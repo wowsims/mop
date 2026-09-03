@@ -53,7 +53,11 @@ export class Timeline extends ResultComponent {
 	private readonly chartPicker: HTMLSelectElement;
 
 	private resultData: SimResultData | null;
-	rendered: boolean;
+	chartRendered: boolean;
+	// Whether the Timeline tab has ever been shown, and whether a result arrived while it
+	// was not.
+	tabShown: boolean;
+	pendingResult: boolean;
 
 	// A rendered rotation timeline for one (result, filter, chart) key. The DOM
 	// nodes are kept LIVE (moved in and out of the containers, never cloned) so
@@ -75,7 +79,9 @@ export class Timeline extends ResultComponent {
 		config.rootCssClass = 'timeline-root';
 		super(config);
 		this.resultData = null;
-		this.rendered = false;
+		this.chartRendered = false;
+		this.tabShown = false;
+		this.pendingResult = false;
 		this.hiddenIds = [];
 		this.addOnDisposeCallback(() => this.reset());
 		this.secondaryResource = config.secondaryResource;
@@ -195,7 +201,14 @@ export class Timeline extends ResultComponent {
 
 	onSimResult(resultData: SimResultData) {
 		this.resultData = resultData;
-		this.update();
+		// Every result reached here and built the whole rotation - ~95 rows, 13k nodes and
+		// 7.4k tooltip instances - into a container that is display:none until the user opens
+		// the Timeline tab. Hold the result instead and build when the tab is actually shown.
+		if (this.tabShown) {
+			this.update();
+		} else {
+			this.pendingResult = true;
+		}
 	}
 
 	private updatePlot() {
@@ -1313,9 +1326,13 @@ export class Timeline extends ResultComponent {
 	}
 
 	update() {
-		if (!this.rendered) this.dpsResourcesPlot.render();
+		// ApexCharts is rendered once for the life of the component; the rotation rebuilds per
+		// result. These were one flag, which is why the deferral below never fired twice.
+		if (!this.chartRendered) {
+			this.dpsResourcesPlot.render();
+			this.chartRendered = true;
+		}
 		this.updatePlot();
-		this.rendered = true;
 	}
 
 	// Per-render resources (tooltips, listeners) belong to the slot being
@@ -1378,9 +1395,13 @@ export class Timeline extends ResultComponent {
 		slot.resetCallbacks.forEach(callback => callback());
 	}
 
+	// Wired to the Timeline tab's shown.bs.tab in detailed_results.tsx.
 	render() {
-		if (this.rendered) return;
-		this.update();
+		this.tabShown = true;
+		if (this.pendingResult || !this.chartRendered) {
+			this.pendingResult = false;
+			this.update();
+		}
 	}
 
 	reset() {
