@@ -1,4 +1,36 @@
 character_stats_results: {
+ key: "TestHolyPaladin-p5"
+ value: {
+  final_stats: 267
+  final_stats: 196
+  final_stats: 43181
+  final_stats: 32006
+  final_stats: 10310
+  final_stats: 5095
+  final_stats: 5336
+  final_stats: 3671
+  final_stats: 5095
+  final_stats: 0
+  final_stats: 86
+  final_stats: 24741
+  final_stats: 862.4
+  final_stats: 0
+  final_stats: 52048.7
+  final_stats: 0
+  final_stats: 0
+  final_stats: 64115
+  final_stats: 0
+  final_stats: 750937
+  final_stats: 300000
+  final_stats: 3000
+  final_stats: 14.98529
+  final_stats: 29.97059
+  final_stats: 18.91293
+  final_stats: 29.86578
+  final_stats: 3
+ }
+}
+character_stats_results: {
  key: "TestHolyPaladin-preraid"
  value: {
   final_stats: 267
