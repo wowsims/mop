@@ -2,10 +2,19 @@ package holy
 
 import (
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/paladin"
 )
 
 func (holy *HolyPaladin) registerHotfixPassive() {
+	// EffectIndex 4 on the Holy specific Hotfix Passive: grants hit and expertise
+	// equal to 50% of Spirit gained from items or effects (base Spirit excluded).
+	baseSpirit := holy.GetBaseStats()[stats.Spirit]
+	holy.AddStat(stats.HitRating, -0.5*baseSpirit)
+	holy.AddStat(stats.ExpertiseRating, -0.5*baseSpirit)
+	holy.AddStatDependency(stats.Spirit, stats.HitRating, 0.5)
+	holy.AddStatDependency(stats.Spirit, stats.ExpertiseRating, 0.5)
+
 	core.MakePermanent(holy.RegisterAura(core.Aura{
 		Label: "Hotfix Passive" + holy.Label,
 	})).AttachSpellMod(core.SpellModConfig{
