@@ -253,7 +253,7 @@
 		},
 		"gear_planner": {
 			"title": "Gear planning only.",
-			"message": "Gear, gems, enchants, talents and the reforge optimizer work for this spec. There is no simulation, so the Simulate and stat weight buttons are disabled."
+			"message": "Gear, gems, enchants, talents and the reforge optimizer work for this spec. There is no simulation yet."
 		},
 		"unlaunched": {
 			"title": "This sim is currently not supported.",
