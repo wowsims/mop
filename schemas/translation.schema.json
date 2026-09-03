@@ -7970,9 +7970,6 @@
 				"warnings": {
 					"type": "object",
 					"properties": {
-						"meta_gem_disabled": {
-							"type": "string"
-						},
 						"profession_requirement": {
 							"type": "string"
 						},
@@ -7994,7 +7991,6 @@
 					},
 					"additionalProperties": false,
 					"required": [
-						"meta_gem_disabled",
 						"profession_requirement",
 						"too_many_jc_gems",
 						"unspent_talent_points",
