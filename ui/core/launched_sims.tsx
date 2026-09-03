@@ -17,11 +17,6 @@ export type SimStatus = {
 	status: LaunchStatus;
 };
 
-export const raidSimStatus: SimStatus = {
-	phase: Phase.Phase1,
-	status: LaunchStatus.Unlaunched,
-};
-
 // This list controls which links are shown in the top-left dropdown menu.
 export const simLaunchStatuses: Record<Spec, SimStatus> = {
 	[Spec.SpecUnknown]: {

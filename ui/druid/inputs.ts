@@ -12,7 +12,6 @@ export const SelfInnervate = <SpecType extends DruidSpecs>() =>
 	InputHelpers.makeClassOptionsBooleanIconInput<SpecType>({
 		fieldName: 'innervateTarget',
 		id: ActionId.fromSpellId(29166),
-		extraCssClasses: ['within-raid-sim-hide'],
 		getValue: (player: Player<SpecType>) => player.getClassOptions().innervateTarget?.type == UnitType.Player,
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
 			const newOptions = player.getClassOptions();

@@ -154,8 +154,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		],
 		builds: [Presets.PRESET_BUILD_P5_MASTERFROST, Presets.PRESET_BUILD_P5_2H_OBLITERATE],
 	},
-
-	raidSimPresets: [],
 });
 
 export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKnight> {
