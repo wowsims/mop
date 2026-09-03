@@ -13,7 +13,8 @@ func playerIsHybridCaster(player *proto.Player) bool {
 	case *proto.Player_BalanceDruid,
 		*proto.Player_ShadowPriest,
 		*proto.Player_ElementalShaman,
-		*proto.Player_MistweaverMonk:
+		*proto.Player_MistweaverMonk,
+		*proto.Player_HolyPaladin:
 		return true
 	default:
 		return false

@@ -60,6 +60,9 @@ func (mw *MistweaverMonk) Initialize() {
 	mw.Monk.Initialize()
 
 	mw.RegisterSpecializationEffects()
+
+	// Mana Meditation (121278): 50% of mana regeneration from Spirit continues in combat.
+	mw.PseudoStats.SpiritRegenRateCombat = 0.5
 }
 
 func (mw *MistweaverMonk) ApplyTalents() {

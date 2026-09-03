@@ -50,7 +50,19 @@ func (holy *HolyPaladin) ApplyTalents() {
 func (holy *HolyPaladin) Initialize() {
 	holy.Paladin.Initialize()
 
+	holy.registerHolyInsight()
 	holy.registerHotfixPassive()
+}
+
+// Holy Insight (112859), the stat-affecting parts only. The healing
+// multipliers on the same spell are not implemented; this spec is a gear
+// planner only.
+func (holy *HolyPaladin) registerHolyInsight() {
+	// Increases mana pool by 400%.
+	holy.MultiplyStat(stats.Mana, 5)
+
+	// 50% of mana regeneration from Spirit continues in combat.
+	holy.PseudoStats.SpiritRegenRateCombat = 0.5
 }
 
 func (holy *HolyPaladin) Reset(sim *core.Simulation) {

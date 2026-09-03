@@ -1,4 +1,4 @@
-package holy
+package mistweaver
 
 import (
 	"testing"
@@ -9,25 +9,25 @@ import (
 )
 
 func init() {
-	RegisterHolyPriest()
+	RegisterMistweaverMonk()
 }
 
 // Stats-only suite: this spec is a gear planner, it has no healing rotation.
 // Pins the final character stats for each gear preset so the passives stay covered.
-func TestHolyPriest(t *testing.T) {
+func TestMistweaverMonk(t *testing.T) {
 	var generators []core.TestGenerator
 	for _, gearSet := range []string{"preraid", "p5"} {
 		player := core.WithSpec(
 			&proto.Player{
-				Class:         proto.Class_ClassPriest,
-				Race:          proto.Race_RaceUndead,
-				Equipment:     core.GetGearSet("../../../ui/priest/holy/gear_sets", gearSet).GearSet,
+				Class:         proto.Class_ClassMonk,
+				Race:          proto.Race_RaceHordePandaren,
+				Equipment:     core.GetGearSet("../../../ui/monk/mistweaver/gear_sets", gearSet).GearSet,
 				Consumables:   FullConsumes,
 				Buffs:         core.FullIndividualBuffs,
 				TalentsString: StandardTalents,
 				Glyphs:        StandardGlyphs,
 				Profession1:   proto.Profession_Engineering,
-				Profession2:   proto.Profession_Tailoring,
+				Profession2:   proto.Profession_Blacksmithing,
 			},
 			PlayerOptions,
 		)
@@ -42,11 +42,11 @@ func TestHolyPriest(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), generators)
 }
 
-var StandardTalents = "122112"
+var StandardTalents = "213312"
 var StandardGlyphs = &proto.Glyphs{
-	Major1: int32(proto.PriestMajorGlyph_GlyphOfRenew),
-	Major2: int32(proto.PriestMajorGlyph_GlyphOfPrayerOfMending),
-	Major3: int32(proto.PriestMajorGlyph_GlyphOfCircleOfHealing),
+	Major1: int32(proto.MonkMajorGlyph_GlyphOfManaTea),
+	Major2: int32(proto.MonkMajorGlyph_GlyphOfRenewingMists),
+	Major3: int32(proto.MonkMajorGlyph_GlyphOfSurgingMist),
 }
 
 var FullConsumes = &proto.ConsumesSpec{
@@ -55,12 +55,10 @@ var FullConsumes = &proto.ConsumesSpec{
 	PotId:   76093, // Potion of the Jade Serpent
 }
 
-var PlayerOptions = &proto.Player_HolyPriest{
-	HolyPriest: &proto.HolyPriest{
-		Options: &proto.HolyPriest_Options{
-			ClassOptions: &proto.PriestOptions{
-				Armor: proto.PriestOptions_InnerFire,
-			},
+var PlayerOptions = &proto.Player_MistweaverMonk{
+	MistweaverMonk: &proto.MistweaverMonk{
+		Options: &proto.MistweaverMonk_Options{
+			ClassOptions: &proto.MonkOptions{},
 		},
 	},
 }
