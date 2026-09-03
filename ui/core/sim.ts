@@ -267,12 +267,6 @@ export class Sim {
 
 				const isBlacksmith = hasBlacksmithing(player);
 
-				// Disable meta gem if inactive.
-				if (gear.hasInactiveMetaGem(isBlacksmith)) {
-					gear = gear.withoutMetaGem();
-					gearChanged = true;
-				}
-
 				// Remove bonus sockets if not blacksmith.
 				if (!isBlacksmith) {
 					gear = gear.withoutBlacksmithSockets();
@@ -369,11 +363,7 @@ export class Sim {
 			const request = this.makeRaidSimRequest(options);
 			const player = request.raid!.parties[0].players[0];
 
-			// Disable meta gem if inactive.
 			const isBlacksmith = hasBlacksmithing(player);
-			if (gear.hasInactiveMetaGem(isBlacksmith)) {
-				gear = gear.withoutMetaGem();
-			}
 
 			// Remove bonus sockets if not blacksmith.
 			if (!isBlacksmith) {
@@ -410,9 +400,6 @@ export class Sim {
 
 	// Normalizes gear for a bulk/reforge request
 	private static prepareBulkGear(gear: Gear, isBlacksmith: boolean): Gear {
-		if (gear.hasInactiveMetaGem(isBlacksmith)) {
-			gear = gear.withoutMetaGem();
-		}
 		if (!isBlacksmith) {
 			gear = gear.withoutBlacksmithSockets();
 		}
@@ -813,11 +800,6 @@ export class Sim {
 		const player = raidProto.parties[0].players[0];
 
 		const isBlacksmith = hasBlacksmithing(player);
-
-		// Disable meta gem if inactive.
-		if (gear.hasInactiveMetaGem(isBlacksmith)) {
-			gear = gear.withoutMetaGem();
-		}
 
 		// Remove bonus sockets if not blacksmith.
 		if (!isBlacksmith) {

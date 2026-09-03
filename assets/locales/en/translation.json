@@ -2264,7 +2264,6 @@
 	"sidebar": {
 		"iterations": "Iterations",
 		"warnings": {
-			"meta_gem_disabled": "Meta gem disabled ({{gemName}}): {{description}}",
 			"profession_requirement": "{{itemName}} requires {{professionName}}, but it is not selected.",
 			"too_many_jc_gems": "Only 2 Jewelcrafting Gems are allowed, but {{count}} are equipped.",
 			"unspent_talent_points": "Missing required talent selections in row {{rowNumbers}}.",

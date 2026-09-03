@@ -60,7 +60,6 @@ import {
 } from './proto/common';
 import { ReforgeSettings } from './proto/api';
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
-import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
 import { getTalentPoints, migrateOldProto, ProtoConversionMap, SpecOptions, SpecRotation } from './proto_utils/utils';
@@ -245,20 +244,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			itemSwapEnabledSpecs.push(player.getSpec());
 		}
 
-		this.addWarning({
-			updateOn: this.player.gearChangeEmitter,
-			getContent: () => {
-				if (!this.player.getGear().hasInactiveMetaGem(this.player.isBlacksmithing())) {
-					return '';
-				}
-
-				const metaGem = this.player.getGear().getMetaGem()!;
-				return i18n.t('sidebar.warnings.meta_gem_disabled', {
-					gemName: metaGem.name,
-					description: getMetaGemConditionDescription(metaGem),
-				});
-			},
-		});
 		this.addWarning({
 			updateOn: TypedEvent.onAny([this.player.gearChangeEmitter, this.player.professionChangeEmitter]),
 			getContent: () => {

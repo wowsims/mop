@@ -5,7 +5,6 @@ import { isBluntWeaponType, isSharpWeaponType } from '../proto_utils/utils';
 import { distinct, equalsOrBothNull, getEnumValues, sum } from '../utils';
 import { Database } from './database';
 import { EquippedItem, ReforgeData } from './equipped_item';
-import { gemMatchesSocket, isMetaGemActive } from './gems';
 import { Stats } from './stats';
 import { validWeaponCombo } from './utils';
 
@@ -231,15 +230,6 @@ export class Gear extends BaseGear {
 		return this.getGemsOfColor(GemColor.GemColorMeta, true)[0] || null;
 	}
 
-	gemColorCounts(isBlacksmithing: boolean): { red: number; yellow: number; blue: number } {
-		const gems = this.getAllGems(isBlacksmithing);
-		return {
-			red: gems.filter(gem => gemMatchesSocket(gem, GemColor.GemColorRed)).length,
-			yellow: gems.filter(gem => gemMatchesSocket(gem, GemColor.GemColorYellow)).length,
-			blue: gems.filter(gem => gemMatchesSocket(gem, GemColor.GemColorBlue)).length,
-		};
-	}
-
 	withChallengeMode(enabled: boolean): Gear {
 		let curGear: Gear = this;
 
@@ -252,21 +242,6 @@ export class Gear extends BaseGear {
 		}
 
 		return curGear;
-	}
-
-	// Returns true if this gear set has a meta gem AND the other gems meet the meta's conditions.
-	hasActiveMetaGem(isBlacksmithing: boolean): boolean {
-		const metaGem = this.getMetaGem();
-		if (!metaGem) {
-			return false;
-		}
-
-		const gemColorCounts = this.gemColorCounts(isBlacksmithing);
-		return isMetaGemActive(metaGem, gemColorCounts.red, gemColorCounts.yellow, gemColorCounts.blue);
-	}
-
-	hasInactiveMetaGem(isBlacksmithing: boolean): boolean {
-		return this.getMetaGem() != null && !this.hasActiveMetaGem(isBlacksmithing);
 	}
 
 	withGem(itemSlot: ItemSlot, socketIdx: number, gem: Gem | null): Gear {
@@ -330,16 +305,6 @@ export class Gear extends BaseGear {
 		}
 
 		return this;
-	}
-
-	withoutMetaGem(): Gear {
-		const headItem = this.getEquippedItem(ItemSlot.ItemSlotHead);
-		const metaGem = this.getMetaGem();
-		if (headItem && metaGem) {
-			return this.withEquippedItem(ItemSlot.ItemSlotHead, headItem.removeGemsWithId(metaGem.id), true);
-		} else {
-			return this;
-		}
 	}
 
 	withoutGems(canDualWield2H: boolean, ignoreSlots?: Set<ItemSlot>, ignoreMeta?: boolean): Gear {
