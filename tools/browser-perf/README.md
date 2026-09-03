@@ -28,6 +28,7 @@ Point at another checkout by setting `WOWSIMS_URL`.
 | script | what it measures |
 |---|---|
 | `log-pipeline-timing.js` | Simulate with the Damage tab active, Log tab first paint, one search keystroke, log scroll frames, Timeline tab build, node and tippy-instance counts |
+| `reference-swap-timing.js` | Swapping between the current result and a saved reference, six times, so the steady state after both subtrees are cached is visible |
 
 `sync` is the blocking main-thread cost of the click itself; `settle` is time until the DOM
 stops mutating; `tippies` counts live tippy instances via the `_tippy` property tippy v6
@@ -97,3 +98,36 @@ is measured rather than an artefact of a stale selector.
 Worth generalising: a metric that reads 0 because its selector matches nothing looks
 identical to a metric that reads 0 because the work stopped. Prefer assertions that fail
 loudly (a non-zero "before" in the same run) over bare counts.
+
+## Reference swap — master `fd8335d2f` vs the perf stack
+
+Swapping current ↔ saved reference is what the live-subtree slot cache exists for, so it is
+the case most at risk from these changes. Both sides measured with the same protocol and the
+same pinned seed, master served from a worktree on :3334.
+
+| steady state (swaps 3-6) | master | perf stack |
+|---|---|---|
+| sync | 79-90 ms | 78-82 ms |
+| settle | 700-870 ms | 422-441 ms |
+| mutations | 5,292 | 5,289 |
+| rotation nodes | 13,326 | 1,452 |
+| live tippy instances | 7,376 | 236 |
+| JS heap | 205-265 MB | 163-206 MB |
+| first swap (cold) | 355 ms | 354 ms |
+
+The cache still hits: a per-target mutation breakdown shows 96 rows added and 96 removed on
+`.rotation-timeline` with **zero** child mutations inside any row, i.e. rows are moved, and
+horizontal windowing adds no churn to a swap.
+
+**The swap's remaining cost is the chart, not the rotation.** Mutation counts are identical
+across both sides because they are dominated by the ApexCharts `updateOptions` redraw and the
+hidden-row emitter, neither of which this stack touches. That is where a future swap
+optimisation would have to go; there is nothing left to win in the rotation DOM.
+
+Swapping while scrolled was checked separately: `scrollLeft` is preserved (12,000 and 24,000),
+the correct window is mounted on the newly attached slot, nothing is mounted more than the
+padding outside it, and swapping back restores identical mounted/in-view counts.
+
+To A/B against another checkout: `git worktree add ../wowsims-mop-master master`, symlink
+`node_modules`, `make dist/mop/.dirstamp`, serve it on another port, and pass that port to
+`run.cjs` — the protocol's `localhost:3333` is substituted.
