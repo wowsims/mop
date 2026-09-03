@@ -64,14 +64,36 @@ async page => {
 	await page.waitForSelector('.dps-action');
 	await page.waitForTimeout(3000);
 
-	// 1. The cost every Simulate press pays, on a tab that shows neither logs nor timeline.
-	out.simulateOnDamageTab = await measure(() => {
-		const btn = document.querySelector('.dps-action');
-		const t = performance.now();
-		btn.click();
-		window.__m.sync = performance.now() - t;
+	// Pin the RNG seed, then reload so the app picks it up. Without this the rotation
+	// differs run to run and row/node counts move by a few percent on their own, which is
+	// the same order as some of the changes being measured.
+	const seeded = await page.evaluate(() => {
+		const key = Object.keys(localStorage).find(k => k.endsWith('__currentSettings__'));
+		if (!key) return false;
+		const settings = JSON.parse(localStorage.getItem(key));
+		settings.settings = { ...settings.settings, fixedRngSeed: '20260903' };
+		localStorage.setItem(key, JSON.stringify(settings));
+		return true;
 	});
-	await page.waitForTimeout(2000);
+	out.seeded = seeded;
+	await page.reload();
+	await page.waitForSelector('.dps-action');
+	await page.waitForTimeout(3000);
+
+	// 1. The cost every Simulate press pays, on a tab that shows neither logs nor timeline.
+	//    Repeated, because the headline figure is a long task and one sample says little.
+	out.simulateOnDamageTab = [];
+	for (let i = 0; i < 3; i++) {
+		out.simulateOnDamageTab.push(
+			await measure(() => {
+				const btn = document.querySelector('.dps-action');
+				const t = performance.now();
+				btn.click();
+				window.__m.sync = performance.now() - t;
+			}),
+		);
+		await page.waitForTimeout(2000);
+	}
 
 	// Whether the Timeline tab built itself while hidden. update() sets `rendered` and
 	// nothing clears it, so the shown.bs.tab deferral at detailed_results.tsx:275 never
