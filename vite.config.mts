@@ -1,7 +1,6 @@
 /** @type {import('vite').UserConfig} */
 
 import fs from 'fs';
-import { glob } from 'glob';
 import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,6 +9,8 @@ import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import stylelint from 'vite-plugin-stylelint';
+
+import { specPages } from './tools/vite/spec_pages.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,6 +127,7 @@ export default defineConfig(({ command, mode }) => {
 			},
 		},
 		plugins: [
+			specPages(BASE_PATH),
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			watchAndRun([
 				{
@@ -162,13 +164,9 @@ export default defineConfig(({ command, mode }) => {
 		build: {
 			...baseConfig.build,
 			rollupOptions: {
+				// The per-spec pages are added by the specPages plugin.
 				input: {
-					...glob.sync(path.resolve(BASE_PATH, '**/index.html').replace(/\\/g, '/')).reduce<Record<string, string>>((acc, cur) => {
-						const name = path.relative(__dirname, cur).split(path.sep).join('/');
-						acc[name] = cur;
-						return acc;
-					}, {}),
-					// Add shared.scss as a separate entry if needed or handle it separately
+					'ui/index.html': path.resolve(BASE_PATH, 'index.html'),
 				},
 				output: {
 					assetFileNames: () => 'bundle/[name]-[hash].style.css',
