@@ -195,6 +195,11 @@ export class ActionId {
 		return `${this.itemId}|${this.randomSuffixId}|${this.spellId}|${this.otherId}|${this.upgradeStep}|${this.tag}`;
 	}
 
+	// equalityKey() without the tag, matching equalsIgnoringTag below.
+	equalityKeyIgnoringTag(): string {
+		return `${this.itemId}|${this.randomSuffixId}|${this.spellId}|${this.otherId}|${this.upgradeStep}`;
+	}
+
 	equalsIgnoringTag(other: ActionId): boolean {
 		return (
 			this.itemId == other.itemId &&
