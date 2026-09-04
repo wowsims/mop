@@ -1,51 +1,5 @@
-.character-stats-header {
-	padding: 5px;
-	font-size: 14px;
-}
-
 .character-stats-table {
 	padding: 10px;
-}
-
-.gear-tab-columns {
-	display: flex;
-
-	@include media-breakpoint-down(xl) {
-		flex-flow: column;
-	}
-}
-
-.left-gear-panel {
-	min-width: calc(550px + 2vw);
-	flex: 3;
-	margin-right: var(--container-padding);
-
-	@include media-breakpoint-down(xl) {
-		margin: 0;
-	}
-
-	@media only screen and (max-width: calc(800px + 1vw)) {
-		min-width: calc(275px + 1vw);
-	}
-}
-
-.right-gear-panel {
-	position: relative;
-	flex: 1.25;
-	min-width: 250px;
-
-	@include media-breakpoint-down(xl) {
-		margin-top: var(--gap-width);
-	}
-
-	@media only screen and (max-width: calc(1050px + 2vw)) {
-		min-width: 275px;
-	}
-}
-
-.talents-tab-content {
-	display: flex;
-	flex-wrap: wrap;
 }
 
 .glyphs-picker {

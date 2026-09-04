@@ -48,42 +48,6 @@
 		}
 	}
 
-	.bulk-boolean-settings-container {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--block-spacer);
-
-		@include media-breakpoint-between(xl, xxxl) {
-			grid-template-columns: 1fr;
-		}
-
-		.boolean-picker-root {
-			margin-bottom: 0;
-		}
-	}
-
-	.fallback-gem-container {
-		display: flex;
-		flex-direction: column;
-
-		.gem-socket-container {
-			height: 30px;
-			width: 30px;
-		}
-
-		.gem-icon {
-			top: 0;
-			left: 0;
-			height: 100%;
-			width: 100%;
-		}
-
-		.sockets-container {
-			display: flex;
-			gap: 3px;
-		}
-	}
-
 	.bulk-gear-freeze-weapontypes__list {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
