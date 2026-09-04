@@ -1,3 +1,4 @@
+import { kebabCase } from '@domain/format';
 import { Emitter } from '@domain/state/events';
 import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
@@ -51,7 +52,7 @@ export abstract class Exporter extends BaseModal {
 	}
 
 	open() {
-		const titleAsSlug = this.header?.title.toLowerCase().replaceAll(' ', '-');
+		const titleAsSlug = this.header && kebabCase(this.header.title);
 		trackPageView(this.header!.title, `/export/${titleAsSlug}`);
 		super.open();
 		this.init();

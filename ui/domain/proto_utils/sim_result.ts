@@ -190,9 +190,6 @@ export class SimResult {
 		}
 	}
 
-	getTargetWithIndex(unitIndex: number): UnitMetrics | null {
-		return this.getTargets().find(target => target.unitIndex == unitIndex) || null;
-	}
 	getTargetWithEncounterIndex(index: number): UnitMetrics | null {
 		return this.getTargets().find(target => target.index == index) || null;
 	}
@@ -208,42 +205,10 @@ export class SimResult {
 		return this.raidMetrics.dps;
 	}
 
-	getActionMetrics(filter?: SimResultFilter): Array<ActionMetrics> {
-		return ActionMetrics.joinById(
-			this.getPlayers(filter)
-				.map(player => player.getPlayerAndPetActions().map(action => action.forTarget(filter)))
-				.flat(),
-		);
-	}
-
 	getRaidIndexedActionMetrics(filter?: SimResultFilter): Array<ActionMetrics> {
 		return ActionMetrics.joinById(
 			this.getRaidIndexedPlayers(filter)
 				.map(player => player.getPlayerAndPetActions().map(action => action.forTarget(filter)))
-				.flat(),
-		);
-	}
-
-	getSpellMetrics(filter?: SimResultFilter): Array<ActionMetrics> {
-		return this.getActionMetrics(filter).filter(e => e.hitAttempts != 0 && !e.isMeleeAction);
-	}
-
-	getMeleeMetrics(filter?: SimResultFilter): Array<ActionMetrics> {
-		return this.getActionMetrics(filter).filter(e => e.hitAttempts != 0 && e.isMeleeAction);
-	}
-
-	getResourceMetrics(resourceType: ResourceType, filter?: SimResultFilter): Array<ResourceMetrics> {
-		return ResourceMetrics.joinById(
-			this.getPlayers(filter)
-				.map(player => player.resources.filter(resource => resource.type == resourceType))
-				.flat(),
-		);
-	}
-
-	getBuffMetrics(filter?: SimResultFilter): Array<AuraMetrics> {
-		return AuraMetrics.joinById(
-			this.getPlayers(filter)
-				.map(player => player.auras)
 				.flat(),
 		);
 	}
@@ -290,15 +255,13 @@ export class SimResult {
 }
 
 export class RaidMetrics {
-	private readonly raid: RaidProto;
 	private readonly metrics: RaidMetricsProto;
 
 	readonly dps: DistributionMetricsProto;
 	readonly hps: DistributionMetricsProto;
 	readonly parties: Array<PartyMetrics>;
 
-	private constructor(raid: RaidProto, metrics: RaidMetricsProto, parties: Array<PartyMetrics>) {
-		this.raid = raid;
+	private constructor(metrics: RaidMetricsProto, parties: Array<PartyMetrics>) {
 		this.metrics = metrics;
 		this.dps = this.metrics.dps!;
 		this.hps = this.metrics.hps!;
@@ -312,25 +275,14 @@ export class RaidMetrics {
 			[...new Array(numParties).keys()].map(i => PartyMetrics.makeNew(resultData, raid.parties[i], metrics.parties[i], i, logIndex)),
 		);
 
-		return new RaidMetrics(raid, metrics, parties);
+		return new RaidMetrics(metrics, parties);
 	}
 }
 
 export class PartyMetrics {
-	private readonly party: PartyProto;
-	private readonly metrics: PartyMetricsProto;
-
-	readonly partyIndex: number;
-	readonly dps: DistributionMetricsProto;
-	readonly hps: DistributionMetricsProto;
 	readonly players: Array<UnitMetrics>;
 
-	private constructor(party: PartyProto, metrics: PartyMetricsProto, partyIndex: number, players: Array<UnitMetrics>) {
-		this.party = party;
-		this.metrics = metrics;
-		this.partyIndex = partyIndex;
-		this.dps = this.metrics.dps!;
-		this.hps = this.metrics.hps!;
+	private constructor(players: Array<UnitMetrics>) {
 		this.players = players;
 	}
 
@@ -348,7 +300,7 @@ export class PartyMetrics {
 				.map(i => UnitMetrics.makeNewPlayer(resultData, party.players[i], metrics.players[i], partyIndex * 5 + i, false, logIndex)),
 		);
 
-		return new PartyMetrics(party, metrics, partyIndex, players);
+		return new PartyMetrics(players);
 	}
 }
 
@@ -834,11 +786,6 @@ export class ResourceMetrics {
 		} else {
 			return Object.values(bucket(resources, resource => resource.actionId.toStringIgnoringTag()));
 		}
-	}
-
-	// Merges resource metrics that have the same name/ID, adding their stats together.
-	static joinById(resources: Array<ResourceMetrics>, useTag?: boolean): Array<ResourceMetrics> {
-		return ResourceMetrics.groupById(resources, useTag).map(resourcesToJoin => ResourceMetrics.merge(resourcesToJoin));
 	}
 }
 

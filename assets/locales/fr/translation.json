@@ -1992,7 +1992,14 @@
 				},
 				"chart_options": {
 					"time_axis": "Temps (s)",
-					"waiting_for_data": "En attente de données..."
+					"waiting_for_data": "En attente de données...",
+					"reset": "Réinitialiser le zoom",
+					"zoom_in": "Zoom avant",
+					"zoom_out": "Zoom arrière",
+					"fit": "Ajuster à la largeur",
+					"pan_left": "Déplacer vers la gauche",
+					"pan_right": "Déplacer vers la droite",
+					"chart_label": "DPS, menace et ressources au fil du temps"
 				},
 				"tooltips": {
 					"dps": "DPS",
@@ -2004,6 +2011,12 @@
 					"after": "Après",
 					"threat": "Menace",
 					"active_auras": "Auras Actives"
+				},
+				"floatingActionBar": {
+					"allShown": "Toutes les lignes affichées",
+					"hidden": "{{count}} masquée(s)",
+					"showAll": "Tout afficher",
+					"toggle": "Afficher ou masquer les lignes"
 				}
 			},
 			"logs": {

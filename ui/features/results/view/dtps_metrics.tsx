@@ -319,7 +319,7 @@ export class DtpsMetricsTable extends MetricsTable<ActionMetrics> {
 
 	getGroupedMetrics(resultData: SimResultData): Array<Array<ActionMetrics>> {
 		const players = resultData.result.getRaidIndexedPlayers(resultData.filter);
-		if (players.length != 1) {
+		if (!players.length) {
 			return [];
 		}
 		const player = players[0];

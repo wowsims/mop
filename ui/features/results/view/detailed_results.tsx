@@ -149,14 +149,12 @@ export class DetailedResults extends Component {
 						<div className="dr-row">
 							<div className="healing-spell-metrics" />
 						</div>
-						<div className="dr-row hps-histogram" />
 					</div>
 					<div id="damageTakenTab" className="tab-pane dr-tab-content damage-taken-content fade">
 						<div className="dr-row topline-results" />
 						<div className="dr-row">
 							<div className="dtps-metrics" />
 						</div>
-						<div className="dr-row damage-taken-histogram" />
 					</div>
 					<div id="buffsTab" className="tab-pane dr-tab-content buffs-content fade">
 						<div className="dr-row">
@@ -295,7 +293,9 @@ export class DetailedResults extends Component {
 		const combatReplay = new CombatReplay({
 			parent: this.rootElem.querySelector('.combat-replay')!,
 			resultsEmitter: this.resultsEmitter,
+			deferUntilShown: true,
 		});
+		deferUntilShown(combatReplay, 'replayTab');
 
 		tabButtons.get('replayTab')?.addEventListener('hide.bs.tab', () => {
 			combatReplay.stopPlayback();

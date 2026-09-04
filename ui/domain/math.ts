@@ -28,11 +28,6 @@ export function zTest(
 	return { z, isDiff: z > Z_95 };
 }
 
-// Returns the index of maximum value, or null if empty.
-export function maxIndex(arr: Array<number>): number | null {
-	return arr.reduce((cur, v, i, arr) => (v > arr[cur] ? i : cur), 0);
-}
-
 // Swaps two elements in the given array.
 export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);

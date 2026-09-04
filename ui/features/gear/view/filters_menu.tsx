@@ -1,3 +1,4 @@
+import { kebabCase } from '@domain/format';
 import { Player } from '@domain/player';
 import { Sim } from '@domain/sim';
 import { subscribeSimField } from '@domain/state/subscriptions';
@@ -295,7 +296,7 @@ export class FiltersMenu extends BaseModal {
 
 	private newSection(name: string): HTMLElement {
 		const section = document.createElement('div');
-		section.classList.add('menu-section', `${name.toLowerCase().replaceAll(' ', '-')}-section`);
+		section.classList.add('menu-section', `${kebabCase(name)}-section`);
 		this.body.appendChild(section);
 		section.innerHTML = `
 			<div class="menu-section-header">

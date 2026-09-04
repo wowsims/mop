@@ -31,7 +31,6 @@
 		"@types/golang-wasm-exec": "^1.15.2",
 		"@types/pako": "^2.0.0",
 		"ajv": "^8.17.1",
-		"apexcharts": "^4.5.0",
 		"async": "^3.2.6",
 		"bootstrap": "^5.3.7",
 		"chart.js": "^4.5.0",

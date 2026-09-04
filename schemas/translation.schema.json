@@ -7000,10 +7000,29 @@
 										},
 										"waiting_for_data": {
 											"type": "string"
+										},
+										"reset": {
+											"type": "string"
+										},
+										"zoom_in": {
+											"type": "string"
+										},
+										"zoom_out": {
+											"type": "string"
+										},
+											"fit": { "type": "string" },
+										"pan_left": {
+											"type": "string"
+										},
+										"pan_right": {
+											"type": "string"
+										},
+										"chart_label": {
+											"type": "string"
 										}
 									},
 									"additionalProperties": false,
-									"required": ["time_axis", "waiting_for_data"]
+									"required": ["time_axis", "waiting_for_data", "reset", "zoom_in", "zoom_out", "pan_left", "pan_right", "chart_label"]
 								},
 								"tooltips": {
 									"type": "object",
@@ -7038,10 +7057,29 @@
 									},
 									"additionalProperties": false,
 									"required": ["dps", "dtps", "amount", "player_damage", "player_damage_taken", "before", "after", "threat", "active_auras"]
+								},
+								"floatingActionBar": {
+									"type": "object",
+									"properties": {
+										"allShown": {
+											"type": "string"
+										},
+										"hidden": {
+											"type": "string"
+										},
+										"showAll": {
+											"type": "string"
+										},
+										"toggle": {
+											"type": "string"
+										}
+									},
+									"additionalProperties": false,
+									"required": ["allShown", "hidden", "showAll", "toggle"]
 								}
 							},
 							"additionalProperties": false,
-							"required": ["disclaimer", "note", "chart_types", "chart_options", "tooltips"]
+							"required": ["disclaimer", "note", "chart_types", "chart_options", "tooltips", "floatingActionBar"]
 						},
 						"logs": {
 							"type": "object",

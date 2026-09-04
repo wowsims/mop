@@ -120,3 +120,21 @@
 	cursor: pointer;
 	display: inline-block;
 }
+
+// A bar that sits at the bottom of its scroll container and grows a padded, bordered,
+// opaque shell once it is actually pinned there. $padding is a parameter because the
+// APL bar's spacer token is scoped to the APL subtree and resolves to nothing elsewhere.
+@mixin bottom-floating-action-bar($padding) {
+	position: sticky;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	margin-top: var(--block-spacer);
+	border: 0 solid var(--bs-border-color);
+
+	&.stuck {
+		padding: $padding;
+		border-width: var(--bs-border-width);
+		background: var(--bs-body-bg);
+	}
+}

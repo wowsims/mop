@@ -96,3 +96,5 @@ export const normalizeName = (name: string): string => {
 export const formatName = (name: string): string => {
 	return name.replace('Food', '');
 };
+
+export const kebabCase = (text: string): string => text.toLowerCase().replaceAll(' ', '-');

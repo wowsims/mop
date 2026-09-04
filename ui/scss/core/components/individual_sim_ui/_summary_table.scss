@@ -45,16 +45,6 @@
 	align-items: center;
 }
 
-.summary-table-footer {
-	.positive {
-		color: var(--bs-success);
-	}
-
-	.negative {
-		color: var(--bs-danger);
-	}
-}
-
 .summary-table--upgrade-costs {
 	.gem-icon {
 		cursor: default;
