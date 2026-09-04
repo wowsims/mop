@@ -60,9 +60,16 @@ func (mw *MistweaverMonk) Initialize() {
 	mw.Monk.Initialize()
 
 	mw.RegisterSpecializationEffects()
+	mw.registerManaMeditation()
+}
 
-	// Mana Meditation (121278): 50% of mana regeneration from Spirit continues in combat.
-	mw.PseudoStats.SpiritRegenRateCombat = 0.5
+// Mana Meditation (121278): 50% of mana regeneration from Spirit continues in combat.
+func (mw *MistweaverMonk) registerManaMeditation() {
+	core.MakePermanent(mw.RegisterAura(core.Aura{
+		Label:      "Mana Meditation" + mw.Label,
+		ActionID:   core.ActionID{SpellID: 121278},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachAdditivePseudoStatBuff(&mw.PseudoStats.SpiritRegenRateCombat, 0.5)
 }
 
 func (mw *MistweaverMonk) ApplyTalents() {

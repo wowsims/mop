@@ -58,11 +58,17 @@ func (holy *HolyPaladin) Initialize() {
 // multipliers on the same spell are not implemented; this spec is a gear
 // planner only.
 func (holy *HolyPaladin) registerHolyInsight() {
-	// Increases mana pool by 400%.
-	holy.MultiplyStat(stats.Mana, 5)
-
-	// 50% of mana regeneration from Spirit continues in combat.
-	holy.PseudoStats.SpiritRegenRateCombat = 0.5
+	core.MakePermanent(holy.RegisterAura(core.Aura{
+		Label:      "Holy Insight" + holy.Label,
+		ActionID:   core.ActionID{SpellID: 112859},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachStatDependency(
+		// Increases mana pool by 400%.
+		holy.NewDynamicMultiplyStat(stats.Mana, 5),
+	).AttachAdditivePseudoStatBuff(
+		// 50% of mana regeneration from Spirit continues in combat.
+		&holy.PseudoStats.SpiritRegenRateCombat, 0.5,
+	)
 }
 
 func (holy *HolyPaladin) Reset(sim *core.Simulation) {
