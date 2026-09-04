@@ -94,8 +94,7 @@
 // No z-index, transform, filter, will-change or content-visibility here: each either makes the
 // row a containing block that kills the sticky label, or applies size containment off-screen so
 // offsetHeight lies to the windower's prefix sums.
-// Pane-scoped while the old view still ships: it puts .rotation-row on its rows too.
-.rotation-pane .rotation-row {
+.rotation-row {
 	display: flex;
 	align-items: stretch;
 	box-sizing: border-box;
@@ -152,7 +151,7 @@
 	}
 }
 
-.rotation-pane .rotation-label-text {
+.rotation-label-text {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
