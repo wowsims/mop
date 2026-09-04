@@ -57,7 +57,7 @@ export class TimelineWindow {
 
 	// viewTop/viewBottom are the vertical scrollport's edges in client coordinates; the scroller
 	// itself only carries the horizontal axis now.
-	update(pps: number, labelWidth: number, viewTop: number, viewBottom: number) {
+	update(pps: number, labelWidth: number, viewTop: number, viewBottom: number, scrollLeft: number) {
 		const count = this.order.length;
 		if (count === 0) {
 			this.unmountAll();
@@ -74,10 +74,10 @@ export class TimelineWindow {
 		const contentTop = this.content.getBoundingClientRect().top;
 		const first = this.indexAt(Math.max(0, viewTop - contentTop - VERTICAL_PADDING_PX));
 		const last = this.indexAt(Math.min(total, viewBottom - contentTop + VERTICAL_PADDING_PX));
-		const left = scroller.scrollLeft - HORIZONTAL_PADDING_PX;
+		const left = scrollLeft - HORIZONTAL_PADDING_PX;
 		// The sticky label occludes the first labelWidth of every track, so the unobscured
 		// track range is [scrollLeft, scrollLeft + clientWidth - labelWidth].
-		const right = scroller.scrollLeft + clientWidth - labelWidth + HORIZONTAL_PADDING_PX;
+		const right = scrollLeft + clientWidth - labelWidth + HORIZONTAL_PADDING_PX;
 
 		if (first === this.lastFirst && last === this.lastLast && left === this.lastLeft && right === this.lastRight && pps === this.lastPps) return;
 		this.lastFirst = first;

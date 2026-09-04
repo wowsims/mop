@@ -370,7 +370,9 @@ export class RotationView extends Component implements WindowHost {
 		if (!this.rulerWidth) this.measureWidths();
 		const pps = this.zoom.pps;
 		const view = this.viewBounds();
-		this.rowWindow.update(pps, this.labelWidth, view.top, view.bottom);
-		this.ruler.draw({ scrollLeft: this.scroller.scrollLeft, pps, duration: this.model?.duration ?? 0, width: this.rulerWidth });
+		// Read before the window writes: a read afterwards forces a second layout flush per frame.
+		const scrollLeft = this.scroller.scrollLeft;
+		this.rowWindow.update(pps, this.labelWidth, view.top, view.bottom, scrollLeft);
+		this.ruler.draw({ scrollLeft, pps, duration: this.model?.duration ?? 0, width: this.rulerWidth });
 	}
 }
