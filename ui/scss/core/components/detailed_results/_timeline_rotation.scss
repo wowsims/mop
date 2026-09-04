@@ -6,7 +6,7 @@
 	--rotation-item-h: 24px;
 	--rotation-row-bg: var(--bs-body-bg);
 	--rotation-cast-bg: rgba(229, 204, 128, 0.7);
-	--rotation-cast-cancel-bg: rgba(230, 128, 102, 0.7);
+	--rotation-cast-cancel-bg: rgba(var(--bs-cancel-rgb), 0.7);
 	--rotation-aura-bg: rgba(0, 0, 255, 0.52);
 	--rotation-travel-bg: rgba(249, 192, 255, 0.6);
 	--rotation-tick-bg: maroon;

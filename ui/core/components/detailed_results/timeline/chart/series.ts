@@ -6,10 +6,14 @@ import { resourceColors, resourceNames } from '../../../../proto_utils/names';
 import SecondaryResource from '../../../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../../../proto_utils/sim_result';
 import { orderedResourceTypes } from '../../../../proto_utils/utils';
-import { dpsColor, manaColor, THREAT_SERIES_NAME, threatColor } from '../constants';
+import { THREAT_SERIES_NAME } from '../constants';
 import { DpsTooltip, ResourceTooltip, ThreatTooltip } from '../tooltip_content';
-import { AXIS_GRID_COLOR } from './colors';
+import { AXIS_GRID_COLOR, cssVarColor } from './colors';
 import { TimelineDataset } from './types';
+
+const dpsColor = () => cssVarColor('--bs-dps');
+const manaColor = () => cssVarColor('--bs-mana');
+const threatColor = () => cssVarColor('--bs-threat');
 
 export const Y_DPS = 'yDps';
 export const Y_MANA = 'yMana';
@@ -41,9 +45,9 @@ export function dpsScale(maxDps: number): ScaleOptions<'linear'> {
 		position: 'left',
 		min: 0,
 		max: Math.max(100, Math.ceil((maxDps || 0) / 100) * 100),
-		title: { display: true, text: 'DPS', color: dpsColor },
-		ticks: { color: dpsColor, maxTicksLimit: 11, precision: 0 },
-		border: { color: dpsColor },
+		title: { display: true, text: 'DPS', color: dpsColor() },
+		ticks: { color: dpsColor(), maxTicksLimit: 11, precision: 0 },
+		border: { color: dpsColor() },
 		grid: { color: AXIS_GRID_COLOR },
 	};
 }
@@ -55,9 +59,9 @@ export function threatScale(maxThreat: number, display: boolean): ScaleOptions<'
 		position: 'left',
 		min: 0,
 		max: Math.max(10000, Math.ceil((maxThreat || 0) / 10000) * 10000),
-		title: { display: true, text: THREAT_SERIES_NAME, color: threatColor },
-		ticks: { color: threatColor, maxTicksLimit: 11, precision: 0 },
-		border: { color: threatColor },
+		title: { display: true, text: THREAT_SERIES_NAME, color: threatColor() },
+		ticks: { color: threatColor(), maxTicksLimit: 11, precision: 0 },
+		border: { color: threatColor() },
 		grid: { color: AXIS_GRID_COLOR },
 	};
 }
@@ -68,13 +72,13 @@ export function manaScale(maxMana: number): ScaleOptions<'linear'> {
 		position: 'right',
 		min: 0,
 		max: maxMana,
-		title: { display: true, text: 'Mana', color: manaColor },
+		title: { display: true, text: 'Mana', color: manaColor() },
 		ticks: {
-			color: manaColor,
+			color: manaColor(),
 			maxTicksLimit: 11,
 			callback: value => `${Number(value).toFixed(0)} (${((Number(value) / maxMana) * 100).toFixed(0)}%)`,
 		},
-		border: { color: manaColor },
+		border: { color: manaColor() },
 		grid: { drawOnChartArea: false },
 	};
 }
@@ -96,7 +100,7 @@ export function dpsDataset(unit: UnitMetrics, seriesId: string, colorOverride: s
 			seriesId,
 			label: 'DPS',
 			yAxisID: Y_DPS,
-			borderColor: colorOverride || dpsColor,
+			borderColor: colorOverride || dpsColor(),
 			borderWidth: 2,
 			pointRadius: 0,
 			pointHoverRadius: 3,
@@ -114,7 +118,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, colorOverride
 		seriesId,
 		label: THREAT_SERIES_NAME,
 		yAxisID,
-		borderColor: colorOverride || threatColor,
+		borderColor: colorOverride || threatColor(),
 		borderWidth: 2,
 		pointRadius: 0,
 		pointHoverRadius: 3,
@@ -135,7 +139,7 @@ export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<Resou
 			seriesId: MANA_SERIES_ID,
 			label: 'Mana',
 			yAxisID: Y_MANA,
-			borderColor: manaColor,
+			borderColor: manaColor(),
 			borderWidth: 2,
 			pointRadius: 0,
 			pointHoverRadius: 3,
