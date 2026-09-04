@@ -15,6 +15,8 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 export interface ZoomConfig {
 	scroller: HTMLElement;
+	// --pps is read by the ruler as well as by the rows, and the ruler is not inside the scroller.
+	styleHost: HTMLElement;
 	labelWidth: () => number;
 	onChange: () => void;
 }
@@ -139,8 +141,7 @@ export class ZoomController {
 	}
 
 	private apply() {
-		const scroller = this.config.scroller;
-		scroller.style.setProperty('--pps', `${this.ppsValue}px`);
-		scroller.dataset.density = densityForPps(this.ppsValue);
+		this.config.styleHost.style.setProperty('--pps', `${this.ppsValue}px`);
+		this.config.scroller.dataset.density = densityForPps(this.ppsValue);
 	}
 }

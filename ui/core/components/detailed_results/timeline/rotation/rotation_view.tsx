@@ -57,7 +57,8 @@ export class RotationView extends Component implements WindowHost {
 		const zoomInRef = ref<HTMLButtonElement>();
 		const fitRef = ref<HTMLButtonElement>();
 		const resetRef = ref<HTMLButtonElement>();
-		const canvasRef = ref<HTMLCanvasElement>();
+		const rulerRef = ref<HTMLDivElement>();
+		const rulerTrackRef = ref<HTMLDivElement>();
 		const scrollerRef = ref<HTMLDivElement>();
 		const contentRef = ref<HTMLDivElement>();
 		const topSpacerRef = ref<HTMLDivElement>();
@@ -69,7 +70,9 @@ export class RotationView extends Component implements WindowHost {
 			<>
 				<div className="rotation-header">
 					{toolbar}
-					<canvas ref={canvasRef} className="rotation-ruler" />
+					<div ref={rulerRef} className="rotation-ruler">
+						<div ref={rulerTrackRef} className="rotation-ruler-track" />
+					</div>
 				</div>
 				<div ref={scrollerRef} className="rotation-scroller" tabIndex={0}>
 					<div ref={contentRef} className="rotation-content">
@@ -84,9 +87,10 @@ export class RotationView extends Component implements WindowHost {
 		this.scroller = scrollerRef.value!;
 		this.actionBar = this.addChild(new RotationFloatingActionBar(this.rootElem, this.visibility));
 
-		this.ruler = new Ruler(canvasRef.value!);
+		this.ruler = new Ruler(rulerRef.value!, rulerTrackRef.value!);
 		this.zoom = new ZoomController({
 			scroller: this.scroller,
+			styleHost: this.rootElem,
 			labelWidth: () => this.corner.offsetWidth,
 			onChange: () => this.schedule(),
 		});
@@ -126,10 +130,9 @@ export class RotationView extends Component implements WindowHost {
 			return;
 		}
 
-		this.scroller.style.setProperty('--duration', String(model.duration));
+		this.rootElem.style.setProperty('--duration', String(model.duration));
 		this.zoom.setDuration(model.duration);
 		this.measureLabelWidth();
-		this.ruler.measure();
 		this.rebuildOrder();
 		this.schedule();
 	}
@@ -229,7 +232,6 @@ export class RotationView extends Component implements WindowHost {
 		if (width !== this.paneWidth) {
 			this.paneWidth = width;
 			this.measureLabelWidth();
-			this.ruler.measure();
 		}
 		this.measureStickyTop();
 		this.schedule();
