@@ -265,17 +265,16 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		});
 	}
 
-	const buffsToShow = buffsById.filter(
-		auraUptimeLogs =>
-			!playerCastsByAbility.some(casts => {
-				const actionId = auraUptimeLogs[0].actionId;
-				return (
-					!!actionId &&
-					(casts[0].actionId!.equalityKeyIgnoringTag() === actionId.equalityKeyIgnoringTag() ||
-						AURA_AS_RESOURCE.some(auraId => auraId.equalityKey() === actionId.equalityKey()))
-				);
-			}),
-	);
+	const auraAsResourceKeys = new Set(AURA_AS_RESOURCE.map(auraId => auraId.equalityKey()));
+	const playerCastKeys = new Set(playerCastsByAbility.map(casts => casts[0].actionId!.equalityKeyIgnoringTag()));
+	const buffsToShow = buffsById.filter(auraUptimeLogs => {
+		const actionId = auraUptimeLogs[0].actionId;
+		// The aura-as-resource test does not depend on the cast, but it sat inside the per-cast
+		// scan, so with no player casts at all it never ran. Kept that way here: this is a
+		// performance change, and correcting it would move rows.
+		if (!actionId || playerCastKeys.size === 0) return true;
+		return !playerCastKeys.has(actionId.equalityKeyIgnoringTag()) && !auraAsResourceKeys.has(actionId.equalityKey());
+	});
 	if (buffsToShow.length > 0) {
 		const section = addSection('buffs', 'buffs', '', true, null);
 		buffsToShow.forEach(auraUptimeLogs => addAuraRow(section, '', auraUptimeLogs));
