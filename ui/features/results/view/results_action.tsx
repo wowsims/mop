@@ -13,7 +13,7 @@ import { translateResultMetricLabel, translateResultMetricTooltip } from '@i18n/
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 
 export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 	const resultsViewer = simUI.resultsViewer;

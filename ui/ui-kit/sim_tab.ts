@@ -1,4 +1,4 @@
-import { trackPageView } from '../tracking/utils';
+import { trackPageView } from '../tracking/analytics';
 import { Component } from './component';
 import type { SimUIHost } from './sim_host';
 

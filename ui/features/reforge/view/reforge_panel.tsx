@@ -24,7 +24,7 @@ import clsx from 'clsx';
 import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent, trackPageView } from '../../../tracking/utils';
+import { trackEvent, trackPageView } from '../../../tracking/analytics';
 import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
 import { renderSavedEPWeights } from '../../stat-weights/view/saved_ep_weights';
 

@@ -22,7 +22,7 @@ import { EnumPicker } from '@ui-kit/pickers/enum_picker';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 
-import { trackEvent, TrackEventProps } from '../../../tracking/utils';
+import { trackEvent, TrackEventProps } from '../../../tracking/analytics';
 export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }

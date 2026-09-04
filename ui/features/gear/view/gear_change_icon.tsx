@@ -9,7 +9,7 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from './action_id_dom';
-import { getEmptySlotIconUrl } from './utils';
+import { getEmptySlotIconUrl } from './gear_elements';
 
 export const buildGearChangeIcon = (
 	player: Player<any>,

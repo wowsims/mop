@@ -6,7 +6,7 @@ import { CopyButton } from '@ui-kit/copy_button';
 import { downloadString } from '@ui-kit/dom_utils';
 import { ref } from 'tsx-vanilla';
 
-import { trackPageView } from '../../../tracking/utils';
+import { trackPageView } from '../../../tracking/analytics';
 
 export interface ExporterOptions {
 	title: string;

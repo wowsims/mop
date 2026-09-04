@@ -21,7 +21,7 @@ import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../tracking/utils';
+import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
 import { SimTitleDropdown } from './header/sim_title_dropdown';
 import { SocialLinks } from './header/social_links';

@@ -42,7 +42,7 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 import SelectorModal from '../../gear/view/selector_modal';
 import { BulkGearJsonImporter } from '../../import-export/view/importers';
 import { runCoreBulkSim as runCoreBulkSimImpl } from '../model/core_sim';

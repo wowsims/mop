@@ -7,9 +7,9 @@ import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 
 import { fillAndSetActionId, setEquippedItemWowheadData } from './action_id_dom';
+import { createItemSockets, getEmptySlotIconUrl } from './gear_elements';
 import { GearData } from './item_list';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
-import { createItemSockets, getEmptySlotIconUrl } from './utils';
 export default class IconItemSwapPicker extends Component {
 	private readonly iconAnchor: HTMLAnchorElement;
 	private readonly socketsContainerElem: HTMLElement;

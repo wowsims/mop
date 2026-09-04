@@ -3,7 +3,7 @@ import i18n from '@i18n/config';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../tracking/utils';
+import { trackEvent } from '../tracking/analytics';
 import { Component } from './component';
 import { ContentBlock, ContentBlockHeaderConfig } from './content_block';
 export type SavedDataManagerConfig<ModObject, T> = {

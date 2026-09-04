@@ -16,9 +16,9 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from './action_id_dom';
+import { createGemContainer, getEmptySlotIconUrl, setGemInContainer } from './gear_elements';
 import GearPicker from './gear_picker';
 import ItemList, { GearData, ItemData, ItemListType } from './item_list';
-import { createGemContainer, getEmptySlotIconUrl, setGemInContainer } from './utils';
 export enum SelectorModalTabs {
 	Items = 'Items',
 	RandomSuffixes = 'Random Suffix',

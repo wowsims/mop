@@ -10,7 +10,7 @@ import Toast from '@ui-kit/toast';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../tracking/utils';
+import { trackEvent } from '../tracking/analytics';
 import { SimUI } from './sim_ui';
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;

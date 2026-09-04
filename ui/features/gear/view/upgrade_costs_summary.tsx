@@ -7,7 +7,7 @@ import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 type UpgradeSummaryTotal = {
 	justicePoints: number;
 	honorPoints: number;

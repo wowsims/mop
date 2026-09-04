@@ -1,7 +1,7 @@
 import { Dropdown } from 'bootstrap';
 import { hideAll as hideAllTippyInstances } from 'tippy.js';
 
-import { isDescendant } from './utils';
+import { isDescendant } from './dom';
 
 Dropdown.Default.offset = [0, -1];
 //Dropdown.Default.display = "static";

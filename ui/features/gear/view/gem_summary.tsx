@@ -9,7 +9,7 @@ import { ContentBlock } from '@ui-kit/content_block';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 import { setActionIdWowheadHref } from './action_id_dom';
 interface GemSummaryData {
 	gem: Gem;

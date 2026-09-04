@@ -9,7 +9,7 @@ import { Component } from '@ui-kit/component';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 import { AuraMetricsTable } from './aura_metrics';
 import { CastMetricsTable } from './cast_metrics';
 import { CombatReplay } from './combat_replay';

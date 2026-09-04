@@ -9,7 +9,7 @@ import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
 import { CopyButton } from '@ui-kit/copy_button';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 type ReforgeSummaryTotal = {
 	[key in Stat]?: number;
 };

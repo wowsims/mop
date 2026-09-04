@@ -4,7 +4,7 @@ import { BaseModal } from '@ui-kit/base_modal';
 import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
-import { trackPageView } from '../../../tracking/utils';
+import { trackPageView } from '../../../tracking/analytics';
 
 export interface ImporterOptions {
 	title: string;

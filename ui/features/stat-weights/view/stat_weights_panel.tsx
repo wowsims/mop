@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent, trackPageView } from '../../../tracking/utils';
+import { trackEvent, trackPageView } from '../../../tracking/analytics';
 import { ResultsViewer } from '../../results/view/results_viewer';
 import { renderSavedEPWeights } from './saved_ep_weights';
 

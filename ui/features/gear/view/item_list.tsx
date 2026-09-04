@@ -18,7 +18,7 @@ import { Clusterize } from '@ui-kit/vendor/clusterize';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackEvent } from '../../../tracking/utils';
+import { trackEvent } from '../../../tracking/analytics';
 import {
 	makePhaseSelector,
 	makeShow1hWeaponsSelector,
@@ -28,9 +28,9 @@ import {
 } from '../../settings/view/other_inputs';
 import { setActionIdWowheadHref } from './action_id_dom';
 import { FiltersMenu } from './filters_menu';
+import { createNameDescriptionLabel } from './gear_elements';
 import { ItemNotice } from './item_notice';
 import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
-import { createNameDescriptionLabel } from './utils';
 export interface ItemData<T extends ItemListType> {
 	item: T;
 	name: string | HTMLElement;

@@ -14,7 +14,7 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { setActionIdBackground, setActionIdWowheadHref } from '../../gear/view/action_id_dom';
-import { createNameDescriptionLabel } from '../../gear/view/utils';
+import { createNameDescriptionLabel } from '../../gear/view/gear_elements';
 import { BulkTab } from './bulk_tab';
 const MAX_SEARCH_RESULTS = 21;
 

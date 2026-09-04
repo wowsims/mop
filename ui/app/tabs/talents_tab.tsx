@@ -11,7 +11,7 @@ import { PetSpecPicker } from '@ui-kit/pickers/pet_spec_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
-import { trackEvent } from '../../tracking/utils';
+import { trackEvent } from '../../tracking/analytics';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class TalentsTab<SpecType extends Spec> extends SimTab {

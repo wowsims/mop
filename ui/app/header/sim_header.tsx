@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import tippy, { ReferenceElement as TippyReferenceElement } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { trackPageView } from '../../tracking/utils';
+import { trackPageView } from '../../tracking/analytics';
 import { SettingsMenu } from '../settings_menu';
 import { SimUI } from '../sim_ui';
 import { SocialLinks } from './social_links';
