@@ -300,7 +300,9 @@ export class DtpsMetricsTable extends MetricsTable<ActionMetrics> {
 				getValue: (metric: ActionMetrics) => metric.critPercent + metric.critBlockPercent || metric.critTickPercent,
 				getDisplayString: (metric: ActionMetrics) =>
 					`${formatToPercent(metric.critPercent + metric.critBlockPercent || metric.critTickPercent, { fallbackString: '-' })}${
-						metric.critPercent + metric.critBlockPercent && metric.critTickPercent ? ` (${formatToPercent(metric.critTickPercent, { fallbackString: '-' })})` : ''
+						metric.critPercent + metric.critBlockPercent && metric.critTickPercent
+							? ` (${formatToPercent(metric.critTickPercent, { fallbackString: '-' })})`
+							: ''
 					}`,
 			},
 			{
@@ -316,7 +318,7 @@ export class DtpsMetricsTable extends MetricsTable<ActionMetrics> {
 
 	getGroupedMetrics(resultData: SimResultData): Array<Array<ActionMetrics>> {
 		const players = resultData.result.getRaidIndexedPlayers(resultData.filter);
-		if (players.length != 1) {
+		if (!players.length) {
 			return [];
 		}
 		const player = players[0];
