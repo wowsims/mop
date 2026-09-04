@@ -285,16 +285,28 @@ export class RotationView extends Component implements WindowHost {
 	private attachDragPan() {
 		let pointerId: number | null = null;
 		let startX = 0;
+		let startY = 0;
 		let startScrollLeft = 0;
+		let startScrollTop = 0;
 		let panned = false;
 
+		// Vertical scrolling belongs to the page, so a vertical drag moves the outer scroller.
+		const scrollTop = () => (this.outer ? this.outer.scrollTop : window.scrollY);
+		const setScrollTop = (top: number) => {
+			if (this.outer) this.outer.scrollTop = top;
+			else window.scrollTo(window.scrollX, top);
+		};
+
 		const onPointerDown = (event: PointerEvent) => {
-			if (pointerId !== null || event.button !== 0) return;
+			// Touch already pans both axes natively; taking the pointer would fight it.
+			if (pointerId !== null || event.button !== 0 || event.pointerType === 'touch') return;
 			// Leave the eye toggles, the wowhead links and anything else interactive alone.
 			if ((event.target as Element).closest('button, a, input, select, textarea')) return;
 			pointerId = event.pointerId;
 			startX = event.clientX;
+			startY = event.clientY;
 			startScrollLeft = this.scroller.scrollLeft;
+			startScrollTop = scrollTop();
 			panned = false;
 			this.scroller.setPointerCapture(event.pointerId);
 		};
@@ -302,12 +314,14 @@ export class RotationView extends Component implements WindowHost {
 		const onPointerMove = (event: PointerEvent) => {
 			if (event.pointerId !== pointerId) return;
 			const dx = event.clientX - startX;
+			const dy = event.clientY - startY;
 			if (!panned) {
-				if (Math.abs(dx) < 4) return;
+				if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
 				panned = true;
 				this.scroller.classList.add('is-panning');
 			}
 			this.scroller.scrollLeft = startScrollLeft - dx;
+			setScrollTop(startScrollTop - dy);
 		};
 
 		const endPan = (event: PointerEvent) => {
