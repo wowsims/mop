@@ -7,7 +7,7 @@ import SecondaryResource from '../../../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../../../proto_utils/sim_result';
 import { orderedResourceTypes } from '../../../../proto_utils/utils';
 import { dpsColor, manaColor, THREAT_SERIES_NAME, threatColor } from '../constants';
-import { dpsTooltip, resourceTooltip, threatTooltip } from '../tooltip_content';
+import { DpsTooltip, ResourceTooltip, ThreatTooltip } from '../tooltip_content';
 import { AXIS_GRID_COLOR } from './colors';
 import { TimelineDataset } from './types';
 
@@ -101,7 +101,7 @@ export function dpsDataset(unit: UnitMetrics, seriesId: string, colorOverride: s
 			pointRadius: 0,
 			pointHoverRadius: 3,
 			data: logs.map(log => ({ x: log.timestamp, y: log.dps, log })),
-			renderTooltip: log => dpsTooltip(log, unit, colorOverride),
+			renderTooltip: log => DpsTooltip(log, unit, colorOverride),
 		},
 	};
 }
@@ -119,7 +119,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, colorOverride
 		pointRadius: 0,
 		pointHoverRadius: 3,
 		data: logs.map(log => ({ x: log.timestamp, y: log.threatAfter, log })),
-		renderTooltip: log => threatTooltip(log, unit, colorOverride),
+		renderTooltip: log => ThreatTooltip(log, unit, colorOverride),
 	};
 }
 
@@ -140,7 +140,7 @@ export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<Resou
 			pointRadius: 0,
 			pointHoverRadius: 3,
 			data: logs.map(log => ({ x: log.timestamp, y: log.valueAfter, log })),
-			renderTooltip: log => resourceTooltip(log, maxMana, true),
+			renderTooltip: log => ResourceTooltip(log, maxMana, true),
 		},
 	};
 }
@@ -189,7 +189,7 @@ export function resourceDatasets(unit: UnitMetrics, secondaryResource: Secondary
 			pointHoverRadius: 3,
 			// Percent of that resource's own maximum: the only scale they share.
 			data: logs.map(log => ({ x: log.timestamp, y: Number(((log.valueAfter / resourceMax) * 100).toFixed(2)), log })),
-			renderTooltip: log => resourceTooltip(log, resourceMax, false),
+			renderTooltip: log => ResourceTooltip(log, resourceMax, false),
 		});
 	}
 

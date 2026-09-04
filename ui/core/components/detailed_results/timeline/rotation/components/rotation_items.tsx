@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 import i18n from '../../../../../../i18n/config';
 import type { AuraUptimeLog, CastLog, DamageDealtLog } from '../../../../../proto_utils/logs_parser';
-import { resourceTooltip } from '../../tooltip_content';
+import { ResourceTooltip } from '../../tooltip_content';
 import { addTooltip } from '../../tooltips';
 import type { AuraItem, AuraStackSegment, CastItem, ContentRow, ResourceItem, RowItem, TickItem } from '../model';
 import type { ItemRenderer } from '../row_track';
@@ -14,7 +14,7 @@ const setSpan = (elem: HTMLElement, item: RowItem) => {
 	setScalar(elem, '--dur', item.end - item.start);
 };
 
-const castTooltip = (log: CastLog) => {
+const CastTooltip = (log: CastLog) => {
 	const travelTime = log.travelTime == 0 ? '' : ` + ${log.travelTime.toFixed(2)}s travel time`;
 	const totalDamage = log.totalDamage();
 	return (
@@ -52,7 +52,7 @@ const castTooltip = (log: CastLog) => {
 	);
 };
 
-const tickTooltip = (log: DamageDealtLog) => (
+const TickTooltip = (log: DamageDealtLog) => (
 	<div className="timeline-tooltip">
 		<span>
 			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {log.result()}
@@ -66,7 +66,7 @@ const tickTooltip = (log: DamageDealtLog) => (
 	</div>
 );
 
-const auraTooltip = (log: AuraUptimeLog) => (
+const AuraTooltip = (log: AuraUptimeLog) => (
 	<div className="timeline-tooltip">
 		<span>
 			{log.actionId!.name}: {log.gainedAt.toFixed(2)}s - {log.fadedAt.toFixed(2)}s
@@ -110,19 +110,19 @@ export function applyCastItem(elem: HTMLElement, item: CastItem) {
 		setScalar(travel, '--t', item.travelStart);
 		setScalar(travel, '--dur', item.travelDuration ?? 0);
 	}
-	addTooltip(elem, () => castTooltip(item.log));
+	addTooltip(elem, () => CastTooltip(item.log));
 }
 
 export function applyTickItem(elem: HTMLElement, item: TickItem) {
 	setScalar(elem, '--t', item.start);
-	addTooltip(elem, () => tickTooltip(item.log));
+	addTooltip(elem, () => TickTooltip(item.log));
 }
 
 export function applyAuraItem(elem: HTMLElement, item: AuraItem) {
 	elem.className = clsx('rotation-item rotation-item-aura', item.sharesRowWithCast && 'shares-row');
 	setSpan(elem, item);
 	elem.replaceChildren(...item.stacks.map(segment => AuraStackElem({ segment })));
-	addTooltip(elem, () => auraTooltip(item.log));
+	addTooltip(elem, () => AuraTooltip(item.log));
 }
 
 export function applyResourceItem(elem: HTMLElement, item: ResourceItem) {
@@ -131,7 +131,7 @@ export function applyResourceItem(elem: HTMLElement, item: ResourceItem) {
 	fill.hidden = item.display !== 'fill';
 	if (item.display === 'fill') setScalar(fill, '--fill', item.fillPercent);
 	(elem.lastElementChild as HTMLElement).textContent = item.text;
-	addTooltip(elem, () => resourceTooltip(item.log, item.startValue, false));
+	addTooltip(elem, () => ResourceTooltip(item.log, item.startValue, false));
 }
 
 export function createItemRenderer(row: ContentRow): ItemRenderer {

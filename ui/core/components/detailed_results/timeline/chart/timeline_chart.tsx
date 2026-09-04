@@ -4,7 +4,7 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../../../../i18n/config';
 import { annotationsPlugin } from './annotations';
 import { THREAT_SERIES_ID } from './series';
-import { chartToolbar } from './toolbar';
+import { ChartToolbar } from './toolbar';
 import { ChartTooltip } from './tooltip';
 import { AnnotationSpec, TimelineChartSpec, TimelineDataset } from './types';
 import { ChartZoom, XRange } from './zoom';
@@ -69,7 +69,7 @@ export class TimelineChart {
 
 		rootElem.appendChild(
 			<div className="timeline-chart">
-				{chartToolbar({
+				{ChartToolbar({
 					reset: () => this.zoom.reset(),
 					zoomIn: () => this.zoom.zoomBy(ZOOM_STEP),
 					zoomOut: () => this.zoom.zoomBy(1 / ZOOM_STEP),

@@ -4,7 +4,7 @@ import { resourceNames } from '../../../proto_utils/names';
 import { UnitMetrics } from '../../../proto_utils/sim_result';
 import { percentageResources } from './constants';
 
-export function dpsTooltip(log: DpsLog, player: UnitMetrics, colorOverride: string) {
+export function DpsTooltip(log: DpsLog, player: UnitMetrics, colorOverride: string) {
 	const showPlayerLabel = colorOverride != '';
 	return (
 		<div className="timeline-tooltip dps">
@@ -19,19 +19,19 @@ export function dpsTooltip(log: DpsLog, player: UnitMetrics, colorOverride: stri
 				<span className="bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
 			<div className="timeline-tooltip-body">
-				<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => tooltipLogItem(damageLog, damageLog.result()))}</ul>
+				<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => TooltipLogItem(damageLog, damageLog.result()))}</ul>
 				<div className="timeline-tooltip-body-row">
 					<span className="series-color">
 						{i18n.t('results_tab.details.timeline.tooltips.dps')}: {log.dps.toFixed(2)}
 					</span>
 				</div>
 			</div>
-			{tooltipAurasSection(log)}
+			{TooltipAurasSection(log)}
 		</div>
 	);
 }
 
-export function threatTooltip(log: ThreatLogGroup, player: UnitMetrics, colorOverride: string) {
+export function ThreatTooltip(log: ThreatLogGroup, player: UnitMetrics, colorOverride: string) {
 	const showPlayerLabel = colorOverride != '';
 	return (
 		<div className="timeline-tooltip threat">
@@ -55,7 +55,7 @@ export function threatTooltip(log: ThreatLogGroup, player: UnitMetrics, colorOve
 				</div>
 				<ul className="timeline-threat-events">
 					{log.logs.map(log =>
-						tooltipLogItem(
+						TooltipLogItem(
 							log,
 							<>
 								{log.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')}
@@ -69,12 +69,12 @@ export function threatTooltip(log: ThreatLogGroup, player: UnitMetrics, colorOve
 					</span>
 				</div>
 			</div>
-			{tooltipAurasSection(log)}
+			{TooltipAurasSection(log)}
 		</div>
 	);
 }
 
-export function resourceTooltip(log: ResourceChangedLogGroup, maxValue: number, includeAuras: boolean) {
+export function ResourceTooltip(log: ResourceChangedLogGroup, maxValue: number, includeAuras: boolean) {
 	const valToDisplayString = percentageResources.includes(log.resourceType)
 		? (val: number) => `${val.toFixed(1)} (${((val / maxValue) * 100).toFixed(0)}%)`
 		: (val: number) => `${val.toFixed(1)}`;
@@ -90,19 +90,19 @@ export function resourceTooltip(log: ResourceChangedLogGroup, maxValue: number, 
 						{i18n.t('results_tab.details.timeline.tooltips.before')}: {valToDisplayString(log.valueBefore)}
 					</span>
 				</div>
-				<ul className="timeline-mana-events">{log.logs.map(manaChangedLog => tooltipLogItem(manaChangedLog, <>{manaChangedLog.resultString()}</>))}</ul>
+				<ul className="timeline-mana-events">{log.logs.map(manaChangedLog => TooltipLogItem(manaChangedLog, <>{manaChangedLog.resultString()}</>))}</ul>
 				<div className="timeline-tooltip-body-row">
 					<span className="series-color">
 						{i18n.t('results_tab.details.timeline.tooltips.after')}: {valToDisplayString(log.valueAfter)}
 					</span>
 				</div>
 			</div>
-			{includeAuras ? tooltipAurasSection(log) : null}
+			{includeAuras ? TooltipAurasSection(log) : null}
 		</div>
 	);
 }
 
-export function tooltipLogItem(log: SimLog, value: Element): JSX.Element {
+export function TooltipLogItem(log: SimLog, value: Element): JSX.Element {
 	return (
 		<li>
 			{log.actionId && log.actionId.iconUrl && <img className="timeline-tooltip-icon" src={log.actionId.iconUrl}></img>}
@@ -112,7 +112,7 @@ export function tooltipLogItem(log: SimLog, value: Element): JSX.Element {
 	);
 }
 
-export function tooltipAurasSection(log: SimLog): JSX.Element | null {
+export function TooltipAurasSection(log: SimLog): JSX.Element | null {
 	if (log.activeAuras.length == 0) {
 		return null;
 	}

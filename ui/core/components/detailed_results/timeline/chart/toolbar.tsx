@@ -8,7 +8,7 @@ export interface ChartToolbarActions {
 	panRight: () => void;
 }
 
-export function chartToolbar(actions: ChartToolbarActions): HTMLElement {
+export function ChartToolbar(actions: ChartToolbarActions): HTMLElement {
 	const items: Array<{ key: string; icon: string; run: () => void }> = [
 		{ key: 'reset', icon: 'fa-arrows-rotate', run: actions.reset },
 		{ key: 'zoom_out', icon: 'fa-magnifying-glass-minus', run: actions.zoomOut },
