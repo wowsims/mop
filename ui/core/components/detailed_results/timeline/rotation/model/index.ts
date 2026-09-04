@@ -11,7 +11,7 @@ export {
 	ROW_KEY_SEPARATOR,
 	sortedCastsByAbility,
 } from './buckets';
-export { actionCategory, DEFAULT_ACTION_CATEGORY, legacyIdToCategoryMap, MELEE_ACTION_CATEGORY, SPELL_ACTION_CATEGORY } from './categories';
+export { actionCategory, DEFAULT_ACTION_CATEGORY, MELEE_ACTION_CATEGORY, rotationCategoryOverrides, SPELL_ACTION_CATEGORY } from './categories';
 export { computeOrder } from './order';
 export type {
 	AuraItem,
