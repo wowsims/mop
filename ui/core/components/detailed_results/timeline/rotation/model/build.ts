@@ -145,11 +145,11 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		header: { label: string; actionId: ActionId | null } | null,
 	): Section => {
 		const index = sections.length;
-		const section: Section = { id, index, kind, label, separatorKey: null, headerKey: null, rowKeys: [] };
+		const section: Section = { id, kind, label, separatorKey: null, headerKey: null, rowKeys: [] };
 		sections.push(section);
 		if (separator) {
 			section.separatorKey = `sep:${index}`;
-			addRow({ kind: 'separator', key: section.separatorKey, section: id, height: ROW_HEIGHTS.separator, hideable: false });
+			addRow({ kind: 'separator', key: section.separatorKey, section: id, height: ROW_HEIGHTS.separator });
 		}
 		if (header) {
 			section.headerKey = `header:${id}`;
@@ -158,7 +158,6 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 				key: section.headerKey,
 				section: id,
 				height: ROW_HEIGHTS.header,
-				hideable: false,
 				label: header.label,
 				actionId: header.actionId,
 			});
@@ -166,7 +165,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		return section;
 	};
 
-	const addResourceRow = (section: Section, scope: string, resourceType: ResourceType, resourceLogs: Array<ResourceChangedLogGroup>) => {
+	const addResourceRow = (section: Section, resourceType: ResourceType, resourceLogs: Array<ResourceChangedLogGroup>) => {
 		if (resourceLogs.length == 0) return;
 
 		let label = resourceNames.get(resourceType)!;
@@ -182,10 +181,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 			key: makeRowKey(section.id, 'resource', resourceBucketKey(resourceType)),
 			section: section.id,
 			height: ROW_HEIGHTS.resource,
-			hideable: true,
 			label,
-			scope,
-			resourceType,
 			icon,
 			cssName: resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-'),
 			items,
@@ -193,7 +189,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		});
 	};
 
-	const addAuraRow = (section: Section, scope: string, auraUptimeLogs: Array<AuraUptimeLog>) => {
+	const addAuraRow = (section: Section, auraUptimeLogs: Array<AuraUptimeLog>) => {
 		const actionId = auraUptimeLogs[0].actionId!;
 		const items: Array<RowItem> = auraItems(auraUptimeLogs, false);
 		addContentRow(section, {
@@ -201,16 +197,14 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 			key: makeRowKey(section.id, 'aura', actionId.equalityKey()),
 			section: section.id,
 			height: ROW_HEIGHTS.aura,
-			hideable: true,
 			label: IDS_TO_GROUP_FOR_ROTATION.includes(actionId.spellId) ? actionId.baseName : actionId.name,
-			scope,
 			actionId,
 			items,
 			maxRightUpTo: sortAndPrefixMax(items),
 		});
 	};
 
-	const addCastRow = (section: Section, scope: string, castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>) => {
+	const addCastRow = (section: Section, castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>) => {
 		const actionId = castLogs[0].actionId!;
 		const grouped = IDS_TO_GROUP_FOR_ROTATION.includes(actionId.spellId);
 		const mergedAuras = aurasById.filter(auraUptimeLogs => {
@@ -225,9 +219,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 			key: makeRowKey(section.id, 'cast', actionBucketKey(actionId)),
 			section: section.id,
 			height: ROW_HEIGHTS.cast,
-			hideable: true,
 			label: grouped ? actionId.baseName : actionId.name,
-			scope,
 			actionId,
 			items,
 			maxRightUpTo: sortAndPrefixMax(items),
@@ -235,7 +227,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 	};
 
 	const playerSection = addSection('', 'player', '', false, null);
-	ORDERED_RESOURCE_TYPES.forEach(resourceType => addResourceRow(playerSection, '', resourceType, player.groupedResourceLogs[resourceType]));
+	ORDERED_RESOURCE_TYPES.forEach(resourceType => addResourceRow(playerSection, resourceType, player.groupedResourceLogs[resourceType]));
 
 	const buffsById = groupedAurasByAbility(player.auraUptimeLogs);
 	const debuffsByTargetById = targets.map(target => groupedAurasByAbility(target.auraUptimeLogs));
@@ -243,11 +235,11 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 
 	AURA_AS_RESOURCE.forEach(actionId => {
 		const auraUptimeLogs = buffsById.find(logs => logs[0].actionId!.equalityKey() === actionId.equalityKey());
-		if (auraUptimeLogs) addAuraRow(playerSection, '', auraUptimeLogs);
+		if (auraUptimeLogs) addAuraRow(playerSection, auraUptimeLogs);
 	});
 
 	const playerCastsByAbility = sortedCastsByAbility(player);
-	playerCastsByAbility.forEach(castLogs => addCastRow(playerSection, '', castLogs, buffsAndDebuffsById));
+	playerCastsByAbility.forEach(castLogs => addCastRow(playerSection, castLogs, buffsAndDebuffsById));
 
 	if (player.pets.length > 0) {
 		const playerPets = new Map<string, { pet: UnitMetrics; castsByAbility: Array<Array<CastLog>> }>();
@@ -260,8 +252,8 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 
 		playerPets.forEach(({ pet, castsByAbility }) => {
 			const section = addSection(`pet:${pet.name}`, 'pet', pet.name, true, { label: pet.name, actionId: ActionId.fromPetName(pet.name) });
-			ORDERED_RESOURCE_TYPES.forEach(resourceType => addResourceRow(section, pet.name, resourceType, pet.groupedResourceLogs[resourceType]));
-			castsByAbility.forEach(castLogs => addCastRow(section, pet.name, castLogs, buffsAndDebuffsById));
+			ORDERED_RESOURCE_TYPES.forEach(resourceType => addResourceRow(section, resourceType, pet.groupedResourceLogs[resourceType]));
+			castsByAbility.forEach(castLogs => addCastRow(section, castLogs, buffsAndDebuffsById));
 		});
 	}
 
@@ -277,14 +269,14 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 	});
 	if (buffsToShow.length > 0) {
 		const section = addSection('buffs', 'buffs', '', true, null);
-		buffsToShow.forEach(auraUptimeLogs => addAuraRow(section, '', auraUptimeLogs));
+		buffsToShow.forEach(auraUptimeLogs => addAuraRow(section, auraUptimeLogs));
 	}
 
 	targets.forEach(target => {
 		const targetCastsByAbility = sortedCastsByAbility(target);
 		if (targetCastsByAbility.length > 0) {
 			const section = addSection(`target-casts:${target.label}`, 'targetCasts', target.label, true, { label: target.label, actionId: null });
-			targetCastsByAbility.forEach(castLogs => addCastRow(section, target.label, castLogs, buffsAndDebuffsById));
+			targetCastsByAbility.forEach(castLogs => addCastRow(section, castLogs, buffsAndDebuffsById));
 		}
 	});
 
@@ -292,7 +284,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		if (debuffsToShow.length > 0) {
 			const label = targets?.[index]?.label ?? '';
 			const section = addSection(`target-debuffs:${label}`, 'targetDebuffs', label, true, { label, actionId: null });
-			debuffsToShow.forEach(auraUptimeLogs => addAuraRow(section, label, auraUptimeLogs));
+			debuffsToShow.forEach(auraUptimeLogs => addAuraRow(section, auraUptimeLogs));
 		}
 	});
 

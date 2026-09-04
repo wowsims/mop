@@ -155,7 +155,10 @@ export class RotationFloatingActionBar extends Component {
 		this.chips.clear();
 
 		const groups = model.sections
-			.map(section => ({ section, rows: section.rowKeys.map(key => this.rowFor(key)).filter((row): row is ContentRow => row.hideable) }))
+			.map(section => ({
+				section,
+				rows: section.rowKeys.map(key => this.rowFor(key)).filter((row): row is ContentRow => row.kind !== 'header' && row.kind !== 'separator'),
+			}))
 			.filter(group => group.rows.length > 0)
 			.map(({ section, rows }) =>
 				Group({

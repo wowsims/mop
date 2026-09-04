@@ -76,7 +76,7 @@ const AuraTooltip = (log: AuraUptimeLog) => (
 
 const AuraStackElem = ({ segment }: { segment: AuraStackSegment }) =>
 	(
-		<div className="rotation-item-stacks" style={{ '--t': String(segment.offset), '--dur': String(segment.duration) }}>
+		<div className="rotation-item rotation-item-stacks" style={{ '--t': String(segment.offset), '--dur': String(segment.duration) }}>
 			{String(segment.stacks)}
 		</div>
 	) as HTMLDivElement;

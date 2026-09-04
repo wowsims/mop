@@ -1,7 +1,6 @@
 import tippy, { type Instance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import type SecondaryResource from '../../../../proto_utils/secondary_resource';
 import { Component } from '../../../component';
 import { delegateTooltips } from '../tooltips';
 import { createItemRenderer } from './components/rotation_items';
@@ -17,20 +16,15 @@ import { findScrollParent, TimelineWindow } from './timeline_window';
 import { VisibilityState } from './visibility';
 import { ZoomController } from './zoom';
 
-export interface RotationViewConfig {
-	secondaryResource?: SecondaryResource | null;
-}
-
 interface MountedRow {
 	track: RowTrack;
 	delegate: Instance;
 }
 
 export class RotationView extends Component implements WindowHost {
-	readonly secondaryResource: SecondaryResource | null;
-
 	private readonly scroller: HTMLDivElement;
 	private readonly corner: HTMLDivElement;
+	private readonly rulerViewport: HTMLDivElement;
 	private readonly ruler: Ruler;
 	private readonly zoom: ZoomController;
 	private readonly rowWindow: TimelineWindow;
@@ -44,14 +38,14 @@ export class RotationView extends Component implements WindowHost {
 	private model: RotationModel | null = null;
 	private frame: number | null = null;
 	private paneWidth = 0;
-	private attached = false;
+	private labelWidth = 0;
+	private rulerWidth = 0;
 	private outer: HTMLElement | null = null;
 	private outerTarget: EventTarget | null = null;
 	private toolbar: HTMLElement | null = null;
 
-	constructor(parent: HTMLElement, config: RotationViewConfig) {
+	constructor(parent: HTMLElement) {
 		super(parent, 'rotation-pane');
-		this.secondaryResource = config.secondaryResource ?? null;
 
 		const zoomOutRef = ref<HTMLButtonElement>();
 		const zoomInRef = ref<HTMLButtonElement>();
@@ -84,14 +78,15 @@ export class RotationView extends Component implements WindowHost {
 		);
 
 		this.corner = toolbar;
+		this.rulerViewport = rulerRef.value!;
 		this.scroller = scrollerRef.value!;
 		this.actionBar = this.addChild(new RotationFloatingActionBar(this.rootElem, this.visibility));
 
-		this.ruler = new Ruler(rulerRef.value!, rulerTrackRef.value!);
+		this.ruler = new Ruler(rulerTrackRef.value!);
 		this.zoom = new ZoomController({
 			scroller: this.scroller,
 			styleHost: this.rootElem,
-			labelWidth: () => this.corner.offsetWidth,
+			labelWidth: () => this.labelWidth,
 			scrollVerticalBy: delta => this.scrollVerticalBy(delta),
 			onChange: () => this.schedule(),
 		});
@@ -231,6 +226,15 @@ export class RotationView extends Component implements WindowHost {
 		const width = (measurer.firstElementChild as HTMLElement).offsetWidth;
 		measurer.remove();
 		this.rootElem.style.setProperty('--label-w', `clamp(8rem, ${Math.ceil(width)}px, 20rem)`);
+		this.measureWidths();
+	}
+
+	// Both widths follow --label-w - the corner is exactly that wide, the ruler takes the rest -
+	// so they only move on a resize or a relabel. Reading them per frame put a layout flush
+	// between the row window's writes and the ruler's read, twice per frame that the window moved.
+	private measureWidths() {
+		this.labelWidth = this.corner.offsetWidth;
+		this.rulerWidth = this.rulerViewport.clientWidth;
 	}
 
 	private onResize() {
@@ -239,6 +243,7 @@ export class RotationView extends Component implements WindowHost {
 			this.paneWidth = width;
 			this.measureLabelWidth();
 		}
+		this.measureWidths();
 		this.measureStickyTop();
 		this.schedule();
 	}
@@ -246,8 +251,7 @@ export class RotationView extends Component implements WindowHost {
 	// Resolved on the first frame rather than in the constructor: the pane is built before it is in
 	// the document, and a walk-up from a detached node would cache the wrong scrollport.
 	private attachOuter() {
-		if (this.attached || !this.rootElem.isConnected) return;
-		this.attached = true;
+		if (this.outerTarget || !this.rootElem.isConnected) return;
 		this.outer = findScrollParent(this.rootElem);
 		this.outerTarget = this.outer ?? window;
 		this.outerTarget.addEventListener('scroll', this.onScroll, { passive: true });
@@ -362,9 +366,11 @@ export class RotationView extends Component implements WindowHost {
 	private runFrame() {
 		if (this.isDisposed) return;
 		this.attachOuter();
+		// The first frame can precede the resize observer's opening callback.
+		if (!this.rulerWidth) this.measureWidths();
 		const pps = this.zoom.pps;
 		const view = this.viewBounds();
-		this.rowWindow.update(pps, this.corner.offsetWidth, view.top, view.bottom);
-		this.ruler.draw({ scrollLeft: this.scroller.scrollLeft, pps, duration: this.model?.duration ?? 0 });
+		this.rowWindow.update(pps, this.labelWidth, view.top, view.bottom);
+		this.ruler.draw({ scrollLeft: this.scroller.scrollLeft, pps, duration: this.model?.duration ?? 0, width: this.rulerWidth });
 	}
 }

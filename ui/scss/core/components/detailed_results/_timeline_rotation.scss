@@ -35,7 +35,8 @@
 	background: var(--bs-body-bg);
 }
 
-.rotation-corner {
+.rotation-corner,
+.rotation-row-label {
 	display: flex;
 	flex: 0 0 var(--label-w);
 	align-items: center;
@@ -143,18 +144,13 @@
 	background-color: var(--rotation-row-bg);
 }
 
+// The rest of this column - width, padding, gap - is shared with .rotation-corner above:
+// the ruler only lines up with the tracks while the two stay identical.
 .rotation-row-label {
 	position: sticky;
 	left: 0;
 	z-index: 3;
-	display: flex;
-	flex: 0 0 var(--label-w);
-	align-items: center;
-	box-sizing: border-box;
-	width: var(--label-w);
-	padding-right: var(--spacer-2);
 	overflow: hidden;
-	gap: var(--spacer-1);
 	background: var(--rotation-row-bg);
 	font-size: 13px;
 	font-weight: bold;
@@ -295,20 +291,9 @@
 	}
 }
 
-.rotation-item-stacks {
-	position: absolute;
-	top: 0;
-	left: calc(var(--pps) * var(--t));
-	display: flex;
-	align-items: center;
-	width: calc(var(--pps) * var(--dur));
-	height: 100%;
-	overflow-x: hidden;
-	border-left: 1px solid var(--bs-gray);
-	border-right: 1px solid var(--bs-gray);
-	font-weight: bold;
-}
-
+// Both are a full-height slice of their parent bordered on each side; .rotation-item
+// carries the positioning.
+.rotation-item-stacks,
 .rotation-item-resource {
 	display: flex;
 	align-items: center;
@@ -345,11 +330,6 @@
 		width: 24px;
 		background-color: var(--bs-solar-energy);
 	}
-
-	&.holy-power {
-		width: 24px;
-		background-color: var(--bs-holy-power);
-	}
 }
 
 .rotation-scroller[data-density='medium'] {
@@ -360,6 +340,8 @@
 }
 
 .rotation-scroller[data-density='coarse'] {
+	--rotation-item-h: 20px;
+
 	.rotation-item-icon,
 	.rotation-item-stacks,
 	.rotation-item-resource-text {
@@ -367,9 +349,7 @@
 	}
 
 	.rotation-item-cast {
-		top: calc((var(--row-h) * 1px - 20px) / 2);
 		min-width: max(2px, calc(var(--pps) * var(--dur)));
-		height: 20px;
 		background-color: var(--bs-gray-700);
 
 		&.outcome-hit {

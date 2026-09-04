@@ -6,31 +6,18 @@ export class VisibilityState {
 		return this.keys;
 	}
 
-	get size(): number {
-		return this.keys.size;
-	}
-
 	isHidden(key: string): boolean {
 		return this.keys.has(key);
 	}
 
 	set(key: string, hidden: boolean) {
-		this.setMany([key], hidden);
-	}
-
-	setMany(keys: ReadonlyArray<string>, hidden: boolean) {
-		let changed = false;
-		for (const key of keys) {
-			if (hidden) {
-				if (!this.keys.has(key)) {
-					this.keys.add(key);
-					changed = true;
-				}
-			} else if (this.keys.delete(key)) {
-				changed = true;
-			}
+		if (hidden) {
+			if (this.keys.has(key)) return;
+			this.keys.add(key);
+		} else if (!this.keys.delete(key)) {
+			return;
 		}
-		if (changed) this.notify();
+		this.notify();
 	}
 
 	showAll() {

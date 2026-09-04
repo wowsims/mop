@@ -103,7 +103,7 @@ export class Timeline extends ResultComponent {
 		this.chart = new TimelineChart(this.dpsResourcesPlotElem);
 
 		this.rotationPlotElem = rotationPlotRef.value!;
-		this.rotationView = this.addChild(new RotationView(rotationPaneRef.value!, { secondaryResource: this.secondaryResource }));
+		this.rotationView = this.addChild(new RotationView(rotationPaneRef.value!));
 	}
 
 	// Pane visibility only. Split out from the change handler so updatePlot's programmatic
@@ -119,7 +119,7 @@ export class Timeline extends ResultComponent {
 		this.syncChartPanes();
 		// Series are not built while the chart is hidden, so build them now. updatePlot is
 		// keyed and cached, so this is a no-op if they are already current.
-		if (this.isChartVisible()) this.update();
+		if (this.isChartVisible()) this.updatePlot();
 	}
 
 	// The rotation view and the chart are alternatives, and the rotation is the default for a
@@ -132,7 +132,7 @@ export class Timeline extends ResultComponent {
 
 	onSimResult(resultData: SimResultData) {
 		this.resultData = resultData;
-		this.update();
+		this.updatePlot();
 	}
 
 	private updatePlot() {
@@ -191,10 +191,6 @@ export class Timeline extends ResultComponent {
 		}
 		this.rotationModelKey = key;
 		this.rotationView.setModel(buildRotationModel({ player, targets, duration, secondaryResource: this.secondaryResource }));
-	}
-
-	update() {
-		this.updatePlot();
 	}
 
 	private resultKey(): string {

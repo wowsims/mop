@@ -1,24 +1,12 @@
 .rotation-floating-action-bar-root {
-	position: sticky;
-	bottom: 0;
+	@include bottom-floating-action-bar(var(--spacer-2));
 	z-index: 4;
-	display: flex;
-	align-items: center;
 	box-sizing: border-box;
-	margin-top: calc(-1 * var(--container-padding));
 	margin-bottom: calc(-1 * var(--container-padding));
 	min-height: var(--rotation-fab-h);
-	margin-top: var(--block-spacer);
-	border: 0 solid var(--bs-border-color);
 	transition:
 		padding 0.15s ease-in-out,
 		border-width 0.15s ease-in-out;
-
-	&.stuck {
-		padding: var(--spacer-2);
-		border-width: var(--bs-border-width);
-		background: var(--bs-body-bg);
-	}
 }
 
 .rotation-fab-preview {
@@ -52,7 +40,7 @@
 .rotation-fab-clip {
 	position: absolute;
 	right: 0;
-	bottom: calc(100% + -1px);
+	bottom: calc(100% - 1px);
 	left: 0;
 	overflow: hidden;
 

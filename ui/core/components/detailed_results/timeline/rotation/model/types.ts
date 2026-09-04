@@ -1,4 +1,3 @@
-import type { ResourceType } from '../../../../../proto/spell';
 import type { ActionId } from '../../../../../proto_utils/action_id';
 import type { AuraUptimeLog, CastLog, DamageDealtLog, ResourceChangedLogGroup } from '../../../../../proto_utils/logs_parser';
 import type SecondaryResource from '../../../../../proto_utils/secondary_resource';
@@ -12,7 +11,6 @@ export type SectionKind = 'player' | 'pet' | 'buffs' | 'targetCasts' | 'targetDe
 
 export interface Section {
 	id: SectionId;
-	index: number;
 	kind: SectionKind;
 	label: string;
 	separatorKey: string | null;
@@ -77,9 +75,7 @@ interface RowBase {
 }
 
 interface ContentRowBase extends RowBase {
-	hideable: true;
 	label: string;
-	scope: string;
 	items: Array<RowItem>;
 	maxRightUpTo: Array<number>;
 }
@@ -96,21 +92,18 @@ export interface AuraRow extends ContentRowBase {
 
 export interface ResourceRow extends ContentRowBase {
 	kind: 'resource';
-	resourceType: ResourceType;
 	icon: string;
 	cssName: string;
 }
 
 export interface HeaderRow extends RowBase {
 	kind: 'header';
-	hideable: false;
 	label: string;
 	actionId: ActionId | null;
 }
 
 export interface SeparatorRow extends RowBase {
 	kind: 'separator';
-	hideable: false;
 }
 
 export type ContentRow = CastRow | AuraRow | ResourceRow;

@@ -6,6 +6,9 @@ export interface RulerFrame {
 	scrollLeft: number;
 	pps: number;
 	duration: number;
+	// Measured by the view on resize. Reading it here instead would flush layout every frame,
+	// right after the row window has written to the DOM.
+	width: number;
 }
 
 function formatTick(time: number, step: number): string {
@@ -69,10 +72,7 @@ export class Ruler {
 	private lastDuration = NaN;
 	private lastWidth = NaN;
 
-	constructor(
-		private readonly viewport: HTMLElement,
-		private readonly track: HTMLElement,
-	) {
+	constructor(private readonly track: HTMLElement) {
 		this.minorTicks = new TickPool(track, 'rotation-ruler-tick', (elem, index) => elem.style.setProperty('--t', String(index * this.minorStep)));
 		this.majorTicks = new TickPool(track, 'rotation-ruler-tick is-major', (elem, index) => elem.style.setProperty('--t', String(index * this.labelStep)));
 		this.labels = new TickPool(track, 'rotation-ruler-label', (elem, index) => {
@@ -83,8 +83,7 @@ export class Ruler {
 		});
 	}
 
-	draw({ scrollLeft, pps, duration }: RulerFrame) {
-		const width = this.viewport.clientWidth;
+	draw({ scrollLeft, pps, duration, width }: RulerFrame) {
 		if (width <= 0) return;
 
 		// A vertical page scroll leaves every tick where it was, and that is now the common case:

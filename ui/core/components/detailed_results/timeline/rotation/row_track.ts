@@ -1,7 +1,5 @@
 import type { ContentRow, RowItem } from './model';
 
-const FREE_LIST_CAP = 32;
-
 export interface ItemRenderer {
 	build(item: RowItem): HTMLElement;
 	update(elem: HTMLElement, item: RowItem): void;
@@ -86,6 +84,6 @@ export class RowTrack {
 			pool = [];
 			this.free.set(kind, pool);
 		}
-		if (pool.length < FREE_LIST_CAP) pool.push(elem);
+		pool.push(elem);
 	}
 }
