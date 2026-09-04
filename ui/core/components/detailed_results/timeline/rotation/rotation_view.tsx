@@ -101,6 +101,8 @@ export class RotationView extends Component implements WindowHost {
 		fitRef.value!.addEventListener('click', () => this.zoom.fitToWidth());
 		resetRef.value!.addEventListener('click', () => this.zoom.reset());
 
+		this.attachDragPan();
+
 		this.addOnDisposeCallback(this.visibility.subscribe(() => this.onVisibilityChanged()));
 		this.addOnDisposeCallback(() => {
 			if (this.frame != null) cancelAnimationFrame(this.frame);
@@ -268,6 +270,66 @@ export class RotationView extends Component implements WindowHost {
 		this.frame = requestAnimationFrame(() => {
 			this.frame = null;
 			this.runFrame();
+		});
+	}
+
+	// Grab-to-pan. The horizontal scrollbar sits at the far end of the rotation now that the page
+	// owns vertical scrolling, so dragging and shift+wheel are the reachable ways to pan.
+	private attachDragPan() {
+		let pointerId: number | null = null;
+		let startX = 0;
+		let startScrollLeft = 0;
+		let panned = false;
+
+		const onPointerDown = (event: PointerEvent) => {
+			if (pointerId !== null || event.button !== 0) return;
+			// Leave the eye toggles, the wowhead links and anything else interactive alone.
+			if ((event.target as Element).closest('button, a, input, select, textarea')) return;
+			pointerId = event.pointerId;
+			startX = event.clientX;
+			startScrollLeft = this.scroller.scrollLeft;
+			panned = false;
+			this.scroller.setPointerCapture(event.pointerId);
+		};
+
+		const onPointerMove = (event: PointerEvent) => {
+			if (event.pointerId !== pointerId) return;
+			const dx = event.clientX - startX;
+			if (!panned) {
+				if (Math.abs(dx) < 4) return;
+				panned = true;
+				this.scroller.classList.add('is-panning');
+			}
+			this.scroller.scrollLeft = startScrollLeft - dx;
+		};
+
+		const endPan = (event: PointerEvent) => {
+			if (event.pointerId !== pointerId) return;
+			if (this.scroller.hasPointerCapture(event.pointerId)) this.scroller.releasePointerCapture(event.pointerId);
+			pointerId = null;
+			this.scroller.classList.remove('is-panning');
+		};
+
+		// A drag ending over an item would otherwise open its tooltip on the trailing click.
+		const onClick = (event: MouseEvent) => {
+			if (!panned) return;
+			panned = false;
+			event.preventDefault();
+			event.stopPropagation();
+		};
+
+		this.scroller.addEventListener('pointerdown', onPointerDown);
+		this.scroller.addEventListener('pointermove', onPointerMove);
+		this.scroller.addEventListener('pointerup', endPan);
+		this.scroller.addEventListener('pointercancel', endPan);
+		this.scroller.addEventListener('click', onClick, { capture: true });
+
+		this.addOnDisposeCallback(() => {
+			this.scroller.removeEventListener('pointerdown', onPointerDown);
+			this.scroller.removeEventListener('pointermove', onPointerMove);
+			this.scroller.removeEventListener('pointerup', endPan);
+			this.scroller.removeEventListener('pointercancel', endPan);
+			this.scroller.removeEventListener('click', onClick, { capture: true });
 		});
 	}
 

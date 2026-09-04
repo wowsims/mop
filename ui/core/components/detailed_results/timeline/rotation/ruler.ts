@@ -25,6 +25,9 @@ export class Ruler {
 	private dpr = 0;
 	private color = '#fff';
 	private font = 'bold 14px sans-serif';
+	private lastScrollLeft = NaN;
+	private lastPps = NaN;
+	private lastDuration = NaN;
 
 	constructor(private readonly canvas: HTMLCanvasElement) {}
 
@@ -34,6 +37,7 @@ export class Ruler {
 		const style = getComputedStyle(this.canvas);
 		this.color = style.color;
 		this.font = `bold ${style.fontSize} ${style.fontFamily}`;
+		this.lastScrollLeft = NaN;
 	}
 
 	draw({ scrollLeft, pps, duration }: RulerFrame) {
@@ -41,10 +45,17 @@ export class Ruler {
 		const width = canvas.clientWidth;
 		if (width <= 0) return;
 
+		const dpr = window.devicePixelRatio || 1;
+		// A vertical scroll leaves every tick where it was, and that is now the common case:
+		// the page owns vertical scrolling, so the frame runs far more often than the ruler moves.
+		if (scrollLeft === this.lastScrollLeft && pps === this.lastPps && duration === this.lastDuration && width === this.cssWidth && dpr === this.dpr) return;
+		this.lastScrollLeft = scrollLeft;
+		this.lastPps = pps;
+		this.lastDuration = duration;
+
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		const dpr = window.devicePixelRatio || 1;
 		// Writing width/height clears the bitmap and resets every context attribute.
 		if (width !== this.cssWidth || dpr !== this.dpr) {
 			this.cssWidth = width;

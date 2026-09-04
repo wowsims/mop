@@ -80,6 +80,12 @@
 	overflow-x: auto;
 	overflow-y: hidden;
 	outline: none;
+	cursor: grab;
+
+	&.is-panning {
+		cursor: grabbing;
+		user-select: none;
+	}
 }
 
 .rotation-content {
