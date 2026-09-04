@@ -93,8 +93,11 @@ func (monk *Monk) registerStanceOfTheWiseSerpent(stanceCD *core.Timer) {
 	actionID := core.ActionID{SpellID: 117895}
 	chiMetrics := monk.NewChiMetrics(actionID)
 
+	// Hit and expertise equal to 50% of Spirit gained from items or effects.
+	// Base Spirit is excluded, so its share is taken back as a flat debit.
 	hitDep := monk.NewDynamicStatDependency(stats.Spirit, stats.HitRating, 0.5)
 	expDep := monk.NewDynamicStatDependency(stats.Spirit, stats.ExpertiseRating, 0.5)
+	baseSpiritShare := -0.5 * monk.GetBaseStats()[stats.Spirit]
 	hasteDep := monk.NewDynamicMultiplyStat(stats.HasteRating, 1.5)
 
 	dmgDone := 0.0
@@ -167,7 +170,10 @@ func (monk *Monk) registerStanceOfTheWiseSerpent(stanceCD *core.Timer) {
 		hitDep,
 	).AttachStatDependency(
 		expDep,
-	).AttachStatDependency(
+	).AttachStatsBuff(stats.Stats{
+		stats.HitRating:       baseSpiritShare,
+		stats.ExpertiseRating: baseSpiritShare,
+	}).AttachStatDependency(
 		hasteDep,
 	)
 
