@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import {
 	BulkSimProgressConfig,
 	NATIVE_COMBINATIONS_LIMIT,

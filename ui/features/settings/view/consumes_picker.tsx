@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';

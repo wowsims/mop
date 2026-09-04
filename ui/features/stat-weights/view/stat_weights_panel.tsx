@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { sanitizeId } from '@domain/format';
 import { stDevToConf90 } from '@domain/math';
 import { Player } from '@domain/player';

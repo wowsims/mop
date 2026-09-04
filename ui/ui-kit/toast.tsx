@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Toast as BootstrapToast } from 'bootstrap';
 import clsx from 'clsx';
 

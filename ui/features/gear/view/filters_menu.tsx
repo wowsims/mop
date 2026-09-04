@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { kebabCase } from '@domain/format';
 import { Player } from '@domain/player';
 import { Sim } from '@domain/sim';

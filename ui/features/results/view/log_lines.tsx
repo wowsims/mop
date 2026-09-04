@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 // Rendering of one parsed combat log line. These were `toHTML()` / `result()`
 // methods on the log classes; the classes are data now (ui/domain/proto_utils/logs.ts)
 // and the JSX lives here.

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { arrayEquals } from '@domain/collections';
 import i18n from '@i18n/config';
 import { Dropdown } from 'bootstrap';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';

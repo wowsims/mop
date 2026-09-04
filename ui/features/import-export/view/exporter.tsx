@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { kebabCase } from '@domain/format';
 import { Emitter } from '@domain/state/events';
 import type { SimHost } from '@features/sim_host';

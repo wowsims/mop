@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { formatDurationSeconds } from '@domain/format';
 import i18n from '@i18n/config';
 import clsx from 'clsx';

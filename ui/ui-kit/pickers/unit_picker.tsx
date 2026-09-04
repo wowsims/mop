@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { ActionId } from '@domain/proto_utils/action_id';
 import { UnitReference } from '@generated/proto/common';
 import clsx from 'clsx';

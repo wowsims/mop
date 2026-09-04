@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { CacheHandler } from '@domain/cache_handler';
 import { getEnumValues } from '@domain/collections';
 import { Player, UnitMetadata } from '@domain/player';

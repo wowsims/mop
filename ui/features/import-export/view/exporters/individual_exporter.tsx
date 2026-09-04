@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { getEnumValues } from '@domain/collections';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import type { IndividualSimHost } from '@features/sim_host';

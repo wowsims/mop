@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { batch } from '@domain/state/batch';

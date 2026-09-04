@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
 import { isDevMode } from '@domain/env';
 import { PlayerSpec, SimStatus } from '@domain/player_spec';

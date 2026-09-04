@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { bucket } from '@domain/collections';
 import { formatToCompactNumber, formatToNumber, formatToPercent } from '@domain/format';
 import { ActionMetrics } from '@domain/proto_utils/sim_result';

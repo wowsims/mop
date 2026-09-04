@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { Component } from '@ui-kit/component';
 import tippy, { type Instance } from 'tippy.js';

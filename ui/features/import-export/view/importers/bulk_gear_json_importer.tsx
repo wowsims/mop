@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Database } from '@domain/proto_utils/database';
 import type { IndividualSimHost } from '@features/sim_host';
 import { EquipmentSpec, Spec } from '@generated/proto/common';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { TopGearResult } from '@domain/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
 import { formatDeltaTextElem, formatToNumber } from '@domain/format';

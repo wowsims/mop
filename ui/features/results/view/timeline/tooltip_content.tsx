@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { kebabCase } from '@domain/format';
 import { DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@domain/proto_utils/logs';
 import { resourceNames } from '@domain/proto_utils/names';

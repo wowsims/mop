@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { formatDurationSeconds } from '@domain/format';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';

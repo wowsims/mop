@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import tippy from 'tippy.js';
 
 import { Component } from './component';

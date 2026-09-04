@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Modal } from 'bootstrap';
 import { ref } from 'tsx-vanilla';
 

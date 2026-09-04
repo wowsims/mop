@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { getEnumValues } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';

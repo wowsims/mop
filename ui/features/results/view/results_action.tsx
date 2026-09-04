@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@domain/format';
 import { zTest } from '@domain/math';
 import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';

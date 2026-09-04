@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { sum } from '@domain/math';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { AuraEventLog, SimLog, SimLogParams } from '@domain/proto_utils/logs';

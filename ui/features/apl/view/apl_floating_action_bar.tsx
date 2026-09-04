@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';

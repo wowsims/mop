@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { CacheHandler } from '@domain/cache_handler';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';

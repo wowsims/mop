@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';

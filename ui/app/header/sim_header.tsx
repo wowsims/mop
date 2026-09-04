@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL } from '@domain/constants/other';
 import { noop } from '@domain/utils';
 import { Exporter } from '@features/import-export/view/exporter';

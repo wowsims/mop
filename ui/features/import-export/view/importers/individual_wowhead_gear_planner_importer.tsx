@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
 import type { IndividualSimHost } from '@features/sim_host';

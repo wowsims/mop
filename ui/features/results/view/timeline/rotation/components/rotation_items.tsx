@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { setActionIdBackground } from '@domain/proto_utils/action_id/dom';
 import type { AuraUptimeLog, CastLog, DamageDealtLog } from '@domain/proto_utils/logs';
 import i18n from '@i18n/config';

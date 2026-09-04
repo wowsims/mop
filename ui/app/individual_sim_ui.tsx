@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';

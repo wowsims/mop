@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '@domain/constants/other';
 import { isDevMode } from '@domain/env';
 import { Sim } from '@domain/sim';

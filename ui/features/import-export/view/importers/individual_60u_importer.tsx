@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import { talentSpellIdsToTalentString } from '@domain/talents/factory';
 import type { IndividualSimHost } from '@features/sim_host';

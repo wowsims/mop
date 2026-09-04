@@ -17,8 +17,7 @@ export default defineConfig({
 		},
 	},
 	oxc: {
-		jsx: { runtime: 'classic', pragma: 'element', pragmaFrag: 'fragment' },
-		jsxInject: "import { element, fragment } from 'tsx-vanilla';",
+		jsx: { runtime: 'automatic', importSource: 'react' },
 	},
 	ssr: { noExternal: true },
 	build: {

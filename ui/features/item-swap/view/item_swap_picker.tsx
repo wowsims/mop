@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { batch } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';

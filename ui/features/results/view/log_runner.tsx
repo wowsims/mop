@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { SimLog } from '@domain/proto_utils/logs';
 import { Emitter } from '@domain/state/events';
 import i18n from '@i18n/config';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { omitDeep } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';

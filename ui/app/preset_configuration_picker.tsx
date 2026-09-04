@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
 import { Stats } from '@domain/proto_utils/stats';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { isDevMode } from '@domain/env';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { Emitter } from '@domain/state/events';

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { ref } from 'tsx-vanilla';
 
 import { Component } from './component';

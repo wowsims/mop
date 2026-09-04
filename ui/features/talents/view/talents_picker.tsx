@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { isRightClick } from '@domain/env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';

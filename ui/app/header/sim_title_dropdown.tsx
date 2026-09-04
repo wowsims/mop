@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { PlayerClass } from '@domain/player_class';
 import { PlayerClasses } from '@domain/player_classes/index';
 import { PlayerSpec } from '@domain/player_spec';

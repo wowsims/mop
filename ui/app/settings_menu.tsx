@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Sim } from '@domain/sim';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';

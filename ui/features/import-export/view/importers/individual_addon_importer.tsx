@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Database } from '@domain/proto_utils/database';
 import { nameToClass, nameToProfession, nameToRace } from '@domain/proto_utils/names';
 import { GlyphConfig } from '@domain/talents/config';
