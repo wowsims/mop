@@ -1,0 +1,375 @@
+.rotation-pane {
+	--pps: 100px;
+	--duration: 0;
+	--label-w: clamp(8rem, 14rem, 20rem);
+	--rotation-fab-h: calc(2.75rem + 2 * var(--spacer-2) + 2 * var(--bs-border-width));
+	--rotation-item-h: 24px;
+	--rotation-row-bg: var(--bs-body-bg);
+	--rotation-cast-bg: rgba(229, 204, 128, 0.7);
+	--rotation-cast-cancel-bg: rgba(var(--bs-cancel-rgb), 0.7);
+	--rotation-aura-bg: rgba(0, 0, 255, 0.52);
+	--rotation-travel-bg: rgba(249, 192, 255, 0.6);
+	--rotation-tick-bg: maroon;
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	color: var(--bs-white);
+
+	@include media-breakpoint-down(lg) {
+		.rotation-label-text {
+			display: none;
+		}
+	}
+}
+
+.rotation-header {
+	position: sticky;
+	top: var(--rotation-sticky-top, 0px);
+	z-index: 5;
+	display: flex;
+	flex: 0 0 30px;
+	height: 30px;
+	margin-right: calc(-1 * var(--container-padding));
+	background: var(--bs-body-bg);
+}
+
+.rotation-corner,
+.rotation-row-label {
+	display: flex;
+	flex: 0 0 var(--label-w);
+	align-items: center;
+	box-sizing: border-box;
+	width: var(--label-w);
+	padding-right: var(--spacer-2);
+	gap: var(--spacer-1);
+}
+
+.rotation-zoom-button {
+	padding: 0 var(--spacer-1);
+	border: 0;
+	background: transparent;
+	color: var(--bs-white);
+	line-height: 1;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bs-brand);
+	}
+}
+
+.rotation-ruler {
+	position: relative;
+	flex: 1 1 0;
+	box-sizing: border-box;
+	min-width: 0;
+	overflow: hidden;
+	border-bottom: 1px solid var(--bs-white);
+	color: var(--bs-white);
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.rotation-ruler-track {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(var(--pps) * var(--duration));
+	height: 100%;
+	transform: translateX(calc(var(--pan, 0) * -1px));
+}
+
+.rotation-ruler-tick {
+	position: absolute;
+	bottom: 0;
+	left: calc(var(--pps) * var(--t));
+	width: 3px;
+	height: 5px;
+	margin-left: -1px;
+	background-image: linear-gradient(to right, transparent 1px, currentcolor 1px, currentcolor 2px, transparent 2px);
+
+	&.is-major {
+		height: 12px;
+	}
+}
+
+.rotation-ruler-label {
+	position: absolute;
+	top: 2px;
+	left: calc(var(--pps) * var(--t));
+	transform: translateX(-50%);
+	white-space: nowrap;
+
+	&.is-first {
+		transform: none;
+	}
+}
+
+.rotation-scroller {
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 0;
+	margin-right: calc(-1 * var(--container-padding));
+	overflow-x: auto;
+	overflow-y: hidden;
+	outline: none;
+	cursor: grab;
+
+	&.is-panning {
+		cursor: grabbing;
+		user-select: none;
+	}
+}
+
+.rotation-content {
+	min-width: 100%;
+	width: calc(var(--label-w) + var(--pps) * var(--duration));
+}
+
+.rotation-vspacer {
+	height: calc(var(--vspacer-h, 0) * 1px);
+}
+
+.rotation-row {
+	--rotation-item-top: calc((var(--row-h) * 1px - var(--rotation-item-h)) / 2);
+
+	display: flex;
+	align-items: stretch;
+	box-sizing: border-box;
+	height: calc(var(--row-h) * 1px);
+	margin: 0;
+	border-bottom: 1px solid var(--bs-gray-700);
+	contain: layout style;
+	background-color: var(--rotation-row-bg);
+}
+
+// The rest of this column - width, padding, gap - is shared with .rotation-corner above:
+// the ruler only lines up with the tracks while the two stay identical.
+.rotation-row-label {
+	position: sticky;
+	left: 0;
+	z-index: 3;
+	overflow: hidden;
+	background: var(--rotation-row-bg);
+	font-size: 13px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.rotation-row-track {
+	position: relative;
+	flex: 1 0 calc(var(--pps) * var(--duration));
+	box-sizing: border-box;
+	min-width: 0;
+}
+
+.rotation-row-icon {
+	@include wowhead-background-icon;
+	flex: 0 0 auto;
+	width: 24px;
+	height: 24px;
+}
+
+.rotation-row-hide {
+	flex: 0 0 auto;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--bs-white);
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bs-link-danger);
+	}
+}
+
+.rotation-label-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.rotation-row-header .rotation-row-label {
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+.rotation-row-separator {
+	border-bottom-color: var(--bs-white);
+}
+
+.rotation-measurer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: max-content;
+	visibility: hidden;
+	pointer-events: none;
+
+	.rotation-row-label {
+		position: static;
+		flex: 0 0 auto;
+		width: max-content;
+	}
+}
+
+.rotation-item {
+	position: absolute;
+	top: 0;
+	left: calc(var(--pps) * var(--t));
+}
+
+.rotation-item-cast {
+	z-index: 1;
+	display: flex;
+	top: var(--rotation-item-top);
+	align-items: center;
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-cast-bg);
+
+	&.cast-cancelled {
+		background-color: var(--rotation-cast-cancel-bg);
+
+		.rotation-item-icon {
+			border-color: var(--bs-cancel);
+		}
+	}
+
+	&.outcome-miss .rotation-item-icon {
+		border-color: var(--bs-miss);
+	}
+
+	&.outcome-partial .rotation-item-icon {
+		border-color: var(--bs-partial);
+	}
+
+	&.outcome-hit .rotation-item-icon {
+		border-color: var(--bs-hit);
+	}
+
+	&.outcome-crit .rotation-item-icon {
+		border-color: var(--bs-crit);
+	}
+}
+
+.rotation-item-icon {
+	@include wowhead-background-icon;
+	flex: 0 0 auto;
+	width: var(--rotation-item-h);
+	height: var(--rotation-item-h);
+	border-bottom: 3px solid var(--bs-gray);
+}
+
+// Sits inside the cast bar, so top: 0 already puts it in the same band.
+.rotation-item-travel {
+	position: absolute;
+	top: 0;
+	left: calc(var(--pps) * var(--t));
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-travel-bg);
+}
+
+.rotation-item-tick {
+	z-index: 2;
+	top: var(--rotation-item-top);
+	width: 5px;
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-tick-bg);
+}
+
+.rotation-item-aura {
+	top: var(--rotation-item-top);
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-aura-bg);
+	opacity: 0.5;
+
+	&.shares-row .rotation-item-stacks {
+		text-indent: 30px;
+	}
+}
+
+// Both are a full-height slice of their parent bordered on each side; .rotation-item
+// carries the positioning.
+.rotation-item-stacks,
+.rotation-item-resource {
+	display: flex;
+	align-items: center;
+	width: calc(var(--pps) * var(--dur));
+	height: 100%;
+	overflow-x: hidden;
+	border-left: 1px solid var(--bs-gray);
+	border-right: 1px solid var(--bs-gray);
+	font-weight: bold;
+}
+
+.rotation-item-resource-fill {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 10px;
+	height: calc(var(--fill) * 1%);
+
+	&.focus {
+		background-color: var(--bs-orange);
+	}
+
+	&.energy {
+		background-color: var(--bs-partial);
+	}
+
+	&.lunar-energy {
+		width: 24px;
+		background-color: var(--bs-lunar-energy);
+	}
+
+	&.solar-energy {
+		top: 0;
+		width: 24px;
+		background-color: var(--bs-solar-energy);
+	}
+}
+
+.rotation-scroller[data-density='medium'] {
+	.rotation-item-stacks,
+	.rotation-item-resource-text {
+		display: none;
+	}
+}
+
+.rotation-scroller[data-density='coarse'] {
+	--rotation-item-h: 20px;
+
+	.rotation-item-icon,
+	.rotation-item-stacks,
+	.rotation-item-resource-text {
+		display: none;
+	}
+
+	.rotation-item-cast {
+		min-width: max(2px, calc(var(--pps) * var(--dur)));
+		background-color: var(--bs-gray-700);
+
+		&.outcome-hit {
+			background-color: var(--bs-hit);
+		}
+
+		&.outcome-crit {
+			background-color: var(--bs-crit);
+		}
+
+		&.outcome-miss {
+			background-color: var(--bs-miss);
+		}
+
+		&.outcome-partial {
+			background-color: var(--bs-partial);
+		}
+
+		&.cast-cancelled {
+			background-color: var(--bs-cancel);
+		}
+	}
+}
