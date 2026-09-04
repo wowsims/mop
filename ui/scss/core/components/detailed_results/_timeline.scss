@@ -82,6 +82,17 @@
 			--bs-btn-active-bg: var(--bs-primary);
 			--bs-btn-active-border-color: var(--bs-primary);
 		}
+
+		// Clicking a label focuses the radio behind it. Browsers disagree about whether that
+		// counts as focus-visible for a radio, so state it outright: a ring for keyboard
+		// focus only, never for a pointer press.
+		.btn-check:focus + .btn {
+			box-shadow: none;
+		}
+
+		.btn-check:focus-visible + .btn {
+			box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
+		}
 	}
 }
 

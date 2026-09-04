@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import tippy, { delegate, Instance, Props } from 'tippy.js';
+import tippy, { delegate, followCursor, Instance, Props } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
@@ -88,13 +88,18 @@ class WindowedRow {
 				this.mounted.delete(index);
 			}
 		});
-		wanted.forEach(index => {
-			if (this.mounted.has(index)) return;
+		// Mount in ascending order. The scan above runs backwards so it can stop early, but
+		// these are absolutely positioned siblings that abut each other, so DOM order decides
+		// which one wins an overlapping pixel - and appending right-to-left let a later block
+		// sit on top of its neighbour and answer for their hovers too.
+		const ascending = [...wanted].sort((a, b) => a - b);
+		for (const index of ascending) {
+			if (this.mounted.has(index)) continue;
 			const item = this.items[index];
 			item.elem ??= item.build();
 			this.rowElem.appendChild(item.elem);
 			this.mounted.add(index);
-		});
+		}
 	}
 }
 
@@ -151,6 +156,13 @@ function delegateTooltips(container: Element): Instance {
 		target: `[${TOOLTIP_TARGET_ATTR}]`,
 		placement: 'bottom',
 		content: '',
+		// Anchor to the pointer rather than to the element. An aura or resource bar can span
+		// the whole fight - tens of thousands of pixels - and anchoring to a box that wide put
+		// the tooltip out by the far edge of it, nowhere near what was being hovered.
+		// 'horizontal' tracks along the row, which is the axis these bars are long on, while
+		// the vertical placement stays tied to the row itself.
+		plugins: [followCursor],
+		followCursor: 'horizontal',
 		// Flip and slide along both axes so a tall tooltip near an edge stays on screen
 		// instead of hanging off it.
 		popperOptions: {
