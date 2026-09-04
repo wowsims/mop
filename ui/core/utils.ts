@@ -13,6 +13,8 @@ export const existsInDOM = (element: HTMLElement | null) => document.body.contai
 
 export const cloneChildren = (element: HTMLElement) => [...(element.childNodes || [])].map(child => child.cloneNode(true));
 
+export const kebabCase = (text: string): string => text.toLowerCase().replaceAll(' ', '-');
+
 /** Escape text for safe insertion into HTML (e.g. attribute or text node via innerHTML). */
 export const encodeHTMLEntities = (text: string): string => {
 	const textArea = document.createElement('textarea');

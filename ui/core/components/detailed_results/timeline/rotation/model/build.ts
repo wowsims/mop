@@ -3,6 +3,7 @@ import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '../../../../
 import type { AuraUptimeLog, CastLog, ResourceChangedLogGroup } from '../../../../../proto_utils/logs_parser';
 import { resourceNames } from '../../../../../proto_utils/names';
 import type { UnitMetrics } from '../../../../../proto_utils/sim_result';
+import { kebabCase } from '../../../../../utils';
 import {
 	actionBucketKey,
 	AURA_AS_RESOURCE,
@@ -170,9 +171,13 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 
 		let label = resourceNames.get(resourceType)!;
 		let icon = resourceTypeToIcon[resourceType];
+		// Every generic resource is the same ResourceType, so the row is classed by the spec's
+		// own resource name instead: 'Generic Resource' can carry no colour.
+		let cssName = kebabCase(resourceNames.get(resourceType)!);
 		if (resourceType == ResourceType.ResourceTypeGenericResource && !!secondaryResource) {
 			label = secondaryResource.name ?? '';
 			icon = secondaryResource.icon || '';
+			if (label) cssName = `secondary-resource secondary-resource--${kebabCase(label)}`;
 		}
 
 		const items: Array<RowItem> = resourceItems(resourceType, resourceLogs, duration);
@@ -183,7 +188,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 			height: ROW_HEIGHTS.resource,
 			label,
 			icon,
-			cssName: resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-'),
+			cssName,
 			items,
 			maxRightUpTo: sortAndPrefixMax(items),
 		});

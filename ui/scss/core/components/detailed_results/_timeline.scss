@@ -1,3 +1,36 @@
+// Written out rather than generated from $secondary-resource-colors: the BEM plugin cannot
+// parse an interpolated selector. Every spec's secondary resource is the same ResourceType,
+// so the timeline classes the row by name.
+.secondary-resource--arcane-charges .series-color,
+.secondary-resource--arcane-charges.series-color {
+	color: var(--bs-arcane-charges);
+}
+
+.secondary-resource--shadow-orbs .series-color,
+.secondary-resource--shadow-orbs.series-color {
+	color: var(--bs-shadow-orbs);
+}
+
+.secondary-resource--demonic-fury .series-color,
+.secondary-resource--demonic-fury.series-color {
+	color: var(--bs-demonic-fury);
+}
+
+.secondary-resource--burning-embers .series-color,
+.secondary-resource--burning-embers.series-color {
+	color: var(--bs-burning-embers);
+}
+
+.secondary-resource--soul-shards .series-color,
+.secondary-resource--soul-shards.series-color {
+	color: var(--bs-soul-shards);
+}
+
+.secondary-resource--holy-power .series-color,
+.secondary-resource--holy-power.series-color {
+	color: var(--bs-holy-power);
+}
+
 .threat .series-color,
 .threat.series-color {
 	color: var(--bs-threat);

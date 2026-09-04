@@ -1,6 +1,7 @@
 import i18n from '../../../../i18n/config';
 import { DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '../../../proto_utils/logs_parser';
 import { resourceNames } from '../../../proto_utils/names';
+import { kebabCase } from '../../../utils';
 import { percentageResources } from './constants';
 
 export function DpsTooltip(log: DpsLog) {
@@ -61,7 +62,7 @@ export function ResourceTooltip(log: ResourceChangedLogGroup, maxValue: number, 
 		: (val: number) => `${val.toFixed(1)}`;
 
 	return (
-		<div className={`timeline-tooltip ${resourceNames.get(log.resourceType)!.toLowerCase().replaceAll(' ', '-')}`}>
+		<div className={`timeline-tooltip ${kebabCase(resourceNames.get(log.resourceType)!)}`}>
 			<div className="timeline-tooltip-header">
 				<span className="bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
