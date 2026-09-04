@@ -42,16 +42,9 @@ import { getLang } from '@i18n/locale_service';
 import { SimRequest } from '@worker/types';
 
 import { hasTouch } from '../shared/bootstrap_overrides';
-import {
-	BULK_CACHE_PROGRESS_CHECK_MODULO,
-	BULK_CACHE_YIELD_BUDGET_MS,
-	type BulkSimReforgeCacheProgress,
-	getBulkSimReforgeCacheData,
-	makeBulkGearDatabase,
-	makeBulkItemDatabaseFromSpecs,
-	throwIfAborted,
-	writeBulkSimReforgeCacheResults,
-} from './bulk/utils';
+import { makeBulkGearDatabase, makeBulkItemDatabaseFromSpecs } from './bulk/gear_database';
+import { BULK_CACHE_PROGRESS_CHECK_MODULO, BULK_CACHE_YIELD_BUDGET_MS, type BulkSimReforgeCacheProgress, getBulkSimReforgeCacheData, writeBulkSimReforgeCacheResults } from './bulk/reforge_cache';
+import { throwIfAborted } from './bulk/utils';
 import { distinct, getEnumValues } from './collections';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';

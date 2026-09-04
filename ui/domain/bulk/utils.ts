@@ -1,17 +1,10 @@
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '@generated/proto/api';
-import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '@generated/proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@generated/proto/db';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
+import { BulkSimResult, BulkSimStage, DistributionMetrics } from '@generated/proto/api';
+import { ItemSlot, WeaponType } from '@generated/proto/common';
 
 import type { Player } from '../player';
 import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/capabilities';
-import { Database } from '../proto_utils/database';
-import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
-import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/items';
-import { ReforgeGearCache } from '../reforge_cache';
-import { getReforgeConfigHash } from '../state/reforge_request';
-import { sleep } from '../utils';
+import { getGearIdentityKey } from '../proto_utils/items';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
@@ -21,10 +14,6 @@ import {
 import { OptimisationStage } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };
-
-const BULK_CACHE_LOOKUP_BATCH_SIZE = 2000;
-export const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
-export const BULK_CACHE_YIELD_BUDGET_MS = 16;
 
 export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): BulkSimItemSlot => {
 	if (canDualWield && [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(slot)) {
@@ -123,215 +112,6 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 
 	return metrics;
 };
-
-export const makeBulkGearDatabase = (db: Database, gearSets: Gear[], extraItems: EquippedItem[] = []): SimDatabase => {
-	const items = new Map<number, Item>();
-	const randomSuffixes = new Map<number, ItemRandomSuffix>();
-	const reforgeStats = new Map<number, ReforgeStat>();
-	const itemEffectRandPropPoints = new Map<number, ItemEffectRandPropPoints>();
-	const enchants = new Map<number, Enchant>();
-	const gems = new Map<number, Gem>();
-
-	const addEquippedItem = (equippedItem: EquippedItem) => {
-		const item = equippedItem.item;
-		items.set(item.id, item);
-
-		const randomSuffix = equippedItem.randomSuffix;
-		if (randomSuffix) randomSuffixes.set(randomSuffix.id, randomSuffix);
-
-		const itemReforge = equippedItem.reforge;
-		if (itemReforge) {
-			const reforge = db.getReforgeById(itemReforge.id);
-			if (reforge) reforgeStats.set(reforge.id, reforge);
-		}
-
-		const scalingIlvls = new Set([equippedItem.ilvl]);
-		Object.values(item.scalingOptions ?? {}).forEach(opt => {
-			if (opt?.ilvl) scalingIlvls.add(opt.ilvl);
-		});
-		scalingIlvls.forEach(ilvl => {
-			const rpp = db.getItemEffectRandPropPoints(ilvl);
-			if (rpp) itemEffectRandPropPoints.set(rpp.ilvl, rpp);
-		});
-
-		const enchant = equippedItem.enchant;
-		if (enchant) enchants.set(enchant.effectId, enchant);
-
-		const tinker = equippedItem.tinker;
-		if (tinker) enchants.set(tinker.effectId, tinker);
-
-		for (const gem of equippedItem.gems) {
-			if (gem) gems.set(gem.id, gem);
-		}
-	};
-
-	for (const gearSet of gearSets) {
-		for (const equippedItem of gearSet.asArray()) {
-			if (equippedItem) addEquippedItem(equippedItem);
-		}
-	}
-	for (const equippedItem of extraItems) {
-		addEquippedItem(equippedItem);
-	}
-
-	return SimDatabase.create({
-		items: Array.from(items.values()).map(item => SimItem.fromJson(Item.toJson(item), { ignoreUnknownFields: true })),
-		randomSuffixes: Array.from(randomSuffixes.values()),
-		reforgeStats: Array.from(reforgeStats.values()),
-		itemEffectRandPropPoints: Array.from(itemEffectRandPropPoints.values()),
-		enchants: Array.from(enchants.values()).map(enchant => SimEnchant.fromJson(Enchant.toJson(enchant), { ignoreUnknownFields: true })),
-		gems: Array.from(gems.values()).map(gem => SimGem.fromJson(Gem.toJson(gem), { ignoreUnknownFields: true })),
-	});
-};
-
-export const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpecs: readonly ItemSpec[]): SimDatabase => {
-	const extraItems = itemSpecs.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null)).filter((item): item is EquippedItem => item != null);
-	return makeBulkGearDatabase(db, [baselineGear], extraItems);
-};
-
-type BulkSimReforgeCacheData = {
-	cache: ReforgeGearCache;
-	candidates: BulkGearCandidate[];
-	optimizedCandidates: BulkGearCandidate[];
-	cachedOptimizedGearSets: Gear[];
-	cacheKeysByCandidateIndex: Map<number, string>;
-};
-
-export type BulkSimReforgeCacheProgress = {
-	stage?: 'candidate-build' | 'cache-restore';
-	processedCandidates: number;
-	totalCandidates: number;
-	restoredCandidates: number;
-};
-
-type BulkSimReforgeCacheContext = {
-	player: Player<any>;
-	gearSets?: Gear[];
-	candidateSpecs?: EquipmentSpec[];
-	candidateGearKeys?: string[];
-	candidateIndices?: number[];
-	db: Database;
-	reforgeRequest: ReforgeOptimizeRequest;
-	raidBuffs: RaidBuffs;
-	partyBuffs: PartyBuffs | undefined;
-	debuffs: Debuffs;
-	onProgress?: (progress: BulkSimReforgeCacheProgress) => void;
-	signal?: AbortSignal;
-};
-
-export async function getBulkSimReforgeCacheData({
-	player,
-	gearSets,
-	candidateSpecs,
-	candidateGearKeys,
-	candidateIndices,
-	db,
-	reforgeRequest,
-	raidBuffs,
-	partyBuffs,
-	debuffs,
-	onProgress,
-	signal,
-}: BulkSimReforgeCacheContext): Promise<BulkSimReforgeCacheData> {
-	throwIfAborted(signal);
-	if (!gearSets && !candidateSpecs) {
-		throw new Error('Either gearSets or candidateSpecs must be provided for cache restore.');
-	}
-
-	const cache = ReforgeGearCache.get(player.getPlayerSpec(), player.sim.env);
-	const configHash = await getReforgeConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
-	const frozenItemSlots =
-		reforgeRequest.settings?.freezeItemSlots && reforgeRequest.settings.frozenItemSlots.length ? reforgeRequest.settings.frozenItemSlots : undefined;
-	const totalCandidates = candidateSpecs?.length ?? gearSets!.length;
-	onProgress?.({
-		stage: 'cache-restore',
-		processedCandidates: 0,
-		totalCandidates,
-		restoredCandidates: 0,
-	});
-
-	let lastYieldAt = performance.now();
-
-	const candidates: BulkGearCandidate[] = [];
-	const optimizedCandidates: BulkGearCandidate[] = [];
-	const cachedOptimizedGearSets: Gear[] = [];
-	const cacheKeysByCandidateIndex = new Map<number, string>();
-	const pendingEntries: Array<{ index: number; spec: EquipmentSpec; cacheKey: string }> = [];
-
-	let processedCandidates = 0;
-	let restoredCandidates = 0;
-	const shouldLookupCache = await cache.hasEntries();
-
-	const flushPendingEntries = async () => {
-		if (!pendingEntries.length) {
-			return;
-		}
-
-		const cachedGearByKey = shouldLookupCache
-			? await cache.getMany(
-					pendingEntries.map(entry => entry.cacheKey),
-					signal,
-				)
-			: new Map<string, EquipmentSpec>();
-		for (const entry of pendingEntries) {
-			throwIfAborted(signal);
-			const cachedGear = cachedGearByKey.get(entry.cacheKey);
-			if (cachedGear) {
-				optimizedCandidates.push(BulkGearCandidate.create({ index: entry.index, gear: cachedGear }));
-				cachedOptimizedGearSets.push(db.lookupEquipmentSpec(cachedGear));
-				restoredCandidates++;
-			} else {
-				candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.spec }));
-				cacheKeysByCandidateIndex.set(entry.index, entry.cacheKey);
-			}
-
-			processedCandidates++;
-			if (processedCandidates % BULK_CACHE_PROGRESS_CHECK_MODULO === 0 || processedCandidates === totalCandidates) {
-				const now = performance.now();
-				if (processedCandidates === totalCandidates || now - lastYieldAt >= BULK_CACHE_YIELD_BUDGET_MS) {
-					onProgress?.({
-						stage: 'cache-restore',
-						processedCandidates,
-						totalCandidates,
-						restoredCandidates,
-					});
-					await sleep(0);
-					lastYieldAt = performance.now();
-				}
-			}
-		}
-
-		pendingEntries.length = 0;
-	};
-
-	for (let i = 0; i < totalCandidates; i++) {
-		throwIfAborted(signal);
-		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getReforgeCacheGearKey(spec, frozenItemSlots);
-		const candidateIndex = candidateIndices?.[i] ?? i;
-		const cacheKey = ReforgeGearCache.getKey(gearKey, configHash);
-		pendingEntries.push({ index: candidateIndex, spec, cacheKey });
-
-		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {
-			await flushPendingEntries();
-		}
-	}
-
-	return { cache, candidates, optimizedCandidates, cachedOptimizedGearSets, cacheKeysByCandidateIndex };
-}
-
-export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkGearCandidate[], cacheData: BulkSimReforgeCacheData): Promise<void> {
-	const cacheEntries: Array<{ key: string; optimizedGear: EquipmentSpec }> = [];
-	for (let i = 0; i < optimizedCandidates.length; i++) {
-		const candidate = optimizedCandidates[i];
-		const cacheKey = cacheData.cacheKeysByCandidateIndex.get(candidate.index);
-		if (!cacheKey || !candidate.gear) {
-			continue;
-		}
-		cacheEntries.push({ key: cacheKey, optimizedGear: candidate.gear });
-	}
-	await cacheData.cache.setGearMany(cacheEntries);
-}
 
 export const throwIfAborted = (signal?: AbortSignal, errorMessage = 'Bulk Sim Aborted'): void => {
 	if (signal?.aborted) {
