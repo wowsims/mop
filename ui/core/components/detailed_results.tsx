@@ -94,6 +94,10 @@ export class DetailedResults extends Component {
 
 		this.simUI = simUI;
 
+		// Kept as the tabs are built, below. Looking them up afterwards meant a document-wide
+		// querySelector per tab, matching on the data attribute Bootstrap uses.
+		const tabButtons = new Map<string, HTMLButtonElement>();
+
 		this.rootDiv = (
 			<div className="dr-root dr-no-results">
 				<div className="dr-toolbar">
@@ -103,6 +107,7 @@ export class DetailedResults extends Component {
 						{tabs.map(({ label, targetId, isActive, classes }) => (
 							<li className={`nav-item dr-tab-tab ${classes?.join(' ') || ''}`} attributes={{ role: 'presentation' }}>
 								<button
+									ref={elem => tabButtons.set(targetId, elem)}
 									className={`nav-link${isActive ? ' active' : ''}`}
 									type="button"
 									attributes={{
@@ -269,7 +274,7 @@ export class DetailedResults extends Component {
 		// Tabs whose contents are expensive hold their results until first shown; see
 		// ResultComponent's deferUntilShown.
 		const deferUntilShown = (component: ResultComponent, tabId: string) => {
-			document.querySelector(`button[data-bs-target="#${tabId}"]`)?.addEventListener('shown.bs.tab', () => component.onTabShown());
+			tabButtons.get(tabId)?.addEventListener('shown.bs.tab', () => component.onTabShown());
 		};
 
 		const timeline = new Timeline({
@@ -285,8 +290,7 @@ export class DetailedResults extends Component {
 			resultsEmitter: this.resultsEmitter,
 		});
 
-		const replayTabEl = document.querySelector('button[data-bs-target="#replayTab"]');
-		replayTabEl?.addEventListener('hide.bs.tab', () => {
+		tabButtons.get('replayTab')?.addEventListener('hide.bs.tab', () => {
 			combatReplay.stopPlayback();
 		});
 

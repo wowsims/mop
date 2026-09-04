@@ -107,10 +107,16 @@ const THREAT_SERIES_NAME = i18n.t('results_tab.details.timeline.tooltips.threat'
 // A radio group behaving like the <select> it replaced, so the rest of the component keeps
 // reading and writing a single `value`.
 class ChartViewPicker {
-	constructor(private readonly rootElem: HTMLElement) {}
+	private readonly inputs: Array<HTMLInputElement>;
+	// Each choice is an input plus its label, and both have to be hidden together. Collected
+	// once here rather than re-queried on every plot update.
+	private readonly optionElems = new Map<string, Array<HTMLElement>>();
 
-	private get inputs(): Array<HTMLInputElement> {
-		return [...this.rootElem.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+	constructor(private readonly rootElem: HTMLElement) {
+		this.inputs = [...rootElem.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+		for (const input of this.inputs) {
+			this.optionElems.set(input.value, [...rootElem.querySelectorAll<HTMLElement>(`.${input.value}-option`)]);
+		}
 	}
 
 	get value(): string {
@@ -119,6 +125,10 @@ class ChartViewPicker {
 
 	set value(next: string) {
 		for (const input of this.inputs) input.checked = input.value === next;
+	}
+
+	setOptionVisible(option: string, visible: boolean) {
+		for (const elem of this.optionElems.get(option) ?? []) elem.classList.toggle('hide', !visible);
 	}
 
 	onChange(callback: () => void) {
@@ -184,6 +194,8 @@ export class Timeline extends ResultComponent {
 	private readonly rotationLabels: HTMLElement;
 	private readonly rotationTimeline: HTMLElement;
 	private readonly rotationHiddenIdsContainer: HTMLElement;
+	// Rebuilt with the rotation subtree, so it is captured where it is created.
+	private rotationCanvas: HTMLCanvasElement | null = null;
 	private readonly chartPicker: ChartViewPicker;
 
 	private resultData: SimResultData | null;
@@ -807,7 +819,7 @@ export class Timeline extends ResultComponent {
 		this.rotationLabels.replaceChildren(<div className="rotation-label-header"></div>);
 		this.rotationTimeline.replaceChildren(
 			<div className="rotation-timeline-header">
-				<canvas className="rotation-timeline-canvas" />
+				<canvas ref={elem => (this.rotationCanvas = elem)} className="rotation-timeline-canvas" />
 			</div>,
 		);
 		this.rotationHiddenIdsContainer.replaceChildren();
@@ -834,7 +846,7 @@ export class Timeline extends ResultComponent {
 		this.clearRotationChart();
 
 		try {
-			this.drawRotationTimeRuler(this.rotationTimeline.querySelector('.rotation-timeline-canvas')!, duration);
+			this.drawRotationTimeRuler(this.rotationCanvas!, duration);
 		} catch (e) {
 			console.log('Failed to draw rotation: ', e);
 		}
@@ -1687,10 +1699,8 @@ export class Timeline extends ResultComponent {
 
 	// Single-player results offer the rotation chart; multi-player ones the threat chart.
 	private setRotationOptionVisible(visible: boolean) {
-		// Each choice is an input plus its label, so both have to be toggled - querySelector
-		// would only ever find the input, which is visually hidden anyway.
-		for (const elem of this.rootElem.querySelectorAll('.rotation-option')) elem.classList.toggle('hide', !visible);
-		for (const elem of this.rootElem.querySelectorAll('.threat-option')) elem.classList.toggle('hide', visible);
+		this.chartPicker.setOptionVisible('rotation', visible);
+		this.chartPicker.setOptionVisible('threat', !visible);
 	}
 
 	private static newSlot(key: string): RotationSlot {
