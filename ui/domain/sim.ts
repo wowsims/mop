@@ -173,11 +173,32 @@ export class Sim {
 		this.encounter = new Encounter(this);
 
 		// Stats recompute on any raid/encounter change — one selector, so a batch
-		// touching both recomputes once.
-		subscribeStatsInputs(this)(() => this.updateCharacterStats(nextEventID()));
+		// touching both recomputes once. Skipped while the initial settings load
+		// is applying: those settings already carry the stats they were saved with.
+		subscribeStatsInputs(this)(() => {
+			if (this.applyingLoadedSettings) return;
+			this.updateCharacterStats(nextEventID());
+		});
 
 		// Initial language write: initialization, not a change.
 		this.store.setState(s => ({ ui: { ...s.ui, language: getLang() } }));
+	}
+
+	// True only while loadIndividualSettings is applying stored settings; see the
+	// stats subscription in the constructor. Replaces a guard that recognised the
+	// load by its EventID being 0, which stopped working once subscribers minted
+	// their own ids instead of receiving the originating one.
+	private applyingLoadedSettings = false;
+
+	// Runs `apply` with the initial-settings-load flag set. Anything that does not
+	// go through here keeps the normal recompute-on-change behaviour.
+	applyLoadedSettings<T>(apply: () => T): T {
+		this.applyingLoadedSettings = true;
+		try {
+			return apply();
+		} finally {
+			this.applyingLoadedSettings = false;
+		}
 	}
 
 	waitForInit(): Promise<void> {
@@ -720,10 +741,6 @@ export class Sim {
 
 	// This should be invoked internally whenever stats might have changed.
 	async updateCharacterStats(eventID: EventID) {
-		if (eventID == 0) {
-			// Skip the first event ID because it interferes with the loaded stats.
-			return;
-		}
 		eventID = nextEventID();
 
 		await this.waitForInit();

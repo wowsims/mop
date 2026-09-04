@@ -45,40 +45,44 @@ export function loadIndividualSettings(
 	const initEventID = nextEventID();
 	// Declared before the batch: its flush can already schedule a persist.
 	let persistTimer: ReturnType<typeof setTimeout> | null = null;
-	batch(() => {
-		host.applyDefaults(initEventID);
+	// The stats recompute is skipped for this batch; the stored settings already
+	// carry the stats they were saved with (Sim.applyLoadedSettings).
+	opts.player.sim.applyLoadedSettings(() =>
+		batch(() => {
+			host.applyDefaults(initEventID);
 
-		const savedSettings = env.storage.getItem(opts.storageKey);
-		if (savedSettings != null) {
+			const savedSettings = env.storage.getItem(opts.storageKey);
+			if (savedSettings != null) {
+				try {
+					const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
+					host.fromProto(initEventID, settings);
+				} catch (e) {
+					console.warn('Failed to parse saved settings: ' + e);
+				}
+			}
+
+			// Loading from link needs to happen after loading saved settings, so that partial link imports
+			// (e.g. rotation only) include the previous settings for other categories.
 			try {
-				const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
-				host.fromProto(initEventID, settings);
+				const urlParseResults = tryParseUrlLocation(env.location);
+				if (urlParseResults) {
+					host.fromProto(initEventID, urlParseResults.settings, urlParseResults.categories);
+				}
 			} catch (e) {
-				console.warn('Failed to parse saved settings: ' + e);
+				console.warn('Failed to parse link settings: ' + e);
 			}
-		}
+			env.location.setHash('');
 
-		// Loading from link needs to happen after loading saved settings, so that partial link imports
-		// (e.g. rotation only) include the previous settings for other categories.
-		try {
-			const urlParseResults = tryParseUrlLocation(env.location);
-			if (urlParseResults) {
-				host.fromProto(initEventID, urlParseResults.settings, urlParseResults.categories);
-			}
-		} catch (e) {
-			console.warn('Failed to parse link settings: ' + e);
-		}
-		env.location.setHash('');
+			opts.player.setName(initEventID, 'Player');
 
-		opts.player.setName(initEventID, 'Player');
+			// This needs to go last so it doesn't re-store things as they are initialized.
+			// Debounced: serializing + storing the full settings on every keystroke
+			// cost ~50 ms per APL edit. A pending write is flushed on page hide.
+			opts.autosaveSubscribe(schedulePersist);
 
-		// This needs to go last so it doesn't re-store things as they are initialized.
-		// Debounced: serializing + storing the full settings on every keystroke
-		// cost ~50 ms per APL edit. A pending write is flushed on page hide.
-		opts.autosaveSubscribe(schedulePersist);
-
-		opts.statWeightSettings.load(initEventID);
-	});
+			opts.statWeightSettings.load(initEventID);
+		}),
+	);
 
 	// The subscription above only sees changes made after it was registered,
 	// so write once explicitly here (the old code saved once at the end of the
