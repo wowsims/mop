@@ -35,6 +35,58 @@ import {
 	ThreatLogGroup,
 } from './logs_parser.js';
 
+// One pass over the raid's logs, bucketed by the unit that produced them. This replaces a
+// full-array filter per player, per pet and per target: on a 25-man raid that was ~60 scans
+// of the same half-million-entry array, and every pet added two more scans of its owner's
+// slice on top.
+class UnitLogIndex {
+	// Players and targets are keyed by index alone, which is safe because raid index and
+	// target index are unique per unit - Entity.equals() also compares name, but only
+	// because it cannot assume that. Pets share their owner's raid index, so they are the
+	// one case that needs the name, and the one case that allocates a key.
+	private readonly players = new Map<number, Array<SimLog>>();
+	private readonly targets = new Map<number, Array<SimLog>>();
+	private readonly pets = new Map<number, Map<string, Array<SimLog>>>();
+
+	constructor(logs: Array<SimLog>) {
+		for (const log of logs) {
+			const source = log.source;
+			if (!source) continue;
+			if (source.isPet) {
+				let byName = this.pets.get(source.index);
+				if (!byName) {
+					byName = new Map();
+					this.pets.set(source.index, byName);
+				}
+				UnitLogIndex.push(byName, source.name, log);
+			} else {
+				UnitLogIndex.push(source.isTarget ? this.targets : this.players, source.index, log);
+			}
+		}
+	}
+
+	private static push<K>(bucket: Map<K, Array<SimLog>>, key: K, log: SimLog) {
+		const existing = bucket.get(key);
+		if (existing) {
+			existing.push(log);
+		} else {
+			bucket.set(key, [log]);
+		}
+	}
+
+	player(raidIndex: number): Array<SimLog> {
+		return this.players.get(raidIndex) ?? [];
+	}
+
+	pet(raidIndex: number, name: string): Array<SimLog> {
+		return this.pets.get(raidIndex)?.get(name) ?? [];
+	}
+
+	target(index: number): Array<SimLog> {
+		return this.targets.get(index) ?? [];
+	}
+}
+
 const simResultsCache = new CacheHandler<SimResult>({
 	keysToKeep: 2,
 });
@@ -231,8 +283,9 @@ export class SimResult {
 
 		const resultData = new SimResultData(request, result);
 		const logs = await SimLog.parseAll(result);
-		const raidPromise = RaidMetrics.makeNew(resultData, request.raid!, result.raidMetrics!, logs);
-		const encounterPromise = EncounterMetrics.makeNew(resultData, request.encounter!, result.encounterMetrics!, logs);
+		const logIndex = new UnitLogIndex(logs);
+		const raidPromise = RaidMetrics.makeNew(resultData, request.raid!, result.raidMetrics!, logIndex);
+		const encounterPromise = EncounterMetrics.makeNew(resultData, request.encounter!, result.encounterMetrics!, logIndex);
 
 		const raidMetrics = await raidPromise;
 		const encounterMetrics = await encounterPromise;
@@ -260,11 +313,11 @@ export class RaidMetrics {
 		this.parties = parties;
 	}
 
-	static async makeNew(resultData: SimResultData, raid: RaidProto, metrics: RaidMetricsProto, logs: Array<SimLog>): Promise<RaidMetrics> {
+	static async makeNew(resultData: SimResultData, raid: RaidProto, metrics: RaidMetricsProto, logIndex: UnitLogIndex): Promise<RaidMetrics> {
 		const numParties = Math.min(raid.parties.length, metrics.parties.length);
 
 		const parties = await Promise.all(
-			[...new Array(numParties).keys()].map(i => PartyMetrics.makeNew(resultData, raid.parties[i], metrics.parties[i], i, logs)),
+			[...new Array(numParties).keys()].map(i => PartyMetrics.makeNew(resultData, raid.parties[i], metrics.parties[i], i, logIndex)),
 		);
 
 		return new RaidMetrics(raid, metrics, parties);
@@ -294,13 +347,13 @@ export class PartyMetrics {
 		party: PartyProto,
 		metrics: PartyMetricsProto,
 		partyIndex: number,
-		logs: Array<SimLog>,
+		logIndex: UnitLogIndex,
 	): Promise<PartyMetrics> {
 		const numPlayers = Math.min(party.players.length, metrics.players.length);
 		const players = await Promise.all(
 			[...new Array(numPlayers).keys()]
 				.filter(i => party.players[i].class != Class.ClassUnknown)
-				.map(i => UnitMetrics.makeNewPlayer(resultData, party.players[i], metrics.players[i], partyIndex * 5 + i, false, logs)),
+				.map(i => UnitMetrics.makeNewPlayer(resultData, party.players[i], metrics.players[i], partyIndex * 5 + i, false, logIndex)),
 		);
 
 		return new PartyMetrics(party, metrics, partyIndex, players);
@@ -334,17 +387,66 @@ export class UnitMetrics {
 	private readonly duration: number;
 
 	readonly logs: Array<SimLog>;
-	readonly damageDealtLogs: Array<DamageDealtLog>;
-	readonly groupedResourceLogs: Record<ResourceType, Array<ResourceChangedLogGroup>>;
-	readonly dpsLogs: Array<DpsLog>;
-	readonly auraUptimeLogs: Array<AuraUptimeLog>;
-	readonly majorCooldownLogs: Array<MajorCooldownUsedLog>;
-	readonly castLogs: Array<CastLog>;
-	readonly threatLogs: Array<ThreatLogGroup>;
+
+	private readonly firstIterationDuration: number;
+	private memoDamageDealtLogs?: Array<DamageDealtLog>;
+	private memoGroupedResourceLogs?: Record<ResourceType, Array<ResourceChangedLogGroup>>;
+	private memoDpsLogs?: Array<DpsLog>;
+	private memoAuraUptimeLogs?: Array<AuraUptimeLog>;
+	private memoMajorCooldownLogs?: Array<MajorCooldownUsedLog>;
+	private memoCastLogs?: Array<CastLog>;
+	private memoThreatLogs?: Array<ThreatLogGroup>;
+	private memoMajorCooldownAuraUptimeLogs?: Array<AuraUptimeLog>;
+
+	get damageDealtLogs(): Array<DamageDealtLog> {
+		return (this.memoDamageDealtLogs ??= this.logs.filter((log): log is DamageDealtLog => log.isDamageDealt()));
+	}
+
+	get dpsLogs(): Array<DpsLog> {
+		if (!this.memoDpsLogs) {
+			this.memoDpsLogs = DpsLog.fromLogs(this.damageDealtLogs);
+			AuraUptimeLog.populateActiveAuras(this.memoDpsLogs, this.auraUptimeLogs);
+		}
+		return this.memoDpsLogs;
+	}
+
+	get castLogs(): Array<CastLog> {
+		return (this.memoCastLogs ??= CastLog.fromLogs(this.logs));
+	}
+
+	get threatLogs(): Array<ThreatLogGroup> {
+		return (this.memoThreatLogs ??= ThreatLogGroup.fromLogs(this.logs));
+	}
+
+	get auraUptimeLogs(): Array<AuraUptimeLog> {
+		return (this.memoAuraUptimeLogs ??= AuraUptimeLog.fromLogs(
+			this.logs,
+			new Entity(this.name, '', this.index, this.target != null, this.isPet),
+			this.firstIterationDuration,
+		));
+	}
+
+	get majorCooldownLogs(): Array<MajorCooldownUsedLog> {
+		return (this.memoMajorCooldownLogs ??= this.logs.filter((log): log is MajorCooldownUsedLog => log.isMajorCooldownUsed()));
+	}
+
+	get groupedResourceLogs(): Record<ResourceType, Array<ResourceChangedLogGroup>> {
+		if (!this.memoGroupedResourceLogs) {
+			this.memoGroupedResourceLogs = ResourceChangedLogGroup.fromLogs(this.logs);
+			AuraUptimeLog.populateActiveAuras(this.memoGroupedResourceLogs[ResourceType.ResourceTypeMana], this.auraUptimeLogs);
+		}
+		return this.memoGroupedResourceLogs;
+	}
 
 	// Aura uptime logs, filtered to include only auras that correspond to a
 	// major cooldown.
-	readonly majorCooldownAuraUptimeLogs: Array<AuraUptimeLog>;
+	get majorCooldownAuraUptimeLogs(): Array<AuraUptimeLog> {
+		if (!this.memoMajorCooldownAuraUptimeLogs) {
+			const mcdIds = new Set(this.majorCooldownLogs.map(mcdLog => mcdLog.actionId!.equalityKey()));
+			this.memoMajorCooldownAuraUptimeLogs = this.auraUptimeLogs.filter(auraLog => mcdIds.has(auraLog.actionId!.equalityKey()));
+		}
+		return this.memoMajorCooldownAuraUptimeLogs;
+	}
 
 	private constructor(
 		player: PlayerProto | null,
@@ -387,26 +489,7 @@ export class UnitMetrics {
 		this.logs = logs;
 		this.iterations = resultData.iterations;
 		this.duration = resultData.duration;
-
-		this.damageDealtLogs = this.logs.filter((log): log is DamageDealtLog => log.isDamageDealt());
-		this.dpsLogs = DpsLog.fromLogs(this.damageDealtLogs);
-		this.castLogs = CastLog.fromLogs(this.logs);
-		this.threatLogs = ThreatLogGroup.fromLogs(this.logs);
-
-		this.auraUptimeLogs = AuraUptimeLog.fromLogs(
-			this.logs,
-			new Entity(this.name, '', this.index, this.target != null, this.isPet),
-			resultData.firstIterationDuration,
-		);
-		this.majorCooldownLogs = this.logs.filter((log): log is MajorCooldownUsedLog => log.isMajorCooldownUsed());
-
-		this.groupedResourceLogs = ResourceChangedLogGroup.fromLogs(this.logs);
-		AuraUptimeLog.populateActiveAuras(this.dpsLogs, this.auraUptimeLogs);
-		AuraUptimeLog.populateActiveAuras(this.groupedResourceLogs[ResourceType.ResourceTypeMana], this.auraUptimeLogs);
-
-		this.majorCooldownAuraUptimeLogs = this.auraUptimeLogs.filter(auraLog =>
-			this.majorCooldownLogs.find(mcdLog => mcdLog.actionId!.equals(auraLog.actionId!)),
-		);
+		this.firstIterationDuration = resultData.firstIterationDuration;
 	}
 
 	get label() {
@@ -521,17 +604,14 @@ export class UnitMetrics {
 		metrics: UnitMetricsProto,
 		raidIndex: number,
 		isPet: boolean,
-		logs: Array<SimLog>,
+		logIndex: UnitLogIndex,
 	): Promise<UnitMetrics> {
-		const playerLogs = logs.filter(
-			log => log.source && !log.source.isTarget && isPet == log.source.isPet && (isPet ? log.source.name == metrics.name : log.source.index == raidIndex),
-		);
-		const petLogs = logs.filter(log => log.source && !log.source.isTarget && log.source.isPet && log.source.index == raidIndex);
+		const playerLogs = isPet ? logIndex.pet(raidIndex, metrics.name) : logIndex.player(raidIndex);
 
 		const actionsPromise = Promise.all(metrics.actions.map(actionMetrics => ActionMetrics.makeNew(null, resultData, actionMetrics, raidIndex)));
 		const aurasPromise = Promise.all(metrics.auras.map(auraMetrics => AuraMetrics.makeNew(null, resultData, auraMetrics, raidIndex)));
 		const resourcesPromise = Promise.all(metrics.resources.map(resourceMetrics => ResourceMetrics.makeNew(null, resultData, resourceMetrics, raidIndex)));
-		const petsPromise = Promise.all(metrics.pets.map(petMetrics => UnitMetrics.makeNewPlayer(resultData, player, petMetrics, raidIndex, true, petLogs)));
+		const petsPromise = Promise.all(metrics.pets.map(petMetrics => UnitMetrics.makeNewPlayer(resultData, player, petMetrics, raidIndex, true, logIndex)));
 
 		let petIdPromise: Promise<ActionId | null> = Promise.resolve(null);
 		if (isPet) {
@@ -559,9 +639,9 @@ export class UnitMetrics {
 		target: TargetProto,
 		metrics: UnitMetricsProto,
 		index: number,
-		logs: Array<SimLog>,
+		logIndex: UnitLogIndex,
 	): Promise<UnitMetrics> {
-		const targetLogs = logs.filter(log => log.source && log.source.isTarget && log.source.index == index);
+		const targetLogs = logIndex.target(index);
 
 		const actionsPromise = Promise.all(metrics.actions.map(actionMetrics => ActionMetrics.makeNew(null, resultData, actionMetrics, index)));
 		const aurasPromise = Promise.all(metrics.auras.map(auraMetrics => AuraMetrics.makeNew(null, resultData, auraMetrics)));
@@ -588,10 +668,15 @@ export class EncounterMetrics {
 		this.targets = targets;
 	}
 
-	static async makeNew(resultData: SimResultData, encounter: EncounterProto, metrics: EncounterMetricsProto, logs: Array<SimLog>): Promise<EncounterMetrics> {
+	static async makeNew(
+		resultData: SimResultData,
+		encounter: EncounterProto,
+		metrics: EncounterMetricsProto,
+		logIndex: UnitLogIndex,
+	): Promise<EncounterMetrics> {
 		const numTargets = Math.min(encounter.targets.length, metrics.targets.length);
 		const targets = await Promise.all(
-			[...new Array(numTargets).keys()].map(i => UnitMetrics.makeNewTarget(resultData, encounter.targets[i], metrics.targets[i], i, logs)),
+			[...new Array(numTargets).keys()].map(i => UnitMetrics.makeNewTarget(resultData, encounter.targets[i], metrics.targets[i], i, logIndex)),
 		);
 
 		return new EncounterMetrics(encounter, metrics, targets);

@@ -31,55 +31,67 @@
 		height: 70vh;
 	}
 
-	.log-runner-table {
-		table-layout: fixed;
+	.log-runner-list {
+		min-width: 100%;
+		width: var(--log-runner-list-width, max-content);
+	}
 
-		th {
+	.log-runner-measurer {
+		position: absolute;
+		top: 0;
+		left: 0;
+		visibility: hidden;
+		pointer-events: none;
+		width: max-content;
+	}
+
+	.log-runner-header,
+	.log-runner-row {
+		display: grid;
+		grid-template-columns: 10ch 1fr;
+		column-gap: var(--spacer-2);
+	}
+
+	.log-runner-header {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: var(--bs-body-bg);
+		border-bottom: 1px solid var(--bs-border-color);
+		font-weight: bold;
+
+		div {
 			padding: var(--spacer-2);
-			vertical-align: bottom;
-
-			&:first-child {
-				width: 10ch;
-			}
-
-			&:not(:first-child) {
-				width: auto;
-			}
 		}
 
-		.log-runner-logs {
-			tr {
-				&:not(:last-child) {
-					td {
-						border-bottom: 1px solid var(--bs-border-color);
-					}
-				}
+		div:first-child {
+			text-align: right;
+		}
+	}
 
-				td {
-					padding-top: var(--spacer-2);
-					padding-bottom: var(--spacer-2);
-					padding-left: var(--spacer-2);
-				}
+	.log-runner-row {
+		border-bottom: 1px solid var(--bs-border-color);
 
-				.log-timestamp {
-					padding-right: var(--spacer-2);
-					text-align: right;
-					vertical-align: top;
-					font-variant-numeric: tabular-nums;
-				}
+		.log-timestamp,
+		.log-event {
+			padding: var(--spacer-2);
+			// Uniform row height is what makes the virtual list's offsets correct, so a long
+			// line scrolls sideways instead of wrapping.
+			white-space: nowrap;
+		}
 
-				.log-event {
-					// Fill any extra width
-					width: 100%;
+		.log-timestamp {
+			text-align: right;
+			font-variant-numeric: tabular-nums;
+		}
 
-					.icon {
-						vertical-align: middle;
-					}
+		.log-event {
+			.icon {
+				vertical-align: middle;
+			}
 
-					.log-action {
-						color: var(--bs-brand);
-					}
-				}
+			.log-action {
+				color: var(--bs-brand);
 			}
 		}
 	}

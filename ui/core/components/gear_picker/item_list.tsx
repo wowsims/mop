@@ -1,11 +1,12 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 import { SortDirection } from '../../constants/other';
 import { setItemQualityCssClass } from '../../css_utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
-import i18n from '../../../i18n/config';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '../../proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
@@ -25,11 +26,10 @@ import {
 	makeShowMatchingGemsSelector,
 } from '../inputs/other_inputs';
 import { ItemNotice } from '../item_notice/item_notice';
-import { Clusterize } from '../virtual_scroll/clusterize';
+import { VirtualList } from '../virtual_scroll/virtual_list';
 import { FiltersMenu } from './filters_menu';
-import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
+import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
-import { trackEvent } from '../../../tracking/utils';
 
 export interface ItemData<T extends ItemListType> {
 	item: T;
@@ -78,7 +78,7 @@ export default class ItemList<T extends ItemListType> {
 	private gearData: GearData;
 	private tabContent: Element;
 	private onItemClick: (itemData: ItemData<T>) => void;
-	private scroller: Clusterize;
+	private scroller: VirtualList;
 
 	private sortBy = ItemListSortBy.ILVL;
 	private sortDirection = SortDirection.DESC;
@@ -188,7 +188,7 @@ export default class ItemList<T extends ItemListType> {
 					<h6 className="favorite-label" />
 					<h6 ref={compareLabelRef} className="compare-label hide" />
 				</div>
-				<ul ref={modalListRef} className="selector-modal-list"></ul>
+				<ul ref={modalListRef} className="selector-modal-list" attributes={{ tabindex: '0' }}></ul>
 			</div>
 		);
 
@@ -232,32 +232,17 @@ export default class ItemList<T extends ItemListType> {
 		this.listElem = modalListRef.value!;
 		this.itemsToDisplay = [];
 
-		this.scroller = new Clusterize(
-			{
-				getNumberOfRows: () => {
-					return this.itemsToDisplay.length;
-				},
-				generateRows: (startIdx, endIdx) => {
-					const items = [];
-					for (let i = startIdx; i < endIdx; ++i) {
-						if (i >= this.itemsToDisplay.length) break;
-						items.push(this.createItemElem({ idx: this.itemsToDisplay[i], data: this.itemData[this.itemsToDisplay[i]] }));
-					}
-					return items;
-				},
+		this.scroller = new VirtualList({
+			scrollElem: this.listElem,
+			contentElem: this.listElem,
+			dataSource: {
+				count: () => this.itemsToDisplay.length,
+				renderRow: index => this.createItemElem({ idx: this.itemsToDisplay[index], data: this.itemData[this.itemsToDisplay[index]] }),
 			},
-			{
-				rows: [],
-				scroll_elem: this.listElem,
-				content_elem: this.listElem,
-				item_height: 56,
-				show_no_data_row: false,
-				no_data_text: '',
-				tag: 'li',
-				rows_in_block: 16,
-				blocks_in_cluster: 2,
-			},
-		);
+			estimatedRowHeight: 56,
+			rowTag: 'li',
+			keepParity: true,
+		});
 
 		const removeButton = removeButtonRef.value;
 		if (removeButton) {
@@ -296,7 +281,6 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	public sizeRefresh() {
-		this.scroller.refresh(true);
 		this.applyFilters();
 	}
 
@@ -331,7 +315,7 @@ export default class ItemList<T extends ItemListType> {
 		const newItemId = this.getItemIdByItemType(newItem);
 		const newEP = newItem !== undefined && newItem !== null ? this.computeEP(newItem) : 0;
 
-		this.scroller.elementUpdate(item => {
+		this.scroller.updateVisible(item => {
 			const idx = (item as HTMLElement).dataset.idx!;
 			const itemData = this.itemData[parseFloat(idx)];
 
