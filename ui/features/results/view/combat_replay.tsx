@@ -1,12 +1,12 @@
 import { formatDurationSeconds } from '@domain/format';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '@domain/proto_utils/logs';
 import { resourceColors, resourceNames } from '@domain/proto_utils/names';
 import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { OtherAction } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import i18n from '@i18n/config';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 

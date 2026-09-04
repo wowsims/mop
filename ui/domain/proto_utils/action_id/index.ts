@@ -3,9 +3,9 @@ import { ActionID as ActionIdProto, ItemLevelState, ItemRandomSuffix, OtherActio
 import { ResourceType } from '@generated/proto/spell';
 import { IconData, UIItem as Item } from '@generated/proto/ui';
 
-import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
-import { buildWowheadTooltipDataset, getWowheadLanguagePrefix, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';
-import { Database } from './database';
+import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../../constants/mechanics';
+import { buildWowheadTooltipDataset, getWowheadLanguagePrefix, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
+import { Database } from '../database';
 
 // If true uses wotlkdb.com, else uses wowhead.com.
 export const USE_WOTLK_DB = false;

@@ -19,13 +19,18 @@ ui/domain/proto_utils                pure data + value objects (Gear, Stats, Equ
 ui/domain/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
 ui/domain/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
                                      facade classes over the store; public API unchanged
-ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_pool,…}
+ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,worker_pool,…}
+ui/domain/{math,format,collections,env,utils}.ts   the old utils grab bag, split by topic
+ui/domain/proto_utils/action_id/{index,dom}.ts     the ActionId value object and the writers
+                                     that enrich an element with its icon, href and tooltip
+                                     dataset. The writers take the element, they never create
+                                     one, and touch no browser global, so they sit in domain.
 ui/i18n/                             LEAF, top-level (alias @i18n): framework-agnostic i18next
                                      config + localization tables (config.ts, entity_mapping.ts,
                                      locale_service.ts, localization.tsx). May import @domain and
                                      @generated/proto; may NOT import @app/@features/@ui-kit/@specs (PR 6c)
 ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
-                                     modals, action_id_dom, dom_utils, css_utils)
+                                     modals, dom_utils, css_utils)
 ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
 ui/app/                              composition root; browser_env.ts, header/, tabs/ (incl. settings_tab),
                                      settings_menu.tsx, notice_native_sim.tsx,
@@ -42,7 +47,7 @@ BANNED: ui/features/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a fa
 
 The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level), keyed on the
 top-level directory. Patterns must use `**`, not `*`: oxlint matches one path segment per `*`,
-so `@features/*` silently misses `@features/gear/view/action_id_dom`. Scoping is an explicit
+so `@features/*` silently misses `@features/gear/view/item_list`. Scoping is an explicit
 file list — negated globs in oxlint `overrides.files` break scoping, so add new dirs to that
 list, don't use `!`.
 
@@ -201,7 +206,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `tools/database/gen_bulksim_constants.ts.go` + `gen_character_constants_ts.go` (emitted import
   strings), `ui/README.md`.
 - 2026-09-02: fixed the "Empty action id!" console error + broken pet icon on the hunter "No Pet"
-  picker entry. `ActionId` (`ui/domain/proto_utils/action_id.ts`) gained a `static empty(name,
+  picker entry. `ActionId` (`ui/domain/proto_utils/action_id/index.ts`) gained a `static empty(name,
   iconUrl?)` factory (sets a private `isEmptyPlaceholder` flag) for INTENTIONALLY empty ids —
   `toStringIgnoringTag()` skips its `console.error` only for those, so accidental empties (e.g. a
   bad `fromPetName`/`fromProto` call) still log. `hunter_pet.ts`'s "No Pet" entry now uses
@@ -393,7 +398,8 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   → `ui/domain/talents/config.ts`; the SimLog classes + parsing → `ui/domain/proto_utils/logs.ts` with
   the JSX in `ui/features/results/view/log_lines.tsx` (`renderLog` / `renderDamageResult` /
   `renderEntity` replace `log.toHTML()` / `.result()`); the generic ActionId DOM writers →
-  `ui/ui-kit/action_id_dom.ts` (gear's `setEquippedItemWowheadData` stays and re-exports them);
+  `ui/domain/proto_utils/action_id/dom.ts`, beside the value object (they enrich an element they
+  are handed, they do not render one, so they stay clear of the domain globals rule);
   the `document`/`location` helpers out of `utils.ts` → `ui/ui-kit/dom_utils.ts` (`getEnvironment`
   keeps the browser probe; `environmentOf(hostname)` is the pure half in domain). `worker_pool.ts`
   uses bare `Worker` / `setTimeout` (`window.Worker` would throw in a worker context anyway); dead
@@ -415,7 +421,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `tools/restructure/move.mjs` (17 files, 97 specifiers in 27 files) — `gear_picker/` (8 files,
   flattened) plus `gem_summary.tsx`/`reforge_summary.tsx`/`upgrade_costs_summary.tsx` (all three
   turned out to be gear summaries, not settings-tab) and `item_notice/item_notice.tsx` all landed
-  in `ui/features/gear/view/` alongside the pre-existing `action_id_dom.ts`/`item_notices.tsx` (no
+  in `ui/features/gear/view/` alongside the pre-existing `item_notices.tsx` (no
   collisions); `item_swap_picker.tsx` → `features/item-swap/view/`; `character_stats.tsx` →
   `features/character-stats/view/`; `encounter_picker.ts` → `features/encounter/view/`;
   `cooldowns_picker.ts` + `consumes_picker.tsx` → `features/settings/view/`. scss under

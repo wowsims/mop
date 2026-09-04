@@ -1,7 +1,7 @@
 import { isRightClick } from '@domain/env';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { fillAndSetActionId } from '@domain/proto_utils/action_id/dom';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
-import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { Input, InputConfig } from '../input';

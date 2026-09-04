@@ -2,6 +2,7 @@
 // methods on the log classes; the classes are data now (ui/domain/proto_utils/logs.ts)
 // and the JSX lives here.
 import { CacheHandler } from '@domain/cache_handler';
+import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import {
 	AuraEventLog,
 	AuraStacksChangeLog,
@@ -20,7 +21,6 @@ import {
 import { resourceNames, spellSchoolNames } from '@domain/proto_utils/names';
 import { SECONDARY_RESOURCES } from '@domain/proto_utils/secondary_resource';
 import { ResourceType } from '@generated/proto/spell';
-import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@ui-kit/action_id_dom';
 import clsx from 'clsx';
 
 const cachedActionIdLink = new CacheHandler<HTMLAnchorElement>();

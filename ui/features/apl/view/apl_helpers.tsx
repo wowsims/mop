@@ -2,6 +2,7 @@ import { CacheHandler } from '@domain/cache_handler';
 import { getEnumValues } from '@domain/collections';
 import { Player, UnitMetadata } from '@domain/player';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
@@ -28,7 +29,6 @@ import { AdaptiveStringPicker } from '@ui-kit/pickers/string_picker';
 import { UnitPicker, UnitPickerConfig, UnitValue } from '@ui-kit/pickers/unit_picker';
 import { ref } from 'tsx-vanilla';
 
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '../../gear/view/action_id_dom';
 import { ACTION_ID_SET, actionIdSets } from '../model/action_id_sets';
 import { CommonFieldDescriptor, DEFAULT_UNIT_REF } from '../model/field_descriptors';
 import { UNIT_SET, unitSets } from '../model/unit_sets';

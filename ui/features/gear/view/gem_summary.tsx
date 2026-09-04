@@ -1,5 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { UIGem as Gem } from '@generated/proto/ui';
@@ -10,7 +11,6 @@ import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../../../tracking/analytics';
-import { setActionIdWowheadHref } from './action_id_dom';
 interface GemSummaryData {
 	gem: Gem;
 	count: number;

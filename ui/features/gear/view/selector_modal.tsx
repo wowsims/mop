@@ -2,6 +2,7 @@ import { sanitizeId } from '@domain/format';
 import { mod } from '@domain/math';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { Stats } from '@domain/proto_utils/stats';
@@ -17,7 +18,6 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from './action_id_dom';
 import { createGemContainer, getEmptySlotIconUrl, setGemInContainer } from './gear_elements';
 import GearPicker from './gear_picker';
 import ItemList, { GearData, ItemData, ItemListType } from './item_list';

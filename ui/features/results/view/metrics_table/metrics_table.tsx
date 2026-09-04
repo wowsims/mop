@@ -1,9 +1,9 @@
 import { CacheHandler } from '@domain/cache_handler';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { ActionMetrics, AuraMetrics, ResourceMetrics, UnitMetrics } from '@domain/proto_utils/sim_result';
 import { Emitter } from '@domain/state/events';
 import i18n from '@i18n/config';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 

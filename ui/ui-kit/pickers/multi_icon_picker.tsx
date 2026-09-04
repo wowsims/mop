@@ -1,9 +1,9 @@
 import { isRightClick } from '@domain/env';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { fillAndSetActionId } from '@domain/proto_utils/action_id/dom';
 import { batch } from '@domain/state/batch';
 import { subscribeSimChange } from '@domain/state/subscriptions';
-import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { Component } from '../component';

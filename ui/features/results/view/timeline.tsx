@@ -2,6 +2,7 @@ import { CacheHandler } from '@domain/cache_handler';
 import { bucket, distinct, stringComparator } from '@domain/collections';
 import { maxIndex } from '@domain/math';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@domain/proto_utils/action_id';
+import { setActionIdBackground, setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@domain/proto_utils/logs';
 import { resourceNames } from '@domain/proto_utils/names';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
@@ -19,7 +20,6 @@ import {
 } from '@features/results/model/timeline_categories';
 import { ResourceType } from '@generated/proto/spell';
 import i18n from '@i18n/config';
-import { setActionIdBackground, setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 import { fragmentToString } from '@ui-kit/dom_utils';
 import ApexCharts from 'apexcharts';
 import clsx from 'clsx';

@@ -3,8 +3,12 @@
 // made a pure value object (ui/domain/proto_utils/action_id.ts) depend on the
 // DOM; ActionId is data now and the rendering lives here. They know nothing
 // beyond ActionId, so they sit in ui-kit rather than in a feature.
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '@domain/wowhead';
+import type { Player } from '@domain/player';
+import type { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { Profession } from '@generated/proto/common';
+
+import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
+import { ActionId } from './index';
 
 export function setActionIdBackground(actionId: ActionId, elem: HTMLElement) {
 	if (actionId.iconUrl) {
@@ -59,4 +63,29 @@ export async function fillAndSetActionId(
 		setActionIdBackground(filled, elem);
 	}
 	return filled;
+}
+
+// Writes the full Wowhead tooltip dataset for one equipped item (gems, enchants,
+// set pieces, upgrade step). Was Player.setWowheadData.
+export function setEquippedItemWowheadData(player: Player<any>, equippedItem: EquippedItem, elem: HTMLElement | HTMLElement[]) {
+	const isBlacksmithing = player.hasProfession(Profession.Blacksmithing);
+	const gemIds = equippedItem.gems.length ? equippedItem.curGems(isBlacksmithing).map(gem => (gem ? gem.id : 0)) : [];
+	const enchantIds = [equippedItem.enchant?.effectId, equippedItem.tinker?.effectId].filter((id): id is number => id !== undefined);
+	const elems = Array.isArray(elem) ? elem : [elem];
+	setActionIdWowheadDataset(equippedItem.asActionId(), elems, {
+		gemIds,
+		itemLevel: Number(equippedItem.ilvl),
+		enchantIds: enchantIds,
+		reforgeId: equippedItem.reforge?.id,
+		randomEnchantmentId: equippedItem.randomSuffix?.id,
+		setPieceIds: player
+			.getGear()
+			.asArray()
+			.filter(ei => ei != null)
+			.map(ei => ei!.item.id),
+		hasExtraSocket: equippedItem.hasExtraSocket(isBlacksmithing),
+		upgradeStep: equippedItem.upgrade,
+	});
+
+	elems.forEach(e => (e.dataset.whtticon = 'false'));
 }

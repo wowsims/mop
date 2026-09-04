@@ -15,7 +15,7 @@ ui/
                      sim_host (SimUIHost/SimHeaderHost — the shell slice ui-kit is allowed to name),
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
-                     css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
+                     css_utils, dom_utils, pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
                      apl/ (model/ action_id_sets + unit_sets + field_descriptors +
                      the value_kinds/action_kinds registries, view/ the pickers),
@@ -74,7 +74,7 @@ into i18n for label lookups). Each layer may only import from layers to its left
 location/navigator) on `ui/domain/**` and `ui/features/*/model/**`.
 
 The `no-restricted-imports` groups use `**` (not `*`): oxlint matches these patterns one
-path segment at a time, so `@features/*` would not catch `@features/gear/view/action_id_dom`.
+path segment at a time, so `@features/*` would not catch `@features/gear/view/item_list`.
 `ui/features/**` may not import the store writers (`patchSlice` / `patchKeyed` / `seedKeyed` /
 `deleteKeyed`) — go through a facade.
 

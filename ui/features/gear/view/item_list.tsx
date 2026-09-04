@@ -2,6 +2,7 @@ import { SortDirection } from '@domain/constants/other';
 import { formatDeltaTextElem } from '@domain/format';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import { getUniqueEnchantString } from '@domain/proto_utils/enchants';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/items';
@@ -26,7 +27,6 @@ import {
 	makeShowEPValuesSelector,
 	makeShowMatchingGemsSelector,
 } from '../../settings/view/other_inputs';
-import { setActionIdWowheadHref } from './action_id_dom';
 import { FiltersMenu } from './filters_menu';
 import { createNameDescriptionLabel } from './gear_elements';
 import { ItemNotice } from './item_notice';

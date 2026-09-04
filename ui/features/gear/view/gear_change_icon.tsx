@@ -1,4 +1,5 @@
 import { Player } from '@domain/player';
+import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { ItemSlot } from '@generated/proto/common';
@@ -8,7 +9,6 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from './action_id_dom';
 import { getEmptySlotIconUrl } from './gear_elements';
 
 export const buildGearChangeIcon = (

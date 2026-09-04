@@ -1,5 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { getEnchantDescription } from '@domain/proto_utils/enchants';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
@@ -10,7 +11,6 @@ import { Component } from '@ui-kit/component';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
-import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from './action_id_dom';
 import { createItemSockets, createNameDescriptionLabel, getEmptySlotIconUrl } from './gear_elements';
 import { ItemNotice } from './item_notice';
 import { MISSING_RANDOM_SUFFIX_WARNING } from './item_notices';

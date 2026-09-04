@@ -1,4 +1,5 @@
 import { Player } from '@domain/player';
+import { setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
@@ -7,7 +8,6 @@ import { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 
-import { setEquippedItemWowheadData } from './action_id_dom';
 import { GearData } from './item_list';
 import { ItemRenderer } from './item_renderer';
 import { addQuickEnchantPopover } from './quick_enchant_popover';

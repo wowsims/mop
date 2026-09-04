@@ -1,12 +1,11 @@
 import type { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import type { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { GemColor, ItemSlot } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
-
-import { setActionIdWowheadHref } from './action_id_dom';
 
 const emptySlotIcons: Record<ItemSlot, string> = {
 	[ItemSlot.ItemSlotHead]: '/mop/assets/item_slots/head.jpg',

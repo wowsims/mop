@@ -1,5 +1,6 @@
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { setActionIdBackground, setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/items';
 import { Emitter } from '@domain/state/events';
 import type { IndividualSimHost } from '@features/sim_host';
@@ -13,7 +14,6 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setActionIdBackground, setActionIdWowheadHref } from '../../gear/view/action_id_dom';
 import { createNameDescriptionLabel } from '../../gear/view/gear_elements';
 import { BulkTab } from './bulk_tab';
 const MAX_SEARCH_RESULTS = 21;
