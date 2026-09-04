@@ -65,8 +65,16 @@ func (resto *RestorationShaman) ApplyTalents() {
 // this spec is a gear planner only.
 func (resto *RestorationShaman) registerPassives() {
 	// Spiritual Insight (112858): increases mana pool by 400%.
-	resto.MultiplyStat(stats.Mana, 5)
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Spiritual Insight" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 112858},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
 
 	// Meditation (95862): 50% of mana regeneration from Spirit continues in combat.
-	resto.PseudoStats.SpiritRegenRateCombat = 0.5
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Meditation" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 95862},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 }

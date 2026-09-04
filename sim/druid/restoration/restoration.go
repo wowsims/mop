@@ -62,10 +62,18 @@ func (resto *RestorationDruid) ApplyTalents() {
 // this spec is a gear planner only.
 func (resto *RestorationDruid) registerPassives() {
 	// Natural Insight (112857): increases mana pool by 400%.
-	resto.MultiplyStat(stats.Mana, 5)
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Natural Insight" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 112857},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
 
 	// Meditation (85101): 50% of mana regeneration from Spirit continues in combat.
-	resto.PseudoStats.SpiritRegenRateCombat = 0.5
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Meditation" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 85101},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 }
 
 func (resto *RestorationDruid) Reset(sim *core.Simulation) {
