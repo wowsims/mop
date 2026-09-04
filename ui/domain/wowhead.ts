@@ -88,13 +88,13 @@ export type WowheadTooltipSpellParams = {
 // id. Porting this file to a sibling sim repo means changing the one line below:
 // the domain, and every url built from it, follows. The literal-union key means
 // an unmapped id is a compile error rather than a `.../undefined/...` url.
-const WOWHEAD_DOMAINS = {
+const WOWHEAD_EXPANSIONS = {
 	5: 'tbc',
 	15: 'mop-classic',
 } as const;
 
-export const WOWHEAD_EXPANSION_ENV: keyof typeof WOWHEAD_DOMAINS = 15;
-export const WOWHEAD_DOMAIN = WOWHEAD_DOMAINS[WOWHEAD_EXPANSION_ENV];
+export const WOWHEAD_EXPANSION_ENV: keyof typeof WOWHEAD_EXPANSIONS = 15;
+export const WOWHEAD_DOMAIN = WOWHEAD_EXPANSIONS[WOWHEAD_EXPANSION_ENV];
 
 export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemParams | WowheadTooltipSpellParams) => {
 	const lang = getLang();
