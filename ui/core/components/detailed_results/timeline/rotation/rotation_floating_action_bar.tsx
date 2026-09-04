@@ -70,23 +70,27 @@ export class RotationFloatingActionBar extends Component {
 		this.rootElem.dataset.expanded = 'false';
 		this.rootElem.appendChild(
 			<>
-				<button
-					ref={toggleRef}
-					type="button"
-					className="btn btn-primary rotation-fab-toggle"
-					attributes={{ 'aria-expanded': 'false', 'aria-label': i18n.t('results_tab.details.timeline.floatingActionBar.toggle') }}>
-					<i className="fas fa-eye-slash" />
-					<span ref={summaryRef} className="rotation-fab-summary" />
-					<span ref={previewRef} className="rotation-fab-preview" />
-				</button>
-				<button ref={showAllRef} type="button" className="btn btn-sm btn-link btn-reset ms-auto rotation-fab-show-all">
-					<i className="fas fa-times me-1" />
-					{i18n.t('results_tab.details.timeline.floatingActionBar.showAll')}
-				</button>
-				<div ref={panelRef} className="rotation-fab-panel">
-					<div className="rotation-fab-panel-inner">
-						<div ref={groupsRef} className="rotation-fab-groups" />
+				<div className="rotation-fab-clip">
+					<div ref={panelRef} className="rotation-fab-panel">
+						<div className="rotation-fab-panel-inner">
+							<div ref={groupsRef} className="rotation-fab-groups" />
+						</div>
 					</div>
+				</div>
+				<div className="rotation-fab-actions">
+					<button
+						ref={toggleRef}
+						type="button"
+						className="btn btn-primary rotation-fab-toggle"
+						attributes={{ 'aria-expanded': 'false', 'aria-label': i18n.t('results_tab.details.timeline.floatingActionBar.toggle') }}>
+						<i className="fas fa-eye-slash" />
+						<span ref={summaryRef} className="rotation-fab-summary" />
+						<span ref={previewRef} className="rotation-fab-preview" />
+					</button>
+					<button ref={showAllRef} type="button" className="btn btn-sm btn-link btn-reset ms-auto rotation-fab-show-all">
+						<i className="fas fa-times me-1" />
+						{i18n.t('results_tab.details.timeline.floatingActionBar.showAll')}
+					</button>
 				</div>
 			</>,
 		);
@@ -96,7 +100,7 @@ export class RotationFloatingActionBar extends Component {
 		this.summaryElem = summaryRef.value!;
 		this.previewElem = previewRef.value!;
 		this.groupsElem = groupsRef.value!;
-		// overflow: hidden hides the collapsed chips but leaves them in the tab order.
+		// The clip wrapper only hides the collapsed chips; inert is what takes them out of the tab order.
 		this.panelInner = panelRef.value!.firstElementChild as HTMLElement;
 		this.panelInner.inert = true;
 
@@ -106,12 +110,14 @@ export class RotationFloatingActionBar extends Component {
 		this.rootElem.addEventListener('keydown', event => this.onKeyDown(event));
 
 		// Bottom-sticky mirror of StickyToolbar: the bar only stops fitting whole against the
-		// viewport's last pixel once it is actually pinned.
+		// viewport's last pixel once it is actually pinned. The 0 threshold is load-bearing: the bar
+		// is built inside the hidden Results tab, so its ratio goes 0 -> pinned without ever passing
+		// through 1, and a [1]-only observer is never called again after that first hidden callback.
 		const observer = new IntersectionObserver(
 			([entry]) => this.rootElem.classList.toggle('stuck', entry.target.clientHeight > 0 && entry.intersectionRatio < 1),
 			{
 				rootMargin: '0px 0px -1px 0px',
-				threshold: [1],
+				threshold: [0, 1],
 			},
 		);
 		observer.observe(this.rootElem);

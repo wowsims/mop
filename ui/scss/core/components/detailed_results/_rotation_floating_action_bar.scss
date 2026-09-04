@@ -8,6 +8,7 @@
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
+	margin-top: calc(-1 * var(--container-padding));
 	min-height: var(--rotation-fab-h);
 	margin-top: var(--block-spacer);
 	border: 0 solid var(--bs-border-color);
@@ -30,33 +31,63 @@
 }
 
 .rotation-fab-toggle {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	min-width: 0;
 	gap: var(--spacer-2);
+	z-index: 1;
+}
+
+// Opaque, and painted after the clip because both are positioned at z-index auto: the drawer
+// slides out from behind it.
+.rotation-fab-actions {
+	position: relative;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	min-width: 0;
+	background: var(--bs-body-bg);
 }
 
 // Overlays the rows above the bar rather than growing it, so the timeline viewport never resizes.
-// Hand-rolled collapse: bootstrap's collapse/accordion SCSS is not compiled into this project.
-.rotation-fab-panel {
+// Sized by the untransformed panel, so opening and closing shifts no layout. The clip is what hides
+// the closed drawer: unclipped it would cover the bar and hang over the rows below it.
+.rotation-fab-clip {
 	position: absolute;
 	right: 0;
-	bottom: 100%;
+	bottom: calc(100% + -1px);
 	left: 0;
-	display: grid;
-	grid-template-rows: 0fr;
+	overflow: hidden;
+}
+
+// A translated-away panel still occupies its box, so it would otherwise swallow clicks meant for
+// the rows beneath it. inert alone covers focus, not the pointer.
+.rotation-floating-action-bar-root[data-expanded='false'] .rotation-fab-clip {
+	pointer-events: none;
+}
+
+// Hand-rolled collapse: bootstrap's collapse/accordion SCSS is not compiled into this project.
+// The transform stays on the panel: on the sticky root it would become a containing block and
+// break the sticky ruler and the sticky row labels.
+.rotation-fab-panel {
+	transform: translate3d(0, 100%, 0);
 	border: var(--bs-border-width) solid var(--bs-border-color);
 	background: var(--bs-body-bg);
-	transition: grid-template-rows 150ms ease;
+	transition: transform 150ms ease;
+
+	.rotation-floating-action-bar-root[data-expanded='true'] & {
+		transform: translate3d(0, 0, 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
 }
 
 .rotation-fab-panel-inner {
 	min-height: 0;
 	overflow: hidden;
-}
-
-.rotation-floating-action-bar-root[data-expanded='true'] .rotation-fab-panel {
-	grid-template-rows: 1fr;
 }
 
 .rotation-fab-groups {
@@ -65,7 +96,7 @@
 	max-height: min(45vh, 26rem);
 	padding: var(--spacer-2);
 	overflow-y: auto;
-	gap: var(--spacer-2);
+	gap: var(--spacer-3);
 }
 
 .rotation-fab-group-title {
