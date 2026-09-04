@@ -13,10 +13,6 @@ import { ResultComponent, ResultComponentConfig, SimResultData } from './result_
 
 const DEBUG_MARKER = '[DEBUG]';
 
-// One entry per displayable log line. `searchText` is the raw log line plus the resolved
-// ability name, lowercased. The raw line names abilities by id ("{SpellID: 55090}"), so the
-// name has to be appended for "scourge strike" to match; building the corpus out of rendered
-// markup instead, as this used to, also made "span", "icon" and "http" match every row.
 type LogEntry = {
 	log: SimLog;
 	searchText: string;
@@ -36,12 +32,8 @@ export class LogRunner extends ResultComponent {
 		contentContainer: HTMLDivElement;
 	};
 
-	// Logs are held as data, not as DOM. Rows are built when they scroll into view.
 	private cacheKey: string | null = null;
 	private entries: Array<LogEntry> = [];
-	// Indexes into `entries` that pass the current search, in order. `allIndexes` and
-	// `nonDebugIndexes` are the two results an empty query produces, so the common case
-	// assigns a reference instead of rebuilding half a million integers per keystroke.
 	private visibleIndexes: Array<number> = [];
 	private allIndexes: Array<number> = [];
 	private nonDebugIndexes: Array<number> = [];
@@ -171,16 +163,12 @@ export class LogRunner extends ResultComponent {
 		this.searchLogs(this.ui.search.value);
 	}
 
-	// `entries` and the index lists are one state transition; they are rebuilt together and
-	// searchLogs() is always what follows, via onSimResult.
 	private rebuildEntries(resultData: SimResultData) {
 		const cacheKey = resultData.result.request.requestId;
 		if (this.cacheKey === cacheKey) return;
 
 		this.cacheKey = cacheKey;
 		this.entries = resultData.result.logs
-			// The explicit predicate keeps SimLog: negating a `this is X` guard otherwise
-			// narrows the element type to never.
 			.filter((log): log is SimLog => !log.isCastCompleted())
 			.map(log => ({
 				log,
@@ -200,8 +188,6 @@ export class LogRunner extends ResultComponent {
 		) as HTMLDivElement;
 	}
 
-	// Built from the log objects. This used to scrape textContent out of the cached row
-	// elements, so it threw if the export button was pressed before a sim had run.
 	private getCombinedText(): string {
 		return this.visibleIndexes
 			.map(index => {

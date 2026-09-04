@@ -12,9 +12,6 @@ export interface ResultComponentConfig {
 	parent: HTMLElement;
 	rootCssClass?: string;
 	resultsEmitter: TypedEvent<SimResultData | null>;
-	// Hold results until the component's tab is first shown. Every result otherwise reaches
-	// every component, so a tab nobody opens still builds its whole DOM on every sim.
-	// Requires the tab to call onTabShown(); see detailed_results.tsx.
 	deferUntilShown?: boolean;
 }
 
@@ -36,7 +33,6 @@ export abstract class ResultComponent extends Component {
 		});
 	}
 
-	// Wired to the tab's shown.bs.tab. Replays the result that arrived while hidden, if any.
 	onTabShown() {
 		if (this.tabShown) return;
 		this.tabShown = true;
