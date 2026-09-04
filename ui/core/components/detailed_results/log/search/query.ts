@@ -24,10 +24,6 @@ const FIELD_ALIASES: Record<string, ClauseField> = {
 
 export const FIELD_NAMES: Array<ClauseField> = ['source', 'target', 'spell', 'type', 'school', 'outcome', 'time', 'amount'];
 
-export function resolveField(name: string): ClauseField | null {
-	return FIELD_ALIASES[name.toLowerCase()] ?? null;
-}
-
 // Splits on unquoted whitespace only, so 'spell:"Death Coil"' stays one token while its
 // internal space is preserved for splitValues to see.
 function tokenize(input: string): Array<string> {
@@ -79,8 +75,11 @@ function stripQuotes(text: string): string {
 
 const FIELD_PREFIX_REGEX = /^([A-Za-z]+):([\s\S]*)$/;
 
-function parseToken(token: string): Clause {
-	const raw = token;
+// The grammar has one owner: the chip parser and the autocomplete both split a token here, so a
+// change to the negation prefix or the field separator cannot desync them.
+export type TokenParts = { negated: boolean; text: string; field: ClauseField | null; fieldName: string | null; valuePart: string | null };
+
+export function splitToken(token: string): TokenParts {
 	let negated = false;
 	let text = token;
 	if (text.startsWith('-') && text.length > 1) {
@@ -89,16 +88,18 @@ function parseToken(token: string): Clause {
 	}
 
 	const match = FIELD_PREFIX_REGEX.exec(text);
-	if (match) {
-		const field = FIELD_ALIASES[match[1].toLowerCase()];
-		if (field) {
-			return { field, values: splitValues(match[2]), negated, raw };
-		}
-		// Unrecognised field name: the whole clause becomes one free-text term instead of
-		// silently matching nothing, so a typo in a field name still finds something.
-		return { field: null, values: [stripQuotes(text)], negated, raw };
-	}
+	if (!match) return { negated, text, field: null, fieldName: null, valuePart: null };
+	return { negated, text, field: FIELD_ALIASES[match[1].toLowerCase()] ?? null, fieldName: match[1], valuePart: match[2] };
+}
 
+function parseToken(token: string): Clause {
+	const raw = token;
+	const { negated, text, field, valuePart } = splitToken(token);
+	if (field && valuePart !== null) {
+		return { field, values: splitValues(valuePart), negated, raw };
+	}
+	// No field prefix, or an unrecognised one: the whole clause becomes a single free-text term
+	// rather than silently matching nothing, so a typo in a field name still finds something.
 	return { field: null, values: [stripQuotes(text)], negated, raw };
 }
 

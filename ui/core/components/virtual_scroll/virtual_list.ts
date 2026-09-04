@@ -144,8 +144,8 @@ export class VirtualList {
 		this.firstIndex = first;
 		this.lastIndex = last;
 
-		this.topSpacer.style.setProperty('--vl-top', String(first * this.rowHeight));
-		this.bottomSpacer.style.setProperty('--vl-bottom', String(Math.max(0, total - 1 - last) * this.rowHeight));
+		this.topSpacer.style.setProperty('--vl-size', String(first * this.rowHeight));
+		this.bottomSpacer.style.setProperty('--vl-size', String(Math.max(0, total - 1 - last) * this.rowHeight));
 
 		const children: Array<Element> = [];
 		if (this.keepParity && first % 2 === 0) children.push(this.parityFiller);

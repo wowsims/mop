@@ -5,13 +5,12 @@ import { stringToResourceType } from '../names';
 import {
 	AuraLog,
 	AuraStacksLog,
+	BaseLog,
 	CastBeganLog,
 	CastCancelledLog,
 	CastCompletedLog,
-	DamageEffect,
 	DamageLog,
 	Entity,
-	BaseLog,
 	LogKind,
 	MajorCooldownLog,
 	Outcome,
@@ -27,12 +26,18 @@ const SPELL_SCHOOL_REGEX = / \(SpellSchool: (-?[0-9]+)\)/;
 const THREAT_REGEX = / \(Threat: (-?[0-9]+\.[0-9]+)\)/;
 const TIMESTAMP_REGEX = /\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/;
 
-// Not read by parseAll - it consumed TIMESTAMP_PREFIX_REGEX through the old SimLog.toHTML and
-// rawWithoutTimestamp methods, which the log/ display components now own. Exported alongside it
-// so a raw line is stripped identically everywhere, instead of a second regex drifting from this one.
-export function rawWithoutTimestamp(raw: string): string {
+// parseAll does not use this - the old SimLog.toHTML and rawWithoutTimestamp did, and the log/
+// display components own that now. Both callers want different capture groups out of the same
+// pattern, so the match is shared rather than the pattern being written out twice.
+// Groups: 1 = timestamp, 2 = entity bracket, 3 = the rest.
+export function matchTimestampPrefix(raw: string): RegExpExecArray | null {
 	const captureArr = TIMESTAMP_PREFIX_REGEX.exec(raw);
-	if (!captureArr || captureArr.length != 4) return raw;
+	return captureArr && captureArr.length == 4 ? captureArr : null;
+}
+
+export function rawWithoutTimestamp(raw: string): string {
+	const captureArr = matchTimestampPrefix(raw);
+	if (!captureArr) return raw;
 	return `${captureArr[2] ?? ''}${captureArr[3]}`.trim();
 }
 

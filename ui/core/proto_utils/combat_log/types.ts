@@ -108,9 +108,6 @@ export interface BaseLog {
 	activeAuras: Array<AuraUptimeLog>;
 }
 
-// Fields every builder receives. `kind` is added by the builder, not the parser.
-export type LogParams = Omit<BaseLog, 'kind' | 'activeAuras' | 'actionIdAsString'> & { actionIdAsString: string | null };
-
 export interface PlainLog extends BaseLog {
 	readonly kind: 'plain';
 }
@@ -240,7 +237,6 @@ export type CombatLog = ParsedLog | DerivedLog;
 
 // Written as standalone predicates rather than methods: negating a `this is X` guard narrows the
 // base type to never by the third branch.
-export const isPlain = (log: CombatLog): log is PlainLog => log.kind === 'plain';
 export const isDamage = (log: CombatLog): log is DamageLog => log.kind === 'damage';
 export const isResource = (log: CombatLog): log is ResourceLog => log.kind === 'resource';
 export const isAura = (log: CombatLog): log is AuraLog => log.kind === 'aura';
@@ -249,10 +245,6 @@ export const isMajorCooldown = (log: CombatLog): log is MajorCooldownLog => log.
 export const isCastBegan = (log: CombatLog): log is CastBeganLog => log.kind === 'cast-began';
 export const isCastCancelled = (log: CombatLog): log is CastCancelledLog => log.kind === 'cast-cancelled';
 export const isCastCompleted = (log: CombatLog): log is CastCompletedLog => log.kind === 'cast-completed';
-export const isStatChange = (log: CombatLog): log is StatChangeLog => log.kind === 'stat-change';
-export const isAuraUptime = (log: CombatLog): log is AuraUptimeLog => log.kind === 'aura-uptime';
-
-export const isDamageEffect = (log: DamageLog, effect: DamageEffect) => log.effect === effect;
 
 export function formattedTimestamp(log: BaseLog): string {
 	const positiveTimestamp = Math.abs(log.timestamp);

@@ -13,17 +13,12 @@ import type {
 	ResourceLog,
 	StatChangeLog,
 } from '../../../../proto_utils/combat_log';
+import { matchTimestampPrefix } from '../../../../proto_utils/combat_log';
 import { resourceNames } from '../../../../proto_utils/names';
 import { SECONDARY_RESOURCES } from '../../../../proto_utils/secondary_resource';
 import { ActionLink } from './action_link';
 import { EntityLabel } from './entity_label';
 import { Results } from './results';
-
-// Extracts the text after the timestamp/entity prefix for the fallback ('plain' and any
-// derived kind without its own layout) rendering below. Distinct from combat_log's own
-// rawWithoutTimestamp: that one keeps the entity bracket text for plain-text export, while this
-// rendering path drops it because EntityLabel supplies a styled replacement.
-const TIMESTAMP_PREFIX_REGEX = /(\[[0-9.-]+\]) (\[[0-9a-zA-Z\s\-()#]+\])?(.*)/;
 
 function Prefix(log: CombatLog, includeTimestamp: boolean): JSX.Element {
 	const prefix = includeTimestamp ? `[${log.timestamp.toFixed(2)}]` : '';
@@ -38,8 +33,10 @@ function Prefix(log: CombatLog, includeTimestamp: boolean): JSX.Element {
 function DefaultLogElem(log: CombatLog, includeTimestamp: boolean): JSX.Element {
 	let html: JSX.Element = <>{log.raw}</>;
 	if (!includeTimestamp) {
-		const captureArr = TIMESTAMP_PREFIX_REGEX.exec(log.raw);
-		if (captureArr && captureArr.length == 4) {
+		// Group 3 only: combat_log's own rawWithoutTimestamp keeps the entity bracket for plain-text
+		// export, while this path drops it because EntityLabel supplies a styled replacement.
+		const captureArr = matchTimestampPrefix(log.raw);
+		if (captureArr) {
 			html = <>{captureArr[3]}</>;
 		}
 	}

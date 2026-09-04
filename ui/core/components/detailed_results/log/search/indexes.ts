@@ -1,6 +1,6 @@
-import { SpellSchool } from '../../../../proto/common';
 import type { CombatLog, DamageEffect, LogKind, Outcome } from '../../../../proto_utils/combat_log/types';
 import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
+import { spellSchoolNames } from '../../../../proto_utils/names';
 import type { Clause, ClauseField } from './query';
 
 export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string> };
@@ -10,16 +10,6 @@ export type SuggestionSource = { spells: Array<string>; units: Array<string>; sc
 type SortedInts = Int32Array | ReadonlyArray<number>;
 
 const EMPTY: SortedInts = [];
-
-const SCHOOL_NAMES: Partial<Record<SpellSchool, string>> = {
-	[SpellSchool.SpellSchoolPhysical]: 'Physical',
-	[SpellSchool.SpellSchoolArcane]: 'Arcane',
-	[SpellSchool.SpellSchoolFire]: 'Fire',
-	[SpellSchool.SpellSchoolFrost]: 'Frost',
-	[SpellSchool.SpellSchoolHoly]: 'Holy',
-	[SpellSchool.SpellSchoolNature]: 'Nature',
-	[SpellSchool.SpellSchoolShadow]: 'Shadow',
-};
 
 // 'cast' unions every cast-related kind because a user typing it means "show me the casts",
 // not the specific began/cancelled/completed split. 'buff' is a plainer synonym for 'aura'.
@@ -159,10 +149,14 @@ function unionSorted(a: SortedInts, b: SortedInts): Array<number> {
 	return out;
 }
 
-function complement(candidates: Array<number>, matched: SortedInts): Array<number> {
+function complement(candidates: SortedInts, matched: SortedInts): Array<number> {
 	const matchedSet = new Set<number>();
 	for (let i = 0; i < matched.length; i++) matchedSet.add(matched[i]);
-	return candidates.filter(i => !matchedSet.has(i));
+	const out: Array<number> = [];
+	for (let i = 0; i < candidates.length; i++) {
+		if (!matchedSet.has(candidates[i])) out.push(candidates[i]);
+	}
+	return out;
 }
 
 function push<K>(map: Map<K, Array<number>>, key: K, i: number) {
@@ -216,6 +210,7 @@ export class LogIndex {
 	private readonly suggestionSpells = new Set<string>();
 	private readonly suggestionUnits = new Set<string>();
 	private readonly suggestionSchools = new Set<string>();
+	private suggestionSource: SuggestionSource = { spells: [], units: [], schools: [] };
 
 	constructor(
 		private readonly logs: ReadonlyArray<CombatLog>,
@@ -228,7 +223,9 @@ export class LogIndex {
 	// by rebuilding the index, so changing the dropdown costs an intersection, not a reindex.
 	filter(clauses: ReadonlyArray<Clause>, showDebug: boolean, targetNumber: number | null = null): Array<number> {
 		this.ensureBuilt();
-		let candidates: Array<number> = Array.from(showDebug ? this.allIndexes : this.nonDebugIndexes);
+		// Stays a typed array until something actually narrows it, so the common no-filter case
+		// does not copy half a million ints just to hand them straight back.
+		let candidates: SortedInts = showDebug ? this.allIndexes : this.nonDebugIndexes;
 
 		if (targetNumber !== null) {
 			const asSource = this.sourceNumberIndex.get(targetNumber);
@@ -247,27 +244,32 @@ export class LogIndex {
 			if (clause.field !== null) continue;
 			const needle = (clause.values[0] ?? '').toLowerCase();
 			if (!needle) continue;
-			candidates = candidates.filter(i => {
+			const kept: Array<number> = [];
+			for (let n = 0; n < candidates.length; n++) {
+				const i = candidates[n];
 				const isMatch = this.searchTextFor(i).includes(needle);
-				return clause.negated ? !isMatch : isMatch;
-			});
+				if (clause.negated ? !isMatch : isMatch) kept.push(i);
+			}
+			candidates = kept;
 		}
 
-		return candidates;
+		return Array.isArray(candidates) ? candidates : Array.from(candidates);
 	}
 
+	// Sorted once at build: the sets never change afterwards, and this runs on every keystroke.
 	suggestions(): SuggestionSource {
 		this.ensureBuilt();
-		return {
-			spells: [...this.suggestionSpells].sort(),
-			units: [...this.suggestionUnits].sort(),
-			schools: [...this.suggestionSchools].sort(),
-		};
+		return this.suggestionSource;
 	}
 
 	private ensureBuilt() {
 		if (this.built) return;
 		this.build();
+		this.suggestionSource = {
+			spells: [...this.suggestionSpells].sort(),
+			units: [...this.suggestionUnits].sort(),
+			schools: [...this.suggestionSchools].sort(),
+		};
 		this.built = true;
 	}
 
@@ -306,7 +308,7 @@ export class LogIndex {
 			}
 
 			if (log.spellSchool != null) {
-				const name = SCHOOL_NAMES[log.spellSchool];
+				const name = spellSchoolNames.get(log.spellSchool);
 				if (name) {
 					push(school, name.toLowerCase(), i);
 					this.suggestionSchools.add(name);

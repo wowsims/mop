@@ -5,7 +5,7 @@ import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
 import type { SuggestionSource } from './indexes';
 import type { Clause, ClauseField } from './query';
-import { clauseText, FIELD_NAMES, parseQuery, resolveField } from './query';
+import { clauseText, FIELD_NAMES, parseQuery, splitToken } from './query';
 
 const OUTCOME_SUGGESTIONS = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 'block', 'critical-block', 'blocked-glance'];
 const TYPE_SUGGESTIONS = ['damage', 'heal', 'shield', 'resource', 'aura', 'buff', 'cast', 'major-cooldown', 'stat-change', 'debug'];
@@ -146,26 +146,21 @@ export class LogSearchBar extends Component {
 	}
 
 	private updateSuggestions() {
-		const text = this.inputElem.value;
-		const negated = text.startsWith('-');
-		const stripped = negated ? text.slice(1) : text;
-		const colonIdx = stripped.indexOf(':');
+		const { text, field, valuePart } = splitToken(this.inputElem.value);
 
-		if (colonIdx === -1) {
-			const prefix = stripped.toLowerCase();
+		if (valuePart === null) {
+			const prefix = text.toLowerCase();
 			this.renderSuggestions(
-				FIELD_NAMES.filter(field => field.startsWith(prefix)),
+				FIELD_NAMES.filter(name => name.startsWith(prefix)),
 				'field',
 			);
 			return;
 		}
 
-		const field = resolveField(stripped.slice(0, colonIdx));
 		if (!field) {
 			this.renderSuggestions([], 'value');
 			return;
 		}
-		const valuePart = stripped.slice(colonIdx + 1);
 		const lastPipe = valuePart.lastIndexOf('|');
 		const partial = (lastPipe === -1 ? valuePart : valuePart.slice(lastPipe + 1)).toLowerCase();
 		const candidates = this.valueCandidates(field);
@@ -219,12 +214,10 @@ export class LogSearchBar extends Component {
 		if (mode === 'field') {
 			this.inputElem.value = `${negatedPrefix}${item}:`;
 		} else {
-			const stripped = negatedPrefix ? text.slice(1) : text;
-			const colonIdx = stripped.indexOf(':');
-			const fieldPart = stripped.slice(0, colonIdx + 1);
-			const valuePart = stripped.slice(colonIdx + 1);
-			const lastPipe = valuePart.lastIndexOf('|');
-			const orPrefix = lastPipe === -1 ? '' : valuePart.slice(0, lastPipe + 1);
+			const { fieldName, valuePart } = splitToken(text);
+			const fieldPart = `${fieldName}:`;
+			const lastPipe = (valuePart ?? '').lastIndexOf('|');
+			const orPrefix = lastPipe === -1 ? '' : (valuePart ?? '').slice(0, lastPipe + 1);
 			const value = /\s/.test(item) ? `"${item}"` : item;
 			this.inputElem.value = `${negatedPrefix}${fieldPart}${orPrefix}${value}`;
 		}

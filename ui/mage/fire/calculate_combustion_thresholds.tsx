@@ -3,7 +3,7 @@ import { BaseModal } from '../../core/components/base_modal';
 import { Component } from '../../core/components/component';
 import { IndividualSimUI } from '../../core/individual_sim_ui';
 import { Spec } from '../../core/proto/common';
-import { AuraLog, AuraUptimeLog, CombatLog, isAura, PlainLog } from '../../core/proto_utils/combat_log';
+import { AuraLog, AuraUptimeLog, CombatLog, computeActionIdAsString, isAura, PlainLog } from '../../core/proto_utils/combat_log';
 import { TypedEvent } from '../../core/typed_event';
 import { FireMage_Rotation } from '../../core/proto/mage';
 import Toast from '../../core/components/toast';
@@ -235,10 +235,7 @@ export class CalculateCombustionThresholds extends Component {
 			const auraMatch = raw.match(/Aura ((gained)|(faded)|(refreshed)): (.*)/);
 			if (auraMatch?.[5]) {
 				const actionId = ActionId.fromLogString(auraMatch[5]);
-				let actionIdAsString: string | null = null;
-				try {
-					actionIdAsString = actionId.toString();
-				} catch {}
+				const actionIdAsString = computeActionIdAsString(actionId);
 				const event = auraMatch[1];
 				return {
 					...base,

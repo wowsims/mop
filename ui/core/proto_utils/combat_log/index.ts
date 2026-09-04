@@ -1,4 +1,4 @@
-export { parseAll, rawWithoutTimestamp } from './parse';
+export { computeActionIdAsString, matchTimestampPrefix, parseAll, rawWithoutTimestamp } from './parse';
 export {
 	buildAuraUptimes,
 	buildCastLogs,
@@ -14,16 +14,12 @@ export {
 	formattedTimestamp,
 	isAura,
 	isAuraStacks,
-	isAuraUptime,
 	isCastBegan,
 	isCastCancelled,
 	isCastCompleted,
 	isDamage,
-	isDamageEffect,
 	isMajorCooldown,
-	isPlain,
 	isResource,
-	isStatChange,
 } from './types';
 export type {
 	AuraLog,
@@ -41,7 +37,6 @@ export type {
 	DerivedLog,
 	DpsLog,
 	LogKind,
-	LogParams,
 	MajorCooldownLog,
 	Outcome,
 	ParsedKind,
