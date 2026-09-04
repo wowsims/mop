@@ -1,7 +1,7 @@
 character_stats_results: {
  key: "TestMistweaverMonk-p5"
  value: {
-  final_stats: 182
+  final_stats: 183
   final_stats: 200
   final_stats: 38771
   final_stats: 30037
@@ -33,7 +33,7 @@ character_stats_results: {
 character_stats_results: {
  key: "TestMistweaverMonk-preraid"
  value: {
-  final_stats: 182
+  final_stats: 183
   final_stats: 200
   final_stats: 28155
   final_stats: 22947
