@@ -1,6 +1,12 @@
 // StrictMode double-invokes effects, so the shell would be constructed twice without the ref gate
 // in app/sim_app.tsx. A second construction is not a crash — it is a second .sim-ui, doubled sidebar
 // buttons and doubled subscriptions — so this counts what ended up in the page.
+//
+// Point REACT_PORT at a DEV SERVER for this one: `node_modules/.bin/vite --port 3403`. Every build
+// this app produces embeds React's production bundle (`vite build --mode development` and
+// NODE_ENV=development both do), and StrictMode is a no-op there, so against a built page this only
+// proves "one shell in the page". Verified by removing the gate: dev server gives .sim-ui=2,
+// sidebarButtons=8, tabs=12; a production build gives 1/4/6 either way.
 import { launch, openSpec, PORTS, specsFromArgv } from './browser.mjs';
 
 const READ = () => ({

@@ -171,6 +171,11 @@ class name across `ui/` before moving its rules.
 
 ## Things that will bite
 
+- **StrictMode is a no-op in every build this app produces.** `vite build` — and
+  `vite build --mode development`, and `NODE_ENV=development vite build` — all embed React's
+  production bundle. Effects are double-invoked only under the dev server (`node_modules/.bin/vite`)
+  and vitest, so that is where a construct-once or double-subscribe bug can be caught at all.
+  Verified by removing `SimApp`'s gate: the dev server then renders two shells, a built page one.
 - **Dropping a `data-bs-*` attribute drops behaviour you cannot see.** Bootstrap's tab plugin, on
   `window load`, gave every `.active[data-bs-toggle="tab"]` a roving `tabindex`, `role="tabpanel"`
   on its pane and arrow/Home/End keyboard navigation. Removing the attribute removed all of it
@@ -211,8 +216,9 @@ Two things specific to this migration:
   state write leaked into a component. Never regenerate to make it pass.
 - **DOM parity is the real gate for the shell**, and it lives in `tools/react-migration/` — four
   Playwright checks against a build of this branch and one of the parent branch, served on two
-  ports. `parity.mjs` (structure, ~4,000 elements per spec), `tabs-a11y.mjs` (attributes + keyboard),
-  `tabs-behaviour.mjs` (clicking every tab), `mount-once.mjs` (StrictMode). Read its README for the
+  ports. `parity.mjs` (structure at load, ~4,000 elements per spec), `panes-parity.mjs` (each tab's contents
+  once opened), `tabs-a11y.mjs` (attributes + keyboard), `tabs-behaviour.mjs` (clicking every tab),
+  `mount-once.mjs` (StrictMode — against a dev server, see above). Read its README for the
   two expected class diffs and the environmental console errors. Use Playwright, not the Chrome
   extension — the extension reports false "renderer frozen" on this app.
 

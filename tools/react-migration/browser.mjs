@@ -33,6 +33,25 @@ export const specsFromArgv = () => (process.argv[2] ? process.argv[2].split(',')
 // exist, and GitHub rate-limits the unauthenticated release check.
 export const ENVIRONMENTAL = /Failed to load resource/;
 
+/**
+ * Structure only: tag + sorted class list + depth, from the element matching `selector`. Text and
+ * most attributes are excluded because ids, hrefs and tooltip contents carry generated values that
+ * differ run-to-run, not build-to-build. Runs in the page — pass it to `page.evaluate`.
+ */
+export const SERIALIZE = selector => {
+	const root = document.querySelector(selector);
+	if (!root) return `NO ${selector}`;
+	const out = [];
+	const walk = (el, depth) => {
+		if (el.nodeType !== 1) return;
+		const cls = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
+		out.push(`${'  '.repeat(Math.min(depth, 40))}${el.tagName.toLowerCase()}${cls ? '.' + cls : ''}`);
+		for (const c of el.children) walk(c, depth + 1);
+	};
+	walk(root, 0);
+	return out.join('\n');
+};
+
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */

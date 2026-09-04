@@ -15,9 +15,13 @@ node_modules/.bin/vite build && npx http-server dist -p 3401 --silent &
 node_modules/.bin/vite build && npx http-server dist -p 3402 --silent &
 
 node tools/react-migration/parity.mjs
+node tools/react-migration/panes-parity.mjs
 node tools/react-migration/tabs-a11y.mjs
 node tools/react-migration/tabs-behaviour.mjs
-node tools/react-migration/mount-once.mjs
+
+# mount-once needs a dev server, not a build — see the table
+node_modules/.bin/vite --port 3403 --strictPort &
+REACT_PORT=3403 node tools/react-migration/mount-once.mjs
 ```
 
 Each takes an optional comma-separated spec list (`node …/parity.mjs warrior/arms,mage/fire`) and
@@ -25,15 +29,18 @@ defaults to five specs from different classes. Ports come from `BASE_PORT` / `RE
 
 | Check | What it would catch |
 |---|---|
-| `parity.mjs` | any change to the rendered tree — every SCSS selector depends on it. Two class diffs are expected and listed in the file |
+| `parity.mjs` | any change to the rendered tree, at load — every SCSS selector depends on it. Two class diffs are expected and listed in the file |
+| `panes-parity.mjs` | a tab body that renders differently once opened. `parity.mjs` only ever sees the tab open on load |
 | `tabs-a11y.mjs` | the attributes and keyboard behaviour Bootstrap's tab plugin used to add on `window load`: roving `tabindex`, `role="tabpanel"`, arrow/Home/End navigation |
 | `tabs-behaviour.mjs` | more than one open tab, a click opening the wrong pane, a pane that never fades in |
-| `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects |
+| `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op |
 
 Two notes from building them:
 
 - Use Playwright, not the Chrome extension. The extension reports false "renderer frozen" on this
   app (see `tools/browser-perf/README.md`).
+- StrictMode only double-invokes under the dev server or vitest. `vite build --mode development`
+  does not help — it still resolves React's production bundle.
 - Under a static server the Go host's `/version` endpoint 404s and GitHub rate-limits the release
   check. Both happen identically on either side, so console errors matching `Failed to load resource`
   are filtered out.

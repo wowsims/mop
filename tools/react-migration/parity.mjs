@@ -1,23 +1,8 @@
 // Structural DOM parity: render the same spec from two builds and compare the rendered tree.
 // This is the gate the shell port is held to — every SCSS selector depends on that structure.
-import { launch, openSpec, PORTS, specsFromArgv } from './browser.mjs';
+import { launch, openSpec, PORTS, SERIALIZE, specsFromArgv } from './browser.mjs';
 
-// Structure only: tag + sorted class list + depth. Text and most attributes are excluded because
-// ids, hrefs and tooltip contents carry generated values that differ run-to-run, not build-to-build.
-// Tab attributes are not covered here at all — tabs-a11y.mjs does that.
-const SERIALIZE = () => {
-	const walk = (el, depth, out) => {
-		if (el.nodeType !== 1) return;
-		const cls = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
-		out.push(`${'  '.repeat(Math.min(depth, 40))}${el.tagName.toLowerCase()}${cls ? '.' + cls : ''}`);
-		for (const c of el.children) walk(c, depth + 1, out);
-	};
-	const out = [];
-	const app = document.querySelector('.sim-ui');
-	if (!app) return 'NO .sim-ui';
-	walk(app, 0, out);
-	return out.join('\n');
-};
+// Attributes are not covered here — tabs-a11y.mjs does that. The serialiser lives in browser.mjs.
 
 // Deliberate class changes from the Phase 1 tab inversion, both verified as unstyled:
 //  - `show` on a nav-link: Bootstrap puts `show` on the pane; the old addSimTabLink also put it on
@@ -35,7 +20,7 @@ const isExpected = (a, b) =>
 
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
-	const dom = await page.evaluate(SERIALIZE);
+	const dom = await page.evaluate(SERIALIZE, '.sim-ui');
 	await page.close();
 	return { dom, errors };
 };
@@ -55,7 +40,9 @@ for (const spec of specsFromArgv()) {
 	const allowed = la.filter((_, i) => la[i] !== lb[i] && isExpected(la[i], lb[i])).length;
 	if (diffs.length === 0 && la.length === lb.length) {
 		pass++;
-		console.log(`PASS  ${spec.padEnd(24)} ${la.length} elements, ${allowed} expected class diffs   errors base=${a.errors.length} react=${b.errors.length}`);
+		console.log(
+			`PASS  ${spec.padEnd(24)} ${la.length} elements, ${allowed} expected class diffs   errors base=${a.errors.length} react=${b.errors.length}`,
+		);
 	} else {
 		fail++;
 		console.log(`FAIL  ${spec.padEnd(24)} base=${la.length} react=${lb.length} elements, ${diffs.length} unexpected`);
