@@ -246,7 +246,6 @@ export class DetailedResults extends Component {
 			parent: this.rootElem.querySelector('.resource-metrics')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
-			deferUntilShown: true,
 		});
 		new AuraMetricsTable(
 			{
@@ -289,6 +288,7 @@ export class DetailedResults extends Component {
 			parent: this.rootElem.querySelector('.timeline')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
+			deferUntilShown: true,
 		});
 		deferUntilShown(timeline, 'timelineTab');
 
@@ -301,13 +301,15 @@ export class DetailedResults extends Component {
 			combatReplay.stopPlayback();
 		});
 
-		new LogRunner(
+		const logRunner = new LogRunner(
 			{
 				parent: this.rootElem.querySelector('.log')!,
 				resultsEmitter: this.resultsEmitter,
+				deferUntilShown: true,
 			},
 			makeLogExporter,
 		);
+		deferUntilShown(logRunner, 'logTab');
 
 		this.rootElem.classList.add('hide-threat-metrics');
 
