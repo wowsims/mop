@@ -10,8 +10,10 @@ import { PlayerSpecs } from '@domain/player_specs';
 import { Sim } from '@domain/sim';
 import type { SpecDefinition } from '@features/spec_config';
 import { registerSpecConfig } from '@features/spec_config';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 
-import { IndividualSimUI } from './individual_sim_ui';
+import { SimApp } from './sim_app';
 
 const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../sims/*/*/spec.{ts,tsx}');
 
@@ -52,5 +54,15 @@ void (async () => {
 
 	sim.raid.setPlayer(0, player);
 
-	new IndividualSimUI(document.body, player, def);
+	// React owns the page root from here. Sim and Player are still built imperatively above, because
+	// `registerSpecConfig` must run before `new Player()` and neither belongs to a render pass.
+	const rootElem = document.getElementById('root');
+	if (!rootElem) throw new Error('No #root element on the page; ui/index_template.html should provide it.');
+
+	// StrictMode is on so the construct-once gate in SimApp is exercised rather than assumed.
+	createRoot(rootElem).render(
+		<StrictMode>
+			<SimApp player={player} def={def} />
+		</StrictMode>,
+	);
 })();

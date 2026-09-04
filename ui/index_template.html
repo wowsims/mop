@@ -21,7 +21,7 @@
 
 		<!-- Load the top-level ui/index.ts -->
 		<script src="/index.ts" type="module"></script>
-		<script src="/app/spec_entry.ts" type="module"></script>
+		<script src="/app/spec_entry.tsx" type="module"></script>
 
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-T3HBB0LXNX"></script>
@@ -36,6 +36,7 @@
 	</head>
 
 	<body id="bootstrap-overrides">
+		<div id="root"></div>
 		<!-- Load wowhead scripts after done loading everything else -->
 		<script>
 			const whTooltips = { colorLinks: true };
