@@ -7010,6 +7010,7 @@
 										"zoom_out": {
 											"type": "string"
 										},
+											"fit": { "type": "string" },
 										"pan_left": {
 											"type": "string"
 										},

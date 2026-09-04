@@ -1996,6 +1996,7 @@
 					"reset": "Réinitialiser le zoom",
 					"zoom_in": "Zoom avant",
 					"zoom_out": "Zoom arrière",
+					"fit": "Ajuster à la largeur",
 					"pan_left": "Déplacer vers la gauche",
 					"pan_right": "Déplacer vers la droite",
 					"chart_label": "DPS, menace et ressources au fil du temps"

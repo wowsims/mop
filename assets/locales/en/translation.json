@@ -1995,6 +1995,7 @@
 					"reset": "Reset zoom",
 					"zoom_in": "Zoom in",
 					"zoom_out": "Zoom out",
+					"fit": "Fit to width",
 					"pan_left": "Pan left",
 					"pan_right": "Pan right",
 					"chart_label": "DPS, threat and resources over time"

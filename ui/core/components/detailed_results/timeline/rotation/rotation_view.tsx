@@ -1,4 +1,4 @@
-import type { Instance } from 'tippy.js';
+import tippy, { type Instance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import type SecondaryResource from '../../../../proto_utils/secondary_resource';
@@ -104,6 +104,11 @@ export class RotationView extends Component implements WindowHost {
 		zoomInRef.value!.addEventListener('click', () => this.zoom.stepIn());
 		fitRef.value!.addEventListener('click', () => this.zoom.fitToWidth());
 		resetRef.value!.addEventListener('click', () => this.zoom.reset());
+
+		const toolbarTips = [zoomOutRef, zoomInRef, fitRef, resetRef].map(buttonRef =>
+			tippy(buttonRef.value!, { content: buttonRef.value!.getAttribute('aria-label') ?? '' }),
+		);
+		this.addOnDisposeCallback(() => toolbarTips.forEach(tip => tip.destroy()));
 
 		this.attachDragPan();
 
