@@ -23,7 +23,6 @@
 }
 
 .rotation-fab-preview {
-	margin-left: var(--spacer-2);
 	overflow: hidden;
 	opacity: 0.75;
 	text-overflow: ellipsis;
@@ -31,7 +30,10 @@
 }
 
 .rotation-fab-toggle {
+	display: inline-flex;
+	align-items: center;
 	min-width: 0;
+	gap: var(--spacer-2);
 }
 
 // Overlays the rows above the bar rather than growing it, so the timeline viewport never resizes.

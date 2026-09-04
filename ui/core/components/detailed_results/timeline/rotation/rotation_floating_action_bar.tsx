@@ -75,7 +75,7 @@ export class RotationFloatingActionBar extends Component {
 					type="button"
 					className="btn btn-primary rotation-fab-toggle"
 					attributes={{ 'aria-expanded': 'false', 'aria-label': i18n.t('results_tab.details.timeline.floatingActionBar.toggle') }}>
-					<i className="fas fa-eye-slash me-2" />
+					<i className="fas fa-eye-slash" />
 					<span ref={summaryRef} className="rotation-fab-summary" />
 					<span ref={previewRef} className="rotation-fab-preview" />
 				</button>
