@@ -15,7 +15,7 @@ const DEBUG_MARKER = '[DEBUG]';
 
 type LogEntry = {
 	log: SimLog;
-	searchText: string;
+	searchText?: string;
 	isDebug: boolean;
 };
 
@@ -149,9 +149,10 @@ export class LogRunner extends ResultComponent {
 			for (let i = 0; i < this.entries.length; i++) {
 				const entry = this.entries[i];
 				if (!this.showDebug && entry.isDebug) continue;
+				const text = (entry.searchText ??= `${entry.log.formattedTimestamp()} ${entry.log.raw} ${entry.log.actionId?.name ?? ''}`.toLowerCase());
 				let matchesAll = true;
 				for (const keyword of keywords) {
-					if (!entry.searchText.includes(keyword)) {
+					if (!text.includes(keyword)) {
 						matchesAll = false;
 						break;
 					}
@@ -181,7 +182,6 @@ export class LogRunner extends ResultComponent {
 			.filter((log): log is SimLog => !log.isCastCompleted())
 			.map(log => ({
 				log,
-				searchText: `${log.formattedTimestamp()} ${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
 				isDebug: log.raw.includes(DEBUG_MARKER),
 			}));
 		this.allIndexes = this.entries.map((_, i) => i);
