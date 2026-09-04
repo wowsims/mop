@@ -5,6 +5,7 @@ import { majorCooldownAnnotations } from './annotations';
 import { classColorValue } from './colors';
 import {
 	DPS_SERIES_ID,
+	dpsColor,
 	dpsDataset,
 	dpsScale,
 	manaDataset,
@@ -14,6 +15,7 @@ import {
 	resourceDatasets,
 	resourcePctScale,
 	THREAT_SERIES_ID,
+	threatColor,
 	threatDataset,
 	threatScale,
 	timeScale,
@@ -21,7 +23,6 @@ import {
 	Y_MANA,
 	Y_RESOURCE_PCT,
 	Y_THREAT,
-	Y_THREAT_HIDDEN,
 } from './series';
 import { TimelineChartSpec, TimelineDataset } from './types';
 
@@ -31,7 +32,7 @@ export function singlePlayerChartSpec(unit: UnitMetrics, duration: number, secon
 	const datasets: Array<TimelineDataset> = [];
 	const scales: TimelineChartSpec['scales'] = timeAxis(duration);
 
-	const dps = dpsDataset(unit, DPS_SERIES_ID, '');
+	const dps = dpsDataset(unit, DPS_SERIES_ID, dpsColor(), false);
 	if (dps) {
 		datasets.push(dps.dataset);
 		scales[Y_DPS] = dpsScale(dps.maxDps);
@@ -43,10 +44,10 @@ export function singlePlayerChartSpec(unit: UnitMetrics, duration: number, secon
 		scales[Y_MANA] = manaScale(mana.maxMana);
 	}
 
-	const threat = threatDataset(unit, THREAT_SERIES_ID, '', Y_THREAT_HIDDEN);
+	const threat = threatDataset(unit, THREAT_SERIES_ID, threatColor(), false);
 	if (threat) {
 		datasets.push(threat);
-		scales[Y_THREAT_HIDDEN] = threatScale(unit.maxThreat, false);
+		scales[Y_THREAT] = threatScale(unit.maxThreat);
 	}
 
 	const resources = resourceDatasets(unit, secondaryResource);
@@ -65,7 +66,7 @@ export function multiPlayerChartSpec(units: Array<UnitMetrics>, duration: number
 	if (mode === 'dps') {
 		let maxDps = 0;
 		for (const unit of units) {
-			const dps = dpsDataset(unit, playerDpsSeriesId(unit), classColorValue(unit.classColor));
+			const dps = dpsDataset(unit, playerDpsSeriesId(unit), classColorValue(unit.classColor, dpsColor()), true);
 			if (!dps) continue;
 			datasets.push(dps.dataset);
 			maxDps = Math.max(maxDps, dps.maxDps);
@@ -74,12 +75,12 @@ export function multiPlayerChartSpec(units: Array<UnitMetrics>, duration: number
 	} else {
 		let maxThreat = 0;
 		for (const unit of units) {
-			const threat = threatDataset(unit, playerThreatSeriesId(unit), classColorValue(unit.classColor), Y_THREAT);
+			const threat = threatDataset(unit, playerThreatSeriesId(unit), classColorValue(unit.classColor, threatColor()), true);
 			if (!threat) continue;
 			datasets.push(threat);
 			maxThreat = Math.max(maxThreat, unit.maxThreat);
 		}
-		scales[Y_THREAT] = threatScale(maxThreat, true);
+		scales[Y_THREAT] = threatScale(maxThreat);
 	}
 
 	return { datasets, scales, duration, annotations: null };

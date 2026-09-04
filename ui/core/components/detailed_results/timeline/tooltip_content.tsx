@@ -4,15 +4,14 @@ import { resourceNames } from '../../../proto_utils/names';
 import { UnitMetrics } from '../../../proto_utils/sim_result';
 import { percentageResources } from './constants';
 
-export function DpsTooltip(log: DpsLog, player: UnitMetrics, colorOverride: string) {
-	const showPlayerLabel = colorOverride != '';
+export function DpsTooltip(log: DpsLog, player: UnitMetrics, color: string, showPlayerLabel: boolean) {
 	return (
 		<div className="timeline-tooltip dps">
 			<div className="timeline-tooltip-header">
 				{showPlayerLabel ? (
 					<>
 						<img className="timeline-tooltip-icon" src={player.iconUrl} />
-						<span style={{ color: colorOverride }}>{player.label}</span>
+						<span style={{ color }}>{player.label}</span>
 						<span> - </span>
 					</>
 				) : null}
@@ -31,15 +30,14 @@ export function DpsTooltip(log: DpsLog, player: UnitMetrics, colorOverride: stri
 	);
 }
 
-export function ThreatTooltip(log: ThreatLogGroup, player: UnitMetrics, colorOverride: string) {
-	const showPlayerLabel = colorOverride != '';
+export function ThreatTooltip(log: ThreatLogGroup, player: UnitMetrics, color: string, showPlayerLabel: boolean) {
 	return (
 		<div className="timeline-tooltip threat">
 			<div className="timeline-tooltip-header">
 				{showPlayerLabel ? (
 					<>
 						<img className="timeline-tooltip-icon" src={player.iconUrl} />
-						<span className="" style={{ color: colorOverride }}>
+						<span className="" style={{ color }}>
 							{player.label}
 						</span>
 						<span> - </span>

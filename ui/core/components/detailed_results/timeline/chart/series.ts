@@ -30,14 +30,13 @@ function valueScale(color: string, text: string, max: number, extra?: Partial<Sc
 	} as ScaleOptions<'linear'>;
 }
 
-const dpsColor = () => cssVarColor('--bs-dps');
+export const dpsColor = () => cssVarColor('--bs-dps');
 const manaColor = () => cssVarColor('--bs-mana');
-const threatColor = () => cssVarColor('--bs-threat');
+export const threatColor = () => cssVarColor('--bs-threat');
 
 export const Y_DPS = 'yDps';
 export const Y_MANA = 'yMana';
 export const Y_THREAT = 'yThreat';
-export const Y_THREAT_HIDDEN = 'yThreatHidden';
 export const Y_RESOURCE_PCT = 'yResourcePct';
 
 export const DPS_SERIES_ID = 'dps';
@@ -62,9 +61,11 @@ export function dpsScale(maxDps: number): ScaleOptions<'linear'> {
 	return valueScale(dpsColor(), 'DPS', Math.max(100, Math.ceil((maxDps || 0) / 100) * 100));
 }
 
-export function threatScale(maxThreat: number, display: boolean): ScaleOptions<'linear'> {
+// 'auto' shows the axis exactly while a dataset drawn against it is visible, so the threat line
+// - hidden by default in the single-player chart - brings its own scale back with it.
+export function threatScale(maxThreat: number): ScaleOptions<'linear'> {
 	const max = Math.max(10000, Math.ceil((maxThreat || 0) / 10000) * 10000);
-	return valueScale(threatColor(), THREAT_SERIES_NAME, max, { display });
+	return valueScale(threatColor(), THREAT_SERIES_NAME, max, { display: 'auto' });
 }
 
 export function manaScale(maxMana: number): ScaleOptions<'linear'> {
@@ -83,7 +84,12 @@ export function resourcePctScale(): ScaleOptions<'linear'> {
 	return { type: 'linear', display: false, min: 0, max: 100 };
 }
 
-export function dpsDataset(unit: UnitMetrics, seriesId: string, colorOverride: string): { dataset: TimelineDataset<DpsLog>; maxDps: number } | null {
+export function dpsDataset(
+	unit: UnitMetrics,
+	seriesId: string,
+	borderColor: string,
+	showPlayerLabel: boolean,
+): { dataset: TimelineDataset<DpsLog>; maxDps: number } | null {
 	const logs = unit.dpsLogs.filter(log => log.timestamp >= 0);
 	if (logs.length == 0) return null;
 
@@ -96,26 +102,26 @@ export function dpsDataset(unit: UnitMetrics, seriesId: string, colorOverride: s
 			seriesId,
 			label: 'DPS',
 			yAxisID: Y_DPS,
-			borderColor: colorOverride || dpsColor(),
+			borderColor,
 			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.dps, log })),
-			renderTooltip: log => DpsTooltip(log, unit, colorOverride),
+			renderTooltip: log => DpsTooltip(log, unit, borderColor, showPlayerLabel),
 		},
 	};
 }
 
-export function threatDataset(unit: UnitMetrics, seriesId: string, colorOverride: string, yAxisID: string): TimelineDataset<ThreatLogGroup> | null {
+export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: string, showPlayerLabel: boolean): TimelineDataset<ThreatLogGroup> | null {
 	const logs = unit.threatLogs.filter(log => log.timestamp >= 0);
 	if (logs.length == 0) return null;
 
 	return {
 		seriesId,
 		label: THREAT_SERIES_NAME,
-		yAxisID,
-		borderColor: colorOverride || threatColor(),
+		yAxisID: Y_THREAT,
+		borderColor,
 		...LINE_DATASET,
 		data: logs.map(log => ({ x: log.timestamp, y: log.threatAfter, log })),
-		renderTooltip: log => ThreatTooltip(log, unit, colorOverride),
+		renderTooltip: log => ThreatTooltip(log, unit, borderColor, showPlayerLabel),
 	};
 }
 
