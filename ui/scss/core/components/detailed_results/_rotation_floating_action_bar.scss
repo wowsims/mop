@@ -1,5 +1,6 @@
-// Chrome only once pinned, as in .apl-floating-action-bar-root. --apl-spacer is scoped to the
-// APL picker subtree and resolves to nothing here, so the padding is var(--spacer-2) directly.
+// Padding and border appear only once pinned, as in .apl-floating-action-bar-root, but the
+// background is unconditional: unlike the APL bar this one overlays the rows. --apl-spacer is
+// scoped to the APL picker subtree and resolves to nothing here, so the padding is var(--spacer-2).
 .rotation-floating-action-bar-root {
 	position: sticky;
 	bottom: 0;
@@ -10,15 +11,14 @@
 	min-height: var(--rotation-fab-h);
 	margin-top: var(--block-spacer);
 	border: 0 solid var(--bs-border-color);
+	background: var(--bs-body-bg);
 	transition:
 		padding 0.15s ease-in-out,
-		border-width 0.15s ease-in-out,
-		background-color 0.15s ease-in-out;
+		border-width 0.15s ease-in-out;
 
 	&.stuck {
 		padding: var(--spacer-2);
 		border-width: var(--bs-border-width);
-		background: var(--bs-body-bg);
 	}
 }
 
