@@ -293,7 +293,9 @@ export class DetailedResults extends Component {
 		const combatReplay = new CombatReplay({
 			parent: this.rootElem.querySelector('.combat-replay')!,
 			resultsEmitter: this.resultsEmitter,
+			deferUntilShown: true,
 		});
+		deferUntilShown(combatReplay, 'replayTab');
 
 		tabButtons.get('replayTab')?.addEventListener('hide.bs.tab', () => {
 			combatReplay.stopPlayback();

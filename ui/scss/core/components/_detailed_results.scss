@@ -3,7 +3,10 @@
 @import './detailed_results/log_runner';
 @import './detailed_results/resource_metrics';
 @import './detailed_results/results_filter';
+@import './detailed_results/rotation_floating_action_bar';
 @import './detailed_results/timeline';
+@import './detailed_results/timeline_chart';
+@import './detailed_results/timeline_rotation';
 @import './detailed_results/topline_results';
 
 .detailed-results-manager-root {

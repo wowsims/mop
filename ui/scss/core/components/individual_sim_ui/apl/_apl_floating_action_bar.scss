@@ -1,18 +1,7 @@
 .apl-floating-action-bar-root {
-	position: sticky;
-	bottom: 0;
-	border: 0px solid var(--bs-border-color);
-	margin-top: var(--block-spacer);
-	display: flex;
-	align-items: center;
+	@include bottom-floating-action-bar(var(--apl-spacer));
 	transition:
 		padding 0.15s ease-in-out,
 		border-width 0.15s ease-in-out,
 		background-color 0.15s ease-in-out;
-
-	&.stuck {
-		padding: var(--apl-spacer);
-		border-width: var(--bs-border-width);
-		background: var(--bs-body-bg);
-	}
 }

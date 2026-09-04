@@ -1,10 +1,11 @@
 import { ref } from 'tsx-vanilla';
 
-import { SimUI } from '../sim_ui';
-import { BaseModal } from './base_modal';
-import Toast from './toast';
 import i18n from '../../i18n/config';
 import { trackPageView } from '../../tracking/utils';
+import { SimUI } from '../sim_ui';
+import { kebabCase } from '../utils';
+import { BaseModal } from './base_modal';
+import Toast from './toast';
 
 export interface ImporterOptions {
 	title: string;
@@ -22,7 +23,7 @@ export abstract class Importer extends BaseModal {
 	constructor(parent: HTMLElement, options: ImporterOptions) {
 		super(parent, 'importer', { title: options.title, footer: true, disposeOnClose: false });
 		this.allowFileUpload = options.allowFileUpload || false;
-		const uploadInputId = 'upload-input-' + options.title.toLowerCase().replaceAll(' ', '-');
+		const uploadInputId = 'upload-input-' + kebabCase(options.title);
 
 		const descriptionElemRef = ref<HTMLDivElement>();
 		const textElemRef = ref<HTMLTextAreaElement>();
@@ -72,11 +73,10 @@ export abstract class Importer extends BaseModal {
 	}
 
 	open() {
-		const titleAsSlug = this.header?.title.toLowerCase().replaceAll(' ', '-');
+		const titleAsSlug = this.header && kebabCase(this.header.title);
 		trackPageView(this.header!.title, `/import/${titleAsSlug}`);
 		super.open();
 	}
-
 
 	abstract onImport(data: string): Promise<void>;
 }
