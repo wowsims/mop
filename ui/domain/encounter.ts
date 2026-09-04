@@ -9,6 +9,7 @@ import {
 	TargetInput,
 } from '@generated/proto/common';
 
+import { ENCOUNTER_DEFAULTS } from './constants/encounter';
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
 import { UnitMetadataList } from './player';
@@ -192,13 +193,7 @@ export class Encounter {
 
 	static defaultEncounterProto(numTargets = 1): EncounterProto {
 		return EncounterProto.create({
-			duration: 300,
-			durationVariation: 60,
-			executeProportion20: 0.2,
-			executeProportion25: 0.25,
-			executeProportion35: 0.35,
-			executeProportion45: 0.45,
-			executeProportion90: 0.9,
+			...ENCOUNTER_DEFAULTS,
 			targets: Array.from({ length: numTargets }, () => Encounter.defaultTargetProto()),
 			apiVersion: CURRENT_API_VERSION,
 		});

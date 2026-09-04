@@ -22,6 +22,7 @@ import { DatabaseFilters } from '@generated/proto/ui';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
+import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
 import { CURRENT_PHASE } from '../constants/other';
 import type { Gear, ItemSwapGear } from '../proto_utils/gear';
 import type { StatCap, Stats } from '../proto_utils/stats';
@@ -244,16 +245,10 @@ const initialState = (): SimState => ({
 		partyBuffs: Array.from({ length: 5 }, () => PartyBuffs.create()),
 		composition: Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => null)),
 	},
-	// Seeded empty to avoid importing encounter.ts (cycle); the Encounter
-	// constructor writes the default target on construction.
+	// Targets are seeded empty to avoid importing encounter.ts (cycle); the
+	// Encounter constructor writes the default target on construction.
 	encounter: {
-		duration: 300,
-		durationVariation: 60,
-		executeProportion20: 0.2,
-		executeProportion25: 0.25,
-		executeProportion35: 0.35,
-		executeProportion45: 0.45,
-		executeProportion90: 0.9,
+		...ENCOUNTER_DEFAULTS,
 		useHealth: false,
 		targets: [],
 	},

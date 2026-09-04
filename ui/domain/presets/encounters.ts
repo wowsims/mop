@@ -1,5 +1,6 @@
 import { Encounter as EncounterProto, InputType, MobType } from '@generated/proto/common';
 
+import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
 import { Encounter } from '../encounter';
 
 // Default single-target encounter proto shared by every class's preset list.
@@ -23,14 +24,10 @@ export const malkorokEncounterProto = ({
 	soakTooltip: string;
 }): EncounterProto =>
 	EncounterProto.create({
+		...ENCOUNTER_DEFAULTS,
 		apiVersion: 3,
 		duration,
 		durationVariation,
-		executeProportion20: 0.2,
-		executeProportion25: 0.25,
-		executeProportion35: 0.35,
-		executeProportion45: 0.45,
-		executeProportion90: 0.9,
 		targets: [
 			{
 				id: 71454,
