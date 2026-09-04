@@ -9,7 +9,7 @@ import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '../../proto_utils/action_id';
 import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '../../proto_utils/logs_parser';
-import { resourceNames } from '../../proto_utils/names';
+import { resourceColors, resourceNames } from '../../proto_utils/names';
 import SecondaryResource from '../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../proto_utils/sim_result';
 import { orderedResourceTypes } from '../../proto_utils/utils';
@@ -102,6 +102,30 @@ class WindowedRow {
 // built on first hover. Before, a rotation created one tippy instance - and its listeners -
 // for every cast, tick, aura window and resource block, several thousand of them, each
 // carrying a fully built subtree for a tooltip that in almost every case is never shown.
+const THREAT_SERIES_NAME = i18n.t('results_tab.details.timeline.tooltips.threat');
+
+// A radio group behaving like the <select> it replaced, so the rest of the component keeps
+// reading and writing a single `value`.
+class ChartViewPicker {
+	constructor(private readonly rootElem: HTMLElement) {}
+
+	private get inputs(): Array<HTMLInputElement> {
+		return [...this.rootElem.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+	}
+
+	get value(): string {
+		return this.inputs.find(input => input.checked)?.value ?? '';
+	}
+
+	set value(next: string) {
+		for (const input of this.inputs) input.checked = input.value === next;
+	}
+
+	onChange(callback: () => void) {
+		this.rootElem.addEventListener('change', callback);
+	}
+}
+
 const TOOLTIP_TARGET_ATTR = 'data-timeline-tooltip';
 const tooltipBuilders = new WeakMap<Element, () => Element>();
 
@@ -152,12 +176,15 @@ export class Timeline extends ResultComponent {
 	// someone switches the Timeline away from the rotation view, so it is imported then.
 	private dpsResourcesPlot: any;
 	private chartPromise: Promise<any> | null = null;
+	// Threat is off by default in the single-player view - it is rarely what anyone opened the
+	// chart for in MoP - but a legend click sticks for the rest of the session.
+	private showThreatSeries = false;
 
 	private readonly rotationPlotElem: HTMLElement;
 	private readonly rotationLabels: HTMLElement;
 	private readonly rotationTimeline: HTMLElement;
 	private readonly rotationHiddenIdsContainer: HTMLElement;
-	private readonly chartPicker: HTMLSelectElement;
+	private readonly chartPicker: ChartViewPicker;
 
 	private resultData: SimResultData | null;
 	// The ApexCharts instance renders once for the life of the component; the rotation
@@ -203,17 +230,45 @@ export class Timeline extends ResultComponent {
 					</p>
 					<p>{i18n.t('results_tab.details.timeline.note')}</p>
 				</div>
-				<select className="timeline-chart-picker form-select">
-					<option className="rotation-option" value="rotation">
+				{/* Two of the three are ever offered at once - rotation and threat swap depending
+				    on whether the result has one player - so a radio group reads better than a
+				    dropdown for what is always a two-way choice. */}
+				<div className="timeline-chart-picker btn-group" attributes={{ role: 'group' }}>
+					<input
+						type="radio"
+						className="btn-check rotation-option"
+						name="timeline-chart-view"
+						id="timeline-chart-view-rotation"
+						value="rotation"
+						autocomplete="off"
+						checked={true}
+					/>
+					<label className="btn btn-sm btn-outline-primary rotation-option" htmlFor="timeline-chart-view-rotation">
 						{i18n.t('results_tab.details.timeline.chart_types.rotation')}
-					</option>
-					<option className="dps-option" value="dps">
+					</label>
+					<input
+						type="radio"
+						className="btn-check dps-option"
+						name="timeline-chart-view"
+						id="timeline-chart-view-dps"
+						value="dps"
+						autocomplete="off"
+					/>
+					<label className="btn btn-sm btn-outline-primary dps-option" htmlFor="timeline-chart-view-dps">
 						{i18n.t('results_tab.details.timeline.chart_types.dps')}
-					</option>
-					<option className="threat-option" value="threat">
+					</label>
+					<input
+						type="radio"
+						className="btn-check threat-option"
+						name="timeline-chart-view"
+						id="timeline-chart-view-threat"
+						value="threat"
+						autocomplete="off"
+					/>
+					<label className="btn btn-sm btn-outline-primary threat-option" htmlFor="timeline-chart-view-threat">
 						{i18n.t('results_tab.details.timeline.chart_types.threat')}
-					</option>
-				</select>
+					</label>
+				</div>
 			</div>,
 		);
 
@@ -230,8 +285,8 @@ export class Timeline extends ResultComponent {
 			</div>,
 		);
 
-		this.chartPicker = this.rootElem.querySelector('.timeline-chart-picker')!;
-		this.chartPicker.addEventListener('change', () => this.onChartPickerSelectHandler());
+		this.chartPicker = new ChartViewPicker(this.rootElem.querySelector('.timeline-chart-picker')!);
+		this.chartPicker.onChange(() => this.onChartPickerSelectHandler());
 
 		this.dpsResourcesPlotElem = this.rootElem.querySelector('.dps-resources-plot')!;
 
@@ -347,6 +402,11 @@ export class Timeline extends ResultComponent {
 			yaxis: [],
 			chart: {
 				events: {
+					legendClick: (_chart: any, seriesIndex: number, config: any) => {
+						if (config?.globals?.seriesNames?.[seriesIndex] === THREAT_SERIES_NAME) {
+							this.showThreatSeries = !this.showThreatSeries;
+						}
+					},
 					beforeResetZoom: () => {
 						return {
 							xaxis: {
@@ -357,7 +417,19 @@ export class Timeline extends ResultComponent {
 					},
 				},
 				toolbar: {
-					show: false,
+					show: true,
+					tools: {
+						// Download opens a menu and is not what was asked for; the rest are the
+						// pan/zoom/reset controls.
+						download: false,
+						selection: true,
+						zoom: true,
+						zoomin: true,
+						zoomout: true,
+						pan: true,
+						reset: true,
+					},
+					autoSelected: 'zoom',
 				},
 			},
 		};
@@ -395,6 +467,8 @@ export class Timeline extends ResultComponent {
 			tooltipHandlers.push(dpsData.tooltipHandler);
 			tooltipHandlers.push(this.addManaSeries(player, options));
 			tooltipHandlers.push(this.addThreatSeries(player, options, ''));
+			tooltipHandlers.push(...this.addResourceSeries(player, options));
+			this.attachUnmappedSeriesToFirstAxis(options);
 			tooltipHandlers = tooltipHandlers.filter(handler => !!handler);
 
 			this.addMajorCooldownAnnotations(player, options);
@@ -516,6 +590,99 @@ export class Timeline extends ResultComponent {
 		};
 	}
 
+	// ApexCharts maps y-axes to series by name. With a single axis every series shares it, but
+	// as soon as there is more than one, a series with no matching entry crashes its
+	// axis-matching pass. Threat has no axis of its own in the single-player view and rode on
+	// the DPS axis, so keep it there explicitly rather than giving it a scale of its own.
+	private attachUnmappedSeriesToFirstAxis(options: any) {
+		if (options.yaxis.length <= 1) return;
+
+		const mapped = new Set<string>();
+		for (const axis of options.yaxis) {
+			for (const name of Array.isArray(axis.seriesName) ? axis.seriesName : [axis.seriesName]) {
+				if (name) mapped.add(name);
+			}
+		}
+
+		const unmapped = options.series.map((series: any) => series.name).filter((name: string) => !mapped.has(name));
+		if (unmapped.length == 0) return;
+
+		const first = options.yaxis[0];
+		const existing = Array.isArray(first.seriesName) ? first.seriesName : [first.seriesName];
+		first.seriesName = [...existing, ...unmapped];
+	}
+
+	// Every other resource the unit actually used, drawn as a faint background trace behind
+	// the DPS line. Mana keeps its own labelled axis; these share a hidden 0-100% axis,
+	// because a rage bar and a rune count have nothing comparable about their raw numbers and
+	// one visible axis per resource would bury the chart.
+	private addResourceSeries(unit: UnitMetrics, options: any): Array<TooltipHandler> {
+		const handlers: Array<TooltipHandler> = [];
+		const traceNames = new Set<string>();
+
+		// Health is only informative where staying alive is the job; on a damage spec it is a
+		// flat line that just adds a trace to read past.
+		const showHealth = !!unit.spec?.isTankSpec || !!unit.spec?.isHealingSpec;
+
+		for (const resourceType of orderedResourceTypes) {
+			// Mana is already plotted against its own axis.
+			if (resourceType == ResourceType.ResourceTypeMana) continue;
+			if (resourceType == ResourceType.ResourceTypeHealth && !showHealth) continue;
+
+			const resourceLogs = unit.groupedResourceLogs[resourceType].filter(log => log.timestamp >= 0);
+			if (resourceLogs.length == 0) continue;
+
+			// Resources that start empty - chi, combo points, runic power - have no useful
+			// maxValue on their groups and a valueBefore of 0 at t=0, so scaling off either
+			// gave nonsense percentages. Take the largest value the resource is ever declared
+			// or observed to hold, over the whole fight.
+			let resourceMax = 0;
+			for (const log of resourceLogs) {
+				resourceMax = Math.max(resourceMax, log.maxValue || 0, log.valueBefore, log.valueAfter);
+			}
+			if (resourceMax <= 0) continue;
+			let name = resourceNames.get(resourceType)!;
+			if (resourceType == ResourceType.ResourceTypeGenericResource && this.secondaryResource?.name) {
+				name = this.secondaryResource.name;
+			}
+
+			traceNames.add(name);
+			options.colors.push(resourceColors.get(resourceType));
+			options.series.push({
+				name: name,
+				type: 'line',
+				data: resourceLogs.map(log => ({
+					x: log.timestamp,
+					// Percent of that resource's own maximum: the only scale they share.
+					y: Number(((log.valueAfter / resourceMax) * 100).toFixed(2)),
+				})),
+			});
+			options.yaxis.push({
+				seriesName: name,
+				show: false,
+				min: 0,
+				max: 100,
+			});
+
+			handlers.push((dataPointIndex: number) => {
+				const log = resourceLogs[dataPointIndex];
+				return this.resourceTooltipElem(log, resourceMax, false);
+			});
+		}
+
+		if (traceNames.size > 0) {
+			// Thin and dashed so they read as context behind the DPS line rather than as peers
+			// of it. Both are per-series arrays, so they have to cover every series in order.
+			options.stroke = {
+				curve: 'straight',
+				width: options.series.map((series: any) => (traceNames.has(series.name) ? 1 : 2)),
+				dashArray: options.series.map((series: any) => (traceNames.has(series.name) ? 4 : 0)),
+			};
+		}
+
+		return handlers;
+	}
+
 	// Returns a function for drawing the tooltip, or null if no series was added.
 	private addManaSeries(unit: UnitMetrics, options: any): TooltipHandler | null {
 		const manaLogs = unit.groupedResourceLogs[ResourceType.ResourceTypeMana].filter(log => log.timestamp >= 0);
@@ -576,7 +743,7 @@ export class Timeline extends ResultComponent {
 	private addThreatSeries(unit: UnitMetrics, options: any, colorOverride: string): TooltipHandler | null {
 		options.colors.push(colorOverride || threatColor);
 		options.series.push({
-			name: i18n.t('results_tab.details.timeline.tooltips.threat'),
+			name: THREAT_SERIES_NAME,
 			type: 'line',
 			data: unit.threatLogs
 				.filter(log => log.timestamp >= 0)
@@ -1495,8 +1662,11 @@ export class Timeline extends ResultComponent {
 
 	// Applies options once the chart exists, keeping updates in order.
 	private applyChartOptions(options: any) {
-		this.chartPromise = this.chartReady().then(chart => {
-			chart.updateOptions(options);
+		const hideThreat = !this.showThreatSeries && options.series.some((series: any) => series.name === THREAT_SERIES_NAME) && options.series.length > 1;
+		this.chartPromise = this.chartReady().then(async chart => {
+			await chart.updateOptions(options);
+			// updateOptions resets legend state, so re-apply the default each time.
+			if (hideThreat) chart.hideSeries(THREAT_SERIES_NAME);
 			return chart;
 		});
 	}
@@ -1517,8 +1687,10 @@ export class Timeline extends ResultComponent {
 
 	// Single-player results offer the rotation chart; multi-player ones the threat chart.
 	private setRotationOptionVisible(visible: boolean) {
-		this.rootElem.querySelector('.rotation-option')!.classList.toggle('hide', !visible);
-		this.rootElem.querySelector('.threat-option')!.classList.toggle('hide', visible);
+		// Each choice is an input plus its label, so both have to be toggled - querySelector
+		// would only ever find the input, which is visually hidden anyway.
+		for (const elem of this.rootElem.querySelectorAll('.rotation-option')) elem.classList.toggle('hide', !visible);
+		for (const elem of this.rootElem.querySelectorAll('.threat-option')) elem.classList.toggle('hide', visible);
 	}
 
 	private static newSlot(key: string): RotationSlot {

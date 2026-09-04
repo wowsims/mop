@@ -67,8 +67,11 @@
 	align-items: flex-start;
 
 	.timeline-chart-picker {
-		width: 8rem;
+		// A button group sizes to its labels; the fixed width the <select> needed would clip it.
+		width: auto;
 		margin-left: auto;
+		flex-shrink: 0;
+		align-self: flex-start;
 	}
 }
 
@@ -112,6 +115,11 @@
 		border: var(--bs-tooltip-border) 1px solid;
 		color: var(--bs-tooltip-body-color);
 		padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+		// ApexCharts sizes its tooltip to the content; without a bound of its own it grows
+		// past the viewport before the inner .timeline-tooltip cap can take effect.
+		max-width: min(94vw, 68rem);
+		max-height: 80vh;
+		overflow: hidden;
 	}
 }
 
@@ -119,6 +127,12 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--spacer-3);
+	// A DPS point can carry dozens of damage events and active auras, which used to make the
+	// tooltip taller than the viewport. Bounding the height lets the lists below spill into
+	// extra columns sideways instead of running off the screen.
+	max-height: 75vh;
+	max-width: min(92vw, 64rem);
+	overflow: auto;
 
 	ul {
 		display: flex;
@@ -134,6 +148,24 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: var(--spacer-2);
+	}
+}
+
+// The two lists that actually get long. Multi-column rather than flex: with the height
+// bounded, the browser lays out further columns to the side rather than growing downwards.
+// Scoped under .timeline-tooltip so this outweighs the `.timeline-tooltip ul` rule above,
+// which is otherwise more specific and keeps the list a single flex column.
+.timeline-tooltip .timeline-dps-events,
+.timeline-tooltip .timeline-active-auras {
+	display: block;
+	max-height: 56vh;
+	column-width: 15rem;
+	column-gap: var(--spacer-3);
+
+	li {
+		break-inside: avoid;
+		// Column boxes are not flex items, so restore the row spacing the flex gap gave.
+		margin-bottom: var(--spacer-1);
 	}
 }
 
