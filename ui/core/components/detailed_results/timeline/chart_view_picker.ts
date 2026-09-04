@@ -1,24 +1,28 @@
-export class ChartViewPicker {
-	private readonly inputs: Array<HTMLInputElement>;
-	private readonly optionElems = new Map<string, Array<HTMLElement>>();
+export type ChartViewOption = {
+	value: string;
+	input: HTMLInputElement;
+	// The input and its label; both have to be hidden together.
+	elems: Array<HTMLElement>;
+};
 
-	constructor(private readonly rootElem: HTMLElement) {
-		this.inputs = [...rootElem.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
-		for (const input of this.inputs) {
-			this.optionElems.set(input.value, [...rootElem.querySelectorAll<HTMLElement>(`.${input.value}-option`)]);
-		}
-	}
+export class ChartViewPicker {
+	constructor(
+		private readonly rootElem: HTMLElement,
+		private readonly options: Array<ChartViewOption>,
+	) {}
 
 	get value(): string {
-		return this.inputs.find(input => input.checked)?.value ?? '';
+		return this.options.find(option => option.input.checked)?.value ?? '';
 	}
 
 	set value(next: string) {
-		for (const input of this.inputs) input.checked = input.value === next;
+		for (const option of this.options) option.input.checked = option.value === next;
 	}
 
-	setOptionVisible(option: string, visible: boolean) {
-		for (const elem of this.optionElems.get(option) ?? []) elem.classList.toggle('hide', !visible);
+	setOptionVisible(value: string, visible: boolean) {
+		const option = this.options.find(candidate => candidate.value === value);
+		if (!option) return;
+		for (const elem of option.elems) elem.classList.toggle('hide', !visible);
 	}
 
 	onChange(callback: () => void) {

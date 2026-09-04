@@ -94,6 +94,18 @@ export class Timeline extends ResultComponent {
 		});
 		this.secondaryResource = config.secondaryResource;
 
+		const chartPickerRef = ref<HTMLDivElement>();
+		const chartViewRefs = (['rotation', 'dps', 'threat'] as const).map(value => ({
+			value,
+			input: ref<HTMLInputElement>(),
+			label: ref<HTMLLabelElement>(),
+		}));
+		const chartViewLabels: Record<string, string> = {
+			rotation: i18n.t('results_tab.details.timeline.chart_types.rotation'),
+			dps: i18n.t('results_tab.details.timeline.chart_types.dps'),
+			threat: i18n.t('results_tab.details.timeline.chart_types.threat'),
+		};
+
 		this.rootElem.appendChild(
 			<div className="timeline-disclaimer">
 				<div className="d-flex flex-column">
@@ -106,67 +118,59 @@ export class Timeline extends ResultComponent {
 				{/* Two of the three are ever offered at once - rotation and threat swap depending
 				    on whether the result has one player - so a radio group reads better than a
 				    dropdown for what is always a two-way choice. */}
-				<div className="timeline-chart-picker btn-group" attributes={{ role: 'group' }}>
-					<input
-						type="radio"
-						className="btn-check rotation-option"
-						name="timeline-chart-view"
-						id="timeline-chart-view-rotation"
-						value="rotation"
-						autocomplete="off"
-						checked={true}
-					/>
-					<label className="btn btn-sm btn-outline-primary rotation-option" htmlFor="timeline-chart-view-rotation">
-						{i18n.t('results_tab.details.timeline.chart_types.rotation')}
-					</label>
-					<input
-						type="radio"
-						className="btn-check dps-option"
-						name="timeline-chart-view"
-						id="timeline-chart-view-dps"
-						value="dps"
-						autocomplete="off"
-					/>
-					<label className="btn btn-sm btn-outline-primary dps-option" htmlFor="timeline-chart-view-dps">
-						{i18n.t('results_tab.details.timeline.chart_types.dps')}
-					</label>
-					<input
-						type="radio"
-						className="btn-check threat-option"
-						name="timeline-chart-view"
-						id="timeline-chart-view-threat"
-						value="threat"
-						autocomplete="off"
-					/>
-					<label className="btn btn-sm btn-outline-primary threat-option" htmlFor="timeline-chart-view-threat">
-						{i18n.t('results_tab.details.timeline.chart_types.threat')}
-					</label>
+				<div ref={chartPickerRef} className="timeline-chart-picker btn-group" attributes={{ role: 'group' }}>
+					{chartViewRefs.map(({ value, input, label }) => (
+						<>
+							<input
+								ref={input}
+								type="radio"
+								className={`btn-check ${value}-option`}
+								name="timeline-chart-view"
+								id={`timeline-chart-view-${value}`}
+								value={value}
+								autocomplete="off"
+								checked={value === 'rotation'}
+							/>
+							<label ref={label} className={`btn btn-sm btn-outline-primary ${value}-option`} htmlFor={`timeline-chart-view-${value}`}>
+								{chartViewLabels[value]}
+							</label>
+						</>
+					))}
 				</div>
 			</div>,
 		);
+
+		const dpsResourcesPlotRef = ref<HTMLDivElement>();
+		const rotationPlotRef = ref<HTMLDivElement>();
+		const rotationLabelsRef = ref<HTMLDivElement>();
+		const rotationTimelineRef = ref<HTMLDivElement>();
+		const rotationHiddenIdsRef = ref<HTMLDivElement>();
 
 		this.rootElem.appendChild(
 			<div className="timeline-plots-container">
-				<div className="timeline-plot dps-resources-plot hide"></div>
-				<div className="timeline-plot rotation-plot">
+				<div ref={dpsResourcesPlotRef} className="timeline-plot dps-resources-plot hide"></div>
+				<div ref={rotationPlotRef} className="timeline-plot rotation-plot">
 					<div className="rotation-container">
-						<div className="rotation-labels"></div>
-						<div className="rotation-timeline" draggable={true}></div>
+						<div ref={rotationLabelsRef} className="rotation-labels"></div>
+						<div ref={rotationTimelineRef} className="rotation-timeline" draggable={true}></div>
 					</div>
-					<div className="rotation-hidden-ids"></div>
+					<div ref={rotationHiddenIdsRef} className="rotation-hidden-ids"></div>
 				</div>
 			</div>,
 		);
 
-		this.chartPicker = new ChartViewPicker(this.rootElem.querySelector('.timeline-chart-picker')!);
+		this.chartPicker = new ChartViewPicker(
+			chartPickerRef.value!,
+			chartViewRefs.map(({ value, input, label }) => ({ value, input: input.value!, elems: [input.value!, label.value!] })),
+		);
 		this.chartPicker.onChange(() => this.onChartPickerSelectHandler());
 
-		this.dpsResourcesPlotElem = this.rootElem.querySelector('.dps-resources-plot')!;
+		this.dpsResourcesPlotElem = dpsResourcesPlotRef.value!;
 
-		this.rotationPlotElem = this.rootElem.querySelector('.rotation-plot')!;
-		this.rotationLabels = this.rootElem.querySelector('.rotation-labels')!;
-		this.rotationTimeline = this.rootElem.querySelector('.rotation-timeline')!;
-		this.rotationHiddenIdsContainer = this.rootElem.querySelector('.rotation-hidden-ids')!;
+		this.rotationPlotElem = rotationPlotRef.value!;
+		this.rotationLabels = rotationLabelsRef.value!;
+		this.rotationTimeline = rotationTimelineRef.value!;
+		this.rotationHiddenIdsContainer = rotationHiddenIdsRef.value!;
 
 		let isMouseDown = false;
 		let startX = 0;
