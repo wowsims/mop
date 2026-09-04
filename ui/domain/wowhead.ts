@@ -84,13 +84,23 @@ export type WowheadTooltipSpellParams = {
 	difficultyId?: 14 | 15 | 16;
 };
 
-export const WOWHEAD_EXPANSION_ENV = 15;
+// Wowhead serves each expansion under its own url segment and its own `dataEnv`
+// id. Porting this file to a sibling sim repo means changing the one line below:
+// the domain, and every url built from it, follows. The literal-union key means
+// an unmapped id is a compile error rather than a `.../undefined/...` url.
+const WOWHEAD_DOMAINS = {
+	5: 'tbc',
+	15: 'mop-classic',
+} as const;
+
+export const WOWHEAD_EXPANSION_ENV: keyof typeof WOWHEAD_DOMAINS = 15;
+export const WOWHEAD_DOMAIN = WOWHEAD_DOMAINS[WOWHEAD_EXPANSION_ENV];
 
 export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemParams | WowheadTooltipSpellParams) => {
 	const lang = getLang();
 	const params = new URLSearchParams();
 	const langPrefix = lang && lang != 'en' ? lang + '.' : '';
-	params.set('domain', `${langPrefix}mop-classic`);
+	params.set('domain', `${langPrefix}${WOWHEAD_DOMAIN}`);
 	params.set('dataEnv', String(WOWHEAD_EXPANSION_ENV));
 
 	params.set('level', String(options.level || CHARACTER_LEVEL));
@@ -144,16 +154,16 @@ export function getWowheadLanguagePrefix(): string {
 	return lang === 'en' ? '' : `${lang}/`;
 }
 
-// Every wowhead link this app builds hangs off one of these two. The entity
-// links keep the bare host they have always used; the gear planner page is the
-// `www.` form we show to users verbatim in the importer.
-export const WOWHEAD_BASE_URL = 'https://wowhead.com/mop-classic';
-export const WOWHEAD_GEAR_PLANNER_URL = 'https://www.wowhead.com/mop-classic/gear-planner';
+// Every wowhead link this app builds hangs off one of these. The entity links
+// keep the bare host they have always used; the gear planner page is the `www.`
+// form we show to users verbatim in the importer.
+export const WOWHEAD_BASE_URL = `https://wowhead.com/${WOWHEAD_DOMAIN}`;
+export const WOWHEAD_GEAR_PLANNER_URL = `https://www.wowhead.com/${WOWHEAD_DOMAIN}/gear-planner`;
 export const WOWHEAD_ICON_BASE_URL = 'https://wow.zamimg.com/images/wow/icons';
 
 type WowheadEntity = 'item' | 'spell' | 'quest' | 'npc' | 'zone';
 
-// `https://wowhead.com/mop-classic/<lang>/<entity>=<id>` — the language segment
+// `https://wowhead.com/<domain>/<lang>/<entity>=<id>` — the language segment
 // is empty for English.
 export function wowheadEntityUrl(entity: WowheadEntity, id: number): string {
 	return `${WOWHEAD_BASE_URL}/${getWowheadLanguagePrefix()}${entity}=${id}`;

@@ -1,5 +1,5 @@
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
-import { WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
+import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -181,8 +181,8 @@ function parseTalentString(e: number[]) {
 }
 
 function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
-	// Extract the part after 'mop-classic/gear-planner/'
-	const match = link.match(/mop-classic\/gear-planner\/(.+)/);
+	// Extract the part after '<domain>/gear-planner/'
+	const match = link.match(new RegExp(`${WOWHEAD_DOMAIN}/gear-planner/(.+)`));
 	if (!match) {
 		throw new Error(`Invalid WCL URL ${link}, must look like "${WOWHEAD_GEAR_PLANNER_URL}/CLASS/RACE/XXXX"`);
 	}
@@ -224,7 +224,7 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 	}
 
 	async onImport(url: string) {
-		const match = url.match(/www\.wowhead\.com\/mop-classic\/gear-planner\/([a-z\-]+)\/([a-z\-]+)\/([a-zA-Z0-9_\-]+)/);
+		const match = url.match(new RegExp(`www\\.wowhead\\.com/${WOWHEAD_DOMAIN}/gear-planner/([a-z\\-]+)/([a-z\\-]+)/([a-zA-Z0-9_\\-]+)`));
 		if (!match) {
 			throw new Error(i18n.t('import.wowhead.error_invalid_url', { url }));
 		}

@@ -19,7 +19,7 @@ import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIIt
 import { CacheHandler } from '../cache_handler';
 import { distinct } from '../collections';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
-import { WOWHEAD_EXPANSION_ENV } from '../wowhead';
+import { WOWHEAD_DOMAIN, WOWHEAD_EXPANSION_ENV } from '../wowhead';
 import { EquippedItem } from './equipped_item';
 import { Gear, ItemSwapGear } from './gear';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';
@@ -420,7 +420,7 @@ export class Database {
 		return Database.getWowheadTooltipData(id, 'spell');
 	}
 	private static async getWowheadTooltipData(id: number, tooltipPostfix: string): Promise<IconData> {
-		const url = `https://nether.wowhead.com/mop-classic/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}`;
+		const url = `https://nether.wowhead.com/${WOWHEAD_DOMAIN}/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}`;
 		try {
 			const response = await fetch(url);
 			const json = await response.json();
