@@ -131,6 +131,8 @@ import {
 	executePhaseThresholdFieldConfig,
 	groupNameFieldConfig,
 	itemSwapSetFieldConfig,
+	makeUseDotBaseValueCheckbox,
+	makeUseRuneRegenBaseValueCheckbox,
 	mathOperatorFieldConfig,
 	minIcdInput,
 	placeholderNameFieldConfig,
@@ -141,8 +143,6 @@ import {
 	stringFieldConfig,
 	totemTypeFieldConfig,
 	unitFieldConfig,
-	useDotBaseValueCheckbox,
-	useRuneRegenBaseValueCheckbox,
 	valueFieldConfig,
 	ValueFieldDescriptor,
 	valueListFieldConfig,
@@ -665,7 +665,7 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		shortDescription: i18n.t('rotation_tab.apl.values.full_rune_cooldown.tooltip'),
 		newValue: APLValueFullRuneCooldown.create,
 		includeIf: (player: Player<any>, isPrepull: boolean) => !isPrepull && player.getClass() == Class.ClassDeathKnight,
-		fields: [useRuneRegenBaseValueCheckbox()],
+		fields: [makeUseRuneRegenBaseValueCheckbox()],
 	}),
 
 	// GCD
@@ -1156,7 +1156,7 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		shortDescription: i18n.t('rotation_tab.apl.values.dot_percent_increase.tooltip'),
 		newValue: APLValueDotPercentIncrease.create,
 		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
-		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), useDotBaseValueCheckbox()],
+		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), makeUseDotBaseValueCheckbox()],
 	}),
 	dotCritPercentIncrease: inputBuilder({
 		label: 'Dot Crit Chance Increase %',
@@ -1164,7 +1164,7 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		shortDescription: "How much higher a new DoT's Critical Strike Chance would be compared to the old.",
 		newValue: APLValueDotPercentIncrease.create,
 		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
-		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), useDotBaseValueCheckbox()],
+		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), makeUseDotBaseValueCheckbox()],
 	}),
 	dotTickRatePercentIncrease: inputBuilder({
 		label: 'Dot Tick Rate Increase %',
@@ -1172,7 +1172,7 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		shortDescription: 'How much faster a new DoT would tick compared to the old.',
 		newValue: APLValueDotPercentIncrease.create,
 		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
-		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), useDotBaseValueCheckbox()],
+		fields: [unitFieldConfig('targetUnit', 'targets'), actionIdFieldConfig('spellId', 'expected_dot_spells', ''), makeUseDotBaseValueCheckbox()],
 	}),
 	sequenceIsComplete: inputBuilder({
 		label: i18n.t('rotation_tab.apl.values.sequence_is_complete.label'),

@@ -142,11 +142,11 @@ export function reactionTimeCheckbox(): Descriptor<'reactionTime'> {
 	return { type: 'reactionTime' };
 }
 
-export function useDotBaseValueCheckbox(): Descriptor<'useDotBaseValue'> {
+export function makeUseDotBaseValueCheckbox(): Descriptor<'useDotBaseValue'> {
 	return { type: 'useDotBaseValue' };
 }
 
-export function useRuneRegenBaseValueCheckbox(): Descriptor<'useRuneRegenBaseValue'> {
+export function makeUseRuneRegenBaseValueCheckbox(): Descriptor<'useRuneRegenBaseValue'> {
 	return { type: 'useRuneRegenBaseValue' };
 }
 

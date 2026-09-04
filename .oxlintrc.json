@@ -1,200 +1,266 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [],
-  "categories": {
-    "correctness": "off"
-  },
-  "env": {
-    "builtin": true
-  },
-  "ignorePatterns": [
-    "ui/generated/proto/**",
-    "dist/**",
-    "binary_dist/**",
-    "node_modules/**"
-  ],
-  "overrides": [
-    {
-      "files": [
-        "**/*.{js,jsx,ts,tsx}"
-      ],
-      "rules": {
-        "import/namespace": "off",
-        "import/default": "error",
-        "import/no-named-as-default": "warn",
-        "import/no-named-as-default-member": "warn",
-        "import/no-duplicates": "warn",
-        "no-array-constructor": "error",
-        "no-unused-expressions": "off",
-        "no-unused-vars": [
-          "warn",
-          {
-            "args": "after-used",
-            "argsIgnorePattern": "^_",
-            "varsIgnorePattern": "^_"
-          }
-        ],
-        "typescript/ban-ts-comment": "off",
-        "typescript/no-duplicate-enum-values": "error",
-        "typescript/no-empty-object-type": "off",
-        "typescript/no-explicit-any": "off",
-        "typescript/no-extra-non-null-assertion": "error",
-        "typescript/no-misused-new": "error",
-        "typescript/no-namespace": "error",
-        "typescript/no-non-null-asserted-optional-chain": "error",
-        "typescript/no-require-imports": "error",
-        "typescript/no-this-alias": "off",
-        "typescript/no-unnecessary-type-constraint": "error",
-        "typescript/no-unsafe-declaration-merging": "error",
-        "typescript/no-unsafe-function-type": "error",
-        "typescript/no-wrapper-object-types": "error",
-        "typescript/prefer-as-const": "error",
-        "typescript/prefer-namespace-keyword": "error",
-        "typescript/triple-slash-reference": "error",
-        "simple-import-sort/imports": "warn",
-        "no-use-before-define": "off",
-        "typescript/explicit-function-return-type": "off",
-        "typescript/explicit-module-boundary-types": "off",
-        "typescript/no-non-null-assertion": "off"
-      },
-      "plugins": [
-        "import",
-        "typescript"
-      ],
-      "jsPlugins": [
-        "eslint-plugin-simple-import-sort"
-      ],
-      "env": {
-        "es2021": true
-      }
-    },
-    {
-      "files": ["ui/features/**/*.{ts,tsx}"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["**/state/sim_store*"],
-                "importNames": ["patchSlice", "patchKeyed", "seedKeyed", "deleteKeyed"],
-                "message": "Features must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/i18n/**/*.{ts,tsx}"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "@app",
-                  "@app/**",
-                  "@features",
-                  "@features/**",
-                  "@ui-kit",
-                  "@ui-kit/**",
-                  "@specs/**"
-                ],
-                "message": "ui/i18n is a leaf and must not depend on app/features/ui-kit/specs (see ui/README.md dependency direction)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/domain/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "@ui-kit",
-                  "@ui-kit/**",
-                  "@features",
-                  "@features/**",
-                  "@app",
-                  "@app/**",
-                  "@specs",
-                  "@specs/**"
-                ],
-                "message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
-              }
-            ]
-          }
-        ],
-        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
-      }
-    },
-    {
-      "files": ["ui/features/*/model/**"],
-      "rules": {
-        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
-      }
-    },
-    {
-      "files": ["ui/ui-kit/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["@features", "@features/**", "@app", "@app/**", "@specs", "@specs/**"],
-                "message": "ui/ui-kit must not depend on features/app/specs (see ui/README.md dependency direction)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/features/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["@app", "@app/**", "@specs", "@specs/**"],
-                "message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/app/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["@specs", "@specs/**"],
-                "message": "ui/app must not depend on specs (see ui/README.md dependency direction)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/**/*.{js,jsx,ts,tsx}"],
-      "rules": {
-        "import/extensions": ["warn", "never", { "json": "always" }]
-      },
-      "plugins": ["import"]
-    }
-  ]
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": [
+		"react"
+	],
+	"categories": {
+		"correctness": "off"
+	},
+	"env": {
+		"builtin": true
+	},
+	"ignorePatterns": [
+		"ui/generated/proto/**",
+		"dist/**",
+		"binary_dist/**",
+		"node_modules/**"
+	],
+	"overrides": [
+		{
+			"files": [
+				"**/*.{js,jsx,ts,tsx}"
+			],
+			"rules": {
+				"import/namespace": "off",
+				"import/default": "error",
+				"import/no-named-as-default": "warn",
+				"import/no-named-as-default-member": "warn",
+				"import/no-duplicates": "warn",
+				"no-array-constructor": "error",
+				"no-unused-expressions": "off",
+				"no-unused-vars": [
+					"warn",
+					{
+						"args": "after-used",
+						"argsIgnorePattern": "^_",
+						"varsIgnorePattern": "^_"
+					}
+				],
+				"typescript/ban-ts-comment": "off",
+				"typescript/no-duplicate-enum-values": "error",
+				"typescript/no-empty-object-type": "off",
+				"typescript/no-explicit-any": "off",
+				"typescript/no-extra-non-null-assertion": "error",
+				"typescript/no-misused-new": "error",
+				"typescript/no-namespace": "error",
+				"typescript/no-non-null-asserted-optional-chain": "error",
+				"typescript/no-require-imports": "error",
+				"typescript/no-this-alias": "off",
+				"typescript/no-unnecessary-type-constraint": "error",
+				"typescript/no-unsafe-declaration-merging": "error",
+				"typescript/no-unsafe-function-type": "error",
+				"typescript/no-wrapper-object-types": "error",
+				"typescript/prefer-as-const": "error",
+				"typescript/prefer-namespace-keyword": "error",
+				"typescript/triple-slash-reference": "error",
+				"simple-import-sort/imports": "warn",
+				"no-use-before-define": "off",
+				"typescript/explicit-function-return-type": "off",
+				"typescript/explicit-module-boundary-types": "off",
+				"typescript/no-non-null-assertion": "off"
+			},
+			"plugins": [
+				"import",
+				"typescript"
+			],
+			"jsPlugins": [
+				"eslint-plugin-simple-import-sort"
+			],
+			"env": {
+				"es2021": true
+			}
+		},
+		{
+			"files": [
+				"ui/features/**/*.{ts,tsx}"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"**/state/sim_store*"
+								],
+								"importNames": [
+									"patchSlice",
+									"patchKeyed",
+									"seedKeyed",
+									"deleteKeyed"
+								],
+								"message": "Features must not write the store directly \u2014 go through a facade (e.g. ui/domain/bulk_settings.ts)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/i18n/**/*.{ts,tsx}"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@app",
+									"@app/**",
+									"@features",
+									"@features/**",
+									"@ui-kit",
+									"@ui-kit/**",
+									"@specs/**"
+								],
+								"message": "ui/i18n is a leaf and must not depend on app/features/ui-kit/specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/domain/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@ui-kit",
+									"@ui-kit/**",
+									"@features",
+									"@features/**",
+									"@app",
+									"@app/**",
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				],
+				"no-restricted-globals": [
+					"error",
+					"window",
+					"document",
+					"localStorage",
+					"location",
+					"navigator"
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/features/*/model/**"
+			],
+			"rules": {
+				"no-restricted-globals": [
+					"error",
+					"window",
+					"document",
+					"localStorage",
+					"location",
+					"navigator"
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/ui-kit/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@features",
+									"@features/**",
+									"@app",
+									"@app/**",
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/ui-kit must not depend on features/app/specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/features/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@app",
+									"@app/**",
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/app/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/app must not depend on specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/**/*.{js,jsx,ts,tsx}"
+			],
+			"rules": {
+				"import/extensions": [
+					"warn",
+					"never",
+					{
+						"json": "always"
+					}
+				]
+			},
+			"plugins": [
+				"import"
+			]
+		}
+	],
+	"rules": {
+		"react-hooks/rules-of-hooks": "error",
+		"react-hooks/exhaustive-deps": "warn"
+	}
 }
