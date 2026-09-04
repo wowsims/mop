@@ -103,7 +103,7 @@ export class Timeline extends ResultComponent {
 
 		this.rootElem.appendChild(
 			<div className="timeline-disclaimer">
-				<div className="d-flex flex-column">
+				<div className="timeline-disclaimer-text d-flex flex-column">
 					<p>
 						<i className="warning fa fa-exclamation-triangle fa-xl me-2"></i>
 						{i18n.t('results_tab.details.timeline.disclaimer')}

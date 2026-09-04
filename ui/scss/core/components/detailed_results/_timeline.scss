@@ -65,6 +65,14 @@
 .timeline-disclaimer {
 	display: flex;
 	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: var(--spacer-2);
+
+	@include media-breakpoint-down(lg) {
+		.timeline-disclaimer-text {
+			flex: 1 1 100%;
+		}
+	}
 
 	.timeline-chart-picker {
 		width: auto;
