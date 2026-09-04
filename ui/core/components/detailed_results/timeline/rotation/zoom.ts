@@ -18,6 +18,8 @@ export interface ZoomConfig {
 	// --pps is read by the ruler as well as by the rows, and the ruler is not inside the scroller.
 	styleHost: HTMLElement;
 	labelWidth: () => number;
+	// The scroller is overflow-y hidden, so vertical keys have to move the page's scroller.
+	scrollVerticalBy: (delta: number) => void;
 	onChange: () => void;
 }
 
@@ -122,10 +124,10 @@ export class ZoomController {
 					scroller.scrollLeft += page * 0.25;
 					break;
 				case 'ArrowUp':
-					scroller.scrollTop -= 64;
+					this.config.scrollVerticalBy(-64);
 					break;
 				case 'ArrowDown':
-					scroller.scrollTop += 64;
+					this.config.scrollVerticalBy(64);
 					break;
 				default:
 					return;

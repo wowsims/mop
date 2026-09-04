@@ -92,6 +92,7 @@ export class RotationView extends Component implements WindowHost {
 			scroller: this.scroller,
 			styleHost: this.rootElem,
 			labelWidth: () => this.corner.offsetWidth,
+			scrollVerticalBy: delta => this.scrollVerticalBy(delta),
 			onChange: () => this.schedule(),
 		});
 		this.zoom.attach();
@@ -282,6 +283,12 @@ export class RotationView extends Component implements WindowHost {
 
 	// Grab-to-pan. The horizontal scrollbar sits at the far end of the rotation now that the page
 	// owns vertical scrolling, so dragging and shift+wheel are the reachable ways to pan.
+	// Vertical scrolling belongs to the page: the timeline's own scroller is overflow-y hidden.
+	private scrollVerticalBy(delta: number) {
+		if (this.outer) this.outer.scrollTop += delta;
+		else window.scrollBy(0, delta);
+	}
+
 	private attachDragPan() {
 		let pointerId: number | null = null;
 		let startX = 0;
@@ -290,12 +297,7 @@ export class RotationView extends Component implements WindowHost {
 		let startScrollTop = 0;
 		let panned = false;
 
-		// Vertical scrolling belongs to the page, so a vertical drag moves the outer scroller.
 		const scrollTop = () => (this.outer ? this.outer.scrollTop : window.scrollY);
-		const setScrollTop = (top: number) => {
-			if (this.outer) this.outer.scrollTop = top;
-			else window.scrollTo(window.scrollX, top);
-		};
 
 		const onPointerDown = (event: PointerEvent) => {
 			// Touch already pans both axes natively; taking the pointer would fight it.
@@ -321,17 +323,20 @@ export class RotationView extends Component implements WindowHost {
 				this.scroller.classList.add('is-panning');
 			}
 			this.scroller.scrollLeft = startScrollLeft - dx;
-			setScrollTop(startScrollTop - dy);
+			this.scrollVerticalBy(startScrollTop - dy - scrollTop());
 		};
 
 		const endPan = (event: PointerEvent) => {
 			if (event.pointerId !== pointerId) return;
 			if (this.scroller.hasPointerCapture(event.pointerId)) this.scroller.releasePointerCapture(event.pointerId);
 			pointerId = null;
+			if (event.type === 'pointercancel') panned = false;
 			this.scroller.classList.remove('is-panning');
 		};
 
-		// A drag ending over an item would otherwise open its tooltip on the trailing click.
+		// Suppresses the click a pan would otherwise deliver to whatever it ended on. It cannot
+		// stop the item tooltip: tippy's delegate triggers on mouseenter, so releasing with the
+		// cursor over a bar shows it exactly as hovering there would.
 		const onClick = (event: MouseEvent) => {
 			if (!panned) return;
 			panned = false;
