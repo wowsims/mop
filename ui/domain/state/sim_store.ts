@@ -273,21 +273,40 @@ export function createSimStore() {
 // Write helpers shared by the facades. Every logical change is ONE setState so
 // subscribers see it once.
 
-type UnkeyedSlice = 'sim' | 'ui' | 'encounter' | 'raid';
-export function patchSlice<N extends UnkeyedSlice>(store: SimStore, slice: N, patch: Partial<SimState[N]>) {
-	store.setState(s => ({ [slice]: { ...s[slice], ...patch } }) as Partial<SimState>);
+// A one-slice state update. Computed keys widen to `{ [x: string]: ... }`, so the
+// cast back to Partial<SimState> is unavoidable; it lives here once instead of at
+// every call site.
+function sliceUpdate<N extends keyof SimState>(slice: N, value: SimState[N]): Partial<SimState> {
+	return { [slice]: value } as Partial<SimState>;
 }
 
-type KeyedSlice = 'players' | 'reforge' | 'statWeights' | 'bulk';
+type UnkeyedSlice = 'sim' | 'ui' | 'encounter' | 'raid';
+export function patchSlice<N extends UnkeyedSlice>(store: SimStore, slice: N, patch: Partial<SimState[N]>) {
+	store.setState(s => sliceUpdate(slice, { ...s[slice], ...patch }));
+}
+
+// The slices keyed by a player's storeKey. Single source of truth: `KeyedSlice`
+// is derived from it, and deleteKeyed iterates it, so adding a keyed slice
+// cannot leave the disposal path behind.
+export const KEYED_SLICES = ['players', 'reforge', 'statWeights', 'bulk'] as const;
+type KeyedSlice = (typeof KEYED_SLICES)[number];
 type KeyedEntry<N extends KeyedSlice> = SimState[N][number];
+type Versions<N extends KeyedSlice> = KeyedEntry<N>['v'];
 
 export function zeroVersions<F extends string>(fields: ReadonlyArray<F>): Record<F, number> {
 	return Object.fromEntries(fields.map(f => [f, 0])) as Record<F, number>;
 }
 
+// A copy of `v` with each named counter incremented.
+function bumpVersions<N extends KeyedSlice>(v: Versions<N>, bumps: ReadonlyArray<keyof Versions<N>>): Versions<N> {
+	const next = { ...v } as Record<string, number>;
+	for (const f of bumps) next[f as string] = (next[f as string] ?? 0) + 1;
+	return next as Versions<N>;
+}
+
 // Seeds store[slice][key] (initialization, not a change).
 export function seedKeyed<N extends KeyedSlice>(store: SimStore, slice: N, key: number, entry: KeyedEntry<N>) {
-	store.setState(s => ({ [slice]: { ...s[slice], [key]: entry } }) as Partial<SimState>);
+	store.setState(s => sliceUpdate(slice, { ...s[slice], [key]: entry }));
 }
 
 // Writes `patch` into store[slice][key] and bumps the given version counters.
@@ -298,7 +317,7 @@ export function patchKeyed<N extends KeyedSlice>(
 	slice: N,
 	key: number,
 	patch: Partial<Omit<KeyedEntry<N>, 'v'>>,
-	bumps: ReadonlyArray<keyof KeyedEntry<N>['v']> = [],
+	bumps: ReadonlyArray<keyof Versions<N>> = [],
 ) {
 	store.setState(s => {
 		const cur = s[slice][key] as KeyedEntry<N> | undefined;
@@ -306,21 +325,16 @@ export function patchKeyed<N extends KeyedSlice>(
 		// in-flight callback must be a no-op, not a TypeError. Returning the current state
 		// object unchanged makes Zustand skip the notification entirely.
 		if (!cur) return s;
-		const v = { ...cur.v } as Record<string, number>;
-		for (const f of bumps) v[f as string] = (v[f as string] ?? 0) + 1;
-		return { [slice]: { ...s[slice], [key]: { ...cur, ...patch, v } } } as Partial<SimState>;
+		return sliceUpdate(slice, { ...s[slice], [key]: { ...cur, ...patch, v: bumpVersions<N>(cur.v, bumps) } });
 	});
 }
 
 // Removes a player's entries from every keyed slice (Player.dispose).
 export function deleteKeyed(store: SimStore, key: number) {
-	store.setState(s => {
-		const out: Partial<SimState> = {};
-		for (const slice of ['players', 'reforge', 'statWeights', 'bulk'] as const) {
-			const copy = { ...s[slice] } as Record<number, unknown>;
-			delete copy[key];
-			(out as Record<string, unknown>)[slice] = copy;
-		}
-		return out;
-	});
+	store.setState(s =>
+		KEYED_SLICES.reduce<Partial<SimState>>((out, slice) => {
+			const { [key]: _removed, ...rest } = s[slice];
+			return Object.assign(out, sliceUpdate(slice, rest));
+		}, {}),
+	);
 }
