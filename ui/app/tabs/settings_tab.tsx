@@ -44,8 +44,8 @@ export class SettingsTab extends SimTab {
 	readonly column2: HTMLElement = this.buildColumn(2, 'settings-left-col');
 	readonly column3: HTMLElement = this.buildColumn(3, 'settings-left-col');
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'settings-tab', title: i18n.t('settings_tab.title') });
+	constructor(simUI: IndividualSimUI<any>) {
+		super(simUI, { identifier: 'settings-tab', title: i18n.t('settings_tab.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = document.createElement('div');

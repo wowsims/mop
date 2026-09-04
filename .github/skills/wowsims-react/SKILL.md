@@ -13,8 +13,8 @@ restate them; it assumes them.
 
 ## Where the migration currently is
 
-**Phase 0 is complete.** React 19 renders in the built app, the two stacks coexist, and every
-gate is green. Nothing in `features/` or `app/` has been ported yet.
+**Phase 1 is complete.** React owns the page root and the top-level tab behaviour; every tab body
+is still a vanilla `Component`, and nothing in `features/` has been ported.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -22,14 +22,30 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | Phase | State |
 |---|---|
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
-| 1 — split `IndividualSimHost` out of the shell, React renders the shell | next, **hard gate** |
-| 2 — ui-kit primitives land *beside* the vanilla ones | not started |
+| 1 — React root, React-owned top-level tabs (same DOM) | **done** |
+| 2 — ui-kit primitives land *beside* the vanilla ones | next |
 | 3 — features port inward, easiest first | not started |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
 Full plan, including the duplication inventory that drives Phase 2:
 `~/.claude/plans/based-on-feature-ui-restructure-start-vast-yeti.md`.
+
+### What React owns today
+
+| File | Role |
+|---|---|
+| `ui/app/spec_entry.tsx` | `createRoot(#root).render(<StrictMode><SimApp/></StrictMode>)` — the only `react-dom/client` import |
+| `ui/app/sim_app.tsx` | Constructs `IndividualSimUI` exactly once into a ref'd `<div>`, then renders `<SimTabs>` |
+| `ui/app/sim_tabs.tsx` | Order, click handling and `active`/`show` for the top-level tabs. Renders `null` |
+| `ui/ui-kit/tab_registry.ts` | `SimTabRegistry` — the tab set and which one is open, as a `useSyncExternalStore` source |
+
+The plan called for a DOM-free `IndividualSimHost` constructed before `createRoot`. That is not
+possible as written: `SimHost` requires `rootElem`, `resultsViewer`, `simTabContentsContainer` and
+`addAction()`, and the `features:` behaviour slots add sidebar buttons during construction. The
+construct-once problem it was meant to solve is solved instead by a `useRef` gate in `SimApp`,
+which is what makes StrictMode's double-invoked effect safe. A test asserts the gate (it fails
+without it).
 
 ## The JSX boundary — the thing that surprises people
 
@@ -161,6 +177,12 @@ class name across `ui/` before moving its rules.
   `IndividualSimUIConfig` as a *type* and hand-mirrors `applyDefaults`. They prove no state write
   leaked into a component. They say nothing about whether anything rendered.
 - **`ListPicker` splices the array you give it.** `getValue` returns a `.slice()`.
+- **Some tab contents read the live document while being constructed.** `detailed_results.tsx`
+  does `document.querySelector('.dr-toolbar')` (and the same for the sticky-toolbar root) inside its
+  constructor, so its pane must already be in the page by then. This is why `SimTabRegistry.attach`
+  appends both elements itself instead of leaving placement to React — React only reasserts order
+  afterwards. Any React-rendered pane in Phase 2+ hits this: fix the lookups before moving the pane
+  into a component's render, or they silently find nothing.
 - **Tooltips portal to `<body>`**, so they outlive their component's subtree. Unmount cleanup is
   load-bearing; assert it in the component's test.
 - **`localization.tsx` walks the DOM** for `[data-i18n]` and writes `textContent`. React
@@ -187,6 +209,21 @@ Two things specific to this migration:
   app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
+  `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a
+  `useRef` gate — the shell is still built by `IndividualSimUI`, React just owns when. **1b**
+  inverted the tabs: `SimTab` and `SimUI.addTab` hand their elements to `SimTabRegistry` instead of
+  appending into the header and calling `data-bs-toggle="tab"`, and `SimTabs` decides order, clicks
+  and `active`/`show`. Bootstrap's tab plugin no longer drives the top-level tabs; the tab sets
+  *inside* detailed-results, bulk, rotation and the selector modal are still Bootstrap's, by design.
+  `SimHeader.activateTab` now delegates to the registry, so the bulk results renderer's
+  "back to gear" path is unchanged. Two deliberate DOM diffs against the parent branch, both
+  pre-existing quirks removed rather than introduced: the gear nav-*link* no longer carries `show`
+  (a pane class Bootstrap put there), and the literal class `false` from
+  `${isFirstTab && 'active'}` is gone. Gate: DOM parity across 5 specs (element counts identical,
+  only those two class diffs), a Playwright click sweep of all 6 tabs on those specs, goldens
+  byte-identical, and 36 unit tests.
 
 - 2026-09-04 Phase 0 complete. React 19.2 alongside tsx-vanilla: tsconfig and both vite configs
   moved to the automatic runtime, the 94 existing `.tsx` files gained

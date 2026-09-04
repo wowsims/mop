@@ -6,9 +6,10 @@
 import type { Player } from '@domain/player';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import { IndividualSimUI } from './individual_sim_ui';
+import { SimTabs } from './sim_tabs';
 
 export interface SimAppProps<SpecType extends Spec> {
 	player: Player<SpecType>;
@@ -29,12 +30,19 @@ export function SimApp<SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	// honestly rather than pretending the lifecycle is reversible. The ref survives StrictMode's
 	// mount/unmount/mount because React keeps the same component instance.
 	const constructed = useRef(false);
+	// Held in state so the tab controller can render once the shell's containers exist.
+	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
 
 	useLayoutEffect(() => {
 		if (constructed.current || !mountRef.current) return;
 		constructed.current = true;
-		new IndividualSimUI(mountRef.current, player, def);
+		setSimUI(new IndividualSimUI(mountRef.current, player, def));
 	}, [player, def]);
 
-	return <div className="sim-app" ref={mountRef} />;
+	return (
+		<>
+			<div className="sim-app" ref={mountRef} />
+			{simUI && <SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />}
+		</>
+	);
 }

@@ -5,16 +5,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
 const constructions: HTMLElement[] = [];
-vi.mock('./individual_sim_ui', () => ({
-	IndividualSimUI: class {
-		constructor(parent: HTMLElement) {
-			constructions.push(parent);
-			const root = document.createElement('div');
-			root.className = 'sim-ui';
-			parent.appendChild(root);
-		}
-	},
-}));
+vi.mock('./individual_sim_ui', async () => {
+	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
+	return {
+		IndividualSimUI: class {
+			readonly simTabContentsContainer = document.createElement('main');
+			readonly simHeader = { simTabsContainer: document.createElement('ul') };
+			readonly tabs = new SimTabRegistry(this.simHeader.simTabsContainer, this.simTabContentsContainer);
+			constructor(parent: HTMLElement) {
+				constructions.push(parent);
+				const root = document.createElement('div');
+				root.className = 'sim-ui';
+				parent.appendChild(root);
+			}
+		},
+	};
+});
 
 const { SimApp } = await import('./sim_app');
 

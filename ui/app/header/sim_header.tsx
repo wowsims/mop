@@ -6,7 +6,6 @@ import { Importer } from '@features/import-export/view/importer';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { isNative } from '@ui-kit/dom_utils';
-import { SimTab } from '@ui-kit/sim_tab';
 import { SimToolbarItem } from '@ui-kit/sim_toolbar_item';
 import clsx from 'clsx';
 import tippy, { ReferenceElement as TippyReferenceElement } from 'tippy.js';
@@ -30,7 +29,8 @@ interface ToolbarLinkArgs {
 export class SimHeader extends Component {
 	private simUI: SimUI;
 
-	private simTabsContainer: HTMLElement;
+	// React appends the registered tabs here; see app/sim_tabs.tsx.
+	readonly simTabsContainer: HTMLElement;
 	private simToolbar: HTMLElement;
 	private knownIssuesLink: TippyReferenceElement<HTMLElement>;
 	private knownIssuesContent: HTMLUListElement;
@@ -52,46 +52,9 @@ export class SimHeader extends Component {
 		new IntersectionObserver(([e]) => e.target.classList.toggle('stuck', e.intersectionRatio < 1), { threshold: [1] }).observe(this.rootElem);
 	}
 
+	// Tab identifiers double as the list item's class name, which is what callers pass.
 	activateTab(className: string) {
-		(this.simTabsContainer.getElementsByClassName(className)[0] as HTMLElement).click();
-	}
-
-	addTab(title: string, contentId: string) {
-		const isFirstTab = this.simTabsContainer.children.length == 0;
-
-		this.simTabsContainer.appendChild(
-			<li
-				className={`${contentId} nav-item`}
-				attributes={{
-					role: 'presentation',
-					// @ts-expect-error
-					'aria-controls': contentId,
-				}}>
-				<button
-					className={`nav-link ${isFirstTab && 'active'}`}
-					type="button"
-					dataset={{
-						bsToggle: 'tab',
-						bsTarget: `#${contentId}`,
-					}}
-					attributes={{
-						role: 'tab',
-						'aria-selected': isFirstTab,
-					}}>
-					{title}
-				</button>
-			</li>,
-		);
-	}
-
-	addSimTabLink(tab: SimTab) {
-		const isFirstTab = this.simTabsContainer.children.length == 0;
-
-		tab.navLink.setAttribute('aria-selected', isFirstTab.toString());
-
-		if (isFirstTab) tab.navLink.classList.add('active', 'show');
-
-		this.simTabsContainer.appendChild(tab.navItem);
+		this.simUI.tabs.activate(className);
 	}
 
 	addImportLink(label: string, importer: Importer, isUnsupported = false) {

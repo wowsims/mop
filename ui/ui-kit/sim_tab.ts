@@ -15,8 +15,10 @@ export abstract class SimTab extends Component {
 	readonly navLink: HTMLElement;
 	readonly contentContainer: HTMLElement;
 
-	constructor(parentElem: HTMLElement, simUI: SimUIHost, config: SimTabConfig) {
-		super(parentElem, 'sim-tab');
+	constructor(simUI: SimUIHost, config: SimTabConfig) {
+		// No parent: the pane is handed to the tab registry, and React decides where it goes and
+		// whether it is the active one.
+		super(null, 'sim-tab');
 
 		this.rootElem.classList.add(config.identifier);
 
@@ -26,15 +28,19 @@ export abstract class SimTab extends Component {
 		this.rootElem.id = this.config.identifier;
 		this.rootElem.classList.add('tab-pane', 'fade');
 
-		if (parentElem.childNodes.length == 0) this.rootElem.classList.add('active', 'show');
-
 		this.navItem = this.buildNavItem();
 		this.navLink = this.navItem.children[0] as HTMLElement;
 		this.contentContainer = document.createElement('div');
 		this.contentContainer.classList.add('tab-pane-content-container');
 		this.rootElem.appendChild(this.contentContainer);
 
-		this.simUI.simHeader.addSimTabLink(this);
+		this.simUI.tabs.attach({
+			id: config.identifier,
+			title: config.title,
+			navItem: this.navItem,
+			navLink: this.navLink,
+			pane: this.rootElem,
+		});
 
 		this.navItem.addEventListener('click', () => {
 			trackPageView(config.title, config.identifier);
@@ -48,8 +54,6 @@ export abstract class SimTab extends Component {
 				<button
 					class="nav-link"
 					type="button"
-					data-bs-toggle="tab"
-					data-bs-target="#${this.config.identifier}"
 					role="tab"
 					aria-controls="${this.config.identifier}"
 				>${this.config.title}</button>

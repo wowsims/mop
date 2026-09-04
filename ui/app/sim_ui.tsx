@@ -17,7 +17,7 @@ import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
-import { SimTab } from '@ui-kit/sim_tab';
+import { SimTabRegistry } from '@ui-kit/tab_registry';
 import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
@@ -58,6 +58,8 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly simActionsContainer: HTMLElement;
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
+	// Order and active state of the top-level tabs. React reads this; see app/sim_tabs.tsx.
+	readonly tabs: SimTabRegistry;
 
 	constructor(parentElem: HTMLElement, sim: Sim, config: SimUIConfig) {
 		super(parentElem, 'sim-ui');
@@ -94,6 +96,7 @@ export abstract class SimUI extends Component implements SimHost {
 		this.simMain = document.createElement('main');
 		this.simMain.classList.add('sim-main', 'tab-content');
 		this.simContentContainer.appendChild(this.simMain);
+		this.tabs = new SimTabRegistry(this.simHeader.simTabsContainer, this.simMain);
 
 		this.rootElem.classList.add(this.config.cssClass);
 
@@ -258,20 +261,34 @@ export abstract class SimUI extends Component implements SimHost {
 		return { group: groupRef.value!, children: refs };
 	}
 
+	// A tab whose content is a plain element rather than a SimTab subclass (the detailed results).
+	// Builds the same two elements SimTab builds and registers them the same way.
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
-		const isFirstTab = this.simTabContentsContainer.children.length == 0;
 
-		this.simHeader.addTab(title, contentId);
-		this.simTabContentsContainer.appendChild(
-			<div id={contentId} className={clsx('tab-pane fade', isFirstTab && 'active show')}>
+		const navLink = (
+			<button className="nav-link" type="button" attributes={{ role: 'tab' }}>
+				{title}
+			</button>
+		) as HTMLElement;
+		const navItem = (
+			<li
+				className={`${contentId} nav-item`}
+				attributes={{
+					role: 'presentation',
+					// @ts-expect-error aria-controls is not in tsx-vanilla's attribute map
+					'aria-controls': contentId,
+				}}>
+				{navLink}
+			</li>
+		) as HTMLElement;
+		const pane = (
+			<div id={contentId} className="tab-pane fade">
 				{content}
-			</div>,
-		);
-	}
+			</div>
+		) as HTMLElement;
 
-	addSimTab(tab: SimTab) {
-		this.simHeader.addSimTabLink(tab);
+		this.tabs.attach({ id: contentId, title, navItem, navLink, pane });
 	}
 
 	addWarning(warning: SimWarning) {

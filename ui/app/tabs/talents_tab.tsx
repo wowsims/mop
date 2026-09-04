@@ -21,8 +21,8 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 	readonly leftPanel: HTMLElement;
 	readonly rightPanel: HTMLElement;
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<SpecType>) {
-		super(parentElem, simUI, { identifier: 'talents-tab', title: i18n.t('talents_tab.title') });
+	constructor(simUI: IndividualSimUI<SpecType>) {
+		super(simUI, { identifier: 'talents-tab', title: i18n.t('talents_tab.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = (<div className="talents-tab-left tab-panel-left" />) as HTMLElement;

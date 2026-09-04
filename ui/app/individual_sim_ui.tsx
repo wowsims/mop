@@ -299,13 +299,14 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		);
 	}
 
+	// Registration order is display order, and the first tab registered is the one open on load,
+	// so gear no longer has to assert that for itself.
 	private addGearTab() {
-		const gearTab = new GearTab(this.simTabContentsContainer, this);
-		gearTab.rootElem.classList.add('active', 'show');
+		new GearTab(this);
 	}
 
 	private addBulkTab(): BulkTab {
-		const bulkTab = new BulkTab(this.simTabContentsContainer, this);
+		const bulkTab = new BulkTab(this);
 		//bulkTab.navLink.hidden = !this.sim.getShowExperimental();
 		//this.sim.showExperimentalChangeEmitter.on(() => {
 		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
@@ -314,15 +315,15 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addSettingsTab() {
-		new SettingsTab(this.simTabContentsContainer, this);
+		new SettingsTab(this);
 	}
 
 	private addTalentsTab() {
-		new TalentsTab(this.simTabContentsContainer, this);
+		new TalentsTab(this);
 	}
 
 	private addRotationTab() {
-		new RotationTab(this.simTabContentsContainer, this);
+		new RotationTab(this);
 	}
 
 	private addDetailedResultsTab() {
