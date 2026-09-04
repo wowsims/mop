@@ -11,6 +11,25 @@ import { DpsTooltip, ResourceTooltip, ThreatTooltip } from '../tooltip_content';
 import { AXIS_GRID_COLOR, cssVarColor } from './colors';
 import { TimelineDataset } from './types';
 
+const LINE_DATASET = { borderWidth: 2, pointRadius: 0, pointHoverRadius: 3 } as const;
+// Thin and dashed so resource traces read as context behind the DPS line rather than peers of it.
+const TRACE_DATASET = { ...LINE_DATASET, borderWidth: 1, borderDash: [4, 4] };
+
+// title, ticks and border each need the colour, which is three places for one axis to disagree.
+function valueScale(color: string, text: string, max: number, extra?: Partial<ScaleOptions<'linear'>>): ScaleOptions<'linear'> {
+	return {
+		type: 'linear',
+		position: 'left',
+		min: 0,
+		max,
+		title: { display: true, text, color },
+		ticks: { color, maxTicksLimit: 11, precision: 0 },
+		border: { color },
+		grid: { color: AXIS_GRID_COLOR },
+		...extra,
+	} as ScaleOptions<'linear'>;
+}
+
 const dpsColor = () => cssVarColor('--bs-dps');
 const manaColor = () => cssVarColor('--bs-mana');
 const threatColor = () => cssVarColor('--bs-threat');
@@ -40,47 +59,24 @@ export function timeScale(duration: number, label: string): ScaleOptions<'linear
 }
 
 export function dpsScale(maxDps: number): ScaleOptions<'linear'> {
-	return {
-		type: 'linear',
-		position: 'left',
-		min: 0,
-		max: Math.max(100, Math.ceil((maxDps || 0) / 100) * 100),
-		title: { display: true, text: 'DPS', color: dpsColor() },
-		ticks: { color: dpsColor(), maxTicksLimit: 11, precision: 0 },
-		border: { color: dpsColor() },
-		grid: { color: AXIS_GRID_COLOR },
-	};
+	return valueScale(dpsColor(), 'DPS', Math.max(100, Math.ceil((maxDps || 0) / 100) * 100));
 }
 
 export function threatScale(maxThreat: number, display: boolean): ScaleOptions<'linear'> {
-	return {
-		type: 'linear',
-		display,
-		position: 'left',
-		min: 0,
-		max: Math.max(10000, Math.ceil((maxThreat || 0) / 10000) * 10000),
-		title: { display: true, text: THREAT_SERIES_NAME, color: threatColor() },
-		ticks: { color: threatColor(), maxTicksLimit: 11, precision: 0 },
-		border: { color: threatColor() },
-		grid: { color: AXIS_GRID_COLOR },
-	};
+	const max = Math.max(10000, Math.ceil((maxThreat || 0) / 10000) * 10000);
+	return valueScale(threatColor(), THREAT_SERIES_NAME, max, { display });
 }
 
 export function manaScale(maxMana: number): ScaleOptions<'linear'> {
-	return {
-		type: 'linear',
+	return valueScale(manaColor(), 'Mana', maxMana, {
 		position: 'right',
-		min: 0,
-		max: maxMana,
-		title: { display: true, text: 'Mana', color: manaColor() },
 		ticks: {
 			color: manaColor(),
 			maxTicksLimit: 11,
 			callback: value => `${Number(value).toFixed(0)} (${((Number(value) / maxMana) * 100).toFixed(0)}%)`,
 		},
-		border: { color: manaColor() },
 		grid: { drawOnChartArea: false },
-	};
+	});
 }
 
 export function resourcePctScale(): ScaleOptions<'linear'> {
@@ -101,9 +97,7 @@ export function dpsDataset(unit: UnitMetrics, seriesId: string, colorOverride: s
 			label: 'DPS',
 			yAxisID: Y_DPS,
 			borderColor: colorOverride || dpsColor(),
-			borderWidth: 2,
-			pointRadius: 0,
-			pointHoverRadius: 3,
+			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.dps, log })),
 			renderTooltip: log => DpsTooltip(log, unit, colorOverride),
 		},
@@ -119,9 +113,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, colorOverride
 		label: THREAT_SERIES_NAME,
 		yAxisID,
 		borderColor: colorOverride || threatColor(),
-		borderWidth: 2,
-		pointRadius: 0,
-		pointHoverRadius: 3,
+		...LINE_DATASET,
 		data: logs.map(log => ({ x: log.timestamp, y: log.threatAfter, log })),
 		renderTooltip: log => ThreatTooltip(log, unit, colorOverride),
 	};
@@ -140,9 +132,7 @@ export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<Resou
 			label: 'Mana',
 			yAxisID: Y_MANA,
 			borderColor: manaColor(),
-			borderWidth: 2,
-			pointRadius: 0,
-			pointHoverRadius: 3,
+			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.valueAfter, log })),
 			renderTooltip: log => ResourceTooltip(log, maxMana, true),
 		},
@@ -186,11 +176,7 @@ export function resourceDatasets(unit: UnitMetrics, secondaryResource: Secondary
 			label,
 			yAxisID: Y_RESOURCE_PCT,
 			borderColor: resourceColors.get(resourceType),
-			// Thin and dashed so they read as context behind the DPS line rather than as peers of it.
-			borderWidth: 1,
-			borderDash: [4, 4],
-			pointRadius: 0,
-			pointHoverRadius: 3,
+			...TRACE_DATASET,
 			// Percent of that resource's own maximum: the only scale they share.
 			data: logs.map(log => ({ x: log.timestamp, y: Number(((log.valueAfter / resourceMax) * 100).toFixed(2)), log })),
 			renderTooltip: log => ResourceTooltip(log, resourceMax, false),
