@@ -2,7 +2,6 @@ import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
-import { getMetaGemConditionDescription } from '@domain/proto_utils/gems';
 import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats } from '@domain/proto_utils/stats';
 import { getTalentPoints } from '@domain/proto_utils/utils';
@@ -136,20 +135,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			itemSwapEnabledSpecs.push(player.getSpec());
 		}
 
-		this.addWarning({
-			updateOn: subscribePlayerField(this.player, 'gear'),
-			getContent: () => {
-				if (!this.player.getGear().hasInactiveMetaGem(this.player.isBlacksmithing())) {
-					return '';
-				}
-
-				const metaGem = this.player.getGear().getMetaGem()!;
-				return i18n.t('sidebar.warnings.meta_gem_disabled', {
-					gemName: metaGem.name,
-					description: getMetaGemConditionDescription(metaGem),
-				});
-			},
-		});
 		this.addWarning({
 			updateOn: subscribeAll([
 				subscribePlayerField(this.player, 'gear'),

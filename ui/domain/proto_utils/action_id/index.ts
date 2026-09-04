@@ -204,6 +204,13 @@ export class ActionId {
 		return this.equalsIgnoringTag(other) && this.tag == other.tag;
 	}
 
+	// A string form of exactly what equals() compares, for use as a Map/Set key. toString()
+	// is not a substitute: it reports only the first non-zero of itemId/spellId/otherId and
+	// drops randomSuffixId and upgradeStep. Keep in step with equalsIgnoringTag below.
+	equalityKey(): string {
+		return `${this.itemId}|${this.randomSuffixId}|${this.spellId}|${this.otherId}|${this.upgradeStep}|${this.tag}`;
+	}
+
 	equalsIgnoringTag(other: ActionId): boolean {
 		return (
 			this.itemId == other.itemId &&

@@ -15,7 +15,12 @@ export class CacheHandler<T> {
 	}
 
 	get(id: string): T | undefined {
-		return this.data.get(id);
+		const value = this.data.get(id);
+		if (this.keysToKeep && value !== undefined) {
+			this.data.delete(id);
+			this.data.set(id, value);
+		}
+		return value;
 	}
 
 	delete(id: string): boolean {
@@ -28,10 +33,11 @@ export class CacheHandler<T> {
 	}
 
 	private keepMostRecent() {
-		if (this.keysToKeep && this.data.size > this.keysToKeep) {
-			const keys = [...this.data.keys()];
-			const keysToRemove = keys.slice(0, keys.length - this.keysToKeep);
-			keysToRemove.forEach(key => this.data.delete(key));
+		if (!this.keysToKeep) return;
+		while (this.data.size > this.keysToKeep) {
+			const oldest = this.data.keys().next();
+			if (oldest.done) return;
+			this.data.delete(oldest.value);
 		}
 	}
 }

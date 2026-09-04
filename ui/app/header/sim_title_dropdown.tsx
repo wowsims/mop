@@ -10,7 +10,6 @@ import { Component } from '@ui-kit/component';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
-
 interface ClassOptions {
 	type: 'Class';
 	class: PlayerClass<Class>;

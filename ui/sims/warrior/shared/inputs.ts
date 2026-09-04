@@ -13,4 +13,3 @@ export const StanceSnapshot = <SpecType extends Spec.SpecArmsWarrior | Spec.Spec
 		label: i18n.t('settings_tab.other.stance_snapshot.label'),
 		labelTooltip: i18n.t('settings_tab.other.stance_snapshot.tooltip'),
 	});
-

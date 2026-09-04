@@ -1,8 +1,8 @@
 import { SimLog } from '@domain/proto_utils/logs';
 import { Emitter } from '@domain/state/events';
 import i18n from '@i18n/config';
-import { fragmentToString } from '@ui-kit/dom_utils';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { VirtualList } from '@ui-kit/virtual_list';
 // @ts-expect-error
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
@@ -14,8 +14,16 @@ import { ResultComponent, ResultComponentConfig, SimResultData } from './result_
 // import another feature's view, so the host builds it and passes it down.
 export type LogExporterFactory = (getLogData: () => string) => { open: () => void };
 
+const DEBUG_MARKER = '[DEBUG]';
+
+type LogEntry = {
+	log: SimLog;
+	searchText: string;
+	isDebug: boolean;
+};
+
 export class LogRunner extends ResultComponent {
-	private virtualScroll: CustomVirtualScroll | null = null;
+	private readonly virtualList: VirtualList;
 	readonly showDebugChangeEmitter = new Emitter<void>();
 	private showDebug = false;
 	private ui: {
@@ -24,14 +32,17 @@ export class LogRunner extends ResultComponent {
 		buttonToTop: HTMLButtonElement;
 		exportLog: HTMLButtonElement;
 		scrollContainer: HTMLDivElement;
-		contentContainer: HTMLTableSectionElement;
+		list: HTMLDivElement;
+		contentContainer: HTMLDivElement;
 	};
-	cacheOutput: {
-		cacheKey: string | null;
-		logs: SimLog[] | null;
-		logsAsHTML: Element[] | null;
-		logsAsText: string[] | null;
-	} = { cacheKey: null, logs: null, logsAsHTML: null, logsAsText: null };
+
+	private cacheKey: string | null = null;
+	// Widest content the list has had to hold, in px. See setListWidth.
+	private listWidth = 0;
+	private entries: Array<LogEntry> = [];
+	private visibleIndexes: Array<number> = [];
+	private allIndexes: Array<number> = [];
+	private nonDebugIndexes: Array<number> = [];
 
 	constructor(config: ResultComponentConfig, makeLogExporter: LogExporterFactory) {
 		config.rootCssClass = 'log-runner-root';
@@ -42,7 +53,8 @@ export class LogRunner extends ResultComponent {
 		const buttonToTopRef = ref<HTMLButtonElement>();
 		const exportLogRef = ref<HTMLButtonElement>();
 		const scrollContainerRef = ref<HTMLDivElement>();
-		const contentContainerRef = ref<HTMLTableSectionElement>();
+		const listRef = ref<HTMLDivElement>();
+		const contentContainerRef = ref<HTMLDivElement>();
 
 		const logExporter = makeLogExporter(() => this.getCombinedText());
 
@@ -58,17 +70,13 @@ export class LogRunner extends ResultComponent {
 					</button>
 				</div>
 				<div ref={scrollContainerRef} className="log-runner-scroll">
-					<table className="metrics-table log-runner-table">
-						<thead>
-							<tr className="metrics-table-header-row">
-								<th>{i18n.t('results_tab.details.logs.time_column')}</th>
-								<th>
-									<div className="d-flex align-items-end">{i18n.t('results_tab.details.logs.event_column')}</div>
-								</th>
-							</tr>
-						</thead>
-						<tbody ref={contentContainerRef} className="log-runner-logs"></tbody>
-					</table>
+					<div ref={listRef} className="log-runner-list">
+						<div className="log-runner-header">
+							<div>{i18n.t('results_tab.details.logs.time_column')}</div>
+							<div>{i18n.t('results_tab.details.logs.event_column')}</div>
+						</div>
+						<div ref={contentContainerRef} className="log-runner-logs"></div>
+					</div>
 				</div>
 			</>,
 		);
@@ -79,6 +87,7 @@ export class LogRunner extends ResultComponent {
 			buttonToTop: buttonToTopRef.value!,
 			exportLog: exportLogRef.value!,
 			scrollContainer: scrollContainerRef.value!,
+			list: listRef.value!,
 			contentContainer: contentContainerRef.value!,
 		};
 
@@ -88,8 +97,9 @@ export class LogRunner extends ResultComponent {
 		};
 		this.ui.search?.addEventListener('input', debounce(onSearchHandler, 150));
 		this.ui.buttonToTop?.addEventListener('click', () => {
-			this.virtualScroll?.scrollToTop();
+			this.virtualList.scrollToTop();
 		});
+
 		this.ui.exportLog?.addEventListener('click', () => {
 			logExporter.open();
 		});
@@ -108,29 +118,19 @@ export class LogRunner extends ResultComponent {
 			},
 		});
 
+		this.virtualList = new VirtualList({
+			scrollElem: this.ui.scrollContainer,
+			contentElem: this.ui.contentContainer,
+			dataSource: {
+				count: () => this.visibleIndexes.length,
+				renderRow: position => this.renderRow(this.entries[this.visibleIndexes[position]].log),
+			},
+			onRender: () => this.repairListWidth(),
+		});
+		this.addOnDisposeCallback(() => this.virtualList.dispose());
+
 		this.showDebugChangeEmitter.on(() => {
 			onSearchHandler();
-		});
-		this.initializeClusterize();
-	}
-
-	// Semicolon-separated cell text, one line per rendered log row.
-	private getCombinedText(): string {
-		return (this.cacheOutput.logsAsHTML ?? [])
-			.map(element =>
-				Array.from(element.querySelectorAll('td'))
-					.map(td => td.textContent?.trim() || '')
-					.join(';'),
-			)
-			.filter(text => text.length > 0)
-			.join('\n');
-	}
-
-	private initializeClusterize(): void {
-		this.virtualScroll = new CustomVirtualScroll({
-			scrollContainer: this.ui.scrollContainer,
-			contentContainer: this.ui.contentContainer,
-			itemHeight: 32,
 		});
 	}
 
@@ -138,122 +138,97 @@ export class LogRunner extends ResultComponent {
 		// Regular expression to match quoted phrases or words
 		const matchQuotesRegex = /"([^"]+)"|\S+/g;
 		let match;
-		const keywords: any[] = [];
+		const keywords: Array<string> = [];
 		// Extract keywords and quoted phrases from the search query
 		while ((match = matchQuotesRegex.exec(searchQuery))) {
 			keywords.push(match[1] ? match[1].toLowerCase() : match[0].toLowerCase());
 		}
-		const filteredLogs = this.cacheOutput.logsAsHTML?.filter((_, index) => {
-			const logText = this.cacheOutput.logsAsText![index];
-			const logRaw = this.cacheOutput.logs![index].raw;
 
-			if (!this.showDebug && logRaw.match(/.*\[DEBUG\].*/)) return false;
-
-			return keywords.every(keyword => {
-				if (keyword.startsWith('"') && keyword.endsWith('"')) {
-					// Remove quotes for exact phrase match
-					return logText.includes(keyword.slice(1, -1));
+		// Filtering produces indexes, not elements, so a keystroke never builds a row.
+		if (keywords.length === 0) {
+			this.visibleIndexes = this.showDebug ? this.allIndexes : this.nonDebugIndexes;
+		} else {
+			const matches: Array<number> = [];
+			for (let i = 0; i < this.entries.length; i++) {
+				const entry = this.entries[i];
+				if (!this.showDebug && entry.isDebug) continue;
+				let matchesAll = true;
+				for (const keyword of keywords) {
+					if (!entry.searchText.includes(keyword)) {
+						matchesAll = false;
+						break;
+					}
 				}
-				return logText.includes(keyword);
-			});
-		});
-
-		if (filteredLogs) {
-			this.virtualScroll?.setItems(filteredLogs);
+				if (matchesAll) matches.push(i);
+			}
+			this.visibleIndexes = matches;
 		}
+
+		this.virtualList.scrollToTop();
 	}
 
 	onSimResult(resultData: SimResultData): void {
-		this.getLogs(resultData);
+		this.rebuildEntries(resultData);
 		this.searchLogs(this.ui.search.value);
+		if (!this.listWidth) this.seedListWidth();
 	}
 
-	getLogs(resultData: SimResultData) {
-		if (!resultData) return [];
+	private rebuildEntries(resultData: SimResultData) {
 		const cacheKey = resultData.result.request.requestId;
-		if (this.cacheOutput.cacheKey === cacheKey) {
-			return this.cacheOutput.logsAsHTML;
+		if (this.cacheKey === cacheKey) return;
+
+		this.cacheKey = cacheKey;
+		this.listWidth = 0;
+		this.ui.list.style.removeProperty('--log-runner-list-width');
+		this.entries = resultData.result.logs
+			.filter((log): log is SimLog => !log.isCastCompleted())
+			.map(log => ({
+				log,
+				searchText: `${log.formattedTimestamp()} ${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
+				isDebug: log.raw.includes(DEBUG_MARKER),
+			}));
+		this.allIndexes = this.entries.map((_, i) => i);
+		this.nonDebugIndexes = this.allIndexes.filter(i => !this.entries[i].isDebug);
+	}
+
+	private seedListWidth() {
+		if (!this.entries.length) return;
+
+		let longest = this.entries[0].log;
+		for (const { log } of this.entries) {
+			if (log.raw.length > longest.raw.length) longest = log;
 		}
 
-		const validLogs = resultData.result.logs.filter(log => !log.isCastCompleted());
-		this.cacheOutput.cacheKey = cacheKey;
-		this.cacheOutput.logs = validLogs;
-		this.cacheOutput.logsAsHTML = validLogs.map(log => this.renderItem(log));
-		this.cacheOutput.logsAsText = this.cacheOutput.logsAsHTML.map(element => fragmentToString(element).trim().toLowerCase());
+		// Positioned out of flow, so it inherits the list's fonts without widening it.
+		const measurer = (<div className="log-runner-measurer">{this.renderRow(longest)}</div>) as HTMLDivElement;
+		this.ui.list.appendChild(measurer);
+		const width = (measurer.firstElementChild as HTMLElement).offsetWidth;
+		measurer.remove();
+		this.setListWidth(width);
 	}
 
-	renderItem(log: SimLog) {
+	private repairListWidth() {
+		if (!this.listWidth) return;
+		const overflow = this.ui.contentContainer.scrollWidth - this.ui.contentContainer.clientWidth;
+		if (overflow > 0) this.setListWidth(this.listWidth + overflow);
+	}
+
+	private setListWidth(width: number) {
+		if (width <= this.listWidth) return;
+		this.listWidth = width;
+		this.ui.list.style.setProperty('--log-runner-list-width', `${Math.ceil(width)}px`);
+	}
+
+	private renderRow(log: SimLog) {
 		return (
-			<tr>
-				<td className="log-timestamp">{log.formattedTimestamp()}</td>
-				<td className="log-evdsfent">{renderLog(log, false).cloneNode(true)}</td>
-			</tr>
-		) as HTMLTableRowElement;
-	}
-}
-
-class CustomVirtualScroll {
-	private scrollContainer: HTMLElement;
-	private contentContainer: HTMLElement;
-	private items: Element[];
-	private itemHeight: number;
-	private visibleItemsCount: number;
-	private startIndex: number;
-	private placeholderTop: HTMLElement;
-	private placeholderBottom: HTMLElement;
-
-	constructor({ scrollContainer, contentContainer, itemHeight }: { scrollContainer: HTMLElement; contentContainer: HTMLElement; itemHeight: number }) {
-		this.scrollContainer = scrollContainer;
-		this.contentContainer = contentContainer;
-		this.items = [];
-		this.itemHeight = itemHeight;
-		this.visibleItemsCount = 50; // +1 for buffer
-		this.startIndex = 0;
-
-		this.placeholderTop = document.createElement('div');
-		this.placeholderBottom = document.createElement('div');
-		contentContainer.prepend(this.placeholderTop);
-		contentContainer.append(this.placeholderBottom);
-
-		this.attachScrollListener();
+			<div className="log-runner-row">
+				<div className="log-timestamp">{log.formattedTimestamp()}</div>
+				<div className="log-event">{renderLog(log, false)}</div>
+			</div>
+		) as HTMLDivElement;
 	}
 
-	scrollToTop(): void {
-		this.scrollContainer.scrollTop = 0;
-		this.startIndex = 0; // Reset startIndex to ensure items are updated correctly
-		this.updateVisibleItems(); // Update the visible items after scrolling to top
-	}
-
-	setItems(newItems: CustomVirtualScroll['items']): void {
-		// Adjust the type of newItems as needed
-		this.items = newItems;
-		this.scrollToTop();
-	}
-
-	private attachScrollListener(): void {
-		this.scrollContainer.addEventListener('scroll', () => {
-			const newIndex = Math.floor(this.scrollContainer.scrollTop / this.itemHeight);
-			if (newIndex !== this.startIndex) {
-				this.startIndex = newIndex;
-				this.updateVisibleItems();
-			}
-		});
-	}
-
-	private updateVisibleItems(): void {
-		const endIndex = this.startIndex + this.visibleItemsCount;
-		const visibleItems = this.items.slice(this.startIndex, endIndex);
-		const remainingItems = this.items.length - endIndex;
-
-		// Update the height of the placeholders before it's placed in the dom to prevent rerender
-		this.placeholderTop.style.height = `${this.startIndex * this.itemHeight}px`;
-		this.placeholderBottom.style.height = `${remainingItems * this.itemHeight}px`;
-		this.contentContainer.replaceChildren(
-			<>
-				{this.placeholderTop}
-				{visibleItems.map(item => item)}
-				{this.placeholderBottom}
-			</>,
-		);
+	private getCombinedText(): string {
+		return this.entries.map(({ log }) => `${log.formattedTimestamp()};${log.rawWithoutTimestamp()}`).join('\n');
 	}
 }

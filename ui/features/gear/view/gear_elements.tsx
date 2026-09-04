@@ -73,9 +73,7 @@ export const createItemSockets = (player: Player<any>, item: EquippedItem): { el
 			const updateProfession = () => {
 				gemContainer.classList[player.isBlacksmithing() ? 'remove' : 'add']('hide');
 			};
-			professionSubscription = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(
-				updateProfession,
-			);
+			professionSubscription = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(updateProfession);
 			updateProfession();
 		}
 		return gemContainer;

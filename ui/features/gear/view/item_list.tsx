@@ -15,7 +15,7 @@ import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlo
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
-import { Clusterize } from '@ui-kit/vendor/clusterize';
+import { VirtualList } from '@ui-kit/virtual_list';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -79,7 +79,7 @@ export default class ItemList<T extends ItemListType> {
 	private gearData: GearData;
 	private tabContent: Element;
 	private onItemClick: (itemData: ItemData<T>) => void;
-	private scroller: Clusterize;
+	private scroller: VirtualList;
 
 	private sortBy = ItemListSortBy.ILVL;
 	private sortDirection = SortDirection.DESC;
@@ -189,7 +189,7 @@ export default class ItemList<T extends ItemListType> {
 					<h6 className="favorite-label" />
 					<h6 ref={compareLabelRef} className="compare-label hide" />
 				</div>
-				<ul ref={modalListRef} className="selector-modal-list"></ul>
+				<ul ref={modalListRef} className="selector-modal-list" attributes={{ tabindex: '0' }}></ul>
 			</div>
 		);
 
@@ -233,32 +233,17 @@ export default class ItemList<T extends ItemListType> {
 		this.listElem = modalListRef.value!;
 		this.itemsToDisplay = [];
 
-		this.scroller = new Clusterize(
-			{
-				getNumberOfRows: () => {
-					return this.itemsToDisplay.length;
-				},
-				generateRows: (startIdx, endIdx) => {
-					const items = [];
-					for (let i = startIdx; i < endIdx; ++i) {
-						if (i >= this.itemsToDisplay.length) break;
-						items.push(this.createItemElem({ idx: this.itemsToDisplay[i], data: this.itemData[this.itemsToDisplay[i]] }));
-					}
-					return items;
-				},
+		this.scroller = new VirtualList({
+			scrollElem: this.listElem,
+			contentElem: this.listElem,
+			dataSource: {
+				count: () => this.itemsToDisplay.length,
+				renderRow: index => this.createItemElem({ idx: this.itemsToDisplay[index], data: this.itemData[this.itemsToDisplay[index]] }),
 			},
-			{
-				rows: [],
-				scroll_elem: this.listElem,
-				content_elem: this.listElem,
-				item_height: 56,
-				show_no_data_row: false,
-				no_data_text: '',
-				tag: 'li',
-				rows_in_block: 16,
-				blocks_in_cluster: 2,
-			},
-		);
+			estimatedRowHeight: 56,
+			rowTag: 'li',
+			keepParity: true,
+		});
 
 		const removeButton = removeButtonRef.value;
 		if (removeButton) {
@@ -297,7 +282,6 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	public sizeRefresh() {
-		this.scroller.refresh(true);
 		this.applyFilters();
 	}
 
@@ -332,7 +316,7 @@ export default class ItemList<T extends ItemListType> {
 		const newItemId = this.getItemIdByItemType(newItem);
 		const newEP = newItem !== undefined && newItem !== null ? this.computeEP(newItem) : 0;
 
-		this.scroller.elementUpdate(item => {
+		this.scroller.updateVisible(item => {
 			const idx = (item as HTMLElement).dataset.idx!;
 			const itemData = this.itemData[parseFloat(idx)];
 

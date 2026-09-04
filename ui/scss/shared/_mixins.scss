@@ -7,9 +7,8 @@
 	$text-color: color-contrast($base-color);
 
 	// Used to style the SimUI background
-	--theme-background-color:
-		#{color.channel($background-color-hex, 'red', $space: rgb), color.channel($background-color-hex, 'green', $space: rgb),
-		color.channel($background-color-hex, 'blue', $space: rgb)};
+	--theme-background-color: #{color.channel($background-color-hex, 'red', $space: rgb), color.channel($background-color-hex, 'green', $space: rgb),
+			color.channel($background-color-hex, 'blue', $space: rgb)};
 	--theme-background-image: url(#{$background-image-url});
 	--theme-background-opacity: #{$opacity};
 

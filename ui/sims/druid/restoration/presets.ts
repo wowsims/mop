@@ -65,7 +65,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 	potId: 57192, // Mythical Mana Potion
 });
 export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns()
+	...defaultRaidBuffMajorDamageCooldowns(),
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});

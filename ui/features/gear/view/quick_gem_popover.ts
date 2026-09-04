@@ -34,7 +34,11 @@ export const addQuickGemPopover = (
 			}));
 		},
 		onItemClick: clickedItem => {
-			player.equipItem(itemSlot, item.withGem(clickedItem, socketIdx));
+			// Read the equipped item at click time. The one captured when this popover was built
+			// goes stale as soon as the slot changes, and writing it back would revert the item.
+			const currentItem = player.getEquippedItem(itemSlot);
+			if (!currentItem) return;
+			player.equipItem(itemSlot, currentItem.withGem(clickedItem, socketIdx));
 		},
 		footerButton: {
 			label: i18n.t('gear_tab.gear_picker.quick_popovers.favorite_gems.open_gems'),

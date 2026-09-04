@@ -202,5 +202,3 @@ const withReforgedCandidates = (request: BulkSimRequest, candidates: BulkGearCan
 	optimizedCandidates,
 	reforgeRequest: undefined,
 });
-
-

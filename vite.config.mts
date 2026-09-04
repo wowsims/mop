@@ -33,8 +33,9 @@ export const UI_ALIASES: Record<string, string> = {
 };
 
 function serveExternalAssets() {
+	const simWorker = process.env.WASM_WORKER ? '/mop/sim_worker.js' : '/mop/local_worker.js';
 	const workerMappings = {
-		'/mop/sim_worker.js': '/mop/local_worker.js',
+		'/mop/sim_worker.js': simWorker,
 		'/mop/net_worker.js': '/mop/net_worker.js',
 		'/mop/lib.wasm.gz': '/mop/lib.wasm.gz',
 		'/mop/highs.wasm': '/mop/highs.wasm',

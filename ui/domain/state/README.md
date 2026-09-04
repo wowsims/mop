@@ -18,16 +18,16 @@ with no store changes. There is no separate event system any more.
 `Sim.store` is created by `createSimStore()` (`sim_store.ts`, wrapped in
 `subscribeWithSelector`). Slices:
 
-| Slice | Owner facade | Contents |
-|---|---|---|
-| `ui` | `Sim` | show* flags, language, wasmConcurrency (presentation; `Sim` keeps the derived getters) |
-| `sim` | `Sim` | iterations, phase, faction, fixedRngSeed, filters, lastUsedRngSeed(+version), metadataVersion |
-| `encounter` | `Encounter` | duration, execute proportions, useHealth, targets (replace-on-write) |
-| `raid` | `Raid` / `Party` | buffs, debuffs, tanks, targetDummies, numActiveParties, partyBuffs[5], composition[5][5] (player storeKeys) |
-| `players[storeKey]` | `Player` / `ItemSwapSettings` | 23 settings fields + per-field version counters (`v`) |
-| `reforge[storeKey]` | `ReforgeSettings` | 12 reforge-optimizer settings + counters |
-| `statWeights[storeKey]` | `StatWeightActionSettings` | excluded stats + counter |
-| `bulk[storeKey]` | `BulkSettingsStore` (`ui/domain/bulk_settings.ts`) | version counters only (the `BulkTab` keeps the values) |
+| Slice                   | Owner facade                                       | Contents                                                                                                    |
+| ----------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `ui`                    | `Sim`                                              | show* flags, language, wasmConcurrency (presentation; `Sim` keeps the derived getters)                      |
+| `sim`                   | `Sim`                                              | iterations, phase, faction, fixedRngSeed, filters, lastUsedRngSeed(+version), metadataVersion               |
+| `encounter`             | `Encounter`                                        | duration, execute proportions, useHealth, targets (replace-on-write)                                        |
+| `raid`                  | `Raid` / `Party`                                   | buffs, debuffs, tanks, targetDummies, numActiveParties, partyBuffs[5], composition[5][5] (player storeKeys) |
+| `players[storeKey]`     | `Player` / `ItemSwapSettings`                      | 23 settings fields + per-field version counters (`v`)                                                       |
+| `reforge[storeKey]`     | `ReforgeSettings`                                  | 12 reforge-optimizer settings + counters                                                                    |
+| `statWeights[storeKey]` | `StatWeightActionSettings`                         | excluded stats + counter                                                                                    |
+| `bulk[storeKey]`        | `BulkSettingsStore` (`ui/domain/bulk_settings.ts`) | version counters only (the `BulkTab` keeps the values)                                                      |
 
 Class-side by design: the Party↔Player object graph (composition in the store is
 the notification source; the objects stay on the classes), `aplRotation`
@@ -77,7 +77,7 @@ return a COPY from `getValue` (`.slice()`).
 
 ## Events vs state
 
-Something that *happened* (sim result, crash, reference set/swapped, a
+Something that _happened_ (sim result, crash, reference set/swapped, a
 UI-local signal like "filters changed") is an event, not state: use
 `Emitter<T>` from `events.ts` (`on` → unsubscribe fn, `emit`).
 No batching, no dedup, fires synchronously. Never put these in the store.
@@ -111,7 +111,7 @@ directory is exactly: `sim_store`, `batch`, `events`, `subscriptions`,
 
 `Player.dispose()` unsubscribes its store reactions and drops its `players` /
 `reforge` / `statWeights` / `bulk` slices on the next tick. Discard rule: `Party.setPlayer`
-disposes a *displaced* player on the next microtask if it still has no party — moves
+disposes a _displaced_ player on the next microtask if it still has no party — moves
 and swaps re-place the instance within the same task and are never disposed; removals
 (`setPlayer(…, null)`) never dispose. Explicit `dispose()` remains for `Party.fromProto`
 spec changes and import temporaries.

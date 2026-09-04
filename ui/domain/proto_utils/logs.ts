@@ -115,6 +115,12 @@ export class SimLog {
 		this.activeAuras = [];
 	}
 
+	rawWithoutTimestamp(): string {
+		const captureArr = TIMESTAMP_PREFIX_REGEX.exec(this.raw);
+		if (!captureArr || captureArr.length != 4) return this.raw;
+		return `${captureArr[2] ?? ''}${captureArr[3]}`.trim();
+	}
+
 	formattedTimestamp(): string {
 		const positiveTimestamp = Math.abs(this.timestamp);
 		const minutes = Math.floor(positiveTimestamp / 60);
@@ -130,56 +136,83 @@ export class SimLog {
 
 	static async parseAll(result: RaidSimResult): Promise<SimLog[]> {
 		const lines = result.logs.split('\n');
-		return Promise.all(
-			lines.map((line, lineIndex) => {
-				const params: SimLogParams = {
-					raw: line,
-					logIndex: lineIndex,
-					timestamp: 0,
-					source: null,
-					target: null,
-					actionId: null,
-					spellSchool: null,
-					threat: 0,
-				};
-				const spellSchoolMatch = line.match(/ \(SpellSchool: (-?[0-9]+)\)/);
-				if (spellSchoolMatch) {
-					params.spellSchool = parseInt(spellSchoolMatch[1]);
-				}
+		const pending: Array<PendingLog> = new Array(lines.length);
+		// Resolving an ActionId is the only asynchronous part of parsing, and a fight names
+		// on the order of a hundred of them across tens of thousands of lines. Collect the
+		// distinct ones while classifying, resolve them in one batch, then build every log
+		// synchronously.
+		const distinctIds = new Map<string, ActionIdRequest>();
 
-				const threatMatch = line.match(/ \(Threat: (-?[0-9]+\.[0-9]+)\)/);
-				if (threatMatch) {
-					params.threat = parseFloat(threatMatch[1]);
-					line = line.substring(0, threatMatch.index);
-				}
+		for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+			let line = lines[lineIndex];
+			const params: SimLogParams = {
+				raw: line,
+				logIndex: lineIndex,
+				timestamp: 0,
+				source: null,
+				target: null,
+				actionId: null,
+				spellSchool: null,
+				threat: 0,
+			};
+			const spellSchoolMatch = SPELL_SCHOOL_REGEX.exec(line);
+			if (spellSchoolMatch) {
+				params.spellSchool = parseInt(spellSchoolMatch[1]);
+			}
 
-				const match = line.match(/\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/);
-				if (!match || !match[1]) {
-					return new SimLog(params);
-				}
+			const threatMatch = THREAT_REGEX.exec(line);
+			if (threatMatch) {
+				params.threat = parseFloat(threatMatch[1]);
+				line = line.substring(0, threatMatch.index);
+			}
 
-				params.timestamp = parseFloat(match[1]);
-				const remainder = match[2];
+			const match = TIMESTAMP_REGEX.exec(line);
+			if (!match || !match[1]) {
+				pending[lineIndex] = { params, matcher: null, match: null, key: '' };
+				continue;
+			}
 
-				const entities = Entity.parseAll(remainder);
-				params.source = entities[0] || null;
-				params.target = entities[1] || null;
+			params.timestamp = parseFloat(match[1]);
+			const remainder = match[2];
 
-				// Order from most to least common to reduce number of checks.
-				return (
-					DamageDealtLog.parse(params) ||
-					ResourceChangedLog.parse(params) ||
-					AuraEventLog.parse(params) ||
-					AuraStacksChangeLog.parse(params) ||
-					MajorCooldownUsedLog.parse(params) ||
-					CastBeganLog.parse(params) ||
-					CastCancelledLog.parse(params) ||
-					CastCompletedLog.parse(params) ||
-					StatChangeLog.parse(params) ||
-					Promise.resolve(new SimLog(params))
-				);
+			const entities = Entity.parseAll(remainder);
+			params.source = entities[0] || null;
+			params.target = entities[1] || null;
+
+			const matched = matchLogLine(params.raw);
+			if (!matched) {
+				pending[lineIndex] = { params, matcher: null, match: null, key: '' };
+				continue;
+			}
+			// Keep the key: the build pass needs it, and recomputing it there means a second
+			// idString() call and a second string per matched line.
+			const logString = matched.matcher.idString(matched.match);
+			const key = `${params.source?.index ?? -1}|${logString}`;
+			pending[lineIndex] = { params, ...matched, key };
+			if (!distinctIds.has(key)) {
+				distinctIds.set(key, { logString, playerIndex: params.source?.index });
+			}
+		}
+
+		const keys = [...distinctIds.keys()];
+		const resolved = await Promise.all(
+			keys.map(key => {
+				const { logString, playerIndex } = distinctIds.get(key)!;
+				return ActionId.fromLogString(logString).fill(playerIndex);
 			}),
 		);
+		// ActionId is immutable (readonly fields, private constructor), so one resolved
+		// instance can be shared by every line that names it.
+		const actionIds = new Map<string, ActionId>();
+		keys.forEach((key, i) => actionIds.set(key, resolved[i]));
+
+		return pending.map(entry => {
+			if (!entry.matcher) {
+				return new SimLog(entry.params);
+			}
+			entry.params.actionId = actionIds.get(entry.key)!;
+			return entry.matcher.build(entry.params, entry.match!);
+		});
 	}
 
 	isDamageDealt(): this is DamageDealtLog {
@@ -300,39 +333,26 @@ export class DamageDealtLog extends SimLog {
 		return this.type == 'shielding';
 	}
 
-	static parse(params: SimLogParams): Promise<DamageDealtLog> | null {
-		const match = params.raw.match(
-			/] (.*?) (tick )?((Miss)|(Hit)|(CriticalBlock)|(Crit)|(Crush)|(GlanceBlock)|(Glance)|(Dodge)|(Parry)|(Block))( \((\d+)% Resist\))?( for (\d+\.\d+) ((damage)|(healing)|(shielding)))?/,
+	static build(params: SimLogParams, match: RegExpExecArray): DamageDealtLog {
+		const amount = match[17] ? parseFloat(match[17]) : 0;
+		const type = match[18] || '';
+
+		return new DamageDealtLog(
+			params,
+			amount,
+			type,
+			match[3] == 'Miss',
+			match[3] == 'Crit' || match[3] == 'CriticalBlock',
+			match[3] == 'Crush',
+			match[3] == 'Glance' || match[3] == 'GlanceBlock',
+			match[3] == 'Dodge',
+			match[3] == 'Parry',
+			match[3] == 'Block' || match[3] == 'CriticalBlock' || match[3] == 'GlanceBlock',
+			Boolean(match[2]) && match[2].includes('tick'),
+			match[15] == '10',
+			match[15] == '20',
+			match[15] == '30',
 		);
-		if (match) {
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(cause => {
-					params.actionId = cause;
-
-					const amount = match[17] ? parseFloat(match[17]) : 0;
-					const type = match[18] || '';
-
-					return new DamageDealtLog(
-						params,
-						amount,
-						type,
-						match[3] == 'Miss',
-						match[3] == 'Crit' || match[3] == 'CriticalBlock',
-						match[3] == 'Crush',
-						match[3] == 'Glance' || match[3] == 'GlanceBlock',
-						match[3] == 'Dodge',
-						match[3] == 'Parry',
-						match[3] == 'Block' || match[3] == 'CriticalBlock' || match[3] == 'GlanceBlock',
-						Boolean(match[2]) && match[2].includes('tick'),
-						match[15] == '10',
-						match[15] == '20',
-						match[15] == '30',
-					);
-				});
-		} else {
-			return null;
-		}
 	}
 }
 
@@ -448,19 +468,9 @@ export class AuraEventLog extends SimLog {
 		this.isRefreshed = isRefreshed;
 	}
 
-	static parse(params: SimLogParams): Promise<AuraEventLog> | null {
-		const match = params.raw.match(/Aura ((gained)|(faded)|(refreshed)): (.*)/);
-		if (match && match[5]) {
-			return ActionId.fromLogString(match[5])
-				.fill(params.source?.index)
-				.then(aura => {
-					params.actionId = aura;
-					const event = match[1];
-					return new AuraEventLog(params, event == 'gained', event == 'faded', event == 'refreshed');
-				});
-		} else {
-			return null;
-		}
+	static build(params: SimLogParams, match: RegExpExecArray): AuraEventLog {
+		const event = match[1];
+		return new AuraEventLog(params, event == 'gained', event == 'faded', event == 'refreshed');
 	}
 }
 
@@ -474,18 +484,8 @@ export class AuraStacksChangeLog extends SimLog {
 		this.newStacks = newStacks;
 	}
 
-	static parse(params: SimLogParams): Promise<AuraStacksChangeLog> | null {
-		const match = params.raw.match(/(.*) stacks: ([0-9]+) --> ([0-9]+)/);
-		if (match && match[1]) {
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(aura => {
-					params.actionId = aura;
-					return new AuraStacksChangeLog(params, parseInt(match[2]), parseInt(match[3]));
-				});
-		} else {
-			return null;
-		}
+	static build(params: SimLogParams, match: RegExpExecArray): AuraStacksChangeLog {
+		return new AuraStacksChangeLog(params, parseInt(match[2]), parseInt(match[3]));
 	}
 }
 
@@ -592,20 +592,39 @@ export class AuraUptimeLog extends SimLog {
 
 	// Populates the activeAuras field for all logs using the provided auras.
 	static populateActiveAuras(logs: Array<SimLog>, auraLogs: Array<AuraUptimeLog>) {
-		let curAuras: Array<AuraUptimeLog> = [];
+		// `curAuras` is kept sorted by name as auras come and go, rather than being filtered,
+		// copied and re-sorted for every single log. Insertion goes after any equal name so
+		// the result matches what a stable sort of the arrival order produced before.
+		const curAuras: Array<AuraUptimeLog> = [];
 		let auraLogsIndex = 0;
+		let changed = true;
+		let activeAuras: Array<AuraUptimeLog> = [];
 
-		logs.forEach(log => {
+		for (const log of logs) {
 			while (auraLogsIndex < auraLogs.length && auraLogs[auraLogsIndex].gainedAt <= log.timestamp) {
-				curAuras.push(auraLogs[auraLogsIndex]);
+				const gained = auraLogs[auraLogsIndex];
+				let insertAt = curAuras.length;
+				while (insertAt > 0 && stringComparator(curAuras[insertAt - 1].actionId!.name, gained.actionId!.name) > 0) {
+					insertAt--;
+				}
+				curAuras.splice(insertAt, 0, gained);
 				auraLogsIndex++;
+				changed = true;
 			}
-			curAuras = curAuras.filter(curAura => curAura.fadedAt > log.timestamp);
+			for (let i = curAuras.length - 1; i >= 0; i--) {
+				if (curAuras[i].fadedAt <= log.timestamp) {
+					curAuras.splice(i, 1);
+					changed = true;
+				}
+			}
 
-			const activeAuras = curAuras.slice();
-			activeAuras.sort((a, b) => stringComparator(a.actionId!.name, b.actionId!.name));
+			// Consecutive logs almost always see the same set, so they share one array.
+			if (changed) {
+				activeAuras = curAuras.slice();
+				changed = false;
+			}
 			log.activeAuras = activeAuras;
-		});
+		}
 	}
 }
 
@@ -644,20 +663,10 @@ export class ResourceChangedLog extends SimLog {
 		}
 	}
 
-	static parse(params: SimLogParams): Promise<ResourceChangedLog> | null {
-		const match = params.raw.match(/(Gained|Spent) (\d+\.?\d*) (\S.+?\S) from (.*?) \((\d+\.?\d*) --> (\d+\.?\d*)\)( of (\d+\.?\d*) total)?/);
-		if (match) {
-			const [resourceType, secondaryType] = stringToResourceType(match[3]);
-			const total = match[8] !== undefined ? parseFloat(match[8]) : 0;
-			return ActionId.fromLogString(match[4])
-				.fill(params.source?.index)
-				.then(cause => {
-					params.actionId = cause;
-					return new ResourceChangedLog(params, resourceType, parseFloat(match[5]), parseFloat(match[6]), match[1] == 'Spent', total, secondaryType);
-				});
-		} else {
-			return null;
-		}
+	static build(params: SimLogParams, match: RegExpExecArray): ResourceChangedLog {
+		const [resourceType, secondaryType] = stringToResourceType(match[3]);
+		const total = match[8] !== undefined ? parseFloat(match[8]) : 0;
+		return new ResourceChangedLog(params, resourceType, parseFloat(match[5]), parseFloat(match[6]), match[1] == 'Spent', total, secondaryType);
 	}
 }
 
@@ -678,7 +687,19 @@ export class ResourceChangedLogGroup extends SimLog {
 	}
 
 	static fromLogs(logs: Array<SimLog>): Record<ResourceType, Array<ResourceChangedLogGroup>> {
-		const allResourceChangedLogs = logs.filter((log): log is ResourceChangedLog => log.isResourceChanged());
+		// Bucket by resource type in one pass. This used to filter the whole resource-log
+		// array once per resource type - fifteen scans of the same data - and rebuild the
+		// resource type list on every call.
+		const byResourceType = new Map<ResourceType, Array<ResourceChangedLog>>();
+		for (const log of logs) {
+			if (!log.isResourceChanged()) continue;
+			const bucket = byResourceType.get(log.resourceType);
+			if (bucket) {
+				bucket.push(log);
+			} else {
+				byResourceType.set(log.resourceType, [log]);
+			}
+		}
 
 		const maxResource = function (logs: ResourceChangedLog[]) {
 			let max = 0;
@@ -690,11 +711,8 @@ export class ResourceChangedLogGroup extends SimLog {
 			return max;
 		};
 		const results: Partial<Record<ResourceType, Array<ResourceChangedLogGroup>>> = {};
-		const resourceTypes = (getEnumValues(ResourceType) as Array<ResourceType>).filter(val => val != ResourceType.ResourceTypeNone);
-		resourceTypes.forEach(resourceType => {
-			const resourceChangedLogs = allResourceChangedLogs.filter(log => log.resourceType == resourceType);
-
-			const groupedLogs = SimLog.groupDuplicateTimestamps(resourceChangedLogs);
+		RESOURCE_TYPES.forEach(resourceType => {
+			const groupedLogs = SimLog.groupDuplicateTimestamps(byResourceType.get(resourceType) || []);
 			results[resourceType] = groupedLogs.map(
 				logGroup =>
 					new ResourceChangedLogGroup(
@@ -726,18 +744,8 @@ export class MajorCooldownUsedLog extends SimLog {
 		super(params);
 	}
 
-	static parse(params: SimLogParams): Promise<MajorCooldownUsedLog> | null {
-		const match = params.raw.match(/Major cooldown used: (.*)/);
-		if (match) {
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(cooldownId => {
-					params.actionId = cooldownId;
-					return new MajorCooldownUsedLog(params);
-				});
-		} else {
-			return null;
-		}
+	static build(params: SimLogParams): MajorCooldownUsedLog {
+		return new MajorCooldownUsedLog(params);
 	}
 }
 
@@ -753,26 +761,16 @@ export class CastBeganLog extends SimLog {
 		this.effectiveTime = effectiveTime;
 	}
 
-	static parse(params: SimLogParams): Promise<CastBeganLog> | null {
-		const match = params.raw.match(/Casting (.*) \(Cost = (\d+\.?\d*), Cast Time = (\d+\.?\d*)(m?s), Effective Time = (\d+\.?\d*)(m?s)\)/);
-		if (match) {
-			let castTime = parseFloat(match[3]);
-			if (match[4] == 'ms') {
-				castTime /= 1000;
-			}
-			let effectiveTime = parseFloat(match[5]);
-			if (match[6] == 'ms') {
-				effectiveTime /= 1000;
-			}
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(castId => {
-					params.actionId = castId;
-					return new CastBeganLog(params, parseFloat(match[2]), castTime, effectiveTime);
-				});
-		} else {
-			return null;
+	static build(params: SimLogParams, match: RegExpExecArray): CastBeganLog {
+		let castTime = parseFloat(match[3]);
+		if (match[4] == 'ms') {
+			castTime /= 1000;
 		}
+		let effectiveTime = parseFloat(match[5]);
+		if (match[6] == 'ms') {
+			effectiveTime /= 1000;
+		}
+		return new CastBeganLog(params, parseFloat(match[2]), castTime, effectiveTime);
 	}
 }
 
@@ -784,22 +782,12 @@ export class CastCancelledLog extends SimLog {
 		this.cancelTime = cancelTime;
 	}
 
-	static parse(params: SimLogParams): Promise<CastCancelledLog> | null {
-		const match = params.raw.match(/Cancelled (.*) after (\d+\.?\d*)(m?s)/);
-		if (match) {
-			let castProgress = parseFloat(match[2]);
-			if (match[3] == 'ms') {
-				castProgress /= 1000;
-			}
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(castId => {
-					params.actionId = castId;
-					return new CastCancelledLog(params, castProgress);
-				});
-		} else {
-			return null;
+	static build(params: SimLogParams, match: RegExpExecArray): CastCancelledLog {
+		let castProgress = parseFloat(match[2]);
+		if (match[3] == 'ms') {
+			castProgress /= 1000;
 		}
+		return new CastCancelledLog(params, castProgress);
 	}
 }
 
@@ -808,18 +796,8 @@ export class CastCompletedLog extends SimLog {
 		super(params);
 	}
 
-	static parse(params: SimLogParams): Promise<CastCompletedLog> | null {
-		const match = params.raw.match(/Completed cast (.*)/);
-		if (match) {
-			return ActionId.fromLogString(match[1])
-				.fill(params.source?.index)
-				.then(castId => {
-					params.actionId = castId;
-					return new CastCompletedLog(params);
-				});
-		} else {
-			return null;
-		}
+	static build(params: SimLogParams): CastCompletedLog {
+		return new CastCompletedLog(params);
 	}
 }
 
@@ -885,10 +863,20 @@ export class CastLog extends SimLog {
 	}
 
 	static fromLogs(logs: Array<SimLog>): Array<CastLog> {
-		const castBeganLogs = logs.filter((log): log is CastBeganLog => log.isCastBegan());
-		const castCompletedLogs = logs.filter((log): log is CastCompletedLog => log.isCastCompleted());
-		const castCancelledLogs = logs.filter((log): log is CastCancelledLog => log.isCastCancelled());
-		const damageDealtLogs = logs.filter((log): log is DamageDealtLog => log.isDamageDealt());
+		// One classification pass instead of four full scans of the same array.
+		const castBeganLogs: Array<CastBeganLog> = [];
+		const castCompletedLogs: Array<CastCompletedLog> = [];
+		const castCancelledLogs: Array<CastCancelledLog> = [];
+		const damageDealtLogs: Array<DamageDealtLog> = [];
+		for (const log of logs) {
+			// instanceof rather than the isX() guards, which are the same test but declared as
+			// `this is X`; chaining those narrows negatively and leaves the compiler holding
+			// `never` by the third branch.
+			if (log instanceof CastBeganLog) castBeganLogs.push(log);
+			else if (log instanceof CastCompletedLog) castCompletedLogs.push(log);
+			else if (log instanceof CastCancelledLog) castCancelledLogs.push(log);
+			else if (log instanceof DamageDealtLog) damageDealtLogs.push(log);
+		}
 
 		const toBucketKey = (actionId: ActionId) => {
 			if (actionId.spellId == 30451 || actionId.spellId == 127632) {
@@ -974,18 +962,132 @@ export class StatChangeLog extends SimLog {
 		this.stats = stats;
 	}
 
-	static parse(params: SimLogParams): Promise<StatChangeLog> | null {
-		const match = params.raw.match(/((Gained)|(Lost)) ({.*}) from (fading )?(.*)/);
-		if (match) {
-			return ActionId.fromLogString(match[6])
-				.fill(params.source?.index)
-				.then(effectId => {
-					params.actionId = effectId;
-					const sign = match[1] == 'Lost' ? -1 : 1;
-					return new StatChangeLog(params, sign == 1, match[4]);
-				});
-		} else {
-			return null;
+	static build(params: SimLogParams, match: RegExpExecArray): StatChangeLog {
+		const sign = match[1] == 'Lost' ? -1 : 1;
+		return new StatChangeLog(params, sign == 1, match[4]);
+	}
+}
+
+// Preamble patterns, hoisted so parseAll does not allocate a fresh RegExp per line.
+const RESOURCE_TYPES = (getEnumValues(ResourceType) as Array<ResourceType>).filter(val => val != ResourceType.ResourceTypeNone);
+
+const TIMESTAMP_PREFIX_REGEX = /(\[[0-9.-]+\]) (\[[0-9a-zA-Z\s\-()#]+\])?(.*)/;
+
+const SPELL_SCHOOL_REGEX = / \(SpellSchool: (-?[0-9]+)\)/;
+const THREAT_REGEX = / \(Threat: (-?[0-9]+\.[0-9]+)\)/;
+const TIMESTAMP_REGEX = /\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/;
+
+type LogMatcher = {
+	// Literals the pattern requires: a line must contain at least one of them to be worth
+	// testing. Skipping a matcher whose guard fails can therefore never skip a match the
+	// pattern would have made, which is what keeps this dispatch equivalent to running every
+	// pattern in order - it just stops paying for the ones that cannot match. The damage
+	// pattern is both the first tried and the most expensive, so guarding it is most of the
+	// win. assertGuardsAreNecessary() below checks each literal really is in its pattern.
+	guard: Array<string>;
+	regex: RegExp;
+	// Some patterns match lines they cannot actually build from; those fall through to the
+	// next matcher, exactly as the old `parse` chain did by returning null.
+	valid?: (match: RegExpExecArray) => boolean;
+	// The fragment naming this line's action, e.g. '{SpellID: 48707}'.
+	idString: (match: RegExpExecArray) => string;
+	build: (params: SimLogParams, match: RegExpExecArray) => SimLog;
+};
+
+// Order is load-bearing: first match wins, and it runs most to least common.
+const LOG_MATCHERS: Array<LogMatcher> = [
+	{
+		guard: ['Miss', 'Hit', 'Crit', 'Crush', 'Glance', 'Dodge', 'Parry', 'Block'],
+		regex: /] (.*?) (tick )?((Miss)|(Hit)|(CriticalBlock)|(Crit)|(Crush)|(GlanceBlock)|(Glance)|(Dodge)|(Parry)|(Block))( \((\d+)% Resist\))?( for (\d+\.\d+) ((damage)|(healing)|(shielding)))?/,
+		idString: match => match[1],
+		build: (params, match) => DamageDealtLog.build(params, match),
+	},
+	{
+		guard: [' from '],
+		regex: /(Gained|Spent) (\d+\.?\d*) (\S.+?\S) from (.*?) \((\d+\.?\d*) --> (\d+\.?\d*)\)( of (\d+\.?\d*) total)?/,
+		idString: match => match[4],
+		build: (params, match) => ResourceChangedLog.build(params, match),
+	},
+	{
+		guard: ['Aura '],
+		regex: /Aura ((gained)|(faded)|(refreshed)): (.*)/,
+		valid: match => Boolean(match[5]),
+		idString: match => match[5],
+		build: (params, match) => AuraEventLog.build(params, match),
+	},
+	{
+		guard: [' stacks: '],
+		regex: /(.*) stacks: ([0-9]+) --> ([0-9]+)/,
+		valid: match => Boolean(match[1]),
+		idString: match => match[1],
+		build: (params, match) => AuraStacksChangeLog.build(params, match),
+	},
+	{
+		guard: ['Major cooldown used: '],
+		regex: /Major cooldown used: (.*)/,
+		idString: match => match[1],
+		build: params => MajorCooldownUsedLog.build(params),
+	},
+	{
+		guard: ['Casting '],
+		regex: /Casting (.*) \(Cost = (\d+\.?\d*), Cast Time = (\d+\.?\d*)(m?s), Effective Time = (\d+\.?\d*)(m?s)\)/,
+		idString: match => match[1],
+		build: (params, match) => CastBeganLog.build(params, match),
+	},
+	{
+		guard: ['Cancelled '],
+		regex: /Cancelled (.*) after (\d+\.?\d*)(m?s)/,
+		idString: match => match[1],
+		build: (params, match) => CastCancelledLog.build(params, match),
+	},
+	{
+		guard: ['Completed cast '],
+		regex: /Completed cast (.*)/,
+		idString: match => match[1],
+		build: params => CastCompletedLog.build(params),
+	},
+	{
+		guard: [' from '],
+		regex: /((Gained)|(Lost)) ({.*}) from (fading )?(.*)/,
+		idString: match => match[6],
+		build: (params, match) => StatChangeLog.build(params, match),
+	},
+];
+
+type MatchedLine = { matcher: LogMatcher; match: RegExpExecArray };
+type PendingLog = { params: SimLogParams; matcher: LogMatcher | null; match: RegExpExecArray | null; key: string };
+type ActionIdRequest = { logString: string; playerIndex: number | undefined };
+
+// The dispatch is only equivalent to trying every pattern in order if each guard literal is
+// something its own pattern requires. That is a property of the table, so check it here
+// rather than trusting the comment. Necessary, not sufficient: a literal inside an optional
+// group would pass this and still not be required, so guards stay hand-reviewed too.
+function assertGuardsAreNecessary() {
+	for (const matcher of LOG_MATCHERS) {
+		for (const literal of matcher.guard) {
+			if (!matcher.regex.source.includes(literal)) {
+				throw new Error(`Log matcher guard '${literal}' is absent from its pattern ${matcher.regex.source}`);
+			}
 		}
 	}
 }
+
+function matchLogLine(raw: string): MatchedLine | null {
+	for (const matcher of LOG_MATCHERS) {
+		let possible = false;
+		for (const literal of matcher.guard) {
+			if (raw.includes(literal)) {
+				possible = true;
+				break;
+			}
+		}
+		if (!possible) continue;
+		const match = matcher.regex.exec(raw);
+		if (match && (!matcher.valid || matcher.valid(match))) {
+			return { matcher, match };
+		}
+	}
+	return null;
+}
+
+assertGuardsAreNecessary();

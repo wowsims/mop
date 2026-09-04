@@ -167,7 +167,11 @@ export default defineSpec<Spec.SpecFuryWarrior>({
 					StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 						breakpoints: [53],
 						capType: StatCapType.TypeSoftCap,
-						postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) / player.getTotalAmplificationTrinketStatModifier()) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+						postCapEPs: [
+							(epWeights.getStat(Stat.StatMasteryRating) / player.getTotalAmplificationTrinketStatModifier()) *
+								0.8 *
+								Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
+						],
 					}),
 				);
 			}

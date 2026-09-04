@@ -19,7 +19,7 @@ import { DtpsMetricsTable } from './dtps_metrics';
 import { HealingMetricsTable } from './healing_metrics';
 import { LogExporterFactory, LogRunner } from './log_runner';
 import { ResourceMetricsTable } from './resource_metrics';
-import { SimResultData } from './result_component';
+import { ResultComponent, SimResultData } from './result_component';
 import { SimResultsManager } from './results_action';
 import { ResultsFilter } from './results_filter';
 import { Timeline } from './timeline';
@@ -95,6 +95,10 @@ export class DetailedResults extends Component {
 
 		this.simUI = simUI;
 
+		// Kept as the tabs are built, below. Looking them up afterwards meant a document-wide
+		// querySelector per tab, matching on the data attribute Bootstrap uses.
+		const tabButtons = new Map<string, HTMLButtonElement>();
+
 		this.rootDiv = (
 			<div className="dr-root dr-no-results">
 				<div className="dr-toolbar">
@@ -104,6 +108,7 @@ export class DetailedResults extends Component {
 						{tabs.map(({ label, targetId, isActive, classes }) => (
 							<li className={`nav-item dr-tab-tab ${classes?.join(' ') || ''}`} attributes={{ role: 'presentation' }}>
 								<button
+									ref={elem => tabButtons.set(targetId, elem)}
 									className={`nav-link${isActive ? ' active' : ''}`}
 									type="button"
 									attributes={{
@@ -241,6 +246,7 @@ export class DetailedResults extends Component {
 			parent: this.rootElem.querySelector('.resource-metrics')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
+			deferUntilShown: true,
 		});
 		new AuraMetricsTable(
 			{
@@ -267,24 +273,31 @@ export class DetailedResults extends Component {
 			resultsEmitter: this.resultsEmitter,
 		});
 
+		// Tabs whose contents are expensive hold their results until first shown; see
+		// ResultComponent's deferUntilShown.
+		const deferUntilShown = (component: ResultComponent, tabId: string) => {
+			const button = tabButtons.get(tabId);
+			if (!button) {
+				console.error(`No tab button for ${tabId}; its deferred contents will never render.`);
+				return;
+			}
+			button.addEventListener('shown.bs.tab', () => component.onTabShown());
+			button.addEventListener('hide.bs.tab', () => component.onTabHidden());
+		};
+
 		const timeline = new Timeline({
 			parent: this.rootElem.querySelector('.timeline')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
 		});
-
-		const tabEl = document.querySelector('button[data-bs-target="#timelineTab"]');
-		tabEl?.addEventListener('shown.bs.tab', () => {
-			timeline.render();
-		});
+		deferUntilShown(timeline, 'timelineTab');
 
 		const combatReplay = new CombatReplay({
 			parent: this.rootElem.querySelector('.combat-replay')!,
 			resultsEmitter: this.resultsEmitter,
 		});
 
-		const replayTabEl = document.querySelector('button[data-bs-target="#replayTab"]');
-		replayTabEl?.addEventListener('hide.bs.tab', () => {
+		tabButtons.get('replayTab')?.addEventListener('hide.bs.tab', () => {
 			combatReplay.stopPlayback();
 		});
 

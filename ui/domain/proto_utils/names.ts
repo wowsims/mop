@@ -171,20 +171,22 @@ export const resourceColors: Map<ResourceType, string> = new Map([
 	[ResourceType.ResourceTypeGenericResource, '#ffffff'],
 ]);
 
-export function stringToResourceType(str: string): [ResourceType, SecondaryResourceType | undefined] {
-	for (const [key, val] of resourceNames) {
-		if (val.toLowerCase() == str.toLowerCase()) {
-			return [key, undefined];
-		}
-	}
-
+// Built once. This is called for every resource line the combat log parser sees, and it
+// used to walk resourceNames and rebuild Object.keys(SecondaryResourceType) on each call.
+// Resource names win over secondary resource names on a tie, as the sequential lookups did.
+const resourceTypesByLowerName = (() => {
+	const byName = new Map<string, [ResourceType, SecondaryResourceType | undefined]>();
 	for (const val of Object.keys(SecondaryResourceType).filter(key => isNaN(Number(key)))) {
-		if (val.toLowerCase() == str.toLowerCase()) {
-			return [ResourceType.ResourceTypeGenericResource, (<any>SecondaryResourceType)[val]];
-		}
+		byName.set(val.toLowerCase(), [ResourceType.ResourceTypeGenericResource, (<any>SecondaryResourceType)[val]]);
 	}
+	for (const [key, val] of resourceNames) {
+		byName.set(val.toLowerCase(), [key, undefined]);
+	}
+	return byName;
+})();
 
-	return [ResourceType.ResourceTypeNone, undefined];
+export function stringToResourceType(str: string): [ResourceType, SecondaryResourceType | undefined] {
+	return resourceTypesByLowerName.get(str.toLowerCase()) ?? [ResourceType.ResourceTypeNone, undefined];
 }
 
 export const difficultyNames: Map<DungeonDifficulty, string> = new Map([

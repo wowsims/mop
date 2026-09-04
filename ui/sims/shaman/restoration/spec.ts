@@ -53,7 +53,7 @@ export default defineSpec<Spec.SpecRestorationShaman>({
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman)
+			...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
