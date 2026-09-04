@@ -151,6 +151,14 @@ function delegateTooltips(container: Element): Instance {
 		target: `[${TOOLTIP_TARGET_ATTR}]`,
 		placement: 'bottom',
 		content: '',
+		// Flip and slide along both axes so a tall tooltip near an edge stays on screen
+		// instead of hanging off it.
+		popperOptions: {
+			modifiers: [
+				{ name: 'flip', options: { padding: 8 } },
+				{ name: 'preventOverflow', options: { padding: 8, altAxis: true, tether: false } },
+			],
+		},
 		onShow(instance) {
 			const reference = instance.reference;
 			const buildContent = tooltipBuilders.get(reference);
@@ -1628,6 +1636,36 @@ export class Timeline extends ResultComponent {
 		this.updatePlot();
 	}
 
+	// ApexCharts positions its tooltip against the plot and never considers the window, so a
+	// large one hangs off the screen near an edge. It is free to overlay the rest of the page
+	// - it just may not leave the window - so nudge it back after each positioning pass
+	// rather than confining it to the chart.
+	private keepTooltipInWindow() {
+		const padding = 8;
+		const clamp = () => {
+			const tooltip = this.dpsResourcesPlotElem.querySelector<HTMLElement>('.apexcharts-tooltip.apexcharts-active');
+			if (!tooltip) return;
+
+			const rect = tooltip.getBoundingClientRect();
+			if (!rect.width && !rect.height) return;
+
+			let dx = 0;
+			let dy = 0;
+			if (rect.right > window.innerWidth - padding) dx = window.innerWidth - padding - rect.right;
+			if (rect.left + dx < padding) dx = padding - rect.left;
+			if (rect.bottom > window.innerHeight - padding) dy = window.innerHeight - padding - rect.bottom;
+			if (rect.top + dy < padding) dy = padding - rect.top;
+			// Writing these triggers the observer again; it settles because the second pass
+			// finds nothing left to correct.
+			if (dx) tooltip.style.left = `${(parseFloat(tooltip.style.left) || 0) + dx}px`;
+			if (dy) tooltip.style.top = `${(parseFloat(tooltip.style.top) || 0) + dy}px`;
+		};
+
+		const observer = new MutationObserver(clamp);
+		observer.observe(this.dpsResourcesPlotElem, { subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+		this.addOnDisposeCallback(() => observer.disconnect());
+	}
+
 	// Loads, constructs and renders the chart the first time it is actually shown. Rendering
 	// it into the hidden container used to lay it out at zero width, and importing ApexCharts
 	// eagerly put it in every page's bundle whether or not the chart was ever opened.
@@ -1666,6 +1704,7 @@ export class Timeline extends ResultComponent {
 				});
 				this.dpsResourcesPlot.render();
 				this.chartRendered = true;
+				this.keepTooltipInWindow();
 				return this.dpsResourcesPlot;
 			});
 		}

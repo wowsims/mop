@@ -72,6 +72,16 @@
 		margin-left: auto;
 		flex-shrink: 0;
 		align-self: flex-start;
+
+		// The class accent itself. Bootstrap's outline buttons shade it for the hover and
+		// active states, which on a two-way toggle just reads as a muddier version of the
+		// same colour.
+		.btn-outline-primary {
+			--bs-btn-hover-bg: var(--bs-primary);
+			--bs-btn-hover-border-color: var(--bs-primary);
+			--bs-btn-active-bg: var(--bs-primary);
+			--bs-btn-active-border-color: var(--bs-primary);
+		}
 	}
 }
 
