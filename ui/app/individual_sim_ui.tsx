@@ -6,7 +6,7 @@ import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats } from '@domain/proto_utils/stats';
 import { getTalentPoints } from '@domain/proto_utils/utils';
 import { StatWeightActionSettings } from '@domain/stat_weight_settings';
-import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { loadIndividualSettings } from '@domain/state/persistence';
 import {
 	applyIndividualSimSettings,
@@ -89,19 +89,19 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		return this.player.getRefStat('dpsRefStat');
 	}
 	set dpsRefStat(v: Stat | undefined) {
-		this.player.setRefStat(nextEventID(), 'dpsRefStat', v);
+		this.player.setRefStat('dpsRefStat', v);
 	}
 	get healRefStat(): Stat | undefined {
 		return this.player.getRefStat('healRefStat');
 	}
 	set healRefStat(v: Stat | undefined) {
-		this.player.setRefStat(nextEventID(), 'healRefStat', v);
+		this.player.setRefStat('healRefStat', v);
 	}
 	get tankRefStat(): Stat | undefined {
 		return this.player.getRefStat('tankRefStat');
 	}
 	set tankRefStat(v: Stat | undefined) {
-		this.player.setRefStat(nextEventID(), 'tankRefStat', v);
+		this.player.setRefStat('tankRefStat', v);
 	}
 
 	private serializationContext(): IndividualSimSerializationContext {
@@ -269,8 +269,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			this.reforger = new ReforgeOptimizer(this, typeof config.reforge === 'function' ? config.reforge(this) : config.reforge);
 		}
 		for (const derived of config.derivedSettings || []) {
-			derived.apply(nextEventID(), this.player, this.sim);
-			derived.subscribe(this.player, this.sim)(() => derived.apply(nextEventID(), this.player, this.sim));
+			derived.apply(this.player, this.sim);
+			derived.subscribe(this.player, this.sim)(() => derived.apply(this.player, this.sim));
 		}
 		for (const feature of config.features || []) {
 			feature(this);
@@ -360,11 +360,10 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.simHeader.addExportLink('CLI', new IndividualCLIExporter(this.rootElem, this));
 	}
 
-	applyDefaultRotation(eventID: EventID) {
+	applyDefaultRotation() {
 		batch(() => {
 			const defaultRotationType = this.individualConfig.defaults.rotationType || APLRotationType.TypeAuto;
 			this.player.setAplRotation(
-				eventID,
 				APLRotation.create({
 					type: defaultRotationType,
 				}),
@@ -375,9 +374,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			}
 
 			const defaultSimpleRotation = this.individualConfig.defaults.simpleRotation || this.player.specTypeFunctions.rotationCreate();
-			this.player.setSimpleRotation(eventID, defaultSimpleRotation);
+			this.player.setSimpleRotation(defaultSimpleRotation);
 			this.player.setSimpleCooldowns(
-				eventID,
 				Cooldowns.create({
 					hpPercentForDefensives: this.player.playerSpec.isTankSpec ? 0.4 : 0,
 				}),
@@ -385,10 +383,9 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		});
 	}
 
-	applyEmptyAplRotation(eventID: EventID) {
+	applyEmptyAplRotation() {
 		batch(() => {
 			this.player.setAplRotation(
-				eventID,
 				APLRotation.create({
 					type: APLRotationType.TypeAPL,
 				}),
@@ -400,71 +397,70 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		updateIndividualSimProtoVersion(settingsProto);
 	}
 
-	applyDefaults(eventID: EventID) {
+	applyDefaults() {
 		batch(() => {
 			const tankSpec = this.player.getPlayerSpec().isTankSpec;
 			const healingSpec = this.player.getPlayerSpec().isHealingSpec;
 
-			this.player.applySharedDefaults(eventID);
-			this.player.setRace(eventID, this.individualConfig.defaults.other?.race || this.player.getPlayerClass().races[0]);
-			this.player.setGear(eventID, this.sim.db.lookupEquipmentSpec(this.individualConfig.defaults.gear));
-			this.player.setConsumes(eventID, this.individualConfig.defaults.consumables);
-			this.applyDefaultRotation(eventID);
-			this.player.setTalentsString(eventID, this.individualConfig.defaults.talents.talentsString);
-			this.player.setGlyphs(eventID, this.individualConfig.defaults.talents.glyphs || Glyphs.create());
-			this.player.setSpecOptions(eventID, this.individualConfig.defaults.specOptions);
-			this.player.setBuffs(eventID, this.individualConfig.defaults.individualBuffs);
-			this.player.getParty()!.setBuffs(eventID, this.individualConfig.defaults.partyBuffs);
-			this.player.getRaid()!.setBuffs(eventID, this.individualConfig.defaults.raidBuffs);
-			this.player.setEpWeights(eventID, this.individualConfig.defaults.epWeights);
+			this.player.applySharedDefaults();
+			this.player.setRace(this.individualConfig.defaults.other?.race || this.player.getPlayerClass().races[0]);
+			this.player.setGear(this.sim.db.lookupEquipmentSpec(this.individualConfig.defaults.gear));
+			this.player.setConsumes(this.individualConfig.defaults.consumables);
+			this.applyDefaultRotation();
+			this.player.setTalentsString(this.individualConfig.defaults.talents.talentsString);
+			this.player.setGlyphs(this.individualConfig.defaults.talents.glyphs || Glyphs.create());
+			this.player.setSpecOptions(this.individualConfig.defaults.specOptions);
+			this.player.setBuffs(this.individualConfig.defaults.individualBuffs);
+			this.player.getParty()!.setBuffs(this.individualConfig.defaults.partyBuffs);
+			this.player.getRaid()!.setBuffs(this.individualConfig.defaults.raidBuffs);
+			this.player.setEpWeights(this.individualConfig.defaults.epWeights);
 			if (this.individualConfig.defaults.itemSwap) {
 				this.player.itemSwapSettings.setItemSwapSettings(
-					eventID,
 					true,
 					this.sim.db.lookupItemSwap(this.individualConfig.defaults.itemSwap || ItemSwap.create()),
 				);
 			}
 
 			const defaultRatios = this.player.getDefaultEpRatios(tankSpec, healingSpec);
-			this.player.setEpRatios(eventID, defaultRatios);
-			this.player.setProfession1(eventID, this.individualConfig.defaults.other?.profession1 || Profession.Engineering);
+			this.player.setEpRatios(defaultRatios);
+			this.player.setProfession1(this.individualConfig.defaults.other?.profession1 || Profession.Engineering);
 
 			if (this.individualConfig.defaults.other?.profession2 === undefined) {
-				this.player.setProfession2(eventID, Profession.Jewelcrafting);
+				this.player.setProfession2(Profession.Jewelcrafting);
 			} else {
-				this.player.setProfession2(eventID, this.individualConfig.defaults.other.profession2);
+				this.player.setProfession2(this.individualConfig.defaults.other.profession2);
 			}
 
-			this.player.setDistanceFromTarget(eventID, this.individualConfig.defaults.other?.distanceFromTarget || 0);
-			this.player.setChannelClipDelay(eventID, this.individualConfig.defaults.other?.channelClipDelay || 0);
-			this.player.setReactionTime(eventID, this.individualConfig.defaults.other?.reactionTime || 100);
+			this.player.setDistanceFromTarget(this.individualConfig.defaults.other?.distanceFromTarget || 0);
+			this.player.setChannelClipDelay(this.individualConfig.defaults.other?.channelClipDelay || 0);
+			this.player.setReactionTime(this.individualConfig.defaults.other?.reactionTime || 100);
 
-			this.reforger?.applyDefaults(eventID);
+			this.reforger?.applyDefaults();
 
-			this.sim.raid.setTargetDummies(eventID, healingSpec ? 9 : 0);
+			this.sim.raid.setTargetDummies(healingSpec ? 9 : 0);
 			if (this.individualConfig.defaults.encounter?.encounter) {
-				this.sim.encounter.fromProto(eventID, this.individualConfig.defaults.encounter.encounter);
+				this.sim.encounter.fromProto(this.individualConfig.defaults.encounter.encounter);
 			} else {
-				this.sim.encounter.applyDefaults(eventID);
+				this.sim.encounter.applyDefaults();
 			}
-			this.sim.encounter.setExecuteProportion90(eventID, this.individualConfig.defaults.other?.highHpThreshold || 0.9);
-			this.sim.raid.setDebuffs(eventID, this.individualConfig.defaults.debuffs);
-			this.sim.applyDefaults(eventID, tankSpec, healingSpec);
+			this.sim.encounter.setExecuteProportion90(this.individualConfig.defaults.other?.highHpThreshold || 0.9);
+			this.sim.raid.setDebuffs(this.individualConfig.defaults.debuffs);
+			this.sim.applyDefaults(tankSpec, healingSpec);
 
 			if (this.individualConfig.defaults.other?.iterationCount) {
-				this.sim.setIterations(eventID, this.individualConfig.defaults.other!.iterationCount!);
+				this.sim.setIterations(this.individualConfig.defaults.other!.iterationCount!);
 			}
 
 			if (tankSpec) {
-				this.sim.raid.setTanks(eventID, [this.player.makeUnitReference()]);
+				this.sim.raid.setTanks([this.player.makeUnitReference()]);
 			} else {
-				this.sim.raid.setTanks(eventID, []);
+				this.sim.raid.setTanks([]);
 			}
 
-			this.statWeightActionSettings.applyDefaults(eventID);
+			this.statWeightActionSettings.applyDefaults();
 
 			if (this.individualConfig.defaultBuild) {
-				PresetConfigurationPicker.applyBuild(eventID, this.individualConfig.defaultBuild, this);
+				PresetConfigurationPicker.applyBuild(this.individualConfig.defaultBuild, this);
 			}
 		});
 	}
@@ -477,8 +473,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		return IndividualLinkExporter.createLink(this);
 	}
 
-	fromProto(eventID: EventID, settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {
-		applyIndividualSimSettings(eventID, this.serializationContext(), settings, includeCategories);
+	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {
+		applyIndividualSimSettings(this.serializationContext(), settings, includeCategories);
 	}
 
 	// Determines whether this sim has either a hard cap or soft cap configured for a particular

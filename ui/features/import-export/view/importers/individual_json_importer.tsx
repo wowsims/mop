@@ -1,5 +1,4 @@
 import { Database } from '@domain/proto_utils/database';
-import { nextEventID } from '@domain/state/batch';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Spec } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
@@ -28,7 +27,7 @@ export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImp
 		if (proto.player?.equipment) {
 			await Database.loadLeftoversIfNecessary(proto.player.equipment);
 		}
-		this.simUI.fromProto(nextEventID(), proto);
+		this.simUI.fromProto(proto);
 		this.close();
 	}
 }

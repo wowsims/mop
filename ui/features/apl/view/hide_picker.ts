@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { nextEventID } from '@domain/state/batch';
 import { Input, InputConfig } from '@ui-kit/input';
 import { ListPicker } from '@ui-kit/pickers/list_picker';
 export class APLHidePicker extends Input<Player<any>, boolean> {
@@ -17,7 +16,7 @@ export class APLHidePicker extends Input<Player<any>, boolean> {
 			'click',
 			() => {
 				this.setInputValue(!this.getInputValue());
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);

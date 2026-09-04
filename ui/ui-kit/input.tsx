@@ -1,4 +1,3 @@
-import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import clsx, { ClassValue } from 'clsx';
@@ -26,7 +25,7 @@ export interface InputConfig<ModObject, T, V = T> {
 
 	// Get and set the mapped value.
 	getValue: (obj: ModObject) => T;
-	setValue: (eventID: EventID, obj: ModObject, newValue: T) => void;
+	setValue: (obj: ModObject, newValue: T) => void;
 
 	// If set, will automatically disable the input when this evaluates to false.
 	enableWhen?: (obj: ModObject) => boolean;
@@ -154,8 +153,8 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		return this.inputConfig.getValue(this.modObject);
 	}
 
-	protected setSourceValue(eventID: EventID, newValue: T) {
-		this.inputConfig.setValue(eventID, this.modObject, newValue);
+	protected setSourceValue(newValue: T) {
+		this.inputConfig.setValue(this.modObject, newValue);
 	}
 
 	protected sourceToValue(src: T): V {
@@ -166,14 +165,14 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 	}
 
 	// Child classes should call this method when the value in the input element changes.
-	inputChanged(eventID: EventID) {
-		this.setSourceValue(eventID, this.getInputValue());
+	inputChanged() {
+		this.setSourceValue(this.getInputValue());
 		this.changeEmitter.emit();
 	}
 
 	// Sets the underlying value directly.
-	setValue(eventID: EventID, newValue: T) {
-		this.inputConfig.setValue(eventID, this.modObject, newValue);
+	setValue(newValue: T) {
+		this.inputConfig.setValue(this.modObject, newValue);
 	}
 
 	static newGroupContainer(className?: ClassValue): HTMLElement {

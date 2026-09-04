@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { nextEventID } from '@domain/state/batch';
 import { ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
@@ -31,7 +30,7 @@ export const addQuickEnchantPopover = (player: Player<any>, tooltipElement: HTML
 			}));
 		},
 		onItemClick: clickedItem => {
-			player.equipItem(nextEventID(), itemSlot, item.withEnchant(clickedItem));
+			player.equipItem(itemSlot, item.withEnchant(clickedItem));
 		},
 		footerButton: {
 			label: i18n.t('gear_tab.gear_picker.quick_popovers.favorite_enchants.open_enchants'),

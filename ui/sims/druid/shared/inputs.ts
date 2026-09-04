@@ -1,7 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { DruidSpecs } from '@domain/proto_utils/utils';
-import { EventID } from '@domain/state/batch';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 // Configuration for class-specific UI elements on the settings tab.
@@ -12,12 +11,12 @@ export const SelfInnervate = <SpecType extends DruidSpecs>() =>
 		fieldName: 'innervateTarget',
 		id: ActionId.fromSpellId(29166),
 		getValue: (player: Player<SpecType>) => player.getClassOptions().innervateTarget?.type == UnitType.Player,
-		setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
+		setValue: (player: Player<SpecType>, newValue: boolean) => {
 			const newOptions = player.getClassOptions();
 			newOptions.innervateTarget = UnitReference.create({
 				type: newValue ? UnitType.Player : UnitType.Unknown,
 				index: 0,
 			});
-			player.setClassOptions(eventID, newOptions);
+			player.setClassOptions(newOptions);
 		},
 	});

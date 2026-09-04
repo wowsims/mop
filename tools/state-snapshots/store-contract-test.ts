@@ -13,7 +13,7 @@ import { ItemSwapGear } from '../../ui/domain/proto_utils/gear';
 import { ReforgeSettings } from '../../ui/domain/reforge_settings';
 import { Sim } from '../../ui/domain/sim';
 import { StatWeightActionSettings } from '../../ui/domain/stat_weight_settings';
-import { batch, nextEventID } from '../../ui/domain/state/batch';
+import { batch } from '../../ui/domain/state/batch';
 import { Emitter } from '../../ui/domain/state/events';
 import {
 	subscribeAll,
@@ -55,7 +55,7 @@ export async function main() {
 	const sim = new Sim({ env });
 	await Database.get();
 	const player = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
-	batch(() => sim.raid.setPlayer(nextEventID(), 0, player));
+	batch(() => sim.raid.setPlayer(0, player));
 
 	// 1. Single guarded write: raw selector once + gated field subscriber once.
 	let selectorFires = 0;
@@ -66,20 +66,20 @@ export async function main() {
 	let raceFires = 0;
 	const unsubRace = subscribePlayerField(player, 'race')(() => raceFires++);
 	const newRace = player.getRace() == Race.RaceOrc ? Race.RaceTroll : Race.RaceOrc;
-	player.setRace(nextEventID(), newRace);
+	player.setRace(newRace);
 	check(selectorFires === 1, 'raw selector fired once on setRace');
 	check(raceFires === 1, 'field subscriber fired once on setRace');
 
 	// 2. Equal-value write: guarded setter → no notification.
-	player.setRace(nextEventID(), newRace);
+	player.setRace(newRace);
 	check(selectorFires === 1 && raceFires === 1, 'equal-value setRace does not notify');
 
 	// 3. Unconditional setters fire every call (version counters).
 	let epRatioFires = 0;
 	const unsubEp = subscribePlayerField(player, 'epRatios')(() => epRatioFires++);
 	const ratios = player.getEpRatios();
-	player.setEpRatios(nextEventID(), ratios);
-	player.setEpRatios(nextEventID(), ratios);
+	player.setEpRatios(ratios);
+	player.setEpRatios(ratios);
 	check(epRatioFires === 2, 'setEpRatios notifies unconditionally (twice for two equal writes)');
 	unsubEp();
 
@@ -87,8 +87,8 @@ export async function main() {
 	let aggregateFires = 0;
 	const unsubAgg = subscribePlayerChange(player)(() => aggregateFires++);
 	batch(() => {
-		player.setName(nextEventID(), 'StoreTest');
-		player.setDistanceFromTarget(nextEventID(), 25);
+		player.setName('StoreTest');
+		player.setDistanceFromTarget(25);
 	});
 	check(aggregateFires === 1, 'batch() collapses two setters into one player aggregate fire');
 	unsubAgg();
@@ -96,7 +96,7 @@ export async function main() {
 	// 5. Encounter write reaches the sim aggregate once.
 	let simFires = 0;
 	const unsubSim0 = subscribeSimChange(sim)(() => simFires++);
-	sim.encounter.setDuration(nextEventID(), 123);
+	sim.encounter.setDuration(123);
 	check(simFires === 1, 'encounter setter propagates once to the sim aggregate');
 	unsubSim0();
 
@@ -109,10 +109,10 @@ export async function main() {
 	const u6c = subscribeRaidField(sim.raid, 'targetDummies')(() => dummiesFires++);
 	const rb = sim.raid.getBuffs();
 	rb.arcaneBrilliance = !rb.arcaneBrilliance;
-	sim.raid.setBuffs(nextEventID(), rb);
-	sim.raid.setBuffs(nextEventID(), rb);
-	sim.raid.setNumActiveParties(nextEventID(), 3);
-	sim.raid.setTargetDummies(nextEventID(), 2);
+	sim.raid.setBuffs(rb);
+	sim.raid.setBuffs(rb);
+	sim.raid.setNumActiveParties(3);
+	sim.raid.setTargetDummies(2);
 	check(raidBuffFires === 1, 'raid buffs notified once (equal re-write suppressed)');
 	check(numPartiesFires === 1, 'numActiveParties notified once');
 	check(dummiesFires === 1, 'targetDummies notified once');
@@ -131,30 +131,30 @@ export async function main() {
 		seenDuringBatch = player.getName() === 'Batched2' ? 1 : 0;
 	});
 	batch(() => {
-		player.setName(nextEventID(), 'Batched1');
-		player.setName(nextEventID(), 'Batched2');
+		player.setName('Batched1');
+		player.setName('Batched2');
 		check(gatedFires === 0, 'gated subscriber deferred inside batch()');
 	});
 	check(gatedFires === 1, 'gated subscriber fired exactly once after the batch');
 	check(seenDuringBatch === 1, 'gated subscriber saw final state');
-	player.setName(nextEventID(), 'Unbatched');
+	player.setName('Unbatched');
 	check(gatedFires === 2, 'gated subscriber fires immediately outside a batch');
 	unsubGated();
-	player.setName(nextEventID(), 'AfterUnsub');
+	player.setName('AfterUnsub');
 	check(gatedFires === 2, 'unsubscribed gated subscriber stays silent');
 
 	// 8. Counter-only fields: rotation, itemSwap, lastUsedRngSeed.
 	let rotFires = 0;
 	const unsubRot = subscribePlayerField(player, 'rotation')(() => rotFires++);
-	player.setAplRotation(nextEventID(), APLRotation.create({ type: 2 }));
-	player.touchRotation(nextEventID());
+	player.setAplRotation(APLRotation.create({ type: 2 }));
+	player.touchRotation();
 	check(rotFires === 2, 'rotation counter: setAplRotation + touchRotation notify once each');
 	unsubRot();
 	let swapFires = 0;
 	const unsubSwap = subscribePlayerField(player, 'itemSwap')(() => swapFires++);
-	player.itemSwapSettings.setEnableItemSwap(nextEventID(), true);
-	player.itemSwapSettings.setEnableItemSwap(nextEventID(), true);
-	player.itemSwapSettings.setGear(nextEventID(), new ItemSwapGear({}));
+	player.itemSwapSettings.setEnableItemSwap(true);
+	player.itemSwapSettings.setEnableItemSwap(true);
+	player.itemSwapSettings.setGear(new ItemSwapGear({}));
 	check(swapFires === 1, 'itemSwap: guarded setters notify once for one real change');
 	check(player.itemSwapSettings.getEnableItemSwap() === true, 'itemSwap facade reads store');
 	unsubSwap();
@@ -177,24 +177,24 @@ export async function main() {
 	const unsubRaid = subscribeRaidChange(sim.raid)(() => raidAgg++);
 	const unsubSim = subscribeSimChange(sim)(() => simAgg++);
 	const unsubEnc = subscribeEncounterChange(sim.encounter)(() => encAgg++);
-	player.setDistanceFromTarget(nextEventID(), 7);
+	player.setDistanceFromTarget(7);
 	check(
 		partyAgg === 1 && raidAgg === 1 && simAgg === 1 && encAgg === 0,
 		`player field change → party/raid/sim aggregates once (${partyAgg}/${raidAgg}/${simAgg}/${encAgg})`,
 	);
 	const player2 = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
 	partyAgg = raidAgg = simAgg = 0;
-	party0.setPlayer(nextEventID(), 1, player2);
+	party0.setPlayer(1, player2);
 	check(compFires === 1, 'composition write notifies once');
 	check(partyAgg === 1 && raidAgg === 1 && simAgg === 1, `comp change → party/raid/sim aggregates once (${partyAgg}/${raidAgg}/${simAgg})`);
 	check(sim.store.getState().raid.composition[0][1] === player2.storeKey, 'composition slice holds the new storeKey');
 	encAgg = 0;
-	sim.encounter.setDuration(nextEventID(), 321);
+	sim.encounter.setDuration(321);
 	check(encAgg === 1, 'encounter aggregate fires once for setDuration');
 	let targetFires = 0;
 	const unsubTargets = subscribeEncounterField(sim.encounter, 'targets')(() => targetFires++);
-	sim.encounter.modifyTarget(nextEventID(), 0, t => (t.level = 92));
-	sim.encounter.modifyTarget(nextEventID(), 99, t => (t.level = 1)); // missing index: still notifies, no throw
+	sim.encounter.modifyTarget(0, t => (t.level = 92));
+	sim.encounter.modifyTarget(99, t => (t.level = 1)); // missing index: still notifies, no throw
 	check(targetFires === 2 && sim.encounter.getTarget(0)!.level === 92, 'modifyTarget replace-on-write notifies (incl. missing-index case)');
 	unsubTargets();
 	unsubComp();
@@ -218,11 +218,11 @@ export async function main() {
 	let rfSub = 0;
 	const unsubRfField = subscribeReforgeField(reforge, 'includeGems')(() => rfField++);
 	const unsubRf = subscribeReforgeChange(reforge)(() => rfSub++);
-	reforge.setIncludeGems(nextEventID(), true);
-	reforge.setIncludeGems(nextEventID(), true);
+	reforge.setIncludeGems(true);
+	reforge.setIncludeGems(true);
 	check(rfField === 1 && rfSub === 1, `reforge field write → field/aggregate subscribers once (${rfField}/${rfSub})`);
 	check(reforge.includeGems === true, 'reforge facade reads the store');
-	reforge.setFrozenItemSlot(nextEventID(), 0, true);
+	reforge.setFrozenItemSlot(0, true);
 	check(reforge.getFrozenItemSlot(0) && rfField === 1, 'frozen slot write bumps freezeItemSlots only');
 	unsubRfField();
 	unsubRf();
@@ -230,7 +230,7 @@ export async function main() {
 	const sw = new StatWeightActionSettings(player, '__store_contract_sw__');
 	let swSub = 0;
 	const unsubSw = subscribeStatWeightsChange(sw)(() => swSub++);
-	sw.setStatExcluded(nextEventID(), player.getEpWeights().asUnitStatArray()[0][0], true);
+	sw.setStatExcluded(player.getEpWeights().asUnitStatArray()[0][0], true);
 	check(swSub === 1, 'stat-weight exclusion notifies once');
 	check(!!env.storage.getItem('__store_contract_sw__'), 'stat-weight settings persisted through the Env storage');
 	unsubSw();
@@ -243,8 +243,8 @@ export async function main() {
 
 	// 12. setGearAsync resolves when currentStats is written.
 	let resolved = false;
-	const p = player.setGearAsync(nextEventID(), player.getGear().withChallengeMode(false), true).then(() => (resolved = true));
-	player.setCurrentStats(nextEventID(), player.getCurrentStats());
+	const p = player.setGearAsync(player.getGear().withChallengeMode(false), true).then(() => (resolved = true));
+	player.setCurrentStats(player.getCurrentStats());
 	await Promise.race([p, new Promise(r => setTimeout(r, 500))]);
 	check(resolved, 'setGearAsync resolves on the next currentStats write');
 
@@ -259,7 +259,7 @@ export async function main() {
 	const unsubDP = subscribePlayerChange(player)(() => derivedPlayerFires++);
 	const unsubDR = subscribeRaidChange(sim.raid)(() => derivedRaidFires++);
 	const unsubDS = subscribeSimChange(sim)(() => derivedSimFires++);
-	player.setCurrentStats(nextEventID(), player.getCurrentStats());
+	player.setCurrentStats(player.getCurrentStats());
 	check(derivedPlayerFires === 0 && derivedRaidFires === 0 && derivedSimFires === 0, 'setCurrentStats does not fire player/raid/sim aggregates');
 	unsubDP();
 	unsubDR();
@@ -269,8 +269,8 @@ export async function main() {
 	let statsFires = 0;
 	const unsubStats = subscribeStatsInputs(sim)(() => statsFires++);
 	batch(() => {
-		sim.raid.setTargetDummies(nextEventID(), 4);
-		sim.encounter.setDuration(nextEventID(), 321);
+		sim.raid.setTargetDummies(4);
+		sim.encounter.setDuration(321);
 	});
 	check(statsFires === 1, 'subscribeStatsInputs fires once for a batch touching raid + encounter');
 
@@ -279,12 +279,12 @@ export async function main() {
 	// the raid tuple).
 	let allFires = 0;
 	const unsubAll = subscribeAll([subscribePlayerField(player, 'talentsString'), subscribeRaidChange(sim.raid)])(() => allFires++);
-	player.setTalentsString(nextEventID(), player.getTalentsString() + '1');
+	player.setTalentsString(player.getTalentsString() + '1');
 	check(allFires === 1, 'subscribeAll fires once for a single write hitting two of its sources');
 	allFires = 0;
 	batch(() => {
-		player.setTalentsString(nextEventID(), player.getTalentsString() + '2');
-		sim.raid.setTargetDummies(nextEventID(), sim.raid.getTargetDummies() + 1);
+		player.setTalentsString(player.getTalentsString() + '2');
+		sim.raid.setTargetDummies(sim.raid.getTargetDummies() + 1);
 	});
 	check(allFires === 1, 'subscribeAll fires once for a batch touching two of its sources');
 	unsubAll();
@@ -305,8 +305,8 @@ export async function main() {
 	let refPlayerFires = 0;
 	const unsubRef = subscribePlayerField(player, 'epRefStat')(() => refFires++);
 	const unsubRefP = subscribePlayerChange(player)(() => refPlayerFires++);
-	player.setRefStat(nextEventID(), 'dpsRefStat', Stat.StatStrength);
-	player.setRefStat(nextEventID(), 'dpsRefStat', Stat.StatStrength); // equal → guarded
+	player.setRefStat('dpsRefStat', Stat.StatStrength);
+	player.setRefStat('dpsRefStat', Stat.StatStrength); // equal → guarded
 	check(refFires === 1 && refPlayerFires === 1 && player.getRefStat('dpsRefStat') === Stat.StatStrength, 'setRefStat fires epRefStat + player change once');
 	unsubRef();
 	unsubRefP();
@@ -325,25 +325,25 @@ export async function main() {
 	const p0 = sim.raid.getParty(0);
 	const a = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
 	const b = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
-	p0.setPlayer(nextEventID(), 1, a);
-	p0.setPlayer(nextEventID(), 2, b);
+	p0.setPlayer(1, a);
+	p0.setPlayer(2, b);
 	// move a from slot 1 to slot 3 (removal + re-place): must not dispose
-	p0.setPlayer(nextEventID(), 3, a);
+	p0.setPlayer(3, a);
 	// swap: b displaces a in slot 3, a re-placed into slot 2 in the same task
-	p0.setPlayer(nextEventID(), 3, b);
-	p0.setPlayer(nextEventID(), 2, a);
+	p0.setPlayer(3, b);
+	p0.setPlayer(2, a);
 	await new Promise(r => setTimeout(r, 0));
 	check(!a.isDisposed() && !b.isDisposed(), 'moves/swaps do not dispose players');
 	// replacement: c displaces a; a is not re-placed → disposed
 	const c = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
-	p0.setPlayer(nextEventID(), 2, c);
+	p0.setPlayer(2, c);
 	await new Promise(r => setTimeout(r, 0));
 	check(a.isDisposed() && !c.isDisposed(), 'replaced player is disposed, replacement is not');
 	await new Promise(r => setTimeout(r, 0));
 	check(sim.store.getState().players[a.storeKey] === undefined, 'replaced player slice removed');
-	p0.setPlayer(nextEventID(), 1, null);
-	p0.setPlayer(nextEventID(), 2, null);
-	p0.setPlayer(nextEventID(), 3, null);
+	p0.setPlayer(1, null);
+	p0.setPlayer(2, null);
+	p0.setPlayer(3, null);
 
 	console.log(failures === 0 ? 'STORE-CONTRACT OK' : `STORE-CONTRACT FAILED (${failures})`);
 	if (failures > 0) process.exitCode = 1;

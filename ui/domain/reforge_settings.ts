@@ -8,7 +8,7 @@ import { ItemSlot, Stat } from '@generated/proto/common';
 
 import type { Player } from './player';
 import { StatCap, Stats, UnitStat } from './proto_utils/stats';
-import { batch, EventID } from './state/batch';
+import { batch } from './state/batch';
 import { patchKeyed, REFORGE_FIELDS, ReforgeField, ReforgeSlice, seedKeyed, SimStore, zeroVersions } from './state/sim_store';
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.
 export class RelativeStatCap {
@@ -120,7 +120,7 @@ export class ReforgeSettings {
 		return this.slice.relativeStatCapPrecision;
 	}
 
-	setStatCaps(eventID: EventID, newStatCaps: Stats) {
+	setStatCaps(newStatCaps: Stats) {
 		this.write({ statCaps: newStatCaps }, ['statCaps']);
 	}
 
@@ -128,52 +128,52 @@ export class ReforgeSettings {
 		return this.useCustomEPValues ? this._statCaps : this.defaults.statCaps || new Stats();
 	}
 
-	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
+	setUseCustomEPValues(newUseCustomEPValues: boolean) {
 		if (newUseCustomEPValues !== this.useCustomEPValues) {
 			this.write({ useCustomEPValues: newUseCustomEPValues }, ['useCustomEPValues']);
 		}
 	}
 
-	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
+	setUseSoftCapBreakpoints(newUseSoftCapBreakpoints: boolean) {
 		if (newUseSoftCapBreakpoints !== this.useSoftCapBreakpoints) {
 			this.write({ useSoftCapBreakpoints: newUseSoftCapBreakpoints }, ['useSoftCapBreakpoints']);
 		}
 	}
 
-	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
+	setBreakpointLimits(newLimits: Stats) {
 		this.write({ breakpointLimits: newLimits }, ['breakpointLimits']);
 	}
 
-	setSoftCapBreakpoints(eventID: EventID, newSoftCapBreakpoints: StatCap[]) {
+	setSoftCapBreakpoints(newSoftCapBreakpoints: StatCap[]) {
 		this.write({ softCapBreakpoints: newSoftCapBreakpoints }, ['softCapBreakpoints']);
 	}
-	setRelativeStatCap(eventID: EventID, newValue: number) {
+	setRelativeStatCap(newValue: number) {
 		this.relativeStatCap = newValue === -1 || !RelativeStatCap.hasRoRo(this.player) ? null : new RelativeStatCap(newValue);
 		this.write({ relativeStatCapStat: newValue }, ['relativeStatCapStat']);
 	}
-	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
+	setRelativeStatCapPrecision(newValue: number) {
 		this.write({ relativeStatCapPrecision: newValue }, ['relativeStatCapPrecision']);
 	}
 
-	setIncludeGems(eventID: EventID, newValue: boolean) {
+	setIncludeGems(newValue: boolean) {
 		if (this.includeGems !== newValue) {
 			this.write({ includeGems: newValue }, ['includeGems']);
 		}
 	}
 
-	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
+	setIncludeEOTBPGemSocket(newValue: boolean) {
 		if (this.includeEOTBPGemSocket !== newValue) {
 			this.write({ includeEOTBPGemSocket: newValue }, ['includeEOTBPGemSocket']);
 		}
 	}
 
-	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
+	setFreezeItemSlots(newValue: boolean) {
 		if (this.freezeItemSlots !== newValue) {
 			this.write({ frozenItemSlots: [], freezeItemSlots: newValue }, ['freezeItemSlots']);
 		}
 	}
 
-	setFrozenItemSlot(eventID: EventID, slot: ItemSlot, frozen: boolean) {
+	setFrozenItemSlot(slot: ItemSlot, frozen: boolean) {
 		if (this.getFrozenItemSlot(slot) !== frozen) {
 			const next = new Set(this.slice.frozenItemSlots as ItemSlot[]);
 			next[frozen ? 'add' : 'delete'](slot);
@@ -182,7 +182,7 @@ export class ReforgeSettings {
 	}
 
 	// Sets all frozen item slots at once
-	setFrozenItemSlots(eventID: EventID, slots: ItemSlot[]) {
+	setFrozenItemSlots(slots: ItemSlot[]) {
 		this.write({ frozenItemSlots: [...new Set(slots)] }, ['freezeItemSlots']);
 	}
 
@@ -190,20 +190,20 @@ export class ReforgeSettings {
 		return (this.slice.frozenItemSlots as ItemSlot[]).includes(slot);
 	}
 
-	fromProto(eventID: EventID, proto: ReforgeSettingsProto) {
+	fromProto(proto: ReforgeSettingsProto) {
 		batch(() => {
-			this.setUseCustomEPValues(eventID, proto.useCustomEpValues);
-			this.setStatCaps(eventID, Stats.fromProto(proto.statCaps));
-			this.setUseSoftCapBreakpoints(eventID, proto.useSoftCapBreakpoints);
-			this.setIncludeGems(eventID, proto.includeGems);
-			this.setIncludeEOTBPGemSocket(eventID, proto.includeEotbGemSocket);
-			this.setFreezeItemSlots(eventID, proto.freezeItemSlots);
-			this.setFrozenItemSlots(eventID, proto.frozenItemSlots);
-			this.setBreakpointLimits(eventID, Stats.fromProto(proto.breakpointLimits));
+			this.setUseCustomEPValues(proto.useCustomEpValues);
+			this.setStatCaps(Stats.fromProto(proto.statCaps));
+			this.setUseSoftCapBreakpoints(proto.useSoftCapBreakpoints);
+			this.setIncludeGems(proto.includeGems);
+			this.setIncludeEOTBPGemSocket(proto.includeEotbGemSocket);
+			this.setFreezeItemSlots(proto.freezeItemSlots);
+			this.setFrozenItemSlots(proto.frozenItemSlots);
+			this.setBreakpointLimits(Stats.fromProto(proto.breakpointLimits));
 			if (proto.relativeStatCapStat) {
-				this.setRelativeStatCap(eventID, UnitStat.fromProto(proto.relativeStatCapStat).getStat());
+				this.setRelativeStatCap(UnitStat.fromProto(proto.relativeStatCapStat).getStat());
 			}
-			this.setRelativeStatCapPrecision(eventID, proto.relativeStatCapMipGap || 0.0001);
+			this.setRelativeStatCapPrecision(proto.relativeStatCapMipGap || 0.0001);
 		});
 	}
 
@@ -222,18 +222,18 @@ export class ReforgeSettings {
 		});
 	}
 
-	applyDefaults(eventID: EventID) {
+	applyDefaults() {
 		batch(() => {
-			this.setUseCustomEPValues(eventID, false);
-			this.setUseSoftCapBreakpoints(eventID, !!this.defaults.softCapBreakpoints?.length);
-			this.setIncludeGems(eventID, false);
-			this.setIncludeEOTBPGemSocket(eventID, false);
-			this.setFreezeItemSlots(eventID, false);
-			this.setStatCaps(eventID, this.defaults.statCaps || new Stats());
-			this.setBreakpointLimits(eventID, this.defaults.breakpointLimits || new Stats());
-			this.setSoftCapBreakpoints(eventID, this.defaults.softCapBreakpoints || []);
-			this.setRelativeStatCap(eventID, this.relativeStatCapStat);
-			this.setRelativeStatCapPrecision(eventID, 0.0001);
+			this.setUseCustomEPValues(false);
+			this.setUseSoftCapBreakpoints(!!this.defaults.softCapBreakpoints?.length);
+			this.setIncludeGems(false);
+			this.setIncludeEOTBPGemSocket(false);
+			this.setFreezeItemSlots(false);
+			this.setStatCaps(this.defaults.statCaps || new Stats());
+			this.setBreakpointLimits(this.defaults.breakpointLimits || new Stats());
+			this.setSoftCapBreakpoints(this.defaults.softCapBreakpoints || []);
+			this.setRelativeStatCap(this.relativeStatCapStat);
+			this.setRelativeStatCapPrecision(0.0001);
 		});
 	}
 }

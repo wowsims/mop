@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { Sim } from '@domain/sim';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '@domain/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
@@ -24,10 +23,7 @@ export const encounterModelsMagicDamage = (sim: Sim): boolean => sim.encounter.g
 // real magic damage, so a value configured for a different encounter can't silently keep
 // applying (the sim ignores it either way, but a stale nonzero value stored in settings/share
 // links is misleading to anyone reading them later).
-export function disableAMSIntakeOnMagicDamageEncounters<SpecType extends Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight>(
-	eventID: EventID,
-	player: Player<SpecType>,
-) {
+export function disableAMSIntakeOnMagicDamageEncounters<SpecType extends Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight>(player: Player<SpecType>) {
 	if (!encounterModelsMagicDamage(player.sim)) return;
 
 	const options = player.getSpecOptions();
@@ -36,7 +32,7 @@ export function disableAMSIntakeOnMagicDamageEncounters<SpecType extends Spec.Sp
 	options.avgAmsHit = 0;
 	options.avgAmsSuccessRate = 0;
 	options.amsNumTicks = 0;
-	player.setSpecOptions(eventID, options);
+	player.setSpecOptions(options);
 }
 
 type AMSIntakeSpecs = Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight;

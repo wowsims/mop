@@ -1,7 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { HunterSpecs } from '@domain/proto_utils/utils';
-import { EventID } from '@domain/state/batch';
 import { HunterOptions_PetType as PetType, PetSpec } from '@generated/proto/hunter';
 import * as InputHelpers from '@ui-kit/input_helpers';
 export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHelpers.TypedIconEnumPickerConfig<any, PetType> {
@@ -78,12 +77,12 @@ export class HunterPet<SpecType extends HunterSpecs> {
 		return this.spec;
 	}
 
-	setSpec(eventID: EventID, newSpec: PetSpec) {
+	setSpec(newSpec: PetSpec) {
 		if (newSpec == this.spec) return;
 
 		const options = this.player.getClassOptions();
 		options.petSpec = newSpec;
 		this.spec = newSpec;
-		this.player.setClassOptions(eventID, options);
+		this.player.setClassOptions(options);
 	}
 }

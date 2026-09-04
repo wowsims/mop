@@ -1,7 +1,6 @@
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
 import { Raid } from '@domain/raid';
-import { EventID, nextEventID } from '@domain/state/batch';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -52,9 +51,9 @@ export class EncounterPicker extends Component {
 			// 	),
 			// 	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			// 	getValue: (encounter: Encounter) => presetTargets.findIndex(pe => equalTargetsIgnoreInputs(encounter.primaryTarget, pe.target)),
-			// 	setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			// 	setValue: (encounter: Encounter, newValue: number) => {
 			// 		if (newValue != -1) {
-			// 			encounter.applyPresetTarget(eventID, presetTargets[newValue], 0);
+			// 			encounter.applyPresetTarget(presetTargets[newValue], 0);
 			// 		}
 			// 	},
 			// });
@@ -75,9 +74,9 @@ export class EncounterPicker extends Component {
 				),
 				storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 				getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
-				setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				setValue: (encounter: Encounter, newValue: number) => {
 					if (newValue != -1) {
-						encounter.applyPreset(eventID, presetEncounters[newValue]);
+						encounter.applyPreset(presetEncounters[newValue]);
 					}
 				},
 			});
@@ -92,8 +91,8 @@ export class EncounterPicker extends Component {
 			//	],
 			//	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			//	getValue: (encounter: Encounter) => encounter.primaryTarget.getLevel(),
-			//	setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
-			//		encounter.primaryTarget.setLevel(eventID, newValue);
+			//	setValue: (encounter: Encounter, newValue: number) => {
+			//		encounter.primaryTarget.setLevel(newValue);
 			//	},
 			//});
 
@@ -102,8 +101,8 @@ export class EncounterPicker extends Component {
 			//	values: mobTypeEnumValues,
 			//	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			//	getValue: (encounter: Encounter) => encounter.primaryTarget.getMobType(),
-			//	setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
-			//		encounter.primaryTarget.setMobType(eventID, newValue);
+			//	setValue: (encounter: Encounter, newValue: number) => {
+			//		encounter.primaryTarget.setMobType(newValue);
 			//	},
 			//});
 
@@ -115,8 +114,8 @@ export class EncounterPicker extends Component {
 			//			label: statNames[stat],
 			//			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			//			getValue: (encounter: Encounter) => encounter.primaryTarget.getStats().getStat(stat),
-			//			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
-			//				encounter.primaryTarget.setStats(eventID, encounter.primaryTarget.getStats().withStat(stat, newValue));
+			//			setValue: (encounter: Encounter, newValue: number) => {
+			//				encounter.primaryTarget.setStats(encounter.primaryTarget.getStats().withStat(stat, newValue));
 			//			},
 			//		});
 			//	});
@@ -130,8 +129,8 @@ export class EncounterPicker extends Component {
 					labelTooltip: i18n.t('settings_tab.encounter.num_allies.tooltip'),
 					storeSubscribe: (raid: Raid) => subscribeAll([subscribeRaidField(raid, 'targetDummies'), subscribePlayerField(player, 'itemSwap')]),
 					getValue: (raid: Raid) => raid.getTargetDummies(),
-					setValue: (eventID: EventID, raid: Raid, newValue: number) => {
-						raid.setTargetDummies(eventID, newValue);
+					setValue: (raid: Raid, newValue: number) => {
+						raid.setTargetDummies(newValue);
 					},
 					showWhen: () => {
 						if ([Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec())) {
@@ -147,7 +146,7 @@ export class EncounterPicker extends Component {
 				const talentDrivenDummies = [Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec());
 				subscribePlayerChange(player)(() => {
 					if (!talentDrivenDummies && !player.shouldEnableTargetDummies() && simUI.sim.raid.getTargetDummies() != 0) {
-						simUI.sim.raid.setTargetDummies(nextEventID(), 0);
+						simUI.sim.raid.setTargetDummies(0);
 					}
 				});
 			}
@@ -159,8 +158,8 @@ export class EncounterPicker extends Component {
 					labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
 					storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 					getValue: (encounter: Encounter) => encounter.primaryTarget.minBaseDamage,
-					setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
-						encounter.modifyTarget(eventID, 0, target => {
+					setValue: (encounter: Encounter, newValue: number) => {
+						encounter.modifyTarget(0, target => {
 							target.minBaseDamage = newValue;
 						});
 					},
@@ -174,7 +173,7 @@ export class EncounterPicker extends Component {
 				targetInputs.length != modEncounter.primaryTarget.targetInputs.length ||
 				modEncounter.primaryTarget.targetInputs.some((ti, i) => ti.label != targetInputs[i].label)
 			) {
-				modEncounter.modifyTarget(nextEventID(), 0, target => {
+				modEncounter.modifyTarget(0, target => {
 					target.targetInputs = targetInputs;
 				});
 			}
@@ -214,13 +213,13 @@ class AdvancedEncounterModal extends BaseModal {
 			itemLabel: i18n.t('settings_tab.encounter.target'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
 			getValue: (encounter: Encounter) => encounter.getTargets().slice(),
-			setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetProto>) => {
+			setValue: (encounter: Encounter, newValue: Array<TargetProto>) => {
 				trackEvent({
 					action: 'settings',
 					category: 'encounter',
 					label: newValue.length > encounter.getTargets().length ? 'add-target' : 'remove-target',
 				});
-				encounter.setTargets(eventID, newValue);
+				encounter.setTargets(newValue);
 			},
 			newItem: () => Encounter.defaultTargetProto(),
 			copyItem: (oldItem: TargetProto) => TargetProto.clone(oldItem),
@@ -251,7 +250,7 @@ class AdvancedEncounterModal extends BaseModal {
 			),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				if (newValue != -1) {
 					const preset = presetEncounters[newValue];
 					trackEvent({
@@ -260,7 +259,7 @@ class AdvancedEncounterModal extends BaseModal {
 						label: 'preset',
 						value: preset.path,
 					});
-					encounter.applyPreset(eventID, preset);
+					encounter.applyPreset(preset);
 				}
 			},
 		});
@@ -319,7 +318,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			),
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => presetTargets.findIndex(pe => equalTargetsIgnoreInputs(this.getTarget(), pe.target)),
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				if (newValue != -1) {
 					const preset = presetTargets[newValue];
 					trackEvent({
@@ -328,7 +327,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 						label: 'preset',
 						value: preset.target?.name || preset.path,
 					});
-					encounter.applyPresetTarget(eventID, preset, this.targetIndex);
+					encounter.applyPresetTarget(preset, this.targetIndex);
 				}
 			},
 		});
@@ -348,8 +347,8 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			),
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().id,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+			setValue: (_: null, newValue: number) => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.id = newValue;
 					trackEvent({
 						action: 'settings',
@@ -376,14 +375,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			],
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().level,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'level',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.level = newValue;
 				});
 			},
@@ -394,14 +393,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			values: mobTypeEnumValues,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().mobType,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'mob_type',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.mobType = newValue;
 				});
 			},
@@ -420,14 +419,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			],
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().tankIndex,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'tank_index',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.tankIndex = newValue;
 				});
 			},
@@ -445,8 +444,8 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				labelTooltip: statData.tooltip,
 				storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 				getValue: () => this.getTarget().stats[stat],
-				setValue: (eventID: EventID, _: null, newValue: number) => {
-					encounter.modifyTarget(eventID, this.targetIndex, target => {
+				setValue: (_: null, newValue: number) => {
+					encounter.modifyTarget(this.targetIndex, target => {
 						target.stats[stat] = newValue;
 					});
 				},
@@ -460,14 +459,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			float: true,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().swingSpeed,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'swing_speed',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.swingSpeed = newValue;
 				});
 			},
@@ -478,14 +477,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().minBaseDamage,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'min_base_damage',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.minBaseDamage = newValue;
 				});
 			},
@@ -497,14 +496,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			float: true,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().damageSpread,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'damage_spread',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.damageSpread = newValue;
 				});
 			},
@@ -517,14 +516,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			reverse: true,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().dualWield,
-			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+			setValue: (_: null, newValue: boolean) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'dual_wield',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.dualWield = newValue;
 				});
 			},
@@ -537,14 +536,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			reverse: true,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().dualWieldPenalty,
-			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+			setValue: (_: null, newValue: boolean) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'dual_wield_penalty',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.dualWieldPenalty = newValue;
 				});
 			},
@@ -558,14 +557,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			reverse: true,
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().parryHaste,
-			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+			setValue: (_: null, newValue: boolean) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'parry_haste',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.parryHaste = newValue;
 				});
 			},
@@ -585,14 +584,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			],
 			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().spellSchool,
-			setValue: (eventID: EventID, _: null, newValue: number) => {
+			setValue: (_: null, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'targets',
 					label: 'spell_school',
 					value: newValue,
 				});
-				encounter.modifyTarget(eventID, this.targetIndex, target => {
+				encounter.modifyTarget(this.targetIndex, target => {
 					target.spellSchool = newValue;
 				});
 			},
@@ -725,12 +724,12 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				labelTooltip: translateTargetInputTooltip(newTargetValue.label, newTargetValue.tooltip),
 				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().numberValue,
-				setValue: (eventID: EventID, _: null, newValue: number) => {
+				setValue: (_: null, newValue: number) => {
 					trackEvent({
 						...sharedTrackingConfig,
 						value: newValue,
 					});
-					this.encounter.modifyTarget(eventID, this.targetIndex, target => {
+					this.encounter.modifyTarget(this.targetIndex, target => {
 						// Replace-on-write: mutate the draft. A missing input drops the
 						// write (matching the old throwaway-object fallback).
 						const input = target.targetInputs[this.targetInputIndex];
@@ -751,12 +750,12 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				extraCssClasses: ['input-inline'],
 				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().boolValue,
-				setValue: (eventID: EventID, _: null, newValue: boolean) => {
+				setValue: (_: null, newValue: boolean) => {
 					trackEvent({
 						...sharedTrackingConfig,
 						value: newValue,
 					});
-					this.encounter.modifyTarget(eventID, this.targetIndex, target => {
+					this.encounter.modifyTarget(this.targetIndex, target => {
 						// Replace-on-write: mutate the draft. A missing input drops the
 						// write (matching the old throwaway-object fallback).
 						const input = target.targetInputs[this.targetInputIndex];
@@ -774,12 +773,12 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				}),
 				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().enumValue,
-				setValue: (eventID: EventID, _: null, newValue: number) => {
+				setValue: (_: null, newValue: number) => {
 					trackEvent({
 						...sharedTrackingConfig,
 						value: newValue,
 					});
-					this.encounter.modifyTarget(eventID, this.targetIndex, target => {
+					this.encounter.modifyTarget(this.targetIndex, target => {
 						// Replace-on-write: mutate the draft. A missing input drops the
 						// write (matching the old throwaway-object fallback).
 						const input = target.targetInputs[this.targetInputIndex];
@@ -800,14 +799,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 		labelTooltip: i18n.t('settings_tab.encounter.duration.tooltip'),
 		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 		getValue: (encounter: Encounter) => encounter.getDuration(),
-		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+		setValue: (encounter: Encounter, newValue: number) => {
 			trackEvent({
 				action: 'settings',
 				category: 'duration',
 				label: 'duration',
 				value: newValue,
 			});
-			encounter.setDuration(eventID, newValue);
+			encounter.setDuration(newValue);
 		},
 		enableWhen: _obj => {
 			return !encounter.getUseHealth();
@@ -819,14 +818,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 		labelTooltip: i18n.t('settings_tab.encounter.duration_variation.tooltip'),
 		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 		getValue: (encounter: Encounter) => encounter.getDurationVariation(),
-		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+		setValue: (encounter: Encounter, newValue: number) => {
 			trackEvent({
 				action: 'settings',
 				category: 'duration',
 				label: 'variation',
 				value: newValue,
 			});
-			encounter.setDurationVariation(eventID, newValue);
+			encounter.setDurationVariation(newValue);
 		},
 		enableWhen: _obj => {
 			return !encounter.getUseHealth();
@@ -844,14 +843,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_20.tooltip'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion20() * 100,
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'execute',
 					label: 'execute_20',
 					value: newValue,
 				});
-				encounter.setExecuteProportion20(eventID, newValue / 100);
+				encounter.setExecuteProportion20(newValue / 100);
 			},
 			enableWhen: _obj => {
 				return !encounter.getUseHealth();
@@ -863,14 +862,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_25.tooltip'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion25() * 100,
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'execute',
 					label: 'execute_25',
 					value: newValue,
 				});
-				encounter.setExecuteProportion25(eventID, newValue / 100);
+				encounter.setExecuteProportion25(newValue / 100);
 			},
 			enableWhen: _obj => {
 				return !encounter.getUseHealth();
@@ -882,14 +881,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_35.tooltip'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion35() * 100,
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'execute',
 					label: 'execute_35',
 					value: newValue,
 				});
-				encounter.setExecuteProportion35(eventID, newValue / 100);
+				encounter.setExecuteProportion35(newValue / 100);
 			},
 			enableWhen: _obj => {
 				return !encounter.getUseHealth();
@@ -901,14 +900,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_45.tooltip'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion45() * 100,
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'execute',
 					label: 'execute_45',
 					value: newValue,
 				});
-				encounter.setExecuteProportion45(eventID, newValue / 100);
+				encounter.setExecuteProportion45(newValue / 100);
 			},
 			enableWhen: _obj => {
 				return !encounter.getUseHealth();
@@ -920,14 +919,14 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			labelTooltip: i18n.t('settings_tab.encounter.duration_below_high_hp.tooltip'),
 			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion90() * 100,
-			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			setValue: (encounter: Encounter, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'execute',
 					label: 'execute_90',
 					value: newValue,
 				});
-				encounter.setExecuteProportion90(eventID, newValue / 100);
+				encounter.setExecuteProportion90(newValue / 100);
 			},
 			enableWhen: _obj => {
 				return !encounter.getUseHealth();
@@ -944,14 +943,14 @@ function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targe
 		isCompact: true,
 		storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
 		getValue: (encounter: Encounter) => encounter.getTargets()[targetIndex].targetInputs.slice(),
-		setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetInput>) => {
+		setValue: (encounter: Encounter, newValue: Array<TargetInput>) => {
 			trackEvent({
 				action: 'settings',
 				category: 'targets',
 				label: 'count',
 				value: newValue.length,
 			});
-			encounter.modifyTarget(eventID, targetIndex, target => {
+			encounter.modifyTarget(targetIndex, target => {
 				target.targetInputs = newValue;
 			});
 		},

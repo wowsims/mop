@@ -3,7 +3,6 @@ import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { getStatName, masterySpellIDs } from '@domain/proto_utils/names';
 import { computeStatAttribution, StatMods, Stats, StatWrites, UnitStat } from '@domain/proto_utils/stats';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
 import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '@generated/proto/common';
@@ -447,9 +446,9 @@ export class CharacterStats extends Component {
 					extraCssClasses: ['mb-0'],
 					storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'bonusStats'),
 					getValue: (player: Player<any>) => player.getBonusStats().getStat(rootStat),
-					setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+					setValue: (player: Player<any>, newValue: number) => {
 						const bonusStats = player.getBonusStats().withStat(rootStat, newValue);
-						player.setBonusStats(eventID, bonusStats);
+						player.setBonusStats(bonusStats);
 						instance?.hide();
 					},
 				});

@@ -12,7 +12,7 @@ import { getSpecConfig, Player } from '../../ui/domain/player';
 import { PlayerSpecs } from '../../ui/domain/player_specs';
 import { Database } from '../../ui/domain/proto_utils/database';
 import { Sim } from '../../ui/domain/sim';
-import { batch, nextEventID } from '../../ui/domain/state/batch';
+import { batch } from '../../ui/domain/state/batch';
 import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
 import { registerSpecConfig } from '../../ui/features/spec_config';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/generated/proto/apl';
@@ -93,54 +93,53 @@ registerSpecConfig(subtletyRogueSpec.spec, subtletyRogueSpec);
 // When the defaults logic moves into ui/domain/state/, replace this mirror with
 // a call to the real implementation — snapshot diffs then verify the move.
 function applySpecDefaults(sim: Sim, player: Player<any>, config: IndividualSimUIConfig<any>) {
-	const eventID = nextEventID();
 	batch(() => {
 		const tankSpec = player.getPlayerSpec().isTankSpec;
 		const healingSpec = player.getPlayerSpec().isHealingSpec;
 
-		player.applySharedDefaults(eventID);
-		player.setRace(eventID, config.defaults.other?.race || player.getPlayerClass().races[0]);
-		player.setGear(eventID, sim.db.lookupEquipmentSpec(config.defaults.gear));
-		player.setConsumes(eventID, config.defaults.consumables);
+		player.applySharedDefaults();
+		player.setRace(config.defaults.other?.race || player.getPlayerClass().races[0]);
+		player.setGear(sim.db.lookupEquipmentSpec(config.defaults.gear));
+		player.setConsumes(config.defaults.consumables);
 
 		const defaultRotationType = config.defaults.rotationType || APLRotationType.TypeAuto;
-		player.setAplRotation(eventID, APLRotation.create({ type: defaultRotationType }));
+		player.setAplRotation(APLRotation.create({ type: defaultRotationType }));
 		if (config.defaults.simpleRotation) {
-			player.setSimpleRotation(eventID, config.defaults.simpleRotation);
-			player.setSimpleCooldowns(eventID, Cooldowns.create({ hpPercentForDefensives: tankSpec ? 0.4 : 0 }));
+			player.setSimpleRotation(config.defaults.simpleRotation);
+			player.setSimpleCooldowns(Cooldowns.create({ hpPercentForDefensives: tankSpec ? 0.4 : 0 }));
 		}
 
-		player.setTalentsString(eventID, config.defaults.talents.talentsString);
-		player.setGlyphs(eventID, config.defaults.talents.glyphs || Glyphs.create());
-		player.setSpecOptions(eventID, config.defaults.specOptions);
-		player.setBuffs(eventID, config.defaults.individualBuffs);
-		player.getParty()!.setBuffs(eventID, config.defaults.partyBuffs);
-		player.getRaid()!.setBuffs(eventID, config.defaults.raidBuffs);
-		player.setEpWeights(eventID, config.defaults.epWeights);
+		player.setTalentsString(config.defaults.talents.talentsString);
+		player.setGlyphs(config.defaults.talents.glyphs || Glyphs.create());
+		player.setSpecOptions(config.defaults.specOptions);
+		player.setBuffs(config.defaults.individualBuffs);
+		player.getParty()!.setBuffs(config.defaults.partyBuffs);
+		player.getRaid()!.setBuffs(config.defaults.raidBuffs);
+		player.setEpWeights(config.defaults.epWeights);
 		if (config.defaults.itemSwap) {
-			player.itemSwapSettings.setItemSwapSettings(eventID, true, sim.db.lookupItemSwap(config.defaults.itemSwap));
+			player.itemSwapSettings.setItemSwapSettings(true, sim.db.lookupItemSwap(config.defaults.itemSwap));
 		}
 
-		player.setEpRatios(eventID, player.getDefaultEpRatios(tankSpec, healingSpec));
-		player.setProfession1(eventID, config.defaults.other?.profession1 || Profession.Engineering);
-		player.setProfession2(eventID, config.defaults.other?.profession2 === undefined ? Profession.Jewelcrafting : config.defaults.other.profession2);
-		player.setDistanceFromTarget(eventID, config.defaults.other?.distanceFromTarget || 0);
-		player.setChannelClipDelay(eventID, config.defaults.other?.channelClipDelay || 0);
-		player.setReactionTime(eventID, config.defaults.other?.reactionTime || 100);
+		player.setEpRatios(player.getDefaultEpRatios(tankSpec, healingSpec));
+		player.setProfession1(config.defaults.other?.profession1 || Profession.Engineering);
+		player.setProfession2(config.defaults.other?.profession2 === undefined ? Profession.Jewelcrafting : config.defaults.other.profession2);
+		player.setDistanceFromTarget(config.defaults.other?.distanceFromTarget || 0);
+		player.setChannelClipDelay(config.defaults.other?.channelClipDelay || 0);
+		player.setReactionTime(config.defaults.other?.reactionTime || 100);
 
-		sim.raid.setTargetDummies(eventID, healingSpec ? 9 : 0);
+		sim.raid.setTargetDummies(healingSpec ? 9 : 0);
 		if (config.defaults.encounter?.encounter) {
-			sim.encounter.fromProto(eventID, config.defaults.encounter.encounter);
+			sim.encounter.fromProto(config.defaults.encounter.encounter);
 		} else {
-			sim.encounter.applyDefaults(eventID);
+			sim.encounter.applyDefaults();
 		}
-		sim.encounter.setExecuteProportion90(eventID, config.defaults.other?.highHpThreshold || 0.9);
-		sim.raid.setDebuffs(eventID, config.defaults.debuffs);
-		sim.applyDefaults(eventID, tankSpec, healingSpec);
+		sim.encounter.setExecuteProportion90(config.defaults.other?.highHpThreshold || 0.9);
+		sim.raid.setDebuffs(config.defaults.debuffs);
+		sim.applyDefaults(tankSpec, healingSpec);
 		if (config.defaults.other?.iterationCount) {
-			sim.setIterations(eventID, config.defaults.other.iterationCount);
+			sim.setIterations(config.defaults.other.iterationCount);
 		}
-		sim.raid.setTanks(eventID, tankSpec ? [player.makeUnitReference()] : []);
+		sim.raid.setTanks(tankSpec ? [player.makeUnitReference()] : []);
 	});
 }
 
@@ -163,9 +162,8 @@ export async function main() {
 		await Database.get();
 		const playerSpec = PlayerSpecs.fromProto(spec);
 		const player = new Player<any>(playerSpec, sim);
-		const initID = nextEventID();
 		batch(() => {
-			sim.raid.setPlayer(initID, 0, player);
+			sim.raid.setPlayer(0, player);
 		});
 
 		applySpecDefaults(sim, player, config);
@@ -174,10 +172,9 @@ export async function main() {
 		// "all selected" filter arrays to [] and fromProto re-expands them, so
 		// the serialized form is only a fixed point from the second pass on.
 		// This is existing behavior we snapshot, not a bug we fix here.
-		const canonID = nextEventID();
-		player.fromProto(canonID, player.toProto(false));
-		sim.fromProto(canonID, sim.toProto());
-		sim.encounter.fromProto(nextEventID(), sim.encounter.toProto());
+		player.fromProto(player.toProto(false));
+		sim.fromProto(sim.toProto());
+		sim.encounter.fromProto(sim.encounter.toProto());
 
 		const playerProto = player.toProto(false);
 		const simProto = sim.toProto();
@@ -192,10 +189,9 @@ export async function main() {
 		const encounterJson = JSON.stringify(encounterProto, bigintReplacer);
 
 		// fromProto(toProto) round trip must now be a fixed point.
-		const rtID = nextEventID();
-		player.fromProto(rtID, playerProto);
-		sim.fromProto(rtID, simProto);
-		sim.encounter.fromProto(nextEventID(), encounterProto);
+		player.fromProto(playerProto);
+		sim.fromProto(simProto);
+		sim.encounter.fromProto(encounterProto);
 		const roundTripStable =
 			JSON.stringify(player.toProto(false), bigintReplacer) === playerJson &&
 			JSON.stringify(sim.toProto(), bigintReplacer) === simJson &&
@@ -212,7 +208,7 @@ export async function main() {
 		};
 		const envelopeProto = individualSimSettingsToProto(ctx);
 		const envelopeJson = JSON.stringify(envelopeProto, bigintReplacer);
-		applyIndividualSimSettings(nextEventID(), ctx, envelopeProto);
+		applyIndividualSimSettings(ctx, envelopeProto);
 		const envelopeStable = JSON.stringify(individualSimSettingsToProto(ctx), bigintReplacer) === envelopeJson;
 
 		out[PlayerSpecs.getFullSpecName(playerSpec)] = {

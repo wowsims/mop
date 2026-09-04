@@ -2,7 +2,6 @@ import { Player } from '@domain/player';
 import { scaledEpValue, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { StatWeightActionSettings } from '@domain/stat_weight_settings';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField, subscribeStatWeightsChange } from '@domain/state/subscriptions';
 import { sanitizeId, stDevToConf90 } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
@@ -283,7 +282,7 @@ export class EpWeightsMenu extends BaseModal {
 
 			let result: StatWeightsResult | null = null;
 			try {
-				result = await this.simUI.player.computeStatWeights(nextEventID(), epStatsToCalc, epPseudoStatsToCalc, this.epReferenceStat, progress => {
+				result = await this.simUI.player.computeStatWeights(epStatsToCalc, epPseudoStatsToCalc, this.epReferenceStat, progress => {
 					this.setSimProgress(progress);
 				});
 				if (result.error) {
@@ -356,7 +355,7 @@ export class EpWeightsMenu extends BaseModal {
 			label: i18n.t('sidebar.buttons.stat_weights.modal.show_all_stats'),
 			inline: true,
 			getValue: () => this.showAllStats,
-			setValue: (_eventID: EventID, _menu: EpWeightsMenu, newValue: boolean) => {
+			setValue: (_menu: EpWeightsMenu, newValue: boolean) => {
 				this.showAllStats = newValue;
 				this.updateTable();
 			},
@@ -370,10 +369,10 @@ export class EpWeightsMenu extends BaseModal {
 				float: true,
 				storeSubscribe: player => subscribePlayerField(player, 'epRatios'),
 				getValue: () => this.simUI.player.getEpRatios()[idx],
-				setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+				setValue: (player: Player<any>, newValue: number) => {
 					const epRatios = player.getEpRatios();
 					epRatios[idx] = newValue;
-					player.setEpRatios(eventID, epRatios);
+					player.setEpRatios(epRatios);
 				},
 			});
 		};
@@ -435,7 +434,7 @@ export class EpWeightsMenu extends BaseModal {
 		for (const pseudoStat of excludedPseudoStats) {
 			newWeights = newWeights.withPseudoStat(pseudoStat, oldWeights.getPseudoStat(pseudoStat));
 		}
-		this.simUI.player.setEpWeights(nextEventID(), newWeights);
+		this.simUI.player.setEpWeights(newWeights);
 	}
 
 	/**
@@ -506,7 +505,7 @@ export class EpWeightsMenu extends BaseModal {
 			new BooleanPicker(includeToggleRef.value, this, {
 				id: 'sw-stat-toggle-' + stat.getFullName(this.simUI.player.getClass()),
 				getValue: epWeightsModal => !epWeightsModal.settings.isUnitStatExcludedFromCalc(stat),
-				setValue: (eventID, epWeightsModal, newValue) => epWeightsModal.settings.setStatExcluded(eventID, stat, !newValue),
+				setValue: (epWeightsModal, newValue) => epWeightsModal.settings.setStatExcluded(stat, !newValue),
 				storeSubscribe: epWeightsModal => subscribeStatWeightsChange(epWeightsModal.settings),
 				enableWhen: epWeightsModal => !stat.isStat() || epWeightsModal.epReferenceStat != stat.getStat(),
 			});
@@ -519,9 +518,9 @@ export class EpWeightsMenu extends BaseModal {
 			float: true,
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'epWeights'),
 			getValue: () => this.simUI.player.getEpWeights().getUnitStat(stat),
-			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+			setValue: (player: Player<any>, newValue: number) => {
 				const epWeights = player.getEpWeights().withUnitStat(stat, newValue);
-				player.setEpWeights(eventID, epWeights);
+				player.setEpWeights(epWeights);
 			},
 		});
 

@@ -1,7 +1,7 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
-import { batch, EventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { omitDeep } from '@domain/utils';
 import { APLGroupListPicker } from '@features/apl/view/apl_group_list_picker';
@@ -239,8 +239,8 @@ export class RotationTab extends SimTab {
 			equals: (a, b) => a === b,
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.getRotationType(),
-			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
-				player.modifyAplRotation(eventID, rotation => {
+			setValue: (player: Player<any>, newValue: number) => {
+				player.modifyAplRotation(rotation => {
 					rotation.type = newValue;
 				});
 			},
@@ -260,9 +260,9 @@ export class RotationTab extends SimTab {
 				SavedRotation.create({
 					rotation: player.getResolvedAplRotation(),
 				}),
-			setData: (eventID: EventID, player: Player<any>, newRotation: SavedRotation) =>
+			setData: (player: Player<any>, newRotation: SavedRotation) =>
 				batch(() => {
-					player.setAplRotation(eventID, newRotation.rotation || APLRotation.create());
+					player.setAplRotation(newRotation.rotation || APLRotation.create());
 				}),
 			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'rotation'), subscribePlayerField(this.simUI.player, 'talentsString')]),
 			// Semantic: Auto and APL types match, simple rotations compare by content.

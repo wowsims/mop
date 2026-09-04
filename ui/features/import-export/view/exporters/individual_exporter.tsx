@@ -1,5 +1,4 @@
 import { SimSettingCategories } from '@domain/constants/sim_settings';
-import { EventID } from '@domain/state/batch';
 import { getEnumValues } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Spec } from '@generated/proto/common';
@@ -82,7 +81,7 @@ export abstract class IndividualExporter<SpecType extends Spec> extends Exporter
 					labelTooltip: exportConfig.labelTooltip,
 					inline: true,
 					getValue: () => this.exportCategories[category],
-					setValue: (eventID: EventID, _modObj: IndividualExporter<SpecType>, newValue: boolean) => {
+					setValue: (_modObj: IndividualExporter<SpecType>, newValue: boolean) => {
 						this.exportCategories[category] = newValue;
 						this.changeEmitter.emit();
 					},

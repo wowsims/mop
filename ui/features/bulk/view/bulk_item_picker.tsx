@@ -177,7 +177,7 @@ export default class BulkItemPicker extends Component {
 	private createGearData(): GearData {
 		const changeEvent = new Emitter<void>();
 		return {
-			equipItem: (_, newItem: EquippedItem | null) => {
+			equipItem: (newItem: EquippedItem | null) => {
 				if (newItem) {
 					this.bulkUI.updateItem(this.index, newItem.asSpec());
 					changeEvent.emit();

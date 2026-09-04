@@ -62,7 +62,7 @@ import { StatCap, Stats } from './proto_utils/stats';
 import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
-import { batch, EventID, nextEventID } from './state/batch';
+import { batch } from './state/batch';
 import type { Env } from './state/env';
 import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
@@ -160,7 +160,7 @@ export class Sim {
 				wasmConcurrencySetting = Math.min(4, Math.floor(this.env.hardwareConcurrency / 2));
 			}
 		}
-		this.setWasmConcurrency(nextEventID(), wasmConcurrencySetting);
+		this.setWasmConcurrency(wasmConcurrencySetting);
 
 		this.signalManager = new SimSignalManager();
 
@@ -177,7 +177,7 @@ export class Sim {
 		// is applying: those settings already carry the stats they were saved with.
 		subscribeStatsInputs(this)(() => {
 			if (this.applyingLoadedSettings) return;
-			this.updateCharacterStats(nextEventID());
+			this.updateCharacterStats();
 		});
 
 		// Initial language write: initialization, not a change.
@@ -297,7 +297,7 @@ export class Sim {
 		});
 	}
 
-	async runRaidSim(eventID: EventID, onProgress: WorkerProgressCallback, options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome> {
+	async runRaidSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.getTargets().length < 1) {
@@ -709,7 +709,7 @@ export class Sim {
 		return await this.workerPool.bulkCandidates(request);
 	}
 
-	async runRaidSimWithLogs(eventID: EventID, options: RunSimOptions = {}): Promise<SimResult | null> {
+	async runRaidSimWithLogs(options: RunSimOptions = {}): Promise<SimResult | null> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.getTargets().length < 1) {
@@ -740,9 +740,7 @@ export class Sim {
 	}
 
 	// This should be invoked internally whenever stats might have changed.
-	async updateCharacterStats(eventID: EventID) {
-		eventID = nextEventID();
-
+	async updateCharacterStats() {
 		await this.waitForInit();
 		// Capture the current players so we avoid issues if something changes while
 		// request is in-flight.
@@ -764,7 +762,7 @@ export class Sim {
 					partyStats.players.map((playerStats, playerIndex) => {
 						const player = players[partyIndex * 5 + playerIndex];
 						if (player) {
-							player.setCurrentStats(eventID, playerStats);
+							player.setCurrentStats(playerStats);
 							return player.updateMetadata();
 						} else {
 							return null;
@@ -785,7 +783,7 @@ export class Sim {
 
 	// Returns the stats for Player 0 without triggering any metadata updates.
 	// Can be used for Suggest Gems / Batch Simming without interfering with the UI.
-	async getCharacterStatsForGear(eventID: EventID, gear: Gear): Promise<PlayerStats> {
+	async getCharacterStatsForGear(gear: Gear): Promise<PlayerStats> {
 		await this.waitForInit();
 
 		const raidProto = this.raid.toProto(false, true);
@@ -958,7 +956,7 @@ export class Sim {
 	getPhase(): number {
 		return this.store.getState().sim.phase;
 	}
-	setPhase(eventID: EventID, newPhase: number) {
+	setPhase(newPhase: number) {
 		if (newPhase != this.getPhase()) {
 			this.set({ phase: newPhase });
 		}
@@ -967,7 +965,7 @@ export class Sim {
 	getFaction(): Faction {
 		return this.store.getState().sim.faction;
 	}
-	setFaction(eventID: EventID, newFaction: Faction) {
+	setFaction(newFaction: Faction) {
 		if (newFaction != this.getFaction() && !!newFaction) {
 			this.set({ faction: newFaction });
 		}
@@ -976,7 +974,7 @@ export class Sim {
 	getFixedRngSeed(): number {
 		return this.store.getState().sim.fixedRngSeed;
 	}
-	setFixedRngSeed(eventID: EventID, newFixedRngSeed: number) {
+	setFixedRngSeed(newFixedRngSeed: number) {
 		if (newFixedRngSeed != this.getFixedRngSeed()) {
 			this.set({ fixedRngSeed: newFixedRngSeed });
 		}
@@ -1007,7 +1005,7 @@ export class Sim {
 		// Make a defensive copy
 		return DatabaseFilters.clone(this.store.getState().sim.filters);
 	}
-	setFilters(eventID: EventID, newFilters: DatabaseFilters) {
+	setFilters(newFilters: DatabaseFilters) {
 		if (DatabaseFilters.equals(newFilters, this.store.getState().sim.filters)) {
 			return;
 		}
@@ -1028,14 +1026,14 @@ export class Sim {
 	getShowDamageMetrics(): boolean {
 		return this.ui.showDamageMetrics;
 	}
-	setShowDamageMetrics(eventID: EventID, newShowDamageMetrics: boolean) {
+	setShowDamageMetrics(newShowDamageMetrics: boolean) {
 		if (newShowDamageMetrics != this.ui.showDamageMetrics) this.setUi({ showDamageMetrics: newShowDamageMetrics });
 	}
 
 	getShowThreatMetrics(): boolean {
 		return this.ui.showThreatMetrics;
 	}
-	setShowThreatMetrics(eventID: EventID, newShowThreatMetrics: boolean) {
+	setShowThreatMetrics(newShowThreatMetrics: boolean) {
 		if (newShowThreatMetrics != this.ui.showThreatMetrics) this.setUi({ showThreatMetrics: newShowThreatMetrics });
 	}
 
@@ -1048,21 +1046,21 @@ export class Sim {
 				))
 		);
 	}
-	setShowHealingMetrics(eventID: EventID, newShowHealingMetrics: boolean) {
+	setShowHealingMetrics(newShowHealingMetrics: boolean) {
 		if (newShowHealingMetrics != this.ui.showHealingMetrics) this.setUi({ showHealingMetrics: newShowHealingMetrics });
 	}
 
 	getShowExperimental(): boolean {
 		return this.ui.showExperimental;
 	}
-	setShowExperimental(eventID: EventID, newShowExperimental: boolean) {
+	setShowExperimental(newShowExperimental: boolean) {
 		if (newShowExperimental != this.ui.showExperimental) this.setUi({ showExperimental: newShowExperimental });
 	}
 
 	getWasmConcurrency(): number {
 		return this.ui.wasmConcurrency;
 	}
-	setWasmConcurrency(eventID: EventID, newWasmConcurrency: number) {
+	setWasmConcurrency(newWasmConcurrency: number) {
 		if (newWasmConcurrency != this.ui.wasmConcurrency) {
 			this.env.storage.setItem(WASM_CONCURRENCY_STORAGE_KEY, newWasmConcurrency.toString());
 			this.setUi({ wasmConcurrency: newWasmConcurrency });
@@ -1072,21 +1070,21 @@ export class Sim {
 	getShowQuickSwap(): boolean {
 		return !hasTouch() && this.ui.showQuickSwap;
 	}
-	setShowQuickSwap(eventID: EventID, newShowQuickSwap: boolean) {
+	setShowQuickSwap(newShowQuickSwap: boolean) {
 		if (newShowQuickSwap != this.ui.showQuickSwap) this.setUi({ showQuickSwap: newShowQuickSwap });
 	}
 
 	getShowEPValues(): boolean {
 		return this.ui.showEPValues;
 	}
-	setShowEPValues(eventID: EventID, newShowEPValues: boolean) {
+	setShowEPValues(newShowEPValues: boolean) {
 		if (newShowEPValues != this.ui.showEPValues) this.setUi({ showEPValues: newShowEPValues });
 	}
 
 	getLanguage(): string {
 		return this.ui.language;
 	}
-	setLanguage(eventID: EventID, newLanguage: string) {
+	setLanguage(newLanguage: string) {
 		newLanguage = newLanguage || 'en';
 		if (newLanguage != this.ui.language) this.setUi({ language: newLanguage });
 	}
@@ -1094,7 +1092,7 @@ export class Sim {
 	getIterations(): number {
 		return this.store.getState().sim.iterations;
 	}
-	setIterations(eventID: EventID, newIterations: number) {
+	setIterations(newIterations: number) {
 		if (newIterations != this.getIterations()) {
 			this.set({ iterations: newIterations });
 		}
@@ -1140,19 +1138,19 @@ export class Sim {
 		});
 	}
 
-	fromProto(eventID: EventID, proto: SimSettingsProto) {
+	fromProto(proto: SimSettingsProto) {
 		batch(() => {
-			this.setIterations(eventID, proto.iterations || 12500);
-			this.setPhase(eventID, proto.phase || CURRENT_PHASE);
-			this.setFixedRngSeed(eventID, Number(proto.fixedRngSeed));
-			this.setShowDamageMetrics(eventID, proto.showDamageMetrics);
-			this.setShowThreatMetrics(eventID, proto.showThreatMetrics);
-			this.setShowHealingMetrics(eventID, proto.showHealingMetrics);
-			this.setShowExperimental(eventID, proto.showExperimental);
-			this.setShowQuickSwap(eventID, proto.showQuickSwap);
-			this.setShowEPValues(eventID, proto.showEpValues);
-			this.setLanguage(eventID, proto.language);
-			this.setFaction(eventID, proto.faction || Faction.Alliance);
+			this.setIterations(proto.iterations || 12500);
+			this.setPhase(proto.phase || CURRENT_PHASE);
+			this.setFixedRngSeed(Number(proto.fixedRngSeed));
+			this.setShowDamageMetrics(proto.showDamageMetrics);
+			this.setShowThreatMetrics(proto.showThreatMetrics);
+			this.setShowHealingMetrics(proto.showHealingMetrics);
+			this.setShowExperimental(proto.showExperimental);
+			this.setShowQuickSwap(proto.showQuickSwap);
+			this.setShowEPValues(proto.showEpValues);
+			this.setLanguage(proto.language);
+			this.setFaction(proto.faction || Faction.Alliance);
 
 			const filters = proto.filters || this.defaultFilters();
 			if (filters.armorTypes.length == 0) {
@@ -1175,13 +1173,12 @@ export class Sim {
 			if (filters.raids.length == 0) {
 				filters.raids = Sim.ALL_RAIDS.slice();
 			}
-			this.setFilters(eventID, filters);
+			this.setFilters(filters);
 		});
 	}
 
-	applyDefaults(eventID: EventID, isTankSim: boolean, isHealingSim: boolean) {
+	applyDefaults(isTankSim: boolean, isHealingSim: boolean) {
 		this.fromProto(
-			eventID,
 			SimSettingsProto.create({
 				iterations: 12500,
 				phase: CURRENT_PHASE,

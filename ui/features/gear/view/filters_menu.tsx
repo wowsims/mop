@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { Sim } from '@domain/sim';
-import { EventID } from '@domain/state/batch';
 import { subscribeSimField } from '@domain/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import { SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
@@ -32,10 +31,10 @@ export class FiltersMenu extends BaseModal {
 			showZeroes: false,
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().minIlvl,
-			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+			setValue: (sim: Sim, newValue: number) => {
 				const newFilters = sim.getFilters();
 				newFilters.minIlvl = newValue;
-				sim.setFilters(eventID, newFilters);
+				sim.setFilters(newFilters);
 			},
 		});
 
@@ -47,10 +46,10 @@ export class FiltersMenu extends BaseModal {
 			showZeroes: false,
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().maxIlvl,
-			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+			setValue: (sim: Sim, newValue: number) => {
 				const newFilters = sim.getFilters();
 				newFilters.maxIlvl = newValue;
-				sim.setFilters(eventID, newFilters);
+				sim.setFilters(newFilters);
 			},
 		});
 
@@ -65,10 +64,10 @@ export class FiltersMenu extends BaseModal {
 			}),
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().factionRestriction,
-			setValue: (eventID: EventID, sim: Sim, newValue: UIItem_FactionRestriction) => {
+			setValue: (sim: Sim, newValue: UIItem_FactionRestriction) => {
 				const newFilters = sim.getFilters();
 				newFilters.factionRestriction = newValue;
-				sim.setFilters(eventID, newFilters);
+				sim.setFilters(newFilters);
 			},
 		});
 
@@ -88,14 +87,14 @@ export class FiltersMenu extends BaseModal {
 				inline: true,
 				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().sources.includes(source),
-				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+				setValue: (sim: Sim, newValue: boolean) => {
 					const filters = sim.getFilters();
 					if (newValue) {
 						filters.sources.push(source);
 					} else {
 						filters.sources = filters.sources.filter(v => v != source);
 					}
-					sim.setFilters(eventID, filters);
+					sim.setFilters(filters);
 				},
 			});
 		});
@@ -109,14 +108,14 @@ export class FiltersMenu extends BaseModal {
 				inline: true,
 				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().raids.includes(raid),
-				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+				setValue: (sim: Sim, newValue: boolean) => {
 					const filters = sim.getFilters();
 					if (newValue) {
 						filters.raids.push(raid);
 					} else {
 						filters.raids = filters.raids.filter(v => v != raid);
 					}
-					sim.setFilters(eventID, filters);
+					sim.setFilters(filters);
 				},
 			});
 		});
@@ -135,14 +134,14 @@ export class FiltersMenu extends BaseModal {
 						inline: true,
 						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().armorTypes.includes(armorType),
-						setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+						setValue: (sim: Sim, newValue: boolean) => {
 							const filters = sim.getFilters();
 							if (newValue) {
 								filters.armorTypes.push(armorType);
 							} else {
 								filters.armorTypes = filters.armorTypes.filter(at => at != armorType);
 							}
-							sim.setFilters(eventID, filters);
+							sim.setFilters(filters);
 						},
 					});
 				});
@@ -160,14 +159,14 @@ export class FiltersMenu extends BaseModal {
 						inline: true,
 						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().weaponTypes.includes(weaponType),
-						setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+						setValue: (sim: Sim, newValue: boolean) => {
 							const filters = sim.getFilters();
 							if (newValue) {
 								filters.weaponTypes.push(weaponType);
 							} else {
 								filters.weaponTypes = filters.weaponTypes.filter(at => at != weaponType);
 							}
-							sim.setFilters(eventID, filters);
+							sim.setFilters(filters);
 						},
 					});
 				});
@@ -182,10 +181,10 @@ export class FiltersMenu extends BaseModal {
 					positive: true,
 					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().minMhWeaponSpeed,
-					setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+					setValue: (sim: Sim, newValue: number) => {
 						const filters = sim.getFilters();
 						filters.minMhWeaponSpeed = newValue;
-						sim.setFilters(eventID, filters);
+						sim.setFilters(filters);
 					},
 				});
 				new NumberPicker<Sim>(weaponSpeedSection, player.sim, {
@@ -196,10 +195,10 @@ export class FiltersMenu extends BaseModal {
 					positive: true,
 					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().maxMhWeaponSpeed,
-					setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+					setValue: (sim: Sim, newValue: number) => {
 						const filters = sim.getFilters();
 						filters.maxMhWeaponSpeed = newValue;
-						sim.setFilters(eventID, filters);
+						sim.setFilters(filters);
 					},
 				});
 
@@ -212,10 +211,10 @@ export class FiltersMenu extends BaseModal {
 						positive: true,
 						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().minOhWeaponSpeed,
-						setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+						setValue: (sim: Sim, newValue: number) => {
 							const filters = sim.getFilters();
 							filters.minOhWeaponSpeed = newValue;
-							sim.setFilters(eventID, filters);
+							sim.setFilters(filters);
 						},
 					});
 					new NumberPicker<Sim>(weaponSpeedSection, player.sim, {
@@ -226,10 +225,10 @@ export class FiltersMenu extends BaseModal {
 						positive: true,
 						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().maxOhWeaponSpeed,
-						setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+						setValue: (sim: Sim, newValue: number) => {
 							const filters = sim.getFilters();
 							filters.maxOhWeaponSpeed = newValue;
-							sim.setFilters(eventID, filters);
+							sim.setFilters(filters);
 						},
 					});
 				}
@@ -249,14 +248,14 @@ export class FiltersMenu extends BaseModal {
 					inline: true,
 					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().rangedWeaponTypes.includes(rangedWeaponType),
-					setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+					setValue: (sim: Sim, newValue: boolean) => {
 						const filters = sim.getFilters();
 						if (newValue) {
 							filters.rangedWeaponTypes.push(rangedWeaponType);
 						} else {
 							filters.rangedWeaponTypes = filters.rangedWeaponTypes.filter(at => at != rangedWeaponType);
 						}
-						sim.setFilters(eventID, filters);
+						sim.setFilters(filters);
 					},
 				});
 			});
@@ -271,10 +270,10 @@ export class FiltersMenu extends BaseModal {
 				positive: true,
 				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().minRangedWeaponSpeed,
-				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+				setValue: (sim: Sim, newValue: number) => {
 					const filters = sim.getFilters();
 					filters.minRangedWeaponSpeed = newValue;
-					sim.setFilters(eventID, filters);
+					sim.setFilters(filters);
 				},
 			});
 			new NumberPicker<Sim>(rangedWeaponSpeedSection, player.sim, {
@@ -285,10 +284,10 @@ export class FiltersMenu extends BaseModal {
 				positive: true,
 				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().maxRangedWeaponSpeed,
-				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+				setValue: (sim: Sim, newValue: number) => {
 					const filters = sim.getFilters();
 					filters.maxRangedWeaponSpeed = newValue;
-					sim.setFilters(eventID, filters);
+					sim.setFilters(filters);
 				},
 			});
 		}

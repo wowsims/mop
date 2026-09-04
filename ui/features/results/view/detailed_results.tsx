@@ -1,5 +1,4 @@
 import { SimResult } from '@domain/proto_utils/sim_result';
-import { nextEventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
@@ -319,7 +318,7 @@ export class DetailedResults extends Component {
 				label: 'death',
 			});
 			if (this.latestDeathSeeds.length > 1) {
-				this.simUI?.sim.setFixedRngSeed(nextEventID(), Number(this.latestDeathSeeds.pop()));
+				this.simUI?.sim.setFixedRngSeed(Number(this.latestDeathSeeds.pop()));
 				this.recentlyEditedSeed = true;
 
 				if (isDevMode()) {
@@ -344,7 +343,7 @@ export class DetailedResults extends Component {
 
 	private updateSettings() {
 		if (this.recentlyEditedSeed) {
-			this.simUI.sim.setFixedRngSeed(nextEventID(), 0);
+			this.simUI.sim.setFixedRngSeed(0);
 			this.recentlyEditedSeed = false;
 		}
 
@@ -398,14 +397,12 @@ export class DetailedResults extends Component {
 			}
 		}
 
-		const eventID = nextEventID();
 		if (this.currentSimResult == null) {
 			this.rootDiv.classList.add('dr-no-results');
 			this.resultsEmitter.emit(null);
 		} else {
 			this.rootDiv.classList.remove('dr-no-results');
 			this.resultsEmitter.emit({
-				eventID: eventID,
 				result: this.currentSimResult,
 				filter: this.resultsFilter.getFilter(),
 			});

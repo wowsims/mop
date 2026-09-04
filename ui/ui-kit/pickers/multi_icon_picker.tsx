@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { batch, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribeSimChange } from '@domain/state/subscriptions';
 import { isRightClick } from '@domain/utils';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
@@ -149,7 +149,7 @@ export class MultiIconPicker<ModObject> extends Component {
 		batch(() => {
 			this.pickers.forEach(picker => {
 				picker.setInputValue(null);
-				picker.inputChanged(nextEventID());
+				picker.inputChanged();
 			});
 			this.updateButtonImage();
 		});

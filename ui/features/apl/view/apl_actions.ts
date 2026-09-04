@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { EventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
 import { APLAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
@@ -30,14 +29,13 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.conditionPicker = new AplValues.APLValuePicker(this.rootElem, this.modObject, {
 			label: i18n.t('rotation_tab.apl.priority_list.if_label'),
 			getValue: (_player: Player<any>) => this.getSourceValue()?.condition,
-			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
+			setValue: (player: Player<any>, newValue: APLValue | undefined) => {
 				const srcVal = this.getSourceValue();
 				if (srcVal) {
 					srcVal.condition = newValue;
-					player.touchRotation(eventID);
+					player.touchRotation();
 				} else {
 					this.setSourceValue(
-						eventID,
 						APLAction.create({
 							condition: newValue,
 						}),
@@ -71,7 +69,7 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 			}),
 			equals: (a, b) => a == b,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.action.oneofKind,
-			setValue: (eventID: EventID, player: Player<any>, newKind: APLActionKind) => {
+			setValue: (player: Player<any>, newKind: APLActionKind) => {
 				const sourceValue = this.getSourceValue();
 				const oldKind = sourceValue?.action.oneofKind;
 				if (oldKind == newKind) {
@@ -114,14 +112,14 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 					if (sourceValue) {
 						sourceValue.action = newSourceValue.action;
 					} else {
-						this.setSourceValue(eventID, newSourceValue);
+						this.setSourceValue(newSourceValue);
 					}
 				} else {
 					sourceValue.action = {
 						oneofKind: newKind,
 					};
 				}
-				player.touchRotation(eventID);
+				player.touchRotation();
 			},
 		});
 
@@ -203,12 +201,12 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		const factory = actionKindFactories[newActionKind];
 		this.actionPicker = factory.factory(this.actionDiv, this.modObject, {
 			getValue: () => (this.getSourceValue()?.action as any)?.[newActionKind] || factory.newValue(),
-			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+			setValue: (player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();
 				if (sourceValue) {
 					(sourceValue?.action as any)[newActionKind] = newValue;
 				}
-				player.touchRotation(eventID);
+				player.touchRotation();
 			},
 		});
 		this.addChild(this.actionPicker);
@@ -239,9 +237,8 @@ function actionListFieldConfig(field: string): AplHelpers.APLPickerBuilderFieldC
 			new ListPicker<Player<any>, APLAction>(parent, player, {
 				...config,
 				// Override setValue to replace undefined elements with default messages.
-				setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLAction>) => {
+				setValue: (player: Player<any>, newValue: Array<APLAction>) => {
 					config.setValue(
-						eventID,
 						player,
 						newValue.map(val => val || APLAction.create()),
 					);

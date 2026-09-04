@@ -14,11 +14,11 @@ import { RogueOptions_PoisonOptions } from '@generated/proto/rogue';
 // `RogueSpecs`.
 export const lethalPoisonRule: DerivedSetting<any> = {
 	subscribe: (player, sim) => subscribeAll([subscribePlayerChange(player), subscribeEncounterChange(sim.encounter)]),
-	apply: (eventID, player: Player<RogueSpecs>) => {
+	apply: (player: Player<RogueSpecs>) => {
 		const options = player.getSpecOptions();
 		if (!options.classOptions!.applyPoisonsManually) {
 			options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 		}
-		player.setSpecOptions(eventID, options);
+		player.setSpecOptions(options);
 	},
 };

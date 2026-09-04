@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
 import { ActionID as ActionIdProto, Cooldown } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -73,7 +72,7 @@ export class CooldownsPicker extends Component {
 			deleteButton.addEventListener('click', () => {
 				const newCooldowns = this.player.getSimpleCooldowns();
 				newCooldowns.cooldowns.splice(i, 1);
-				this.player.setSimpleCooldowns(nextEventID(), newCooldowns);
+				this.player.setSimpleCooldowns(newCooldowns);
 				deleteButtonTooltip.hide();
 			});
 			row.appendChild(deleteButton);
@@ -108,7 +107,7 @@ export class CooldownsPicker extends Component {
 			backupIconUrl: (value: ActionIdProto) => ActionId.fromProto(value),
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[cooldownIndex]?.id || ActionIdProto.create(),
-			setValue: (eventID: EventID, player: Player<any>, newValue: ActionIdProto) => {
+			setValue: (player: Player<any>, newValue: ActionIdProto) => {
 				if (!newValue.rawId.oneofKind) return;
 				const newCooldowns = player.getSimpleCooldowns();
 
@@ -120,7 +119,7 @@ export class CooldownsPicker extends Component {
 					timings: [],
 				});
 
-				player.setSimpleCooldowns(eventID, newCooldowns);
+				player.setSimpleCooldowns(newCooldowns);
 			},
 		});
 		return actionPicker;
@@ -135,10 +134,10 @@ export class CooldownsPicker extends Component {
 			getValue: (player: Player<any>) => {
 				return player.getSimpleCooldowns().cooldowns[cooldownIndex]?.timings || [];
 			},
-			setValue: (eventID: EventID, player: Player<any>, newValue: Array<number>) => {
+			setValue: (player: Player<any>, newValue: Array<number>) => {
 				const newCooldowns = player.getSimpleCooldowns();
 				newCooldowns.cooldowns[cooldownIndex].timings = newValue;
-				player.setSimpleCooldowns(eventID, newCooldowns);
+				player.setSimpleCooldowns(newCooldowns);
 			},
 			enableWhen: (player: Player<any>) => {
 				const curCooldown = player.getSimpleCooldowns().cooldowns[cooldownIndex];

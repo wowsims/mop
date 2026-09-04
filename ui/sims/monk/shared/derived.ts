@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { DerivedSetting } from '@features/spec_config';
 import { MonkTalents } from '@generated/proto/monk';
@@ -23,7 +22,7 @@ export const setTalentBasedSettings = (player: Player<any>) => {
 		targetDummies = 9;
 	}
 
-	player.getRaid()?.setTargetDummies(nextEventID(), targetDummies);
+	player.getRaid()?.setTargetDummies(targetDummies);
 };
 
 // Zen Sphere / Chi Wave decide how many target dummies the raid needs, so the
@@ -35,5 +34,5 @@ export const setTalentBasedSettings = (player: Player<any>) => {
 // spec's `derivedSettings`.
 export const talentBasedSettingsRule: DerivedSetting<any> = {
 	subscribe: player => subscribePlayerField(player, 'talentsString'),
-	apply: (_eventID, player) => setTalentBasedSettings(player),
+	apply: player => setTalentBasedSettings(player),
 };

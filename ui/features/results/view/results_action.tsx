@@ -1,6 +1,6 @@
 import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { RequestTypes } from '@domain/sim_signal_manager';
-import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { formatDeltaTextElem, formatToNumber, formatToPercent, zTest } from '@domain/utils';
 import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
@@ -58,7 +58,7 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 
 	const resultsManager = new SimResultsManager(simUI);
 	simUI.sim.simResultEmitter.on(simResult => {
-		resultsManager.setSimResult(nextEventID(), simResult);
+		resultsManager.setSimResult(simResult);
 	});
 	return resultsManager;
 }
@@ -113,7 +113,7 @@ export class SimResultsManager {
 		);
 	}
 
-	setSimResult(eventID: EventID, simResult: SimResult) {
+	setSimResult(simResult: SimResult) {
 		this.reset();
 		this.currentData = {
 			simResult: simResult,
@@ -201,14 +201,13 @@ export class SimResultsManager {
 			const onSwapClickHandler = () => {
 				batch(() => {
 					if (this.currentData && this.referenceData) {
-						const swapEventID = nextEventID();
 						const tmpData = this.currentData;
 						this.currentData = this.referenceData;
 						this.referenceData = tmpData;
 
-						this.simUI.sim.raid.fromProto(swapEventID, this.currentData.raidProto);
-						this.simUI.sim.encounter.fromProto(swapEventID, this.currentData.encounterProto);
-						this.setSimResult(swapEventID, this.currentData.simResult);
+						this.simUI.sim.raid.fromProto(this.currentData.raidProto);
+						this.simUI.sim.encounter.fromProto(this.currentData.encounterProto);
+						this.setSimResult(this.currentData.simResult);
 
 						this.referenceChangeEmitter.emit();
 						this.updateReference();

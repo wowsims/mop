@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import { APLAction, APLPrepullAction, APLValue } from '@generated/proto/apl';
@@ -23,8 +22,8 @@ export class APLPrePullListPicker extends Component {
 			itemLabel: i18n.t('rotation_tab.apl.prePullActions.name'),
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.prepullActions,
-			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLPrepullAction>) => {
-				player.modifyAplRotation(eventID, rotation => {
+			setValue: (player: Player<any>, newValue: Array<APLPrepullAction>) => {
+				player.modifyAplRotation(rotation => {
 					rotation.prepullActions = newValue;
 				});
 			},
@@ -65,9 +64,9 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		this.hidePicker = this.addChild(
 			new APLHidePicker(itemHeaderElem, player, {
 				getValue: () => this.getItem().hide,
-				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
+				setValue: (player: Player<any>, newValue: boolean) => {
 					this.getItem().hide = newValue;
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 			}),
 		);
@@ -79,7 +78,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 				labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 				extraCssClasses: ['apl-prepull-actions-doat'],
 				getValue: () => this.getItem().doAtValue,
-				setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
+				setValue: (player: Player<any>, newValue: APLValue | undefined) => {
 					if (newValue) {
 						this.getItem().doAtValue = newValue;
 					} else {
@@ -88,7 +87,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 							uuid: { value: randomUUID() },
 						});
 					}
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 				inline: true,
 			}),
@@ -97,9 +96,9 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		this.actionPicker = this.addChild(
 			new APLActionPicker(this.rootElem, this.player, {
 				getValue: () => this.getItem().action!,
-				setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
+				setValue: (player: Player<any>, newValue: APLAction) => {
 					this.getItem().action = newValue;
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 			}),
 		);

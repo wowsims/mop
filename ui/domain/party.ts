@@ -5,7 +5,7 @@ import { Player } from './player';
 import { getPlayerSpecFromPlayer } from './proto_utils/utils';
 import { Raid } from './raid';
 import { Sim } from './sim';
-import { batch, EventID } from './state/batch';
+import { batch } from './state/batch';
 export const MAX_PARTY_SIZE = 5;
 
 // Manages all the settings for a single Party.
@@ -26,7 +26,7 @@ export class Party {
 	}
 
 	// Writes this party's slot → storeKey row (replace-on-write).
-	private writeComposition(_eventID: EventID) {
+	private writeComposition() {
 		const row = this.players.map(p => (p ? p.storeKey : null));
 		this.sim.store.setState(s => ({
 			raid: { ...s.raid, composition: s.raid.composition.map((r, i) => (i == this.index ? row : r)) },
@@ -41,10 +41,10 @@ export class Party {
 		return this.size() == 0;
 	}
 
-	clear(eventID: EventID) {
-		this.setBuffs(eventID, PartyBuffs.create());
+	clear() {
+		this.setBuffs(PartyBuffs.create());
 		for (let i = 0; i < MAX_PARTY_SIZE; i++) {
-			this.setPlayer(eventID, i, null);
+			this.setPlayer(i, null);
 		}
 	}
 
@@ -62,7 +62,7 @@ export class Party {
 		return this.players[playerIndex];
 	}
 
-	setPlayer(eventID: EventID, playerIndex: number, newPlayer: Player<any> | null) {
+	setPlayer(playerIndex: number, newPlayer: Player<any> | null) {
 		if (playerIndex < 0 || playerIndex >= MAX_PARTY_SIZE) {
 			throw new Error('Invalid player index: ' + playerIndex);
 		}
@@ -80,7 +80,7 @@ export class Party {
 			if (newPlayer != null) {
 				const newPlayerOldParty = newPlayer.getParty();
 				if (newPlayerOldParty) {
-					newPlayerOldParty.setPlayer(eventID, newPlayer.getPartyIndex(), null);
+					newPlayerOldParty.setPlayer(newPlayer.getPartyIndex(), null);
 				}
 				this.players[playerIndex] = newPlayer;
 				newPlayer.setParty(this);
@@ -88,7 +88,7 @@ export class Party {
 				this.players[playerIndex] = null;
 			}
 
-			this.writeComposition(eventID);
+			this.writeComposition();
 		});
 
 		// Discard detection: a player displaced by a replacement is disposed
@@ -113,7 +113,7 @@ export class Party {
 		return PartyBuffs.clone(this.storedBuffs);
 	}
 
-	setBuffs(eventID: EventID, newBuffs: PartyBuffs) {
+	setBuffs(newBuffs: PartyBuffs) {
 		if (PartyBuffs.equals(this.storedBuffs, newBuffs)) return;
 
 		// Make a defensive copy
@@ -128,13 +128,13 @@ export class Party {
 		});
 	}
 
-	fromProto(eventID: EventID, proto: PartyProto) {
+	fromProto(proto: PartyProto) {
 		batch(() => {
-			this.setBuffs(eventID, proto.buffs || PartyBuffs.create());
+			this.setBuffs(proto.buffs || PartyBuffs.create());
 
 			for (let i = 0; i < MAX_PARTY_SIZE; i++) {
 				if (!proto.players[i] || proto.players[i].class == Class.ClassUnknown) {
-					this.setPlayer(eventID, i, null);
+					this.setPlayer(i, null);
 					continue;
 				}
 
@@ -144,11 +144,11 @@ export class Party {
 
 				// Reuse the current player if possible, so that event handlers are preserved.
 				if (currentPlayer && spec.specID == currentPlayer.getSpec()) {
-					currentPlayer.fromProto(eventID, playerProto);
+					currentPlayer.fromProto(playerProto);
 				} else {
 					const newPlayer = new Player(spec, this.sim);
-					newPlayer.fromProto(eventID, playerProto);
-					this.setPlayer(eventID, i, newPlayer);
+					newPlayer.fromProto(playerProto);
+					this.setPlayer(i, newPlayer);
 					// The replaced instance is referenced nowhere else (pickers
 					// re-sync from the composition write above).
 					currentPlayer?.dispose();

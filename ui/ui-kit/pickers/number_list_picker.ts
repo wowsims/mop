@@ -1,4 +1,3 @@
-import { nextEventID } from '@domain/state/batch';
 import { arrayEquals } from '@domain/utils';
 
 import { Input, InputConfig } from '../input';
@@ -29,7 +28,7 @@ export class NumberListPicker<ModObject> extends Input<ModObject, Array<number>>
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);

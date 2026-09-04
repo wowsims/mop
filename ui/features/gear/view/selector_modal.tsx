@@ -3,7 +3,6 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { Stats } from '@domain/proto_utils/stats';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { mod, randomUUID, sanitizeId } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
@@ -185,20 +184,20 @@ export default class SelectorModal extends BaseModal {
 						nameDescription: item.nameDescription,
 						phase: item.phase,
 						ignoreEPFilter: false,
-						onEquip: (eventID, item) => {
+						onEquip: item => {
 							const equippedItem = gearData.getEquippedItem();
 							if (equippedItem) {
-								gearData.equipItem(eventID, equippedItem.withItem(item));
+								gearData.equipItem(equippedItem.withItem(item));
 							} else {
-								gearData.equipItem(eventID, new EquippedItem({ item, challengeMode: this.player.getChallengeModeEnabled() }));
+								gearData.equipItem(new EquippedItem({ item, challengeMode: this.player.getChallengeModeEnabled() }));
 							}
 						},
 					};
 				}),
 				computeEP: (item: Item) => this.player.computeItemEP(item, selectedSlot),
 				equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.item,
-				onRemove: (eventID: number) => {
-					gearData.equipItem(eventID, null);
+				onRemove: () => {
+					gearData.equipItem(null);
 					this.removeTabs(SelectorModalTabs.Enchants);
 					this.removeTabs(SelectorModalTabs.RandomSuffixes);
 					this.removeTabs(SelectorModalTabs.Reforging);
@@ -229,17 +228,17 @@ export default class SelectorModal extends BaseModal {
 							phase: enchant.phase || 1,
 							ignoreEPFilter: true,
 							nameDescription: '',
-							onEquip: (eventID, enchant) => {
+							onEquip: enchant => {
 								const equippedItem = gearData.getEquippedItem();
-								if (equippedItem) gearData.equipItem(eventID, equippedItem.withEnchant(enchant));
+								if (equippedItem) gearData.equipItem(equippedItem.withEnchant(enchant));
 							},
 						};
 					}),
 				computeEP: (enchant: Enchant) => this.player.computeEnchantEP(enchant),
 				equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.enchant,
-				onRemove: (eventID: number) => {
+				onRemove: () => {
 					const equippedItem = gearData.getEquippedItem();
-					if (equippedItem) gearData.equipItem(eventID, equippedItem.withEnchant(null));
+					if (equippedItem) gearData.equipItem(equippedItem.withEnchant(null));
 				},
 			});
 
@@ -265,17 +264,17 @@ export default class SelectorModal extends BaseModal {
 							phase: tinker.phase || 1,
 							ignoreEPFilter: true,
 							nameDescription: '',
-							onEquip: (eventID, tinker) => {
+							onEquip: tinker => {
 								const equippedItem = gearData.getEquippedItem();
-								if (equippedItem) gearData.equipItem(eventID, equippedItem.withTinker(tinker));
+								if (equippedItem) gearData.equipItem(equippedItem.withTinker(tinker));
 							},
 						};
 					}),
 				computeEP: (tinker: Enchant) => this.player.computeEnchantEP(tinker),
 				equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.tinker,
-				onRemove: (eventID: number) => {
+				onRemove: () => {
 					const equippedItem = gearData.getEquippedItem();
-					if (equippedItem) gearData.equipItem(eventID, equippedItem.withTinker(null));
+					if (equippedItem) gearData.equipItem(equippedItem.withTinker(null));
 				},
 			});
 		}
@@ -392,9 +391,9 @@ export default class SelectorModal extends BaseModal {
 						phase: gem.phase,
 						nameDescription: '',
 						ignoreEPFilter: true,
-						onEquip: (eventID, gem) => {
+						onEquip: gem => {
 							const equippedItem = gearData.getEquippedItem();
-							if (equippedItem) gearData.equipItem(eventID, equippedItem.withGem(gem, socketIdx));
+							if (equippedItem) gearData.equipItem(equippedItem.withGem(gem, socketIdx));
 						},
 					};
 				}),
@@ -406,9 +405,9 @@ export default class SelectorModal extends BaseModal {
 					return gemEP;
 				},
 				equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.gems[socketIdx],
-				onRemove: (eventID: number) => {
+				onRemove: () => {
 					const equippedItem = gearData.getEquippedItem();
-					if (equippedItem) gearData.equipItem(eventID, equippedItem.withGem(null, socketIdx));
+					if (equippedItem) gearData.equipItem(equippedItem.withGem(null, socketIdx));
 				},
 				setTabContent: tabButton => {
 					const gemContainer = createGemContainer(socketColor, null, socketIdx);
@@ -467,20 +466,20 @@ export default class SelectorModal extends BaseModal {
 					phase: itemProto.phase,
 					nameDescription: '',
 					ignoreEPFilter: true,
-					onEquip: (eventID, randomSuffix) => {
+					onEquip: randomSuffix => {
 						const equippedItem = gearData.getEquippedItem();
 						if (equippedItem) {
-							gearData.equipItem(eventID, equippedItem.withItem(equippedItem.item).withRandomSuffix(randomSuffix));
+							gearData.equipItem(equippedItem.withItem(equippedItem.item).withRandomSuffix(randomSuffix));
 						}
 					},
 				};
 			}),
 			computeEP: (randomSuffix: ItemRandomSuffix) => this.player.computeRandomSuffixEP(randomSuffix),
 			equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.randomSuffix,
-			onRemove: (eventID: number) => {
+			onRemove: () => {
 				const equippedItem = gearData.getEquippedItem();
 				if (equippedItem) {
-					gearData.equipItem(eventID, equippedItem.withItem(equippedItem.item).withRandomSuffix(null));
+					gearData.equipItem(equippedItem.withItem(equippedItem.item).withRandomSuffix(null));
 				}
 				this.removeTabs(SelectorModalTabs.Reforging);
 				this.removeTabs(SelectorModalTabs.Upgrades);
@@ -518,20 +517,20 @@ export default class SelectorModal extends BaseModal {
 					phase: itemProto.phase,
 					nameDescription: '',
 					ignoreEPFilter: true,
-					onEquip: (eventID, reforgeData) => {
+					onEquip: reforgeData => {
 						const equippedItem = gearData.getEquippedItem();
 						if (equippedItem) {
-							gearData.equipItem(eventID, equippedItem.withReforge(reforgeData.reforge));
+							gearData.equipItem(equippedItem.withReforge(reforgeData.reforge));
 						}
 					},
 				};
 			}),
 			computeEP: (reforge: ReforgeData) => this.player.computeReforgingEP(reforge),
 			equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?.getReforgeData() || null,
-			onRemove: (eventID: number) => {
+			onRemove: () => {
 				const equippedItem = gearData.getEquippedItem();
 				if (equippedItem) {
-					gearData.equipItem(eventID, equippedItem.withItem(equippedItem.item).withRandomSuffix(equippedItem._randomSuffix));
+					gearData.equipItem(equippedItem.withItem(equippedItem.item).withRandomSuffix(equippedItem._randomSuffix));
 				}
 			},
 		});
@@ -569,20 +568,20 @@ export default class SelectorModal extends BaseModal {
 					phase: itemProto.phase,
 					nameDescription: '',
 					ignoreEPFilter: true,
-					onEquip: (eventID, upgradeStep) => {
+					onEquip: upgradeStep => {
 						const equippedItem = gearData.getEquippedItem();
 						if (equippedItem) {
-							gearData.equipItem(eventID, equippedItem.withUpgrade(upgradeStep));
+							gearData.equipItem(equippedItem.withUpgrade(upgradeStep));
 						}
 					},
 				};
 			}),
 			computeEP: (upgradeStep: ItemLevelState) => this.player.computeUpgradeEP(equippedItem, upgradeStep, this.currentSlot),
 			equippedToItemFn: (equippedItem: EquippedItem | null) => equippedItem?._upgrade,
-			onRemove: (eventID: number) => {
+			onRemove: () => {
 				const equippedItem = gearData.getEquippedItem();
 				if (equippedItem) {
-					gearData.equipItem(eventID, equippedItem.withUpgrade(ItemLevelState.Base));
+					gearData.equipItem(equippedItem.withUpgrade(ItemLevelState.Base));
 				}
 			},
 		});
@@ -611,7 +610,7 @@ export default class SelectorModal extends BaseModal {
 		itemData: ItemData<T>[];
 		computeEP: (item: T) => number;
 		equippedToItemFn: (equippedItem: EquippedItem | null) => T | null | undefined;
-		onRemove: (eventID: EventID) => void;
+		onRemove: () => void;
 		setTabContent?: (tabElem: HTMLButtonElement) => void;
 		socketColor?: GemColor;
 	}) {
@@ -661,7 +660,7 @@ export default class SelectorModal extends BaseModal {
 			itemData => {
 				const prevItem = gearData.getEquippedItem();
 				const item = itemData;
-				itemData.onEquip(nextEventID(), item.item);
+				itemData.onEquip(item.item);
 
 				const isItemChange = Item.is(item.item);
 				const newItem = gearData.getEquippedItem() || null;

@@ -1,7 +1,6 @@
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/utils';
-import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import type { IndividualSimHost } from '@features/sim_host';
 import { ItemLevelState, ItemSpec } from '@generated/proto/common';
@@ -86,7 +85,7 @@ export default class BulkItemSearch extends ContentBlock {
 			showZeroes: false,
 			storeSubscribe: () => this.filtersChangeEmitter.on,
 			getValue: _ => this.minIlvl,
-			setValue: (eventID: EventID, _, newValue: number) => {
+			setValue: (_, newValue: number) => {
 				this.minIlvl = newValue;
 				this.filtersChangeEmitter.emit();
 			},
@@ -100,7 +99,7 @@ export default class BulkItemSearch extends ContentBlock {
 			showZeroes: false,
 			storeSubscribe: () => this.filtersChangeEmitter.on,
 			getValue: _ => this.maxIlvl,
-			setValue: (eventID: EventID, _, newValue: number) => {
+			setValue: (_, newValue: number) => {
 				this.maxIlvl = newValue;
 				this.filtersChangeEmitter.emit();
 			},

@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { APLValidation } from '@generated/proto/api';
 import { LogLevel } from '@generated/proto/common';
@@ -136,7 +135,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				() => {
 					const newItem = this.config.newItem();
 					const newList = this.config.getValue(this.modObject).concat([newItem]);
-					this.config.setValue(nextEventID(), this.modObject, newList);
+					this.config.setValue(this.modObject, newList);
 					if (newButtonTooltip) {
 						newButtonTooltip.hide();
 					}
@@ -244,10 +243,10 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		const itemPicker = this.config.newItemPicker(itemElem, this, index, {
 			storeSubscribe: this.config.storeSubscribe,
 			getValue: () => this.getSourceValue()[index],
-			setValue: (eventID: EventID, modObj: ModObject, newValue: ItemType) => {
+			setValue: (modObj: ModObject, newValue: ItemType) => {
 				const newList = this.getSourceValue();
 				newList[index] = newValue;
-				this.config.setValue(eventID, modObj, newList);
+				this.config.setValue(modObj, newList);
 			},
 		});
 
@@ -275,7 +274,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						deleteButtonTooltip.hide();
 						const newList = this.config.getValue(this.modObject);
 						newList.splice(index, 1);
-						this.config.setValue(nextEventID(), this.modObject, newList);
+						this.config.setValue(this.modObject, newList);
 					},
 					{ signal: this.signal },
 				);
@@ -332,7 +331,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 					} else if ('copyItem' in this.config && this.config.copyItem) {
 						const newList = this.config.getValue(this.modObject).slice();
 						newList.splice(index, 0, this.config.copyItem(newList[index]));
-						this.config.setValue(nextEventID(), this.modObject, newList);
+						this.config.setValue(this.modObject, newList);
 					}
 					copyButtonTooltip.hide();
 				},
@@ -535,14 +534,14 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						const oldList = curDragData.listPicker.config.getValue(curDragData.listPicker.modObject);
 						arrElem = oldList[srcIdx];
 						oldList.splice(srcIdx, 1);
-						curDragData.listPicker.config.setValue(nextEventID(), curDragData.listPicker.modObject, oldList);
+						curDragData.listPicker.config.setValue(curDragData.listPicker.modObject, oldList);
 					} else {
 						arrElem = newList[srcIdx];
 						newList.splice(srcIdx, 1);
 					}
 
 					newList.splice(dstIdx, 0, arrElem);
-					this.config.setValue(nextEventID(), this.modObject, newList);
+					this.config.setValue(this.modObject, newList);
 
 					curDragData = null;
 				},

@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { nextEventID } from '@domain/state/batch';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
@@ -35,7 +34,7 @@ export const addQuickGemPopover = (
 			}));
 		},
 		onItemClick: clickedItem => {
-			player.equipItem(nextEventID(), itemSlot, item.withGem(clickedItem, socketIdx));
+			player.equipItem(itemSlot, item.withGem(clickedItem, socketIdx));
 		},
 		footerButton: {
 			label: i18n.t('gear_tab.gear_picker.quick_popovers.favorite_gems.open_gems'),

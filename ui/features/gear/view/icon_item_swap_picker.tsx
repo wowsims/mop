@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { ItemSlot } from '@generated/proto/common';
@@ -77,8 +76,8 @@ export default class IconItemSwapPicker extends Component {
 
 	private createGearData(): GearData {
 		return {
-			equipItem: (eventID: EventID, newItem: EquippedItem | null) => {
-				this.player.itemSwapSettings.equipItem(eventID, this.slot, newItem);
+			equipItem: (newItem: EquippedItem | null) => {
+				this.player.itemSwapSettings.equipItem(this.slot, newItem);
 			},
 			getEquippedItem: () => this.player.itemSwapSettings.getItem(this.slot),
 			subscribe: subscribePlayerField(this.player, 'itemSwap'),

@@ -13,7 +13,7 @@ import { Stats } from '../proto_utils/stats';
 import { migrateOldProto, ProtoConversionMap } from '../proto_utils/utils';
 import type { ReforgeSettings } from '../reforge_settings';
 import type { Sim } from '../sim';
-import { batch, EventID } from './batch';
+import { batch } from './batch';
 // The state surface the envelope serializes besides Player/Sim: the reforge
 // settings model and the EP reference-stat selections owned by the sim UI.
 export interface IndividualSimSerializationContext {
@@ -104,7 +104,6 @@ export function individualSimSettingsToProto(ctx: IndividualSimSerializationCont
 }
 
 export function applyIndividualSimSettings(
-	eventID: EventID,
 	ctx: IndividualSimSerializationContext,
 	settings: IndividualSimSettings,
 	includeCategories?: Array<SimSettingCategories>,
@@ -121,50 +120,50 @@ export function applyIndividualSimSettings(
 			return;
 		}
 
-		ctx.player.fromProto(eventID, settings.player, includeCategories);
+		ctx.player.fromProto(settings.player, includeCategories);
 
 		if (loadCategory(SimSettingCategories.Miscellaneous)) {
-			ctx.sim.raid.setTanks(eventID, settings.tanks || []);
+			ctx.sim.raid.setTanks(settings.tanks || []);
 		}
 		if (loadCategory(SimSettingCategories.External)) {
-			ctx.sim.raid.setBuffs(eventID, settings.raidBuffs || RaidBuffs.create());
-			ctx.sim.raid.setDebuffs(eventID, settings.debuffs || Debuffs.create());
+			ctx.sim.raid.setBuffs(settings.raidBuffs || RaidBuffs.create());
+			ctx.sim.raid.setDebuffs(settings.debuffs || Debuffs.create());
 			const party = ctx.player.getParty();
 			if (party) {
-				party.setBuffs(eventID, settings.partyBuffs || PartyBuffs.create());
+				party.setBuffs(settings.partyBuffs || PartyBuffs.create());
 			}
-			ctx.sim.raid.setTargetDummies(eventID, settings.targetDummies);
+			ctx.sim.raid.setTargetDummies(settings.targetDummies);
 		}
 		if (loadCategory(SimSettingCategories.Encounter)) {
-			ctx.sim.encounter.fromProto(eventID, settings.encounter || EncounterProto.create());
+			ctx.sim.encounter.fromProto(settings.encounter || EncounterProto.create());
 		}
 		if (loadCategory(SimSettingCategories.UISettings)) {
 			if (settings.epWeightsStats) {
-				ctx.player.setEpWeights(eventID, Stats.fromProto(settings.epWeightsStats));
+				ctx.player.setEpWeights(Stats.fromProto(settings.epWeightsStats));
 			} else {
-				ctx.player.setEpWeights(eventID, ctx.defaultEpWeights);
+				ctx.player.setEpWeights(ctx.defaultEpWeights);
 			}
 
 			const defaultRatios = ctx.player.getDefaultEpRatios(tankSpec, healingSpec);
 			if (settings.epRatios) {
 				const missingRatios = new Array<number>(defaultRatios.length - settings.epRatios.length).fill(0);
-				ctx.player.setEpRatios(eventID, settings.epRatios.concat(missingRatios));
+				ctx.player.setEpRatios(settings.epRatios.concat(missingRatios));
 			} else {
-				ctx.player.setEpRatios(eventID, defaultRatios);
+				ctx.player.setEpRatios(defaultRatios);
 			}
 
 			if (settings.reforgeSettings && ctx.reforgeSettings) {
-				ctx.reforgeSettings.fromProto(eventID, settings.reforgeSettings);
+				ctx.reforgeSettings.fromProto(settings.reforgeSettings);
 			}
 
 			for (const kind of ['dpsRefStat', 'healRefStat', 'tankRefStat'] as const) {
-				if (settings[kind]) ctx.player.setRefStat(eventID, kind, settings[kind]);
+				if (settings[kind]) ctx.player.setRefStat(kind, settings[kind]);
 			}
 
 			if (settings.settings) {
-				ctx.sim.fromProto(eventID, settings.settings);
+				ctx.sim.fromProto(settings.settings);
 			} else {
-				ctx.sim.applyDefaults(eventID, tankSpec, healingSpec);
+				ctx.sim.applyDefaults(tankSpec, healingSpec);
 			}
 		}
 	});

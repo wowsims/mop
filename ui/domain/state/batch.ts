@@ -8,14 +8,6 @@
 //
 // No imports here on purpose: this module sits at the bottom of the graph.
 
-// Single EventID counter for the whole page. An EventID is an opaque action id
-// carried through setter signatures (useful for grouping, e.g. future undo).
-export type EventID = number;
-let nextId: EventID = 0;
-export function nextEventID(): EventID {
-	return nextId++;
-}
-
 let depth = 0;
 let pending = new Set<() => void>();
 

@@ -6,7 +6,6 @@ import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@domain/proto_utils/names';
 import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/utils';
 import { Sim } from '@domain/sim';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
 import { formatDeltaTextElem } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
@@ -42,7 +41,7 @@ export interface ItemData<T extends ItemListType> {
 	ilvl?: number;
 	ignoreEPFilter: boolean;
 	nameDescription: string;
-	onEquip: (eventID: EventID, item: T) => void;
+	onEquip: (item: T) => void;
 }
 
 interface ItemDataWithIdx<T extends ItemListType> {
@@ -51,7 +50,7 @@ interface ItemDataWithIdx<T extends ItemListType> {
 }
 
 export interface GearData {
-	equipItem: (eventID: EventID, equippedItem: EquippedItem | null) => void;
+	equipItem: (equippedItem: EquippedItem | null) => void;
 	getEquippedItem: () => EquippedItem | null;
 	// Fires when the equipped item for this slot changes.
 	subscribe: StoreSubscribe;
@@ -98,7 +97,7 @@ export default class ItemList<T extends ItemListType> {
 		socketColor: GemColor,
 		computeEP: (item: T) => number,
 		equippedToItemFn: (equippedItem: EquippedItem | null) => T | null | undefined,
-		onRemove: (eventID: EventID) => void,
+		onRemove: () => void,
 		onItemClick: (itemData: ItemData<T>) => void,
 	) {
 		this.id = id;
@@ -264,7 +263,7 @@ export default class ItemList<T extends ItemListType> {
 		const removeButton = removeButtonRef.value;
 		if (removeButton) {
 			removeButton.addEventListener('click', _event => {
-				onRemove(nextEventID());
+				onRemove();
 			});
 
 			switch (label) {
@@ -599,7 +598,7 @@ export default class ItemList<T extends ItemListType> {
 			favoriteIconElem.value!.classList.toggle('fas');
 			favoriteIconElem.value!.classList.toggle('far');
 			listItemElem.dataset.fav = isFavorite.toString();
-			this.player.sim.setFilters(nextEventID(), filters);
+			this.player.sim.setFilters(filters);
 		};
 		favoriteElem.value!.addEventListener('click', () => toggleFavorite(listItemElem.dataset.fav === 'false'));
 

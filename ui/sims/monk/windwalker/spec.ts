@@ -3,7 +3,6 @@ import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { RelativeStatCap } from '@domain/reforge_settings';
-import { nextEventID } from '@domain/state/batch';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
@@ -138,7 +137,7 @@ export default defineSpec<Spec.SpecWindwalkerMonk>({
 		getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
 			const avgIlvl = player.getGear().getAverageItemLevel(false);
 			if (RelativeStatCap.hasRoRo(player)) {
-				host.reforger?.setUseSoftCapBreakpoints(nextEventID(), false);
+				host.reforger?.setUseSoftCapBreakpoints(false);
 				if (avgIlvl >= 560) {
 					return Presets.RORO_P5_EP_PRESET.epWeights;
 				} else {

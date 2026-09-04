@@ -1,5 +1,4 @@
 import { Sim } from '@domain/sim';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
 import { setLang, supportedLanguages } from '@i18n/locale_service';
@@ -78,7 +77,7 @@ export class SettingsMenu extends BaseModal {
 					category: 'restore-defaults',
 					label: 'restore',
 				});
-				this.simUI.applyDefaults(nextEventID());
+				this.simUI.applyDefaults();
 				new Toast({
 					variant: 'success',
 					body: i18n.t('info.options.restore_defaults.success_message'),
@@ -94,8 +93,8 @@ export class SettingsMenu extends BaseModal {
 				extraCssClasses: ['mb-0'],
 				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'fixedRngSeed'),
 				getValue: (sim: Sim) => sim.getFixedRngSeed(),
-				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
-					sim.setFixedRngSeed(eventID, newValue);
+				setValue: (sim: Sim, newValue: number) => {
+					sim.setFixedRngSeed(newValue);
 				},
 			});
 
@@ -127,14 +126,14 @@ export class SettingsMenu extends BaseModal {
 					const idx = langs.indexOf(sim.getLanguage());
 					return idx == -1 ? defaultLang : idx;
 				},
-				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+				setValue: (sim: Sim, newValue: number) => {
 					trackEvent({
 						action: 'settings',
 						category: 'language',
 						label: 'update',
 						value: langs[newValue],
 					});
-					sim.setLanguage(eventID, langs[newValue] || 'en');
+					sim.setLanguage(langs[newValue] || 'en');
 					setLang(langs[newValue] || 'en');
 				},
 			});
@@ -150,8 +149,8 @@ export class SettingsMenu extends BaseModal {
 				inline: true,
 				storeSubscribe: (sim: Sim) => subscribeUiField(sim, 'showThreatMetrics'),
 				getValue: (sim: Sim) => sim.getShowThreatMetrics(),
-				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
-					sim.setShowThreatMetrics(eventID, newValue);
+				setValue: (sim: Sim, newValue: boolean) => {
+					sim.setShowThreatMetrics(newValue);
 				},
 			});
 
@@ -163,14 +162,14 @@ export class SettingsMenu extends BaseModal {
 				inline: true,
 				storeSubscribe: (sim: Sim) => subscribeUiField(sim, 'showExperimental'),
 				getValue: (sim: Sim) => sim.getShowExperimental(),
-				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+				setValue: (sim: Sim, newValue: boolean) => {
 					trackEvent({
 						action: 'settings',
 						category: 'show-experimental',
 						label: 'update',
 						value: newValue,
 					});
-					sim.setShowExperimental(eventID, newValue);
+					sim.setShowExperimental(newValue);
 				},
 			});
 		if (showQuickSwap.value)
@@ -181,8 +180,8 @@ export class SettingsMenu extends BaseModal {
 				inline: true,
 				storeSubscribe: (sim: Sim) => subscribeUiField(sim, 'showQuickSwap'),
 				getValue: (sim: Sim) => sim.getShowQuickSwap(),
-				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
-					sim.setShowQuickSwap(eventID, newValue);
+				setValue: (sim: Sim, newValue: boolean) => {
+					sim.setShowQuickSwap(newValue);
 				},
 			});
 
@@ -198,14 +197,14 @@ export class SettingsMenu extends BaseModal {
 				labelTooltip: 'Use web workers to spread sim workload over multiple CPU cores.',
 				storeSubscribe: (sim: Sim) => subscribeUiField(sim, 'wasmConcurrency'),
 				getValue: (sim: Sim) => sim.getWasmConcurrency(),
-				setValue: (eventID, sim, newValue) => {
+				setValue: (sim, newValue) => {
 					trackEvent({
 						action: 'settings',
 						category: 'concurrency',
 						label: 'update',
 						value: newValue,
 					});
-					sim.setWasmConcurrency(eventID, newValue);
+					sim.setWasmConcurrency(newValue);
 				},
 				values: values,
 			});

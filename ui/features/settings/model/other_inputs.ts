@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { emptyUnitReference } from '@domain/proto_utils/utils';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -18,8 +17,8 @@ export const InputDelay = {
 	labelTooltip: i18n.t('settings_tab.other.input_delay.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'reactionTime'), subscribePlayerField(player, 'channelClipDelay')]),
 	getValue: (player: Player<any>) => player.getReactionTime(),
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
-		player.setReactionTime(eventID, newValue);
+	setValue: (player: Player<any>, newValue: number) => {
+		player.setReactionTime(newValue);
 	},
 };
 
@@ -30,8 +29,8 @@ export const ChallengeMode = {
 	labelTooltip: i18n.t('settings_tab.other.challenge_mode.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'challengeModeEnabled'),
 	getValue: (player: Player<any>) => player.getChallengeModeEnabled(),
-	setValue: (eventID: EventID, player: Player<any>, value: boolean) => {
-		player.setChallengeModeEnabled(eventID, value);
+	setValue: (player: Player<any>, value: boolean) => {
+		player.setChallengeModeEnabled(value);
 	},
 };
 
@@ -42,8 +41,8 @@ export const ChannelClipDelay = {
 	labelTooltip: i18n.t('settings_tab.other.channel_clip_delay.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'reactionTime'), subscribePlayerField(player, 'channelClipDelay')]),
 	getValue: (player: Player<any>) => player.getChannelClipDelay(),
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
-		player.setChannelClipDelay(eventID, newValue);
+	setValue: (player: Player<any>, newValue: number) => {
+		player.setChannelClipDelay(newValue);
 	},
 };
 
@@ -54,8 +53,8 @@ export const InFrontOfTarget = {
 	labelTooltip: i18n.t('settings_tab.other.in_front_of_target.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'inFrontOfTarget'),
 	getValue: (player: Player<any>) => player.getInFrontOfTarget(),
-	setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
-		player.setInFrontOfTarget(eventID, newValue);
+	setValue: (player: Player<any>, newValue: boolean) => {
+		player.setInFrontOfTarget(newValue);
 	},
 };
 
@@ -66,8 +65,8 @@ export const DistanceFromTarget = {
 	labelTooltip: i18n.t('settings_tab.other.distance_from_target.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'distanceFromTarget'),
 	getValue: (player: Player<any>) => player.getDistanceFromTarget(),
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
-		player.setDistanceFromTarget(eventID, newValue);
+	setValue: (player: Player<any>, newValue: number) => {
+		player.setDistanceFromTarget(newValue);
 	},
 };
 
@@ -86,7 +85,7 @@ export const TankAssignment = {
 	],
 	storeSubscribe: (player: Player<any>) => subscribeRaidField(player.getRaid()!, 'tanks'),
 	getValue: (player: Player<any>) => (player.getRaid()?.getTanks() || []).findIndex(tank => UnitReference.equals(tank, player.makeUnitReference())),
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const newTanks = [];
 		if (newValue != -1) {
 			for (let i = 0; i < newValue; i++) {
@@ -94,7 +93,7 @@ export const TankAssignment = {
 			}
 			newTanks.push(player.makeUnitReference());
 		}
-		player.getRaid()!.setTanks(eventID, newTanks);
+		player.getRaid()!.setTanks(newTanks);
 	},
 };
 
@@ -105,10 +104,10 @@ export const IncomingHps = {
 	labelTooltip: i18n.t('settings_tab.other.incoming_hps.tooltip'),
 	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().hps,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
 		healingModel.hps = newValue;
-		player.setHealingModel(eventID, healingModel);
+		player.setHealingModel(healingModel);
 	},
 	enableWhen: (player: Player<any>) => (player.getRaid()?.getTanks() || []).find(tank => UnitReference.equals(tank, player.makeUnitReference())) != null,
 };
@@ -121,10 +120,10 @@ export const HealingCadence = {
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence.tooltip'),
 	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceSeconds,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
 		healingModel.cadenceSeconds = newValue;
-		player.setHealingModel(eventID, healingModel);
+		player.setHealingModel(healingModel);
 	},
 	enableWhen: (player: Player<any>) => (player.getRaid()?.getTanks() || []).find(tank => UnitReference.equals(tank, player.makeUnitReference())) != null,
 };
@@ -137,10 +136,10 @@ export const HealingCadenceVariation = {
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence_variation.tooltip'),
 	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceVariation,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
 		healingModel.cadenceVariation = newValue;
-		player.setHealingModel(eventID, healingModel);
+		player.setHealingModel(healingModel);
 	},
 	enableWhen: (player: Player<any>) => (player.getRaid()?.getTanks() || []).find(tank => UnitReference.equals(tank, player.makeUnitReference())) != null,
 };
@@ -153,10 +152,10 @@ export const AbsorbFrac = {
 	labelTooltip: i18n.t('settings_tab.other.absorb_frac.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
 	getValue: (player: Player<any>) => player.getHealingModel().absorbFrac * 100,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
 		healingModel.absorbFrac = newValue / 100;
-		player.setHealingModel(eventID, healingModel);
+		player.setHealingModel(healingModel);
 	},
 };
 
@@ -168,10 +167,10 @@ export const BurstWindow = {
 	labelTooltip: i18n.t('settings_tab.other.burst_window.tooltip'),
 	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().burstWindow,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
 		healingModel.burstWindow = newValue;
-		player.setHealingModel(eventID, healingModel);
+		player.setHealingModel(healingModel);
 	},
 	enableWhen: (player: Player<any>) => (player.getRaid()?.getTanks() || []).find(tank => UnitReference.equals(tank, player.makeUnitReference())) != null,
 };
@@ -184,9 +183,9 @@ export const HpPercentForDefensives = {
 	labelTooltip: i18n.t('settings_tab.other.hp_percent_for_defensives.tooltip'),
 	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 	getValue: (player: Player<any>) => player.getSimpleCooldowns().hpPercentForDefensives * 100,
-	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+	setValue: (player: Player<any>, newValue: number) => {
 		const cooldowns = player.getSimpleCooldowns();
 		cooldowns.hpPercentForDefensives = newValue / 100;
-		player.setSimpleCooldowns(eventID, cooldowns);
+		player.setSimpleCooldowns(cooldowns);
 	},
 };

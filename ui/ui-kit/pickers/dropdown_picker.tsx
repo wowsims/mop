@@ -1,4 +1,3 @@
-import { nextEventID } from '@domain/state/batch';
 import { arrayEquals } from '@domain/utils';
 import i18n from '@i18n/config';
 import { Dropdown } from 'bootstrap';
@@ -167,7 +166,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 				}
 				const onButtonClick = () => {
 					this.updateValue(valueConfig);
-					this.inputChanged(nextEventID());
+					this.inputChanged();
 				};
 				buttonRef.value!.addEventListener('click', onButtonClick);
 				this.addOnResetCallback(() => {

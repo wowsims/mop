@@ -1,5 +1,4 @@
 import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
-import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -35,7 +34,7 @@ export class ResultsFilter extends ResultComponent {
 			sourceToValue: (src: UnitReference | undefined) => this.refToValue(src),
 			valueToSource: (val: UnitValue) => val.value,
 			getValue: (filterData: FilterData) => this.numToRef(filterData.target),
-			setValue: (eventID: EventID, filterData: FilterData, newValue: UnitReference | undefined) => this.setTarget(eventID, this.refToNum(newValue)),
+			setValue: (filterData: FilterData, newValue: UnitReference | undefined) => this.setTarget(this.refToNum(newValue)),
 			values: [],
 		});
 	}
@@ -47,11 +46,11 @@ export class ResultsFilter extends ResultComponent {
 	}
 
 	onSimResult(resultData: SimResultData) {
-		this.targetFilter.setOptions(this.getUnitOptions(resultData.eventID, resultData.result));
+		this.targetFilter.setOptions(this.getUnitOptions(resultData.result));
 		this.targetFilter.rootElem.classList.remove('d-none');
 	}
 
-	setTarget(eventID: EventID, newTarget: number | null) {
+	setTarget(newTarget: number | null) {
 		this.currentFilter.target = newTarget === null ? ALL_UNITS : newTarget;
 		this.changeEmitter.emit();
 	}
@@ -94,7 +93,7 @@ export class ResultsFilter extends ResultComponent {
 		return idx == ALL_UNITS ? UnitReference.create({ type: UnitType.AllTargets }) : UnitReference.create({ type: UnitType.Target, index: idx });
 	}
 
-	private getUnitOptions(eventID: EventID, simResult: SimResult): Array<UnitValueConfig> {
+	private getUnitOptions(simResult: SimResult): Array<UnitValueConfig> {
 		const allUnitsOption = UnitReference.create({ type: UnitType.AllTargets });
 
 		const unitOptions = simResult.getTargets().map(unit => UnitReference.create({ type: UnitType.Target, index: unit.index }));

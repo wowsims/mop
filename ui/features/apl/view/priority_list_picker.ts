@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { APLAction, APLListItem } from '@generated/proto/apl';
 import i18n from '@i18n/config';
@@ -23,8 +22,8 @@ export class APLPriorityListPicker extends Component {
 			itemLabel: i18n.t('rotation_tab.apl.priorityList.name'),
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.priorityList,
-			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
-				player.modifyAplRotation(eventID, rotation => {
+			setValue: (player: Player<any>, newValue: Array<APLListItem>) => {
+				player.modifyAplRotation(rotation => {
 					rotation.priorityList = newValue;
 				});
 			},
@@ -85,9 +84,9 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		this.hidePicker = this.addChild(
 			new APLHidePicker(itemHeaderElem, player, {
 				getValue: () => this.getItem().hide,
-				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
+				setValue: (player: Player<any>, newValue: boolean) => {
 					this.getItem().hide = newValue;
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 			}),
 		);
@@ -95,9 +94,9 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		this.actionPicker = this.addChild(
 			new APLActionPicker(this.rootElem, this.player, {
 				getValue: () => this.getItem().action!,
-				setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
+				setValue: (player: Player<any>, newValue: APLAction) => {
 					this.getItem().action = newValue;
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 			}),
 		);

@@ -1,9 +1,7 @@
 import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
-import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { Component } from '@ui-kit/component';
 export interface SimResultData {
-	eventID: EventID;
 	result: SimResult;
 	filter: SimResultFilter;
 }

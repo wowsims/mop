@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { ItemSlot } from '@generated/proto/common';
@@ -154,8 +153,8 @@ export class ItemPicker extends Component {
 
 	createGearData(): GearData {
 		return {
-			equipItem: (eventID: EventID, equippedItem: EquippedItem | null) => {
-				this.player.equipItem(eventID, this.slot, equippedItem);
+			equipItem: (equippedItem: EquippedItem | null) => {
+				this.player.equipItem(this.slot, equippedItem);
 			},
 			getEquippedItem: () => this.player.getEquippedItem(this.slot)?.withChallengeMode(this.player.getChallengeModeEnabled()).withDynamicStats() || null,
 			subscribe: subscribePlayerField(this.player, 'gear'),

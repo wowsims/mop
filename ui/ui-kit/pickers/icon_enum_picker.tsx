@@ -1,5 +1,4 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import { nextEventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import tippy from 'tippy.js';
@@ -136,7 +135,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 					// Zero out the picker if the selected option is hidden
 					if (this.currentValue == valueConfig.value) {
 						this.setInputValue(this.config.zeroValue);
-						this.inputChanged(nextEventID());
+						this.inputChanged();
 					}
 				}
 			};
@@ -150,7 +149,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 					event.preventDefault();
 					this.currentValue = valueConfig.value;
 					this.storedValue = undefined;
-					this.inputChanged(nextEventID());
+					this.inputChanged();
 				},
 				{ signal: this.signal },
 			);
@@ -177,7 +176,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 
 		this.storedValue = this.getInputValue();
 		this.setInputValue(this.config.zeroValue);
-		this.inputChanged(nextEventID());
+		this.inputChanged();
 	}
 
 	/**
@@ -194,7 +193,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 		if (this.config.equals(sourceValue, this.config.zeroValue)) {
 			// Source was zeroed by storeValue(); restore the previously saved selection.
 			this.setInputValue(this.storedValue);
-			this.inputChanged(nextEventID());
+			this.inputChanged();
 		}
 		this.storedValue = undefined;
 	}

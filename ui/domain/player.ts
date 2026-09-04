@@ -82,7 +82,7 @@ import {
 } from './proto_utils/utils';
 import { Raid } from './raid';
 import { Sim } from './sim';
-import { batch, EventID, nextEventID } from './state/batch';
+import { batch } from './state/batch';
 import { deleteKeyed, patchKeyed, PLAYER_FIELDS, PlayerField, PlayerSlice, seedKeyed, zeroVersions } from './state/sim_store';
 import { subscribePlayerField } from './state/subscriptions';
 import { playerTalentStringToProto } from './talents/factory';
@@ -312,12 +312,12 @@ export class Player<SpecType extends Spec> {
 	}
 
 	// Signals a rotation change made in place on `aplRotation` (APL editor).
-	touchRotation(_eventID: EventID) {
+	touchRotation() {
 		this.write({}, ['rotation']);
 	}
 
 	// Item-swap fields share one version counter (ItemSwapSettings facade).
-	patchItemSwap(eventID: EventID, patch: { itemSwapEnabled?: boolean; itemSwapGear?: ItemSwapGear; itemSwapBonusStats?: Stats }) {
+	patchItemSwap(patch: { itemSwapEnabled?: boolean; itemSwapGear?: ItemSwapGear; itemSwapBonusStats?: Stats }) {
 		this.write(patch, ['itemSwap']);
 	}
 
@@ -394,7 +394,7 @@ export class Player<SpecType extends Spec> {
 				this,
 				'challengeModeEnabled',
 			)(() => {
-				this.setGear(nextEventID(), this.getGear(), true);
+				this.setGear(this.getGear(), true);
 			}),
 		);
 	}
@@ -423,7 +423,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice()[kind] as Stat | undefined;
 	}
 
-	setRefStat(eventID: EventID, kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat', stat: Stat | undefined) {
+	setRefStat(kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat', stat: Stat | undefined) {
 		if (this.slice()[kind] === stat) return;
 		this.write({ [kind]: stat }, ['epRefStat']);
 	}
@@ -568,7 +568,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().epWeights;
 	}
 
-	setEpWeights(eventID: EventID, newEpWeights: Stats) {
+	setEpWeights(newEpWeights: Stats) {
 		this.patch('epWeights', newEpWeights);
 
 		this.gemEPCache = new Map();
@@ -605,7 +605,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().epRatios.slice();
 	}
 
-	setEpRatios(eventID: EventID, newRatios: Array<number>) {
+	setEpRatios(newRatios: Array<number>) {
 		this.patch('epRatios', newRatios);
 	}
 
@@ -616,7 +616,6 @@ export class Player<SpecType extends Spec> {
 	// Error display (toasts) is the caller's responsibility; a result with
 	// result.error set or a thrown error must be handled by the UI layer.
 	async computeStatWeights(
-		_eventID: EventID,
 		epStats: Array<Stat>,
 		epPseudoStats: Array<PseudoStat>,
 		epReferenceStat: Stat,
@@ -629,7 +628,7 @@ export class Player<SpecType extends Spec> {
 		return PlayerStats.clone(this.slice().currentStats);
 	}
 
-	setCurrentStats(eventID: EventID, newStats: PlayerStats) {
+	setCurrentStats(newStats: PlayerStats) {
 		this.patch('currentStats', newStats);
 	}
 
@@ -653,7 +652,7 @@ export class Player<SpecType extends Spec> {
 	getName(): string {
 		return this.slice().name;
 	}
-	setName(eventID: EventID, newName: string) {
+	setName(newName: string) {
 		if (newName != this.getName()) {
 			this.patch('name', newName);
 		}
@@ -670,7 +669,7 @@ export class Player<SpecType extends Spec> {
 	getRace(): Race {
 		return this.slice().race;
 	}
-	setRace(eventID: EventID, newRace: Race) {
+	setRace(newRace: Race) {
 		if (newRace != this.getRace()) {
 			this.patch('race', newRace);
 		}
@@ -679,7 +678,7 @@ export class Player<SpecType extends Spec> {
 	getProfession1(): Profession {
 		return this.slice().profession1 as Profession;
 	}
-	setProfession1(eventID: EventID, newProfession: Profession) {
+	setProfession1(newProfession: Profession) {
 		if (newProfession != this.getProfession1()) {
 			this.patch('profession1', newProfession);
 		}
@@ -687,7 +686,7 @@ export class Player<SpecType extends Spec> {
 	getProfession2(): Profession {
 		return this.slice().profession2 as Profession;
 	}
-	setProfession2(eventID: EventID, newProfession: Profession) {
+	setProfession2(newProfession: Profession) {
 		if (newProfession != this.getProfession2()) {
 			this.patch('profession2', newProfession);
 		}
@@ -695,10 +694,10 @@ export class Player<SpecType extends Spec> {
 	getProfessions(): Array<Profession> {
 		return [this.getProfession1(), this.getProfession2()].filter(p => p != Profession.ProfessionUnknown);
 	}
-	setProfessions(eventID: EventID, newProfessions: Array<Profession>) {
+	setProfessions(newProfessions: Array<Profession>) {
 		batch(() => {
-			this.setProfession1(eventID, newProfessions[0] || Profession.ProfessionUnknown);
-			this.setProfession2(eventID, newProfessions[1] || Profession.ProfessionUnknown);
+			this.setProfession1(newProfessions[0] || Profession.ProfessionUnknown);
+			this.setProfession2(newProfessions[1] || Profession.ProfessionUnknown);
 		});
 	}
 	hasProfession(prof: Profession): boolean {
@@ -717,7 +716,7 @@ export class Player<SpecType extends Spec> {
 		return IndividualBuffs.clone(this.slice().buffs);
 	}
 
-	setBuffs(eventID: EventID, newBuffs: IndividualBuffs) {
+	setBuffs(newBuffs: IndividualBuffs) {
 		if (IndividualBuffs.equals(this.slice().buffs, newBuffs)) return;
 
 		// Make a defensive copy
@@ -740,7 +739,7 @@ export class Player<SpecType extends Spec> {
 		return ConsumesSpec.clone({ ...this.slice().consumables, consumableIds: [] });
 	}
 
-	setConsumes(eventID: EventID, newConsumes: ConsumesSpec) {
+	setConsumes(newConsumes: ConsumesSpec) {
 		if (ConsumesSpec.equals(this.slice().consumables, newConsumes)) return;
 
 		// Make a defensive copy
@@ -751,8 +750,8 @@ export class Player<SpecType extends Spec> {
 		return this.getSpec() == Spec.SpecFuryWarrior;
 	}
 
-	equipItem(eventID: EventID, slot: ItemSlot, newItem: EquippedItem | null) {
-		this.setGear(eventID, this.getGear().withEquippedItem(slot, newItem, this.canDualWield2H()));
+	equipItem(slot: ItemSlot, newItem: EquippedItem | null) {
+		this.setGear(this.getGear().withEquippedItem(slot, newItem, this.canDualWield2H()));
 	}
 
 	getEquippedItem(slot: ItemSlot): EquippedItem | null {
@@ -767,12 +766,12 @@ export class Player<SpecType extends Spec> {
 		return this.slice().gear;
 	}
 
-	setGear(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
+	setGear(newGear: Gear, forceUpdate?: boolean) {
 		if (newGear.equals(this.getGear()) && !forceUpdate) return;
 		this.patch('gear', newGear.withChallengeMode(this.getChallengeModeEnabled()));
 	}
 
-	async setGearAsync(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
+	async setGearAsync(newGear: Gear, forceUpdate?: boolean) {
 		if (newGear.equals(this.getGear()) && !forceUpdate) return;
 		const statsUpdatePromise = new Promise<void>(resolve => {
 			const unsub = this.sim.store.subscribe(
@@ -783,7 +782,7 @@ export class Player<SpecType extends Spec> {
 				},
 			);
 		});
-		this.setGear(eventID, newGear);
+		this.setGear(newGear);
 		await statsUpdatePromise;
 	}
 
@@ -791,7 +790,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().bonusStats;
 	}
 
-	setBonusStats(eventID: EventID, newBonusStats: Stats) {
+	setBonusStats(newBonusStats: Stats) {
 		if (newBonusStats.equals(this.getBonusStats())) return;
 
 		this.patch('bonusStats', newBonusStats);
@@ -853,12 +852,12 @@ export class Player<SpecType extends Spec> {
 
 	// In-place rotation mutation with a single change event — the write path for
 	// the APL editor's per-field edits.
-	modifyAplRotation(eventID: EventID, modify: (rotation: APLRotation) => void) {
+	modifyAplRotation(modify: (rotation: APLRotation) => void) {
 		modify(this.aplRotation_);
 		this.write({}, ['rotation']);
 	}
 
-	setAplRotation(eventID: EventID, newRotation: APLRotation) {
+	setAplRotation(newRotation: APLRotation) {
 		if (APLRotation.equals(newRotation, this.aplRotation_)) return;
 
 		this.aplRotation_ = APLRotation.clone(newRotation);
@@ -880,7 +879,7 @@ export class Player<SpecType extends Spec> {
 		}
 	}
 
-	setSimpleRotation(eventID: EventID, newRotation: SpecRotation<SpecType>) {
+	setSimpleRotation(newRotation: SpecRotation<SpecType>) {
 		if (this.specTypeFunctions.rotationEquals(newRotation, this.getSimpleRotation())) return;
 
 		if (!this.aplRotation_.simple) {
@@ -896,7 +895,7 @@ export class Player<SpecType extends Spec> {
 		return Cooldowns.clone(this.aplRotation_.simple?.cooldowns || Cooldowns.create());
 	}
 
-	setSimpleCooldowns(eventID: EventID, newCooldowns: Cooldowns) {
+	setSimpleCooldowns(newCooldowns: Cooldowns) {
 		if (Cooldowns.equals(this.getSimpleCooldowns(), newCooldowns)) return;
 
 		if (!this.aplRotation_.simple) {
@@ -950,7 +949,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().talentsString;
 	}
 
-	setTalentsString(eventID: EventID, newTalentsString: string) {
+	setTalentsString(newTalentsString: string) {
 		if (newTalentsString == this.getTalentsString()) return;
 
 		// Invalidate the parsed-talents cache before the emit fires.
@@ -971,7 +970,7 @@ export class Player<SpecType extends Spec> {
 		return Glyphs.clone(this.slice().glyphs);
 	}
 
-	setGlyphs(eventID: EventID, newGlyphs: Glyphs) {
+	setGlyphs(newGlyphs: Glyphs) {
 		if (Glyphs.equals(this.slice().glyphs, newGlyphs)) return;
 
 		// Make a defensive copy
@@ -996,7 +995,7 @@ export class Player<SpecType extends Spec> {
 		return this.getSpecOptions().classOptions as ClassOptions<SpecType>;
 	}
 
-	setClassOptions(eventID: EventID, newClassOptions: ClassOptions<SpecType>) {
+	setClassOptions(newClassOptions: ClassOptions<SpecType>) {
 		const newSpecOptions = this.getSpecOptions();
 		newSpecOptions.classOptions = newClassOptions;
 		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
@@ -1008,7 +1007,7 @@ export class Player<SpecType extends Spec> {
 		return this.specTypeFunctions.optionsCopy(this.slice().specOptions as SpecOptions<SpecType>);
 	}
 
-	setSpecOptions(eventID: EventID, newSpecOptions: SpecOptions<SpecType>) {
+	setSpecOptions(newSpecOptions: SpecOptions<SpecType>) {
 		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
 
 		this.patch('specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
@@ -1018,7 +1017,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().reactionTime;
 	}
 
-	setReactionTime(eventID: EventID, newReactionTime: number) {
+	setReactionTime(newReactionTime: number) {
 		if (newReactionTime == this.getReactionTime()) return;
 
 		this.patch('reactionTime', newReactionTime);
@@ -1028,7 +1027,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().channelClipDelay;
 	}
 
-	setChannelClipDelay(eventID: EventID, newChannelClipDelay: number) {
+	setChannelClipDelay(newChannelClipDelay: number) {
 		if (newChannelClipDelay == this.getChannelClipDelay()) return;
 
 		this.patch('channelClipDelay', newChannelClipDelay);
@@ -1038,7 +1037,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().challengeModeEnabled;
 	}
 
-	setChallengeModeEnabled(eventID: EventID, value: boolean) {
+	setChallengeModeEnabled(value: boolean) {
 		if (value === this.getChallengeModeEnabled()) return;
 
 		this.patch('challengeModeEnabled', value);
@@ -1048,7 +1047,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().inFrontOfTarget;
 	}
 
-	setInFrontOfTarget(eventID: EventID, newInFrontOfTarget: boolean) {
+	setInFrontOfTarget(newInFrontOfTarget: boolean) {
 		if (newInFrontOfTarget == this.getInFrontOfTarget()) return;
 
 		this.patch('inFrontOfTarget', newInFrontOfTarget);
@@ -1058,7 +1057,7 @@ export class Player<SpecType extends Spec> {
 		return this.slice().distanceFromTarget;
 	}
 
-	setDistanceFromTarget(eventID: EventID, newDistanceFromTarget: number) {
+	setDistanceFromTarget(newDistanceFromTarget: number) {
 		if (newDistanceFromTarget == this.getDistanceFromTarget()) return;
 
 		this.patch('distanceFromTarget', newDistanceFromTarget);
@@ -1088,7 +1087,7 @@ export class Player<SpecType extends Spec> {
 		const hm = this.getHealingModel();
 		if (hm.cadenceSeconds == 0 || hm.hps == 0) {
 			this.setDefaultHealingParams(hm);
-			this.setHealingModel(0, hm);
+			this.setHealingModel(hm);
 		}
 	}
 
@@ -1097,7 +1096,7 @@ export class Player<SpecType extends Spec> {
 		return HealingModel.clone(this.slice().healingModel);
 	}
 
-	setHealingModel(eventID: EventID, newHealingModel: HealingModel) {
+	setHealingModel(newHealingModel: HealingModel) {
 		if (HealingModel.equals(this.slice().healingModel, newHealingModel)) return;
 
 		// Make a defensive copy
@@ -1547,26 +1546,24 @@ export class Player<SpecType extends Spec> {
 		return player;
 	}
 
-	fromProto(eventID: EventID, proto: PlayerProto, includeCategories?: Array<SimSettingCategories>) {
+	fromProto(proto: PlayerProto, includeCategories?: Array<SimSettingCategories>) {
 		// Fix potential out-of-date protos before importing
 		batch(() => {
 			Player.updateProtoVersion(proto);
 			const loadCategory = (cat: SimSettingCategories) => !includeCategories || includeCategories.length == 0 || includeCategories.includes(cat);
-			eventID = nextEventID();
 			if (loadCategory(SimSettingCategories.Gear)) {
-				this.setGear(eventID, proto.equipment ? this.sim.db.lookupEquipmentSpec(proto.equipment) : new Gear({}));
+				this.setGear(proto.equipment ? this.sim.db.lookupEquipmentSpec(proto.equipment) : new Gear({}));
 				this.itemSwapSettings.setItemSwapSettings(
-					eventID,
 					proto.enableItemSwap,
 					proto.itemSwap ? this.sim.db.lookupItemSwap(proto.itemSwap) : new ItemSwapGear({}),
 					Stats.fromProto(proto.itemSwap?.prepullBonusStats),
 				);
-				this.setBonusStats(eventID, Stats.fromProto(proto.bonusStats || UnitStats.create()));
-				//this.setBulkEquipmentSpec(eventID, BulkEquipmentSpec.create()); // Do not persist the bulk equipment settings.
+				this.setBonusStats(Stats.fromProto(proto.bonusStats || UnitStats.create()));
+				//this.setBulkEquipmentSpec(BulkEquipmentSpec.create()); // Do not persist the bulk equipment settings.
 			}
 			if (loadCategory(SimSettingCategories.Talents)) {
-				this.setTalentsString(eventID, proto.talentsString);
-				this.setGlyphs(eventID, proto.glyphs || Glyphs.create());
+				this.setTalentsString(proto.talentsString);
+				this.setGlyphs(proto.glyphs || Glyphs.create());
 			}
 			if (loadCategory(SimSettingCategories.Rotation)) {
 				if (proto.rotation?.type == APLRotationType.TypeUnknown) {
@@ -1575,53 +1572,51 @@ export class Player<SpecType extends Spec> {
 					}
 					proto.rotation.type = APLRotationType.TypeAuto;
 				}
-				this.setAplRotation(eventID, proto.rotation || APLRotation.create());
+				this.setAplRotation(proto.rotation || APLRotation.create());
 			}
 			if (loadCategory(SimSettingCategories.Consumes)) {
-				this.setConsumes(eventID, proto.consumables || ConsumesSpec.create());
+				this.setConsumes(proto.consumables || ConsumesSpec.create());
 			}
 			if (loadCategory(SimSettingCategories.Miscellaneous)) {
-				this.setSpecOptions(eventID, this.specTypeFunctions.optionsFromPlayer(proto));
-				this.setName(eventID, proto.name);
-				this.setRace(eventID, proto.race);
-				this.setProfession1(eventID, proto.profession1);
-				this.setProfession2(eventID, proto.profession2);
-				this.setReactionTime(eventID, proto.reactionTimeMs);
-				this.setChannelClipDelay(eventID, proto.channelClipDelayMs);
-				this.setInFrontOfTarget(eventID, proto.inFrontOfTarget);
-				this.setDistanceFromTarget(eventID, proto.distanceFromTarget);
-				this.setHealingModel(eventID, proto.healingModel || HealingModel.create());
-				this.setChallengeModeEnabled(eventID, proto.challengeMode);
+				this.setSpecOptions(this.specTypeFunctions.optionsFromPlayer(proto));
+				this.setName(proto.name);
+				this.setRace(proto.race);
+				this.setProfession1(proto.profession1);
+				this.setProfession2(proto.profession2);
+				this.setReactionTime(proto.reactionTimeMs);
+				this.setChannelClipDelay(proto.channelClipDelayMs);
+				this.setInFrontOfTarget(proto.inFrontOfTarget);
+				this.setDistanceFromTarget(proto.distanceFromTarget);
+				this.setHealingModel(proto.healingModel || HealingModel.create());
+				this.setChallengeModeEnabled(proto.challengeMode);
 			}
 			if (loadCategory(SimSettingCategories.External)) {
-				this.setBuffs(eventID, proto.buffs || IndividualBuffs.create());
+				this.setBuffs(proto.buffs || IndividualBuffs.create());
 			}
 		});
 	}
 
-	clone(eventID: EventID): Player<SpecType> {
+	clone(): Player<SpecType> {
 		const newPlayer = new Player<SpecType>(this.playerSpec, this.sim);
-		newPlayer.fromProto(eventID, this.toProto());
+		newPlayer.fromProto(this.toProto());
 		return newPlayer;
 	}
 
-	applySharedDefaults(eventID: EventID) {
+	applySharedDefaults() {
 		batch(() => {
-			this.setReactionTime(eventID, 100);
-			this.setInFrontOfTarget(eventID, this.playerSpec.isTankSpec);
+			this.setReactionTime(100);
+			this.setInFrontOfTarget(this.playerSpec.isTankSpec);
 			this.setHealingModel(
-				eventID,
 				HealingModel.create({
 					burstWindow: this.playerSpec.isTankSpec ? 6 : 0,
 				}),
 			);
 			this.setSimpleCooldowns(
-				eventID,
 				Cooldowns.create({
 					hpPercentForDefensives: this.playerSpec.isTankSpec ? 0.4 : 0,
 				}),
 			);
-			this.setBonusStats(eventID, new Stats());
+			this.setBonusStats(new Stats());
 		});
 	}
 

@@ -1,6 +1,6 @@
 import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
-import { batch, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';
@@ -51,18 +51,17 @@ export abstract class IndividualImporter<SpecType extends Spec> extends Importer
 		const gear = simUI.sim.db.lookupEquipmentSpec(equipmentSpec);
 
 		// Now update settings using the parsed values.
-		const eventID = nextEventID();
 		batch(() => {
-			simUI.player.setRace(eventID, race);
-			simUI.player.setGear(eventID, gear);
+			simUI.player.setRace(race);
+			simUI.player.setGear(gear);
 			if (talentsStr && talentsStr != '--') {
-				simUI.player.setTalentsString(eventID, talentsStr);
+				simUI.player.setTalentsString(talentsStr);
 			}
 			if (glyphs) {
-				simUI.player.setGlyphs(eventID, glyphs);
+				simUI.player.setGlyphs(glyphs);
 			}
 			if (professions.length > 0) {
-				simUI.player.setProfessions(eventID, professions);
+				simUI.player.setProfessions(professions);
 			}
 		});
 

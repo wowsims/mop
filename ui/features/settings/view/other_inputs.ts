@@ -1,5 +1,4 @@
 import { Sim } from '@domain/sim';
-import { EventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
@@ -13,10 +12,10 @@ export function makeShow1hWeaponsSelector(parent: HTMLElement, sim: Sim): Boolea
 		inline: true,
 		storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 		getValue: (sim: Sim) => sim.getFilters().oneHandedWeapons,
-		setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+		setValue: (sim: Sim, newValue: boolean) => {
 			const filters = sim.getFilters();
 			filters.oneHandedWeapons = newValue;
-			sim.setFilters(eventID, filters);
+			sim.setFilters(filters);
 		},
 	});
 }
@@ -30,10 +29,10 @@ export function makeShow2hWeaponsSelector(parent: HTMLElement, sim: Sim): Boolea
 		inline: true,
 		storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 		getValue: (sim: Sim) => sim.getFilters().twoHandedWeapons,
-		setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+		setValue: (sim: Sim, newValue: boolean) => {
 			const filters = sim.getFilters();
 			filters.twoHandedWeapons = newValue;
-			sim.setFilters(eventID, filters);
+			sim.setFilters(filters);
 		},
 	});
 }
@@ -46,10 +45,10 @@ export function makeShowMatchingGemsSelector(parent: HTMLElement, sim: Sim): Boo
 		inline: true,
 		storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 		getValue: (sim: Sim) => sim.getFilters().matchingGemsOnly,
-		setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+		setValue: (sim: Sim, newValue: boolean) => {
 			const filters = sim.getFilters();
 			filters.matchingGemsOnly = newValue;
-			sim.setFilters(eventID, filters);
+			sim.setFilters(filters);
 		},
 	});
 }
@@ -62,8 +61,8 @@ export function makeShowEPValuesSelector(parent: HTMLElement, sim: Sim): Boolean
 		inline: true,
 		storeSubscribe: (sim: Sim) => subscribeUiField(sim, 'showEPValues'),
 		getValue: (sim: Sim) => sim.getShowEPValues(),
-		setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
-			sim.setShowEPValues(eventID, newValue);
+		setValue: (sim: Sim, newValue: boolean) => {
+			sim.setShowEPValues(newValue);
 		},
 	});
 }
@@ -81,8 +80,8 @@ export function makePhaseSelector(parent: HTMLElement, sim: Sim): EnumPicker<Sim
 		],
 		storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'phase'),
 		getValue: (sim: Sim) => sim.getPhase(),
-		setValue: (eventID: EventID, sim: Sim, newValue: number) => {
-			sim.setPhase(eventID, newValue);
+		setValue: (sim: Sim, newValue: number) => {
+			sim.setPhase(newValue);
 		},
 	});
 }

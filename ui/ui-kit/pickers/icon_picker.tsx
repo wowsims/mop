@@ -1,5 +1,4 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import { nextEventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { isRightClick } from '@domain/utils';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
@@ -151,11 +150,11 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 	handleLeftClick() {
 		if (this.config.states == 0 || this.currentValue + 1 < this.config.states) {
 			this.currentValue++;
-			this.inputChanged(nextEventID());
+			this.inputChanged();
 		} else if (this.currentValue > 0) {
 			// roll over
 			this.currentValue = 0;
-			this.inputChanged(nextEventID());
+			this.inputChanged();
 		}
 	}
 
@@ -170,7 +169,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 				this.currentValue = this.config.states - 1;
 			}
 		}
-		this.inputChanged(nextEventID());
+		this.inputChanged();
 	}
 
 	getInputElem(): HTMLElement {
@@ -250,7 +249,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 
 		this.storedValue = this.getInputValue();
 		this.setInputValue(0 as ValueType);
-		this.inputChanged(nextEventID());
+		this.inputChanged();
 	}
 
 	/**
@@ -260,7 +259,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 		if (typeof this.storedValue === 'undefined') return;
 
 		this.setInputValue(this.storedValue);
-		this.inputChanged(nextEventID());
+		this.inputChanged();
 		this.storedValue = undefined;
 	}
 

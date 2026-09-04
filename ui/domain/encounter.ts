@@ -14,7 +14,7 @@ import { CURRENT_API_VERSION } from './constants/other';
 import { UnitMetadataList } from './player';
 import { Stats } from './proto_utils/stats';
 import { Sim } from './sim';
-import { batch, EventID } from './state/batch';
+import { batch } from './state/batch';
 import { EncounterSlice, SimStore } from './state/sim_store';
 // Manages all the settings for an Encounter. State lives in the Zustand
 // store's `encounter` slice.
@@ -36,7 +36,7 @@ export class Encounter {
 		return this.store.getState().encounter;
 	}
 
-	private set(eventID: EventID, patch: Partial<EncounterSlice>) {
+	private set(patch: Partial<EncounterSlice>) {
 		this.store.setState(s => ({ encounter: { ...s.encounter, ...patch } }));
 	}
 
@@ -54,86 +54,86 @@ export class Encounter {
 		return this.enc.targets[index];
 	}
 
-	setTargets(eventID: EventID, newTargets: Array<TargetProto>) {
+	setTargets(newTargets: Array<TargetProto>) {
 		// The old setter notified unconditionally; a same-reference write is
 		// stored as a fresh array so subscribers still see a change.
-		this.set(eventID, { targets: newTargets === this.enc.targets ? newTargets.slice() : newTargets });
+		this.set({ targets: newTargets === this.enc.targets ? newTargets.slice() : newTargets });
 	}
 
 	// Target mutation with a single change event — the write path for the
 	// encounter picker's per-field edits. Replace-on-write: the callback gets a
 	// clone, which then replaces the original in a new targets array.
-	modifyTarget(eventID: EventID, index: number, modify: (target: TargetProto) => void) {
+	modifyTarget(index: number, modify: (target: TargetProto) => void) {
 		const targets = this.enc.targets.slice();
 		if (!targets[index]) {
 			// Old behavior for a missing target: the write went to a throwaway
 			// object and the change event still fired.
-			this.set(eventID, { targets });
+			this.set({ targets });
 			return;
 		}
 		const clone = TargetProto.clone(targets[index]);
 		modify(clone);
 		targets[index] = clone;
-		this.set(eventID, { targets });
+		this.set({ targets });
 	}
 
 	getDurationVariation(): number {
 		return this.enc.durationVariation;
 	}
-	setDurationVariation(eventID: EventID, newDuration: number) {
+	setDurationVariation(newDuration: number) {
 		if (newDuration == this.enc.durationVariation) return;
-		this.set(eventID, { durationVariation: newDuration });
+		this.set({ durationVariation: newDuration });
 	}
 
 	getDuration(): number {
 		return this.enc.duration;
 	}
-	setDuration(eventID: EventID, newDuration: number) {
+	setDuration(newDuration: number) {
 		if (newDuration == this.enc.duration) return;
-		this.set(eventID, { duration: newDuration });
+		this.set({ duration: newDuration });
 	}
 
 	getExecuteProportion20(): number {
 		return this.enc.executeProportion20;
 	}
-	setExecuteProportion20(eventID: EventID, newExecuteProportion20: number) {
+	setExecuteProportion20(newExecuteProportion20: number) {
 		if (newExecuteProportion20 == this.enc.executeProportion20) return;
-		this.set(eventID, { executeProportion20: newExecuteProportion20 });
+		this.set({ executeProportion20: newExecuteProportion20 });
 	}
 	getExecuteProportion25(): number {
 		return this.enc.executeProportion25;
 	}
-	setExecuteProportion25(eventID: EventID, newExecuteProportion25: number) {
+	setExecuteProportion25(newExecuteProportion25: number) {
 		if (newExecuteProportion25 == this.enc.executeProportion25) return;
-		this.set(eventID, { executeProportion25: newExecuteProportion25 });
+		this.set({ executeProportion25: newExecuteProportion25 });
 	}
 	getExecuteProportion35(): number {
 		return this.enc.executeProportion35;
 	}
-	setExecuteProportion35(eventID: EventID, newExecuteProportion35: number) {
+	setExecuteProportion35(newExecuteProportion35: number) {
 		if (newExecuteProportion35 == this.enc.executeProportion35) return;
-		this.set(eventID, { executeProportion35: newExecuteProportion35 });
+		this.set({ executeProportion35: newExecuteProportion35 });
 	}
 	getExecuteProportion45(): number {
 		return this.enc.executeProportion45;
 	}
-	setExecuteProportion45(eventID: EventID, newExecuteProportion45: number) {
+	setExecuteProportion45(newExecuteProportion45: number) {
 		if (newExecuteProportion45 == this.enc.executeProportion45) return;
-		this.set(eventID, { executeProportion45: newExecuteProportion45 });
+		this.set({ executeProportion45: newExecuteProportion45 });
 	}
 	getExecuteProportion90(): number {
 		return this.enc.executeProportion90;
 	}
-	setExecuteProportion90(eventID: EventID, newExecuteProportion90: number) {
+	setExecuteProportion90(newExecuteProportion90: number) {
 		if (newExecuteProportion90 == this.enc.executeProportion90) return;
-		this.set(eventID, { executeProportion90: newExecuteProportion90 });
+		this.set({ executeProportion90: newExecuteProportion90 });
 	}
 	getUseHealth(): boolean {
 		return this.enc.useHealth;
 	}
-	setUseHealth(eventID: EventID, newUseHealth: boolean) {
+	setUseHealth(newUseHealth: boolean) {
 		if (newUseHealth == this.enc.useHealth) return;
-		this.set(eventID, { useHealth: newUseHealth });
+		this.set({ useHealth: newUseHealth });
 	}
 
 	matchesPreset(preset: PresetEncounter): boolean {
@@ -141,14 +141,14 @@ export class Encounter {
 		return preset.targets.length == targets.length && targets.every((t, i) => TargetProto.equals(t, preset.targets[i].target));
 	}
 
-	applyPreset(eventID: EventID, preset: PresetEncounter) {
-		this.set(eventID, { targets: preset.targets.map(presetTarget => presetTarget.target || TargetProto.create()) });
+	applyPreset(preset: PresetEncounter) {
+		this.set({ targets: preset.targets.map(presetTarget => presetTarget.target || TargetProto.create()) });
 	}
 
-	applyPresetTarget(eventID: EventID, preset: PresetTarget, index: number) {
+	applyPresetTarget(preset: PresetTarget, index: number) {
 		const targets = this.enc.targets.slice();
 		targets[index] = preset.target || TargetProto.create();
-		this.set(eventID, { targets });
+		this.set({ targets });
 	}
 
 	toProto(): EncounterProto {
@@ -167,30 +167,27 @@ export class Encounter {
 		});
 	}
 
-	fromProto(eventID: EventID, proto: EncounterProto) {
+	fromProto(proto: EncounterProto) {
 		// Fix out-of-date protos before importing
 		Encounter.updateProtoVersion(proto);
 
 		batch(() => {
-			this.setDuration(eventID, proto.duration);
-			this.setDurationVariation(eventID, proto.durationVariation);
-			this.setExecuteProportion20(eventID, proto.executeProportion20);
-			this.setExecuteProportion25(eventID, proto.executeProportion25);
-			this.setExecuteProportion35(eventID, proto.executeProportion35);
-			this.setExecuteProportion45(eventID, proto.executeProportion45);
-			this.setExecuteProportion90(eventID, proto.executeProportion90);
-			this.setUseHealth(eventID, proto.useHealth);
+			this.setDuration(proto.duration);
+			this.setDurationVariation(proto.durationVariation);
+			this.setExecuteProportion20(proto.executeProportion20);
+			this.setExecuteProportion25(proto.executeProportion25);
+			this.setExecuteProportion35(proto.executeProportion35);
+			this.setExecuteProportion45(proto.executeProportion45);
+			this.setExecuteProportion90(proto.executeProportion90);
+			this.setUseHealth(proto.useHealth);
 			// Clone so edits in the Advanced Encounter picker cannot mutate the
 			// saved entry's (or the config default's) own target protos.
-			this.setTargets(
-				eventID,
-				proto.targets.map(t => TargetProto.clone(t)),
-			);
+			this.setTargets(proto.targets.map(t => TargetProto.clone(t)));
 		});
 	}
 
-	applyDefaults(eventID: EventID) {
-		this.fromProto(eventID, Encounter.defaultEncounterProto());
+	applyDefaults() {
+		this.fromProto(Encounter.defaultEncounterProto());
 	}
 
 	static defaultEncounterProto(numTargets = 1): EncounterProto {

@@ -10,7 +10,6 @@ import { ReforgeGearCache } from '@domain/reforge_cache';
 import { ReforgeSettings as ReforgeSettingsState } from '@domain/reforge_settings';
 import type { ReforgeOptimizeConfig, Sim } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/state/reforge_request';
 import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
@@ -94,7 +93,7 @@ export class ReforgeOptimizerModel {
 				this.settings.useCustomEPValues &&
 				(this.player.hasCustomEPWeights() || !this.settings._statCaps.equals(this.defaults.statCaps || new Stats()))
 			) {
-				this.setUseSoftCapBreakpoints(nextEventID(), false);
+				this.setUseSoftCapBreakpoints(false);
 			}
 		});
 
@@ -102,7 +101,7 @@ export class ReforgeOptimizerModel {
 			this.player,
 			'gear',
 		)(() => {
-			this.setRelativeStatCap(nextEventID(), this.settings.relativeStatCapStat);
+			this.setRelativeStatCap(this.settings.relativeStatCapStat);
 		});
 	}
 
@@ -149,47 +148,47 @@ export class ReforgeOptimizerModel {
 	}
 
 	// Settings API — delegates to this.settings (ui/domain/reforge_settings.ts).
-	setStatCaps(eventID: EventID, newStatCaps: Stats) {
-		this.settings.setStatCaps(eventID, newStatCaps);
+	setStatCaps(newStatCaps: Stats) {
+		this.settings.setStatCaps(newStatCaps);
 	}
 
 	get statCaps() {
 		return this.settings.statCaps;
 	}
 
-	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
-		this.settings.setUseCustomEPValues(eventID, newUseCustomEPValues);
+	setUseCustomEPValues(newUseCustomEPValues: boolean) {
+		this.settings.setUseCustomEPValues(newUseCustomEPValues);
 	}
 
-	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
-		this.settings.setUseSoftCapBreakpoints(eventID, newUseSoftCapBreakpoints);
+	setUseSoftCapBreakpoints(newUseSoftCapBreakpoints: boolean) {
+		this.settings.setUseSoftCapBreakpoints(newUseSoftCapBreakpoints);
 	}
 
-	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
-		this.settings.setBreakpointLimits(eventID, newLimits);
+	setBreakpointLimits(newLimits: Stats) {
+		this.settings.setBreakpointLimits(newLimits);
 	}
 
-	setRelativeStatCap(eventID: EventID, newValue: number) {
-		this.settings.setRelativeStatCap(eventID, newValue);
+	setRelativeStatCap(newValue: number) {
+		this.settings.setRelativeStatCap(newValue);
 	}
-	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
-		this.settings.setRelativeStatCapPrecision(eventID, newValue);
-	}
-
-	setIncludeGems(eventID: EventID, newValue: boolean) {
-		this.settings.setIncludeGems(eventID, newValue);
+	setRelativeStatCapPrecision(newValue: number) {
+		this.settings.setRelativeStatCapPrecision(newValue);
 	}
 
-	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
-		this.settings.setIncludeEOTBPGemSocket(eventID, newValue);
+	setIncludeGems(newValue: boolean) {
+		this.settings.setIncludeGems(newValue);
 	}
 
-	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
-		this.settings.setFreezeItemSlots(eventID, newValue);
+	setIncludeEOTBPGemSocket(newValue: boolean) {
+		this.settings.setIncludeEOTBPGemSocket(newValue);
 	}
 
-	setFrozenItemSlot(eventID: EventID, slot: ItemSlot, frozen: boolean) {
-		this.settings.setFrozenItemSlot(eventID, slot, frozen);
+	setFreezeItemSlots(newValue: boolean) {
+		this.settings.setFreezeItemSlots(newValue);
+	}
+
+	setFrozenItemSlot(slot: ItemSlot, frozen: boolean) {
+		this.settings.setFrozenItemSlot(slot, frozen);
 	}
 
 	getFrozenItemSlot(slot: ItemSlot): boolean {
@@ -300,15 +299,15 @@ export class ReforgeOptimizerModel {
 		await this.sim.signalManager.abortType(RequestTypes.ReforgeOptimize);
 	}
 
-	fromProto(eventID: EventID, proto: ReforgeSettings) {
-		this.settings.fromProto(eventID, proto);
+	fromProto(proto: ReforgeSettings) {
+		this.settings.fromProto(proto);
 	}
 
 	toProto(): ReforgeSettings {
 		return this.settings.toProto();
 	}
 
-	applyDefaults(eventID: EventID) {
-		this.settings.applyDefaults(eventID);
+	applyDefaults() {
+		this.settings.applyDefaults();
 	}
 }

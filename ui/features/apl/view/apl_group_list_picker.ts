@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { APLGroup } from '@generated/proto/apl';
 import i18n from '@i18n/config';
@@ -21,8 +20,8 @@ export class APLGroupListPicker extends Component {
 			itemLabel: i18n.t('rotation_tab.apl.actionGroups.name'),
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.groups || [],
-			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLGroup>) => {
-				player.modifyAplRotation(eventID, rotation => {
+			setValue: (player: Player<any>, newValue: Array<APLGroup>) => {
+				player.modifyAplRotation(rotation => {
 					rotation.groups = newValue;
 				});
 			},
@@ -45,7 +44,7 @@ export class APLGroupListPicker extends Component {
 						newItem.name = name;
 						const newList = groups.slice();
 						newList.splice(index, 0, newItem);
-						listPicker.config.setValue(nextEventID(), simUI.player, newList);
+						listPicker.config.setValue(simUI.player, newList);
 					},
 				});
 			},

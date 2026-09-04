@@ -4,7 +4,6 @@ import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
 import type { Sim } from '@domain/sim';
-import type { EventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
@@ -177,7 +176,7 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 // again whenever `subscribe`'s source fires.
 export interface DerivedSetting<SpecType extends Spec> {
 	subscribe: (player: Player<SpecType>, sim: Sim) => StoreSubscribe;
-	apply: (eventID: EventID, player: Player<SpecType>, sim: Sim) => void;
+	apply: (player: Player<SpecType>, sim: Sim) => void;
 }
 
 // The behaviour slots a spec declares on top of its config data — the four

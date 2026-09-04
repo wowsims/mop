@@ -1,7 +1,6 @@
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { nextEventID } from '@domain/state/batch';
 import type { TalentConfig, TalentLocation, TalentsConfig, TalentTreeConfig } from '@domain/talents/config';
 import { classGlyphsConfig } from '@domain/talents/factory';
 import { isRightClick } from '@domain/utils';
@@ -154,7 +153,7 @@ class TalentTreePicker<TalentsProto> extends Component {
 
 	resetPoints() {
 		this.rows.forEach(row => row.forEach(talent => talent.setSelected(false)));
-		this.picker.inputChanged(nextEventID());
+		this.picker.inputChanged();
 	}
 
 	private getTreeIcon(playerSpec: number): string {
@@ -205,7 +204,7 @@ class TalentPicker<TalentsProto> extends Component {
 			event.preventDefault();
 			this.longTouchTimer = window.setTimeout(() => {
 				this.setSelected(false);
-				this.tree.picker.inputChanged(nextEventID());
+				this.tree.picker.inputChanged();
 				this.longTouchTimer = undefined;
 			}, 750);
 		});
@@ -218,12 +217,12 @@ class TalentPicker<TalentsProto> extends Component {
 				return;
 			}
 			this.setSelected(true);
-			this.tree.picker.inputChanged(nextEventID());
+			this.tree.picker.inputChanged();
 		});
 		this.rootElem.addEventListener('mousedown', event => {
 			const shouldAdd = !isRightClick(event);
 			this.setSelected(shouldAdd);
-			this.tree.picker.inputChanged(nextEventID());
+			this.tree.picker.inputChanged();
 		});
 	}
 

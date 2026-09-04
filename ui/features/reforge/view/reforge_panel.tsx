@@ -4,7 +4,7 @@ import { Gear } from '@domain/proto_utils/gear';
 import { statCapTypeNames } from '@domain/proto_utils/names';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { RelativeStatCap } from '@domain/reforge_settings';
-import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
@@ -97,7 +97,7 @@ export class ReforgeOptimizer {
 				try {
 					await this.abortReforgeOptimization();
 				} catch {}
-				if (this.previousGear) this.player.setGear(nextEventID(), this.previousGear);
+				if (this.previousGear) this.player.setGear(this.previousGear);
 				this.progressTrackerModal.hide();
 				trackEvent({
 					action: 'settings',
@@ -131,10 +131,10 @@ export class ReforgeOptimizer {
 				try {
 					performance.mark('reforge-optimization-start');
 					if (this.wasCM) {
-						simUI.player.setChallengeModeEnabled(nextEventID(), false);
+						simUI.player.setChallengeModeEnabled(false);
 					}
 					const gear = await this.optimizeReforges();
-					await this.player.setGearAsync(nextEventID(), gear);
+					await this.player.setGearAsync(gear);
 					this.onReforgeDone();
 				} catch (error) {
 					if (this.isCancelling) return;
@@ -219,43 +219,43 @@ export class ReforgeOptimizer {
 		return this.model.processedStatCaps;
 	}
 
-	setStatCaps(eventID: EventID, newStatCaps: Stats) {
-		this.model.setStatCaps(eventID, newStatCaps);
+	setStatCaps(newStatCaps: Stats) {
+		this.model.setStatCaps(newStatCaps);
 	}
 
-	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
-		this.model.setUseCustomEPValues(eventID, newUseCustomEPValues);
+	setUseCustomEPValues(newUseCustomEPValues: boolean) {
+		this.model.setUseCustomEPValues(newUseCustomEPValues);
 	}
 
-	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
-		this.model.setUseSoftCapBreakpoints(eventID, newUseSoftCapBreakpoints);
+	setUseSoftCapBreakpoints(newUseSoftCapBreakpoints: boolean) {
+		this.model.setUseSoftCapBreakpoints(newUseSoftCapBreakpoints);
 	}
 
-	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
-		this.model.setBreakpointLimits(eventID, newLimits);
+	setBreakpointLimits(newLimits: Stats) {
+		this.model.setBreakpointLimits(newLimits);
 	}
 
-	setRelativeStatCap(eventID: EventID, newValue: number) {
-		this.model.setRelativeStatCap(eventID, newValue);
+	setRelativeStatCap(newValue: number) {
+		this.model.setRelativeStatCap(newValue);
 	}
-	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
-		this.model.setRelativeStatCapPrecision(eventID, newValue);
-	}
-
-	setIncludeGems(eventID: EventID, newValue: boolean) {
-		this.model.setIncludeGems(eventID, newValue);
+	setRelativeStatCapPrecision(newValue: number) {
+		this.model.setRelativeStatCapPrecision(newValue);
 	}
 
-	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
-		this.model.setIncludeEOTBPGemSocket(eventID, newValue);
+	setIncludeGems(newValue: boolean) {
+		this.model.setIncludeGems(newValue);
 	}
 
-	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
-		this.model.setFreezeItemSlots(eventID, newValue);
+	setIncludeEOTBPGemSocket(newValue: boolean) {
+		this.model.setIncludeEOTBPGemSocket(newValue);
 	}
 
-	setFrozenItemSlot(eventID: EventID, slot: ItemSlot, frozen: boolean) {
-		this.model.setFrozenItemSlot(eventID, slot, frozen);
+	setFreezeItemSlots(newValue: boolean) {
+		this.model.setFreezeItemSlots(newValue);
+	}
+
+	setFrozenItemSlot(slot: ItemSlot, frozen: boolean) {
+		this.model.setFrozenItemSlot(slot, frozen);
 	}
 
 	getFrozenItemSlot(slot: ItemSlot): boolean {
@@ -274,16 +274,16 @@ export class ReforgeOptimizer {
 		await this.model.abortReforgeOptimization();
 	}
 
-	fromProto(eventID: EventID, proto: ReforgeSettings) {
-		this.model.fromProto(eventID, proto);
+	fromProto(proto: ReforgeSettings) {
+		this.model.fromProto(proto);
 	}
 
 	toProto(): ReforgeSettings {
 		return this.model.toProto();
 	}
 
-	applyDefaults(eventID: EventID) {
-		this.model.applyDefaults(eventID);
+	applyDefaults() {
+		this.model.applyDefaults();
 	}
 
 	buildReforgeButtonTooltip(softCapsConfigWithLimits: StatCap[]) {
@@ -362,14 +362,14 @@ export class ReforgeOptimizer {
 					inline: true,
 					storeSubscribe: () => subscribeReforgeField(this.settings, 'useCustomEPValues'),
 					getValue: () => this.settings.useCustomEPValues,
-					setValue: (eventID, _player, newValue) => {
+					setValue: (_player, newValue) => {
 						trackEvent({
 							action: 'settings',
 							category: 'reforging',
 							label: 'use_custom_ep',
 							value: newValue,
 						});
-						this.setUseCustomEPValues(eventID, newValue);
+						this.setUseCustomEPValues(newValue);
 					},
 				});
 				let useSoftCapBreakpointsInput: BooleanPicker<Player<any>> | null = null;
@@ -381,14 +381,14 @@ export class ReforgeOptimizer {
 						inline: true,
 						storeSubscribe: () => subscribeReforgeField(this.settings, 'useSoftCapBreakpoints'),
 						getValue: () => this.settings.useSoftCapBreakpoints,
-						setValue: (eventID, _player, newValue) => {
+						setValue: (_player, newValue) => {
 							trackEvent({
 								action: 'settings',
 								category: 'reforging',
 								label: 'softcap_breakpoints',
 								value: newValue,
 							});
-							this.setUseSoftCapBreakpoints(eventID, newValue);
+							this.setUseSoftCapBreakpoints(newValue);
 						},
 					});
 				}
@@ -412,8 +412,8 @@ export class ReforgeOptimizer {
 					getValue: () => {
 						return this.settings.relativeStatCapStat;
 					},
-					setValue: (_eventID, _player, newValue) => {
-						this.setRelativeStatCap(nextEventID(), newValue);
+					setValue: (_player, newValue) => {
+						this.setRelativeStatCap(newValue);
 					},
 					showWhen: () => {
 						const canEnable = RelativeStatCap.hasRoRo(this.player);
@@ -446,8 +446,8 @@ export class ReforgeOptimizer {
 							subscribePlayerField(this.player, 'gear'),
 						]),
 					getValue: () => this.settings.relativeStatCapPrecision,
-					setValue: (_eventID, _player, newValue) => {
-						this.setRelativeStatCapPrecision(nextEventID(), newValue);
+					setValue: (_player, newValue) => {
+						this.setRelativeStatCapPrecision(newValue);
 					},
 					showWhen: () => RelativeStatCap.hasRoRo(this.player) && this.settings.relativeStatCapStat !== -1,
 				});
@@ -460,7 +460,7 @@ export class ReforgeOptimizer {
 					inline: true,
 					storeSubscribe: () => subscribeReforgeField(this.settings, 'includeGems'),
 					getValue: () => this.settings.includeGems,
-					setValue: (eventID, _player, newValue) => {
+					setValue: (_player, newValue) => {
 						trackEvent({
 							action: 'settings',
 							category: 'reforging',
@@ -468,8 +468,8 @@ export class ReforgeOptimizer {
 							value: newValue,
 						});
 						batch(() => {
-							this.setIncludeGems(eventID, newValue);
-							this.setIncludeEOTBPGemSocket(eventID, this.player.sim.getPhase() >= 2);
+							this.setIncludeGems(newValue);
+							this.setIncludeEOTBPGemSocket(this.player.sim.getPhase() >= 2);
 						});
 					},
 				});
@@ -488,8 +488,8 @@ export class ReforgeOptimizer {
 						]),
 					getValue: () => this.settings.includeEOTBPGemSocket,
 					showWhen: () => this.settings.includeGems && this.player.hasEotBPItemEquipped(),
-					setValue: (eventID, _player, newValue) => {
-						this.setIncludeEOTBPGemSocket(eventID, newValue);
+					setValue: (_player, newValue) => {
+						this.setIncludeEOTBPGemSocket(newValue);
 					},
 				});
 
@@ -501,14 +501,14 @@ export class ReforgeOptimizer {
 					inline: true,
 					storeSubscribe: () => subscribeReforgeField(this.settings, 'freezeItemSlots'),
 					getValue: () => this.settings.freezeItemSlots,
-					setValue: (eventID, _player, newValue) => {
+					setValue: (_player, newValue) => {
 						trackEvent({
 							action: 'settings',
 							category: 'reforging',
 							label: 'freeze_item_slots',
 							value: newValue,
 						});
-						this.setFreezeItemSlots(eventID, newValue);
+						this.setFreezeItemSlots(newValue);
 					},
 				});
 
@@ -566,8 +566,8 @@ export class ReforgeOptimizer {
 									inline: true,
 									storeSubscribe: () => subscribeReforgeField(this.settings, 'freezeItemSlots'),
 									getValue: () => this.getFrozenItemSlot(slot) || false,
-									setValue: (eventID, _player, newValue) => {
-										this.setFrozenItemSlot(eventID, slot, newValue);
+									setValue: (_player, newValue) => {
+										this.setFrozenItemSlot(slot, newValue);
 									},
 								});
 								const column = <td>{picker.rootElem}</td>;
@@ -613,7 +613,7 @@ export class ReforgeOptimizer {
 								<button
 									ref={defaultStatCapsButtonRef}
 									className="d-inline ms-auto"
-									onclick={() => this.setStatCaps(nextEventID(), this.defaults.statCaps || new Stats())}>
+									onclick={() => this.setStatCaps(this.defaults.statCaps || new Stats())}>
 									<i className="fas fa-arrow-rotate-left" />
 								</button>
 							</div>
@@ -642,8 +642,8 @@ export class ReforgeOptimizer {
 							getValue: () => {
 								return this.model.toVisualUnitStatPercentage(this.statCaps.getUnitStat(unitStat), unitStat);
 							},
-							setValue: (_eventID, _player, newValue) => {
-								this.setStatCaps(nextEventID(), this.statCaps.withUnitStat(unitStat, this.model.toDefaultUnitStatValue(newValue, unitStat)));
+							setValue: (_player, newValue) => {
+								this.setStatCaps(this.statCaps.withUnitStat(unitStat, this.model.toDefaultUnitStatValue(newValue, unitStat)));
 							},
 						};
 
@@ -665,7 +665,7 @@ export class ReforgeOptimizer {
 							inline: false,
 							storeSubscribe: () => subscribeReforgeChange(this.settings),
 							getValue: () => this.settings.undershootCaps.getUnitStat(unitStat) > 0,
-							setValue: (_eventID, _player, newValue) => {
+							setValue: (_player, newValue) => {
 								this.settings.undershootCaps = this.settings.undershootCaps.withUnitStat(unitStat, newValue ? 1 : 0);
 							},
 						});
@@ -858,8 +858,8 @@ export class ReforgeOptimizer {
 
 											return limit;
 										},
-										setValue: (eventID, _player, newValue) => {
-											this.setBreakpointLimits(eventID, this.settings.breakpointLimits.withUnitStat(unitStat, newValue));
+										setValue: (_player, newValue) => {
+											this.setBreakpointLimits(this.settings.breakpointLimits.withUnitStat(unitStat, newValue));
 										},
 									})
 								: null;
@@ -960,7 +960,7 @@ export class ReforgeOptimizer {
 	onReforgeError(error: any) {
 		if (isDevMode()) console.log(error);
 
-		if (this.previousGear) void this.player.setGearAsync(nextEventID(), this.previousGear);
+		if (this.previousGear) void this.player.setGearAsync(this.previousGear);
 		trackEvent({
 			action: 'settings',
 			category: 'reforging',
@@ -987,7 +987,7 @@ export class ReforgeOptimizer {
 		this.progressTrackerModal.hide();
 
 		if (this.wasCM) {
-			this.simUI.player.setChallengeModeEnabled(nextEventID(), true);
+			this.simUI.player.setChallengeModeEnabled(true);
 		}
 		performance.mark('reforge-optimization-end');
 		const completionTimeInMs = performance.measure('reforge-optimization-measure', 'reforge-optimization-start', 'reforge-optimization-end').duration;

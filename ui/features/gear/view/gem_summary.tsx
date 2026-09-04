@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { UIGem as Gem } from '@generated/proto/ui';
@@ -100,7 +99,7 @@ export class GemSummary extends Component {
 							category: 'gems',
 							label: 'reset',
 						});
-						this.player.setGear(nextEventID(), this.player.getGear().withoutGems(this.player.canDualWield2H()));
+						this.player.setGear(this.player.getGear().withoutGems(this.player.canDualWield2H()));
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.gem_summary.reset_gems')}

@@ -2,7 +2,6 @@ import { Party } from '@domain/party';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Raid } from '@domain/raid';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
 import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
@@ -45,7 +44,7 @@ export function makeBooleanRaidBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -61,7 +60,7 @@ export function makeBooleanPartyBuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
 			getValue: (party: Party) => party.getBuffs(),
-			setValue: (eventID: EventID, party: Party, newVal: PartyBuffs) => party.setBuffs(eventID, newVal),
+			setValue: (party: Party, newVal: PartyBuffs) => party.setBuffs(newVal),
 			storeSubscribe: (party: Party) => subscribePartyBuffs(party),
 		},
 		config.actionId,
@@ -78,7 +77,7 @@ export function makeBooleanIndividualBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -95,7 +94,7 @@ export function makeBooleanConsumeInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getConsumes(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: ConsumesSpec) => player.setConsumes(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: ConsumesSpec) => player.setConsumes(newVal),
 			storeSubscribe: (player: Player<SpecType>) =>
 				subscribeAll([
 					subscribePlayerField(player, 'consumables'),
@@ -116,7 +115,7 @@ export function makeBooleanDebuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getDebuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: Debuffs) => player.getRaid()!.setDebuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: Debuffs) => player.getRaid()!.setDebuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeRaidField(player.getRaid()!, 'debuffs'),
 		},
 		config.actionId,
@@ -142,7 +141,7 @@ export function makeTristateRaidBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -160,7 +159,7 @@ export function makeTristateIndividualBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -177,7 +176,7 @@ export function makeTristateDebuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
-			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
+			setValue: (raid: Raid, newVal: Debuffs) => raid.setDebuffs(newVal),
 			storeSubscribe: (raid: Raid) => subscribeRaidField(raid, 'debuffs'),
 		},
 		config.actionId,
@@ -202,7 +201,7 @@ export function makeQuadstateDebuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
-			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
+			setValue: (raid: Raid, newVal: Debuffs) => raid.setDebuffs(newVal),
 			storeSubscribe: (raid: Raid) => subscribeRaidField(raid, 'debuffs'),
 		},
 		config.actionId,
@@ -229,7 +228,7 @@ export function makeMultistateRaidBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -249,7 +248,7 @@ export function makeMultistatePartyBuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
 			getValue: (party: Party) => party.getBuffs(),
-			setValue: (eventID: EventID, party: Party, newVal: PartyBuffs) => party.setBuffs(eventID, newVal),
+			setValue: (party: Party, newVal: PartyBuffs) => party.setBuffs(newVal),
 			storeSubscribe: (party: Party) => subscribePartyBuffs(party),
 		},
 		actionId,
@@ -267,7 +266,7 @@ export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')]),
 		},
 		config.actionId,
@@ -288,7 +287,7 @@ export function makeMultistateMultiplierIndividualBuffInput<SpecType extends Spe
 		{
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
-			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
+			setValue: (player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(newVal),
 			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'buffs'),
 		},
 		actionId,
@@ -308,7 +307,7 @@ export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
-			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
+			setValue: (raid: Raid, newVal: Debuffs) => raid.setDebuffs(newVal),
 			storeSubscribe: (raid: Raid) => subscribeRaidField(raid, 'debuffs'),
 		},
 		actionId,
@@ -332,6 +331,6 @@ export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
 // 		showWhen: (player: Player<SpecType>) =>
 // 			(!config.faction || config.faction == player.getFaction()),
 // 		getValue: (player: Player<SpecType>) => player.getBuffs(),
-// 		setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
+// 		setValue: (player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(newVal),
 // 	}, config.fieldName, config.values, config.numColumns, config.direction || IconEnumPickerDirection.Vertical)
 // };

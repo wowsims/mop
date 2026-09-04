@@ -4,7 +4,6 @@ import { SavedStatWeightSettings } from '@generated/proto/ui';
 import { CURRENT_API_VERSION } from './constants/other';
 import type { Player } from './player';
 import { UnitStat } from './proto_utils/stats';
-import { EventID } from './state/batch';
 import type { Env } from './state/env';
 import { patchKeyed, seedKeyed, SimStore, StatWeightsSlice } from './state/sim_store';
 import { subscribeStatWeightsChange } from './state/subscriptions';
@@ -51,11 +50,11 @@ export class StatWeightActionSettings {
 		// No-op, as there are no proto version migrations currently
 	}
 
-	applyDefaults(_eventID: EventID) {
+	applyDefaults() {
 		this.write({ excludedStats: [], excludedPseudoStats: [] });
 	}
 
-	load(_eventID: EventID) {
+	load() {
 		const storageValue = this.env.storage.getItem(this.storageKey);
 		if (storageValue) {
 			const settingsProto = SavedStatWeightSettings.fromJsonString(storageValue, { ignoreUnknownFields: true });
@@ -105,7 +104,7 @@ export class StatWeightActionSettings {
 	 * @param stat
 	 * @param exclude
 	 */
-	setStatExcluded(eventID: EventID, stat: UnitStat, exclude: boolean) {
+	setStatExcluded(stat: UnitStat, exclude: boolean) {
 		const updateStatEntry = <T extends Stat | PseudoStat>(s: T, target: T[]) => {
 			const currentIdx = target.indexOf(s);
 			if (exclude) {

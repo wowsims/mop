@@ -1,7 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
-import { nextEventID } from '@domain/state/batch';
 import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
 
@@ -23,13 +22,13 @@ import DefaultTalentsJson from './presets/talents/default.talents.json';
 const setFrostArmor = (player: Player<Spec.SpecArcaneMage>) => {
 	const specOptions = player.getSpecOptions();
 	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorFrostArmor;
-	player.setSpecOptions(nextEventID(), specOptions);
+	player.setSpecOptions(specOptions);
 };
 
 const setMageArmor = (player: Player<Spec.SpecArcaneMage>) => {
 	const specOptions = player.getSpecOptions();
 	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorMageArmor;
-	player.setSpecOptions(nextEventID(), specOptions);
+	player.setSpecOptions(specOptions);
 };
 
 export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear, { onLoad: setFrostArmor });

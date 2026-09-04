@@ -13,7 +13,7 @@ import { IndividualSimSettings } from '@generated/proto/ui';
 import type { SimSettingCategories } from '../constants/sim_settings';
 import type { Player } from '../player';
 import type { StatWeightActionSettings } from '../stat_weight_settings';
-import { batch, EventID, nextEventID } from './batch';
+import { batch } from './batch';
 import { tryParseUrlLocation } from './sim_links';
 import type { StoreSubscribe } from './subscriptions';
 
@@ -26,9 +26,9 @@ export const SHARED_SAVED_ENCOUNTER_STORAGE_KEY = 'sharedData__savedEncounter__'
 // The pieces of the sim UI the load sequence drives. toProto/fromProto are the
 // (wrapper) envelope serializers; applyDefaults stays UI-owned.
 export interface IndividualSettingsHost {
-	applyDefaults(eventID: EventID): void;
+	applyDefaults(): void;
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings;
-	fromProto(eventID: EventID, settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
+	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
 }
 
 export function loadIndividualSettings(
@@ -42,20 +42,19 @@ export function loadIndividualSettings(
 	},
 ) {
 	const env = opts.player.sim.env;
-	const initEventID = nextEventID();
 	// Declared before the batch: its flush can already schedule a persist.
 	let persistTimer: ReturnType<typeof setTimeout> | null = null;
 	// The stats recompute is skipped for this batch; the stored settings already
 	// carry the stats they were saved with (Sim.applyLoadedSettings).
 	opts.player.sim.applyLoadedSettings(() =>
 		batch(() => {
-			host.applyDefaults(initEventID);
+			host.applyDefaults();
 
 			const savedSettings = env.storage.getItem(opts.storageKey);
 			if (savedSettings != null) {
 				try {
 					const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
-					host.fromProto(initEventID, settings);
+					host.fromProto(settings);
 				} catch (e) {
 					console.warn('Failed to parse saved settings: ' + e);
 				}
@@ -66,21 +65,21 @@ export function loadIndividualSettings(
 			try {
 				const urlParseResults = tryParseUrlLocation(env.location);
 				if (urlParseResults) {
-					host.fromProto(initEventID, urlParseResults.settings, urlParseResults.categories);
+					host.fromProto(urlParseResults.settings, urlParseResults.categories);
 				}
 			} catch (e) {
 				console.warn('Failed to parse link settings: ' + e);
 			}
 			env.location.setHash('');
 
-			opts.player.setName(initEventID, 'Player');
+			opts.player.setName('Player');
 
 			// This needs to go last so it doesn't re-store things as they are initialized.
 			// Debounced: serializing + storing the full settings on every keystroke
 			// cost ~50 ms per APL edit. A pending write is flushed on page hide.
 			opts.autosaveSubscribe(schedulePersist);
 
-			opts.statWeightSettings.load(initEventID);
+			opts.statWeightSettings.load();
 		}),
 	);
 

@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { nextEventID } from '@domain/state/batch';
 import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
@@ -36,13 +35,13 @@ export class AplFloatingActionBar extends Component {
 					onSubmit: (name: string) => {
 						const newItem = config.createItem!(name);
 						const newList = listPicker.config.getValue(listPicker.modObject).concat([newItem]);
-						listPicker.config.setValue(nextEventID(), listPicker.modObject, newList);
+						listPicker.config.setValue(listPicker.modObject, newList);
 					},
 				});
 			} else {
 				const newItem = listPicker.config.newItem();
 				const newList = listPicker.config.getValue(listPicker.modObject).concat([newItem]);
-				listPicker.config.setValue(nextEventID(), listPicker.modObject, newList);
+				listPicker.config.setValue(listPicker.modObject, newList);
 			}
 		});
 
@@ -54,7 +53,7 @@ export class AplFloatingActionBar extends Component {
 		);
 
 		resetButton.addEventListener('click', () => {
-			simUI.applyEmptyAplRotation(nextEventID());
+			simUI.applyEmptyAplRotation();
 		});
 
 		new IntersectionObserver(

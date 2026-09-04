@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Stat } from '@generated/proto/common';
@@ -116,7 +115,7 @@ export class ReforgeSummary extends Component {
 							label: 'reset',
 						});
 						const gear = this.player.getGear().withoutReforges(this.player.canDualWield2H());
-						this.player.setGear(nextEventID(), gear);
+						this.player.setGear(gear);
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.reforge_summary.reset_reforges')}

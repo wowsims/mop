@@ -24,7 +24,6 @@ import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItem
 import { RelativeStatCap } from '@domain/reforge_settings';
 import { ReforgeOptimizeConfig } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
-import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
 import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, Z_95, zTest } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
@@ -869,9 +868,9 @@ export class BulkTab extends SimTab {
 				inline: true,
 				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.weaponTypeFilters.get(slot)!.includes(weaponType),
-				setValue: (eventID, _modObj, newValue: boolean) => {
+				setValue: (_modObj, newValue: boolean) => {
 					const filter = this.weaponTypeFilters.get(slot)!;
-					this.setWeaponTypeFilter(slot, newValue ? [...filter, weaponType] : filter.filter(type => type !== weaponType), eventID);
+					this.setWeaponTypeFilter(slot, newValue ? [...filter, weaponType] : filter.filter(type => type !== weaponType));
 					trackEvent({
 						action: 'settings',
 						category: 'batch_sim',
@@ -883,7 +882,7 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	private setFrozenItem(bulkSlot: BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket, item: EquippedItem | null, _eventID = nextEventID()) {
+	private setFrozenItem(bulkSlot: BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket, item: EquippedItem | null) {
 		if (item === this.frozenItems.get(bulkSlot)) {
 			return;
 		}
@@ -916,12 +915,7 @@ export class BulkTab extends SimTab {
 		);
 	}
 
-	private setWeaponTypeFilter(
-		slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand,
-		newFilter: WeaponType[],
-		eventID = nextEventID(),
-		shouldEmit = true,
-	): boolean {
+	private setWeaponTypeFilter(slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand, newFilter: WeaponType[], shouldEmit = true): boolean {
 		const currentFilter = this.weaponTypeFilters.get(slot)!;
 		const hasChanged = currentFilter.length !== newFilter.length || currentFilter.some((weaponType, idx) => weaponType !== newFilter[idx]);
 
@@ -937,7 +931,7 @@ export class BulkTab extends SimTab {
 	}
 
 	private clearWeaponTypeFilter(slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand): boolean {
-		return this.setWeaponTypeFilter(slot, [], undefined, false);
+		return this.setWeaponTypeFilter(slot, [], false);
 	}
 
 	private setFrozenWeaponSlot(itemSlot: number | null): boolean {
@@ -1017,7 +1011,7 @@ export class BulkTab extends SimTab {
 						storeSubscribe: () => subscribeBulkChange(this),
 						enableWhen: _modObj => this.canEnableRequiredTwoPiece(setBonus.setId),
 						getValue: _modObj => this.requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
-						setValue: (eventID, _modObj, newValue) => {
+						setValue: (_modObj, newValue) => {
 							this.setRequiredSetBonus(setBonus, newValue ? 2 : 0);
 							trackEvent({
 								action: 'settings',
@@ -1038,7 +1032,7 @@ export class BulkTab extends SimTab {
 						storeSubscribe: () => subscribeBulkChange(this),
 						enableWhen: _modObj => this.canEnableRequiredFourPiece(setBonus),
 						getValue: _modObj => this.requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
-						setValue: (eventID, _modObj, newValue) => {
+						setValue: (_modObj, newValue) => {
 							this.setRequiredSetBonus(setBonus, newValue ? 4 : 0);
 							trackEvent({
 								action: 'settings',
@@ -1095,7 +1089,7 @@ export class BulkTab extends SimTab {
 				inline: true,
 				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.inheritUpgrades,
-				setValue: (_, _modObj, newValue: boolean) => {
+				setValue: (_modObj, newValue: boolean) => {
 					this.setInheritUpgrades(newValue);
 					trackEvent({
 						action: 'settings',
@@ -1114,7 +1108,7 @@ export class BulkTab extends SimTab {
 				inline: true,
 				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.useLegacyBulkSim,
-				setValue: (_, _modObj, newValue: boolean) => {
+				setValue: (_modObj, newValue: boolean) => {
 					this.setUseLegacyBulkSim(newValue);
 					trackEvent({
 						action: 'settings',
@@ -1156,14 +1150,14 @@ export class BulkTab extends SimTab {
 						return -1;
 					}
 				},
-				setValue: (eventID, _modObj, newValue) => {
+				setValue: (_modObj, newValue) => {
 					let newItem: EquippedItem | null = null;
 
 					if (newValue != -1) {
 						newItem = this.simUI.player.getGear().getEquippedItem(newValue);
 					}
 
-					this.setFrozenItem(BulkSimItemSlot.ItemSlotFinger, newItem, eventID);
+					this.setFrozenItem(BulkSimItemSlot.ItemSlotFinger, newItem);
 					trackEvent({
 						action: 'settings',
 						category: 'batch_sim',
@@ -1202,14 +1196,14 @@ export class BulkTab extends SimTab {
 						return -1;
 					}
 				},
-				setValue: (eventID, _modObj, newValue) => {
+				setValue: (_modObj, newValue) => {
 					let newItem: EquippedItem | null = null;
 
 					if (newValue != -1) {
 						newItem = this.simUI.player.getGear().getEquippedItem(newValue);
 					}
 
-					this.setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, newItem, eventID);
+					this.setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, newItem);
 					trackEvent({
 						action: 'settings',
 						category: 'batch_sim',
@@ -1238,7 +1232,7 @@ export class BulkTab extends SimTab {
 
 						return this.frozenWeaponSlot;
 					},
-					setValue: (eventID, _modObj, newValue) => {
+					setValue: (_modObj, newValue) => {
 						this.setFrozenWeaponSlot(newValue === -1 ? null : newValue);
 						trackEvent({
 							action: 'settings',
@@ -1473,8 +1467,8 @@ export class BulkTab extends SimTab {
 			return undefined;
 		}
 
-		this.simUI.reforger.setIncludeGems(nextEventID(), true);
-		this.simUI.reforger.setIncludeEOTBPGemSocket(nextEventID(), playerPhase);
+		this.simUI.reforger.setIncludeGems(true);
+		this.simUI.reforger.setIncludeEOTBPGemSocket(playerPhase);
 		this.updateRelativeStatCapReforges();
 		return this.simUI.reforger.getReforgeOptimizeConfig(this.originalGear);
 	}
@@ -1599,7 +1593,7 @@ export class BulkTab extends SimTab {
 					cancelled: wasCancelling,
 				});
 			}
-			await this.simUI.player.setGearAsync(nextEventID(), this.originalGear!);
+			await this.simUI.player.setGearAsync(this.originalGear!);
 			this.bulkSimButton.disabled = false;
 			if (wasCancelling) {
 				new Toast({

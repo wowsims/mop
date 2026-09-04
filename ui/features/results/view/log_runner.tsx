@@ -102,7 +102,7 @@ export class LogRunner extends ResultComponent {
 			reverse: true,
 			storeSubscribe: () => this.showDebugChangeEmitter.on,
 			getValue: () => this.showDebug,
-			setValue: (eventID, _logRunner, newValue) => {
+			setValue: (_logRunner, newValue) => {
 				this.showDebug = newValue;
 				this.showDebugChangeEmitter.emit();
 			},

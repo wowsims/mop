@@ -1,7 +1,7 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
-import { batch, EventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribePlayerChange } from '@domain/state/subscriptions';
 import GearPicker from '@features/gear/view/gear_picker';
 import { GemSummary } from '@features/gear/view/gem_summary';
@@ -75,10 +75,10 @@ export class GearTab extends SimTab {
 					bonusStatsStats: player.getBonusStats().toProto(),
 				});
 			},
-			setData: (eventID: EventID, player: Player<any>, newSavedGear: SavedGearSet) => {
+			setData: (player: Player<any>, newSavedGear: SavedGearSet) => {
 				batch(() => {
-					player.setGear(eventID, this.simUI.sim.db.lookupEquipmentSpec(newSavedGear.gear || EquipmentSpec.create()));
-					player.setBonusStats(eventID, Stats.fromProto(newSavedGear.bonusStatsStats || UnitStats.create()));
+					player.setGear(this.simUI.sim.db.lookupEquipmentSpec(newSavedGear.gear || EquipmentSpec.create()));
+					player.setBonusStats(Stats.fromProto(newSavedGear.bonusStatsStats || UnitStats.create()));
 				});
 			},
 			subscribe: subscribePlayerChange(this.simUI.player),

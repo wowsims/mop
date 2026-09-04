@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { HunterSpecs } from '@domain/proto_utils/utils';
-import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
 import tippy from 'tippy.js';
@@ -62,7 +61,7 @@ export class PetSpecPicker<SpecType extends HunterSpecs> extends Component {
 		if (newSpec === current) return;
 		const opts = this.player.getClassOptions();
 		opts.petSpec = newSpec;
-		this.player.setClassOptions(nextEventID(), opts);
+		this.player.setClassOptions(opts);
 	}
 
 	private renderActive() {

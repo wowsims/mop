@@ -1,6 +1,6 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
-import { batch, EventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { classTalentsConfig } from '@domain/talents/factory';
 import { TalentsPicker } from '@features/talents/view/talents_picker';
@@ -53,13 +53,13 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 			tree: classTalentsConfig[this.simUI.player.getClass()]!,
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'talentsString'),
 			getValue: (player: Player<any>) => player.getTalentsString(),
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+			setValue: (player: Player<any>, newValue: string) => {
 				trackEvent({
 					action: 'settings',
 					category: 'talents',
 					label: 'update',
 				});
-				player.setTalentsString(eventID, newValue);
+				player.setTalentsString(newValue);
 			},
 		});
 	}
@@ -78,10 +78,10 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 					talentsString: player.getTalentsString(),
 					glyphs: player.getGlyphs(),
 				}),
-			setData: (eventID: EventID, player: Player<any>, newTalents: SavedTalents) => {
+			setData: (player: Player<any>, newTalents: SavedTalents) => {
 				batch(() => {
-					player.setTalentsString(eventID, newTalents.talentsString);
-					player.setGlyphs(eventID, newTalents.glyphs || Glyphs.create());
+					player.setTalentsString(newTalents.talentsString);
+					player.setGlyphs(newTalents.glyphs || Glyphs.create());
 				});
 			},
 			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'talentsString'), subscribePlayerField(this.simUI.player, 'glyphs')]),

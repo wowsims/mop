@@ -1,7 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { ShamanSpecs } from '@domain/proto_utils/utils';
-import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { CustomSection } from '@features/spec_config';
 import { Spec } from '@generated/proto/common';
@@ -51,10 +50,10 @@ const feleAutocastIconInput = <SpecType extends ShamanSpecs>(spellId: number, fl
 		fieldName: 'feleAutocast',
 		id: ActionId.fromSpellId(spellId),
 		getValue: (player: Player<SpecType>) => player.getClassOptions().feleAutocast![flag],
-		setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
+		setValue: (player: Player<SpecType>, newValue: boolean) => {
 			const newOptions = player.getClassOptions();
 			newOptions.feleAutocast![flag] = newValue;
-			player.setClassOptions(eventID, newOptions);
+			player.setClassOptions(newOptions);
 		},
 		storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
 	});
@@ -83,10 +82,10 @@ export const enhancementTotemsSection = (): CustomSection<Spec.SpecEnhancementSh
 			label: i18n.t('settings_tab.other.shaman_disable_immolate.label'),
 			labelTooltip: i18n.t('settings_tab.other.shaman_disable_immolate.tooltip'),
 			getValue: player => player.getClassOptions().feleAutocast?.noImmolateWfunleash || false,
-			setValue: (eventID, player, newVal) => {
+			setValue: (player, newVal) => {
 				const newOptions = player.getClassOptions();
 				newOptions.feleAutocast!.noImmolateWfunleash = newVal;
-				player.setClassOptions(eventID, newOptions);
+				player.setClassOptions(newOptions);
 			},
 		}),
 		InputHelpers.makeClassOptionsNumberInput<ShamanSpecs>({
@@ -95,10 +94,10 @@ export const enhancementTotemsSection = (): CustomSection<Spec.SpecEnhancementSh
 			labelTooltip: i18n.t('settings_tab.other.shaman_disable_immolate_duration.tooltip'),
 			float: true,
 			getValue: player => player.getClassOptions().feleAutocast?.noImmolateDuration || 0,
-			setValue: (eventID, player, newVal) => {
+			setValue: (player, newVal) => {
 				const newOptions = player.getClassOptions();
 				newOptions.feleAutocast!.noImmolateDuration = newVal;
-				player.setClassOptions(eventID, newOptions);
+				player.setClassOptions(newOptions);
 			},
 			showWhen: player => player.getClassOptions().feleAutocast!.noImmolateWfunleash,
 		}),

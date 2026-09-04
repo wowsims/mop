@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Faction, ItemQuality } from '@generated/proto/common';
@@ -150,7 +149,7 @@ export class UpgradeCostsSummary extends Component {
 									}
 								}
 
-								this.player.setGear(nextEventID(), curGear);
+								this.player.setGear(curGear);
 							}}>
 							<i className="fas fa-arrow-up me-1"></i>
 							{i18n.t('gear_tab.upgrade_summary.upgrade_all_items')}
@@ -171,7 +170,7 @@ export class UpgradeCostsSummary extends Component {
 							label: 'reset',
 						});
 						const gear = this.player.getGear().withoutUpgrades(this.player.canDualWield2H());
-						this.player.setGear(nextEventID(), gear);
+						this.player.setGear(gear);
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.upgrade_summary.reset_upgrades')}

@@ -1,5 +1,4 @@
 import { Player } from '@domain/player';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
 import {
 	APLValue,
@@ -69,7 +68,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			),
 			equals: (a, b) => a == b,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
-			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
+			setValue: (player: Player<any>, newKind: APLValueKind) => {
 				const sourceValue = this.getSourceValue();
 				const oldKind = sourceValue?.value.oneofKind;
 				if (oldKind == newKind) {
@@ -132,12 +131,12 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 					if (sourceValue) {
 						sourceValue.value = newSourceValue.value;
 					} else {
-						this.setSourceValue(eventID, newSourceValue);
+						this.setSourceValue(newSourceValue);
 					}
 				} else {
-					this.setSourceValue(eventID, undefined);
+					this.setSourceValue(undefined);
 				}
-				player.touchRotation(eventID);
+				player.touchRotation();
 			},
 		});
 
@@ -229,12 +228,12 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();
 			},
-			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+			setValue: (player: Player<any>, newValue: any) => {
 				const sourceVal = this.getSourceValue();
 				if (sourceVal) {
 					(sourceVal.value as any)[newKind] = newValue;
 				}
-				player.touchRotation(eventID);
+				player.touchRotation();
 			},
 		});
 		this.addChild(this.valuePicker);
@@ -351,9 +350,8 @@ export function valueListFieldConfig(field: string): AplHelpers.APLPickerBuilder
 			new ListPicker<Player<any>, APLValue | undefined>(parent, player, {
 				...config,
 				// Override setValue to replace undefined elements with default messages.
-				setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLValue | undefined>) => {
+				setValue: (player: Player<any>, newValue: Array<APLValue | undefined>) => {
 					config.setValue(
-						eventID,
 						player,
 						newValue.map(val => {
 							return (
@@ -391,7 +389,7 @@ export function valueListFieldConfig(field: string): AplHelpers.APLPickerBuilder
 						(index, ref) => {
 							const values = config.getValue(player) as Array<APLValue | undefined>;
 							values[index] = ref;
-							config.setValue(nextEventID(), player, values);
+							config.setValue(player, values);
 						},
 						parent,
 					),

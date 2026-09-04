@@ -20,9 +20,9 @@ export const renderSavedEPWeights = (
 			SavedEPWeights.create({
 				epWeights: player.getEpWeights().toProto(),
 			}),
-		setData: (eventID, player, newEPWeights) => {
+		setData: (player, newEPWeights) => {
 			batch(() => {
-				player.setEpWeights(eventID, Stats.fromProto(newEPWeights.epWeights));
+				player.setEpWeights(Stats.fromProto(newEPWeights.epWeights));
 			});
 		},
 		subscribe: subscribePlayerField(simUI.player, 'epWeights'),

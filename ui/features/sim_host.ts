@@ -3,7 +3,6 @@ import type { Player } from '@domain/player';
 import type { Gear } from '@domain/proto_utils/gear';
 import type { SimResult } from '@domain/proto_utils/sim_result';
 import type { RunSimOptions } from '@domain/sim';
-import type { EventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import type { WorkerProgressCallback } from '@domain/worker_pool';
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult, StatWeightsResult } from '@generated/proto/api';
@@ -57,9 +56,9 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	dpsRefStat: Stat | undefined;
 	healRefStat: Stat | undefined;
 	tankRefStat: Stat | undefined;
-	applyEmptyAplRotation(eventID: EventID): void;
+	applyEmptyAplRotation(): void;
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings;
-	fromProto(eventID: EventID, settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
+	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
 	getStorageKey(keyPart: string): string;
 	getSavedEPWeightsStorageKey(): string;
 }

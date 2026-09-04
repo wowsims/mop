@@ -1,5 +1,3 @@
-import { nextEventID } from '@domain/state/batch';
-
 import { Input, InputConfig } from '../input';
 export interface EnumValueConfig {
 	name: string;
@@ -33,7 +31,7 @@ export class EnumPicker<ModObject> extends Input<ModObject, number> {
 		this.selectElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);

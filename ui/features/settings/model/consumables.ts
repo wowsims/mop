@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { batch, EventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
 import { Consumable } from '@generated/proto/db';
@@ -20,7 +20,7 @@ export interface ConsumableStatOption<T> extends ItemStatOption<T> {
 export interface ConsumeInputFactoryArgs<T extends number> {
 	consumesFieldName: keyof ConsumesSpec;
 	// Additional callback if logic besides syncing consumes is required
-	onSet?: (eventactionId: EventID, player: Player<any>, newValue: T) => void;
+	onSet?: (player: Player<any>, newValue: T) => void;
 	showWhen?: (player: Player<any>) => boolean;
 }
 
@@ -53,7 +53,7 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 				]),
 			showWhen: (player: Player<any>) => (!args.showWhen || args.showWhen(player)) && valueOptions.some(option => option.showWhen?.(player)),
 			getValue: (player: Player<any>) => player.getConsumes()[args.consumesFieldName] as T,
-			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+			setValue: (player: Player<any>, newValue: number) => {
 				const newConsumes = player.getConsumes();
 				if (newConsumes[args.consumesFieldName] === newValue) {
 					return;
@@ -61,9 +61,9 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 
 				(newConsumes[args.consumesFieldName] as number) = newValue;
 				batch(() => {
-					player.setConsumes(eventID, newConsumes);
+					player.setConsumes(newConsumes);
 					if (args.onSet) {
-						args.onSet(eventID, player, newValue as T);
+						args.onSet(player, newValue as T);
 					}
 				});
 			},
@@ -117,7 +117,7 @@ export const makeExplosivesInput = makeConsumeInputFactory({ consumesFieldName: 
 
 export interface ConsumableInputOptions {
 	consumesFieldName: keyof ConsumesSpec;
-	setValue?: (eventID: EventID, player: Player<any>, newValue: number) => void;
+	setValue?: (player: Player<any>, newValue: number) => void;
 }
 
 export function makeConsumableInput(
@@ -141,9 +141,9 @@ export function makeConsumableInput(
 		storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'consumables'),
 		getValue: (player: Player<any>) => player.getConsumes()[options.consumesFieldName] as number,
 		showWhen: (_: Player<any>) => !!valueOptions.length,
-		setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+		setValue: (player: Player<any>, newValue: number) => {
 			if (options.setValue) {
-				options.setValue(eventID, player, newValue);
+				options.setValue(player, newValue);
 			}
 
 			const newConsumes = {
@@ -159,7 +159,7 @@ export function makeConsumableInput(
 			if ((options.consumesFieldName === 'battleElixirId' || options.consumesFieldName === 'guardianElixirId') && newValue != 0) {
 				newConsumes.flaskId = 0;
 			}
-			player.setConsumes(eventID, newConsumes);
+			player.setConsumes(newConsumes);
 		},
 	};
 }

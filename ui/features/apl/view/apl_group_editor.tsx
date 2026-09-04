@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
 import { APLAction, APLGroup, APLListItem } from '@generated/proto/apl';
 import { UUID } from '@generated/proto/common';
@@ -50,7 +49,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 				defaultValue: group.name,
 				existingNames: () => (player.aplRotation.groups || []).filter(g => g !== group).map(g => g.name),
 				onSubmit: (name: string) => {
-					player.modifyAplRotation(nextEventID(), rotation => {
+					player.modifyAplRotation(rotation => {
 						renameAPLReference(rotation, { type: 'group', oldName: group.name, newName: name });
 						group.name = name;
 					});
@@ -74,11 +73,11 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 					},
 				},
 				getValue: () => this.getSourceValue()?.actions || [],
-				setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
+				setValue: (player: Player<any>, newValue: Array<APLListItem>) => {
 					const group = this.getSourceValue();
 					if (group) {
 						group.actions = newValue;
-						player.touchRotation(eventID);
+						player.touchRotation();
 					}
 				},
 				newItem: () =>
@@ -176,9 +175,9 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 		this.hidePicker = this.addChild(
 			new APLHidePicker(itemHeaderElem, player, {
 				getValue: () => this.getItem().hide,
-				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
+				setValue: (player: Player<any>, newValue: boolean) => {
 					this.getItem().hide = newValue;
-					this.player.touchRotation(eventID);
+					this.player.touchRotation();
 				},
 			}),
 		);
@@ -186,11 +185,11 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 		this.actionPicker = this.addChild(
 			new APLActionPicker(this.rootElem, this.modObject, {
 				getValue: () => this.getItem().action!,
-				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+				setValue: (player: Player<any>, newValue: any) => {
 					const item = this.getSourceValue();
 					if (item) {
 						this.getItem().action = newValue;
-						player.touchRotation(eventID);
+						player.touchRotation();
 					}
 				},
 			}),

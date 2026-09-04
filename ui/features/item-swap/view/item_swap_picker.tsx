@@ -1,5 +1,5 @@
 import { Player } from '@domain/player';
-import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { ItemSlot, Spec } from '@generated/proto/common';
@@ -30,8 +30,8 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 			labelTooltip: i18n.t('settings_tab.other.enable_item_swap.tooltip'),
 			extraCssClasses: ['input-inline'],
 			getValue: (player: Player<SpecType>) => player.itemSwapSettings.getEnableItemSwap(),
-			setValue(eventID: EventID, player: Player<SpecType>, newValue: boolean) {
-				player.itemSwapSettings.setEnableItemSwap(eventID, newValue);
+			setValue(player: Player<SpecType>, newValue: boolean) {
+				player.itemSwapSettings.setEnableItemSwap(newValue);
 			},
 			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'itemSwap'),
 		});
@@ -71,7 +71,7 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 		toggleEnabled();
 
 		if (swapButtonRef.value) {
-			swapButtonRef.value.addEventListener('click', _event => this.swapWithGear(nextEventID(), player));
+			swapButtonRef.value.addEventListener('click', _event => this.swapWithGear(player));
 			tippy(swapButtonRef.value, {
 				content: i18n.t('settings_tab.other.item_swap.tooltip'),
 			});
@@ -85,7 +85,7 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 		itemSwapContainer.appendChild(tmpContainer);
 	}
 
-	swapWithGear(eventID: EventID, player: Player<SpecType>) {
+	swapWithGear(player: Player<SpecType>) {
 		let newGear = player.getGear();
 		let newIsg = player.itemSwapSettings.getGear();
 
@@ -98,8 +98,8 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 		});
 
 		batch(() => {
-			player.setGear(eventID, newGear);
-			player.itemSwapSettings.setGear(eventID, newIsg);
+			player.setGear(newGear);
+			player.itemSwapSettings.setGear(newIsg);
 		});
 	}
 }

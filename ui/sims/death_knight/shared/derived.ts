@@ -14,5 +14,5 @@ import { disableAMSIntakeOnMagicDamageEncounters } from './inputs';
 // one spec's `derivedSettings`. The callback body is still checked against the union.
 export const amsIntakeRule: DerivedSetting<any> = {
 	subscribe: (_player, sim) => subscribeEncounterChange(sim.encounter),
-	apply: (eventID, player: Player<Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight>) => disableAMSIntakeOnMagicDamageEncounters(eventID, player),
+	apply: (player: Player<Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight>) => disableAMSIntakeOnMagicDamageEncounters(player),
 };

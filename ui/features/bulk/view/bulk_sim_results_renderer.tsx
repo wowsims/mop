@@ -1,6 +1,5 @@
 import { TopGearResult } from '@domain/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
-import { nextEventID } from '@domain/state/batch';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
@@ -89,7 +88,7 @@ export default class BulkSimResultRenderer extends Component {
 		}
 
 		equipButtonRef.value?.addEventListener('click', () => {
-			simUI.player.setGear(nextEventID(), result.gear);
+			simUI.player.setGear(result.gear);
 			simUI.simHeader.activateTab('gear-tab');
 			new Toast({
 				variant: 'success',

@@ -2,7 +2,6 @@ import { CacheHandler } from '@domain/cache_handler';
 import { Player, UnitMetadata } from '@domain/player';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
 import { getEnumValues, randomUUID } from '@domain/utils';
 import {
@@ -44,7 +43,7 @@ export interface APLActionIDPickerConfig<ModObject> extends Omit<
 	getUnitRef: (player: Player<any>) => UnitReference;
 	defaultUnitRef: DEFAULT_UNIT_REF;
 	getValue: (obj: ModObject) => ActionID;
-	setValue: (eventID: EventID, obj: ModObject, newValue: ActionID) => void;
+	setValue: (obj: ModObject, newValue: ActionID) => void;
 }
 
 const cachedAPLActionIDPickerContent = new CacheHandler<Element>();
@@ -315,9 +314,9 @@ export class APLPickerBuilder<T> extends Input<Player<any>, T> {
 						}
 						return source[field];
 					},
-					setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+					setValue: (player: Player<any>, newValue: any) => {
 						builder.getSourceValue()[field] = newValue;
-						player.touchRotation(eventID);
+						player.touchRotation();
 					},
 				},
 				() => builder.getSourceValue(),
@@ -596,8 +595,8 @@ class APLPlaceholderNamePicker extends Input<Player<any>, string> {
 					};
 					updateGroupRefs(player.aplRotation);
 				}
-				this.setSourceValue(nextEventID(), name);
-				player.touchRotation(nextEventID());
+				this.setSourceValue(name);
+				player.touchRotation();
 			},
 			onCancel: isNew
 				? () => {
@@ -612,7 +611,7 @@ class APLPlaceholderNamePicker extends Input<Player<any>, string> {
 							if (Array.isArray(obj)) return obj.some(clearValue);
 							return Object.values(obj).some(clearValue);
 						};
-						player.modifyAplRotation(nextEventID(), rotation => {
+						player.modifyAplRotation(rotation => {
 							clearValue(rotation);
 						});
 					}
@@ -710,10 +709,10 @@ class APLGroupVariablesPicker extends Input<Player<any>, any[]> {
 			itemLabel: 'Variable',
 			// Copy: ListPicker splices its input in place before calling setValue.
 			getValue: () => this.getInputValue(),
-			setValue: (eventID: EventID, player: Player<any>, newValue: any[]) => {
+			setValue: (player: Player<any>, newValue: any[]) => {
 				const parentValue = this.getParentValue();
 				if (parentValue) parentValue.variables = newValue;
-				config.setValue(eventID, player, newValue);
+				config.setValue(player, newValue);
 			},
 			newItem: () => {
 				throw new Error('newItem should not be called for auto-populated group variables');
@@ -872,7 +871,7 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 				}
 				return '';
 			},
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+			setValue: (player: Player<any>, newValue: string) => {
 				const item = this.getSourceValue();
 				if (item && newValue) {
 					item.value = {
@@ -882,7 +881,7 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 							variableRef: { name: newValue },
 						},
 					};
-					player.touchRotation(eventID);
+					player.touchRotation();
 				}
 			},
 		});
@@ -1247,7 +1246,7 @@ export function extractToVariableAction(
 						}),
 					);
 
-					player.touchRotation(nextEventID());
+					player.touchRotation();
 				},
 			});
 		},

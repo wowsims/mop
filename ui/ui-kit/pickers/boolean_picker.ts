@@ -1,5 +1,3 @@
-import { nextEventID } from '@domain/state/batch';
-
 import { Input, InputConfig } from '../input';
 /**
  * Data for creating a boolean picker (checkbox).
@@ -35,7 +33,7 @@ export class BooleanPicker<ModObject> extends Input<ModObject, boolean> {
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);

@@ -1,5 +1,3 @@
-import { nextEventID } from '@domain/state/batch';
-
 import { Input, InputConfig } from '../input';
 /**
  * Data for creating a string picker.
@@ -26,7 +24,7 @@ export class StringPicker<ModObject> extends Input<ModObject, string> {
 		this.inputElem.addEventListener(
 			'input',
 			() => {
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);
@@ -66,7 +64,7 @@ export class AdaptiveStringPicker<ModObject> extends Input<ModObject, string> {
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(nextEventID());
+				this.inputChanged();
 			},
 			{ signal: this.signal },
 		);

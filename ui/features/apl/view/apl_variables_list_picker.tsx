@@ -1,6 +1,5 @@
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
@@ -25,8 +24,8 @@ export class APLVariablesListPicker extends Component {
 			itemLabel: i18n.t('rotation_tab.apl.variables.name'),
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.valueVariables || [],
-			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLValueVariable>) => {
-				player.modifyAplRotation(eventID, rotation => {
+			setValue: (player: Player<any>, newValue: Array<APLValueVariable>) => {
+				player.modifyAplRotation(rotation => {
 					rotation.valueVariables = newValue;
 				});
 			},
@@ -43,7 +42,7 @@ export class APLVariablesListPicker extends Component {
 						const newItem = APLValueVariable.create({ name, value: oldItem.value });
 						const newList = variables.slice();
 						newList.splice(index, 0, newItem);
-						listPicker.config.setValue(nextEventID(), simUI.player, newList);
+						listPicker.config.setValue(simUI.player, newList);
 					},
 				});
 			},
@@ -124,7 +123,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 				defaultValue: sourceValue.name,
 				existingNames: () => (player.aplRotation.valueVariables || []).filter(v => v !== sourceValue).map(v => v.name),
 				onSubmit: (name: string) => {
-					player.modifyAplRotation(nextEventID(), rotation => {
+					player.modifyAplRotation(rotation => {
 						renameAPLReference(rotation, { type: 'variable', oldName: sourceValue.name, newName: name });
 						sourceValue.name = name;
 					});
@@ -138,10 +137,10 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 				label: i18n.t('rotation_tab.apl.variables.attributes.value'),
 				labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
 				getValue: () => this.getSourceValue().value,
-				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+				setValue: (player: Player<any>, newValue: any) => {
 					const sourceValue = this.getSourceValue();
 					sourceValue.value = newValue;
-					this.config.setValue(eventID, player, this.config.getValue(player));
+					this.config.setValue(player, this.config.getValue(player));
 				},
 			}),
 		);

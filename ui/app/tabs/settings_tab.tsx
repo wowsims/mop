@@ -2,7 +2,7 @@ import { PresetConfigurationCategory } from '@domain/constants/preset_categories
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
-import { batch, EventID } from '@domain/state/batch';
+import { batch } from '@domain/state/batch';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -114,7 +114,7 @@ export class SettingsTab extends SimTab {
 			}),
 			storeSubscribe: sim => subscribePlayerField(sim, 'race'),
 			getValue: sim => sim.getRace(),
-			setValue: (eventID, sim, newValue) => sim.setRace(eventID, newValue),
+			setValue: (sim, newValue) => sim.setRace(newValue),
 		});
 
 		if (this.simUI.individualConfig.playerInputs?.inputs.length) {
@@ -136,7 +136,7 @@ export class SettingsTab extends SimTab {
 			}),
 			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
 			getValue: sim => sim.getProfession1(),
-			setValue: (eventID, sim, newValue) => sim.setProfession1(eventID, newValue),
+			setValue: (sim, newValue) => sim.setProfession1(newValue),
 		});
 
 		const _profession2Picker = new EnumPicker(professionGroup, this.simUI.player, {
@@ -150,7 +150,7 @@ export class SettingsTab extends SimTab {
 			}),
 			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
 			getValue: sim => sim.getProfession2(),
-			setValue: (eventID, sim, newValue) => sim.setProfession2(eventID, newValue),
+			setValue: (sim, newValue) => sim.setProfession2(newValue),
 		});
 	}
 
@@ -293,7 +293,7 @@ export class SettingsTab extends SimTab {
 			saveButtonText: i18n.t('settings_tab.saved_encounters.save_encounter'),
 			storageKey: this.simUI.getSavedEncounterStorageKey(),
 			getData: (encounter: Encounter) => SavedEncounter.create({ encounter: encounter.toProto() }),
-			setData: (eventID: EventID, encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(eventID, newEncounter.encounter!),
+			setData: (encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(newEncounter.encounter!),
 			subscribe: subscribeEncounterChange(this.simUI.sim.encounter),
 			toJson: (a: SavedEncounter) => SavedEncounter.toJson(a),
 			fromJson: (obj: any) => SavedEncounter.fromJson(obj),
@@ -308,32 +308,31 @@ export class SettingsTab extends SimTab {
 			getData: () => {
 				return this.getCurrentSavedSettings();
 			},
-			setData: (eventID: EventID, simUI: IndividualSimUI<any>, newSettings: SavedSettings) => {
+			setData: (simUI: IndividualSimUI<any>, newSettings: SavedSettings) => {
 				batch(() => {
-					simUI.sim.raid.setBuffs(eventID, newSettings.raidBuffs || RaidBuffs.create());
-					simUI.sim.raid.setDebuffs(eventID, newSettings.debuffs || Debuffs.create());
+					simUI.sim.raid.setBuffs(newSettings.raidBuffs || RaidBuffs.create());
+					simUI.sim.raid.setDebuffs(newSettings.debuffs || Debuffs.create());
 					const party = simUI.player.getParty();
 					if (party) {
-						party.setBuffs(eventID, newSettings.partyBuffs || PartyBuffs.create());
+						party.setBuffs(newSettings.partyBuffs || PartyBuffs.create());
 					}
-					simUI.player.setBuffs(eventID, newSettings.playerBuffs || IndividualBuffs.create());
+					simUI.player.setBuffs(newSettings.playerBuffs || IndividualBuffs.create());
 
-					simUI.player.setConsumes(eventID, newSettings.consumables || ConsumesSpec.create());
+					simUI.player.setConsumes(newSettings.consumables || ConsumesSpec.create());
 
-					simUI.player.setRace(eventID, newSettings.race);
-					simUI.player.setProfessions(eventID, newSettings.professions);
+					simUI.player.setRace(newSettings.race);
+					simUI.player.setProfessions(newSettings.professions);
 					simUI.player.itemSwapSettings.setItemSwapSettings(
-						eventID,
 						newSettings.enableItemSwap,
 						simUI.sim.db.lookupItemSwap(newSettings.itemSwap || ItemSwap.create()),
 						Stats.fromProto(newSettings.itemSwap?.prepullBonusStats),
 					);
-					simUI.player.setReactionTime(eventID, newSettings.reactionTimeMs);
-					simUI.player.setChannelClipDelay(eventID, newSettings.channelClipDelayMs);
-					simUI.player.setInFrontOfTarget(eventID, newSettings.inFrontOfTarget);
-					simUI.player.setDistanceFromTarget(eventID, newSettings.distanceFromTarget);
-					simUI.player.setHealingModel(eventID, newSettings.healingModel || HealingModel.create());
-					simUI.player.setChallengeModeEnabled(eventID, newSettings.challengeMode);
+					simUI.player.setReactionTime(newSettings.reactionTimeMs);
+					simUI.player.setChannelClipDelay(newSettings.channelClipDelayMs);
+					simUI.player.setInFrontOfTarget(newSettings.inFrontOfTarget);
+					simUI.player.setDistanceFromTarget(newSettings.distanceFromTarget);
+					simUI.player.setHealingModel(newSettings.healingModel || HealingModel.create());
+					simUI.player.setChallengeModeEnabled(newSettings.challengeMode);
 				});
 			},
 			subscribe: subscribeAll([

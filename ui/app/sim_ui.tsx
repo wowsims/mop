@@ -5,7 +5,6 @@ import { Gear } from '@domain/proto_utils/gear';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { RunSimOptions, Sim, SimError } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
@@ -69,9 +68,7 @@ export abstract class SimUI extends Component implements SimHost {
 			<>
 				<div className="sim-root">
 					<div className="sim-bg" />
-					{config.noticeText ? (
-						<div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div>
-					) : null}
+					{config.noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div> : null}
 					<div className="sim-container">
 						<aside className="sim-sidebar">
 							<div className="sim-title" />
@@ -175,14 +172,14 @@ export abstract class SimUI extends Component implements SimHost {
 			extraCssClasses: ['iterations-picker'],
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
 			getValue: (sim: Sim) => sim.getIterations(),
-			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+			setValue: (sim: Sim, newValue: number) => {
 				trackEvent({
 					action: 'settings',
 					category: 'iterations',
 					label: 'update',
 					value: newValue,
 				});
-				sim.setIterations(eventID, newValue);
+				sim.setIterations(newValue);
 			},
 		}).rootElem;
 
@@ -318,7 +315,7 @@ export abstract class SimUI extends Component implements SimHost {
 		this.resultsViewer.setPending();
 		try {
 			await this.sim.signalManager.abortType(RequestTypes.All);
-			const result = await this.sim.runRaidSim(nextEventID(), onProgress, options);
+			const result = await this.sim.runRaidSim(onProgress, options);
 			if (!(result instanceof SimResult) && result.type == ErrorOutcomeType.ErrorOutcomeAborted) {
 				new Toast({
 					variant: 'info',
@@ -347,7 +344,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async runSimOnce(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			return await this.sim.runRaidSimWithLogs(nextEventID(), { debug: true, singleIteration: true, ...options });
+			return await this.sim.runRaidSimWithLogs({ debug: true, singleIteration: true, ...options });
 		} catch (e) {
 			this.resultsViewer.hideAll();
 			this.handleCrash(e);
@@ -430,7 +427,7 @@ export abstract class SimUI extends Component implements SimHost {
 		return hash;
 	}
 
-	abstract applyDefaults(eventID: EventID): void;
+	abstract applyDefaults(): void;
 	abstract toLink(): string;
 }
 

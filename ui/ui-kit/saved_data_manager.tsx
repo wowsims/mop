@@ -1,4 +1,3 @@
-import { EventID, nextEventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
 import tippy from 'tippy.js';
@@ -20,7 +19,7 @@ export type SavedDataManagerConfig<ModObject, T> = {
 	// without it entries compare by their `toJson` string.
 	equals?: (a: T, b: T) => boolean;
 	getData: (modObject: ModObject) => T;
-	setData: (eventID: EventID, modObject: ModObject, data: T) => void;
+	setData: (modObject: ModObject, data: T) => void;
 	toJson: (a: T) => any;
 	fromJson: (obj: any) => T;
 	nameLabel?: string;
@@ -140,7 +139,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 		) as HTMLElement;
 
 		dataElem?.addEventListener('click', () => {
-			this.config.setData(nextEventID(), this.modObject, config.data);
+			this.config.setData(this.modObject, config.data);
 			config.onLoad?.(this.modObject);
 			// Run the deferred check now so the clicked entry's name is the one left in the input.
 			this.flushChecks();

@@ -1,7 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Database } from '@domain/proto_utils/database';
-import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { GlyphsConfig } from '@domain/talents/config';
 import { stringComparator } from '@domain/utils';
@@ -133,10 +132,10 @@ class GlyphPicker extends Input<Player<any>, number> {
 			inline: true,
 			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'glyphs'),
 			getValue: (player: Player<any>) => player.getGlyphs()[glyphField] as number,
-			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
+			setValue: (player: Player<any>, newValue: number) => {
 				const glyphs = player.getGlyphs();
 				(glyphs[glyphField] as number) = newValue;
-				player.setGlyphs(eventID, glyphs);
+				player.setGlyphs(glyphs);
 			},
 		});
 		this.rootElem.classList.add('item-picker-root');
@@ -284,7 +283,7 @@ class GlyphSelectorModal extends BaseModal {
 				}
 				anchorElem.value.addEventListener('click', event => {
 					event.preventDefault();
-					this.glyphPicker?.setValue(nextEventID(), glyphData.id);
+					this.glyphPicker?.setValue(glyphData.id);
 				});
 			}
 			if (iconElem.value) {
