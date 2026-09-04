@@ -9,6 +9,7 @@ import { JsonObject } from '@protobuf-ts/runtime';
 import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
+import { showImportWarning } from '../importer';
 import { IndividualImporter } from './individual_importer';
 
 export class IndividualAddonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
@@ -32,17 +33,7 @@ export class IndividualAddonImporter<SpecType extends Spec> extends IndividualIm
 			</div>,
 		);
 
-		if (warningRef.value)
-			new Toast({
-				title: i18n.t('import.addon.reforge_warning.title'),
-				body: <div>{i18n.t('import.addon.reforge_warning.message')}</div>,
-				additionalClasses: ['toast-import-warning'],
-				container: warningRef.value,
-				variant: 'warning',
-				canClose: false,
-				autoShow: true,
-				autohide: false,
-			});
+		if (warningRef.value) showImportWarning(warningRef.value, 'import.addon.reforge_warning.title', 'import.addon.reforge_warning.message');
 	}
 
 	async onImport(data: string) {

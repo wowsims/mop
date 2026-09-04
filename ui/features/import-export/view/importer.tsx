@@ -79,3 +79,18 @@ export abstract class Importer extends BaseModal {
 
 	abstract onImport(data: string): Promise<void>;
 }
+
+// The standing warning an importer pins above its input: same styling, always
+// visible, never dismissable. Only the strings differ between importers.
+export function showImportWarning(container: HTMLElement, titleKey: string, messageKey: string) {
+	new Toast({
+		title: i18n.t(titleKey),
+		body: <div>{i18n.t(messageKey)}</div>,
+		additionalClasses: ['toast-import-warning'],
+		container,
+		variant: 'warning',
+		canClose: false,
+		autoShow: true,
+		autohide: false,
+	});
+}

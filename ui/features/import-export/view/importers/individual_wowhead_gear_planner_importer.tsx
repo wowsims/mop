@@ -3,9 +3,9 @@ import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
+import { showImportWarning } from '../importer';
 import { IndividualImporter } from './individual_importer';
 
 const i = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -210,17 +210,7 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 			</div>,
 		);
 
-		if (warningRef.value)
-			new Toast({
-				title: i18n.t('import.wowhead.tinker_warning.title'),
-				body: <div>{i18n.t('import.wowhead.tinker_warning.message')}</div>,
-				additionalClasses: ['toast-import-warning'],
-				container: warningRef.value,
-				variant: 'warning',
-				canClose: false,
-				autoShow: true,
-				autohide: false,
-			});
+		if (warningRef.value) showImportWarning(warningRef.value, 'import.wowhead.tinker_warning.title', 'import.wowhead.tinker_warning.message');
 	}
 
 	async onImport(url: string) {
