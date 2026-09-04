@@ -22,7 +22,12 @@ const TYPE_KIND_ALIASES: Partial<Record<string, Array<LogKind>>> = {
 	stacks: ['aura-stacks'],
 };
 
+// 'damage' is an effect, not a kind: the 'damage' kind tags every damage-dealt line, heals and
+// shields included, so routing it through the kind index would make type:damage and type:heal
+// overlap instead of partition. A miss has no effect at all and matches neither, which is what
+// master's isDamage() reported for it too.
 const TYPE_EFFECT_ALIASES: Partial<Record<string, DamageEffect>> = {
+	damage: 'damage',
 	heal: 'healing',
 	healing: 'healing',
 	shield: 'shielding',

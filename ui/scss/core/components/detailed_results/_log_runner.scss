@@ -96,9 +96,6 @@
 	color: var(--bs-brand);
 }
 
-// Shared with the gear picker's VirtualList (components/gear_picker/item_list.tsx) - CSS is
-// global, so one rule covers both consumers. Each spacer only ever sets its own side's
-// property, so the unset side falls back to 0.
 .log-content {
 	.dr-row {
 		padding: 0;

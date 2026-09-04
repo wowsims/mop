@@ -59,9 +59,12 @@
 	// number or magic pixel offset. The panes that are just tables are left alone; a floor would
 	// only add whitespace under a short one.
 	> .tab-content > .tab-pane.dr-tab-content {
-		&.log-content,
-		&.timeline-content,
-		&.replay-content {
+		// Only while active: `display` here outranks Bootstrap's `.tab-content > .tab-pane
+		// { display: none }` (0,5,0 against 0,2,0), so without the guard every one of these panes
+		// stays laid out at the floor height behind whichever tab is open.
+		&.log-content.active,
+		&.timeline-content.active,
+		&.replay-content.active {
 			display: flex;
 			flex-direction: column;
 			min-height: var(--dr-filling-pane-min-height);

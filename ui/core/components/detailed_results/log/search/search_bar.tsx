@@ -1,5 +1,8 @@
 import { ref } from 'tsx-vanilla';
 
+// Matches the debounce master's log search used.
+const PENDING_DEBOUNCE_MS = 150;
+
 import i18n from '../../../../../i18n/config';
 import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
@@ -15,6 +18,7 @@ export class LogSearchBar extends Component {
 	readonly changeEmitter = new TypedEvent<void>('Log Search');
 
 	private chips: Array<Clause> = [];
+	private pendingTimer: number | null = null;
 	private readonly inputElem: HTMLInputElement;
 	private readonly chipsElem: HTMLDivElement;
 	private readonly suggestionsElem: HTMLUListElement;
@@ -49,13 +53,25 @@ export class LogSearchBar extends Component {
 		this.suggestionsElem = suggestionsRef.value!;
 
 		this.inputElem.addEventListener('keydown', e => this.onKeyDown(e));
-		this.inputElem.addEventListener('input', () => this.updateSuggestions());
+		this.inputElem.addEventListener('input', () => {
+			this.updateSuggestions();
+			// Uncommitted text filters too, on the same debounce master used. Without this a term
+			// only takes effect on Enter, and a user who types and stops sees an unfiltered list
+			// with nothing telling them why.
+			if (this.pendingTimer !== null) clearTimeout(this.pendingTimer);
+			this.pendingTimer = window.setTimeout(() => {
+				this.pendingTimer = null;
+				this.emitChange();
+			}, PENDING_DEBOUNCE_MS);
+		});
 		this.inputElem.addEventListener('focus', () => this.updateSuggestions());
 		this.inputElem.addEventListener('blur', () => this.hideSuggestions());
 	}
 
+	// The committed chips plus whatever is still being typed, so the two behave identically.
 	get clauses(): ReadonlyArray<Clause> {
-		return this.chips;
+		const pending = this.inputElem.value.trim();
+		return pending ? [...this.chips, ...parseQuery(pending)] : this.chips;
 	}
 
 	clear() {
@@ -146,6 +162,10 @@ export class LogSearchBar extends Component {
 	}
 
 	private updateSuggestions() {
+		if (document.activeElement !== this.inputElem) {
+			this.hideSuggestions();
+			return;
+		}
 		const { text, field, valuePart } = splitToken(this.inputElem.value);
 
 		if (valuePart === null) {
