@@ -161,15 +161,14 @@
 	}
 }
 
-// The two lists that actually get long. Multi-column rather than flex: with the height
-// bounded, the browser lays out further columns to the side rather than growing downwards.
-// Scoped under .timeline-tooltip so this outweighs the `.timeline-tooltip ul` rule above,
-// which is otherwise more specific and keeps the list a single flex column.
-.timeline-tooltip .timeline-dps-events,
+// Auras are short, repetitive lines and there can be dozens of them, so they go two-up to
+// halve the height. Scoped under .timeline-tooltip so this outweighs the
+// `.timeline-tooltip ul` rule above, which is otherwise more specific and would keep the
+// list a single flex column.
 .timeline-tooltip .timeline-active-auras {
 	display: block;
 	max-height: 56vh;
-	column-width: 15rem;
+	column-count: 2;
 	column-gap: var(--spacer-3);
 
 	li {
@@ -177,6 +176,13 @@
 		// Column boxes are not flex items, so restore the row spacing the flex gap gave.
 		margin-bottom: var(--spacer-1);
 	}
+}
+
+// Damage rows stay one per line: they are long enough that a second column would wrap each
+// of them instead of fitting more in. Bounded so a busy point scrolls rather than stretches.
+.timeline-tooltip .timeline-dps-events {
+	max-height: 40vh;
+	overflow-y: auto;
 }
 
 .timeline-tooltip-header {
