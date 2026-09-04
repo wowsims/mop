@@ -43,9 +43,6 @@ export const DPS_SERIES_ID = 'dps';
 export const MANA_SERIES_ID = 'mana';
 export const THREAT_SERIES_ID = 'threat';
 
-export const playerDpsSeriesId = (unit: UnitMetrics) => `dps:${unit.unitIndex}`;
-export const playerThreatSeriesId = (unit: UnitMetrics) => `threat:${unit.unitIndex}`;
-
 export function timeScale(duration: number, label: string): ScaleOptions<'linear'> {
 	return {
 		type: 'linear',
@@ -84,12 +81,7 @@ export function resourcePctScale(): ScaleOptions<'linear'> {
 	return { type: 'linear', display: false, min: 0, max: 100 };
 }
 
-export function dpsDataset(
-	unit: UnitMetrics,
-	seriesId: string,
-	borderColor: string,
-	showPlayerLabel: boolean,
-): { dataset: TimelineDataset<DpsLog>; maxDps: number } | null {
+export function dpsDataset(unit: UnitMetrics, seriesId: string, borderColor: string): { dataset: TimelineDataset<DpsLog>; maxDps: number } | null {
 	const logs = unit.dpsLogs.filter(log => log.timestamp >= 0);
 	if (logs.length == 0) return null;
 
@@ -105,12 +97,12 @@ export function dpsDataset(
 			borderColor,
 			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.dps, log })),
-			renderTooltip: log => DpsTooltip(log, unit, borderColor, showPlayerLabel),
+			renderTooltip: log => DpsTooltip(log),
 		},
 	};
 }
 
-export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: string, showPlayerLabel: boolean): TimelineDataset<ThreatLogGroup> | null {
+export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: string): TimelineDataset<ThreatLogGroup> | null {
 	const logs = unit.threatLogs.filter(log => log.timestamp >= 0);
 	if (logs.length == 0) return null;
 
@@ -121,7 +113,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: 
 		borderColor,
 		...LINE_DATASET,
 		data: logs.map(log => ({ x: log.timestamp, y: log.threatAfter, log })),
-		renderTooltip: log => ThreatTooltip(log, unit, borderColor, showPlayerLabel),
+		renderTooltip: log => ThreatTooltip(log),
 	};
 }
 

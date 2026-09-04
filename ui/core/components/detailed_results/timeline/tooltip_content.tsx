@@ -1,20 +1,12 @@
 import i18n from '../../../../i18n/config';
 import { DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '../../../proto_utils/logs_parser';
 import { resourceNames } from '../../../proto_utils/names';
-import { UnitMetrics } from '../../../proto_utils/sim_result';
 import { percentageResources } from './constants';
 
-export function DpsTooltip(log: DpsLog, player: UnitMetrics, color: string, showPlayerLabel: boolean) {
+export function DpsTooltip(log: DpsLog) {
 	return (
 		<div className="timeline-tooltip dps">
 			<div className="timeline-tooltip-header">
-				{showPlayerLabel ? (
-					<>
-						<img className="timeline-tooltip-icon" src={player.iconUrl} />
-						<span style={{ color }}>{player.label}</span>
-						<span> - </span>
-					</>
-				) : null}
 				<span className="bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
 			<div className="timeline-tooltip-body">
@@ -30,19 +22,10 @@ export function DpsTooltip(log: DpsLog, player: UnitMetrics, color: string, show
 	);
 }
 
-export function ThreatTooltip(log: ThreatLogGroup, player: UnitMetrics, color: string, showPlayerLabel: boolean) {
+export function ThreatTooltip(log: ThreatLogGroup) {
 	return (
 		<div className="timeline-tooltip threat">
 			<div className="timeline-tooltip-header">
-				{showPlayerLabel ? (
-					<>
-						<img className="timeline-tooltip-icon" src={player.iconUrl} />
-						<span className="" style={{ color }}>
-							{player.label}
-						</span>
-						<span> - </span>
-					</>
-				) : null}
 				<span className="bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
 			<div className="timeline-tooltip-body">

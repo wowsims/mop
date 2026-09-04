@@ -4,7 +4,7 @@ import i18n from '../../../../i18n/config';
 import SecondaryResource from '../../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../../proto_utils/sim_result';
 import { ResultComponent, SimResultData } from '../result_component';
-import { multiPlayerChartSpec, singlePlayerChartSpec } from './chart/build';
+import { chartSpec } from './chart/build';
 import { TimelineChart } from './chart/timeline_chart';
 import { ChartViewPicker } from './chart_view_picker';
 import { buildRotationModel } from './rotation/model';
@@ -35,15 +35,13 @@ export class Timeline extends ResultComponent {
 		this.secondaryResource = config.secondaryResource;
 
 		const chartPickerRef = ref<HTMLDivElement>();
-		const chartViewRefs = (['rotation', 'dps', 'threat'] as const).map(value => ({
+		const chartViewRefs = (['rotation', 'dps'] as const).map(value => ({
 			value,
 			input: ref<HTMLInputElement>(),
-			label: ref<HTMLLabelElement>(),
 		}));
 		const chartViewLabels: Record<string, string> = {
 			rotation: i18n.t('results_tab.details.timeline.chart_types.rotation'),
 			dps: i18n.t('results_tab.details.timeline.chart_types.dps'),
-			threat: i18n.t('results_tab.details.timeline.chart_types.threat'),
 		};
 
 		this.rootElem.appendChild(
@@ -55,11 +53,8 @@ export class Timeline extends ResultComponent {
 					</p>
 					<p>{i18n.t('results_tab.details.timeline.note')}</p>
 				</div>
-				{/* Two of the three are ever offered at once - rotation and threat swap depending
-				    on whether the result has one player - so a radio group reads better than a
-				    dropdown for what is always a two-way choice. */}
 				<div ref={chartPickerRef} className="timeline-chart-picker btn-group" attributes={{ role: 'group' }}>
-					{chartViewRefs.map(({ value, input, label }) => (
+					{chartViewRefs.map(({ value, input }) => (
 						<>
 							<input
 								ref={input}
@@ -71,7 +66,7 @@ export class Timeline extends ResultComponent {
 								autocomplete="off"
 								checked={value === 'rotation'}
 							/>
-							<label ref={label} className={`btn btn-sm btn-outline-primary ${value}-option`} htmlFor={`timeline-chart-view-${value}`}>
+							<label className={`btn btn-sm btn-outline-primary ${value}-option`} htmlFor={`timeline-chart-view-${value}`}>
 								{chartViewLabels[value]}
 							</label>
 						</>
@@ -95,7 +90,7 @@ export class Timeline extends ResultComponent {
 
 		this.chartPicker = new ChartViewPicker(
 			chartPickerRef.value!,
-			chartViewRefs.map(({ value, input, label }) => ({ value, input: input.value!, elems: [input.value!, label.value!] })),
+			chartViewRefs.map(({ value, input }) => ({ value, input: input.value! })),
 		);
 		this.chartPicker.onChange(() => this.onChartPickerSelectHandler());
 
@@ -106,8 +101,6 @@ export class Timeline extends ResultComponent {
 		this.rotationView = this.addChild(new RotationView(rotationPaneRef.value!));
 	}
 
-	// Pane visibility only. Split out from the change handler so updatePlot's programmatic
-	// switch to 'dps' does not re-enter updatePlot through it.
 	private syncChartPanes() {
 		const showRotation = this.chartPicker.value === 'rotation';
 		this.dpsResourcesPlotElem.classList.toggle('hide', showRotation);
@@ -122,10 +115,10 @@ export class Timeline extends ResultComponent {
 		if (this.isChartVisible()) this.updatePlot();
 	}
 
-	// The rotation view and the chart are alternatives, and the rotation is the default for a
-	// single player. Building the chart's series while it is hidden costs a pass over the
-	// unit's dps logs, mana group and threat logs - and forces those lazy derives to
-	// materialise - for something nobody is looking at.
+	// The rotation view and the chart are alternatives, and the rotation is the default.
+	// Building the chart's series while it is hidden costs a pass over the unit's dps logs,
+	// mana group and threat logs - and forces those lazy derives to materialise - for
+	// something nobody is looking at.
 	private isChartVisible(): boolean {
 		return this.chartPicker.value !== 'rotation';
 	}
@@ -140,44 +133,29 @@ export class Timeline extends ResultComponent {
 			return;
 		}
 
-		const players = this.resultData.result.getRaidIndexedPlayers(this.resultData.filter);
-		const singlePlayer = players.length == 1;
-		if (!singlePlayer && this.chartPicker.value == 'rotation') {
-			// Programmatic select changes fire no 'change' event: sync the plot containers by hand.
-			this.chartPicker.value = 'dps';
-			this.syncChartPanes();
-		}
-
-		const duration = this.resultData!.result.result.firstIterationDuration || 1;
-		let spec;
-
-		if (singlePlayer) {
-			const player = players[0];
-
-			this.setRotationOptionVisible(true);
-
-			try {
-				this.updateRotation(player, duration);
-			} catch (e) {
-				console.log('Failed to update rotation chart: ', e);
-			}
-
-			if (!this.isChartVisible()) {
-				// Nothing else to do: the rotation is what is on screen.
-				return;
-			}
-
-			spec = singlePlayerChartSpec(player, duration, this.secondaryResource);
-		} else {
-			this.setRotationOptionVisible(false);
-
+		// A cleared result still emits, with an empty raid.
+		const player = this.resultData.result.getRaidIndexedPlayers(this.resultData.filter)[0];
+		if (!player) {
 			this.rotationModelKey = null;
 			this.rotationView.setModel(null);
-
-			spec = multiPlayerChartSpec(players, duration, this.chartPicker.value == 'dps' ? 'dps' : 'threat');
+			this.chart.render(null);
+			return;
 		}
 
-		this.chart.render(spec);
+		const duration = this.resultData.result.result.firstIterationDuration || 1;
+
+		try {
+			this.updateRotation(player, duration);
+		} catch (e) {
+			console.log('Failed to update rotation chart: ', e);
+		}
+
+		if (!this.isChartVisible()) {
+			// Nothing else to do: the rotation is what is on screen.
+			return;
+		}
+
+		this.chart.render(chartSpec(player, duration, this.secondaryResource));
 	}
 
 	private updateRotation(player: UnitMetrics, duration: number) {
@@ -196,12 +174,6 @@ export class Timeline extends ResultComponent {
 	private resultKey(): string {
 		const rd = this.resultData!;
 		return [rd.result.request.requestId, JSON.stringify(rd.filter)].join('|');
-	}
-
-	// Single-player results offer the rotation chart; multi-player ones the threat chart.
-	private setRotationOptionVisible(visible: boolean) {
-		this.chartPicker.setOptionVisible('rotation', visible);
-		this.chartPicker.setOptionVisible('threat', !visible);
 	}
 
 	reset() {

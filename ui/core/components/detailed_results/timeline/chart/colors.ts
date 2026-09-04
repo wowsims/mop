@@ -11,10 +11,4 @@ export function cssVarColor(name: string): string {
 	return value;
 }
 
-// A unit can have no class colour - a target, or a pet the sim reports without one - so the
-// caller supplies the series' own colour to fall back to rather than getting an empty string.
-export function classColorValue(classColor: string, fallback: string): string {
-	return classColor ? cssVarColor(`--bs-${classColor}`) : fallback;
-}
-
 export const AXIS_GRID_COLOR = 'rgba(255, 255, 255, 0.1)';

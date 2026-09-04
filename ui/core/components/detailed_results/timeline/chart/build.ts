@@ -2,7 +2,6 @@ import i18n from '../../../../../i18n/config';
 import SecondaryResource from '../../../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../../../proto_utils/sim_result';
 import { majorCooldownAnnotations } from './annotations';
-import { classColorValue } from './colors';
 import {
 	DPS_SERIES_ID,
 	dpsColor,
@@ -10,8 +9,6 @@ import {
 	dpsScale,
 	manaDataset,
 	manaScale,
-	playerDpsSeriesId,
-	playerThreatSeriesId,
 	resourceDatasets,
 	resourcePctScale,
 	THREAT_SERIES_ID,
@@ -28,11 +25,11 @@ import { TimelineChartSpec, TimelineDataset } from './types';
 
 const timeAxis = (duration: number) => ({ x: timeScale(duration, i18n.t('results_tab.details.timeline.chart_options.time_axis')) });
 
-export function singlePlayerChartSpec(unit: UnitMetrics, duration: number, secondaryResource: SecondaryResource | null | undefined): TimelineChartSpec {
+export function chartSpec(unit: UnitMetrics, duration: number, secondaryResource: SecondaryResource | null | undefined): TimelineChartSpec {
 	const datasets: Array<TimelineDataset> = [];
 	const scales: TimelineChartSpec['scales'] = timeAxis(duration);
 
-	const dps = dpsDataset(unit, DPS_SERIES_ID, dpsColor(), false);
+	const dps = dpsDataset(unit, DPS_SERIES_ID, dpsColor());
 	if (dps) {
 		datasets.push(dps.dataset);
 		scales[Y_DPS] = dpsScale(dps.maxDps);
@@ -44,7 +41,7 @@ export function singlePlayerChartSpec(unit: UnitMetrics, duration: number, secon
 		scales[Y_MANA] = manaScale(mana.maxMana);
 	}
 
-	const threat = threatDataset(unit, THREAT_SERIES_ID, threatColor(), false);
+	const threat = threatDataset(unit, THREAT_SERIES_ID, threatColor());
 	if (threat) {
 		datasets.push(threat);
 		scales[Y_THREAT] = threatScale(unit.maxThreat);
@@ -57,31 +54,4 @@ export function singlePlayerChartSpec(unit: UnitMetrics, duration: number, secon
 	}
 
 	return { datasets, scales, duration, annotations: majorCooldownAnnotations(unit) };
-}
-
-export function multiPlayerChartSpec(units: Array<UnitMetrics>, duration: number, mode: 'dps' | 'threat'): TimelineChartSpec {
-	const datasets: Array<TimelineDataset> = [];
-	const scales: TimelineChartSpec['scales'] = timeAxis(duration);
-
-	if (mode === 'dps') {
-		let maxDps = 0;
-		for (const unit of units) {
-			const dps = dpsDataset(unit, playerDpsSeriesId(unit), classColorValue(unit.classColor, dpsColor()), true);
-			if (!dps) continue;
-			datasets.push(dps.dataset);
-			maxDps = Math.max(maxDps, dps.maxDps);
-		}
-		scales[Y_DPS] = dpsScale(maxDps);
-	} else {
-		let maxThreat = 0;
-		for (const unit of units) {
-			const threat = threatDataset(unit, playerThreatSeriesId(unit), classColorValue(unit.classColor, threatColor()), true);
-			if (!threat) continue;
-			datasets.push(threat);
-			maxThreat = Math.max(maxThreat, unit.maxThreat);
-		}
-		scales[Y_THREAT] = threatScale(maxThreat);
-	}
-
-	return { datasets, scales, duration, annotations: null };
 }
