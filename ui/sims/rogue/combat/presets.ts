@@ -25,7 +25,7 @@ export const ROTATION_PRESET_COMBAT = PresetUtils.makePresetAPLRotation('Combat'
 export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(CombatEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const CombatTalents = PresetUtils.makePresetTalentsFromJSON(CombatTalentsJson, {});
 

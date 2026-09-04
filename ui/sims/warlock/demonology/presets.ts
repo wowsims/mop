@@ -34,7 +34,7 @@ export const P4_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P4EpJson);
 export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 export const DemonologyTalentsDefault = PresetUtils.makePresetTalentsFromJSON(DemonologyTalentsDefaultJson, { major: MajorGlyph, minor: MinorGlyph });
 
 export const DefaultOptions = WarlockOptions.create({
@@ -50,7 +50,6 @@ export const DefaultConsumables = ConsumesSpec.create({
 	potId: 76093, //Potion of the Jade Serpent
 	prepotId: 76093, // Potion of the Jade Serpent
 });
-
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
 

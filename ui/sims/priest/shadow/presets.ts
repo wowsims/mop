@@ -106,7 +106,7 @@ export const SHADOW_BREAKPOINTS: UnitStatPresets = {
 };
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://www.wowhead.com/mop-classic/talent-calc/priest and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc/priest and copy the numbers in the url.
 export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, {});
 
 export const DefaultOptions = Options.create({

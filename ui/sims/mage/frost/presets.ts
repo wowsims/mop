@@ -43,7 +43,7 @@ export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1BisEpJ
 export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1PrebisEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const FrostDefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MageMajorGlyph, minor: MageMinorGlyph });
 

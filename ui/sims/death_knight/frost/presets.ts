@@ -28,7 +28,7 @@ export const TWOHAND_OBLITERATE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJ
 export const MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(MasterfrostEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, {
 	major: DeathKnightMajorGlyph,

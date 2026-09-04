@@ -4,11 +4,8 @@ import { ResourceType } from '@generated/proto/spell';
 import { IconData, UIItem as Item } from '@generated/proto/ui';
 
 import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../../constants/mechanics';
-import { buildWowheadTooltipDataset, getWowheadLanguagePrefix, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
+import { buildWowheadTooltipDataset, wowheadEntityUrl, wowheadIconUrl, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
 import { Database } from '../database';
-
-// If true uses wotlkdb.com, else uses wowhead.com.
-export const USE_WOTLK_DB = false;
 
 type ActionIdOptions = {
 	itemId?: number;
@@ -218,8 +215,7 @@ export class ActionId {
 	}
 
 	static makeItemUrl(id: number, randomSuffixId?: number, reforgeId?: number, upgradeStep?: ItemLevelState): string {
-		const langPrefix = getWowheadLanguagePrefix();
-		const url = new URL(`https://wowhead.com/mop-classic/${langPrefix}item=${id}`);
+		const url = new URL(wowheadEntityUrl('item', id));
 		url.searchParams.set('level', String(CHARACTER_LEVEL));
 		url.searchParams.set('rand', String(randomSuffixId || 0));
 		if (reforgeId) url.searchParams.set('forg', String(reforgeId));
@@ -231,12 +227,7 @@ export class ActionId {
 		return url.toString();
 	}
 	static makeSpellUrl(id: number): string {
-		const langPrefix = getWowheadLanguagePrefix();
-		if (USE_WOTLK_DB) {
-			return `https://wotlkdb.com/?spell=${id}`;
-		} else {
-			return `https://wowhead.com/mop-classic/${langPrefix}spell=${id}`;
-		}
+		return wowheadEntityUrl('spell', id);
 	}
 	static async makeItemTooltipData(id: number, params?: Omit<WowheadTooltipItemParams, 'itemId'>) {
 		return buildWowheadTooltipDataset({ itemId: id, ...params });
@@ -245,28 +236,13 @@ export class ActionId {
 		return buildWowheadTooltipDataset({ spellId: id, ...params });
 	}
 	static makeQuestUrl(id: number): string {
-		const langPrefix = getWowheadLanguagePrefix();
-		if (USE_WOTLK_DB) {
-			return 'https://wotlkdb.com/?quest=' + id;
-		} else {
-			return `https://wowhead.com/mop-classic/${langPrefix}quest=${id}`;
-		}
+		return wowheadEntityUrl('quest', id);
 	}
 	static makeNpcUrl(id: number): string {
-		const langPrefix = getWowheadLanguagePrefix();
-		if (USE_WOTLK_DB) {
-			return 'https://wotlkdb.com/?npc=' + id;
-		} else {
-			return `https://wowhead.com/mop-classic/${langPrefix}npc=${id}`;
-		}
+		return wowheadEntityUrl('npc', id);
 	}
 	static makeZoneUrl(id: number): string {
-		const langPrefix = getWowheadLanguagePrefix();
-		if (USE_WOTLK_DB) {
-			return 'https://wotlkdb.com/?zone=' + id;
-		} else {
-			return `https://wowhead.com/mop-classic/${langPrefix}zone=${id}`;
-		}
+		return wowheadEntityUrl('zone', id);
 	}
 
 	// Returns an ActionId with the name and iconUrl fields filled.
@@ -1160,11 +1136,7 @@ export class ActionId {
 	}
 
 	private static makeIconUrl(iconLabel: string): string {
-		if (USE_WOTLK_DB) {
-			return `https://wotlkdb.com/static/images/wow/icons/large/${iconLabel}.jpg`;
-		} else {
-			return `https://wow.zamimg.com/images/wow/icons/large/${iconLabel}.jpg`;
-		}
+		return wowheadIconUrl(iconLabel);
 	}
 
 	static async getTooltipData(actionId: ActionId, options: { signal?: AbortSignal } = {}): Promise<IconData> {

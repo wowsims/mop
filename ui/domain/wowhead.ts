@@ -143,3 +143,22 @@ export function getWowheadLanguagePrefix(): string {
 	const lang = getLang();
 	return lang === 'en' ? '' : `${lang}/`;
 }
+
+// Every wowhead link this app builds hangs off one of these two. The entity
+// links keep the bare host they have always used; the gear planner page is the
+// `www.` form we show to users verbatim in the importer.
+export const WOWHEAD_BASE_URL = 'https://wowhead.com/mop-classic';
+export const WOWHEAD_GEAR_PLANNER_URL = 'https://www.wowhead.com/mop-classic/gear-planner';
+export const WOWHEAD_ICON_BASE_URL = 'https://wow.zamimg.com/images/wow/icons';
+
+type WowheadEntity = 'item' | 'spell' | 'quest' | 'npc' | 'zone';
+
+// `https://wowhead.com/mop-classic/<lang>/<entity>=<id>` — the language segment
+// is empty for English.
+export function wowheadEntityUrl(entity: WowheadEntity, id: number): string {
+	return `${WOWHEAD_BASE_URL}/${getWowheadLanguagePrefix()}${entity}=${id}`;
+}
+
+export function wowheadIconUrl(iconLabel: string, size: 'large' | 'medium' | 'small' = 'large'): string {
+	return `${WOWHEAD_ICON_BASE_URL}/${size}/${iconLabel}.jpg`;
+}

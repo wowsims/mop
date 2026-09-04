@@ -66,7 +66,7 @@ export const RORO_P3_4_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(RoroP
 export const RORO_P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(RoroP5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/mop/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 

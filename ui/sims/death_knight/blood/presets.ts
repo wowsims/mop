@@ -58,7 +58,7 @@ export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5B
 export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5OffensiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const BloodTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, {
 	major: DeathKnightMajorGlyph,

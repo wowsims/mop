@@ -39,7 +39,7 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 export const DEFAULT_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, {
 	major: DeathKnightMajorGlyph,

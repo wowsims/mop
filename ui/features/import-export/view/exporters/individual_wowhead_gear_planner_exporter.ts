@@ -1,6 +1,6 @@
 import { CHARACTER_LEVEL } from '@domain/constants/mechanics';
 import { raceNames } from '@domain/proto_utils/names';
-import { WOWHEAD_EXPANSION_ENV } from '@domain/wowhead';
+import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
 import { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
@@ -171,7 +171,7 @@ export class IndividualWowheadGearPlannerExporter<SpecType extends Spec> extends
 
 		const classStr = player.getPlayerClass().friendlyName.replaceAll(/\s/g, '-').toLowerCase();
 		const raceStr = converWowheadRace(raceNames.get(player.getRace())!);
-		const url = `https://www.wowhead.com/mop-classic/gear-planner/${classStr}/${raceStr}/`;
+		const url = `${WOWHEAD_GEAR_PLANNER_URL}/${classStr}/${raceStr}/`;
 
 		const addGlyph = (glyphItemId: number): number => {
 			const spellId = this.simUI.sim.db.glyphItemToSpellId(glyphItemId);

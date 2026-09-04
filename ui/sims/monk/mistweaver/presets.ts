@@ -17,7 +17,7 @@ export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Default', DefaultG
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/mop/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 

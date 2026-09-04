@@ -108,7 +108,7 @@ export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1Pre
 export const MASTERY_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(MasteryEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 export const FireTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MajorGlyph, minor: MinorGlyph });
 
 // Computed preset: reuses FireTalents' glyphs, so it stays in TS rather than its own JSON file.

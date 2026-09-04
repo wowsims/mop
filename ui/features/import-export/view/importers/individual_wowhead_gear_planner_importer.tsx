@@ -1,4 +1,5 @@
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
+import { WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -183,7 +184,7 @@ function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 	// Extract the part after 'mop-classic/gear-planner/'
 	const match = link.match(/mop-classic\/gear-planner\/(.+)/);
 	if (!match) {
-		throw new Error(`Invalid WCL URL ${link}, must look like "https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX"`);
+		throw new Error(`Invalid WCL URL ${link}, must look like "${WOWHEAD_GEAR_PLANNER_URL}/CLASS/RACE/XXXX"`);
 	}
 	const e = match[1];
 	return readHash(e);
@@ -198,7 +199,7 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 			<div>
 				<p>
 					{i18n.t('import.wowhead.description')}{' '}
-					<a href="https://www.wowhead.com/mop-classic/gear-planner" target="_blank">
+					<a href={WOWHEAD_GEAR_PLANNER_URL} target="_blank">
 						{i18n.t('import.wowhead.gear_planner_link')}
 					</a>
 					.

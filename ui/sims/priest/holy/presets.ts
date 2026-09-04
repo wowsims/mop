@@ -32,7 +32,7 @@ export const ROTATION_PRESET_AOE4PLUS = PresetUtils.makePresetAPLRotation('AOE (
 export const P1_EP_WEIGHTS = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
-// https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
+// https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
