@@ -32,7 +32,8 @@ for (const spec of specsFromArgv()) {
 		if (r.activePanes[0] !== id) problems.push(`${id}: active pane is ${r.activePanes[0]}`);
 	}
 
-	// The "back to gear" path the bulk results renderer takes, through SimHeader.activateTab.
+	// Returning to the gear tab, the way the bulk results renderer does. This clicks the link;
+	// SimHeader.activateTab's registry.activate path is covered by tabs-a11y.mjs and a unit test.
 	await page.click('.sim-tabs li.settings-tab .nav-link');
 	await page.waitForTimeout(200);
 	await page.click('.sim-tabs li.gear-tab .nav-link');

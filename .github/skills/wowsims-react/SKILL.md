@@ -198,7 +198,11 @@ class name across `ui/` before moving its rules.
 - **Tooltips portal to `<body>`**, so they outlive their component's subtree. Unmount cleanup is
   load-bearing; assert it in the component's test.
 - **`localization.tsx` walks the DOM** for `[data-i18n]` and writes `textContent`. React
-  reconciliation clobbers that — React components need `useTranslation`.
+  reconciliation clobbers that — React components need `useTranslation`. Checked in Phase 1: the
+  only page that depends on the walk is the landing page (`ui/index.html` + `ui/index.ts`, 132 nodes
+  at runtime). `ui/index_template.html` carries only `data-i18n-lang` on `<html>`, which sets the
+  lang attribute and touches no text. So the walk constrains the homepage only — and the homepage is
+  the page React does not obviously improve.
 - **`use` is a reserved prefix now.** `react-hooks/rules-of-hooks` keys on it, so a non-hook helper
   named `useX` is a lint error. Name factories `makeUseX` (this is why
   `makeUseDotBaseValueCheckbox` reads the way it does — the proto field is `useDotBaseValue`).
@@ -218,7 +222,8 @@ Two things specific to this migration:
   Playwright checks against a build of this branch and one of the parent branch, served on two
   ports. `parity.mjs` (structure at load, ~4,000 elements per spec), `panes-parity.mjs` (each tab's contents
   once opened), `tabs-a11y.mjs` (attributes + keyboard), `tabs-behaviour.mjs` (clicking every tab),
-  `mount-once.mjs` (StrictMode — against a dev server, see above). Read its README for the
+  `mount-once.mjs` (StrictMode — against a dev server, see above) and `landing.mjs` (the homepage,
+  which every other check skips). Read its README for the
   two expected class diffs and the environmental console errors. Use Playwright, not the Chrome
   extension — the extension reports false "renderer frozen" on this app.
 
@@ -243,7 +248,7 @@ Two things specific to this migration:
   (a pane class Bootstrap put there), and the literal class `false` from
   `${isFirstTab && 'active'}` is gone. Gate: DOM parity across 5 specs (element counts identical,
   only those two class diffs), a Playwright click sweep of all 6 tabs on those specs, goldens
-  byte-identical, and 39 unit tests. The four checks are committed at `tools/react-migration/`.
+  byte-identical, and 39 unit tests. The six checks are committed at `tools/react-migration/`.
 
 - 2026-09-04 Phase 0 complete. React 19.2 alongside tsx-vanilla: tsconfig and both vite configs
   moved to the automatic runtime, the 94 existing `.tsx` files gained
