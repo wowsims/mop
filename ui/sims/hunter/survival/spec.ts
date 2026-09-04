@@ -114,7 +114,7 @@ export default defineSpec<Spec.SpecSurvivalHunter>({
 		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
-	autoRotation: (player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
+	autoRotation: (_player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_SV.rotation.rotation!;
 	},
 

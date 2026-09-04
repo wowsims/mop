@@ -187,12 +187,12 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 
 	// Whether a single-element group should have its parent row removed.
 	// Override this to add custom behavior.
-	protected shouldCollapse(metric: T): boolean {
+	protected shouldCollapse(_metric: T): boolean {
 		return true;
 	}
 
 	// Override this to customize rowElem after it has been populated.
-	protected customizeRowElem(metric: T, rowElem: HTMLElement, isChildRow = false) {
+	protected customizeRowElem(_metric: T, _rowElem: HTMLElement, _isChildRow = false) {
 		return;
 	}
 
@@ -213,7 +213,7 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 	): MetricsColumnConfig<T> {
 		return {
 			name: i18n.t('results_tab.details.columns.name'),
-			fillCell: (metric: T, cellElem: HTMLElement, rowElem: HTMLElement) => {
+			fillCell: (metric: T, cellElem: HTMLElement, _rowElem: HTMLElement) => {
 				const data = getData(metric);
 				const actionIdAsString = data.actionId.toString();
 				const iconElemRef = ref<HTMLAnchorElement>();
@@ -241,7 +241,7 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 		return {
 			name: i18n.t('results_tab.details.columns.name'),
 			columnClass: 'name-cell',
-			fillCell: (player: UnitMetrics, cellElem: HTMLElement, rowElem: HTMLElement) => {
+			fillCell: (player: UnitMetrics, cellElem: HTMLElement, _rowElem: HTMLElement) => {
 				cellElem.appendChild(
 					<>
 						<img className="metrics-action-icon" src={player.iconUrl}></img>

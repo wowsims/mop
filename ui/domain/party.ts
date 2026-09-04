@@ -26,7 +26,7 @@ export class Party {
 	}
 
 	// Writes this party's slot → storeKey row (replace-on-write).
-	private writeComposition(eventID: EventID) {
+	private writeComposition(_eventID: EventID) {
 		const row = this.players.map(p => (p ? p.storeKey : null));
 		this.sim.store.setState(s => ({
 			raid: { ...s.raid, composition: s.raid.composition.map((r, i) => (i == this.index ? row : r)) },

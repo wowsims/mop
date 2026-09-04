@@ -95,7 +95,7 @@ export default defineSpec<Spec.SpecDisciplinePriest>({
 		gear: [Presets.P1_PRESET],
 	},
 
-	autoRotation: (player: Player<Spec.SpecDisciplinePriest>): APLRotation => {
+	autoRotation: (_player: Player<Spec.SpecDisciplinePriest>): APLRotation => {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 });

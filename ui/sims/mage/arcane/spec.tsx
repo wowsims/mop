@@ -141,7 +141,7 @@ export default defineSpec<Spec.SpecArcaneMage>({
 		],
 	},
 
-	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
+	autoRotation: (_player: Player<Spec.SpecArcaneMage>): APLRotation => {
 		return Presets.ROTATION_PRESET_T15_4PC.rotation.rotation!;
 	},
 

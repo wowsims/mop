@@ -29,7 +29,7 @@
         "no-unused-vars": [
           "warn",
           {
-            "args": "none",
+            "args": "after-used",
             "argsIgnorePattern": "^_",
             "varsIgnorePattern": "^_"
           }

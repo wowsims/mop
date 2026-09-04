@@ -189,7 +189,7 @@ export default defineSpec<Spec.SpecFireMage>({
 		settings: [Presets.CRIT_SETTINGS, Presets.MASTERY_SETTINGS],
 	},
 
-	autoRotation: (player: Player<Spec.SpecFireMage>): APLRotation => {
+	autoRotation: (_player: Player<Spec.SpecFireMage>): APLRotation => {
 		// const numTargets = player.sim.encounter.targets.length;
 		// if (numTargets >= 3) {
 		// 	return Presets.FIRE_ROTATION_PRESET_CLEAVE.rotation.rotation!;

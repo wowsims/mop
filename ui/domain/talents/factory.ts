@@ -57,7 +57,7 @@ export const classGlyphsConfig: Record<Class, GlyphsConfig> = {
 	[Class.ClassWarrior]: warriorGlyphsConfig,
 } as const;
 
-export function talentSpellIdsToTalentString(playerClass: Class, talentIds: Array<number>): string {
+export function talentSpellIdsToTalentString(_playerClass: Class, _talentIds: Array<number>): string {
 	// TODO: Fix once we know the actual output
 	return '';
 

@@ -25,7 +25,7 @@ export class DpsHistogram extends ResultComponent {
 		const colors: Array<string> = [];
 
 		const labels = Object.keys(damageMetrics.hist);
-		labels.forEach((k, i) => {
+		labels.forEach((k, _i) => {
 			vals.push(damageMetrics.hist[Number(k)]);
 			const val = parseInt(k);
 			if (val > min && val < max) {

@@ -215,7 +215,7 @@ export class Clusterize {
     }
 
     // get tag name, content tag name, tag height, calc cluster height
-    private exploreEnvironment(rows: Element[], cache: any) {
+    private exploreEnvironment(rows: Element[], _cache: any) {
         const opts = this.options;
         opts.content_tag = this.content_elem.tagName.toLowerCase();
         if (!rows.length)

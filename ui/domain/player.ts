@@ -312,7 +312,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	// Signals a rotation change made in place on `aplRotation` (APL editor).
-	touchRotation(eventID: EventID) {
+	touchRotation(_eventID: EventID) {
 		this.write({}, ['rotation']);
 	}
 

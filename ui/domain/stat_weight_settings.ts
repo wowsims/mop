@@ -51,11 +51,11 @@ export class StatWeightActionSettings {
 		// No-op, as there are no proto version migrations currently
 	}
 
-	applyDefaults(eventID: EventID) {
+	applyDefaults(_eventID: EventID) {
 		this.write({ excludedStats: [], excludedPseudoStats: [] });
 	}
 
-	load(eventID: EventID) {
+	load(_eventID: EventID) {
 		const storageValue = this.env.storage.getItem(this.storageKey);
 		if (storageValue) {
 			const settingsProto = SavedStatWeightSettings.fromJsonString(storageValue, { ignoreUnknownFields: true });

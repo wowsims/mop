@@ -8,5 +8,5 @@ export const ExhaleWindow = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecAff
 	fieldName: 'exhaleWindow',
 	label: i18n.t('rotation_tab.options.warlock.affliction.exhale_window.label'),
 	labelTooltip: i18n.t('rotation_tab.options.warlock.affliction.exhale_window.tooltip'),
-	showWhen: (player: Player<Spec.SpecAfflictionWarlock>) => true,
+	showWhen: (_player: Player<Spec.SpecAfflictionWarlock>) => true,
 });

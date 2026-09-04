@@ -10,5 +10,5 @@ export const HonorAmongThievesCritRate = InputHelpers.makeSpecOptionsNumberInput
 	fieldName: 'honorAmongThievesCritRate',
 	label: i18n.t('rotation_tab.options.rogue.subtlety.honor_of_thieves_crit_rate.label'),
 	labelTooltip: i18n.t('rotation_tab.options.rogue.subtlety.honor_of_thieves_crit_rate.tooltip'),
-	showWhen: (player: Player<Spec.SpecSubtletyRogue>) => false,
+	showWhen: (_player: Player<Spec.SpecSubtletyRogue>) => false,
 });
