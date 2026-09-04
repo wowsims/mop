@@ -1,16 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="" data-i18n-lang>
 	<head>
 		<title id="title" data-i18n="landing.home.title">Welcome to WoWSims MOP</title>
-		<meta charset="utf-8">
+		<meta charset="utf-8" />
 
-		<link rel="icon" type="image/x-icon" href="/mop/assets/favicon_io/favicon.ico">
+		<link rel="icon" type="image/x-icon" href="/mop/assets/favicon_io/favicon.ico" />
 
-		<meta name="description" content="" data-i18n="landing.home.description">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="" data-i18n="landing.home.description" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<link rel="stylesheet" href="/scss/homepage/index.scss">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link rel="stylesheet" href="/scss/homepage/index.scss" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+			integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer" />
 	</head>
 	<body class="bg-black">
 		<div class="homepage-image"></div>
@@ -20,19 +25,35 @@
 					<nav class="navbar navbar-dark navbar-expand-md flex-wrap align-items-end w-100">
 						<div class="navbar-brand-container order-0">
 							<a href="#" class="navbar-brand d-flex align-items-center p-0 m-0">
-								<img class="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png">
+								<img class="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png" />
 								<div class="d-flex flex-column">
 									<h2 class="wowsims-title" data-i18n="landing.header.wowsims"></h2>
 									<h3 class="expansion-title w-100" data-i18n="landing.header.expansion"></h3>
 								</div>
 							</a>
-							<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="landing.navigation.toggle">
+							<button
+								class="navbar-toggler"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#homepageHeaderCollapse"
+								aria-controls="homepageHeaderCollapse"
+								aria-expanded="false"
+								aria-label=""
+								data-i18n="landing.navigation.toggle">
 								<i class="fas fa-bars fa-2x"></i>
 							</button>
 						</div>
 						<div id="homepageHeaderCollapse" class="collapse navbar-collapse homepage-header-collapse order-2 order-md-1">
 							<div class="navbar-nav">
-								<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="landing.navigation.toggle">
+								<button
+									class="navbar-toggler"
+									type="button"
+									data-bs-toggle="collapse"
+									data-bs-target="#homepageHeaderCollapse"
+									aria-controls="homepageHeaderCollapse"
+									aria-expanded="false"
+									aria-label=""
+									data-i18n="landing.navigation.toggle">
 									<i class="fas fa-times fa-2x"></i>
 								</button>
 								<a href="https://discord.gg/p3DgvmnDCS" target="_blank" class="nav-link link-alt">
@@ -49,8 +70,7 @@
 									<button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="languageDropdown">
 										<i class="fas fa-globe fa-2x"></i>
 									</button>
-									<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-									</ul>
+									<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown"></ul>
 								</div>
 							</div>
 						</div>
@@ -63,17 +83,18 @@
 						<p id="description" class="wowsims-info" data-i18n="landing.home.welcomeDescription"></p>
 					</div>
 					<div class="sim-links-container">
-
 						<div class="sim-links" id="sim-links"></div>
 					</div>
 				</div>
 			</main>
-    	</div>
+		</div>
 		<script src="./index.ts" type="module"></script>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-T3HBB0LXNX"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
+			function gtag() {
+				dataLayer.push(arguments);
+			}
 			gtag('js', new Date());
 			gtag('config', 'G-YEJ8MEHGV2');
 		</script>

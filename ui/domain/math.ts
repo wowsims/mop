@@ -41,17 +41,6 @@ export function stDevToConf90(stDev: number, N: number) {
 export function stDevToConf95(stDev: number, N: number) {
 	return (Z_95 * stDev) / Math.sqrt(N);
 }
-
-export function getStDev(arr: Array<number>, sample = false): number {
-	if (arr.length === 0 || (sample && arr.length === 1)) {
-		return 0;
-	}
-
-	const mean = sum(arr) / arr.length;
-	const variance = sum(arr.map(value => Math.pow(value - mean, 2))) / (sample ? arr.length - 1 : arr.length);
-	return Math.sqrt(variance);
-}
-
 // Only works for numeric enums
 export function permutations<T>(arr: Array<T>, k: number): Array<Array<T>> {
 	if (k == 0) {
@@ -98,14 +87,6 @@ export function permutationsWithDups<T>(arr: Array<T>, k: number): Array<Array<T
 			.flat();
 	}
 }
-
-// Returns all N choose K combinations of the elements in arr of size N, allowing duplicates.
-export function combinationsWithDups<T>(arr: Array<T>, k: number): Array<Array<T>> {
-	const perms = permutationsWithDups(arr, k);
-	const sorted = perms.map(permutation => permutation.sort());
-	return distinct(sorted, (permutationA, permutationB) => permutationA.every((elem, i) => elem == permutationB[i]));
-}
-
 // Converts a Uint8Array into a hex string.
 export const mod = (n: number, m: number): number => {
 	return ((n % m) + m) % m;

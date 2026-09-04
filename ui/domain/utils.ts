@@ -6,9 +6,6 @@ export const randomUUID = () => uuidv4();
 export const noop = () => {};
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-export const cloneChildren = (element: HTMLElement) => [...(element.childNodes || [])].map(child => child.cloneNode(true));
-
 export function hashString(value: string): string {
 	let h1 = 0x811c9dc5;
 	let h2 = 0xcbf29ce4;
@@ -19,21 +16,6 @@ export function hashString(value: string): string {
 	}
 	return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
 }
-
-export function buf2hex(data: Uint8Array): string {
-	return [...data].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
-const randomStringChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+';
-export function randomString(len?: number): string {
-	let str = '';
-	const strLen = len || 10;
-	for (let i = 0; i < strLen; i++) {
-		str += randomStringChars[Math.floor(Math.random() * randomStringChars.length)];
-	}
-	return str;
-}
-
 // Allows replacement of stringified objects based on the key and path.
 // If handler returns a string, that string is used. Otherwise, the normal JSON.stringify result is returned.
 export function jsonStringifyCustom(value: any, indent: number, handler: (value: any, path: Array<string>) => string | undefined | void): string {

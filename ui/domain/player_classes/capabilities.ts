@@ -1,11 +1,16 @@
 import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@generated/proto/common';
 
 import type { EligibleWeaponType } from '../player_class';
-import { CLASS_ARMOR_TYPES, CLASS_RACES, CLASS_RANGED_WEAPON_TYPES, CLASS_WEAPON_TYPES, SPEC_CAN_DUAL_WIELD, SPEC_CAN_DUAL_WIELD_2H } from './capabilities_auto_gen';
+import {
+	CLASS_ARMOR_TYPES,
+	CLASS_RACES,
+	CLASS_RANGED_WEAPON_TYPES,
+	CLASS_WEAPON_TYPES,
+	SPEC_CAN_DUAL_WIELD,
+	SPEC_CAN_DUAL_WIELD_2H,
+} from './capabilities_auto_gen';
 
-const classArmorTypes = new Map<Class, ArmorType[]>(
-	Object.entries(CLASS_ARMOR_TYPES).map(([classID, armorTypes]) => [Number(classID) as Class, armorTypes]),
-);
+const classArmorTypes = new Map<Class, ArmorType[]>(Object.entries(CLASS_ARMOR_TYPES).map(([classID, armorTypes]) => [Number(classID) as Class, armorTypes]));
 
 const classWeaponTypes = new Map<Class, EligibleWeaponType[]>(
 	Object.entries(CLASS_WEAPON_TYPES).map(([classID, weaponTypes]) => [

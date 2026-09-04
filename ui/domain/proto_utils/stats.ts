@@ -643,17 +643,6 @@ export class StatCap {
 		return clonedSoftCaps;
 	}
 }
-
-export function convertHastePresetBreakpointsToPercent(ratingPresets: Map<string, number>): Map<string, number> {
-	const convertedPresets = new Map<string, number>();
-
-	for (const [presetName, ratingValue] of ratingPresets.entries()) {
-		convertedPresets.set(presetName, ratingValue / Mechanics.HASTE_RATING_PER_HASTE_PERCENT);
-	}
-
-	return convertedPresets;
-}
-
 // Helper utility to determine whether a particular PseudoStat has been configured as either a hard cap or
 // soft cap.
 export function pseudoStatHasCap(pseudoStat: PseudoStat, hardCaps: Stats, softCaps: StatCap[]): boolean {
@@ -669,49 +658,6 @@ export function pseudoStatHasCap(pseudoStat: PseudoStat, hardCaps: Stats, softCa
 
 	return false;
 }
-
-export function pseudoStatIsCapped(pseudoStat: PseudoStat, hardCaps: Stats, softCaps: StatCap[]): boolean {
-	if (hardCaps.getPseudoStat(pseudoStat) < 0) {
-		return true;
-	}
-
-	for (const config of softCaps) {
-		if (config.unitStat.equalsPseudoStat(pseudoStat)) {
-			return config.unitStat.getPseudoStat() < 0;
-		}
-	}
-
-	return false;
-}
-
-export function statHasCap(stat: Stat, hardCaps: Stats, softCaps: StatCap[]): boolean {
-	if (hardCaps.getStat(stat) != 0) {
-		return true;
-	}
-
-	for (const config of softCaps) {
-		if (config.unitStat.equalsStat(stat)) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-export function statIsCapped(stat: Stat, hardCaps: Stats, softCaps: StatCap[]): boolean {
-	if (hardCaps.getStat(stat) < 0) {
-		return true;
-	}
-
-	for (const config of softCaps) {
-		if (config.unitStat.equalsStat(stat)) {
-			return config.unitStat.getStat() < 0;
-		}
-	}
-
-	return false;
-}
-
 export const DEFAULT_GEM_STATS = [
 	Stat.StatHitRating,
 	Stat.StatCritRating,

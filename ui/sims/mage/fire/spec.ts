@@ -281,63 +281,63 @@ export default defineSpec<Spec.SpecFireMage>({
 	reforge: {
 		statSelectionPresets: statSelectionPresets,
 		enableBreakpointLimits: true,
-			// updateSoftCaps: softCaps => {
-			// 	const raidBuffs = player.getRaid()?.getBuffs();
-			// 	const hasBL = !!raidBuffs?.bloodlust;
-			// 	const hasBerserking = player.getRace() === Race.RaceTroll;
-			// 	const hasGlyphOfCombustion = !!player.getMajorGlyphs().find(glyph => glyph === MageMajorGlyph.GlyphOfCombustion);
+		// updateSoftCaps: softCaps => {
+		// 	const raidBuffs = player.getRaid()?.getBuffs();
+		// 	const hasBL = !!raidBuffs?.bloodlust;
+		// 	const hasBerserking = player.getRace() === Race.RaceTroll;
+		// 	const hasGlyphOfCombustion = !!player.getMajorGlyphs().find(glyph => glyph === MageMajorGlyph.GlyphOfCombustion);
 
-			// 	const modifyHaste = (oldHastePercent: number, modifier: number) =>
-			// 		Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
+		// 	const modifyHaste = (oldHastePercent: number, modifier: number) =>
+		// 		Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
 
-			// 	this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-			// 		const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-			// 		if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-			// 			if (hasGlyphOfCombustion) softCap.breakpoints = relevantMageBombBreakpoints;
+		// 	this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+		// 		const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
+		// 		if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
+		// 			if (hasGlyphOfCombustion) softCap.breakpoints = relevantMageBombBreakpoints;
 
-			// 			const adjustedHastedBreakpoints = new Set([...softCap.breakpoints]);
-			// 			const hasCloseMatchingValue = (value: number) =>
-			// 				[...adjustedHastedBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
+		// 			const adjustedHastedBreakpoints = new Set([...softCap.breakpoints]);
+		// 			const hasCloseMatchingValue = (value: number) =>
+		// 				[...adjustedHastedBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
 
-			// 			softCap.breakpoints.forEach(breakpoint => {
-			// 				if (hasBL) {
-			// 					const blBreakpoint = modifyHaste(breakpoint, 1.3);
+		// 			softCap.breakpoints.forEach(breakpoint => {
+		// 				if (hasBL) {
+		// 					const blBreakpoint = modifyHaste(breakpoint, 1.3);
 
-			// 					if (blBreakpoint > 0) {
-			// 						if (!hasCloseMatchingValue(blBreakpoint)) adjustedHastedBreakpoints.add(blBreakpoint);
-			// 						if (hasBerserking) {
-			// 							const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-			// 							if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-			// 								adjustedHastedBreakpoints.add(berserkingBreakpoint);
-			// 							}
-			// 						}
-			// 					}
-			// 				}
-			// 			});
-			// 			softCapToModify.breakpoints = [...adjustedHastedBreakpoints].sort((a, b) => a - b);
-			// 		}
-			// 	});
-			// 	return softCaps;
-			// },
-			// additionalSoftCapTooltipInformation: {
-			// 	[Stat.StatHasteRating]: () => {
-			// 		const raidBuffs = player.getRaid()?.getBuffs();
-			// 		const hasBL = !!raidBuffs?.bloodlust;
-			// 		const hasBerserking = player.getRace() === Race.RaceTroll;
+		// 					if (blBreakpoint > 0) {
+		// 						if (!hasCloseMatchingValue(blBreakpoint)) adjustedHastedBreakpoints.add(blBreakpoint);
+		// 						if (hasBerserking) {
+		// 							const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
+		// 							if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
+		// 								adjustedHastedBreakpoints.add(berserkingBreakpoint);
+		// 							}
+		// 						}
+		// 					}
+		// 				}
+		// 			});
+		// 			softCapToModify.breakpoints = [...adjustedHastedBreakpoints].sort((a, b) => a - b);
+		// 		}
+		// 	});
+		// 	return softCaps;
+		// },
+		// additionalSoftCapTooltipInformation: {
+		// 	[Stat.StatHasteRating]: () => {
+		// 		const raidBuffs = player.getRaid()?.getBuffs();
+		// 		const hasBL = !!raidBuffs?.bloodlust;
+		// 		const hasBerserking = player.getRace() === Race.RaceTroll;
 
-			// 		return (
-			// 			<>
-			// 				{(hasBL || hasBerserking) && (
-			// 					<>
-			// 						<p className="mb-0">Additional breakpoints have been created using the following cooldowns:</p>
-			// 						<ul className="mb-0">
-			// 							{hasBL && <li>Bloodlust</li>}
-			// 							{hasBerserking && <li>Berserking</li>}
-			// 						</ul>
-			// 					</>
-			// 				)}
-			// 			</>
-			// 		);
+		// 		return (
+		// 			<>
+		// 				{(hasBL || hasBerserking) && (
+		// 					<>
+		// 						<p className="mb-0">Additional breakpoints have been created using the following cooldowns:</p>
+		// 						<ul className="mb-0">
+		// 							{hasBL && <li>Bloodlust</li>}
+		// 							{hasBerserking && <li>Berserking</li>}
+		// 						</ul>
+		// 					</>
+		// 				)}
+		// 			</>
+		// 		);
 		// 	},
 		// },
 	},

@@ -1,7 +1,6 @@
-import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { HunterSpecs } from '@domain/proto_utils/spec_types';
-import { HunterOptions_PetType as PetType, PetSpec } from '@generated/proto/hunter';
+import { HunterOptions_PetType as PetType } from '@generated/proto/hunter';
 import * as InputHelpers from '@ui-kit/input_helpers';
 export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHelpers.TypedIconEnumPickerConfig<any, PetType> {
 	return InputHelpers.makeClassOptionsEnumIconInput<SpecType, PetType>({
@@ -59,30 +58,4 @@ export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHel
 			{ value: PetType.WaterStrider, actionId: ActionId.fromPetName('Water Strider'), tooltip: 'Water Strider' },
 		],
 	});
-}
-
-const defaultSpec = PetSpec.Ferocity;
-
-export class HunterPet<SpecType extends HunterSpecs> {
-	readonly player: Player<SpecType>;
-
-	private spec: PetSpec;
-
-	constructor(player: Player<SpecType>) {
-		this.player = player;
-		this.spec = defaultSpec;
-	}
-
-	getSpec(): PetSpec {
-		return this.spec;
-	}
-
-	setSpec(newSpec: PetSpec) {
-		if (newSpec == this.spec) return;
-
-		const options = this.player.getClassOptions();
-		options.petSpec = newSpec;
-		this.spec = newSpec;
-		this.player.setClassOptions(options);
-	}
 }

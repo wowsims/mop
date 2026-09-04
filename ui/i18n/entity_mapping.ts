@@ -1,7 +1,20 @@
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { LaunchStatus } from '@domain/constants/other';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { ArmorType, Class, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@generated/proto/common';
+import {
+	ArmorType,
+	Class,
+	ItemSlot,
+	MobType,
+	Profession,
+	PseudoStat,
+	Race,
+	RangedWeaponType,
+	Spec,
+	SpellSchool,
+	Stat,
+	WeaponType,
+} from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';
 

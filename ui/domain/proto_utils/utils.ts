@@ -98,8 +98,6 @@ export const orderedResourceTypes: Array<ResourceType> = [
 ];
 
 export const AL_CATEGORY_HARD_MODE = 'Hard Mode';
-export const AL_CATEGORY_TITAN_RUNE = 'Titan Rune';
-
 export const defaultRaidBuffMajorDamageCooldowns = (classID?: Class): Partial<RaidBuffs> => {
 	return RaidBuffs.create({
 		skullBannerCount: classID == Class.ClassWarrior ? 1 : 2,

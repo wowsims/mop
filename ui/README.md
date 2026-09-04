@@ -110,16 +110,16 @@ override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
 
 ## Aliases
 
-| Alias | Resolves to |
-|---|---|
-| `@domain/*` | `ui/domain/*` |
+| Alias          | Resolves to      |
+| -------------- | ---------------- |
+| `@domain/*`    | `ui/domain/*`    |
 | `@generated/*` | `ui/generated/*` |
-| `@worker/*` | `ui/worker/*` |
-| `@ui-kit/*` | `ui/ui-kit/*` |
-| `@features/*` | `ui/features/*` |
-| `@app/*` | `ui/app/*` |
-| `@specs/*` | `ui/specs/*` |
-| `@i18n/*` | `ui/i18n/*` |
+| `@worker/*`    | `ui/worker/*`    |
+| `@ui-kit/*`    | `ui/ui-kit/*`    |
+| `@features/*`  | `ui/features/*`  |
+| `@app/*`       | `ui/app/*`       |
+| `@specs/*`     | `ui/specs/*`     |
+| `@i18n/*`      | `ui/i18n/*`      |
 
 Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts`
 (`getBaseConfig`, inherited by worker builds) and `vite.harness.mts`. Node's `package.json`
@@ -197,7 +197,7 @@ registerSpecConfig(def.spec, def)  →  new Sim  →  new Player  →  (enableHe
 sim.raid.setPlayer  →  new IndividualSimUI(document.body, player, def)
 ```
 
-**Ordering constraint:** `registerSpecConfig` must run *before* `new Player()`, which resolves
+**Ordering constraint:** `registerSpecConfig` must run _before_ `new Player()`, which resolves
 the spec's config out of the registry in its own constructor. This is the only place that
 ordering matters, and `spec_entry.ts` is the only place it is expressed.
 
@@ -220,7 +220,7 @@ subclass anywhere. Adding a spec is:
    image), which the spec page links unconditionally.
 
 The page itself is not one of the steps: there is no per-spec `index.html`, in the source tree or
-anywhere else. `ui/index_template.html` is the *one* spec page, and `tools/vite/spec_pages.mts`
+anywhere else. `ui/index_template.html` is the _one_ spec page, and `tools/vite/spec_pages.mts`
 (the `spec-pages` vite plugin) puts it at all 34 URLs — `configureServer` answers
 `/mop/<class>/<spec>/` and `.../index.html` with it through `transformIndexHtml` in dev, and a
 `post` `generateBundle` takes the page vite already processed, drops its own output path from the

@@ -24,12 +24,7 @@ export class APLNameModal extends BaseModal {
 		this.body.appendChild(
 			<div className="apl-name-modal-body">
 				<label className="form-label">{config.inputLabel}</label>
-				<input
-					type="text"
-					className="form-control"
-					ref={inputRef}
-					placeholder={config.inputPlaceholder || ''}
-				/>
+				<input type="text" className="form-control" ref={inputRef} placeholder={config.inputPlaceholder || ''} />
 				<div className="invalid-feedback" ref={errorRef} />
 			</div>,
 		);
@@ -49,8 +44,7 @@ export class APLNameModal extends BaseModal {
 			input.value = config.defaultValue;
 		}
 
-		const getExistingNames = () =>
-			typeof config.existingNames === 'function' ? config.existingNames() : config.existingNames;
+		const getExistingNames = () => (typeof config.existingNames === 'function' ? config.existingNames() : config.existingNames);
 
 		const validate = () => {
 			const name = input.value.trim();

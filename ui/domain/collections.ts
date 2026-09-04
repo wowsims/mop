@@ -3,7 +3,6 @@
 // @ts-expect-error
 import cloneDeep from 'lodash/cloneDeep';
 
-import { formatName, normalizeName } from './format';
 export const omitDeep = <T>(collection: T, excludeKeys: string[]): T => {
 	const clonedCollection = cloneDeep(collection);
 
@@ -47,28 +46,6 @@ export function stringComparator(a: string, b: string): number {
 		return 0;
 	}
 }
-
-// Sorts an objectArray by a property. Returns a new array.
-// Can be called recursively.
-export function sortByProperty(objArray: any[], prop: string, direct = 1) {
-	if (!Array.isArray(objArray)) throw new Error('FIRST ARGUMENT NOT AN ARRAY');
-	const clone = objArray.slice(0);
-	const propPath = prop.constructor === Array ? prop : prop.split('.');
-	clone.sort(function (a, b) {
-		for (const p in propPath) {
-			if (a[propPath[p]] && b[propPath[p]]) {
-				a = a[propPath[p]];
-				b = b[propPath[p]];
-			}
-		}
-		// convert numeric strings to integers
-		a = a.toString().match(/^\d+$/) ? +a : a;
-		b = b.toString().match(/^\d+$/) ? +b : b;
-		return a < b ? -1 * direct : a > b ? 1 * direct : 0;
-	});
-	return clone;
-}
-
 export function swap<T>(arr: Array<T>, i: number, j: number) {
 	[arr[i], arr[j]] = [arr[j], arr[i]];
 }
@@ -121,18 +98,4 @@ export function getEnumValues<E>(enumType: any): Array<E> {
 // Whether a click event was a right click.
 export const getEnumKeyFromValue = <T extends Record<string, string | number>>(enumObj: T, value: number): string | undefined => {
 	return (enumObj as any)[value];
-};
-
-export const findInputItemForEnum = <T extends Record<string, string | number>, U extends { name: string }>(
-	enumObj: T,
-	enumValue: number,
-	items: U[],
-): U | undefined => {
-	const targetEnumKey = getEnumKeyFromValue(enumObj, enumValue);
-	if (!targetEnumKey) {
-		return undefined;
-	}
-	return items.find(item => {
-		return normalizeName(item.name) === formatName(targetEnumKey);
-	});
 };

@@ -5,44 +5,6 @@ import { Input, InputConfig } from '../input';
 export interface StringPickerConfig<ModObject> extends InputConfig<ModObject, string> {
 	id: string;
 }
-
-// UI element for picking an arbitrary string field.
-export class StringPicker<ModObject> extends Input<ModObject, string> {
-	private readonly inputElem: HTMLSpanElement;
-
-	constructor(parent: HTMLElement, modObject: ModObject, config: StringPickerConfig<ModObject>) {
-		super(parent, 'string-picker-root', modObject, config);
-
-		this.inputElem = document.createElement('span');
-		this.inputElem.id = config.id;
-		this.inputElem.setAttribute('contenteditable', '');
-		this.inputElem.classList.add('string-picker-input');
-		this.rootElem.appendChild(this.inputElem);
-
-		this.init();
-
-		this.inputElem.addEventListener(
-			'input',
-			() => {
-				this.inputChanged();
-			},
-			{ signal: this.signal },
-		);
-	}
-
-	getInputElem(): HTMLElement {
-		return this.inputElem;
-	}
-
-	getInputValue(): string {
-		return this.inputElem.textContent || '';
-	}
-
-	setInputValue(newValue: string) {
-		this.inputElem.textContent = newValue;
-	}
-}
-
 interface AdaptiveStringPickerConfig<ModObject> extends InputConfig<ModObject, string> {
 	id: string;
 }

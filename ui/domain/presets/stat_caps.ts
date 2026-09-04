@@ -15,7 +15,8 @@ export const meleeHitExpertiseCaps = (expertiseCapPercent = 7.5): Stats => {
 
 // Expertise-only cap (no melee hit), used by specs whose rotation doesn't care about avoiding
 // misses but does care about avoiding dodges.
-export const expertiseCap = (expertiseCapPercent = 7.5): Stats => new Stats().withStat(Stat.StatExpertiseRating, expertiseCapPercent * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
+export const expertiseCap = (expertiseCapPercent = 7.5): Stats =>
+	new Stats().withStat(Stat.StatExpertiseRating, expertiseCapPercent * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
 
 // Spell hit cap, used by the default `statCaps` of most caster specs.
 export const spellHitCap = (spellHitCapPercent = 15): Stats => new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, spellHitCapPercent);

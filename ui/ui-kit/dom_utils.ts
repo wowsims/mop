@@ -9,17 +9,6 @@ export const fragmentToString = (element: Node | Element) => {
 	div.appendChild(element.cloneNode(true));
 	return div.innerHTML;
 };
-
-/** Escape text for safe insertion into HTML (e.g. attribute or text node via innerHTML). */
-export const encodeHTMLEntities = (text: string): string => {
-	const textArea = document.createElement('textarea');
-	textArea.textContent = text;
-	return textArea.innerHTML;
-};
-
-export function downloadJson(json: any, fileName: string) {
-	downloadString(JSON.stringify(json, null, 2), fileName);
-}
 export function downloadString(data: string, fileName: string) {
 	const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
 	const downloadAnchorNode = document.createElement('a');

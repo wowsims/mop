@@ -1,6 +1,6 @@
-import tippy from "tippy.js";
+import tippy from 'tippy.js';
 
-import { Component } from "./component";
+import { Component } from './component';
 
 export class TooltipButton extends Component {
 	constructor(parent: HTMLElement, tooltip: string, extraCssClasses: Array<string> = []) {

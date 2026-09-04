@@ -43,7 +43,13 @@ import { SimRequest } from '@worker/types';
 
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { makeBulkGearDatabase, makeBulkItemDatabaseFromSpecs } from './bulk/gear_database';
-import { BULK_CACHE_PROGRESS_CHECK_MODULO, BULK_CACHE_YIELD_BUDGET_MS, type BulkSimReforgeCacheProgress, getBulkSimReforgeCacheData, writeBulkSimReforgeCacheResults } from './bulk/reforge_cache';
+import {
+	BULK_CACHE_PROGRESS_CHECK_MODULO,
+	BULK_CACHE_YIELD_BUDGET_MS,
+	type BulkSimReforgeCacheProgress,
+	getBulkSimReforgeCacheData,
+	writeBulkSimReforgeCacheResults,
+} from './bulk/reforge_cache';
 import { throwIfAborted } from './bulk/utils';
 import { distinct, getEnumValues } from './collections';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
@@ -70,11 +76,6 @@ import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
 
 export const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
-export type StatWeightsData = {
-	request: StatWeightsRequest;
-	result: StatWeightsResult;
-};
-
 export type ReforgeOptimizeConfig = {
 	gear: Gear;
 	preCapEPWeights: Stats;

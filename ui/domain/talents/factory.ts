@@ -112,18 +112,3 @@ export function talentStringToProto<TalentsProto>(proto: TalentsProto, talentStr
 
 	return proto;
 }
-
-// Note that this function will fail if any of the talent names are not defined. TODO: Remove that condition
-// once all talents are migrated to wrath and use all fields.
-export function protoToTalentString<TalentsProto>(proto: TalentsProto, talentsConfig: TalentsConfig<TalentsProto>): string {
-	return talentsConfig.talents
-		.reduce<number[]>(
-			(acc, talent) => {
-				const value = proto[talent.fieldName as keyof TalentsProto];
-				if (value) acc[talent.location.rowIdx] = talent.location.colIdx;
-				return acc;
-			},
-			[...Array(6).fill(0)],
-		)
-		.join('');
-}

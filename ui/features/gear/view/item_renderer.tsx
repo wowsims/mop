@@ -74,11 +74,11 @@ export class ItemRenderer extends Component {
 					<div ref={socketsContainerElem} className="item-picker-sockets-container"></div>
 				</div>
 				<div className="item-picker-labels-container">
-						<div ref={nameContainerElem} className="item-picker-name-row d-flex gap-1">
-							<a ref={nameElem} className="item-picker-name-container" href="javascript:void(0)" attributes={{ role: 'button' }} />
-						</div>
-						<a ref={enchantElem} className="item-picker-enchant hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
-						<a ref={tinkerElem} className="item-picker-tinker hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
+					<div ref={nameContainerElem} className="item-picker-name-row d-flex gap-1">
+						<a ref={nameElem} className="item-picker-name-container" href="javascript:void(0)" attributes={{ role: 'button' }} />
+					</div>
+					<a ref={enchantElem} className="item-picker-enchant hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
+					<a ref={tinkerElem} className="item-picker-tinker hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
 					<a ref={reforgeElem} className="item-picker-reforge hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
 				</div>
 			</>,

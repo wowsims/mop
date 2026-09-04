@@ -33,13 +33,6 @@ export interface ResultMetricCategories {
 	healing: string;
 	threat: string;
 }
-
-export interface ResultsLineArgs {
-	average: number;
-	stdev?: number;
-	classes?: string;
-}
-
 export const resultMetricCategories: { [ResultMetrics: string]: keyof ResultMetricCategories } = {
 	dps: 'damage',
 	tps: 'threat',

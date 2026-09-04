@@ -43,30 +43,6 @@ export function formatDurationSeconds(seconds: number, options: FormatDurationSe
 	}
 	return `${remainingSeconds}${secondsSuffix}s`;
 }
-
-// Synchronous 64-bit string hash (FNV-1a paired with a djb2 variant). Collision-resistant
-// enough for local cache keys and content-derived seeds; unlike crypto.subtle it costs no
-// async round-trip.
-export function hexToRgba(hex: string, alpha: number): string {
-	if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-		let parts = hex.substring(1).split('');
-		if (parts.length == 3) {
-			parts = [parts[0], parts[0], parts[1], parts[1], parts[2], parts[2]];
-		}
-		const c: any = '0x' + parts.join('');
-		return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + alpha + ')';
-	}
-	throw new Error('Invalid hex color: ' + hex);
-}
-
-export function camelToSnakeCase(str: string): string {
-	let result = str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-	if (result.startsWith('_')) {
-		result = result.substring(1);
-	}
-	return result;
-}
-
 export function formatDeltaTextElem(
 	elem: HTMLElement,
 	before: number,
@@ -100,13 +76,6 @@ export function formatDeltaTextElem(
 		elem.classList.add('negative');
 	}
 }
-
-// Returns all N pick K permutations of the elements in arr of size N.
-export function htmlDecode(input: string) {
-	const doc = new DOMParser().parseFromString(input, 'text/html');
-	return doc.documentElement.textContent;
-}
-
 // JavaScript's built in modulo (%) has several issues. This is a fix that works similar to the intuitive way modulo works in most languages
 export const formatToCompactNumber: typeof formatToNumber = (number, options) => formatToNumber(number, { notation: 'compact', ...options });
 
