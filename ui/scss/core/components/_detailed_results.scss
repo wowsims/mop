@@ -51,6 +51,29 @@
 		padding-top: 0;
 		padding-bottom: 0;
 	}
+
+	// Panes whose content sizes itself from the pane rather than the other way round - a
+	// virtualised list, a canvas, a scroller - cannot use height:100%: every ancestor up to
+	// .sim-root is content-driven, so there is no definite height to resolve against, and the pane
+	// collapses to its own toolbar. They share one floor here instead of each inventing its own vh
+	// number or magic pixel offset. The panes that are just tables are left alone; a floor would
+	// only add whitespace under a short one.
+	> .tab-content > .tab-pane.dr-tab-content {
+		&.log-content,
+		&.timeline-content,
+		&.replay-content {
+			display: flex;
+			flex-direction: column;
+			min-height: var(--dr-filling-pane-min-height);
+
+			> .dr-row {
+				display: flex;
+				flex-direction: column;
+				flex: 1 1 auto;
+				min-height: 0;
+			}
+		}
+	}
 }
 
 .dr-toolbar {

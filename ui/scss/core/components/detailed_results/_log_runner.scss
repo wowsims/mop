@@ -3,12 +3,8 @@
 
 	display: flex;
 	flex-direction: column;
-	height: 100%;
-	// The tab pane has no definite height of its own, so height:100% alone resolves against
-	// nothing and the whole column collapses to the actions row - which does not look broken,
-	// it looks like an empty log, because the scroller keeps rendering its overscan rows.
-	// The floor is what master's `height: 70vh` on the scroller effectively provided.
-	min-height: 70vh;
+	flex: 1 1 auto;
+	min-height: 0;
 }
 
 .log-runner-actions {
@@ -104,15 +100,15 @@
 // global, so one rule covers both consumers. Each spacer only ever sets its own side's
 // property, so the unset side falls back to 0.
 .log-content {
-	height: 100%;
-
 	.dr-row {
-		height: 100%;
 		padding: 0;
+	}
 
-		.log {
-			height: 100%;
-		}
+	.log {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
 }
 

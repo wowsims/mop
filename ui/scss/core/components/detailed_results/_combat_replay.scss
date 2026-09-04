@@ -26,8 +26,8 @@
 .combat-replay-root {
 	display: flex;
 	flex-direction: column;
-	// Fill from the top of the tab content to the bottom of the viewport, with a 16px gap.
-	height: calc(100vh - 175px);
+	flex: 1 1 auto;
+	min-height: 0;
 	padding-bottom: 16px;
 	overflow: hidden;
 	background: var(--bs-body-bg);

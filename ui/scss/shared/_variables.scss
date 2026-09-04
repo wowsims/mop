@@ -238,6 +238,7 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 	--section-spacer: var(--section-spacer-sm);
 
 	--block-spacer: 0.75rem;
+	--dr-filling-pane-min-height: 70vh;
 	--gap-width: 1.5rem;
 	--gap-width-sm: 0.5rem;
 }

@@ -126,15 +126,15 @@
 }
 
 .timeline-content {
-	height: 100%;
-
 	.dr-row {
-		height: 100%;
 		padding: 0;
+	}
 
-		.timeline {
-			height: 100%;
-		}
+	.timeline {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
 }
 
