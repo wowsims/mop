@@ -1991,7 +1991,13 @@
 				},
 				"chart_options": {
 					"time_axis": "Time (s)",
-					"waiting_for_data": "Waiting for data..."
+					"waiting_for_data": "Waiting for data...",
+					"reset": "Reset zoom",
+					"zoom_in": "Zoom in",
+					"zoom_out": "Zoom out",
+					"pan_left": "Pan left",
+					"pan_right": "Pan right",
+					"chart_label": "DPS, threat and resources over time"
 				},
 				"tooltips": {
 					"dps": "DPS",

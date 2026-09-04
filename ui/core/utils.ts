@@ -13,12 +13,6 @@ export const existsInDOM = (element: HTMLElement | null) => document.body.contai
 
 export const cloneChildren = (element: HTMLElement) => [...(element.childNodes || [])].map(child => child.cloneNode(true));
 
-export const fragmentToString = (element: Node | Element) => {
-	const div = document.createElement('div');
-	div.appendChild(element.cloneNode(true));
-	return div.innerHTML;
-};
-
 /** Escape text for safe insertion into HTML (e.g. attribute or text node via innerHTML). */
 export const encodeHTMLEntities = (text: string): string => {
 	const textArea = document.createElement('textarea');
@@ -172,11 +166,6 @@ export function zTest(
 	const denom = Math.sqrt(Math.pow(err1, 2) + Math.pow(err2, 2));
 	const z = Math.abs(delta / denom);
 	return { z, isDiff: z > Z_95 };
-}
-
-// Returns the index of maximum value, or null if empty.
-export function maxIndex(arr: Array<number>): number | null {
-	return arr.reduce((cur, v, i, arr) => (v > arr[cur] ? i : cur), 0);
 }
 
 // Swaps two elements in the given array.

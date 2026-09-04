@@ -7000,10 +7000,28 @@
 										},
 										"waiting_for_data": {
 											"type": "string"
+										},
+										"reset": {
+											"type": "string"
+										},
+										"zoom_in": {
+											"type": "string"
+										},
+										"zoom_out": {
+											"type": "string"
+										},
+										"pan_left": {
+											"type": "string"
+										},
+										"pan_right": {
+											"type": "string"
+										},
+										"chart_label": {
+											"type": "string"
 										}
 									},
 									"additionalProperties": false,
-									"required": ["time_axis", "waiting_for_data"]
+									"required": ["time_axis", "waiting_for_data", "reset", "zoom_in", "zoom_out", "pan_left", "pan_right", "chart_label"]
 								},
 								"tooltips": {
 									"type": "object",

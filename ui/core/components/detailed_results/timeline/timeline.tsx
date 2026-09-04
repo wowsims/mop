@@ -11,18 +11,10 @@ import SecondaryResource from '../../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../../proto_utils/sim_result';
 import { orderedResourceTypes } from '../../../proto_utils/utils';
 import { TypedEvent } from '../../../typed_event';
-import { bucket, fragmentToString, stringComparator } from '../../../utils';
+import { bucket, stringComparator } from '../../../utils';
 import { ResultComponent, SimResultData } from '../result_component';
-import {
-	addDpsSeries,
-	addDpsYAxis,
-	addMajorCooldownAnnotations,
-	addManaSeries,
-	addResourceSeries,
-	addThreatSeries,
-	addThreatYAxis,
-	attachUnmappedSeriesToFirstAxis,
-} from './chart_series';
+import { multiPlayerChartSpec, singlePlayerChartSpec } from './chart/build';
+import { TimelineChart } from './chart/timeline_chart';
 import { ChartViewPicker } from './chart_view_picker';
 import {
 	auraAsResource,
@@ -34,22 +26,15 @@ import {
 	percentageResources,
 	ROW_WINDOW_PADDING_PX,
 	SPELL_ACTION_CATEGORY,
-	THREAT_SERIES_NAME,
 } from './constants';
-import { resourceTooltipElem } from './tooltip_content';
+import { resourceTooltip } from './tooltip_content';
 import { addTooltip, delegateTooltips } from './tooltips';
-import { RotationSlot, TimelineConfig, TooltipHandler } from './types';
+import { RotationSlot, TimelineConfig } from './types';
 import { WindowedRow } from './windowed_row';
 
 export class Timeline extends ResultComponent {
 	private readonly dpsResourcesPlotElem: HTMLElement;
-	// Built on first use. ApexCharts is ~560 KB of the per-page chunk and is only needed once
-	// someone switches the Timeline away from the rotation view, so it is imported then.
-	private dpsResourcesPlot: any;
-	private chartPromise: Promise<any> | null = null;
-	// Threat is off by default in the single-player view - it is rarely what anyone opened the
-	// chart for in MoP - but a legend click sticks for the rest of the session.
-	private showThreatSeries = false;
+	private readonly chart: TimelineChart;
 
 	private readonly rotationPlotElem: HTMLElement;
 	private readonly rotationLabels: HTMLElement;
@@ -85,6 +70,7 @@ export class Timeline extends ResultComponent {
 		this.hiddenIds = [];
 		this.addOnDisposeCallback(() => {
 			if (this.rowWindowFrame != null) cancelAnimationFrame(this.rowWindowFrame);
+			this.chart.dispose();
 			this.reset();
 		});
 		this.secondaryResource = config.secondaryResource;
@@ -161,6 +147,7 @@ export class Timeline extends ResultComponent {
 		this.chartPicker.onChange(() => this.onChartPickerSelectHandler());
 
 		this.dpsResourcesPlotElem = dpsResourcesPlotRef.value!;
+		this.chart = new TimelineChart(this.dpsResourcesPlotElem);
 
 		this.rotationPlotElem = rotationPlotRef.value!;
 		this.rotationLabels = rotationLabelsRef.value!;
@@ -209,6 +196,7 @@ export class Timeline extends ResultComponent {
 		const showRotation = this.chartPicker.value === 'rotation';
 		this.dpsResourcesPlotElem.classList.toggle('hide', showRotation);
 		this.rotationPlotElem.classList.toggle('hide', !showRotation);
+		this.chart.setVisible(!showRotation);
 	}
 
 	onChartPickerSelectHandler() {
@@ -248,91 +236,19 @@ export class Timeline extends ResultComponent {
 		// or parked in the cache.
 		const key = this.resultKey(!singlePlayer);
 		const hit = this.liveSlot?.key === key ? this.liveSlot : this.parkedSlot?.key === key ? this.parkedSlot : null;
-		if (hit?.plotOptions) {
+		if (hit?.chartSpec) {
 			if (hit !== this.liveSlot) {
 				this.parkedSlot = null;
 				this.stashLiveSlot();
 				this.attachSlot(hit);
 			}
 			this.setRotationOptionVisible(singlePlayer);
-			this.applyChartOptions(hit.plotOptions);
+			this.chart.render(hit.chartSpec);
 			return;
 		}
 
 		const duration = this.resultData!.result.result.firstIterationDuration || 1;
-		const options: any = {
-			theme: {
-				mode: 'dark',
-			},
-			series: [],
-			colors: [],
-			// updateOptions deep-merges, so any key an options object omits keeps the value the
-			// previous chart left behind. addResourceSeries writes per-series stroke arrays;
-			// without a default here they would survive into the next chart, which has a
-			// different series count, and render unrelated lines thin and dashed.
-			stroke: {
-				curve: 'straight',
-				width: 2,
-				dashArray: 0,
-			},
-			xaxis: {
-				min: 0,
-				max: duration,
-				tickAmount: 10,
-				decimalsInFloat: 1,
-				labels: {
-					show: true,
-				},
-				title: {
-					text: 'Time (s)',
-				},
-			},
-			yaxis: [],
-			chart: {
-				events: {
-					legendClick: (_chart: any, seriesIndex: number, config: any) => {
-						if (config?.globals?.seriesNames?.[seriesIndex] === THREAT_SERIES_NAME) {
-							this.showThreatSeries = !this.showThreatSeries;
-						}
-					},
-					beforeResetZoom: () => {
-						return {
-							xaxis: {
-								min: 0,
-								max: duration,
-							},
-						};
-					},
-				},
-				toolbar: {
-					show: true,
-					tools: {
-						// Download opens a menu and is not what was asked for; the rest are the
-						// pan/zoom/reset controls.
-						download: false,
-						selection: true,
-						zoom: true,
-						zoomin: true,
-						zoomout: true,
-						pan: true,
-						reset: true,
-					},
-					autoSelected: 'zoom',
-				},
-			},
-		};
-
-		let tooltipHandlers: Array<TooltipHandler | null> = [];
-		options.tooltip = {
-			enabled: true,
-			custom: (data: { series: any; seriesIndex: number; dataPointIndex: number; w: any }) => {
-				if (tooltipHandlers[data.seriesIndex]) {
-					return fragmentToString(tooltipHandlers[data.seriesIndex]!(data.dataPointIndex));
-				} else {
-					throw new Error('No tooltip handler for series ' + data.seriesIndex);
-				}
-			},
-		};
+		let spec;
 
 		if (singlePlayer) {
 			const player = players[0];
@@ -350,16 +266,7 @@ export class Timeline extends ResultComponent {
 				return;
 			}
 
-			const dpsData = addDpsSeries(player, options, '');
-			addDpsYAxis(dpsData.maxDps, options);
-			tooltipHandlers.push(dpsData.tooltipHandler);
-			tooltipHandlers.push(addManaSeries(player, options));
-			tooltipHandlers.push(addThreatSeries(player, options, ''));
-			tooltipHandlers.push(...addResourceSeries(player, options, this.secondaryResource));
-			attachUnmappedSeriesToFirstAxis(options);
-			tooltipHandlers = tooltipHandlers.filter(handler => !!handler);
-
-			addMajorCooldownAnnotations(player, options);
+			spec = singlePlayerChartSpec(player, duration, this.secondaryResource);
 		} else {
 			this.setRotationOptionVisible(false);
 
@@ -368,27 +275,11 @@ export class Timeline extends ResultComponent {
 			// No rotation subtree, but the (expensive) per-player series are worth caching for swaps.
 			this.liveSlot = Timeline.newSlot(key);
 
-			if (this.chartPicker.value == 'dps') {
-				let maxDps = 0;
-				players.forEach(player => {
-					const dpsData = addDpsSeries(player, options, `var(--bs-${player.classColor}`);
-					maxDps = Math.max(maxDps, dpsData.maxDps);
-					tooltipHandlers.push(dpsData.tooltipHandler);
-				});
-				addDpsYAxis(maxDps, options);
-			} else {
-				// threat
-				let maxThreat = 0;
-				players.forEach(player => {
-					tooltipHandlers.push(addThreatSeries(player, options, player.classColor));
-					maxThreat = Math.max(maxThreat, player.maxThreat);
-				});
-				addThreatYAxis(maxThreat, options);
-			}
+			spec = multiPlayerChartSpec(players, duration, this.chartPicker.value == 'dps' ? 'dps' : 'threat');
 		}
 
-		if (this.liveSlot?.key === key) this.liveSlot.plotOptions = options;
-		this.applyChartOptions(options);
+		if (this.liveSlot?.key === key) this.liveSlot.chartSpec = spec;
+		this.chart.render(spec);
 	}
 
 	private clearRotationChart() {
@@ -786,7 +677,7 @@ export class Timeline extends ResultComponent {
 						resourceElem.textContent = Math.floor(resourceLogGroup.valueAfter).toFixed(0);
 					}
 				}
-				addTooltip(resourceElem, () => resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false));
+				addTooltip(resourceElem, () => resourceTooltip(resourceLogGroup, startValue(resourceLogGroup), false));
 				return resourceElem;
 			});
 		});
@@ -1058,99 +949,6 @@ export class Timeline extends ResultComponent {
 		this.updatePlot();
 	}
 
-	// ApexCharts positions its tooltip against the plot and never considers the window, so a
-	// large one hangs off the screen near an edge. It is free to overlay the rest of the page
-	// - it just may not leave the window - so nudge it back after each positioning pass
-	// rather than confining it to the chart.
-	private keepTooltipInWindow() {
-		const padding = 8;
-		const clamp = () => {
-			const tooltip = this.dpsResourcesPlotElem.querySelector<HTMLElement>('.apexcharts-tooltip.apexcharts-active');
-			if (!tooltip) return;
-
-			const rect = tooltip.getBoundingClientRect();
-			if (!rect.width && !rect.height) return;
-
-			let dx = 0;
-			let dy = 0;
-			if (rect.right > window.innerWidth - padding) dx = window.innerWidth - padding - rect.right;
-			if (rect.left + dx < padding) dx = padding - rect.left;
-			if (rect.bottom > window.innerHeight - padding) dy = window.innerHeight - padding - rect.bottom;
-			if (rect.top + dy < padding) dy = padding - rect.top;
-			// Writing these triggers the observer again; it settles because the second pass
-			// finds nothing left to correct.
-			if (dx) tooltip.style.left = `${(parseFloat(tooltip.style.left) || 0) + dx}px`;
-			if (dy) tooltip.style.top = `${(parseFloat(tooltip.style.top) || 0) + dy}px`;
-		};
-
-		const observer = new MutationObserver(clamp);
-		observer.observe(this.dpsResourcesPlotElem, { subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
-		this.addOnDisposeCallback(() => observer.disconnect());
-	}
-
-	// Loads, constructs and renders the chart the first time it is actually shown. Rendering
-	// it into the hidden container used to lay it out at zero width, and importing ApexCharts
-	// eagerly put it in every page's bundle whether or not the chart was ever opened.
-	private chartReady(): Promise<any> {
-		if (!this.chartPromise) {
-			this.chartPromise = import('apexcharts').then(module => {
-				const ApexCharts = module.default;
-				this.dpsResourcesPlot = new ApexCharts(this.dpsResourcesPlotElem, {
-					chart: {
-						animations: {
-							enabled: false,
-						},
-						background: 'transparent',
-						foreColor: 'white',
-						height: '100%',
-						id: 'dpsResources',
-						type: 'line',
-						zoom: {
-							enabled: true,
-							allowMouseWheelZoom: false,
-						},
-					},
-					series: [], // Set dynamically
-					xaxis: {
-						title: {
-							text: i18n.t('results_tab.details.timeline.chart_options.time_axis'),
-						},
-					},
-					noData: {
-						text: i18n.t('results_tab.details.timeline.chart_options.waiting_for_data'),
-					},
-					stroke: {
-						width: 2,
-						curve: 'straight',
-					},
-				});
-				this.dpsResourcesPlot.render();
-				this.keepTooltipInWindow();
-				return this.dpsResourcesPlot;
-			});
-		}
-		return this.chartPromise;
-	}
-
-	// Applies options once the chart exists, keeping updates in order.
-	private applyChartOptions(options: any) {
-		const hideThreat =
-			!this.showThreatSeries &&
-			options.series.some((series: any) => series.name === THREAT_SERIES_NAME) &&
-			options.series.some((series: any) => series.name !== THREAT_SERIES_NAME);
-		this.chartPromise = this.chartReady()
-			.then(async chart => {
-				await chart.updateOptions(options);
-				// updateOptions resets legend state, so re-apply the default each time.
-				if (hideThreat) chart.hideSeries(THREAT_SERIES_NAME);
-				return chart;
-			})
-			.catch(error => {
-				console.error('Failed to update the timeline chart: ', error);
-				return this.dpsResourcesPlot;
-			});
-	}
-
 	// Per-render resources (tooltips, listeners) belong to the slot being
 	// rendered so a parked slot can be destroyed independently. Rows are only
 	// ever built under a live slot (see updateRotationChart).
@@ -1172,7 +970,7 @@ export class Timeline extends ResultComponent {
 	}
 
 	private static newSlot(key: string): RotationSlot {
-		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null, windowedRows: [] };
+		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], chartSpec: null, windowedRows: [] };
 	}
 
 	private takeParkedSlot(key: string): RotationSlot | null {

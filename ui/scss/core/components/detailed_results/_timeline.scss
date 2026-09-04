@@ -118,19 +118,6 @@
 	&.dps-resources-plot {
 		height: 32rem;
 	}
-
-	.apexcharts-tooltip.apexcharts-theme-dark {
-		z-index: 1000;
-		box-shadow: none;
-		border-radius: 0;
-		background-color: var(--bs-tooltip-bg);
-		border: var(--bs-tooltip-border) 1px solid;
-		color: var(--bs-tooltip-body-color);
-		padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
-		max-width: min(94vw, 68rem);
-		max-height: 80vh;
-		overflow: hidden;
-	}
 }
 
 .timeline-tooltip {

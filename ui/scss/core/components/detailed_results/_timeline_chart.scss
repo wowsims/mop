@@ -1,0 +1,41 @@
+.timeline-chart {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: var(--spacer-2);
+}
+
+.timeline-chart-toolbar {
+	width: auto;
+	margin-left: auto;
+	flex-shrink: 0;
+	align-self: flex-start;
+}
+
+.timeline-chart-canvas {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+}
+
+.timeline-chart-empty {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+}
+
+.timeline-chart-tooltip {
+	position: fixed;
+	left: calc(var(--tooltip-x, 0) * 1px);
+	top: calc(var(--tooltip-y, 0) * 1px);
+	z-index: 1000;
+	pointer-events: none;
+	background-color: var(--bs-tooltip-bg);
+	border: var(--bs-tooltip-border) 1px solid;
+	color: var(--bs-tooltip-body-color);
+	padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+	max-width: min(94vw, 68rem);
+	max-height: 80vh;
+	overflow: hidden;
+}
