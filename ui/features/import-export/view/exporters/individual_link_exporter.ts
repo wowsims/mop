@@ -1,5 +1,5 @@
+import { arrayEquals, getEnumValues } from '@domain/collections';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
-import { arrayEquals, getEnumValues } from '@domain/utils';
 import { Spec } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';

@@ -1,4 +1,4 @@
-import { formatDurationSeconds } from '@domain/utils';
+import { formatDurationSeconds } from '@domain/format';
 import i18n from '@i18n/config';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';

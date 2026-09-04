@@ -1,9 +1,9 @@
+import { isRightClick } from '@domain/env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { TalentConfig, TalentLocation, TalentsConfig, TalentTreeConfig } from '@domain/talents/config';
 import { classGlyphsConfig } from '@domain/talents/factory';
-import { isRightClick } from '@domain/utils';
 import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import { Class, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';

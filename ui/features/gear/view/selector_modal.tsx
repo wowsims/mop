@@ -1,10 +1,12 @@
+import { sanitizeId } from '@domain/format';
+import { mod } from '@domain/math';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { Stats } from '@domain/proto_utils/stats';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
-import { mod, randomUUID, sanitizeId } from '@domain/utils';
+import { randomUUID } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
 import { GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, Profession } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';

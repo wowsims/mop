@@ -8,8 +8,8 @@ import {
 	RaidSimResultCombinationRequest,
 } from '@generated/proto/api';
 
+import { isDevMode } from '../env';
 import { SimSignals } from '../sim_signal_manager';
-import { isDevMode } from '../utils';
 import { WorkerPool, WorkerProgressCallback } from '../worker_pool';
 
 class ConcurrentSimProgress {

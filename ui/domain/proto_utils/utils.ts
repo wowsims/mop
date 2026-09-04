@@ -155,12 +155,12 @@ import {
 	WarriorTalents,
 } from '@generated/proto/warrior';
 
+import { getEnumValues, intersection, swap } from '../collections';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { PlayerClass } from '../player_class';
 import { PlayerClasses } from '../player_classes';
 import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
-import { getEnumValues, intersection, swap } from '../utils';
 import { Database } from './database';
 import type { SpecOptions, SpecTypeFunctions } from './spec_types';
 import { UnknownRotation, UnknownSpecOptions, UnknownTalents } from './spec_types';

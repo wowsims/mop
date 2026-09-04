@@ -43,10 +43,12 @@ import {
 	UIItem_FactionRestriction,
 } from '@generated/proto/ui';
 
+import { omitDeep, stringComparator } from './collections';
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
 import { SimSettingCategories } from './constants/sim_settings';
 import { ItemSwapSettings } from './item_swap_settings';
+import { sum } from './math';
 import { MAX_PARTY_SIZE, Party } from './party';
 import { PlayerClass } from './player_class';
 import { PlayerSpec } from './player_spec';
@@ -80,7 +82,6 @@ import { batch } from './state/batch';
 import { deleteKeyed, patchKeyed, PLAYER_FIELDS, PlayerField, PlayerSlice, seedKeyed, zeroVersions } from './state/sim_store';
 import { subscribePlayerField } from './state/subscriptions';
 import { playerTalentStringToProto } from './talents/factory';
-import { omitDeep, stringComparator, sum } from './utils';
 import { WorkerProgressCallback } from './worker_pool';
 
 export interface AuraStats {

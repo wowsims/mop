@@ -1,4 +1,4 @@
-import { arrayEquals } from '@domain/utils';
+import { arrayEquals } from '@domain/collections';
 
 import { Input, InputConfig } from '../input';
 /**

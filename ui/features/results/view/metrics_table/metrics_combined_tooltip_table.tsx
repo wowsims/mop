@@ -1,4 +1,4 @@
-import { formatToCompactNumber } from '@domain/utils';
+import { formatToCompactNumber } from '@domain/format';
 import { SpellSchool } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import clsx from 'clsx';

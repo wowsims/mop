@@ -16,7 +16,11 @@ import {
 	getBulkPlayerCanDualWield,
 } from '@domain/bulk/utils';
 import { BulkSettingsStore } from '@domain/bulk_settings';
+import { getEnumValues } from '@domain/collections';
 import { REPO_RELEASES_URL } from '@domain/constants/other';
+import { isDevMode } from '@domain/env';
+import { formatDurationSeconds, formatToNumber } from '@domain/format';
+import { Z_95, zTest } from '@domain/math';
 import { isSpecDualWield2HCapable } from '@domain/player_classes/capabilities';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Gear } from '@domain/proto_utils/gear';
@@ -25,7 +29,6 @@ import { RelativeStatCap } from '@domain/reforge_settings';
 import { ReforgeOptimizeConfig } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
-import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, Z_95, zTest } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
 import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';

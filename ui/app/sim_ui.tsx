@@ -1,4 +1,5 @@
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
+import { isDevMode } from '@domain/env';
 import { PlayerSpec, SimStatus } from '@domain/player_spec';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Gear } from '@domain/proto_utils/gear';
@@ -7,7 +8,6 @@ import { RunSimOptions, Sim, SimError } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
-import { isDevMode } from '@domain/utils';
 import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';

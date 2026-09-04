@@ -1,13 +1,13 @@
 import { Raid as RaidProto } from '@generated/proto/api';
 import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 
+import { sum } from './math';
 import { MAX_PARTY_SIZE, Party } from './party';
 import { Player } from './player';
 import { Sim } from './sim';
 import { batch } from './state/batch';
 import type { RaidSlice } from './state/sim_store';
 import { shallowArrayEquals } from './state/subscriptions';
-import { sum } from './utils';
 export const MAX_NUM_PARTIES = 5;
 
 // Manages all the settings for a single Raid.

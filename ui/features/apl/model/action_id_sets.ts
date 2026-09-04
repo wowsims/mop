@@ -1,6 +1,6 @@
+import { bucket } from '@domain/collections';
 import { UnitMetadata } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { bucket } from '@domain/utils';
 import { OtherAction } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { DropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';

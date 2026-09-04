@@ -1,9 +1,10 @@
+import { formatToNumber } from '@domain/format';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { ClassOptions, SpecOptions, SpecRotation } from '@domain/proto_utils/spec_types';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { subscribePlayerField } from '@domain/state/subscriptions';
-import { formatToNumber, randomUUID } from '@domain/utils';
+import { randomUUID } from '@domain/utils';
 import { Spec } from '@generated/proto/common';
 
 import { BooleanPickerConfig } from './pickers/boolean_picker';

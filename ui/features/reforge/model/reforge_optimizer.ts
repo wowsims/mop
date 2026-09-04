@@ -2,6 +2,7 @@
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
 // ../view/reforge_panel.tsx and owns every button, tooltip, toast and modal.
 import * as Mechanics from '@domain/constants/mechanics';
+import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
 import { Gear } from '@domain/proto_utils/gear';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
@@ -12,7 +13,6 @@ import type { ReforgeOptimizeConfig, Sim } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/state/reforge_request';
 import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
-import { isDevMode } from '@domain/utils';
 import type { IndividualSimUIConfig } from '@features/spec_config';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { Class, ItemSlot, Spec, Stat } from '@generated/proto/common';

@@ -1,3 +1,4 @@
+import { getEnumValues } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
@@ -11,7 +12,6 @@ import {
 	subscribePlayerField,
 	subscribeRaidField,
 } from '@domain/state/subscriptions';
-import { getEnumValues } from '@domain/utils';
 import { EncounterPicker } from '@features/encounter/view/encounter_picker';
 import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';

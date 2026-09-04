@@ -1,5 +1,5 @@
+import { getEnumValues } from '@domain/collections';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
-import { getEnumValues } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
 import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';

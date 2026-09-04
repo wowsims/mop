@@ -17,8 +17,8 @@ import { SpellEffect } from '@generated/proto/spell';
 import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache_handler';
+import { distinct } from '../collections';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
-import { distinct } from '../utils';
 import { WOWHEAD_EXPANSION_ENV } from '../wowhead';
 import { EquippedItem } from './equipped_item';
 import { Gear, ItemSwapGear } from './gear';

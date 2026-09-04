@@ -1,7 +1,7 @@
+import { isDevMode } from '@domain/env';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { Emitter } from '@domain/state/events';
 import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
-import { isDevMode } from '@domain/utils';
 import type { IndividualSimHost, SimHost } from '@features/sim_host';
 import { SimRun, SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';

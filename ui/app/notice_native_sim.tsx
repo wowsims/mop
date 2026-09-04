@@ -1,6 +1,6 @@
 import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '@domain/constants/other';
+import { isDevMode } from '@domain/env';
 import { Sim } from '@domain/sim';
-import { isDevMode } from '@domain/utils';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import Toast from '@ui-kit/toast';

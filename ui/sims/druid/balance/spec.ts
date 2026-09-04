@@ -1,9 +1,9 @@
 import * as Mechanics from '@domain/constants/mechanics';
+import { formatToNumber } from '@domain/format';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { formatToNumber } from '@domain/utils';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 import { StatCapType } from '@generated/proto/api';

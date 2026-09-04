@@ -1,5 +1,6 @@
+import { getEnumValues } from '@domain/collections';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
-import { getEnumValues, jsonStringifyWithFlattenedPaths } from '@domain/utils';
+import { jsonStringifyWithFlattenedPaths } from '@domain/utils';
 import { Spec } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';

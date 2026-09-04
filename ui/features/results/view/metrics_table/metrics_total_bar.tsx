@@ -1,5 +1,5 @@
+import { formatToCompactNumber, formatToPercent } from '@domain/format';
 import { spellSchoolNames } from '@domain/proto_utils/names';
-import { formatToCompactNumber, formatToPercent } from '@domain/utils';
 import { SpellSchool } from '@generated/proto/common';
 import clsx from 'clsx';
 

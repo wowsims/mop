@@ -1,4 +1,5 @@
 import { SortDirection } from '@domain/constants/other';
+import { formatDeltaTextElem } from '@domain/format';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { getUniqueEnchantString } from '@domain/proto_utils/enchants';
@@ -7,7 +8,6 @@ import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTE
 import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/utils';
 import { Sim } from '@domain/sim';
 import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
-import { formatDeltaTextElem } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
 import { isIndividualSimHost } from '@features/sim_host';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@generated/proto/common';

@@ -2,8 +2,8 @@ import { BulkGearCandidate, BulkSimRequest, BulkSimStage, ReforgeOptimizeMode, R
 import { EquipmentSpec } from '@generated/proto/common';
 import { queue } from 'async';
 
+import { formatDurationSeconds } from '../../format';
 import { SimSignals } from '../../sim_signal_manager';
-import { formatDurationSeconds } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { optimizeReforgeGear, reforgeGearKey } from '../reforge_optimizer';
 import { makeBulkSimStageProgressEmitter } from './progress';

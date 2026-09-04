@@ -1,6 +1,6 @@
 import { DistributionMetrics } from '@generated/proto/api';
 
-import { Z_95 } from '../../utils';
+import { Z_95 } from '../../math';
 import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants_auto_gen';
 import { getBulkSimStageMaxSurvivors } from './stage';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig } from './types';

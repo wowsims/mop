@@ -1,6 +1,6 @@
+import { isRightClick } from '@domain/env';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
-import { isRightClick } from '@domain/utils';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import { ref } from 'tsx-vanilla';
 

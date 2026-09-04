@@ -19,9 +19,10 @@ import { ResourceType } from '@generated/proto/spell';
 import { SimRun } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache_handler';
+import { bucket } from '../collections';
+import { sum } from '../math';
 import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
-import { bucket, sum } from '../utils';
 import { ActionId, defaultTargetIcon } from './action_id';
 import { AuraUptimeLog, CastLog, DamageDealtLog, DpsLog, Entity, MajorCooldownUsedLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from './logs';
 import { getPlayerSpecFromPlayer } from './utils';

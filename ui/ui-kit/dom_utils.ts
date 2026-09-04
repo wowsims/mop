@@ -1,6 +1,6 @@
 // DOM helpers lifted out of ui/domain/utils.ts: they read `document` or the
 // page location directly, which ui/domain is not allowed to do.
-import { environmentOf, Environments } from '@domain/utils';
+import { environmentOf, Environments } from '@domain/env';
 
 export const existsInDOM = (element: HTMLElement | null) => document.body.contains(element);
 

@@ -1,4 +1,6 @@
 import { CacheHandler } from '@domain/cache_handler';
+import { bucket, distinct, stringComparator } from '@domain/collections';
+import { maxIndex } from '@domain/math';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@domain/proto_utils/action_id';
 import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@domain/proto_utils/logs';
 import { resourceNames } from '@domain/proto_utils/names';
@@ -6,7 +8,6 @@ import SecondaryResource from '@domain/proto_utils/secondary_resource';
 import { UnitMetrics } from '@domain/proto_utils/sim_result';
 import { orderedResourceTypes } from '@domain/proto_utils/utils';
 import { Emitter } from '@domain/state/events';
-import { bucket, distinct, maxIndex, stringComparator } from '@domain/utils';
 import {
 	auraAsResource,
 	DEFAULT_ACTION_CATEGORY,

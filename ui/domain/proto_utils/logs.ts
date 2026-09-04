@@ -5,7 +5,8 @@ import { RaidSimResult } from '@generated/proto/api';
 import { SpellSchool } from '@generated/proto/common';
 import { ResourceType, SecondaryResourceType } from '@generated/proto/spell';
 
-import { bucket, getEnumValues, stringComparator, sum } from '../utils';
+import { bucket, getEnumValues, stringComparator } from '../collections';
+import { sum } from '../math';
 import { ActionId } from './action_id';
 import { stringToResourceType } from './names';
 

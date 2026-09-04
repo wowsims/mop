@@ -5,12 +5,12 @@ import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeR
 import { Debuffs, GemColor, ItemQuality, PartyBuffs, Profession, RaidBuffs } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
 
+import { distinct } from '../collections';
 import { SimSettingCategories } from '../constants/sim_settings';
 import type { Player } from '../player';
 import { Database } from '../proto_utils/database';
 import { ReforgeGearCache } from '../reforge_cache';
 import type { ReforgeOptimizeConfig } from '../sim';
-import { distinct } from '../utils';
 
 // The player state a reforge solve depends on: the listed setting categories, plus bonus
 // stats and item-swap config, minus fields that are either keyed separately (equipment),

@@ -1,3 +1,4 @@
+import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Gear } from '@domain/proto_utils/gear';
@@ -6,7 +7,6 @@ import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@domain/state/subscriptions';
-import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import type { ActionGroupItem, IndividualSimHost } from '@features/sim_host';
 import { ReforgeSettings, StatCapType } from '@generated/proto/api';

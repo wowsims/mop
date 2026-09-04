@@ -1,9 +1,10 @@
 import { CacheHandler } from '@domain/cache_handler';
+import { getEnumValues } from '@domain/collections';
 import { Player, UnitMetadata } from '@domain/player';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
-import { getEnumValues, randomUUID } from '@domain/utils';
+import { randomUUID } from '@domain/utils';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,

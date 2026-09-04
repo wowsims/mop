@@ -52,8 +52,10 @@ import {
 	throwIfAborted,
 	writeBulkSimReforgeCacheResults,
 } from './bulk/utils';
+import { distinct, getEnumValues } from './collections';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
+import { environmentOf } from './env';
 import { Player, UnitMetadata } from './player';
 import { Database } from './proto_utils/database';
 import { Gear } from './proto_utils/gear';
@@ -68,7 +70,7 @@ import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
 import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
-import { distinct, environmentOf, getEnumValues, hashString, noop, sleep } from './utils';
+import { hashString, noop, sleep } from './utils';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
 

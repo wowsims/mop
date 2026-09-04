@@ -1,7 +1,8 @@
+import { sum } from '@domain/math';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { AuraEventLog, SimLog, SimLogParams } from '@domain/proto_utils/logs';
 import { RequestTypes } from '@domain/sim_signal_manager';
-import { sleep, sum } from '@domain/utils';
+import { sleep } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
 import { ProgressMetrics, RaidSimResult } from '@generated/proto/api';
 import { Spec } from '@generated/proto/common';

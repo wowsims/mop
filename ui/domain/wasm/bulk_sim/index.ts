@@ -10,8 +10,8 @@ import {
 } from '@generated/proto/api';
 import { EquipmentSpec } from '@generated/proto/common';
 
+import { isDevMode } from '../../env';
 import { SimSignals } from '../../sim_signal_manager';
-import { isDevMode } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { BulkSimCandidateTransport, runSingleBulkSimCandidate } from './batch';
 import { ConcurrentBulkSimStageCarryOver, newBulkSimStageCarryOver } from './carry_over';

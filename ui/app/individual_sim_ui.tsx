@@ -1,4 +1,5 @@
 import { SimSettingCategories } from '@domain/constants/sim_settings';
+import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
 import { getMetaGemConditionDescription } from '@domain/proto_utils/gems';
@@ -16,7 +17,6 @@ import {
 } from '@domain/state/serialization';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
-import { isDevMode } from '@domain/utils';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { CharacterStats } from '@features/character-stats/view/character_stats';
 import { ItemNotice } from '@features/gear/view/item_notice';

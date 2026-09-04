@@ -1,7 +1,7 @@
 import { GemColor, Profession, Stat } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
 
-import { getEnumValues } from '../utils';
+import { getEnumValues } from '../collections';
 
 export const GEM_COLORS = (getEnumValues(GemColor) as Array<GemColor>).filter(color => color != GemColor.GemColorUnknown);
 export const PRIMARY_COLORS = [GemColor.GemColorRed, GemColor.GemColorYellow, GemColor.GemColorBlue];
