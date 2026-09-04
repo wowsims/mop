@@ -32,8 +32,6 @@ export class CacheHandler<T> {
 		if (this.keysToKeep) this.keepMostRecent();
 	}
 
-	// Map iterates in insertion order, so the oldest key is simply the first one. Building
-	// the full key array here cost an allocation on every set once the cap was reached.
 	private keepMostRecent() {
 		if (!this.keysToKeep) return;
 		while (this.data.size > this.keysToKeep) {

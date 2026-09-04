@@ -241,7 +241,6 @@ export default class ItemList<T extends ItemListType> {
 			},
 			estimatedRowHeight: 56,
 			rowTag: 'li',
-			// The list is striped with :nth-child, so the window has to keep its parity.
 			keepParity: true,
 		});
 
@@ -282,7 +281,6 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	public sizeRefresh() {
-		// applyFilters() ends in scroller.update(), which is a full rebuild.
 		this.applyFilters();
 	}
 

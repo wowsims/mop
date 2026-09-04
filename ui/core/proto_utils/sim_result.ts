@@ -388,10 +388,6 @@ export class UnitMetrics {
 
 	readonly logs: Array<SimLog>;
 
-	// Derived views over `logs`. Each is read by roughly one tab, and a result carries one
-	// UnitMetrics per player, pet and target, so building them up front costs the whole
-	// raid's worth of work whether or not anything displays it. Built on first read
-	// instead, and memoized because the tabs re-read them on every filter change.
 	private readonly firstIterationDuration: number;
 	private memoDamageDealtLogs?: Array<DamageDealtLog>;
 	private memoGroupedResourceLogs?: Record<ResourceType, Array<ResourceChangedLogGroup>>;
