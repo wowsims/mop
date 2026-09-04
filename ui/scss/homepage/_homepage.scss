@@ -16,8 +16,7 @@
 	flex-direction: column;
 
 	.homepage-header-container,
-	.homepage-content-container,
-	.homepage-footer-container {
+	.homepage-content-container {
 		@include media-breakpoint-down(md) {
 			padding-top: var(--spacer-3);
 			padding-bottom: var(--spacer-3);

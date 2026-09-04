@@ -46,10 +46,6 @@
 		}
 	}
 
-	.bulk-talent-loadout {
-		flex: 2;
-	}
-
 	.bulk-results-actions {
 		display: flex;
 		justify-content: flex-end;
@@ -75,8 +71,4 @@
 
 .bulk-result-item {
 	border: 3px solid transparent;
-
-	&.bulk-result-item-changed {
-		border-color: var(--bs-danger);
-	}
 }

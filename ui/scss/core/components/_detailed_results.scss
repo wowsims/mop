@@ -3,7 +3,6 @@
 @import './detailed_results/log_runner';
 @import './detailed_results/resource_metrics';
 @import './detailed_results/results_filter';
-@import './detailed_results/source_chart';
 @import './detailed_results/timeline';
 @import './detailed_results/topline_results';
 
@@ -19,10 +18,6 @@
 .detailed-results-controls-div {
 	display: flex;
 	margin-bottom: var(--block-spacer);
-
-	.detailed-results-new-tab-button {
-		margin-right: var(--block-spacer);
-	}
 
 	.detailed-results-death-iteration-button {
 		margin-left: var(--block-spacer);
@@ -87,11 +82,6 @@
 	flex-grow: 1;
 }
 
-.other-metrics {
-	display: flex;
-	width: 100%;
-}
-
 .metrics-table {
 	table-layout: auto;
 
@@ -116,7 +106,6 @@
 }
 
 .damage-content .metrics-table,
-.threat-content .metrics-table,
 .healing-content .metrics-table,
 .tippy-box[data-theme='metrics-table'] {
 	font-size: 12px;
@@ -146,10 +135,6 @@
 	border-bottom: 2px solid rgba(var(--bs-white-rgb), 0.8);
 }
 
-.metrics-table-footer-row {
-	border-top: 2px solid rgba(var(--bs-white-rgb), 0.8);
-}
-
 .metrics-table-header-cell {
 	padding: var(--spacer-1) var(--spacer-2);
 	cursor: pointer;
@@ -168,20 +153,17 @@
 	background-color: var(--bs-black-alpha-50);
 }
 
-.metrics-table-body,
-.metrics-table-footer {
+.metrics-table-body {
 	td {
 		padding: var(--spacer-1) var(--spacer-2);
 	}
 }
 
-.metrics-table-body td:first-child,
-.metrics-table-footer td:first-child {
+.metrics-table-body td:first-child {
 	text-align: left;
 }
 
-.metrics-table-body td:not(:first-child),
-.metrics-table-footer td:not(:first-child) {
+.metrics-table-body td:not(:first-child) {
 	text-align: right;
 }
 
@@ -228,8 +210,7 @@ tr:not(.parent-metric) .expand-toggle {
 	min-width: calc(var(--total-percentage-width) + var(--total-amount-width) + var(--total-bar-min-width));
 }
 
-.metrics-total-percentage,
-.metrics-total-damage {
+.metrics-total-percentage {
 	flex-shrink: 0;
 }
 
@@ -269,15 +250,6 @@ tr:not(.parent-metric) .expand-toggle {
 		th {
 			padding-top: 0;
 			text-align: center;
-		}
-	}
-
-	tfoot {
-		tr:last-child {
-			td {
-				font-weight: var(--font-weight-medium);
-				padding-bottom: 0;
-			}
 		}
 	}
 }
