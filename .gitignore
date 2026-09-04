@@ -52,6 +52,3 @@ tools/db2tool/listfile.csv
 tools/db2tool/DBDCache/
 tools/db2tool/dbfilesclient/
 tools/db2tool/caches/
-
-# Log-pipeline benchmark build output (see tools/bench/README.md)
-tools/bench/.build/
