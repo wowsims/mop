@@ -67,7 +67,9 @@ export class VirtualList {
 		this.parityFiller = document.createElement(tag);
 		this.parityFiller.hidden = true;
 		this.topSpacer = document.createElement(tag);
+		this.topSpacer.className = 'virtual-list-spacer';
 		this.bottomSpacer = document.createElement(tag);
+		this.bottomSpacer.className = 'virtual-list-spacer';
 
 		this.onScroll = this.onScroll.bind(this);
 		this.scrollElem.addEventListener('scroll', this.onScroll, { passive: true });
@@ -142,8 +144,8 @@ export class VirtualList {
 		this.firstIndex = first;
 		this.lastIndex = last;
 
-		this.topSpacer.style.height = `${first * this.rowHeight}px`;
-		this.bottomSpacer.style.height = `${Math.max(0, total - 1 - last) * this.rowHeight}px`;
+		this.topSpacer.style.setProperty('--vl-top', String(first * this.rowHeight));
+		this.bottomSpacer.style.setProperty('--vl-bottom', String(Math.max(0, total - 1 - last) * this.rowHeight));
 
 		const children: Array<Element> = [];
 		if (this.keepParity && first % 2 === 0) children.push(this.parityFiller);

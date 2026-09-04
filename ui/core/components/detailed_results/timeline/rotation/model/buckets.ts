@@ -2,7 +2,7 @@ import { APLActionItemSwap_SwapSet } from '../../../../../proto/apl';
 import { OtherAction } from '../../../../../proto/common';
 import { ResourceType } from '../../../../../proto/spell';
 import { ActionId } from '../../../../../proto_utils/action_id';
-import type { AuraUptimeLog, CastLog } from '../../../../../proto_utils/logs_parser';
+import type { AuraUptimeLog, CastLog } from '../../../../../proto_utils/combat_log';
 import type { UnitMetrics } from '../../../../../proto_utils/sim_result';
 import { actionCategory } from './categories';
 import type { SectionId } from './types';

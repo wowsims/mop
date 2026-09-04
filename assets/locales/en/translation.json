@@ -2023,7 +2023,8 @@
 				"export_button": "Export Log",
 				"time_column": "Time",
 				"event_column": "Event",
-				"show_debug": "Show Debug Statements"
+				"show_debug": "Show Debug Statements",
+				"search_placeholder": "Search logs…"
 			},
 			"tabs": {
 				"damage": "Damage",

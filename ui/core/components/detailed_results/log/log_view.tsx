@@ -1,30 +1,36 @@
-// @ts-expect-error
-import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../i18n/config';
-import { SimLog } from '../../proto_utils/logs_parser';
-import { SimUI } from '../../sim_ui';
-import { TypedEvent } from '../../typed_event.js';
-import { LogExporter } from '../individual_sim_ui/exporters/detailed_log_exporter';
-import { BooleanPicker } from '../pickers/boolean_picker.js';
-import { VirtualList } from '../virtual_scroll/virtual_list';
-import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
+import i18n from '../../../../i18n/config';
+import { CombatLog, formattedTimestamp, isCastCompleted, rawWithoutTimestamp } from '../../../proto_utils/combat_log';
+import { SimUI } from '../../../sim_ui';
+import { TypedEvent } from '../../../typed_event.js';
+import { LogExporter } from '../../individual_sim_ui/exporters/detailed_log_exporter';
+import { BooleanPicker } from '../../pickers/boolean_picker.js';
+import { VirtualList } from '../../virtual_scroll/virtual_list';
+import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component.js';
+import { LogLineElem } from './components/log_line';
+import { LogIndex, SuggestionSource } from './search/indexes';
+import { LogSearchBar } from './search/search_bar';
 
 const DEBUG_MARKER = '[DEBUG]';
 
-type LogEntry = {
-	log: SimLog;
-	searchText?: string;
-	isDebug: boolean;
-};
+// Timeline and CombatReplay narrow their unit list with this filter; the log has no unit rows, so
+// the equivalent is to keep the lines naming that target. Null whenever it would be a no-op, which
+// includes every single-target encounter.
+function selectedTargetNumber(resultData: SimResultData): number | null {
+	if (resultData.result.getTargets().length < 2) return null;
+	const selected = resultData.result.getTargets(resultData.filter);
+	return selected.length === 1 ? selected[0].index + 1 : null;
+}
+const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [] };
 
-export class LogRunner extends ResultComponent {
+export class LogView extends ResultComponent {
 	private readonly virtualList: VirtualList;
+	private readonly searchBar: LogSearchBar;
 	readonly showDebugChangeEmitter = new TypedEvent<void>('Show Debug');
 	private showDebug = false;
 	private ui: {
-		search: HTMLInputElement;
+		search: HTMLDivElement;
 		actions: HTMLDivElement;
 		buttonToTop: HTMLButtonElement;
 		exportLog: HTMLButtonElement;
@@ -36,16 +42,17 @@ export class LogRunner extends ResultComponent {
 	private cacheKey: string | null = null;
 	// Widest content the list has had to hold, in px. See setListWidth.
 	private listWidth = 0;
-	private entries: Array<LogEntry> = [];
+	private logs: Array<CombatLog> = [];
+	private logIndex: LogIndex | null = null;
 	private visibleIndexes: Array<number> = [];
-	private allIndexes: Array<number> = [];
-	private nonDebugIndexes: Array<number> = [];
+	// The results filter's selected target, as the number the log prints, or null for all.
+	private targetNumber: number | null = null;
 
 	constructor(config: ResultComponentConfig, simUi: SimUI) {
 		config.rootCssClass = 'log-runner-root';
 		super(config);
 
-		const searchRef = ref<HTMLInputElement>();
+		const searchRef = ref<HTMLDivElement>();
 		const actionsRef = ref<HTMLDivElement>();
 		const buttonToTopRef = ref<HTMLButtonElement>();
 		const exportLogRef = ref<HTMLButtonElement>();
@@ -58,7 +65,7 @@ export class LogRunner extends ResultComponent {
 		this.rootElem.appendChild(
 			<>
 				<div ref={actionsRef} className="log-runner-actions">
-					<input ref={searchRef} type="text" className="form-control log-search-input" placeholder={i18n.t('common.filter')} />
+					<div ref={searchRef}></div>
 					<button ref={exportLogRef} className="btn btn-primary order-last log-runner-scroll-to-top-btn me-2">
 						{i18n.t('results_tab.details.logs.export_button')}
 					</button>
@@ -88,11 +95,9 @@ export class LogRunner extends ResultComponent {
 			contentContainer: contentContainerRef.value!,
 		};
 
-		// Use the 'input' event to trigger search as the user types
-		const onSearchHandler = () => {
-			this.searchLogs(this.ui.search.value);
-		};
-		this.ui.search?.addEventListener('input', debounce(onSearchHandler, 150));
+		this.searchBar = new LogSearchBar(this.ui.search, { suggestions: () => this.logIndex?.suggestions() ?? EMPTY_SUGGESTIONS });
+		this.searchBar.changeEmitter.on(() => this.refreshVisible());
+
 		this.ui.buttonToTop?.addEventListener('click', () => {
 			this.virtualList.scrollToTop();
 		});
@@ -101,7 +106,7 @@ export class LogRunner extends ResultComponent {
 			logExporter.open();
 		});
 
-		new BooleanPicker<LogRunner>(this.ui.actions, this, {
+		new BooleanPicker<LogView>(this.ui.actions, this, {
 			id: 'log-runner-show-debug',
 			extraCssClasses: ['show-debug-picker'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
@@ -109,7 +114,7 @@ export class LogRunner extends ResultComponent {
 			reverse: true,
 			changedEvent: () => this.showDebugChangeEmitter,
 			getValue: () => this.showDebug,
-			setValue: (eventID, _logRunner, newValue) => {
+			setValue: (eventID, _logView, newValue) => {
 				this.showDebug = newValue;
 				this.showDebugChangeEmitter.emit(eventID);
 			},
@@ -120,54 +125,24 @@ export class LogRunner extends ResultComponent {
 			contentElem: this.ui.contentContainer,
 			dataSource: {
 				count: () => this.visibleIndexes.length,
-				renderRow: position => this.renderRow(this.entries[this.visibleIndexes[position]].log),
+				renderRow: position => this.renderRow(this.logs[this.visibleIndexes[position]]),
 			},
 			onRender: () => this.repairListWidth(),
 		});
 		this.addOnDisposeCallback(() => this.virtualList.dispose());
 
-		this.showDebugChangeEmitter.on(() => {
-			onSearchHandler();
-		});
+		this.showDebugChangeEmitter.on(() => this.refreshVisible());
 	}
 
-	searchLogs(searchQuery: string): void {
-		// Regular expression to match quoted phrases or words
-		const matchQuotesRegex = /"([^"]+)"|\S+/g;
-		let match;
-		const keywords: Array<string> = [];
-		// Extract keywords and quoted phrases from the search query
-		while ((match = matchQuotesRegex.exec(searchQuery))) {
-			keywords.push(match[1] ? match[1].toLowerCase() : match[0].toLowerCase());
-		}
-
-		// Filtering produces indexes, not elements, so a keystroke never builds a row.
-		if (keywords.length === 0) {
-			this.visibleIndexes = this.showDebug ? this.allIndexes : this.nonDebugIndexes;
-		} else {
-			const matches: Array<number> = [];
-			for (let i = 0; i < this.entries.length; i++) {
-				const entry = this.entries[i];
-				if (!this.showDebug && entry.isDebug) continue;
-				const text = (entry.searchText ??= `${entry.log.formattedTimestamp()} ${entry.log.raw} ${entry.log.actionId?.name ?? ''}`.toLowerCase());
-				let matchesAll = true;
-				for (const keyword of keywords) {
-					if (!text.includes(keyword)) {
-						matchesAll = false;
-						break;
-					}
-				}
-				if (matchesAll) matches.push(i);
-			}
-			this.visibleIndexes = matches;
-		}
-
+	private refreshVisible(): void {
+		this.visibleIndexes = this.logIndex ? this.logIndex.filter(this.searchBar.clauses, this.showDebug, this.targetNumber) : [];
 		this.virtualList.scrollToTop();
 	}
 
 	onSimResult(resultData: SimResultData): void {
 		this.rebuildEntries(resultData);
-		this.searchLogs(this.ui.search.value);
+		this.targetNumber = selectedTargetNumber(resultData);
+		this.refreshVisible();
 		if (!this.listWidth) this.seedListWidth();
 	}
 
@@ -178,21 +153,16 @@ export class LogRunner extends ResultComponent {
 		this.cacheKey = cacheKey;
 		this.listWidth = 0;
 		this.ui.list.style.removeProperty('--log-runner-list-width');
-		this.entries = resultData.result.logs
-			.filter((log): log is SimLog => !log.isCastCompleted())
-			.map(log => ({
-				log,
-				isDebug: log.raw.includes(DEBUG_MARKER),
-			}));
-		this.allIndexes = this.entries.map((_, i) => i);
-		this.nonDebugIndexes = this.allIndexes.filter(i => !this.entries[i].isDebug);
+		const logs = resultData.result.logs.filter(log => !isCastCompleted(log));
+		this.logs = logs;
+		this.logIndex = new LogIndex(logs, i => logs[i].raw.includes(DEBUG_MARKER));
 	}
 
 	private seedListWidth() {
-		if (!this.entries.length) return;
+		if (!this.logs.length) return;
 
-		let longest = this.entries[0].log;
-		for (const { log } of this.entries) {
+		let longest = this.logs[0];
+		for (const log of this.logs) {
 			if (log.raw.length > longest.raw.length) longest = log;
 		}
 
@@ -216,16 +186,16 @@ export class LogRunner extends ResultComponent {
 		this.ui.list.style.setProperty('--log-runner-list-width', `${Math.ceil(width)}px`);
 	}
 
-	private renderRow(log: SimLog) {
+	private renderRow(log: CombatLog) {
 		return (
 			<div className="log-runner-row">
-				<div className="log-timestamp">{log.formattedTimestamp()}</div>
-				<div className="log-event">{log.toHTML(false)}</div>
+				<div className="log-timestamp">{formattedTimestamp(log)}</div>
+				<div className="log-event">{LogLineElem(log, false)}</div>
 			</div>
 		) as HTMLDivElement;
 	}
 
 	private getCombinedText(): string {
-		return this.entries.map(({ log }) => `${log.formattedTimestamp()};${log.rawWithoutTimestamp()}`).join('\n');
+		return this.logs.map(log => `${formattedTimestamp(log)};${rawWithoutTimestamp(log.raw)}`).join('\n');
 	}
 }

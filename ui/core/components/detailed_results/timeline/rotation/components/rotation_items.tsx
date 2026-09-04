@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 
 import i18n from '../../../../../../i18n/config';
-import type { AuraUptimeLog, CastLog, DamageDealtLog } from '../../../../../proto_utils/logs_parser';
+import type { AuraUptimeLog, CastLog, DamageLog } from '../../../../../proto_utils/combat_log';
+import { Results } from '../../../log/components/results';
 import { ResourceTooltip } from '../../tooltip_content';
 import { addTooltip } from '../../tooltips';
 import type { AuraItem, AuraStackSegment, CastItem, ContentRow, ResourceItem, RowItem, TickItem } from '../model';
@@ -16,7 +17,7 @@ const setSpan = (elem: HTMLElement, item: RowItem) => {
 
 const CastTooltip = (log: CastLog) => {
 	const travelTime = log.travelTime == 0 ? '' : ` + ${log.travelTime.toFixed(2)}s travel time`;
-	const totalDamage = log.totalDamage();
+	const totalDamage = log.damageDealtLogs.reduce((total, ddl) => total + ddl.amount, 0);
 	return (
 		<div className="timeline-tooltip">
 			<span>
@@ -36,7 +37,7 @@ const CastTooltip = (log: CastLog) => {
 					{log.damageDealtLogs.map(ddl => (
 						<li>
 							<span>
-								{ddl.timestamp.toFixed(2)}s - {ddl.result()}
+								{ddl.timestamp.toFixed(2)}s - {Results(ddl)}
 							</span>
 							{ddl.source?.isTarget && (
 								<span className="threat-metrics">
@@ -52,10 +53,10 @@ const CastTooltip = (log: CastLog) => {
 	);
 };
 
-const TickTooltip = (log: DamageDealtLog) => (
+const TickTooltip = (log: DamageLog) => (
 	<div className="timeline-tooltip">
 		<span>
-			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {log.result()}
+			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {Results(log)}
 		</span>
 		{log.source?.isTarget && (
 			<span className="threat-metrics">

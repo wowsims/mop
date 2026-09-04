@@ -1,8 +1,8 @@
 import { ChartDataset, ChartOptions } from 'chart.js';
 
-import { SimLog } from '../../../../proto_utils/logs_parser';
+import { CombatLog } from '../../../../proto_utils/combat_log';
 
-export interface TimelinePoint<L extends SimLog = SimLog> {
+export interface TimelinePoint<L extends CombatLog = CombatLog> {
 	x: number;
 	y: number;
 	log: L;
@@ -10,7 +10,7 @@ export interface TimelinePoint<L extends SimLog = SimLog> {
 
 // renderTooltip is declared as a method so it stays bivariant and a
 // TimelineDataset<DpsLog> can live in an Array<TimelineDataset>.
-export interface TimelineDataset<L extends SimLog = SimLog> extends ChartDataset<'line', Array<TimelinePoint<L>>> {
+export interface TimelineDataset<L extends CombatLog = CombatLog> extends ChartDataset<'line', Array<TimelinePoint<L>>> {
 	seriesId: string;
 	renderTooltip(log: L): Element;
 }

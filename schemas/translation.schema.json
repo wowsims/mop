@@ -7098,10 +7098,13 @@
 								},
 								"show_debug": {
 									"type": "string"
+								},
+								"search_placeholder": {
+									"type": "string"
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder"]
 						},
 						"tabs": {
 							"type": "object",

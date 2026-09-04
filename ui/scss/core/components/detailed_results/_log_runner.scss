@@ -1,98 +1,205 @@
 .log-runner-root {
-	.log-runner-actions {
-		display: flex;
-		margin-bottom: var(--spacer-3);
+	--log-runner-list-width: max-content;
 
-		.log-search-input {
-			width: 25vw;
-		}
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+}
 
-		.show-debug-picker {
-			width: unset;
-			margin-bottom: 0;
-			margin-right: var(--block-spacer);
-			margin-left: auto;
+.log-runner-actions {
+	display: flex;
+	margin-bottom: var(--spacer-3);
+}
 
-			label {
-				margin-left: var(--spacer-1);
-			}
+.show-debug-picker {
+	width: unset;
+	margin-bottom: 0;
+	margin-right: var(--block-spacer);
+	margin-left: auto;
+
+	label {
+		margin-left: var(--spacer-1);
+	}
+}
+
+.log-runner-scroll {
+	position: relative;
+	flex: 1 1 0;
+	min-height: 0;
+	box-sizing: border-box;
+	overflow-x: auto;
+	overflow-y: auto;
+	will-change: scroll-position;
+}
+
+.log-runner-list {
+	min-width: 100%;
+	width: var(--log-runner-list-width);
+}
+
+.log-runner-measurer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: max-content;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.log-runner-header,
+.log-runner-row {
+	display: grid;
+	grid-template-columns: 10ch 1fr;
+	column-gap: var(--spacer-2);
+}
+
+.log-runner-header {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: var(--bs-body-bg);
+	border-bottom: 1px solid var(--bs-border-color);
+	font-weight: bold;
+}
+
+.log-runner-header div {
+	padding: var(--spacer-2);
+}
+
+.log-runner-header div:first-child {
+	text-align: right;
+}
+
+.log-runner-row {
+	border-bottom: 1px solid var(--bs-border-color);
+}
+
+.log-timestamp,
+.log-event {
+	padding: var(--spacer-2);
+	// Uniform row height is what makes the virtual list's offsets correct, so a long
+	// line scrolls sideways instead of wrapping.
+	white-space: nowrap;
+}
+
+.log-timestamp {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.log-event .icon {
+	vertical-align: middle;
+}
+
+.log-event .log-action {
+	color: var(--bs-brand);
+}
+
+// Shared with the gear picker's VirtualList (components/gear_picker/item_list.tsx) - CSS is
+// global, so one rule covers both consumers. Each spacer only ever sets its own side's
+// property, so the unset side falls back to 0.
+.virtual-list-spacer {
+	height: calc((var(--vl-top, 0) + var(--vl-bottom, 0)) * 1px);
+}
+
+.log-content {
+	height: 100%;
+
+	.dr-row {
+		height: 100%;
+		padding: 0;
+
+		.log {
+			height: 100%;
 		}
 	}
+}
 
-	.log-runner-scroll {
-		overflow-y: auto;
-		overflow-x: auto;
+.log-search-bar {
+	position: relative;
+	min-width: 25vw;
+}
 
-		margin: 0 auto;
-		position: relative;
-		width: 100%;
-		box-sizing: border-box;
-		will-change: scroll-position;
-		height: 70vh;
-	}
+.log-search-chips {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--spacer-1);
+	padding: var(--spacer-1);
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-border-radius);
+	background: var(--bs-body-bg);
 
-	.log-runner-list {
-		min-width: 100%;
-		width: var(--log-runner-list-width, max-content);
-	}
+	.log-search-input {
+		flex: 1 1 auto;
+		min-width: 6rem;
+		width: auto;
+		border: none;
+		box-shadow: none;
+		padding: 0;
+		background: transparent;
 
-	.log-runner-measurer {
-		position: absolute;
-		top: 0;
-		left: 0;
-		visibility: hidden;
-		pointer-events: none;
-		width: max-content;
-	}
-
-	.log-runner-header,
-	.log-runner-row {
-		display: grid;
-		grid-template-columns: 10ch 1fr;
-		column-gap: var(--spacer-2);
-	}
-
-	.log-runner-header {
-		position: sticky;
-		top: 0;
-		z-index: 1;
-		background: var(--bs-body-bg);
-		border-bottom: 1px solid var(--bs-border-color);
-		font-weight: bold;
-
-		div {
-			padding: var(--spacer-2);
-		}
-
-		div:first-child {
-			text-align: right;
+		&:focus {
+			outline: none;
 		}
 	}
+}
 
-	.log-runner-row {
-		border-bottom: 1px solid var(--bs-border-color);
+.log-search-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacer-1);
+	padding: 0 var(--spacer-1);
+	border-radius: var(--bs-border-radius);
+	background: var(--bs-tertiary-bg);
+	white-space: nowrap;
+	font-size: 0.85em;
 
-		.log-timestamp,
-		.log-event {
-			padding: var(--spacer-2);
-			// Uniform row height is what makes the virtual list's offsets correct, so a long
-			// line scrolls sideways instead of wrapping.
-			white-space: nowrap;
+	.log-search-chip-text {
+		cursor: text;
+	}
+
+	.log-search-chip-remove {
+		border: none;
+		background: none;
+		padding: 0;
+		line-height: 1;
+		color: var(--bs-secondary-color);
+		cursor: pointer;
+
+		&:hover {
+			color: var(--bs-body-color);
 		}
+	}
+}
 
-		.log-timestamp {
-			text-align: right;
-			font-variant-numeric: tabular-nums;
-		}
+.log-search-suggestions {
+	position: absolute;
+	z-index: 2;
+	top: 100%;
+	left: 0;
+	right: 0;
+	margin: var(--spacer-1) 0 0;
+	padding: var(--spacer-1) 0;
+	max-height: 16rem;
+	overflow-y: auto;
+	list-style: none;
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-border-radius);
+	background: var(--bs-body-bg);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
-		.log-event {
-			.icon {
-				vertical-align: middle;
-			}
+	&[hidden] {
+		display: none;
+	}
+}
 
-			.log-action {
-				color: var(--bs-brand);
-			}
-		}
+.log-search-suggestion {
+	padding: var(--spacer-1) var(--spacer-2);
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bs-tertiary-bg);
 	}
 }

@@ -118,7 +118,10 @@ export interface PlainLog extends BaseLog {
 export interface DamageLog extends BaseLog {
 	readonly kind: 'damage';
 	readonly outcome: Outcome;
-	readonly effect: DamageEffect;
+	// null when the line carries no "for N <effect>" clause at all, which is what a miss, dodge or
+	// parry looks like. Master modelled that as the empty string and its isDamage() reported false
+	// for it, so absence has to stay distinguishable from damage.
+	readonly effect: DamageEffect | null;
 	readonly amount: number;
 	// Periodic damage. Orthogonal to `outcome` — a tick can crit, and the display only says
 	// "Tick" when the outcome is a plain hit.

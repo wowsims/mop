@@ -4,7 +4,7 @@ import { ref } from 'tsx-vanilla';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId } from '../../proto_utils/action_id';
-import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '../../proto_utils/logs_parser';
+import { AuraStacksLog, CastBeganLog, DamageLog, Entity, isCastBegan, isDamage, isResource, ResourceLog } from '../../proto_utils/combat_log';
 import { resourceColors, resourceNames } from '../../proto_utils/names';
 import { formatDurationSeconds } from '../../utils';
 import { ActionMetrics, SimResult, SimResultFilter } from '../../proto_utils/sim_result';
@@ -28,7 +28,7 @@ interface AuraSnapshot {
 	iconUrl: string;
 	actionId: ActionId | null;
 	targetIndex: number;
-	stacksChange: AuraStacksChangeLog[];
+	stacksChange: AuraStacksLog[];
 }
 
 interface ResourceSnapshot {
@@ -89,7 +89,7 @@ const DOT_RESOURCE_TYPES = new Set([
 	ResourceType.ResourceTypeDeathRune,
 ]);
 
-function stacksAt(stacksChange: AuraStacksChangeLog[], t: number): number {
+function stacksAt(stacksChange: AuraStacksLog[], t: number): number {
 	for (let i = stacksChange.length - 1; i >= 0; i--) {
 		if (stacksChange[i].timestamp <= t) return stacksChange[i].newStacks;
 	}
@@ -359,14 +359,14 @@ export class CombatReplay extends ResultComponent {
 		);
 
 		const castBeganLogs: CastBeganLog[] = [];
-		const dmgLogs: DamageDealtLog[] = [];
-		const resourceLogs: ResourceChangedLog[] = [];
+		const dmgLogs: DamageLog[] = [];
+		const resourceLogs: ResourceLog[] = [];
 
 		for (const log of result.logs) {
 			if (log.timestamp < 0) continue;
-			if (log.isCastBegan()) castBeganLogs.push(log);
-			else if (log.isDamageDealt()) dmgLogs.push(log);
-			else if (log.isResourceChanged()) resourceLogs.push(log);
+			if (isCastBegan(log)) castBeganLogs.push(log);
+			else if (isDamage(log)) dmgLogs.push(log);
+			else if (isResource(log)) resourceLogs.push(log);
 		}
 
 		const isReplayCastSequenceAction = (c: CastBeganLog): boolean => {
@@ -397,9 +397,9 @@ export class CombatReplay extends ResultComponent {
 			for (const d of playerDmg) {
 				if (d.timestamp < cast.timestamp) continue;
 				if (d.timestamp > cast.timestamp + 3) break;
-				if (d.actionId?.name === castName && !d.miss && !d.dodge && !d.parry) {
+				if (d.actionId?.name === castName && d.outcome !== 'miss' && d.outcome !== 'dodge' && d.outcome !== 'parry') {
 					dmg = d.amount;
-					isCrit = d.crit;
+					isCrit = d.outcome === 'crit' || d.outcome === 'critical-block';
 					target = d.target;
 					break;
 				}
@@ -443,7 +443,7 @@ export class CombatReplay extends ResultComponent {
 		}
 
 		for (const d of playerDmg) {
-			if (d.miss || d.dodge || d.parry) continue;
+			if (d.outcome === 'miss' || d.outcome === 'dodge' || d.outcome === 'parry') continue;
 			if (d.actionId && d.actionId.otherId !== OtherAction.OtherActionNone) continue;
 			const cardIdx = this.enemyNames.findIndex(n => n === d.target?.name);
 			if (cardIdx === -1 && this.enemyNames.length > 0) continue;
@@ -454,7 +454,7 @@ export class CombatReplay extends ResultComponent {
 				x: 20 + ((seed * 23) % 60),
 				y: 10 + ((seed * 37) % 60),
 				dmg: d.amount > 0 ? d.amount : null,
-				isCrit: d.crit,
+				isCrit: d.outcome === 'crit' || d.outcome === 'critical-block',
 			});
 		}
 
