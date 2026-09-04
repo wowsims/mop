@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { HunterSpecs } from '@domain/proto_utils/utils';
+import type { HunterSpecs } from '@domain/proto_utils/spec_types';
 import { HunterOptions_PetType as PetType, PetSpec } from '@generated/proto/hunter';
 import * as InputHelpers from '@ui-kit/input_helpers';
 export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHelpers.TypedIconEnumPickerConfig<any, PetType> {

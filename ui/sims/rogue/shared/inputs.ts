@@ -1,5 +1,5 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import { RogueSpecs } from '@domain/proto_utils/utils';
+import type { RogueSpecs } from '@domain/proto_utils/spec_types';
 import { RogueOptions_PoisonOptions as Poison } from '@generated/proto/rogue';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';

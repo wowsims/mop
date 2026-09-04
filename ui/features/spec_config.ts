@@ -1,8 +1,8 @@
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
 import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from '@domain/presets/types';
+import type { SpecOptions, SpecRotation } from '@domain/proto_utils/spec_types';
 import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
 import type { Sim } from '@domain/sim';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';

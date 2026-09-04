@@ -3,7 +3,7 @@ import { Class } from '@generated/proto/common';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { ElementalShaman, EnhancementShaman, RestorationShaman } from '../player_specs/shaman';
-import { ShamanSpecs } from '../proto_utils/utils';
+import type { ShamanSpecs } from '../proto_utils/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Shaman extends PlayerClass<Class.ClassShaman> {

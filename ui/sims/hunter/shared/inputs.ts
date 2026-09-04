@@ -1,4 +1,4 @@
-import { HunterSpecs } from '@domain/proto_utils/utils';
+import type { HunterSpecs } from '@domain/proto_utils/spec_types';
 import { makePetTypeInputConfig } from '@features/talents/view/hunter_pet';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';

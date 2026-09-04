@@ -1,5 +1,5 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import { PriestSpecs } from '@domain/proto_utils/utils';
+import type { PriestSpecs } from '@domain/proto_utils/spec_types';
 import { PriestOptions_Armor } from '@generated/proto/priest';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

@@ -1,7 +1,8 @@
 import { Class, Spec } from '@generated/proto/common';
 
 import { PlayerSpec } from '../player_spec';
-import { SpecTalents, specTypeFunctions } from '../proto_utils/utils';
+import type { SpecTalents } from '../proto_utils/spec_types';
+import { specTypeFunctions } from '../proto_utils/utils';
 import { GlyphsConfig, TalentsConfig } from './config';
 import { deathKnightGlyphsConfig, deathKnightTalentsConfig } from './death_knight';
 import { druidGlyphsConfig, druidTalentsConfig } from './druid';

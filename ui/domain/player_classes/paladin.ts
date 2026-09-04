@@ -3,7 +3,7 @@ import { Class } from '@generated/proto/common';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { HolyPaladin, ProtectionPaladin, RetributionPaladin } from '../player_specs/paladin';
-import { PaladinSpecs } from '../proto_utils/utils';
+import type { PaladinSpecs } from '../proto_utils/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Paladin extends PlayerClass<Class.ClassPaladin> {

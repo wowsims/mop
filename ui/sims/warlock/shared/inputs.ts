@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { WarlockSpecs } from '@domain/proto_utils/utils';
+import type { WarlockSpecs } from '@domain/proto_utils/spec_types';
 import { subscribePlayerChange } from '@domain/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { WarlockOptions_Summon as Summon } from '@generated/proto/warlock';

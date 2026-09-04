@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { DruidSpecs } from '@domain/proto_utils/utils';
+import type { DruidSpecs } from '@domain/proto_utils/spec_types';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 // Configuration for class-specific UI elements on the settings tab.

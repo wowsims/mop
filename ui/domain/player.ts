@@ -58,13 +58,12 @@ import { EquippedItem, ReforgeData } from './proto_utils/equipped_item';
 import { Gear, ItemSwapGear } from './proto_utils/gear';
 import { gemMatchesSocket, isUnrestrictedGem } from './proto_utils/gems';
 import SecondaryResource from './proto_utils/secondary_resource';
+import type { ClassOptions, ClassSpecs, SpecClasses, SpecOptions, SpecRotation, SpecTalents, SpecTypeFunctions } from './proto_utils/spec_types';
 import { Stats } from './proto_utils/stats';
 import {
 	AL_CATEGORY_HARD_MODE,
 	canEquipEnchant,
 	canEquipItem,
-	ClassOptions,
-	ClassSpecs,
 	emptyUnitReference,
 	enchantAppliesToItem,
 	getMetaGemEffectEP,
@@ -72,11 +71,6 @@ import {
 	isPVPItem,
 	newUnitReference,
 	raceToFaction,
-	SpecClasses,
-	SpecOptions,
-	SpecRotation,
-	SpecTalents,
-	SpecTypeFunctions,
 	specTypeFunctions,
 	withSpec,
 } from './proto_utils/utils';

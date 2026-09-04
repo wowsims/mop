@@ -5,7 +5,7 @@ import { LOCAL_STORAGE_PREFIX } from '../constants/other';
 import { PlayerClass } from '../player_class';
 import { PlayerClasses } from '../player_classes';
 import { PlayerSpec } from '../player_spec';
-import { SpecClasses } from '../proto_utils/utils';
+import type { SpecClasses } from '../proto_utils/spec_types';
 import * as DeathKnightSpecs from './death_knight';
 import * as DruidSpecs from './druid';
 import * as HunterSpecs from './hunter';

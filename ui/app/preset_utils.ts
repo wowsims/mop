@@ -16,8 +16,9 @@ import type {
 	PresetTalents,
 	PresetTalentsOptions,
 } from '@domain/presets/types';
+import type { SpecRotation } from '@domain/proto_utils/spec_types';
 import { Stats } from '@domain/proto_utils/stats';
-import { SpecRotation, specTypeFunctions } from '@domain/proto_utils/utils';
+import { specTypeFunctions } from '@domain/proto_utils/utils';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	Cooldowns,
@@ -151,11 +152,7 @@ export type PresetTalentsGlyphEnums = {
 	minor?: { [key: string]: number | string };
 };
 
-export const makePresetTalentsFromJSON = (
-	json: PresetTalentsJson,
-	glyphEnums: PresetTalentsGlyphEnums,
-	options?: PresetTalentsOptions,
-): PresetTalents => {
+export const makePresetTalentsFromJSON = (json: PresetTalentsJson, glyphEnums: PresetTalentsGlyphEnums, options?: PresetTalentsOptions): PresetTalents => {
 	let glyphs: Glyphs | undefined;
 	if (json.glyphs) {
 		const glyphFields: Record<string, number> = {};

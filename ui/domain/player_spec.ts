@@ -2,7 +2,7 @@ import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@generated/proto
 
 import { LaunchStatus, Phase } from './constants/other';
 import { EligibleWeaponType, IconSize } from './player_class';
-import { SpecClasses } from './proto_utils/utils';
+import type { SpecClasses } from './proto_utils/spec_types';
 
 export type SimStatus = {
 	phase: Phase;

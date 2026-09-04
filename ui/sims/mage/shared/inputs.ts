@@ -1,5 +1,5 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import { MageSpecs } from '@domain/proto_utils/utils';
+import type { MageSpecs } from '@domain/proto_utils/spec_types';
 import { MageArmor } from '@generated/proto/mage';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

@@ -3,7 +3,7 @@ import { Class } from '@generated/proto/common';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BrewmasterMonk, MistweaverMonk, WindwalkerMonk } from '../player_specs/monk';
-import { MonkSpecs } from '../proto_utils/utils';
+import type { MonkSpecs } from '../proto_utils/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Monk extends PlayerClass<Class.ClassMonk> {

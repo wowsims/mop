@@ -1,5 +1,5 @@
 import { Player } from '@domain/player';
-import { HunterSpecs } from '@domain/proto_utils/utils';
+import type { HunterSpecs } from '@domain/proto_utils/spec_types';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
 import tippy from 'tippy.js';

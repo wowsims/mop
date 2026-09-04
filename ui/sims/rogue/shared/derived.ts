@@ -1,5 +1,5 @@
 import type { Player } from '@domain/player';
-import type { RogueSpecs } from '@domain/proto_utils/utils';
+import type { RogueSpecs } from '@domain/proto_utils/spec_types';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerChange } from '@domain/state/subscriptions';
 import type { DerivedSetting } from '@features/spec_config';
 import { RogueOptions_PoisonOptions } from '@generated/proto/rogue';
