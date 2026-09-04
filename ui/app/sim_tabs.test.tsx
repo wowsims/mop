@@ -30,10 +30,18 @@ const flushFrame = async () => {
 const renderTabs = () => render(<SimTabs registry={registry} strip={strip} panes={panes} />);
 
 beforeEach(() => {
+	document.body.innerHTML = '';
 	strip = document.createElement('ul');
 	panes = document.createElement('main');
+	// Attached, so focus() actually moves document.activeElement.
+	document.body.append(strip, panes);
 	registry = new SimTabRegistry(strip, panes);
 });
+
+const press = (key: string) =>
+	act(() => {
+		(document.activeElement ?? strip).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+	});
 
 describe('SimTabs', () => {
 	it('appends each registered tab to the strip and the pane container, in registration order', () => {
@@ -95,6 +103,49 @@ describe('SimTabs', () => {
 		expect(pane.classList.contains('show')).toBe(false);
 		await flushFrame();
 		expect(pane.classList.contains('show')).toBe(true);
+	});
+
+	it('keeps a roving tabindex, so Tab reaches the strip once and lands on the open tab', async () => {
+		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
+		renderTabs();
+		const tabindex = () => [...strip.querySelectorAll('.nav-link')].map(el => el.getAttribute('tabindex'));
+		expect(tabindex()).toEqual([null, '-1', '-1']);
+
+		await act(async () => {
+			registry.activate('talents-tab');
+		});
+		expect(tabindex()).toEqual(['-1', '-1', null]);
+	});
+
+	it('moves between tabs with the arrow keys, wrapping, and with Home/End — Bootstrap did this', () => {
+		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
+		renderTabs();
+		strip.querySelector<HTMLElement>('.gear-tab .nav-link')!.focus();
+
+		const openTab = () => panes.querySelector('.tab-pane.active')!.id;
+		const focusedTab = () => (document.activeElement as HTMLElement).parentElement!.className.split(' ')[0];
+
+		press('ArrowRight');
+		expect([openTab(), focusedTab()]).toEqual(['settings-tab', 'settings-tab']);
+		press('ArrowLeft');
+		expect([openTab(), focusedTab()]).toEqual(['gear-tab', 'gear-tab']);
+		// Wrapping in both directions is what makes a roving tabindex navigable.
+		press('ArrowLeft');
+		expect(openTab()).toBe('talents-tab');
+		press('ArrowRight');
+		expect(openTab()).toBe('gear-tab');
+		press('End');
+		expect(openTab()).toBe('talents-tab');
+		press('Home');
+		expect(openTab()).toBe('gear-tab');
+	});
+
+	it('leaves other keys alone, so typing still reaches the page', () => {
+		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
+		renderTabs();
+		strip.querySelector<HTMLElement>('.gear-tab .nav-link')!.focus();
+		press('a');
+		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
 	});
 
 	it('activates by identifier, which is how the bulk results renderer returns to the gear tab', async () => {

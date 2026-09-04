@@ -171,6 +171,13 @@ class name across `ui/` before moving its rules.
 
 ## Things that will bite
 
+- **Dropping a `data-bs-*` attribute drops behaviour you cannot see.** Bootstrap's tab plugin, on
+  `window load`, gave every `.active[data-bs-toggle="tab"]` a roving `tabindex`, `role="tabpanel"`
+  on its pane and arrow/Home/End keyboard navigation. Removing the attribute removed all of it
+  silently: class-level DOM parity was green, the click sweep was green, and keyboard users had lost
+  tab navigation. Before replacing any Bootstrap widget, read its `js/dist/*.js` for what its
+  constructor stamps on the DOM, and diff *attributes and keyboard behaviour* against the parent
+  branch — `tools/react-migration/tabs-a11y.mjs` is the pattern.
 - **Sim progress bypasses the store.** The worker progress callback writes DOM directly, per tick,
   unbatched. Route it into a slice or hold it behind a ref and throttle — never `setState` per tick.
 - **Goldens do not cover the shell.** `tools/state-snapshots/snapshot.ts` imports
@@ -202,11 +209,12 @@ Two things specific to this migration:
 
 - **Goldens must stay byte-identical.** The port touches `view/` only, so any golden diff means a
   state write leaked into a component. Never regenerate to make it pass.
-- **DOM parity is the real gate for the shell.** Serve a build of this branch and one of the parent
-  branch on two ports and compare rendered structure per spec. That is how the 94-file pragma
-  codemod was proven not to change rendering (~4,000 elements per spec, identical across 5 specs).
-  Use Playwright, not the Chrome extension — the extension reports false "renderer frozen" on this
-  app.
+- **DOM parity is the real gate for the shell**, and it lives in `tools/react-migration/` — four
+  Playwright checks against a build of this branch and one of the parent branch, served on two
+  ports. `parity.mjs` (structure, ~4,000 elements per spec), `tabs-a11y.mjs` (attributes + keyboard),
+  `tabs-behaviour.mjs` (clicking every tab), `mount-once.mjs` (StrictMode). Read its README for the
+  two expected class diffs and the environmental console errors. Use Playwright, not the Chrome
+  extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
 
@@ -217,13 +225,19 @@ Two things specific to this migration:
   appending into the header and calling `data-bs-toggle="tab"`, and `SimTabs` decides order, clicks
   and `active`/`show`. Bootstrap's tab plugin no longer drives the top-level tabs; the tab sets
   *inside* detailed-results, bulk, rotation and the selector modal are still Bootstrap's, by design.
+  `SimTabs` also re-implements what the plugin did beyond clicking — roving `tabindex`, arrow and
+  Home/End navigation with wrap-around and focus following the selection — and panes carry
+  `role="tabpanel"` in their markup, which the plugin used to stamp on load. Two behaviour notes:
+  `SimHeader.activateTab` now calls `registry.activate` instead of `.click()`ing the nav-link, so a
+  programmatic tab switch no longer fires `trackPageView` (user clicks still do); and the pane open
+  on load gets `show` in the same frame as `active`, because only a *switch* needs to fade.
   `SimHeader.activateTab` now delegates to the registry, so the bulk results renderer's
   "back to gear" path is unchanged. Two deliberate DOM diffs against the parent branch, both
   pre-existing quirks removed rather than introduced: the gear nav-*link* no longer carries `show`
   (a pane class Bootstrap put there), and the literal class `false` from
   `${isFirstTab && 'active'}` is gone. Gate: DOM parity across 5 specs (element counts identical,
   only those two class diffs), a Playwright click sweep of all 6 tabs on those specs, goldens
-  byte-identical, and 36 unit tests.
+  byte-identical, and 39 unit tests. The four checks are committed at `tools/react-migration/`.
 
 - 2026-09-04 Phase 0 complete. React 19.2 alongside tsx-vanilla: tsconfig and both vite configs
   moved to the automatic runtime, the 94 existing `.tsx` files gained

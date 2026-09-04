@@ -172,6 +172,18 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-05 React renders the page. `ui/index_template.html` has a `<div id="root">`,
+  `ui/app/spec_entry.tsx` calls `createRoot(...).render(<StrictMode><SimApp/></StrictMode>)`, and
+  `SimApp` constructs `IndividualSimUI` once behind a `useRef` gate — the shell is still imperative,
+  React owns when it is built. Top-level tab ownership moved out of the header: `SimTab` and
+  `SimUI.addTab` hand their elements to `SimTabRegistry` (`ui/ui-kit/tab_registry.ts`) and
+  `ui/app/sim_tabs.tsx` decides order, activation, keyboard navigation and the `active`/`show`
+  classes. `SimHeader.addTab`/`addSimTabLink` are gone and `activateTab` delegates to the registry;
+  `SimUIHost` gained `tabs` and `SimHeaderHost` lost `addSimTabLink`. Bootstrap's tab plugin no
+  longer drives the top-level tabs (inner tab sets still use it). New gate for view-layer work:
+  `tools/react-migration/` — DOM parity against a build of the parent branch, plus tab a11y,
+  tab behaviour and construct-once checks. See the `wowsims-react` skill for the details.
+
 - 2026-09-04 React migration started; the view layer is now documented by the `wowsims-react`
   skill, which this one should be read alongside. What changed here: JSX is no longer globally
   tsx-vanilla. `tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react` and both vite configs

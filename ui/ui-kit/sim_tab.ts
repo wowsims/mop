@@ -27,6 +27,9 @@ export abstract class SimTab extends Component {
 
 		this.rootElem.id = this.config.identifier;
 		this.rootElem.classList.add('tab-pane', 'fade');
+		// Bootstrap's tab plugin used to stamp this on load, following data-bs-target. It is a fixed
+		// property of the element, so it belongs in the markup now rather than in a React effect.
+		this.rootElem.setAttribute('role', 'tabpanel');
 
 		this.navItem = this.buildNavItem();
 		this.navLink = this.navItem.children[0] as HTMLElement;

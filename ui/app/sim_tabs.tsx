@@ -60,10 +60,33 @@ export function SimTabs({ registry, strip, panes }: SimTabsProps) {
 			const isActive = entry.id === activeId;
 			entry.navLink.classList.toggle('active', isActive);
 			entry.navLink.setAttribute('aria-selected', String(isActive));
+			// Roving tabindex: Tab reaches the strip once and lands on the open tab, arrows move
+			// within it. Bootstrap expressed it the same way — no attribute on the active link.
+			if (isActive) entry.navLink.removeAttribute('tabindex');
+			else entry.navLink.setAttribute('tabindex', '-1');
 			entry.pane.classList.toggle('active', isActive);
 			if (!isActive) entry.pane.classList.remove('show');
 		}
 	}, [entries, activeId]);
+
+	// Arrow/Home/End navigation, wrapping at both ends, with focus following the selection. This was
+	// Bootstrap's `_keydown`; nothing else provides it, and with a roving tabindex the arrows are the
+	// only way to reach the other tabs from the keyboard. Up/Down scroll the page if not prevented.
+	useLayoutEffect(() => {
+		const onKeyDown = (event: KeyboardEvent) => {
+			const from = entries.findIndex(entry => entry.navLink === event.target);
+			if (from < 0) return;
+			const offset = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
+			const to = offset ? (from + offset + entries.length) % entries.length : event.key === 'Home' ? 0 : event.key === 'End' ? entries.length - 1 : -1;
+			if (to < 0) return;
+			event.stopPropagation();
+			event.preventDefault();
+			entries[to].navLink.focus({ preventScroll: true });
+			registry.activate(entries[to].id);
+		};
+		strip.addEventListener('keydown', onKeyDown);
+		return () => strip.removeEventListener('keydown', onKeyDown);
+	}, [entries, registry, strip]);
 
 	// Bootstrap sets `active` first and `show` on the next frame *when switching*, so its .15s fade
 	// actually runs; on the initial render it sets both at once, since there is nothing to fade from.

@@ -283,7 +283,7 @@ export abstract class SimUI extends Component implements SimHost {
 			</li>
 		) as HTMLElement;
 		const pane = (
-			<div id={contentId} className="tab-pane fade">
+			<div id={contentId} className="tab-pane fade" attributes={{ role: 'tabpanel' }}>
 				{content}
 			</div>
 		) as HTMLElement;
