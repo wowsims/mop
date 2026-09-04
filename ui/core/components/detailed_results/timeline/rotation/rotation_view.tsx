@@ -13,7 +13,7 @@ import { RotationFloatingActionBar } from './rotation_floating_action_bar';
 import { RowTrack } from './row_track';
 import { Ruler } from './ruler';
 import type { WindowHost } from './timeline_window';
-import { TimelineWindow } from './timeline_window';
+import { findScrollParent, TimelineWindow } from './timeline_window';
 import { VisibilityState } from './visibility';
 import { ZoomController } from './zoom';
 
@@ -38,10 +38,16 @@ export class RotationView extends Component implements WindowHost {
 	private readonly actionBar: RotationFloatingActionBar;
 
 	private readonly mountedRows = new Map<string, MountedRow>();
+	private readonly resizeObserver = new ResizeObserver(() => this.onResize());
+	private readonly onScroll = () => this.schedule();
 
 	private model: RotationModel | null = null;
 	private frame: number | null = null;
 	private paneWidth = 0;
+	private attached = false;
+	private outer: HTMLElement | null = null;
+	private outerTarget: EventTarget | null = null;
+	private toolbar: HTMLElement | null = null;
 
 	constructor(parent: HTMLElement, config: RotationViewConfig) {
 		super(parent, 'rotation-pane');
@@ -87,11 +93,8 @@ export class RotationView extends Component implements WindowHost {
 		this.zoom.attach();
 		this.rowWindow = new TimelineWindow(this.scroller, contentRef.value!, topSpacerRef.value!, bottomSpacerRef.value!, this);
 
-		const onScroll = () => this.schedule();
-		this.scroller.addEventListener('scroll', onScroll, { passive: true });
-
-		const resizeObserver = new ResizeObserver(() => this.onResize());
-		resizeObserver.observe(this.rootElem);
+		this.scroller.addEventListener('scroll', this.onScroll, { passive: true });
+		this.resizeObserver.observe(this.rootElem);
 
 		zoomOutRef.value!.addEventListener('click', () => this.zoom.stepOut());
 		zoomInRef.value!.addEventListener('click', () => this.zoom.stepIn());
@@ -101,8 +104,10 @@ export class RotationView extends Component implements WindowHost {
 		this.addOnDisposeCallback(this.visibility.subscribe(() => this.onVisibilityChanged()));
 		this.addOnDisposeCallback(() => {
 			if (this.frame != null) cancelAnimationFrame(this.frame);
-			this.scroller.removeEventListener('scroll', onScroll);
-			resizeObserver.disconnect();
+			this.scroller.removeEventListener('scroll', this.onScroll);
+			this.outerTarget?.removeEventListener('scroll', this.onScroll);
+			window.removeEventListener('resize', this.onScroll);
+			this.resizeObserver.disconnect();
 			this.zoom.dispose();
 			this.rowWindow.unmountAll();
 		});
@@ -224,7 +229,38 @@ export class RotationView extends Component implements WindowHost {
 			this.measureLabelWidth();
 			this.ruler.measure();
 		}
+		this.measureStickyTop();
 		this.schedule();
+	}
+
+	// Resolved on the first frame rather than in the constructor: the pane is built before it is in
+	// the document, and a walk-up from a detached node would cache the wrong scrollport.
+	private attachOuter() {
+		if (this.attached || !this.rootElem.isConnected) return;
+		this.attached = true;
+		this.outer = findScrollParent(this.rootElem);
+		this.outerTarget = this.outer ?? window;
+		this.outerTarget.addEventListener('scroll', this.onScroll, { passive: true });
+		if (this.outer) this.resizeObserver.observe(this.outer);
+		else window.addEventListener('resize', this.onScroll, { passive: true });
+		this.toolbar = this.rootElem.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar') ?? null;
+		if (this.toolbar) this.resizeObserver.observe(this.toolbar);
+		this.measureStickyTop();
+	}
+
+	private measureStickyTop() {
+		const toolbar = this.toolbar;
+		// getBoundingClientRect, not offsetHeight: the latter rounds to whole pixels and leaves the
+		// ruler a fraction of a pixel behind the toolbar.
+		const top = toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0;
+		this.rootElem.style.setProperty('--rotation-sticky-top', `${top}px`);
+	}
+
+	private viewBounds(): { top: number; bottom: number } {
+		const outer = this.outer;
+		if (!outer) return { top: 0, bottom: window.innerHeight };
+		const rect = outer.getBoundingClientRect();
+		return { top: rect.top, bottom: rect.bottom };
 	}
 
 	private schedule() {
@@ -237,8 +273,10 @@ export class RotationView extends Component implements WindowHost {
 
 	private runFrame() {
 		if (this.isDisposed) return;
+		this.attachOuter();
 		const pps = this.zoom.pps;
-		this.rowWindow.update(pps, this.corner.offsetWidth);
+		const view = this.viewBounds();
+		this.rowWindow.update(pps, this.corner.offsetWidth, view.top, view.bottom);
 		this.ruler.draw({ scrollLeft: this.scroller.scrollLeft, pps, duration: this.model?.duration ?? 0 });
 	}
 }

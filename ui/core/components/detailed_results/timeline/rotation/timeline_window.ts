@@ -7,6 +7,17 @@ export interface WindowHost {
 	windowRow(key: string, left: number, right: number, pps: number): void;
 }
 
+// A non-`visible` overflow on either axis makes an element a scrollport for both, so the first
+// ancestor that clips vertically is the one the rows are windowed against. null means the viewport:
+// body and documentElement scroll the page, and their box is the document, not the visible area.
+export function findScrollParent(elem: HTMLElement): HTMLElement | null {
+	for (let node = elem.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+		const overflowY = getComputedStyle(node).overflowY;
+		if (overflowY !== 'visible' && overflowY !== 'clip') return node;
+	}
+	return null;
+}
+
 export class TimelineWindow {
 	private order: ReadonlyArray<string> = [];
 	private offsets = new Float64Array(1);
@@ -31,8 +42,8 @@ export class TimelineWindow {
 		const offsets = new Float64Array(order.length + 1);
 		for (let i = 0; i < order.length; i++) offsets[i + 1] = offsets[i] + heightOf(order[i]);
 		this.offsets = offsets;
-		// The scroller is sized by its content, and update() bails while it has no height, so the
-		// spacers have to carry the full height before the first window pass or nothing ever mounts.
+		// The page scrolls the rows, so the spacers have to carry the full height before the first
+		// window pass or the outer scrollport never grows and nothing past the top ever mounts.
 		this.setSpacer(this.topSpacer, 0);
 		this.setSpacer(this.bottomSpacer, offsets[order.length]);
 		this.resetGuard();
@@ -44,7 +55,9 @@ export class TimelineWindow {
 		this.resetGuard();
 	}
 
-	update(pps: number, labelWidth: number) {
+	// viewTop/viewBottom are the vertical scrollport's edges in client coordinates; the scroller
+	// itself only carries the horizontal axis now.
+	update(pps: number, labelWidth: number, viewTop: number, viewBottom: number) {
 		const count = this.order.length;
 		if (count === 0) {
 			this.unmountAll();
@@ -54,13 +67,13 @@ export class TimelineWindow {
 		}
 
 		const scroller = this.scroller;
-		const clientHeight = scroller.clientHeight;
 		const clientWidth = scroller.clientWidth;
-		if (!clientHeight || !clientWidth) return;
+		if (!clientWidth || viewBottom <= viewTop) return;
 
 		const total = this.offsets[count];
-		const first = this.indexAt(Math.max(0, scroller.scrollTop - VERTICAL_PADDING_PX));
-		const last = this.indexAt(Math.min(total, scroller.scrollTop + clientHeight + VERTICAL_PADDING_PX));
+		const contentTop = this.content.getBoundingClientRect().top;
+		const first = this.indexAt(Math.max(0, viewTop - contentTop - VERTICAL_PADDING_PX));
+		const last = this.indexAt(Math.min(total, viewBottom - contentTop + VERTICAL_PADDING_PX));
 		const left = scroller.scrollLeft - HORIZONTAL_PADDING_PX;
 		// The sticky label occludes the first labelWidth of every track, so the unobscured
 		// track range is [scrollLeft, scrollLeft + clientWidth - labelWidth].

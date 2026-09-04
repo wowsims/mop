@@ -21,10 +21,16 @@
 	}
 }
 
+// --rotation-sticky-top is measured from the results toolbar, which is itself sticky under the
+// sim header, so the ruler pins below both instead of behind them.
 .rotation-header {
+	position: sticky;
+	top: var(--rotation-sticky-top, 0px);
+	z-index: 5;
 	display: flex;
 	flex: 0 0 30px;
 	height: 30px;
+	background: var(--bs-body-bg);
 }
 
 .rotation-corner {
@@ -67,10 +73,12 @@
 	// Never flexes: a sibling below it must not be able to shrink the timeline viewport.
 	flex: 0 0 auto;
 	min-height: 0;
-	max-height: 70vh;
 	// Room for the floating action bar so the last row still scrolls clear of it once it is stuck.
 	padding-bottom: var(--rotation-fab-h);
-	overflow: auto;
+	// overflow-x: auto forces the other axis off `visible`, and the box is sized by the full row
+	// stack, so overflow-y: hidden never clips: vertical scrolling belongs to the page.
+	overflow-x: auto;
+	overflow-y: hidden;
 	outline: none;
 }
 
