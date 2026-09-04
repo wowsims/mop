@@ -299,7 +299,6 @@ export class Sim {
 				randomSeed: BigInt(this.nextRngSeed()),
 				// Every result therefore carries a full combat log for iteration 1, which
 				// SimResult.makeNew parses on the main thread - seconds of work on a raid sim.
-				// See tools/bench/README.md.
 				debugFirstIteration: true,
 				debug: options.debug ?? false,
 			}),

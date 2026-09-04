@@ -60,10 +60,6 @@ export class Timeline extends ResultComponent {
 	private readonly chartPicker: ChartViewPicker;
 
 	private resultData: SimResultData | null;
-	// The ApexCharts instance renders once for the life of the component; the rotation
-	// rebuilds per result. Deferral until the tab is shown lives in ResultComponent.
-	chartRendered: boolean;
-
 	// A rendered rotation timeline for one (result, filter, chart) key. The DOM
 	// nodes are kept LIVE (moved in and out of the containers, never cloned) so
 	// their tippy instances, click handlers and emitter subscriptions survive a
@@ -86,7 +82,6 @@ export class Timeline extends ResultComponent {
 		config.rootCssClass = 'timeline-root';
 		super(config);
 		this.resultData = null;
-		this.chartRendered = false;
 		this.hiddenIds = [];
 		this.addOnDisposeCallback(() => {
 			if (this.rowWindowFrame != null) cancelAnimationFrame(this.rowWindowFrame);
@@ -174,8 +169,13 @@ export class Timeline extends ResultComponent {
 
 		let isMouseDown = false;
 		let startX = 0;
-		// Covers drag-to-pan too: the handler below writes scrollLeft, which fires 'scroll'.
 		this.rotationTimeline.addEventListener('scroll', () => this.scheduleRowWindow(), { passive: true });
+
+		if (typeof ResizeObserver !== 'undefined') {
+			const observer = new ResizeObserver(() => this.scheduleRowWindow());
+			observer.observe(this.rotationTimeline);
+			this.addOnDisposeCallback(() => observer.disconnect());
+		}
 
 		let scrollLeft = 0;
 		this.rotationTimeline.addEventListener('dragstart', event => {
@@ -203,17 +203,19 @@ export class Timeline extends ResultComponent {
 		});
 	}
 
+	// Pane visibility only. Split out from the change handler so updatePlot's programmatic
+	// switch to 'dps' does not re-enter updatePlot through it.
+	private syncChartPanes() {
+		const showRotation = this.chartPicker.value === 'rotation';
+		this.dpsResourcesPlotElem.classList.toggle('hide', showRotation);
+		this.rotationPlotElem.classList.toggle('hide', !showRotation);
+	}
+
 	onChartPickerSelectHandler() {
-		if (this.chartPicker.value === 'rotation') {
-			this.dpsResourcesPlotElem.classList.add('hide');
-			this.rotationPlotElem.classList.remove('hide');
-		} else {
-			this.dpsResourcesPlotElem.classList.remove('hide');
-			this.rotationPlotElem.classList.add('hide');
-			// Series are not built while the chart is hidden, so build them now. updatePlot is
-			// keyed and cached, so this is a no-op if they are already current.
-			this.update();
-		}
+		this.syncChartPanes();
+		// Series are not built while the chart is hidden, so build them now. updatePlot is
+		// keyed and cached, so this is a no-op if they are already current.
+		if (this.isChartVisible()) this.update();
 	}
 
 	// The rotation view and the chart are alternatives, and the rotation is the default for a
@@ -239,7 +241,7 @@ export class Timeline extends ResultComponent {
 		if (!singlePlayer && this.chartPicker.value == 'rotation') {
 			// Programmatic select changes fire no 'change' event: sync the plot containers by hand.
 			this.chartPicker.value = 'dps';
-			this.onChartPickerSelectHandler();
+			this.syncChartPanes();
 		}
 
 		// Fast path: this result was rendered before and its slot is either live
@@ -264,6 +266,15 @@ export class Timeline extends ResultComponent {
 			},
 			series: [],
 			colors: [],
+			// updateOptions deep-merges, so any key an options object omits keeps the value the
+			// previous chart left behind. addResourceSeries writes per-series stroke arrays;
+			// without a default here they would survive into the next chart, which has a
+			// different series count, and render unrelated lines thin and dashed.
+			stroke: {
+				curve: 'straight',
+				width: 2,
+				dashArray: 0,
+			},
 			xaxis: {
 				min: 0,
 				max: duration,
@@ -629,8 +640,11 @@ export class Timeline extends ResultComponent {
 	private applyRowWindow() {
 		const rows = this.liveSlot?.windowedRows;
 		if (!rows?.length) return;
+
+		const width = this.rotationTimeline.clientWidth;
+		if (!width) return;
 		const left = this.rotationTimeline.scrollLeft - ROW_WINDOW_PADDING_PX;
-		const right = this.rotationTimeline.scrollLeft + this.rotationTimeline.clientWidth + ROW_WINDOW_PADDING_PX;
+		const right = this.rotationTimeline.scrollLeft + width + ROW_WINDOW_PADDING_PX;
 		for (const row of rows) row.mount(left, right);
 	}
 
@@ -1111,7 +1125,6 @@ export class Timeline extends ResultComponent {
 					},
 				});
 				this.dpsResourcesPlot.render();
-				this.chartRendered = true;
 				this.keepTooltipInWindow();
 				return this.dpsResourcesPlot;
 			});
@@ -1121,13 +1134,21 @@ export class Timeline extends ResultComponent {
 
 	// Applies options once the chart exists, keeping updates in order.
 	private applyChartOptions(options: any) {
-		const hideThreat = !this.showThreatSeries && options.series.some((series: any) => series.name === THREAT_SERIES_NAME) && options.series.length > 1;
-		this.chartPromise = this.chartReady().then(async chart => {
-			await chart.updateOptions(options);
-			// updateOptions resets legend state, so re-apply the default each time.
-			if (hideThreat) chart.hideSeries(THREAT_SERIES_NAME);
-			return chart;
-		});
+		const hideThreat =
+			!this.showThreatSeries &&
+			options.series.some((series: any) => series.name === THREAT_SERIES_NAME) &&
+			options.series.some((series: any) => series.name !== THREAT_SERIES_NAME);
+		this.chartPromise = this.chartReady()
+			.then(async chart => {
+				await chart.updateOptions(options);
+				// updateOptions resets legend state, so re-apply the default each time.
+				if (hideThreat) chart.hideSeries(THREAT_SERIES_NAME);
+				return chart;
+			})
+			.catch(error => {
+				console.error('Failed to update the timeline chart: ', error);
+				return this.dpsResourcesPlot;
+			});
 	}
 
 	// Per-render resources (tooltips, listeners) belong to the slot being

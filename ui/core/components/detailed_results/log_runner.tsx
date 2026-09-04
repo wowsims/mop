@@ -29,10 +29,13 @@ export class LogRunner extends ResultComponent {
 		buttonToTop: HTMLButtonElement;
 		exportLog: HTMLButtonElement;
 		scrollContainer: HTMLDivElement;
+		list: HTMLDivElement;
 		contentContainer: HTMLDivElement;
 	};
 
 	private cacheKey: string | null = null;
+	// Widest content the list has had to hold, in px. See setListWidth.
+	private listWidth = 0;
 	private entries: Array<LogEntry> = [];
 	private visibleIndexes: Array<number> = [];
 	private allIndexes: Array<number> = [];
@@ -47,6 +50,7 @@ export class LogRunner extends ResultComponent {
 		const buttonToTopRef = ref<HTMLButtonElement>();
 		const exportLogRef = ref<HTMLButtonElement>();
 		const scrollContainerRef = ref<HTMLDivElement>();
+		const listRef = ref<HTMLDivElement>();
 		const contentContainerRef = ref<HTMLDivElement>();
 
 		const logExporter = new LogExporter(simUi.rootElem, simUi, () => this.getCombinedText());
@@ -63,7 +67,7 @@ export class LogRunner extends ResultComponent {
 					</button>
 				</div>
 				<div ref={scrollContainerRef} className="log-runner-scroll">
-					<div className="log-runner-list">
+					<div ref={listRef} className="log-runner-list">
 						<div className="log-runner-header">
 							<div>{i18n.t('results_tab.details.logs.time_column')}</div>
 							<div>{i18n.t('results_tab.details.logs.event_column')}</div>
@@ -80,6 +84,7 @@ export class LogRunner extends ResultComponent {
 			buttonToTop: buttonToTopRef.value!,
 			exportLog: exportLogRef.value!,
 			scrollContainer: scrollContainerRef.value!,
+			list: listRef.value!,
 			contentContainer: contentContainerRef.value!,
 		};
 
@@ -117,6 +122,7 @@ export class LogRunner extends ResultComponent {
 				count: () => this.visibleIndexes.length,
 				renderRow: position => this.renderRow(this.entries[this.visibleIndexes[position]].log),
 			},
+			onRender: () => this.repairListWidth(),
 		});
 		this.addOnDisposeCallback(() => this.virtualList.dispose());
 
@@ -161,6 +167,7 @@ export class LogRunner extends ResultComponent {
 	onSimResult(resultData: SimResultData): void {
 		this.rebuildEntries(resultData);
 		this.searchLogs(this.ui.search.value);
+		if (!this.listWidth) this.seedListWidth();
 	}
 
 	private rebuildEntries(resultData: SimResultData) {
@@ -168,15 +175,45 @@ export class LogRunner extends ResultComponent {
 		if (this.cacheKey === cacheKey) return;
 
 		this.cacheKey = cacheKey;
+		this.listWidth = 0;
+		this.ui.list.style.removeProperty('--log-runner-list-width');
 		this.entries = resultData.result.logs
 			.filter((log): log is SimLog => !log.isCastCompleted())
 			.map(log => ({
 				log,
-				searchText: `${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
+				searchText: `${log.formattedTimestamp()} ${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
 				isDebug: log.raw.includes(DEBUG_MARKER),
 			}));
 		this.allIndexes = this.entries.map((_, i) => i);
 		this.nonDebugIndexes = this.allIndexes.filter(i => !this.entries[i].isDebug);
+	}
+
+	private seedListWidth() {
+		if (!this.entries.length) return;
+
+		let longest = this.entries[0].log;
+		for (const { log } of this.entries) {
+			if (log.raw.length > longest.raw.length) longest = log;
+		}
+
+		// Positioned out of flow, so it inherits the list's fonts without widening it.
+		const measurer = (<div className="log-runner-measurer">{this.renderRow(longest)}</div>) as HTMLDivElement;
+		this.ui.list.appendChild(measurer);
+		const width = (measurer.firstElementChild as HTMLElement).offsetWidth;
+		measurer.remove();
+		this.setListWidth(width);
+	}
+
+	private repairListWidth() {
+		if (!this.listWidth) return;
+		const overflow = this.ui.contentContainer.scrollWidth - this.ui.contentContainer.clientWidth;
+		if (overflow > 0) this.setListWidth(this.listWidth + overflow);
+	}
+
+	private setListWidth(width: number) {
+		if (width <= this.listWidth) return;
+		this.listWidth = width;
+		this.ui.list.style.setProperty('--log-runner-list-width', `${Math.ceil(width)}px`);
 	}
 
 	private renderRow(log: SimLog) {
@@ -189,11 +226,6 @@ export class LogRunner extends ResultComponent {
 	}
 
 	private getCombinedText(): string {
-		return this.visibleIndexes
-			.map(index => {
-				const { log } = this.entries[index];
-				return `${log.formattedTimestamp()};${log.raw}`;
-			})
-			.join('\n');
+		return this.entries.map(({ log }) => `${log.formattedTimestamp()};${log.rawWithoutTimestamp()}`).join('\n');
 	}
 }

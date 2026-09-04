@@ -1,15 +1,21 @@
+import { ref } from 'tsx-vanilla';
+
+import i18n from '../../i18n/config';
+import { trackEvent } from '../../tracking/utils';
+import { IndividualSimUI } from '../individual_sim_ui';
 import { SimRun, SimRunData } from '../proto/ui';
 import { SimResult } from '../proto_utils/sim_result';
 import { SimUI } from '../sim_ui';
 import { TypedEvent } from '../typed_event';
+import { isDevMode } from '../utils';
 import { Component } from './component';
 import { AuraMetricsTable } from './detailed_results/aura_metrics';
 import { CastMetricsTable } from './detailed_results/cast_metrics';
+import { CombatReplay } from './detailed_results/combat_replay';
 import { DamageMetricsTable } from './detailed_results/damage_metrics';
 import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
-import { CombatReplay } from './detailed_results/combat_replay';
 import { LogRunner } from './detailed_results/log_runner';
 import { ResourceMetricsTable } from './detailed_results/resource_metrics';
 import { ResultComponent, SimResultData } from './detailed_results/result_component';
@@ -18,11 +24,6 @@ import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
 import { SimResultsManager } from './sim_action';
 import { StickyToolbar } from './sticky_toolbar';
-import i18n from '../../i18n/config';
-import { ref } from 'tsx-vanilla';
-import { isDevMode } from '../utils';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { trackEvent } from '../../tracking/utils';
 
 type Tab = {
 	isActive?: boolean;
@@ -274,7 +275,13 @@ export class DetailedResults extends Component {
 		// Tabs whose contents are expensive hold their results until first shown; see
 		// ResultComponent's deferUntilShown.
 		const deferUntilShown = (component: ResultComponent, tabId: string) => {
-			tabButtons.get(tabId)?.addEventListener('shown.bs.tab', () => component.onTabShown());
+			const button = tabButtons.get(tabId);
+			if (!button) {
+				console.error(`No tab button for ${tabId}; its deferred contents will never render.`);
+				return;
+			}
+			button.addEventListener('shown.bs.tab', () => component.onTabShown());
+			button.addEventListener('hide.bs.tab', () => component.onTabHidden());
 		};
 
 		const timeline = new Timeline({

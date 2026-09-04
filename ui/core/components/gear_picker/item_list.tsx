@@ -1,11 +1,12 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 import { SortDirection } from '../../constants/other';
 import { setItemQualityCssClass } from '../../css_utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
-import i18n from '../../../i18n/config';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '../../proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
@@ -27,9 +28,8 @@ import {
 import { ItemNotice } from '../item_notice/item_notice';
 import { VirtualList } from '../virtual_scroll/virtual_list';
 import { FiltersMenu } from './filters_menu';
-import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
+import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
-import { trackEvent } from '../../../tracking/utils';
 
 export interface ItemData<T extends ItemListType> {
 	item: T;
@@ -188,7 +188,7 @@ export default class ItemList<T extends ItemListType> {
 					<h6 className="favorite-label" />
 					<h6 ref={compareLabelRef} className="compare-label hide" />
 				</div>
-				<ul ref={modalListRef} className="selector-modal-list"></ul>
+				<ul ref={modalListRef} className="selector-modal-list" attributes={{ tabindex: '0' }}></ul>
 			</div>
 		);
 

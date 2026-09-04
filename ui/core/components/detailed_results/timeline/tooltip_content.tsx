@@ -11,10 +11,8 @@ export function dpsTooltip(log: DpsLog, _includeAuras: boolean, player: UnitMetr
 			<div className="timeline-tooltip-header">
 				{showPlayerLabel ? (
 					<>
-						<img className="timeline-tooltip-icon" src="${player.iconUrl}" />
-						<span className="" style="color: ${colorOverride}">
-							{player.label}
-						</span>
+						<img className="timeline-tooltip-icon" src={player.iconUrl} />
+						<span style={{ color: colorOverride }}>{player.label}</span>
 						<span> - </span>
 					</>
 				) : null}

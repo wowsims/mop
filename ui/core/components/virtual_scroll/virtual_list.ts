@@ -29,6 +29,9 @@ export interface VirtualListOptions {
 	// Adds a hidden filler when the window starts on an odd index, so :nth-child striping on
 	// the rows does not flip as you scroll.
 	keepParity?: boolean;
+	// Called after the mounted window changes, for state that depends on which rows are in
+	// the DOM. Not called per scroll event - only when the window actually moves.
+	onRender?: () => void;
 }
 
 export class VirtualList {
@@ -36,6 +39,7 @@ export class VirtualList {
 	private readonly contentElem: HTMLElement;
 	private readonly dataSource: VirtualListDataSource;
 	private readonly keepParity: boolean;
+	private readonly onRender?: () => void;
 	private readonly topSpacer: HTMLElement;
 	private readonly bottomSpacer: HTMLElement;
 	private readonly parityFiller: HTMLElement;
@@ -56,6 +60,7 @@ export class VirtualList {
 		this.contentElem = options.contentElem;
 		this.dataSource = options.dataSource;
 		this.keepParity = options.keepParity ?? false;
+		this.onRender = options.onRender;
 		this.rowHeight = options.estimatedRowHeight ?? 32;
 
 		const tag = options.rowTag ?? 'div';
@@ -79,6 +84,7 @@ export class VirtualList {
 
 	// Re-reads the row count. Call after the data source's contents change.
 	update() {
+		this.measured = false;
 		this.invalidate();
 		this.render();
 	}
@@ -120,10 +126,10 @@ export class VirtualList {
 
 		const viewportHeight = this.scrollElem.clientHeight || this.rowHeight;
 		const visibleCount = Math.ceil(viewportHeight / this.rowHeight) + OVERSCAN_ROWS * 2;
-		const first = Math.max(0, Math.floor(this.scrollElem.scrollTop / this.rowHeight) - OVERSCAN_ROWS);
+		const first = Math.min(total - 1, Math.max(0, Math.floor(this.scrollElem.scrollTop / this.rowHeight) - OVERSCAN_ROWS));
 		const last = Math.min(total - 1, first + visibleCount);
 
-		if (this.measured && first === this.firstIndex && last === this.lastIndex) return;
+		if (first === this.firstIndex && last === this.lastIndex) return;
 
 		const next = new Map<number, Element>();
 		const rows: Array<Element> = [];
@@ -139,15 +145,13 @@ export class VirtualList {
 		this.topSpacer.style.height = `${first * this.rowHeight}px`;
 		this.bottomSpacer.style.height = `${Math.max(0, total - 1 - last) * this.rowHeight}px`;
 
-		// The whole window is re-inserted rather than diffed. It is bounded by the viewport
-		// plus overscan (~43 rows), and measured scrolling holds 17ms frames with no drops,
-		// so diffing entered/left rows would add branching for no observed gain.
 		const children: Array<Element> = [];
-		if (this.keepParity && first % 2 === 1) children.push(this.parityFiller);
+		if (this.keepParity && first % 2 === 0) children.push(this.parityFiller);
 		children.push(this.topSpacer, ...rows, this.bottomSpacer);
 		this.contentElem.replaceChildren(...children);
 
 		if (!this.measured) this.measureRowHeight(rows[0]);
+		this.onRender?.();
 	}
 
 	private invalidate() {

@@ -16,6 +16,8 @@ export class WindowedRow {
 	}
 
 	private sort() {
+		this.mounted.forEach(index => this.items[index].elem?.remove());
+		this.mounted.clear();
 		// A DoT's ticks can outlast the next cast, so items are not added in x order.
 		this.items.sort((a, b) => a.left - b.left);
 		this.maxRightUpTo.length = 0;

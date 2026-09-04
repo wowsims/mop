@@ -32,10 +32,16 @@
 	}
 
 	.log-runner-list {
-		// Rows are a two-column grid rather than a table so the virtual list can size them.
-		// A table row wraps to whatever its content needs, which made every row a different
-		// height and left the scroll offsets guessing.
 		min-width: 100%;
+		width: var(--log-runner-list-width, max-content);
+	}
+
+	.log-runner-measurer {
+		position: absolute;
+		top: 0;
+		left: 0;
+		visibility: hidden;
+		pointer-events: none;
 		width: max-content;
 	}
 
