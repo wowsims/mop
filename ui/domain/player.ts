@@ -59,23 +59,12 @@ import { Database } from './proto_utils/database';
 import { EquippedItem, ReforgeData } from './proto_utils/equipped_item';
 import { Gear, ItemSwapGear } from './proto_utils/gear';
 import { gemMatchesSocket, isUnrestrictedGem } from './proto_utils/gems';
+import { canEquipEnchant, canEquipItem, enchantAppliesToItem, getMetaGemEffectEP, isPVPItem } from './proto_utils/items';
 import SecondaryResource from './proto_utils/secondary_resource';
+import { specTypeFunctions, withSpec } from './proto_utils/spec_functions';
 import type { ClassOptions, ClassSpecs, SpecClasses, SpecOptions, SpecRotation, SpecTalents, SpecTypeFunctions } from './proto_utils/spec_types';
 import { Stats } from './proto_utils/stats';
-import {
-	AL_CATEGORY_HARD_MODE,
-	canEquipEnchant,
-	canEquipItem,
-	emptyUnitReference,
-	enchantAppliesToItem,
-	getMetaGemEffectEP,
-	getTalentTreePoints,
-	isPVPItem,
-	newUnitReference,
-	raceToFaction,
-	specTypeFunctions,
-	withSpec,
-} from './proto_utils/utils';
+import { AL_CATEGORY_HARD_MODE, emptyUnitReference, getTalentTreePoints, newUnitReference, raceToFaction } from './proto_utils/utils';
 import { Raid } from './raid';
 import { Sim } from './sim';
 import { batch } from './state/batch';

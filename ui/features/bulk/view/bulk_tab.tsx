@@ -24,7 +24,7 @@ import { Z_95, zTest } from '@domain/math';
 import { isSpecDualWield2HCapable } from '@domain/player_classes/capabilities';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Gear } from '@domain/proto_utils/gear';
-import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@domain/proto_utils/utils';
+import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@domain/proto_utils/items';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import { ReforgeOptimizeConfig } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';

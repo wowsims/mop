@@ -5,7 +5,7 @@ import { translatePseudoStat, translateStat } from '@i18n/localization';
 import { getEnumValues } from '../collections';
 import * as Mechanics from '../constants/mechanics';
 import { CURRENT_API_VERSION } from '../constants/other';
-import { migrateOldProto, ProtoConversionMap } from './utils';
+import { migrateOldProto, ProtoConversionMap } from './proto_migration';
 
 const STATS_LEN = getEnumValues(Stat).length;
 const PSEUDOSTATS_LEN = getEnumValues(PseudoStat).length;

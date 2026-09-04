@@ -8,7 +8,7 @@ import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/c
 import { Database } from '../proto_utils/database';
 import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
-import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/utils';
+import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/items';
 import { ReforgeGearCache } from '../reforge_cache';
 import { getReforgeConfigHash } from '../state/reforge_request';
 import { sleep } from '../utils';

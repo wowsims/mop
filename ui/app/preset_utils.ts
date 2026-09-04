@@ -16,9 +16,9 @@ import type {
 	PresetTalents,
 	PresetTalentsOptions,
 } from '@domain/presets/types';
+import { specTypeFunctions } from '@domain/proto_utils/spec_functions';
 import type { SpecRotation } from '@domain/proto_utils/spec_types';
 import { Stats } from '@domain/proto_utils/stats';
-import { specTypeFunctions } from '@domain/proto_utils/utils';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	Cooldowns,

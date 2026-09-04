@@ -18,8 +18,8 @@ import { distinct } from '../collections';
 import { MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { ActionId } from './action_id';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';
+import { enchantAppliesToItem } from './items';
 import { Stats } from './stats';
-import { enchantAppliesToItem } from './utils';
 
 export const getWeaponDPS = (item: Item, upgradeStep: ItemLevelState = ItemLevelState.Base): number => {
 	const { weaponDamageMin, weaponDamageMax } = item.scalingOptions[upgradeStep];

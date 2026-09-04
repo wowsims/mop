@@ -23,8 +23,8 @@ import { WOWHEAD_EXPANSION_ENV } from '../wowhead';
 import { EquippedItem } from './equipped_item';
 import { Gear, ItemSwapGear } from './gear';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';
+import { getEligibleEnchantSlots, getEligibleItemSlots } from './items';
 import { Stats } from './stats';
-import { getEligibleEnchantSlots, getEligibleItemSlots } from './utils';
 
 const dbUrlJson = '/mop/assets/database/db.json';
 const dbUrlBin = '/mop/assets/database/db.bin';

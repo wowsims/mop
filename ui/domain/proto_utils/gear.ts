@@ -7,8 +7,8 @@ import { sum } from '../math';
 import { Database } from './database';
 import { EquippedItem, ReforgeData } from './equipped_item';
 import { gemMatchesSocket, isMetaGemActive } from './gems';
+import { isBluntWeaponType, isSharpWeaponType, validWeaponCombo } from './items';
 import { Stats } from './stats';
-import { isBluntWeaponType, isSharpWeaponType, validWeaponCombo } from './utils';
 
 type InternalGear = Record<ItemSlot, EquippedItem | null>;
 
@@ -463,7 +463,6 @@ export class Gear extends BaseGear {
 		const totalIlvl = sum(items.filter((item): item is EquippedItem => item != null).map(item => item.ilvl));
 		return totalIlvl / itemSlotsToCount;
 	}
-
 }
 
 /**

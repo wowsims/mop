@@ -1,6 +1,6 @@
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/utils';
+import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/items';
 import { Emitter } from '@domain/state/events';
 import type { IndividualSimHost } from '@features/sim_host';
 import { ItemLevelState, ItemSpec } from '@generated/proto/common';
