@@ -136,7 +136,7 @@ var ClassBaseStats = map[proto.Class]stats.Stats{
 	proto.Class_ClassPaladin: {
 		stats.Health:      146663,
 		stats.Agility:     105,
-		stats.Strength:    178,
+		stats.Strength:    179,
 		stats.Intellect:   114,
 		stats.Spirit:      123,
 		stats.Stamina:     169,
@@ -216,7 +216,7 @@ var ClassBaseStats = map[proto.Class]stats.Stats{
 	proto.Class_ClassMonk: {
 		stats.Health:      146663,
 		stats.Agility:     113,
-		stats.Strength:    94,
+		stats.Strength:    95,
 		stats.Intellect:   169,
 		stats.Spirit:      190,
 		stats.Stamina:     113,
