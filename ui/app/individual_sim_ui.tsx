@@ -16,7 +16,7 @@ import {
 	updateIndividualSimProtoVersion,
 } from '@domain/state/serialization';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
+import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { CharacterStats } from '@features/character-stats/view/character_stats';
 import { ItemNotice } from '@features/gear/view/item_notice';
