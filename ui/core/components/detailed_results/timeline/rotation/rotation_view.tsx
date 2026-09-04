@@ -7,9 +7,9 @@ import { delegateTooltips } from '../tooltips';
 import { createItemRenderer } from './components/rotation_items';
 import { RotationRowElem, RowLabelCell, SectionHeaderRow, SeparatorRowElem } from './components/rotation_row';
 import { RotationToolbar } from './components/rotation_toolbar';
-import { VisibilityBar, VisibilityChip, VisibilityGroup } from './components/visibility_bar';
-import type { ContentRow, HeaderRow, RotationModel, Row, Section } from './model';
+import type { ContentRow, HeaderRow, RotationModel, Row } from './model';
 import { computeOrder } from './model';
+import { RotationFloatingActionBar } from './rotation_floating_action_bar';
 import { RowTrack } from './row_track';
 import { Ruler } from './ruler';
 import type { WindowHost } from './timeline_window';
@@ -26,21 +26,6 @@ interface MountedRow {
 	delegate: Instance;
 }
 
-function sectionTitle(section: Section): string {
-	switch (section.kind) {
-		case 'player':
-			return 'Player';
-		case 'buffs':
-			return 'Buffs';
-		case 'targetCasts':
-			return `${section.label} - Casts`;
-		case 'targetDebuffs':
-			return `${section.label} - Debuffs`;
-		default:
-			return section.label;
-	}
-}
-
 export class RotationView extends Component implements WindowHost {
 	readonly secondaryResource: SecondaryResource | null;
 
@@ -50,22 +35,12 @@ export class RotationView extends Component implements WindowHost {
 	private readonly zoom: ZoomController;
 	private readonly rowWindow: TimelineWindow;
 	private readonly visibility = new VisibilityState();
-
-	private readonly visibilityRoot: HTMLDivElement;
-	private readonly toggleButton: HTMLButtonElement;
-	private readonly showAllButton: HTMLButtonElement;
-	private readonly panelInner: HTMLElement;
-	private readonly summaryElem: HTMLElement;
-	private readonly previewElem: HTMLElement;
-	private readonly groupsElem: HTMLDivElement;
+	private readonly actionBar: RotationFloatingActionBar;
 
 	private readonly mountedRows = new Map<string, MountedRow>();
-	private readonly chips = new Map<string, HTMLButtonElement>();
 
 	private model: RotationModel | null = null;
 	private frame: number | null = null;
-	private groupsBuilt = false;
-	private expanded = false;
 	private paneWidth = 0;
 
 	constructor(parent: HTMLElement, config: RotationViewConfig) {
@@ -81,15 +56,8 @@ export class RotationView extends Component implements WindowHost {
 		const contentRef = ref<HTMLDivElement>();
 		const topSpacerRef = ref<HTMLDivElement>();
 		const bottomSpacerRef = ref<HTMLDivElement>();
-		const toggleRef = ref<HTMLButtonElement>();
-		const summaryRef = ref<HTMLSpanElement>();
-		const previewRef = ref<HTMLSpanElement>();
-		const showAllRef = ref<HTMLButtonElement>();
-		const panelRef = ref<HTMLDivElement>();
-		const groupsRef = ref<HTMLDivElement>();
 
 		const toolbar = RotationToolbar({ zoomOutRef, zoomInRef, fitRef, resetRef });
-		const visibilityBar = VisibilityBar({ toggleRef, summaryRef, previewRef, showAllRef, panelRef, groupsRef });
 
 		this.rootElem.appendChild(
 			<>
@@ -103,21 +71,12 @@ export class RotationView extends Component implements WindowHost {
 						<div ref={bottomSpacerRef} className="rotation-vspacer" />
 					</div>
 				</div>
-				{visibilityBar}
 			</>,
 		);
 
 		this.corner = toolbar;
 		this.scroller = scrollerRef.value!;
-		this.visibilityRoot = visibilityBar;
-		this.toggleButton = toggleRef.value!;
-		this.showAllButton = showAllRef.value!;
-		this.summaryElem = summaryRef.value!;
-		this.previewElem = previewRef.value!;
-		this.groupsElem = groupsRef.value!;
-		// overflow: hidden hides the collapsed chips but leaves them in the tab order.
-		this.panelInner = panelRef.value!.firstElementChild as HTMLElement;
-		this.panelInner.inert = true;
+		this.actionBar = this.addChild(new RotationFloatingActionBar(this.rootElem, this.visibility));
 
 		this.ruler = new Ruler(canvasRef.value!);
 		this.zoom = new ZoomController({
@@ -139,11 +98,6 @@ export class RotationView extends Component implements WindowHost {
 		fitRef.value!.addEventListener('click', () => this.zoom.fitToWidth());
 		resetRef.value!.addEventListener('click', () => this.zoom.reset());
 
-		this.toggleButton.addEventListener('click', () => this.setExpanded(!this.expanded));
-		this.showAllButton.addEventListener('click', () => this.visibility.showAll());
-		this.groupsElem.addEventListener('click', event => this.onChipClick(event));
-		this.visibilityRoot.addEventListener('keydown', event => this.onPanelKeyDown(event));
-
 		this.addOnDisposeCallback(this.visibility.subscribe(() => this.onVisibilityChanged()));
 		this.addOnDisposeCallback(() => {
 			if (this.frame != null) cancelAnimationFrame(this.frame);
@@ -152,20 +106,15 @@ export class RotationView extends Component implements WindowHost {
 			this.zoom.dispose();
 			this.rowWindow.unmountAll();
 		});
-
-		this.updateSummary();
 	}
 
 	setModel(model: RotationModel | null) {
 		this.model = model;
 		this.rowWindow.unmountAll();
-		this.chips.clear();
-		this.groupsElem.replaceChildren();
-		this.groupsBuilt = false;
+		this.actionBar.setModel(model);
 
 		if (!model) {
 			this.rowWindow.invalidate([], () => 0);
-			this.updateSummary();
 			this.schedule();
 			return;
 		}
@@ -175,7 +124,6 @@ export class RotationView extends Component implements WindowHost {
 		this.measureLabelWidth();
 		this.ruler.measure();
 		this.rebuildOrder();
-		if (this.expanded) this.ensureGroups();
 		this.schedule();
 	}
 
@@ -246,12 +194,11 @@ export class RotationView extends Component implements WindowHost {
 		const model = this.model;
 		if (!model) return;
 		this.rowWindow.invalidate(computeOrder(model, this.visibility.hidden), key => this.rowFor(key).height);
-		this.updateSummary();
 	}
 
 	private onVisibilityChanged() {
 		this.rebuildOrder();
-		this.syncChips();
+		this.actionBar.sync();
 		this.schedule();
 	}
 
@@ -293,81 +240,5 @@ export class RotationView extends Component implements WindowHost {
 		const pps = this.zoom.pps;
 		this.rowWindow.update(pps, this.corner.offsetWidth);
 		this.ruler.draw({ scrollLeft: this.scroller.scrollLeft, pps, duration: this.model?.duration ?? 0 });
-	}
-
-	private setExpanded(expanded: boolean) {
-		this.expanded = expanded;
-		this.visibilityRoot.dataset.expanded = String(expanded);
-		this.toggleButton.setAttribute('aria-expanded', String(expanded));
-		this.panelInner.inert = !expanded;
-		if (expanded) this.ensureGroups();
-	}
-
-	private ensureGroups() {
-		const model = this.model;
-		if (this.groupsBuilt || !model) return;
-		this.groupsBuilt = true;
-		this.chips.clear();
-
-		const groups = model.sections
-			.map(section => ({ section, rows: section.rowKeys.map(key => this.rowFor(key)).filter((row): row is ContentRow => row.hideable) }))
-			.filter(group => group.rows.length > 0)
-			.map(({ section, rows }) =>
-				VisibilityGroup({
-					title: sectionTitle(section),
-					chips: rows.map(row => {
-						const chip = VisibilityChip({ rowKey: row.key, label: row.label });
-						this.chips.set(row.key, chip);
-						return chip;
-					}),
-				}),
-			);
-		this.groupsElem.replaceChildren(...groups);
-		this.syncChips();
-	}
-
-	private syncChips() {
-		this.chips.forEach((chip, key) => {
-			const hidden = this.visibility.isHidden(key);
-			chip.setAttribute('aria-checked', String(!hidden));
-			chip.classList.toggle('is-hidden', hidden);
-		});
-	}
-
-	private updateSummary() {
-		const model = this.model;
-		const hiddenKeys = [...this.visibility.hidden].filter(key => !!model?.byKey.has(key));
-		this.summaryElem.textContent = hiddenKeys.length ? `${hiddenKeys.length} hidden` : 'All rows shown';
-		const labels = hiddenKeys.slice(0, 3).map(key => {
-			const row = this.rowFor(key);
-			return row.kind === 'separator' ? '' : row.label;
-		});
-		this.previewElem.textContent = labels.length ? `${labels.join(', ')}${hiddenKeys.length > labels.length ? ', …' : ''}` : '';
-		this.showAllButton.hidden = hiddenKeys.length === 0;
-	}
-
-	private onChipClick(event: Event) {
-		const chip = (event.target as Element).closest<HTMLButtonElement>('.rotation-chip');
-		const key = chip?.dataset.rowKey;
-		if (key) this.visibility.set(key, !this.visibility.isHidden(key));
-	}
-
-	private onPanelKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			this.setExpanded(false);
-			this.toggleButton.focus();
-			event.preventDefault();
-			return;
-		}
-		if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-		const chip = (event.target as Element).closest<HTMLButtonElement>('.rotation-chip');
-		const group = chip?.parentElement;
-		if (!chip || !group) return;
-		const chips = [...group.querySelectorAll<HTMLButtonElement>('.rotation-chip')];
-		const next = chips[(chips.indexOf(chip) + (event.key === 'ArrowRight' ? 1 : chips.length - 1)) % chips.length];
-		chip.tabIndex = -1;
-		next.tabIndex = 0;
-		next.focus();
-		event.preventDefault();
 	}
 }

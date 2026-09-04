@@ -1,5 +1,6 @@
 .rotation-pane {
 	--label-w: clamp(8rem, 14rem, 20rem);
+	--rotation-fab-h: calc(2.75rem + 2 * var(--spacer-2) + 2 * var(--bs-border-width));
 	--rotation-row-bg: var(--bs-body-bg);
 	--rotation-cast-bg: rgba(229, 204, 128, 0.7);
 	--rotation-cast-cancel-bg: rgba(230, 128, 102, 0.7);
@@ -63,9 +64,12 @@
 	--duration: 0;
 
 	position: relative;
-	flex: 1 1 auto;
+	// Never flexes: a sibling below it must not be able to shrink the timeline viewport.
+	flex: 0 0 auto;
 	min-height: 0;
 	max-height: 70vh;
+	// Room for the floating action bar so the last row still scrolls clear of it once it is stuck.
+	padding-bottom: var(--rotation-fab-h);
 	overflow: auto;
 	outline: none;
 }
@@ -82,7 +86,8 @@
 // No z-index, transform, filter, will-change or content-visibility here: each either makes the
 // row a containing block that kills the sticky label, or applies size containment off-screen so
 // offsetHeight lies to the windower's prefix sums.
-.rotation-row {
+// Pane-scoped while the old view still ships: it puts .rotation-row on its rows too.
+.rotation-pane .rotation-row {
 	display: flex;
 	align-items: stretch;
 	box-sizing: border-box;
@@ -139,7 +144,7 @@
 	}
 }
 
-.rotation-label-text {
+.rotation-pane .rotation-label-text {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -346,112 +351,5 @@
 		&.cast-cancelled {
 			background-color: var(--bs-cancel);
 		}
-	}
-}
-
-.rotation-visibility {
-	position: sticky;
-	bottom: 0;
-	z-index: 4;
-	flex: 0 0 auto;
-	border-top: 1px solid var(--bs-border-color);
-	background: var(--bs-body-bg);
-}
-
-.rotation-visibility-bar {
-	display: flex;
-	align-items: center;
-	padding: var(--spacer-2);
-	gap: var(--spacer-2);
-}
-
-.rotation-visibility-toggle {
-	display: flex;
-	flex: 1 1 auto;
-	align-items: center;
-	min-width: 0;
-	padding: 0;
-	border: 0;
-	background: transparent;
-	color: var(--bs-white);
-	text-align: left;
-	gap: var(--spacer-2);
-	cursor: pointer;
-}
-
-.rotation-visibility-summary {
-	flex: 0 0 auto;
-	font-weight: bold;
-}
-
-.rotation-visibility-preview {
-	overflow: hidden;
-	opacity: 0.7;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.rotation-visibility-show-all {
-	flex: 0 0 auto;
-	padding: 0 var(--spacer-2);
-	border: 1px solid var(--bs-border-color);
-	border-radius: var(--bs-border-radius);
-	background: transparent;
-	color: var(--bs-white);
-	cursor: pointer;
-}
-
-// Hand-rolled collapse: bootstrap's collapse/accordion SCSS is not compiled into this project.
-.rotation-visibility-panel {
-	display: grid;
-	grid-template-rows: 0fr;
-	transition: grid-template-rows 150ms ease;
-}
-
-.rotation-visibility-panel-inner {
-	min-height: 0;
-	overflow: hidden;
-}
-
-.rotation-visibility[data-expanded='true'] .rotation-visibility-panel {
-	grid-template-rows: 1fr;
-}
-
-.rotation-visibility-groups {
-	display: flex;
-	flex-direction: column;
-	max-height: 40vh;
-	padding: var(--spacer-2);
-	overflow-y: auto;
-	gap: var(--spacer-2);
-}
-
-.rotation-chip-group-title {
-	margin-bottom: var(--spacer-1);
-	font-weight: bold;
-}
-
-.rotation-chip-group-chips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--spacer-1);
-}
-
-.rotation-chip {
-	padding: 0 var(--spacer-2);
-	border: 1px solid var(--bs-border-color);
-	border-radius: var(--bs-border-radius);
-	background: transparent;
-	color: var(--bs-white);
-	font-size: 12px;
-	cursor: pointer;
-
-	&.is-hidden {
-		opacity: 0.45;
-		text-decoration: line-through;
-	}
-
-	&:focus-visible {
-		outline: 2px solid var(--bs-primary);
 	}
 }

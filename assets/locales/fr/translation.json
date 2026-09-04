@@ -2010,6 +2010,12 @@
 					"after": "Après",
 					"threat": "Menace",
 					"active_auras": "Auras Actives"
+				},
+				"floatingActionBar": {
+					"allShown": "Toutes les lignes affichées",
+					"hidden": "{{count}} masquée(s)",
+					"showAll": "Tout afficher",
+					"toggle": "Afficher ou masquer les lignes"
 				}
 			},
 			"logs": {

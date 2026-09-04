@@ -2009,6 +2009,12 @@
 					"after": "After",
 					"threat": "Threat",
 					"active_auras": "Active Auras"
+				},
+				"floatingActionBar": {
+					"allShown": "All rows shown",
+					"hidden": "{{count}} hidden",
+					"showAll": "Show all",
+					"toggle": "Toggle hidden rows"
 				}
 			},
 			"logs": {

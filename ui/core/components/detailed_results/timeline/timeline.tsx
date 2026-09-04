@@ -27,6 +27,8 @@ import {
 	ROW_WINDOW_PADDING_PX,
 	SPELL_ACTION_CATEGORY,
 } from './constants';
+import { buildRotationModel } from './rotation/model';
+import { RotationView } from './rotation/rotation_view';
 import { resourceTooltip } from './tooltip_content';
 import { addTooltip, delegateTooltips } from './tooltips';
 import { RotationSlot, TimelineConfig } from './types';
@@ -40,6 +42,7 @@ export class Timeline extends ResultComponent {
 	private readonly rotationLabels: HTMLElement;
 	private readonly rotationTimeline: HTMLElement;
 	private readonly rotationHiddenIdsContainer: HTMLElement;
+	private readonly rotationView: RotationView | null;
 	// Rebuilt with the rotation subtree, so it is captured where it is created.
 	private rotationCanvas: HTMLCanvasElement | null = null;
 	private readonly chartPicker: ChartViewPicker;
@@ -60,6 +63,7 @@ export class Timeline extends ResultComponent {
 	private hiddenIds: Array<{ scope: string; actionId: ActionId }>;
 
 	private rowWindowFrame: number | null = null;
+	private rotationModelKey: string | null = null;
 
 	private secondaryResource?: SecondaryResource | null;
 
@@ -126,16 +130,21 @@ export class Timeline extends ResultComponent {
 		const rotationLabelsRef = ref<HTMLDivElement>();
 		const rotationTimelineRef = ref<HTMLDivElement>();
 		const rotationHiddenIdsRef = ref<HTMLDivElement>();
+		const rotationLegacyRef = ref<HTMLDivElement>();
+		const rotationNextRef = ref<HTMLDivElement>();
 
 		this.rootElem.appendChild(
 			<div className="timeline-plots-container">
 				<div ref={dpsResourcesPlotRef} className="timeline-plot dps-resources-plot hide"></div>
 				<div ref={rotationPlotRef} className="timeline-plot rotation-plot">
-					<div className="rotation-container">
-						<div ref={rotationLabelsRef} className="rotation-labels"></div>
-						<div ref={rotationTimelineRef} className="rotation-timeline" draggable={true}></div>
+					<div ref={rotationLegacyRef} className="rotation-legacy">
+						<div className="rotation-container">
+							<div ref={rotationLabelsRef} className="rotation-labels"></div>
+							<div ref={rotationTimelineRef} className="rotation-timeline" draggable={true}></div>
+						</div>
+						<div ref={rotationHiddenIdsRef} className="rotation-hidden-ids"></div>
 					</div>
-					<div ref={rotationHiddenIdsRef} className="rotation-hidden-ids"></div>
+					<div ref={rotationNextRef} className="rotation-next"></div>
 				</div>
 			</div>,
 		);
@@ -153,6 +162,12 @@ export class Timeline extends ResultComponent {
 		this.rotationLabels = rotationLabelsRef.value!;
 		this.rotationTimeline = rotationTimelineRef.value!;
 		this.rotationHiddenIdsContainer = rotationHiddenIdsRef.value!;
+
+		this.rotationView = new URLSearchParams(window.location.search).has('newTimeline')
+			? this.addChild(new RotationView(rotationNextRef.value!, { secondaryResource: this.secondaryResource }))
+			: null;
+		rotationLegacyRef.value!.classList.toggle('hide', !!this.rotationView);
+		rotationNextRef.value!.classList.toggle('hide', !this.rotationView);
 
 		let isMouseDown = false;
 		let startX = 0;
@@ -256,7 +271,7 @@ export class Timeline extends ResultComponent {
 			this.setRotationOptionVisible(true);
 
 			try {
-				this.updateRotationChart(player, duration);
+				this.updateRotation(player, duration);
 			} catch (e) {
 				console.log('Failed to update rotation chart: ', e);
 			}
@@ -272,6 +287,8 @@ export class Timeline extends ResultComponent {
 
 			this.stashLiveSlot();
 			this.clearRotationChart();
+			this.rotationModelKey = null;
+			this.rotationView?.setModel(null);
 			// No rotation subtree, but the (expensive) per-player series are worth caching for swaps.
 			this.liveSlot = Timeline.newSlot(key);
 
@@ -290,6 +307,23 @@ export class Timeline extends ResultComponent {
 			</div>,
 		);
 		this.rotationHiddenIdsContainer.replaceChildren();
+	}
+
+	private updateRotation(player: UnitMetrics, duration: number) {
+		if (!this.rotationView) {
+			this.updateRotationChart(player, duration);
+			return;
+		}
+		const targets = this.resultData!.result.getTargets(this.resultData!.filter);
+		if (targets.length == 0) {
+			return;
+		}
+		const key = this.resultKey();
+		if (this.rotationModelKey === key) {
+			return;
+		}
+		this.rotationModelKey = key;
+		this.rotationView.setModel(buildRotationModel({ player, targets, duration, secondaryResource: this.secondaryResource }));
 	}
 
 	private updateRotationChart(player: UnitMetrics, duration: number) {
@@ -1015,6 +1049,7 @@ export class Timeline extends ResultComponent {
 		if (this.parkedSlot) this.destroySlot(this.parkedSlot);
 		this.liveSlot = null;
 		this.parkedSlot = null;
+		this.rotationModelKey = null;
 		super.reset();
 	}
 }

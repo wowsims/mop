@@ -31,6 +31,10 @@ export class TimelineWindow {
 		const offsets = new Float64Array(order.length + 1);
 		for (let i = 0; i < order.length; i++) offsets[i + 1] = offsets[i] + heightOf(order[i]);
 		this.offsets = offsets;
+		// The scroller is sized by its content, and update() bails while it has no height, so the
+		// spacers have to carry the full height before the first window pass or nothing ever mounts.
+		this.setSpacer(this.topSpacer, 0);
+		this.setSpacer(this.bottomSpacer, offsets[order.length]);
 		this.resetGuard();
 	}
 

@@ -1,0 +1,78 @@
+// Chrome only once pinned, as in .apl-floating-action-bar-root. --apl-spacer is scoped to the
+// APL picker subtree and resolves to nothing here, so the padding is var(--spacer-2) directly.
+.rotation-floating-action-bar-root {
+	position: sticky;
+	bottom: 0;
+	z-index: 4;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	min-height: var(--rotation-fab-h);
+	margin-top: var(--block-spacer);
+	border: 0 solid var(--bs-border-color);
+	transition:
+		padding 0.15s ease-in-out,
+		border-width 0.15s ease-in-out,
+		background-color 0.15s ease-in-out;
+
+	&.stuck {
+		padding: var(--spacer-2);
+		border-width: var(--bs-border-width);
+		background: var(--bs-body-bg);
+	}
+}
+
+.rotation-fab-preview {
+	margin-left: var(--spacer-2);
+	overflow: hidden;
+	opacity: 0.75;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rotation-fab-toggle {
+	min-width: 0;
+}
+
+// Overlays the rows above the bar rather than growing it, so the timeline viewport never resizes.
+// Hand-rolled collapse: bootstrap's collapse/accordion SCSS is not compiled into this project.
+.rotation-fab-panel {
+	position: absolute;
+	right: 0;
+	bottom: 100%;
+	left: 0;
+	display: grid;
+	grid-template-rows: 0fr;
+	border: var(--bs-border-width) solid var(--bs-border-color);
+	background: var(--bs-body-bg);
+	transition: grid-template-rows 150ms ease;
+}
+
+.rotation-fab-panel-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.rotation-floating-action-bar-root[data-expanded='true'] .rotation-fab-panel {
+	grid-template-rows: 1fr;
+}
+
+.rotation-fab-groups {
+	display: flex;
+	flex-direction: column;
+	max-height: min(45vh, 26rem);
+	padding: var(--spacer-2);
+	overflow-y: auto;
+	gap: var(--spacer-2);
+}
+
+.rotation-fab-group-title {
+	margin-bottom: var(--spacer-1);
+	font-weight: bold;
+}
+
+.rotation-fab-group-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacer-1);
+}
