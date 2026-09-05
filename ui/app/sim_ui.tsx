@@ -8,7 +8,7 @@ import { SimResult } from '@domain/proto_utils/sim_result';
 import { RunSimOptions, Sim, SimError } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
-import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { subscribeSimField } from '@domain/state/subscriptions';
 import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
@@ -65,7 +65,8 @@ export abstract class SimUI extends Component implements SimHost {
 	constructor(dom: ShellDom, sim: Sim, config: SimUIConfig) {
 		// Adopted, not built: `buildShellDom` owns the markup. `rootCssClass` still adds `sim-ui`, so
 		// the class list on the element is unchanged.
-		super(null, 'sim-ui', dom.root);
+		// No `rootCssClass`: the root's whole class list is React's (app/shell_classes.ts).
+		super(null, undefined, dom.root);
 		this.dom = dom;
 		this.sim = sim;
 		this.config = config;
@@ -76,64 +77,7 @@ export abstract class SimUI extends Component implements SimHost {
 		this.simMain = dom.main;
 		this.tabs = new SimTabRegistry(this.simMain);
 
-		this.rootElem.classList.add(this.config.cssClass);
-
-		if (this.config.spec.isHealingSpec) {
-			this.rootElem.classList.add('sim-type--heal');
-		} else if (this.config.spec.isTankSpec) {
-			this.rootElem.classList.add('sim-type--tank');
-		} else if (this.config.spec.isMeleeDpsSpec || this.config.spec.isRangedDpsSpec) {
-			this.rootElem.classList.add('sim-type--dps', this.config.spec.isMeleeDpsSpec ? 'sim-type--melee' : 'sim-type--ranged');
-		}
-
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
-
-		const updateShowDamageMetrics = () => {
-			if (this.sim.getShowDamageMetrics()) this.rootElem.classList.remove('hide-damage-metrics');
-			else this.rootElem.classList.add('hide-damage-metrics');
-		};
-		updateShowDamageMetrics();
-		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowDamageMetrics);
-
-		const updateShowThreatMetrics = () => {
-			if (this.sim.getShowThreatMetrics()) this.rootElem.classList.remove('hide-threat-metrics');
-			else this.rootElem.classList.add('hide-threat-metrics');
-		};
-		updateShowThreatMetrics();
-		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowThreatMetrics);
-
-		const updateShowHealingMetrics = () => {
-			if (this.sim.getShowHealingMetrics()) this.rootElem.classList.remove('hide-healing-metrics');
-			else this.rootElem.classList.add('hide-healing-metrics');
-		};
-		updateShowHealingMetrics();
-		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowHealingMetrics);
-
-		const updateShowEpRatios = () => {
-			// Threat metrics *always* shows multiple columns, so
-			// always show ratios when they are shown
-			if (this.sim.getShowThreatMetrics()) {
-				this.rootElem.classList.remove('hide-ep-ratios');
-				// This case doesn't currently happen, but who knows
-				// what the future holds...
-			} else if (this.sim.getShowDamageMetrics() && this.sim.getShowHealingMetrics()) {
-				this.rootElem.classList.remove('hide-ep-ratios');
-			} else {
-				this.rootElem.classList.add('hide-ep-ratios');
-			}
-		};
-
-		updateShowEpRatios();
-		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowEpRatios);
-		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowEpRatios);
-		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowEpRatios);
-
-		const updateShowExperimental = () => {
-			if (this.sim.getShowExperimental()) this.rootElem.classList.remove('hide-experimental');
-			else this.rootElem.classList.add('hide-experimental');
-		};
-		updateShowExperimental();
-		subscribeUiField(this.sim, 'showExperimental')(updateShowExperimental);
 
 		this.addKnownIssues(config);
 

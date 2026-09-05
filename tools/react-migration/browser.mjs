@@ -22,7 +22,9 @@ const loadChromium = async () => {
 	}
 };
 
-export const SPECS = ['warrior/arms', 'mage/fire', 'hunter/beast_mastery', 'monk/windwalker', 'priest/shadow'];
+// A tank is in here deliberately: the list was all DPS, and `hide-healing-metrics` is computed from
+// a tank-spec list, so a class that only ever appears on tanks went unchecked by every gate.
+export const SPECS = ['warrior/arms', 'mage/fire', 'hunter/beast_mastery', 'monk/windwalker', 'priest/shadow', 'warrior/protection'];
 
 // Two static servers: the parent branch's build and this one's. See README.md.
 export const PORTS = { base: Number(process.env.BASE_PORT ?? 3401), react: Number(process.env.REACT_PORT ?? 3402) };

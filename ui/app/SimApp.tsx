@@ -26,7 +26,11 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 
 	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
 	// any of those nodes would take the vanilla content with it. See SimShell's own note.
-	const shell = useMemo(() => <SimShell domRef={domRef} />, []);
+	const shell = useMemo(
+		() => <SimShell domRef={domRef} sim={player.sim} cssClass={def.cssClass} spec={player.getPlayerSpec()} />,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
 
 	useLayoutEffect(() => {
 		if (constructed.current || !domRef.current) return;

@@ -1,3 +1,4 @@
+import { createSimStore } from '@domain/state/sim_store';
 import { render } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -33,8 +34,18 @@ vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="
 
 const { SimApp } = await import('./SimApp');
 
-const player = {} as never;
-const def = {} as never;
+// The shell reads the metric toggles off a real store — `subscribeUiField` selects from it — and the
+// spec's shape decides the `sim-type--*` class, so both have to be genuine rather than empty casts.
+const sim = {
+	store: createSimStore(),
+	getShowDamageMetrics: () => true,
+	getShowThreatMetrics: () => false,
+	getShowHealingMetrics: () => false,
+	getShowExperimental: () => false,
+};
+const spec = { isHealingSpec: false, isTankSpec: false, isMeleeDpsSpec: true, isRangedDpsSpec: false };
+const player = { sim, getPlayerSpec: () => spec } as never;
+const def = { cssClass: 'arms-warrior-sim-ui' } as never;
 
 describe('SimApp', () => {
 	beforeEach(() => {

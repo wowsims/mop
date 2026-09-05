@@ -742,9 +742,22 @@ Three separate things depend on that, which is why it is not an optimisation:
 `SimShell` fills a `RefObject<ShellDom>` in a layout effect, and `SimApp` constructs against it in
 its own — a child's layout effect runs before its parent's, so both happen in one commit.
 
-**Neither root carries a `className`.** `Component`'s `rootCssClass` still adds `sim-ui` and
-`sim-header`, and `SimUI` appends the rest. The class list is all-or-nothing: mixing React and
-`classList` on one element means the next React render drops whatever vanilla added.
+**The root's class list is React's, all of it** (`app/shell_classes.ts`, small pure functions with
+their own suite). It has to be all or nothing: React writes `className` wholesale, so an element
+cannot have half its list from React and half from `classList` without the next render dropping the
+other half. `.sim-header` still takes its class from `Component`'s `rootCssClass`, which owns that
+element's list outright.
+
+**One class per subscription, over the fields that class depends on.** The vanilla shell ran five
+updaters with five different field sets, and collapsing them into one subscription is a behaviour
+change, not a tidy-up. It also surfaced a real bug: `Sim.getShowHealingMetrics()` is
+`showHealingMetrics || (showThreatMetrics && <tank spec>)`, but vanilla only recomputed that class
+on `showHealingMetrics` — so a tank whose saved settings turned threat on kept `hide-healing-metrics`
+from construction and hid columns its own rule says to show. Fixed, and recorded as an asserted
+`INTENDED` divergence.
+
+**The gate's default spec list was all DPS**, which is why a tank-only class went unchecked by every
+gate for the whole migration. `warrior/protection` is in it now.
 
 `SimApp.test.tsx` guards the remount case directly — it appends a marker to a container after
 construction and asserts it survives the render that sets `simUI`. Verified by mutation: forcing a
@@ -810,6 +823,10 @@ allowlist. An entry names the exact `base` and `react` lines, and the gate fails
 is *not observed*, as loudly as it would have failed for making the change unrecorded. Reverting the
 markup is a failure; so is the markup moving out from under the entry. The old two-entry allowlist
 this file used to carry could only subtract, which is why it was deleted rather than extended.
+
+An entry may also carry a `match(base, react)` predicate instead of a fixed pair, for a line whose
+text varies per spec — the root's class list carries the spec's own class, so the healing-metrics
+entry could not be written as two literals.
 
 First entry: the sidebar's `.character-stats-label` is an `<h3>`, not a `<label>`. A `<label>` with
 no control labels nothing — it was a heading wearing the wrong element. The styling is unchanged and

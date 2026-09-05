@@ -124,7 +124,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			knownIssues: config.knownIssues,
 			simStatus: player.getPlayerSpec().launch,
 		});
-		this.rootElem.classList.add('individual-sim-ui');
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
 		this.raidSimResultsManager = null;

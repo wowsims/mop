@@ -34,7 +34,15 @@ const INTENDED = [
 		react: 'h3.character-stats-label',
 		why: 'a <label> with no control is not a label; the sidebar heading is a heading',
 	},
+	{
+		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
+		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
+		describe: 'react drops hide-healing-metrics on a tank spec',
+		why: 'Sim.getShowHealingMetrics() derives from showThreatMetrics, and the vanilla shell only recomputed that class on showHealingMetrics — so a tank whose saved settings turned threat on kept hiding columns its own rule says to show',
+	},
 ];
+
+const matches = (entry, base, react) => (entry.match ? entry.match(base, react) : base === entry.base && react === entry.react);
 
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
@@ -76,7 +84,7 @@ for (const spec of specsFromArgv()) {
 		const { la, lb, at } = lineDiffs(base, react);
 		sizes.push(`${name}=${lb.length}`);
 		const unexpected = at.filter(i => {
-			const entry = INTENDED.find(e => la[i]?.trim() === e.base && lb[i]?.trim() === e.react);
+			const entry = INTENDED.find(e => matches(e, la[i]?.trim() ?? '', lb[i]?.trim() ?? ''));
 			if (entry) seen.add(entry);
 			return !entry;
 		});
@@ -113,7 +121,7 @@ await browser.close();
 const stale = INTENDED.filter(entry => !seen.has(entry));
 for (const entry of stale) {
 	fail++;
-	console.log(`FAIL  intended divergence never observed: ${entry.base} -> ${entry.react} (${entry.why})`);
+	console.log(`FAIL  intended divergence never observed: ${entry.describe ?? `${entry.base} -> ${entry.react}`} (${entry.why})`);
 }
 
 console.log(`\n${pass} pass, ${fail} fail`);

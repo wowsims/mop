@@ -1,11 +1,36 @@
+import type { PlayerSpec } from '@domain/player_spec';
+import type { Sim } from '@domain/sim';
+import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
-import { type RefObject, useLayoutEffect, useRef } from 'react';
+import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { type RefObject, useLayoutEffect, useMemo, useRef } from 'react';
 
+import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
+
+type UiToggle = 'showDamageMetrics' | 'showThreatMetrics' | 'showHealingMetrics' | 'showExperimental';
+
+// Module-level so each array has a stable identity across renders, which is what lets the
+// subscription below depend on it directly instead of on a joined string.
+const DAMAGE_FIELDS: UiToggle[] = ['showDamageMetrics'];
+const THREAT_FIELDS: UiToggle[] = ['showThreatMetrics'];
+const HEALING_FIELDS: UiToggle[] = ['showHealingMetrics', 'showThreatMetrics'];
+const EXPERIMENTAL_FIELDS: UiToggle[] = ['showExperimental'];
+const EP_RATIO_FIELDS: UiToggle[] = ['showDamageMetrics', 'showHealingMetrics', 'showThreatMetrics'];
+
+/** One class, one subscription, over the fields that class actually depends on. */
+const useMetricFlag = (sim: Sim, fields: UiToggle[], read: () => boolean) => {
+	const subscribe = useMemo(() => subscribeAll(fields.map(field => subscribeUiField(sim, field))), [sim, fields]);
+	return useStoreSubscribe(subscribe, read);
+};
 
 export interface SimShellProps {
 	/** Filled in a layout effect, before `SimApp`'s own effect constructs the shell into it. */
 	domRef: RefObject<ShellDom | null>;
+	sim: Sim;
+	/** The spec's own class, e.g. `arms-warrior-sim-ui`. */
+	cssClass: string;
+	spec: PlayerSpec<any>;
 	noticeText?: string;
 }
 
@@ -21,11 +46,12 @@ export interface SimShellProps {
  * - `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` while the tabs are constructed, so
  *   the header has to be laid out in this first render, not a later one.
  *
- * Neither root carries a `className`: `Component`'s `rootCssClass` still adds `sim-ui` and
- * `sim-header`, and `SimUI` appends the rest of the list. That list becomes React's in its own
- * commit — mixing the two would drop whatever vanilla added on the next render.
+ * The root's class list is React's, all of it — see `shell_classes.ts`. It has to be all or
+ * nothing: React writes `className` wholesale, so an element cannot have half its list from React
+ * and half from `classList` without the next render dropping the other half. `.sim-header` still
+ * gets its class from `Component`'s `rootCssClass`, which owns that element's list outright.
  */
-export const SimShell = ({ domRef, noticeText }: SimShellProps) => {
+export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const title = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
@@ -37,6 +63,23 @@ export const SimShell = ({ domRef, noticeText }: SimShellProps) => {
 	const header = useRef<HTMLElement>(null);
 	const tabsMount = useRef<HTMLDivElement>(null);
 	const toolbar = useRef<HTMLDivElement>(null);
+
+	// One subscription per class, listing the fields that class actually depends on.
+	//
+	// Healing subscribes to threat as well as to itself, which the vanilla shell did not:
+	// `Sim.getShowHealingMetrics()` is `showHealingMetrics || (showThreatMetrics && <tank spec>)`,
+	// and vanilla only re-ran that updater on `showHealingMetrics`. So a tank whose saved settings
+	// turned threat on kept `hide-healing-metrics` from construction and hid columns its own rule
+	// says to show. Fixed rather than reproduced, and recorded as an intended divergence in
+	// `parity.mjs` — it is visible at load on every tank spec.
+	const damage = useMetricFlag(sim, DAMAGE_FIELDS, () => sim.getShowDamageMetrics());
+	const threat = useMetricFlag(sim, THREAT_FIELDS, () => sim.getShowThreatMetrics());
+	const healing = useMetricFlag(sim, HEALING_FIELDS, () => sim.getShowHealingMetrics());
+	const experimental = useMetricFlag(sim, EXPERIMENTAL_FIELDS, () => sim.getShowExperimental());
+	const epRatios = useMetricFlag(sim, EP_RATIO_FIELDS, () =>
+		showsEpRatios({ damage: sim.getShowDamageMetrics(), healing: sim.getShowHealingMetrics(), threat: sim.getShowThreatMetrics() }),
+	);
+	const metrics = { damage, threat, healing, epRatios, experimental };
 
 	// A child's layout effect runs before its parent's, which is what lets `SimApp` construct
 	// against a populated bundle in the very same commit.
@@ -57,7 +100,7 @@ export const SimShell = ({ domRef, noticeText }: SimShellProps) => {
 	}, [domRef]);
 
 	return (
-		<div ref={root}>
+		<div ref={root} className={simUiClasses({ cssClass, spec, metrics })}>
 			<div className="sim-root">
 				<div className="sim-bg" />
 				{noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{noticeText}</div> : null}
