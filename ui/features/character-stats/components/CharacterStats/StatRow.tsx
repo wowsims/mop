@@ -10,9 +10,9 @@ import clsx from 'clsx';
 import { useId } from 'react';
 
 import { BonusStatsLink } from './BonusStatsLink';
-import { bonusStatClass, masteryScaling } from './stat_display';
 import { TooltipNote } from './TooltipNote';
 import { TooltipRow } from './TooltipRow';
+import { bonusStatClass, masteryScaling } from './utils/stat_display';
 
 export interface StatRowProps {
 	unitStat: UnitStat;

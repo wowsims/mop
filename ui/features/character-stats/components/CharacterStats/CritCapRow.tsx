@@ -4,8 +4,8 @@ import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type CSSProperties, useId } from 'react';
 
-import { critCapClass } from './stat_display';
 import { TooltipRow } from './TooltipRow';
+import { critCapClass } from './utils/stat_display';
 
 export interface CritCapRowProps {
 	info: MeleeCritCapInfo;

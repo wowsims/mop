@@ -520,7 +520,7 @@ shell still builds, and the vanilla view is deleted. Four things are worth carry
   DOM, React fills a named container inside it.
 - **The vanilla component's `this` fields became explicit arguments.** `statDisplayString` read
   `this.player`, `this.hasRacialHitBonus` and `this.activeRacialExpertiseBonuses`, all set as a side
-  effect of `updateStats`; in `stat_display.ts` they are parameters, and `rows.ts` holds the group
+  effect of `updateStats`; in `utils/stat_display.ts` they are parameters, and `utils/rows.ts` holds the group
   order as data so the render is a map over it.
 - **The bonus-stat cell owns two tooltips**, one on the icon (hover, the stat's name) and one on the
   button (click, the `NumberPicker`), which is why `Icon` needed its rest spread — the `data-tooltip-id`
@@ -660,6 +660,11 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   This applies to `ui-kit`, `app` and ported feature components. `ui/domain/**` and un-ported
   `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
+- **A component folder holds only components at its top level.** Everything else is a named
+  companion: `types.ts` for types (`Icon/types.ts`), `utils.ts` for helpers — or `utils/` when there
+  is more than one, as `CharacterStats/utils/{stat_display,rows}.ts` is. `index.ts` is the public
+  surface. A reader scanning the folder should be able to tell what is a component from the
+  filenames alone, which is the same reason the PascalCase rule exists.
 - **PascalCase filenames for anything that renders JSX** — `PickerShell.tsx`, `SimTabs.tsx`,
   `SimHostContext.tsx`, and a co-located stylesheet follows its component (`SimTabs.scss`). Tests
   take their subject's name. Two things stay snake_case on purpose: hook modules that render nothing

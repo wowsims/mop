@@ -8,9 +8,9 @@ import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { useMemo } from 'react';
 
 import { CritCapRow } from './CritCapRow';
-import { buildRows } from './rows';
-import { meleeCritCapDisplayString, readRacialBonuses, shouldShowMeleeCritCap, statDisplayString } from './stat_display';
 import { StatRow } from './StatRow';
+import { buildRows } from './utils/rows';
+import { meleeCritCapDisplayString, readRacialBonuses, shouldShowMeleeCritCap, statDisplayString } from './utils/stat_display';
 
 /**
  * Takes no props: there is one player per page and one sidebar, and everything this needs is on the
