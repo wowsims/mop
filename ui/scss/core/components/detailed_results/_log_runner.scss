@@ -198,6 +198,16 @@
 	align-self: center;
 }
 
+// The same override the APL applies inside its picker root: the button is sitting inline in a
+// row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
+.log-search-add-field,
+.log-search-group-add {
+	.dropdown-picker-button {
+		padding: 0;
+		border: 0;
+	}
+}
+
 // Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
 .log-search-option-icon {
 	width: var(--icon-size-sm);
