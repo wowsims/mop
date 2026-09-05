@@ -8,7 +8,7 @@ import type { DropdownValueConfig } from '../../../pickers/dropdown_picker';
 import { DropdownPicker, TextDropdownPicker } from '../../../pickers/dropdown_picker';
 import type { SuggestionSource } from './indexes';
 import { isNumericFilter } from './indexes';
-import type { Clause, ClauseField, QueryNode } from './query';
+import type { ClauseField, QueryNode } from './query';
 import { FIELD_NAMES } from './query';
 
 // Matches the debounce master's log search used.
@@ -27,11 +27,23 @@ const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCas
 
 type ValueOption = DropdownValueConfig<string> & { label: string; iconUrl?: string };
 
+// The chip's delete and the group's delete are the same control; .saved-data-set-delete carries
+// the look, this carries the markup.
+function DeleteButton(extraClass: string, onClick: () => void): HTMLButtonElement {
+	const elem = (
+		<button type="button" className={clsx('saved-data-set-delete', extraClass)}>
+			<i className="fa fa-times fa-lg" />
+		</button>
+	) as HTMLButtonElement;
+	elem.addEventListener('click', onClick);
+	return elem;
+}
+
 // A field, the values picked under it, and how they join.
 type SearchGroup = { field: ClauseField; join: 'and' | 'or'; values: Array<string> };
 
 function clauseOf(field: ClauseField, value: string): QueryNode {
-	return { kind: 'clause', clause: { field, values: [value], negated: false, raw: `${field}:${value}` } as Clause };
+	return { kind: 'clause', clause: { field, values: [value] } };
 }
 
 // A group only filters once it has something in it, so a field picked but not yet filled is
@@ -58,6 +70,7 @@ export class LogSearchBar extends Component {
 		private readonly config: { suggestions: () => SuggestionSource },
 	) {
 		super(parent, 'log-search-bar');
+		this.rootElem.classList.add('d-flex', 'flex-column', 'gap-1');
 
 		const groupsRef = ref<HTMLDivElement>();
 		const inputRef = ref<HTMLInputElement>();
@@ -72,7 +85,9 @@ export class LogSearchBar extends Component {
 					placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
 					autocomplete="off"
 				/>
-				<div ref={groupsRef} className="log-search-groups">
+				{/* Under the field, not inside it: a group is two rows tall once it has values, and
+				    growing that inside a text input moves the caret around as you type. */}
+				<div ref={groupsRef} className="log-search-groups d-flex flex-wrap align-items-start row-gap-1 column-gap-2">
 					<div ref={addFieldRef} className="log-search-add-field"></div>
 				</div>
 			</>,
@@ -97,12 +112,18 @@ export class LogSearchBar extends Component {
 		const built = this.groups.map(groupToNode).filter((node): node is QueryNode => node !== null);
 		const text = this.inputElem.value.trim();
 		if (!text) return built;
-		return [...built, { kind: 'clause', clause: { field: null, values: [text], negated: false, raw: text } as Clause }];
+		return [...built, { kind: 'clause', clause: { field: null, values: [text] } }];
 	}
 
 	clear() {
 		this.groups = [];
 		this.inputElem.value = '';
+		this.update();
+	}
+
+	// Every edit does the same two things, so they are one call rather than a pair that a new
+	// mutation site could half-forget.
+	private update() {
 		this.renderGroups();
 		this.emitChange();
 	}
@@ -133,8 +154,7 @@ export class LogSearchBar extends Component {
 				setValue: (_eventID, _obj, field) => {
 					if (!field) return;
 					this.groups.push({ field, join: 'or', values: [] });
-					this.renderGroups();
-					this.emitChange();
+					this.update();
 				},
 			}),
 		);
@@ -143,7 +163,6 @@ export class LogSearchBar extends Component {
 	private renderGroup(group: SearchGroup, index: number): HTMLElement {
 		const itemsRef = ref<HTMLDivElement>();
 		const addRef = ref<HTMLDivElement>();
-		const removeRef = ref<HTMLButtonElement>();
 		const elem = (
 			<div className="log-search-group">
 				<div className="log-search-group-head">
@@ -157,18 +176,15 @@ export class LogSearchBar extends Component {
 								onclick={() => {
 									if (group.join === join) return;
 									group.join = join;
-									this.renderGroups();
-									this.emitChange();
+									this.update();
 								}}>
 								{join.toUpperCase()}
 							</button>
 						))}
 					</div>
-					<button ref={removeRef} type="button" className="log-search-group-remove saved-data-set-delete">
-						<i className="fa fa-times fa-lg" />
-					</button>
+					{DeleteButton('log-search-group-remove', () => this.removeGroup(index))}
 				</div>
-				<div ref={itemsRef} className="log-search-group-items">
+				<div ref={itemsRef} className="log-search-group-items d-flex flex-wrap align-items-center gap-1">
 					<div ref={addRef} className="input-group"></div>
 				</div>
 			</div>
@@ -180,7 +196,6 @@ export class LogSearchBar extends Component {
 				addRef.value!,
 			),
 		);
-		removeRef.value!.addEventListener('click', () => this.removeGroup(index));
 		const placeholder = TYPED_FIELDS[group.field];
 		if (placeholder) {
 			const valueRef = ref<HTMLInputElement>();
@@ -207,8 +222,7 @@ export class LogSearchBar extends Component {
 				// rather than a rejected one, so it is refused here instead.
 				if (!value || !isNumericFilter(value) || group.values.includes(value)) return;
 				group.values.push(value);
-				this.renderGroups();
-				this.emitChange();
+				this.update();
 			};
 			valueRef.value!.addEventListener('keydown', e => {
 				if (e.key === 'Enter') {
@@ -240,8 +254,7 @@ export class LogSearchBar extends Component {
 				getValue: () => null,
 				setValue: (_eventID, _obj, value) => {
 					if (value && !group.values.includes(value)) group.values.push(value);
-					this.renderGroups();
-					this.emitChange();
+					this.update();
 				},
 			}),
 		);
@@ -249,29 +262,22 @@ export class LogSearchBar extends Component {
 	}
 
 	private renderTag(label: string, onRemove: () => void): HTMLElement {
-		const removeRef = ref<HTMLButtonElement>();
-		const elem = (
+		return (
 			<div className="log-search-chip saved-data-set-chip badge rounded-pill">
 				<span className="log-search-chip-text saved-data-set-name">{sentenceCase(label)}</span>
-				<button ref={removeRef} type="button" className="log-search-chip-remove saved-data-set-delete">
-					<i className="fa fa-times fa-lg" />
-				</button>
+				{DeleteButton('log-search-chip-remove', onRemove)}
 			</div>
 		) as HTMLElement;
-		removeRef.value!.addEventListener('click', onRemove);
-		return elem;
 	}
 
 	private removeGroup(index: number) {
 		this.groups.splice(index, 1);
-		this.renderGroups();
-		this.emitChange();
+		this.update();
 	}
 
 	private removeValue(groupIndex: number, valueIndex: number) {
 		this.groups[groupIndex]?.values.splice(valueIndex, 1);
-		this.renderGroups();
-		this.emitChange();
+		this.update();
 	}
 
 	private valueOptions(field: ClauseField): Array<ValueOption> {

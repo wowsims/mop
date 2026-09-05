@@ -160,16 +160,6 @@ function unionSorted(a: SortedInts, b: SortedInts): Array<number> {
 	return out;
 }
 
-function complement(candidates: SortedInts, matched: SortedInts): Array<number> {
-	const matchedSet = new Set<number>();
-	for (let i = 0; i < matched.length; i++) matchedSet.add(matched[i]);
-	const out: Array<number> = [];
-	for (let i = 0; i < candidates.length; i++) {
-		if (!matchedSet.has(candidates[i])) out.push(candidates[i]);
-	}
-	return out;
-}
-
 function push<K>(map: Map<K, Array<number>>, key: K, i: number) {
 	let arr = map.get(key);
 	if (!arr) {
@@ -274,23 +264,19 @@ export class LogIndex {
 				for (const child of node.children) out = unionSorted(out, this.evalNode(child, candidates));
 				return out;
 			}
-			case 'not':
-				return complement(candidates, this.evalNode(node.child, candidates));
 		}
 	}
 
 	private evalClause(clause: Clause, candidates: SortedInts): SortedInts {
 		if (clause.field !== null) {
-			const matched = this.matchStructured(clause.field, clause.values);
-			return clause.negated ? complement(candidates, matched) : intersectSorted(candidates, matched);
+			return intersectSorted(candidates, this.matchStructured(clause.field, clause.values));
 		}
 		const needle = (clause.values[0] ?? '').toLowerCase();
 		if (!needle) return candidates;
 		const kept: Array<number> = [];
 		for (let n = 0; n < candidates.length; n++) {
 			const i = candidates[n];
-			const isMatch = this.searchTextFor(i).includes(needle);
-			if (clause.negated ? !isMatch : isMatch) kept.push(i);
+			if (this.searchTextFor(i).includes(needle)) kept.push(i);
 		}
 		return kept;
 	}

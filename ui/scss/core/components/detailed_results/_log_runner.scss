@@ -117,22 +117,6 @@
 	}
 }
 
-.log-search-bar {
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacer-1);
-}
-
-// The built filters sit under the field rather than inside it: a group is two rows tall once it
-// has values, and nesting that inside a text input makes the caret jump around as it grows.
-.log-search-groups {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	justify-content: flex-start;
-	gap: var(--spacer-1) var(--spacer-2);
-}
-
 .log-search-group {
 	max-width: 250px;
 	display: flex;
@@ -173,38 +157,23 @@
 // The same override the APL applies inside its picker root: the button is sitting inline in a
 // row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
 .log-search-add-field,
-.log-search-group-add {
+.log-search-group-items {
 	.dropdown-picker-button {
 		padding: 0;
 		border: 0;
 	}
 }
 
-// Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
-.log-search-group-add {
-	display: flex;
-	align-items: center;
-	gap: var(--spacer-1);
-}
-
 .log-search-group-input {
 	width: 8rem;
 }
 
+// Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
 .log-search-option-icon {
 	width: var(--icon-size-sm);
 	height: var(--icon-size-sm);
 	margin-right: var(--spacer-1);
 	vertical-align: text-bottom;
-}
-
-// Same indent-and-rule the APL builder uses for a nested list, so a value reads as belonging to
-// the field above it.
-.log-search-group-items {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: var(--spacer-1);
 }
 
 .log-search-chip {
