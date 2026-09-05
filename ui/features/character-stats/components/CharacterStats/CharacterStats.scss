@@ -1,8 +1,15 @@
 .character-stats-root {
 	width: 100%;
 
+	// An `<h3>`, so it carries the heading semantics a `<label>` with no control never had. The
+	// styling is the label's: `label { font-weight: bold }` and the inherited body size are what it
+	// used to pick up globally, and a heading brings its own size and margins instead.
 	.character-stats-label {
-		margin-bottom: var(--spacer-2);
+		display: inline-block;
+		margin: 0 0 var(--spacer-2);
+		font-size: 1rem;
+		font-weight: bold;
+		line-height: 1.25;
 	}
 
 	.character-stats-table {

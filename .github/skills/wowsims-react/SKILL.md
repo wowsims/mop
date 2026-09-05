@@ -745,6 +745,21 @@ tree keeps its vanilla shape. The element must have no React children.
 — it only ever read `individualConfig`, `player`, `reforger` and `sim`, and a body in `app/tabs`
 cannot hand it the concrete shell.
 
+## Intended divergences are asserted, not allowed
+
+Phase 3 changes markup on purpose, so `parity.mjs` carries an `INTENDED` list — and it is **not** an
+allowlist. An entry names the exact `base` and `react` lines, and the gate fails if that divergence
+is *not observed*, as loudly as it would have failed for making the change unrecorded. Reverting the
+markup is a failure; so is the markup moving out from under the entry. The old two-entry allowlist
+this file used to carry could only subtract, which is why it was deleted rather than extended.
+
+First entry: the sidebar's `.character-stats-label` is an `<h3>`, not a `<label>`. A `<label>` with
+no control labels nothing — it was a heading wearing the wrong element. The styling is unchanged and
+measured: same 41×18 box, 14px/700 SimDefaultFont, 17.5px line-height, 7px bottom margin, 1px
+letter-spacing (from the global `*` rule, which an `h3` inherits too). What the element used to pick
+up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
+brings its own size and margins.
+
 ## Pickers are Base UI `Field`
 
 `PickerShell` is `Field.Root` / `Field.Label` / `Field.Description`, and every picker's control is a

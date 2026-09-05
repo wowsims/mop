@@ -22,6 +22,20 @@ const PRUNED = /\.(sim-tabs(-mount)?|sim-main)(\.|$)/;
 // Only the order is given up; each modal is still byte-compared against its twin.
 const MODAL = /\.modal(\.|$)/;
 
+/**
+ * Divergences the port means to have. This is **not** an allowlist: an entry is required to still be
+ * observed, so reverting the change fails the gate just as loudly as making it did. That is the
+ * difference between recording a decision and quietly subtracting from the comparison — the
+ * allowlist this file used to carry could only ever hide things.
+ */
+const INTENDED = [
+	{
+		base: 'label.character-stats-label',
+		react: 'h3.character-stats-label',
+		why: 'a <label> with no control is not a label; the sidebar heading is a heading',
+	},
+];
+
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
@@ -44,6 +58,7 @@ const lineDiffs = (a, b) => {
 };
 
 const browser = await launch();
+const seen = new Set();
 let pass = 0;
 let fail = 0;
 for (const spec of specsFromArgv()) {
@@ -60,9 +75,14 @@ for (const spec of specsFromArgv()) {
 	for (const [name, base, react] of regions) {
 		const { la, lb, at } = lineDiffs(base, react);
 		sizes.push(`${name}=${lb.length}`);
-		if (!at.length && la.length === lb.length) continue;
-		problems.push(`${name}: base ${la.length} lines, react ${lb.length}, ${at.length} differ`);
-		for (const i of at.slice(0, 6)) problems.push(`  line ${i}\n     base : ${la[i]}\n     react: ${lb[i]}`);
+		const unexpected = at.filter(i => {
+			const entry = INTENDED.find(e => la[i]?.trim() === e.base && lb[i]?.trim() === e.react);
+			if (entry) seen.add(entry);
+			return !entry;
+		});
+		if (!unexpected.length && la.length === lb.length) continue;
+		problems.push(`${name}: base ${la.length} lines, react ${lb.length}, ${unexpected.length} differ`);
+		for (const i of unexpected.slice(0, 6)) problems.push(`  line ${i}\n     base : ${la[i]}\n     react: ${lb[i]}`);
 	}
 
 	const pruned = b.shell.split('\n').filter(l => l.trimStart() === PRUNED_LINE).length;
@@ -87,5 +107,14 @@ for (const spec of specsFromArgv()) {
 	for (const e of b.errors.slice(0, 3)) console.log(`   react error: ${e.slice(0, 160)}`);
 }
 await browser.close();
+
+// An intended divergence that stopped happening is a finding too: either the change was reverted or
+// the markup moved, and in both cases this entry is now lying about the tree.
+const stale = INTENDED.filter(entry => !seen.has(entry));
+for (const entry of stale) {
+	fail++;
+	console.log(`FAIL  intended divergence never observed: ${entry.base} -> ${entry.react} (${entry.why})`);
+}
+
 console.log(`\n${pass} pass, ${fail} fail`);
 process.exit(fail ? 1 : 0);

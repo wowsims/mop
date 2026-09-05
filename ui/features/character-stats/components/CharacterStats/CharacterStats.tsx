@@ -54,7 +54,8 @@ export const CharacterStats = () => {
 
 	return (
 		<div className="character-stats-root">
-			<label className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</label>
+			{/* A heading, not a form label: it labels the table, not a control. */}
+			<h3 className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</h3>
 			<table className="character-stats-table">
 				{rows.map(group => (
 					<tbody key={group.key}>
