@@ -18,6 +18,16 @@ export interface PickerPair<ModObject> {
 	dispose(): void;
 }
 
+// What a field shows lives in an IDL property that never reflects to an attribute, so a diff built
+// from attributes alone cannot see the one thing a picker exists to do. Deleting `checked={value}`
+// from BooleanPicker made an attribute-only parity file go green.
+const formState = (element: Element): string => {
+	if (element instanceof HTMLInputElement) return ` value=[${element.value}] checked=${element.checked}`;
+	if (element instanceof HTMLSelectElement) return ` value=[${element.value}] selectedIndex=${element.selectedIndex}`;
+	if (element instanceof HTMLTextAreaElement) return ` value=[${element.value}]`;
+	return '';
+};
+
 const serialize = (element: Element, depth = 0): string[] => {
 	const attributes = Array.from(element.attributes)
 		.map(attribute => `${attribute.name}="${attribute.value}"`)
@@ -28,7 +38,7 @@ const serialize = (element: Element, depth = 0): string[] => {
 		.filter(node => node.nodeType === Node.TEXT_NODE)
 		.map(node => node.textContent)
 		.join('');
-	const line = `${'  '.repeat(depth)}<${element.tagName.toLowerCase()} ${attributes}> bg=[${background}] text=[${text}] hidden=${(element as HTMLElement).hidden}`;
+	const line = `${'  '.repeat(depth)}<${element.tagName.toLowerCase()} ${attributes}> bg=[${background}] text=[${text}] hidden=${(element as HTMLElement).hidden}${formState(element)}`;
 	return [line, ...Array.from(element.children).flatMap(child => serialize(child, depth + 1))];
 };
 

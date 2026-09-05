@@ -501,7 +501,14 @@ Two things specific to this migration:
   query the DOM. Out of that came `mountBoth` (`ui/ui-kit/react/picker_oracle.tsx`): check 1 run
   rather than read, diffing the vanilla picker's tree against the port's per element and per
   attribute. Every picker port from here ships a `*.parity.test.tsx` using it —
-  `IconPicker.parity.test.tsx` is the worked example. `Tooltip` then gained `openOnClick`, the one
+  `IconPicker.parity.test.tsx` is the worked example, and the five pickers that predate the oracle
+  were backfilled. That backfill found the oracle's own blind spot: it serialised attributes, and
+  what a field *shows* lives in an IDL property that never reflects — so deleting `checked={value}`
+  from `BooleanPicker` made an attribute-only parity file go green. `mountBoth` now serialises
+  `value`, `checked` and `selectedIndex`. A checked checkbox does carry the `checked` attribute on
+  the React side (React sets it through `defaultChecked`), which is inert here — nothing uses a
+  `[checked]` selector and the two `:checked` rules read the property — so that one attribute is
+  stripped by name in `BooleanPicker.parity.test.tsx`. `Tooltip` then gained `openOnClick`, the one
   prop the first three Phase 3 features need that it lacked — character-stats' bonus-stat popover is
   a click-triggered interactive tippy that builds a `NumberPicker` in `onShow`, and react-tooltip
   does not render its children until the tooltip first opens, so the laziness is free — and it
