@@ -1,0 +1,64 @@
+character_stats_results: {
+ key: "TestDisciplinePriest-p5"
+ value: {
+  final_stats: 133
+  final_stats: 142
+  final_stats: 42851
+  final_stats: 32678
+  final_stats: 7869
+  final_stats: 0
+  final_stats: 14440
+  final_stats: 2451
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 17888
+  final_stats: 0
+  final_stats: 0
+  final_stats: 58066.69
+  final_stats: 0
+  final_stats: 0
+  final_stats: 28913.6
+  final_stats: 0
+  final_stats: 746317
+  final_stats: 300000
+  final_stats: 15000
+  final_stats: 0
+  final_stats: 0
+  final_stats: 32.24667
+  final_stats: 43.20435
+  final_stats: 0
+ }
+}
+character_stats_results: {
+ key: "TestDisciplinePriest-preraid"
+ value: {
+  final_stats: 133
+  final_stats: 142
+  final_stats: 28114
+  final_stats: 24572
+  final_stats: 6098
+  final_stats: 0
+  final_stats: 10340
+  final_stats: 1463
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 12137
+  final_stats: 0
+  final_stats: 0
+  final_stats: 41141.21
+  final_stats: 0
+  final_stats: 0
+  final_stats: 25604.8
+  final_stats: 0
+  final_stats: 539999
+  final_stats: 300000
+  final_stats: 15000
+  final_stats: 0
+  final_stats: 0
+  final_stats: 25.41333
+  final_stats: 33.17166
+  final_stats: 0
+ }
+}

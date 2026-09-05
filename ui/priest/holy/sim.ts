@@ -1,15 +1,20 @@
-import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs.js';
-import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
-import * as Mechanics from '../../core/constants/mechanics.js';
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
-import { Player } from '../../core/player.js';
+import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
+import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
+import * as Mechanics from '../../core/constants/mechanics';
+import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
+import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl.js';
-import { PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { StatCapType } from '../../core/proto/api';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as PriestInputs from '../inputs';
-import * as Presets from './presets.js';
+import * as Presets from './presets';
 
+const hasteBreakpoints = Presets.HOLY_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
+
+// Gear planner only: no healing spells are implemented, so there is no simulation for this spec.
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPriest, {
 	cssClass: 'holy-priest-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Priest),
@@ -17,64 +22,62 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPriest, {
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [
-		Stat.StatIntellect,
-		Stat.StatSpirit,
-		Stat.StatSpellPower,
-		Stat.StatHitRating,
-		Stat.StatCritRating,
-		Stat.StatHasteRating,
-		Stat.StatMP5,
-		Stat.StatMasteryRating,
-	],
-	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
+	epStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating],
+	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMP5, Stat.StatMasteryRating],
-		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
+		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating],
+		[PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
 	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
-	// modifyDisplayStats: (player: Player<Spec.SpecHolyPriest>) => {
-	// 	let stats = new Stats();
-	// 	stats = stats.addStat(Stat.StatSpellHit, player.getTalents().shadowFocus * 1 * Mechanics.SPELL_HIT_RATING_PER_HIT_CHANCE);
-
-	// 	return {
-	// 		talents: stats,
-	// 	};
-	// },
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4_PRESET.gear,
+		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_EP_WEIGHTS.epWeights,
+		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		// Default soft caps for the Reforge optimizer: reach a Renew tick breakpoint, then value
+		// haste at QE Live's weight (zero).
+		softCapBreakpoints: (() => {
+			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [hasteBreakpoints.get('5-tick - Renew')!, hasteBreakpoints.get('6-tick - Renew')!],
+				capType: StatCapType.TypeThreshold,
+				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			});
+			return [hasteSoftCapConfig];
+		})(),
+		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('5-tick - Renew')!),
+		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
-		talents: Presets.StandardTalents.data,
+		talents: Presets.DefaultTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: Presets.DefaultRaidBuffs,
-
+		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
+			arcaneBrilliance: true,
+			blessingOfKings: true,
+			mindQuickening: true,
+			leaderOfThePack: true,
+			blessingOfMight: true,
+		}),
 		partyBuffs: PartyBuffs.create({}),
-
-		individualBuffs: Presets.DefaultIndividualBuffs,
-
-		debuffs: Presets.DefaultDebuffs,
-
-		other: Presets.OtherDefaults,
+		individualBuffs: IndividualBuffs.create({}),
+		debuffs: Debuffs.create({}),
 	},
 
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [PriestInputs.ArmorInput()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	// Stamina is not an EP stat for healers, but the buff still belongs in the stats panel.
+	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [OtherInputs.InputDelay, OtherInputs.TankAssignment, OtherInputs.ChannelClipDelay],
+		inputs: [],
 	},
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
@@ -82,28 +85,27 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPriest, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_WEIGHTS],
+		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents, Presets.EnlightenmentTalents],
-		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_AOE24, Presets.ROTATION_PRESET_AOE4PLUS],
+		talents: [Presets.DefaultTalents],
+		// Preset rotations that the user can quickly select.
+		rotations: [],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P5_PRESET],
 	},
 
-	autoRotation: (player: Player<Spec.SpecHolyPriest>): APLRotation => {
-		const numTargets = player.sim.encounter.targets.length;
-		if (numTargets > 4) {
-			return Presets.ROTATION_PRESET_AOE4PLUS.rotation.rotation!;
-		} else if (numTargets > 1) {
-			return Presets.ROTATION_PRESET_AOE24.rotation.rotation!;
-		} else {
-			return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
-		}
+	autoRotation: (_: Player<Spec.SpecHolyPriest>): APLRotation => {
+		return APLRotation.create();
 	},
 });
 
 export class HolyPriestSimUI extends IndividualSimUI<Spec.SpecHolyPriest> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecHolyPriest>) {
 		super(parentElem, player, SPEC_CONFIG);
+
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: Presets.HOLY_BREAKPOINTS,
+			enableBreakpointLimits: true,
+		});
 	}
 }

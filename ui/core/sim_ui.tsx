@@ -51,7 +51,12 @@ export interface SimUIConfig {
 export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
+	// Unlaunched sim outside dev mode: every action is off and the results panel shows the unlaunched notice.
 	readonly disabled: boolean;
+	// Simulation controls (Simulate, iterations, stat weight calculation, bulk sim, results) are hidden.
+	// True for unlaunched sims outside dev mode and always for gear-planner sims. Stat weights can
+	// still be edited by hand.
+	readonly simDisabled: boolean;
 
 	// Emits when anything from the sim, raid, or encounter changes.
 	readonly changeEmitter;
@@ -70,6 +75,7 @@ export abstract class SimUI extends Component {
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
+		this.simDisabled = this.disabled || config.simStatus.status === LaunchStatus.GearPlanner;
 
 		const container = (
 			<>
@@ -193,6 +199,7 @@ export abstract class SimUI extends Component {
 				sim.setIterations(eventID, newValue);
 			},
 		}).rootElem;
+		if (this.simDisabled) this.iterationsPicker.classList.add('d-none');
 
 		const resultsViewerElem = this.rootElem.querySelector('.sim-sidebar-results') as HTMLElement;
 		this.resultsViewer = new ResultsViewer(resultsViewerElem);
@@ -223,6 +230,24 @@ export abstract class SimUI extends Component {
 							{i18n.t('sim.unlaunched.healing_message')}
 							<br />
 							{i18n.t('sim.unlaunched.qe_live_message')} <a href="https://questionablyepic.com/live/">QE Live</a>!
+						</p>
+					)}
+				</div>,
+			);
+		} else if (this.simDisabled) {
+			// Goes into the results viewer's content area so it stacks above the warnings icon.
+			this.resultsViewer.setContent(
+				<div className="d-flex flex-column align-items-center text-center">
+					<i className="fas fa-tools fa-3x mb-2" />
+					<h6>{i18n.t('sim.gear_planner.title')}</h6>
+					<p>{i18n.t('sim.gear_planner.message')}</p>
+					{this.config.spec?.isHealingSpec && (
+						<p>
+							{i18n.t('sim.unlaunched.healing_message')}
+							<br />
+							<a href="https://questionablyepic.com/live/" target="_blank">
+								{i18n.t('sim.unlaunched.qe_live_message')}
+							</a>
 						</p>
 					)}
 				</div>,
@@ -293,6 +318,9 @@ export abstract class SimUI extends Component {
 		switch (config.simStatus.status) {
 			case LaunchStatus.Unlaunched:
 				statusStr = i18n.t('info.status.unlaunched');
+				break;
+			case LaunchStatus.GearPlanner:
+				statusStr = i18n.t('info.status.gear_planner');
 				break;
 			case LaunchStatus.Alpha:
 				statusStr = i18n.t('info.status.alpha');

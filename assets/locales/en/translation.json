@@ -39,6 +39,7 @@
 		},
 		"status": {
 			"unlaunched": "Not Yet Supported",
+			"gear_planner": "Gear Planner",
 			"alpha": "Alpha",
 			"beta": "Beta",
 			"launched": "Launched"
@@ -249,6 +250,10 @@
 		"crash_modal": {
 			"title": "Extra Crash Information",
 			"header": "Please append the following complete link to the issue you just created. This will simplify debugging the issue."
+		},
+		"gear_planner": {
+			"title": "Gear planning only.",
+			"message": "Gear, gems, enchants, talents and the reforge optimizer work for this spec. There's no simulation planned."
 		},
 		"unlaunched": {
 			"title": "This sim is currently not supported.",
@@ -2245,6 +2250,7 @@
 		"github": "Contribute on GitHub",
 		"status": {
 			"unlaunched": "This sim is a WORK IN PROGRESS. It is not fully developed and should not be used for general purposes.",
+			"gear_planner": "This sim is a GEAR PLANNER only. Gear, gems, enchants, talents and the reforge optimizer work. There's no simulation planned for this spec.",
 			"alpha": "This sim is in ALPHA. Bugs are expected; please let us know if you find one!",
 			"beta": "This sim is in BETA. There may still be a few bugs; please let us know if you find one!"
 		},

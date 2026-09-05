@@ -15,8 +15,8 @@ export const MASTERY_RATING_PER_MASTERY_POINT = 600.0;
 
 export const RAID_BUFF_MASTERY_RATING = 3000;
 
-// TODO: Adjust for MoP values
 // Mastery Ratings have various increments based on spec.
+// Healer values are from DB2 (5.5.4): EffectBasePoints / 100 or EffectBonusCoefficient of the mastery spell.
 export const masteryPercentPerPoint: Map<Spec, number> = new Map([
 	[Spec.SpecAssassinationRogue, 3.5],
 	[Spec.SpecCombatRogue, 2.0],
@@ -28,7 +28,7 @@ export const masteryPercentPerPoint: Map<Spec, number> = new Map([
 	[Spec.SpecFeralDruid, 3.13], // TODO: We expect 3.125, possibly bugged?
 	[Spec.SpecGuardianDruid, 2.0],
 	[Spec.SpecRestorationDruid, 1.25],
-	[Spec.SpecHolyPaladin, 1.5],
+	[Spec.SpecHolyPaladin, 1.25],
 	[Spec.SpecProtectionPaladin, 1.0],
 	[Spec.SpecRetributionPaladin, 1.85],
 	[Spec.SpecElementalShaman, 2.0],
@@ -43,12 +43,13 @@ export const masteryPercentPerPoint: Map<Spec, number> = new Map([
 	[Spec.SpecArcaneMage, 2],
 	[Spec.SpecFireMage, 1.5],
 	[Spec.SpecFrostMage, 2],
-	[Spec.SpecDisciplinePriest, 2.5],
-	[Spec.SpecHolyPriest, 1.25],
+	[Spec.SpecDisciplinePriest, 1.6],
+	[Spec.SpecHolyPriest, 1.3],
 	[Spec.SpecShadowPriest, 1.8],
 	[Spec.SpecAfflictionWarlock, 3.1],
 	[Spec.SpecDemonologyWarlock, 3],
 	[Spec.SpecDestructionWarlock, 3],
 	[Spec.SpecWindwalkerMonk, 0.2],
 	[Spec.SpecBrewmasterMonk, 0.625],
+	[Spec.SpecMistweaverMonk, 1.25],
 ]);

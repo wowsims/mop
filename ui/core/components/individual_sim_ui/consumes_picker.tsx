@@ -38,10 +38,12 @@ export class ConsumesPicker extends Component {
 	}
 
 	private init(): void {
-		this.buildPotionsPicker();
+		// Potions and explosives only matter inside an encounter; gear planners never run one.
+		const gearPlanner = this.simUI.simDisabled;
+		if (!gearPlanner) this.buildPotionsPicker();
 		this.buildElixirsPicker();
 		this.buildFoodPicker();
-		this.buildEngPicker();
+		if (!gearPlanner) this.buildEngPicker();
 		this.buildPetPicker();
 	}
 

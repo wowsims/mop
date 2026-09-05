@@ -1,0 +1,64 @@
+character_stats_results: {
+ key: "TestHolyPriest-p5"
+ value: {
+  final_stats: 133
+  final_stats: 142
+  final_stats: 38784
+  final_stats: 33649
+  final_stats: 17750
+  final_stats: 0
+  final_stats: 7792
+  final_stats: 1749
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 9303
+  final_stats: 0
+  final_stats: 0
+  final_stats: 56976.48
+  final_stats: 0
+  final_stats: 0
+  final_stats: 28190.4
+  final_stats: 0
+  final_stats: 689379
+  final_stats: 300000
+  final_stats: 15000
+  final_stats: 0
+  final_stats: 0
+  final_stats: 21.16667
+  final_stats: 32.50759
+  final_stats: 0
+ }
+}
+character_stats_results: {
+ key: "TestHolyPriest-preraid"
+ value: {
+  final_stats: 133
+  final_stats: 142
+  final_stats: 29398
+  final_stats: 27156
+  final_stats: 12471
+  final_stats: 0
+  final_stats: 4744
+  final_stats: 2906
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 7615
+  final_stats: 0
+  final_stats: 0
+  final_stats: 44269.06
+  final_stats: 0
+  final_stats: 0
+  final_stats: 26030.4
+  final_stats: 0
+  final_stats: 557975
+  final_stats: 300000
+  final_stats: 15000
+  final_stats: 0
+  final_stats: 0
+  final_stats: 16.08667
+  final_stats: 24.86487
+  final_stats: 0
+ }
+}

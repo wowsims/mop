@@ -295,7 +295,7 @@ export class EpWeightsMenu extends BaseModal {
 
 		this.footer!.appendChild(
 			<>
-				<button ref={calcWeightsButtonRef} className="btn btn-primary calc-weights">
+				<button ref={calcWeightsButtonRef} className={clsx('btn btn-primary calc-weights', simUI.simDisabled && 'd-none')}>
 					<i className="fas fa-calculator me-1" />
 					{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
 				</button>

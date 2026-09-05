@@ -79,16 +79,18 @@ func (priest *Priest) AddPartyBuffs(_ *proto.PartyBuffs) {
 }
 
 func (priest *Priest) Initialize() {
+	// Inner Fire (588): +10% spell power and +60% armor.
 	if priest.SelfBuffs.UseInnerFire {
 		priest.MultiplyStat(stats.SpellPower, 1.1)
-		priest.ApplyEquipScaling(stats.Armor, 1.1)
+		priest.ApplyEquipScaling(stats.Armor, 1.6)
 		core.MakePermanent(priest.RegisterAura(core.Aura{
 			Label:    "Inner Fire",
 			ActionID: core.ActionID{SpellID: 588},
 		}))
 	}
 
-	priest.MultiplyStat(stats.Intellect, 1.05)
+	// Mysticism (89745): +5% Intellect while wearing only cloth.
+	priest.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeCloth, 89745)
 	priest.registerShadowWordPainSpell()
 	priest.registerShadowfiendSpell()
 	priest.registerVampiricTouchSpell()
