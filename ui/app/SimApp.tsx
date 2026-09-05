@@ -7,6 +7,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
+import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
@@ -19,6 +20,8 @@ export interface SimAppProps<SpecType extends Spec> {
 
 export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
 	const domRef = useRef<ShellDom | null>(null);
+	// The same object as `simUI` below, reachable from callbacks the shell captured before it existed.
+	const simUIRef = useRef<IndividualSimUI<SpecType> | null>(null);
 	// Constructing the shell is not undoable — loadIndividualSettings subscribes autosave and returns
 	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
 	const constructed = useRef(false);
@@ -27,7 +30,18 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
 	// any of those nodes would take the vanilla content with it. See SimShell's own note.
 	const shell = useMemo(
-		() => <SimShell domRef={domRef} sim={player.sim} cssClass={def.cssClass} spec={player.getPlayerSpec()} />,
+		() => (
+			<SimShell
+				domRef={domRef}
+				sim={player.sim}
+				cssClass={def.cssClass}
+				spec={player.getPlayerSpec()}
+				knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
+				// Created once with the element, so the toolbar's props never change identity. It fires
+				// long after the shell exists, which is what makes reaching through the ref safe.
+				onOpenSettings={() => simUIRef.current?.simHeader.openSettings()}
+			/>
+		),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);
@@ -35,7 +49,8 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	useLayoutEffect(() => {
 		if (constructed.current || !domRef.current) return;
 		constructed.current = true;
-		setSimUI(new IndividualSimUI(domRef.current, player, def));
+		simUIRef.current = new IndividualSimUI(domRef.current, player, def);
+		setSimUI(simUIRef.current);
 	}, [player, def]);
 
 	// The skeleton renders immediately; everything that needs the constructed shell hangs off `simUI`,

@@ -8,7 +8,18 @@
 // being one. So the strip and `.sim-main` are pruned out of the tree comparison and each pane is
 // compared on its own, keyed by the id that survives the swap on the `SimTab` root, with its root
 // class list normalised away. Everything else — header, sidebar, modals, toasts — stays strict.
-import { collectSubtrees, dropRootClasses, launch, openSpec, PORTS, PRUNED_LINE, pruneSubtrees, SERIALIZE, specsFromArgv } from './browser.mjs';
+import {
+	collapseWrappers,
+	collectSubtrees,
+	dropRootClasses,
+	launch,
+	openSpec,
+	PORTS,
+	PRUNED_LINE,
+	pruneSubtrees,
+	SERIALIZE,
+	specsFromArgv,
+} from './browser.mjs';
 
 // Attributes are not covered here — tabs-a11y.mjs does that. The serialiser lives in browser.mjs.
 
@@ -42,6 +53,18 @@ const INTENDED = [
 	},
 ];
 
+// The one divergence that is a deletion rather than a changed line, so `INTENDED` cannot hold it.
+//
+// Each social link used to be `div.sim-toolbar-item > button > a`. `SimToolbarItem` produced that by
+// accident — `SocialLinks` handed it a finished anchor as a *child* and no `href` of its own, and
+// the no-href branch renders a `<button>` — and it is invalid: `<button>`'s content model has no
+// room for interactive descendants. The React toolbar drops the wrapper, so the baseline's three
+// bare `<button>` lines are collapsed out before the trees are compared.
+const SOCIALS = /\.sim-toolbar-socials(\.|$)/;
+// Bare: the socials' buttons are the only ones under that container with no class at all.
+const SOCIAL_WRAPPER = /^button$/;
+const SOCIAL_COUNT = 3;
+
 const matches = (entry, base, react) => (entry.match ? entry.match(base, react) : base === entry.base && react === entry.react);
 
 const grab = async (browser, port, spec) => {
@@ -73,6 +96,10 @@ for (const spec of specsFromArgv()) {
 	const a = await grab(browser, PORTS.base, spec);
 	const b = await grab(browser, PORTS.react, spec);
 	const problems = [];
+
+	const socials = collapseWrappers(a.shell, SOCIALS, SOCIAL_WRAPPER);
+	a.shell = socials.dom;
+	if (socials.dropped !== SOCIAL_COUNT) problems.push(`collapsed ${socials.dropped} social wrappers out of the baseline, expected ${SOCIAL_COUNT}`);
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);

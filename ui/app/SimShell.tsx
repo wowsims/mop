@@ -4,8 +4,9 @@ import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
-import { type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
 
@@ -33,14 +34,20 @@ export interface SimShellProps {
 	cssClass: string;
 	spec: PlayerSpec<any>;
 	noticeText?: string;
+	/** Already derived — the launch-status notice is part of the list by the time it arrives. */
+	knownIssues: ReadonlyArray<ReactNode>;
+	/** Opens the still-vanilla settings modal, which `SimHeader` owns. */
+	onOpenSettings: () => void;
 }
 
 /**
  * The sim's skeleton — everything parent to the tabs. It renders **once** and is never re-rendered:
  * `SimApp` holds the element in a `useMemo`, which is load-bearing three times over.
  *
- * - Every container here is filled imperatively afterwards. React must not own their children, and
- *   a re-render that re-created any of these nodes would take the vanilla content with it.
+ * - Every container still in `ShellDom` is filled imperatively afterwards. React must not own their
+ *   children, and a re-render that re-created any of these nodes would take the vanilla content with
+ *   it. `.sim-toolbar` is the exception and no longer in the bundle: its contents are React's, and a
+ *   container leaves `ShellDom` as that becomes true of it.
  * - Bootstrap rewrites `aria-expanded` on the dropdown toggles and `.show` on their menus. React
  *   diffs against its own last props rather than the DOM, so a re-render with identical props is
  *   already safe — but not re-rendering at all makes that independent of React's bail-out rules.
@@ -52,7 +59,7 @@ export interface SimShellProps {
  * and half from `classList` without the next render dropping the other half. That is why `.stuck`
  * moving to React state also means `.sim-header` stops coming from `Component`'s `rootCssClass`.
  */
-export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellProps) => {
+export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const title = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
@@ -63,7 +70,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellPr
 	const main = useRef<HTMLElement>(null);
 	const header = useRef<HTMLElement>(null);
 	const tabsMount = useRef<HTMLDivElement>(null);
-	const toolbar = useRef<HTMLDivElement>(null);
 
 	// One subscription per class, listing the fields that class actually depends on.
 	//
@@ -108,7 +114,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellPr
 			main: main.current!,
 			header: header.current!,
 			tabsMount: tabsMount.current!,
-			toolbar: toolbar.current!,
 		};
 	}, [domRef]);
 
@@ -146,7 +151,9 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellPr
 										<ul className="dropdown-menu" />
 									</div>
 								</div>
-								<div ref={toolbar} className="sim-toolbar nav" />
+								<div className="sim-toolbar nav">
+									<SimToolbar knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
+								</div>
 							</div>
 						</header>
 						<main ref={main} className="sim-main" />

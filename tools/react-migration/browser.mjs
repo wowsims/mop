@@ -86,6 +86,47 @@ export const pruneSubtrees = (dom, re) => {
 };
 
 /**
+ * Removes every line matching `re` inside each subtree matching `within`, lifting that line's own
+ * children one level to close the gap — as if the element had never wrapped anything. Both patterns
+ * are tested against the trimmed line, and neither may carry the `g` flag.
+ *
+ * This is how a port that *deletes* an element is compared. `INTENDED` in `parity.mjs` can only
+ * describe a line that changed, because the comparison is index-aligned: drop an element and every
+ * line below it shifts, and the two trees stop being comparable at all. Collapsing the wrapper out
+ * of the baseline restores the alignment without giving up anything below it — the anchor, its
+ * classes and its icon are still compared byte for byte, which pruning the subtree would not do.
+ *
+ * `dropped` is returned so the caller can require the wrapper to have been there. That is what keeps
+ * this an assertion rather than an allowlist: put the wrapper back on the React side and the count
+ * still says 3, but take it off the vanilla side and the count says 0 and the gate fails.
+ */
+export const collapseWrappers = (dom, within, re) => {
+	const out = [];
+	let dropped = 0;
+	// The indent of the enclosing `within` element, and of the wrapper currently being removed.
+	let scope = null;
+	let cut = null;
+	for (const line of dom.split('\n')) {
+		const indent = line.length - line.trimStart().length;
+		const trimmed = line.trim();
+		if (scope !== null && indent <= scope) scope = null;
+		if (cut !== null && indent <= cut) cut = null;
+		if (scope === null) {
+			if (within.test(trimmed)) scope = indent;
+			out.push(line);
+			continue;
+		}
+		if (cut === null && re.test(trimmed)) {
+			cut = indent;
+			dropped++;
+			continue;
+		}
+		out.push(cut === null ? line : line.slice(2));
+	}
+	return { dom: out.join('\n'), dropped };
+};
+
+/**
  * Replaces the root element's own class list — SERIALIZE puts it on line 0 — with just its tag
  * name. A tab pane's root classes are exactly what the Base UI swap rewrites
  * (`sim-tab.gear-tab.tab-pane.fade.active.show` becomes `sim-tab.gear-tab.sim-tab-body`), so a

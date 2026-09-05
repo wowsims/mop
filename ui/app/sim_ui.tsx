@@ -20,6 +20,7 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
+import type { ReactNode } from 'react';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../tracking/analytics';
@@ -29,7 +30,6 @@ import { SocialLinks } from './header/social_links';
 import { NoticeNativeSim } from './notice_native_sim';
 import type { ShellDom } from './shell_dom';
 const URLMAXLEN = 2048;
-const globalKnownIssues: Array<string> = [];
 
 export interface SimUIConfig {
 	// Additional css class to add to the root element.
@@ -39,7 +39,7 @@ export interface SimUIConfig {
 	// The spec of the individual sim.
 	spec: PlayerSpec<any>;
 	simStatus: SimStatus;
-	knownIssues?: Array<string>;
+	knownIssues?: Array<ReactNode>;
 	noticeText?: string;
 }
 
@@ -78,8 +78,6 @@ export abstract class SimUI extends Component implements SimHost {
 		this.tabs = new SimTabRegistry(this.simMain);
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
-
-		this.addKnownIssues(config);
 
 		// Sidebar Contents
 
@@ -196,27 +194,6 @@ export abstract class SimUI extends Component implements SimHost {
 
 	addWarning(warning: SimWarning) {
 		this.resultsViewer.addWarning(warning);
-	}
-
-	private addKnownIssues(config: SimUIConfig) {
-		let statusStr = '';
-		switch (config.simStatus.status) {
-			case LaunchStatus.Unlaunched:
-				statusStr = i18n.t('info.status.unlaunched');
-				break;
-			case LaunchStatus.Alpha:
-				statusStr = i18n.t('info.status.alpha');
-				break;
-			case LaunchStatus.Beta:
-				statusStr = i18n.t('info.status.beta');
-				break;
-		}
-
-		if (statusStr) {
-			config.knownIssues = [statusStr].concat(config.knownIssues || []);
-		}
-		config.knownIssues?.forEach(issue => this.simHeader.addKnownIssue(issue));
-		globalKnownIssues?.forEach(issue => this.simHeader.addKnownIssue(issue));
 	}
 
 	// Returns a key suitable for the browser's localStorage feature.

@@ -1,3 +1,4 @@
+import { LaunchStatus, Phase } from '@domain/constants/other';
 import { createSimStore } from '@domain/state/sim_store';
 import { render } from '@testing-library/react';
 import { StrictMode } from 'react';
@@ -32,6 +33,11 @@ vi.mock('./individual_sim_ui', async () => {
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 
+// The toolbar asks a local sim host whether it is outdated, and happy-dom's hostname is localhost,
+// so it takes that branch. Left in flight, the request is aborted at teardown and the rejection is
+// printed; refused outright it takes the toolbar's own `.catch(noop)`, which is the real path.
+vi.stubGlobal('fetch', () => Promise.reject(new Error('no sim host')));
+
 const { SimApp } = await import('./SimApp');
 
 // The shell reads the metric toggles off a real store — `subscribeUiField` selects from it — and the
@@ -43,7 +49,15 @@ const sim = {
 	getShowHealingMetrics: () => false,
 	getShowExperimental: () => false,
 };
-const spec = { isHealingSpec: false, isTankSpec: false, isMeleeDpsSpec: true, isRangedDpsSpec: false };
+// `launch` is real because the shell derives the known-issues list from it — a launched spec earns
+// no status notice, so the toolbar's link ships hidden.
+const spec = {
+	isHealingSpec: false,
+	isTankSpec: false,
+	isMeleeDpsSpec: true,
+	isRangedDpsSpec: false,
+	launch: { phase: Phase.Phase1, status: LaunchStatus.Launched },
+};
 const player = { sim, getPlayerSpec: () => spec } as never;
 const def = { cssClass: 'arms-warrior-sim-ui' } as never;
 

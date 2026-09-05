@@ -41,6 +41,9 @@ Full plan, including the duplication inventory that drives Phase 2:
 | `ui/app/SimApp.tsx` | Constructs `IndividualSimUI` exactly once into a ref'd `<div>`, then renders `<SimTabs>` and portals the React-owned pieces in |
 | `ui/app/SimTabs.tsx` | The Base UI `Tabs` strip and one panel per tab; each panel adopts the pane its `SimTab` registered |
 | `ui/ui-kit/tab_registry.ts` | `SimTabRegistry` — the tab set and which one is open, as a `useSyncExternalStore` source |
+| `ui/app/SimShell.tsx` | The skeleton — everything parent to the tabs. Renders once, fills the `ShellDom` bundle in a layout effect |
+| `ui/app/header/SimToolbar/` | The header's right-hand end: known issues, bug report, download binary, the cog, the socials |
+| `ui/app/known_issues.ts` | `knownIssuesFor(simStatus, knownIssues)` — the status notice and the spec's own list, derived rather than accumulated |
 
 The plan called for a DOM-free `IndividualSimHost` constructed before `createRoot`. That is not
 possible as written: `SimHost` requires `rootElem`, `resultsViewer`, `simTabContentsContainer` and
@@ -835,6 +838,20 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+### Flag invalid markup, do not port it — standing rule, 2026-09-05
+
+While reading vanilla markup for a port, keep a running list of anything invalid or spec-violating:
+invalid nesting, `target="_blank"` with no `rel`, a `<button>` with no `type`, a label pointing at
+nothing, duplicate ids, ARIA naming an element that does not exist. **Batch them into one
+`AskUserQuestion` per unit of work, with options** — do not reproduce them faithfully and do not fix
+them silently. The parity gate is the reason this is a rule rather than a preference: it makes
+carrying a defect forward the path of least resistance, and once carried the gate locks it in.
+
+The first one found this way was the toolbar's social links, `div.sim-toolbar-item > button > a` —
+`<button>`'s content model forbids interactive descendants, so that markup never parsed the way it
+read. `SimToolbarItem` produced it by accident: `SocialLinks` passed the anchor as a *child* and no
+`href`, and the no-href branch renders a `<button>`. The React port drops the wrapper.
+
 ## `Button`: the `<button>` half only
 
 The `<button>` branch renders Base UI's `Button`. The `<a>` branch does not, on Base UI's own
@@ -1012,6 +1029,33 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **The header toolbar is React** — known issues, bug report, download binary, the cog
+  and the socials. `SimHeader` keeps only the two import/export dropdowns, which wait on the Base UI
+  `Menu` adapter, plus `openSettings()`; everything else it built is gone. Three things are worth
+  knowing:
+
+  **`ShellDom` shrinks as containers become React's.** `toolbar` left the bundle in this commit.
+  Handing out an element whose children React reconciles is how you get the "half React, half
+  `appendChild`" bug the `SimShell` docstring warns about, so a container is removed from the
+  interface at the moment its contents are ported, not later.
+
+  **Callbacks, not the `simUI` object.** `SimApp` passes `onOpenSettings` down; it closes over a
+  `simUIRef` filled in the same layout effect that constructs the shell, so the arrow is created once
+  with the memoised element and the toolbar's props never change identity. `SettingsMenu` is still
+  built eagerly in `SimHeader`'s constructor — building it on first click would drop a modal out of
+  `parity.mjs`'s set comparison.
+
+  **`knownIssues` widened to `Array<ReactNode>`** — the one authorised change to the frozen spec
+  surface, taken deliberately. `SimUI.addKnownIssues` used to prepend the launch-status notice *into
+  `config.knownIssues` itself*, mutating that surface on the way past; `knownIssuesFor` derives the
+  list instead. Vanilla rendered each issue with `innerHTML` because "the issue text can contain
+  stringified HTML" — no spec currently does, and rendering as text would have quietly closed the
+  door, so the field now carries content rather than markup.
+
+  Gates: `parity.mjs` green on all 6 specs and `header-toolbar.mjs` byte-identical on `warrior/arms`
+  and `priest/discipline` — the second because it is unlaunched, which is the only way the
+  known-issues link is visible and its tooltip comparable.
 
 - 2026-09-05 **Talents is the first feature ported end to end.** `TalentsPicker` is React
   (`TalentTreePicker` and `TalentPicker` are their own files, helpers in `utils/`), the vanilla view
