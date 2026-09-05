@@ -229,6 +229,54 @@ describe('IconPicker', () => {
 		expect(setValue).toHaveBeenLastCalledWith(settings, true);
 	});
 
+	it('carries the wowhead opt-outs and opens in a new tab', () => {
+		const settings = new Settings(0);
+		render(<IconPicker modObject={settings} config={configFor()} />);
+		const [main, improved1] = allAnchors();
+		expect(main.target).toBe('_blank');
+		expect(main.dataset.whtticon).toBe('false');
+		expect(main.dataset.disableWowheadTouchTooltip).toBe('true');
+		expect(improved1.dataset.whtticon).toBe('false');
+		expect(improved1.dataset.disableWowheadTouchTooltip).toBe('true');
+	});
+
+	it('marks the first improved anchor active only above value 1', () => {
+		const settings = new Settings(1);
+		const config = configFor({ states: 3, improvedId });
+		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
+		expect(allAnchors()[1].classList.contains('active')).toBe(false);
+
+		act(() => settings.set(2));
+		rerender(<IconPicker modObject={settings} config={config} />);
+		expect(allAnchors()[1].classList.contains('active')).toBe(true);
+	});
+
+	it('hides the second improved anchor until value 3, and only when states 4 configures it', () => {
+		const settings = new Settings(2);
+		const config = configFor({ states: 4, improvedId, improvedId2 });
+		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
+		expect(allAnchors()[2].hidden).toBe(true);
+
+		act(() => settings.set(3));
+		rerender(<IconPicker modObject={settings} config={config} />);
+		expect(allAnchors()[2].hidden).toBe(false);
+
+		// states 3 never touches either anchor's `hidden`, so neither is hidden.
+		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
+		expect(allAnchors()[1].hidden).toBe(false);
+		expect(allAnchors()[2].hidden).toBe(false);
+	});
+
+	it('hides the counter label at states 2 and shows it above', () => {
+		const settings = new Settings(0);
+		const { rerender } = render(<IconPicker modObject={settings} config={configFor()} />);
+		const label = () => document.querySelector('.icon-picker-label')!;
+		expect(label().classList.contains('hide')).toBe(true);
+
+		rerender(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
+		expect(label().classList.contains('hide')).toBe(false);
+	});
+
 	it('writes the disabled attribute on the anchor as well as the class on the root', () => {
 		const settings = new Settings(0);
 		render(<IconPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);

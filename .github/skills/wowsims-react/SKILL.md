@@ -98,7 +98,7 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
-| `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.ts` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
+| `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
 | `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
@@ -315,6 +315,12 @@ class name across `ui/` before moving its rules.
   a vanilla list item reads from `useStoreSubscribe`'s cached snapshot, so if a sibling vanilla
   handler mutates that same array in place, the React picker shows stale data until the next
   notification. Bites in Phase 3, when APL ports.
+- **A bound picker renders twice at mount, and runs its effects twice, in every build.** Measured:
+  `useInput` gives 2 renders and 2 effect runs at mount with no StrictMode anywhere. The cause is
+  `useStoreSubscribe` marking the snapshot stale when it subscribes, so React's post-subscribe read
+  builds a fresh `{ value, revision }` and sees a change. An effect that must run once per
+  notification therefore cannot use a one-shot ref — compare `revision` and act only when it moved.
+  This is the same shape as the StrictMode trap and it is *not* limited to the dev server.
 - **`IconEnumPicker` leaves a stale `href` behind.** Its button starts as
   `href="javascript:void(0)"`; `setImage` overwrites it with the wowhead URL when the selected value
   has an `actionId`, and `removeAttribute('href')`s it when that value's `showWhen` is false — but
@@ -391,7 +397,8 @@ Two things specific to this migration:
   the store-on-hide write runs from the source subscription, so it fires on **any** notification
   while hidden (a picker that mounts hidden over a non-zero source is zeroed by the first one) and
   never during construction, which a one-shot "skip the first effect" flag gets wrong in both
-  directions and StrictMode then replays; and `Input.update()` writes `disabled` on the input
+  directions — and which mounting alone defeats, because a bound picker renders and runs its effects
+  **twice at mount in every build** (see the trap below); and `Input.update()` writes `disabled` on the input
   element as well as the class on the root, which React will not render from a typed anchor prop.
   Note that `getAllByRole('link')` cannot see an anchor without an href, so the structural tests
   query the DOM.
