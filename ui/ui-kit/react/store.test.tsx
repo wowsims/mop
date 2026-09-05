@@ -15,13 +15,13 @@ const gated = <U,>(store: SimStore, selector: (s: SimState) => U): StoreSubscrib
 const ungated = <U,>(store: SimStore, selector: (s: SimState) => U): StoreSubscribe =>
 	((onChange: () => void) => store.subscribe(selector, onChange)) as StoreSubscribe;
 
-function probe(store: SimStore, source: StoreSubscribe, read: (s: SimState) => unknown, renders: { n: number }) {
+const probe = (store: SimStore, source: StoreSubscribe, read: (s: SimState) => unknown, renders: { n: number }) => {
 	return function Probe() {
 		const value = useStoreSubscribe(source, () => read(store.getState()));
 		renders.n++;
 		return <span>{String(value)}</span>;
 	};
-}
+};
 
 describe('useStoreSubscribe', () => {
 	it('renders the current value and re-renders when the field changes', () => {

@@ -4,7 +4,7 @@ import { environmentOf, Environments } from '@domain/env';
 
 export const existsInDOM = (element: HTMLElement | null) => document.body.contains(element);
 
-export function downloadString(data: string, fileName: string) {
+export const downloadString = (data: string, fileName: string) => {
 	const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
 	const downloadAnchorNode = document.createElement('a');
 	downloadAnchorNode.setAttribute('href', dataStr);
@@ -12,7 +12,7 @@ export function downloadString(data: string, fileName: string) {
 	document.body.appendChild(downloadAnchorNode); // required for firefox
 	downloadAnchorNode.click();
 	downloadAnchorNode.remove();
-}
+};
 
 const hostname = window.location.hostname;
 export const getEnvironment = (): Environments => environmentOf(hostname);

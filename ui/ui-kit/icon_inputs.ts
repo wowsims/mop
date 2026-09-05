@@ -22,10 +22,10 @@ export const buildIconInput = <SpecType extends Spec>(parent: HTMLElement, playe
 	}
 };
 
-export function withLabel<ModObject, T>(config: IconInputConfig<ModObject, T>, label: string): IconInputConfig<ModObject, T> {
+export const withLabel = <ModObject, T>(config: IconInputConfig<ModObject, T>, label: string): IconInputConfig<ModObject, T> => {
 	config.label = label;
 	return config;
-}
+};
 
 interface BooleanInputConfig<T> {
 	actionId: ActionId;
@@ -36,9 +36,9 @@ interface BooleanInputConfig<T> {
 	showWhen?: (player: Player<any>) => boolean;
 }
 
-export function makeBooleanRaidBuffInput<SpecType extends Spec>(
+export const makeBooleanRaidBuffInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<RaidBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return InputHelpers.makeBooleanIconInput<any, RaidBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -52,10 +52,10 @@ export function makeBooleanRaidBuffInput<SpecType extends Spec>(
 		config.value,
 		config.label,
 	);
-}
-export function makeBooleanPartyBuffInput<SpecType extends Spec>(
+};
+export const makeBooleanPartyBuffInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<PartyBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return InputHelpers.makeBooleanIconInput<any, PartyBuffs, Party>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
@@ -67,11 +67,11 @@ export function makeBooleanPartyBuffInput<SpecType extends Spec>(
 		config.fieldName,
 		config.value,
 	);
-}
+};
 
-export function makeBooleanIndividualBuffInput<SpecType extends Spec>(
+export const makeBooleanIndividualBuffInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<IndividualBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return InputHelpers.makeBooleanIconInput<any, IndividualBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -85,11 +85,11 @@ export function makeBooleanIndividualBuffInput<SpecType extends Spec>(
 		config.value,
 		config.label,
 	);
-}
+};
 
-export function makeBooleanConsumeInput<SpecType extends Spec>(
+export const makeBooleanConsumeInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<ConsumesSpec>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return InputHelpers.makeBooleanIconInput<any, ConsumesSpec, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -107,10 +107,10 @@ export function makeBooleanConsumeInput<SpecType extends Spec>(
 		config.fieldName,
 		config.value,
 	);
-}
-export function makeBooleanDebuffInput<SpecType extends Spec>(
+};
+export const makeBooleanDebuffInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<Debuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return InputHelpers.makeBooleanIconInput<any, Debuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -123,7 +123,7 @@ export function makeBooleanDebuffInput<SpecType extends Spec>(
 		config.value,
 		config.label,
 	);
-}
+};
 
 interface TristateInputConfig<T> {
 	actionId: ActionId;
@@ -133,9 +133,9 @@ interface TristateInputConfig<T> {
 	label?: string;
 }
 
-export function makeTristateRaidBuffInput<SpecType extends Spec>(
+export const makeTristateRaidBuffInput = <SpecType extends Spec>(
 	config: TristateInputConfig<RaidBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeTristateIconInput<any, RaidBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -149,11 +149,11 @@ export function makeTristateRaidBuffInput<SpecType extends Spec>(
 		config.fieldName,
 		config.label,
 	);
-}
+};
 
-export function makeTristateIndividualBuffInput<SpecType extends Spec>(
+export const makeTristateIndividualBuffInput = <SpecType extends Spec>(
 	config: TristateInputConfig<IndividualBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeTristateIconInput<any, IndividualBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -167,11 +167,11 @@ export function makeTristateIndividualBuffInput<SpecType extends Spec>(
 		config.fieldName,
 		config.label,
 	);
-}
+};
 
-export function makeTristateDebuffInput<SpecType extends Spec>(
+export const makeTristateDebuffInput = <SpecType extends Spec>(
 	config: TristateInputConfig<Debuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeTristateIconInput<any, Debuffs, Raid>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
@@ -184,7 +184,7 @@ export function makeTristateDebuffInput<SpecType extends Spec>(
 		config.fieldName,
 		config.label,
 	);
-}
+};
 
 interface QuadStateInputConfig<T> {
 	actionId: ActionId;
@@ -194,9 +194,9 @@ interface QuadStateInputConfig<T> {
 	faction?: Faction;
 }
 
-export function makeQuadstateDebuffInput<SpecType extends Spec>(
+export const makeQuadstateDebuffInput = <SpecType extends Spec>(
 	config: QuadStateInputConfig<Debuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeQuadstateIconInput<any, Debuffs, Raid>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
@@ -209,7 +209,7 @@ export function makeQuadstateDebuffInput<SpecType extends Spec>(
 		config.impId2,
 		config.fieldName,
 	);
-}
+};
 
 interface MultiStateInputConfig<T> {
 	actionId: ActionId;
@@ -220,9 +220,9 @@ interface MultiStateInputConfig<T> {
 	faction?: Faction;
 }
 
-export function makeMultistateRaidBuffInput<SpecType extends Spec>(
+export const makeMultistateRaidBuffInput = <SpecType extends Spec>(
 	config: MultiStateInputConfig<RaidBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeMultistateIconInput<any, RaidBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -237,13 +237,13 @@ export function makeMultistateRaidBuffInput<SpecType extends Spec>(
 		config.multiplier,
 		config.label,
 	);
-}
-export function makeMultistatePartyBuffInput<SpecType extends Spec>(
+};
+export const makeMultistatePartyBuffInput = <SpecType extends Spec>(
 	actionId: ActionId,
 	numStates: number,
 	fieldName: keyof PartyBuffs,
 	label?: string,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeMultistateIconInput<any, PartyBuffs, Party>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
@@ -257,10 +257,10 @@ export function makeMultistatePartyBuffInput<SpecType extends Spec>(
 		undefined,
 		label,
 	);
-}
-export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
+};
+export const makeMultistateIndividualBuffInput = <SpecType extends Spec>(
 	config: MultiStateInputConfig<IndividualBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeMultistateIconInput<any, IndividualBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -275,14 +275,14 @@ export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
 		config.multiplier,
 		config.label,
 	);
-}
+};
 
-export function makeMultistateMultiplierIndividualBuffInput<SpecType extends Spec>(
+export const makeMultistateMultiplierIndividualBuffInput = <SpecType extends Spec>(
 	actionId: ActionId,
 	numStates: number,
 	multiplier: number,
 	fieldName: keyof IndividualBuffs,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
 	return InputHelpers.makeMultistateIconInput<any, IndividualBuffs, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -295,14 +295,14 @@ export function makeMultistateMultiplierIndividualBuffInput<SpecType extends Spe
 		fieldName,
 		multiplier,
 	);
-}
+};
 
-export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
+export const makeMultistateMultiplierDebuffInput = <SpecType extends Spec>(
 	actionId: ActionId,
 	numStates: number,
 	multiplier: number,
 	fieldName: keyof Debuffs,
-): InputHelpers.TypedIconPickerConfig<Player<any>, number> {
+): InputHelpers.TypedIconPickerConfig<Player<any>, number> => {
 	return InputHelpers.makeMultistateIconInput<any, Debuffs, Raid>(
 		{
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
@@ -315,7 +315,7 @@ export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
 		fieldName,
 		multiplier,
 	);
-}
+};
 
 // interface EnumInputConfig<ModObject, Message, T> {
 // 	fieldName: keyof Message

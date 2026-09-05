@@ -10,10 +10,10 @@ const itemQualityCssClasses: Record<ItemQuality, string> = {
 	[ItemQuality.ItemQualityArtifact]: 'text-artifact',
 	[ItemQuality.ItemQualityHeirloom]: 'text-heirloom',
 };
-export function setItemQualityCssClass(elem: HTMLElement, quality: ItemQuality | null) {
+export const setItemQualityCssClass = (elem: HTMLElement, quality: ItemQuality | null) => {
 	Object.values(itemQualityCssClasses).forEach(cssClass => elem.classList.remove(cssClass));
 
 	if (quality) {
 		elem.classList.add(itemQualityCssClasses[quality]);
 	}
-}
+};

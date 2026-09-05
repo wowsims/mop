@@ -651,9 +651,14 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
 - **One component per file**, named after the component, in the component's folder. A folder that
   holds `CharacterStats.tsx` also holds `StatRow.tsx`, `CritCapRow.tsx`, `BonusStatsLink.tsx`,
   `TooltipRow.tsx` and `TooltipNote.tsx` — not one file with six functions in it.
-- **Arrow syntax** for components and for the small helpers beside them:
-  `export const StatRow = ({ … }: StatRowProps) => (…)`. Non-component module functions
-  (`buildRows`, `statDisplayString`) stay `function` declarations where hoisting or overloads help.
+- **Arrow syntax for every function on the React side**, not only components:
+  `export const StatRow = ({ … }: StatRowProps) => (…)`, and equally
+  `export const buildRows = (…): RowGroup[] => {…}`. A `forwardRef` keeps its devtools name through
+  an explicit `displayName`, not an inner named function. Two things this costs: arrows are not
+  hoisted, so a helper used above its declaration has to move up, and a generic in a `.tsx` file
+  needs the trailing comma (`<T,>`) that a `.ts` file must not have.
+  This applies to `ui-kit`, `app` and ported feature components. `ui/domain/**` and un-ported
+  `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
 
 ## Ambient state: `useSimHost`, and the rule that keeps it cheap

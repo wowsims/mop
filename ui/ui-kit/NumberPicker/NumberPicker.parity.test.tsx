@@ -52,7 +52,7 @@ const inputOf = (rootElem: Element) => rootElem.querySelector('input') as HTMLIn
 
 // Drives the `input` event on both inputs directly (not through `pair.step`, which is for mod-object
 // mutations) — this is what `updateSize` listens for.
-async function typeBoth(pair: PickerPair<Settings>, text: string) {
+const typeBoth = async (pair: PickerPair<Settings>, text: string) => {
 	await act(async () => {
 		for (const rootElem of [pair.vanilla.rootElem, pair.react.rootElem]) {
 			const input = inputOf(rootElem);
@@ -60,10 +60,10 @@ async function typeBoth(pair: PickerPair<Settings>, text: string) {
 			input.dispatchEvent(new Event('input', { bubbles: true }));
 		}
 	});
-}
+};
 
 // Drives the native `change` event both pickers commit on.
-async function changeBoth(pair: PickerPair<Settings>, text: string) {
+const changeBoth = async (pair: PickerPair<Settings>, text: string) => {
 	await act(async () => {
 		for (const rootElem of [pair.vanilla.rootElem, pair.react.rootElem]) {
 			const input = inputOf(rootElem);
@@ -71,7 +71,7 @@ async function changeBoth(pair: PickerPair<Settings>, text: string) {
 			input.dispatchEvent(new Event('change', { bubbles: true }));
 		}
 	});
-}
+};
 
 describe('NumberPicker matches the vanilla picker', () => {
 	const cases: Array<[string, Partial<NumberPickerConfig<Settings>>]> = [

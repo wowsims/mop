@@ -66,7 +66,7 @@ const compare = (vanilla: string[], react: string[]) =>
  *   returns early on `equals`). Vanilla's `restoreValue` notifies before it clears its stored
  *   value, so without that guard it re-enters itself without bound.
  */
-export async function mountBoth<ModObject, Config>({
+export const mountBoth = async <ModObject, Config>({
 	Vanilla,
 	React,
 	config,
@@ -76,7 +76,7 @@ export async function mountBoth<ModObject, Config>({
 	React: (props: { modObject: ModObject; config: Config }) => ReactNode;
 	config: Config;
 	makeModObject: () => ModObject;
-}): Promise<PickerPair<ModObject>> {
+}): Promise<PickerPair<ModObject>> => {
 	const vanillaModObject = makeModObject();
 	const parent = document.createElement('div');
 	document.body.appendChild(parent);
@@ -106,4 +106,4 @@ export async function mountBoth<ModObject, Config>({
 			unmount();
 		},
 	};
-}
+};

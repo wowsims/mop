@@ -19,7 +19,7 @@ export const readRacialBonuses = (player: Player<any>): RacialBonuses => ({
 	activeRacialExpertiseBonuses: player.getActiveRacialExpertiseBonuses(),
 });
 
-export function statDisplayString(player: Player<any>, racial: RacialBonuses, deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean): string {
+export const statDisplayString = (player: Player<any>, racial: RacialBonuses, deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean): string => {
 	const rootStat = unitStat.hasRootStat() ? unitStat.getRootStat() : null;
 	let rootRatingValue = rootStat !== null ? deltaStats.getStat(rootStat) : null;
 	let derivedPercentOrPointsValue = unitStat.convertDefaultUnitsToPercent(deltaStats.getUnitStat(unitStat));
@@ -66,11 +66,11 @@ export function statDisplayString(player: Player<any>, racial: RacialBonuses, de
 	const percentOrPointsString = derivedPercentOrPointsValue === null ? '' : `${derivedPercentOrPointsValue.toFixed(2)}` + percentOrPointsSuffix;
 	const wrappedPercentOrPointsString = hideRootRating || derivedPercentOrPointsValue === null ? percentOrPointsString : ` (${percentOrPointsString})`;
 	return rootRatingString + wrappedPercentOrPointsString;
-}
+};
 
 export const shouldShowMeleeCritCap = (player: Player<any>): boolean => player.getPlayerSpec().isMeleeDpsSpec;
 
-export function meleeCritCapDisplayString(player: Player<any>): string {
+export const meleeCritCapDisplayString = (player: Player<any>): string => {
 	const playerCritCapDelta = player.getMeleeCritCap();
 
 	if (playerCritCapDelta === 0.0) {
@@ -79,10 +79,10 @@ export function meleeCritCapDisplayString(player: Player<any>): string {
 
 	const prefix = playerCritCapDelta > 0 ? i18n.t('sidebar.character_stats.crit_cap.over_by') : i18n.t('sidebar.character_stats.crit_cap.under_by');
 	return `${prefix} ${Math.abs(playerCritCapDelta).toFixed(2)}%`;
-}
+};
 
 /** Warlock and Protection Warrior scale mastery twice, off a different base. */
-export function masteryScaling(player: Player<any>): { modifiers: number[]; customBonus: number[] } {
+export const masteryScaling = (player: Player<any>): { modifiers: number[]; customBonus: number[] } => {
 	let modifiers = [player.getMasteryPerPointModifier()];
 	let customBonus = [0];
 	switch (player.getSpec()) {
@@ -106,7 +106,7 @@ export function masteryScaling(player: Player<any>): { modifiers: number[]; cust
 			break;
 	}
 	return { modifiers, customBonus };
-}
+};
 
 export const bonusStatClass = (bonusStatValue: number): string => (bonusStatValue === 0 ? 'text-white' : bonusStatValue > 0 ? 'text-success' : 'text-danger');
 

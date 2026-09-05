@@ -10,7 +10,7 @@ import { useCallback, useRef, useSyncExternalStore } from 'react';
  * object from `getSnapshot` on every render is what React reports as "The result of getSnapshot
  * should be cached to avoid an infinite loop", and most model getters here do exactly that.
  */
-export function useStoreSubscribe<T>(subscribe: StoreSubscribe, read: () => T): T {
+export const useStoreSubscribe = <T>(subscribe: StoreSubscribe, read: () => T): T => {
 	// Held in a ref so only `subscribe` decides when React re-subscribes.
 	const readRef = useRef(read);
 	readRef.current = read;
@@ -39,4 +39,4 @@ export function useStoreSubscribe<T>(subscribe: StoreSubscribe, read: () => T): 
 	}, []);
 
 	return useSyncExternalStore(subscribeFn, getSnapshot, getSnapshot);
-}
+};

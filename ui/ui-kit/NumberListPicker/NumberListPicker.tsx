@@ -10,13 +10,13 @@ export interface NumberListPickerProps<ModObject> {
 }
 
 // The vanilla getInputValue: '' -> [], otherwise split(',').map(parseFloat), dropping NaN entries.
-function parseInputValue(text: string): Array<number> {
+const parseInputValue = (text: string): Array<number> => {
 	if (!text) return [];
 	return text
 		.split(',')
 		.map(parseFloat)
 		.filter(val => !isNaN(val));
-}
+};
 
 /**
  * The field is uncontrolled and synced imperatively, exactly as NumberPicker is: the vanilla picker

@@ -5,12 +5,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { SimTabs } from './sim_tabs';
 
 // The pane is all SimTab and SimUI.addTab hand to the registry; the tab and the panel are React's.
-function makeTab(id: string) {
+const makeTab = (id: string) => {
 	const pane = document.createElement('div');
 	pane.id = id;
 	pane.className = 'sim-tab';
 	return { id, title: id, pane };
-}
+};
 
 let strip: HTMLElement;
 let panes: HTMLElement;

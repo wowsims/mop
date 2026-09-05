@@ -71,7 +71,7 @@ const defaultGroups = (): Map<StatGroup, Array<UnitStat>> =>
 
 // Expertise sits next to whichever hit the spec cares about, and mastery at the end of that same
 // group — except for tanks, where mastery is a defensive stat.
-function placeExpertiseAndMastery(groups: Map<StatGroup, Array<UnitStat>>, player: Player<any>, epReferenceStat: Stat) {
+const placeExpertiseAndMastery = (groups: Map<StatGroup, Array<UnitStat>>, player: Player<any>, epReferenceStat: Stat) => {
 	const after = (group: StatGroup, hit: PseudoStat) => {
 		const stats = groups.get(group)!;
 		stats.splice(stats.findIndex(stat => stat.equalsPseudoStat(hit)) + 1, 0, UnitStat.fromStat(Stat.StatExpertiseRating));
@@ -86,9 +86,9 @@ function placeExpertiseAndMastery(groups: Map<StatGroup, Array<UnitStat>>, playe
 	} else {
 		after(StatGroup.Physical, PseudoStat.PseudoStatPhysicalHitPercent).push(UnitStat.fromStat(Stat.StatMasteryRating));
 	}
-}
+};
 
-export function buildRows(player: Player<any>, statList: Array<UnitStat>, epReferenceStat: Stat): RowGroup[] {
+export const buildRows = (player: Player<any>, statList: Array<UnitStat>, epReferenceStat: Stat): RowGroup[] => {
 	const groups = defaultGroups();
 	placeExpertiseAndMastery(groups, player, epReferenceStat);
 	const showCritCap = shouldShowMeleeCritCap(player);
@@ -112,4 +112,4 @@ export function buildRows(player: Player<any>, statList: Array<UnitStat>, epRefe
 		result.push({ key, rows });
 	});
 	return result;
-}
+};

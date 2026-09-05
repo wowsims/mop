@@ -51,26 +51,26 @@ const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
  * The ref is the popover's `close()`: `character_stats.tsx` hides its bonus-stat popover from inside
  * the picker it contains, which is `instance.hide()` on the vanilla side.
  */
-export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(function Tooltip(
-	{ id, content, place = 'top', clickable, openOnClick, hidden, onOpenChange, className },
-	ref,
-) {
-	return (
-		<ReactTooltip
-			ref={ref}
-			id={id}
-			place={place}
-			clickable={clickable}
-			openOnClick={openOnClick}
-			closeEvents={openOnClick ? undefined : HOVER_CLOSE}
-			globalCloseEvents={GLOBAL_CLOSE}
-			hidden={hidden}
-			afterShow={onOpenChange && (() => onOpenChange(true))}
-			afterHide={onOpenChange && (() => onOpenChange(false))}
-			className={clsx('sim-tooltip', className)}
-			noArrow
-			disableStyleInjection="core">
-			{content}
-		</ReactTooltip>
-	);
-});
+export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
+	({ id, content, place = 'top', clickable, openOnClick, hidden, onOpenChange, className }, ref) => {
+		return (
+			<ReactTooltip
+				ref={ref}
+				id={id}
+				place={place}
+				clickable={clickable}
+				openOnClick={openOnClick}
+				closeEvents={openOnClick ? undefined : HOVER_CLOSE}
+				globalCloseEvents={GLOBAL_CLOSE}
+				hidden={hidden}
+				afterShow={onOpenChange && (() => onOpenChange(true))}
+				afterHide={onOpenChange && (() => onOpenChange(false))}
+				className={clsx('sim-tooltip', className)}
+				noArrow
+				disableStyleInjection="core">
+				{content}
+			</ReactTooltip>
+		);
+	},
+);
+Tooltip.displayName = 'Tooltip';

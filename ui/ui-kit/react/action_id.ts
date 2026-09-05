@@ -45,7 +45,7 @@ const stateOf = (actionId: ActionId | undefined): ActionIdState =>
  * second one that resolved sooner. `undefined` is a state the callers have — an icon anchor that
  * exists at every `states` but is only filled at some of them — and resolves to empty fields.
  */
-export function useActionId(actionId: ActionId | undefined): ActionIdState {
+export const useActionId = (actionId: ActionId | undefined): ActionIdState => {
 	const key = keyOf(actionId);
 	const idRef = useRef(actionId);
 	idRef.current = actionId;
@@ -77,4 +77,4 @@ export function useActionId(actionId: ActionId | undefined): ActionIdState {
 	}, [key]);
 
 	return state;
-}
+};

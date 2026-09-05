@@ -25,7 +25,7 @@ export interface InputState<T, V = T> {
  * matches the vanilla Input's refresh() and is what makes configs like the encounter target list —
  * `getTargets().slice()`, a new array every call — safe to bind.
  */
-export function useInput<ModObject, T, V = T>(modObject: ModObject, config: InputConfig<ModObject, T, V>): InputState<T, V> {
+export const useInput = <ModObject, T, V = T>(modObject: ModObject, config: InputConfig<ModObject, T, V>): InputState<T, V> => {
 	const configRef = useRef(config);
 	configRef.current = config;
 
@@ -79,4 +79,4 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 		disabled: !!config.enableWhen && !config.enableWhen(modObject),
 		revision: snapshot.revision,
 	};
-}
+};

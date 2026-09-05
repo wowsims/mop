@@ -8,6 +8,12 @@ export interface AdaptiveStringPickerProps<ModObject> {
 	config: StringPickerConfig<ModObject>;
 }
 
+const updateSize = (input: HTMLInputElement | null) => {
+	if (!input) return;
+	const size = Math.max(3, input.value.length);
+	if (input.size !== size) input.size = size;
+};
+
 /**
  * The field is uncontrolled and synced imperatively, exactly as NumberPicker is: the vanilla picker
  * commits on the native `change` event, not React's per-keystroke `onChange`.
@@ -42,9 +48,3 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 		</PickerShell>
 	);
 };
-
-function updateSize(input: HTMLInputElement | null) {
-	if (!input) return;
-	const size = Math.max(3, input.value.length);
-	if (input.size !== size) input.size = size;
-}

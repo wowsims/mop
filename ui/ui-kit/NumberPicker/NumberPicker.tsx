@@ -10,23 +10,29 @@ export interface NumberPickerProps<ModObject> {
 }
 
 // The vanilla setInputValue: the format the field is given whenever it is synced from the source.
-function formatSourceValue(value: number, float: boolean, showZeroes: boolean, maxDecimalDigits: number): string {
+const formatSourceValue = (value: number, float: boolean, showZeroes: boolean, maxDecimalDigits: number): string => {
 	if (value === 0 && !showZeroes) return '';
 	if (float) return formatToNumber(value, { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: maxDecimalDigits });
 	return String(value);
-}
+};
 
 // The vanilla `positive` change handler, which rewrites the field in place before the value is read
 // back. It groups (formatToNumber's default) where formatSourceValue does not, and its integer
 // branch turns an empty field into the literal "NaN". Both are odd; both are reproduced.
-function applyPositive(text: string, float: boolean, maxDecimalDigits: number): string {
+const applyPositive = (text: string, float: boolean, maxDecimalDigits: number): string => {
 	if (float) return formatToNumber(Math.abs(Number(text)), { minimumFractionDigits: 2, maximumFractionDigits: maxDecimalDigits });
 	return Math.abs(parseInt(text)).toString();
-}
+};
 
-function parseValue(text: string, float: boolean): number {
+const parseValue = (text: string, float: boolean): number => {
 	return float ? Number(text || '') || 0 : parseInt(text || '') || 0;
-}
+};
+
+const updateSize = (input: HTMLInputElement | null) => {
+	if (!input) return;
+	const size = Math.max(3, input.value.length);
+	if (input.size !== size) input.size = size;
+};
 
 /**
  * The field is uncontrolled and synced imperatively, which is not the usual React shape but is what
@@ -82,9 +88,3 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 		</PickerShell>
 	);
 };
-
-function updateSize(input: HTMLInputElement | null) {
-	if (!input) return;
-	const size = Math.max(3, input.value.length);
-	if (input.size !== size) input.size = size;
-}

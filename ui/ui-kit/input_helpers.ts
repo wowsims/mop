@@ -13,18 +13,18 @@ import { IconEnumPickerConfig, IconEnumValueConfig } from './pickers/icon_enum_p
 import { IconPickerConfig } from './pickers/icon_picker';
 import { MultiIconPickerConfig } from './pickers/multi_icon_picker';
 import { NumberPickerConfig } from './pickers/number_picker';
-export function makeMultiIconInput<ModObject>(
+export const makeMultiIconInput = <ModObject>(
 	inputs: Array<IconPickerConfig<ModObject, any>>,
 	label: string,
 	categoryId?: ActionId,
-): MultiIconPickerConfig<ModObject> {
+): MultiIconPickerConfig<ModObject> => {
 	return {
 		inputs: inputs,
 		label: label,
 		categoryId: categoryId,
 		showWhen: p => inputs.filter(i => !i.showWhen || i.showWhen(p as ModObject)).length > 0,
 	};
-}
+};
 
 // Extend this to add player callbacks as optional config fields.
 interface BasePlayerConfig<SpecType extends Spec, T> {
@@ -45,9 +45,9 @@ export interface TypedBooleanPickerConfig<ModObject> extends BooleanPickerConfig
 interface WrappedBooleanInputConfig<SpecType extends Spec, ModObject> extends BooleanPickerConfig<ModObject> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-export function makeWrappedBooleanInput<SpecType extends Spec, ModObject>(
+export const makeWrappedBooleanInput = <SpecType extends Spec, ModObject>(
 	config: WrappedBooleanInputConfig<SpecType, ModObject>,
-): TypedBooleanPickerConfig<Player<SpecType>> {
+): TypedBooleanPickerConfig<Player<SpecType>> => {
 	const getModObject = config.getModObject;
 	return {
 		id: config.id,
@@ -62,7 +62,7 @@ export function makeWrappedBooleanInput<SpecType extends Spec, ModObject>(
 		showWhen: config.showWhen ? (player: Player<SpecType>) => config.showWhen!(getModObject(player)) : undefined,
 		extraCssClasses: config.extraCssClasses,
 	};
-}
+};
 export interface PlayerBooleanInputConfig<SpecType extends Spec, Message> extends BasePlayerConfig<SpecType, boolean> {
 	fieldName: keyof Message;
 	label: string;
@@ -71,9 +71,9 @@ export interface PlayerBooleanInputConfig<SpecType extends Spec, Message> extend
 	enableWhen?: (player: Player<SpecType>) => boolean;
 	showWhen?: (player: Player<SpecType>) => boolean;
 }
-export function makeClassOptionsBooleanInput<SpecType extends Spec>(
+export const makeClassOptionsBooleanInput = <SpecType extends Spec>(
 	config: PlayerBooleanInputConfig<SpecType, ClassOptions<SpecType>>,
-): TypedBooleanPickerConfig<Player<SpecType>> {
+): TypedBooleanPickerConfig<Player<SpecType>> => {
 	return makeWrappedBooleanInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -93,10 +93,10 @@ export function makeClassOptionsBooleanInput<SpecType extends Spec>(
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
 	});
-}
-export function makeSpecOptionsBooleanInput<SpecType extends Spec>(
+};
+export const makeSpecOptionsBooleanInput = <SpecType extends Spec>(
 	config: PlayerBooleanInputConfig<SpecType, SpecOptions<SpecType>>,
-): TypedBooleanPickerConfig<Player<SpecType>> {
+): TypedBooleanPickerConfig<Player<SpecType>> => {
 	return makeWrappedBooleanInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -116,10 +116,10 @@ export function makeSpecOptionsBooleanInput<SpecType extends Spec>(
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
 	});
-}
-export function makeRotationBooleanInput<SpecType extends Spec>(
+};
+export const makeRotationBooleanInput = <SpecType extends Spec>(
 	config: PlayerBooleanInputConfig<SpecType, SpecRotation<SpecType>>,
-): TypedBooleanPickerConfig<Player<SpecType>> {
+): TypedBooleanPickerConfig<Player<SpecType>> => {
 	return makeWrappedBooleanInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -139,7 +139,7 @@ export function makeRotationBooleanInput<SpecType extends Spec>(
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
 	});
-}
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 //                                    NUMBER
@@ -151,9 +151,9 @@ export interface TypedNumberPickerConfig<ModObject> extends NumberPickerConfig<M
 interface WrappedNumberInputConfig<SpecType extends Spec, ModObject> extends NumberPickerConfig<ModObject> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-function makeWrappedNumberInput<SpecType extends Spec, ModObject>(
+const makeWrappedNumberInput = <SpecType extends Spec, ModObject>(
 	config: WrappedNumberInputConfig<SpecType, ModObject>,
-): TypedNumberPickerConfig<Player<SpecType>> {
+): TypedNumberPickerConfig<Player<SpecType>> => {
 	const getModObject = config.getModObject;
 	return {
 		id: config.id,
@@ -172,7 +172,7 @@ function makeWrappedNumberInput<SpecType extends Spec, ModObject>(
 		showWhen: config.showWhen ? (player: Player<SpecType>) => config.showWhen!(getModObject(player)) : undefined,
 		extraCssClasses: config.extraCssClasses,
 	};
-}
+};
 export interface PlayerNumberInputConfig<SpecType extends Spec, Message>
 	extends
 		BasePlayerConfig<SpecType, number>,
@@ -192,9 +192,9 @@ export const numberInputValueToPercentage = (value: number, config: PlayerNumber
 export const numberInputPercentToValue = (value: number, config: PlayerNumberInputConfig<any, any>) =>
 	Number(formatToNumber(value * 100, { maximumFractionDigits: config.maxDecimalDigits, useGrouping: false }));
 
-export function makeClassOptionsNumberInput<SpecType extends Spec>(
+export const makeClassOptionsNumberInput = <SpecType extends Spec>(
 	config: PlayerNumberInputConfig<SpecType, ClassOptions<SpecType>>,
-): TypedNumberPickerConfig<Player<SpecType>> {
+): TypedNumberPickerConfig<Player<SpecType>> => {
 	const internalConfig = {
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -228,10 +228,10 @@ export function makeClassOptionsNumberInput<SpecType extends Spec>(
 		internalConfig.setValue = (player: Player<SpecType>, newVal: number) => setValue(player, numberInputValueToPercentage(newVal, config));
 	}
 	return makeWrappedNumberInput<SpecType, Player<SpecType>>(internalConfig);
-}
-export function makeSpecOptionsNumberInput<SpecType extends Spec>(
+};
+export const makeSpecOptionsNumberInput = <SpecType extends Spec>(
 	config: PlayerNumberInputConfig<SpecType, SpecOptions<SpecType>>,
-): TypedNumberPickerConfig<Player<SpecType>> {
+): TypedNumberPickerConfig<Player<SpecType>> => {
 	const internalConfig = {
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -266,10 +266,10 @@ export function makeSpecOptionsNumberInput<SpecType extends Spec>(
 		internalConfig.setValue = (player: Player<SpecType>, newVal: number) => setValue(player, numberInputValueToPercentage(newVal, config));
 	}
 	return makeWrappedNumberInput<SpecType, Player<SpecType>>(internalConfig);
-}
-export function makeRotationNumberInput<SpecType extends Spec>(
+};
+export const makeRotationNumberInput = <SpecType extends Spec>(
 	config: PlayerNumberInputConfig<SpecType, SpecRotation<SpecType>>,
-): TypedNumberPickerConfig<Player<SpecType>> {
+): TypedNumberPickerConfig<Player<SpecType>> => {
 	const internalConfig = {
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -302,7 +302,7 @@ export function makeRotationNumberInput<SpecType extends Spec>(
 		internalConfig.setValue = (player: Player<SpecType>, newVal: number) => setValue(player, numberInputValueToPercentage(newVal, config));
 	}
 	return makeWrappedNumberInput<SpecType, Player<SpecType>>(internalConfig);
-}
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 //                                    ENUM
@@ -314,7 +314,9 @@ export interface TypedEnumPickerConfig<ModObject> extends EnumPickerConfig<ModOb
 interface WrappedEnumInputConfig<SpecType extends Spec, ModObject> extends EnumPickerConfig<ModObject> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-function makeWrappedEnumInput<SpecType extends Spec, ModObject>(config: WrappedEnumInputConfig<SpecType, ModObject>): TypedEnumPickerConfig<Player<SpecType>> {
+const makeWrappedEnumInput = <SpecType extends Spec, ModObject>(
+	config: WrappedEnumInputConfig<SpecType, ModObject>,
+): TypedEnumPickerConfig<Player<SpecType>> => {
 	const getModObject = config.getModObject;
 	return {
 		id: config.id,
@@ -329,7 +331,7 @@ function makeWrappedEnumInput<SpecType extends Spec, ModObject>(config: WrappedE
 		enableWhen: config.enableWhen ? (player: Player<SpecType>) => config.enableWhen!(getModObject(player)) : undefined,
 		showWhen: config.showWhen ? (player: Player<SpecType>) => config.showWhen!(getModObject(player)) : undefined,
 	};
-}
+};
 
 export interface PlayerEnumInputConfig<SpecType extends Spec, Message> {
 	fieldName: keyof Message;
@@ -344,9 +346,9 @@ export interface PlayerEnumInputConfig<SpecType extends Spec, Message> {
 	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
 }
 // T is unused, but kept to have the same interface as the icon enum inputs.
-export function makeClassOptionsEnumInput<SpecType extends Spec, _T>(
+export const makeClassOptionsEnumInput = <SpecType extends Spec, _T>(
 	config: PlayerEnumInputConfig<SpecType, ClassOptions<SpecType>>,
-): TypedEnumPickerConfig<Player<SpecType>> {
+): TypedEnumPickerConfig<Player<SpecType>> => {
 	return makeWrappedEnumInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -366,11 +368,11 @@ export function makeClassOptionsEnumInput<SpecType extends Spec, _T>(
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
-}
+};
 // T is unused, but kept to have the same interface as the icon enum inputs.
-export function makeSpecOptionsEnumInput<SpecType extends Spec, _T>(
+export const makeSpecOptionsEnumInput = <SpecType extends Spec, _T>(
 	config: PlayerEnumInputConfig<SpecType, SpecOptions<SpecType>>,
-): TypedEnumPickerConfig<Player<SpecType>> {
+): TypedEnumPickerConfig<Player<SpecType>> => {
 	return makeWrappedEnumInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -390,11 +392,11 @@ export function makeSpecOptionsEnumInput<SpecType extends Spec, _T>(
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
-}
+};
 // T is unused, but kept to have the same interface as the icon enum inputs.
-export function makeRotationEnumInput<SpecType extends Spec, _T>(
+export const makeRotationEnumInput = <SpecType extends Spec, _T>(
 	config: PlayerEnumInputConfig<SpecType, SpecRotation<SpecType>>,
-): TypedEnumPickerConfig<Player<SpecType>> {
+): TypedEnumPickerConfig<Player<SpecType>> => {
 	return makeWrappedEnumInput<SpecType, Player<SpecType>>({
 		id: `${String(config.fieldName) || randomUUID()}`,
 		label: config.label,
@@ -414,7 +416,7 @@ export function makeRotationEnumInput<SpecType extends Spec, _T>(
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
-}
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 //                                  ICON
@@ -426,9 +428,9 @@ export interface TypedIconPickerConfig<ModObject, T> extends IconPickerConfig<Mo
 interface WrappedIconInputConfig<SpecType extends Spec, ModObject, T> extends IconPickerConfig<ModObject, T> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-function makeWrappedIconInput<SpecType extends Spec, ModObject, T>(
+const makeWrappedIconInput = <SpecType extends Spec, ModObject, T>(
 	config: WrappedIconInputConfig<SpecType, ModObject, T>,
-): TypedIconPickerConfig<Player<SpecType>, T> {
+): TypedIconPickerConfig<Player<SpecType>, T> => {
 	const getModObject = config.getModObject;
 	return {
 		type: 'icon',
@@ -441,7 +443,7 @@ function makeWrappedIconInput<SpecType extends Spec, ModObject, T>(
 		setValue: (player: Player<SpecType>, newValue: T) => config.setValue(getModObject(player), newValue),
 		extraCssClasses: config.extraCssClasses,
 	};
-}
+};
 
 interface WrappedTypedInputConfig<Message, ModObject, T> {
 	getModObject: (player: Player<any>) => ModObject;
@@ -455,13 +457,13 @@ interface WrappedTypedInputConfig<Message, ModObject, T> {
 	setFieldValue?: (modObj: ModObject, newValue: T) => void;
 }
 
-export function makeBooleanIconInput<SpecType extends Spec, Message, ModObject>(
+export const makeBooleanIconInput = <SpecType extends Spec, Message, ModObject>(
 	config: WrappedTypedInputConfig<Message, ModObject, boolean>,
 	actionId: ActionId,
 	fieldName: keyof Message,
 	value?: number,
 	label?: string,
-): TypedIconPickerConfig<Player<SpecType>, boolean> {
+): TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return makeWrappedIconInput<SpecType, ModObject, boolean>({
 		getModObject: config.getModObject,
 		actionId,
@@ -491,16 +493,16 @@ export function makeBooleanIconInput<SpecType extends Spec, Message, ModObject>(
 			}),
 		extraCssClasses: config.extraCssClasses,
 	});
-}
+};
 
 export interface PlayerBooleanIconInputConfig<SpecType extends Spec, Message, T> extends BasePlayerConfig<SpecType, T> {
 	fieldName: keyof Message;
 	id: ActionId;
 	value?: number;
 }
-export function makeClassOptionsBooleanIconInput<SpecType extends Spec>(
+export const makeClassOptionsBooleanIconInput = <SpecType extends Spec>(
 	config: PlayerBooleanIconInputConfig<SpecType, ClassOptions<SpecType>, boolean>,
-): TypedIconPickerConfig<Player<SpecType>, boolean> {
+): TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return makeBooleanIconInput<SpecType, ClassOptions<SpecType>, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -516,10 +518,10 @@ export function makeClassOptionsBooleanIconInput<SpecType extends Spec>(
 		config.fieldName,
 		config.value,
 	);
-}
-export function makeSpecOptionsBooleanIconInput<SpecType extends Spec>(
+};
+export const makeSpecOptionsBooleanIconInput = <SpecType extends Spec>(
 	config: PlayerBooleanIconInputConfig<SpecType, SpecOptions<SpecType>, boolean>,
-): TypedIconPickerConfig<Player<SpecType>, boolean> {
+): TypedIconPickerConfig<Player<SpecType>, boolean> => {
 	return makeBooleanIconInput<SpecType, SpecOptions<SpecType>, Player<SpecType>>(
 		{
 			getModObject: (player: Player<SpecType>) => player,
@@ -535,15 +537,15 @@ export function makeSpecOptionsBooleanIconInput<SpecType extends Spec>(
 		config.fieldName,
 		config.value,
 	);
-}
+};
 
-function makeNumberIconInput<SpecType extends Spec, Message, ModObject>(
+const makeNumberIconInput = <SpecType extends Spec, Message, ModObject>(
 	config: WrappedTypedInputConfig<Message, ModObject, number>,
 	actionId: ActionId,
 	fieldName: keyof Message,
 	multiplier?: number,
 	label?: string,
-): TypedIconPickerConfig<Player<SpecType>, number> {
+): TypedIconPickerConfig<Player<SpecType>, number> => {
 	return makeWrappedIconInput<SpecType, ModObject, number>({
 		getModObject: config.getModObject,
 		actionId,
@@ -565,44 +567,44 @@ function makeNumberIconInput<SpecType extends Spec, Message, ModObject>(
 			config.setValue(modObj, newMessage);
 		},
 	});
-}
-export function makeTristateIconInput<SpecType extends Spec, Message, ModObject>(
+};
+export const makeTristateIconInput = <SpecType extends Spec, Message, ModObject>(
 	config: WrappedTypedInputConfig<Message, ModObject, number>,
 	id: ActionId,
 	impId: ActionId,
 	fieldName: keyof Message,
 	label?: string,
-): TypedIconPickerConfig<Player<SpecType>, number> {
+): TypedIconPickerConfig<Player<SpecType>, number> => {
 	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName, undefined, label);
 	input.states = 3;
 	input.improvedId = impId;
 	return input;
-}
-export function makeQuadstateIconInput<SpecType extends Spec, Message, ModObject>(
+};
+export const makeQuadstateIconInput = <SpecType extends Spec, Message, ModObject>(
 	config: WrappedTypedInputConfig<Message, ModObject, number>,
 	id: ActionId,
 	impId: ActionId,
 	impId2: ActionId,
 	fieldName: keyof Message,
-): TypedIconPickerConfig<Player<SpecType>, number> {
+): TypedIconPickerConfig<Player<SpecType>, number> => {
 	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName);
 	input.states = 4;
 	input.improvedId = impId;
 	input.improvedId2 = impId2;
 	return input;
-}
-export function makeMultistateIconInput<SpecType extends Spec, Message, ModObject>(
+};
+export const makeMultistateIconInput = <SpecType extends Spec, Message, ModObject>(
 	config: WrappedTypedInputConfig<Message, ModObject, number>,
 	id: ActionId,
 	numStates: number,
 	fieldName: keyof Message,
 	multiplier?: number,
 	label?: string,
-): TypedIconPickerConfig<Player<SpecType>, number> {
+): TypedIconPickerConfig<Player<SpecType>, number> => {
 	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName, multiplier, label);
 	input.states = numStates;
 	return input;
-}
+};
 
 export interface TypedIconEnumPickerConfig<ModObject, T> extends IconEnumPickerConfig<ModObject, T> {
 	type: 'iconEnum';
@@ -611,9 +613,9 @@ export interface TypedIconEnumPickerConfig<ModObject, T> extends IconEnumPickerC
 interface WrappedEnumIconInputConfig<SpecType extends Spec, ModObject, T> extends IconEnumPickerConfig<ModObject, T> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-function makeWrappedEnumIconInput<SpecType extends Spec, ModObject, T>(
+const makeWrappedEnumIconInput = <SpecType extends Spec, ModObject, T>(
 	config: WrappedEnumIconInputConfig<SpecType, ModObject, T>,
-): TypedIconEnumPickerConfig<Player<SpecType>, T> {
+): TypedIconEnumPickerConfig<Player<SpecType>, T> => {
 	const getModObject = config.getModObject;
 	return {
 		type: 'iconEnum',
@@ -633,16 +635,16 @@ function makeWrappedEnumIconInput<SpecType extends Spec, ModObject, T>(
 		setValue: (player: Player<SpecType>, newValue: T) => config.setValue(getModObject(player), newValue),
 		extraCssClasses: config.extraCssClasses,
 	};
-}
+};
 
 export interface PlayerEnumIconInputConfig<SpecType extends Spec, Message, T> extends BasePlayerConfig<SpecType, T> {
 	fieldName: keyof Message;
 	values: Array<IconEnumValueConfig<Player<SpecType>, T>>;
 	numColumns?: number;
 }
-export function makeClassOptionsEnumIconInput<SpecType extends Spec, T>(
+export const makeClassOptionsEnumIconInput = <SpecType extends Spec, T>(
 	config: PlayerEnumIconInputConfig<SpecType, ClassOptions<SpecType>, T>,
-): TypedIconEnumPickerConfig<Player<SpecType>, T> {
+): TypedIconEnumPickerConfig<Player<SpecType>, T> => {
 	return makeWrappedEnumIconInput<SpecType, Player<SpecType>, T>({
 		numColumns: config.numColumns || 1,
 		values: config.values,
@@ -661,10 +663,10 @@ export function makeClassOptionsEnumIconInput<SpecType extends Spec, T>(
 		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		extraCssClasses: config.extraCssClasses,
 	});
-}
-export function makeSpecOptionsEnumIconInput<SpecType extends Spec, T>(
+};
+export const makeSpecOptionsEnumIconInput = <SpecType extends Spec, T>(
 	config: PlayerEnumIconInputConfig<SpecType, SpecOptions<SpecType>, T>,
-): TypedIconEnumPickerConfig<Player<SpecType>, T> {
+): TypedIconEnumPickerConfig<Player<SpecType>, T> => {
 	return makeWrappedEnumIconInput<SpecType, Player<SpecType>, T>({
 		numColumns: config.numColumns || 1,
 		values: config.values,
@@ -683,10 +685,10 @@ export function makeSpecOptionsEnumIconInput<SpecType extends Spec, T>(
 		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		extraCssClasses: config.extraCssClasses,
 	});
-}
-export function makeRotationEnumIconInput<SpecType extends Spec, T>(
+};
+export const makeRotationEnumIconInput = <SpecType extends Spec, T>(
 	config: PlayerEnumIconInputConfig<SpecType, SpecRotation<SpecType>, T>,
-): TypedIconEnumPickerConfig<Player<SpecType>, T> {
+): TypedIconEnumPickerConfig<Player<SpecType>, T> => {
 	return makeWrappedEnumIconInput<SpecType, Player<SpecType>, T>({
 		numColumns: config.numColumns || 1,
 		values: config.values,
@@ -705,4 +707,4 @@ export function makeRotationEnumIconInput<SpecType extends Spec, T>(
 		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'rotation')),
 		extraCssClasses: config.extraCssClasses,
 	});
-}
+};

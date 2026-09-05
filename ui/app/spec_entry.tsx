@@ -19,14 +19,14 @@ const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../sims/*/*/
 
 // '/mop/warrior/arms/' -> '../sims/warrior/arms/spec' (then tried as .ts and .tsx —
 // a couple of specs need real JSX for their reforge tooltips).
-function specModuleKey(pathname: string): string {
+const specModuleKey = (pathname: string): string => {
 	const base = import.meta.env.BASE_URL || '/';
 	const rel = (pathname.startsWith(base) ? pathname.slice(base.length) : pathname)
 		.replace(/^\/+/, '')
 		.replace(/index\.html$/, '')
 		.replace(/\/+$/, '');
 	return `../sims/${rel}/spec`;
-}
+};
 
 // An async IIFE rather than top-level await: the vite build target does not
 // support TLA and downgrades it to a tolerated transform.
