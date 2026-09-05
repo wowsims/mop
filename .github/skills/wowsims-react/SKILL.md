@@ -122,14 +122,35 @@ Commit sequence, and the ordering call that matters — **the gates are rewritte
 invariants *before* the swap, against the current build**, because a gate rewritten in the same
 commit as the change it gates proves nothing:
 
-1. React authors the strip, markup byte-identical. **Done** (`afbc55015`).
-2. Gates move from baseline-equality to invariants, still green on today's markup.
+1. React authors the strip, markup byte-identical. **Done** (`afbc55015`), plus `96dd84aba`, which
+   took the markup out of `bulk_tab.title` and gave `SimTabConfig` a typed `badge` field instead —
+   a translation string is data, and rendering data as HTML was the wrong shape even though the
+   vanilla nav item did it.
+2. Gates move from baseline-equality to invariants, still green on today's markup. **Done** (`8324d654e`).
 3. The swap — `Tabs.Root/List/Tab/Panel`, the SCSS, and the unit tests. **Cannot be split**: the old
    selectors match nothing on the new markup and vice versa.
 4. `trackPageView` from per-tab `onClick` to `Tabs.Root`'s `onValueChange`, which has three real
    behaviour deltas of its own (keyboard starts being tracked, detailed results starts being
    tracked, a re-click stops being tracked).
 5. Optional `Tabs.Indicator` for the underline.
+
+### What the swap must satisfy
+
+The gates went shape-agnostic in commit 2, and in doing so they placed contracts on the swap. Each
+fails loudly — an unresolved-identifier or count guard — rather than silently:
+
+- The tab identifier stays a **class token** on the `[role=tab]` element or an ancestor `<li>`.
+  `Tabs.Tab` emits no `data-value`, so `className={`sim-tab-link ${entry.id}`}` is what carries it.
+- `#<id>` stays on the `SimTab` root, `.sim-tabs` on the `Tabs.List` element, `.sim-main` on the
+  pane container, and the Base UI panel is a **direct child** of `.sim-main` carrying
+  `role=tabpanel`.
+- **`parity.mjs` will fail on the plan as written.** Portalling `Tabs.Root` to keep `#root` at one
+  child gives it a host `<div style="display:contents">` with no class, so `PRUNED` will not match
+  it and it lands as a third direct child of `.sim-content`. Either give that div a class and add it
+  to `PRUNED` (and bump the `pruned !== 2` guard), or portal into `.sim-main`, which is already
+  inside a pruned subtree.
+- `activateOnFocus` must be `true`, and `tabs-a11y.mjs`'s keyboard comparison is what catches its
+  absence.
 
 Full plan, with the SCSS inventory and the risk register:
 `scratchpad/base-ui-tabs-plan.md`.
