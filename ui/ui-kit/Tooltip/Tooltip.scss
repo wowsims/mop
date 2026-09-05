@@ -8,6 +8,9 @@
 	background-color: var(--bs-tooltip-bg);
 	color: var(--bs-tooltip-body-color);
 	font-size: var(--btn-font-size);
+	// Rendered in place, not portaled, so it inherits from whatever it is anchored inside — the
+	// content-block header's title is bold, and tippy's popper never was.
+	font-weight: normal;
 	opacity: 1;
 
 	@include media-breakpoint-down(xl) {

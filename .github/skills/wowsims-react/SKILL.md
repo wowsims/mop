@@ -113,6 +113,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
+| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — 18 sites, 9 in `settings_tab.tsx` | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/react/picker_oracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
@@ -481,6 +482,16 @@ Two things specific to this migration:
   same button, so the React one takes `icon`. Note that `Icon` normalises the FA5 spelling —
   `fa-question-circle` renders as `fa-circle-question` — and that a tooltip anchor carries a
   `data-tooltip-id` the vanilla element does not.
+
+  Then `ContentBlock`, the most-constructed thing in the app layer. Two things the review caught,
+  both invisible to the parity diff because they concern content the diff never sees: the header
+  tooltip is **HTML** — the vanilla `TooltipButton` passes tippy `allowHTML: true`, and five of the
+  eight shipped header tooltips are translation strings carrying `<strong>` or `<br>`, which React
+  escapes — and the header needed a content axis, not only a ref, because four call sites append
+  into `headerElement` after construction (a description paragraph, and the three gear summaries'
+  reset button, which they `replaceChild` on every gear change). `children` is the body, and
+  `headerChildren` is that. `config.rootElem` is ignored: it exists so the vanilla `Component` can
+  adopt an existing element, and nothing passes one.
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a
