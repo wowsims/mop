@@ -98,6 +98,8 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
+| `useInput` | `ui/ui-kit/react/input.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 61 call sites / 33 files | `content` (any node), `place`, `clickable`, the anchor (`data-tooltip-id`) | the theme, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
@@ -135,6 +137,25 @@ So when you add a shared component, say in its header comment which axis it para
 it fixes, and export it from the feature's `index.ts`. If a caller cannot express what it needs
 through props, widen the props — do not let it fork the markup, because a fork also forks the CSS
 class names, and then the stylesheet has two owners.
+
+## Pickers: how a React component consumes `InputConfig`
+
+`InputConfig` is part of the frozen spec surface, so React fits itself to it, not the other way
+round. `useInput(modObject, config)` is that fit, and every React picker is built on it. It returns
+`{ value, setValue, hidden, disabled }`, and three of its rules are not obvious:
+
+- **`getValue` is re-read only when the source notifies**, and the result is held in between. This
+  is required, not an optimisation: configs such as the encounter target list return
+  `getTargets().slice()` — a new array on every call — and `useSyncExternalStore` treats a new
+  snapshot identity as a change, which React reports as *"The result of getSnapshot should be cached
+  to avoid an infinite loop"*. The vanilla `Input` has the same behaviour: it re-reads in
+  `refresh()`, on notification.
+- **`showWhen` renders the `hide` class rather than unmounting.** The plan calls conditional
+  rendering the idiom React deletes, and that holds for the hand-rolled container toggles — but a
+  picker's own node has to stay while Phase 3 compares DOM against the vanilla build. Revisit in
+  Phase 5, when there is no vanilla side to compare against.
+- **`defaultValue` seeds the input and the source takes over at the first notification**, whether or
+  not the value actually changed — `init()` then `refresh()` in the vanilla class.
 
 ## Co-located SCSS, in practice
 
@@ -259,7 +280,11 @@ Two things specific to this migration:
   end in dev and in the build (see the section above; `shared/_tokens.scss` is new). First component
   is `Tooltip` — react-tooltip with the app's tooltip theme, replacing tippy for React call sites as
   each feature ports — followed by `Button`, whose `as="a"` requires an `href` at the type level and
-  whose `<button>` defaults to `type="button"`, both defects the hand-written markup allows. Two things the library does that the plan did not predict are recorded under
+  whose `<button>` defaults to `type="button"`, both defects the hand-written markup allows. Then
+  `useInput` and `BooleanPicker`: the first three features Phase 3 ports (character-stats, encounter,
+  item-swap) are almost entirely pickers, so the `InputConfig` binding is the real critical path, and
+  it is described in its own section above. Base UI is not involved in a checkbox — no Bootstrap JS
+  drives one — so `BooleanPicker` emits the same markup as the vanilla picker and needs no new SCSS. Two things the library does that the plan did not predict are recorded under
   "Things that will bite". `vitest.setup.ts` now runs Testing Library's `cleanup` after each test,
   without which a second render finds the first one's DOM.
 
