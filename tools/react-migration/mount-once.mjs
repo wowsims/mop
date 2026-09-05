@@ -14,7 +14,7 @@ const READ = () => ({
 	simApp: document.querySelectorAll('.sim-app').length,
 	rootChildren: document.getElementById('root')?.children.length,
 	sidebarActions: document.querySelectorAll('.sim-sidebar-actions .sim-sidebar-action-button').length,
-	tabs: document.querySelectorAll('.sim-tabs > li').length,
+	tabs: document.querySelectorAll('.sim-tabs [role=tab]').length,
 	// Portalled, not constructed: a target built by the shell's constructor is the one place a
 	// second React pass could mount twice without the construct-once ref noticing.
 	stats: document.querySelectorAll('.sim-sidebar-stats .character-stats-root').length,

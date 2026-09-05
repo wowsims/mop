@@ -31,13 +31,28 @@ defaults to five specs from different classes. Ports come from `BASE_PORT` / `RE
 
 | Check | What it would catch |
 |---|---|
-| `parity.mjs` | any change to the rendered tree, at load — every SCSS selector depends on it. Two class diffs are expected and listed in the file |
-| `panes-parity.mjs` | a tab body that renders differently once opened. `parity.mjs` only ever sees the tab open on load |
-| `tabs-a11y.mjs` | the attributes and keyboard behaviour Bootstrap's tab plugin used to add on `window load`: roving `tabindex`, `role="tabpanel"`, arrow/Home/End navigation |
-| `tabs-behaviour.mjs` | more than one open tab, a click opening the wrong pane, a pane that never fades in |
+| `parity.mjs` | any change to the rendered tree, at load — every SCSS selector depends on it. The tab strip and `.sim-main` are pruned to a placeholder and each pane is compared on its own `#id` with its root class list normalised; everything else stays byte-strict |
+| `panes-parity.mjs` | a tab body that renders differently once opened, and a tab whose click opens nothing. `parity.mjs` only ever sees the tab open on load |
+| `tabs-a11y.mjs` | one tablist, one selected tab, one Tab stop and the two agreeing; every pane mounted whether open or not; every tab's `aria-controls` resolving to a top-level tabpanel that points back at it. Plus arrow/Home/End, still compared against the baseline |
+| `tabs-behaviour.mjs` | more than one open pane, a click opening the wrong pane, a pane that never fades in |
 | `landing.mjs` | a regression on `/mop/` itself — the homepage has no sim, so every other check skips it, and it is the one page that still depends on localization's `[data-i18n]` DOM walk |
 | `sidebar-popover.mjs` | everything about the sidebar that only exists after an interaction: the bonus-stat popover (where it mounts, whether the sidebar's `overflow-y: auto` clips it, whether each close path commits a half-typed value), that the table re-renders once the worker returns, and the two stat-value tooltips. Set `PORT` to pick a build — the entire output should be identical on both |
 | `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op |
+
+The four tab checks read the strip and the panes through `window.simTabsProbe`, installed by
+`openSpec` in `browser.mjs`. Its readers are shape-agnostic on purpose: they answer for the parent
+branch's Bootstrap strip, this branch's React-authored copy of it, and the Base UI strip that
+replaces both, so the gates can be proved green before the markup swap rather than alongside it. Two
+consequences worth knowing:
+
+- The identifier is found as a class token on the `[role=tab]` element or an ancestor `<li>` that
+  names an element inside `.sim-main`. Base UI's `Tabs.Tab` emits no `data-value`, so the swap has to
+  keep spelling the id into `className`.
+- The pane `aria-labelledby` back-pointer in `tabs-a11y.mjs` is feature-detected on the attribute
+  being present. Nothing sets it before the swap, so that one assertion is dormant until then.
+- `tabs-a11y.mjs`'s keyboard sequence is the last two-sided comparison against the parent branch. If
+  the parent is ever rebased past the point where Bootstrap's plugin owned the top strip, the
+  baseline disappears and that half has to become an absolute assertion too.
 
 Two notes from building them:
 
