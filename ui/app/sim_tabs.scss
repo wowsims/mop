@@ -28,33 +28,33 @@
 	// shorter than a tab, and the tabs overflow it downward by design (`align-items: flex-end`).
 	margin: 0;
 	border: 0;
-	// Sass variables, not `--bs-nav-link-*`: those custom properties are emitted by `.nav`, which
-	// this element deliberately is not.
-	padding: $nav-link-padding-y $nav-link-padding-x;
+	// Tokens we own — see `shared/_variables.scss`. Not `--bs-nav-link-*`, which `.nav` emits and
+	// this element deliberately is not, and not Bootstrap's Sass variables, which go with Bootstrap.
+	padding: var(--tab-padding-y) var(--tab-padding-x);
 	background: none;
-	color: $nav-link-color;
+	color: var(--tab-color);
 	font-family: inherit;
-	font-size: $nav-link-font-size;
+	font-size: var(--tab-font-size);
 	font-weight: bold;
 	white-space: nowrap;
 	text-decoration: none;
 	cursor: pointer;
-	transition: $nav-link-transition;
+	transition: var(--tab-transition);
 
 	&:hover {
-		color: $nav-link-hover-color;
+		color: var(--tab-color-hover);
 	}
 
 	// Base UI marks the selected tab; there is no `.active` class any more.
 	&[data-active] {
 		position: relative;
-		color: $nav-tabs-link-active-color;
+		color: var(--tab-color-active);
 
 		&::after {
 			content: '';
 			position: absolute;
 			height: 2px;
-			background: $nav-tabs-link-active-color;
+			background: var(--tab-color-active);
 			bottom: 0;
 			left: 0;
 			right: 0;
@@ -62,10 +62,10 @@
 	}
 
 	// Bootstrap's `.nav-link:focus-visible` ring, carried over rather than invented: measured on the
-	// parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`, which is `$focus-ring-box-shadow`.
+	// parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`.
 	&:focus-visible {
 		outline: 0;
-		box-shadow: $focus-ring-box-shadow;
+		box-shadow: var(--focus-ring);
 	}
 }
 
@@ -79,7 +79,7 @@
 	flex-grow: 1;
 	padding-top: var(--gap-width);
 	opacity: 1;
-	transition: $transition-fade;
+	transition: var(--transition-fade);
 
 	&[data-starting-style] {
 		opacity: 0;

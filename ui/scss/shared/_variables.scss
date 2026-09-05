@@ -423,3 +423,30 @@ $toast-header-color: $toast-color;
 $toast-header-background-color: $toast-background-color;
 $toast-padding-x: var(--spacer-3);
 $toast-padding-y: var(--spacer-3);
+
+// Tokens we own, for components that no longer carry Bootstrap classes
+//
+// Two things disappear when Bootstrap does, and one is already gone for ported components:
+//
+// - Its **component-scoped** custom properties (`--bs-nav-link-*`, `--bs-btn-*`, `--bs-modal-*`,
+//   `--bs-toast-*`) are emitted inside `.nav`, `.btn` and friends, not at `:root`. A component that
+//   drops those classes stops resolving them *today* — measured: 35 of the 104 `--bs-*` names this
+//   tree uses are undefined at `:root`.
+// - Its **Sass** variables are compile-time, so they vanish with the dependency rather than
+//   degrading.
+//
+// So a ported component reads from here instead. The right-hand sides still come from Bootstrap
+// today, deliberately: this block is the single seam, and removing Bootstrap means changing these
+// values and nothing else.
+:root {
+	--focus-ring: #{$focus-ring-box-shadow};
+	--transition-fade: #{$transition-fade};
+
+	--tab-padding-y: #{$nav-link-padding-y};
+	--tab-padding-x: #{$nav-link-padding-x};
+	--tab-font-size: #{$nav-link-font-size};
+	--tab-transition: #{$nav-link-transition};
+	--tab-color: #{$nav-link-color};
+	--tab-color-hover: #{$nav-link-hover-color};
+	--tab-color-active: #{$nav-tabs-link-active-color};
+}

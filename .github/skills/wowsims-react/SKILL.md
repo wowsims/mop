@@ -600,6 +600,37 @@ Three claims in this file were wrong and are corrected above or here: Escape (be
 needs nothing new", and the count of `ListPicker`'s encounter callers — there are two islands in
 `encounter_picker.ts`, not one.
 
+## CSS custom properties: what Bootstrap's removal takes with it
+
+Bootstrap goes eventually, and it takes two things that a ported component may be leaning on
+without anyone noticing:
+
+- **Component-scoped custom properties.** `--bs-nav-link-*`, `--bs-btn-*`, `--bs-modal-*`,
+  `--bs-toast-*`, `--bs-dropdown-link-color`, `--bs-progress-height`, `--bs-form-check-*-bg-image`
+  and friends are emitted *inside* `.nav`, `.btn`, `.modal`… not at `:root`. A component that drops
+  those classes stops resolving them **today**, silently — which is exactly what the first Base UI
+  tab styles did, until the numbers came out wrong.
+- **Sass variables.** `$nav-link-padding-y`, `$focus-ring-box-shadow`, `$transition-fade` are
+  compile-time, so they do not degrade — they vanish with the dependency.
+
+Measured, on the built page: this tree uses **104 distinct `--bs-*` names**, of which **68 resolve
+at `:root`** and **35 do not**. The 35 are Bootstrap's component-scoped set plus a few the project
+defines on a local selector or through a mixin (`--bs-border-default` in `_detailed_results.scss`,
+`--bs-primary-dampened` and `--bs-hover-color` from `shared/_mixins.scss`) — those are fine, they
+travel with the rules that use them. Reproduce the audit with a `getComputedStyle(documentElement)`
+sweep over the names; do not reason about it from the Sass.
+
+**The rule.** A ported component reads tokens we own, never a `--bs-*` and never a Bootstrap Sass
+variable. They live in one `:root` block at the end of `ui/scss/shared/_variables.scss`, and the
+right-hand sides still come from Bootstrap today *on purpose*: that block is the single seam, so
+removing the dependency means changing those values and nothing else. Add what your component needs
+there rather than reaching sideways. `--focus-ring`, `--transition-fade` and the `--tab-*` set are
+the first entries, from the Base UI tab port.
+
+Note this is separate from the 68 that do resolve at `:root`: many of those are emitted by
+Bootstrap's own `:root`, so they need re-homing into the same block when the time comes. That sweep
+is its own unit, not something to do component by component.
+
 ## Co-located SCSS, in practice
 
 A component's stylesheet sits beside its TSX and is imported from it. Vite merges it into the same
