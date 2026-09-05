@@ -314,7 +314,9 @@ tooltip and popover in the tree already closes on Escape, and a React one that d
 odd one out. (An earlier commit removed it on the reasoning that tippy's own dist has no Escape
 handling. True, and irrelevant — the app adds it.) Clicking *inside* the tooltip is safe: the
 handler returns early on `tooltipRef.contains(target)`, so the `NumberPicker` in the bonus-stat
-popover stays open while it is used.
+popover stays open while it is used. Closing on Escape or an outside click **commits** whatever was
+typed and not yet blurred, matching tippy — both unmount the content, and removing a user-edited
+input fires `change`. Measured, not reasoned: `tools/react-migration/sidebar-popover.mjs`.
 
 `Tooltip` forwards a ref to react-tooltip's `TooltipRefProps`, whose `close()` is the popover's
 `instance.hide()` — `character_stats.tsx` hides its bonus-stat popover from inside the picker it
@@ -353,13 +355,30 @@ enough to fix immediately, each now with a test that fails without it:
   live configs pass `input-inline` in `extraCssClasses` *and* set `inline` — a duplicate that would
   have reached the parity harness.
 
-**The sidebar cannot be ported today.** It needs, in order: a `createPortal` mount from `SimApp`
-into `.sim-sidebar-stats` (which `sim_ui.tsx` builds as vanilla DOM — there is no React mount point
-for it, and no `createPortal` anywhere in `ui/` yet); the `Tooltip` ref, which is built; the `Icon`
-rest spread, which is built. Then, browser-first: whether the right-placed popover is clipped by
-`.sim-sidebar-content`'s `overflow-y: auto`, which decides a `positionStrategy` pass-through. Carry
-the `bonus-stats-popover` rules with the port, re-keyed to `.sim-tooltip.bonus-stats-popover` and
-with `text-align: left` (the cell is right-aligned).
+**One prerequisite is left for the sidebar: a `createPortal` mount from `SimApp` into
+`.sim-sidebar-stats`.** `sim_ui.tsx` builds that div as vanilla DOM, there is no React mount point
+for it, and there is no `createPortal` anywhere in `ui/` yet. The `Tooltip` ref and the `Icon` rest
+spread are both built. Carry the `bonus-stats-popover` rules with the port, re-keyed to
+`.sim-tooltip.bonus-stats-popover` and with `text-align: left` (the cell is right-aligned).
+
+The browser check that was open is done — `tools/react-migration/sidebar-popover.mjs`, and it
+answered both questions against the vanilla build:
+
+- **The popover is not clipped, and `positionStrategy` is not needed.** It overhangs
+  `.sim-sidebar-content` by 123px and stays fully visible, hit-testable past the scroller's edge.
+  `position: absolute` resolves against `aside.sim-sidebar`, which is `position: sticky` and sits
+  *outside* the scroller, and a scroll container does not clip a descendant whose containing block
+  is one of its own ancestors. react-tooltip renders in place, in the same cell tippy mounts into,
+  so it inherits the same escape. The condition to keep in mind is `.sim-sidebar`'s `sticky`: give
+  any element between the popover and it a `position`, and clipping starts.
+- **Every close path commits the half-typed value** — Escape, outside click, Enter and a plain Tab
+  all wrote `+123`, and nothing was committed while typing. The mechanism is worth knowing because
+  it is not the hide: in Chrome, removing a focused input that the *user* edited fires `change`
+  then `blur`, while hiding it (`visibility` or `display`) fires nothing and keeps focus. tippy
+  unmounts its popper on hide, and react-tooltip unmounts its content on close (`setRendered(false)`),
+  so both commit for the same reason. A port that switched to keeping the content mounted and
+  hidden would silently discard the edit — and note that the flag is only set by real key events,
+  so a test that writes `.value` and dispatches a synthetic `InputEvent` cannot see any of this.
 
 **A React-owned tab pane has no path today, and it is not a `LegacyHost` problem.** `SimTab`'s
 constructor takes `(simUI, config)`, calls `super(null, 'sim-tab')`, builds its own pane and nav item

@@ -22,7 +22,9 @@ export interface TooltipProps {
 // `clickOutsideAnchor` is tippy's `hideOnClick`. Escape is not an addition either: the app binds a
 // global `keydown` that calls tippy's `hideAll()` (`shared/bootstrap_overrides.ts`), so every
 // tooltip and popover in the tree closes on Escape today. Clicking inside the tooltip does not
-// close it — the handler returns early on `tooltipRef.contains(target)`.
+// close it — the handler returns early on `tooltipRef.contains(target)`. Closing commits a
+// half-typed edit rather than discarding it, as tippy does: both unmount their content, and
+// removing a user-edited input fires `change`.
 const CLOSE_ON_CLICK_OUTSIDE = { clickOutsideAnchor: true, escape: true };
 
 /**

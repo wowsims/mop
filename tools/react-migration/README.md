@@ -19,6 +19,7 @@ node tools/react-migration/panes-parity.mjs
 node tools/react-migration/tabs-a11y.mjs
 node tools/react-migration/tabs-behaviour.mjs
 node tools/react-migration/landing.mjs
+node tools/react-migration/sidebar-popover.mjs
 
 # mount-once needs a dev server, not a build — see the table
 node_modules/.bin/vite --port 3403 --strictPort &
@@ -35,6 +36,7 @@ defaults to five specs from different classes. Ports come from `BASE_PORT` / `RE
 | `tabs-a11y.mjs` | the attributes and keyboard behaviour Bootstrap's tab plugin used to add on `window load`: roving `tabindex`, `role="tabpanel"`, arrow/Home/End navigation |
 | `tabs-behaviour.mjs` | more than one open tab, a click opening the wrong pane, a pane that never fades in |
 | `landing.mjs` | a regression on `/mop/` itself — the homepage has no sim, so every other check skips it, and it is the one page that still depends on localization's `[data-i18n]` DOM walk |
+| `sidebar-popover.mjs` | the bonus-stat popover — nothing else opens it, and it does not exist until a click. Records where it mounts, whether the sidebar's `overflow-y: auto` clips it, and whether each close path commits a half-typed value. Runs against `BASE_PORT`; set `PORT` to diff the React build once the sidebar ports |
 | `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op |
 
 Two notes from building them:
