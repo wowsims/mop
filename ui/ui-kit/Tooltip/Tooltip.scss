@@ -1,0 +1,26 @@
+@import 'shared/tokens';
+
+.sim-tooltip {
+	max-width: var(--bs-tooltip-max-width);
+	padding: 0;
+	border: var(--bs-tooltip-border) 1px solid;
+	border-radius: 0;
+	background-color: var(--bs-tooltip-bg);
+	color: var(--bs-tooltip-body-color);
+	font-size: var(--btn-font-size);
+	opacity: 1;
+
+	@include media-breakpoint-down(xl) {
+		--bs-tooltip-max-width: var(--bs-tooltip-max-width-lg);
+	}
+
+	@include media-breakpoint-down(md) {
+		--bs-tooltip-max-width: var(--bs-tooltip-max-width-sm);
+	}
+
+	// react-tooltip's inner element hardcodes 8px 16px. Its class carries a build hash, so match the
+	// stable prefix rather than the full name.
+	[class*='styles-module_content'] {
+		padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+	}
+}

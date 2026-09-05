@@ -98,12 +98,13 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 61 call sites / 33 files | `content` (any node), `place`, `clickable`, the anchor (`data-tooltip-id`) | the theme, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
-`Button` (polymorphic `as`, 132 clickables), `Tooltip` (react-tooltip, 33 files), `ActionIcon`
+`Button` (polymorphic `as`, 132 clickables), `ActionIcon`
 (the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`; then the feature-shaped ones,
 of which `SummaryTableRow` + `SummaryResetButton` is the cheapest and `ItemCell` the largest.
 
@@ -133,6 +134,21 @@ So when you add a shared component, say in its header comment which axis it para
 it fixes, and export it from the feature's `index.ts`. If a caller cannot express what it needs
 through props, widen the props — do not let it fork the markup, because a fork also forks the CSS
 class names, and then the stylesheet has two owners.
+
+## Co-located SCSS, in practice
+
+A component's stylesheet sits beside its TSX and is imported from it. Vite merges it into the same
+stylesheet the `<link>` tags in `index_template.html` already produce, and `spec_pages.mts` copies
+that page to all 34 spec URLs — nothing has to be registered anywhere.
+
+- `@import 'shared/tokens';` is how a component reaches variables and mixins. It resolves through
+  `css.preprocessorOptions.scss.loadPaths`, so the path is the same at any depth.
+- `shared/variables` **cannot** be imported alone: it extends bootstrap's `$theme-colors` and uses
+  bootstrap mixins, so `shared/_tokens.scss` loads bootstrap's functions, variables and mixins first.
+  That costs about 66 ms of Sass per component stylesheet — measured, and the reason to keep the
+  number of stylesheets to one per component rather than one per file.
+- A vendor stylesheet is imported from the TSX **before** the component's own, because in the
+  emitted bundle import order is cascade order and most vendor rules are single-class.
 
 ## Component folder layout
 
@@ -183,6 +199,14 @@ class name across `ui/` before moving its rules.
   tab navigation. Before replacing any Bootstrap widget, read its `js/dist/*.js` for what its
   constructor stamps on the DOM, and diff *attributes and keyboard behaviour* against the parent
   branch — `tools/react-migration/tabs-a11y.mjs` is the pattern.
+- **react-tooltip renders in place, not in a portal.** The tooltip element is a child of wherever
+  the `<Tooltip>` sits in the React tree, so an anchor inside an `overflow: hidden` container needs
+  `positionStrategy="fixed"` or a tooltip declared higher up. The plan assumed a body portal.
+- **react-tooltip injects its stylesheet at runtime unless told not to.** `disableStyleInjection`
+  alone only stops the *base* styles; `disableStyleInjection="core"` stops both, which is what the
+  `Tooltip` component passes. The library's `REACT_TOOLTIP_DISABLE_*_STYLES` env vars are useless in
+  a browser bundle — the guard around them tests `typeof process`, which is `undefined` there. An
+  injected `<style>` lands in `<head>` after the bundle, so it silently outranks a component theme.
 - **Sim progress bypasses the store.** The worker progress callback writes DOM directly, per tick,
   unbatched. Route it into a slice or hold it behind a ref and throttle — never `setState` per tick.
 - **Goldens do not cover the shell.** `tools/state-snapshots/snapshot.ts` imports
@@ -228,6 +252,14 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 Phase 2 opened. Groundwork first: `@base-ui/react` 1.7.0 and `react-tooltip` 6.0.8
+  installed and proved to bundle under Vite 8's oxc, and the co-located SCSS pipeline proved end to
+  end in dev and in the build (see the section above; `shared/_tokens.scss` is new). First component
+  is `Tooltip` — react-tooltip with the app's tooltip theme, replacing tippy for React call sites as
+  each feature ports. Two things the library does that the plan did not predict are recorded under
+  "Things that will bite". `vitest.setup.ts` now runs Testing Library's `cleanup` after each test,
+  without which a second render finds the first one's DOM.
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a

@@ -21,6 +21,7 @@ export default defineConfig({
 	},
 	test: {
 		environment: 'happy-dom',
+		setupFiles: [path.resolve(here, 'vitest.setup.ts')],
 		include: ['ui/**/*.test.ts', 'ui/**/*.test.tsx'],
 		restoreMocks: true,
 	},

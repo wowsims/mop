@@ -250,7 +250,9 @@
 					"warn",
 					"never",
 					{
-						"json": "always"
+						"css": "always",
+						"json": "always",
+						"scss": "always"
 					}
 				]
 			},
