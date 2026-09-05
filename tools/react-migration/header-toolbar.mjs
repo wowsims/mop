@@ -31,7 +31,19 @@ const structure = () => {
 			expanded: d.querySelector('button')?.getAttribute('aria-expanded') ?? null,
 			items: d.querySelectorAll('.dropdown-menu > *').length,
 		})),
-		toolbarChildren: [...(header.querySelector('.sim-toolbar')?.children ?? [])].map(describe),
+		// Each item, not just the count: the link's own classes, whether it is an anchor and where it
+		// points, and the icon glyph — `Icon` cannot emit the bare `fa` prefix these use, so a port
+		// that reached for it would silently change every one of them.
+		toolbarItems: [...(header.querySelector('.sim-toolbar')?.children ?? [])].map(item => {
+			const link = item.querySelector('a, span, button');
+			return {
+				item: describe(item),
+				link: link ? `${link.tagName.toLowerCase()}.${[...link.classList].sort().join('.')}` : null,
+				href: link?.getAttribute('href') ?? null,
+				target: link?.getAttribute('target') ?? null,
+				icon: [...(item.querySelector('i')?.classList ?? [])].sort().join('.') || null,
+			};
+		}),
 		knownIssuesHidden: header.querySelector('.known-issues')?.classList.contains('hide') ?? null,
 	};
 };
@@ -97,6 +109,27 @@ for (const [label, selector] of [
 
 	console.log(`  ${label.padEnd(7)} hover=${onHover} leave=${onLeave} clickWhileOpen=${onClickWhileOpen} escape=${onEscape}`);
 }
+
+// The toolbar's tooltips are the only thing that says what these icon-only links are, and they
+// exist nowhere in the DOM until hovered.
+console.log('\ntoolbar tooltips');
+const items = await page.locator('.sim-toolbar .sim-toolbar-item').all();
+for (const [index, item] of items.entries()) {
+	await away();
+	// The known-issues link ships hidden on a spec that has none, so it is not hoverable.
+	if (!(await item.isVisible())) {
+		console.log(`  item ${index}  (hidden)`);
+		continue;
+	}
+	await item.hover();
+	await page.waitForTimeout(500);
+	const text = await page.evaluate(() => {
+		const box = document.querySelector('.tippy-box, .sim-tooltip');
+		return box && getComputedStyle(box).visibility !== 'hidden' ? box.textContent.trim().slice(0, 60) : null;
+	});
+	console.log(`  item ${index}  ${JSON.stringify(text)}`);
+}
+await away();
 
 // `.stuck` comes from an IntersectionObserver whose rootMargin is the header's height, read while
 // the tabs are being constructed — so it is the assertion that catches a header measured too early.
