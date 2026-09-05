@@ -332,6 +332,12 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			ItemNotice.registerSetBonusNotices(this.sim.db);
 			this.loadSettings();
 
+			// Gear planners hide the encounter settings; keep the default target in the background so
+			// stats and the reforge optimizer always have a full environment to build.
+			if (this.simDisabled) {
+				this.sim.encounter.applyDefaults(TypedEvent.nextEventID());
+			}
+
 			// Gear-planner specs never simulate, so the healing-sim disclaimer does not apply to them.
 			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode() && !this.simDisabled) {
 				alert(i18n.t('sim.healing_sim_disclaimer'));
