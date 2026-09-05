@@ -64,6 +64,8 @@ export const OtherDefaults = {
 
 // HoT tick breakpoints as total spell haste percent (raid buff included):
 // (ticks - 0.5) / baseTicks - 1. Riptide 18s/3s, Healing Rain 10s/2s, Earthliving 12s/3s.
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.687;
+
 export const RESTORATION_BREAKPOINTS: UnitStatPresets[] = [
 	{
 		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
