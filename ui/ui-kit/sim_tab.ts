@@ -1,4 +1,3 @@
-import { trackPageView } from '../tracking/analytics';
 import { Component } from './component';
 import type { SimUIHost } from './sim_host';
 
@@ -11,8 +10,6 @@ export abstract class SimTab extends Component {
 	protected simUI: SimUIHost;
 	protected config: SimTabConfig;
 
-	readonly navItem: HTMLElement;
-	readonly navLink: HTMLElement;
 	readonly contentContainer: HTMLElement;
 
 	constructor(simUI: SimUIHost, config: SimTabConfig) {
@@ -29,39 +26,12 @@ export abstract class SimTab extends Component {
 		// Bootstrap's tab plugin used to stamp this on load, following data-bs-target.
 		this.rootElem.setAttribute('role', 'tabpanel');
 
-		this.navItem = this.buildNavItem();
-		this.navLink = this.navItem.children[0] as HTMLElement;
 		this.contentContainer = document.createElement('div');
 		this.contentContainer.classList.add('tab-pane-content-container');
 		this.rootElem.appendChild(this.contentContainer);
 
-		this.simUI.tabs.attach({
-			id: config.identifier,
-			title: config.title,
-			navItem: this.navItem,
-			navLink: this.navLink,
-			pane: this.rootElem,
-		});
-
-		this.navItem.addEventListener('click', () => {
-			trackPageView(config.title, config.identifier);
-		});
-	}
-
-	private buildNavItem(): HTMLElement {
-		const tabFragment = document.createElement('fragment');
-		tabFragment.innerHTML = `
-			<li class="${this.config.identifier} nav-item" role="presentation">
-				<button
-					class="nav-link"
-					type="button"
-					role="tab"
-					aria-controls="${this.config.identifier}"
-				>${this.config.title}</button>
-			</li>
-		`;
-
-		return tabFragment.children[0] as HTMLElement;
+		// The nav item is React's: see app/sim_tabs.tsx.
+		this.simUI.tabs.attach({ id: config.identifier, title: config.title, pane: this.rootElem });
 	}
 
 	protected abstract buildTabContent(): void;

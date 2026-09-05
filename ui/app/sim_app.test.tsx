@@ -11,7 +11,7 @@ vi.mock('./individual_sim_ui', async () => {
 		IndividualSimUI: class {
 			readonly simTabContentsContainer = document.createElement('main');
 			readonly simHeader = { simTabsContainer: document.createElement('ul') };
-			readonly tabs = new SimTabRegistry(this.simHeader.simTabsContainer, this.simTabContentsContainer);
+			readonly tabs = new SimTabRegistry(this.simTabContentsContainer);
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			// Built by the constructor, which is the point: the portal cannot target it on first render.
 			readonly sidebarStatsContainer = document.createElement('div');

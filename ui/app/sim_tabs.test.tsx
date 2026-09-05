@@ -4,17 +4,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { SimTabs } from './sim_tabs';
 
-// Builds the two elements SimTab and SimUI.addTab hand to the registry.
+// The pane is all SimTab and SimUI.addTab hand to the registry; the nav item is React's.
 function makeTab(id: string) {
-	const navLink = document.createElement('button');
-	navLink.className = 'nav-link';
-	const navItem = document.createElement('li');
-	navItem.className = `${id} nav-item`;
-	navItem.appendChild(navLink);
 	const pane = document.createElement('div');
 	pane.id = id;
 	pane.className = 'sim-tab tab-pane fade';
-	return { id, title: id, navItem, navLink, pane };
+	return { id, title: id, pane };
 }
 
 let strip: HTMLElement;
@@ -35,7 +30,7 @@ beforeEach(() => {
 	panes = document.createElement('main');
 	// Attached, so focus() actually moves document.activeElement.
 	document.body.append(strip, panes);
-	registry = new SimTabRegistry(strip, panes);
+	registry = new SimTabRegistry(panes);
 });
 
 const press = (key: string) =>

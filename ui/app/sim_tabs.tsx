@@ -1,12 +1,17 @@
-// Top-level tab behaviour, owned by React — everything Bootstrap's tab plugin used to do. Renders
-// null: the elements are still built by SimTab and SimUI.addTab, so what React owns here is their
-// order and active state, not their markup.
+// Top-level tab behaviour, owned by React — everything Bootstrap's tab plugin used to do, plus the
+// strip itself. The panes are still built by SimTab and SimUI.addTab and attached by the registry
+// (a tab's constructor reads the live document), so what React owns here is the nav markup, the
+// order and the active state.
 import type { SimTabRegistry } from '@ui-kit/tab_registry';
-import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
+import clsx from 'clsx';
+import { useCallback, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
+
+import { trackPageView } from '../tracking/analytics';
 
 export interface SimTabsProps {
 	registry: SimTabRegistry;
-	/** The header's `<ul class="sim-tabs">`. */
+	/** The header's `<ul class="sim-tabs">`, built by the vanilla shell. */
 	strip: HTMLElement;
 	/** The sim's `<main class="sim-main tab-content">`. */
 	panes: HTMLElement;
@@ -16,43 +21,30 @@ export const SimTabs = ({ registry, strip, panes }: SimTabsProps) => {
 	const entries = useSyncExternalStore(registry.subscribe, registry.getEntries);
 	const activeId = useSyncExternalStore(registry.subscribe, registry.getActiveId);
 
-	// Reasserts the registry's order over what attaching produced, and does nothing when they already
-	// agree — appendChild would otherwise move nodes on every attach. Both containers hold only tabs.
-	useLayoutEffect(() => {
-		const reorder = (container: HTMLElement, wanted: HTMLElement[]) => {
-			const current = [...container.children];
-			if (wanted.length === current.length && wanted.every((el, i) => el === current[i])) return;
-			wanted.forEach(el => container.appendChild(el));
-		};
-		reorder(
-			strip,
-			entries.map(entry => entry.navItem),
-		);
-		reorder(
-			panes,
-			entries.map(entry => entry.pane),
-		);
-	}, [entries, strip, panes]);
+	// Keyed by tab id rather than read off the DOM: the keyboard handler needs to map an event target
+	// back to an entry, and to move focus, and neither is worth an attribute in the markup.
+	const links = useRef(new Map<string, HTMLElement>());
+	const linkRef = useCallback(
+		(id: string) => (element: HTMLElement | null) => {
+			if (element) links.current.set(id, element);
+			else links.current.delete(id);
+		},
+		[],
+	);
 
+	// Reasserts the registry's order over what attaching produced, and does nothing when they already
+	// agree — appendChild would otherwise move nodes on every attach. The container holds only panes.
 	useLayoutEffect(() => {
-		const onClick = (entry: (typeof entries)[number]) => () => registry.activate(entry.id);
-		const handlers = entries.map(entry => {
-			const handler = onClick(entry);
-			entry.navLink.addEventListener('click', handler);
-			return () => entry.navLink.removeEventListener('click', handler);
-		});
-		return () => handlers.forEach(remove => remove());
-	}, [entries, registry]);
+		const wanted = entries.map(entry => entry.pane);
+		const current = [...panes.children];
+		if (wanted.length === current.length && wanted.every((el, i) => el === current[i])) return;
+		wanted.forEach(el => panes.appendChild(el));
+	}, [entries, panes]);
 
 	// `active` controls display, `show` controls opacity.
 	useLayoutEffect(() => {
 		for (const entry of entries) {
 			const isActive = entry.id === activeId;
-			entry.navLink.classList.toggle('active', isActive);
-			entry.navLink.setAttribute('aria-selected', String(isActive));
-			// Roving tabindex, as Bootstrap set it: no attribute on the active link.
-			if (isActive) entry.navLink.removeAttribute('tabindex');
-			else entry.navLink.setAttribute('tabindex', '-1');
 			entry.pane.classList.toggle('active', isActive);
 			if (!isActive) entry.pane.classList.remove('show');
 		}
@@ -62,14 +54,14 @@ export const SimTabs = ({ registry, strip, panes }: SimTabsProps) => {
 	// With a roving tabindex these are the only way to reach the other tabs from the keyboard.
 	useLayoutEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
-			const from = entries.findIndex(entry => entry.navLink === event.target);
+			const from = entries.findIndex(entry => links.current.get(entry.id) === event.target);
 			if (from < 0) return;
 			const offset = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
 			const to = offset ? (from + offset + entries.length) % entries.length : event.key === 'Home' ? 0 : event.key === 'End' ? entries.length - 1 : -1;
 			if (to < 0) return;
 			event.stopPropagation();
 			event.preventDefault();
-			entries[to].navLink.focus({ preventScroll: true });
+			links.current.get(entries[to].id)?.focus({ preventScroll: true });
 			registry.activate(entries[to].id);
 		};
 		strip.addEventListener('keydown', onKeyDown);
@@ -93,5 +85,32 @@ export const SimTabs = ({ registry, strip, panes }: SimTabsProps) => {
 		return () => cancelAnimationFrame(frame);
 	}, [entries, activeId]);
 
-	return null;
+	return createPortal(
+		entries.map(entry => {
+			const isActive = entry.id === activeId;
+			return (
+				<li key={entry.id} className={`${entry.id} nav-item`} role="presentation" aria-controls={entry.ariaControlsOnItem ? entry.id : undefined}>
+					<button
+						ref={linkRef(entry.id)}
+						className={clsx('nav-link', isActive && 'active')}
+						type="button"
+						role="tab"
+						aria-selected={isActive}
+						// Roving tabindex, as Bootstrap set it: no attribute on the active link.
+						tabIndex={isActive ? undefined : -1}
+						aria-controls={entry.ariaControlsOnItem ? undefined : entry.id}
+						onClick={() => {
+							registry.activate(entry.id);
+							trackPageView(entry.title, entry.id);
+						}}
+						// A title is a translation string that may carry markup — `bulk_tab.title` is
+						// `Batch (<span class="text-success">New</span>)` — and the nav item it replaces was
+						// built with innerHTML. Rendering it as text drops the span.
+						dangerouslySetInnerHTML={{ __html: entry.title }}
+					/>
+				</li>
+			);
+		}),
+		strip,
+	);
 };

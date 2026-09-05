@@ -95,7 +95,7 @@ export abstract class SimUI extends Component implements SimHost {
 		this.simMain = document.createElement('main');
 		this.simMain.classList.add('sim-main', 'tab-content');
 		this.simContentContainer.appendChild(this.simMain);
-		this.tabs = new SimTabRegistry(this.simHeader.simTabsContainer, this.simMain);
+		this.tabs = new SimTabRegistry(this.simMain);
 
 		this.rootElem.classList.add(this.config.cssClass);
 
@@ -264,29 +264,13 @@ export abstract class SimUI extends Component implements SimHost {
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
 
-		const navLink = (
-			<button className="nav-link" type="button" attributes={{ role: 'tab' }}>
-				{title}
-			</button>
-		) as HTMLElement;
-		const navItem = (
-			<li
-				className={`${contentId} nav-item`}
-				attributes={{
-					role: 'presentation',
-					// @ts-expect-error aria-controls is not in tsx-vanilla's attribute map
-					'aria-controls': contentId,
-				}}>
-				{navLink}
-			</li>
-		) as HTMLElement;
 		const pane = (
 			<div id={contentId} className="tab-pane fade" attributes={{ role: 'tabpanel' }}>
 				{content}
 			</div>
 		) as HTMLElement;
 
-		this.tabs.attach({ id: contentId, title, navItem, navLink, pane });
+		this.tabs.attach({ id: contentId, title, pane, ariaControlsOnItem: true });
 	}
 
 	addWarning(warning: SimWarning) {
