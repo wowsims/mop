@@ -152,8 +152,9 @@ for free and `[data-starting-style] { opacity: 0 }` plus a 150 ms transition rep
 That is the faithful port, it needs no dependency, and it deletes the `active`-before-`show` rAF
 dance in `sim_tabs.tsx`.
 
-**`motion` is therefore a design choice, not a porting requirement.** If richer enter/exit is wanted,
-the docs' kept-mounted recipe applies — and note it is the *second* pattern, not the first:
+**Decided 2026-09-05: use Base UI's CSS transitions wherever they reach.** No animation dependency
+is being added. `motion` stays a design choice for later, and if it is ever wanted the docs'
+kept-mounted recipe applies — note it is the *second* pattern, not the first:
 
 ```tsx
 <Tabs.Panel value={id} keepMounted render={(props, state) => (
