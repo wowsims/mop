@@ -11,6 +11,7 @@
 import {
 	collapseWrappers,
 	collectSubtrees,
+	dropSubtrees,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -49,6 +50,14 @@ const SOCIALS = /\.sim-toolbar-socials(\.|$)/;
 const SOCIAL_WRAPPER = /^button$/;
 const SOCIAL_COUNT = 3;
 
+// Base UI portals the import/export popups to `<body>` and renders them only while open, so at load
+// the React tree has no menu where the Bootstrap one has a populated `<ul>`. Dropped from the
+// baseline outright rather than replaced with a placeholder — a placeholder would be the difference.
+// The contents are covered by `header-toolbar.mjs`, which reads the item labels with the menu open.
+const IMPORT_EXPORT = /\.import-export(\.|$)/;
+const DROPDOWN_MENU = /^ul\.dropdown-menu$/;
+const DROPDOWN_COUNT = 2;
+
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
@@ -74,6 +83,10 @@ for (const spec of specsFromArgv()) {
 	const socials = collapseWrappers(a.shell, SOCIALS, SOCIAL_WRAPPER);
 	a.shell = socials.dom;
 	if (socials.dropped !== SOCIAL_COUNT) problems.push(`collapsed ${socials.dropped} social wrappers out of the baseline, expected ${SOCIAL_COUNT}`);
+
+	const menus = dropSubtrees(a.shell, IMPORT_EXPORT, DROPDOWN_MENU);
+	a.shell = menus.dom;
+	if (menus.dropped !== DROPDOWN_COUNT) problems.push(`dropped ${menus.dropped} dropdown menus from the baseline, expected ${DROPDOWN_COUNT}`);
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);

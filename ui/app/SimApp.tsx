@@ -5,9 +5,11 @@ import { ItemSwapPicker } from '@features/item-swap';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { ImportExportMenu } from './header/ImportExportMenu';
 import { useSimReady } from './hooks/useSimReady';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
@@ -66,6 +68,18 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 			{simUI && (
 				<SimHostProvider host={simUI}>
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
+					{createPortal(
+						<>
+							<ImportExportMenu kind="import" registry={simUI.simHeader.importExport} icon="fa fa-download" title={i18n.t('import.title')} />
+							<ImportExportMenu
+								kind="export"
+								registry={simUI.simHeader.importExport}
+								icon="fa fa-right-from-bracket"
+								title={i18n.t('export.title')}
+							/>
+						</>,
+						simUI.simHeader.importExportContainer,
+					)}
 					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}

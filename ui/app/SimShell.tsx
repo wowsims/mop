@@ -2,8 +2,6 @@ import { SOCIALS } from '@domain/constants/other';
 import type { PlayerSpec } from '@domain/player_spec';
 import type { Sim } from '@domain/sim';
 import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
-import i18n from '@i18n/config';
-import { Button } from '@ui-kit/Button';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -51,9 +49,6 @@ export interface SimShellProps {
  *   children, and a re-render that re-created any of these nodes would take the vanilla content with
  *   it. `.sim-toolbar` and `.sim-sidebar-socials` are the exceptions and no longer in the bundle: their
  *   contents are React's, and a container leaves `ShellDom` as that becomes true of it.
- * - Bootstrap rewrites `aria-expanded` on the dropdown toggles and `.show` on their menus. React
- *   diffs against its own last props rather than the DOM, so a re-render with identical props is
- *   already safe — but not re-rendering at all makes that independent of React's bail-out rules.
  * - `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` while the tabs are constructed, so
  *   the header has to be laid out in this first render, not a later one.
  *
@@ -72,6 +67,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	const main = useRef<HTMLElement>(null);
 	const header = useRef<HTMLElement>(null);
 	const tabsMount = useRef<HTMLDivElement>(null);
+	const importExport = useRef<HTMLDivElement>(null);
 
 	// One subscription per class, listing the fields that class actually depends on.
 	//
@@ -115,6 +111,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 			main: main.current!,
 			header: header.current!,
 			tabsMount: tabsMount.current!,
+			importExport: importExport.current!,
 		};
 	}, [domRef]);
 
@@ -141,31 +138,9 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
 								<div ref={tabsMount} className="sim-tabs-mount" />
-								<div className="import-export nav">
-									<div className="dropdown sim-dropdown-menu import-dropdown">
-										{/* Literal, not derived: Bootstrap owns this attribute once the plugin takes over. */}
-										<Button
-											variant="unstyled"
-											className="import-link"
-											aria-expanded="false"
-											data-bs-toggle="dropdown"
-											data-bs-display="dynamic">
-											<i className="fa fa-download" aria-hidden="true" /> {i18n.t('import.title')}
-										</Button>
-										<ul className="dropdown-menu" />
-									</div>
-									<div className="dropdown sim-dropdown-menu export-dropdown">
-										<Button
-											variant="unstyled"
-											className="export-link"
-											aria-expanded="false"
-											data-bs-toggle="dropdown"
-											data-bs-display="dynamic">
-											<i className="fa fa-right-from-bracket" aria-hidden="true" /> {i18n.t('export.title')}
-										</Button>
-										<ul className="dropdown-menu" />
-									</div>
-								</div>
+								{/* Filled by a portal, like the tab strip: the menus' contents are registered on
+								    `waitForInit`, long after this renders. */}
+								<div ref={importExport} className="import-export nav" />
 								<div className="sim-toolbar nav">
 									<SimToolbar knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
 								</div>

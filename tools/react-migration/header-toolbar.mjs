@@ -12,6 +12,26 @@ import { launch, openSpec, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
+const IS_BASE = PORT === PORTS.base;
+
+// A behaviour the two shapes are known to disagree on, asserted rather than diffed. Printing the raw
+// value would make this probe's output differ between the ports forever, and the whole point of it
+// is that they match; printing whether each build did what it is recorded as doing keeps that true
+// and still fails the moment either side changes.
+//
+// Bootstrap's click data-API toggled a hover-opened menu shut, and it stayed shut because re-opening
+// needed a fresh `mouseover` that a stationary pointer never sent. Base UI re-evaluates hover at
+// once, so the menu reappears.
+const KNOWN = {
+	clickWhileOpen: { base: false, react: true },
+};
+
+const assertKnown = (name, value) => {
+	const known = KNOWN[name];
+	if (!known) return `${name}=${value}`;
+	const expected = IS_BASE ? known.base : known.react;
+	return `${name}=${value === expected ? 'as-recorded' : `UNEXPECTED(${value}, recorded ${expected})`}`;
+};
 
 const structure = () => {
 	const header = document.querySelector('.sim-header');
@@ -24,12 +44,13 @@ const structure = () => {
 		// normalised to a token rather than compared here.
 		containerChildren: [...container.children].map(el => (el.querySelector('[role=tab]') || el.matches('.sim-tabs') ? '<tabs>' : describe(el))),
 		// Read through `simDropdownProbe` so this survives the Base UI `Menu` swap. The toggle's own
-		// class is the identity — `import-link` / `export-link` — and the item count is the contents;
-		// neither is allowed to change. `expanded` is the one state signal both shapes share.
+		// class is the identity — `import-link` / `export-link` — and `expanded` is the one state
+		// signal both shapes share. The *contents* are read in the behaviour section below, while the
+		// menu is open: Base UI portals its popup and renders it only then, so at rest there is
+		// nothing to count on either shape's terms.
 		dropdowns: window.simDropdownProbe.toggles(header).map(toggle => ({
 			name: window.simDropdownProbe.nameOf(toggle),
 			expanded: toggle.getAttribute('aria-expanded'),
-			items: window.simDropdownProbe.items(toggle).length,
 		})),
 		// Each item, not just the count: the link's own classes, whether it is an anchor and where it
 		// points, and the icon glyph — `Icon` cannot emit the bare `fa` prefix these use, so a port
@@ -104,6 +125,8 @@ for (const [label, selector] of [
 	await page.hover(selector);
 	await page.waitForTimeout(400);
 	const onHover = await page.evaluate(openState, selector);
+	// The contents, read while it is open — the only moment both shapes have them in the document.
+	const items = await page.evaluate(sel => window.simDropdownProbe.items(document.querySelector(sel)).map(item => item.textContent.trim()), selector);
 
 	await away();
 	const onLeave = await page.evaluate(openState, selector);
@@ -122,7 +145,8 @@ for (const [label, selector] of [
 	const onEscape = await page.evaluate(openState, selector);
 	await away();
 
-	console.log(`  ${label.padEnd(7)} hover=${onHover} leave=${onLeave} clickWhileOpen=${onClickWhileOpen} escape=${onEscape}`);
+	console.log(`  ${label.padEnd(7)} hover=${onHover} leave=${onLeave} ${assertKnown('clickWhileOpen', onClickWhileOpen)} escape=${onEscape}`);
+	console.log(`  ${' '.repeat(7)} items=${JSON.stringify(items)}`);
 }
 
 // The toolbar's tooltips are the only thing that says what these icon-only links are, and they

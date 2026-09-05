@@ -300,6 +300,48 @@ export const unobservedIntended = (intended, seen) =>
 		.filter(entry => !seen.has(entry))
 		.map(entry => `intended divergence never observed: ${entry.describe ?? `${entry.base} -> ${entry.react}`} (${entry.why})`);
 
+/**
+ * Removes every subtree whose serialised line matches `re`, children and all, and reports how many
+ * went. Unlike `pruneSubtrees` this leaves no placeholder: it is for a subtree that exists on one
+ * side and *nowhere* on the other, where a placeholder would itself be the difference.
+ *
+ * The case is a portaled popup. Base UI renders the import/export menus into `<body>` and only while
+ * they are open, so at load the React tree has no menu at all while the Bootstrap one has a
+ * populated `<ul>`. Their contents are still compared — `header-toolbar.mjs` reads the item labels
+ * with the menu open, which is the only moment both shapes have them.
+ *
+ * Scoped by `within` for the same reason `collapseWrappers` is: `ul.dropdown-menu` also describes
+ * the sim title's dropdown and the language picker, and dropping those silently reduced the whole
+ * shell comparison to noise the first time this ran unscoped.
+ */
+export const dropSubtrees = (dom, within, re) => {
+	const out = [];
+	let dropped = 0;
+	let scope = null;
+	let cutAt = null;
+	for (const line of dom.split('\n')) {
+		const indent = line.length - line.trimStart().length;
+		const trimmed = line.trim();
+		if (cutAt !== null) {
+			if (indent > cutAt) continue;
+			cutAt = null;
+		}
+		if (scope !== null && indent <= scope) scope = null;
+		if (scope === null) {
+			if (within.test(trimmed)) scope = indent;
+			out.push(line);
+			continue;
+		}
+		if (re.test(trimmed)) {
+			cutAt = indent;
+			dropped++;
+			continue;
+		}
+		out.push(line);
+	}
+	return { dom: out.join('\n'), dropped };
+};
+
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */

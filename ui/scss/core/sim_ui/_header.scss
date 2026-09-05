@@ -70,17 +70,9 @@
 			font-size: var(--bs-nav-link-font-size);
 			transition: var(--nav-link-transition);
 
-			&.show {
+			// Base UI's open marker. Bootstrap wrote `.show` here; the class is gone with the plugin.
+			&[data-popup-open] {
 				color: var(--bs-white);
-			}
-		}
-
-		.dropdown-item {
-			&.disabled {
-				pointer-events: auto;
-				cursor: not-allowed;
-				color: var(--bs-dropdown-link-color);
-				opacity: 0.5;
 			}
 		}
 	}
@@ -120,11 +112,10 @@
 
 	.sim-dropdown-menu {
 		display: flex;
-		// Needed so that dropdowns don't clip the header with overflow-x set
+		// Kept from the Bootstrap layout: `.dropdown` sets `position: relative`, and the header
+		// scrolls on x. The menu itself can no longer be clipped by that — Base UI portals it to the
+		// body — but this element is still a flex child of `.import-export` and positioning it would
+		// change that. The popup's own styles live in `app/header/ImportExportMenu/`.
 		position: unset;
-
-		.dropdown-menu {
-			top: -2px;
-		}
 	}
 }

@@ -16,9 +16,9 @@ restate them; it assumes them.
 **React owns the shell.** `SimShell.tsx` renders everything parent to the tabs — the sidebar, the
 header, the content column — and the vanilla `SimUI`/`SimHeader` adopt those elements instead of
 building them. React also owns the top-level tab behaviour, the header toolbar, both sets of social
-links, the sidebar's character-stats table and the talents tab body. What is left of the header is
-the two import/export dropdowns, which wait on the Base UI `Menu` adapter. The remaining tab bodies
-are vanilla `Component`s.
+links, the sidebar's character-stats table and the talents tab body. The header is finished: the
+import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. The remaining tab
+bodies are vanilla `Component`s.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -27,8 +27,8 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 |---|---|
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
-| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**; the Base UI `Menu` adapter next — *not* stat-weights, whose panel is a `BaseModal` and so waits on `Dialog` |
+| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns; `Toast`, `Dialog` and the three dropdown pickers wait for their first consumer |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns on Base UI `Menu`**; the `Dialog` adapter next, which unblocks stat-weights and the advanced encounter modal |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -335,6 +335,7 @@ of the duplication sweep was to build each shape once.
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
+| `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads | the popup's markup and styling, and that the contents arrive asynchronously |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1068,6 +1069,41 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The header's import/export dropdowns are Base UI `Menu`s — the last Bootstrap JS in
+  the header is gone.** Styling was re-expressed rather than inherited: the popup portals to
+  `<body>`, so no header selector reaches it and `--bs-dropdown-*` resolves to nothing (those are
+  emitted inside `.dropdown-menu`, a class this markup does not carry). New `--dropdown-*` tokens in
+  the seam block, and the result measured identical against the baseline — same box, same
+  background, border, radius, font, item padding, and the same `rgb(15,16,21)` on hover. One nudge
+  was needed: Bootstrap's plugin default offset is `[0, -1]` and the stylesheet pulled the menu up
+  another 2px, so `sideOffset={-1}` is what lands it on the same pixel.
+
+  **Contents are a registry, not props.** `IndividualSimUI` registers the links from
+  `addTopbarComponents()`, which runs on `waitForInit` — long after the shell renders. So
+  `ImportExportRegistry` is a `useSyncExternalStore` source, the same answer `SimTabRegistry` gives
+  for the tab strip. The `SimApp` test caught the classic footgun immediately: a mock whose
+  `getEntries` returned a fresh `[]` each call is an infinite render loop, because snapshots are
+  compared by identity.
+
+  **One behaviour diverges and is recorded rather than fought.** Bootstrap's click data-API toggled
+  a hover-opened menu shut and it *stayed* shut, because re-opening needed a fresh `mouseover` that
+  a stationary pointer never sends. Base UI re-evaluates hover at once, so the menu reappears and a
+  click on the trigger looks inert. Two fixes were tried — closing from a controlled `onOpenChange`,
+  then disabling `openOnHover` until `pointerleave` — and both lost the race with Base UI's own
+  hover scheduling. `header-toolbar.mjs` now *asserts* the pair (`base: false`, `react: true`) and
+  prints `as-recorded`, so its output still matches across ports and either side changing it fails.
+  Hover-to-open itself is identical: `openOnHover` with `delay={0}` is what the global `body`
+  listener in `shared/bootstrap_overrides.ts` used to do.
+
+  **`dropSubtrees` joins `collapseWrappers`.** A portaled popup exists on one side and nowhere on
+  the other, so `pruneSubtrees`' placeholder would itself be the difference. It drops the baseline's
+  two `<ul>`s outright and requires both to have been there. It is scoped by a `within` pattern for
+  the reason the first unscoped run demonstrated: `ul.dropdown-menu` also describes the sim title's
+  dropdown and the language picker, and dropping those reduced the whole shell comparison to noise.
+
+  The item labels moved out of the probe's structure section into its behaviour section, read with
+  the menu open — the only moment both shapes have them in the document.
 
 - 2026-09-06 **Three deferred decisions answered, and `INTENDED` became one list with a ceiling.**
 

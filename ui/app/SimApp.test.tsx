@@ -7,12 +7,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
 const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement }> = [];
+const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
 	return {
 		IndividualSimUI: class {
 			readonly simTabContentsContainer = document.createElement('main');
-			readonly simHeader = { simTabsContainer: document.createElement('ul') };
+			readonly simHeader = {
+				simTabsContainer: document.createElement('ul'),
+				// React portals the two dropdowns into this and reads their contents from the registry.
+				importExportContainer: document.createElement('div'),
+				// One frozen array, not a fresh one per call: `useSyncExternalStore` compares snapshots by
+				// identity, so returning a new `[]` each time is an infinite render loop. The real
+				// registry holds its arrays and only replaces them in `add`.
+				importExport: { subscribe: () => () => {}, getEntries: () => NO_ENTRIES },
+			};
 			readonly tabs = new SimTabRegistry(this.simTabContentsContainer);
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			readonly sidebarStatsContainer: HTMLElement;

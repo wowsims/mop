@@ -2,20 +2,21 @@
 import { Exporter } from '@features/import-export/view/exporter';
 import { Importer } from '@features/import-export/view/importer';
 import { Component } from '@ui-kit/component';
-import clsx from 'clsx';
-import tippy from 'tippy.js';
-import { ref } from 'tsx-vanilla';
 
 import { trackPageView } from '../../tracking/analytics';
 import { SettingsMenu } from '../settings_menu';
 import type { ShellDom } from '../shell_dom';
 import { SimUI } from '../sim_ui';
+import { ImportExportRegistry } from './import_export_registry';
 
 export class SimHeader extends Component {
 	private simUI: SimUI;
 	private settingsMenu: SettingsMenu;
+	/** The two dropdowns' contents. React renders them — see header/ImportExportMenu. */
+	readonly importExport = new ImportExportRegistry();
 
 	readonly simTabsContainer: HTMLElement;
+	readonly importExportContainer: HTMLElement;
 
 	constructor(dom: ShellDom, simUI: SimUI) {
 		// Adopted from the shell bundle. No `rootCssClass`: the header's class list, `.stuck`
@@ -23,6 +24,7 @@ export class SimHeader extends Component {
 		super(null, undefined, dom.header);
 		this.simUI = simUI;
 		this.simTabsContainer = dom.tabsMount;
+		this.importExportContainer = dom.importExport;
 		// Built here rather than on first open so it joins the modal set at construction time, which
 		// is when every other modal joins it.
 		this.settingsMenu = new SettingsMenu(this.simUI.rootElem, this.simUI);
@@ -40,29 +42,9 @@ export class SimHeader extends Component {
 	}
 
 	addImportLink(label: string, importer: Importer, isUnsupported = false) {
-		this.addImportExportLink('.import-dropdown', label, importer, isUnsupported);
+		this.importExport.add('import', label, importer, isUnsupported);
 	}
 	addExportLink(label: string, exporter: Exporter, isUnsupported = false) {
-		this.addImportExportLink('.export-dropdown', label, exporter, isUnsupported);
-	}
-	private addImportExportLink(cssClass: string, label: string, importerExporter: Importer | Exporter, isUnsupported?: boolean) {
-		const dropdownElem = this.rootElem.querySelector<HTMLElement>(cssClass)!;
-		const menuElem = dropdownElem.querySelector<HTMLElement>('.dropdown-menu')!;
-		const buttonRef = ref<HTMLButtonElement>();
-
-		menuElem.appendChild(
-			<li>
-				<button type="button" ref={buttonRef} className={clsx('dropdown-item', isUnsupported && 'disabled')}>
-					{label}
-				</button>
-			</li>,
-		);
-		if (buttonRef.value) {
-			if (isUnsupported) {
-				tippy(buttonRef.value, { content: 'Currently unsupported' });
-				return;
-			}
-			buttonRef.value.addEventListener('click', () => importerExporter.open());
-		}
+		this.importExport.add('export', label, exporter, isUnsupported);
 	}
 }

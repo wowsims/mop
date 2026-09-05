@@ -23,6 +23,8 @@ export interface ShellDom {
 	main: HTMLElement;
 	header: HTMLElement;
 	tabsMount: HTMLElement;
+	/** Mount point, not a container to fill: React portals the two dropdowns in. */
+	importExport: HTMLElement;
 }
 
 // `noticeText` is declared on `SimUIConfig` and supplied by nothing — the banner has never
