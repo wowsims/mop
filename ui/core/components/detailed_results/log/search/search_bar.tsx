@@ -17,6 +17,10 @@ const OUTCOME_SUGGESTIONS = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 
 const TYPE_SUGGESTIONS = ['damage', 'heal', 'shield', 'resource', 'aura', 'buff', 'cast', 'major-cooldown', 'stat-change', 'debug'];
 const SUGGESTION_LIMIT = 20;
 
+// Display only. Fields and enum values are matched case-insensitively, so capitalising the label
+// cannot change what a query selects.
+const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text);
+
 export class LogSearchBar extends Component {
 	readonly changeEmitter = new TypedEvent<void>('Log Search');
 
@@ -229,10 +233,8 @@ export class LogSearchBar extends Component {
 			case 'spell':
 				return this.config.suggestions().spells;
 			case 'source':
-			case 'target': {
-				const { targets, units } = this.config.suggestions();
-				return [...targets, ...units];
-			}
+			case 'target':
+				return this.config.suggestions().units;
 			default:
 				return [];
 		}
@@ -250,7 +252,7 @@ export class LogSearchBar extends Component {
 			const li = (
 				<li>
 					<button type="button" className="dropdown-item log-search-suggestion">
-						{item}
+						{sentenceCase(item)}
 					</button>
 				</li>
 			) as HTMLLIElement;

@@ -3,10 +3,7 @@ import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
 import { spellSchoolNames } from '../../../../proto_utils/names';
 import type { Clause, ClauseField, QueryNode } from './query';
 
-// `targets` are the numbers a target is written as in the log, offered separately from `units`
-// because `target:2` is the form that selects one, and several can be ORed - `target:1|2` - which
-// the names cannot express as compactly.
-export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string>; targets: Array<string> };
+export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string> };
 
 // Union of typed-array and plain-array so binary-search results (contiguous slices) and
 // build-time index arrays (Int32Array) can share the same merge/intersect helpers.
@@ -218,7 +215,7 @@ export class LogIndex {
 	private readonly suggestionSpells = new Set<string>();
 	private readonly suggestionUnits = new Set<string>();
 	private readonly suggestionSchools = new Set<string>();
-	private suggestionSource: SuggestionSource = { spells: [], units: [], schools: [], targets: [] };
+	private suggestionSource: SuggestionSource = { spells: [], units: [], schools: [] };
 
 	constructor(
 		private readonly logs: ReadonlyArray<CombatLog>,
@@ -303,7 +300,6 @@ export class LogIndex {
 		this.suggestionSource = {
 			spells: [...this.suggestionSpells].sort(),
 			units: [...this.suggestionUnits].sort(),
-			targets: [...new Set([...this.targetNumberIndex.keys(), ...this.sourceNumberIndex.keys()])].sort((a, b) => a - b).map(String),
 			schools: [...this.suggestionSchools].sort(),
 		};
 		this.built = true;

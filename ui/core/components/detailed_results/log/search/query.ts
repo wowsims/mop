@@ -216,8 +216,14 @@ function quoteIfNeeded(value: string): string {
 	return /\s/.test(value) ? `"${value}"` : value;
 }
 
+// Display only, and safe: parseToken lowercases the field before looking it up, and every value
+// index is keyed lowercase, so a capitalised chip re-parses to the same clause when it is edited.
+const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text);
+
 export function clauseText(clause: Clause): string {
-	const body = clause.field ? `${clause.field}:${clause.values.map(quoteIfNeeded).join('|')}` : quoteIfNeeded(clause.values[0] ?? '');
+	const body = clause.field
+		? `${sentenceCase(clause.field)}:${clause.values.map(value => sentenceCase(quoteIfNeeded(value))).join('|')}`
+		: sentenceCase(quoteIfNeeded(clause.values[0] ?? ''));
 	return clause.negated ? `-${body}` : body;
 }
 

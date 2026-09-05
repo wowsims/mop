@@ -58,10 +58,11 @@
 	// collapses to its own toolbar. They share one floor here instead of each inventing its own vh
 	// number or magic pixel offset. The panes that are just tables are left alone; a floor would
 	// only add whitespace under a short one.
-	> .tab-content > .tab-pane.dr-tab-content {
-		// Only while active: `display` here outranks Bootstrap's `.tab-content > .tab-pane
-		// { display: none }` (0,5,0 against 0,2,0), so without the guard every one of these panes
-		// stays laid out at the floor height behind whichever tab is open.
+	// Guarded twice, because `display` here outranks both of the rules that hide these panes:
+	// Bootstrap's `.tab-content > .tab-pane { display: none }` for an inactive tab, and
+	// `.dr-no-results .dr-row` for a sim that has not been run. Without the guards the panes lay
+	// out behind whichever tab is open, and an empty log renders under "Run a simulation".
+	&:not(.dr-no-results) > .tab-content > .tab-pane.dr-tab-content {
 		&.log-content.active,
 		&.timeline-content.active,
 		&.replay-content.active {
