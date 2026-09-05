@@ -335,7 +335,7 @@ of the duplication sweep was to build each shape once.
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
-| `useSimReady` | `ui/ui-kit/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it |
+| `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -854,15 +854,6 @@ would be an unrequested markup change with a parity divergence attached.
   element against a build that keeps those elements. That is a constraint of the gate, not a design
   choice — when Phase 5 retires the vanilla comparison, the idiom becomes a conditional render as
   the plan always said. Do not read the comments defending it as permanent.
-- **`watchTargetDummies` has no test for the guarantee that matters.** It must not be armed while
-  saved settings are being restored, which is true only because it is queued in the same
-  `waitForInit` block as `repairTargetInputs`. Move that block and nothing fails. ~15 lines of
-  vitest — arm the rule, mutate talents, assert a saved count survives — would pin it.
-- **`<label class="form-label">` labelling a group, not a control** — `ItemSwapPicker`'s "Item Swap"
-  label sits over a swap button and a row of icon pickers, and points at none of them. Same defect
-  class as `.character-stats-label`, which became an `<h3>`; the fix here is probably a `<span>`
-  plus `role="group"` + `aria-labelledby` on the icon group, which is a bigger change than that one
-  was. Ported unchanged for now.
 
 ### Flag invalid markup, do not port it — standing rule, 2026-09-05
 
@@ -1077,6 +1068,35 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Three deferred decisions answered, and `INTENDED` became one list with a ceiling.**
+
+  Item swap's `<label class="form-label">` named the icon group rather than a control, so it is a
+  `<span>` and the group carries `role="group"` + `aria-labelledby`. Verified in the browser: the
+  reference resolves on the React build and there is no group role on the baseline.
+
+  That divergence is in a *pane*, and `panes-parity.mjs` had no way to record one — it was strict
+  byte equality. Rather than give it a second list, `INTENDED` moved to `tools/react-migration/
+  intended.mjs` and both gates read it: `parity.mjs` owns the "every entry must still be observed"
+  check because it is the gate that sees the shell *and* every pane; `panes-parity.mjs` enforces
+  only each entry's `max`.
+
+  **`max` is new and it matters.** `label.form-label` appears a dozen times in the settings pane and
+  exactly one of them is meant to change. Without a ceiling the entry would quietly absorb the next
+  eleven, which is an allowlist wearing an assertion's clothes. The helpers
+  (`unexpectedLines`, `overusedIntended`, `unobservedIntended`) live in `browser.mjs` and were
+  checked directly: one fold passes, two fold as "folded 2 lines, at most 1 expected", an unrelated
+  diff is still reported, and an unobserved entry is still a failure.
+
+  `useSimReady` moved to `app/hooks/`. It encodes a fact about this shell's init order, which a
+  generic widget kit does not know — unlike `useStoreSubscribe` and `useActionId`, whose subject
+  genuinely is domain state. That is the line, and it is now written down.
+
+  `watchTargetDummies` has a test. The guarantee worth pinning is that arming it does not apply it:
+  settings are restored on `waitForInit`, raid settings and talents separately, so a rule that
+  applied itself on arm would zero a saved count against talents that had not arrived. Converting it
+  to a `DerivedSetting` — whose contract is apply-then-subscribe — is the refactor the test exists to
+  fail, and it does: making it apply on arm fails exactly that case and nothing else.
 
 - 2026-09-06 **`simDropdownProbe`, landed before the `Menu` port rather than after it.** The header
   gate read Bootstrap's shape directly — a `.dropdown-menu` sibling that gains `.show`, and

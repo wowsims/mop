@@ -17,9 +17,13 @@ import {
 	PORTS,
 	PRUNED_LINE,
 	pruneSubtrees,
+	overusedIntended,
 	SERIALIZE,
 	specsFromArgv,
+	unexpectedLines,
+	unobservedIntended,
 } from './browser.mjs';
+import { INTENDED } from './intended.mjs';
 
 // Attributes are not covered here — tabs-a11y.mjs does that. The serialiser lives in browser.mjs.
 
@@ -33,26 +37,6 @@ const PRUNED = /\.(sim-tabs(-mount)?|sim-main)(\.|$)/;
 // Only the order is given up; each modal is still byte-compared against its twin.
 const MODAL = /\.modal(\.|$)/;
 
-/**
- * Divergences the port means to have. This is **not** an allowlist: an entry is required to still be
- * observed, so reverting the change fails the gate just as loudly as making it did. That is the
- * difference between recording a decision and quietly subtracting from the comparison — the
- * allowlist this file used to carry could only ever hide things.
- */
-const INTENDED = [
-	{
-		base: 'label.character-stats-label',
-		react: 'h3.character-stats-label',
-		why: 'a <label> with no control is not a label; the sidebar heading is a heading',
-	},
-	{
-		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
-		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
-		describe: 'react drops hide-healing-metrics on a tank spec',
-		why: 'Sim.getShowHealingMetrics() derives from showThreatMetrics, and the vanilla shell only recomputed that class on showHealingMetrics — so a tank whose saved settings turned threat on kept hiding columns its own rule says to show',
-	},
-];
-
 // The one divergence that is a deletion rather than a changed line, so `INTENDED` cannot hold it.
 //
 // Each social link used to be `div.sim-toolbar-item > button > a`. `SimToolbarItem` produced that by
@@ -65,8 +49,6 @@ const SOCIALS = /\.sim-toolbar-socials(\.|$)/;
 const SOCIAL_WRAPPER = /^button$/;
 const SOCIAL_COUNT = 3;
 
-const matches = (entry, base, react) => (entry.match ? entry.match(base, react) : base === entry.base && react === entry.react);
-
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
@@ -78,14 +60,6 @@ const grab = async (browser, port, spec) => {
 	for (const id of ids) if (id) panes[id] = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
 	await page.close();
 	return { ids, shell, panes, modals, errors };
-};
-
-const lineDiffs = (a, b) => {
-	const la = a.split('\n');
-	const lb = b.split('\n');
-	const at = [];
-	for (let i = 0; i < Math.max(la.length, lb.length); i++) if (la[i] !== lb[i]) at.push(i);
-	return { la, lb, at };
 };
 
 const browser = await launch();
@@ -108,13 +82,14 @@ for (const spec of specsFromArgv()) {
 	const regions = [['shell', a.shell, b.shell], ...b.ids.filter(Boolean).map(id => [id, a.panes[id] ?? `NO #${id}`, b.panes[id]])];
 	const sizes = [];
 	for (const [name, base, react] of regions) {
-		const { la, lb, at } = lineDiffs(base, react);
+		const la = base.split('\n');
+		const lb = react.split('\n');
 		sizes.push(`${name}=${lb.length}`);
-		const unexpected = at.filter(i => {
-			const entry = INTENDED.find(e => matches(e, la[i]?.trim() ?? '', lb[i]?.trim() ?? ''));
-			if (entry) seen.add(entry);
-			return !entry;
-		});
+		// Tallied per region, so `max` reads as "at most this many lines here" rather than run-wide.
+		const tally = new Map();
+		const unexpected = unexpectedLines(la, lb, INTENDED, tally);
+		for (const entry of tally.keys()) seen.add(entry);
+		problems.push(...overusedIntended(INTENDED, tally).map(problem => `${name}: ${problem}`));
 		if (!unexpected.length && la.length === lb.length) continue;
 		problems.push(`${name}: base ${la.length} lines, react ${lb.length}, ${unexpected.length} differ`);
 		for (const i of unexpected.slice(0, 6)) problems.push(`  line ${i}\n     base : ${la[i]}\n     react: ${lb[i]}`);
@@ -145,10 +120,11 @@ await browser.close();
 
 // An intended divergence that stopped happening is a finding too: either the change was reverted or
 // the markup moved, and in both cases this entry is now lying about the tree.
-const stale = INTENDED.filter(entry => !seen.has(entry));
-for (const entry of stale) {
+// This gate owns the check for the whole list, because it is the one that sees both the shell and
+// every pane. `panes-parity.mjs` shares the list but only enforces each entry's `max`.
+for (const problem of unobservedIntended(INTENDED, seen)) {
 	fail++;
-	console.log(`FAIL  intended divergence never observed: ${entry.describe ?? `${entry.base} -> ${entry.react}`} (${entry.why})`);
+	console.log(`FAIL  ${problem}`);
 }
 
 console.log(`\n${pass} pass, ${fail} fail`);

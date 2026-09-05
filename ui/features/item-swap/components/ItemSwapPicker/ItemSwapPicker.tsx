@@ -35,6 +35,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	const host = useSimHost();
 	const player = host.player as Player<SpecType>;
 	const swapId = useId();
+	const labelId = useId();
 	const swapTooltip = i18n.t('settings_tab.other.item_swap.tooltip');
 
 	const subscribe = useMemo(() => subscribePlayerField(player, 'itemSwap'), [player]);
@@ -62,7 +63,12 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 		<div className="item-swap-picker-root">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			<div className={clsx('input-root input-inline input-item-swap-container', !enabled && 'hide')}>
-				<label className="form-label">{i18n.t('settings_tab.other.item_swap.label')}</label>
+				{/* A `<label>` that labels nothing is not a label: this names the icon group below, which
+				    is not a form control. The group says so itself instead. Recorded as an intended
+				    divergence in `panes-parity.mjs`. */}
+				<span className="form-label" id={labelId}>
+					{i18n.t('settings_tab.other.item_swap.label')}
+				</span>
 				<Button
 					variant="unstyled"
 					className="gear-swap-icon"
@@ -72,7 +78,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					<Icon name="arrows-rotate" className="me-1" />
 				</Button>
 				<Tooltip id={swapId} content={swapTooltip} />
-				<div className="picker-group icon-group" ref={mountIcons} />
+				<div className="picker-group icon-group" role="group" aria-labelledby={labelId} ref={mountIcons} />
 			</div>
 			{note && <p className={clsx('form-text', !enabled && 'hide')}>{note}</p>}
 		</div>

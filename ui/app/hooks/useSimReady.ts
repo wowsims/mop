@@ -12,6 +12,10 @@ import { useEffect, useState } from 'react';
  * Registration order matters and is reliable: an effect here runs after the shell's constructor has
  * queued its own callbacks, so anything the shell does on init has already happened by the time this
  * flips.
+ *
+ * In `app/` rather than `ui-kit/`: it encodes a fact about *this shell's* init order, which is not
+ * something a generic widget kit knows. `useStoreSubscribe` and `useActionId` reach into `@domain`
+ * because their subject genuinely is domain state; this one's subject is the composition root.
  */
 export const useSimReady = (sim: Sim): boolean => {
 	const [ready, setReady] = useState(false);

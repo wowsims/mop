@@ -9,7 +9,8 @@
 // Selectors here go through `window.simTabsProbe` (browser.mjs) so that one script drives the
 // Bootstrap strip on the parent branch and the Base UI strip that replaces it. Tabs are clicked by
 // position rather than by class, which is why the tab-id lists are compared first.
-import { dropRootClasses, launch, openSpec, PORTS, SERIALIZE, specsFromArgv } from './browser.mjs';
+import { dropRootClasses, launch, openSpec, overusedIntended, PORTS, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+import { INTENDED } from './intended.mjs';
 
 // Deferred tab bodies build on first show; the same wait applies to both sides.
 const SETTLE = 1000;
@@ -44,7 +45,13 @@ for (const spec of specsFromArgv()) {
 			const lb = dom.react.split('\n');
 			sizes.push(`${id}=${lb.length}`);
 			if (dom.base === dom.react) continue;
-			const first = la.findIndex((l, i) => l !== lb[i]);
+			// Tallied per pane, so `max` means "at most this many lines in one pane" rather than
+			// across the whole run.
+			const tally = new Map();
+			const unexpected = unexpectedLines(la, lb, INTENDED, tally);
+			problems.push(...overusedIntended(INTENDED, tally).map(problem => `${id}: ${problem}`));
+			if (!unexpected.length && la.length === lb.length) continue;
+			const first = unexpected[0] ?? la.findIndex((l, i) => l !== lb[i]);
 			problems.push(
 				`${id}: base ${la.length} elements, react ${lb.length}; first diff line ${first}\n      base : ${la[first]}\n      react: ${lb[first]}`,
 			);
@@ -59,5 +66,6 @@ for (const spec of specsFromArgv()) {
 	for (const side of Object.keys(PORTS)) await sides[side].page.close();
 }
 await browser.close();
+
 console.log(fails ? `\n${fails} spec(s) FAILED` : '\npane contents identical on every tab');
 process.exit(fails ? 1 : 0);

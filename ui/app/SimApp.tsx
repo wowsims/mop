@@ -5,10 +5,10 @@ import { ItemSwapPicker } from '@features/item-swap';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
-import { useSimReady } from '@ui-kit/hooks/useSimReady';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useSimReady } from './hooks/useSimReady';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';

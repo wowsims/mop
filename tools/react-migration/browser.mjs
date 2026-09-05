@@ -254,6 +254,52 @@ const PROBE = () => {
 	};
 };
 
+/**
+ * Shared machinery for the divergences a port means to have.
+ *
+ * An entry names the exact `base` and `react` lines, or carries a `match(base, react)` predicate for
+ * a line whose text varies per spec. It is **not** an allowlist: a caller is expected to check
+ * afterwards that every entry was observed, so reverting the markup fails as loudly as making the
+ * change unrecorded would have.
+ *
+ * `max` is what keeps a fixed pair from becoming one. `label.form-label` appears a dozen times in
+ * the settings pane and exactly one of them is meant to become a `span`; without a ceiling, the
+ * entry would quietly absorb the next eleven too.
+ */
+export const matchesIntended = (entry, base, react) => (entry.match ? entry.match(base, react) : base === entry.base && react === entry.react);
+
+/**
+ * Indices where the two serialised trees differ, minus the intended divergences. Observations are
+ * tallied into `tally` (a Map keyed by entry) so the caller can check both directions: an entry that
+ * was never observed, and one observed more often than its `max`.
+ */
+export const unexpectedLines = (baseLines, reactLines, intended, tally) => {
+	const at = [];
+	for (let i = 0; i < Math.max(baseLines.length, reactLines.length); i++) {
+		const base = baseLines[i]?.trim() ?? '';
+		const react = reactLines[i]?.trim() ?? '';
+		if (base === react) continue;
+		const entry = intended.find(e => matchesIntended(e, base, react));
+		if (!entry) {
+			at.push(i);
+			continue;
+		}
+		tally.set(entry, (tally.get(entry) ?? 0) + 1);
+	}
+	return at;
+};
+
+/** Entries folded more often than they are allowed to be, as printable problems. */
+export const overusedIntended = (intended, tally) =>
+	intended
+		.filter(entry => entry.max !== undefined && (tally.get(entry) ?? 0) > entry.max)
+		.map(entry => `intended divergence folded ${tally.get(entry)} lines, at most ${entry.max} expected: ${entry.why}`);
+
+export const unobservedIntended = (intended, seen) =>
+	intended
+		.filter(entry => !seen.has(entry))
+		.map(entry => `intended divergence never observed: ${entry.describe ?? `${entry.base} -> ${entry.react}`} (${entry.why})`);
+
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */
