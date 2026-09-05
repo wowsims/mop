@@ -14,14 +14,16 @@ export interface TooltipProps {
 	place?: TooltipPlace;
 	/** Lets the pointer enter the tooltip, for content with links or buttons in it. */
 	clickable?: boolean;
-	/** A popover: opens on click instead of hover, and closes on a click outside or Escape. */
+	/** A popover: opens on click instead of hover, and closes on a click outside itself. */
 	openOnClick?: boolean;
 	className?: string;
 }
 
-// tippy's `trigger: 'click'` closes on an outside click and not on Escape; react-tooltip's
-// clickOutsideAnchor already defaults to true here, and Escape is the one deliberate improvement.
-const CLOSE_ON_CLICK_OUTSIDE = { clickOutsideAnchor: true, escape: true };
+// Matching tippy's `hideOnClick`, and deliberately nothing more. Escape would be a new close path
+// with no blur in front of it, and react-tooltip unmounts the content on close — so it would drop a
+// half-typed value out of an uncontrolled picker, which no path does today. Clicking inside the
+// tooltip does not close it: the handler returns early on `tooltipRef.contains(target)`.
+const CLOSE_ON_CLICK_OUTSIDE = { clickOutsideAnchor: true };
 
 /**
  * Content is `children`, which react-tooltip does not render until the tooltip first opens — so a

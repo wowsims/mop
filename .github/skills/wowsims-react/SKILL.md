@@ -247,25 +247,32 @@ ports on its own.
 Only the props with a consumer are built. The rest of the mapping is written down so the next port
 reaches for the prop instead of inventing one:
 
-| tippy | sites | react-tooltip |
+The counts are occurrences of each key across `ui/`, a proxy — a few belong to other object
+literals — but the ordering is the point. Every react-tooltip name below was read off
+`react-tooltip.d.ts`, not recalled.
+
+| tippy | keys in `ui/` | react-tooltip |
 |---|---|---|
-| `content` | 31 | `content` — it is `children`, and **not rendered until the tooltip first opens** |
-| `onShow` building content lazily | 10 | free, per the line above; drop the callback |
-| `duration` / `animation` | 17 | CSS in `Tooltip.scss`, not props |
+| `content` | 40 | `content` — it is `children`, and **not rendered until the tooltip first opens** |
+| `duration` / `animation` | 20 | CSS in `Tooltip.scss`, not props |
+| `placement` | 12 | `place` |
+| `onShow` building content lazily | 10 | free, per the first row; drop the callback |
+| `plugins`, `popperOptions`, `inlinePositioning`, `triggerTarget`, `onCreate` | 10 | no equivalent — decide at the call site |
+| `delay` | 9 | `delayShow` / `delayHide` |
 | `theme` | 7 | `className` — the rules become `.sim-tooltip.<theme>` |
-| `placement` | 6 | `place` |
-| `delay` | 6 | `delayShow` / `delayHide` |
 | `interactive` | 5 | `clickable` |
 | `allowHTML` | 5 | moot; content is JSX |
+| `offset` / `maxWidth` | 5 | `offset`; width is CSS |
+| `appendTo` | 3 | react-tooltip renders in place; reach for `positionStrategy="fixed"` |
 | `trigger: 'click'` | 3 | `openOnClick` — **built** |
-| `appendTo` | 2 | react-tooltip renders in place; reach for `positionStrategy="fixed"` |
 | `followCursor` | 1 | `float` |
-| `offset` / `maxWidth` | 4 | `offset`; width is CSS |
-| `plugins`, `popperOptions`, `inlinePositioning`, `triggerTarget`, `onCreate` | 7 | no equivalent — decide at the call site |
 
-`openOnClick` also sets `globalCloseEvents`. react-tooltip already defaults `clickOutsideAnchor` to
-true once a click event is in play, which is what tippy's `hideOnClick` does; Escape is the one
-deliberate improvement — tippy's dist contains no Escape handling at all.
+`openOnClick` also sets `globalCloseEvents: { clickOutsideAnchor: true }`, which is what tippy's
+`hideOnClick` does — and no more. Escape is deliberately **not** added: it would be a close path
+with no blur in front of it, and react-tooltip unmounts the content on close (`setRendered(false)`),
+so it would drop a half-typed value out of an uncontrolled picker where nothing does today. Clicking
+*inside* the tooltip is safe — the handler returns early on `tooltipRef.contains(target)`, so the
+`NumberPicker` in the bonus-stat popover stays open while it is being used.
 
 **happy-dom cannot see a tooltip open.** The node keeps `react-tooltip__closing` and never reaches
 the shown class, because the transition and floating-ui's measurements need a real layout. What is
