@@ -1,7 +1,7 @@
 import { arrayEquals } from '@domain/collections';
 import type { NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
 import { useInput } from '@ui-kit/react/input';
-import { PickerShell } from '@ui-kit/react/picker_shell';
+import { PickerShell } from '@ui-kit/react/PickerShell';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
 export interface NumberListPickerProps<ModObject> {

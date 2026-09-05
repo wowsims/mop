@@ -13,7 +13,7 @@ import { registerSpecConfig } from '@features/spec_config';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { SimApp } from './sim_app';
+import { SimApp } from './SimApp';
 
 const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../sims/*/*/spec.{ts,tsx}');
 

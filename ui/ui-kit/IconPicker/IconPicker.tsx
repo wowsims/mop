@@ -2,7 +2,7 @@ import { isRightClick } from '@domain/env';
 import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { useActionId } from '@ui-kit/react/action_id';
 import { useInput } from '@ui-kit/react/input';
-import { PickerShell } from '@ui-kit/react/picker_shell';
+import { PickerShell } from '@ui-kit/react/PickerShell';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 

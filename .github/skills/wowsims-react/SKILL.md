@@ -660,6 +660,12 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   This applies to `ui-kit`, `app` and ported feature components. `ui/domain/**` and un-ported
   `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
+- **PascalCase filenames for anything that renders JSX** — `PickerShell.tsx`, `SimTabs.tsx`,
+  `SimHostContext.tsx`, and a co-located stylesheet follows its component (`SimTabs.scss`). Tests
+  take their subject's name. Two things stay snake_case on purpose: hook modules that render nothing
+  (`react/input.ts`, `react/store.ts`, `react/action_id.ts`) — their `.tsx` tests are only `.tsx`
+  because the *fixtures* render — and `app/spec_entry.tsx`, which contains JSX but is the page entry
+  script, named as one and referenced from `index_template.html` and `vite.config.mts`.
 
 ## Which store hook to reach for
 

@@ -2,7 +2,7 @@ import './CharacterStats.scss';
 
 import { computeStatAttribution, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
-import { useSimHost } from '@features/sim_host_context';
+import { useSimHost } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/react/store';
 import { useMemo } from 'react';

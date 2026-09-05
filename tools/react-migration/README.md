@@ -1,7 +1,7 @@
 # React migration checks
 
 The goldens (`npm run test:snapshots`) never construct the shell — `tools/state-snapshots/snapshot.ts`
-imports `IndividualSimUIConfig` as a *type* and mirrors `applyDefaults` by hand. They prove no state
+imports `IndividualSimUIConfig` as a _type_ and mirrors `applyDefaults` by hand. They prove no state
 write leaked into a component; they say nothing about whether anything rendered. The checks below
 are what the view layer is actually gated on.
 
@@ -30,16 +30,16 @@ REACT_PORT=3403 node tools/react-migration/mount-once.mjs
 Each takes an optional comma-separated spec list (`node …/parity.mjs warrior/arms,mage/fire`) and
 defaults to five specs from different classes. Ports come from `BASE_PORT` / `REACT_PORT`.
 
-| Check | What it would catch |
-|---|---|
-| `parity.mjs` | any change to the rendered tree, at load — every SCSS selector depends on it. The tab strip and `.sim-main` are pruned to a placeholder and each pane is compared on its own `#id` with its root class list normalised; everything else stays byte-strict |
-| `panes-parity.mjs` | a tab body that renders differently once opened, and a tab whose click opens nothing. `parity.mjs` only ever sees the tab open on load |
-| `tabs-a11y.mjs` | one tablist, one selected tab, one Tab stop and the two agreeing; every pane mounted whether open or not; every tab's `aria-controls` resolving to a top-level tabpanel that points back at it. Plus arrow/Home/End, still compared against the baseline |
-| `tabs-behaviour.mjs` | more than one open pane, a click opening the wrong pane, a pane that never fades in |
-| `landing.mjs` | a regression on `/mop/` itself — the homepage has no sim, so every other check skips it, and it is the one page that still depends on localization's `[data-i18n]` DOM walk |
+| Check                 | What it would catch                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `parity.mjs`          | any change to the rendered tree, at load — every SCSS selector depends on it. The tab strip and `.sim-main` are pruned to a placeholder and each pane is compared on its own `#id` with its root class list normalised; everything else stays byte-strict                                                                                                                           |
+| `panes-parity.mjs`    | a tab body that renders differently once opened, and a tab whose click opens nothing. `parity.mjs` only ever sees the tab open on load                                                                                                                                                                                                                                              |
+| `tabs-a11y.mjs`       | one tablist, one selected tab, one Tab stop and the two agreeing; every pane mounted whether open or not; every tab's `aria-controls` resolving to a top-level tabpanel that points back at it. Plus arrow/Home/End, still compared against the baseline                                                                                                                            |
+| `tabs-behaviour.mjs`  | more than one open pane, a click opening the wrong pane, a pane that never fades in                                                                                                                                                                                                                                                                                                 |
+| `landing.mjs`         | a regression on `/mop/` itself — the homepage has no sim, so every other check skips it, and it is the one page that still depends on localization's `[data-i18n]` DOM walk                                                                                                                                                                                                         |
 | `sidebar-popover.mjs` | everything about the sidebar that only exists after an interaction: the bonus-stat popover (where it mounts, whether the sidebar's `overflow-y: auto` clips it, whether each close path commits a half-typed value), that the table re-renders once the worker returns, and the two stat-value tooltips. Set `PORT` to pick a build — the entire output should be identical on both |
-| `talents.mjs` | the talents tab, which is almost entirely click behaviour — the DOM at load says nothing about whether spending a point works. Records the pane's structure, then spends, unspends and resets points, reading the talents string out of the autosaved settings. Set `PORT` to pick a build; the whole output should be identical on both |
-| `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op |
+| `talents.mjs`         | the talents tab, which is almost entirely click behaviour — the DOM at load says nothing about whether spending a point works. Records the pane's structure, then spends, unspends and resets points, reading the talents string out of the autosaved settings. Set `PORT` to pick a build; the whole output should be identical on both                                            |
+| `mount-once.mjs`      | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op                                                                                                                                                                                                       |
 
 The four tab checks read the strip and the panes through `window.simTabsProbe`, installed by
 `openSpec` in `browser.mjs`. Its readers are shape-agnostic on purpose: they answer for the parent

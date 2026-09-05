@@ -1,5 +1,5 @@
 // StrictMode double-invokes effects, so the shell would be constructed twice without the ref gate
-// in app/sim_app.tsx. A second construction is not a crash — it is a second .sim-ui, doubled sidebar
+// in app/SimApp.tsx. A second construction is not a crash — it is a second .sim-ui, doubled sidebar
 // buttons and doubled subscriptions — so this counts what ended up in the page.
 //
 // Point REACT_PORT at a DEV SERVER for this one: `node_modules/.bin/vite --port 3403`. Every build

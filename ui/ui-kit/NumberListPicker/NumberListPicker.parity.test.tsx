@@ -1,6 +1,6 @@
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { NumberListPicker as VanillaNumberListPicker, type NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
-import { mountBoth } from '@ui-kit/react/picker_oracle';
+import { mountBoth } from '@ui-kit/react/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { NumberListPicker } from './NumberListPicker';

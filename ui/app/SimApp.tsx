@@ -1,13 +1,13 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
-import { SimHostProvider } from '@features/sim_host_context';
+import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
-import { SimTabs } from './sim_tabs';
+import { SimTabs } from './SimTabs';
 
 export interface SimAppProps<SpecType extends Spec> {
 	player: Player<SpecType>;

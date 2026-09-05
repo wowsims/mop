@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { InputConfig } from '@ui-kit/input';
 import { describe, expect, it, vi } from 'vitest';
 
-import { PickerShell } from './picker_shell';
+import { PickerShell } from './PickerShell';
 
 type Mod = Record<string, never>;
 

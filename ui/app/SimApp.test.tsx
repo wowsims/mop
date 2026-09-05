@@ -29,7 +29,7 @@ vi.mock('./individual_sim_ui', async () => {
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 
-const { SimApp } = await import('./sim_app');
+const { SimApp } = await import('./SimApp');
 
 const player = {} as never;
 const def = {} as never;

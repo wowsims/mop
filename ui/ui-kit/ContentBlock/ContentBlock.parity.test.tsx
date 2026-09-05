@@ -1,7 +1,7 @@
 import type { ContentBlockConfig, ContentBlockHeaderConfig } from '@ui-kit/content_block';
 import { ContentBlock as VanillaContentBlock } from '@ui-kit/content_block';
-import type { VanillaPicker } from '@ui-kit/react/picker_oracle';
-import { mountBoth } from '@ui-kit/react/picker_oracle';
+import type { VanillaPicker } from '@ui-kit/react/PickerOracle';
+import { mountBoth } from '@ui-kit/react/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { ContentBlock } from './ContentBlock';

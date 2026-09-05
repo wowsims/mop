@@ -6,7 +6,7 @@
 // registers the id it generated, so an `id` passed to it renders on the element but leaves every
 // tab's `aria-controls` dangling. Adopting keeps `#<id>` on the SimTab root, which four stylesheets
 // select on.
-import './sim_tabs.scss';
+import './SimTabs.scss';
 
 import { Tabs } from '@base-ui/react/tabs';
 import type { SimTabRegistry } from '@ui-kit/tab_registry';

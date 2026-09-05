@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { SimTabs } from './sim_tabs';
+import { SimTabs } from './SimTabs';
 
 // The pane is all SimTab and SimUI.addTab hand to the registry; the tab and the panel are React's.
 const makeTab = (id: string) => {

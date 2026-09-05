@@ -1,6 +1,6 @@
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { EnumPicker as VanillaEnumPicker, type EnumPickerConfig, type EnumValueConfig } from '@ui-kit/pickers/enum_picker';
-import { mountBoth } from '@ui-kit/react/picker_oracle';
+import { mountBoth } from '@ui-kit/react/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { EnumPicker } from './EnumPicker';
