@@ -47,7 +47,7 @@ export class LogSearchBar extends Component {
 						autocomplete="off"
 					/>
 				</div>
-				<ul ref={suggestionsRef} className="log-search-suggestions" hidden></ul>
+				<ul ref={suggestionsRef} className="log-search-suggestions dropdown-menu" hidden></ul>
 			</>,
 		);
 
@@ -245,7 +245,13 @@ export class LogSearchBar extends Component {
 		}
 		this.suggestionsElem.hidden = false;
 		for (const item of shown) {
-			const li = (<li className="log-search-suggestion">{item}</li>) as HTMLLIElement;
+			const li = (
+				<li>
+					<button type="button" className="dropdown-item log-search-suggestion">
+						{item}
+					</button>
+				</li>
+			) as HTMLLIElement;
 			// mousedown (not click) fires before the input's blur, so preventDefault here keeps
 			// focus in the input instead of the suggestion click closing the list first.
 			li.addEventListener('mousedown', e => {

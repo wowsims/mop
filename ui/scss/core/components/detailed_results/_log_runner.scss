@@ -158,23 +158,25 @@
 }
 
 .log-search-suggestions {
+	// Carries .dropdown-menu, so the panel and its items look like every other dropdown in the
+	// app. Only the anchoring is ours: this one is placed against the search box rather than by
+	// Bootstrap's positioning, and it is toggled with [hidden] rather than .show.
 	position: absolute;
 	z-index: 2;
 	top: 100%;
 	left: 0;
 	right: 0;
-	margin: var(--spacer-1) 0 0;
-	padding: var(--spacer-1) 0;
+	margin-top: var(--spacer-1);
 	max-height: 16rem;
 	overflow-y: auto;
-	list-style: none;
-	border: 1px solid var(--bs-border-color);
-	border-radius: var(--bs-border-radius);
-	background: var(--bs-body-bg);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
-	&[hidden] {
-		display: none;
+	&:not([hidden]) {
+		display: block;
+	}
+
+	.log-search-suggestion {
+		width: 100%;
+		text-align: left;
 	}
 }
 
