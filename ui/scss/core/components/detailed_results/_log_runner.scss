@@ -102,6 +102,47 @@
 	}
 }
 
+.log-search-help {
+	display: flex;
+	align-items: center;
+
+	.tooltip-button {
+		--bs-btn-padding-y: 0;
+	}
+}
+
+.log-search-help-tooltip {
+	text-align: left;
+
+	p {
+		margin: var(--spacer-1) 0;
+	}
+
+	ul {
+		display: grid;
+		gap: var(--spacer-1);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: flex;
+		flex-direction: column;
+	}
+
+	code {
+		color: var(--bs-brand);
+	}
+
+	// The tooltip paints its own dark ground, so the description takes the tooltip's text colour
+	// dimmed rather than a page-level secondary colour, which is too dark to read on it.
+	span {
+		color: inherit;
+		opacity: 0.7;
+	}
+}
+
 .log-search-bar {
 	position: relative;
 	min-width: 25vw;

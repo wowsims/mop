@@ -2025,7 +2025,17 @@
 				"time_column": "Temps",
 				"event_column": "Événement",
 				"show_debug": "Afficher les messages de débogage",
-				"search_placeholder": "Search logs…"
+				"search_placeholder": "Search logs…",
+				"search_help": {
+					"title": "Search syntax",
+					"intro": "Terms are combined with AND unless you say otherwise. Use OR, NOT and parentheses to group them.",
+					"one_ability": "a single ability, quoted because of the space",
+					"group": "group with parentheses",
+					"either_target": "either target, for one field",
+					"kinds": "a kind of line; a leading minus excludes",
+					"numeric": "an outcome and a numeric comparison",
+					"time_range": "a time range, in seconds"
+				}
 			},
 			"tabs": {
 				"damage": "Dégâts",

@@ -7101,10 +7101,41 @@
 								},
 								"search_placeholder": {
 									"type": "string"
+								},
+								"search_help": {
+									"type": "object",
+									"properties": {
+										"title": {
+											"type": "string"
+										},
+										"intro": {
+											"type": "string"
+										},
+										"one_ability": {
+											"type": "string"
+										},
+										"group": {
+											"type": "string"
+										},
+										"either_target": {
+											"type": "string"
+										},
+										"kinds": {
+											"type": "string"
+										},
+										"numeric": {
+											"type": "string"
+										},
+										"time_range": {
+											"type": "string"
+										}
+									},
+									"additionalProperties": false,
+									"required": ["title", "intro", "one_ability", "group", "either_target", "kinds", "numeric", "time_range"]
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_help"]
 						},
 						"tabs": {
 							"type": "object",
