@@ -71,13 +71,10 @@ export const RESTORATION_BREAKPOINTS: UnitStatPresets[] = [
 		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
 		presets: new Map([
 			['7-tick - Riptide', 8.33334],
-			['6-tick - Healing Rain', 10],
 			['5-tick - Earthliving', 12.5],
 			['8-tick - Riptide', 25],
-			['7-tick - Healing Rain', 30],
 			['6-tick - Earthliving', 37.5],
 			['9-tick - Riptide', 41.66667],
-			['8-tick - Healing Rain', 50],
 			['10-tick - Riptide', 58.33334],
 		]),
 	},
