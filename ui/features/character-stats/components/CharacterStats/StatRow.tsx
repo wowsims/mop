@@ -5,6 +5,7 @@ import { usePlayer } from '@features/SimHostContext';
 import { PseudoStat, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';
+import { Button } from '@ui-kit/Button';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -38,18 +39,21 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show }: StatRowProp
 			</td>
 			<td className="character-stats-table-value">
 				<div className="stat-value-link-container">
-					<button className={clsx('stat-value-link', contextualClass)} data-tooltip-id={id}>
+					<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} data-tooltip-id={id}>
 						{`${show(attribution.final, unitStat, true)} `}
-					</button>
+					</Button>
 					{isMastery &&
 						modifiers.map((modifier, index) => (
-							<a
+							<Button
+								as="a"
+								variant="unstyled"
 								key={index}
 								href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
 								className={clsx('stat-value-link-mastery', contextualClass)}
-								target="_blank">
+								target="_blank"
+								rel="noopener noreferrer">
 								{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
-							</a>
+							</Button>
 						))}
 				</div>
 				{unitStat.hasRootStat() && <BonusStatsLink rootStat={unitStat.getRootStat()} />}

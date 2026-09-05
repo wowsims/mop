@@ -4,6 +4,7 @@ import { subscribePlayerField } from '@domain/state/subscriptions';
 import { usePlayer } from '@features/SimHostContext';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
@@ -49,9 +50,9 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 		<>
 			{/* The vanilla button carried an inert `data-bs-toggle="popover"`: Bootstrap popovers are
 			    opt-in and nothing in the tree ever constructed one, so it held no behaviour. */}
-			<button className="add-bonus-stats text-white ms-2" data-tooltip-id={`${id}-popover`}>
+			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" data-tooltip-id={`${id}-popover`}>
 				<Icon name="plus-minus" data-tooltip-id={`${id}-icon`} />
-			</button>
+			</Button>
 			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />
 			<Tooltip
 				ref={popover}
