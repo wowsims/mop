@@ -8845,6 +8845,9 @@
 						"bonus_prefix": {
 							"type": "string"
 						},
+						"bonus_action": {
+							"type": "string"
+						},
 						"points_suffix": {
 							"type": "string"
 						},
@@ -8853,7 +8856,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "melee_crit_cap", "tooltip", "attack_table", "crit_cap", "bonus_prefix", "points_suffix", "percent_suffix"]
+					"required": ["title", "melee_crit_cap", "tooltip", "attack_table", "crit_cap", "bonus_prefix", "bonus_action", "points_suffix", "percent_suffix"]
 				}
 			},
 			"additionalProperties": false,

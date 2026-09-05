@@ -2515,6 +2515,7 @@
 				"under_by": "Under by"
 			},
 			"bonus_prefix": "Bonus",
+			"bonus_action": "Add bonus {{stat}}",
 			"points_suffix": "Points",
 			"percent_suffix": "%"
 		}

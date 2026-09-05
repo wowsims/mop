@@ -1053,6 +1053,22 @@ Two things specific to this migration:
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-05 **A tooltip's content is already reachable by keyboard — do not re-raise this.** It
+  looked like a gap: react-tooltip does not render the tooltip until it opens, and no call site
+  writes `aria-describedby`. The library does it itself. Its default `openEvents` are
+  `{mouseenter, focus}`, so tabbing to a control opens its tooltip; while open it sets
+  `aria-describedby` on the active anchor and removes it on close; and the tooltip node carries
+  `id={id}` and `role="tooltip"`. Measured on `priest/discipline` (the only spec where the
+  known-issues link is visible): focus the cog or that link on either build and the attribute
+  resolves to the text. The React port is in fact ahead — tippy's node has no `role`.
+
+  The bonus-stats `±` button did have no name, and now reads "Add bonus Strength" from a new
+  `sidebar.character_stats.bonus_action` key (en + fr + `schemas/translation.schema.json`, whose
+  `additionalProperties: false` makes the schema part mandatory). Its existing `label` names the
+  *value* — right for the picker inside the popover, not for the control that opens it. `Icon`
+  already emits `aria-hidden` unless given a `title`, so nothing else was needed.
+  `.sim-sidebar-stats` is now a region in `a11y.mjs`, and it was clean apart from that one button.
+
 - 2026-09-05 **The sidebar's social links are React too, and every clickable in the header now goes
   through `Button`.** `SocialLink` is one component for both places — it renders the anchor and
   nothing around it, because what wraps it is exactly what differs (the toolbar's

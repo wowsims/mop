@@ -14,7 +14,7 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
 const IS_BASE = PORT === PORTS.base;
 
-const REGIONS = ['.sim-header .sim-toolbar', '.sim-header .import-export', '.sim-sidebar-socials'];
+const REGIONS = ['.sim-header .sim-toolbar', '.sim-header .import-export', '.sim-sidebar-socials', '.sim-sidebar-stats'];
 
 // The tab strip is deliberately absent: it is Base UI's markup, and `useButton` does not default
 // `type` either, which is its own question for whoever ports the last of it.

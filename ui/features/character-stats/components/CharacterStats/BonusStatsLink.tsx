@@ -30,6 +30,10 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 	// declaratively instead of relying on event order.
 	const [popoverOpen, setPopoverOpen] = useState(false);
 	const label = `${i18n.t('sidebar.character_stats.bonus_prefix')} ${getStatName(rootStat)}`;
+	// The button holds only an icon, so its name has to say what it does. "Bonus Strength" is the
+	// picker's own label and names the value, not the action — fine inside the popover, not enough
+	// on the control that opens it.
+	const action = i18n.t('sidebar.character_stats.bonus_action', { stat: getStatName(rootStat) });
 
 	const config = useMemo(
 		(): NumberPickerConfig<Player<any>> => ({
@@ -50,7 +54,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 		<>
 			{/* The vanilla button carried an inert `data-bs-toggle="popover"`: Bootstrap popovers are
 			    opt-in and nothing in the tree ever constructed one, so it held no behaviour. */}
-			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" data-tooltip-id={`${id}-popover`}>
+			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" aria-label={action} data-tooltip-id={`${id}-popover`}>
 				<Icon name="plus-minus" data-tooltip-id={`${id}-icon`} />
 			</Button>
 			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />
