@@ -1,13 +1,17 @@
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
+import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
+import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { UnitStat } from '../../core/proto_utils/stats';
+import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as ShamanInputs from '../inputs';
 import * as Presets from './presets';
+
+const hasteBreakpoints = Presets.RESTORATION_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
 
 // Gear planner only: no healing spells are implemented, so there is no simulation for this spec.
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationShaman, {
@@ -31,6 +35,17 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationShaman, {
 		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		// Default soft caps for the Reforge optimizer: reach a Riptide tick breakpoint, then
+		// value haste at QE Live's weight.
+		softCapBreakpoints: (() => {
+			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [hasteBreakpoints.get('7-tick - Riptide')!, hasteBreakpoints.get('8-tick - Riptide')!],
+				capType: StatCapType.TypeThreshold,
+				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			});
+			return [hasteSoftCapConfig];
+		})(),
+		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('7-tick - Riptide')!),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -87,6 +102,7 @@ export class RestorationShamanSimUI extends IndividualSimUI<Spec.SpecRestoration
 
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: Presets.RESTORATION_BREAKPOINTS,
+			enableBreakpointLimits: true,
 		});
 	}
 }

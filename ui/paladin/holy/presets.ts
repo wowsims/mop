@@ -63,6 +63,8 @@ export const OtherDefaults = {
 
 // HoT tick breakpoints as total spell haste percent (raid buff included):
 // (ticks - 0.5) / baseTicks - 1. Eternal Flame 30s/3s, Sacred Shield 30s/6s.
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.527;
+
 export const HOLY_BREAKPOINTS: UnitStatPresets[] = [
 	{
 		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
