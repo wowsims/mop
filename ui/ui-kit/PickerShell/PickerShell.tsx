@@ -1,9 +1,8 @@
+import { adoptNode, isNode } from '@ui-kit/dom_utils';
 import type { InputConfig } from '@ui-kit/input';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
-
-import { adoptNode, isNode } from './dom';
 
 // `classList.add` drops a repeat; clsx does not, and two live configs pass `input-inline` in
 // `extraCssClasses` as well as setting `inline` (`other_inputs.ts`, and `rotation_tab.tsx`, which

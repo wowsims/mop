@@ -1,7 +1,7 @@
 import type { InputConfig } from '@ui-kit/input';
 import { useCallback, useRef, useState } from 'react';
 
-import { useStoreSubscribe } from './store';
+import { useStoreSubscribe } from './useStoreSubscribe';
 
 export interface InputState<T, V = T> {
 	value: V;

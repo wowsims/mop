@@ -1,7 +1,7 @@
 import { formatToNumber } from '@domain/format';
+import { useInput } from '@ui-kit/hooks/useInput';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
-import { useInput } from '@ui-kit/react/input';
-import { PickerShell } from '@ui-kit/react/PickerShell';
+import { PickerShell } from '@ui-kit/PickerShell';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
 export interface NumberPickerProps<ModObject> {

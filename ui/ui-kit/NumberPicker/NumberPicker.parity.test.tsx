@@ -1,8 +1,8 @@
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { act } from '@testing-library/react';
 import { NumberPicker as VanillaNumberPicker, type NumberPickerConfig } from '@ui-kit/pickers/number_picker';
-import type { PickerPair } from '@ui-kit/react/PickerOracle';
-import { mountBoth } from '@ui-kit/react/PickerOracle';
+import type { PickerPair } from '@ui-kit/testing/PickerOracle';
+import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { NumberPicker } from './NumberPicker';

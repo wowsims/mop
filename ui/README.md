@@ -57,9 +57,12 @@ real DOM nodes opt out on line 1 with `/** @jsxImportSource @jsx-vanilla */`, wh
 `ui/shared/jsx-vanilla/` — a direct call through to tsx-vanilla's `element`. Porting a file to React
 means deleting that pragma.
 
-React glue lives in `ui-kit/react/` (`LegacyHost`, which mounts a not-yet-ported `Component` inside
-the React tree, and `useStoreSubscribe`). Shared React components get a folder of their own,
-`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}`. See `.github/skills/wowsims-react/`
+Shared React components get a folder of their own,
+`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}` — including `LegacyHost`, which mounts
+a not-yet-ported `Component` inside the React tree. Hooks live in `ui-kit/hooks/`, one per file
+named after the hook (`useInput.ts`, `useStoreSubscribe.ts`, `useActionId.ts`), and test-only
+helpers in `ui-kit/testing/`. There is no `ui-kit/react/`: every component here is React now, so the
+qualifier distinguished nothing. See `.github/skills/wowsims-react/`
 for the component registry and the migration's current position.
 
 ## Placement rules

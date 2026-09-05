@@ -3,7 +3,7 @@ import { act, render } from '@testing-library/react';
 import type { InputConfig } from '@ui-kit/input';
 import { describe, expect, it } from 'vitest';
 
-import { useInput } from './input';
+import { useInput } from './useInput';
 
 // The encounter target list is written this way: getTargets().slice(), a new array every call.
 class Targets {

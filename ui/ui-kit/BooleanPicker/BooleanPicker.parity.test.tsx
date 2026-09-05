@@ -2,7 +2,7 @@ import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { fireEvent } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import { BooleanPicker as VanillaBooleanPicker, type BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
-import { mountBoth, type PickerPair } from '@ui-kit/react/PickerOracle';
+import { mountBoth, type PickerPair } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { BooleanPicker } from './BooleanPicker';

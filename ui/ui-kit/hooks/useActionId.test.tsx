@@ -2,7 +2,7 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { act, render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { useActionId } from './action_id';
+import { useActionId } from './useActionId';
 
 // A filled ActionId as fill() returns one: same id fields, plus name and iconUrl.
 const filled = (actionId: ActionId, name: string, iconUrl: string) => Object.assign(Object.create(ActionId.prototype), actionId, { name, iconUrl }) as ActionId;

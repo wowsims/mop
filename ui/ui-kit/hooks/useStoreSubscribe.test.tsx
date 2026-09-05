@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 import { act } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { useStoreSubscribe } from './store';
+import { useStoreSubscribe } from './useStoreSubscribe';
 
 // Field sources built the way state/subscriptions.ts builds them, but without needing a Sim or a
 // Player: the question under test is how React reacts to the store, not how the facades write to it.

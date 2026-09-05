@@ -1,6 +1,6 @@
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { AdaptiveStringPicker as VanillaAdaptiveStringPicker, type StringPickerConfig } from '@ui-kit/pickers/string_picker';
-import { mountBoth } from '@ui-kit/react/PickerOracle';
+import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';
 
 import { AdaptiveStringPicker } from './AdaptiveStringPicker';

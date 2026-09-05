@@ -308,22 +308,22 @@ of the duplication sweep was to build each shape once.
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
 | `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — 18 sites, 9 in `settings_tab.tsx` | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
-| `mountBoth` | `ui/ui-kit/react/picker_oracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
-| `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
+| `mountBoth` | `ui/ui-kit/testing/PickerOracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
+| `useActionId` | `ui/ui-kit/hooks/useActionId.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
 | `NumberPicker` | `ui/ui-kit/NumberPicker/` | `ui-kit/pickers/number_picker.ts` (still live, dual-stack) | the `NumberPickerConfig` it is given | commit on native `change`, the `size` rule, and the float/positive/showZeroes formats |
 | `EnumPicker` | `ui/ui-kit/EnumPicker/` | `ui-kit/pickers/enum_picker.tsx` (still live, dual-stack) | the `EnumPickerConfig` it is given | the `select`/`option` markup and out-of-range selection |
-| `PickerShell` | `ui/ui-kit/react/picker_shell.tsx` | `Input`'s constructor: root classes, label, description | the picker's own class and its input(s) | class order, `form-label`, tooltip and description handling |
+| `PickerShell` | `ui/ui-kit/PickerShell/` | `Input`'s constructor: root classes, label, description | the picker's own class and its input(s) | class order, `form-label`, tooltip and description handling |
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
-| `useInput` | `ui/ui-kit/react/input.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
+| `useInput` | `ui/ui-kit/hooks/useInput.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
-| `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
-| `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
+| `LegacyHost` | `ui/ui-kit/LegacyHost/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
+| `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -344,7 +344,7 @@ the file passed straight through:
 
 1. **Dump both DOM trees** and compare tag order, class names and attributes — including what the
    base class contributes and *when* it does. Run it, do not read it: `mountBoth` in
-   `ui/ui-kit/react/picker_oracle.tsx` constructs the vanilla picker and renders the port over
+   `ui/ui-kit/testing/PickerOracle.tsx` constructs the vanilla picker and renders the port over
    equivalent mod objects and diffs them per element, marking a class-order-only difference as such.
    `IconPicker.parity.test.tsx` is the worked example — a case list of configs, each at value 0 and
    at the top value, plus a walk through every value and an `enableWhen` flip. Reading instead of
@@ -398,7 +398,7 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
   React reports as *"The result of getSnapshot should be cached to avoid an infinite loop"*. The
   vanilla `Input` has the same behaviour: it re-reads in `refresh()`, on notification.
 - **`description` and `labelTooltip` are `string | Element`, and the Element form is real**
-  (`reforge_panel.tsx:527`). Render it with `adoptNode` from `ui-kit/react/dom.ts`; casting it to
+  (`reforge_panel.tsx:527`). Render it with `adoptNode` from `ui-kit/dom_utils.ts`; casting it to
   string produces `[object HTMLDivElement]` and nothing fails.
 - **`showWhen` renders the `hide` class rather than unmounting.** The plan calls conditional
   rendering the idiom React deletes, and that holds for the hand-rolled container toggles — but a
@@ -719,6 +719,12 @@ Two boundaries:
 
 ## Component folder layout
 
+There is no `ui-kit/react/`. It made sense when React was the exception; every component in `ui-kit`
+is React now, so the qualifier named nothing. What was in it went to where its kind belongs:
+components to their own folders (`PickerShell/`, `LegacyHost/`), hooks to `ui-kit/hooks/` one per
+file named after the hook, the `mountBoth` oracle to `ui-kit/testing/`, and the two DOM helpers into
+`ui-kit/dom_utils.ts`.
+
 ```
 ui/ui-kit/<Name>/{ <Name>.tsx, <Name>.scss, types.ts, index.ts }
 ui/features/<feature>/components/<Name>/{ … }      # `view/` is renamed as each feature ports
@@ -927,7 +933,7 @@ Two things specific to this migration:
   **twice at mount in every build** (see the trap below); and `Input.update()` writes `disabled` on the input
   element as well as the class on the root, which React will not render from a typed anchor prop.
   Note that `getAllByRole('link')` cannot see an anchor without an href, so the structural tests
-  query the DOM. Out of that came `mountBoth` (`ui/ui-kit/react/picker_oracle.tsx`): check 1 run
+  query the DOM. Out of that came `mountBoth` (`ui/ui-kit/testing/PickerOracle.tsx`): check 1 run
   rather than read, diffing the vanilla picker's tree against the port's per element and per
   attribute. Every picker port from here ships a `*.parity.test.tsx` using it —
   `IconPicker.parity.test.tsx` is the worked example, and the five pickers that predate the oracle

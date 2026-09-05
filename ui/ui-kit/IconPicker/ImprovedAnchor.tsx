@@ -1,5 +1,5 @@
 import type { ActionId } from '@domain/proto_utils/action_id';
-import { useActionId } from '@ui-kit/react/action_id';
+import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
 
 export interface ImprovedAnchorProps {
