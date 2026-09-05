@@ -12,7 +12,7 @@ export interface ActionIdState {
 
 // reforgeId is in the wowhead item URL but is not part of equals(), so equalityKey() alone would
 // hold a stale href across a reforge.
-const keyOf = (actionId: ActionId) => `${actionId.equalityKey()}|${actionId.reforgeId}`;
+const keyOf = (actionId: ActionId | undefined) => (actionId ? `${actionId.equalityKey()}|${actionId.reforgeId}` : '');
 
 const hrefOf = (actionId: ActionId) => {
 	if (actionId.itemId) return ActionId.makeItemUrl(actionId.itemId, actionId.randomSuffixId, actionId.reforgeId, actionId.upgradeStep);
@@ -20,12 +20,17 @@ const hrefOf = (actionId: ActionId) => {
 	return '';
 };
 
-const stateOf = (actionId: ActionId): ActionIdState => ({
-	iconUrl: actionId.iconUrl,
-	name: actionId.name,
-	href: hrefOf(actionId),
-	ready: !!(actionId.name || actionId.iconUrl) || !actionId.anyId(),
-});
+const EMPTY: ActionIdState = { iconUrl: '', name: '', href: '', ready: true };
+
+const stateOf = (actionId: ActionId | undefined): ActionIdState =>
+	actionId
+		? {
+				iconUrl: actionId.iconUrl,
+				name: actionId.name,
+				href: hrefOf(actionId),
+				ready: !!(actionId.name || actionId.iconUrl) || !actionId.anyId(),
+			}
+		: EMPTY;
 
 /**
  * Resolves an `ActionId` to the fields a component renders: icon, name and wowhead href.
@@ -37,9 +42,10 @@ const stateOf = (actionId: ActionId): ActionIdState => ({
  *
  * An id that already carries a name or icon renders on the first pass; only an unfilled one waits
  * for a render. Changing the id aborts the fill in flight, so a slow first id cannot overwrite a
- * second one that resolved sooner.
+ * second one that resolved sooner. `undefined` is a state the callers have — an icon anchor that
+ * exists at every `states` but is only filled at some of them — and resolves to empty fields.
  */
-export function useActionId(actionId: ActionId): ActionIdState {
+export function useActionId(actionId: ActionId | undefined): ActionIdState {
 	const key = keyOf(actionId);
 	const idRef = useRef(actionId);
 	idRef.current = actionId;
@@ -55,7 +61,7 @@ export function useActionId(actionId: ActionId): ActionIdState {
 
 	useEffect(() => {
 		const id = idRef.current;
-		if (stateOf(id).ready) return;
+		if (!id || stateOf(id).ready) return;
 
 		const controller = new AbortController();
 		id.fill(undefined, { signal: controller.signal })

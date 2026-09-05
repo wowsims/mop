@@ -98,6 +98,7 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.ts` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
 | `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
@@ -382,6 +383,18 @@ Two things specific to this migration:
   the href without filling at all, and aborts a fill in flight when the id changes, so a slow first
   id cannot paint over a second one that resolved sooner (vanilla passes one component-lifetime
   signal and does not guard that race).
+
+  `IconPicker` followed it — the one icon picker that is not a Bootstrap dropdown. Three things the
+  adversarial pass caught that a green suite did not: vanilla builds **both** improved anchors at
+  every `states` and gates only the *fill*, so an unfilled one is an `<a>` with no href that
+  `.icon-input-improved:not([href])` hides — mounting them conditionally changes the element count;
+  the store-on-hide write runs from the source subscription, so it fires on **any** notification
+  while hidden (a picker that mounts hidden over a non-zero source is zeroed by the first one) and
+  never during construction, which a one-shot "skip the first effect" flag gets wrong in both
+  directions and StrictMode then replays; and `Input.update()` writes `disabled` on the input
+  element as well as the class on the root, which React will not render from a typed anchor prop.
+  Note that `getAllByRole('link')` cannot see an anchor without an href, so the structural tests
+  query the DOM.
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a
