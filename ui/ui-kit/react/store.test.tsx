@@ -115,3 +115,29 @@ describe('useStoreSubscribe', () => {
 		}
 	});
 });
+
+// Most model getters here build a fresh value per call, so the cache is what makes them bindable.
+describe('useStoreSubscribe snapshot caching', () => {
+	it('re-reads once per notification, not once per render', () => {
+		let reads = 0;
+		const listeners = new Set<() => void>();
+		const subscribe = (listener: () => void) => {
+			listeners.add(listener);
+			return () => listeners.delete(listener);
+		};
+		const Probe = () => {
+			const value = useStoreSubscribe(subscribe, () => {
+				reads++;
+				return ['a', 'b'];
+			});
+			return <span>{value.join(',')}</span>;
+		};
+
+		const { container } = render(<Probe />);
+		expect(container.textContent).toBe('a,b');
+		const afterMount = reads;
+
+		act(() => listeners.forEach(listener => listener()));
+		expect(reads).toBe(afterMount + 1);
+	});
+});

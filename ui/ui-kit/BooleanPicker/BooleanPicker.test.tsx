@@ -93,11 +93,28 @@ describe('BooleanPicker', () => {
 		expect(root.querySelector('label')!.className).toBe('form-label');
 	});
 
-	it('puts the input last when reverse is set', () => {
+	it('puts the input last when reverse is set, after the description', () => {
 		const settings = new Settings();
-		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ reverse: true })} />);
+		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ reverse: true, description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
 		expect(root.classList.contains('form-check-reverse')).toBe(true);
-		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'INPUT']);
+		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
+	});
+
+	// InputConfig types both of these as string | Element, and reforge_panel.tsx:527 passes an
+	// Element. Stringifying it renders "[object HTMLDivElement]" with nothing to notice it.
+	it('renders an Element description and tooltip rather than stringifying them', async () => {
+		const settings = new Settings();
+		const description = document.createElement('div');
+		description.textContent = 'Built elsewhere';
+		const tooltip = document.createElement('span');
+		tooltip.textContent = 'Node tooltip';
+
+		render(<BooleanPicker modObject={settings} config={configFor({ description, labelTooltip: tooltip })} />);
+		expect(screen.getByText('Built elsewhere')).toBeTruthy();
+		expect(document.body.textContent).not.toContain('[object');
+
+		fireEvent.mouseEnter(screen.getByText('Enable Item Swap'));
+		expect(await screen.findByText('Node tooltip')).toBeTruthy();
 	});
 });

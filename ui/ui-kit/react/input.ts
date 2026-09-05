@@ -15,10 +15,9 @@ export interface InputState<T, V = T> {
  * Binds one `InputConfig` — the frozen picker contract every spec is written against — to a React
  * component.
  *
- * `getValue` is re-read only when the source notifies, and its result is held between notifications.
- * That matches the vanilla Input, which re-reads in refresh(), and it is required rather than an
- * optimisation: configs like the encounter target list return `getTargets().slice()`, a new array
- * every call, which useSyncExternalStore would otherwise see as a new snapshot on every render.
+ * `getValue` is re-read once per notification and held in between (see `useStoreSubscribe`), which
+ * matches the vanilla Input's refresh() and is what makes configs like the encounter target list —
+ * `getTargets().slice()`, a new array every call — safe to bind.
  */
 export function useInput<ModObject, T, V = T>(modObject: ModObject, config: InputConfig<ModObject, T, V>): InputState<T, V> {
 	const configRef = useRef(config);
@@ -29,15 +28,11 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	// whether or not the value actually changed.
 	const [seed, setSeed] = useState(config.defaultValue);
 
-	const snapshot = useRef<{ mod: ModObject; value: T } | null>(null);
-	const stale = useRef(true);
-
 	const subscribe = useCallback(
 		(onChange: () => void) => {
 			const source = configRef.current.storeSubscribe?.(modObject);
 			return source
 				? source(() => {
-						stale.current = true;
 						setSeed(undefined);
 						onChange();
 					})
@@ -46,13 +41,7 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 		[modObject],
 	);
 
-	const source = useStoreSubscribe(subscribe, () => {
-		if (stale.current || snapshot.current?.mod !== modObject) {
-			snapshot.current = { mod: modObject, value: configRef.current.getValue(modObject) };
-			stale.current = false;
-		}
-		return snapshot.current.value;
-	});
+	const source = useStoreSubscribe(subscribe, () => configRef.current.getValue(modObject));
 
 	const toValue = (src: T): V => (configRef.current.sourceToValue ? configRef.current.sourceToValue(src) : (src as unknown as V));
 

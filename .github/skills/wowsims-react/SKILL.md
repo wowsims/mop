@@ -144,12 +144,15 @@ class names, and then the stylesheet has two owners.
 round. `useInput(modObject, config)` is that fit, and every React picker is built on it. It returns
 `{ value, setValue, hidden, disabled }`, and three of its rules are not obvious:
 
-- **`getValue` is re-read only when the source notifies**, and the result is held in between. This
-  is required, not an optimisation: configs such as the encounter target list return
-  `getTargets().slice()` — a new array on every call — and `useSyncExternalStore` treats a new
-  snapshot identity as a change, which React reports as *"The result of getSnapshot should be cached
-  to avoid an infinite loop"*. The vanilla `Input` has the same behaviour: it re-reads in
-  `refresh()`, on notification.
+- **`getValue` is re-read only when the source notifies**, and the result is held in between — this
+  lives in `useStoreSubscribe`, so it protects every binding, not just pickers. It is required, not
+  an optimisation: configs such as the encounter target list return `getTargets().slice()` — a new
+  array on every call — and `useSyncExternalStore` treats a new snapshot identity as a change, which
+  React reports as *"The result of getSnapshot should be cached to avoid an infinite loop"*. The
+  vanilla `Input` has the same behaviour: it re-reads in `refresh()`, on notification.
+- **`description` and `labelTooltip` are `string | Element`, and the Element form is real**
+  (`reforge_panel.tsx:527`). Render it with `adoptNode` from `ui-kit/react/dom.ts`; casting it to
+  string produces `[object HTMLDivElement]` and nothing fails.
 - **`showWhen` renders the `hide` class rather than unmounting.** The plan calls conditional
   rendering the idiom React deletes, and that holds for the hand-rolled container toggles — but a
   picker's own node has to stay while Phase 3 compares DOM against the vanilla build. Revisit in
