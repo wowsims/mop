@@ -1,7 +1,9 @@
+import { SOCIALS } from '@domain/constants/other';
 import type { PlayerSpec } from '@domain/player_spec';
 import type { Sim } from '@domain/sim';
 import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -9,6 +11,7 @@ import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, us
 import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
+import { SocialLink } from './SocialLink';
 
 type UiToggle = 'showDamageMetrics' | 'showThreatMetrics' | 'showHealingMetrics' | 'showExperimental';
 
@@ -46,8 +49,8 @@ export interface SimShellProps {
  *
  * - Every container still in `ShellDom` is filled imperatively afterwards. React must not own their
  *   children, and a re-render that re-created any of these nodes would take the vanilla content with
- *   it. `.sim-toolbar` is the exception and no longer in the bundle: its contents are React's, and a
- *   container leaves `ShellDom` as that becomes true of it.
+ *   it. `.sim-toolbar` and `.sim-sidebar-socials` are the exceptions and no longer in the bundle: their
+ *   contents are React's, and a container leaves `ShellDom` as that becomes true of it.
  * - Bootstrap rewrites `aria-expanded` on the dropdown toggles and `.show` on their menus. React
  *   diffs against its own last props rather than the DOM, so a re-render with identical props is
  *   already safe — but not re-rendering at all makes that independent of React's bail-out rules.
@@ -65,7 +68,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	const sidebarActions = useRef<HTMLDivElement>(null);
 	const sidebarResults = useRef<HTMLDivElement>(null);
 	const sidebarStats = useRef<HTMLDivElement>(null);
-	const sidebarSocials = useRef<HTMLDivElement>(null);
 	const content = useRef<HTMLDivElement>(null);
 	const main = useRef<HTMLElement>(null);
 	const header = useRef<HTMLElement>(null);
@@ -109,7 +111,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 			sidebarActions: sidebarActions.current!,
 			sidebarResults: sidebarResults.current!,
 			sidebarStats: sidebarStats.current!,
-			sidebarSocials: sidebarSocials.current!,
 			content: content.current!,
 			main: main.current!,
 			header: header.current!,
@@ -129,7 +130,11 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 							<div ref={sidebarActions} className="sim-sidebar-actions" />
 							<div ref={sidebarResults} className="sim-sidebar-results" />
 							<div ref={sidebarStats} className="sim-sidebar-stats" />
-							<div ref={sidebarSocials} className="sim-sidebar-socials" />
+							<div className="sim-sidebar-socials">
+								{SOCIALS.map(social => (
+									<SocialLink key={social.key} social={social} />
+								))}
+							</div>
 						</div>
 					</aside>
 					<div ref={content} className="sim-content container-fluid">
@@ -139,15 +144,25 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 								<div className="import-export nav">
 									<div className="dropdown sim-dropdown-menu import-dropdown">
 										{/* Literal, not derived: Bootstrap owns this attribute once the plugin takes over. */}
-										<button type="button" className="import-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
+										<Button
+											variant="unstyled"
+											className="import-link"
+											aria-expanded="false"
+											data-bs-toggle="dropdown"
+											data-bs-display="dynamic">
 											<i className="fa fa-download" aria-hidden="true" /> {i18n.t('import.title')}
-										</button>
+										</Button>
 										<ul className="dropdown-menu" />
 									</div>
 									<div className="dropdown sim-dropdown-menu export-dropdown">
-										<button type="button" className="export-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
+										<Button
+											variant="unstyled"
+											className="export-link"
+											aria-expanded="false"
+											data-bs-toggle="dropdown"
+											data-bs-display="dynamic">
 											<i className="fa fa-right-from-bracket" aria-hidden="true" /> {i18n.t('export.title')}
-										</button>
+										</Button>
 										<ul className="dropdown-menu" />
 									</div>
 								</div>

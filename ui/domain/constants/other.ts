@@ -27,6 +27,27 @@ export const REPO_RELEASES_URL = `${REPO_URL}/releases`;
 export const REPO_NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 export const REPO_CHOOSE_NEW_ISSUE_URL = `${REPO_NEW_ISSUE_URL}/choose`;
 
+/**
+ * The three social links, rendered in both the header toolbar and the sidebar. One list because
+ * they are the same three links — the two places differ only in what wraps them. `tooltip` is an
+ * i18n key, and doubles as the accessible name.
+ */
+export const SOCIALS = [
+	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'discord-link link-alt', icon: 'fab fa-discord fa-lg', tooltip: 'info.discord' },
+	{ key: 'github', href: REPO_URL, className: 'github-link link-alt', icon: 'fab fa-github fa-lg', tooltip: 'info.github' },
+	// The only one that spells itself out beside the glyph.
+	{
+		key: 'patreon',
+		href: 'https://patreon.com/wowsims',
+		className: 'patreon-link link-alt',
+		icon: 'fab fa-patreon fa-lg',
+		tooltip: 'info.patreon',
+		label: ' Patreon',
+	},
+] as const;
+
+export type Social = (typeof SOCIALS)[number];
+
 // Root-relative path of the individual sim page for the given spec. Resolve it
 // against the page origin at the point of use (see SimTitleDropdown) — this
 // layer has no `window`. Lives here rather than in proto_utils/utils so that

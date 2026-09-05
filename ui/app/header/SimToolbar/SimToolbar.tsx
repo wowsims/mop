@@ -1,10 +1,10 @@
-import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, REPO_URL } from '@domain/constants/other';
+import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@domain/constants/other';
 import { noop } from '@domain/utils';
 import i18n from '@i18n/config';
 import { isNative } from '@ui-kit/dom_utils';
 import { type ReactNode, useEffect, useState } from 'react';
 
-import { SocialItem } from './SocialItem';
+import { SocialLink } from '../../SocialLink';
 import { ToolbarItem } from './ToolbarItem';
 
 export interface SimToolbarProps {
@@ -12,12 +12,6 @@ export interface SimToolbarProps {
 	knownIssues: ReadonlyArray<ReactNode>;
 	onOpenSettings: () => void;
 }
-
-const SOCIALS = [
-	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'discord-link link-alt', icon: 'fab fa-discord fa-lg', tooltip: 'info.discord' },
-	{ key: 'github', href: REPO_URL, className: 'github-link link-alt', icon: 'fab fa-github fa-lg', tooltip: 'info.github' },
-	{ key: 'patreon', href: 'https://patreon.com/wowsims', className: 'patreon-link link-alt', icon: 'fab fa-patreon fa-lg', tooltip: 'info.patreon' },
-] as const;
 
 /**
  * Asks the local sim host whether a newer build exists. Only the "outdated" answer renders anything,
@@ -79,10 +73,10 @@ export const SimToolbar = ({ knownIssues, onOpenSettings }: SimToolbarProps) => 
 
 			<div className="sim-toolbar-socials">
 				{SOCIALS.map(social => (
-					<SocialItem key={social.key} href={social.href} className={social.className} icon={social.icon} tooltip={i18n.t(social.tooltip)}>
-						{/* Patreon is the only one that spells itself out beside the glyph. */}
-						{social.key === 'patreon' && ' Patreon'}
-					</SocialItem>
+					// The toolbar wraps each link the way it wraps every other item; the sidebar does not.
+					<div key={social.key} className="sim-toolbar-item">
+						<SocialLink social={social} />
+					</div>
 				))}
 			</div>
 

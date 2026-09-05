@@ -2,8 +2,14 @@ import { Button as BaseButton } from '@base-ui/react/button';
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-/** The `btn btn-*` shapes the tree actually uses. */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel';
+/**
+ * The `btn btn-*` shapes the tree actually uses, plus `unstyled` — which emits no `btn` class at
+ * all, for a control that is a button or a link semantically but carries none of the button
+ * *styling*. The header toolbar's items are the case: their classes are their own. Everything else
+ * `Button` does still applies there — the `<a>`/`<button>` split, Base UI's button behaviour, and
+ * the `type` default.
+ */
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel' | 'unstyled';
 
 interface ButtonBaseProps {
 	/** `null` emits a bare `btn` — the talents tree's reset is `btn link-danger`. */
@@ -23,7 +29,7 @@ export type ButtonProps = ButtonAsButton | ButtonAsAnchor;
 
 export const Button = (props: ButtonProps) => {
 	const variant = props.variant === undefined ? 'primary' : props.variant;
-	const classes = clsx('btn', variant && `btn-${variant}`, props.size && `btn-${props.size}`, props.className);
+	const classes = variant === 'unstyled' ? props.className : clsx('btn', variant && `btn-${variant}`, props.size && `btn-${props.size}`, props.className);
 
 	// A plain anchor, deliberately not `Base.Button`. Its docs: "Links (`<a>`) have their own
 	// semantics and should not be rendered as buttons through the `render` prop." Every

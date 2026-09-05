@@ -322,7 +322,7 @@ of the duplication sweep was to build each shape once.
 | `PickerShell` | `ui/ui-kit/PickerShell/` | `Input`'s constructor: root classes, label, description | the picker's own class, its input(s), and the root `ref` — so a picker whose vanilla constructor appended into its own root can mount that with `useLegacyMount` | class order, `form-label`, tooltip and description handling |
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/hooks/useInput.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
-| `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href`. The `<button>` branch is Base UI's `Button`; the `<a>` branch is **deliberately not** |
+| `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant` (incl. `unstyled`, which emits no `btn` at all), `size`, any native props | `type="button"`, and that `as="a"` carries an `href`. The `<button>` branch is Base UI's `Button`; the `<a>` branch is **deliberately not** |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
@@ -330,6 +330,7 @@ of the duplication sweep was to build each shape once.
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
 | `LegacyHost` | `ui/ui-kit/LegacyHost/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
+| `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1051,6 +1052,33 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **The sidebar's social links are React too, and every clickable in the header now goes
+  through `Button`.** `SocialLink` is one component for both places — it renders the anchor and
+  nothing around it, because what wraps it is exactly what differs (the toolbar's
+  `div.sim-toolbar-item`, the sidebar's nothing). `SOCIALS` moved to `@domain/constants/other`
+  beside the `REPO_*` URLs it already used. The vanilla `SocialLinks` class is deleted;
+  `sidebarSocials` left `ShellDom` the way `toolbar` did.
+
+  **`Button` gained an `unstyled` variant**, which emits no `btn` class at all. Without it the rule
+  "every `<a>`/`<button>` is a `Button`" could not reach the header: those controls carry their own
+  classes and none of Bootstrap's button styling, so routing them through `Button` would have
+  restyled the whole toolbar. Everything else `Button` does still applies to them — the `<a>` vs
+  Base UI `<button>` split, and the `type` default. Base UI's `useButton` also adds `tabindex="0"`
+  to a native `<button>`; redundant, behaviourally identical, and not removable from the outside.
+
+  **One SCSS change, and it is load-bearing.** `.sim-sidebar-socials` was
+  `& > *:not(:last-child) { margin-right }` and is now `gap`. react-tooltip renders *in place*, so
+  an open tooltip becomes a child of that container — under the old rule it would have taken
+  `:last-child` off the last link and given it a trailing margin, shifting a centred row the moment
+  you hovered. `gap` cannot be disturbed by an out-of-flow child. Measured identical: container and
+  all three links at the same box on both builds.
+
+  The accessibility checks moved out of `header-toolbar.mjs` into `a11y.mjs`, one region per area
+  React owns (`.sim-toolbar`, `.import-export`, `.sim-sidebar-socials`). `header-toolbar.mjs` goes
+  back to being byte-identical on both ports, which is easier to reason about than a probe with one
+  block that is meant to differ. Point `a11y.mjs` at `PORT=3401` to read the baseline: 8 checks
+  fail there, and that output is the list of findings the port fixed.
 
 - 2026-09-05 **The header toolbar is React** — known issues, bug report, download binary, the cog
   and the socials. `SimHeader` keeps only the two import/export dropdowns, which wait on the Base UI

@@ -1,3 +1,4 @@
+import { Button } from '@ui-kit/Button';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
@@ -39,14 +40,15 @@ export const ToolbarItem = ({ icon, tooltip, place = 'bottom', className, href, 
 	);
 	return (
 		<div className="sim-toolbar-item">
+			{/* `variant="unstyled"`: these carry their own classes, not `btn`. */}
 			{href ? (
-				<a href={href} target="_blank" rel="noopener noreferrer" className={classes} aria-label={label} {...anchor}>
+				<Button as="a" variant="unstyled" href={href} target="_blank" rel="noopener noreferrer" className={classes} aria-label={label} {...anchor}>
 					{content}
-				</a>
+				</Button>
 			) : (
-				<button type="button" className={classes} aria-label={label} onClick={onClick} {...anchor}>
+				<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} {...anchor}>
 					{content}
-				</button>
+				</Button>
 			)}
 			{tooltip && <Tooltip id={id} place={place} content={tooltip} />}
 		</div>

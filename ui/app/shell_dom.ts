@@ -5,8 +5,8 @@
  * `querySelector`. The markup itself is `SimShell.tsx`; this is only the contract between it and
  * the vanilla shell.
  *
- * A container leaves this interface as its contents become React's — `.sim-toolbar` did when the
- * header toolbar ported. Handing one out is what lets a component `appendChild` into a subtree
+ * A container leaves this interface as its contents become React's — `.sim-toolbar` and
+ * `.sim-sidebar-socials` did when the header toolbar and the sidebar's links ported. Handing one out is what lets a component `appendChild` into a subtree
  * React reconciles, so the bundle shrinks rather than being kept in sync.
  *
  * Neither root carries its own class — `Component`'s `rootCssClass` still adds `sim-ui` and
@@ -19,7 +19,6 @@ export interface ShellDom {
 	sidebarActions: HTMLElement;
 	sidebarResults: HTMLElement;
 	sidebarStats: HTMLElement;
-	sidebarSocials: HTMLElement;
 	content: HTMLElement;
 	main: HTMLElement;
 	header: HTMLElement;
