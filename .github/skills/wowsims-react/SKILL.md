@@ -28,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**; stat-weights next |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**; the Base UI `Menu` adapter next — *not* stat-weights, whose panel is a `BaseModal` and so waits on `Dialog` |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -849,6 +849,15 @@ brings its own size and margins.
 Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
 would be an unrequested markup change with a parity divergence attached.
 
+- **The `hide` class survives only as long as the parity gate does.** `ItemSwapPicker` and every
+  `showWhen` render it rather than unmounting, because `panes-parity.mjs` compares element for
+  element against a build that keeps those elements. That is a constraint of the gate, not a design
+  choice — when Phase 5 retires the vanilla comparison, the idiom becomes a conditional render as
+  the plan always said. Do not read the comments defending it as permanent.
+- **`watchTargetDummies` has no test for the guarantee that matters.** It must not be armed while
+  saved settings are being restored, which is true only because it is queued in the same
+  `waitForInit` block as `repairTargetInputs`. Move that block and nothing fails. ~15 lines of
+  vitest — arm the rule, mutate talents, assert a saved count survives — would pin it.
 - **`<label class="form-label">` labelling a group, not a control** — `ItemSwapPicker`'s "Item Swap"
   label sits over a swap button and a row of icon pickers, and points at none of them. Same defect
   class as `.character-stats-label`, which became an `<h3>`; the fix here is probably a `<span>`

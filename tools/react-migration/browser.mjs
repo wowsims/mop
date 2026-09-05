@@ -239,6 +239,9 @@ const PROBE = () => {
 		menuOf,
 		// `.show` is Bootstrap's; `aria-expanded` is what both shapes agree on, and Base UI also
 		// unmounts the popup entirely — so "no menu in the DOM" counts as closed rather than unknown.
+		// Which signal is authoritative differs: for Bootstrap it is `.show` on the menu, for Base UI
+		// it is `aria-expanded` plus a popup that exists at all. Requiring both is what covers the two
+		// without a shape check — an unmounted popup reads closed rather than unknown.
 		isOpen: toggle => {
 			if (toggle.getAttribute('aria-expanded') !== 'true') return false;
 			const menu = menuOf(toggle);
