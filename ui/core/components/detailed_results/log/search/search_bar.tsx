@@ -3,12 +3,15 @@ import { ref } from 'tsx-vanilla';
 // Matches the debounce master's log search used.
 const PENDING_DEBOUNCE_MS = 150;
 
+// Typing one of these means the query is not finished, so space cannot end the chip here.
+const OPERATOR_WORDS = new Set(['and', 'or', 'not']);
+
 import i18n from '../../../../../i18n/config';
 import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
 import type { SuggestionSource } from './indexes';
-import type { Clause, ClauseField } from './query';
-import { clauseText, FIELD_NAMES, parseQuery, splitToken } from './query';
+import type { ClauseField, QueryNode } from './query';
+import { FIELD_NAMES, nodeText, parseChips, splitToken } from './query';
 
 const OUTCOME_SUGGESTIONS = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 'block', 'critical-block', 'blocked-glance'];
 const TYPE_SUGGESTIONS = ['damage', 'heal', 'shield', 'resource', 'aura', 'buff', 'cast', 'major-cooldown', 'stat-change', 'debug'];
@@ -17,7 +20,7 @@ const SUGGESTION_LIMIT = 20;
 export class LogSearchBar extends Component {
 	readonly changeEmitter = new TypedEvent<void>('Log Search');
 
-	private chips: Array<Clause> = [];
+	private chips: Array<QueryNode> = [];
 	private pendingTimer: number | null = null;
 	private readonly inputElem: HTMLInputElement;
 	private readonly chipsElem: HTMLDivElement;
@@ -69,9 +72,9 @@ export class LogSearchBar extends Component {
 	}
 
 	// The committed chips plus whatever is still being typed, so the two behave identically.
-	get clauses(): ReadonlyArray<Clause> {
+	get clauses(): ReadonlyArray<QueryNode> {
 		const pending = this.inputElem.value.trim();
-		return pending ? [...this.chips, ...parseQuery(pending)] : this.chips;
+		return pending ? [...this.chips, ...parseChips(pending)] : this.chips;
 	}
 
 	clear() {
@@ -86,7 +89,7 @@ export class LogSearchBar extends Component {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			this.commit();
-		} else if (e.key === ' ' && !this.isInsideQuotes()) {
+		} else if (e.key === ' ' && this.spaceCommits()) {
 			e.preventDefault();
 			this.commit();
 		} else if (e.key === 'Backspace' && this.inputElem.value === '' && this.chips.length > 0) {
@@ -100,6 +103,24 @@ export class LogSearchBar extends Component {
 		}
 	}
 
+	// Space is a convenient way to finish a plain term, but it must not chop an expression apart
+	// mid-way: `source:Ghoul AND (Claw OR Sweeping)` is one query, and committing at every space
+	// turns it into seven chips. Enter always commits, whatever the state.
+	private spaceCommits(): boolean {
+		if (this.isInsideQuotes()) return false;
+		const text = this.inputElem.value;
+		let depth = 0;
+		let inQuotes = false;
+		for (const ch of text) {
+			if (ch === '"') inQuotes = !inQuotes;
+			else if (!inQuotes && ch === '(') depth++;
+			else if (!inQuotes && ch === ')') depth--;
+		}
+		if (depth > 0) return false;
+		const lastToken = text.trimEnd().split(/\s+/).pop() ?? '';
+		return !OPERATOR_WORDS.has(lastToken.toLowerCase());
+	}
+
 	private isInsideQuotes(): boolean {
 		let quoteCount = 0;
 		for (const ch of this.inputElem.value) if (ch === '"') quoteCount++;
@@ -109,9 +130,16 @@ export class LogSearchBar extends Component {
 	private commit() {
 		const text = this.inputElem.value.trim();
 		if (!text) return;
-		const clauses = parseQuery(text);
-		if (!clauses.length) return;
-		this.chips.push(...clauses);
+		// A chip is committed as soon as a space follows it, so by the time someone types the AND
+		// or OR that was meant to join it to the next term, the left side is already a chip.
+		// Leading with an operator folds back into it rather than starting a broken expression.
+		const first = text.split(/\s+/)[0].toLowerCase();
+		const joined = (first === 'and' || first === 'or') && this.chips.length > 0;
+		const source = joined ? `${nodeText(this.chips[this.chips.length - 1])} ${text}` : text;
+		const nodes = parseChips(source);
+		if (!nodes.length) return;
+		if (joined) this.chips.pop();
+		this.chips.push(...nodes);
 		this.inputElem.value = '';
 		this.renderChips();
 		this.updateSuggestions();
@@ -119,8 +147,8 @@ export class LogSearchBar extends Component {
 	}
 
 	private editChip(index: number) {
-		const [clause] = this.chips.splice(index, 1);
-		this.inputElem.value = clauseText(clause);
+		const [node] = this.chips.splice(index, 1);
+		this.inputElem.value = nodeText(node);
 		this.inputElem.focus();
 		this.renderChips();
 		this.updateSuggestions();
@@ -140,16 +168,16 @@ export class LogSearchBar extends Component {
 			if (node !== this.inputElem) toRemove.push(node);
 		});
 		toRemove.forEach(node => this.chipsElem.removeChild(node));
-		this.chips.forEach((clause, i) => this.chipsElem.insertBefore(this.renderChip(clause, i), this.inputElem));
+		this.chips.forEach((node, i) => this.chipsElem.insertBefore(this.renderChip(node, i), this.inputElem));
 	}
 
-	private renderChip(clause: Clause, index: number): HTMLSpanElement {
+	private renderChip(node: QueryNode, index: number): HTMLSpanElement {
 		const bodyRef = ref<HTMLSpanElement>();
 		const removeRef = ref<HTMLButtonElement>();
 		const elem = (
 			<span className="log-search-chip saved-data-set-chip badge rounded-pill">
 				<span ref={bodyRef} className="log-search-chip-text saved-data-set-name">
-					{clauseText(clause)}
+					{nodeText(node)}
 				</span>
 				<button ref={removeRef} type="button" className="log-search-chip-remove saved-data-set-delete">
 					×

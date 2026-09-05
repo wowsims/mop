@@ -1,7 +1,7 @@
 import type { CombatLog, DamageEffect, LogKind, Outcome } from '../../../../proto_utils/combat_log/types';
 import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
 import { spellSchoolNames } from '../../../../proto_utils/names';
-import type { Clause, ClauseField } from './query';
+import type { Clause, ClauseField, QueryNode } from './query';
 
 export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string> };
 
@@ -226,7 +226,7 @@ export class LogIndex {
 	// prints. It restricts to lines naming that target at either endpoint, which is the log-shaped
 	// equivalent of the unit list Timeline and CombatReplay narrow. It is applied here rather than
 	// by rebuilding the index, so changing the dropdown costs an intersection, not a reindex.
-	filter(clauses: ReadonlyArray<Clause>, showDebug: boolean, targetNumber: number | null = null): Array<number> {
+	filter(nodes: ReadonlyArray<QueryNode>, showDebug: boolean, targetNumber: number | null = null): Array<number> {
 		this.ensureBuilt();
 		// Stays a typed array until something actually narrows it, so the common no-filter case
 		// does not copy half a million ints just to hand them straight back.
@@ -238,27 +238,54 @@ export class LogIndex {
 			candidates = intersectSorted(candidates, unionSorted(asSource ?? EMPTY, asTarget ?? EMPTY));
 		}
 
-		for (const clause of clauses) {
-			if (clause.field === null) continue;
-			const matched = this.matchStructured(clause.field, clause.values);
-			candidates = clause.negated ? complement(candidates, matched) : intersectSorted(candidates, matched);
-		}
-
-		// Free-text terms run last, over whatever the structured clauses left standing.
-		for (const clause of clauses) {
-			if (clause.field !== null) continue;
-			const needle = (clause.values[0] ?? '').toLowerCase();
-			if (!needle) continue;
-			const kept: Array<number> = [];
-			for (let n = 0; n < candidates.length; n++) {
-				const i = candidates[n];
-				const isMatch = this.searchTextFor(i).includes(needle);
-				if (clause.negated ? !isMatch : isMatch) kept.push(i);
-			}
-			candidates = kept;
-		}
-
+		// The chip row ANDs its chips, so this is one AND node's worth of work.
+		candidates = this.evalAnd(nodes, candidates);
 		return Array.isArray(candidates) ? candidates : Array.from(candidates);
+	}
+
+	// Structured children first, so a free-text scan inside the same AND only ever walks what
+	// they left standing. Nested groups sit between the two: they can narrow, but they can also
+	// contain a scan of their own.
+	private evalAnd(nodes: ReadonlyArray<QueryNode>, candidates: SortedInts): SortedInts {
+		const rank = (node: QueryNode) => (node.kind === 'clause' ? (node.clause.field === null ? 2 : 0) : 1);
+		for (const node of [...nodes].sort((a, b) => rank(a) - rank(b))) {
+			candidates = this.evalNode(node, candidates);
+			if (!candidates.length) break;
+		}
+		return candidates;
+	}
+
+	private evalNode(node: QueryNode, candidates: SortedInts): SortedInts {
+		switch (node.kind) {
+			case 'clause':
+				return this.evalClause(node.clause, candidates);
+			case 'and':
+				return this.evalAnd(node.children, candidates);
+			case 'or': {
+				// Each branch sees the same candidates; the union is what survives the group.
+				let out: SortedInts = EMPTY;
+				for (const child of node.children) out = unionSorted(out, this.evalNode(child, candidates));
+				return out;
+			}
+			case 'not':
+				return complement(candidates, this.evalNode(node.child, candidates));
+		}
+	}
+
+	private evalClause(clause: Clause, candidates: SortedInts): SortedInts {
+		if (clause.field !== null) {
+			const matched = this.matchStructured(clause.field, clause.values);
+			return clause.negated ? complement(candidates, matched) : intersectSorted(candidates, matched);
+		}
+		const needle = (clause.values[0] ?? '').toLowerCase();
+		if (!needle) return candidates;
+		const kept: Array<number> = [];
+		for (let n = 0; n < candidates.length; n++) {
+			const i = candidates[n];
+			const isMatch = this.searchTextFor(i).includes(needle);
+			if (clause.negated ? !isMatch : isMatch) kept.push(i);
+		}
+		return kept;
 	}
 
 	// Sorted once at build: the sets never change afterwards, and this runs on every keystroke.
