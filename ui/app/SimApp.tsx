@@ -3,11 +3,12 @@ import { CharacterStats } from '@features/character-stats';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
-import { buildShellDom } from './shell_dom';
+import type { ShellDom } from './shell_dom';
+import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
 import { TalentsTabBody } from './tabs/TalentsTabBody';
 
@@ -17,23 +18,27 @@ export interface SimAppProps<SpecType extends Spec> {
 }
 
 export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
-	const mountRef = useRef<HTMLDivElement>(null);
+	const domRef = useRef<ShellDom | null>(null);
 	// Constructing the shell is not undoable — loadIndividualSettings subscribes autosave and returns
 	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
 
+	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
+	// any of those nodes would take the vanilla content with it. See SimShell's own note.
+	const shell = useMemo(() => <SimShell domRef={domRef} />, []);
+
 	useLayoutEffect(() => {
-		if (constructed.current || !mountRef.current) return;
+		if (constructed.current || !domRef.current) return;
 		constructed.current = true;
-		setSimUI(new IndividualSimUI(buildShellDom(mountRef.current, {}), player, def));
+		setSimUI(new IndividualSimUI(domRef.current, player, def));
 	}, [player, def]);
 
-	// Every React-owned piece of the shell hangs off `simUI`, not off the first render: the containers
-	// it portals into are built by the constructor above, so they exist only once that state is set.
+	// The skeleton renders immediately; everything that needs the constructed shell hangs off `simUI`,
+	// which only exists after the effect above has run.
 	return (
 		<>
-			<div className="sim-app" ref={mountRef} />
+			<div className="sim-app">{shell}</div>
 			{simUI && (
 				<SimHostProvider host={simUI}>
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />

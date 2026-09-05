@@ -74,6 +74,22 @@ describe('SimApp', () => {
 		expect(document.querySelectorAll('.character-stats-root')).toHaveLength(1);
 	});
 
+	// The failure this guards against is silent: React re-renders when `simUI` is set, and if the
+	// skeleton were recreated in that second render, every element the shell imperatively filled
+	// during construction would be discarded with the old nodes.
+	it('keeps the same skeleton nodes when the constructed shell arrives', () => {
+		const { container } = render(<SimApp player={player} def={def} />);
+		const dom = constructions[0];
+		const marker = document.createElement('span');
+		marker.className = 'built-imperatively';
+		dom.sidebarStats.appendChild(marker);
+
+		// `setSimUI` has already re-rendered by now; the nodes must have survived it.
+		expect(container.querySelector('.sim-ui')).toBe(dom.root);
+		expect(dom.sidebarStats.isConnected).toBe(true);
+		expect(dom.sidebarStats.querySelector('.built-imperatively')).toBe(marker);
+	});
+
 	it('mounts the shell into its own container', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
 		const mount = container.querySelector('.sim-app')!;

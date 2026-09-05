@@ -13,8 +13,10 @@ restate them; it assumes them.
 
 ## Where the migration currently is
 
-**Phase 3 has started.** React owns the page root, the top-level tab behaviour and the sidebar's
-character-stats table; every tab body is still a vanilla `Component`.
+**React owns the shell's skeleton.** `SimShell.tsx` renders everything parent to the tabs — the
+sidebar, the header scaffold, the content column — and the vanilla `SimUI`/`SimHeader` adopt those
+elements instead of building them. React also owns the top-level tab behaviour, the sidebar's
+character-stats table and the talents tab body. The remaining tab bodies are vanilla `Component`s.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -722,6 +724,31 @@ Two boundaries:
 - **A feature component may drop props for it only where the axis does not vary.** `CharacterStats`
   has one call site and one player; a component that several callers configure differently keeps its
   props, or it gets bypassed the way the abstractions below did.
+
+## The shell: what makes it hold together
+
+`SimShell.tsx` is the skeleton and it renders **once** — `SimApp` holds the element in a `useMemo`.
+Three separate things depend on that, which is why it is not an optimisation:
+
+- Every container in it is filled imperatively afterwards. React must not own their children, and a
+  re-render that recreated any node would discard the vanilla content inside it.
+- Bootstrap rewrites `aria-expanded` on the dropdown toggles and `.show` on their menus. React diffs
+  against its own last props rather than the DOM, so a same-props re-render is already safe — not
+  re-rendering at all makes that independent of React's bail-out rules.
+- `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` *while the tabs are being
+  constructed*, so the header must be laid out in the first render. A header that arrives one render
+  later measures zero and the sticky offset is silently wrong.
+
+`SimShell` fills a `RefObject<ShellDom>` in a layout effect, and `SimApp` constructs against it in
+its own — a child's layout effect runs before its parent's, so both happen in one commit.
+
+**Neither root carries a `className`.** `Component`'s `rootCssClass` still adds `sim-ui` and
+`sim-header`, and `SimUI` appends the rest. The class list is all-or-nothing: mixing React and
+`classList` on one element means the next React render drops whatever vanilla added.
+
+`SimApp.test.tsx` guards the remount case directly — it appends a marker to a container after
+construction and asserts it survives the render that sets `simUI`. Verified by mutation: forcing a
+remount fails it and three others.
 
 ## Sim warnings are derived state, not notifications
 
