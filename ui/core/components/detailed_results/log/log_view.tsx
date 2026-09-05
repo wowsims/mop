@@ -23,7 +23,7 @@ function selectedTargetNumber(resultData: SimResultData): number | null {
 	const selected = resultData.result.getTargets(resultData.filter);
 	return selected.length === 1 ? selected[0].index + 1 : null;
 }
-const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [] };
+const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [], spellIcons: new Map() };
 
 // The example queries are syntax, not prose: `spell:`, AND and OR are keywords the parser matches
 // literally, so only the descriptions beside them are translated.

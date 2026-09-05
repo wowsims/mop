@@ -194,21 +194,16 @@
 	line-height: 1.5;
 }
 
-.log-search-group-join,
-.log-search-group-add,
 .log-search-add-field {
 	align-self: center;
-
-	--bs-btn-padding-x: var(--spacer-1);
-	--bs-btn-padding-y: 0;
-
-	font-size: var(--content-font-size);
-	line-height: 1.5;
-	text-decoration: none;
 }
 
-.log-search-group-join {
-	color: var(--bs-brand);
+// Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
+.log-search-option-icon {
+	width: var(--icon-size-sm);
+	height: var(--icon-size-sm);
+	margin-right: var(--spacer-1);
+	vertical-align: text-bottom;
 }
 
 // Same indent-and-rule the APL builder uses for a nested list, so a value reads as belonging to

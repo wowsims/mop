@@ -3,7 +3,9 @@ import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
 import { spellSchoolNames } from '../../../../proto_utils/names';
 import type { Clause, ClauseField, QueryNode } from './query';
 
-export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string> };
+// `spellIcons` is a name -> icon URL side table rather than a richer option type, so this module
+// stays a plain data layer: the URL is a string the picker happens to put in an <img>.
+export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string>; spellIcons: Map<string, string> };
 
 // Union of typed-array and plain-array so binary-search results (contiguous slices) and
 // build-time index arrays (Int32Array) can share the same merge/intersect helpers.
@@ -213,9 +215,10 @@ export class LogIndex {
 	private searchTextCache!: Array<string | undefined>;
 
 	private readonly suggestionSpells = new Set<string>();
+	private readonly spellIcons = new Map<string, string>();
 	private readonly suggestionUnits = new Set<string>();
 	private readonly suggestionSchools = new Set<string>();
-	private suggestionSource: SuggestionSource = { spells: [], units: [], schools: [] };
+	private suggestionSource: SuggestionSource = { spells: [], units: [], schools: [], spellIcons: new Map() };
 
 	constructor(
 		private readonly logs: ReadonlyArray<CombatLog>,
@@ -301,6 +304,7 @@ export class LogIndex {
 			spells: [...this.suggestionSpells].sort(),
 			units: [...this.suggestionUnits].sort(),
 			schools: [...this.suggestionSchools].sort(),
+			spellIcons: this.spellIcons,
 		};
 		this.built = true;
 	}
@@ -350,6 +354,7 @@ export class LogIndex {
 			if (log.actionId?.name) {
 				push(spell, log.actionId.name.toLowerCase(), i);
 				this.suggestionSpells.add(log.actionId.name);
+				if (log.actionId.iconUrl) this.spellIcons.set(log.actionId.name, log.actionId.iconUrl);
 			}
 
 			if (log.source) {

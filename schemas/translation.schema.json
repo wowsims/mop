@@ -7105,6 +7105,9 @@
 								"search_add_filter": {
 									"type": "string"
 								},
+								"search_add_value": {
+									"type": "string"
+								},
 								"search_help": {
 									"type": "object",
 									"properties": {
@@ -7138,7 +7141,7 @@
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_help"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_add_value", "search_help"]
 						},
 						"tabs": {
 							"type": "object",

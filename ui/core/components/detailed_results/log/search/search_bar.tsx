@@ -1,8 +1,11 @@
+import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../../i18n/config';
 import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
+import type { DropdownValueConfig } from '../../../pickers/dropdown_picker';
+import { DropdownPicker, TextDropdownPicker } from '../../../pickers/dropdown_picker';
 import type { SuggestionSource } from './indexes';
 import type { Clause, ClauseField, QueryNode } from './query';
 import { FIELD_NAMES, nodeText, parseChips, splitToken } from './query';
@@ -25,6 +28,8 @@ const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCas
 // they join - and is what the UI edits. A raw group is anything typed that does not reduce to
 // that shape (a bare word, a NOT, a mixed expression); it is kept whole and shown as one tag.
 type SearchGroup = { kind: 'field'; field: ClauseField; join: 'and' | 'or'; negated: boolean; values: Array<string> } | { kind: 'raw'; node: QueryNode };
+
+type ValueOption = DropdownValueConfig<string> & { label: string; iconUrl?: string };
 
 // What a click on the suggestion list should do.
 type Menu = { kind: 'input'; mode: 'field' | 'value' } | { kind: 'newField' } | { kind: 'groupValue'; index: number };
@@ -68,7 +73,9 @@ export class LogSearchBar extends Component {
 	private readonly inputElem: HTMLInputElement;
 	private readonly chipsElem: HTMLDivElement;
 	private readonly suggestionsElem: HTMLUListElement;
-	private readonly addFieldElem: HTMLButtonElement;
+	private readonly addFieldElem: HTMLDivElement;
+	// Rebuilt with the groups, so the previous set has to be disposed rather than dropped.
+	private pickers: Array<Component> = [];
 
 	constructor(
 		parent: HTMLElement,
@@ -79,7 +86,7 @@ export class LogSearchBar extends Component {
 		const chipsRef = ref<HTMLDivElement>();
 		const inputRef = ref<HTMLInputElement>();
 		const suggestionsRef = ref<HTMLUListElement>();
-		const addFieldRef = ref<HTMLButtonElement>();
+		const addFieldRef = ref<HTMLDivElement>();
 
 		this.rootElem.appendChild(
 			<>
@@ -94,9 +101,7 @@ export class LogSearchBar extends Component {
 					<ul ref={suggestionsRef} className="log-search-suggestions dropdown-menu" hidden></ul>
 				</div>
 				<div ref={chipsRef} className="log-search-groups">
-					<button ref={addFieldRef} type="button" className="log-search-add-field btn btn-link">
-						<i className="fas fa-plus" /> {i18n.t('results_tab.details.logs.search_add_filter')}
-					</button>
+					<div ref={addFieldRef} className="log-search-add-field"></div>
 				</div>
 			</>,
 		);
@@ -105,12 +110,6 @@ export class LogSearchBar extends Component {
 		this.inputElem = inputRef.value!;
 		this.suggestionsElem = suggestionsRef.value!;
 		this.addFieldElem = addFieldRef.value!;
-
-		this.addFieldElem.addEventListener('mousedown', e => {
-			e.preventDefault();
-			this.menu = { kind: 'newField' };
-			this.renderSuggestions(FIELD_NAMES);
-		});
 
 		this.inputElem.addEventListener('keydown', e => this.onKeyDown(e));
 		this.inputElem.addEventListener('input', () => {
@@ -209,38 +208,70 @@ export class LogSearchBar extends Component {
 	}
 
 	private renderGroups() {
+		this.pickers.forEach(picker => picker.dispose());
+		this.pickers = [];
 		const stale: Array<ChildNode> = [];
 		this.chipsElem.childNodes.forEach(node => {
 			if (node !== this.addFieldElem) stale.push(node);
 		});
 		stale.forEach(node => this.chipsElem.removeChild(node));
 		this.groups.forEach((group, i) => this.chipsElem.insertBefore(this.renderGroup(group, i), this.addFieldElem));
+		this.renderAddField();
+	}
+
+	// The same plain dropdown the APL uses to pick a field: no icons, and it falls back to its
+	// label after a pick because choosing a property is the start of a group, not a setting.
+	private renderAddField() {
+		this.addFieldElem.replaceChildren();
+		this.pickers.push(
+			new TextDropdownPicker<LogSearchBar, ClauseField | null>(this.addFieldElem, this, {
+				id: 'log-search-add-filter',
+				defaultLabel: i18n.t('results_tab.details.logs.search_add_filter'),
+				equals: (a, b) => a === b,
+				values: FIELD_NAMES.map(field => ({ value: field, label: sentenceCase(field) })),
+				getValue: () => null,
+				setValue: (_eventID, _obj, field) => {
+					if (!field) return;
+					this.groups.push({ kind: 'field', field, join: 'or', negated: false, values: [] });
+					this.renderGroups();
+					this.emitChange();
+				},
+			}),
+		);
 	}
 
 	private renderGroup(group: SearchGroup, index: number): HTMLElement {
 		if (group.kind === 'raw') return this.renderTag(nodeText(group.node), () => this.removeGroup(index));
 
 		const itemsRef = ref<HTMLDivElement>();
-		const joinRef = ref<HTMLButtonElement>();
-		const addRef = ref<HTMLButtonElement>();
+		const addRef = ref<HTMLDivElement>();
 		const removeRef = ref<HTMLButtonElement>();
 		const elem = (
 			<div className="log-search-group">
 				<div className="log-search-group-head">
 					<span className="log-search-group-field">{sentenceCase(group.field)}</span>
-					{group.values.length > 1 && (
-						<button ref={joinRef} type="button" className="log-search-group-join btn btn-link">
-							{group.join === 'and' ? 'AND' : 'OR'}
-						</button>
-					)}
+					<div className="log-search-group-join btn-group btn-group-sm" attributes={{ role: 'group' }}>
+						{(['and', 'or'] as const).map(join => (
+							<button
+								type="button"
+								className={clsx('btn', 'btn-sm', group.join === join ? 'btn-primary' : 'btn-outline-primary')}
+								attributes={{ 'aria-pressed': group.join === join }}
+								onclick={() => {
+									if (group.kind !== 'field' || group.join === join) return;
+									group.join = join;
+									this.renderGroups();
+									this.emitChange();
+								}}>
+								{join.toUpperCase()}
+							</button>
+						))}
+					</div>
 					<button ref={removeRef} type="button" className="log-search-group-remove saved-data-set-delete">
 						<i className="fa fa-times fa-lg" />
 					</button>
 				</div>
 				<div ref={itemsRef} className="log-search-group-items">
-					<button ref={addRef} type="button" className="log-search-group-add btn btn-link">
-						<i className="fas fa-plus" />
-					</button>
+					<div ref={addRef} className="log-search-group-add"></div>
 				</div>
 			</div>
 		) as HTMLElement;
@@ -251,17 +282,26 @@ export class LogSearchBar extends Component {
 				addRef.value!,
 			),
 		);
-		joinRef.value?.addEventListener('click', () => {
-			group.join = group.join === 'and' ? 'or' : 'and';
-			this.renderGroups();
-			this.emitChange();
-		});
 		removeRef.value!.addEventListener('click', () => this.removeGroup(index));
-		addRef.value!.addEventListener('mousedown', e => {
-			e.preventDefault();
-			this.menu = { kind: 'groupValue', index };
-			this.renderSuggestions(this.valueCandidates(group.field));
-		});
+		this.pickers.push(
+			new DropdownPicker<LogSearchBar, string | null, string>(addRef.value!, this, {
+				id: `log-search-group-${index}`,
+				defaultLabel: i18n.t('results_tab.details.logs.search_add_value'),
+				equals: (a, b) => a === b,
+				values: this.valueOptions(group.field),
+				setOptionContent: (button, valueConfig) => {
+					const option = valueConfig as ValueOption;
+					if (option.iconUrl) button.appendChild((<img className="log-search-option-icon" src={option.iconUrl} />) as HTMLElement);
+					button.appendChild(document.createTextNode(option.label));
+				},
+				getValue: () => null,
+				setValue: (_eventID, _obj, value) => {
+					if (value && group.kind === 'field' && !group.values.includes(value)) group.values.push(value);
+					this.renderGroups();
+					this.emitChange();
+				},
+			}),
+		);
 		return elem;
 	}
 
@@ -317,6 +357,11 @@ export class LogSearchBar extends Component {
 		const lastPipe = valuePart.lastIndexOf('|');
 		const partial = (lastPipe === -1 ? valuePart : valuePart.slice(lastPipe + 1)).toLowerCase();
 		this.renderSuggestions(this.valueCandidates(field).filter(value => value.toLowerCase().includes(partial)));
+	}
+
+	private valueOptions(field: ClauseField): Array<ValueOption> {
+		const icons = this.config.suggestions().spellIcons;
+		return this.valueCandidates(field).map(value => ({ value, label: sentenceCase(value), iconUrl: icons.get(value) }));
 	}
 
 	private valueCandidates(field: ClauseField): Array<string> {
