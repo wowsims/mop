@@ -14,7 +14,7 @@ export interface SimAppProps<SpecType extends Spec> {
 	def: SpecDefinition<SpecType>;
 }
 
-export function SimApp<SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) {
+export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
 	const mountRef = useRef<HTMLDivElement>(null);
 	// Constructing the shell is not undoable — loadIndividualSettings subscribes autosave and returns
 	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
@@ -41,4 +41,4 @@ export function SimApp<SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 			)}
 		</>
 	);
-}
+};

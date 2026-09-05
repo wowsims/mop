@@ -15,7 +15,7 @@ export interface AdaptiveStringPickerProps<ModObject> {
  * Unlike NumberPicker, the vanilla `setInputValue` here also calls `updateSize`, so a source-driven
  * change moves the `size` attribute too — not just typing.
  */
-export function AdaptiveStringPicker<ModObject>({ modObject, config }: AdaptiveStringPickerProps<ModObject>) {
+export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: AdaptiveStringPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +41,7 @@ export function AdaptiveStringPicker<ModObject>({ modObject, config }: AdaptiveS
 			<input ref={inputRef} type="text" id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(inputRef.current)} />
 		</PickerShell>
 	);
-}
+};
 
 function updateSize(input: HTMLInputElement | null) {
 	if (!input) return;

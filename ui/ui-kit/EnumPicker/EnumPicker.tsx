@@ -13,7 +13,7 @@ export interface EnumPickerProps<ModObject> {
  * that is not in the option list unselected (`selectedIndex === -1`), which is what the vanilla
  * picker does, whereas a React-controlled select owns that case differently.
  */
-export function EnumPicker<ModObject>({ modObject, config }: EnumPickerProps<ModObject>) {
+export const EnumPicker = <ModObject,>({ modObject, config }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const selectRef = useRef<HTMLSelectElement>(null);
 
@@ -45,4 +45,4 @@ export function EnumPicker<ModObject>({ modObject, config }: EnumPickerProps<Mod
 			</select>
 		</PickerShell>
 	);
-}
+};

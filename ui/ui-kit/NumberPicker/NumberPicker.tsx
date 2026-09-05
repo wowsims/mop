@@ -35,7 +35,7 @@ function parseValue(text: string, float: boolean): number {
  * controlled value would also add a `value` attribute the vanilla DOM does not have, and would tie
  * the `size` attribute to every render rather than to typing.
  */
-export function NumberPicker<ModObject>({ modObject, config }: NumberPickerProps<ModObject>) {
+export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -81,7 +81,7 @@ export function NumberPicker<ModObject>({ modObject, config }: NumberPickerProps
 			/>
 		</PickerShell>
 	);
-}
+};
 
 function updateSize(input: HTMLInputElement | null) {
 	if (!input) return;

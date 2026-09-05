@@ -1,5 +1,4 @@
 import { isRightClick } from '@domain/env';
-import type { ActionId } from '@domain/proto_utils/action_id';
 import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { useActionId } from '@ui-kit/react/action_id';
 import { useInput } from '@ui-kit/react/input';
@@ -7,29 +6,14 @@ import { PickerShell } from '@ui-kit/react/picker_shell';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
+import { ImprovedAnchor } from './ImprovedAnchor';
+
 export interface IconPickerProps<ModObject, ValueType> {
 	modObject: ModObject;
 	config: IconPickerConfig<ModObject, ValueType>;
 }
 
-// Both improved anchors exist at every `states` — vanilla builds them once and only ever gates the
-// FILL, leaving an unfilled one without an href, which `.icon-input-improved:not([href])` hides.
-// Each needs its own `useActionId`, so each is its own component.
-function ImprovedAnchor({ actionId, className, active, hidden }: { actionId?: ActionId; className: string; active: boolean; hidden: boolean }) {
-	const { iconUrl, href } = useActionId(actionId);
-	return (
-		<a
-			className={clsx('icon-picker-button icon-input-improved', className, active && 'active')}
-			data-whtticon="false"
-			data-disable-wowhead-touch-tooltip="true"
-			href={href || undefined}
-			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
-			hidden={hidden}
-		/>
-	);
-}
-
-export function IconPicker<ModObject, ValueType>({ modObject, config }: IconPickerProps<ModObject, ValueType>) {
+export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPickerProps<ModObject, ValueType>) => {
 	const { value, setValue, hidden: showWhenHidden, disabled, revision } = useInput(modObject, config);
 	const currentValue = Number(value);
 
@@ -151,4 +135,4 @@ export function IconPicker<ModObject, ValueType>({ modObject, config }: IconPick
 			leading={main}
 		/>
 	);
-}
+};

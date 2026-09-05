@@ -12,7 +12,7 @@ export interface LegacyHostProps<C extends Component> {
 	className?: string;
 }
 
-export function LegacyHost<C extends Component>({ create, deps = NO_DEPS, className }: LegacyHostProps<C>) {
+export const LegacyHost = <C extends Component>({ create, deps = NO_DEPS, className }: LegacyHostProps<C>) => {
 	const hostRef = useRef<HTMLDivElement>(null);
 
 	// Held in a ref so only `deps` decides when the component is rebuilt.
@@ -33,4 +33,4 @@ export function LegacyHost<C extends Component>({ create, deps = NO_DEPS, classN
 	}, deps);
 
 	return <div ref={hostRef} className={className} />;
-}
+};

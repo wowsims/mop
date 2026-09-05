@@ -45,13 +45,13 @@ class VanillaAdapter implements VanillaPicker {
 	}
 }
 
-function ReactAdapter({ modObject, config }: { modObject: ModObject; config: ContentBlockConfig }) {
+const ReactAdapter = ({ modObject, config }: { modObject: ModObject; config: ContentBlockConfig }) => {
 	return (
 		<ContentBlock cssClass={modObject.cssClass} config={config} headerChildren={modObject.withHeaderChild && <p className="fs-body">Describes it</p>}>
 			{modObject.withBodyChild && <span>Hello</span>}
 		</ContentBlock>
 	);
-}
+};
 
 const both = (config: ContentBlockConfig, extra: Partial<ModObject> = {}) =>
 	mountBoth({ Vanilla: VanillaAdapter, React: ReactAdapter, config, makeModObject: () => ({ cssClass: 'my-block', ...extra }) });

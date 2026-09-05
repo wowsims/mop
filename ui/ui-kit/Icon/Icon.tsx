@@ -19,7 +19,7 @@ const resolve = (name: IconName | IconAlias): IconName => (name in ICON_ALIASES 
 
 // The rest props matter: an icon is an anchor for its own tooltip at several sites, and a dropped
 // `data-tooltip-id` fails silently.
-export function Icon({ name, style = 'solid', size, spin, className, title, ...rest }: IconProps) {
+export const Icon = ({ name, style = 'solid', size, spin, className, title, ...rest }: IconProps) => {
 	return (
 		<i
 			{...rest}
@@ -28,4 +28,4 @@ export function Icon({ name, style = 'solid', size, spin, className, title, ...r
 			aria-hidden={title ? undefined : true}
 		/>
 	);
-}
+};

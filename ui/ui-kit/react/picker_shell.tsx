@@ -26,7 +26,7 @@ export interface PickerShellProps<ModObject, T, V> {
  * description, then whatever the subclass appends. Class order matches too, `disabled`/`hide` last,
  * since vanilla toggles those after construction.
  */
-export function PickerShell<ModObject, T, V>({ config, cssClass, hidden, disabled, leading, children }: PickerShellProps<ModObject, T, V>) {
+export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disabled, leading, children }: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
 	// tippy also accepts a function; nothing in the tree passes one, and dropping content silently is
 	// how a tooltip goes missing with nothing to notice it.
@@ -60,4 +60,4 @@ export function PickerShell<ModObject, T, V>({ config, cssClass, hidden, disable
 			{children}
 		</div>
 	);
-}
+};

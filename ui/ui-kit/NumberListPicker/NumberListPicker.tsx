@@ -23,7 +23,7 @@ function parseInputValue(text: string): Array<number> {
  * commits on the native `change` event, not React's `onChange` (the input event), and re-syncs on
  * every notification (`revision`), not only on a value change.
  */
-export function NumberListPicker<ModObject>({ modObject, config }: NumberListPickerProps<ModObject>) {
+export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -58,4 +58,4 @@ export function NumberListPicker<ModObject>({ modObject, config }: NumberListPic
 			/>
 		</PickerShell>
 	);
-}
+};

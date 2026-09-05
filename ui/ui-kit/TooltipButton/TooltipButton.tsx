@@ -14,7 +14,7 @@ export interface TooltipButtonProps {
 	className?: string;
 }
 
-export function TooltipButton({ tooltip, icon = 'question-circle', iconStyle = 'regular', place, className }: TooltipButtonProps) {
+export const TooltipButton = ({ tooltip, icon = 'question-circle', iconStyle = 'regular', place, className }: TooltipButtonProps) => {
 	const id = useId();
 	return (
 		<>
@@ -24,4 +24,4 @@ export function TooltipButton({ tooltip, icon = 'question-circle', iconStyle = '
 			<Tooltip id={id} content={tooltip} place={place} />
 		</>
 	);
-}
+};

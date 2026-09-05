@@ -7,7 +7,7 @@ export interface BooleanPickerProps<ModObject> {
 	config: BooleanPickerConfig<ModObject>;
 }
 
-export function BooleanPicker<ModObject>({ modObject, config }: BooleanPickerProps<ModObject>) {
+export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled } = useInput(modObject, config);
 
 	const input = (
@@ -31,4 +31,4 @@ export function BooleanPicker<ModObject>({ modObject, config }: BooleanPickerPro
 			{config.reverse ? input : undefined}
 		</PickerShell>
 	);
-}
+};

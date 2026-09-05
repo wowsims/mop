@@ -12,7 +12,7 @@ export interface SimTabsProps {
 	panes: HTMLElement;
 }
 
-export function SimTabs({ registry, strip, panes }: SimTabsProps) {
+export const SimTabs = ({ registry, strip, panes }: SimTabsProps) => {
 	const entries = useSyncExternalStore(registry.subscribe, registry.getEntries);
 	const activeId = useSyncExternalStore(registry.subscribe, registry.getActiveId);
 
@@ -94,4 +94,4 @@ export function SimTabs({ registry, strip, panes }: SimTabsProps) {
 	}, [entries, activeId]);
 
 	return null;
-}
+};

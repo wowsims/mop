@@ -35,7 +35,7 @@ export interface ContentBlockProps {
  * `config.rootElem` is ignored: it exists so the vanilla `Component` can adopt an element that
  * already exists, which React does not do. No call site passes one.
  */
-export function ContentBlock({ cssClass, config, children, headerChildren, bodyRef, headerRef }: ContentBlockProps) {
+export const ContentBlock = ({ cssClass, config, children, headerChildren, bodyRef, headerRef }: ContentBlockProps) => {
 	const header = config.header;
 	const hasHeader = !!header && Object.keys(header).length > 0;
 	const TitleTag = (header?.titleTag || 'h6') as ElementType;
@@ -56,4 +56,4 @@ export function ContentBlock({ cssClass, config, children, headerChildren, bodyR
 			</div>
 		</div>
 	);
-}
+};

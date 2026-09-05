@@ -20,7 +20,7 @@ type ButtonAsAnchor = ButtonBaseProps & Omit<AnchorHTMLAttributes<HTMLAnchorElem
 
 export type ButtonProps = ButtonAsButton | ButtonAsAnchor;
 
-export function Button(props: ButtonProps) {
+export const Button = (props: ButtonProps) => {
 	const variant = props.variant === undefined ? 'primary' : props.variant;
 	const classes = clsx('btn', variant && `btn-${variant}`, props.size && `btn-${props.size}`, props.className);
 
@@ -40,4 +40,4 @@ export function Button(props: ButtonProps) {
 			{children}
 		</button>
 	);
-}
+};
