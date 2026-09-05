@@ -12,7 +12,9 @@ import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
-const IS_REACT = PORT === PORTS.react;
+// Anything that is not the parent-branch build is a build of this branch — the dev server on :3403
+// included, which a `=== PORTS.react` test would have let off.
+const IS_REACT = PORT !== PORTS.base;
 
 const structure = () => {
 	const header = document.querySelector('.sim-header');

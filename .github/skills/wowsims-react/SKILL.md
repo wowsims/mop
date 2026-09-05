@@ -937,6 +937,28 @@ class name across `ui/` before moving its rules.
 
 ## Things that will bite
 
+### A react-tooltip renders where you declare it, and overflow decides whether you see it
+
+tippy portaled every tooltip to `<body>`. react-tooltip does not — the node appears inside the
+element that declared it. In the header that is `div.sim-toolbar-item`, inside
+`div.sim-header-container`, which is `overflow-x: scroll` (and therefore `overflow-y: auto`, since
+one visible axis is not allowed beside a scrolling one). The toolbar's tooltips extend ~27px below
+that container's bottom edge.
+
+They are drawn anyway, and the reason is worth knowing before you rely on it: the tooltip is
+`position: absolute`, and its containing block is the nearest *positioned* ancestor — the sticky
+`.sim-header`, which is outside `.sim-header-container`'s scroll box. An absolutely-positioned
+element is not clipped by a scroll container that is not in its containing-block chain. Had the
+overflow been on `.sim-header` itself, the same markup would have been cut off.
+
+None of the gates can see this. `getBoundingClientRect` is unchanged by clipping,
+`getComputedStyle(...).visibility` still says `visible`, and `elementFromPoint` returns whatever is
+underneath because both libraries set `pointer-events: none` on a non-interactive tooltip. It took
+a screenshot of the tooltip's own rect on both builds. Do that once per *new* container a `Tooltip`
+lands in, not once per tooltip — the answer is a property of the ancestors, not of the call site.
+If one is ever clipped, the fix is `positionStrategy="fixed"` on the `Tooltip` primitive.
+
+
 - **StrictMode is a no-op in every build this app produces.** `vite build` — and
   `vite build --mode development`, and `NODE_ENV=development vite build` — all embed React's
   production bundle. Effects are double-invoked only under the dev server (`node_modules/.bin/vite`)
