@@ -75,4 +75,21 @@ describe('PickerShell', () => {
 		expect(warn).toHaveBeenCalledOnce();
 		expect(root().querySelector('label')!.getAttribute('data-tooltip-id')).toBeNull();
 	});
+
+	// `classList.add` drops a repeat and clsx does not. `other_inputs.ts` ships `input-inline` in
+	// `extraCssClasses` while also setting `inline`, and `rotation_tab.tsx` pushes it into the config
+	// in place on every rebuild — so a duplicate would reach the DOM and the parity harness.
+	it('emits a class once when a config supplies it twice', () => {
+		const { container } = render(
+			<PickerShell
+				config={{ id: 'x', inline: true, extraCssClasses: ['input-inline', 'mb-0'], getValue: () => 0, setValue: () => {} }}
+				cssClass="number-picker-root"
+				hidden={false}
+				disabled={false}
+			/>,
+		);
+		const classes = Array.from(container.firstElementChild!.classList);
+		expect(classes.filter(name => name === 'input-inline')).toHaveLength(1);
+		expect(container.firstElementChild!.className.split(' ')).toEqual(classes);
+	});
 });

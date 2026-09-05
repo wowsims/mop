@@ -5,6 +5,11 @@ import { type ReactNode, useMemo } from 'react';
 
 import { adoptNode, isNode } from './dom';
 
+// `classList.add` drops a repeat; clsx does not, and two live configs pass `input-inline` in
+// `extraCssClasses` as well as setting `inline` (`other_inputs.ts`, and `rotation_tab.tsx`, which
+// pushes it into the config in place on every rebuild).
+const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join(' ');
+
 export interface PickerShellProps<ModObject, T, V> {
 	config: InputConfig<ModObject, T, V> & { id: string };
 	/** The picker's own class, e.g. `number-picker-root`. */
@@ -37,7 +42,8 @@ export function PickerShell<ModObject, T, V>({ config, cssClass, hidden, disable
 	);
 
 	return (
-		<div className={clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide')}>
+		<div
+			className={dedupe(clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'))}>
 			{leading}
 			{config.label && (
 				<label htmlFor={config.id} className="form-label" title={config.label} data-tooltip-id={tooltipId}>

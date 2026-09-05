@@ -36,16 +36,21 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	const [seed, setSeed] = useState(() => (config.defaultValue ? config.defaultValue : undefined));
 	const revision = useRef(0);
 
+	// An input with no `storeSubscribe` — the contract names UI-local toggles — has nothing to tell
+	// it a write happened, so `setValue` rings this itself. Without it a controlled input reverts on
+	// its own click: React restores the rendered value and the snapshot is never re-read.
+	const notify = useRef<() => void>(() => {});
+
 	const subscribe = useCallback(
 		(onChange: () => void) => {
+			const ring = () => {
+				revision.current++;
+				setSeed(undefined);
+				onChange();
+			};
+			notify.current = ring;
 			const source = configRef.current.storeSubscribe?.(modObject);
-			return source
-				? source(() => {
-						revision.current++;
-						setSeed(undefined);
-						onChange();
-					})
-				: () => {};
+			return source ? source(ring) : () => {};
 		},
 		[modObject],
 	);
@@ -58,8 +63,11 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	const setValue = useCallback(
 		(next: V) => {
 			setSeed(undefined);
-			const { setValue: write, valueToSource } = configRef.current;
+			const { setValue: write, valueToSource, storeSubscribe } = configRef.current;
 			write(modObject, valueToSource ? valueToSource(next) : (next as unknown as T));
+			// A sourced write notifies on its own; ringing here too would re-read before the store has
+			// committed.
+			if (!storeSubscribe) notify.current();
 		},
 		[modObject],
 	);

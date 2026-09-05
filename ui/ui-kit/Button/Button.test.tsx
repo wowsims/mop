@@ -32,4 +32,14 @@ describe('Button', () => {
 		);
 		expect(screen.getByRole('button').className).toBe('btn btn-outline-primary btn-sm reforge-action');
 	});
+
+	// talents_picker.tsx's reset is `btn link-danger` — a bare btn with no variant.
+	it('emits a bare btn when variant is null', () => {
+		render(
+			<Button variant={null} className="talent-tree-reset link-danger">
+				Reset
+			</Button>,
+		);
+		expect(Array.from(screen.getByRole('button').classList).sort()).toEqual(['btn', 'link-danger', 'talent-tree-reset']);
+	});
 });

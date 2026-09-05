@@ -50,6 +50,33 @@ describe('useInput', () => {
 	});
 });
 
+// `InputConfig` tells UI-local toggles to omit `storeSubscribe` — `stat_weights_panel.tsx`'s
+// show-all-stats checkbox is one — and nothing else can tell those that a write happened.
+describe('useInput without a source', () => {
+	it('re-reads its own write, so a controlled input does not revert', () => {
+		const local = { on: false };
+		const config = {
+			getValue: (m: typeof local) => m.on,
+			setValue: (m: typeof local, next: boolean) => {
+				m.on = next;
+			},
+		};
+		const Probe = () => {
+			const { value, setValue } = useInput(local, config);
+			return <input type="checkbox" checked={value} onChange={event => setValue(event.target.checked)} />;
+		};
+		const { container } = render(<Probe />);
+		const input = container.querySelector('input')!;
+
+		act(() => {
+			input.click();
+		});
+
+		expect(local.on).toBe(true);
+		expect(input.checked).toBe(true);
+	});
+});
+
 describe('useInput revision', () => {
 	it('counts notifications from its own source only', () => {
 		const own = new Set<() => void>();

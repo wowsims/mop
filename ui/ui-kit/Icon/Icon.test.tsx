@@ -42,4 +42,10 @@ describe('Icon', () => {
 		expect(titled.getAttribute('aria-hidden')).toBeNull();
 		expect(titled.getAttribute('title')).toBe('Close');
 	});
+
+	// character_stats.tsx anchors a tooltip on the <i> itself; a dropped attribute fails silently.
+	it('passes an unknown attribute through, so it can anchor its own tooltip', () => {
+		const { container } = render(<Icon name="circle-question" data-tooltip-id="bonus-str" />);
+		expect(container.querySelector('i')!.dataset.tooltipId).toBe('bonus-str');
+	});
 });

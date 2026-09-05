@@ -5,7 +5,8 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel';
 
 interface ButtonBaseProps {
-	variant?: ButtonVariant;
+	/** `null` emits a bare `btn` — `talents_picker.tsx`'s reset is `btn link-danger`. */
+	variant?: ButtonVariant | null;
 	size?: 'sm';
 	className?: string;
 	children?: ReactNode;
@@ -20,7 +21,8 @@ type ButtonAsAnchor = ButtonBaseProps & Omit<AnchorHTMLAttributes<HTMLAnchorElem
 export type ButtonProps = ButtonAsButton | ButtonAsAnchor;
 
 export function Button(props: ButtonProps) {
-	const classes = clsx('btn', `btn-${props.variant ?? 'primary'}`, props.size && `btn-${props.size}`, props.className);
+	const variant = props.variant === undefined ? 'primary' : props.variant;
+	const classes = clsx('btn', variant && `btn-${variant}`, props.size && `btn-${props.size}`, props.className);
 
 	if (props.as === 'a') {
 		const { as: _as, variant: _variant, size: _size, className: _className, children, ...anchorProps } = props;

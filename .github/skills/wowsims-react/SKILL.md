@@ -307,12 +307,18 @@ literals — but the ordering is the point. Every react-tooltip name below was r
 | `trigger: 'click'` | 3 | `openOnClick` — **built** |
 | `followCursor` | 1 | `float` |
 
-`openOnClick` also sets `globalCloseEvents: { clickOutsideAnchor: true }`, which is what tippy's
-`hideOnClick` does — and no more. Escape is deliberately **not** added: it would be a close path
-with no blur in front of it, and react-tooltip unmounts the content on close (`setRendered(false)`),
-so it would drop a half-typed value out of an uncontrolled picker where nothing does today. Clicking
-*inside* the tooltip is safe — the handler returns early on `tooltipRef.contains(target)`, so the
-`NumberPicker` in the bonus-stat popover stays open while it is being used.
+`openOnClick` sets `globalCloseEvents: { clickOutsideAnchor: true, escape: true }`. The first is
+tippy's `hideOnClick`. The second is **also parity, not an addition** — corrected after an audit:
+`ui/shared/bootstrap_overrides.ts` binds a global `keydown` that calls tippy's `hideAll()`, so every
+tooltip and popover in the tree already closes on Escape, and a React one that did not would be the
+odd one out. (An earlier commit removed it on the reasoning that tippy's own dist has no Escape
+handling. True, and irrelevant — the app adds it.) Clicking *inside* the tooltip is safe: the
+handler returns early on `tooltipRef.contains(target)`, so the `NumberPicker` in the bonus-stat
+popover stays open while it is used.
+
+`Tooltip` forwards a ref to react-tooltip's `TooltipRefProps`, whose `close()` is the popover's
+`instance.hide()` — `character_stats.tsx` hides its bonus-stat popover from inside the picker it
+contains, and `reforge_panel.tsx` calls `hideAll()`.
 
 **happy-dom cannot see a tooltip open.** The node keeps `react-tooltip__closing` and never reaches
 the shown class, because the transition and floating-ui's measurements need a real layout. What is
@@ -328,6 +334,44 @@ The one theme in the tree, `bonus-stats-popover`, is eight lines in
 `ui/scss/core/components/_character_stats.scss` that lay out a `NumberPicker` inside the popover. It
 belongs to character-stats, not to `Tooltip`: it co-locates when that feature ports, as
 `.sim-tooltip.bonus-stats-popover .number-picker-root`.
+
+### Phase 3 readiness — audited 2026-09-05, and unit 1 is not ready
+
+Five read-only audits ran every Phase 2 component against its real call sites. Four gaps were real
+enough to fix immediately, each now with a test that fails without it:
+
+- **`useInput` did not re-read its own write when the config has no `storeSubscribe`.** The contract
+  names UI-local toggles as the source-less case (`stat_weights_panel.tsx`'s show-all-stats
+  checkbox is one), and nothing else tells those a write happened — so a controlled input reverted
+  on its own click. `setValue` now rings the subscriber itself in that case, and only that case.
+- **`Icon` dropped every unknown prop.** No rest spread, so a `data-tooltip-id` on the `<i>` — which
+  `character_stats.tsx` needs, it anchors one tooltip on the icon and another on the button —
+  vanished silently.
+- **`Button` could not emit a bare `btn`.** `talents_picker.tsx`'s reset is `btn link-danger`;
+  `variant={null}` is that shape.
+- **`PickerShell` repeated a class.** `classList.add` drops a repeat and `clsx` does not, and two
+  live configs pass `input-inline` in `extraCssClasses` *and* set `inline` — a duplicate that would
+  have reached the parity harness.
+
+**The sidebar cannot be ported today.** It needs, in order: a `createPortal` mount from `SimApp`
+into `.sim-sidebar-stats` (which `sim_ui.tsx` builds as vanilla DOM — there is no React mount point
+for it, and no `createPortal` anywhere in `ui/` yet); the `Tooltip` ref, which is built; the `Icon`
+rest spread, which is built. Then, browser-first: whether the right-placed popover is clipped by
+`.sim-sidebar-content`'s `overflow-y: auto`, which decides a `positionStrategy` pass-through. Carry
+the `bonus-stats-popover` rules with the port, re-keyed to `.sim-tooltip.bonus-stats-popover` and
+with `text-align: left` (the cell is right-aligned).
+
+**A React-owned tab pane has no path today, and it is not a `LegacyHost` problem.** `SimTab`'s
+constructor takes `(simUI, config)`, calls `super(null, 'sim-tab')`, builds its own pane and nav item
+and hands both to `SimTabRegistry.attach`, which appends them — and there is no detach. So
+"React renders the pane, `LegacyHost` runs `new XTab(host)`" leaves the host div empty and a second
+pane in the container. The smaller move is the same `createPortal` the sidebar needs, aimed at the
+vanilla tab's own content container; widening `SimTab` to adopt an existing pane is only necessary
+if a whole tab must live inside a `LegacyHost`, which nothing requires.
+
+Three claims in this file were wrong and are corrected above or here: Escape (below), "the sidebar
+needs nothing new", and the count of `ListPicker`'s encounter callers — there are two islands in
+`encounter_picker.ts`, not one.
 
 ## Co-located SCSS, in practice
 
