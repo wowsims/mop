@@ -164,12 +164,21 @@
 }
 
 .log-search-group {
+	// Same box the APL builder uses for a list item: dimmed border, translucent body ground,
+	// square corners, and it firms up on hover. The tokens are shared rather than re-derived.
 	display: flex;
 	flex-direction: column;
 	gap: var(--spacer-1);
-	padding: var(--spacer-1) var(--spacer-2);
-	border: 1px solid var(--bs-border-color);
-	border-radius: var(--bs-border-radius);
+	padding: var(--apl-spacer);
+	border: var(--apl-border);
+	border-radius: 0;
+	background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
+	transition: all 0.2s ease;
+
+	&:hover {
+		background-color: color-mix(in srgb, var(--bs-body-bg) 85%, transparent);
+		border-color: var(--bs-border-color);
+	}
 }
 
 .log-search-group-head {
@@ -181,9 +190,8 @@
 }
 
 .log-search-group-field {
-	color: var(--bs-secondary-color);
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	font-size: var(--btn-font-size);
+	line-height: 1.5;
 }
 
 .log-search-group-join,
@@ -210,8 +218,8 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--spacer-1);
-	padding-left: var(--spacer-2);
-	border-left: 1px solid var(--bs-border-color);
+	padding-left: var(--apl-spacer);
+	border-left: var(--apl-border);
 }
 
 .log-search-chip {
