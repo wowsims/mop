@@ -28,6 +28,7 @@
 		"test:snapshots:update": "node tools/state-snapshots/check.mjs --update"
 	},
 	"dependencies": {
+		"@base-ui/react": "^1.7.0",
 		"@popperjs/core": "^2.11.8",
 		"@types/golang-wasm-exec": "^1.15.2",
 		"@types/pako": "^2.0.0",
@@ -44,6 +45,7 @@
 		"pako": "^2.0.4",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
+		"react-tooltip": "^6.0.8",
 		"shallow-equal": "^3.1.0",
 		"tippy.js": "^6.3.7",
 		"tsx-vanilla": "^1.2.0",

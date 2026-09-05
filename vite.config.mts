@@ -141,6 +141,7 @@ export default defineConfig(({ command, mode }) => {
 		css: {
 			preprocessorOptions: {
 				scss: {
+					loadPaths: [path.resolve(__dirname, 'ui', 'scss')],
 					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
 				},
 			},
