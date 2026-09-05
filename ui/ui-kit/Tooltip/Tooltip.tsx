@@ -23,8 +23,9 @@ export interface TooltipProps {
 // global `keydown` that calls tippy's `hideAll()` (`shared/bootstrap_overrides.ts`), so every
 // tooltip and popover in the tree closes on Escape today. Clicking inside the tooltip does not
 // close it — the handler returns early on `tooltipRef.contains(target)`. Closing commits a
-// half-typed edit rather than discarding it, as tippy does: both unmount their content, and
-// removing a user-edited input fires `change`.
+// half-typed edit rather than discarding it, as tippy does: React detaches the content in the
+// mutation phase and flushes effect cleanups after, so a picker's native `change` listener is
+// still attached when its input is removed. Measured — `tools/react-migration/sidebar-popover.mjs`.
 const CLOSE_ON_CLICK_OUTSIDE = { clickOutsideAnchor: true, escape: true };
 
 /**

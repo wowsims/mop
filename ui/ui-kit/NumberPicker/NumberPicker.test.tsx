@@ -51,6 +51,24 @@ describe('NumberPicker', () => {
 		expect(input().value).toBe('7');
 	});
 
+	// The field listens for the native `change` event, not React's onChange (which is the input
+	// event) and not onBlur. Both alternatives look equivalent and are not: typing would commit per
+	// keystroke, and onBlur is a delegated listener that never fires when the close path detaches
+	// the node — which is exactly what happens to the bonus-stat popover on Escape. Measured in
+	// `tools/react-migration/sidebar-popover.mjs`; this is the half of it happy-dom can hold.
+	it('does not commit while the field is being typed into', () => {
+		const settings = new Settings(5);
+		render(<NumberPicker modObject={settings} config={configFor()} />);
+
+		input().value = '77';
+		fireEvent.input(input());
+		expect(settings.writes).toBe(0);
+		expect(settings.value).toBe(5);
+
+		fireEvent.change(input());
+		expect(settings.value).toBe(77);
+	});
+
 	it('re-renders when the source changes underneath it', () => {
 		const settings = new Settings(1);
 		render(<NumberPicker modObject={settings} config={configFor()} />);

@@ -315,8 +315,8 @@ odd one out. (An earlier commit removed it on the reasoning that tippy's own dis
 handling. True, and irrelevant — the app adds it.) Clicking *inside* the tooltip is safe: the
 handler returns early on `tooltipRef.contains(target)`, so the `NumberPicker` in the bonus-stat
 popover stays open while it is used. Closing on Escape or an outside click **commits** whatever was
-typed and not yet blurred, matching tippy — both unmount the content, and removing a user-edited
-input fires `change`. Measured, not reasoned: `tools/react-migration/sidebar-popover.mjs`.
+typed and not yet blurred, matching tippy. Measured, not reasoned — see the readiness section below
+and `tools/react-migration/sidebar-popover.mjs`.
 
 `Tooltip` forwards a ref to react-tooltip's `TooltipRefProps`, whose `close()` is the popover's
 `instance.hide()` — `character_stats.tsx` hides its bonus-stat popover from inside the picker it
@@ -372,13 +372,24 @@ answered both questions against the vanilla build:
   so it inherits the same escape. The condition to keep in mind is `.sim-sidebar`'s `sticky`: give
   any element between the popover and it a `position`, and clipping starts.
 - **Every close path commits the half-typed value** — Escape, outside click, Enter and a plain Tab
-  all wrote `+123`, and nothing was committed while typing. The mechanism is worth knowing because
-  it is not the hide: in Chrome, removing a focused input that the *user* edited fires `change`
-  then `blur`, while hiding it (`visibility` or `display`) fires nothing and keeps focus. tippy
-  unmounts its popper on hide, and react-tooltip unmounts its content on close (`setRendered(false)`),
-  so both commit for the same reason. A port that switched to keeping the content mounted and
-  hidden would silently discard the edit — and note that the flag is only set by real key events,
-  so a test that writes `.value` and dispatches a synthetic `InputEvent` cannot see any of this.
+  all wrote `+123`, and nothing was committed while typing. Chrome blurs a focused input that is
+  removed *or* hidden, and blur fires `change` on a field the user edited, so tippy's unmount and
+  react-tooltip's `setRendered(false)` both commit, and so would a close that only hid the content.
+  Two things make this easy to measure wrongly. The user-edit flag is only set by real key events,
+  so a test that writes `.value` and dispatches a synthetic `InputEvent` sees no `change` at all and
+  concludes the opposite. And the blur that hiding causes is deferred to the next rendering update,
+  so reading `document.activeElement` in the same task that wrote the style says the input still has
+  focus — it does not a frame later.
+- **React's unmount does not race the native listener, and its own `onBlur` never fires.** Measured
+  with the real `Tooltip` under the dev server: Escape produced `native change`, `native blur`, then
+  `effect cleanup`, in that order — React detaches the DOM in the mutation phase and flushes passive
+  effect destroys afterwards, so a listener attached in `useEffect` is still live when its node is
+  removed. React's `onBlur` on the same input produced nothing, because it is delegated from the
+  root container and a detached node's event path never reaches it. That is a second reason
+  `NumberPicker`'s field is uncontrolled with a native `change` listener, on top of the
+  input-vs-change semantics its own comment gives: switching to `onBlur` would look equivalent and
+  would silently discard the edit on every popover close. `NumberPicker.test.tsx` pins the half
+  happy-dom can hold — typing alone commits nothing.
 
 **A React-owned tab pane has no path today, and it is not a `LegacyHost` problem.** `SimTab`'s
 constructor takes `(simUI, config)`, calls `super(null, 'sim-tab')`, builds its own pane and nav item
@@ -527,6 +538,18 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 The two questions blocking the sidebar port were answered in a browser rather than
+  argued about, and one of the standing answers was wrong. `tools/react-migration/sidebar-popover.mjs`
+  opens the bonus-stat popover, types into the picker inside it and closes it four ways. The sidebar
+  does **not** clip the popover — `position: absolute` resolves against `aside.sim-sidebar`, which is
+  sticky and outside the scroller — so the planned `positionStrategy` pass-through is not needed.
+  Every close path commits the half-typed value, on both stacks and for the same reason: a focused
+  input that is removed or hidden gets blurred, and blur fires `change`. The React half was measured
+  too, with the real `Tooltip` under the dev server, because the ordering of React's DOM removal
+  against its effect cleanups decides it; `onBlur` would not have worked and looks like it would.
+  Both findings sit in the readiness section. The only prerequisite left for unit 1 is the
+  `createPortal` mount.
 
 - 2026-09-05 Phase 2 opened. Groundwork first: `@base-ui/react` 1.7.0 and `react-tooltip` 6.0.8
   installed and proved to bundle under Vite 8's oxc, and the co-located SCSS pipeline proved end to

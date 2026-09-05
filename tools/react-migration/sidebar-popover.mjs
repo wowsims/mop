@@ -11,9 +11,9 @@
 //      (`position: sticky`), which is outside the scroller. A scroll container does not clip a
 //      descendant whose containing block is one of its own ancestors.
 //   2. whether closing commits the half-typed value. The picker commits on the native `change`
-//      event, so this rests on whether the close path removes the focused input: removal fires
-//      `change` before `blur` in Chrome, hiding it fires nothing and keeps focus. tippy unmounts
-//      its popper on hide, so every close path commits.
+//      event, so this rests on whether the close path takes focus off the input — and every one
+//      does: Chrome blurs a focused element that is removed *or* hidden, and blur fires `change`
+//      on a field the user edited. Only real key events set that flag, which is why this types.
 //   3. that the three close paths (Escape, outside click, Enter) agree with each other and with a
 //      plain Tab out.
 //
@@ -23,7 +23,11 @@ import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
-const POPOVER = ".tippy-box[data-theme='bonus-stats-popover']";
+// Both sides: tippy's themed box today, `Tooltip`'s `className` once the sidebar ports. Kept as
+// parts because a selector list does not distribute over a descendant combinator.
+const POPOVER_PARTS = [".tippy-box[data-theme='bonus-stats-popover']", '.sim-tooltip.bonus-stats-popover'];
+const POPOVER = POPOVER_PARTS.join(', ');
+const inside = suffix => POPOVER_PARTS.map(part => `${part} ${suffix}`).join(', ');
 const TYPED = '123';
 
 const readBonusStats = () => {
@@ -89,10 +93,10 @@ const run = async (browser, name) => {
 
 	const before = await page.evaluate(readBonusStats);
 	await page.click('.character-stats-table-row button.add-bonus-stats');
-	await page.waitForSelector(`${POPOVER} .number-picker-input`, { state: 'visible', timeout: 5000 });
+	await page.waitForSelector(inside('.number-picker-input'), { state: 'visible', timeout: 5000 });
 	const geo = await page.evaluate(geometry, POPOVER);
 
-	const input = page.locator(`${POPOVER} .number-picker-input`);
+	const input = page.locator(inside('.number-picker-input'));
 	await input.click();
 	// Typed, not filled: `change` fires on blur only for a *user* edit, and only real key events
 	// set that flag. A programmatic `.value =` write plus a synthetic InputEvent does not.
@@ -103,9 +107,12 @@ const run = async (browser, name) => {
 	await page.waitForTimeout(600);
 
 	const after = await page.evaluate(readBonusStats);
+	// react-tooltip unmounts its content, so a missing box is closed; tippy leaves a hidden root.
 	const stillOpen = await page.evaluate(selector => {
 		const box = document.querySelector(selector);
-		return !!box && box.closest('[data-tippy-root]')?.style.visibility !== 'hidden' && getComputedStyle(box).opacity !== '0';
+		if (!box) return false;
+		const style = getComputedStyle(box);
+		return box.closest('[data-tippy-root]')?.style.visibility !== 'hidden' && style.visibility !== 'hidden' && style.opacity !== '0';
 	}, POPOVER);
 	await context.close();
 	return { name, geo, before, midway, after, stillOpen, errors };
