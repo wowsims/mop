@@ -176,6 +176,42 @@ that will bite".
 `tabs-behaviour.mjs` reads computed opacity, so it works against CSS transitions and inline-animated
 values alike.
 
+### The swap's design, settled and measured
+
+- **Where `Tabs.Root` lives.** `sim_header.tsx` emits `<div class="sim-tabs-mount">` where the
+  `<ul class="sim-tabs">` is today; React portals `Tabs.Root` into it and renders `Tabs.List` as its
+  child, so only the panels are portalled onward into `.sim-main`. `PRUNED` in `parity.mjs` already
+  matches `sim-tabs-mount`, so the pruned-subtree count stays 2. Both wrappers need
+  `display: contents`: `.sim-header-container` is `display: flex` (`_header.scss:40-42`) and
+  `.sim-tabs` is one of its flex items, so a wrapper that participates in layout moves the strip.
+- **The panel wraps the pane, it does not replace it.** `Tabs.Panel keepMounted` renders an empty
+  div whose ref callback `appendChild`s the vanilla pane — the `TabsPanel` id defect above rules out
+  making the panel *be* the pane. `#<id>` therefore stays on the `SimTab` root one level deeper,
+  which is exactly why `parity.mjs` compares each `#<id>` subtree separately and normalises line 0.
+- **`.sim-main` is `display: flex`** (`_main.scss:6-9`) and today `.tab-pane` is the flex item, so
+  the `.tab-pane` rules move to the panel, which becomes the item.
+- **What `sim_tab.ts` drops from the pane:** `tab-pane`, `fade` and `role="tabpanel"`. `fade` is the
+  dangerous one — `.fade:not(.show) { opacity: 0 }` is global and would hide every pane.
+  `.sim-main` also drops `tab-content`.
+
+The strip's computed styles on the parent branch, so the replacement can be written against Base
+UI's own attributes rather than `.nav-link` (measured, not read off the Sass):
+
+| | strip | tab | active tab |
+|---|---|---|---|
+| display / align | `flex`, `nowrap`, `align-items: flex-end` | `flex`, `align-items: center` | — |
+| padding | `0` | `14px` | — |
+| font | 14px / 700 / SimDefaultFont | 12.25px, line-height 15.3125px | — |
+| colour | — | `rgb(165, 177, 214)` | `rgb(255, 255, 255)` |
+| transition | — | `color 0.15s ease-in-out` | — |
+| underline | — | none | `::after`, 2px, white, `position: absolute; bottom/left/right: 0`, parent `position: relative` |
+
+Those map to the existing `--bs-nav-link-padding-*`, `--bs-nav-link-font-size`,
+`--nav-link-transition`, `$nav-link-color` and `$nav-tabs-link-active-color`, which is what the new
+rules should use — the numbers above are the check, not the source. `.nav-tabs .nav-item .nav-link`
+in `_bootstrap_style_overrides.scss:198-226` stays, because the three nested Bootstrap strips still
+need it.
+
 ### What the swap must satisfy
 
 The gates went shape-agnostic in commit 2, and in doing so they placed contracts on the swap. Each
