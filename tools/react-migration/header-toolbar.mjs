@@ -12,6 +12,7 @@ import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
+const IS_REACT = PORT === PORTS.react;
 
 const structure = () => {
 	const header = document.querySelector('.sim-header');
@@ -62,6 +63,42 @@ const structure = () => {
 		}),
 		knownIssuesHidden: header.querySelector('.known-issues')?.classList.contains('hide') ?? null,
 	};
+};
+
+// Four things the port adds that the baseline does not have, and that nothing else can see: the
+// tree comparison in `parity.mjs` is structural and explicitly does not read attributes.
+//
+// They are reported as checks rather than as recorded values because they are the one part of this
+// probe whose output is *meant* to differ between the two builds — everything above this must stay
+// byte-identical, and confining the divergence to a block of PASS/FAIL lines is what keeps that
+// true. Against the React build a failure is a gate failure; against the baseline these are the
+// findings themselves, and failing is the expected reading.
+//
+// The tab strip is deliberately out of scope: it is Base UI's markup, and `useButton` does not
+// default `type` either, which is its own question for whoever ports the last of it.
+const a11y = () => {
+	const scope = [...document.querySelectorAll('.sim-header .sim-toolbar, .sim-header .import-export')];
+	const within = selector => scope.flatMap(el => [...el.querySelectorAll(selector)]);
+	const name = el => (el.getAttribute('aria-label') || el.textContent || '').trim();
+
+	const controls = within('a, button');
+	const unnamed = controls.filter(el => !name(el));
+	const icons = within('i');
+	const shown = icons.filter(el => el.getAttribute('aria-hidden') !== 'true');
+	const blank = within('a[target="_blank"]');
+	const unsafe = blank.filter(el => {
+		const rel = (el.getAttribute('rel') || '').split(/\s+/);
+		return !rel.includes('noopener') || !rel.includes('noreferrer');
+	});
+	const buttons = within('button');
+	const untyped = buttons.filter(el => !el.getAttribute('type'));
+
+	return [
+		[unnamed.length === 0, `${controls.length - unnamed.length}/${controls.length} controls have an accessible name`],
+		[shown.length === 0, `${icons.length - shown.length}/${icons.length} icons are aria-hidden`],
+		[unsafe.length === 0, `${blank.length - unsafe.length}/${blank.length} _blank links carry rel=noopener noreferrer`],
+		[untyped.length === 0, `${buttons.length - untyped.length}/${buttons.length} buttons declare a type`],
+	];
 };
 
 const openState = selector => document.querySelector(selector)?.parentElement?.querySelector('.dropdown-menu')?.classList.contains('show') ?? null;
@@ -161,7 +198,12 @@ await page.evaluate(() => document.querySelector('.sim-ui')?.scrollTo({ top: 400
 await page.waitForTimeout(600);
 console.log(`  scrolled    ${await stuck()}`);
 
+console.log(`\naccessibility (expected to fail on the baseline — these are the port's additions)`);
+const checks = await page.evaluate(a11y);
+for (const [ok, text] of checks) console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${text}`);
+const a11yFailed = IS_REACT && checks.some(([ok]) => !ok);
+
 if (errors.length) for (const e of errors) console.log(`  ERROR ${e}`);
 await context.close();
 await browser.close();
-process.exit(errors.length ? 1 : 0);
+process.exit(errors.length || a11yFailed ? 1 : 0);

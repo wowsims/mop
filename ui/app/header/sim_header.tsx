@@ -52,7 +52,7 @@ export class SimHeader extends Component {
 
 		menuElem.appendChild(
 			<li>
-				<button ref={buttonRef} className={clsx('dropdown-item', isUnsupported && 'disabled')}>
+				<button type="button" ref={buttonRef} className={clsx('dropdown-item', isUnsupported && 'disabled')}>
 					{label}
 				</button>
 			</li>,

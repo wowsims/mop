@@ -27,20 +27,24 @@ export const ToolbarItem = ({ icon, tooltip, place = 'bottom', className, href, 
 	const id = useId();
 	const anchor = tooltip ? { 'data-tooltip-id': id } : {};
 	const classes = clsx(className, hidden && 'hide');
+	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the
+	// tooltip is a `data-` attribute no assistive tech reads. The tooltip text is the name it already
+	// has, so it becomes the name it exposes. Items that carry their own text keep it.
+	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (
 		<>
-			{icon && <i className={icon} />}
+			{icon && <i className={icon} aria-hidden="true" />}
 			{children}
 		</>
 	);
 	return (
 		<div className="sim-toolbar-item">
 			{href ? (
-				<a href={href} target="_blank" className={classes} {...anchor}>
+				<a href={href} target="_blank" rel="noopener noreferrer" className={classes} aria-label={label} {...anchor}>
 					{content}
 				</a>
 			) : (
-				<button type="button" className={classes} onClick={onClick} {...anchor}>
+				<button type="button" className={classes} aria-label={label} onClick={onClick} {...anchor}>
 					{content}
 				</button>
 			)}

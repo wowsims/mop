@@ -1057,6 +1057,16 @@ Two things specific to this migration:
   and `priest/discipline` — the second because it is unlaunched, which is the only way the
   known-issues link is visible and its tooltip comparable.
 
+  **What the flag-it rule produced on its first run**, all three approved and fixed: every icon-only
+  control in the header had no accessible name (the glyph is a private-use codepoint and the tooltip
+  is a `data-` attribute nothing reads), every `target="_blank"` had no `rel`, and the dropdown
+  buttons had no `type`. The tooltip string is now the `aria-label` on any item with no text of its
+  own, every `<i>` is `aria-hidden`, and both are invisible to `parity.mjs` — it compares structure
+  and says so explicitly. So `header-toolbar.mjs` grew an `accessibility` block of PASS/FAIL checks,
+  which is the *only* part of that probe meant to differ between the two builds: everything above it
+  stays byte-identical, and the probe exits non-zero when a check fails against the React port.
+  Reading it against the baseline prints the findings themselves.
+
 - 2026-09-05 **Talents is the first feature ported end to end.** `TalentsPicker` is React
   (`TalentTreePicker` and `TalentPicker` are their own files, helpers in `utils/`), the vanilla view
   is deleted, and `PetSpecPicker` is wired — which is why `TalentsPicker` had to go first: an

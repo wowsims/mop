@@ -23,8 +23,10 @@ export const SocialItem = ({ href, className, icon, tooltip, children }: SocialI
 	const id = useId();
 	return (
 		<div className="sim-toolbar-item">
-			<a href={href} target="_blank" className={className} data-tooltip-id={id}>
-				<i className={icon} />
+			{/* The tooltip is the accessible name — Patreon's visible " Patreon" is inside it, so the
+			    name still contains the label. */}
+			<a href={href} target="_blank" rel="noopener noreferrer" className={className} aria-label={tooltip} data-tooltip-id={id}>
+				<i className={icon} aria-hidden="true" />
 				{children}
 			</a>
 			{/* tippy's default placement, which the socials took and the rest of the toolbar did not. */}

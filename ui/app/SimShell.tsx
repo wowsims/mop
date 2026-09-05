@@ -139,14 +139,14 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 								<div className="import-export nav">
 									<div className="dropdown sim-dropdown-menu import-dropdown">
 										{/* Literal, not derived: Bootstrap owns this attribute once the plugin takes over. */}
-										<button className="import-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
-											<i className="fa fa-download" /> {i18n.t('import.title')}
+										<button type="button" className="import-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
+											<i className="fa fa-download" aria-hidden="true" /> {i18n.t('import.title')}
 										</button>
 										<ul className="dropdown-menu" />
 									</div>
 									<div className="dropdown sim-dropdown-menu export-dropdown">
-										<button className="export-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
-											<i className="fa fa-right-from-bracket" /> {i18n.t('export.title')}
+										<button type="button" className="export-link" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="dynamic">
+											<i className="fa fa-right-from-bracket" aria-hidden="true" /> {i18n.t('export.title')}
 										</button>
 										<ul className="dropdown-menu" />
 									</div>
