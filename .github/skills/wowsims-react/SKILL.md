@@ -308,12 +308,13 @@ literals — but the ordering is the point. Every react-tooltip name below was r
 | `trigger: 'click'` | 3 | `openOnClick` — **built** |
 | `followCursor` | 1 | `float` |
 
-`openOnClick` sets `globalCloseEvents: { clickOutsideAnchor: true, escape: true }`. The first is
-tippy's `hideOnClick`. The second is **also parity, not an addition** — corrected after an audit:
-`ui/shared/bootstrap_overrides.ts` binds a global `keydown` that calls tippy's `hideAll()`, so every
-tooltip and popover in the tree already closes on Escape, and a React one that did not would be the
-odd one out. (An earlier commit removed it on the reasoning that tippy's own dist has no Escape
-handling. True, and irrelevant — the app adds it.) Clicking *inside* the tooltip is safe: the
+`escape: true` goes on **every** tooltip, not only popovers, and `clickOutsideAnchor: true` only on
+those opened by a click. The second is tippy's `hideOnClick`. The first is parity rather than an
+addition — corrected twice: `ui/shared/bootstrap_overrides.ts` binds a global `keydown` that calls
+tippy's `hideAll()`, which does not distinguish a hover tooltip from a popover. (An earlier commit
+removed it on the reasoning that tippy's own dist has no Escape handling — true, and irrelevant,
+the app adds it; a later one gated it on `openOnClick`, which left a hover tooltip open after
+Escape where vanilla closed it.) Clicking *inside* the tooltip is safe: the
 handler returns early on `tooltipRef.contains(target)`, so the `NumberPicker` in the bonus-stat
 popover stays open while it is used. Closing on Escape or an outside click **commits** whatever was
 typed and not yet blurred, matching tippy. Measured, not reasoned — see the readiness section below
@@ -383,8 +384,12 @@ enough to fix immediately, each now with a test that fails without it:
 `Icon` rest spread — and the port landed (above). Carry the `bonus-stats-popover` rules with the port, re-keyed to
 `.sim-tooltip.bonus-stats-popover` and with `text-align: left` (the cell is right-aligned).
 
-The browser check that was open is done — `tools/react-migration/sidebar-popover.mjs`, and it
-answered both questions against the vanilla build:
+`tools/react-migration/sidebar-popover.mjs` is the sidebar's behavioural gate. Its whole output is
+identical on both builds, which is the point: it opens the popover, types into the picker, closes it
+four ways, waits out the worker recompute to prove the table re-rendered, and hovers both stat-value
+tooltips — the attribution breakdown and the crit-cap table, which are the component's largest block
+of markup and exist only while a value is hovered, so nothing else here can see them. What it found
+against the vanilla build:
 
 - **The popover is not clipped, and `positionStrategy` is not needed.** It overhangs
   `.sim-sidebar-content` by 123px and stays fully visible, hit-testable past the scroller's edge.

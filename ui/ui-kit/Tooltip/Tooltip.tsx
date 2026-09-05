@@ -19,13 +19,15 @@ export interface TooltipProps {
 	className?: string;
 }
 
-// `clickOutsideAnchor` is tippy's `hideOnClick`. Escape is not an addition either: the app binds a
-// global `keydown` that calls tippy's `hideAll()` (`shared/bootstrap_overrides.ts`), so every
-// tooltip and popover in the tree closes on Escape today. Clicking inside the tooltip does not
-// close it — the handler returns early on `tooltipRef.contains(target)`. Closing commits a
-// half-typed edit rather than discarding it, as tippy does: React detaches the content in the
-// mutation phase and flushes effect cleanups after, so a picker's native `change` listener is
-// still attached when its input is removed. Measured — `tools/react-migration/sidebar-popover.mjs`.
+// Escape closes *every* tooltip, not only popovers: the app binds a global `keydown` that calls
+// tippy's `hideAll()` (`shared/bootstrap_overrides.ts`), which does not distinguish them, so a
+// hover tooltip that survived Escape would be the odd one out. `clickOutsideAnchor` is tippy's
+// `hideOnClick` and belongs only to a popover; clicking inside it does not close it, because the
+// handler returns early on `tooltipRef.contains(target)`. Closing commits a half-typed edit rather
+// than discarding it, as tippy does: React detaches the content in the mutation phase and flushes
+// effect cleanups after, so a picker's native `change` listener is still attached when its input is
+// removed. Measured — `tools/react-migration/sidebar-popover.mjs`.
+const CLOSE_ON_ESCAPE = { escape: true };
 const CLOSE_ON_CLICK_OUTSIDE = { clickOutsideAnchor: true, escape: true };
 
 /**
@@ -43,7 +45,7 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(function Toolti
 			place={place}
 			clickable={clickable}
 			openOnClick={openOnClick}
-			globalCloseEvents={openOnClick ? CLOSE_ON_CLICK_OUTSIDE : undefined}
+			globalCloseEvents={openOnClick ? CLOSE_ON_CLICK_OUTSIDE : CLOSE_ON_ESCAPE}
 			className={clsx('sim-tooltip', className)}
 			noArrow
 			disableStyleInjection="core">
