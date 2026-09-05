@@ -37,7 +37,7 @@ export class SimHeader extends Component {
 	constructor(parentElem: HTMLElement, simUI: SimUI) {
 		super(parentElem, 'sim-header');
 		this.simUI = simUI;
-		this.simTabsContainer = this.rootElem.querySelector<HTMLElement>('.sim-tabs')!;
+		this.simTabsContainer = this.rootElem.querySelector<HTMLElement>('.sim-tabs-mount')!;
 		this.simToolbar = this.rootElem.querySelector<HTMLElement>('.sim-toolbar')!;
 
 		this.knownIssuesContent = (<ul className="text-start ps-3 mb-0"></ul>) as HTMLUListElement;
@@ -51,7 +51,7 @@ export class SimHeader extends Component {
 		new IntersectionObserver(([e]) => e.target.classList.toggle('stuck', e.intersectionRatio < 1), { threshold: [1] }).observe(this.rootElem);
 	}
 
-	// Tab identifiers double as the list item's class name, which is what callers pass.
+	// Tab identifiers double as a class name on the tab button, which is what callers pass.
 	activateTab(className: string) {
 		this.simUI.tabs.activate(className);
 	}
@@ -203,7 +203,7 @@ export class SimHeader extends Component {
 		return (
 			<header className="sim-header">
 				<div className="sim-header-container">
-					<ul className="sim-tabs nav nav-tabs" attributes={{ role: 'tablist' }}></ul>
+					<div className="sim-tabs-mount"></div>
 					<div className="import-export nav">
 						<div className="dropdown sim-dropdown-menu import-dropdown">
 							<button className="import-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>

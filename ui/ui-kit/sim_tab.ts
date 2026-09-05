@@ -24,9 +24,8 @@ export abstract class SimTab extends Component {
 		this.config = config;
 
 		this.rootElem.id = this.config.identifier;
-		this.rootElem.classList.add('tab-pane', 'fade');
-		// Bootstrap's tab plugin used to stamp this on load, following data-bs-target.
-		this.rootElem.setAttribute('role', 'tabpanel');
+		// No `tab-pane`/`fade`: the Base UI panel wrapping this owns `role="tabpanel"`, visibility and
+		// the fade. `.fade:not(.show) { opacity: 0 }` is global, so leaving it would hide every pane.
 
 		this.contentContainer = document.createElement('div');
 		this.contentContainer.classList.add('tab-pane-content-container');

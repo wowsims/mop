@@ -53,6 +53,7 @@
 		}
 	}
 
+	// `.sim-tabs` is the Base UI tab list; the rest of its rules are in app/sim_tabs.scss.
 	.sim-tabs,
 	.import-export,
 	.sim-toolbar {
@@ -60,10 +61,6 @@
 		flex-wrap: nowrap;
 		align-items: flex-end;
 		font-weight: bold;
-	}
-
-	.sim-tabs {
-		border-bottom: 0;
 	}
 
 	.import-export {

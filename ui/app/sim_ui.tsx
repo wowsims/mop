@@ -93,7 +93,7 @@ export abstract class SimUI extends Component implements SimHost {
 		this.simContentContainer = this.rootElem.querySelector('.sim-content') as HTMLElement;
 		this.simHeader = new SimHeader(this.simContentContainer, this);
 		this.simMain = document.createElement('main');
-		this.simMain.classList.add('sim-main', 'tab-content');
+		this.simMain.classList.add('sim-main');
 		this.simContentContainer.appendChild(this.simMain);
 		this.tabs = new SimTabRegistry(this.simMain);
 
@@ -194,7 +194,7 @@ export abstract class SimUI extends Component implements SimHost {
 		socialsContainer.appendChild(SocialLinks.buildGitHubLink());
 		socialsContainer.appendChild(SocialLinks.buildPatreonLink());
 
-		this.simTabContentsContainer = this.rootElem.querySelector('.sim-main.tab-content') as HTMLElement;
+		this.simTabContentsContainer = this.rootElem.querySelector('.sim-main') as HTMLElement;
 
 		if (this.disabled) {
 			resultsViewerElem.appendChild(
@@ -265,7 +265,7 @@ export abstract class SimUI extends Component implements SimHost {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
 
 		const pane = (
-			<div id={contentId} className="tab-pane fade" attributes={{ role: 'tabpanel' }}>
+			<div id={contentId} className="sim-tab">
 				{content}
 			</div>
 		) as HTMLElement;

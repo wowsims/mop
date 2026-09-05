@@ -4,11 +4,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { SimTabs } from './sim_tabs';
 
-// The pane is all SimTab and SimUI.addTab hand to the registry; the nav item is React's.
+// The pane is all SimTab and SimUI.addTab hand to the registry; the tab and the panel are React's.
 function makeTab(id: string) {
 	const pane = document.createElement('div');
 	pane.id = id;
-	pane.className = 'sim-tab tab-pane fade';
+	pane.className = 'sim-tab';
 	return { id, title: id, pane };
 }
 
@@ -16,17 +16,11 @@ let strip: HTMLElement;
 let panes: HTMLElement;
 let registry: SimTabRegistry;
 
-const flushFrame = async () => {
-	await act(async () => {
-		await new Promise(resolve => requestAnimationFrame(() => resolve(null)));
-	});
-};
-
 const renderTabs = () => render(<SimTabs registry={registry} strip={strip} panes={panes} />);
 
 beforeEach(() => {
 	document.body.innerHTML = '';
-	strip = document.createElement('ul');
+	strip = document.createElement('div');
 	panes = document.createElement('main');
 	// Attached, so focus() actually moves document.activeElement.
 	document.body.append(strip, panes);
@@ -38,109 +32,88 @@ const press = (key: string) =>
 		(document.activeElement ?? strip).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
 	});
 
+const tabs = () => [...strip.querySelectorAll<HTMLElement>('[role="tab"]')];
+const tab = (id: string) => strip.querySelector<HTMLElement>(`.${id}`)!;
+const panels = () => [...panes.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+/** The pane inside the one panel that is not hidden. */
+const openId = () => panels().find(panel => !panel.hasAttribute('hidden'))?.firstElementChild?.id ?? null;
+const selectedIds = () =>
+	tabs()
+		.filter(el => el.hasAttribute('data-active'))
+		.map(el => el.className.split(' ').pop()!);
+
 describe('SimTabs', () => {
-	it('appends each registered tab to the strip and the pane container, in registration order', () => {
+	it('renders one tab and one panel per registered tab, in registration order', () => {
 		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
-		expect([...strip.children].map(el => el.className)).toEqual(['gear-tab nav-item', 'settings-tab nav-item', 'talents-tab nav-item']);
-		expect([...panes.children].map(el => el.id)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
+		expect(tabs().map(el => el.textContent)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
+		// Each panel adopts its pane, so the id the stylesheets select on moves one level down.
+		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
 	});
 
-	it('opens the first registered tab, which is what decides the tab open on load', async () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
+	it('keeps every panel mounted, because a pane is built once and may read the document', () => {
+		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
-		await flushFrame();
-		expect(panes.querySelectorAll('.tab-pane.active.show')).toHaveLength(1);
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
-		expect(strip.querySelectorAll('.nav-link.active')).toHaveLength(1);
+		expect(panels()).toHaveLength(3);
+		expect(panes.querySelectorAll('.sim-tab')).toHaveLength(3);
+		// Hidden rather than removed — `[hidden]` is what stops them showing.
+		expect(panels().filter(panel => panel.hasAttribute('hidden'))).toHaveLength(2);
 	});
 
-	it('shows the tab open on load in the same frame, since there is nothing to fade from', () => {
+	it('opens the first registered tab, which is what decides the tab open on load', () => {
 		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		// `render` flushes effects but not the animation frame one of them can schedule, so a pane that
-		// only gains `show` on the next frame would be at opacity 0 here — a flash on every page load.
 		renderTabs();
-		const pane = panes.querySelector<HTMLElement>('#gear-tab')!;
-		expect(pane.classList.contains('active')).toBe(true);
-		expect(pane.classList.contains('show')).toBe(true);
+		expect(openId()).toBe('gear-tab');
+		expect(selectedIds()).toEqual(['gear-tab']);
+	});
+
+	it('does not fade the tab open on load, which would blank the page for the first frame', () => {
+		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
+		renderTabs();
+		const open = panels().find(panel => !panel.hasAttribute('hidden'))!;
+		expect(open.hasAttribute('data-starting-style')).toBe(false);
 	});
 
 	it('activates exactly one tab per click, and marks it selected', async () => {
 		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
 
-		const settingsLink = strip.querySelector<HTMLElement>('.settings-tab .nav-link')!;
 		await act(async () => {
-			settingsLink.click();
+			tab('settings-tab').click();
 		});
-		await flushFrame();
 
-		expect(panes.querySelectorAll('.tab-pane.active.show')).toHaveLength(1);
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('settings-tab');
-		expect(strip.querySelectorAll('.nav-link.active')).toHaveLength(1);
-		expect(settingsLink.getAttribute('aria-selected')).toBe('true');
-		expect(strip.querySelector<HTMLElement>('.gear-tab .nav-link')!.getAttribute('aria-selected')).toBe('false');
-	});
-
-	it('adds `active` before `show` when switching, so the fade still runs', async () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
-		await flushFrame();
-
-		// Synchronous act flushes the effects but not the animation frame they schedule, which is
-		// exactly the window this test is about.
-		act(() => {
-			strip.querySelector<HTMLElement>('.settings-tab .nav-link')!.click();
-		});
-		const pane = panes.querySelector<HTMLElement>('#settings-tab')!;
-		// Bootstrap sequenced these across two frames; collapsing them would make tabs snap.
-		expect(pane.classList.contains('active')).toBe(true);
-		expect(pane.classList.contains('show')).toBe(false);
-		await flushFrame();
-		expect(pane.classList.contains('show')).toBe(true);
+		expect(openId()).toBe('settings-tab');
+		expect(selectedIds()).toEqual(['settings-tab']);
+		expect(tab('settings-tab').getAttribute('aria-selected')).toBe('true');
+		expect(tab('gear-tab').getAttribute('aria-selected')).toBe('false');
 	});
 
 	it('keeps a roving tabindex, so Tab reaches the strip once and lands on the open tab', async () => {
 		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
-		const tabindex = () => [...strip.querySelectorAll('.nav-link')].map(el => el.getAttribute('tabindex'));
-		expect(tabindex()).toEqual([null, '-1', '-1']);
+		const stops = () =>
+			tabs()
+				.filter(el => el.tabIndex !== -1)
+				.map(el => el.className.split(' ').pop());
+		expect(stops()).toEqual(['gear-tab']);
 
 		await act(async () => {
 			registry.activate('talents-tab');
 		});
-		expect(tabindex()).toEqual(['-1', '-1', null]);
+		expect(stops()).toEqual(['talents-tab']);
 	});
 
-	it('moves between tabs with the arrow keys, wrapping, and with Home/End — Bootstrap did this', () => {
-		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
-		strip.querySelector<HTMLElement>('.gear-tab .nav-link')!.focus();
-
-		const openTab = () => panes.querySelector('.tab-pane.active')!.id;
-		const focusedTab = () => (document.activeElement as HTMLElement).parentElement!.className.split(' ')[0];
-
-		press('ArrowRight');
-		expect([openTab(), focusedTab()]).toEqual(['settings-tab', 'settings-tab']);
-		press('ArrowLeft');
-		expect([openTab(), focusedTab()]).toEqual(['gear-tab', 'gear-tab']);
-		// Wrapping in both directions is what makes a roving tabindex navigable.
-		press('ArrowLeft');
-		expect(openTab()).toBe('talents-tab');
-		press('ArrowRight');
-		expect(openTab()).toBe('gear-tab');
-		press('End');
-		expect(openTab()).toBe('talents-tab');
-		press('Home');
-		expect(openTab()).toBe('gear-tab');
-	});
+	// Arrow/Home/End navigation is Base UI's composite, and it does not drive under happy-dom — the
+	// keys land but the roving focus never moves. `tools/react-migration/tabs-a11y.mjs` asserts the
+	// whole sequence in a real browser, against the parent branch's, which is a stronger check than
+	// this file could make anyway.
 
 	it('leaves other keys alone, so typing still reaches the page', () => {
 		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
-		strip.querySelector<HTMLElement>('.gear-tab .nav-link')!.focus();
+		tab('gear-tab').focus();
 		press('a');
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
+		expect(openId()).toBe('gear-tab');
 	});
 
 	it('activates by identifier, which is how the bulk results renderer returns to the gear tab', async () => {
@@ -149,14 +122,12 @@ describe('SimTabs', () => {
 		await act(async () => {
 			registry.activate('settings-tab');
 		});
-		await flushFrame();
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('settings-tab');
+		expect(openId()).toBe('settings-tab');
 
 		await act(async () => {
 			registry.activate('gear-tab');
 		});
-		await flushFrame();
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
+		expect(openId()).toBe('gear-tab');
 	});
 
 	it('places a tab registered after mount without disturbing the active one', async () => {
@@ -165,10 +136,8 @@ describe('SimTabs', () => {
 		await act(async () => {
 			registry.attach(makeTab('bulk-tab'));
 		});
-		await flushFrame();
-		expect([...panes.children].map(el => el.id)).toEqual(['gear-tab', 'settings-tab', 'bulk-tab']);
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
-		expect(panes.querySelectorAll('.tab-pane.active.show')).toHaveLength(1);
+		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'bulk-tab']);
+		expect(openId()).toBe('gear-tab');
 	});
 
 	it('ignores activation of an unknown tab', async () => {
@@ -177,7 +146,6 @@ describe('SimTabs', () => {
 		await act(async () => {
 			registry.activate('nope');
 		});
-		await flushFrame();
-		expect(panes.querySelector('.tab-pane.active')!.id).toBe('gear-tab');
+		expect(openId()).toBe('gear-tab');
 	});
 });
