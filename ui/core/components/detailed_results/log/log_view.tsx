@@ -22,7 +22,7 @@ function selectedTargetNumber(resultData: SimResultData): number | null {
 	const selected = resultData.result.getTargets(resultData.filter);
 	return selected.length === 1 ? selected[0].index + 1 : null;
 }
-const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [] };
+const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [], targets: [] };
 
 export class LogView extends ResultComponent {
 	private readonly virtualList: VirtualList;

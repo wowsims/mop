@@ -229,8 +229,10 @@ export class LogSearchBar extends Component {
 			case 'spell':
 				return this.config.suggestions().spells;
 			case 'source':
-			case 'target':
-				return this.config.suggestions().units;
+			case 'target': {
+				const { targets, units } = this.config.suggestions();
+				return [...targets, ...units];
+			}
 			default:
 				return [];
 		}
