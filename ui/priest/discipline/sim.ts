@@ -1,3 +1,4 @@
+import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
@@ -56,7 +57,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDisciplinePriest, {
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [PriestInputs.ArmorInput()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	// Stamina is not an EP stat for healers, but the buff still belongs in the stats panel.
+	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
