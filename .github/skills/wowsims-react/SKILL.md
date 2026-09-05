@@ -13,10 +13,12 @@ restate them; it assumes them.
 
 ## Where the migration currently is
 
-**React owns the shell's skeleton.** `SimShell.tsx` renders everything parent to the tabs — the
-sidebar, the header scaffold, the content column — and the vanilla `SimUI`/`SimHeader` adopt those
-elements instead of building them. React also owns the top-level tab behaviour, the sidebar's
-character-stats table and the talents tab body. The remaining tab bodies are vanilla `Component`s.
+**React owns the shell.** `SimShell.tsx` renders everything parent to the tabs — the sidebar, the
+header, the content column — and the vanilla `SimUI`/`SimHeader` adopt those elements instead of
+building them. React also owns the top-level tab behaviour, the header toolbar, both sets of social
+links, the sidebar's character-stats table and the talents tab body. What is left of the header is
+the two import/export dropdowns, which wait on the Base UI `Menu` adapter. The remaining tab bodies
+are vanilla `Component`s.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -26,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**; encounter is next |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials); encounter is next |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
