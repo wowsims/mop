@@ -661,6 +661,34 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
 
+## Which store hook to reach for
+
+Two, and the choice is made by what you have in hand, not by preference:
+
+- **A plain selector read** — use zustand's own `useStore(sim.store, selector)`, or
+  `useStoreWithEqualityFn` from `zustand/traditional` if the selector needs custom equality (zustand
+  5 dropped the third argument from `useStore`). There are no such call sites yet, which is why
+  there is no wrapper for it: building one before a consumer exists is how you get an abstraction
+  nobody fits.
+- **A `StoreSubscribe` in hand** — `useStoreSubscribe(subscribe, read)`. Every consumer today is
+  this case, because the domain layer hands out `subscribePlayerField` / `subscribeSimChange` /
+  `subscribeAll`, and the value wanted is read back through a *facade* (`player.getBonusStats()`),
+  not off a store slice.
+
+**Could the second be zustand's `useStore` too?** Partly. A selector-built source carries
+`.sel = { store, selector, equalityFn }`, and `subscribeAll` folds same-store sources into one tuple
+selector, so the subscription itself is expressible. But `.sel` is optional — absent for a
+hand-built source and when `subscribeAll` spans stores — so a hook that unwraps it needs a branch,
+and hooks cannot be called conditionally. And the facade read still needs
+`useMemo(() => read(), [version])`, so the snapshot cache does not disappear, it moves. It would
+relocate code and add a branch rather than remove either.
+
+**The batch gate is not a reason to prefer either — measured, not assumed.** The plan left open
+whether React needs `subscribeGated` at all. `store.test.tsx` answers it: a `batch()` writing three
+slices produces **exactly one render, gated and ungated alike**, because React coalesces
+same-tick updates and the read happens at render time, after the batch has closed. The gate stays
+because vanilla subscribers still need it, but nothing on the React side depends on it.
+
 ## Ambient state: `useSimHost`, and the rule that keeps it cheap
 
 `SimHostProvider` wraps everything React renders once the shell exists, and `useSimHost()` /
