@@ -98,6 +98,7 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
 | `NumberPicker` | `ui/ui-kit/NumberPicker/` | `ui-kit/pickers/number_picker.ts` (still live, dual-stack) | the `NumberPickerConfig` it is given | commit on native `change`, the `size` rule, and the float/positive/showZeroes formats |
@@ -352,6 +353,15 @@ Two things specific to this migration:
   drives one — so `BooleanPicker` emits the same markup as the vanilla picker and needs no new SCSS. Two things the library does that the plan did not predict are recorded under
   "Things that will bite". `vitest.setup.ts` now runs Testing Library's `cleanup` after each test,
   without which a second render finds the first one's DOM.
+
+  The pickers were followed by `useActionId`, which is a hook and not a component on purpose: nine
+  call sites read the same three fields off an `ActionId` and every one of them renders a different
+  element (`<a>` with a background image, a button-shaped anchor, an `<img>`, a dropdown option, a
+  text row), so a component would fix the axis that varies — the reason `fillAndSetActionId` is used
+  once out of nine. It seeds synchronously from an id that already carries a name or icon, derives
+  the href without filling at all, and aborts a fill in flight when the id changes, so a slow first
+  id cannot paint over a second one that resolved sooner (vanilla passes one component-lifetime
+  signal and does not guard that race).
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a
