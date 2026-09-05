@@ -35,11 +35,11 @@ export class LogSearchBar extends Component {
 
 		this.rootElem.appendChild(
 			<>
-				<div ref={chipsRef} className="log-search-chips">
+				<div ref={chipsRef} className="form-control log-search-chips">
 					<input
 						ref={inputRef}
 						type="text"
-						className="form-control log-search-input"
+						className="log-search-input"
 						placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
 						autocomplete="off"
 					/>
@@ -147,11 +147,11 @@ export class LogSearchBar extends Component {
 		const bodyRef = ref<HTMLSpanElement>();
 		const removeRef = ref<HTMLButtonElement>();
 		const elem = (
-			<span className="log-search-chip">
-				<span ref={bodyRef} className="log-search-chip-text">
+			<span className="log-search-chip saved-data-set-chip badge rounded-pill">
+				<span ref={bodyRef} className="log-search-chip-text saved-data-set-name">
 					{clauseText(clause)}
 				</span>
-				<button ref={removeRef} type="button" className="log-search-chip-remove">
+				<button ref={removeRef} type="button" className="log-search-chip-remove saved-data-set-delete">
 					×
 				</button>
 			</span>

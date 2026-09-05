@@ -108,14 +108,20 @@
 }
 
 .log-search-chips {
+	// Carries .form-control, so the chrome comes from the same place as every other input in the
+	// app; only the parts that make it hold chips are set here.
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--spacer-1);
-	padding: var(--spacer-1);
-	border: 1px solid var(--bs-border-color);
-	border-radius: var(--bs-border-radius);
-	background: var(--bs-body-bg);
+	height: auto;
+	cursor: text;
+
+	// The real <input> is a bare caret inside the box, so the box has to take the focus ring.
+	&:focus-within {
+		border-color: $input-focus-border-color;
+		box-shadow: $input-focus-box-shadow;
+	}
 
 	.log-search-input {
 		flex: 1 1 auto;
@@ -125,6 +131,8 @@
 		box-shadow: none;
 		padding: 0;
 		background: transparent;
+		color: inherit;
+		font: inherit;
 
 		&:focus {
 			outline: none;
@@ -133,14 +141,9 @@
 }
 
 .log-search-chip {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--spacer-1);
-	padding: 0 var(--spacer-1);
-	border-radius: var(--bs-border-radius);
-	background: var(--bs-tertiary-bg);
+	// Outline-accent look and sizing come from .saved-data-set-chip, the same chip the rotation
+	// action bar reuses. Only the search-specific bits are set here.
 	white-space: nowrap;
-	font-size: 0.85em;
 
 	.log-search-chip-text {
 		cursor: text;
@@ -149,14 +152,8 @@
 	.log-search-chip-remove {
 		border: none;
 		background: none;
-		padding: 0;
 		line-height: 1;
-		color: var(--bs-secondary-color);
 		cursor: pointer;
-
-		&:hover {
-			color: var(--bs-body-color);
-		}
 	}
 }
 
