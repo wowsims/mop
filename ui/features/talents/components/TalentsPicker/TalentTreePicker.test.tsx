@@ -1,4 +1,5 @@
 import type { TalentTreeConfig } from '@domain/talents/config';
+import { SimHostProvider } from '@features/SimHostContext';
 import { Class, Spec } from '@generated/proto/common';
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -24,16 +25,16 @@ const treeConfig: TalentTreeConfig<Record<string, never>> = {
 	})),
 };
 
+// The component reads class and spec from the host rather than taking them as props, so the tests
+// supply the smallest host that answers those two questions.
+const host = { player: { getClass: () => Class.ClassWarrior, getSpec: () => Spec.SpecArmsWarrior } } as never;
+
 const tree = (talentsString: string) => {
 	const onChange = vi.fn();
 	render(
-		<TalentTreePicker
-			config={treeConfig}
-			playerClass={Class.ClassWarrior}
-			playerSpec={Spec.SpecArmsWarrior}
-			talentsString={talentsString}
-			onChange={onChange}
-		/>,
+		<SimHostProvider host={host}>
+			<TalentTreePicker config={treeConfig} talentsString={talentsString} onChange={onChange} />
+		</SimHostProvider>,
 	);
 	return onChange;
 };

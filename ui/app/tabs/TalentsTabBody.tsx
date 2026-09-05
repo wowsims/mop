@@ -36,8 +36,6 @@ export const TalentsTabBody = () => {
 
 	const talentsConfig = useMemo(
 		() => ({
-			playerClass: player.getClass(),
-			playerSpec: player.getSpec(),
 			tree: classTalentsConfig[player.getClass()]!,
 			storeSubscribe: (subject: Player<any>) => subscribePlayerField(subject, 'talentsString'),
 			getValue: (subject: Player<any>) => subject.getTalentsString(),
@@ -92,7 +90,7 @@ export const TalentsTabBody = () => {
 	return (
 		<>
 			<div className="talents-tab-left tab-panel-left">
-				<TalentsPicker player={player} config={talentsConfig} />
+				<TalentsPicker config={talentsConfig} />
 				{/* Hunters pick a pet spec; every other class has none, and vanilla renders nothing. */}
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
 			</div>

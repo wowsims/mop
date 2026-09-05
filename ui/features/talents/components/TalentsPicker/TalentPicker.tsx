@@ -1,7 +1,7 @@
 import { isRightClick } from '@domain/env';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { TalentConfig } from '@domain/talents/config';
-import type { Class } from '@generated/proto/common';
+import { usePlayer } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
 import { useActionId } from '@ui-kit/hooks/useActionId';
@@ -11,7 +11,6 @@ import { selectedColumn, withTalentCleared, withTalentSelected } from './utils/t
 
 export interface TalentPickerProps<TalentsProto> {
 	config: TalentConfig<TalentsProto>;
-	playerClass: Class;
 	talentsString: string;
 	onChange: (next: string) => void;
 }
@@ -30,12 +29,13 @@ const LONG_TOUCH_MS = 750;
  * suppresses the compatibility `mousedown` the browser fires after a touch, which would otherwise
  * re-spend the point a long press had just cleared.
  */
-export const TalentPicker = <TalentsProto,>({ config, playerClass, talentsString, onChange }: TalentPickerProps<TalentsProto>) => {
+export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }: TalentPickerProps<TalentsProto>) => {
+	const player = usePlayer();
 	const rootRef = useRef<HTMLAnchorElement>(null);
 	const actionId = useMemo(() => ActionId.fromSpellId(config.spellId), [config.spellId]);
 	const { iconUrl, href } = useActionId(actionId);
 	const selected = selectedColumn(talentsString, config.location.rowIdx) === config.location.colIdx;
-	const label = i18n.t(`${getClassI18nKey(playerClass)}.${String(config.fieldName)}`, { ns: 'talents' }) || config.fancyName;
+	const label = i18n.t(`${getClassI18nKey(player.getClass())}.${String(config.fieldName)}`, { ns: 'talents' }) || config.fancyName;
 
 	const select = () => onChange(withTalentSelected(talentsString, config.location));
 	const clear = () => onChange(withTalentCleared(talentsString, config.location));

@@ -1,6 +1,6 @@
 import { PlayerSpecs } from '@domain/player_specs';
 import type { TalentTreeConfig } from '@domain/talents/config';
-import type { Class, Spec } from '@generated/proto/common';
+import { usePlayer } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { translatePlayerSpec } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
@@ -13,8 +13,6 @@ import { clearedTalentsString } from './utils/talents_string';
 
 export interface TalentTreePickerProps<TalentsProto> {
 	config: TalentTreeConfig<TalentsProto>;
-	playerClass: Class;
-	playerSpec: Spec;
 	talentsString: string;
 	onChange: (next: string) => void;
 }
@@ -29,7 +27,9 @@ const LEVELS_PER_ROW = 15;
  * its markup *and* its class names to piggyback on this stylesheet. Exported here, but the class
  * names stay shared until those styles are deliberately split.
  */
-export const TalentTreePicker = <TalentsProto,>({ config, playerClass, playerSpec, talentsString, onChange }: TalentTreePickerProps<TalentsProto>) => {
+export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChange }: TalentTreePickerProps<TalentsProto>) => {
+	const player = usePlayer();
+	const playerSpec = player.getSpec();
 	const resetTooltipId = useId();
 	const spec = useMemo(() => PlayerSpecs.fromProto(playerSpec), [playerSpec]);
 	const rows = useMemo(() => buildTalentRows(config.talents), [config.talents]);
@@ -59,7 +59,6 @@ export const TalentTreePicker = <TalentsProto,>({ config, playerClass, playerSpe
 							<TalentPicker
 								key={`${talent.location.rowIdx}-${talent.location.colIdx}`}
 								config={talent}
-								playerClass={playerClass}
 								talentsString={talentsString}
 								onChange={onChange}
 							/>

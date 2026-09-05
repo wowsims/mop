@@ -1,8 +1,9 @@
 import type { Player } from '@domain/player';
 import type { TalentsConfig } from '@domain/talents/config';
 import { classGlyphsConfig } from '@domain/talents/factory';
+import { usePlayer } from '@features/SimHostContext';
 import { GlyphsPicker } from '@features/talents/view/glyphs_picker';
-import type { Class, Spec } from '@generated/proto/common';
+import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { CopyButton } from '@ui-kit/copy_button';
 import { useInput } from '@ui-kit/hooks/useInput';
@@ -14,13 +15,10 @@ import { useId } from 'react';
 import { TalentTreePicker } from './TalentTreePicker';
 
 export interface TalentsPickerConfig<ModObject, TalentsProto> extends InputConfig<ModObject, string> {
-	playerClass: Class;
-	playerSpec: Spec;
 	tree: TalentsConfig<TalentsProto>;
 }
 
 export interface TalentsPickerProps<TalentsProto> {
-	player: Player<any>;
 	config: TalentsPickerConfig<Player<any>, TalentsProto>;
 }
 
@@ -39,7 +37,8 @@ export interface TalentsPickerProps<TalentsProto> {
  *   this element's children, so appending there lands it after `.talents-picker-inner`, which is the
  *   order `.talents-picker-root`'s flex row expects.
  */
-export const TalentsPicker = <TalentsProto,>({ player, config }: TalentsPickerProps<TalentsProto>) => {
+export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<TalentsProto>) => {
+	const player = usePlayer();
 	// `PickerShell` needs an id for the label's `htmlFor`; this config carries no label, and vanilla
 	// passed `config.id || undefined` there, so nothing renders it either way.
 	const fallbackId = useId();
@@ -58,7 +57,7 @@ export const TalentsPicker = <TalentsProto,>({ player, config }: TalentsPickerPr
 
 	// Vanilla gated this on `isPlayer()` — whether the mod object has a `playerClass`. The React
 	// component takes a `Player`, so the gate has nothing left to decide.
-	const mountGlyphs = useLegacyMount(parent => new GlyphsPicker(parent, player, classGlyphsConfig[player.getClass()]), [player]);
+	const mountGlyphs = useLegacyMount(parent => new GlyphsPicker(parent, player, classGlyphsConfig[player.getClass() as Class]), [player]);
 
 	return (
 		<PickerShell ref={mountGlyphs} config={{ ...config, id: config.id ?? fallbackId }} cssClass="talents-picker-root" hidden={hidden} disabled={disabled}>
@@ -67,13 +66,7 @@ export const TalentsPicker = <TalentsProto,>({ player, config }: TalentsPickerPr
 					<div className="talents-picker-actions" ref={mountActions} />
 				</div>
 				<div id="talents" className="talents-picker-list">
-					<TalentTreePicker
-						config={config.tree}
-						playerClass={config.playerClass}
-						playerSpec={config.playerSpec}
-						talentsString={value}
-						onChange={setValue}
-					/>
+					<TalentTreePicker config={config.tree} talentsString={value} onChange={setValue} />
 				</div>
 			</div>
 		</PickerShell>
