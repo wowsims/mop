@@ -169,7 +169,7 @@ export class LogSearchBar extends Component {
 					</button>
 				</div>
 				<div ref={itemsRef} className="log-search-group-items">
-					<div ref={addRef} className="log-search-group-add"></div>
+					<div ref={addRef} className="input-group"></div>
 				</div>
 			</div>
 		) as HTMLElement;
