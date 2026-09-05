@@ -1,5 +1,6 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
+import { SimHostProvider } from '@features/sim_host_context';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
 import { useLayoutEffect, useRef, useState } from 'react';
@@ -32,19 +33,11 @@ export function SimApp<SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 		<>
 			<div className="sim-app" ref={mountRef} />
 			{simUI && (
-				<>
+				<SimHostProvider host={simUI}>
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
-					{createPortal(
-						<CharacterStats
-							player={player}
-							statList={simUI.individualConfig.displayStats}
-							epReferenceStat={simUI.individualConfig.epReferenceStat}
-							modifyDisplayStats={simUI.individualConfig.modifyDisplayStats}
-							overwriteDisplayStats={simUI.individualConfig.overwriteDisplayStats}
-						/>,
-						simUI.sidebarStatsContainer,
-					)}
-				</>
+					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
+					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
+				</SimHostProvider>
 			)}
 		</>
 	);

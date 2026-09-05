@@ -152,6 +152,7 @@ of the duplication sweep was to build each shape once.
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
+| `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
 | `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 
@@ -445,6 +446,38 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
 - A vendor stylesheet is imported from the TSX **before** the component's own, because in the
   emitted bundle import order is cascade order and most vendor rules are single-class.
 
+## Conventions
+
+- **One component per file**, named after the component, in the component's folder. A folder that
+  holds `CharacterStats.tsx` also holds `StatRow.tsx`, `CritCapRow.tsx`, `BonusStatsLink.tsx`,
+  `TooltipRow.tsx` and `TooltipNote.tsx` — not one file with six functions in it.
+- **Arrow syntax** for components and for the small helpers beside them:
+  `export const StatRow = ({ … }: StatRowProps) => (…)`. Non-component module functions
+  (`buildRows`, `statDisplayString`) stay `function` declarations where hoisting or overloads help.
+- **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
+
+## Ambient state: `useSimHost`, and the rule that keeps it cheap
+
+`SimHostProvider` wraps everything React renders once the shell exists, and `useSimHost()` /
+`usePlayer()` / `useSim()` read it. A feature component reaches for them instead of taking `host` or
+`player` as a prop; `CharacterStats` takes **no** props because of it.
+
+**The context value is identity, never state.** It holds the same three references for the life of
+the page. Anything that changed in there would re-render every consumer on every store
+notification, whatever that consumer actually reads — and this store is written constantly (sim
+progress ticks bypass it entirely for that reason). Reactivity stays per-component:
+`useStoreSubscribe(subscribe, read)` for a `StoreSubscribe` source, or zustand's
+`useStore(useSim().store, selector)`.
+
+Two boundaries:
+
+- **`ui-kit` never uses it.** Lint already forbids `@features` there, and it is the design rule too:
+  a generic picker's `modObject` is the sim, the encounter or an APL action as often as it is the
+  player, so it stays a prop.
+- **A feature component may drop props for it only where the axis does not vary.** `CharacterStats`
+  has one call site and one player; a component that several callers configure differently keeps its
+  props, or it gets bypassed the way the abstractions below did.
+
 ## Component folder layout
 
 ```
@@ -574,6 +607,13 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **`SimHostProvider`, and two conventions.** Ambient `host`/`player`/`sim` through
+  context instead of threading them down every level — `CharacterStats` now takes no props. The
+  value is deliberately stable references only; the reasoning is in its own section above and it is
+  the thing to get right, because a context that carried store state would re-render every consumer
+  on every notification. Conventions recorded at the user's request: one component per file, arrow
+  syntax for components. Zero DOM change — `parity.mjs` and `sidebar-popover.mjs` both unchanged.
 
 - 2026-09-05 **Phase 3 unit 1: the sidebar.** `CharacterStats` is React, portalled from `SimApp`
   into the container `IndividualSimUI` builds, and its stylesheet is co-located. The vanilla view is
