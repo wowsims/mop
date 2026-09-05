@@ -109,7 +109,7 @@ of the duplication sweep was to build each shape once.
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/react/input.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
-| `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 61 call sites / 33 files | `content` (any node), `place`, `clickable`, the anchor (`data-tooltip-id`) | the theme, and that unmount removes it |
+| `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
@@ -149,6 +149,9 @@ the file passed straight through:
 5. **`showWhen` adds `hide`**, and the node stays in the DOM.
 6. **Re-run the gates yourself** rather than trusting the report: type-check, oxlint on the new
    files, the new test file.
+
+Check 1 is the porter's job before it is the reviewer's: a picker port is not ready for review
+without its `*.parity.test.tsx`. The reviewer's dump is the second pass, not the first.
 
 ## Why abstractions here get bypassed — read this before designing one
 
@@ -238,6 +241,41 @@ is the last Phase 2 item because it changes markup shape.
 
 `IconPicker` is not one of them: no dropdown, no tippy, no `showWhen` override on its values. It
 ports on its own.
+
+### Tooltip: what the 62 tippy sites need, and what exists
+
+Only the props with a consumer are built. The rest of the mapping is written down so the next port
+reaches for the prop instead of inventing one:
+
+| tippy | sites | react-tooltip |
+|---|---|---|
+| `content` | 31 | `content` — it is `children`, and **not rendered until the tooltip first opens** |
+| `onShow` building content lazily | 10 | free, per the line above; drop the callback |
+| `duration` / `animation` | 17 | CSS in `Tooltip.scss`, not props |
+| `theme` | 7 | `className` — the rules become `.sim-tooltip.<theme>` |
+| `placement` | 6 | `place` |
+| `delay` | 6 | `delayShow` / `delayHide` |
+| `interactive` | 5 | `clickable` |
+| `allowHTML` | 5 | moot; content is JSX |
+| `trigger: 'click'` | 3 | `openOnClick` — **built** |
+| `appendTo` | 2 | react-tooltip renders in place; reach for `positionStrategy="fixed"` |
+| `followCursor` | 1 | `float` |
+| `offset` / `maxWidth` | 4 | `offset`; width is CSS |
+| `plugins`, `popperOptions`, `inlinePositioning`, `triggerTarget`, `onCreate` | 7 | no equivalent — decide at the call site |
+
+`openOnClick` also sets `globalCloseEvents`. react-tooltip already defaults `clickOutsideAnchor` to
+true once a click event is in play, which is what tippy's `hideOnClick` does; Escape is the one
+deliberate improvement — tippy's dist contains no Escape handling at all.
+
+**happy-dom cannot see a tooltip open.** The node keeps `react-tooltip__closing` and never reaches
+the shown class, because the transition and floating-ui's measurements need a real layout. What is
+testable there is that content *mounts* on the opening event — which is how the `openOnClick` test
+tells a click from a hover. Anything about closing has to be checked in a browser.
+
+The one theme in the tree, `bonus-stats-popover`, is eight lines in
+`ui/scss/core/components/_character_stats.scss` that lay out a `NumberPicker` inside the popover. It
+belongs to character-stats, not to `Tooltip`: it co-locates when that feature ports, as
+`.sim-tooltip.bonus-stats-popover .number-picker-root`.
 
 ## Co-located SCSS, in practice
 
@@ -408,7 +446,13 @@ Two things specific to this migration:
   **twice at mount in every build** (see the trap below); and `Input.update()` writes `disabled` on the input
   element as well as the class on the root, which React will not render from a typed anchor prop.
   Note that `getAllByRole('link')` cannot see an anchor without an href, so the structural tests
-  query the DOM.
+  query the DOM. Out of that came `mountBoth` (`ui/ui-kit/react/picker_oracle.tsx`): check 1 run
+  rather than read, diffing the vanilla picker's tree against the port's per element and per
+  attribute. Every picker port from here ships a `*.parity.test.tsx` using it —
+  `IconPicker.parity.test.tsx` is the worked example. `Tooltip` then gained `openOnClick`, the one
+  prop the first three Phase 3 features need that it lacked — character-stats' bonus-stat popover is
+  a click-triggered interactive tippy that builds a `NumberPicker` in `onShow`, and react-tooltip
+  does not render its children until the tooltip first opens, so the laziness is free.
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a

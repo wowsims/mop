@@ -28,6 +28,41 @@ describe('Tooltip', () => {
 		expect(document.body.textContent).not.toContain('Reforge to hit cap');
 	});
 
+	// tippy's 10 `onShow` call sites build their content lazily. react-tooltip does it for free:
+	// children are not rendered until the tooltip first opens, so a picker inside one costs nothing
+	// until it is shown.
+	it('does not render its content until it is first opened', () => {
+		let renders = 0;
+		const Content = () => {
+			renders++;
+			return <span>Bonus Strength</span>;
+		};
+		render(
+			<>
+				<button data-tooltip-id="bonus">Strength</button>
+				<Tooltip id="bonus" content={<Content />} />
+			</>,
+		);
+		expect(renders).toBe(0);
+
+		fireEvent.mouseEnter(screen.getByRole('button'));
+		expect(renders).toBe(1);
+	});
+
+	it('opens on click, not on hover, when openOnClick is set', () => {
+		render(
+			<>
+				<button data-tooltip-id="bonus">Strength</button>
+				<Tooltip id="bonus" openOnClick clickable content={<span>Bonus Strength</span>} />
+			</>,
+		);
+		fireEvent.mouseEnter(screen.getByRole('button'));
+		expect(screen.queryByText('Bonus Strength')).toBeNull();
+
+		fireEvent.click(screen.getByRole('button'));
+		expect(screen.getByText('Bonus Strength')).toBeTruthy();
+	});
+
 	// The library injects its own stylesheet unless disableStyleInjection is "core" — bare `true`
 	// stops only the base styles. An injected tag lands after the bundle's <link> and outranks the
 	// component's theme, which is how the tooltip kept the library's 0.9 opacity in the browser.
