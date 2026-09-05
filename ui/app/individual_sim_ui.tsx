@@ -299,8 +299,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		);
 	}
 
-	// Registration order is display order, and the first tab registered is the one open on load,
-	// so gear no longer has to assert that for itself.
+	// First tab attached is the one open on load, so gear no longer asserts that for itself.
 	private addGearTab() {
 		new GearTab(this);
 	}

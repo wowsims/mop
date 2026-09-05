@@ -29,7 +29,6 @@ interface ToolbarLinkArgs {
 export class SimHeader extends Component {
 	private simUI: SimUI;
 
-	// React appends the registered tabs here; see app/sim_tabs.tsx.
 	readonly simTabsContainer: HTMLElement;
 	private simToolbar: HTMLElement;
 	private knownIssuesLink: TippyReferenceElement<HTMLElement>;

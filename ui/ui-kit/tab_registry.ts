@@ -1,13 +1,5 @@
-// The set of top-level sim tabs, and which one is open.
-//
-// Tabs used to append themselves straight into the header's `.sim-tabs` list and the sim's
-// `.sim-main` pane container, and Bootstrap's tab plugin drove activation off `data-bs-toggle`.
-// Now they attach here instead, and React reads this registry to decide the order and active state
-// of both containers.
-//
-// The elements themselves are still built imperatively by SimTab and SimUI.addTab, which is why
-// this holds elements rather than descriptions of them. When those components become React in a
-// later phase, the entries become props, `attach` goes away and this can hold plain data.
+// The set of top-level sim tabs, and which one is open. React reads it through
+// useSyncExternalStore; see app/sim_tabs.tsx.
 
 export interface SimTabEntry {
 	/** Also the pane element's DOM id, and the class the header list item carries. */
@@ -23,19 +15,12 @@ export class SimTabRegistry {
 	private activeId: string | null = null;
 	private readonly listeners = new Set<() => void>();
 
-	/**
-	 * The containers are needed at attach time, not at render, because a tab builds its contents in
-	 * its constructor and parts of that content read the live document — `DetailedResults` looks up
-	 * `.dr-toolbar` through `document`, for one. Putting the pane in the page as the tab is created
-	 * preserves the invariant those call sites were written against. React still decides order and
-	 * which tab is open; it simply does not decide membership.
-	 */
 	constructor(
 		private readonly strip: HTMLElement,
 		private readonly panes: HTMLElement,
 	) {}
 
-	// Bound so they can be handed straight to useSyncExternalStore.
+	// Bound for useSyncExternalStore.
 	readonly subscribe = (listener: () => void): (() => void) => {
 		this.listeners.add(listener);
 		return () => {
@@ -43,16 +28,14 @@ export class SimTabRegistry {
 		};
 	};
 
-	// Identity is stable between attachments, which is what useSyncExternalStore requires.
 	readonly getEntries = (): ReadonlyArray<SimTabEntry> => this.entries;
 	readonly getActiveId = (): string | null => this.activeId;
 
 	/**
-	 * Records the tab *and* puts its two elements in the page — hence `attach` rather than
-	 * `register`: the side effect is the point, not an implementation detail.
-	 *
-	 * Attach order is display order, and the first tab attached is the one open on load — the same
-	 * rule the old code expressed as "am I being appended into an empty container?".
+	 * Records the tab and puts its elements in the page. Attaching here rather than from React is
+	 * required: a tab builds its contents in its constructor and some of that reads the live
+	 * document (`DetailedResults` looks up `.dr-toolbar`). Attach order is display order, and the
+	 * first tab attached is the one open on load.
 	 */
 	attach(entry: SimTabEntry) {
 		this.entries = [...this.entries, entry];

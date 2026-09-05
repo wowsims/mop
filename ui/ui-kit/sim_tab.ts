@@ -16,8 +16,7 @@ export abstract class SimTab extends Component {
 	readonly contentContainer: HTMLElement;
 
 	constructor(simUI: SimUIHost, config: SimTabConfig) {
-		// No parent: the pane is handed to the tab registry, and React decides where it goes and
-		// whether it is the active one.
+		// No parent: the registry attaches the pane, React decides whether it is the active one.
 		super(null, 'sim-tab');
 
 		this.rootElem.classList.add(config.identifier);
@@ -27,8 +26,7 @@ export abstract class SimTab extends Component {
 
 		this.rootElem.id = this.config.identifier;
 		this.rootElem.classList.add('tab-pane', 'fade');
-		// Bootstrap's tab plugin used to stamp this on load, following data-bs-target. It is a fixed
-		// property of the element, so it belongs in the markup now rather than in a React effect.
+		// Bootstrap's tab plugin used to stamp this on load, following data-bs-target.
 		this.rootElem.setAttribute('role', 'tabpanel');
 
 		this.navItem = this.buildNavItem();

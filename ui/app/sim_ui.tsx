@@ -58,7 +58,6 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly simActionsContainer: HTMLElement;
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
-	// Order and active state of the top-level tabs. React reads this; see app/sim_tabs.tsx.
 	readonly tabs: SimTabRegistry;
 
 	constructor(parentElem: HTMLElement, sim: Sim, config: SimUIConfig) {
@@ -262,7 +261,6 @@ export abstract class SimUI extends Component implements SimHost {
 	}
 
 	// A tab whose content is a plain element rather than a SimTab subclass (the detailed results).
-	// Builds the same two elements SimTab builds and registers them the same way.
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
 

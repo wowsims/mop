@@ -54,12 +54,9 @@ void (async () => {
 
 	sim.raid.setPlayer(0, player);
 
-	// React owns the page root from here. Sim and Player are still built imperatively above, because
-	// `registerSpecConfig` must run before `new Player()` and neither belongs to a render pass.
 	const rootElem = document.getElementById('root');
 	if (!rootElem) throw new Error('No #root element on the page; ui/index_template.html should provide it.');
 
-	// StrictMode is on so the construct-once gate in SimApp is exercised rather than assumed.
 	createRoot(rootElem).render(
 		<StrictMode>
 			<SimApp player={player} def={def} />
