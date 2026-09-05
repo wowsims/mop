@@ -13,7 +13,6 @@ import {
 	subscribePlayerField,
 	subscribeRaidField,
 } from '@domain/state/subscriptions';
-import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
@@ -36,6 +35,8 @@ import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	/** Where React renders the encounter block. Filled in `buildEncounterSettings`. */
 	encounterContainer!: HTMLElement;
+	/** Where React renders the item-swap block — only on specs that declare swap slots. */
+	itemSwapContainer?: HTMLElement;
 
 	protected simUI: IndividualSimUI<any>;
 
@@ -192,11 +193,9 @@ export class SettingsTab extends SimTab {
 				});
 			}
 
-			if (swapSlots.length > 0) {
-				const _itemSwapPicker = new ItemSwapPicker(contentBlock.bodyElement, this.simUI, this.simUI.player, {
-					itemSlots: swapSlots,
-				});
-			}
+			// Same deal as the encounter block: React renders this one, into the body the vanilla
+			// inputs above have already filled. A portal appends, so the order is what it was.
+			if (swapSlots.length > 0) this.itemSwapContainer = contentBlock.bodyElement;
 		}
 	}
 

@@ -1,6 +1,7 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
+import { ItemSwapPicker } from '@features/item-swap';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
@@ -73,6 +74,10 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 							<EncounterPicker showExecuteProportion={def.encounterPicker.showExecuteProportion} />,
 							simUI.settingsTab.encounterContainer,
 						)}
+					{/* Absent on a spec with no swap slots, which is most of them. */}
+					{ready &&
+						simUI.settingsTab.itemSwapContainer &&
+						createPortal(<ItemSwapPicker itemSlots={def.itemSwapSlots ?? []} />, simUI.settingsTab.itemSwapContainer)}
 				</SimHostProvider>
 			)}
 		</>

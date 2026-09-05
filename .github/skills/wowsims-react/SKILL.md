@@ -28,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**; item-swap or stat-weights next |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**; stat-weights next |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -334,6 +334,7 @@ of the duplication sweep was to build each shape once.
 | `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
+| `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `useSimReady` | `ui/ui-kit/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -843,6 +844,17 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+### Findings waiting on a decision
+
+Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
+would be an unrequested markup change with a parity divergence attached.
+
+- **`<label class="form-label">` labelling a group, not a control** — `ItemSwapPicker`'s "Item Swap"
+  label sits over a swap button and a row of icon pickers, and points at none of them. Same defect
+  class as `.character-stats-label`, which became an `<h3>`; the fix here is probably a `<span>`
+  plus `role="group"` + `aria-labelledby` on the icon group, which is a bigger change than that one
+  was. Ported unchanged for now.
+
 ### Flag invalid markup, do not port it — standing rule, 2026-09-05
 
 While reading vanilla markup for a port, keep a running list of anything invalid or spec-violating:
@@ -1056,6 +1068,26 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Item swap ported.** Same shape as encounter: the settings tab hands `SimApp` a
+  content-block body, React renders into it. Two things worth keeping:
+
+  **The `hide` class is not a missed simplification.** The plan says eleven sites hand-roll
+  "subscribe, then `classList.toggle('hide')`" on a container and that React deletes the idiom by
+  rendering conditionally. It cannot here. `panes-parity.mjs` compares this pane element for
+  element, and vanilla keeps those elements in the tree with a class on them — item swap ships
+  disabled on every spec, so conditionally rendering would be a diff on all six gate specs. The
+  class stays until the parity gate does.
+
+  **`swapWithGear` moved to `features/item-swap/model/`**, like the encounter rules. It was a method
+  on the view whose whole body is two store writes in a `batch`.
+
+  New gate `tools/react-migration/item-swap.mjs`: toggles the checkbox and checks the class flips
+  *both* ways, then clicks the swap button twice — the operation is its own inverse, and the readout
+  is which slots the swap set holds, read off the icons' wowhead links. A first draft of it measured
+  nothing at all (it read a `window.__simPlayer` that does not exist and printed `null` on both
+  builds, which diffs clean); the icons were what actually moved. Identical on `warrior/arms` and
+  `monk/windwalker`.
 
 - 2026-09-06 **Encounter is ported — the first React feature living inside a vanilla tab.** The
   settings tab still builds its nine content blocks; `buildEncounterSettings` now builds an *empty*
