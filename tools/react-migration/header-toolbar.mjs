@@ -61,6 +61,11 @@ page.on('console', m => {
 await page.addInitScript(() => {
 	window.alert = () => {};
 });
+// The download-binary link is otherwise invisible to every gate. `isNative()` is
+// `hostname.includes('localhost')`, so under these servers it takes the `fetch('/version')` branch —
+// which 404s here, leaving the link unrendered on both builds and the port unverified. Answering it
+// makes the outdated case real, and it is the only branch that renders anything.
+await page.route('**/version', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ outdated: 2 }) }));
 await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
 await page.waitForSelector('.sim-header', { timeout: 60000 });
 await page.waitForTimeout(2500);
