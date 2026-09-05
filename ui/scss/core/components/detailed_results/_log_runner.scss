@@ -182,20 +182,9 @@
 }
 
 .log-search-chip {
-	// Outline-accent look and sizing come from .saved-data-set-chip, the same chip the rotation
-	// action bar reuses. Only the search-specific bits are set here.
+	// Everything else - the outline, the pill, the hover, the delete button - is
+	// .saved-data-set-chip's, so that a query chip and a saved-data pill are the same control.
 	white-space: nowrap;
-
-	.log-search-chip-text {
-		cursor: text;
-	}
-
-	.log-search-chip-remove {
-		border: none;
-		background: none;
-		line-height: 1;
-		cursor: pointer;
-	}
 }
 
 .log-search-suggestions {
@@ -221,11 +210,3 @@
 	}
 }
 
-.log-search-suggestion {
-	padding: var(--spacer-1) var(--spacer-2);
-	cursor: pointer;
-
-	&:hover {
-		background: var(--bs-tertiary-bg);
-	}
-}

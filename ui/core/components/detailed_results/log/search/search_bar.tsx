@@ -171,19 +171,19 @@ export class LogSearchBar extends Component {
 		this.chips.forEach((node, i) => this.chipsElem.insertBefore(this.renderChip(node, i), this.inputElem));
 	}
 
-	private renderChip(node: QueryNode, index: number): HTMLSpanElement {
-		const bodyRef = ref<HTMLSpanElement>();
+	private renderChip(node: QueryNode, index: number): HTMLElement {
+		const bodyRef = ref<HTMLButtonElement>();
 		const removeRef = ref<HTMLButtonElement>();
 		const elem = (
-			<span className="log-search-chip saved-data-set-chip badge rounded-pill">
-				<span ref={bodyRef} className="log-search-chip-text saved-data-set-name">
+			<div className="log-search-chip saved-data-set-chip badge rounded-pill">
+				<button ref={bodyRef} type="button" className="log-search-chip-text saved-data-set-name">
 					{nodeText(node)}
-				</span>
-				<button ref={removeRef} type="button" className="log-search-chip-remove saved-data-set-delete">
-					×
 				</button>
-			</span>
-		) as HTMLSpanElement;
+				<button ref={removeRef} type="button" className="log-search-chip-remove saved-data-set-delete">
+					<i className="fa fa-times fa-lg" />
+				</button>
+			</div>
+		) as HTMLElement;
 		bodyRef.value!.addEventListener('click', () => this.editChip(index));
 		removeRef.value!.addEventListener('click', () => this.removeChip(index));
 		return elem;
