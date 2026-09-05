@@ -29,6 +29,7 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 // Both sides: tippy's box today, `Tooltip`'s `sim-tooltip` once a component ports.
 const ANY_TOOLTIP = '.tippy-box, .sim-tooltip';
+
 const STAT_ROW = '.character-stats-table-row';
 // Both sides: tippy's themed box today, `Tooltip`'s `className` once the sidebar ports. Kept as
 // parts because a selector list does not distribute over a descendant combinator.
@@ -49,6 +50,17 @@ const readBonusStats = () => {
 	}
 	return null;
 };
+
+// Visible, not merely present: tippy leaves a hidden root behind and react-tooltip leaves a node
+// mid-transition, and both read as fully transparent while one is running — so this is only
+// meaningful once the fade has settled. It is what catches a tooltip that should have closed and
+// did not: opening the popover hides the bonus-stat icon's hover tooltip on the vanilla side,
+// because tippy's `hideOnClick` covers a click on the reference itself.
+const countOpenTooltips = anyTooltip =>
+	[...document.querySelectorAll(anyTooltip)].filter(el => {
+		const style = getComputedStyle(el);
+		return style.visibility !== 'hidden' && style.opacity !== '0' && el.closest('[data-tippy-root]')?.style.visibility !== 'hidden';
+	}).length;
 
 const geometry = selector => {
 	const box = document.querySelector(selector);
@@ -105,7 +117,10 @@ const run = async (browser, name) => {
 	const valueBefore = await page.evaluate(readFirstValue);
 	await page.click(`${STAT_ROW} button.add-bonus-stats`);
 	await page.waitForSelector(inside('.number-picker-input'), { state: 'visible', timeout: 5000 });
+	// After the fade, so the count below is not reading a transition mid-flight.
+	await page.waitForTimeout(600);
 	const geo = await page.evaluate(geometry, POPOVER);
+	geo.openTooltips = await page.evaluate(countOpenTooltips, ANY_TOOLTIP);
 
 	const input = page.locator(inside('.number-picker-input'));
 	await input.click();

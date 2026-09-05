@@ -8,7 +8,7 @@ import { Icon } from '@ui-kit/Icon';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
 import { Tooltip, type TooltipRefProps } from '@ui-kit/Tooltip';
-import { useId, useMemo, useRef } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 
 export interface BonusStatsLinkProps {
 	rootStat: Stat;
@@ -23,6 +23,11 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 	const player = usePlayer();
 	const id = useId();
 	const popover = useRef<TooltipRefProps>(null);
+	// The icon's hover tooltip says the same thing the open popover's label does, and tippy hid it on
+	// any click (`hideOnClick`). react-tooltip's equivalent loses a race on a *cold* click, where the
+	// pointer's mouseenter and the click arrive together and its deferred show wins — so suppress it
+	// declaratively instead of relying on event order.
+	const [popoverOpen, setPopoverOpen] = useState(false);
 	const label = `${i18n.t('sidebar.character_stats.bonus_prefix')} ${getStatName(rootStat)}`;
 
 	const config = useMemo(
@@ -47,7 +52,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 			<button className="add-bonus-stats text-white ms-2" data-tooltip-id={`${id}-popover`}>
 				<Icon name="plus-minus" data-tooltip-id={`${id}-icon`} />
 			</button>
-			<Tooltip id={`${id}-icon`} content={label} />
+			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />
 			<Tooltip
 				ref={popover}
 				id={`${id}-popover`}
@@ -55,6 +60,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 				place="right"
 				openOnClick
 				clickable
+				onOpenChange={setPopoverOpen}
 				content={<NumberPicker modObject={player} config={config} />}
 			/>
 		</>
