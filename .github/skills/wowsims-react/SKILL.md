@@ -67,13 +67,23 @@ import-export 168 · item-swap 105.
 | Unit | Tab | Constructs | Still missing |
 |---|---|---|---|
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
-| **Talents** | 112 | `TalentsPicker` 265, `GlyphsPicker` 335, `PetSpecPicker` 76 | `GlyphSelectorModal` as an island |
+| **Talents** | 112 | `TalentsPicker` 266, `GlyphsPicker` 336, `PetSpecPicker` 61, **plus `PresetConfigurationPicker` and two `SavedDataManager`s** | `GlyphSelectorModal` as an island; the two shared components stay `LegacyHost` islands |
 | **Settings** | 492 | `EncounterPicker` 996, settings views 434, `ItemSwapPicker` 105 | `MultiIconPicker` ×2 (`Menu`, or an island), `ListPicker` island, `AdvancedEncounterModal` island |
 | **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
 | **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
 
-The sidebar is the smallest real unit and needs no new primitive; talents is next. Settings is not
+The sidebar is the smallest real unit and needs no new primitive; talents is next — and the table
+understated it. `PresetConfigurationPicker` is built by **four** tabs (talents, settings, rotation,
+gear) and `SavedDataManager` by more, so neither ports with talents: they stay vanilla behind
+`LegacyHost`, which nothing has used yet, until their other consumers port. What talents actually
+ports is `TalentsPicker`, `GlyphsPicker` and `PetSpecPicker`.
+
+The body itself uses the pattern the sidebar proved rather than the plan's: the vanilla `SimTab`
+stays as the thing that registers with the registry and owns an empty `contentContainer`, and
+`SimApp` portals the React content into it. `tools/react-migration/talents.mjs` is the baseline —
+18 talents in one tree for MoP, a six-digit string with one digit per tier, left click to spend and
+right click to clear, and reset zeroing all six. Settings is not
 the sixth-easiest feature the plan makes it — it is ~2,000 lines of construction, most of it the
 encounter picker.
 

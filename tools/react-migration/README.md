@@ -20,6 +20,7 @@ node tools/react-migration/tabs-a11y.mjs
 node tools/react-migration/tabs-behaviour.mjs
 node tools/react-migration/landing.mjs
 node tools/react-migration/sidebar-popover.mjs
+node tools/react-migration/talents.mjs
 
 # mount-once needs a dev server, not a build — see the table
 node_modules/.bin/vite --port 3403 --strictPort &
@@ -37,6 +38,7 @@ defaults to five specs from different classes. Ports come from `BASE_PORT` / `RE
 | `tabs-behaviour.mjs` | more than one open pane, a click opening the wrong pane, a pane that never fades in |
 | `landing.mjs` | a regression on `/mop/` itself — the homepage has no sim, so every other check skips it, and it is the one page that still depends on localization's `[data-i18n]` DOM walk |
 | `sidebar-popover.mjs` | everything about the sidebar that only exists after an interaction: the bonus-stat popover (where it mounts, whether the sidebar's `overflow-y: auto` clips it, whether each close path commits a half-typed value), that the table re-renders once the worker returns, and the two stat-value tooltips. Set `PORT` to pick a build — the entire output should be identical on both |
+| `talents.mjs` | the talents tab, which is almost entirely click behaviour — the DOM at load says nothing about whether spending a point works. Records the pane's structure, then spends, unspends and resets points, reading the talents string out of the autosaved settings. Set `PORT` to pick a build; the whole output should be identical on both |
 | `mount-once.mjs` | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op |
 
 The four tab checks read the strip and the panes through `window.simTabsProbe`, installed by
