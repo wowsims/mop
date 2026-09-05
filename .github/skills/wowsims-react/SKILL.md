@@ -723,6 +723,31 @@ Two boundaries:
   has one call site and one player; a component that several callers configure differently keeps its
   props, or it gets bypassed the way the abstractions below did.
 
+## Sim warnings are derived state, not notifications
+
+Two things here are called warnings and they want opposite treatments, so decide which one you are
+looking at before reaching for a component:
+
+- **`ui-kit/toast.tsx`** — Bootstrap `Toast`, 11 sites, transient and dismissed. This is what Base
+  UI's `Toast` replaces, and it is the deferred Phase 2 item.
+- **Sim warnings** — `{ updateOn: StoreSubscribe, getContent: () => string | string[] }`, rendered
+  as *one* triangle in the sidebar whose tooltip lists whatever is currently active, hidden when
+  nothing is. `getContent()` returning `''` is how a warning turns itself off, so these re-evaluate
+  continuously: the JC-gems warning appears the moment a third JC gem is socketed and disappears
+  when it is removed.
+
+**A toast is the wrong shape for the second.** Toasts are fire-and-forget; these are a live
+projection of store state. Modelled as toasts you get either a pop on every gear change, or a
+dismissed toast that should have come back and cannot.
+
+**A store/context for registration is right, though**, and is the next step for them. Today only
+something holding a `simUI` can call `addWarning`, which is why every warning lives in
+`individual_sim_ui.tsx` or a spec file — a ported feature component has no way to contribute one.
+The hard constraint is that `warnings: [simUI => SimWarning]` in `ui/sims/**/spec.ts` is part of the
+**frozen** spec surface, so whatever replaces the plumbing keeps accepting that exact shape; only
+the delivery mechanism changes. Do it after the shell's C3, since `addWarning` is one of the five
+imperative APIs C2 deliberately leaves untouched.
+
 ## Porting a tab body: the pattern, and the two things it moves
 
 The vanilla `SimTab` subclass stays — it is what attaches the pane, and attaching has to happen
