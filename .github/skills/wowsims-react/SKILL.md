@@ -85,6 +85,55 @@ and the ordering that matters — `addSidebarComponents` before the tabs, `waitF
 stat-weights action — stays imperative. That is Phase 3's opening move, and it is why no Phase 2
 component has a consumer yet: every call site sits inside a body `IndividualSimUI` still builds.
 
+## Base UI `Tabs` — decided 2026-09-05, in progress
+
+Phase 1 kept Bootstrap's tab markup so a class-for-class parity gate could pass. That was too
+conservative: mimicking Bootstrap's DOM forever is what would prevent finishing the migration, and
+Bootstrap-DOM selectors are *supposed* to die as each component ports. Base UI `Tabs` takes over the
+strip and the panes, and the styling is re-expressed on its markup.
+
+Facts verified in `node_modules/@base-ui/react` 1.7.0 — check them again if the version moves:
+
+- **`Tabs.Panel` supports `keepMounted`** (`tabs/panel/TabsPanel.d.ts:36`), and hidden panels get a
+  real `hidden` attribute plus `inert`. That is load-bearing: every pane exists from construction
+  today, and three of them read the live document while building
+  (`detailed_results.tsx:219,379`, `rotation_view.tsx:262`).
+- **The state attribute is `data-active`, not `data-selected`** (`tabs/tab/TabsTabDataAttributes.mjs:19`).
+- **`Tabs.Panel` ignores a passed `id`.** `TabsPanel.mjs:41` calls `useBaseUiId()` with no argument
+  where `TabsTab.mjs:53` calls `useBaseUiId(idProp)`, and `registerMountedTabPanel(value, id)` then
+  registers the generated one — so every tab's `aria-controls` would dangle. This decides the
+  design: **React renders an empty `<Tabs.Panel keepMounted>` and its ref callback adopts the
+  vanilla pane**, rather than the panel *being* the pane. The pane keeps its id, which four
+  stylesheets select on (`#gear-tab`, `#bulk-tab`, `#rotation-tab`), and `SimTab`'s signature does
+  not change.
+- **`activateOnFocus` defaults to `false`** (`tabs/list/TabsList.mjs:21`) and must be set: focus
+  follows selection today.
+- **Do not add `[hidden] { display: none }`** — `bootstrap/scss/_reboot.scss:615` already ships it
+  with `!important`.
+- **`@extend` of a missing target is a hard Sass error**, not a silent no-op — proved with the
+  repo's own compiler. A dropped class name fails the build rather than quietly changing layout.
+
+**Three nested Bootstrap tab strips stay** — `bulk_tab.tsx:219` constructs `new Tab(...)`, and
+`detailed_results.tsx:122` and `selector_modal.tsx:632` carry `data-bs-toggle="tab"`. They still need
+`.nav-link`, `.tab-pane`, `.fade`, `.show` and `_bootstrap_style_overrides.scss:198-226`, so none of
+that may be deleted. Removing Bootstrap's tab plugin entirely is a separate, larger port.
+
+Commit sequence, and the ordering call that matters — **the gates are rewritten to shape-agnostic
+invariants *before* the swap, against the current build**, because a gate rewritten in the same
+commit as the change it gates proves nothing:
+
+1. React authors the strip, markup byte-identical. **Done** (`afbc55015`).
+2. Gates move from baseline-equality to invariants, still green on today's markup.
+3. The swap — `Tabs.Root/List/Tab/Panel`, the SCSS, and the unit tests. **Cannot be split**: the old
+   selectors match nothing on the new markup and vice versa.
+4. `trackPageView` from per-tab `onClick` to `Tabs.Root`'s `onValueChange`, which has three real
+   behaviour deltas of its own (keyboard starts being tracked, detailed results starts being
+   tracked, a re-click stops being tracked).
+5. Optional `Tabs.Indicator` for the underline.
+
+Full plan, with the SCSS inventory and the risk register:
+`scratchpad/base-ui-tabs-plan.md`.
+
 ## The JSX boundary — the thing that surprises people
 
 Both JSX dialects compile in this tree. Which one a file gets is decided per file:
@@ -607,6 +656,17 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **Base UI `Tabs` accepted, and commit 1 landed.** Keeping Bootstrap's markup was
+  rejected as a permanent position. `SimTab` and `SimUI.addTab` no longer build nav items;
+  `SimTabs` renders the strip into the header's `<ul>` through a portal, markup byte-identical, so
+  `parity.mjs` still matches the parent branch. Two quirks are carried deliberately and die with the
+  swap: `addTab` puts `aria-controls` on the list item where `SimTab` puts it on the button, and a
+  tab title is a translation string that may carry markup (`bulk_tab.title` is
+  `Batch (<span class="text-success">New</span>)`), which the old innerHTML path rendered as HTML —
+  rendering it as a text child silently dropped the span, and parity.mjs caught it as 3958 elements
+  becoming 3957. Everything verified in `node_modules` is in the section above, including a Base UI
+  defect that decides the design.
 
 - 2026-09-05 **`SimHostProvider`, and two conventions.** Ambient `host`/`player`/`sim` through
   context instead of threading them down every level — `CharacterStats` now takes no props. The
