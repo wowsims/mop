@@ -129,6 +129,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
+	justify-content: flex-start;
 	gap: var(--spacer-1) var(--spacer-2);
 }
 
@@ -180,6 +181,12 @@
 }
 
 // Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
+.log-search-group-add {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-1);
+}
+
 .log-search-group-input {
 	width: 8rem;
 }

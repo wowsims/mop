@@ -184,16 +184,22 @@ export class LogSearchBar extends Component {
 		const placeholder = TYPED_FIELDS[group.field];
 		if (placeholder) {
 			const valueRef = ref<HTMLInputElement>();
+			const submitRef = ref<HTMLButtonElement>();
 			addRef.value!.appendChild(
 				(
-					<input
-						ref={valueRef}
-						type="text"
-						className="form-control form-control-sm log-search-group-input"
-						placeholder={placeholder}
-						autocomplete="off"
-					/>
-				) as HTMLElement,
+					<>
+						<input
+							ref={valueRef}
+							type="text"
+							className="form-control form-control-sm log-search-group-input"
+							placeholder={placeholder}
+							autocomplete="off"
+						/>
+						<button ref={submitRef} type="button" className="log-search-group-submit btn btn-sm btn-primary" attributes={{ 'aria-label': 'Add' }}>
+							<i className="fa fa-check" />
+						</button>
+					</>
+				) as unknown as HTMLElement,
 			);
 			const commit = () => {
 				const value = valueRef.value!.value.trim();
@@ -211,6 +217,13 @@ export class LogSearchBar extends Component {
 				}
 			});
 			valueRef.value!.addEventListener('blur', commit);
+			// mousedown, not click: the button's own click would blur the input first, and the
+			// commit that blur triggers re-renders the group and takes the button away before the
+			// click ever lands on it.
+			submitRef.value!.addEventListener('mousedown', e => {
+				e.preventDefault();
+				commit();
+			});
 			return elem;
 		}
 		this.pickers.push(
