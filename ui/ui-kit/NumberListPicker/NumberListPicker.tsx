@@ -1,3 +1,4 @@
+import { Field } from '@base-ui/react/field';
 import { arrayEquals } from '@domain/collections';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
@@ -48,9 +49,9 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 
 	return (
 		<PickerShell config={config} cssClass="number-list-picker-root" hidden={hidden} disabled={disabled}>
-			<input
+			<Field.Control
+				render={<input type="text" />}
 				ref={inputRef}
-				type="text"
 				id={config.id}
 				className="number-list-picker-input form-control"
 				placeholder={config.placeholder || ''}

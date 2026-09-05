@@ -1,3 +1,4 @@
+import { Field } from '@base-ui/react/field';
 import { formatToNumber } from '@domain/format';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
@@ -77,9 +78,9 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 
 	return (
 		<PickerShell config={config} cssClass="number-picker-root" hidden={hidden} disabled={disabled}>
-			<input
+			<Field.Control
+				render={<input type="text" />}
 				ref={inputRef}
-				type="text"
 				id={config.id}
 				className="form-control number-picker-input"
 				disabled={disabled}

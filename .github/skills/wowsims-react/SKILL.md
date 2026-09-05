@@ -717,6 +717,29 @@ Two boundaries:
   has one call site and one player; a component that several callers configure differently keeps its
   props, or it gets bypassed the way the abstractions below did.
 
+## Pickers are Base UI `Field`
+
+`PickerShell` is `Field.Root` / `Field.Label` / `Field.Description`, and every picker's control is a
+`Field.Control` rendering the same native element it always did (`render={<input type="text" />}`,
+`render={<select />}`). Base UI's `Select` and `NumberField` are *not* used: `Select` is a popup with
+its own markup, and `NumberField` ships spinner buttons — both are visual changes rather than ports,
+and belong to their own units.
+
+Three things this cost, all found by the parity oracle rather than by reading:
+
+- **Pass `htmlFor` on `Field.Label` explicitly.** Field points a label at the `Field.Control` it
+  finds and *generates an id when there is none* — `IconPicker` renders anchors, so its label pointed
+  at an element that does not exist. `config.id` is the value vanilla uses either way.
+- **`Field.Description` renders a `<p>`**, so it needs `render={<div />}`.
+- **`Field.Control` honours a passed `id`** (`useLabelableId({ id: idProp })`) — unlike `TabsPanel`,
+  which ignores one. Worth checking per part rather than assuming either way.
+
+What Field adds is additive: `data-disabled` / `data-filled` state hooks, and `aria-labelledby` plus
+`aria-describedby` — the latter an association vanilla never had, so a description was invisible to a
+screen reader before. `PickerOracle` filters those from its diff and asserts them directly in
+`associations()`, which rides along inside `diff()` so every parity assertion already written covers
+it. Verified by mutation: breaking `htmlFor` takes the suite from 31 to 50 failures.
+
 ## Component folder layout
 
 There is no `ui-kit/react/`. It made sense when React was the exception; every component in `ui-kit`

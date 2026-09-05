@@ -1,3 +1,4 @@
+import { Field } from '@base-ui/react/field';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
@@ -36,13 +37,13 @@ export const EnumPicker = <ModObject,>({ modObject, config }: EnumPickerProps<Mo
 
 	return (
 		<PickerShell config={config} cssClass="enum-picker-root" hidden={hidden} disabled={disabled}>
-			<select ref={selectRef} id={config.id} className="enum-picker-selector form-select" disabled={disabled}>
+			<Field.Control render={<select />} ref={selectRef} id={config.id} className="enum-picker-selector form-select" disabled={disabled}>
 				{config.values.map(entry => (
 					<option key={entry.value} value={String(entry.value)} title={entry.tooltip}>
 						{entry.name}
 					</option>
 				))}
-			</select>
+			</Field.Control>
 		</PickerShell>
 	);
 };

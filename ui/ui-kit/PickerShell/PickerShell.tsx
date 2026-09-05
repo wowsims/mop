@@ -1,3 +1,4 @@
+import { Field } from '@base-ui/react/field';
 import { adoptNode, isNode } from '@ui-kit/dom_utils';
 import type { InputConfig } from '@ui-kit/input';
 import { Tooltip } from '@ui-kit/Tooltip';
@@ -41,22 +42,29 @@ export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disable
 	);
 
 	return (
-		<div
+		<Field.Root
+			disabled={disabled}
 			className={dedupe(clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'))}>
 			{leading}
 			{config.label && (
-				<label htmlFor={config.id} className="form-label" title={config.label} data-tooltip-id={tooltipId}>
+				// `htmlFor` explicitly rather than letting Field derive it. Field points a label at the
+				// `Field.Control` it finds, and generates an id when there is none — IconPicker renders
+				// anchors, not a control, so its label would have pointed at an element that does not
+				// exist. `config.id` is the value vanilla uses either way.
+				<Field.Label htmlFor={config.id} className="form-label" title={config.label} data-tooltip-id={tooltipId}>
 					{config.label}
-				</label>
+				</Field.Label>
 			)}
 			{tooltipNode}
 			{config.description &&
 				(isNode(config.description) ? (
-					<div className="input-description" ref={adoptNode(config.description)} />
+					<Field.Description render={<div />} className="input-description" ref={adoptNode(config.description)} />
 				) : (
-					<div className="input-description">{config.description}</div>
+					<Field.Description render={<div />} className="input-description">
+						{config.description}
+					</Field.Description>
 				))}
 			{children}
-		</div>
+		</Field.Root>
 	);
 };
