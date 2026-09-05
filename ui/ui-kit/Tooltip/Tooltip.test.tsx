@@ -27,4 +27,14 @@ describe('Tooltip', () => {
 		expect(document.querySelectorAll('.sim-tooltip')).toHaveLength(0);
 		expect(document.body.textContent).not.toContain('Reforge to hit cap');
 	});
+
+	// The library injects its own stylesheet unless disableStyleInjection is "core" — bare `true`
+	// stops only the base styles. An injected tag lands after the bundle's <link> and outranks the
+	// component's theme, which is how the tooltip kept the library's 0.9 opacity in the browser.
+	it('injects no stylesheet of its own', async () => {
+		render(<Anchored />);
+		fireEvent.mouseEnter(screen.getByRole('button'));
+		await screen.findByText('Reforge to hit cap');
+		expect(document.querySelectorAll('style[id^="react-tooltip-"]')).toHaveLength(0);
+	});
 });

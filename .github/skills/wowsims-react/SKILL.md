@@ -98,13 +98,14 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 61 call sites / 33 files | `content` (any node), `place`, `clickable`, the anchor (`data-tooltip-id`) | the theme, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
-`Button` (polymorphic `as`, 132 clickables), `ActionIcon`
+`ActionIcon`
 (the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`; then the feature-shaped ones,
 of which `SummaryTableRow` + `SummaryResetButton` is the cheapest and `ItemCell` the largest.
 
@@ -145,8 +146,8 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   `css.preprocessorOptions.scss.loadPaths`, so the path is the same at any depth.
 - `shared/variables` **cannot** be imported alone: it extends bootstrap's `$theme-colors` and uses
   bootstrap mixins, so `shared/_tokens.scss` loads bootstrap's functions, variables and mixins first.
-  That costs about 66 ms of Sass per component stylesheet — measured, and the reason to keep the
-  number of stylesheets to one per component rather than one per file.
+  That costs about 30 ms of Sass per component stylesheet (measured: ten of them add 0.27 s to a
+  1.8 s build), which is why one stylesheet per component is the unit, not one per file.
 - A vendor stylesheet is imported from the TSX **before** the component's own, because in the
   emitted bundle import order is cascade order and most vendor rules are single-class.
 
@@ -257,7 +258,8 @@ Two things specific to this migration:
   installed and proved to bundle under Vite 8's oxc, and the co-located SCSS pipeline proved end to
   end in dev and in the build (see the section above; `shared/_tokens.scss` is new). First component
   is `Tooltip` — react-tooltip with the app's tooltip theme, replacing tippy for React call sites as
-  each feature ports. Two things the library does that the plan did not predict are recorded under
+  each feature ports — followed by `Button`, whose `as="a"` requires an `href` at the type level and
+  whose `<button>` defaults to `type="button"`, both defects the hand-written markup allows. Two things the library does that the plan did not predict are recorded under
   "Things that will bite". `vitest.setup.ts` now runs Testing Library's `cleanup` after each test,
   without which a second render finds the first one's DOM.
 
