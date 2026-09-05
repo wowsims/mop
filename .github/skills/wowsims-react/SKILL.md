@@ -127,12 +127,23 @@ commit as the change it gates proves nothing:
    a translation string is data, and rendering data as HTML was the wrong shape even though the
    vanilla nav item did it.
 2. Gates move from baseline-equality to invariants, still green on today's markup. **Done** (`8324d654e`).
-3. The swap — `Tabs.Root/List/Tab/Panel`, the SCSS, and the unit tests. **Cannot be split**: the old
-   selectors match nothing on the new markup and vice versa.
-4. `trackPageView` from per-tab `onClick` to `Tabs.Root`'s `onValueChange`, which has three real
-   behaviour deltas of its own (keyboard starts being tracked, detailed results starts being
-   tracked, a re-click stops being tracked).
-5. Optional `Tabs.Indicator` for the underline.
+3. The swap — `Tabs.Root/List/Tab/Panel`, the SCSS, and the unit tests. **Done** (`838991da1`).
+4. `trackPageView` — **absorbed into 1 and 3**, since it hung off elements those commits deleted.
+   Its three behaviour deltas are live and are all improvements, but they are deltas: keyboard
+   navigation is now tracked, the detailed-results tab is now tracked at all (`addTab` never
+   attached the listener that `SimTab`'s constructor did), and re-clicking the open tab no longer
+   fires an event, because `onValueChange` only fires on a change.
+5. `Tabs.Indicator` — **declined**, not deferred. The underline is a `::after` on the selected tab
+   and is pixel-identical to Bootstrap's; an Indicator is a separate element that slides between
+   tabs, which is a visual change, not a port. Raise it as a design choice or not at all.
+
+**What the swap is worth knowing for the next Base UI adoption.** `activateOnFocus` is not the
+default and focus-follows-selection needs it. `height: 100%` on a control Bootstrap wrapped in an
+`<li>` resolved against that `<li>`, whose height was the control's — against a real parent it is
+not a no-op. The `:focus-visible` ring is Bootstrap's `$focus-ring-box-shadow` and it is easy to
+miss, because measuring the `<li>` instead of the button shows no ring at all. And Base UI's
+composite keyboard navigation does not drive under happy-dom, so that half of a tab port's tests
+belongs in the browser gate.
 
 ### Animating the panes — read `docs/react/handbook/animation.md` in the package
 
@@ -755,6 +766,15 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **Base UI owns the top-level tabs** (`838991da1`), and no Bootstrap class is left on
+  them. The styles were copied onto Base UI's markup rather than reused, and the result is
+  pixel-identical to the parent branch at rest and after keyboard navigation — a diff harness caught
+  two mistakes that no DOM gate could (a height that used to resolve against a wrapper `<li>`, and a
+  focus ring the baseline has). The fade is `[data-starting-style]` plus `keepMounted`'s `hidden`
+  attribute, so it stays enter-only with no animation dependency. Panels adopt their panes rather
+  than being them, forced by the `TabsPanel` id defect. Commits 4 and 5 of the sequence are closed
+  out above rather than left open.
 
 - 2026-09-05 **Base UI `Tabs` accepted, and commit 1 landed.** Keeping Bootstrap's markup was
   rejected as a permanent position. `SimTab` and `SimUI.addTab` no longer build nav items;
