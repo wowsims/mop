@@ -47,7 +47,11 @@ construct-once problem it was meant to solve is solved instead by a `useRef` gat
 which is what makes StrictMode's double-invoked effect safe. A test asserts the gate (it fails
 without it).
 
-### Phase 3's unit is the tab plus what it constructs — a proposed re-plan
+### Phase 3's unit is the tab plus what it constructs — ACCEPTED 2026-09-05
+
+The user accepted this order over the plan's, and accepted deferring the rest of Phase 2 —
+`Toast`, `Dialog`, `Menu` and the three dropdown pickers — until the tab that needs each one ports.
+Do not build them speculatively.
 
 The plan orders Phase 3 by **view files per feature**, and file count turns out to have no
 relationship to size: `encounter` is one file of 996 lines, the third-heaviest view in the tree,
