@@ -1,15 +1,16 @@
-import { Player } from '../../player';
 import i18n from '../../../i18n/config';
+import { sourceFilterI18nKeys } from '../../../i18n/entity_mapping';
+import { translateArmorType, translateRaidFilter, translateRangedWeaponType, translateSourceFilter, translateWeaponType } from '../../../i18n/localization';
+import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
 import { SourceFilterOption, UIItem_FactionRestriction } from '../../proto/ui';
-import { translateSourceFilter, translateRaidFilter, translateArmorType, translateWeaponType, translateRangedWeaponType } from '../../../i18n/localization';
 import { Sim } from '../../sim';
 import { EventID } from '../../typed_event';
+import { kebabCase } from '../../utils';
 import { BaseModal } from '../base_modal';
 import { BooleanPicker } from '../pickers/boolean_picker';
 import { EnumPicker } from '../pickers/enum_picker';
 import { NumberPicker } from '../pickers/number_picker';
-import { sourceFilterI18nKeys } from '../../../i18n/entity_mapping';
 
 const factionRestrictionsToLabels: Record<UIItem_FactionRestriction, string> = {
 	[UIItem_FactionRestriction.UNSPECIFIED]: i18n.t('gear_tab.gear_picker.filters.faction_labels.none'),
@@ -296,7 +297,7 @@ export class FiltersMenu extends BaseModal {
 
 	private newSection(name: string): HTMLElement {
 		const section = document.createElement('div');
-		section.classList.add('menu-section', `${name.toLowerCase().replaceAll(' ', '-')}-section`);
+		section.classList.add('menu-section', `${kebabCase(name)}-section`);
 		this.body.appendChild(section);
 		section.innerHTML = `
 			<div class="menu-section-header">

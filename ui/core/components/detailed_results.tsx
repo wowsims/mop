@@ -1,28 +1,29 @@
+import { ref } from 'tsx-vanilla';
+
+import i18n from '../../i18n/config';
+import { trackEvent } from '../../tracking/utils';
+import { IndividualSimUI } from '../individual_sim_ui';
 import { SimRun, SimRunData } from '../proto/ui';
 import { SimResult } from '../proto_utils/sim_result';
 import { SimUI } from '../sim_ui';
 import { TypedEvent } from '../typed_event';
+import { isDevMode } from '../utils';
 import { Component } from './component';
 import { AuraMetricsTable } from './detailed_results/aura_metrics';
 import { CastMetricsTable } from './detailed_results/cast_metrics';
+import { CombatReplay } from './detailed_results/combat_replay';
 import { DamageMetricsTable } from './detailed_results/damage_metrics';
 import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
-import { CombatReplay } from './detailed_results/combat_replay';
 import { LogRunner } from './detailed_results/log_runner';
 import { ResourceMetricsTable } from './detailed_results/resource_metrics';
-import { SimResultData } from './detailed_results/result_component';
+import { ResultComponent, SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
 import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
 import { SimResultsManager } from './sim_action';
 import { StickyToolbar } from './sticky_toolbar';
-import i18n from '../../i18n/config';
-import { ref } from 'tsx-vanilla';
-import { isDevMode } from '../utils';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { trackEvent } from '../../tracking/utils';
 
 type Tab = {
 	isActive?: boolean;
@@ -94,6 +95,10 @@ export class DetailedResults extends Component {
 
 		this.simUI = simUI;
 
+		// Kept as the tabs are built, below. Looking them up afterwards meant a document-wide
+		// querySelector per tab, matching on the data attribute Bootstrap uses.
+		const tabButtons = new Map<string, HTMLButtonElement>();
+
 		this.rootDiv = (
 			<div className="dr-root dr-no-results">
 				<div className="dr-toolbar">
@@ -103,6 +108,7 @@ export class DetailedResults extends Component {
 						{tabs.map(({ label, targetId, isActive, classes }) => (
 							<li className={`nav-item dr-tab-tab ${classes?.join(' ') || ''}`} attributes={{ role: 'presentation' }}>
 								<button
+									ref={elem => tabButtons.set(targetId, elem)}
 									className={`nav-link${isActive ? ' active' : ''}`}
 									type="button"
 									attributes={{
@@ -143,14 +149,12 @@ export class DetailedResults extends Component {
 						<div className="dr-row">
 							<div className="healing-spell-metrics" />
 						</div>
-						<div className="dr-row hps-histogram" />
 					</div>
 					<div id="damageTakenTab" className="tab-pane dr-tab-content damage-taken-content fade">
 						<div className="dr-row topline-results" />
 						<div className="dr-row">
 							<div className="dtps-metrics" />
 						</div>
-						<div className="dr-row damage-taken-histogram" />
 					</div>
 					<div id="buffsTab" className="tab-pane dr-tab-content buffs-content fade">
 						<div className="dr-row">
@@ -172,17 +176,17 @@ export class DetailedResults extends Component {
 							<div className="resource-metrics" />
 						</div>
 					</div>
-				<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
-					<div className="dr-row">
-						<div className="timeline" />
+					<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
+						<div className="dr-row">
+							<div className="timeline" />
+						</div>
 					</div>
-				</div>
-				<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
-					<div className="dr-row">
-						<div className="combat-replay" />
+					<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
+						<div className="dr-row">
+							<div className="combat-replay" />
+						</div>
 					</div>
-				</div>
-				<div id="logTab" className="tab-pane dr-tab-content log-content fade">
+					<div id="logTab" className="tab-pane dr-tab-content log-content fade">
 						<div className="dr-row">
 							<div className="log" />
 						</div>
@@ -266,31 +270,46 @@ export class DetailedResults extends Component {
 			resultsEmitter: this.resultsEmitter,
 		});
 
+		// Tabs whose contents are expensive hold their results until first shown; see
+		// ResultComponent's deferUntilShown.
+		const deferUntilShown = (component: ResultComponent, tabId: string) => {
+			const button = tabButtons.get(tabId);
+			if (!button) {
+				console.error(`No tab button for ${tabId}; its deferred contents will never render.`);
+				return;
+			}
+			button.addEventListener('shown.bs.tab', () => component.onTabShown());
+			button.addEventListener('hide.bs.tab', () => component.onTabHidden());
+		};
+
 		const timeline = new Timeline({
 			parent: this.rootElem.querySelector('.timeline')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimUI<any>)?.player?.secondaryResource,
+			deferUntilShown: true,
 		});
-
-		const tabEl = document.querySelector('button[data-bs-target="#timelineTab"]');
-		tabEl?.addEventListener('shown.bs.tab', () => {
-			timeline.render();
-		});
+		deferUntilShown(timeline, 'timelineTab');
 
 		const combatReplay = new CombatReplay({
 			parent: this.rootElem.querySelector('.combat-replay')!,
 			resultsEmitter: this.resultsEmitter,
+			deferUntilShown: true,
 		});
+		deferUntilShown(combatReplay, 'replayTab');
 
-		const replayTabEl = document.querySelector('button[data-bs-target="#replayTab"]');
-		replayTabEl?.addEventListener('hide.bs.tab', () => {
+		tabButtons.get('replayTab')?.addEventListener('hide.bs.tab', () => {
 			combatReplay.stopPlayback();
 		});
 
-		new LogRunner({
-			parent: this.rootElem.querySelector('.log')!,
-			resultsEmitter: this.resultsEmitter,
-		}, this.simUI);
+		const logRunner = new LogRunner(
+			{
+				parent: this.rootElem.querySelector('.log')!,
+				resultsEmitter: this.resultsEmitter,
+				deferUntilShown: true,
+			},
+			this.simUI,
+		);
+		deferUntilShown(logRunner, 'logTab');
 
 		this.rootElem.classList.add('hide-threat-metrics');
 

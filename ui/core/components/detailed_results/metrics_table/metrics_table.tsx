@@ -234,19 +234,4 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 			},
 		};
 	}
-
-	static playerNameCellConfig(): MetricsColumnConfig<UnitMetrics> {
-		return {
-			name: i18n.t('results_tab.details.columns.name'),
-			columnClass: 'name-cell',
-			fillCell: (player: UnitMetrics, cellElem: HTMLElement, rowElem: HTMLElement) => {
-				cellElem.appendChild(
-					<>
-						<img className="metrics-action-icon" src={player.iconUrl}></img>
-						<span className={`metrics-action-name text-${player.classColor}`}>{player.label}</span>
-					</>,
-				);
-			},
-		};
-	}
 }

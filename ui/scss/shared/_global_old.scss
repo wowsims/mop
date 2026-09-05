@@ -2,10 +2,6 @@
 	--theme-background-color: DarkSlateGrey;
 	--theme-background-image: linear-gradient(var(--bs-black), var(--bs-black));
 	--theme-background-opacity: 0.9;
-	--main-bg-color: DarkSlateGrey;
-	--main-secondary-color: var(--bs-black);
-	--sidebar-text-color: var(--bs-white);
-	--sidebar-highlight-color: var(--bs-crit);
 }
 
 @font-face {
@@ -43,32 +39,6 @@
 	100% {
 		transform: rotate(360deg);
 	}
-}
-
-.dropdown-root {
-	position: relative;
-	display: inline-block !important;
-	white-space: nowrap;
-}
-
-.dropdown-root:hover .dropdown-panel {
-	display: grid !important;
-}
-
-.dropdown-button {
-	cursor: pointer;
-	background-color: var(--bs-gray);
-}
-
-.dropdown-panel {
-	display: none;
-	position: absolute;
-	z-index: 1;
-	box-shadow: 2px 4px 20px 5px var(--bs-black);
-}
-
-.dropdown-option-container {
-	background-color: var(--bs-gray);
 }
 
 .dropdown-option {

@@ -154,6 +154,24 @@ $resource-colors: (
 );
 $theme-colors: map-merge($theme-colors, $resource-colors);
 
+// Secondary resources. Each spec has at most one, and they all arrive as the same
+// ResourceType, so the timeline classes rows by name rather than by type.
+$arcane-charges-color: #5c7cfa;
+$shadow-orbs-color: #9b59d0;
+$demonic-fury-color: #8e6fc9;
+$burning-embers-color: #e8590c;
+$soul-shards-color: #8551c9;
+
+$secondary-resource-colors: (
+	arcane-charges: $arcane-charges-color,
+	shadow-orbs: $shadow-orbs-color,
+	demonic-fury: $demonic-fury-color,
+	burning-embers: $burning-embers-color,
+	soul-shards: $soul-shards-color,
+	holy-power: $holy-power-color,
+);
+$theme-colors: map-merge($theme-colors, $secondary-resource-colors);
+
 // Damage types
 $damage-hit: green;
 $damage-crit: blue;
