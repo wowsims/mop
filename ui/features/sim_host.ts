@@ -61,6 +61,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
 	getStorageKey(keyPart: string): string;
 	getSavedEPWeightsStorageKey(): string;
+	getSavedTalentsStorageKey(): string;
 }
 
 // `instanceof IndividualSimUI` is not available to features (the shell lives in

@@ -15,6 +15,8 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			// Built by the constructor, which is the point: the portal cannot target it on first render.
 			readonly sidebarStatsContainer = document.createElement('div');
+			// React fills the talents tab body through this, the same way it fills the sidebar.
+			readonly talentsTab = { contentContainer: document.createElement('div') };
 			constructor(parent: HTMLElement) {
 				constructions.push(parent);
 				const root = document.createElement('div');
@@ -28,6 +30,7 @@ vi.mock('./individual_sim_ui', async () => {
 
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
+vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 
 const { SimApp } = await import('./SimApp');
 

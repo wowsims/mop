@@ -717,6 +717,34 @@ Two boundaries:
   has one call site and one player; a component that several callers configure differently keeps its
   props, or it gets bypassed the way the abstractions below did.
 
+## Porting a tab body: the pattern, and the two things it moves
+
+The vanilla `SimTab` subclass stays — it is what attaches the pane, and attaching has to happen
+where it always did, before the constructor reads the live document. What it loses is its contents:
+`buildTabContent()` becomes empty and `SimApp` portals a React body into `contentContainer`, the way
+it already portals `CharacterStats` into the sidebar. `TalentsTab` is 19 lines now.
+
+**Mount surviving vanilla components with `useLegacyMount`, not `LegacyHost`.** `LegacyHost` renders
+a wrapper div and builds into that, which is fine in isolation but changes the pane's DOM — and a
+tab body is exactly where `panes-parity.mjs` compares this branch against the parent element for
+element. `useLegacyMount` is a ref callback, so the React-rendered panel *is* the parent and the
+tree keeps its vanilla shape. The element must have no React children.
+
+**Two things move when a tab ports, and the second is not obvious:**
+
+- Construction moves from the shell's constructor into a React effect. Anything appended to a
+  *shared* container therefore lands in a different order — which is how this surfaced: 21 modals,
+  identical content, dozens of differing lines in `parity.mjs`. Modals are now compared as a set
+  (same count, same contents, order free); each is still byte-compared against its twin, only the
+  sequence is given up. Expect this for every remaining tab.
+- A component the tab shares with other tabs must **not** port with it. `PresetConfigurationPicker`
+  is built by four tabs and `SavedDataManager` by several, so talents leaves both vanilla behind
+  `useLegacyMount`. Porting them here would drag settings, rotation and gear along.
+
+`PresetConfigurationPicker` was widened from `IndividualSimUI` to `IndividualSimHost` in the process
+— it only ever read `individualConfig`, `player`, `reforger` and `sim`, and a body in `app/tabs`
+cannot hand it the concrete shell.
+
 ## Pickers are Base UI `Field`
 
 `PickerShell` is `Field.Root` / `Field.Label` / `Field.Description`, and every picker's control is a

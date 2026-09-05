@@ -8,22 +8,31 @@
 // being one. So the strip and `.sim-main` are pruned out of the tree comparison and each pane is
 // compared on its own, keyed by the id that survives the swap on the `SimTab` root, with its root
 // class list normalised away. Everything else — header, sidebar, modals, toasts — stays strict.
-import { dropRootClasses, launch, openSpec, PORTS, PRUNED_LINE, pruneSubtrees, SERIALIZE, specsFromArgv } from './browser.mjs';
+import { collectSubtrees, dropRootClasses, launch, openSpec, PORTS, PRUNED_LINE, pruneSubtrees, SERIALIZE, specsFromArgv } from './browser.mjs';
 
 // Attributes are not covered here — tabs-a11y.mjs does that. The serialiser lives in browser.mjs.
 
 // The strip (`.sim-tabs` today, `.sim-tabs-mount` wrapping it after the swap) and the pane
 // container, whose own class list loses `tab-content`. No `g` flag: `RegExp.test` is stateful.
 const PRUNED = /\.(sim-tabs(-mount)?|sim-main)(\.|$)/;
+// Modals are appended to `.sim-ui` as their owner is constructed, so their *order* tracks
+// construction order — and porting a tab moves its construction from the shell's constructor into a
+// React effect. That reorders them without changing one of them, which a positional diff reports as
+// dozens of differing lines. So they are compared as a set: same count, same contents, order free.
+// Only the order is given up; each modal is still byte-compared against its twin.
+const MODAL = /\.modal(\.|$)/;
 
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
-	const shell = pruneSubtrees(await page.evaluate(SERIALIZE, '.sim-ui'), PRUNED);
+	const tree = await page.evaluate(SERIALIZE, '.sim-ui');
+	const shell = pruneSubtrees(pruneSubtrees(tree, MODAL), PRUNED);
+	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
+	const modals = collectSubtrees(tree, MODAL).sort();
 	const panes = {};
 	for (const id of ids) if (id) panes[id] = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
 	await page.close();
-	return { ids, shell, panes, errors };
+	return { ids, shell, panes, modals, errors };
 };
 
 const lineDiffs = (a, b) => {
@@ -57,7 +66,15 @@ for (const spec of specsFromArgv()) {
 	}
 
 	const pruned = b.shell.split('\n').filter(l => l.trimStart() === PRUNED_LINE).length;
-	if (pruned !== 2) problems.push(`${pruned} pruned subtrees in the shell, expected 2 (the strip and .sim-main)`);
+	if (pruned !== 2 + b.modals.length) {
+		problems.push(`${pruned} pruned subtrees in the shell, expected ${2 + b.modals.length} (the strip, .sim-main, and ${b.modals.length} modals)`);
+	}
+	if (a.modals.length !== b.modals.length) problems.push(`base has ${a.modals.length} modals, react has ${b.modals.length}`);
+	else {
+		const differing = b.modals.filter((modal, index) => modal !== a.modals[index]);
+		if (differing.length)
+			problems.push(`${differing.length} of ${b.modals.length} modals differ in content:\n${differing[0].split('\n').slice(0, 4).join('\n')}`);
+	}
 
 	if (problems.length === 0) {
 		pass++;

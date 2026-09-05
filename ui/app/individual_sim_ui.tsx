@@ -290,6 +290,9 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	// `SimApp` portals <CharacterStats/> in here once construction has produced it.
+	// React fills this tab's body — see app/tabs/TalentsTabBody.tsx.
+	talentsTab!: TalentsTab<SpecType>;
+
 	get sidebarStatsContainer(): HTMLElement {
 		return this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement;
 	}
@@ -313,7 +316,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addTalentsTab() {
-		new TalentsTab(this);
+		this.talentsTab = new TalentsTab(this);
 	}
 
 	private addRotationTab() {

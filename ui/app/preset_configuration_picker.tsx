@@ -4,6 +4,7 @@ import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch } from '@domain/state/batch';
 import { subscribeSimChange } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';
 import i18n from '@i18n/config';
@@ -13,13 +14,12 @@ import { ContentBlock } from '@ui-kit/content_block';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { IndividualSimUI } from './individual_sim_ui';
 import { PresetBuild } from './preset_utils';
 export class PresetConfigurationPicker extends Component {
-	readonly simUI: IndividualSimUI<Spec>;
+	readonly simUI: IndividualSimHost<Spec>;
 	readonly builds: Array<PresetBuild>;
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<Spec>, types?: PresetConfigurationCategory[]) {
+	constructor(parentElem: HTMLElement, simUI: IndividualSimHost<Spec>, types?: PresetConfigurationCategory[]) {
 		super(parentElem, 'preset-configuration-picker-root');
 		this.rootElem.classList.add('saved-data-manager-root');
 
@@ -130,7 +130,7 @@ export class PresetConfigurationPicker extends Component {
 
 	static applyBuild(
 		{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings, reforgeSettings }: PresetBuild,
-		simUI: IndividualSimUI<any>,
+		simUI: IndividualSimHost<any>,
 	) {
 		batch(() => {
 			if (gear) simUI.player.setGear(simUI.sim.db.lookupEquipmentSpec(gear.gear));

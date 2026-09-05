@@ -192,3 +192,21 @@ export const openSpec = async (browser, port, spec, { selector = '.sim-ui', sett
 	await page.waitForTimeout(settle);
 	return { page, errors };
 };
+
+/**
+ * The subtrees `pruneSubtrees` would replace, returned whole. Used where a region's *order* is an
+ * implementation detail but its contents are not — modals, which are appended as their owner is
+ * constructed, so porting a tab moves one without changing it.
+ */
+export const collectSubtrees = (dom, re) => {
+	const lines = dom.split('\n');
+	const out = [];
+	for (let i = 0; i < lines.length; i++) {
+		const indent = lines[i].search(/\S/);
+		if (!re.test(lines[i])) continue;
+		const subtree = [lines[i]];
+		while (i + 1 < lines.length && lines[i + 1].search(/\S/) > indent) subtree.push(lines[++i]);
+		out.push(subtree.join('\n'));
+	}
+	return out;
+};

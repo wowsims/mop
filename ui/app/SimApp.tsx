@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
 import { SimTabs } from './SimTabs';
+import { TalentsTabBody } from './tabs/TalentsTabBody';
 
 export interface SimAppProps<SpecType extends Spec> {
 	player: Player<SpecType>;
@@ -37,6 +38,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
 					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
+					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 				</SimHostProvider>
 			)}
 		</>
