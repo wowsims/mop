@@ -27,6 +27,7 @@ import { SimHeader } from './header/sim_header';
 import { SimTitleDropdown } from './header/sim_title_dropdown';
 import { SocialLinks } from './header/social_links';
 import { NoticeNativeSim } from './notice_native_sim';
+import type { ShellDom } from './shell_dom';
 const URLMAXLEN = 2048;
 const globalKnownIssues: Array<string> = [];
 
@@ -59,42 +60,20 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
 	readonly tabs: SimTabRegistry;
+	protected readonly dom: ShellDom;
 
-	constructor(parentElem: HTMLElement, sim: Sim, config: SimUIConfig) {
-		super(parentElem, 'sim-ui');
+	constructor(dom: ShellDom, sim: Sim, config: SimUIConfig) {
+		// Adopted, not built: `buildShellDom` owns the markup. `rootCssClass` still adds `sim-ui`, so
+		// the class list on the element is unchanged.
+		super(null, 'sim-ui', dom.root);
+		this.dom = dom;
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
 
-		const container = (
-			<>
-				<div className="sim-root">
-					<div className="sim-bg" />
-					{config.noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div> : null}
-					<div className="sim-container">
-						<aside className="sim-sidebar">
-							<div className="sim-title" />
-							<div className="sim-sidebar-content">
-								<div className="sim-sidebar-actions" />
-								<div className="sim-sidebar-results" />
-								<div className="sim-sidebar-stats" />
-								<div className="sim-sidebar-socials" />
-							</div>
-						</aside>
-						<div className="sim-content container-fluid" />
-					</div>
-				</div>
-				<div className="sim-toast-container p-3 bottom-0 right-0" id="toastContainer" />
-			</>
-		);
-
-		this.rootElem.appendChild(container);
-
-		this.simContentContainer = this.rootElem.querySelector('.sim-content') as HTMLElement;
-		this.simHeader = new SimHeader(this.simContentContainer, this);
-		this.simMain = document.createElement('main');
-		this.simMain.classList.add('sim-main');
-		this.simContentContainer.appendChild(this.simMain);
+		this.simContentContainer = dom.content;
+		this.simHeader = new SimHeader(dom, this);
+		this.simMain = dom.main;
 		this.tabs = new SimTabRegistry(this.simMain);
 
 		this.rootElem.classList.add(this.config.cssClass);
@@ -160,10 +139,9 @@ export abstract class SimUI extends Component implements SimHost {
 
 		// Sidebar Contents
 
-		const titleElem = this.rootElem.querySelector('.sim-title') as HTMLElement;
-		new SimTitleDropdown(titleElem, config.spec);
+		new SimTitleDropdown(dom.title, config.spec);
 
-		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
+		this.simActionsContainer = dom.sidebarActions;
 
 		this.sim.waitForInit().then(() => {
 			this.addNoticeForNativeSim();
@@ -186,15 +164,14 @@ export abstract class SimUI extends Component implements SimHost {
 			},
 		}).rootElem;
 
-		const resultsViewerElem = this.rootElem.querySelector('.sim-sidebar-results') as HTMLElement;
+		const resultsViewerElem = dom.sidebarResults;
 		this.resultsViewer = new ResultsViewer(resultsViewerElem);
 
-		const socialsContainer = this.rootElem.querySelector('.sim-sidebar-socials') as HTMLElement;
-		socialsContainer.appendChild(SocialLinks.buildDiscordLink());
-		socialsContainer.appendChild(SocialLinks.buildGitHubLink());
-		socialsContainer.appendChild(SocialLinks.buildPatreonLink());
+		dom.sidebarSocials.appendChild(SocialLinks.buildDiscordLink());
+		dom.sidebarSocials.appendChild(SocialLinks.buildGitHubLink());
+		dom.sidebarSocials.appendChild(SocialLinks.buildPatreonLink());
 
-		this.simTabContentsContainer = this.rootElem.querySelector('.sim-main') as HTMLElement;
+		this.simTabContentsContainer = dom.main;
 
 		if (this.disabled) {
 			resultsViewerElem.appendChild(

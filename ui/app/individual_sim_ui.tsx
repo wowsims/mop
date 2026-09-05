@@ -49,6 +49,7 @@ import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
 import { PresetConfigurationPicker } from './preset_configuration_picker';
+import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
 import { RotationTab } from './tabs/rotation_tab';
@@ -115,8 +116,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	readonly bt: BulkTab | null = null;
 	reforger: ReforgeOptimizer | null = null;
 
-	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
-		super(parentElem, player.sim, {
+	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
+		super(dom, player.sim, {
 			cssClass: config.cssClass,
 			cssScheme: config.cssScheme,
 			spec: player.getPlayerSpec(),
@@ -294,7 +295,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	talentsTab!: TalentsTab<SpecType>;
 
 	get sidebarStatsContainer(): HTMLElement {
-		return this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement;
+		return this.dom.sidebarStats;
 	}
 
 	// First tab attached is the one open on load, so gear no longer asserts that for itself.

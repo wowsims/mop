@@ -7,6 +7,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
+import { buildShellDom } from './shell_dom';
 import { SimTabs } from './SimTabs';
 import { TalentsTabBody } from './tabs/TalentsTabBody';
 
@@ -25,7 +26,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	useLayoutEffect(() => {
 		if (constructed.current || !mountRef.current) return;
 		constructed.current = true;
-		setSimUI(new IndividualSimUI(mountRef.current, player, def));
+		setSimUI(new IndividualSimUI(buildShellDom(mountRef.current, {}), player, def));
 	}, [player, def]);
 
 	// Every React-owned piece of the shell hangs off `simUI`, not off the first render: the containers

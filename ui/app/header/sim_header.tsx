@@ -13,6 +13,7 @@ import { ref } from 'tsx-vanilla';
 
 import { trackPageView } from '../../tracking/analytics';
 import { SettingsMenu } from '../settings_menu';
+import type { ShellDom } from '../shell_dom';
 import { SimUI } from '../sim_ui';
 import { SocialLinks } from './social_links';
 
@@ -34,11 +35,12 @@ export class SimHeader extends Component {
 	private knownIssuesLink: TippyReferenceElement<HTMLElement>;
 	private knownIssuesContent: HTMLUListElement;
 
-	constructor(parentElem: HTMLElement, simUI: SimUI) {
-		super(parentElem, 'sim-header');
+	constructor(dom: ShellDom, simUI: SimUI) {
+		// Adopted from the shell bundle; `rootCssClass` still adds `sim-header`.
+		super(null, 'sim-header', dom.header);
 		this.simUI = simUI;
-		this.simTabsContainer = this.rootElem.querySelector<HTMLElement>('.sim-tabs-mount')!;
-		this.simToolbar = this.rootElem.querySelector<HTMLElement>('.sim-toolbar')!;
+		this.simTabsContainer = dom.tabsMount;
+		this.simToolbar = dom.toolbar;
 
 		this.knownIssuesContent = (<ul className="text-start ps-3 mb-0"></ul>) as HTMLUListElement;
 		this.knownIssuesLink = this.addKnownIssuesLink();
@@ -197,30 +199,5 @@ export class SimHeader extends Component {
 
 	private addPatreonLink(container: HTMLElement) {
 		container.appendChild(<SimToolbarItem>{SocialLinks.buildPatreonLink()}</SimToolbarItem>);
-	}
-
-	protected customRootElement(): HTMLElement {
-		return (
-			<header className="sim-header">
-				<div className="sim-header-container">
-					<div className="sim-tabs-mount"></div>
-					<div className="import-export nav">
-						<div className="dropdown sim-dropdown-menu import-dropdown">
-							<button className="import-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>
-								<i className="fa fa-download"></i> {i18n.t('import.title')}
-							</button>
-							<ul className="dropdown-menu"></ul>
-						</div>
-						<div className="dropdown sim-dropdown-menu export-dropdown">
-							<button className="export-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>
-								<i className="fa fa-right-from-bracket"></i> {i18n.t('export.title')}
-							</button>
-							<ul className="dropdown-menu"></ul>
-						</div>
-					</div>
-					<div className="sim-toolbar nav"></div>
-				</div>
-			</header>
-		) as HTMLElement;
 	}
 }
