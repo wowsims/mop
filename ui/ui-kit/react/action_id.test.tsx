@@ -15,7 +15,7 @@ const deferFill = () => {
 	return { spy, resolvers };
 };
 
-const Probe = ({ actionId }: { actionId: ActionId }) => {
+const Probe = ({ actionId }: { actionId?: ActionId }) => {
 	const { iconUrl, name, href, ready } = useActionId(actionId);
 	return <a href={href} data-ready={String(ready)} data-icon={iconUrl} title={name} />;
 };
@@ -87,6 +87,16 @@ describe('useActionId', () => {
 		rerender(<Probe actionId={ActionId.fromItemId(7, 0, 0, 222)} />);
 
 		expect(anchor(container).href).toContain('forg=222');
+	});
+
+	it('resolves an absent id to empty fields without a fill', () => {
+		const { spy } = deferFill();
+		const { container } = render(<Probe actionId={undefined} />);
+
+		expect(anchor(container).dataset.icon).toBe('');
+		expect(anchor(container).getAttribute('href')).toBe('');
+		expect(anchor(container).dataset.ready).toBe('true');
+		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it('uses the spell url for a spell id', () => {

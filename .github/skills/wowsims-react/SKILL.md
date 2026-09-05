@@ -99,6 +99,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
+| `mountBoth` | `ui/ui-kit/react/picker_oracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
@@ -131,7 +132,13 @@ who did not write it has run these, because each one has already caught a defect
 the file passed straight through:
 
 1. **Dump both DOM trees** and compare tag order, class names and attributes — including what the
-   base class contributes and *when* it does. Say which two orders you compared.
+   base class contributes and *when* it does. Run it, do not read it: `mountBoth` in
+   `ui/ui-kit/react/picker_oracle.tsx` constructs the vanilla picker and renders the port over
+   equivalent mod objects and diffs them per element, marking a class-order-only difference as such.
+   `IconPicker.parity.test.tsx` is the worked example — a case list of configs, each at value 0 and
+   at the top value, plus a walk through every value and an `enableWhen` flip. Reading instead of
+   diffing is what let a port ship with one anchor where vanilla has three: the missing ones carry no
+   `href`, and `.icon-input-improved:not([href])` hides them, so nothing looked wrong.
 2. **Map both event sets.** Which DOM event commits in the vanilla component, which one commits in
    the React one? React's `onChange` is the *input* event; the vanilla pickers commit on the native
    `change`. That single mismatch produced three separate user-visible defects.
