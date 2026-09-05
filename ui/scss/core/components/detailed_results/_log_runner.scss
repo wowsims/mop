@@ -9,7 +9,14 @@
 
 .log-runner-actions {
 	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--spacer-2);
 	margin-bottom: var(--spacer-3);
+
+	@include media-breakpoint-up(lg) {
+		flex-direction: row;
+	}
 }
 
 .show-debug-picker {
@@ -102,44 +109,11 @@
 	}
 }
 
-.log-search-help {
-	display: flex;
-	align-items: center;
+.log-search {
+	width: 100%;
 
-	.tooltip-button {
-		--bs-btn-padding-y: 0;
-	}
-}
-
-.log-search-help-tooltip {
-	text-align: left;
-
-	p {
-		margin: var(--spacer-1) 0;
-	}
-
-	ul {
-		display: grid;
-		gap: var(--spacer-1);
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	li {
-		display: flex;
-		flex-direction: column;
-	}
-
-	code {
-		color: var(--bs-brand);
-	}
-
-	// The tooltip paints its own dark ground, so the description takes the tooltip's text colour
-	// dimmed rather than a page-level secondary colour, which is too dark to read on it.
-	span {
-		color: inherit;
-		opacity: 0.7;
+	@include media-breakpoint-up(lg) {
+		max-width: 50%;
 	}
 }
 
@@ -147,11 +121,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--spacer-1);
-	min-width: 25vw;
-}
-
-.log-search-field {
-	position: relative;
 }
 
 // The built filters sit under the field rather than inside it: a group is two rows tall once it
@@ -164,11 +133,10 @@
 }
 
 .log-search-group {
-	// Same box the APL builder uses for a list item: dimmed border, translucent body ground,
-	// square corners, and it firms up on hover. The tokens are shared rather than re-derived.
+	max-width: 250px;
 	display: flex;
 	flex-direction: column;
-	gap: var(--spacer-1);
+	gap: var(--spacer-2);
 	padding: var(--apl-spacer);
 	border: var(--apl-border);
 	border-radius: 0;
@@ -184,7 +152,6 @@
 .log-search-group-head {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 	gap: var(--spacer-2);
 	font-size: var(--content-font-size);
 }
@@ -192,6 +159,10 @@
 .log-search-group-field {
 	font-size: var(--btn-font-size);
 	line-height: 1.5;
+}
+
+.log-search-group-join {
+	margin-left: auto;
 }
 
 .log-search-add-field {
@@ -209,6 +180,10 @@
 }
 
 // Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
+.log-search-group-input {
+	width: 8rem;
+}
+
 .log-search-option-icon {
 	width: var(--icon-size-sm);
 	height: var(--icon-size-sm);
@@ -223,36 +198,11 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--spacer-1);
-	padding-left: var(--apl-spacer);
-	border-left: var(--apl-border);
 }
 
 .log-search-chip {
 	// Everything else - the outline, the pill, the hover, the delete button - is
 	// .saved-data-set-chip's, so that a query chip and a saved-data pill are the same control.
 	white-space: nowrap;
-}
-
-.log-search-suggestions {
-	// Carries .dropdown-menu, so the panel and its items look like every other dropdown in the
-	// app. Only the anchoring is ours: this one is placed against the search box rather than by
-	// Bootstrap's positioning, and it is toggled with [hidden] rather than .show.
-	position: absolute;
-	z-index: 2;
-	top: 100%;
-	left: 0;
-	right: 0;
-	margin-top: var(--spacer-1);
-	max-height: 16rem;
-	overflow-y: auto;
-
-	&:not([hidden]) {
-		display: block;
-	}
-
-	.log-search-suggestion {
-		width: 100%;
-		text-align: left;
-	}
 }
 

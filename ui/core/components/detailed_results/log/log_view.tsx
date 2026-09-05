@@ -6,7 +6,6 @@ import { SimUI } from '../../../sim_ui';
 import { TypedEvent } from '../../../typed_event.js';
 import { LogExporter } from '../../individual_sim_ui/exporters/detailed_log_exporter';
 import { BooleanPicker } from '../../pickers/boolean_picker.js';
-import { TooltipButton } from '../../tooltip_button';
 import { VirtualList } from '../../virtual_scroll/virtual_list';
 import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component.js';
 import { LogLineElem } from './components/log_line';
@@ -24,34 +23,6 @@ function selectedTargetNumber(resultData: SimResultData): number | null {
 	return selected.length === 1 ? selected[0].index + 1 : null;
 }
 const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [], spellIcons: new Map() };
-
-// The example queries are syntax, not prose: `spell:`, AND and OR are keywords the parser matches
-// literally, so only the descriptions beside them are translated.
-const SEARCH_EXAMPLES: Array<[string, string]> = [
-	['spell:"Death Coil"', 'one_ability'],
-	['source:Ghoul AND (Claw OR Sweeping)', 'group'],
-	['target:1|2', 'either_target'],
-	['type:cast -type:debug', 'kinds'],
-	['outcome:crit amount:>5000', 'numeric'],
-	['t:10-30', 'time_range'],
-];
-
-function escapeHtml(text: string): string {
-	return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function searchHelpContent(): string {
-	const rows = SEARCH_EXAMPLES.map(
-		([query, key]) => `<li><code>${escapeHtml(query)}</code><span>${escapeHtml(i18n.t(`results_tab.details.logs.search_help.${key}`))}</span></li>`,
-	).join('');
-	return (
-		`<div class="log-search-help-tooltip">` +
-		`<strong>${escapeHtml(i18n.t('results_tab.details.logs.search_help.title'))}</strong>` +
-		`<p>${escapeHtml(i18n.t('results_tab.details.logs.search_help.intro'))}</p>` +
-		`<ul>${rows}</ul>` +
-		`</div>`
-	);
-}
 
 export class LogView extends ResultComponent {
 	private readonly virtualList: VirtualList;
@@ -82,7 +53,6 @@ export class LogView extends ResultComponent {
 		super(config);
 
 		const searchRef = ref<HTMLDivElement>();
-		const searchHelpRef = ref<HTMLDivElement>();
 		const actionsRef = ref<HTMLDivElement>();
 		const buttonToTopRef = ref<HTMLButtonElement>();
 		const exportLogRef = ref<HTMLButtonElement>();
@@ -95,8 +65,7 @@ export class LogView extends ResultComponent {
 		this.rootElem.appendChild(
 			<>
 				<div ref={actionsRef} className="log-runner-actions">
-					<div ref={searchRef}></div>
-					<div ref={searchHelpRef} className="log-search-help"></div>
+					<div ref={searchRef} className="log-search"></div>
 					<button ref={exportLogRef} className="btn btn-primary order-last log-runner-scroll-to-top-btn me-2">
 						{i18n.t('results_tab.details.logs.export_button')}
 					</button>
@@ -127,7 +96,6 @@ export class LogView extends ResultComponent {
 		};
 
 		this.searchBar = new LogSearchBar(this.ui.search, { suggestions: () => this.logIndex?.suggestions() ?? EMPTY_SUGGESTIONS });
-		this.addChild(new TooltipButton(searchHelpRef.value!, searchHelpContent()));
 		this.searchBar.changeEmitter.on(() => this.refreshVisible());
 
 		this.ui.buttonToTop?.addEventListener('click', () => {

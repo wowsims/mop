@@ -41,6 +41,10 @@ type NumericFilter = { min: number; minInclusive: boolean; max: number; maxInclu
 // Accepts 'a-b' ranges and '>', '>=', '<', '<=', '=' comparisons; a bare number is exact.
 // The range separator and a negative sign are both '-', but the number pattern only stops
 // consuming at a non-digit, so '-5-10' still splits into -5 and 10.
+export function isNumericFilter(value: string): boolean {
+	return parseNumericFilter(value) !== null;
+}
+
 function parseNumericFilter(value: string): NumericFilter | null {
 	const trimmed = value.trim();
 	const range = /^(-?\d+(?:\.\d+)?)\s*-\s*(-?\d+(?:\.\d+)?)$/.exec(trimmed);
