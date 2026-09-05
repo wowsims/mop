@@ -125,7 +125,7 @@ export class BulkTab extends SimTab {
 	private canSatisfySetBonusMemo = new Map<string, boolean>();
 
 	constructor(simUI: IndividualSimHost<any>) {
-		super(simUI, { identifier: 'bulk-tab', title: i18n.t('bulk_tab.title') });
+		super(simUI, { identifier: 'bulk-tab', title: i18n.t('bulk_tab.title'), badge: i18n.t('bulk_tab.title_badge') });
 
 		this.simUI = simUI;
 		this.playerCanDualWield = getBulkPlayerCanDualWield(this.simUI.player);

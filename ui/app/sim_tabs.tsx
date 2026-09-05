@@ -102,12 +102,16 @@ export const SimTabs = ({ registry, strip, panes }: SimTabsProps) => {
 						onClick={() => {
 							registry.activate(entry.id);
 							trackPageView(entry.title, entry.id);
-						}}
-						// A title is a translation string that may carry markup — `bulk_tab.title` is
-						// `Batch (<span class="text-success">New</span>)` — and the nav item it replaces was
-						// built with innerHTML. Rendering it as text drops the span.
-						dangerouslySetInnerHTML={{ __html: entry.title }}
-					/>
+						}}>
+						{entry.title}
+						{entry.badge && (
+							<>
+								{' ('}
+								<span className="text-success">{entry.badge}</span>
+								{')'}
+							</>
+						)}
+					</button>
 				</li>
 			);
 		}),

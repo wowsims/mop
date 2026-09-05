@@ -5,6 +5,8 @@ export interface SimTabEntry {
 	/** Also the pane element's DOM id, and the class the header list item carries. */
 	id: string;
 	title: string;
+	/** Rendered as `title (badge)` with the badge in green. Only the batch tab has one. */
+	badge?: string;
 	pane: HTMLElement;
 	/**
 	 * `SimUI.addTab` hangs `aria-controls` on the list item; `SimTab` hangs it on the button. Nothing

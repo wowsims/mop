@@ -4,6 +4,8 @@ import type { SimUIHost } from './sim_host';
 export interface SimTabConfig {
 	identifier: string;
 	title: string;
+	/** Rendered after the title, in green. Kept out of `title` so neither is markup. */
+	badge?: string;
 }
 
 export abstract class SimTab extends Component {
@@ -31,7 +33,7 @@ export abstract class SimTab extends Component {
 		this.rootElem.appendChild(this.contentContainer);
 
 		// The nav item is React's: see app/sim_tabs.tsx.
-		this.simUI.tabs.attach({ id: config.identifier, title: config.title, pane: this.rootElem });
+		this.simUI.tabs.attach({ id: config.identifier, title: config.title, badge: config.badge, pane: this.rootElem });
 	}
 
 	protected abstract buildTabContent(): void;

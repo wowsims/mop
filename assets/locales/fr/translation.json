@@ -762,7 +762,8 @@
         }
     },
     "bulk_tab": {
-        "title": "Lot (<span class=\"text-success\">Nouveau</span>)",
+        "title": "Lot",
+        "title_badge": "Nouveau",
         "description": "<span className=\"bold\">Simulation par lot</span> est une nouvelle fonctionnalité similaire à la simulation <span className=\"bold\">Top Gear</span> sur <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> qui vous permet de sélectionner plusieurs objets et de les simuler pour trouver les meilleures combinaisons.<br />C'est une fonctionnalité <span className=\"text-brand\">Alpha</span>, donc si vous avez des commentaires ou trouvez un bug, veuillez le signaler !",
         "download_native": "Téléchargez le simulateur en local pour des résultats plus rapides.",
         "tabs": {
