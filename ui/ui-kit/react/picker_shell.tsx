@@ -1,7 +1,7 @@
 import type { InputConfig } from '@ui-kit/input';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 import { adoptNode, isNode } from './dom';
 
@@ -29,6 +29,12 @@ export function PickerShell<ModObject, T, V>({ config, cssClass, hidden, disable
 		console.warn(`${cssClass} ${config.id}: labelTooltip is neither a string nor a node, so it is not rendered.`, tooltip);
 	}
 	const tooltipId = typeof tooltip === 'string' || isNode(tooltip) ? `${config.id}-tooltip` : undefined;
+	// Held across re-renders: a picker re-renders on every notification from its own source, and
+	// re-mounting the tooltip would re-attach its anchor listeners each time.
+	const tooltipNode = useMemo(
+		() => (tooltipId ? <Tooltip id={tooltipId} content={isNode(tooltip) ? <span ref={adoptNode(tooltip)} /> : (tooltip as string)} /> : null),
+		[tooltipId, tooltip],
+	);
 
 	return (
 		<div className={clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide')}>
@@ -38,7 +44,7 @@ export function PickerShell<ModObject, T, V>({ config, cssClass, hidden, disable
 					{config.label}
 				</label>
 			)}
-			{tooltipId && <Tooltip id={tooltipId} content={isNode(tooltip) ? <span ref={adoptNode(tooltip)} /> : (tooltip as string)} />}
+			{tooltipNode}
 			{config.description &&
 				(isNode(config.description) ? (
 					<div className="input-description" ref={adoptNode(config.description)} />

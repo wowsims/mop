@@ -120,6 +120,25 @@ Add its row **in the same commit** as the component, plus a Change log entry. A 
 row is how the next person builds it a second time — that is the failure this table exists to
 prevent, so treat a missing row as a failed review rather than a formatting nit.
 
+### Reviewing a port — the six checks
+
+A port of an existing vanilla component is not done when its tests pass. It is done when someone
+who did not write it has run these, because each one has already caught a defect that every test in
+the file passed straight through:
+
+1. **Dump both DOM trees** and compare tag order, class names and attributes — including what the
+   base class contributes and *when* it does. Say which two orders you compared.
+2. **Map both event sets.** Which DOM event commits in the vanilla component, which one commits in
+   the React one? React's `onChange` is the *input* event; the vanilla pickers commit on the native
+   `change`. That single mismatch produced three separate user-visible defects.
+3. **Every config option handled**, each with a test that fails when the behaviour is removed. Name
+   any test that would pass either way — several always exist.
+4. **`git status --short`**: anything outside the new folder is a failed review. The dual-stack rule
+   means the vanilla component is untouched.
+5. **`showWhen` adds `hide`**, and the node stays in the DOM.
+6. **Re-run the gates yourself** rather than trusting the report: type-check, oxlint on the new
+   files, the new test file.
+
 ## Why abstractions here get bypassed — read this before designing one
 
 Six existing abstractions in this tree are ignored by most of their potential callers. There are

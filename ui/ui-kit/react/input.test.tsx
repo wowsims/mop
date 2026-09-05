@@ -49,3 +49,37 @@ describe('useInput', () => {
 		expect(container.textContent).toBe('1,2,3');
 	});
 });
+
+describe('useInput revision', () => {
+	it('counts notifications from its own source only', () => {
+		const own = new Set<() => void>();
+		const unrelated = new Set<() => void>();
+		const mod = { value: 1 };
+		const config = {
+			storeSubscribe: () => (listener: () => void) => {
+				own.add(listener);
+				return () => own.delete(listener);
+			},
+			getValue: (m: typeof mod) => m.value,
+			setValue: () => {},
+		};
+
+		let renders = 0;
+		const Probe = () => {
+			const { revision } = useInput(mod, config);
+			renders++;
+			return <span>{revision}</span>;
+		};
+		const { container } = render(<Probe />);
+		const atMount = renders;
+
+		// A store the picker never subscribed to: no listener of ours to call, so nothing re-renders.
+		act(() => unrelated.forEach(listener => listener()));
+		expect(renders).toBe(atMount);
+		expect(container.textContent).toBe('0');
+
+		// Its own source, with the value unchanged — vanilla refresh() still runs, so this must render.
+		act(() => own.forEach(listener => listener()));
+		expect(container.textContent).toBe('1');
+	});
+});

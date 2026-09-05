@@ -88,13 +88,27 @@ describe('EnumPicker', () => {
 
 	it('links the label to the select, and carries inline and extra classes', () => {
 		const settings = new Settings();
-		const { container } = render(
-			<EnumPicker modObject={settings} config={configFor({ inline: true, extraCssClasses: ['encounter-picker-field'] })} />,
-		);
+		const { container } = render(<EnumPicker modObject={settings} config={configFor({ inline: true, extraCssClasses: ['encounter-picker-field'] })} />);
 		const root = container.firstElementChild!;
 		expect(root.classList.contains('input-inline')).toBe(true);
 		expect(root.classList.contains('encounter-picker-field')).toBe(true);
 		expect(root.querySelector('label')!.getAttribute('for')).toBe(select().id);
+	});
+
+	// config is an object literal in the caller's render, so a values-keyed effect would re-assign
+	// select.value on every render — which closes the dropdown under a user who has it open.
+	it('does not re-assign the selection when the parent re-renders with a fresh config', () => {
+		const settings = new Settings(1);
+		// Callers write `values: [...]` inline, so the array is rebuilt on every parent render.
+		const freshConfig = () => configFor({ values: values.map(entry => ({ ...entry })) });
+		const { rerender } = render(<EnumPicker modObject={settings} config={freshConfig()} />);
+
+		select().value = '';
+		rerender(<EnumPicker modObject={settings} config={freshConfig()} />);
+		expect(select().value).toBe('');
+
+		act(() => settings.set(1));
+		expect(select().value).toBe('1');
 	});
 
 	it('subscribes once and unsubscribes on unmount', () => {
