@@ -213,12 +213,48 @@ const PROBE = () => {
 				.map(idOf),
 		focusedId: () => idOf(document.activeElement),
 	};
+
+	// The same treatment for the header's import/export dropdowns, ahead of the Base UI `Menu` swap
+	// rather than after it — a gate that only understands the shape it is about to lose cannot say
+	// whether the replacement behaves.
+	//
+	// Bootstrap's shape: a `[data-bs-toggle=dropdown]` button beside a `.dropdown-menu` that gains
+	// `.show`, with `aria-expanded` on the toggle. Base UI's `Menu` will portal its popup out of the
+	// dropdown entirely and link it by `aria-controls`, so "the menu" cannot stay a sibling lookup.
+	// Both are covered below; `aria-expanded` is the one signal common to them.
+	// Scoped: there are dropdowns outside the header too, and a gate asking about the header's two
+	// must not silently start counting the sim title's.
+	const togglesOf = (root = document) => [...root.querySelectorAll('[data-bs-toggle=dropdown], [aria-haspopup=menu]')];
+	const menuOf = toggle => {
+		const controlled = toggle.getAttribute('aria-controls');
+		if (controlled) {
+			const byId = document.getElementById(controlled);
+			if (byId) return byId;
+		}
+		return toggle.parentElement?.querySelector('.dropdown-menu, [role=menu]') ?? null;
+	};
+
+	window.simDropdownProbe = {
+		toggles: togglesOf,
+		menuOf,
+		// `.show` is Bootstrap's; `aria-expanded` is what both shapes agree on, and Base UI also
+		// unmounts the popup entirely — so "no menu in the DOM" counts as closed rather than unknown.
+		isOpen: toggle => {
+			if (toggle.getAttribute('aria-expanded') !== 'true') return false;
+			const menu = menuOf(toggle);
+			return !menu || !menu.classList.contains('dropdown-menu') || menu.classList.contains('show');
+		},
+		items: toggle => [...(menuOf(toggle)?.querySelectorAll('.dropdown-item, [role=menuitem]') ?? [])],
+		// Which dropdown this is, for a gate that names them: the toggle's own class carries it
+		// (`import-link` / `export-link`) and must keep doing so through the swap.
+		nameOf: toggle => [...toggle.classList].find(name => name.endsWith('-link')) ?? null,
+	};
 };
 
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */
-export const openSpec = async (browser, port, spec, { selector = '.sim-ui', settle = 2500 } = {}) => {
+export const openSpec = async (browser, port, spec, { selector = '.sim-ui', settle = 2500, route } = {}) => {
 	const page = await browser.newPage();
 	const errors = [];
 	page.on('pageerror', e => errors.push(String(e)));
@@ -230,6 +266,8 @@ export const openSpec = async (browser, port, spec, { selector = '.sim-ui', sett
 		window.alert = () => {};
 	});
 	await page.addInitScript(PROBE);
+	// Answered before navigation, for an endpoint the static servers do not have.
+	if (route) await page.route(route[0], r => r.fulfill(route[1]));
 	await page.goto(`http://localhost:${port}/mop/${spec}/`, { waitUntil: 'load', timeout: 60000 });
 	await page.waitForSelector(selector, { timeout: 60000 });
 	await page.waitForTimeout(settle);

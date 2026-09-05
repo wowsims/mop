@@ -8,7 +8,7 @@
 //
 // Runs against `BASE_PORT` by default; set `PORT` to point at the React build. The whole output
 // should be identical on both.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -23,13 +23,13 @@ const structure = () => {
 		// own shape already differs by design (Base UI replaced it) and has its own gates, so it is
 		// normalised to a token rather than compared here.
 		containerChildren: [...container.children].map(el => (el.querySelector('[role=tab]') || el.matches('.sim-tabs') ? '<tabs>' : describe(el))),
-		dropdowns: [...header.querySelectorAll('.dropdown')].map(d => ({
-			className: [...d.classList].sort().join('.'),
-			toggle: d.querySelector('button')?.className ?? null,
-			// The plugin needs these; dropping one silently disables the menu.
-			bsToggle: d.querySelector('button')?.dataset.bsToggle ?? null,
-			expanded: d.querySelector('button')?.getAttribute('aria-expanded') ?? null,
-			items: d.querySelectorAll('.dropdown-menu > *').length,
+		// Read through `simDropdownProbe` so this survives the Base UI `Menu` swap. The toggle's own
+		// class is the identity — `import-link` / `export-link` — and the item count is the contents;
+		// neither is allowed to change. `expanded` is the one state signal both shapes share.
+		dropdowns: window.simDropdownProbe.toggles(header).map(toggle => ({
+			name: window.simDropdownProbe.nameOf(toggle),
+			expanded: toggle.getAttribute('aria-expanded'),
+			items: window.simDropdownProbe.items(toggle).length,
 		})),
 		// Each item, not just the count: the link's own classes, whether it is an anchor and where it
 		// points, and the icon glyph — `Icon` cannot emit the bare `fa` prefix these use, so a port
@@ -64,27 +64,21 @@ const structure = () => {
 	};
 };
 
-const openState = selector => document.querySelector(selector)?.parentElement?.querySelector('.dropdown-menu')?.classList.contains('show') ?? null;
+const openState = selector => {
+	const toggle = document.querySelector(selector);
+	return toggle ? window.simDropdownProbe.isOpen(toggle) : null;
+};
 
 const browser = await launch();
-const context = await browser.newContext();
-const page = await context.newPage();
-const errors = [];
-page.on('pageerror', e => errors.push(String(e)));
-page.on('console', m => {
-	if (m.type() === 'error' && !ENVIRONMENTAL.test(m.text())) errors.push('console: ' + m.text());
-});
-await page.addInitScript(() => {
-	window.alert = () => {};
-});
 // The download-binary link is otherwise invisible to every gate. `isNative()` is
 // `hostname.includes('localhost')`, so under these servers it takes the `fetch('/version')` branch —
 // which 404s here, leaving the link unrendered on both builds and the port unverified. Answering it
 // makes the outdated case real, and it is the only branch that renders anything.
-await page.route('**/version', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ outdated: 2 }) }));
-await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-await page.waitForSelector('.sim-header', { timeout: 60000 });
-await page.waitForTimeout(2500);
+const { page, errors } = await openSpec(browser, PORT, SPEC, {
+	selector: '.sim-header',
+	// Answered before the page loads, so the outdated branch is real on both builds.
+	route: ['**/version', { status: 200, contentType: 'application/json', body: JSON.stringify({ outdated: 2 }) }],
+});
 
 console.log(`${SPEC} on :${PORT}\n`);
 console.log('structure');
@@ -162,6 +156,6 @@ await page.waitForTimeout(600);
 console.log(`  scrolled    ${await stuck()}`);
 
 if (errors.length) for (const e of errors) console.log(`  ERROR ${e}`);
-await context.close();
+await page.close();
 await browser.close();
 process.exit(errors.length ? 1 : 0);

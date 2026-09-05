@@ -1069,6 +1069,29 @@ Two things specific to this migration:
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **`simDropdownProbe`, landed before the `Menu` port rather than after it.** The header
+  gate read Bootstrap's shape directly — a `.dropdown-menu` sibling that gains `.show`, and
+  `data-bs-toggle` on the toggle — which is exactly the shape the Base UI `Menu` adapter removes. A
+  gate that only understands the shape it is about to lose cannot say whether the replacement
+  behaves, so the reader moved into `browser.mjs` beside `simTabsProbe` and now covers both: the
+  menu is found by `aria-controls` first and a sibling lookup second, `aria-expanded` is the state
+  signal both shapes share, and a popup that has been unmounted counts as closed rather than
+  unknown. `toggles(root)` is scoped, because there are dropdowns outside the header.
+
+  What this places on the `Menu` port, the same way the tab probe constrained the `Tabs` one: the
+  toggle keeps its `import-link` / `export-link` class as its identity, and keeps `aria-expanded`.
+
+  `header-toolbar.mjs` also moved onto `openSpec`, which needed a `route` option for the `/version`
+  answer it was doing by hand. Output identical on both ports for `warrior/arms` and
+  `priest/discipline`, and every section below `dropdowns` is byte-for-byte what it was.
+
+  **Next unit is the `Menu` adapter itself** — import/export dropdowns first, then the sim title
+  dropdown and the three dropdown pickers. It is Tabs-sized, not encounter-sized: new markup, its
+  own SCSS, a `parity.mjs` normalisation for the changed subtree, and the hover-to-open behaviour
+  that `shared/bootstrap_overrides.ts` currently supplies globally from a `body` listener keyed on
+  `[data-bs-toggle=dropdown]` — which the ported dropdowns will no longer match, while the
+  un-ported ones still need it.
+
 - 2026-09-06 **Item swap ported.** Same shape as encounter: the settings tab hands `SimApp` a
   content-block body, React renders into it. Two things worth keeping:
 
