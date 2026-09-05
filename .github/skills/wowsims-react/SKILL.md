@@ -134,24 +134,46 @@ commit as the change it gates proves nothing:
    tracked, a re-click stops being tracked).
 5. Optional `Tabs.Indicator` for the underline.
 
-### Animation: `motion`, for the panes only
+### Animating the panes — read `docs/react/handbook/animation.md` in the package
 
-Decided 2026-09-05, not yet installed — it lands with its first consumer, the way `Toast`, `Dialog`
-and `Menu` do. Two things to get right when it does:
+Base UI documents three routes: CSS transitions via `[data-starting-style]` / `[data-ending-style]`,
+CSS animations via `[data-open]` / `[data-closed]`, and JS libraries through the `render` prop. It
+recommends transitions over animations, because a transition cancels smoothly mid-flight — which is
+the case here, since tabs get switched fast.
 
-- **`AnimatePresence` is the wrong tool here.** It animates a component *out of the tree*, and these
-  panes must stay mounted: their content is built once by a vanilla constructor and three of them
-  read the live document. The fit is a `motion.div` animating opacity over a kept-mounted panel,
-  which replaces the hand-written `active`-before-`show` rAF dance in `sim_tabs.tsx` and the
-  `[data-ending-style]{display:none}` workaround the plan needed for Base UI's own transition, where
-  the outgoing panel is briefly still laid out in `.sim-main`'s flex row.
-- **It buys `prefers-reduced-motion` for free**, which the current `.fade` CSS does not honour.
+**The pane fade is enter-only, and that decides it.** Bootstrap's rules are
+`.tab-content > .tab-pane { display: none }`, `> .active { display: block }`
+(`bootstrap/scss/_nav.scss:189-196`) and `.fade:not(.show) { opacity: 0 }` over
+`$transition-fade: opacity .15s linear`. So the *outgoing* pane is hidden instantly — there is no
+exit animation to preserve, and the "outgoing panel still laid out in `.sim-main`'s flex row" blip
+only appears if one is added. `keepMounted` puts a real `hidden` attribute on the closed panel, and
+Bootstrap's reboot already ships `[hidden] { display: none !important }`, so the instant hide comes
+for free and `[data-starting-style] { opacity: 0 }` plus a 150 ms transition reproduces the rest.
+That is the faithful port, it needs no dependency, and it deletes the `active`-before-`show` rAF
+dance in `sim_tabs.tsx`.
 
-Not for tooltips: react-tooltip owns its own fade, and its node only unmounts on that transition's
-`transitionend` — overriding the opacity is precisely the defect recorded under "Things that will
-bite". Leave it alone.
+**`motion` is therefore a design choice, not a porting requirement.** If richer enter/exit is wanted,
+the docs' kept-mounted recipe applies — and note it is the *second* pattern, not the first:
 
-`tabs-behaviour.mjs` reads computed opacity, so it keeps working against inline-animated values.
+```tsx
+<Tabs.Panel value={id} keepMounted render={(props, state) => (
+  <motion.div {...(props as HTMLMotionProps<'div'>)} initial={false} animate={{ opacity: state.hidden ? 0 : 1 }} />
+)} />
+```
+
+`AnimatePresence` is for components unmounted when closed; these panes stay mounted, because their
+content is built once by a vanilla constructor and three of them read the live document. Two API
+details worth not rediscovering: `TabsPanelState` exposes **`hidden` and `transitionStatus`, not
+`open`** (`tabs/panel/TabsPanel.d.ts:17-26`), and Base UI detects animation completion through
+`element.getAnimations()`, so any Motion animation must include `opacity` — the docs suggest
+`opacity: 0.9999` when opacity is not otherwise part of it.
+
+Not for tooltips either way: react-tooltip owns its own fade, and its node only unmounts on that
+transition's `transitionend` — overriding the opacity is precisely the defect recorded under "Things
+that will bite".
+
+`tabs-behaviour.mjs` reads computed opacity, so it works against CSS transitions and inline-animated
+values alike.
 
 ### What the swap must satisfy
 
