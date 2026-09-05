@@ -144,41 +144,74 @@
 }
 
 .log-search-bar {
-	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-1);
 	min-width: 25vw;
 }
 
-.log-search-chips {
-	// Carries .form-control, so the chrome comes from the same place as every other input in the
-	// app; only the parts that make it hold chips are set here.
+.log-search-field {
+	position: relative;
+}
+
+// The built filters sit under the field rather than inside it: a group is two rows tall once it
+// has values, and nesting that inside a text input makes the caret jump around as it grows.
+.log-search-groups {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: var(--spacer-1) var(--spacer-2);
+}
+
+.log-search-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-1);
+	padding: var(--spacer-1) var(--spacer-2);
+	border: 1px solid var(--bs-border-color);
+	border-radius: var(--bs-border-radius);
+}
+
+.log-search-group-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacer-2);
+	font-size: var(--content-font-size);
+}
+
+.log-search-group-field {
+	color: var(--bs-secondary-color);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.log-search-group-join,
+.log-search-group-add,
+.log-search-add-field {
+	align-self: center;
+
+	--bs-btn-padding-x: var(--spacer-1);
+	--bs-btn-padding-y: 0;
+
+	font-size: var(--content-font-size);
+	line-height: 1.5;
+	text-decoration: none;
+}
+
+.log-search-group-join {
+	color: var(--bs-brand);
+}
+
+// Same indent-and-rule the APL builder uses for a nested list, so a value reads as belonging to
+// the field above it.
+.log-search-group-items {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--spacer-1);
-	height: auto;
-	cursor: text;
-
-	// The real <input> is a bare caret inside the box, so the box has to take the focus ring.
-	&:focus-within {
-		border-color: $input-focus-border-color;
-		box-shadow: $input-focus-box-shadow;
-	}
-
-	.log-search-input {
-		flex: 1 1 auto;
-		min-width: 6rem;
-		width: auto;
-		border: none;
-		box-shadow: none;
-		padding: 0;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-
-		&:focus {
-			outline: none;
-		}
-	}
+	padding-left: var(--spacer-2);
+	border-left: 1px solid var(--bs-border-color);
 }
 
 .log-search-chip {

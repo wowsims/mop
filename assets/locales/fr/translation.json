@@ -2026,6 +2026,7 @@
 				"event_column": "Événement",
 				"show_debug": "Afficher les messages de débogage",
 				"search_placeholder": "Search logs…",
+				"search_add_filter": "Add filter",
 				"search_help": {
 					"title": "Search syntax",
 					"intro": "Terms are combined with AND unless you say otherwise. Use OR, NOT and parentheses to group them.",
