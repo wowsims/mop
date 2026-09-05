@@ -317,7 +317,7 @@ of the duplication sweep was to build each shape once.
 | `PickerShell` | `ui/ui-kit/PickerShell/` | `Input`'s constructor: root classes, label, description | the picker's own class, its input(s), and the root `ref` — so a picker whose vanilla constructor appended into its own root can mount that with `useLegacyMount` | class order, `form-label`, tooltip and description handling |
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/hooks/useInput.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
-| `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
+| `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href`. The `<button>` branch is Base UI's `Button`; the `<a>` branch is **deliberately not** |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
@@ -765,6 +765,25 @@ measured: same 41×18 box, 14px/700 SimDefaultFont, 17.5px line-height, 7px bott
 letter-spacing (from the global `*` rule, which an `h3` inherits too). What the element used to pick
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
+
+## `Button`: the `<button>` half only
+
+The `<button>` branch renders Base UI's `Button`. The `<a>` branch does not, on Base UI's own
+instruction (`docs/react/components/button.md:150`): *"Links (`<a>`) have their own semantics and
+should not be rendered as buttons through the `render` prop."* That matches why `as="a"` requires an
+`href` here — `item-picker-icon`, `glyph-link`, `gem-socket-container` and `metrics-action-icon` are
+anchors *because* of the wowhead link they carry. They are links that look like buttons, so wrapping
+them would layer `role="button"` and keyboard handling on top of link semantics.
+
+What the swap buys: `data-disabled` for styling, enforced button semantics, and a dev warning when
+`nativeButton={false}` is put on a real `<button>`. What it does not: `useButton` does **not** default
+`type="button"`, so that stays ours — a `<button>` in a form submits it otherwise, and several here
+are in forms. `focusableWhenDisabled` is Base UI's and is not exposed on our props yet; the buttons
+that would want it (Simulate, Stat Weights) are built imperatively by `addAction`, not through this
+component, so exposing it now would be API with no caller.
+
+Rendered DOM is unchanged — `parity.mjs` and `panes-parity.mjs` both pass untouched, so there is no
+`INTENDED` entry to add.
 
 ## Pickers are Base UI `Field`
 
