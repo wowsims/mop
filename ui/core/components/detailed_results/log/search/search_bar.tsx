@@ -2,20 +2,18 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../../i18n/config';
+import { OUTCOMES } from '../../../../proto_utils/combat_log/types';
 import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
 import type { DropdownValueConfig } from '../../../pickers/dropdown_picker';
 import { DropdownPicker, TextDropdownPicker } from '../../../pickers/dropdown_picker';
 import type { SuggestionSource } from './indexes';
-import { isNumericFilter } from './indexes';
+import { isNumericFilter, TYPE_SUGGESTIONS } from './indexes';
 import type { ClauseField, QueryNode } from './query';
 import { FIELD_NAMES } from './query';
 
 // Matches the debounce master's log search used.
 const PENDING_DEBOUNCE_MS = 150;
-
-const OUTCOME_SUGGESTIONS = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 'block', 'critical-block', 'blocked-glance'];
-const TYPE_SUGGESTIONS = ['damage', 'heal', 'shield', 'resource', 'aura', 'buff', 'cast', 'major-cooldown', 'stat-change', 'debug'];
 
 // These two are ranges and comparisons over a number, not a set of values, so they are typed
 // rather than picked. The placeholders are syntax, so they are not translated.
@@ -285,12 +283,12 @@ export class LogSearchBar extends Component {
 		return this.valueCandidates(field).map(value => ({ value, label: sentenceCase(value), iconUrl: icons.get(value) }));
 	}
 
-	private valueCandidates(field: ClauseField): Array<string> {
+	private valueCandidates(field: ClauseField): ReadonlyArray<string> {
 		switch (field) {
 			case 'type':
 				return TYPE_SUGGESTIONS;
 			case 'outcome':
-				return OUTCOME_SUGGESTIONS;
+				return OUTCOMES;
 			case 'school':
 				return this.config.suggestions().schools;
 			case 'spell':

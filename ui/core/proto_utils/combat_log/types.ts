@@ -59,10 +59,16 @@ export class Entity {
 // The one token the sim prints per damage line (sim/core/flags.go:123). Exactly one arrives, so
 // the UI maps it rather than re-deriving a precedence from booleans.
 //
+// An array rather than a bare union because the log search offers the same set as filter values;
+// listing it once is what keeps the two from drifting. The order is that list's display order -
+// the parse keys a token map instead of scanning, so nothing here depends on it.
+//
 // 'crush' is absent on purpose: OutcomeCrush is declared and read back in String(), but nothing in
 // sim/ ever sets it, so the token cannot reach the log. Partial resists are gone for the same
 // reason - the sim contains no "% Resist" fragment at all.
-export type Outcome = 'miss' | 'dodge' | 'parry' | 'critical-block' | 'blocked-glance' | 'block' | 'glance' | 'crit' | 'hit';
+export const OUTCOMES = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 'block', 'critical-block', 'blocked-glance'] as const;
+
+export type Outcome = (typeof OUTCOMES)[number];
 
 export type DamageEffect = 'damage' | 'healing' | 'shielding';
 

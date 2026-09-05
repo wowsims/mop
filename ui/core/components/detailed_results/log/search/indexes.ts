@@ -1,4 +1,4 @@
-import type { CombatLog, DamageEffect, LogKind, Outcome } from '../../../../proto_utils/combat_log/types';
+import type { CombatLog, DamageEffect, LogKind, Outcome, ParsedKind } from '../../../../proto_utils/combat_log/types';
 import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
 import { spellSchoolNames } from '../../../../proto_utils/names';
 import type { Clause, ClauseField, QueryNode } from './query';
@@ -13,28 +13,45 @@ type SortedInts = Int32Array | ReadonlyArray<number>;
 
 const EMPTY: SortedInts = [];
 
-// 'cast' unions every cast-related kind because a user typing it means "show me the casts",
-// not the specific began/cancelled/completed split. 'buff' is a plainer synonym for 'aura'.
-const TYPE_KIND_ALIASES: Partial<Record<string, Array<LogKind>>> = {
-	cast: ['cast-began', 'cast-cancelled', 'cast-completed', 'cast'],
-	aura: ['aura'],
-	buff: ['aura'],
-	resource: ['resource'],
-	cooldown: ['major-cooldown'],
-	stacks: ['aura-stacks'],
-};
+type TypeFilter = { kinds: ReadonlyArray<LogKind> } | { effect: DamageEffect } | { debug: true };
 
-// 'damage' is an effect, not a kind: the 'damage' kind tags every damage-dealt line, heals and
-// shields included, so routing it through the kind index would make type:damage and type:heal
-// overlap instead of partition. A miss has no effect at all and matches neither, which is what
-// master's isDamage() reported for it too.
-const TYPE_EFFECT_ALIASES: Partial<Record<string, DamageEffect>> = {
-	damage: 'damage',
-	heal: 'healing',
-	healing: 'healing',
-	shield: 'shielding',
-	shielding: 'shielding',
-};
+// One row per token the Type filter offers. The dropdown lists these keys and matchType reads the
+// same rows, so a token cannot be offered without a matcher, or matched without being offered.
+//
+// 'cast' unions every cast-related kind because a user picking it means "show me the casts", not
+// the specific began/cancelled/completed split. 'buff' is a plainer synonym for 'aura'.
+//
+// damage/heal/shield select an effect, not a kind: the 'damage' kind tags every damage-dealt line,
+// heals and shields included, so routing them through the kind index would make type:damage and
+// type:heal overlap instead of partition. A miss has no effect at all and matches neither, which
+// is what master's isDamage() reported for it too.
+const TYPE_FILTERS = {
+	damage: { effect: 'damage' },
+	heal: { effect: 'healing' },
+	shield: { effect: 'shielding' },
+	resource: { kinds: ['resource'] },
+	aura: { kinds: ['aura'] },
+	buff: { kinds: ['aura'] },
+	cast: { kinds: ['cast-began', 'cast-cancelled', 'cast-completed', 'cast'] },
+	'major-cooldown': { kinds: ['major-cooldown'] },
+	'stat-change': { kinds: ['stat-change'] },
+	debug: { debug: true },
+} as const satisfies Record<string, TypeFilter>;
+
+type TypeToken = keyof typeof TYPE_FILTERS;
+
+export const TYPE_SUGGESTIONS: ReadonlyArray<TypeToken> = Object.keys(TYPE_FILTERS) as Array<TypeToken>;
+
+// Parsed kinds no token reaches, each deliberately:
+//   'plain'       - the parser's fallback for a line it did not recognise; nothing to select on.
+//   'damage'      - reached through the effect rows above, never through the kind index.
+//   'aura-stacks' - no token offers it, and filter values are picked rather than typed.
+// A new ParsedKind that is neither covered by a row above nor listed here stops compiling below,
+// which is the only direction `satisfies` cannot catch on its own.
+type UnfilterableKind = 'plain' | 'damage' | 'aura-stacks';
+type FilteredKind = Extract<(typeof TYPE_FILTERS)[TypeToken], { kinds: ReadonlyArray<unknown> }>['kinds'][number];
+type AssertNever<T extends never> = T;
+type _UncoveredKinds = AssertNever<Exclude<ParsedKind, UnfilterableKind | FilteredKind>>;
 
 type NumericFilter = { min: number; minInclusive: boolean; max: number; maxInclusive: boolean };
 
@@ -418,12 +435,11 @@ export class LogIndex {
 	}
 
 	private matchType(rawValue: string): SortedInts {
-		const value = rawValue.toLowerCase();
-		if (value === 'debug') return this.debugIndexes;
-		const effectAlias = TYPE_EFFECT_ALIASES[value];
-		if (effectAlias) return this.effectIndex.get(effectAlias) ?? EMPTY;
-		const kinds = TYPE_KIND_ALIASES[value] ?? [value as LogKind];
-		return kinds.map(k => this.kindIndex.get(k) ?? EMPTY).reduce<SortedInts>((acc, cur) => unionSorted(acc, cur), EMPTY);
+		const filter: TypeFilter | undefined = TYPE_FILTERS[rawValue.toLowerCase() as TypeToken];
+		if (!filter) return EMPTY;
+		if ('debug' in filter) return this.debugIndexes;
+		if ('effect' in filter) return this.effectIndex.get(filter.effect) ?? EMPTY;
+		return filter.kinds.map(k => this.kindIndex.get(k) ?? EMPTY).reduce<SortedInts>((acc, cur) => unionSorted(acc, cur), EMPTY);
 	}
 
 	private matchEntity(nameIndex: Map<string, Int32Array>, numberIndex: Map<number, Int32Array>, rawValue: string): SortedInts {
