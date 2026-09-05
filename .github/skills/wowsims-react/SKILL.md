@@ -187,6 +187,11 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
 - **`revision` counts notifications**, and a picker holding text the user is editing re-syncs on it
   rather than on a value change. `Input.refresh()` runs on every notification, so half-typed input is
   reset by any store event, not only by one that changes this input's value.
+- **Every bound picker re-renders on every notification from its own source**, whether or not its
+  value changed, because `revision` is part of the snapshot. That is `Input.refresh()`'s behaviour,
+  and it is what text pickers need — but it means the encounter tab's ~20 pickers each re-render on
+  any `Encounter` change. Faithful, and a known cost: if a tab feels slow in Phase 3, this is the
+  first thing to measure, not the last.
 - **A text or select picker is uncontrolled and synced imperatively.** Not the usual React shape, and
   deliberate: the vanilla picker commits on the native `change` event — blur *after an edit*, and
   Enter — while React's `onChange` is the input event, which fires per keystroke. Committing on blur
@@ -194,6 +199,23 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
   user never entered. A controlled `value` also renders a `value` attribute the vanilla DOM lacks and
   ties `size` to every render instead of to typing. `BooleanPicker` stays controlled: a checkbox's
   `change` and React's `onChange` are the same event.
+
+### `ListPicker` stays vanilla for now — decided, do not re-open
+
+It is not being ported in Phase 2, and the reasons are structural rather than "it is big":
+
+- **Six of its seven callers are APL**, which is last in the Phase 3 order. The seventh is the
+  encounter target list, which wraps as a `LegacyHost` island when encounter ports.
+- **`newItemPicker` returns a vanilla `Input`** — the contract, and every caller, hands back an
+  instance whose `refresh()`, `signal` and `addOnDisposeCallback` the list drives. A React shell
+  hosting those through `LegacyHost` buys nothing over hosting the whole vanilla list that way.
+- **Drag state is a module global** (`curDragData`) that crosses list instances, and a drop reads
+  `curDragData.listPicker.config` directly. Two implementations sharing that is a real hazard, not a
+  hypothetical one. Encounter's list never drags with an APL list (`invalidDropTarget` rejects a
+  different `itemLabel`), so nothing is lost by waiting.
+
+It ports when APL ports, with React children — which is also where hand-written list reconciliation
+is actually worth deleting.
 
 ## Co-located SCSS, in practice
 
@@ -272,7 +294,12 @@ class name across `ui/` before moving its rules.
 - **Goldens do not cover the shell.** `tools/state-snapshots/snapshot.ts` imports
   `IndividualSimUIConfig` as a *type* and hand-mirrors `applyDefaults`. They prove no state write
   leaked into a component. They say nothing about whether anything rendered.
-- **`ListPicker` splices the array you give it.** `getValue` returns a `.slice()`.
+- **`ListPicker` splices the array you give it.** `getValue` returns a `.slice()`. It also mutates
+  what `getValue` returned, in place: `newList.splice(index, 1)` on delete and `newList[index] = …`
+  in the per-item `setValue` (`list_picker.tsx` ~295-300 and ~511). A React picker rendered *inside*
+  a vanilla list item reads from `useStoreSubscribe`'s cached snapshot, so if a sibling vanilla
+  handler mutates that same array in place, the React picker shows stale data until the next
+  notification. Bites in Phase 3, when APL ports.
 - **Some tab contents read the live document while being constructed.** `detailed_results.tsx`
   does `document.querySelector('.dr-toolbar')` (and the same for the sticky-toolbar root) inside its
   constructor, so its pane must already be in the page by then. This is why `SimTabRegistry.attach`
