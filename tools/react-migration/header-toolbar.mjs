@@ -35,6 +35,10 @@ const structure = () => {
 		// points, and the icon glyph — `Icon` cannot emit the bare `fa` prefix these use, so a port
 		// that reached for it would silently change every one of them.
 		toolbarItems: [...(header.querySelector('.sim-toolbar')?.children ?? [])].map(item => {
+			// The socials are a container of their own, described below rather than here: their
+			// element *shape* is one of the things the port changes, so reading `querySelector('a,
+			// span, button')` off the container would compare the wrapper instead of the link.
+			if (item.matches('.sim-toolbar-socials')) return { item: describe(item), socials: item.children.length };
 			const link = item.querySelector('a, span, button');
 			return {
 				item: describe(item),
@@ -42,6 +46,18 @@ const structure = () => {
 				href: link?.getAttribute('href') ?? null,
 				target: link?.getAttribute('target') ?? null,
 				icon: [...(item.querySelector('i')?.classList ?? [])].sort().join('.') || null,
+			};
+		}),
+		// Where each social points, what it shows and what it is called — everything about them that
+		// the port is *not* allowed to change. The element around the anchor is deliberately absent.
+		socials: [...header.querySelectorAll('.sim-toolbar-socials .sim-toolbar-item')].map(item => {
+			const link = item.querySelector('a');
+			return {
+				className: [...(link?.classList ?? [])].sort().join('.') || null,
+				href: link?.getAttribute('href') ?? null,
+				target: link?.getAttribute('target') ?? null,
+				icon: [...(item.querySelector('i')?.classList ?? [])].sort().join('.') || null,
+				text: link?.textContent.trim() || null,
 			};
 		}),
 		knownIssuesHidden: header.querySelector('.known-issues')?.classList.contains('hide') ?? null,
