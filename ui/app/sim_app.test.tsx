@@ -12,15 +12,22 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly simTabContentsContainer = document.createElement('main');
 			readonly simHeader = { simTabsContainer: document.createElement('ul') };
 			readonly tabs = new SimTabRegistry(this.simHeader.simTabsContainer, this.simTabContentsContainer);
+			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
+			// Built by the constructor, which is the point: the portal cannot target it on first render.
+			readonly sidebarStatsContainer = document.createElement('div');
 			constructor(parent: HTMLElement) {
 				constructions.push(parent);
 				const root = document.createElement('div');
 				root.className = 'sim-ui';
+				root.appendChild(this.sidebarStatsContainer);
 				parent.appendChild(root);
 			}
 		},
 	};
 });
+
+// The real one needs a Player with a live store; what is under test here is the portal, not it.
+vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 
 const { SimApp } = await import('./sim_app');
 
@@ -49,6 +56,21 @@ describe('SimApp', () => {
 		);
 		expect(constructions).toHaveLength(1);
 		expect(container.querySelectorAll('.sim-ui')).toHaveLength(1);
+	});
+
+	it('portals the sidebar stats into the container the shell built', () => {
+		render(<SimApp player={player} def={def} />);
+		const container = constructions[0].querySelector('.sim-ui')!.firstElementChild!;
+		expect(container.querySelectorAll('.character-stats-root')).toHaveLength(1);
+	});
+
+	it('portals it exactly once under StrictMode', () => {
+		render(
+			<StrictMode>
+				<SimApp player={player} def={def} />
+			</StrictMode>,
+		);
+		expect(document.querySelectorAll('.character-stats-root')).toHaveLength(1);
 	});
 
 	it('mounts the shell into its own container', () => {

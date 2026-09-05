@@ -18,7 +18,6 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
-import { CharacterStats } from '@features/character-stats/view/character_stats';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
 	// Individual60UEPExporter,
@@ -288,15 +287,11 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.sim.waitForInit().then(() => {
 			this.epWeightsModal = addStatWeightsAction(this, this.statWeightActionSettings);
 		});
+	}
 
-		new CharacterStats(
-			this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement,
-			this,
-			this.player,
-			this.individualConfig.displayStats,
-			this.individualConfig.modifyDisplayStats,
-			this.individualConfig.overwriteDisplayStats,
-		);
+	// `SimApp` portals <CharacterStats/> in here once construction has produced it.
+	get sidebarStatsContainer(): HTMLElement {
+		return this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement;
 	}
 
 	// First tab attached is the one open on load, so gear no longer asserts that for itself.

@@ -15,6 +15,9 @@ const READ = () => ({
 	rootChildren: document.getElementById('root')?.children.length,
 	sidebarActions: document.querySelectorAll('.sim-sidebar-actions .sim-sidebar-action-button').length,
 	tabs: document.querySelectorAll('.sim-tabs > li').length,
+	// Portalled, not constructed: a target built by the shell's constructor is the one place a
+	// second React pass could mount twice without the construct-once ref noticing.
+	stats: document.querySelectorAll('.sim-sidebar-stats .character-stats-root').length,
 });
 
 const browser = await launch();
@@ -22,10 +25,10 @@ let bad = 0;
 for (const spec of specsFromArgv().slice(0, 2)) {
 	const { page, errors } = await openSpec(browser, PORTS.react, spec, { settle: 4000 });
 	const r = await page.evaluate(READ);
-	const ok = r.simUi === 1 && r.simApp === 1 && r.rootChildren === 1 && errors.length === 0;
+	const ok = r.simUi === 1 && r.simApp === 1 && r.rootChildren === 1 && r.stats === 1 && errors.length === 0;
 	if (!ok) bad++;
 	console.log(
-		`${ok ? 'PASS' : 'FAIL'}  ${spec.padEnd(20)} .sim-ui=${r.simUi} .sim-app=${r.simApp} #root children=${r.rootChildren} sidebarButtons=${r.sidebarActions} tabs=${r.tabs} errors=${errors.length}`,
+		`${ok ? 'PASS' : 'FAIL'}  ${spec.padEnd(20)} .sim-ui=${r.simUi} .sim-app=${r.simApp} #root children=${r.rootChildren} sidebarButtons=${r.sidebarActions} tabs=${r.tabs} stats=${r.stats} errors=${errors.length}`,
 	);
 	if (errors.length) console.log('   ', errors.slice(0, 2));
 	await page.close();

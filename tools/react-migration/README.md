@@ -2,7 +2,7 @@
 
 The goldens (`npm run test:snapshots`) never construct the shell — `tools/state-snapshots/snapshot.ts`
 imports `IndividualSimUIConfig` as a *type* and mirrors `applyDefaults` by hand. They prove no state
-write leaked into a component; they say nothing about whether anything rendered. These four checks
+write leaked into a component; they say nothing about whether anything rendered. The checks below
 are what the view layer is actually gated on.
 
 They compare a build of the migration branch against a build of its parent, so both have to be built

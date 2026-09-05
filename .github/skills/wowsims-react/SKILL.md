@@ -13,8 +13,8 @@ restate them; it assumes them.
 
 ## Where the migration currently is
 
-**Phase 1 is complete.** React owns the page root and the top-level tab behaviour; every tab body
-is still a vanilla `Component`, and nothing in `features/` has been ported.
+**Phase 3 has started.** React owns the page root, the top-level tab behaviour and the sidebar's
+character-stats table; every tab body is still a vanilla `Component`.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -23,8 +23,8 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 |---|---|
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
-| 2 — ui-kit primitives land *beside* the vanilla ones | next |
-| 3 — features port inward, easiest first | not started |
+| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**; encounter is next |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -151,6 +151,7 @@ of the duplication sweep was to build each shape once.
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
+| `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `LegacyHost` | `ui/ui-kit/react/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/react/store.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 
@@ -337,7 +338,30 @@ The one theme in the tree, `bonus-stats-popover`, is eight lines in
 belongs to character-stats, not to `Tooltip`: it co-locates when that feature ports, as
 `.sim-tooltip.bonus-stats-popover .number-picker-root`.
 
-### Phase 3 readiness — audited 2026-09-05, and unit 1 is not ready
+### Unit 1 — the sidebar — landed 2026-09-05
+
+`CharacterStats` is React, portalled from `SimApp` into the `.sim-sidebar-stats` div the vanilla
+shell still builds, and the vanilla view is deleted. Four things are worth carrying forward:
+
+- **`createPortal` targets a container the constructor produced,** so it cannot be rendered on the
+  first pass. `SimApp` already held the constructed shell in state for `SimTabs`; the portal hangs
+  off the same `simUI &&`. That is the shape every later tab will use — `IndividualSimUI` builds the
+  DOM, React fills a named container inside it.
+- **The vanilla component's `this` fields became explicit arguments.** `statDisplayString` read
+  `this.player`, `this.hasRacialHitBonus` and `this.activeRacialExpertiseBonuses`, all set as a side
+  effect of `updateStats`; in `stat_display.ts` they are parameters, and `rows.ts` holds the group
+  order as data so the render is a map over it.
+- **The bonus-stat cell owns two tooltips**, one on the icon (hover, the stat's name) and one on the
+  button (click, the `NumberPicker`), which is why `Icon` needed its rest spread — the `data-tooltip-id`
+  goes on the `<i>`, not the button.
+- **`epReferenceStat` is the only thing the component wanted from `simUI`**, so it is a prop rather
+  than a host reference. Per the design rule above, the axis that varies is what gets parameterised.
+
+The vanilla button's inert `data-bs-toggle="popover"` is gone: nothing in the tree ever constructed
+a Bootstrap popover (they are opt-in, unlike tabs and dropdowns, which auto-init from the data API),
+so it carried no behaviour to lose. Verified before removing.
+
+### Phase 3 readiness — audited 2026-09-05
 
 Five read-only audits ran every Phase 2 component against its real call sites. Four gaps were real
 enough to fix immediately, each now with a test that fails without it:
@@ -355,10 +379,8 @@ enough to fix immediately, each now with a test that fails without it:
   live configs pass `input-inline` in `extraCssClasses` *and* set `inline` — a duplicate that would
   have reached the parity harness.
 
-**One prerequisite is left for the sidebar: a `createPortal` mount from `SimApp` into
-`.sim-sidebar-stats`.** `sim_ui.tsx` builds that div as vanilla DOM, there is no React mount point
-for it, and there is no `createPortal` anywhere in `ui/` yet. The `Tooltip` ref and the `Icon` rest
-spread are both built. Carry the `bonus-stats-popover` rules with the port, re-keyed to
+**The sidebar's prerequisites are all met** — the `createPortal` mount, the `Tooltip` ref and the
+`Icon` rest spread — and the port landed (above). Carry the `bonus-stats-popover` rules with the port, re-keyed to
 `.sim-tooltip.bonus-stats-popover` and with `text-align: left` (the cell is right-aligned).
 
 The browser check that was open is done — `tools/react-migration/sidebar-popover.mjs`, and it
@@ -467,6 +489,15 @@ class name across `ui/` before moving its rules.
   tab navigation. Before replacing any Bootstrap widget, read its `js/dist/*.js` for what its
   constructor stamps on the DOM, and diff *attributes and keyboard behaviour* against the parent
   branch — `tools/react-migration/tabs-a11y.mjs` is the pattern.
+- **Never give `.sim-tooltip` a flat `opacity`.** react-tooltip's shown class is
+  `opacity: var(--rt-opacity)` and its closing class is `opacity: 0`, and the tooltip node unmounts
+  on that transition's `transitionend`. Override `opacity` and the transition never runs, so the
+  node never unmounts — and the safety timer that exists for exactly this case is cleared by *any*
+  `transitionend` reaching the tooltip, including one that bubbled from a descendant (a focused
+  `.form-control` inside a popover is enough). The result is a tooltip that closes visually, stays
+  mounted forever, and never blurs the picker inside it, so a half-typed value is silently lost.
+  Set `--rt-opacity` instead. Found by `sidebar-popover.mjs` on the character-stats port: it was in
+  `Tooltip.scss` from the day the component landed, and every unit test was green.
 - **react-tooltip renders in place, not in a portal.** The tooltip element is a child of wherever
   the `<Tooltip>` sits in the React tree, so an anchor inside an `overflow: hidden` container needs
   `positionStrategy="fixed"` or a tooltip declared higher up. The plan assumed a body portal.
@@ -538,6 +569,14 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **Phase 3 unit 1: the sidebar.** `CharacterStats` is React, portalled from `SimApp`
+  into the container `IndividualSimUI` builds, and its stylesheet is co-located. The vanilla view is
+  deleted — a feature view is not dual-stack, only `ui-kit` primitives are. The port paid for itself
+  immediately by surfacing a `Tooltip` defect that had been there since the component landed and
+  that every unit test was blind to: `.sim-tooltip { opacity: 1 }` killed react-tooltip's closing
+  transition, so a closed tooltip stayed mounted forever and the picker inside it never got the blur
+  that commits. `sidebar-popover.mjs` now runs green against both builds, line for line.
 
 - 2026-09-05 The two questions blocking the sidebar port were answered in a browser rather than
   argued about, and one of the standing answers was wrong. `tools/react-migration/sidebar-popover.mjs`

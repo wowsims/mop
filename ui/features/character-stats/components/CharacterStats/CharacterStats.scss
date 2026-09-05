@@ -44,7 +44,10 @@
 	}
 }
 
-.tippy-box[data-theme='bonus-stats-popover'] {
+.sim-tooltip.bonus-stats-popover {
+	// The cell this renders inside is right-aligned; the popover is not.
+	text-align: left;
+
 	.number-picker-root {
 		flex-direction: column;
 

@@ -1,7 +1,9 @@
 import type { Player } from '@domain/player';
+import { CharacterStats } from '@features/character-stats';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { IndividualSimUI } from './individual_sim_ui';
 import { SimTabs } from './sim_tabs';
@@ -24,10 +26,26 @@ export function SimApp<SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 		setSimUI(new IndividualSimUI(mountRef.current, player, def));
 	}, [player, def]);
 
+	// Every React-owned piece of the shell hangs off `simUI`, not off the first render: the containers
+	// it portals into are built by the constructor above, so they exist only once that state is set.
 	return (
 		<>
 			<div className="sim-app" ref={mountRef} />
-			{simUI && <SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />}
+			{simUI && (
+				<>
+					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
+					{createPortal(
+						<CharacterStats
+							player={player}
+							statList={simUI.individualConfig.displayStats}
+							epReferenceStat={simUI.individualConfig.epReferenceStat}
+							modifyDisplayStats={simUI.individualConfig.modifyDisplayStats}
+							overwriteDisplayStats={simUI.individualConfig.overwriteDisplayStats}
+						/>,
+						simUI.sidebarStatsContainer,
+					)}
+				</>
+			)}
 		</>
 	);
 }
