@@ -47,6 +47,20 @@ construct-once problem it was meant to solve is solved instead by a `useRef` gat
 which is what makes StrictMode's double-invoked effect safe. A test asserts the gate (it fails
 without it).
 
+### Phase 3's unit is the tab, not the feature
+
+The plan orders Phase 3 by view files per feature, and that map is wrong in one important place:
+**the features do not assemble themselves — `ui/app/tabs/*` does.** `settings_tab.tsx` is 19.7K and
+constructs nine `ContentBlock`s, the encounter picker, the race and profession pickers, every buff,
+debuff, consume and cooldown grid, and the item-swap picker; `ui/features/settings/` holds four view
+files and the config lists they are built from. `rotation_tab.tsx` (12K), `talents_tab.tsx` and
+`gear_tab.ts` are the same shape.
+
+So "settings(4)" is not the sixth-easiest feature; it is one of the largest single files to port.
+Re-derive the Phase 3 order from the tabs before starting it. It is also why no Phase 2 component
+has a consumer yet: every call site is inside a tab body that `IndividualSimUI` still constructs —
+the deferred Phase 1 rule 3. React-owned tab bodies are Phase 3's opening move, not a later step.
+
 ## The JSX boundary — the thing that surprises people
 
 Both JSX dialects compile in this tree. Which one a file gets is decided per file:
@@ -99,6 +113,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
+| `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/react/picker_oracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/react/action_id.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
 | `AdaptiveStringPicker` | `ui/ui-kit/AdaptiveStringPicker/` | `ui-kit/pickers/string_picker.ts` (still live, dual-stack) | the `StringPickerConfig` it is given | commit on native `change`, and a `size` that follows source changes too (vanilla's `setInputValue` calls `updateSize`) |
@@ -459,7 +474,13 @@ Two things specific to this migration:
   `IconPicker.parity.test.tsx` is the worked example. `Tooltip` then gained `openOnClick`, the one
   prop the first three Phase 3 features need that it lacked — character-stats' bonus-stat popover is
   a click-triggered interactive tippy that builds a `NumberPicker` in `onShow`, and react-tooltip
-  does not render its children until the tooltip first opens, so the laziness is free.
+  does not render its children until the tooltip first opens, so the laziness is free — and it
+  renders **no DOM at all** before that, so a `<Tooltip>` beside an anchor costs nothing in a parity
+  diff. `TooltipButton` followed, because `ContentBlock`'s header tooltip needs it: the vanilla one
+  hardcodes the question mark, which is why three of its six potential call sites hand-rolled the
+  same button, so the React one takes `icon`. Note that `Icon` normalises the FA5 spelling —
+  `fa-question-circle` renders as `fa-circle-question` — and that a tooltip anchor carries a
+  `data-tooltip-id` the vanilla element does not.
 
 - 2026-09-05 Phase 1 complete: React renders the shell, in two steps. **1a** added
   `<div id="root">`, renamed `spec_entry.ts` → `.tsx`, and moved construction into `SimApp` behind a
