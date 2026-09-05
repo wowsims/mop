@@ -1062,6 +1062,13 @@ Two things specific to this migration:
   known-issues link is visible): focus the cog or that link on either build and the attribute
   resolves to the text. The React port is in fact ahead — tippy's node has no `role`.
 
+  `a11y.mjs` asserts the chain rather than trusting the reading: per region it focuses the first
+  *visible* tooltip anchor and requires `aria-describedby` to resolve to a `[role="tooltip"]` node
+  with text. Verified by breaking it — passing `openEvents={{mouseenter: true}}` (the obvious fix for
+  a tooltip that flashes while tabbing past) makes three regions fail and the gate exit 1. On the
+  baseline that half reads as skipped, because tippy anchors carry `data-tippy-content`, not
+  `data-tooltip-id`.
+
   The bonus-stats `±` button did have no name, and now reads "Add bonus Strength" from a new
   `sidebar.character_stats.bonus_action` key (en + fr + `schemas/translation.schema.json`, whose
   `additionalProperties: false` makes the schema part mandatory). Its existing `label` names the

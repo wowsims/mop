@@ -51,6 +51,23 @@ const CHECKS = regions => {
 	return out;
 };
 
+// A tooltip's content reaches assistive tech only through a chain that is entirely react-tooltip's
+// doing, and entirely invisible to a static check: focusing the anchor has to *open* the tooltip
+// (its default `openEvents` include `focus`), the open node has to carry `id` and `role="tooltip"`,
+// and the library has to write `aria-describedby` on the anchor while it is shown. Every link is a
+// default one, so any of them can be turned off from a call site — `openEvents={{mouseenter: true}}`
+// alone would end keyboard reachability with nothing else changing.
+//
+// The baseline has nothing to select: tippy anchors carry `data-tippy-content`, not
+// `data-tooltip-id`. So this half of the probe reads as skipped there rather than as findings —
+// tippy does set `aria-describedby`, it just does not give the node a `role`.
+const DESCRIBES = ([selector, index]) => {
+	const el = document.querySelectorAll(selector)[index];
+	const described = el?.getAttribute('aria-describedby');
+	const target = described ? document.getElementById(described) : null;
+	return { described, role: target?.getAttribute('role') ?? null, text: (target?.textContent ?? '').trim() };
+};
+
 const browser = await launch();
 const context = await browser.newContext();
 const page = await context.newPage();
@@ -72,6 +89,33 @@ for (const [region, checks] of Object.entries(await page.evaluate(CHECKS, REGION
 		console.log(`    ${ok ? 'PASS' : 'FAIL'}  ${text}`);
 	}
 }
+// Focus, not hover: a keyboard user is the one this chain exists for.
+for (const region of REGIONS) {
+	// The first *visible* one: the toolbar's first anchor is the known-issues link, which ships
+	// hidden on a launched spec and cannot be focused.
+	const anchors = await page.locator(`${region} [data-tooltip-id]`).all();
+	let index = -1;
+	for (const [at, anchor] of anchors.entries())
+		if (await anchor.isVisible()) {
+			await anchor.focus();
+			index = at;
+			break;
+		}
+	if (index < 0) {
+		console.log(`  ${region}\n    ----  no visible tooltip anchor to focus`);
+		continue;
+	}
+	await page.waitForTimeout(700);
+	const { described, role, text } = await page.evaluate(DESCRIBES, [`${region} [data-tooltip-id]`, index]);
+	const ok = !!described && role === 'tooltip' && !!text;
+	if (!ok) failed++;
+	console.log(
+		`  ${region}\n    ${ok ? 'PASS' : 'FAIL'}  focus describes the anchor (describedby=${described} role=${role} text=${JSON.stringify(text.slice(0, 30))})`,
+	);
+	await page.evaluate(() => document.activeElement?.blur());
+	await page.waitForTimeout(300);
+}
+
 console.log(`\n${failed ? `${failed} checks fail` : 'all regions clean'}`);
 
 if (errors.length) for (const e of errors) console.log(`  ERROR ${e}`);

@@ -40,6 +40,12 @@ export interface TooltipProps {
 // after, so a picker's native `change` listener is still attached when its input is removed.
 // Measured — `tools/react-migration/sidebar-popover.mjs`.
 const GLOBAL_CLOSE = { clickOutsideAnchor: true, escape: true };
+// `openEvents` is deliberately never passed. Its default is `{mouseenter, focus}`, and the `focus`
+// half is the whole of keyboard access to a tooltip's content: focusing the anchor opens the
+// tooltip, and react-tooltip then writes `aria-describedby` on that anchor pointing at the node it
+// just rendered with `id` and `role="tooltip"`. Passing `openEvents={{mouseenter: true}}` — the
+// obvious fix for a tooltip that flashes while tabbing past — would silently end that.
+// `a11y.mjs` focuses one anchor per region and asserts the chain resolves.
 // Only for hover tooltips: `openOnClick` turns `mouseleave`/`blur` off, and passing this would
 // turn them back on.
 const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
