@@ -1,21 +1,11 @@
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
-import { Raid } from '@domain/raid';
-import {
-	subscribeAll,
-	subscribeEncounterChange,
-	subscribeEncounterField,
-	subscribePlayerChange,
-	subscribePlayerField,
-	subscribeRaidField,
-} from '@domain/state/subscriptions';
+import { subscribeEncounterChange, subscribeEncounterField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
-import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';
+import { InputType, MobType, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';
-import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
@@ -23,174 +13,14 @@ import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 
 import { trackEvent, TrackEventProps } from '../../../tracking/analytics';
+import { durationConfigs, executeConfigs } from '../components/EncounterPicker/utils/configs';
+// Still declared here because `features/spec_config.ts` — frozen for the migration — imports it
+// from this path. The picker that reads it is React (`../components/EncounterPicker`).
 export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }
 
-export class EncounterPicker extends Component {
-	constructor(parent: HTMLElement, modEncounter: Encounter, config: EncounterPickerConfig, simUI: IndividualSimHost<any>) {
-		super(parent, 'encounter-picker-root');
-
-		addEncounterFieldPickers(this.rootElem, modEncounter, config.showExecuteProportion);
-
-		// Need to wait so that the encounter and target presets will be loaded.
-		modEncounter.sim.waitForInit().then(() => {
-			const presetTargets = modEncounter.sim.db.getAllPresetTargets();
-
-			// new EnumPicker<Encounter>(this.rootElem, modEncounter, {
-			// 	extraCssClasses: ['damage-metrics', 'npc-picker'],
-			// 	label: 'NPC',
-			// 	labelTooltip: 'Selects a preset NPC configuration.',
-			// 	values: [{ name: 'Custom', value: -1 }].concat(
-			// 		presetTargets.map((pe, i) => {
-			// 			return {
-			// 				name: pe.path,
-			// 				value: i,
-			// 			};
-			// 		}),
-			// 	),
-			// 	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
-			// 	getValue: (encounter: Encounter) => presetTargets.findIndex(pe => equalTargetsIgnoreInputs(encounter.primaryTarget, pe.target)),
-			// 	setValue: (encounter: Encounter, newValue: number) => {
-			// 		if (newValue != -1) {
-			// 			encounter.applyPresetTarget(presetTargets[newValue], 0);
-			// 		}
-			// 	},
-			// });
-
-			const presetEncounters = modEncounter.sim.db.getAllPresetEncounters();
-			new EnumPicker<Encounter>(this.rootElem, modEncounter, {
-				id: 'encounter-preset-encouter',
-				label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-				//extraCssClasses: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
-				extraCssClasses: ['damage-metrics', 'npc-picker'],
-				values: [{ name: i18n.t('common.custom'), value: -1 }].concat(
-					presetEncounters.map((pe, i) => {
-						return {
-							name: pe.path,
-							value: i,
-						};
-					}),
-				),
-				storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-				getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
-				setValue: (encounter: Encounter, newValue: number) => {
-					if (newValue != -1) {
-						encounter.applyPreset(presetEncounters[newValue]);
-					}
-				},
-			});
-
-			//new EnumPicker<Encounter>(this.rootElem, modEncounter, {
-			//	label: 'Target Level',
-			//	values: [
-			//		{ name: '83', value: 83 },
-			//		{ name: '82', value: 82 },
-			//		{ name: '81', value: 81 },
-			//		{ name: '80', value: 80 },
-			//	],
-			//	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
-			//	getValue: (encounter: Encounter) => encounter.primaryTarget.getLevel(),
-			//	setValue: (encounter: Encounter, newValue: number) => {
-			//		encounter.primaryTarget.setLevel(newValue);
-			//	},
-			//});
-
-			//new EnumPicker(this.rootElem, modEncounter, {
-			//	label: 'Mob Type',
-			//	values: mobTypeEnumValues,
-			//	changedEvent: (encounter: Encounter) => encounter.changeEmitter,
-			//	getValue: (encounter: Encounter) => encounter.primaryTarget.getMobType(),
-			//	setValue: (encounter: Encounter, newValue: number) => {
-			//		encounter.primaryTarget.setMobType(newValue);
-			//	},
-			//});
-
-			// Leaving this commented in case we want it later. But it takes up a lot of
-			// screen space and none of these fields get changed much.
-			//if (config.simpleTargetStats) {
-			//	config.simpleTargetStats.forEach(stat => {
-			//		new NumberPicker(this.rootElem, modEncounter, {
-			//			label: statNames[stat],
-			//			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
-			//			getValue: (encounter: Encounter) => encounter.primaryTarget.getStats().getStat(stat),
-			//			setValue: (encounter: Encounter, newValue: number) => {
-			//				encounter.primaryTarget.setStats(encounter.primaryTarget.getStats().withStat(stat, newValue));
-			//			},
-			//		});
-			//	});
-			//}
-
-			if (simUI.player.canEnableTargetDummies()) {
-				const player = simUI.player;
-				new NumberPicker(this.rootElem, simUI.sim.raid, {
-					id: 'encounter-num-allies',
-					label: i18n.t('settings_tab.encounter.num_allies.label'),
-					labelTooltip: i18n.t('settings_tab.encounter.num_allies.tooltip'),
-					storeSubscribe: (raid: Raid) => subscribeAll([subscribeRaidField(raid, 'targetDummies'), subscribePlayerField(player, 'itemSwap')]),
-					getValue: (raid: Raid) => raid.getTargetDummies(),
-					setValue: (raid: Raid, newValue: number) => {
-						raid.setTargetDummies(newValue);
-					},
-					showWhen: () => {
-						if ([Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec())) {
-							return false;
-						}
-
-						return player.shouldEnableTargetDummies();
-					},
-				});
-				// Reset the dummy count when the setting stops applying (previously a
-				// side effect inside showWhen). Monks are exempt: their count is
-				// talent-driven (see monk/shared/derived.ts), not user-facing.
-				const talentDrivenDummies = [Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec());
-				subscribePlayerChange(player)(() => {
-					if (!talentDrivenDummies && !player.shouldEnableTargetDummies() && simUI.sim.raid.getTargetDummies() != 0) {
-						simUI.sim.raid.setTargetDummies(0);
-					}
-				});
-			}
-
-			if (simUI.player.getPlayerSpec().isTankSpec) {
-				new NumberPicker(this.rootElem, modEncounter, {
-					id: 'encounter-min-base-damage',
-					label: i18n.t('settings_tab.encounter.min_base_damage.label'),
-					labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
-					storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-					getValue: (encounter: Encounter) => encounter.primaryTarget.minBaseDamage,
-					setValue: (encounter: Encounter, newValue: number) => {
-						encounter.modifyTarget(0, target => {
-							target.minBaseDamage = newValue;
-						});
-					},
-				});
-			}
-
-			// Transfer Target Inputs from target Id if they dont match (possible when custom AI is selected)
-			const targetIndex = presetTargets.findIndex(pe => modEncounter.primaryTarget.id == pe.target?.id);
-			const targetInputs = presetTargets[targetIndex]?.target?.targetInputs || [];
-			if (
-				targetInputs.length != modEncounter.primaryTarget.targetInputs.length ||
-				modEncounter.primaryTarget.targetInputs.some((ti, i) => ti.label != targetInputs[i].label)
-			) {
-				modEncounter.modifyTarget(0, target => {
-					target.targetInputs = targetInputs;
-				});
-			}
-
-			makeTargetInputsPicker(this.rootElem, modEncounter, 0);
-
-			const advancedModal = new AdvancedEncounterModal(simUI.rootElem, modEncounter);
-			const advancedButton = document.createElement('button');
-			advancedButton.classList.add('advanced-button', 'btn', 'btn-primary');
-			advancedButton.textContent = i18n.t('settings_tab.encounter.advanced');
-			advancedButton.addEventListener('click', () => advancedModal.open());
-			this.rootElem.appendChild(advancedButton);
-		});
-	}
-}
-
-class AdvancedEncounterModal extends BaseModal {
+export class AdvancedEncounterModal extends BaseModal {
 	private readonly encounter: Encounter;
 
 	constructor(parent: HTMLElement, encounter: Encounter) {
@@ -790,152 +620,26 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 	}
 }
 
+/**
+ * The clock and the execute bands, built into `parent` as two `.picker-group`s.
+ *
+ * Kept vanilla because `AdvancedEncounterModal` is still a `BaseModal` and builds them into its own
+ * header. The React block renders the same two groups from the same configs — `durationConfigs` and
+ * `executeConfigs` are shared rather than copied, which is what stops the two stacks drifting while
+ * both exist.
+ */
 function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
 	const durationGroup = Input.newGroupContainer();
 	rootElem.appendChild(durationGroup);
-	new NumberPicker(durationGroup, encounter, {
-		id: 'encounter-duration',
-		label: i18n.t('settings_tab.encounter.duration.label'),
-		labelTooltip: i18n.t('settings_tab.encounter.duration.tooltip'),
-		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-		getValue: (encounter: Encounter) => encounter.getDuration(),
-		setValue: (encounter: Encounter, newValue: number) => {
-			trackEvent({
-				action: 'settings',
-				category: 'duration',
-				label: 'duration',
-				value: newValue,
-			});
-			encounter.setDuration(newValue);
-		},
-		enableWhen: _obj => {
-			return !encounter.getUseHealth();
-		},
-	});
-	new NumberPicker(durationGroup, encounter, {
-		id: 'encounter-duration-variation',
-		label: i18n.t('settings_tab.encounter.duration_variation.label'),
-		labelTooltip: i18n.t('settings_tab.encounter.duration_variation.tooltip'),
-		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-		getValue: (encounter: Encounter) => encounter.getDurationVariation(),
-		setValue: (encounter: Encounter, newValue: number) => {
-			trackEvent({
-				action: 'settings',
-				category: 'duration',
-				label: 'variation',
-				value: newValue,
-			});
-			encounter.setDurationVariation(newValue);
-		},
-		enableWhen: _obj => {
-			return !encounter.getUseHealth();
-		},
-	});
+	for (const config of durationConfigs(encounter)) new NumberPicker(durationGroup, encounter, config);
 
-	if (showExecuteProportion) {
-		const executeGroup = Input.newGroupContainer();
-		executeGroup.classList.add('execute-group');
-		rootElem.appendChild(executeGroup);
-
-		new NumberPicker(executeGroup, encounter, {
-			id: 'encounter-execute-proportion',
-			label: i18n.t('settings_tab.encounter.execute_duration_20.label'),
-			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_20.tooltip'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => encounter.getExecuteProportion20() * 100,
-			setValue: (encounter: Encounter, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'execute',
-					label: 'execute_20',
-					value: newValue,
-				});
-				encounter.setExecuteProportion20(newValue / 100);
-			},
-			enableWhen: _obj => {
-				return !encounter.getUseHealth();
-			},
-		});
-		new NumberPicker(executeGroup, encounter, {
-			id: 'encounter-execute-proportion-25',
-			label: i18n.t('settings_tab.encounter.execute_duration_25.label'),
-			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_25.tooltip'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => encounter.getExecuteProportion25() * 100,
-			setValue: (encounter: Encounter, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'execute',
-					label: 'execute_25',
-					value: newValue,
-				});
-				encounter.setExecuteProportion25(newValue / 100);
-			},
-			enableWhen: _obj => {
-				return !encounter.getUseHealth();
-			},
-		});
-		new NumberPicker(executeGroup, encounter, {
-			id: 'encounter-execute-proportion-35',
-			label: i18n.t('settings_tab.encounter.execute_duration_35.label'),
-			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_35.tooltip'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => encounter.getExecuteProportion35() * 100,
-			setValue: (encounter: Encounter, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'execute',
-					label: 'execute_35',
-					value: newValue,
-				});
-				encounter.setExecuteProportion35(newValue / 100);
-			},
-			enableWhen: _obj => {
-				return !encounter.getUseHealth();
-			},
-		});
-		new NumberPicker(executeGroup, encounter, {
-			id: 'encounter-execute-proportion-45',
-			label: i18n.t('settings_tab.encounter.execute_duration_45.label'),
-			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_45.tooltip'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => encounter.getExecuteProportion45() * 100,
-			setValue: (encounter: Encounter, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'execute',
-					label: 'execute_45',
-					value: newValue,
-				});
-				encounter.setExecuteProportion45(newValue / 100);
-			},
-			enableWhen: _obj => {
-				return !encounter.getUseHealth();
-			},
-		});
-		new NumberPicker(executeGroup, encounter, {
-			id: 'encounter-execute-proportion-90',
-			label: i18n.t('settings_tab.encounter.duration_below_high_hp.label'),
-			labelTooltip: i18n.t('settings_tab.encounter.duration_below_high_hp.tooltip'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => encounter.getExecuteProportion90() * 100,
-			setValue: (encounter: Encounter, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'execute',
-					label: 'execute_90',
-					value: newValue,
-				});
-				encounter.setExecuteProportion90(newValue / 100);
-			},
-			enableWhen: _obj => {
-				return !encounter.getUseHealth();
-			},
-		});
-	}
+	if (!showExecuteProportion) return;
+	const executeGroup = Input.newGroupContainer('execute-group');
+	rootElem.appendChild(executeGroup);
+	for (const config of executeConfigs(encounter)) new NumberPicker(executeGroup, encounter, config);
 }
 
-function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targetIndex: number) {
+export function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targetIndex: number) {
 	return new ListPicker<Encounter, TargetInput>(parent, encounter, {
 		allowedActions: [],
 		itemLabel: i18n.t('settings_tab.encounter.target_inputs.label'),

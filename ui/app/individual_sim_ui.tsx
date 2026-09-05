@@ -18,6 +18,8 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
+import { watchTargetDummies } from '@features/encounter/model/target_dummies';
+import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
 	// Individual60UEPExporter,
@@ -235,6 +237,18 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.addSidebarComponents();
 		this.addGearTab();
 		this.addSettingsTab();
+		// Two encounter rules that used to live inside the encounter picker, which is React now — and
+		// a view is not where a store write belongs. Queued here so they keep the position that
+		// picker's own callback held: after `loadSettings`, and before the topbar.
+		//
+		// Both depend on that ordering. The repair is against saved state, so it has to see it. And
+		// the dummy rule must not be armed while settings are still being restored: raid settings and
+		// talents are restored separately, so a rule reading `shouldEnableTargetDummies()` in between
+		// would zero a saved count against talents that had not arrived yet.
+		this.sim.waitForInit().then(() => {
+			repairTargetInputs(this.sim.encounter);
+			watchTargetDummies(this.player, this.sim);
+		});
 		this.addTalentsTab();
 		this.addRotationTab();
 
@@ -292,6 +306,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	// `SimApp` portals <CharacterStats/> in here once construction has produced it.
 	// React fills this tab's body — see app/tabs/TalentsTabBody.tsx.
 	talentsTab!: TalentsTab<SpecType>;
+	// Held for the same reason: React renders the encounter block into one of its content blocks.
+	settingsTab!: SettingsTab;
 
 	get sidebarStatsContainer(): HTMLElement {
 		return this.dom.sidebarStats;
@@ -312,7 +328,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addSettingsTab() {
-		new SettingsTab(this);
+		this.settingsTab = new SettingsTab(this);
 	}
 
 	private addTalentsTab() {

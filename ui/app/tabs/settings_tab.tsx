@@ -13,7 +13,6 @@ import {
 	subscribePlayerField,
 	subscribeRaidField,
 } from '@domain/state/subscriptions';
-import { EncounterPicker } from '@features/encounter/view/encounter_picker';
 import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
@@ -35,6 +34,9 @@ import { SimTab } from '@ui-kit/sim_tab';
 import { CustomSection, IndividualSimUI, InputConfig, InputSection } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
+	/** Where React renders the encounter block. Filled in `buildEncounterSettings`. */
+	encounterContainer!: HTMLElement;
+
 	protected simUI: IndividualSimUI<any>;
 
 	readonly leftPanel: HTMLElement;
@@ -83,8 +85,9 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column1, 'encounter-settings', {
 			header: { title: i18n.t('settings_tab.encounter.title') },
 		});
-
-		new EncounterPicker(contentBlock.bodyElement, this.simUI.sim.encounter, this.simUI.individualConfig.encounterPicker, this.simUI);
+		// Built empty on purpose: `SimApp` portals the React `EncounterPicker` into it. The block
+		// itself stays vanilla because the eight around it do.
+		this.encounterContainer = contentBlock.bodyElement;
 	}
 
 	private buildPlayerSettings() {

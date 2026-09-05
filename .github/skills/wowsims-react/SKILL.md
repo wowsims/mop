@@ -28,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Toast`, `Dialog`, `Menu` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials); encounter is next |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**; item-swap or stat-weights next |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -333,6 +333,8 @@ of the duplication sweep was to build each shape once.
 | `LegacyHost` | `ui/ui-kit/LegacyHost/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
+| `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
+| `useSimReady` | `ui/ui-kit/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1054,6 +1056,52 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Encounter is ported — the first React feature living inside a vanilla tab.** The
+  settings tab still builds its nine content blocks; `buildEncounterSettings` now builds an *empty*
+  one and hands `SimApp` the body to portal into. That is the pattern the other eight will use.
+
+  **Three things this unit teaches, all of which cost a debugging round:**
+
+  **`SettingsTab.buildTabContent()` runs inside a `waitForInit` callback, not the constructor.** So
+  the container does not exist when `SimApp` first renders, and `createPortal` into `undefined` is
+  React error 299 — at load, with no other symptom, and every gate just times out waiting for the
+  strip. `useSimReady(sim)` gates the portal. An effect registered there always runs after the
+  shell's constructor has queued its own callbacks, which is what makes the ordering safe rather
+  than lucky.
+
+  **A vanilla island can sit *between* React siblings, but only because `showWhen` is a class.**
+  The target-input `ListPicker` belongs above the advanced button, and `useLegacyMount` appends —
+  so the mount moves it back with `insertBefore`, which works because a ref callback runs after
+  React has committed that element's children. This is safe only while React's child list under
+  that element is static, and it is: `useInput` renders `showWhen` as the `hide` class rather than
+  unmounting, exactly as vanilla did. If a picker there ever renders `null` instead, React will
+  re-insert it relative to its own next sibling and the island will end up on the wrong side.
+
+  **Read the whole class before deciding what is live.** The old `EncounterPicker` had ~90 lines of
+  commented-out pickers, and a live `EnumPicker` sitting in the middle of them. It got dropped, and
+  `panes-parity` caught it as 15 missing elements with a first-diff line that pointed at the picker
+  *after* the hole. `npc-picker` and `encounter-preset-encouter` — spelling vanilla's — are back.
+
+  Two store writes left the view for `features/encounter/model/`, wired in `individual_sim_ui.tsx`:
+  re-seeding the primary target's inputs from its preset, and zeroing the raid's dummy count when the
+  player stops being able to enable it. Both are queued on `waitForInit`, in the position the
+  picker's own callback held — after `loadSettings` — and both need that. The repair is against
+  saved state, so it has to see it. The dummy rule must not be *armed* during the restore at all:
+  raid settings and talents come back separately, so a rule reading `shouldEnableTargetDummies()`
+  between them would zero a saved count against talents that had not arrived yet. Registering it in
+  the constructor instead — which is where a `DerivedSetting` would put it — reintroduces exactly
+  that window.
+
+  `durationConfigs`/`executeConfigs` are shared with the still-vanilla `AdvancedEncounterModal`,
+  which builds the same two `.picker-group`s into its header. Sharing the configs rather than
+  copying them is what stops the two stacks drifting while both exist.
+
+  New gate `tools/react-migration/encounter.mjs`: the block's children, its picker ids and its
+  groups, then the modal opened by clicking and closed by Escape. It caught a bug in itself first —
+  `BaseModal`'s `rootCssClass` lands on the `.modal-dialog`, while Bootstrap puts `show` on the
+  `.modal` that wraps it, so reading the dialog's own classList reports "closed" forever. Identical
+  on both builds for `warrior/protection` and `monk/windwalker`.
 
 - 2026-09-05 **A tooltip's content is already reachable by keyboard — do not re-raise this.** It
   looked like a gap: react-tooltip does not render the tooltip until it opens, and no call site

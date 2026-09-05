@@ -1,8 +1,10 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
+import { EncounterPicker } from '@features/encounter';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
+import { useSimReady } from '@ui-kit/hooks/useSimReady';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -26,6 +28,8 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
+	// `SettingsTab` builds its content blocks on init, so the encounter container is not there before.
+	const ready = useSimReady(player.sim);
 
 	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
 	// any of those nodes would take the vanilla content with it. See SimShell's own note.
@@ -64,6 +68,11 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
+					{ready &&
+						createPortal(
+							<EncounterPicker showExecuteProportion={def.encounterPicker.showExecuteProportion} />,
+							simUI.settingsTab.encounterContainer,
+						)}
 				</SimHostProvider>
 			)}
 		</>
