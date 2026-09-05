@@ -134,6 +134,25 @@ commit as the change it gates proves nothing:
    tracked, a re-click stops being tracked).
 5. Optional `Tabs.Indicator` for the underline.
 
+### Animation: `motion`, for the panes only
+
+Decided 2026-09-05, not yet installed — it lands with its first consumer, the way `Toast`, `Dialog`
+and `Menu` do. Two things to get right when it does:
+
+- **`AnimatePresence` is the wrong tool here.** It animates a component *out of the tree*, and these
+  panes must stay mounted: their content is built once by a vanilla constructor and three of them
+  read the live document. The fit is a `motion.div` animating opacity over a kept-mounted panel,
+  which replaces the hand-written `active`-before-`show` rAF dance in `sim_tabs.tsx` and the
+  `[data-ending-style]{display:none}` workaround the plan needed for Base UI's own transition, where
+  the outgoing panel is briefly still laid out in `.sim-main`'s flex row.
+- **It buys `prefers-reduced-motion` for free**, which the current `.fade` CSS does not honour.
+
+Not for tooltips: react-tooltip owns its own fade, and its node only unmounts on that transition's
+`transitionend` — overriding the opacity is precisely the defect recorded under "Things that will
+bite". Leave it alone.
+
+`tabs-behaviour.mjs` reads computed opacity, so it keeps working against inline-animated values.
+
 ### What the swap must satisfy
 
 The gates went shape-agnostic in commit 2, and in doing so they placed contracts on the swap. Each
