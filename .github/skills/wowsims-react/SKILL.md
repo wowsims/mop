@@ -47,19 +47,39 @@ construct-once problem it was meant to solve is solved instead by a `useRef` gat
 which is what makes StrictMode's double-invoked effect safe. A test asserts the gate (it fails
 without it).
 
-### Phase 3's unit is the tab, not the feature
+### Phase 3's unit is the tab plus what it constructs — a proposed re-plan
 
-The plan orders Phase 3 by view files per feature, and that map is wrong in one important place:
-**the features do not assemble themselves — `ui/app/tabs/*` does.** `settings_tab.tsx` is 19.7K and
-constructs nine `ContentBlock`s, the encounter picker, the race and profession pickers, every buff,
-debuff, consume and cooldown grid, and the item-swap picker; `ui/features/settings/` holds four view
-files and the config lists they are built from. `rotation_tab.tsx` (12K), `talents_tab.tsx` and
-`gear_tab.ts` are the same shape.
+The plan orders Phase 3 by **view files per feature**, and file count turns out to have no
+relationship to size: `encounter` is one file of 996 lines, the third-heaviest view in the tree,
+while `import-export` is four files of 168 lines. The features also do not assemble themselves —
+`ui/app/tabs/*` does, in thin dispatchers (`settings_tab.tsx` 492 lines, `rotation_tab.tsx` 299,
+`talents_tab.tsx` 112, `gear_tab.ts` 107) that construct the feature components. So the unit is a
+tab **and** the components it builds, sized in lines.
 
-So "settings(4)" is not the sixth-easiest feature; it is one of the largest single files to port.
-Re-derive the Phase 3 order from the tabs before starting it. It is also why no Phase 2 component
-has a consumer yet: every call site is inside a tab body that `IndividualSimUI` still constructs —
-the deferred Phase 1 rule 3. React-owned tab bodies are Phase 3's opening move, not a later step.
+Feature view totals, measured: results 4,477 · gear 3,477 · apl 2,925 · bulk 2,371 · reforge 1,003 ·
+encounter 996 · stat-weights 890 · talents 661 · character-stats 476 · settings 434 ·
+import-export 168 · item-swap 105.
+
+| Unit | Tab | Constructs | Still missing |
+|---|---|---|---|
+| **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
+| **Talents** | 112 | `TalentsPicker` 265, `GlyphsPicker` 335, `PetSpecPicker` 76 | `GlyphSelectorModal` as an island |
+| **Settings** | 492 | `EncounterPicker` 996, settings views 434, `ItemSwapPicker` 105 | `MultiIconPicker` ×2 (`Menu`, or an island), `ListPicker` island, `AdvancedEncounterModal` island |
+| **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
+| **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
+| **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
+
+The sidebar is the smallest real unit and needs no new primitive; talents is next. Settings is not
+the sixth-easiest feature the plan makes it — it is ~2,000 lines of construction, most of it the
+encounter picker.
+
+**Rule 3 is smaller than the plan feared.** `IndividualSimUI` has ten private methods that each do
+`new XTab(this)`, and every tab constructor already hands its elements to `SimTabRegistry.attach`
+(Phase 1b). Making a tab body React-owned is: React renders the pane's `<div class="…-tab">`, and a
+`LegacyHost` inside it runs the same `new XTab(host)`. The 518-line file loses about forty lines,
+and the ordering that matters — `addSidebarComponents` before the tabs, `waitForInit` before the
+stat-weights action — stays imperative. That is Phase 3's opening move, and it is why no Phase 2
+component has a consumer yet: every call site sits inside a body `IndividualSimUI` still builds.
 
 ## The JSX boundary — the thing that surprises people
 
@@ -294,6 +314,11 @@ so it would drop a half-typed value out of an uncontrolled picker where nothing 
 the shown class, because the transition and floating-ui's measurements need a real layout. What is
 testable there is that content *mounts* on the opening event — which is how the `openOnClick` test
 tells a click from a hover. Anything about closing has to be checked in a browser.
+
+**`allowHTML: true` — five sites.** Their content is a `translation.json` string carrying `<strong>`
+or `<br>`, and React escapes it. Render those, and only those, as
+`<span dangerouslySetInnerHTML={{ __html: text }} />`, the way `ContentBlock` does for its header
+tooltip. Anything that is not a translation string stays escaped.
 
 The one theme in the tree, `bonus-stats-popover`, is eight lines in
 `ui/scss/core/components/_character_stats.scss` that lay out a `NumberPicker` inside the popover. It
