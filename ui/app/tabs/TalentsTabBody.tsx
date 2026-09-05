@@ -4,13 +4,14 @@ import { batch } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { classTalentsConfig } from '@domain/talents/factory';
 import { useSimHost } from '@features/SimHostContext';
-import { TalentsPicker } from '@features/talents/view/talents_picker';
+import { TalentsPicker } from '@features/talents/components/TalentsPicker';
 import { Class, Glyphs } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
-import { PetSpecPicker } from '@ui-kit/pickers/pet_spec_picker';
+import { PetSpecPicker } from '@ui-kit/PetSpecPicker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
+import { useMemo } from 'react';
 
 import { trackEvent } from '../../tracking/analytics';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
@@ -20,9 +21,10 @@ import { PresetConfigurationPicker } from '../preset_configuration_picker';
  * `app/tabs` rather than `features/` because assembling feature components is what a tab does, and
  * `PresetConfigurationPicker` is in `app/`, which `features/**` may not import.
  *
- * The three things inside are still vanilla and mount through `useLegacyMount`, which builds them
- * into these panels rather than into wrappers of its own, so the pane's DOM is the shape it always
- * was and `panes-parity.mjs` still compares like for like.
+ * The left panel is React's: `TalentsPicker` renders it, and the hunter pet-spec picker beside it.
+ * The right panel's two components mount through `useLegacyMount`, which builds them into the panel
+ * rather than into wrappers of its own, so the pane's DOM is the shape it always was and
+ * `panes-parity.mjs` still compares like for like.
  *
  * `PresetConfigurationPicker` and `SavedDataManager` are deliberately not ported with this tab: four
  * tabs build the first and several build the second, so porting them here would drag settings,
@@ -32,22 +34,18 @@ export const TalentsTabBody = () => {
 	const host = useSimHost();
 	const player = host.player;
 
-	const mountLeft = useLegacyMount(
-		parent => {
-			const picker = new TalentsPicker(parent, player, {
-				playerClass: player.getClass(),
-				playerSpec: player.getSpec(),
-				tree: classTalentsConfig[player.getClass()]!,
-				storeSubscribe: (subject: Player<any>) => subscribePlayerField(subject, 'talentsString'),
-				getValue: (subject: Player<any>) => subject.getTalentsString(),
-				setValue: (subject: Player<any>, newValue: string) => {
-					trackEvent({ action: 'settings', category: 'talents', label: 'update' });
-					subject.setTalentsString(newValue);
-				},
-			});
-			// Hunters pick a pet spec; every other class has none, and vanilla renders nothing.
-			return player.isClass(Class.ClassHunter) ? [picker, new PetSpecPicker(parent, player)] : picker;
-		},
+	const talentsConfig = useMemo(
+		() => ({
+			playerClass: player.getClass(),
+			playerSpec: player.getSpec(),
+			tree: classTalentsConfig[player.getClass()]!,
+			storeSubscribe: (subject: Player<any>) => subscribePlayerField(subject, 'talentsString'),
+			getValue: (subject: Player<any>) => subject.getTalentsString(),
+			setValue: (subject: Player<any>, newValue: string) => {
+				trackEvent({ action: 'settings', category: 'talents', label: 'update' });
+				subject.setTalentsString(newValue);
+			},
+		}),
 		[player],
 	);
 
@@ -93,7 +91,11 @@ export const TalentsTabBody = () => {
 	// Portalled into `SimTab`'s own `.tab-pane-content-container`, so this renders only the panels.
 	return (
 		<>
-			<div className="talents-tab-left tab-panel-left" ref={mountLeft} />
+			<div className="talents-tab-left tab-panel-left">
+				<TalentsPicker player={player} config={talentsConfig} />
+				{/* Hunters pick a pet spec; every other class has none, and vanilla renders nothing. */}
+				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
+			</div>
 			<div className="talents-tab-right tab-panel-right" ref={mountRight} />
 		</>
 	);

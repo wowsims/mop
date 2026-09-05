@@ -36,8 +36,8 @@ Full plan, including the duplication inventory that drives Phase 2:
 | File | Role |
 |---|---|
 | `ui/app/spec_entry.tsx` | `createRoot(#root).render(<StrictMode><SimApp/></StrictMode>)` — the only `react-dom/client` import |
-| `ui/app/sim_app.tsx` | Constructs `IndividualSimUI` exactly once into a ref'd `<div>`, then renders `<SimTabs>` |
-| `ui/app/sim_tabs.tsx` | Order, click handling and `active`/`show` for the top-level tabs. Renders `null` |
+| `ui/app/SimApp.tsx` | Constructs `IndividualSimUI` exactly once into a ref'd `<div>`, then renders `<SimTabs>` and portals the React-owned pieces in |
+| `ui/app/SimTabs.tsx` | The Base UI `Tabs` strip and one panel per tab; each panel adopts the pane its `SimTab` registered |
 | `ui/ui-kit/tab_registry.ts` | `SimTabRegistry` — the tab set and which one is open, as a `useSyncExternalStore` source |
 
 The plan called for a DOM-free `IndividualSimHost` constructed before `createRoot`. That is not
@@ -67,7 +67,7 @@ import-export 168 · item-swap 105.
 | Unit | Tab | Constructs | Still missing |
 |---|---|---|---|
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
-| **Talents** | 112 | `TalentsPicker` 266, `GlyphsPicker` 336, `PetSpecPicker` 61, **plus `PresetConfigurationPicker` and two `SavedDataManager`s** | `GlyphSelectorModal` as an island; the two shared components stay `LegacyHost` islands |
+| **Talents** — **done** | 19 | `TalentsPicker` + `PetSpecPicker` are React; `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and two `SavedDataManager`s stay vanilla behind `useLegacyMount` | `GlyphSelectorModal` needs `Dialog`; the shared four need their other consumers |
 | **Settings** | 492 | `EncounterPicker` 996, settings views 434, `ItemSwapPicker` 105 | `MultiIconPicker` ×2 (`Menu`, or an island), `ListPicker` island, `AdvancedEncounterModal` island |
 | **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
@@ -171,7 +171,7 @@ only appears if one is added. `keepMounted` puts a real `hidden` attribute on th
 Bootstrap's reboot already ships `[hidden] { display: none !important }`, so the instant hide comes
 for free and `[data-starting-style] { opacity: 0 }` plus a 150 ms transition reproduces the rest.
 That is the faithful port, it needs no dependency, and it deletes the `active`-before-`show` rAF
-dance in `sim_tabs.tsx`.
+dance in `SimTabs.tsx`.
 
 **Decided 2026-09-05: use Base UI's CSS transitions wherever they reach.** No animation dependency
 is being added. `motion` stays a design choice for later, and if it is ever wanted the docs'
@@ -314,12 +314,13 @@ of the duplication sweep was to build each shape once.
 | `NumberListPicker` | `ui/ui-kit/NumberListPicker/` | `ui-kit/pickers/number_list_picker.ts` (still live, dual-stack) | the `NumberListPickerConfig` it is given | the comma-separated parse, and the equal-value guard that stops a rewrite mid-edit |
 | `NumberPicker` | `ui/ui-kit/NumberPicker/` | `ui-kit/pickers/number_picker.ts` (still live, dual-stack) | the `NumberPickerConfig` it is given | commit on native `change`, the `size` rule, and the float/positive/showZeroes formats |
 | `EnumPicker` | `ui/ui-kit/EnumPicker/` | `ui-kit/pickers/enum_picker.tsx` (still live, dual-stack) | the `EnumPickerConfig` it is given | the `select`/`option` markup and out-of-range selection |
-| `PickerShell` | `ui/ui-kit/PickerShell/` | `Input`'s constructor: root classes, label, description | the picker's own class and its input(s) | class order, `form-label`, tooltip and description handling |
+| `PickerShell` | `ui/ui-kit/PickerShell/` | `Input`'s constructor: root classes, label, description | the picker's own class, its input(s), and the root `ref` — so a picker whose vanilla constructor appended into its own root can mount that with `useLegacyMount` | class order, `form-label`, tooltip and description handling |
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/hooks/useInput.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
 | `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
+| `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
 | `LegacyHost` | `ui/ui-kit/LegacyHost/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
@@ -544,7 +545,7 @@ enough to fix immediately, each now with a test that fails without it:
 - **`Icon` dropped every unknown prop.** No rest spread, so a `data-tooltip-id` on the `<i>` — which
   `character_stats.tsx` needs, it anchors one tooltip on the icon and another on the button —
   vanished silently.
-- **`Button` could not emit a bare `btn`.** `talents_picker.tsx`'s reset is `btn link-danger`;
+- **`Button` could not emit a bare `btn`.** the talents tree's reset is `btn link-danger`;
   `variant={null}` is that shape.
 - **`PickerShell` repeated a class.** `classList.add` drops a repeat and `clsx` does not, and two
   live configs pass `input-inline` in `extraCssClasses` *and* set `inline` — a duplicate that would
@@ -923,6 +924,19 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-05 **Talents is the first feature ported end to end.** `TalentsPicker` is React
+  (`TalentTreePicker` and `TalentPicker` are their own files, helpers in `utils/`), the vanilla view
+  is deleted, and `PetSpecPicker` is wired — which is why `TalentsPicker` had to go first: an
+  imperative mount always appends, so a React sibling would have landed before it and flipped the
+  panel's order. `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and the two
+  `SavedDataManager`s stay vanilla behind `useLegacyMount`, each because something *else* still
+  consumes it. `PickerShell` gained a root `ref` for exactly that: a picker whose vanilla constructor
+  appended into its own root needs somewhere to put it, and a ref callback runs after React has
+  committed that element's children, so the append lands in the right place. Three dead members went
+  with the port — a `zIndex` accessor pair, `getTalent(location)`, and an `isPlayer()` gate that the
+  React props type makes always true. Gate: `talents.mjs` byte-identical on warrior *and* hunter,
+  the second because `PetSpecPicker` renders for no other class.
 
 - 2026-09-05 **Base UI owns the top-level tabs** (`838991da1`), and no Bootstrap class is left on
   them. The styles were copied onto Base UI's markup rather than reused, and the result is

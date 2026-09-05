@@ -76,6 +76,33 @@ describe('PickerShell', () => {
 		expect(root().querySelector('label')!.getAttribute('data-tooltip-id')).toBeNull();
 	});
 
+	// `TalentsPicker` mounts the still-vanilla GlyphsPicker on this root through `useLegacyMount`,
+	// which is a ref callback returning a cleanup. Base UI merges the forwarded ref with its own, so
+	// this pins that the merge honours the returned cleanup instead of discarding it — without which
+	// the component would be built again on every re-render and never disposed.
+	it('forwards a ref to the root, once, and runs the cleanup it returns on unmount', () => {
+		const attached: Array<Element> = [];
+		const detach = vi.fn();
+		const mount = (node: HTMLDivElement | null) => {
+			if (!node) return;
+			attached.push(node);
+			return detach;
+		};
+		const shellWith = (label: string) => (
+			<PickerShell ref={mount} config={configFor({ label })} cssClass="talents-picker-root" hidden={false} disabled={false} />
+		);
+
+		const { rerender, unmount } = render(shellWith('One'));
+		expect(attached).toEqual([root()]);
+
+		rerender(shellWith('Two'));
+		expect(attached).toHaveLength(1);
+		expect(detach).not.toHaveBeenCalled();
+
+		unmount();
+		expect(detach).toHaveBeenCalledOnce();
+	});
+
 	// `classList.add` drops a repeat and clsx does not. `other_inputs.ts` ships `input-inline` in
 	// `extraCssClasses` while also setting `inline`, and `rotation_tab.tsx` pushes it into the config
 	// in place on every rebuild — so a duplicate would reach the DOM and the parity harness.

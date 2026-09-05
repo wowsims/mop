@@ -5,7 +5,7 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel';
 
 interface ButtonBaseProps {
-	/** `null` emits a bare `btn` — `talents_picker.tsx`'s reset is `btn link-danger`. */
+	/** `null` emits a bare `btn` — the talents tree's reset is `btn link-danger`. */
 	variant?: ButtonVariant | null;
 	size?: 'sm';
 	className?: string;

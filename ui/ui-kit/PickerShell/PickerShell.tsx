@@ -3,7 +3,7 @@ import { adoptNode, isNode } from '@ui-kit/dom_utils';
 import type { InputConfig } from '@ui-kit/input';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, type Ref, useMemo } from 'react';
 
 // `classList.add` drops a repeat; clsx does not, and two live configs pass `input-inline` in
 // `extraCssClasses` as well as setting `inline` (`other_inputs.ts`, and `rotation_tab.tsx`, which
@@ -19,6 +19,12 @@ export interface PickerShellProps<ModObject, T, V> {
 	/** Rendered before the label — the checkbox position, which vanilla gets by prepending. */
 	leading?: ReactNode;
 	children?: ReactNode;
+	/**
+	 * The root element. A picker whose vanilla constructor appended a still-vanilla component to its
+	 * own root — `TalentsPicker` and its `GlyphsPicker` — mounts it here through `useLegacyMount`,
+	 * which appends after the React children and so keeps the order vanilla built.
+	 */
+	ref?: Ref<HTMLDivElement>;
 }
 
 /**
@@ -26,7 +32,7 @@ export interface PickerShellProps<ModObject, T, V> {
  * description, then whatever the subclass appends. Class order matches too, `disabled`/`hide` last,
  * since vanilla toggles those after construction.
  */
-export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disabled, leading, children }: PickerShellProps<ModObject, T, V>) => {
+export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disabled, leading, children, ref }: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
 	// tippy also accepts a function; nothing in the tree passes one, and dropping content silently is
 	// how a tooltip goes missing with nothing to notice it.
@@ -43,6 +49,7 @@ export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disable
 
 	return (
 		<Field.Root
+			ref={ref}
 			disabled={disabled}
 			className={dedupe(clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'))}>
 			{leading}
