@@ -58,12 +58,15 @@ export function useActionId(actionId: ActionId): ActionIdState {
 		if (stateOf(id).ready) return;
 
 		const controller = new AbortController();
-		id.fill(undefined, { signal: controller.signal }).then(
-			filled => {
+		id.fill(undefined, { signal: controller.signal })
+			.then(filled => {
 				if (!controller.signal.aborted) setState({ iconUrl: filled.iconUrl, name: filled.name, href: hrefOf(filled), ready: true });
-			},
-			() => {},
-		);
+			})
+			// Only the abort is quiet. A failed lookup surfaces as an unhandled rejection, as it does
+			// through the vanilla writers, which have no catch either.
+			.catch((error: unknown) => {
+				if (!controller.signal.aborted) throw error;
+			});
 		return () => controller.abort();
 	}, [key]);
 

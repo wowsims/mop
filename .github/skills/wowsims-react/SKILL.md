@@ -218,6 +218,19 @@ It is not being ported in Phase 2, and the reasons are structural rather than "i
 It ports when APL ports, with React children — which is also where hand-written list reconciliation
 is actually worth deleting.
 
+### The three dropdown pickers wait for the Base UI `Menu` adapter
+
+`IconEnumPicker` and `MultiIconPicker` are dropdown widgets, not icon widgets: both put
+`data-bs-toggle="dropdown"` on their button and let Bootstrap's JS open, close and position the
+menu, and `multi_icon_picker.tsx:83` listens for `hide.bs.dropdown` — an event only Bootstrap
+fires. Porting either before the `Menu` adapter exists means React rendering markup that Bootstrap
+then mutates (`show`, `aria-expanded`, Popper's inline styles) — the tabs failure in reverse — or
+porting them twice. So they move with `dropdown_picker.tsx` as one batch, after `Menu` lands, which
+is the last Phase 2 item because it changes markup shape.
+
+`IconPicker` is not one of them: no dropdown, no tippy, no `showWhen` override on its values. It
+ports on its own.
+
 ## Co-located SCSS, in practice
 
 A component's stylesheet sits beside its TSX and is imported from it. Vite merges it into the same
@@ -301,6 +314,13 @@ class name across `ui/` before moving its rules.
   a vanilla list item reads from `useStoreSubscribe`'s cached snapshot, so if a sibling vanilla
   handler mutates that same array in place, the React picker shows stale data until the next
   notification. Bites in Phase 3, when APL ports.
+- **`IconEnumPicker` leaves a stale `href` behind.** Its button starts as
+  `href="javascript:void(0)"`; `setImage` overwrites it with the wowhead URL when the selected value
+  has an `actionId`, and `removeAttribute('href')`s it when that value's `showWhen` is false — but
+  for a value carrying only `color` or `iconUrl` it writes neither, so the button keeps the previous
+  value's wowhead link. A declarative port cannot reproduce that without tracking history, and
+  should not: render the URL for an `actionId`, nothing for a hidden value, and
+  `javascript:void(0)` otherwise, and say so in the port's test.
 - **Some tab contents read the live document while being constructed.** `detailed_results.tsx`
   does `document.querySelector('.dr-toolbar')` (and the same for the sticky-toolbar root) inside its
   constructor, so its pane must already be in the page by then. This is why `SimTabRegistry.attach`
