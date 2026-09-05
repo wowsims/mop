@@ -9,6 +9,12 @@ export interface InputState<T, V = T> {
 	/** `showWhen` said no. Rendered as the `hide` class, not unmounted — see the skill. */
 	hidden: boolean;
 	disabled: boolean;
+	/**
+	 * Increments on every notification, including ones that leave the value unchanged. An input that
+	 * holds text the user is editing re-syncs on this, because that is what `Input.refresh()` does —
+	 * a picker showing half-typed input is reset by any notification, not only by a real change.
+	 */
+	revision: number;
 }
 
 /**
@@ -25,14 +31,17 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 
 	// `defaultValue` seeds the input without writing to the source, and the source takes over at the
 	// first notification — vanilla does the same through init() then refresh(), which re-reads
-	// whether or not the value actually changed.
-	const [seed, setSeed] = useState(config.defaultValue);
+	// whether or not the value actually changed. Vanilla tests it for truthiness, so a defaultValue
+	// of 0 (a real enum value) is ignored; matched here rather than corrected.
+	const [seed, setSeed] = useState(() => (config.defaultValue ? config.defaultValue : undefined));
+	const revision = useRef(0);
 
 	const subscribe = useCallback(
 		(onChange: () => void) => {
 			const source = configRef.current.storeSubscribe?.(modObject);
 			return source
 				? source(() => {
+						revision.current++;
 						setSeed(undefined);
 						onChange();
 					})
@@ -41,7 +50,8 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 		[modObject],
 	);
 
-	const source = useStoreSubscribe(subscribe, () => configRef.current.getValue(modObject));
+	// One object per notification, so a notification that does not change the value still re-renders.
+	const snapshot = useStoreSubscribe(subscribe, () => ({ value: configRef.current.getValue(modObject), revision: revision.current }));
 
 	const toValue = (src: T): V => (configRef.current.sourceToValue ? configRef.current.sourceToValue(src) : (src as unknown as V));
 
@@ -55,9 +65,10 @@ export function useInput<ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	);
 
 	return {
-		value: toValue(seed !== undefined ? seed : source),
+		value: toValue(seed !== undefined ? seed : snapshot.value),
 		setValue,
 		hidden: !!config.showWhen && !config.showWhen(modObject),
 		disabled: !!config.enableWhen && !config.enableWhen(modObject),
+		revision: snapshot.revision,
 	};
 }

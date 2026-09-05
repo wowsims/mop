@@ -98,6 +98,9 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
+| `NumberPicker` | `ui/ui-kit/NumberPicker/` | `ui-kit/pickers/number_picker.ts` (still live, dual-stack) | the `NumberPickerConfig` it is given | commit on native `change`, the `size` rule, and the float/positive/showZeroes formats |
+| `EnumPicker` | `ui/ui-kit/EnumPicker/` | `ui-kit/pickers/enum_picker.tsx` (still live, dual-stack) | the `EnumPickerConfig` it is given | the `select`/`option` markup and out-of-range selection |
+| `PickerShell` | `ui/ui-kit/react/picker_shell.tsx` | `Input`'s constructor: root classes, label, description | the picker's own class and its input(s) | class order, `form-label`, tooltip and description handling |
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/react/input.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant`, `size`, any native props | the `btn` base class, `type="button"`, and that `as="a"` carries an `href` |
@@ -158,7 +161,18 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
   picker's own node has to stay while Phase 3 compares DOM against the vanilla build. Revisit in
   Phase 5, when there is no vanilla side to compare against.
 - **`defaultValue` seeds the input and the source takes over at the first notification**, whether or
-  not the value actually changed — `init()` then `refresh()` in the vanilla class.
+  not the value actually changed — `init()` then `refresh()` in the vanilla class. Vanilla tests it
+  for *truthiness*, so a `defaultValue` of 0 is ignored; matched rather than corrected.
+- **`revision` counts notifications**, and a picker holding text the user is editing re-syncs on it
+  rather than on a value change. `Input.refresh()` runs on every notification, so half-typed input is
+  reset by any store event, not only by one that changes this input's value.
+- **A text or select picker is uncontrolled and synced imperatively.** Not the usual React shape, and
+  deliberate: the vanilla picker commits on the native `change` event — blur *after an edit*, and
+  Enter — while React's `onChange` is the input event, which fires per keystroke. Committing on blur
+  instead writes on a plain focus/blur, which with `defaultValue` or `positive` set writes a value the
+  user never entered. A controlled `value` also renders a `value` attribute the vanilla DOM lacks and
+  ties `size` to every render instead of to typing. `BooleanPicker` stays controlled: a checkbox's
+  `change` and React's `onChange` are the same event.
 
 ## Co-located SCSS, in practice
 
