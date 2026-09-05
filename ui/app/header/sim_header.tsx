@@ -36,8 +36,9 @@ export class SimHeader extends Component {
 	private knownIssuesContent: HTMLUListElement;
 
 	constructor(dom: ShellDom, simUI: SimUI) {
-		// Adopted from the shell bundle; `rootCssClass` still adds `sim-header`.
-		super(null, 'sim-header', dom.header);
+		// Adopted from the shell bundle. No `rootCssClass`: the header's class list, `.stuck`
+		// included, is React's (app/SimShell.tsx).
+		super(null, undefined, dom.header);
 		this.simUI = simUI;
 		this.simTabsContainer = dom.tabsMount;
 		this.simToolbar = dom.toolbar;
@@ -48,9 +49,6 @@ export class SimHeader extends Component {
 		this.addDownloadBinaryLink();
 		this.addSimOptionsLink();
 		this.addSocialLinks();
-
-		// Allow styling the sticky header
-		new IntersectionObserver(([e]) => e.target.classList.toggle('stuck', e.intersectionRatio < 1), { threshold: [1] }).observe(this.rootElem);
 	}
 
 	// Tab identifiers double as a class name on the tab button, which is what callers pass.

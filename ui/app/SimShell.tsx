@@ -3,7 +3,8 @@ import type { Sim } from '@domain/sim';
 import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
-import { type RefObject, useLayoutEffect, useMemo, useRef } from 'react';
+import clsx from 'clsx';
+import { type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
@@ -46,10 +47,10 @@ export interface SimShellProps {
  * - `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` while the tabs are constructed, so
  *   the header has to be laid out in this first render, not a later one.
  *
- * The root's class list is React's, all of it — see `shell_classes.ts`. It has to be all or
+ * Both roots' class lists are React's, all of them — see `shell_classes.ts`. It has to be all or
  * nothing: React writes `className` wholesale, so an element cannot have half its list from React
- * and half from `classList` without the next render dropping the other half. `.sim-header` still
- * gets its class from `Component`'s `rootCssClass`, which owns that element's list outright.
+ * and half from `classList` without the next render dropping the other half. That is why `.stuck`
+ * moving to React state also means `.sim-header` stops coming from `Component`'s `rootCssClass`.
  */
 export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
@@ -80,6 +81,18 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellPr
 		showsEpRatios({ damage: sim.getShowDamageMetrics(), healing: sim.getShowHealingMetrics(), threat: sim.getShowThreatMetrics() }),
 	);
 	const metrics = { damage, threat, healing, epRatios, experimental };
+
+	// `.stuck` styles the header once it has scrolled off its resting position. The observer watches
+	// for the header ceasing to be fully visible, which is what `threshold: [1]` means — it fires when
+	// the ratio drops below 1, not when the header leaves the viewport.
+	const [stuck, setStuck] = useState(false);
+	useEffect(() => {
+		const element = header.current;
+		if (!element) return;
+		const observer = new IntersectionObserver(([entry]) => setStuck(entry.intersectionRatio < 1), { threshold: [1] });
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
 
 	// A child's layout effect runs before its parent's, which is what lets `SimApp` construct
 	// against a populated bundle in the very same commit.
@@ -115,7 +128,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText }: SimShellPr
 						</div>
 					</aside>
 					<div ref={content} className="sim-content container-fluid">
-						<header ref={header}>
+						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
 								<div ref={tabsMount} className="sim-tabs-mount" />
 								<div className="import-export nav">
