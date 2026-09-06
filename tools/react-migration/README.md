@@ -8,10 +8,16 @@ are what the view layer is actually gated on.
 They compare a build of the migration branch against a build of its parent, so both have to be built
 and served first:
 
+**Name the worktrees.** "the parent worktree" is `~/personal/wowsims-mop-restructure`
+(`feature/ui-restructure`) — *not* `~/personal/wowsims-mop`, which is `master`. Serving master on
+3401 does not fail loudly: the comparison still runs, and every spec fails on a line 0 that differs
+by one class, which reads like a regression in this branch. It has happened once. Check with
+`git -C <worktree> branch --show-current` before trusting a red run.
+
 ```bash
-# in the parent worktree
+# in ~/personal/wowsims-mop-restructure (feature/ui-restructure)
 node_modules/.bin/vite build && npx http-server dist -p 3401 --silent &
-# in this worktree
+# in ~/personal/wowsims-mop-react (this worktree)
 node_modules/.bin/vite build && npx http-server dist -p 3402 --silent &
 
 node tools/react-migration/parity.mjs
