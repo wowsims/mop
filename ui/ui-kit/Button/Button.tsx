@@ -1,4 +1,5 @@
 import { Button as BaseButton } from '@base-ui/react/button';
+import { externalRel } from '@domain/links';
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
@@ -38,8 +39,10 @@ export const Button = (props: ButtonProps) => {
 	// keyboard handlers on top of link semantics.
 	if (props.as === 'a') {
 		const { as: _as, variant: _variant, size: _size, className: _className, children, ...anchorProps } = props;
+		// Cross-origin links get their `rel` here rather than at ~40 call sites that each had to
+		// remember it; an explicit `rel` is merged, not replaced.
 		return (
-			<a className={classes} {...anchorProps}>
+			<a className={classes} {...anchorProps} rel={externalRel(anchorProps.href, anchorProps.rel)}>
 				{children}
 			</a>
 		);

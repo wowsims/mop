@@ -33,6 +33,45 @@ describe('Button', () => {
 		expect(screen.getByRole('button').className).toBe('btn btn-outline-primary btn-sm reforge-action');
 	});
 
+	it('adds rel to a cross-origin link without being asked', () => {
+		render(
+			<Button as="a" href="https://www.wowhead.com/mop-classic/item=1" target="_blank">
+				Item
+			</Button>,
+		);
+		expect(screen.getByRole('link').getAttribute('rel')).toBe('noopener noreferrer');
+	});
+
+	it('merges an explicit rel rather than replacing it, and does not duplicate', () => {
+		render(
+			<Button as="a" href="https://www.wowhead.com/mop-classic/item=1" rel="nofollow noopener">
+				Item
+			</Button>,
+		);
+		expect(screen.getByRole('link').getAttribute('rel')).toBe('nofollow noopener noreferrer');
+	});
+
+	// Relative links stay in this document, and the non-http schemes open no browsing context.
+	it('leaves relative and non-http hrefs alone', () => {
+		render(
+			<>
+				<Button as="a" href="/mop/warrior/arms/">
+					Arms
+				</Button>
+				<Button as="a" href="#gear-tab">
+					Gear
+				</Button>
+				<Button as="a" href="mailto:someone@example.com">
+					Mail
+				</Button>
+				<Button as="a" href="javascript:void(0)">
+					Inert
+				</Button>
+			</>,
+		);
+		screen.getAllByRole('link').forEach(link => expect(link.getAttribute('rel')).toBeNull());
+	});
+
 	// The talents tree's reset is `btn link-danger` — a bare btn with no variant.
 	it('emits a bare btn when variant is null', () => {
 		render(

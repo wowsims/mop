@@ -42,7 +42,7 @@ export const ToolbarItem = ({ icon, tooltip, place = 'bottom', className, href, 
 		<div className="sim-toolbar-item">
 			{/* `variant="unstyled"`: these carry their own classes, not `btn`. */}
 			{href ? (
-				<Button as="a" variant="unstyled" href={href} target="_blank" rel="noopener noreferrer" className={classes} aria-label={label} {...anchor}>
+				<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} {...anchor}>
 					{content}
 				</Button>
 			) : (

@@ -56,8 +56,7 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 										key={index}
 										href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
 										className={clsx('stat-value-link-mastery', contextualClass)}
-										target="_blank"
-										rel="noopener noreferrer">
+										target="_blank">
 										{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
 									</Button>
 								))}

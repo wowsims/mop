@@ -22,15 +22,7 @@ export const SocialLink = ({ social }: SocialLinkProps) => {
 	const tooltip = i18n.t(social.tooltip);
 	return (
 		<>
-			<Button
-				as="a"
-				variant="unstyled"
-				href={social.href}
-				target="_blank"
-				rel="noopener noreferrer"
-				className={social.className}
-				aria-label={tooltip}
-				data-tooltip-id={id}>
+			<Button as="a" variant="unstyled" href={social.href} target="_blank" className={social.className} aria-label={tooltip} data-tooltip-id={id}>
 				<i className={social.icon} aria-hidden="true" />
 				{'label' in social && social.label}
 			</Button>
