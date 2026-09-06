@@ -23,15 +23,10 @@ export interface SimAppProps<SpecType extends Spec> {
 
 export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
 	const domRef = useRef<ShellDom | null>(null);
-	// The same object as `simUI` below, reachable from callbacks the shell captured before it existed.
 	const simUIRef = useRef<IndividualSimUI<SpecType> | null>(null);
-	// Constructing the shell is not undoable — loadIndividualSettings subscribes autosave and returns
-	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
 
-	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
-	// any of those nodes would take the vanilla content with it. See SimShell's own note.
 	const shell = useMemo(
 		() => (
 			<SimShell
@@ -40,8 +35,6 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 				cssClass={def.cssClass}
 				spec={player.getPlayerSpec()}
 				knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
-				// Created once with the element, so the toolbar's props never change identity. It fires
-				// long after the shell exists, which is what makes reaching through the ref safe.
 				onOpenSettings={() => simUIRef.current?.simHeader.openSettings()}
 			/>
 		),
@@ -56,8 +49,6 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 		setSimUI(simUIRef.current);
 	}, [player, def]);
 
-	// The skeleton renders immediately; everything that needs the constructed shell hangs off `simUI`,
-	// which only exists after the effect above has run.
 	return (
 		<>
 			<div className="sim-app">{shell}</div>
@@ -71,7 +62,6 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						</>,
 						simUI.simHeader.importExportContainer,
 					)}
-					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}

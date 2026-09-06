@@ -19,18 +19,10 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	const { value, setValue, hidden: showWhenHidden, disabled, revision } = useInput(modObject, config);
 	const currentValue = Number(value);
 
-	// getInputValue()/setInputValue(): the source is a bi-state boolean at states === 2, a plain
-	// number otherwise.
 	const toSourceValue = (n: number): ValueType => (config.states === 2 ? Boolean(n) : n) as unknown as ValueType;
 
-	// showWhen() is overridden on the vanilla picker to also require an actionId.
 	const hidden = config.actionId == null || showWhenHidden;
 
-	// storeValue()/restoreValue(): remember the value across a hide, zero it while hidden, and put it
-	// back on the way back in. Vanilla drives this from its source subscription, so it never runs
-	// during construction and it runs on EVERY notification — a picker that mounts hidden over a
-	// non-zero source is zeroed by the first one, not by a transition. Keying on the revision rather
-	// than on a one-shot flag keeps both true, and stays correct when StrictMode replays the effect.
 	const storedValue = useRef<ValueType | undefined>(undefined);
 	const lastRevision = useRef<number | null>(null);
 	useEffect(() => {
@@ -74,12 +66,10 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 		}
 	};
 
-	// `Input.update()` writes `disabled` on the input element as well as the class on the root, and
-	// `disabled` is not in React's anchor prop types because HTML has no such attribute on <a>.
+	// `Input.update()` writes `disabled` on the input element as well as the class on the root, and `disabled` is not in React's anchor prop types because HTML has no such attribute on <a>.
 	const disabledAttribute = (disabled ? { disabled: true } : {}) as Record<string, boolean>;
 
-	// The nested anchors are what vanilla builds; React logs a validateDOMNesting warning for them in
-	// dev and vitest. Both sides build this DOM through DOM APIs, so nothing is re-parented.
+	// The nested anchors are what vanilla builds; React logs a validateDOMNesting warning for them in dev and vitest.
 	const main = (
 		<a
 			className={clsx(
@@ -126,8 +116,6 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 		</a>
 	);
 
-	// IconPickerConfig, unlike the other picker configs, does not narrow InputConfig's `id` to
-	// required — PickerShell needs one to wire the label's `htmlFor` and tooltip id.
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}

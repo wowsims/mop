@@ -16,28 +16,10 @@ export interface AdvancedEncounterModalProps {
 	onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Everything about the encounter that the sidebar block does not show: the full clock and execute
- * fields, and one editable target per enemy.
- *
- * Both halves are still vanilla. `addEncounterFieldPickers` is shared with the React block rather
- * than duplicated, and the targets list is a `ListPicker`, which stays vanilla by a standing
- * decision. They mount into their own elements, so the body's DOM is the shape it always was.
- *
- * `keepMounted`, because the vanilla modal was `disposeOnClose: false` — it was built once and left
- * in the DOM. `parity.mjs` compares the modals under `.sim-ui` as a set, so a dialog that vanishes
- * when closed is a diff on every spec.
- *
- * `container` is the sim root, which is where the vanilla modal was built. That is not cosmetic:
- * `scss/sims/sim.scss` applies the spec theme to `.<spec>-sim-ui`, so a dialog portaled to `<body>`
- * loses `--bs-primary` and the whole `--theme-*` set — and this one contains pickers that use them.
- */
 export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounterModalProps) => {
 	const host = useSimHost();
 	const encounter = host.sim.encounter;
 
-	// The modal's own preset picker, which is not the sidebar's: different id, different classes, and
-	// it reports the preset it applied to analytics where the sidebar's does not.
 	const presetConfig = useMemo((): EnumPickerConfig<Encounter> => {
 		const presets = encounter.sim.db.getAllPresetEncounters();
 		return {

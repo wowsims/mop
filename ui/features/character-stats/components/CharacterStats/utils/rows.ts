@@ -1,5 +1,3 @@
-// Which stats the sidebar shows, in which group, in which order. Every rule is the vanilla
-// component's constructor, kept as data so the render is a map over it.
 import { Player } from '@domain/player';
 import { UnitStat } from '@domain/proto_utils/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
@@ -21,7 +19,6 @@ export interface RowGroup {
 	rows: Row[];
 }
 
-// Insertion order is render order.
 const defaultGroups = (): Map<StatGroup, Array<UnitStat>> =>
 	new Map<StatGroup, Array<UnitStat>>([
 		[StatGroup.Primary, [UnitStat.fromStat(Stat.StatHealth), UnitStat.fromStat(Stat.StatMana)]],
@@ -69,8 +66,7 @@ const defaultGroups = (): Map<StatGroup, Array<UnitStat>> =>
 		],
 	]);
 
-// Expertise sits next to whichever hit the spec cares about, and mastery at the end of that same
-// group — except for tanks, where mastery is a defensive stat.
+// Expertise sits next to whichever hit the spec cares about, and mastery at the end of that same group — except for tanks, where mastery is a defensive stat.
 const placeExpertiseAndMastery = (groups: Map<StatGroup, Array<UnitStat>>, player: Player<any>, epReferenceStat: Stat) => {
 	const after = (group: StatGroup, hit: PseudoStat) => {
 		const stats = groups.get(group)!;
@@ -97,8 +93,7 @@ export const buildRows = (player: Player<any>, statList: Array<UnitStat>, epRefe
 	groups.forEach((groupedStats, key) => {
 		const filtered = groupedStats.filter(stat => statList.find(listStat => listStat.equals(stat)));
 		if (!filtered.length) return;
-		// Mastery lands in both Physical and Spell for some specs; a group holding only it is the
-		// one the spec does not care about.
+		// Mastery lands in both Physical and Spell for some specs; a group holding only it is the one the spec does not care about.
 		if ([StatGroup.Physical, StatGroup.Spell].includes(key) && filtered.length === 1) return;
 
 		const rows: Row[] = [];

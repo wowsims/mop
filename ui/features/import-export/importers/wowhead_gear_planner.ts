@@ -178,7 +178,6 @@ function parseTalentString(e: number[]) {
 	return t;
 }
 
-/** Exported for its own tests; the importer below is the only other caller. */
 export function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 	// Extract the part after '<domain>/gear-planner/'
 	const match = link.match(new RegExp(`${WOWHEAD_DOMAIN}/gear-planner/(.+)`));
@@ -189,10 +188,6 @@ export function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON
 	return readHash(e);
 }
 
-/**
- * Wowhead's own slot numbering, shared with the gear-planner *exporter* — it was a `static` on the
- * vanilla importer class and the exporter reached across for it, so the direction is unchanged.
- */
 export const WOWHEAD_SLOT_IDS: Record<ItemSlot, number> = {
 	[ItemSlot.ItemSlotHead]: 1,
 	[ItemSlot.ItemSlotNeck]: 2,

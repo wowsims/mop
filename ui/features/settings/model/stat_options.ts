@@ -34,13 +34,6 @@ export interface IconEnumPickerStatOption extends PickerStatOption<typeof IconEn
 
 export type ItemStatOptions<T> = ItemStatOption<T>;
 export type PickerStatOptions = IconPickerStatOption | MultiIconPickerStatOption | IconEnumPickerStatOption;
-/**
- * The two members `StatOptionIcons` can render. Narrower than `PickerStatOptions` on purpose:
- * `IconEnumPicker` is ported now, but no buffs, debuffs or cooldown option list names one, so the
- * dispatch has no branch for it — and a runtime dispatch returning `null` would render a section
- * silently short. An option list that gains one has to fail to compile instead, at which point
- * widening this and the dispatch is the change to make.
- */
 export type RenderableStatOptions = IconPickerStatOption | MultiIconPickerStatOption;
 export type StatOptions<T, Options extends ItemStatOptions<T> | PickerStatOptions> = Array<Options>;
 

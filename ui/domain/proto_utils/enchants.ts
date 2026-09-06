@@ -12,8 +12,7 @@ function fetchEnchantDescriptions(): Promise<Record<number, string>> {
 				}
 				return descriptionsMap;
 			})
-			// Never memoize a failure — the same reset `Database.get` does, for the same reason: one
-			// transient error would otherwise leave every later caller awaiting the same rejection.
+			// Never memoize a failure: same reset as Database.get.
 			.catch(error => {
 				descriptionsPromise = null;
 				throw error;

@@ -196,8 +196,7 @@ export class Sim {
 			return apply();
 		} finally {
 			this.applyingLoadedSettings = false;
-			// `currentStats` is server-derived and is not part of the stored settings, so
-			// without this the display keeps the stats computed from the pre-load defaults.
+			// Not redundant: every recompute was suppressed for the whole load, and currentStats is never persisted.
 			this.updateCharacterStats();
 		}
 	}

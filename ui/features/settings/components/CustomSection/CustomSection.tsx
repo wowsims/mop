@@ -15,28 +15,11 @@ export interface CustomSectionProps {
 	section: CustomSectionConfig<any>;
 }
 
-/** A section with no `when` subscribes to nothing, as the vanilla builder only subscribed when one existed. */
 const NEVER: StoreSubscribe = () => () => {};
 
-/**
- * A spec's own settings section, from the `sections` entry that declares it: an optional row of icon
- * toggles above an optional list of generic inputs, inside the block that titles them.
- *
- * The block is this component's now that the tab body is React, and so are the two things that used
- * to stay behind in `settings_tab.tsx` because they live on the block's *root*: the `custom-section`
- * class and the `when` visibility. `when` only reads the player, so there is still nothing to move
- * into `model/`.
- *
- * `inline` is forced on everything, icon pickers included, because the vanilla builder walked every
- * `.input-root` in the body afterwards. Neither live section declares an `iconEnum` input, so this
- * has no branch for one even though `IconEnumPicker` is ported; the narrowing below means a spec
- * that adds one fails to compile rather than rendering a section silently short.
- */
 export const CustomSection = ({ section }: CustomSectionProps) => {
 	const player = usePlayer() as Player<Spec>;
 	const when = section.when;
-	// `subscribePlayerChange` builds a new source per call, and `useStoreSubscribe` re-subscribes
-	// whenever that identity changes.
 	const subscribe = useMemo(() => (when ? subscribePlayerChange(player) : NEVER), [player, when]);
 	const visible = useStoreSubscribe(subscribe, () => !when || when(player));
 
@@ -52,7 +35,6 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 					{section.iconInputs.map((config, index) => {
 						if (config.type !== 'icon')
 							throw new Error(`custom section ${section.id}: ${config.type} inputs need a React picker that does not exist yet`);
-						// The configs carry no id of their own, and the list is declared statically.
 						return <IconPicker key={index} modObject={player} config={{ ...config, inline: true }} />;
 					})}
 				</div>

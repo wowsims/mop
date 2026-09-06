@@ -12,11 +12,6 @@ import { StatRow } from './StatRow';
 import { buildRows } from './utils/rows';
 import { meleeCritCapDisplayString, readRacialBonuses, shouldShowMeleeCritCap, statDisplayString } from './utils/stat_display';
 
-/**
- * Takes no props: there is one player per page and one sidebar, and everything this needs is on the
- * host. A `ui-kit` component may not do this — it has to stay sim-agnostic — but a feature component
- * with a single call site would only be re-threading what the context already holds.
- */
 export const CharacterStats = () => {
 	const host = useSimHost();
 	const player = host.player;
@@ -28,8 +23,6 @@ export const CharacterStats = () => {
 		[player],
 	);
 
-	// One read per notification, held in between — so building fresh Stats objects here is free of
-	// the "getSnapshot should be cached" trap.
 	const snapshot = useStoreSubscribe(subscribe, () => {
 		const racial = readRacialBonuses(player);
 		const bonusStats = player.getBonusStats();
@@ -41,13 +34,10 @@ export const CharacterStats = () => {
 			overwriteDisplayStats ? overwriteDisplayStats(player) : undefined,
 		);
 		return {
-			// `currentStats` is seeded empty and only `computeStats` fills `finalStats`, so this is
-			// "the first round trip has not landed yet" rather than "the player has no stats".
 			pending: !player.getCurrentStats().finalStats,
 			racial,
 			bonusStats,
 			attribution,
-			// Only defined for the specs that show the crit-cap row; the getter is meaningless elsewhere.
 			critCap: shouldShowMeleeCritCap(player) ? { info: player.getMeleeCritCapInfo(), text: meleeCritCapDisplayString(player) } : null,
 		};
 	});
@@ -57,7 +47,6 @@ export const CharacterStats = () => {
 
 	return (
 		<div className="character-stats-root">
-			{/* A heading, not a form label: it labels the table, not a control. */}
 			<h3 className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</h3>
 			<table className="character-stats-table" aria-busy={pending || undefined}>
 				{rows.map(group => (

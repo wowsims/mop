@@ -8,15 +8,6 @@ export interface SimStatusResult {
 	error: unknown;
 }
 
-/**
- * The init state of `sim.waitForInit()` as a status rather than a boolean, so a view can tell
- * "still loading" apart from "loaded" and render a skeleton for the first.
- *
- * `waitForInit` rejects when the database load fails, and until this hook nothing caught it: the
- * shell simply stayed unready forever with no error shown. The rejection is surfaced here instead.
- *
- * See `useSimReady` for the boolean form and for why this lives in `app/` rather than `ui-kit/`.
- */
 export const useSimStatus = (sim: Sim): SimStatusResult => {
 	const [state, setState] = useState<SimStatusResult>({ status: 'loading', error: null });
 	useEffect(() => {

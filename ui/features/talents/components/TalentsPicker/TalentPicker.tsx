@@ -16,20 +16,8 @@ export interface TalentPickerProps<TalentsProto> {
 	onChange: (next: string) => void;
 }
 
-/** Vanilla's `longTouchTimer`: a press held this long unspends the point instead of spending it. */
 const LONG_TOUCH_MS = 750;
 
-/**
- * One talent: an anchor carrying the wowhead link, with left click to spend and right click to
- * unspend. `data-selected` is a `"true"`/`"false"` string rather than a boolean attribute because
- * three stylesheet rules match on the value, including a `:has([data-selected='true'])` on the row.
- *
- * The touch handlers are native listeners rather than React's props, and that is not a style
- * choice: React attaches `touchstart` and `touchmove` to its root **passively**, so
- * `preventDefault()` from an `onTouchStart` is a no-op — and it is load-bearing here. It is what
- * suppresses the compatibility `mousedown` the browser fires after a touch, which would otherwise
- * re-spend the point a long press had just cleared.
- */
 export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }: TalentPickerProps<TalentsProto>) => {
 	const player = usePlayer();
 	const rootRef = useRef<HTMLAnchorElement>(null);
@@ -41,8 +29,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 	const select = () => onChange(withTalentSelected(talentsString, config.location));
 	const clear = () => onChange(withTalentCleared(talentsString, config.location));
 
-	// The native listeners are attached once, so they read the current handlers through a ref rather
-	// than re-attaching on every talents-string change.
+	// The native listeners are attached once, so they read the current handlers through a ref rather than re-attaching on every talents-string change.
 	const handlers = useRef({ select, clear });
 	handlers.current = { select, clear };
 
@@ -89,8 +76,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 			href={href || undefined}
 			rel={externalRel(href, undefined)}
 			data-selected={String(selected)}
-			// The anchor is a wowhead link, so following it has to be suppressed; and `mousedown`
-			// rather than `click` is what commits, which is why a right click reaches it at all.
+			// The anchor is a wowhead link, so following it has to be suppressed; and `mousedown` rather than `click` is what commits, which is why a right click reaches it at all.
 			onClick={event => event.preventDefault()}
 			onContextMenu={event => event.preventDefault()}
 			onMouseDown={event => (isRightClick(event.nativeEvent) ? handlers.current.clear() : handlers.current.select())}>

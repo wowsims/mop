@@ -6,9 +6,6 @@ import { element, fragment } from 'tsx-vanilla';
 
 export const Fragment = fragment;
 
-// Cross-origin anchors get `rel="noopener noreferrer"` here, which is the only seam the whole
-// vanilla stack shares — the alternative is remembering it at ~220 hand-written `<a href>` sites.
-// The React side does the same in `Button`. This goes away with the shim itself in Phase 5.
 const withExternalRel = (type: unknown, props: unknown): unknown => {
 	if (type !== 'a' || props == null || typeof props !== 'object') return props;
 	const { href, rel } = props as { href?: unknown; rel?: unknown };

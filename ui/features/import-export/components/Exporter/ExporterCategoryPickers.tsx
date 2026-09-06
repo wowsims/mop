@@ -11,14 +11,6 @@ export interface ExporterCategoryPickersProps {
 	onChange: () => void;
 }
 
-/**
- * The row of checkboxes the link and JSON exporters put above the textarea.
- *
- * The configs carry no `storeSubscribe`: this is the UI-local case the `InputConfig` contract names,
- * and `useInput` rings its own subscriber after such a write, so the ticked box re-reads itself.
- * The vanilla version routed the same thing through an `Emitter` it also used to rebuild the text;
- * `onChange` is that second half.
- */
 export const ExporterCategoryPickers = ({ categories, onChange }: ExporterCategoryPickersProps) => {
 	const configs = useMemo(
 		() =>

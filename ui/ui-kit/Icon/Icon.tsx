@@ -1,5 +1,3 @@
-// A FontAwesome glyph. `name`, `style` and `size` are closed unions, so a nonexistent glyph, an
-// invalid size or two glyph classes on one element cannot compile.
 import clsx from 'clsx';
 import type { HTMLAttributes } from 'react';
 
@@ -17,8 +15,7 @@ export interface IconProps extends Omit<HTMLAttributes<HTMLElement>, 'style'> {
 
 const resolve = (name: IconName | IconAlias): IconName => (name in ICON_ALIASES ? ICON_ALIASES[name as IconAlias] : (name as IconName));
 
-// The rest props matter: an icon is an anchor for its own tooltip at several sites, and a dropped
-// `data-tooltip-id` fails silently.
+// The rest props matter: an icon is an anchor for its own tooltip at several sites, and a dropped `data-tooltip-id` fails silently.
 export const Icon = ({ name, style = 'solid', size, spin, className, title, ...rest }: IconProps) => {
 	return (
 		<i

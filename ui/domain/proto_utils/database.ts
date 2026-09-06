@@ -39,14 +39,7 @@ export class Database {
 	private static loadPromise: Promise<Database> | null = null;
 	private static instance: Database | null = null;
 
-	/**
-	 * The whole page hangs off this one load, so it takes no `AbortSignal`: the promise is shared by
-	 * every caller, and honouring one caller's signal would abort the database for all of them. The
-	 * icon requests below already say this about themselves; this is the same rule one level up.
-	 *
-	 * A failure here is fatal to the page rather than to one widget, so it retries a couple of times
-	 * before giving up, and the memo is cleared on the way out so a later caller can try again.
-	 */
+	/** Shared by the whole page, so it takes no AbortSignal; retries, and clears the memo on failure. */
 	static async get(): Promise<Database> {
 		if (!Database.loadPromise) {
 			Database.loadPromise = (async () => {
@@ -55,9 +48,7 @@ export class Database {
 				Database.instance = db;
 				return db;
 			})().catch(error => {
-				// Never memoize a failure: one transient fetch error must not leave every later
-				// caller awaiting the same rejection for the page lifetime (cf. getSharedWasmModule
-				// in ui/domain/worker_pool.ts). Everything downstream hangs off waitForInit().
+				// Never memoize a failure (cf. getSharedWasmModule): one transient error must not brick every later caller.
 				Database.loadPromise = null;
 				throw error;
 			});

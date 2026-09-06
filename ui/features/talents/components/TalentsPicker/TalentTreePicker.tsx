@@ -21,13 +21,6 @@ export interface TalentTreePickerProps<TalentsProto> {
 /** Row N is unlocked at level N × 15, which is what the gutter shows. */
 const LEVELS_PER_ROW = 15;
 
-/**
- * The tree: the spec header with its reset button, the background, and the grid of talents.
- *
- * It was module-scoped and unexported in the vanilla file, which is why `pet_spec_picker` retyped
- * its markup *and* its class names to piggyback on this stylesheet. Exported here, but the class
- * names stay shared until those styles are deliberately split.
- */
 export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChange }: TalentTreePickerProps<TalentsProto>) => {
 	const player = usePlayer();
 	const playerSpec = player.getSpec();
@@ -45,8 +38,6 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 					className="talent-tree-reset link-danger"
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
-					{/* `style="base"` keeps the bare `fa` prefix: the class list is what the pane parity
-					    gate compares, and normalising this glyph to `fas` is a change, not a port. */}
 					<Icon name="times" style="base" />
 				</Button>
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />

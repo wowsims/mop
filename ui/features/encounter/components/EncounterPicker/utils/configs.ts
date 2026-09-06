@@ -14,9 +14,7 @@ const whileTimed = (encounter: Encounter) => () => !encounter.getUseHealth();
 
 interface Field {
 	id: string;
-	/** The `settings_tab.encounter.*` key holding this field's label and tooltip. */
 	key: string;
-	/** The analytics label, which does not follow the id or the key. */
 	label: string;
 	category: 'duration' | 'execute';
 	get: (encounter: Encounter) => number;
@@ -36,7 +34,6 @@ const field = (encounter: Encounter, spec: Field): NumberPickerConfig<Encounter>
 	enableWhen: whileTimed(encounter),
 });
 
-/** The clock: how long the fight lasts and how much that varies. */
 export const durationConfigs = (encounter: Encounter): Array<NumberPickerConfig<Encounter>> =>
 	(
 		[
@@ -52,8 +49,7 @@ export const durationConfigs = (encounter: Encounter): Array<NumberPickerConfig<
 		] satisfies Array<Field>
 	).map(spec => field(encounter, spec));
 
-// Stored as a proportion, shown as a percentage. The 90 entry is the odd one out twice over: it is
-// the *high* health band rather than an execute range, and its translation key says so.
+// Stored as a proportion, shown as a percentage.
 const EXECUTE_BANDS: Array<Field> = [
 	{
 		id: 'encounter-execute-proportion',
@@ -99,11 +95,6 @@ const EXECUTE_BANDS: Array<Field> = [
 
 export const executeConfigs = (encounter: Encounter): Array<NumberPickerConfig<Encounter>> => EXECUTE_BANDS.map(band => field(encounter, band));
 
-/**
- * Allies, which are the raid's target dummies. Subscribed to `itemSwap` as well as to the count,
- * because a swapped weapon is one of the things that can take the ability away — and `showWhen` has
- * to be re-read when it does.
- */
 export const numAlliesConfig = (player: Player<any>): NumberPickerConfig<Raid> => ({
 	id: 'encounter-num-allies',
 	label: i18n.t('settings_tab.encounter.num_allies.label'),
@@ -115,7 +106,6 @@ export const numAlliesConfig = (player: Player<any>): NumberPickerConfig<Raid> =
 	showWhen: () => ![Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec()) && player.shouldEnableTargetDummies(),
 });
 
-/** Tanks only: how hard the boss hits at minimum. */
 export const minBaseDamageConfig = (): NumberPickerConfig<Encounter> => ({
 	id: 'encounter-min-base-damage',
 	label: i18n.t('settings_tab.encounter.min_base_damage.label'),
@@ -128,13 +118,6 @@ export const minBaseDamageConfig = (): NumberPickerConfig<Encounter> => ({
 		}),
 });
 
-/**
- * The preset encounter, or "Custom" when the current one matches none of them. Needs the database,
- * so it is read once when the block renders — which is after `waitForInit` for the whole tab.
- *
- * The id's spelling is vanilla's: `encounter-preset-encouter`. It is the element's DOM id, so it is
- * not a typo anyone can quietly fix here.
- */
 export const presetEncounterConfig = (encounter: Encounter): EnumPickerConfig<Encounter> => {
 	const presets = encounter.sim.db.getAllPresetEncounters();
 	return {

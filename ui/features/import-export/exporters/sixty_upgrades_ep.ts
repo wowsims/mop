@@ -36,11 +36,6 @@ const PSEUDO_STAT_NAMES: Partial<Record<PseudoStat, string>> = {
 
 const getName = (stat: UnitStat): string => (stat.isStat() ? STAT_NAMES[stat.getStat()] : (PSEUDO_STAT_NAMES[stat.getPseudoStat()] ?? ''));
 
-/**
- * Registered by nothing — `individual_sim_ui` has kept its line commented out since the Cataclysm
- * URL was carried over. Kept so the definition and its stat table do not have to be rediscovered,
- * exactly as the class it replaces was.
- */
 export const SIXTY_UPGRADES_EP_EXPORTER: ExporterDefinition = {
 	title: 'Sixty Upgrades Cataclysm EP Export',
 	allowDownload: true,

@@ -9,7 +9,6 @@ import { default as pako } from 'pako';
 import { selectedCategories } from './categories';
 import type { ExporterDefinition } from './types';
 
-/** Also `IndividualSimUI.toLink()`, which shares the sim by URL with the default categories. */
 export const createLink = (host: IndividualSimHost<any>, exportCategories?: Array<SimSettingCategories>): string => {
 	if (!exportCategories) {
 		exportCategories = LINK_DEFAULT_CATEGORIES;

@@ -2,13 +2,7 @@ import type { Player } from '@domain/player';
 import { batch } from '@domain/state/batch';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 
-/**
- * Exchanges the equipped item and the swap item in each of `itemSlots`, in one batch so the two
- * writes land as a single notification.
- *
- * `canDualWield2H()` is passed through because `withEquippedItem` uses it to decide whether putting
- * a two-hander in one hand has to clear the other — the swap can move a weapon into either side.
- */
+/** Exchanges the equipped item and the swap item in each of `itemSlots`, in one batch so the two writes land as a single notification. */
 export const swapWithGear = <SpecType extends Spec>(player: Player<SpecType>, itemSlots: ReadonlyArray<ItemSlot>): void => {
 	let newGear = player.getGear();
 	let newSwapGear = player.itemSwapSettings.getGear();

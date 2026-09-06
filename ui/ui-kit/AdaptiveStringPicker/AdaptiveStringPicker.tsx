@@ -15,13 +15,6 @@ const updateSize = (input: HTMLInputElement | null) => {
 	if (input.size !== size) input.size = size;
 };
 
-/**
- * The field is uncontrolled and synced imperatively, exactly as NumberPicker is: the vanilla picker
- * commits on the native `change` event, not React's per-keystroke `onChange`.
- *
- * Unlike NumberPicker, the vanilla `setInputValue` here also calls `updateSize`, so a source-driven
- * change moves the `size` attribute too — not just typing.
- */
 export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: AdaptiveStringPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);

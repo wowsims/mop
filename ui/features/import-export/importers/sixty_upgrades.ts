@@ -6,7 +6,6 @@ import Toast from '@ui-kit/toast';
 import { finishIndividualImport } from './finish_individual_import';
 import type { ImporterDefinition } from './types';
 
-/** `<p>…</p><ul><li><strong>name</strong></li>…</ul>`, which is what the vanilla JSX built. */
 const removedSuffixesBody = (itemNames: string[]): HTMLElement => {
 	const body = document.createElement('div');
 	const lead = document.createElement('p');
@@ -79,9 +78,6 @@ export const SIXTY_UPGRADES_IMPORTER: ImporterDefinition = {
 			}
 			equipmentSpec.items.push(itemSpec);
 		});
-
-		// The vanilla importer called `sim.db.lookupEquipmentSpec(equipmentSpec)` here and threw the
-		// result away; `finishIndividualImport` calls it again for the gear it actually applies.
 
 		await finishIndividualImport(host, {
 			charClass,

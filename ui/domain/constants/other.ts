@@ -27,17 +27,9 @@ export const REPO_RELEASES_URL = `${REPO_URL}/releases`;
 export const REPO_NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 export const REPO_CHOOSE_NEW_ISSUE_URL = `${REPO_NEW_ISSUE_URL}/choose`;
 
-/**
- * The three social links, rendered in both the header toolbar and the sidebar. One list because
- * they are the same three links — the two places differ only in what wraps them. `tooltip` is an
- * i18n key, and doubles as the accessible name. `icon` is a FontAwesome glyph name, checked against
- * `IconName` where it is rendered — this module may not import from `ui-kit`, so `as const` keeps
- * the literals narrow enough for that check to bite.
- */
 export const SOCIALS = [
 	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'discord-link link-alt', icon: 'discord', tooltip: 'info.discord' },
 	{ key: 'github', href: REPO_URL, className: 'github-link link-alt', icon: 'github', tooltip: 'info.github' },
-	// The only one that spells itself out beside the glyph.
 	{
 		key: 'patreon',
 		href: 'https://patreon.com/wowsims',

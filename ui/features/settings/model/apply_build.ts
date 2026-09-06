@@ -3,16 +3,6 @@ import { Stats } from '@domain/proto_utils/stats';
 import { batch } from '@domain/state/batch';
 import type { IndividualSimHost } from '@features/sim_host';
 
-/**
- * Applies a preset build — gear, talents, rotation, encounter, settings — in one batch.
- *
- * Lifted out of `PresetConfigurationPicker`, where it was a `static` on a view class whose whole
- * body is store writes, and which already had a caller that is not a view: `IndividualSimUI`
- * applies `defaultBuild` through it during construction.
- *
- * Every field is optional and every branch guards, because a preset declares only the parts it
- * means to set — `itemSwap` is the exception that acts on its own absence, disabling swapping.
- */
 export const applyBuild = (
 	{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings, reforgeSettings }: PresetBuild,
 	simUI: IndividualSimHost<any>,

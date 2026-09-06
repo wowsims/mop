@@ -1155,9 +1155,6 @@ export class ActionId {
 		return wowheadIconUrl(iconLabel);
 	}
 
-	// Takes no signal: the icon request is shared between callers and the database load beneath it is
-	// shared by the whole page, so neither can honour one caller's abort. Callers that care whether
-	// they were aborted check their own signal after awaiting, which is what `useActionId` does.
 	static async getTooltipData(actionId: ActionId): Promise<IconData> {
 		if (actionId.itemId) {
 			return Database.getItemIconData(actionId.itemId);

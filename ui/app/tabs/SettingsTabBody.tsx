@@ -19,32 +19,11 @@ import { useMemo } from 'react';
 import { useSimReady } from '../hooks/useSimReady';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 
-/**
- * The settings tab's contents, rendered by React into the pane `SettingsTab` registers. It lives in
- * `app/tabs` rather than `features/` for `TalentsTabBody`'s reasons: assembling feature components is
- * what a tab does, and `PresetConfigurationPicker` is in `app/`, which `features/**` may not import.
- *
- * The three left-hand columns are React's, and so is every content block in them — `ContentBlock`'s
- * first consumer, after nine months of it being ported and waiting. Their children behind `ready`
- * reproduce the vanilla tab exactly: it built the columns in its constructor and everything in them
- * inside one `waitForInit` callback, which is what `useSimReady` is.
- *
- * The right panel's three components mount through `useLegacyMount`, which builds them into the
- * panel rather than into wrappers of its own, so the pane's DOM keeps the shape it always had and
- * `panes-parity.mjs` still compares like for like.
- *
- * `PresetConfigurationPicker` and `SavedDataManager` are deliberately not ported with this tab: four
- * tabs build the first and several build the second, so porting them here would drag gear, rotation
- * and talents along with it.
- */
 export const SettingsTabBody = () => {
 	const host = useSimHost();
 	const config = host.individualConfig;
 	const ready = useSimReady(host.sim);
 
-	// Every list is derived from a module-level constant and the spec's own config, so none of them
-	// changes for the life of the page — and `ConsumesPicker` memoises a database read on the two it
-	// is handed, which a fresh array per render would defeat.
 	const options = useMemo(
 		() => ({
 			buffs: relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, host),
@@ -59,10 +38,6 @@ export const SettingsTabBody = () => {
 	);
 
 	const itemSwapSlots = config.itemSwapSlots || [];
-	// Whether the block exists at all, unchanged from the vanilla guard. Its swap-slots half is
-	// unreachable — `applyDefaultConfigOptions` prepends Challenge Mode, so `inputs` is non-empty on
-	// all 34 specs — and is kept as written rather than "simplified", since it is the config surface
-	// that would have to change.
 	const hasOtherSettings = config.otherInputs.inputs.length > 0 || itemSwapSlots.length > 0;
 
 	const mountRight = useLegacyMount(
@@ -110,8 +85,6 @@ export const SettingsTabBody = () => {
 				fromJson: (obj: any) => SavedSettings.fromJson(obj),
 			});
 
-			// Stored entries and presets are only readable once the database has loaded; the panel is
-			// built long before that, exactly as the talents one is.
 			host.sim.waitForInit().then(() => {
 				savedEncounterManager.loadUserData();
 				config.presets.encounters?.forEach(encounter => {
@@ -148,9 +121,6 @@ export const SettingsTabBody = () => {
 					});
 				});
 
-				// Each entry bakes in a snapshot of the settings as they are *now*, which is a quirk to
-				// preserve rather than improve: computing it lazily would read better and would change
-				// what a preset item swap restores.
 				config.presets.itemSwaps?.forEach(presetItemSwap => {
 					savedSettingsManager.addSavedData({
 						name: presetItemSwap.name,
@@ -166,7 +136,6 @@ export const SettingsTabBody = () => {
 		[host, config],
 	);
 
-	// Portalled into `SimTab`'s own `.tab-pane-content-container`, so this renders only the panels.
 	return (
 		<>
 			<div className="settings-tab-left tab-panel-left">
@@ -185,7 +154,6 @@ export const SettingsTabBody = () => {
 				<div className="tab-panel-col settings-left-col-2">
 					{ready && (
 						<>
-							{/* One per `sections` entry the spec declares; most declare none. */}
 							{config.sections?.map(section => (
 								<CustomSection key={section.id} section={section} />
 							))}
@@ -212,16 +180,11 @@ export const SettingsTabBody = () => {
 								cssClass="buffs-settings"
 								config={{
 									header: { title: i18n.t('settings_tab.raid_buffs.title'), tooltip: i18n.t('settings_tab.raid_buffs.tooltip') },
-									// What `configureIconSection` did for this block, without the picker
-									// construction it counted: hide the body when the spec's stats filter
-									// every buff out. The misc bundle never counted towards it.
 									bodyClasses: options.buffs.length === 0 ? ['hide'] : undefined,
 								}}
 								headerChildren={<p className="fs-body">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
 							</ContentBlock>
-							{/* Both cooldown blocks are the same shape, and each exists only when its own
-							    option list survives `relevantStatOptions`. */}
 							{options.externalDamageCooldowns.length > 0 && (
 								<ContentBlock
 									cssClass="buffs-settings"

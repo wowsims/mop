@@ -14,50 +14,27 @@ import { SocialLink } from './SocialLink';
 
 type UiToggle = 'showDamageMetrics' | 'showThreatMetrics' | 'showHealingMetrics' | 'showExperimental';
 
-// Module-level so each array has a stable identity across renders, which is what lets the
-// subscription below depend on it directly instead of on a joined string.
 const DAMAGE_FIELDS: UiToggle[] = ['showDamageMetrics'];
 const THREAT_FIELDS: UiToggle[] = ['showThreatMetrics'];
 const HEALING_FIELDS: UiToggle[] = ['showHealingMetrics', 'showThreatMetrics'];
 const EXPERIMENTAL_FIELDS: UiToggle[] = ['showExperimental'];
 const EP_RATIO_FIELDS: UiToggle[] = ['showDamageMetrics', 'showHealingMetrics', 'showThreatMetrics'];
 
-/** One class, one subscription, over the fields that class actually depends on. */
 const useMetricFlag = (sim: Sim, fields: UiToggle[], read: () => boolean) => {
 	const subscribe = useMemo(() => subscribeAll(fields.map(field => subscribeUiField(sim, field))), [sim, fields]);
 	return useStoreSubscribe(subscribe, read);
 };
 
 export interface SimShellProps {
-	/** Filled in a layout effect, before `SimApp`'s own effect constructs the shell into it. */
 	domRef: RefObject<ShellDom | null>;
 	sim: Sim;
-	/** The spec's own class, e.g. `arms-warrior-sim-ui`. */
 	cssClass: string;
 	spec: PlayerSpec<any>;
 	noticeText?: string;
-	/** Already derived — the launch-status notice is part of the list by the time it arrives. */
 	knownIssues: ReadonlyArray<ReactNode>;
-	/** Opens the still-vanilla settings modal, which `SimHeader` owns. */
 	onOpenSettings: () => void;
 }
 
-/**
- * The sim's skeleton — everything parent to the tabs. It renders **once** and is never re-rendered:
- * `SimApp` holds the element in a `useMemo`, which is load-bearing three times over.
- *
- * - Every container still in `ShellDom` is filled imperatively afterwards. React must not own their
- *   children, and a re-render that re-created any of these nodes would take the vanilla content with
- *   it. `.sim-toolbar`, `.sim-sidebar-socials` and `.sim-title` are the exceptions and no longer in the
- *   bundle: their contents are React's, and a container leaves `ShellDom` as that becomes true of it.
- * - `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` while the tabs are constructed, so
- *   the header has to be laid out in this first render, not a later one.
- *
- * Both roots' class lists are React's, all of them — see `shell_classes.ts`. It has to be all or
- * nothing: React writes `className` wholesale, so an element cannot have half its list from React
- * and half from `classList` without the next render dropping the other half. That is why `.stuck`
- * moving to React state also means `.sim-header` stops coming from `Component`'s `rootCssClass`.
- */
 export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
@@ -69,14 +46,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	const tabsMount = useRef<HTMLDivElement>(null);
 	const importExport = useRef<HTMLDivElement>(null);
 
-	// One subscription per class, listing the fields that class actually depends on.
-	//
-	// Healing subscribes to threat as well as to itself, which the vanilla shell did not:
-	// `Sim.getShowHealingMetrics()` is `showHealingMetrics || (showThreatMetrics && <tank spec>)`,
-	// and vanilla only re-ran that updater on `showHealingMetrics`. So a tank whose saved settings
-	// turned threat on kept `hide-healing-metrics` from construction and hid columns its own rule
-	// says to show. Fixed rather than reproduced, and recorded as an intended divergence in
-	// `parity.mjs` — it is visible at load on every tank spec.
 	const damage = useMetricFlag(sim, DAMAGE_FIELDS, () => sim.getShowDamageMetrics());
 	const threat = useMetricFlag(sim, THREAT_FIELDS, () => sim.getShowThreatMetrics());
 	const healing = useMetricFlag(sim, HEALING_FIELDS, () => sim.getShowHealingMetrics());
@@ -86,9 +55,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	);
 	const metrics = { damage, threat, healing, epRatios, experimental };
 
-	// `.stuck` styles the header once it has scrolled off its resting position. The observer watches
-	// for the header ceasing to be fully visible, which is what `threshold: [1]` means — it fires when
-	// the ratio drops below 1, not when the header leaves the viewport.
 	const [stuck, setStuck] = useState(false);
 	useEffect(() => {
 		const element = header.current;
@@ -98,8 +64,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 		return () => observer.disconnect();
 	}, []);
 
-	// A child's layout effect runs before its parent's, which is what lets `SimApp` construct
-	// against a populated bundle in the very same commit.
+	// A child's layout effect runs before its parent's, which is what lets `SimApp` construct against a populated bundle in the very same commit.
 	useLayoutEffect(() => {
 		domRef.current = {
 			root: root.current!,
@@ -139,8 +104,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
 								<div ref={tabsMount} className="sim-tabs-mount" />
-								{/* Filled by a portal, like the tab strip: the menus' contents are registered on
-								    `waitForInit`, long after this renders. */}
 								<div ref={importExport} className="import-export nav" />
 								<div className="sim-toolbar nav">
 									<SimToolbar knownIssues={knownIssues} onOpenSettings={onOpenSettings} />

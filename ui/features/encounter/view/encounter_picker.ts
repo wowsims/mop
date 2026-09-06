@@ -13,16 +13,11 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 
 import { trackEvent, TrackEventProps } from '../../../tracking/analytics';
 import { durationConfigs, executeConfigs } from '../components/EncounterPicker/utils/configs';
-// Still declared here because `features/spec_config.ts` — frozen for the migration — imports it
-// from this path. The picker that reads it is React (`../components/EncounterPicker`).
+// Still declared here because `features/spec_config.ts` — frozen for the migration — imports it from this path.
 export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }
 
-/**
- * The editable list of enemies, one `TargetPicker` per target. Still vanilla: `ListPicker` is, by a
- * standing decision, and this is its only encounter caller besides the target-inputs list.
- */
 export function makeTargetsPicker(parent: HTMLElement, encounter: Encounter) {
 	return new ListPicker<Encounter, TargetProto>(parent, encounter, {
 		extraCssClasses: ['targets-picker', 'mb-0'],
@@ -573,14 +568,6 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 	}
 }
 
-/**
- * The clock and the execute bands, built into `parent` as two `.picker-group`s.
- *
- * Kept vanilla because `AdvancedEncounterModal` is still a `BaseModal` and builds them into its own
- * header. The React block renders the same two groups from the same configs — `durationConfigs` and
- * `executeConfigs` are shared rather than copied, which is what stops the two stacks drifting while
- * both exist.
- */
 export function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
 	const durationGroup = Input.newGroupContainer();
 	rootElem.appendChild(durationGroup);

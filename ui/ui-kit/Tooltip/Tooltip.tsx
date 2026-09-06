@@ -23,40 +23,12 @@ export interface TooltipProps {
 	className?: string;
 }
 
-// Both of these are tippy's defaults, which every call site in the tree inherits, and both apply to
-// hover tooltips as much as to popovers:
-//
-// - `hideOnClick: true` hides on a click anywhere, the reference included. react-tooltip splits that
-//   in two and defaults the anchor half off (`closeEvents.click`), so without `HOVER_CLOSE` the
-//   bonus-stat icon's tooltip stayed open behind the popover its own button had just opened. A
-//   screenshot diff against the vanilla build is what caught it; `sidebar-popover.mjs` counts open
-//   tooltips now.
-// - Escape: `shared/bootstrap_overrides.ts` binds a global `keydown` calling tippy's `hideAll()`,
-//   which does not distinguish a hover tooltip from a popover.
-//
-// Clicking *inside* a tooltip does not close it — the handler returns early on
-// `tooltipRef.contains(target)`. And closing commits a half-typed edit rather than discarding it,
-// as tippy does: React detaches the content in the mutation phase and flushes effect cleanups
-// after, so a picker's native `change` listener is still attached when its input is removed.
-// Measured — `tools/react-migration/sidebar-popover.mjs`.
+// Both of these are tippy's defaults, which every call site in the tree inherits, and both apply to hover tooltips as much as to popovers: - `hideOnClick: true` hides on a click anywhere, the reference included. react-tooltip splits that in two and defaults the anchor half off (`closeEvents.click`), so without `HOVER_CLOSE` the bonus-stat icon's tooltip stayed open behind the popover its own button had just opened.
 const GLOBAL_CLOSE = { clickOutsideAnchor: true, escape: true };
-// `openEvents` is deliberately never passed. Its default is `{mouseenter, focus}`, and the `focus`
-// half is the whole of keyboard access to a tooltip's content: focusing the anchor opens the
-// tooltip, and react-tooltip then writes `aria-describedby` on that anchor pointing at the node it
-// just rendered with `id` and `role="tooltip"`. Passing `openEvents={{mouseenter: true}}` — the
-// obvious fix for a tooltip that flashes while tabbing past — would silently end that.
-// `a11y.mjs` focuses one anchor per region and asserts the chain resolves.
-// Only for hover tooltips: `openOnClick` turns `mouseleave`/`blur` off, and passing this would
-// turn them back on.
+// `openEvents` is deliberately never passed.
 const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
 
-/**
- * Content is `children`, which react-tooltip does not render until the tooltip first opens — so a
- * picker built inside one costs nothing until it is shown, the way tippy's `onShow` hand-rolls it.
- *
- * The ref is the popover's `close()`: `character_stats.tsx` hides its bonus-stat popover from inside
- * the picker it contains, which is `instance.hide()` on the vanilla side.
- */
+/** Content is `children`, which react-tooltip does not render until the tooltip first opens — so a picker built inside one costs nothing until it is shown, the way tippy's `onShow` hand-rolls it. */
 export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 	({ id, content, place = 'top', clickable, openOnClick, hidden, onOpenChange, className }, ref) => {
 		return (

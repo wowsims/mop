@@ -4,16 +4,12 @@ import clsx from 'clsx';
 
 export interface SimLinkContentProps {
 	iconPath: string;
-	/** The small line above the title: "Simulator" on the root, the class name on a spec link. */
 	label?: string;
-	/** The root's label is white; a spec link's takes the class colour it inherits. */
 	labelIsWhite?: boolean;
 	title: string;
-	/** Only specs have one; a class row shows no phase. */
 	launch?: { phase: number; status: number };
 }
 
-/** The inside of every row in this menu — icon, optional label, title, optional launch status. */
 export const SimLinkContent = ({ iconPath, label, labelIsWhite, title, launch }: SimLinkContentProps) => (
 	<div className="sim-link-content">
 		<img src={iconPath} className="sim-link-icon" alt="" />

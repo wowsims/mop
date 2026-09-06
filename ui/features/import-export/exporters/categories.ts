@@ -5,12 +5,6 @@ import i18n from '@i18n/config';
 
 import type { ExportCategories } from './types';
 
-/**
- * The checkboxes an exporter with `selectCategories` shows, in order.
- *
- * UISettings is deliberately absent: users almost never intend to export them and it messes with
- * other users' settings. The JSON exporter is the way out if someone really wants them.
- */
 export const EXPORT_CATEGORY_OPTIONS: ReadonlyArray<{ category: SimSettingCategories; label: string; labelTooltip: string }> = [
 	{
 		category: SimSettingCategories.Gear,
@@ -49,12 +43,10 @@ export const EXPORT_CATEGORY_OPTIONS: ReadonlyArray<{ category: SimSettingCatego
 	},
 ];
 
-/** Every category, ticked when the importer would take it by default. */
 export const defaultExportCategories = (): ExportCategories =>
 	Object.fromEntries(
 		(getEnumValues(SimSettingCategories) as Array<SimSettingCategories>).map(category => [category, LINK_DEFAULT_CATEGORIES.includes(category)]),
 	) as ExportCategories;
 
-/** The ticked categories, in enum order — the shape `toProto` and `createLink` take. */
 export const selectedCategories = (categories: ExportCategories): Array<SimSettingCategories> =>
 	(getEnumValues(SimSettingCategories) as Array<SimSettingCategories>).filter(category => categories[category]);

@@ -10,7 +10,6 @@ export interface NumberListPickerProps<ModObject> {
 	config: NumberListPickerConfig<ModObject>;
 }
 
-// The vanilla getInputValue: '' -> [], otherwise split(',').map(parseFloat), dropping NaN entries.
 const parseInputValue = (text: string): Array<number> => {
 	if (!text) return [];
 	return text
@@ -19,17 +18,10 @@ const parseInputValue = (text: string): Array<number> => {
 		.filter(val => !isNaN(val));
 };
 
-/**
- * The field is uncontrolled and synced imperatively, exactly as NumberPicker is: the vanilla picker
- * commits on the native `change` event, not React's `onChange` (the input event), and re-syncs on
- * every notification (`revision`), not only on a value change.
- */
 export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	// The vanilla setInputValue: skip the write entirely when the field already parses to the same
-	// value — this is what stops the field being rewritten mid-edit, e.g. while typing '1,2,'.
 	useLayoutEffect(() => {
 		const input = inputRef.current;
 		if (!input) return;

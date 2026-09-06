@@ -11,18 +11,13 @@ export interface PetSpecPickerProps<SpecType extends HunterSpecs> {
 	player: Player<SpecType>;
 }
 
-// Order is display order, and `renderActive` matched by index — so it is the data, not a lookup.
 const SPECS: ReadonlyArray<{ spec: PetSpec; label: string; iconKey: string }> = [
 	{ spec: PetSpec.Ferocity, label: 'Ferocity', iconKey: 'ability_druid_kingofthejungle' },
 	{ spec: PetSpec.Tenacity, label: 'Tenacity', iconKey: 'ability_druid_demoralizingroar' },
 	{ spec: PetSpec.Cunning, label: 'Cunning', iconKey: 'ability_eyeoftheowl' },
 ];
 
-/**
- * The hunter pet's spec. It wears the talent tree's class names deliberately — `talent-tree-*` and
- * `talent-picker-*` — because it piggybacks on that stylesheet rather than carrying one of its own.
- * Moving those styles into a talents component would take this with them.
- */
+/** It wears the talent tree's class names deliberately — `talent-tree-*` and `talent-picker-*` — because it piggybacks on that stylesheet rather than carrying one of its own. */
 export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecPickerProps<SpecType>) => {
 	const id = useId();
 	const subscribe = useMemo(() => subscribePlayerField(player, 'specOptions'), [player]);

@@ -5,7 +5,6 @@ import type { IndividualSimHost } from '@features/sim_host';
 import type { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';
 
-/** One parsed character, in the shape every individual importer produces. */
 export interface IndividualImport {
 	charClass: Class;
 	race: Race;
@@ -17,18 +16,6 @@ export interface IndividualImport {
 	missingItems?: number[];
 }
 
-/**
- * The tail every individual importer shares: check the class, fill in whatever items the database
- * has not loaded yet, apply the character in one batch, and say what was missing.
- *
- * It was `IndividualImporter.finishIndividualImport`, a protected method that also closed the modal.
- * Closing belongs to the dialog now — the `Importer` shell closes when `onImport` resolves — so this
- * is only the work, and the class mismatch it can throw reaches the shell's error toast.
- *
- * **That last part is a fix, not a port.** All three vanilla callers invoked this without `await`,
- * so a "Wrong Class!" rejection was unhandled: importing a mage export on a warrior page changed
- * nothing and told the user nothing.
- */
 export const finishIndividualImport = async (
 	host: IndividualSimHost<any>,
 	{ charClass, race, equipmentSpec, talentsStr, glyphs, professions, missingEnchants = [], missingItems = [] }: IndividualImport,

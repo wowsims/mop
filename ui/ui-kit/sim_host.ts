@@ -6,7 +6,6 @@ import type { SimTabRegistry } from './tab_registry';
 // ui-kit must not name the shell itself (see ui/README.md dependency direction).
 export interface SimHeaderHost {
 	readonly rootElem: HTMLElement;
-	/** Opens a tab by its identifier. Kept as-is for callers such as the bulk results renderer. */
 	activateTab(className: string): void;
 }
 

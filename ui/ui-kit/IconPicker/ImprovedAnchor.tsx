@@ -11,9 +11,6 @@ export interface ImprovedAnchorProps {
 	hidden: boolean;
 }
 
-// Both improved anchors exist at every `states` — vanilla builds them once and only ever gates the
-// FILL, leaving an unfilled one without an href, which `.icon-input-improved:not([href])` hides.
-// Each needs its own `useActionId`, so each is its own component.
 export const ImprovedAnchor = ({ actionId, className, active, hidden }: ImprovedAnchorProps) => {
 	const { iconUrl, href } = useActionId(actionId);
 	return (

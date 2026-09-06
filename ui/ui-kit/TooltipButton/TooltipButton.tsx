@@ -6,8 +6,6 @@ import { type ReactNode, useId } from 'react';
 
 export interface TooltipButtonProps {
 	tooltip: ReactNode;
-	/** The vanilla component hardcodes the question mark, which is why three of its six potential
-	 * call sites hand-rolled the same button with a different glyph. */
 	icon?: IconProps['name'];
 	iconStyle?: IconProps['style'];
 	place?: TooltipPlace;

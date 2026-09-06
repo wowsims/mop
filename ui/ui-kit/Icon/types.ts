@@ -1,4 +1,4 @@
-/** Canonical FontAwesome 6 names the app uses. FA5 spellings live in `ICON_ALIASES`. */
+/** Canonical FontAwesome 6 names the app uses. */
 export type IconName =
 	| 'arrow-left'
 	| 'arrow-right'
@@ -51,14 +51,7 @@ export type IconName =
 	| 'triangle-exclamation'
 	| 'user';
 
-/**
- * FA5 spellings still in the tree, mapped to their FA6 name. Both were live simultaneously.
- *
- * `rotate-left` and `arrow-right-from-bracket` are deliberately NOT here. They were mapped to
- * `arrow-rotate-left` and `right-from-bracket`, but in the pinned 6.0.0 CSS those are four distinct
- * glyphs — \f2ea vs \f0e2 and \f2f5 vs \f08b — so each "alias" silently swapped the icon. Both
- * are canonical names above instead, and each renders its own glyph.
- */
+/** FA5 spellings mapped to FA6. rotate-left and arrow-right-from-bracket are deliberately absent: different glyphs, not aliases. */
 export const ICON_ALIASES = {
 	'exclamation-triangle': 'triangle-exclamation',
 	'exclamation-circle': 'circle-exclamation',
@@ -67,12 +60,7 @@ export const ICON_ALIASES = {
 
 export type IconAlias = keyof typeof ICON_ALIASES;
 
-/**
- * Style families, spelled once — the tree mixes `fas` and `fa-solid` for the same thing.
- *
- * `base` is the bare `fa` prefix. It is not a family of its own: FontAwesome resolves it to the
- * default style, which is what the header toolbar and the import/export menus were written with.
- */
+/** base is the bare fa prefix, which FontAwesome resolves to the default style. */
 export type IconStyle = 'solid' | 'regular' | 'brands' | 'base';
 
 /** Sizes FontAwesome defines. `fa-1xl`, used by the toast close button, is not one of them. */

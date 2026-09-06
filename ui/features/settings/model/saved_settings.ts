@@ -4,13 +4,6 @@ import type { IndividualSimHost } from '@features/sim_host';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, RaidBuffs } from '@generated/proto/common';
 import { SavedSettings } from '@generated/proto/ui';
 
-/**
- * Everything the "Saved Settings" manager stores, read off the live sim.
- *
- * Both halves lived on `SettingsTab` and are pure state: one reads, one writes. They are here so the
- * tab can become a view — and because `readSavedSettings` already has two callers, the manager's
- * `getData` and the preset item-swap list, which bakes a load-time snapshot into each entry.
- */
 export const readSavedSettings = (host: IndividualSimHost<any>): SavedSettings =>
 	SavedSettings.create({
 		raidBuffs: host.sim.raid.getBuffs(),
@@ -30,12 +23,6 @@ export const readSavedSettings = (host: IndividualSimHost<any>): SavedSettings =
 		challengeMode: host.player.getChallengeModeEnabled(),
 	});
 
-/**
- * Applies a saved settings entry, in one batch so the fourteen writes land as a single notification.
- *
- * Every `|| X.create()` is load-bearing rather than defensive: proto3 omits an empty message, so a
- * saved entry that had no debuffs comes back with the field absent, and the setter needs a value.
- */
 export const applySavedSettings = (host: IndividualSimHost<any>, settings: SavedSettings): void => {
 	batch(() => {
 		host.sim.raid.setBuffs(settings.raidBuffs || RaidBuffs.create());

@@ -237,14 +237,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.addSidebarComponents();
 		this.addGearTab();
 		this.addSettingsTab();
-		// Two encounter rules that used to live inside the encounter picker, which is React now — and
-		// a view is not where a store write belongs. Queued here so they keep the position that
-		// picker's own callback held: after `loadSettings`, and before the topbar.
-		//
-		// Both depend on that ordering. The repair is against saved state, so it has to see it. And
-		// the dummy rule must not be armed while settings are still being restored: raid settings and
-		// talents are restored separately, so a rule reading `shouldEnableTargetDummies()` in between
-		// would zero a saved count against talents that had not arrived yet.
 		this.sim.waitForInit().then(() => {
 			repairTargetInputs(this.sim.encounter);
 			watchTargetDummies(this.player, this.sim);
@@ -303,17 +295,13 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		});
 	}
 
-	// `SimApp` portals <CharacterStats/> in here once construction has produced it.
-	// React fills this tab's body — see app/tabs/TalentsTabBody.tsx.
 	talentsTab!: TalentsTab<SpecType>;
-	// Held for the same reason — see app/tabs/SettingsTabBody.tsx.
 	settingsTab!: SettingsTab;
 
 	get sidebarStatsContainer(): HTMLElement {
 		return this.dom.sidebarStats;
 	}
 
-	// First tab attached is the one open on load, so gear no longer asserts that for itself.
 	private addGearTab() {
 		new GearTab(this);
 	}
@@ -347,8 +335,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addTopbarComponents() {
-		// A React dialog has no `open()` for `addImportLink`/`addExportLink` to call — it has state —
-		// so the header menu renders it and owns which one is open. Registration order is menu order.
 		const importRegistry = this.simHeader.importExport;
 		importRegistry.addDialog('import', 'JSON', JsonImporterDialog);
 		// importRegistry.addDialog('import', '60U Cata', SixtyUpgradesImporterDialog);

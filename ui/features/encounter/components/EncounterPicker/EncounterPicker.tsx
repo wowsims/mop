@@ -14,19 +14,6 @@ export interface EncounterPickerProps {
 	showExecuteProportion: boolean;
 }
 
-/**
- * The encounter block in the settings tab.
- *
- * Rendered whole rather than in two stages. The vanilla constructor added the duration fields
- * synchronously and everything else in a `waitForInit` callback — but the constructor itself ran
- * inside the settings tab's own `waitForInit` callback, so the first stage never had a moment of its
- * own. `SettingsTabBody` renders this behind the same signal, which is that callback's React form.
- *
- * Two of that constructor's jobs are **not** here: re-seeding the primary target's inputs from its
- * preset, and zeroing the raid's dummy count when the player stops being able to enable it. Both
- * were store writes inside a view; they live in `features/encounter/model/` now and are wired in
- * `individual_sim_ui.tsx`.
- */
 export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps) => {
 	const host = useSimHost();
 	const encounter = host.sim.encounter;
@@ -38,10 +25,6 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 	const allies = useMemo(() => numAlliesConfig(player), [player]);
 	const minBaseDamage = useMemo(() => minBaseDamageConfig(), []);
 
-	// `ListPicker` is still vanilla, and the advanced modal behind the button below is a `BaseModal`
-	// waiting on the Base UI `Dialog` adapter. Both are built into the root element itself rather
-	// than into a wrapper, so the block's DOM is the shape it always was — and the list is moved back
-	// above the button, which React has already committed by the time a ref callback runs.
 	const mountTargetInputs = useLegacyMount(
 		parent => {
 			const picker = makeTargetInputsPicker(parent, encounter, 0);

@@ -15,9 +15,4 @@ export abstract class IndividualImporter<SpecType extends Spec> extends Importer
 		super(parent, options);
 		this.simUI = simUI;
 	}
-
-	// `finishIndividualImport` used to live here. Its four callers are React now, and it moved with
-	// them to `features/import-export/importers/finish_individual_import.ts`, minus the
-	// `this.close()` the dialog does for itself. `BulkGearJsonImporter`, the one subclass left,
-	// never called it.
 }

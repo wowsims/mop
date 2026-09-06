@@ -19,9 +19,7 @@ export interface StatRowProps {
 	unitStat: UnitStat;
 	bonusStats: Stats;
 	attribution: StatAttribution;
-	/** `statDisplayString` with the player and its racial bonuses already bound. */
 	show: (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => string;
-	/** The first `computeStats` round trip has not returned yet, so there is no value to show. */
 	pending?: boolean;
 }
 

@@ -7,12 +7,9 @@ import { type ReactNode, useId } from 'react';
 
 export interface ToolbarItemProps {
 	icon?: IconName;
-	/** Toolbar glyphs are `fas` unless told otherwise; `base` is the bare `fa` prefix. */
 	iconStyle?: IconStyle;
-	/** Every toolbar glyph is `fa-lg` today, so that is the default rather than a repeated prop. */
 	iconSize?: IconSize;
 	tooltip?: ReactNode;
-	/** Vanilla's `addToolbarLink` placed these below; the socials used tippy's default, which is top. */
 	place?: 'top' | 'bottom';
 	className?: string;
 	href?: string;
@@ -21,10 +18,6 @@ export interface ToolbarItemProps {
 	children?: ReactNode;
 }
 
-/**
- * One toolbar affordance: an `<a>` when it carries an href, a `<button>` otherwise — the split
- * `SimToolbarItem` made, and the reason the socials do not go through this component.
- */
 export const ToolbarItem = ({
 	icon,
 	iconStyle = 'solid',
@@ -40,9 +33,7 @@ export const ToolbarItem = ({
 	const id = useId();
 	const anchor = tooltip ? tooltipAnchorProps(id) : {};
 	const classes = clsx(className, hidden && 'hide');
-	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the
-	// tooltip is a `data-` attribute no assistive tech reads. The tooltip text is the name it already
-	// has, so it becomes the name it exposes. Items that carry their own text keep it.
+	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the tooltip is a `data-` attribute no assistive tech reads.
 	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (
 		<>
@@ -52,7 +43,6 @@ export const ToolbarItem = ({
 	);
 	return (
 		<div className="sim-toolbar-item">
-			{/* `variant="unstyled"`: these carry their own classes, not `btn`. */}
 			{href ? (
 				<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} {...anchor}>
 					{content}

@@ -61,9 +61,6 @@ export abstract class SimUI extends Component implements SimHost {
 	protected readonly dom: ShellDom;
 
 	constructor(dom: ShellDom, sim: Sim, config: SimUIConfig) {
-		// Adopted, not built: `buildShellDom` owns the markup. `rootCssClass` still adds `sim-ui`, so
-		// the class list on the element is unchanged.
-		// No `rootCssClass`: the root's whole class list is React's (app/shell_classes.ts).
 		super(null, undefined, dom.root);
 		this.dom = dom;
 		this.sim = sim;
@@ -171,7 +168,6 @@ export abstract class SimUI extends Component implements SimHost {
 		return { group: groupRef.value!, children: refs };
 	}
 
-	// A tab whose content is a plain element rather than a SimTab subclass (the detailed results).
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
 

@@ -1,4 +1,3 @@
-/** A row with no value: the italic footnotes under the expertise and spell-hit breakdowns. */
 export interface TooltipNoteProps {
 	text: string;
 }

@@ -23,7 +23,6 @@ function glyphNameToID(glyphName: string, glyphsConfig: Record<number, GlyphConf
 	throw new Error(`Unknown glyph name '${glyphName}'`);
 }
 
-/** Exported for its own tests; the importer below is the only other caller. */
 export function glyphToID(glyph: string | JsonObject, db: Database, glyphsConfig: Record<number, GlyphConfig>): number {
 	if (typeof glyph === 'string') {
 		// Legacy version: AddOn exports Glyphs by name (string) only. Names must be in English.
@@ -46,10 +45,6 @@ function getWSEVersion(): Promise<string | null> {
 		});
 }
 
-// One request per page load, fired at module evaluation — the vanilla importer held it in a `static`
-// initialiser, which ran at exactly the same moment for the same reason: the module is imported by
-// `individual_sim_ui`. It already resolves to `null` on any failure, so the version check below is
-// skipped rather than reported when GitHub is unreachable.
 const WSE_VERSION = getWSEVersion();
 
 export const ADDON_IMPORTER: ImporterDefinition = {

@@ -9,18 +9,11 @@ export interface EnumPickerProps<ModObject> {
 	config: EnumPickerConfig<ModObject>;
 }
 
-/**
- * Synced imperatively for the same reason as NumberPicker: assigning `select.value` leaves a value
- * that is not in the option list unselected (`selectedIndex === -1`), which is what the vanilla
- * picker does, whereas a React-controlled select owns that case differently.
- */
 export const EnumPicker = <ModObject,>({ modObject, config }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const selectRef = useRef<HTMLSelectElement>(null);
 
-	// Deliberately not keyed on config.values: config is usually an object literal in the parent's
-	// render, so that would re-assign select.value on every render — which closes the dropdown if the
-	// user has it open. Vanilla re-assigns on notification only, which is what `revision` is.
+	// Deliberately not keyed on config.values: config is usually an object literal in the parent's render, so that would re-assign select.value on every render — which closes the dropdown if the user has it open.
 	useLayoutEffect(() => {
 		const select = selectRef.current;
 		if (!select) return;

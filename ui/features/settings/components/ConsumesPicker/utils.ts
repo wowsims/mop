@@ -8,7 +8,6 @@ import type { TypedIconEnumPickerConfig } from '@ui-kit/input_helpers';
 
 export type ConsumeConfig = TypedIconEnumPickerConfig<Player<any>, number>;
 
-/** One config per icon-enum picker the block renders, in the order they appear. */
 export interface ConsumeConfigs {
 	prepot: ConsumeConfig;
 	potion: ConsumeConfig;
@@ -20,27 +19,12 @@ export interface ConsumeConfigs {
 	explosive: ConsumeConfig;
 }
 
-/**
- * Mighty Rage Potion is offered to warriors and to guardian druids only — the one class-specific cut
- * in a list the database otherwise filters by the spec's own stats.
- */
 const potionsFor = (player: Player<any>, db: Database, stats: Array<Stat>) => {
 	const potions = db.getConsumablesByTypeAndStats(ConsumableType.ConsumableTypePotion, stats);
 	if (player.getClass() === Class.ClassWarrior || player.getSpec() === Spec.SpecGuardianDruid) return potions;
 	return potions.filter(potion => potion.id !== 13442);
 };
 
-/**
- * Every picker config the block needs, built in one pass.
- *
- * They belong together because they share a database snapshot — the potion list feeds two of them —
- * and because each `makeConsumableInput` closes over the item list it is handed, so a caller that
- * rebuilt one per render would give its picker a fresh config on every notification.
- *
- * The two elixir configs and the flask are separate pickers that write to each other's fields:
- * `makeConsumableInput` zeroes the elixirs when a flask is chosen and the flask when an elixir is,
- * which is the model's business rather than this block's.
- */
 export const consumeConfigs = (
 	player: Player<any>,
 	db: Database,

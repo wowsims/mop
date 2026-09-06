@@ -16,20 +16,6 @@ import { useMemo } from 'react';
 import { trackEvent } from '../../tracking/analytics';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 
-/**
- * The talents tab's contents, rendered by React into the pane `TalentsTab` registers. It lives in
- * `app/tabs` rather than `features/` because assembling feature components is what a tab does, and
- * `PresetConfigurationPicker` is in `app/`, which `features/**` may not import.
- *
- * The left panel is React's: `TalentsPicker` renders it, and the hunter pet-spec picker beside it.
- * The right panel's two components mount through `useLegacyMount`, which builds them into the panel
- * rather than into wrappers of its own, so the pane's DOM is the shape it always was and
- * `panes-parity.mjs` still compares like for like.
- *
- * `PresetConfigurationPicker` and `SavedDataManager` are deliberately not ported with this tab: four
- * tabs build the first and several build the second, so porting them here would drag settings,
- * rotation and gear along with it.
- */
 export const TalentsTabBody = () => {
 	const host = useSimHost();
 	const player = host.player;
@@ -72,7 +58,6 @@ export const TalentsTabBody = () => {
 				nameExistsAlert: i18n.t('talents_tab.saved_talents.alerts.name_exists'),
 			});
 
-			// Presets are only known once the database has loaded; the tab is built long before that.
 			host.sim.waitForInit().then(() => {
 				saved.loadUserData();
 				host.individualConfig.presets.talents.forEach(config => {
@@ -86,12 +71,10 @@ export const TalentsTabBody = () => {
 		[player, host],
 	);
 
-	// Portalled into `SimTab`'s own `.tab-pane-content-container`, so this renders only the panels.
 	return (
 		<>
 			<div className="talents-tab-left tab-panel-left">
 				<TalentsPicker config={talentsConfig} />
-				{/* Hunters pick a pet spec; every other class has none, and vanilla renders nothing. */}
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
 			</div>
 			<div className="talents-tab-right tab-panel-right" ref={mountRight} />

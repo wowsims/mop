@@ -1274,6 +1274,22 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **Comments stripped across the whole of PR 1567, per the `comment-checker` hook.**
+  The user's standing rule — rationale lives in the commit message and here, not in the code — is
+  now enforced by a PostToolUse hook on every Edit/Write. Swept retroactively over the PR diff
+  against `feature/ui-restructure`: 449 comment units in 180 files. 227 removed outright, 96 trimmed
+  to the one sentence that carries the fact (game-mechanics rules, a11y decisions, library semantics
+  a future edit would silently break), 36 pre-existing lines that merely moved during a port kept
+  verbatim. Net −1,589 lines, zero behaviour change: type-check, lint, vitest, build and every browser
+  gate identical before and after.
+
+  **Two traps for the next sweep.** The hook reports `/** @jsxImportSource @jsx-vanilla */` as a
+  docstring — it is the pragma that switches a file onto the vanilla runtime, and removing it breaks
+  the whole vanilla stack. It also flags `// oxlint-disable-next-line` and deliberately commented-out
+  code (the 60U registrations). All three are excluded by rule in the sweep script, not by hand.
+  The hook does not inspect SCSS; the 188 `//` lines the PR adds there are untouched and unreviewed.
+  `ui/features/spec_config.ts` and `ui/sims/**` were skipped as frozen.
+
 - 2026-09-06 **The wowhead and tooltip anchor attributes come from one helper each.**
   `wowheadAnchorProps()` in `ui-kit/wowhead.ts` and `tooltipAnchorProps()` in
   `ui-kit/Tooltip/utils.ts`. Neither collapsed to a flat constant, because both had an exception

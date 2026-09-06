@@ -1,6 +1,3 @@
-// The three pure pieces of the sidebar's stat table, lifted out of the vanilla component's methods
-// so they take what they read instead of reaching through `this`. Every rule here is a MoP display
-// convention with no other home, and none of it is derivable from `Stats` alone.
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { Stats, UnitStat } from '@domain/proto_utils/stats';
@@ -10,7 +7,6 @@ import i18n from '@i18n/config';
 export interface RacialBonuses {
 	/** Draenei: the racial hit is baked into the rating, and is subtracted before it is shown. */
 	hasRacialHitBonus: boolean;
-	/** Per hand, from the racial weapon-expertise bonuses. */
 	activeRacialExpertiseBonuses: boolean[];
 }
 
