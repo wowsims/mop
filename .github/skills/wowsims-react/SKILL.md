@@ -851,6 +851,14 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+### Hands off: log / log_runner — 2026-09-06
+
+The user is refactoring `log_runner` and the log pipeline in parallel with this migration. **Do not
+port, touch or plan around those files** until they say it has landed. They are in the results
+feature, which is Phase 3's last and hardest cluster and Phase 4's island work, so nothing in the
+current queue needs them — but a future session picking work "by difficulty order" would walk
+straight into it.
+
 ### Findings waiting on a decision
 
 - **Four React `ui-kit` components have no consumer at all** — `LegacyHost`, `ContentBlock`,
