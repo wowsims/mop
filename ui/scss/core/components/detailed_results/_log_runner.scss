@@ -115,12 +115,12 @@
 	position: relative;
 	display: flex;
 	flex: 1;
-	// align-items: center;
 	min-width: 0;
 	gap: var(--spacer-2);
 	flex-direction: column;
 
 	@include media-breakpoint-up(md) {
+		align-items: center;
 		flex-direction: row;
 	}
 
@@ -149,13 +149,16 @@
 	display: flex;
 	align-items: center;
 	gap: var(--spacer-2);
-	margin-left: auto;
+
+	@include media-breakpoint-up(md) {
+		margin-left: auto;
+	}
 }
 
 .log-fab-clip {
 	position: absolute;
-	right: 0;
 	bottom: calc(100% - 1px);
+	right: 0;
 	left: 0;
 	overflow: hidden;
 
