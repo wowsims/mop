@@ -2026,7 +2026,13 @@
 				"show_debug": "Show Debug Statements",
 				"search_placeholder": "Search logs…",
 				"search_add_filter": "Add filter",
-				"search_add_value": "Add value"
+				"search_add_value": "Add value",
+				"floatingActionBar": {
+					"toggle": "Toggle filters",
+					"none": "No filters",
+					"active": "{{count}} active",
+					"clear": "Clear filters"
+				}
 			},
 			"tabs": {
 				"damage": "Damage",

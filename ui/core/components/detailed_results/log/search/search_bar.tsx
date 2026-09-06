@@ -17,16 +17,20 @@ import { FIELD_NAMES } from './query';
 // Matches the debounce master's log search used.
 const PENDING_DEBOUNCE_MS = 150;
 
+// The groups sit in the bottom bar's drawer, which clips its overflow; a fixed-position menu is
+// the one that still opens past its edge, and dropup is the direction that has room down there.
+const FIXED_POPPER = { strategy: 'fixed' };
+
 // These two are ranges and comparisons over a number, not a set of values, so they are typed
 // rather than picked. The placeholders are syntax, so they are not translated.
 const TYPED_FIELDS: Partial<Record<ClauseField, string>> = { time: '10-30', amount: '>5000' };
 
 // Display only. Fields and values are matched case-insensitively, so capitalising the label
 // cannot change what a query selects.
-const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text);
+export const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text);
 
 // Tokens take the words the log lines use, so a chip reads like the rows it selects.
-function labelOf(field: ClauseField, value: string): string {
+export function labelOf(field: ClauseField, value: string): string {
 	switch (field) {
 		case 'outcome':
 			return OUTCOME_LABEL[value as Outcome] ?? value;
@@ -74,28 +78,30 @@ export class LogSearchBar extends Component {
 	constructor(
 		parent: HTMLElement,
 		private readonly config: { suggestions: () => SuggestionSource },
+		// The keyword box lives apart from the groups: it stays above the rows while the groups sit
+		// in the bar under them, and a group is two rows tall once it has values anyway.
+		inputParent: HTMLElement,
 	) {
 		super(parent, 'log-search-bar');
-		this.rootElem.classList.add('d-flex', 'flex-column', 'gap-1');
 
 		const groupsRef = ref<HTMLDivElement>();
 		const inputRef = ref<HTMLInputElement>();
 		const addFieldRef = ref<HTMLDivElement>();
 
+		inputParent.appendChild(
+			<input
+				ref={inputRef}
+				type="text"
+				className="form-control log-search-input"
+				placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
+				autocomplete="off"
+			/>,
+		);
+		// Add filter sits on its own row under the groups, so it does not drift sideways as they come and go.
 		this.rootElem.appendChild(
 			<>
-				<input
-					ref={inputRef}
-					type="text"
-					className="form-control log-search-input"
-					placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
-					autocomplete="off"
-				/>
-				{/* Under the field, not inside it: a group is two rows tall once it has values, and
-				    growing that inside a text input moves the caret around as you type. */}
-				<div ref={groupsRef} className="log-search-groups d-flex flex-wrap align-items-start row-gap-1 column-gap-2">
-					<div ref={addFieldRef} className="log-search-add-field"></div>
-				</div>
+				<div ref={groupsRef} className="log-search-groups d-flex flex-wrap align-items-start row-gap-1 column-gap-2"></div>
+				<div ref={addFieldRef} className="log-search-add-field"></div>
 			</>,
 		);
 
@@ -122,6 +128,11 @@ export class LogSearchBar extends Component {
 		return keywordsOf(this.inputElem.value);
 	}
 
+	clearGroups() {
+		this.searchGroups = [];
+		this.update();
+	}
+
 	// The value pickers snapshot their options, so a new result has to rebuild them.
 	refresh() {
 		this.renderGroups();
@@ -137,12 +148,7 @@ export class LogSearchBar extends Component {
 	private renderGroups() {
 		this.pickers.forEach(picker => picker.dispose());
 		this.pickers = [];
-		const stale: Array<ChildNode> = [];
-		this.groupsElem.childNodes.forEach(node => {
-			if (node !== this.addFieldElem) stale.push(node);
-		});
-		stale.forEach(node => this.groupsElem.removeChild(node));
-		this.searchGroups.forEach((group, i) => this.groupsElem.insertBefore(this.renderGroup(group, i), this.addFieldElem));
+		this.groupsElem.replaceChildren(...this.searchGroups.map((group, i) => this.renderGroup(group, i)));
 		this.renderAddField();
 	}
 
@@ -155,6 +161,8 @@ export class LogSearchBar extends Component {
 				id: 'log-search-add-filter',
 				defaultLabel: i18n.t('results_tab.details.logs.search_add_filter'),
 				equals: (a, b) => a === b,
+				popperConfig: FIXED_POPPER,
+				extraCssClasses: ['dropup'],
 				values: FIELD_NAMES.map(field => ({ value: field, label: sentenceCase(field) })),
 				getValue: () => null,
 				setValue: (_eventID, _obj, field) => {
@@ -251,6 +259,8 @@ export class LogSearchBar extends Component {
 				id: `log-search-group-${index}`,
 				defaultLabel: i18n.t('results_tab.details.logs.search_add_value'),
 				equals: (a, b) => a === b,
+				popperConfig: FIXED_POPPER,
+				extraCssClasses: ['dropup'],
 				values: this.valueOptions(group.field),
 				setOptionContent: (button, valueConfig) => {
 					const option = valueConfig as ValueOption;

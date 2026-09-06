@@ -1,41 +1,23 @@
 .log-runner-root {
 	display: flex;
 	flex-direction: column;
-	flex: 1 1 auto;
-	min-height: 0;
-}
-
-.log-runner-actions {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: var(--spacer-2);
-	margin-bottom: var(--spacer-3);
-
-	@include media-breakpoint-up(lg) {
-		flex-direction: row;
-	}
 }
 
 .show-debug-picker {
 	width: unset;
 	margin-bottom: 0;
-	margin-right: var(--block-spacer);
-	margin-left: auto;
 
 	label {
 		margin-left: var(--spacer-1);
 	}
 }
 
+// Vertical scrolling belongs to the page, as it does for the timeline; this only carries the
+// sideways overflow of long lines, so the header above it can stick to the viewport.
 .log-runner-scroll {
 	position: relative;
-	flex: 1 1 0;
-	min-height: 0;
-	box-sizing: border-box;
 	overflow-x: auto;
-	overflow-y: auto;
-	will-change: scroll-position;
+	overflow-y: hidden;
 }
 
 .log-runner-list {
@@ -59,11 +41,26 @@
 	column-gap: var(--spacer-2);
 }
 
-.log-runner-header {
+.log-runner-sticky {
 	position: sticky;
-	top: 0;
-	z-index: 1;
+	top: var(--log-sticky-top, 0px);
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-2);
+	padding-top: var(--spacer-2);
 	background: var(--bs-body-bg);
+}
+
+.log-search {
+	width: 100%;
+
+	@include media-breakpoint-up(lg) {
+		max-width: 50%;
+	}
+}
+
+.log-runner-header {
 	border-bottom: 1px solid var(--bs-border-color);
 	font-weight: bold;
 }
@@ -107,12 +104,98 @@
 	}
 }
 
-.log-search {
-	width: 100%;
+.log-floating-action-bar-root {
+	@include bottom-floating-action-bar(var(--spacer-2));
+	z-index: 4;
+	box-sizing: border-box;
+	margin-bottom: calc(-1 * var(--container-padding));
+}
 
-	@include media-breakpoint-up(lg) {
-		max-width: 50%;
+.log-fab-actions {
+	position: relative;
+	display: flex;
+	flex: 1;
+	// align-items: center;
+	min-width: 0;
+	gap: var(--spacer-2);
+	flex-direction: column;
+
+	@include media-breakpoint-up(md) {
+		flex-direction: row;
 	}
+
+	.stuck & {
+		background: var(--bs-body-bg);
+	}
+}
+
+.log-fab-toggle {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	gap: var(--spacer-2);
+	z-index: 1;
+}
+
+.log-fab-preview {
+	overflow: hidden;
+	opacity: 0.75;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.log-fab-controls {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-2);
+	margin-left: auto;
+}
+
+.log-fab-clip {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% - 1px);
+	left: 0;
+	overflow: hidden;
+
+	.log-floating-action-bar-root[data-expanded='false'] & {
+		pointer-events: none;
+	}
+}
+
+.log-fab-panel {
+	transform: translate3d(0, 100%, 0);
+	border: var(--bs-border-width) solid var(--bs-border-color);
+	background: var(--bs-body-bg);
+	transition: transform 150ms ease;
+
+	// none, not translate3d(0, 0, 0): a transformed panel is the containing block for the
+	// pickers' fixed-position menus, and the clip above would cut them off with it.
+	.log-floating-action-bar-root[data-expanded='true'] & {
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+.log-fab-panel-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.log-search-bar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-2);
+}
+
+.log-fab-filters {
+	max-height: min(45vh, 26rem);
+	padding: var(--spacer-2);
+	overflow-y: auto;
 }
 
 .log-search-group {
@@ -154,10 +237,6 @@
 	margin-left: auto;
 }
 
-.log-search-add-field {
-	align-self: center;
-}
-
 // The same override the APL applies inside its picker root: the button is sitting inline in a
 // row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
 .log-search-add-field,
@@ -177,4 +256,3 @@
 	// .saved-data-set-chip's, so that a query chip and a saved-data pill are the same control.
 	white-space: nowrap;
 }
-

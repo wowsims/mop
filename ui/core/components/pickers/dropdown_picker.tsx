@@ -23,6 +23,9 @@ export interface DropdownPickerConfig<ModObject, T, V = T> extends InputConfig<M
 	equals: (a: V | undefined, b: V | undefined) => boolean;
 	setOptionContent: (button: HTMLButtonElement, valueConfig: DropdownValueConfig<V>, isSelectButton?: boolean) => void;
 	createMissingValue?: (val: V) => Promise<DropdownValueConfig<V>>;
+	// Passed to Bootstrap's dropdown as data-bs-popper-config; { strategy: 'fixed' } lets the
+	// menu escape an overflow-clipped ancestor.
+	popperConfig?: Record<string, unknown>;
 	defaultLabel: string;
 }
 
@@ -61,7 +64,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 					ref={buttonRef}
 					id={config.id}
 					className="dropdown-picker-button btn dropdown-toggle open-on-click"
-					dataset={{ bsToggle: 'dropdown' }}
+					dataset={{ bsToggle: 'dropdown', ...(config.popperConfig && { bsPopperConfig: JSON.stringify(config.popperConfig) }) }}
 					attributes={{ 'aria-expanded': false }}>
 					{config.defaultLabel}
 				</button>

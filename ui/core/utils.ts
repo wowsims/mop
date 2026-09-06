@@ -268,6 +268,17 @@ export function camelToSnakeCase(str: string): string {
 export function downloadJson(json: any, fileName: string) {
 	downloadString(JSON.stringify(json, null, 2), fileName);
 }
+// Nearest ancestor the user can scroll vertically, or null when the page itself is it. An
+// overflow-y: hidden box is skipped: it clips but never scrolls, and the log's sideways scroller
+// is one, sitting between the rows and the pane that really moves them.
+export function findScrollParent(elem: HTMLElement): HTMLElement | null {
+	for (let node = elem.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+		const overflowY = getComputedStyle(node).overflowY;
+		if (overflowY === 'auto' || overflowY === 'scroll') return node;
+	}
+	return null;
+}
+
 export function downloadString(data: string, fileName: string, mimeType = 'text/json') {
 	const dataStr = `data:${mimeType};charset=utf-8,` + encodeURIComponent(data);
 	const downloadAnchorNode = document.createElement('a');

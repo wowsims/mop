@@ -61,17 +61,17 @@
 	// Guarded twice, because `display` here outranks both of the rules that hide these panes:
 	// Bootstrap's `.tab-content > .tab-pane { display: none }` for an inactive tab, and
 	// `.dr-no-results .dr-row` for a sim that has not been run. Without the guards the panes lay
-	// out behind whichever tab is open, and an empty log renders under "Run a simulation".
+	// out behind whichever tab is open, and an empty timeline renders under "Run a simulation".
+	// The log is not here: the page scrolls it, so its height is its rows.
 	&:not(.dr-no-results) > .tab-content > .tab-pane.dr-tab-content {
-		&.log-content.active,
 		&.timeline-content.active,
 		&.replay-content.active {
 			display: flex;
 			flex-direction: column;
 			min-height: var(--dr-filling-pane-min-height);
 
-			// The pane, its row and the component's mount point are the same scaffolding in all
-			// three cases (detailed_results.tsx:179-193), so they fill here. Whether the component
+			// The pane, its row and the component's mount point are the same scaffolding in both
+			// cases (detailed_results.tsx:179-188), so they fill here. Whether the component
 			// inside then stretches is the component's own call.
 			> .dr-row,
 			> .dr-row > * {

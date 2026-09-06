@@ -10,14 +10,6 @@ export interface WindowHost {
 // A non-`visible` overflow on either axis makes an element a scrollport for both, so the first
 // ancestor that clips vertically is the one the rows are windowed against. null means the viewport:
 // body and documentElement scroll the page, and their box is the document, not the visible area.
-export function findScrollParent(elem: HTMLElement): HTMLElement | null {
-	for (let node = elem.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
-		const overflowY = getComputedStyle(node).overflowY;
-		if (overflowY !== 'visible' && overflowY !== 'clip') return node;
-	}
-	return null;
-}
-
 export class TimelineWindow {
 	private order: ReadonlyArray<string> = [];
 	private offsets = new Float64Array(1);

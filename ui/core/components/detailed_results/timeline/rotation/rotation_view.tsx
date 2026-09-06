@@ -1,6 +1,7 @@
 import tippy, { type Instance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import { findScrollParent } from '../../../../utils';
 import { Component } from '../../../component';
 import { delegateTooltips } from '../tooltips';
 import { createItemRenderer } from './components/rotation_items';
@@ -12,7 +13,7 @@ import { RotationFloatingActionBar } from './rotation_floating_action_bar';
 import { RowTrack } from './row_track';
 import { Ruler } from './ruler';
 import type { WindowHost } from './timeline_window';
-import { findScrollParent, TimelineWindow } from './timeline_window';
+import { TimelineWindow } from './timeline_window';
 import { VisibilityState } from './visibility';
 import { ZoomController } from './zoom';
 

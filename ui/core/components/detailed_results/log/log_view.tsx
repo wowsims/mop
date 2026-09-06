@@ -8,6 +8,7 @@ import { LogExporter } from '../../individual_sim_ui/exporters/detailed_log_expo
 import { BooleanPicker } from '../../pickers/boolean_picker.js';
 import { VirtualList } from '../../virtual_scroll/virtual_list';
 import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component.js';
+import { LogFloatingActionBar } from './components/log_floating_action_bar';
 import { LogLineElem } from './components/log_line';
 import { EMPTY_SUGGESTIONS, LogIndex, SortedInts } from './search/indexes';
 import { LogSearchBar } from './search/search_bar';
@@ -29,14 +30,16 @@ export class LogView extends ResultComponent {
 	readonly showDebugChangeEmitter = new TypedEvent<void>('Show Debug');
 	private showDebug = false;
 	private ui: {
-		search: HTMLDivElement;
-		actions: HTMLDivElement;
-		buttonToTop: HTMLButtonElement;
-		exportLog: HTMLButtonElement;
-		scrollContainer: HTMLDivElement;
+		sticky: HTMLDivElement;
 		list: HTMLDivElement;
 		contentContainer: HTMLDivElement;
 	};
+
+	// The page scrolls the log, the same as the timeline, so the search box and column header stick
+	// under the results toolbar and the virtual list is told how much viewport all three cover.
+	private toolbar: HTMLElement | null = null;
+	private stickyTop = 0;
+	private readonly chromeObserver = new ResizeObserver(() => this.measureStickyTop());
 
 	private cacheKey: string | null = null;
 	// Widest content the list has had to hold, in px. See setListWidth.
@@ -51,33 +54,26 @@ export class LogView extends ResultComponent {
 		config.rootCssClass = 'log-runner-root';
 		super(config);
 
+		const stickyRef = ref<HTMLDivElement>();
 		const searchRef = ref<HTMLDivElement>();
-		const actionsRef = ref<HTMLDivElement>();
-		const buttonToTopRef = ref<HTMLButtonElement>();
-		const exportLogRef = ref<HTMLButtonElement>();
-		const scrollContainerRef = ref<HTMLDivElement>();
 		const listRef = ref<HTMLDivElement>();
 		const contentContainerRef = ref<HTMLDivElement>();
+		const buttonToTopRef = ref<HTMLButtonElement>();
+		const exportLogRef = ref<HTMLButtonElement>();
 
 		const logExporter = new LogExporter(simUi.rootElem, simUi, () => this.getCombinedText());
 
 		this.rootElem.appendChild(
 			<>
-				<div ref={actionsRef} className="log-runner-actions">
+				<div ref={stickyRef} className="log-runner-sticky">
 					<div ref={searchRef} className="log-search"></div>
-					<button ref={exportLogRef} className="btn btn-primary order-last log-runner-scroll-to-top-btn me-2">
-						{i18n.t('results_tab.details.logs.export_button')}
-					</button>
-					<button ref={buttonToTopRef} className="btn btn-primary order-last log-runner-scroll-to-top-btn">
-						{i18n.t('results_tab.details.logs.top_button')}
-					</button>
+					<div className="log-runner-header">
+						<div>{i18n.t('results_tab.details.logs.time_column')}</div>
+						<div>{i18n.t('results_tab.details.logs.event_column')}</div>
+					</div>
 				</div>
-				<div ref={scrollContainerRef} className="log-runner-scroll">
+				<div className="log-runner-scroll">
 					<div ref={listRef} className="log-runner-list">
-						<div className="log-runner-header">
-							<div>{i18n.t('results_tab.details.logs.time_column')}</div>
-							<div>{i18n.t('results_tab.details.logs.event_column')}</div>
-						</div>
 						<div ref={contentContainerRef} className="log-runner-logs"></div>
 					</div>
 				</div>
@@ -85,27 +81,34 @@ export class LogView extends ResultComponent {
 		);
 
 		this.ui = {
-			search: searchRef.value!,
-			actions: actionsRef.value!,
-			buttonToTop: buttonToTopRef.value!,
-			exportLog: exportLogRef.value!,
-			scrollContainer: scrollContainerRef.value!,
+			sticky: stickyRef.value!,
 			list: listRef.value!,
 			contentContainer: contentContainerRef.value!,
 		};
 
-		this.searchBar = new LogSearchBar(this.ui.search, { suggestions: () => this.logIndex?.suggestions() ?? EMPTY_SUGGESTIONS });
+		const actionBar = this.addChild(
+			new LogFloatingActionBar(this.rootElem, { suggestions: () => this.logIndex?.suggestions() ?? EMPTY_SUGGESTIONS }, searchRef.value!),
+		);
+		this.searchBar = actionBar.searchBar;
 		this.searchBar.changeEmitter.on(() => this.refreshVisible());
 
-		this.ui.buttonToTop?.addEventListener('click', () => {
-			this.virtualList.scrollToTop();
-		});
+		actionBar.actionsElem.appendChild(
+			<>
+				<button ref={exportLogRef} className="btn btn-primary">
+					{i18n.t('results_tab.details.logs.export_button')}
+				</button>
+				<button ref={buttonToTopRef} className="btn btn-primary">
+					{i18n.t('results_tab.details.logs.top_button')}
+				</button>
+			</>,
+		);
+		buttonToTopRef.value!.addEventListener('click', () => this.virtualList.scrollToTop());
+		exportLogRef.value!.addEventListener('click', () => logExporter.open());
 
-		this.ui.exportLog?.addEventListener('click', () => {
-			logExporter.open();
-		});
+		this.chromeObserver.observe(this.ui.sticky);
+		this.addOnDisposeCallback(() => this.chromeObserver.disconnect());
 
-		new BooleanPicker<LogView>(this.ui.actions, this, {
+		new BooleanPicker<LogView>(actionBar.actionsElem, this, {
 			id: 'log-runner-show-debug',
 			extraCssClasses: ['show-debug-picker'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
@@ -120,8 +123,8 @@ export class LogView extends ResultComponent {
 		});
 
 		this.virtualList = new VirtualList({
-			scrollElem: this.ui.scrollContainer,
 			contentElem: this.ui.contentContainer,
+			topInset: () => this.stickyTop + this.ui.sticky.getBoundingClientRect().height,
 			dataSource: {
 				count: () => this.visibleIndexes.length,
 				renderRow: position => this.renderRow(this.logs[this.visibleIndexes[position]]),
@@ -139,6 +142,7 @@ export class LogView extends ResultComponent {
 	}
 
 	onSimResult(resultData: SimResultData): void {
+		this.attachToolbar();
 		this.rebuildEntries(resultData);
 		this.targetNumber = selectedTargetNumber(resultData);
 		this.refreshVisible();
@@ -156,6 +160,21 @@ export class LogView extends ResultComponent {
 		this.logs = logs;
 		this.logIndex = new LogIndex(logs, i => logs[i].raw.includes(DEBUG_MARKER));
 		this.searchBar.refresh();
+	}
+
+	// Resolved here rather than in the constructor: the pane is built before it is in the document.
+	private attachToolbar() {
+		if (this.toolbar || !this.rootElem.isConnected) return;
+		this.toolbar = this.rootElem.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar') ?? null;
+		if (this.toolbar) this.chromeObserver.observe(this.toolbar);
+		this.measureStickyTop();
+	}
+
+	// The measurement the rotation makes for its ruler (rotation_view.tsx measureStickyTop).
+	private measureStickyTop() {
+		const toolbar = this.toolbar;
+		this.stickyTop = toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0;
+		this.rootElem.style.setProperty('--log-sticky-top', `${this.stickyTop}px`);
 	}
 
 	private seedListWidth() {
