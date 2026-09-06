@@ -845,6 +845,37 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+### The sim title dropdown is BLOCKED on Base UI's submenu modality — attempted 2026-09-06
+
+The port was written, worked, and was reverted. Do not start it again without deciding the question
+below first.
+
+`Menu.SubmenuRoot` maps onto the markup exactly — a class row per `SubmenuTrigger`, each spec a
+`Menu.LinkItem` so it stays a real, middle-clickable link — and it rendered correctly: 11 classes in
+the right order with the right colour tokens, all 34 spec links with the right hrefs, icons, labels
+and launch statuses. What it cannot do is let you *browse*.
+
+When a submenu opens, Base UI marks the parent tree inert (`markOthers` from its floating-ui fork,
+`data-base-ui-inert`), and the parent's rows come back `pointer-events: none`. Measured, not
+inferred: `elementFromPoint` over the second class row returns the positioner, not the row. So you
+can open one class and then cannot move to another — the whole point of the menu. `modal={false}`
+on `Menu.Root` does not lift it, and `SubmenuRoot` has no `modal` prop of its own.
+
+The open question is which way out:
+
+- Accept modal submenus and give the menu a different shape — one flat popup with a group per class,
+  say — which changes the interaction rather than fighting the library.
+- Override `pointer-events` on the inert parent. Cheap, but `markOthers` also sets `aria-hidden` on
+  it, so the class list would be pointer-reachable and invisible to a screen reader at the same
+  time. That is worse than what is there now.
+- Keep this one on Bootstrap until Base UI offers a non-modal submenu.
+
+`tools/react-migration/sim-title.mjs` landed anyway and is green on both ports: it opens the menu,
+walks all eleven classes, and compares every spec link's tag, colour, label, title, launch status,
+href and icon — 34 links. It is the gate this port needs, and it exists before the port, which is
+the rule. It also covers what `parity.mjs` would lose: Bootstrap builds all 361 lines of that menu
+into the page up front, and a portaled popup takes them out of the tree comparison.
+
 ### Findings waiting on a decision
 
 Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
