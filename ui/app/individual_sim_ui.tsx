@@ -251,10 +251,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		// Declarative behaviour slots. These run last, exactly where a spec
 		// subclass' constructor body used to run: after every tab and sidebar
 		// component exists, but still synchronously, so `loadSettings()` (queued
-		// on waitForInit above) already sees `this.reforger`.
-		// `features` goes before `reforge` because a slot that adds a sidebar
-		// button has to land above the reforge button, as it did when both were
-		// statements in the spec constructor. No slot reads `this.reforger`.
+		// on waitForInit above) already sees `this.reforger`. Order is observable:
+		// a `features` slot's sidebar button lands above the reforge button.
 		for (const feature of config.features || []) {
 			feature(this);
 		}

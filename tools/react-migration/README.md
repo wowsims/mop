@@ -13,7 +13,11 @@ running several at once, or backgrounding them with `&`, makes it thrash. Run th
 another, close every browser you open (including on an error path: a throw that skips
 `browser.close()` leaves it resident), and prefer `type-check` and `vitest` while iterating, saving
 the browser passes for the end. `parity.mjs` and `panes-parity.mjs` also exceed a 120s tool timeout
-at six specs — split them into two runs of three rather than backgrounding one run of six.
+at six specs — split them into two runs of three rather than backgrounding one run of six. A split
+run makes `parity.mjs` report any `INTENDED` entry the half it ran cannot reach as never observed:
+`hide-healing-metrics` is warrior/protection only, so the half without it always says so. That is
+the split talking, not a stale entry — confirm against a run that covers the spec before deleting
+anything.
 
 **Name the worktrees.** The baseline is `~/personal/wowsims-mop` (`master`) — the branch this PR
 targets. It was `~/personal/wowsims-mop-restructure` (`feature/ui-restructure`) until 2026-09-07,
