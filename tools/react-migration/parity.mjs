@@ -109,6 +109,13 @@ const DROPDOWN_COUNT = 2;
 // every one of their specs into the page up front. One drop takes the lot, because the class
 // submenus are nested inside the root `<ul>`. `sim-title.mjs` compares them opened instead — which
 // is the only way the spec links, the way every other sim is reached, get looked at at all.
+// The `:3401` baseline is `feature/ui-restructure`, which predates master's log rewrite (PR #1566),
+// so the log view's contents cannot match and comparing them says nothing. Both sides root it at
+// `log-runner-root`, so the subtree is dropped from each and the rest of the pane — metrics tables,
+// timeline, replay — is still compared line for line. The counts are asserted, so a log view that
+// vanishes from one side still fails. Delete this once the baseline carries master.
+const LOG_VIEW = /\blog-runner-root\b/;
+
 const SIM_TITLE = /\.sim-title(\.|$)/;
 const SIM_TITLE_MENU_COUNT = 1;
 
@@ -123,6 +130,7 @@ const grab = async (browser, port, spec) => {
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const panes = {};
+	const logViews = {};
 	const levels = {};
 	const paneProblems = [];
 	for (const id of ids) {
@@ -142,7 +150,13 @@ const grab = async (browser, port, spec) => {
 		panes[id] = normalised.dom;
 	}
 	await page.close();
-	return { ids, shell, panes, levels, modals, paneProblems, errors };
+	for (const id of Object.keys(panes)) {
+		const log = dropSubtrees(panes[id], /./, LOG_VIEW);
+		if (!log.dropped) continue;
+		panes[id] = log.dom;
+		logViews[id] = log.dropped;
+	}
+	return { ids, shell, panes, levels, modals, logViews, paneProblems, errors };
 };
 
 const browser = await launch();
@@ -165,6 +179,12 @@ for (const spec of specsFromArgv()) {
 	const title = dropSubtrees(a.shell, SIM_TITLE, DROPDOWN_MENU);
 	a.shell = title.dom;
 	if (title.dropped !== SIM_TITLE_MENU_COUNT) problems.push(`dropped ${title.dropped} sim-title menus, expected ${SIM_TITLE_MENU_COUNT}`);
+
+	for (const id of new Set([...Object.keys(a.logViews), ...Object.keys(b.logViews)])) {
+		const base = a.logViews[id] ?? 0;
+		const react = b.logViews[id] ?? 0;
+		if (base !== react) problems.push(`${id}: dropped ${base} log views from the baseline and ${react} from react`);
+	}
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);
