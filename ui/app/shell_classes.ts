@@ -38,4 +38,4 @@ export interface SimUiClassesArgs {
 }
 
 export const simUiClasses = ({ cssClass, spec, metrics }: SimUiClassesArgs): string =>
-	clsx('sim-ui', 'individual-sim-ui', cssClass, simTypeClasses(spec), metricVisibilityClasses(metrics));
+	clsx('sim-ui', cssClass, simTypeClasses(spec), metricVisibilityClasses(metrics));

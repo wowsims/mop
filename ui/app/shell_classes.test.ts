@@ -66,7 +66,7 @@ describe('metricVisibilityClasses', () => {
 describe('simUiClasses', () => {
 	it('always carries the two roots and the spec class', () => {
 		const classes = tokens(simUiClasses({ cssClass: 'arms-warrior-sim-ui', spec: spec({ isMeleeDpsSpec: true }), metrics: ALL_ON }));
-		expect(classes).toEqual(['arms-warrior-sim-ui', 'individual-sim-ui', 'sim-type--dps', 'sim-type--melee', 'sim-ui']);
+		expect(classes).toEqual(['arms-warrior-sim-ui', 'sim-type--dps', 'sim-type--melee', 'sim-ui']);
 	});
 
 	it('adds every hide class when the toggles are all off', () => {
@@ -84,7 +84,6 @@ describe('simUiClasses', () => {
 			'hide-healing-metrics',
 			'hide-threat-metrics',
 			'holy-priest-sim-ui',
-			'individual-sim-ui',
 			'sim-type--heal',
 			'sim-ui',
 		]);

@@ -15,14 +15,15 @@ another, close every browser you open (including on an error path: a throw that 
 the browser passes for the end. `parity.mjs` and `panes-parity.mjs` also exceed a 120s tool timeout
 at six specs — split them into two runs of three rather than backgrounding one run of six.
 
-**Name the worktrees.** "the parent worktree" is `~/personal/wowsims-mop-restructure`
-(`feature/ui-restructure`) — _not_ `~/personal/wowsims-mop`, which is `master`. Serving master on
-3401 does not fail loudly: the comparison still runs, and every spec fails on a line 0 that differs
-by one class, which reads like a regression in this branch. It has happened once. Check with
+**Name the worktrees.** The baseline is `~/personal/wowsims-mop` (`master`) — the branch this PR
+targets. It was `~/personal/wowsims-mop-restructure` (`feature/ui-restructure`) until 2026-09-07,
+when the stack was repointed at master; `feature/ui-restructure` is never merged on its own, so
+gating against it measured half the diff. Serving the wrong branch on 3401 does not fail loudly:
+the comparison still runs and reads like a regression in this branch. Check with
 `git -C <worktree> branch --show-current` before trusting a red run.
 
 ```bash
-# in ~/personal/wowsims-mop-restructure (feature/ui-restructure)
+# in ~/personal/wowsims-mop (master)
 node_modules/.bin/vite build && npx http-server dist -p 3401 --silent &
 # in ~/personal/wowsims-mop-react (this worktree)
 node_modules/.bin/vite build && npx http-server dist -p 3402 --silent &

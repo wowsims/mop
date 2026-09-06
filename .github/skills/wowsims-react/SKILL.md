@@ -20,8 +20,9 @@ links, the sidebar's character-stats table and the talents and settings tab bodi
 finished: the import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. The
 remaining four tab bodies are vanilla `Component`s.
 
-Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
-`feature/ui-restructure`.
+Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, targeting `master`. It carries
+`feature/ui-restructure` inside it: that branch is never merged on its own, so every gate compares
+against master.
 
 | Phase | State |
 |---|---|
@@ -1311,6 +1312,29 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **The parity baseline is `master`, not `feature/ui-restructure`.** The restructure was
+  never going to merge on its own, so gating against it measured half the diff and let a restructure
+  regression pass as a baseline fact. `:3401` now serves a build of `~/personal/wowsims-mop`
+  (`master`); `tools/react-migration/README.md` says so, and its old warning against serving master
+  is inverted. Three things fell out of the switch:
+  - The `LOG_VIEW` allowance in `parity.mjs` and `panes-parity.mjs` is gone — master carries the log
+    rewrite, and `detailed-results-tab-tab` is now 605 lines on both sides for every spec. Removing
+    it left a dangling `logViews` reference in `panes-parity.mjs` that only surfaced at runtime;
+    `node --check` does not catch an undeclared identifier, so run the gate after editing it.
+  - The three APL-validation `INTENDED` entries are deleted. Their own `why` said to delete them once
+    the fix reached `feature/ui-restructure`; master classifies validations correctly, so both sides
+    now agree and the stale check flagged them.
+  - `shell_classes.ts` no longer emits `individual-sim-ui`. It existed only on this stack, was read by
+    no SCSS, tool or module, and was the whole of the line-0 divergence on five specs.
+
+  The one real behaviour change: the `features:` behaviour slots now run **before** `config.reforge`,
+  not after. Ordering is observable — a slot that adds a sidebar button has to land above the reforge
+  button — and mage/fire's constructor on master ran `CalculateCombustionThresholds` before
+  `ReforgeOptimizer`. `features` is the only slot that touches the DOM, mage/fire is its only user
+  repo-wide, and no slot reads `this.reforger`, so the move is safe. `derivedSettings` stays after
+  `reforge`, where windwalker's `getEPDefaults` comment assumes it. All six specs now match master on
+  every pane.
 
 - 2026-09-06 **`IconPicker` un-nests its level container: no more `<a>` inside `<a>`.**
   `.icon-input-level-container` is the anchor's next sibling instead of its only child, so the two

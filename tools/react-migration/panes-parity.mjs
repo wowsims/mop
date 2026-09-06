@@ -29,11 +29,6 @@ const SETTLE = 1000;
 
 const browser = await launch();
 let fails = 0;
-// See parity.mjs: the `:3401` baseline predates master's log rewrite, so the log view's contents
-// cannot match. Dropped from both sides by its shared root; the counts are compared, so a log view
-// missing from one side still fails. Delete once the baseline carries master.
-const LOG_VIEW = /\blog-runner-root\b/;
-
 for (const spec of specsFromArgv()) {
 	const sides = {};
 	for (const [side, port] of Object.entries(PORTS)) sides[side] = await openSpec(browser, port, spec, { selector: '.sim-tabs [role=tab]' });
@@ -52,7 +47,6 @@ for (const spec of specsFromArgv()) {
 		for (const [index, id] of ids.entries()) {
 			const dom = {};
 			const levels = {};
-			const logViews = {};
 			for (const side of Object.keys(PORTS)) {
 				await sides[side].page.locator('.sim-tabs [role=tab]').nth(index).click();
 				await sides[side].page.waitForTimeout(SETTLE);
@@ -68,11 +62,7 @@ for (const spec of specsFromArgv()) {
 					dom[side] = normalised.dom;
 					problems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 				}
-				const log = dropSubtrees(dom[side], /./, LOG_VIEW);
-				dom[side] = log.dom;
-				logViews[side] = log.dropped;
 			}
-			if (logViews.base !== logViews.react) problems.push(`${id}: dropped ${logViews.base} log views from the baseline and ${logViews.react} from react`);
 			// What makes the lift an assertion rather than a fold: React must have nothing left to lift,
 			// and both sides must hold the same number of level containers either way.
 			if (levels.react.lifted) problems.push(`${id}: react still nests ${levels.react.lifted} level container(s) inside the picker anchor`);

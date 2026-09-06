@@ -252,15 +252,18 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		// subclass' constructor body used to run: after every tab and sidebar
 		// component exists, but still synchronously, so `loadSettings()` (queued
 		// on waitForInit above) already sees `this.reforger`.
+		// `features` goes before `reforge` because a slot that adds a sidebar
+		// button has to land above the reforge button, as it did when both were
+		// statements in the spec constructor. No slot reads `this.reforger`.
+		for (const feature of config.features || []) {
+			feature(this);
+		}
 		if (config.reforge) {
 			this.reforger = new ReforgeOptimizer(this, typeof config.reforge === 'function' ? config.reforge(this) : config.reforge);
 		}
 		for (const derived of config.derivedSettings || []) {
 			derived.apply(this.player, this.sim);
 			derived.subscribe(this.player, this.sim)(() => derived.apply(this.player, this.sim));
-		}
-		for (const feature of config.features || []) {
-			feature(this);
 		}
 	}
 
