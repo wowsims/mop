@@ -27,7 +27,7 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly sidebarStatsContainer: HTMLElement;
 			// React fills the talents tab body through this, the same way it fills the sidebar.
 			readonly talentsTab = { contentContainer: document.createElement('div') };
-			readonly settingsTab = { encounterContainer: document.createElement('div') };
+			readonly settingsTab = { contentContainer: document.createElement('div') };
 			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
 			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
 			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement }) {
@@ -42,7 +42,7 @@ vi.mock('./individual_sim_ui', async () => {
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
-vi.mock('@features/encounter', () => ({ EncounterPicker: () => <div className="encounter-picker-root" /> }));
+vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 // Needs the real spec registry to list every class; what is under test here is the shell's gate.
 vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div className="sim-title-dropdown-root" /> }));
 
@@ -57,8 +57,7 @@ const { SimApp } = await import('./SimApp');
 // spec's shape decides the `sim-type--*` class, so both have to be genuine rather than empty casts.
 const sim = {
 	store: createSimStore(),
-	// `SimApp` waits on this before portalling anything into a container the settings tab builds in
-	// its own `waitForInit` callback.
+	// The tab bodies gate their own content on this; `SimApp` only portals them in.
 	waitForInit: () => Promise.resolve(),
 	getShowDamageMetrics: () => true,
 	getShowThreatMetrics: () => false,

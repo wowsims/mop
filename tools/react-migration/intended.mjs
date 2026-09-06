@@ -29,6 +29,12 @@ export const INTENDED = [
 		why: "same rule as the entry above, for MultiIconPicker's own caption: it names the picker's icon group, so the root carries role=group + aria-labelledby",
 	},
 	{
+		base: 'i.fa-question-circle.far',
+		react: 'i.fa-circle-question.far',
+		max: 4,
+		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Four is the settings pane's ceiling: buffs, debuffs and the two external-cooldown blocks, all four together only on warrior/protection. It rises as further tabs stop building vanilla ContentBlocks",
+	},
+	{
 		base: 'button.apl-validations.list-picker-item-action',
 		react: 'button.apl-validation-warning.apl-validations.list-picker-item-action',
 		max: 11,

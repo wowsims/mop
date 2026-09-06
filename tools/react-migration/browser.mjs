@@ -271,11 +271,15 @@ const PROBE = () => {
 		// Shown, not merely present. Bootstrap creates its backdrop on open and removes it on close, so
 		// existence was the same question there; a Base UI dialog kept mounted leaves its backdrop in
 		// the DOM permanently and marks it `data-open` only while it is up.
-		backdrop: () => {
-			const backdrop = document.querySelector('.modal-backdrop, .sim-dialog-backdrop');
-			if (!backdrop) return false;
-			return backdrop.classList.contains('modal-backdrop') || backdrop.hasAttribute('data-open');
-		},
+		//
+		// Every kept-mounted backdrop, not the first one: the page has six now — five exporters plus
+		// the advanced encounter modal — and `querySelector` answered for whichever happened to be
+		// first, which is never the one a gate has just opened. Only one dialog is ever up at a time,
+		// so "any backdrop is shown" is the question that was being asked when there was only one.
+		backdrop: () =>
+			[...document.querySelectorAll('.modal-backdrop, .sim-dialog-backdrop')].some(
+				backdrop => backdrop.classList.contains('modal-backdrop') || backdrop.hasAttribute('data-open'),
+			),
 		bodyLocked: () => document.body.classList.contains('modal-open') || document.body.style.overflow === 'hidden',
 	};
 };

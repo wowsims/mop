@@ -69,7 +69,10 @@ const INSTALL = () => {
 				.map(name => name.slice('consumes-'.length));
 			return `row:${[...new Set(tokens)].sort().join('+') || '?'}`;
 		}
-		if (el.classList.contains('multi-icon-picker-root')) return `multi:${text(own(el, 'label.multi-icon-picker-label')) || '?'}`;
+		// By class, not by tag, for the reason spelled out at the `.form-label` read below: the React
+		// caption is a `<span>` — it names an icon group rather than a control — so keying on `label`
+		// silently turned every multi-icon row's key into `multi:?` on this build only.
+		if (el.classList.contains('multi-icon-picker-root')) return `multi:${text(own(el, '.multi-icon-picker-label')) || '?'}`;
 		const anchor = own(el, 'a');
 		if (anchor) {
 			const href = anchor.getAttribute('href');

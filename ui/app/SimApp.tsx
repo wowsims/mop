@@ -1,10 +1,5 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
-import { EncounterPicker } from '@features/encounter';
-import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
-import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
-import * as ConsumablesInputs from '@features/settings/model/consumables';
-import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
@@ -13,12 +8,12 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { ImportExportMenu } from './header/ImportExportMenu';
-import { useSimReady } from './hooks/useSimReady';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
+import { SettingsTabBody } from './tabs/SettingsTabBody';
 import { TalentsTabBody } from './tabs/TalentsTabBody';
 
 export interface SimAppProps<SpecType extends Spec> {
@@ -34,8 +29,6 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	// no unsubscribe — so it happens once and StrictMode's second pass is a no-op.
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
-	// `SettingsTab` builds its content blocks on init, so the encounter container is not there before.
-	const ready = useSimReady(player.sim);
 
 	// Rendered once and held: everything inside is filled imperatively, so a re-render that recreated
 	// any of those nodes would take the vanilla content with it. See SimShell's own note.
@@ -86,68 +79,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{/* Context reaches through a portal: it follows the React tree, not the DOM one. */}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
-					{ready &&
-						createPortal(
-							<EncounterPicker showExecuteProportion={def.encounterPicker.showExecuteProportion} />,
-							simUI.settingsTab.encounterContainer,
-						)}
-					{ready &&
-						createPortal(
-							<PlayerSettings iconInputs={def.playerIconInputs} inputs={def.playerInputs?.inputs ?? []} />,
-							simUI.settingsTab.playerSettingsContainer,
-						)}
-					{/* Reads the database synchronously, so `ready` is a hard gate here rather than the
-					    container-exists one it is for the blocks around it. */}
-					{ready &&
-						createPortal(
-							<ConsumesPicker
-								consumableStats={def.consumableStats ?? def.epStats}
-								conjuredOptions={relevantStatOptions(ConsumablesInputs.CONJURED_CONFIG, simUI)}
-								explosiveOptions={relevantStatOptions(ConsumablesInputs.EXPLOSIVE_CONFIG, simUI)}
-								petInputs={def.petConsumeInputs ?? []}
-							/>,
-							simUI.settingsTab.consumesContainer,
-						)}
-					{/* The block itself is absent when the spec declares neither inputs nor swap slots. */}
-					{ready &&
-						simUI.settingsTab.otherSettingsContainer &&
-						createPortal(
-							<OtherSettings inputs={def.otherInputs.inputs} itemSlots={def.itemSwapSlots ?? []} />,
-							simUI.settingsTab.otherSettingsContainer,
-						)}
-					{/* Buffs and debuffs port together: debuffs interleaves the two picker kinds in config
-					    order, so neither block can be half React. */}
-					{ready &&
-						createPortal(
-							<RaidBuffs
-								options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, simUI)}
-								miscOptions={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_MISC_CONFIG, simUI)}
-							/>,
-							simUI.settingsTab.buffsContainer,
-						)}
-					{ready &&
-						createPortal(
-							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.DEBUFFS_CONFIG, simUI)} />,
-							simUI.settingsTab.debuffsContainer,
-						)}
-					{/* Both cooldown blocks are the same shape; the tab decides whether each exists. */}
-					{ready &&
-						simUI.settingsTab.externalDamageCooldownContainer &&
-						createPortal(
-							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DAMAGE_COOLDOWN, simUI)} />,
-							simUI.settingsTab.externalDamageCooldownContainer,
-						)}
-					{ready &&
-						simUI.settingsTab.externalDefensiveCooldownContainer &&
-						createPortal(
-							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN, simUI)} />,
-							simUI.settingsTab.externalDefensiveCooldownContainer,
-						)}
-					{/* One per `sections` entry the spec declares; most declare none. */}
-					{ready &&
-						simUI.settingsTab.customSectionContainers.map(({ section, body }) =>
-							createPortal(<CustomSection section={section} />, body, section.id),
-						)}
+					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 				</SimHostProvider>
 			)}
 		</>

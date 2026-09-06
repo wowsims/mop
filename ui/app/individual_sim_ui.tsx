@@ -308,7 +308,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	// `SimApp` portals <CharacterStats/> in here once construction has produced it.
 	// React fills this tab's body — see app/tabs/TalentsTabBody.tsx.
 	talentsTab!: TalentsTab<SpecType>;
-	// Held for the same reason: React renders the encounter block into one of its content blocks.
+	// Held for the same reason — see app/tabs/SettingsTabBody.tsx.
 	settingsTab!: SettingsTab;
 
 	get sidebarStatsContainer(): HTMLElement {

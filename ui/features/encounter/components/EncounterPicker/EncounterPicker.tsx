@@ -19,9 +19,8 @@ export interface EncounterPickerProps {
  *
  * Rendered whole rather than in two stages. The vanilla constructor added the duration fields
  * synchronously and everything else in a `waitForInit` callback — but the constructor itself ran
- * inside `SettingsTab.buildTabContent`, which is already on `waitForInit`, so the first stage never
- * had a moment of its own. `SimApp` waits for the same signal before portalling this in, because the
- * content block it renders into does not exist until then.
+ * inside the settings tab's own `waitForInit` callback, so the first stage never had a moment of its
+ * own. `SettingsTabBody` renders this behind the same signal, which is that callback's React form.
  *
  * Two of that constructor's jobs are **not** here: re-seeding the primary target's inputs from its
  * preset, and zeroing the raid's dummy count when the player stops being able to enable it. Both

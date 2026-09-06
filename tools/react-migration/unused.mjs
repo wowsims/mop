@@ -15,7 +15,6 @@ const UI_KIT = 'ui/ui-kit';
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
 const ALLOWED = {
-	ContentBlock: 'ported and parity-tested; its consumers arrive when the tab bodies stop being vanilla ContentBlocks',
 	NumberListPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 	AdaptiveStringPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 };

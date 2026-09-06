@@ -29,7 +29,13 @@ const REGIONS = [
 	// and the base-to-React delta is the same one control on a spec with a ported icon-enum picker and
 	// on one without. So this is an earlier port's slack, taken up now rather than left as room a later
 	// one could grow into. The baseline is 162 on the same spec.
-	{ selector: '.settings-tab', ceiling: { unnamed: 155, shown: 3, unsafe: 34, untyped: 4 } },
+	//
+	// `shown` went 3 → 0 with the tab body: those three bare `<i class="far fa-question-circle">` were
+	// the vanilla `ContentBlock` header tooltips, and the React `Icon` behind `TooltipButton` marks its
+	// glyph `aria-hidden`. `unsafe` went 34 → 0 when the external-link seams landed and was left slack;
+	// it is taken up here for the reason the other ratchets were, so a later port cannot grow into the
+	// room. Both are zero now, which is an equality rather than a ceiling.
+	{ selector: '.settings-tab', ceiling: { unnamed: 155, untyped: 4 } },
 ];
 const SELECTORS = REGIONS.map(region => region.selector);
 

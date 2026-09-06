@@ -16,9 +16,9 @@ restate them; it assumes them.
 **React owns the shell.** `SimShell.tsx` renders everything parent to the tabs — the sidebar, the
 header, the content column — and the vanilla `SimUI`/`SimHeader` adopt those elements instead of
 building them. React also owns the top-level tab behaviour, the header toolbar, both sets of social
-links, the sidebar's character-stats table and the talents tab body. The header is finished: the
-import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. The remaining tab
-bodies are vanilla `Component`s.
+links, the sidebar's character-stats table and the talents and settings tab bodies. The header is
+finished: the import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. The
+remaining four tab bodies are vanilla `Component`s.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 `feature/ui-restructure`.
@@ -313,7 +313,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
-| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — 18 sites, 9 in `settings_tab.tsx` | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
+| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — the nine settings blocks are React now, the other nine sites are gear, apl and bulk | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/testing/PickerOracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/hooks/useActionId.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
@@ -345,7 +345,7 @@ of the duplication sweep was to build each shape once.
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (**deleted** — the player block was its last caller) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
-| `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection`'s body half in `app/tabs/settings_tab.tsx` | a `CustomSection` config — its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards |
+| `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection` in `app/tabs/settings_tab.tsx` (**deleted** — one caller) | a `CustomSection` config — its block, its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards, and that `when` toggles `hide` on the block's root rather than on the body |
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
@@ -1231,10 +1231,10 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
 11. ~~**Consumes**~~ — **done.** Both extra costs were real and both are recorded in the change log:
    the `waitForInit` dependency is a hard one, and `updateRow`'s inversion was answered by exporting
    the picker's `showWhen()` override so the row asks the configs rather than the instances.
-12. **Preset configuration and the saved-data managers do not port with this tab** — four and six
-   consumers respectively, across gear, rotation and talents. Mount them through `useLegacyMount`
-   into a React-owned right panel when the tab body becomes `SettingsTabBody.tsx`, exactly as
-   `TalentsTabBody` does.
+12. ~~**Preset configuration and the saved-data managers do not port with this tab**~~ — **done.**
+   Both still vanilla, mounted through `useLegacyMount` into the React-owned right panel of
+   `SettingsTabBody.tsx`, exactly as `TalentsTabBody` does. The tab body is React and
+   `settings_tab.tsx` is 18 lines.
 7. Switch ported components onto the owned tokens from item 1, and decide the component-scoped 35.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
    bulk, import-export, apl, gear, results.
@@ -1244,6 +1244,54 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The settings tab body is React, and it gave `ContentBlock` its first consumer.**
+  `settings_tab.tsx` went from 306 lines to 18 — the same shape `talents_tab.tsx` has, registering the
+  pane and owning nothing else — and the eleven portals `SimApp` aimed at named containers inside it
+  collapsed to one aimed at `contentContainer`. The nine containers on `SettingsTab` are gone with
+  them; nothing outside `SimApp` ever read them.
+
+  **The `ready` gate is the port of one `waitForInit` callback, not a per-block decision.** The
+  vanilla tab built its three columns in the constructor and *everything* in them inside a single
+  `waitForInit().then(buildTabContent)`, so the faithful shape is the columns rendered always and
+  their children behind `useSimReady` — which is also what keeps `ConsumesPicker`'s synchronous
+  `Database.getSync()` legal. `SimApp` no longer calls `useSimReady` at all.
+
+  **The right panel mounts before init where vanilla built it after, and that is safe for one
+  reason worth writing down.** `useLegacyMount` runs in the commit that sets `simUI`, so its
+  `waitForInit().then(...)` is registered in the same task as the shell's own — after
+  `loadSettings`, which the constructor queues first. The load-time snapshot each `presets.itemSwaps`
+  entry bakes in therefore still sees loaded settings. `player.getParty()` is likewise non-null: the
+  page entry calls `raid.setPlayer(0, player)` before `createRoot`.
+
+  **`CustomSection` absorbed its own block.** The reason its `ContentBlock`, `custom-section` class
+  and `when` visibility stayed in `settings_tab.tsx` was that `when` toggles `hide` on the block's
+  **root**, which React did not own. It does now, so the split is gone and `buildCustomSection` is
+  deleted. A section with no `when` subscribes to nothing, as the vanilla builder did — the
+  alternative, an unconditional hook on a source that never matters, would re-render the section on
+  every player change.
+
+  **One `INTENDED` entry, and it is `TooltipButton`'s first appearance in the tree.** A React
+  `ContentBlock` header tooltip draws its glyph through `Icon`, which spells FA6's canonical
+  `fa-circle-question` where the vanilla button hardcodes FA5's `fa-question-circle` alias — the same
+  glyph in the pinned 6.0.0 CSS, a different class token, and the only line either tree gate reports.
+  `max: 4` is the settings pane's ceiling: buffs, debuffs and the two external-cooldown blocks, which
+  only `warrior/protection` has all four of. It rises as further tabs stop building vanilla blocks.
+
+  **Two ratchets came down.** `a11y.mjs`'s settings `shown` went 3 → 0, because those three bare
+  `<i>` were exactly the vanilla header tooltips and `Icon` marks its glyph `aria-hidden`; `unsafe`
+  went to 0 as well, slack left by the external-link seams and taken up here rather than left as room
+  a later port could grow into. `unnamed` is unmoved at its 155 ceiling — every control this port
+  renders already existed.
+
+  **Two gate defects found while running them, neither introduced here.** `settings-tab.mjs` keyed
+  every multi-icon row on `label.multi-icon-picker-label`, which stopped matching when that caption
+  became a `<span>` the day before, so the React side printed `multi:?` for all eight — a comment
+  four lines above already says to select `.form-label` by class for that exact reason. And
+  `simModalProbe.backdrop()` read `querySelector`, which was unambiguous when the page had one Base
+  UI dialog and answers for an exporter now that it has six; `encounter.mjs` had been reporting
+  `backdrop: false` on the React build since the exporters landed. Both fixed; both gates are
+  byte-identical on the two builds again.
 
 - 2026-09-06 **The `.form-label`-over-an-icon-group shape is settled across the settings tab.** A
   `<label>` with no control is not a label, and the tab had the shape in three places. `ConsumeRow`
