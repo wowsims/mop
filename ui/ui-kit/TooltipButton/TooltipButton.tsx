@@ -1,6 +1,6 @@
 import { Button } from '@ui-kit/Button';
 import { Icon, type IconProps } from '@ui-kit/Icon';
-import { Tooltip, type TooltipPlace } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps, type TooltipPlace } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
 
@@ -18,7 +18,7 @@ export const TooltipButton = ({ tooltip, icon = 'question-circle', iconStyle = '
 	const id = useId();
 	return (
 		<>
-			<Button variant="link" className={clsx('tooltip-button', className)} data-tooltip-id={id}>
+			<Button variant="link" className={clsx('tooltip-button', className)} {...tooltipAnchorProps(id)}>
 				<Icon name={icon} style={iconStyle} />
 			</Button>
 			<Tooltip id={id} content={tooltip} place={place} />

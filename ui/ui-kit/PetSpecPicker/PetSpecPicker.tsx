@@ -3,7 +3,7 @@ import type { HunterSpecs } from '@domain/proto_utils/spec_types';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
@@ -46,9 +46,12 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 					<div
 						key={spec}
 						className={clsx('talent-picker-root pet-spec-item', spec === active && 'selected')}
-						data-tooltip-id={`${id}-${spec}`}
+						{...tooltipAnchorProps(`${id}-${spec}`)}
 						onClick={() => select(spec)}>
-						<div className="talent-picker-icon" style={{ backgroundImage: `url('https://wow.zamimg.com/images/wow/icons/large/${iconKey}.jpg')` }} />
+						<div
+							className="talent-picker-icon"
+							style={{ backgroundImage: `url('https://wow.zamimg.com/images/wow/icons/large/${iconKey}.jpg')` }}
+						/>
 						<div className="talent-picker-label">{label}</div>
 						<Tooltip id={`${id}-${spec}`} content={label} />
 					</div>

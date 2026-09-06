@@ -5,7 +5,7 @@ import i18n from '@i18n/config';
 import { translatePlayerSpec } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';
 
 import { TalentPicker } from './TalentPicker';
@@ -43,7 +43,7 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<Button
 					variant={null}
 					className="talent-tree-reset link-danger"
-					data-tooltip-id={resetTooltipId}
+					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
 					{/* `style="base"` keeps the bare `fa` prefix: the class list is what the pane parity
 					    gate compares, and normalising this glyph to `fas` is a change, not a port. */}

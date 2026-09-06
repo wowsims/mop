@@ -9,6 +9,7 @@ import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
+import { wowheadAnchorProps } from '@ui-kit/wowhead';
 import clsx from 'clsx';
 import { useId, useState } from 'react';
 
@@ -98,7 +99,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						// — and Base UI points the popup's `aria-labelledby` at it, which would have made
 						// the group nameless too. Naming it fixes both.
 						aria-label={config.label}
-						data-disable-wowhead-touch-tooltip="true"
+						{...wowheadAnchorProps({ icon: false })}
 						// `fillAndSetActionId(id, elem, false, true)` — background only. The vanilla
 						// button never carries an `href`, which is why the settings gate keys these
 						// rows on their label rather than on a wowhead action.

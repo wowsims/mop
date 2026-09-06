@@ -10,7 +10,7 @@ import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
@@ -73,7 +73,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					variant="unstyled"
 					className="gear-swap-icon"
 					aria-label={swapTooltip}
-					data-tooltip-id={swapId}
+					{...tooltipAnchorProps(swapId)}
 					onClick={() => swapWithGear(player, itemSlots)}>
 					<Icon name="arrows-rotate" className="me-1" />
 				</Button>

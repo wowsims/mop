@@ -6,7 +6,7 @@ import { PseudoStat, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
 
@@ -45,7 +45,7 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 				) : (
 					<>
 						<div className="stat-value-link-container">
-							<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} data-tooltip-id={id}>
+							<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} {...tooltipAnchorProps(id)}>
 								{`${show(attribution.final, unitStat, true)} `}
 							</Button>
 							{isMastery &&

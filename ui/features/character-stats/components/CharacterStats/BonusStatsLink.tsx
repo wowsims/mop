@@ -8,7 +8,7 @@ import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
-import { Tooltip, type TooltipRefProps } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps, type TooltipRefProps } from '@ui-kit/Tooltip';
 import { useId, useMemo, useRef, useState } from 'react';
 
 export interface BonusStatsLinkProps {
@@ -54,8 +54,8 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 		<>
 			{/* The vanilla button carried an inert `data-bs-toggle="popover"`: Bootstrap popovers are
 			    opt-in and nothing in the tree ever constructed one, so it held no behaviour. */}
-			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" aria-label={action} data-tooltip-id={`${id}-popover`}>
-				<Icon name="plus-minus" data-tooltip-id={`${id}-icon`} />
+			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" aria-label={action} {...tooltipAnchorProps(`${id}-popover`)}>
+				<Icon name="plus-minus" {...tooltipAnchorProps(`${id}-icon`)} />
 			</Button>
 			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />
 			<Tooltip

@@ -1,7 +1,7 @@
 import type { MeleeCritCapInfo } from '@domain/player';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type CSSProperties, useId } from 'react';
 
@@ -29,7 +29,7 @@ export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 			<td className="character-stats-table-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
 			<td className="character-stats-table-value">
 				<div className="stat-value-link-container">
-					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} data-tooltip-id={id}>
+					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} {...tooltipAnchorProps(id)}>
 						{`${text} `}
 					</Button>
 				</div>

@@ -1,7 +1,7 @@
 import { Field } from '@base-ui/react/field';
 import { adoptNode, isNode } from '@ui-kit/dom_utils';
 import type { InputConfig } from '@ui-kit/input';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, type Ref, useMemo } from 'react';
 
@@ -58,7 +58,7 @@ export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disable
 				// `Field.Control` it finds, and generates an id when there is none — IconPicker renders
 				// anchors, not a control, so its label would have pointed at an element that does not
 				// exist. `config.id` is the value vanilla uses either way.
-				<Field.Label htmlFor={config.id} className="form-label" title={config.label} data-tooltip-id={tooltipId}>
+				<Field.Label htmlFor={config.id} className="form-label" title={config.label} {...tooltipAnchorProps(tooltipId)}>
 					{config.label}
 				</Field.Label>
 			)}

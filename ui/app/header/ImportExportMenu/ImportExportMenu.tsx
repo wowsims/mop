@@ -3,7 +3,7 @@ import './ImportExportMenu.scss';
 import { Menu } from '@base-ui/react/menu';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName, IconStyle } from '@ui-kit/Icon/types';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useState, useSyncExternalStore } from 'react';
 
@@ -70,7 +70,7 @@ export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', tit
 									disabled={entry.isUnsupported}
 									// Kept on the disabled branch too: the tooltip anchors on the item, and
 									// `Menu.Item` does not stop it being hovered.
-									{...(entry.isUnsupported ? { 'data-tooltip-id': unsupportedId } : {})}
+									{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}
 									onClick={() => {
 										if (entry.isUnsupported) return;
 										// A vanilla entry shows its own Bootstrap modal; a React one only has state.

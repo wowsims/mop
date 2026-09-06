@@ -1,6 +1,8 @@
 import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import type { IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
+import { tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { wowheadAnchorProps } from '@ui-kit/wowhead';
 import clsx from 'clsx';
 
 import { iconStyleOf } from './utils';
@@ -43,15 +45,13 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 			}}>
 			<a
 				className="icon-picker-button"
-				data-whtticon="false"
-				data-disable-wowhead-touch-tooltip="true"
+				{...wowheadAnchorProps()}
 				// An option anchor carries no href until its id resolves to a wowhead page, and loses
 				// it while hidden — vanilla `removeAttribute`s it there. `ActionId.empty` resolves to
 				// neither an item nor a spell, so the "No Pet" entry keeps none.
 				href={hidden ? undefined : href || undefined}
 				style={hidden ? undefined : iconStyleOf(valueConfig, iconUrl)}
-				data-tooltip-id={valueConfig.tooltip ? tooltipId : undefined}
-				data-tooltip-content={valueConfig.tooltip}
+				{...tooltipAnchorProps(valueConfig.tooltip ? tooltipId : undefined, valueConfig.tooltip)}
 			/>
 		</Menu.Item>
 	);

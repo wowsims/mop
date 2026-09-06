@@ -4,6 +4,7 @@ import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
+import { wowheadAnchorProps } from '@ui-kit/wowhead';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
@@ -88,8 +89,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				!useImprovedIcons && config.states > 2 && 'use-counter',
 				currentValue > 0 && 'active',
 			)}
-			data-whtticon="false"
-			data-disable-wowhead-touch-tooltip="true"
+			{...wowheadAnchorProps()}
 			target="_blank"
 			href={href || undefined}
 			rel={externalRel(href, undefined)}

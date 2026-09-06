@@ -5,7 +5,7 @@ import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { type IconEnumPickerConfig, IconEnumPickerDirection, type IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -147,8 +147,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}
 					data-whtticon="false"
 					data-disable-wowhead-touch-tooltip="true"
-					data-tooltip-id={config.tooltip ? tooltipId : undefined}
-					data-tooltip-content={config.tooltip}
+					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
 				/>
 				{/* Where vanilla's `<ul>` sat. See the note above the component. */}
 				<div className="icon-enum-picker-slot" ref={setSlot} />
