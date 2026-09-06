@@ -1,11 +1,10 @@
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
-import { subscribeEncounterChange, subscribeEncounterField } from '@domain/state/subscriptions';
+import { subscribeEncounterField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import { InputType, MobType, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';
-import { BaseModal } from '@ui-kit/base_modal';
 import { Input } from '@ui-kit/input';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
@@ -20,80 +19,34 @@ export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }
 
-export class AdvancedEncounterModal extends BaseModal {
-	private readonly encounter: Encounter;
-
-	constructor(parent: HTMLElement, encounter: Encounter) {
-		super(parent, 'advanced-encounter-picker-modal', { disposeOnClose: false });
-
-		this.encounter = encounter;
-
-		this.addHeader();
-		this.body.innerHTML = `
-			<div class="encounter-header"></div>
-			<div class="encounter-targets"></div>
-		`;
-
-		const header = this.rootElem.getElementsByClassName('encounter-header')[0] as HTMLElement;
-		const targetsElem = this.rootElem.getElementsByClassName('encounter-targets')[0] as HTMLElement;
-
-		addEncounterFieldPickers(header, this.encounter, true);
-		new ListPicker<Encounter, TargetProto>(targetsElem, this.encounter, {
-			extraCssClasses: ['targets-picker', 'mb-0'],
-			itemLabel: i18n.t('settings_tab.encounter.target'),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
-			getValue: (encounter: Encounter) => encounter.getTargets().slice(),
-			setValue: (encounter: Encounter, newValue: Array<TargetProto>) => {
-				trackEvent({
-					action: 'settings',
-					category: 'encounter',
-					label: newValue.length > encounter.getTargets().length ? 'add-target' : 'remove-target',
-				});
-				encounter.setTargets(newValue);
-			},
-			newItem: () => Encounter.defaultTargetProto(),
-			copyItem: (oldItem: TargetProto) => TargetProto.clone(oldItem),
-			newItemPicker: (
-				parent: HTMLElement,
-				listPicker: ListPicker<Encounter, TargetProto>,
-				index: number,
-				config: ListItemPickerConfig<Encounter, TargetProto>,
-			) => new TargetPicker(parent, encounter, index, config),
-			minimumItems: 1,
-		});
-	}
-
-	private addHeader() {
-		const presetEncounters = this.encounter.sim.db.getAllPresetEncounters();
-
-		new EnumPicker<Encounter>(this.header as HTMLElement, this.encounter, {
-			id: 'aem-encounter-picker',
-			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-			extraCssClasses: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
-			values: [{ name: 'Custom', value: -1 }].concat(
-				presetEncounters.map((pe, i) => {
-					return {
-						name: pe.path,
-						value: i,
-					};
-				}),
-			),
-			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
-			getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
-			setValue: (encounter: Encounter, newValue: number) => {
-				if (newValue != -1) {
-					const preset = presetEncounters[newValue];
-					trackEvent({
-						action: 'settings',
-						category: 'encounter',
-						label: 'preset',
-						value: preset.path,
-					});
-					encounter.applyPreset(preset);
-				}
-			},
-		});
-	}
+/**
+ * The editable list of enemies, one `TargetPicker` per target. Still vanilla: `ListPicker` is, by a
+ * standing decision, and this is its only encounter caller besides the target-inputs list.
+ */
+export function makeTargetsPicker(parent: HTMLElement, encounter: Encounter) {
+	return new ListPicker<Encounter, TargetProto>(parent, encounter, {
+		extraCssClasses: ['targets-picker', 'mb-0'],
+		itemLabel: i18n.t('settings_tab.encounter.target'),
+		storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
+		getValue: (encounter: Encounter) => encounter.getTargets().slice(),
+		setValue: (encounter: Encounter, newValue: Array<TargetProto>) => {
+			trackEvent({
+				action: 'settings',
+				category: 'encounter',
+				label: newValue.length > encounter.getTargets().length ? 'add-target' : 'remove-target',
+			});
+			encounter.setTargets(newValue);
+		},
+		newItem: () => Encounter.defaultTargetProto(),
+		copyItem: (oldItem: TargetProto) => TargetProto.clone(oldItem),
+		newItemPicker: (
+			parent: HTMLElement,
+			listPicker: ListPicker<Encounter, TargetProto>,
+			index: number,
+			config: ListItemPickerConfig<Encounter, TargetProto>,
+		) => new TargetPicker(parent, encounter, index, config),
+		minimumItems: 1,
+	});
 }
 
 class TargetPicker extends Input<Encounter, TargetProto> {
@@ -628,7 +581,7 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
  * `executeConfigs` are shared rather than copied, which is what stops the two stacks drifting while
  * both exist.
  */
-function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
+export function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
 	const durationGroup = Input.newGroupContainer();
 	rootElem.appendChild(durationGroup);
 	for (const config of durationConfigs(encounter)) new NumberPicker(durationGroup, encounter, config);

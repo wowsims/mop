@@ -36,7 +36,20 @@ const PRUNED = /\.(sim-tabs(-mount)?|sim-main)(\.|$)/;
 // React effect. That reorders them without changing one of them, which a positional diff reports as
 // dozens of differing lines. So they are compared as a set: same count, same contents, order free.
 // Only the order is given up; each modal is still byte-compared against its twin.
-const MODAL = /\.modal(\.|$)/;
+// `sim-dialog-portal` is the Base UI equivalent — with a `container`, the portal wraps the backdrop
+// and the viewport in one element, and `Dialog` names it. Matching both keeps the placeholder count
+// aligned as modals port one at a time: each side has exactly one per dialog either way.
+const MODAL = /\.(modal|sim-dialog-portal)(\.|$)/;
+
+// The dialog whose shape the port changes. Its markup is Base UI's rather than Bootstrap's, so the
+// set comparison below cannot compare it against its twin — it is removed from both sides, and
+// required to have been on both. `encounter.mjs` is its gate: it opens the modal, closes it with
+// Escape, and reads the backdrop, the body lock, the target count and the header groups, byte for
+// byte across the two builds.
+const PORTED_DIALOG = 'advanced-encounter-picker-modal';
+
+// What each side calls the ported dialog inside its modal set.
+const PORTED_DIALOG_REACT = 'sim-dialog-portal';
 
 // The one divergence that is a deletion rather than a changed line, so `INTENDED` cannot hold it.
 //
@@ -122,6 +135,18 @@ for (const spec of specsFromArgv()) {
 	const pruned = b.shell.split('\n').filter(l => l.trimStart() === PRUNED_LINE).length;
 	if (pruned !== 2 + b.modals.length) {
 		problems.push(`${pruned} pruned subtrees in the shell, expected ${2 + b.modals.length} (the strip, .sim-main, and ${b.modals.length} modals)`);
+	}
+	// Each side keeps a placeholder for the ported dialog, so the shell still lines up, but their
+	// contents are different markup by design and cannot be compared against each other. Both are
+	// required to be present, so reverting the port fails here rather than passing quietly.
+	for (const [side, grabbed, marker] of [
+		['base', a, PORTED_DIALOG],
+		['react', b, PORTED_DIALOG_REACT],
+	]) {
+		const kept = grabbed.modals.filter(modal => !modal.includes(marker));
+		if (grabbed.modals.length - kept.length !== 1)
+			problems.push(`${side}: ${grabbed.modals.length - kept.length} ported dialogs in the modal set, expected 1`);
+		grabbed.modals = kept;
 	}
 	if (a.modals.length !== b.modals.length) problems.push(`base has ${a.modals.length} modals, react has ${b.modals.length}`);
 	else {

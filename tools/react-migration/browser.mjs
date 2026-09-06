@@ -268,7 +268,14 @@ const PROBE = () => {
 			const wrapper = dialog.closest('.modal');
 			return wrapper ? wrapper.classList.contains('show') : dialog.hasAttribute('data-open');
 		},
-		backdrop: () => !!document.querySelector('.modal-backdrop, .sim-dialog-backdrop'),
+		// Shown, not merely present. Bootstrap creates its backdrop on open and removes it on close, so
+		// existence was the same question there; a Base UI dialog kept mounted leaves its backdrop in
+		// the DOM permanently and marks it `data-open` only while it is up.
+		backdrop: () => {
+			const backdrop = document.querySelector('.modal-backdrop, .sim-dialog-backdrop');
+			if (!backdrop) return false;
+			return backdrop.classList.contains('modal-backdrop') || backdrop.hasAttribute('data-open');
+		},
 		bodyLocked: () => document.body.classList.contains('modal-open') || document.body.style.overflow === 'hidden',
 	};
 };

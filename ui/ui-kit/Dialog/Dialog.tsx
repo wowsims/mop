@@ -57,12 +57,24 @@ export interface DialogProps {
 	 * the bottom border, which is what vanilla's `p-0 border-0` did. No caller passes it today.
 	 */
 	header?: boolean;
+	/**
+	 * Content beside the title, inside the header bar. `AdvancedEncounterModal` puts a preset picker
+	 * there with `order-first`, and `SelectorModal`'s stylesheet has an `& + .btn-close` sibling rule
+	 * that depends on something sitting between the title and the close button.
+	 */
+	headerChildren?: ReactNode;
 	/** The footer's contents. Vanilla rendered an empty `.modal-footer` for callers to append into. */
 	footer?: ReactNode;
 	/** Cap the popup at the viewport height and scroll the body, instead of scrolling the viewport. */
 	scrollContents?: boolean;
 	/** Removes the close button, the backdrop press and the Escape key. Programmatic close still works. */
 	preventClose?: boolean;
+	/**
+	 * Keep the dialog in the DOM while closed, which is what `disposeOnClose: false` meant — and what
+	 * eight of the ten vanilla callers got. It also keeps the modal in the set `parity.mjs` compares,
+	 * which is otherwise a diff on every spec.
+	 */
+	keepMounted?: boolean;
 	/** The body's contents. */
 	children?: ReactNode;
 }
@@ -75,9 +87,11 @@ export const Dialog = ({
 	size = 'lg',
 	title,
 	header = true,
+	headerChildren,
 	footer,
 	scrollContents = false,
 	preventClose = false,
+	keepMounted = false,
 	children,
 }: DialogProps) => (
 	<BaseDialog.Root
@@ -92,13 +106,17 @@ export const Dialog = ({
 			}
 			onOpenChange(nextOpen);
 		}}>
-		<BaseDialog.Portal container={container}>
+		{/* Named, because with a `container` the portal renders a wrapper element of its own. Unnamed
+		    it is a classless `<div>` among the sim root's children, which no gate can pick out from
+		    anything else — `parity.mjs` treats this one class as the whole dialog. */}
+		<BaseDialog.Portal className="sim-dialog-portal" container={container} keepMounted={keepMounted}>
 			<BaseDialog.Backdrop className="sim-dialog-backdrop" />
 			<BaseDialog.Viewport className="sim-dialog-viewport">
 				<BaseDialog.Popup className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', cssClass)}>
-					{(title != null || !preventClose) && (
-						<div className={clsx('sim-dialog-header', !header && title == null && 'sim-dialog-header--bare')}>
+					{(title != null || headerChildren != null || !preventClose) && (
+						<div className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}>
 							{title != null && <BaseDialog.Title className="sim-dialog-title">{title}</BaseDialog.Title>}
+							{headerChildren}
 							{!preventClose && (
 								<BaseDialog.Close className="sim-dialog-close" aria-label="Close">
 									<Icon name="times" size="2xl" />

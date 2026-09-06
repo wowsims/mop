@@ -4,9 +4,10 @@ import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { NumberPicker } from '@ui-kit/NumberPicker';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 
-import { AdvancedEncounterModal, makeTargetInputsPicker } from '../../view/encounter_picker';
+import { makeTargetInputsPicker } from '../../view/encounter_picker';
+import { AdvancedEncounterModal } from '../AdvancedEncounterModal';
 import { durationConfigs, executeConfigs, minBaseDamageConfig, numAlliesConfig, presetEncounterConfig } from './utils/configs';
 
 export interface EncounterPickerProps {
@@ -51,21 +52,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 		[encounter],
 	);
 
-	// A ref, not state: nothing renders from it, and the click that reads it happens long after the
-	// effect has run. Holding it in state would re-render the whole block once for nothing and leave
-	// the button inert for that first frame.
-	const advanced = useRef<AdvancedEncounterModal | null>(null);
-	useEffect(() => {
-		// Built into the sim root rather than into this block, which is where vanilla put it — and
-		// eagerly, so it joins the set `parity.mjs` compares at load.
-		const modal = new AdvancedEncounterModal(host.rootElem, encounter);
-		advanced.current = modal;
-		return () => {
-			modal.dispose();
-			modal.rootElem.remove();
-			advanced.current = null;
-		};
-	}, [host, encounter]);
+	const [advancedOpen, setAdvancedOpen] = useState(false);
 
 	return (
 		<div className="encounter-picker-root" ref={mountTargetInputs}>
@@ -84,9 +71,10 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 			<EnumPicker modObject={encounter} config={preset} />
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}
 			{player.getPlayerSpec().isTankSpec && <NumberPicker modObject={encounter} config={minBaseDamage} />}
-			<Button className="advanced-button" onClick={() => advanced.current?.open()}>
+			<Button className="advanced-button" onClick={() => setAdvancedOpen(true)}>
 				{i18n.t('settings_tab.encounter.advanced')}
 			</Button>
+			<AdvancedEncounterModal open={advancedOpen} onOpenChange={setAdvancedOpen} />
 		</div>
 	);
 };

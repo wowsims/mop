@@ -25,7 +25,9 @@
 }
 
 .advanced-encounter-picker-modal {
-	.modal-body {
+	// Was `.modal-body`. The dialog is Base UI now and its body carries our own class — Bootstrap's
+	// would resolve `--bs-modal-*`, which is only emitted inside `.modal`.
+	.sim-dialog-body {
 		overflow: auto;
 		gap: var(--block-spacer);
 	}

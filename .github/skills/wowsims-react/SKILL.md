@@ -337,6 +337,7 @@ of the duplication sweep was to build each shape once.
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads | the popup's markup and styling, and that the contents arrive asynchronously |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
+| `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1178,6 +1179,33 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **`Dialog` has its first consumer: the advanced encounter modal.** Both halves inside it
+  stay vanilla — `addEncounterFieldPickers` is shared with the React block rather than duplicated,
+  and the targets list is a `ListPicker`, which stays vanilla by a standing decision — so this port
+  is the dialog chrome and nothing else.
+
+  Three things the first consumer forced, all of which the next one inherits:
+
+  **`headerChildren`.** The preset picker sits beside the title with `order-first`. It was already
+  named as the axis two callers need; this is the one that needed it first.
+
+  **`keepMounted`.** Vanilla built this modal once and left it in the DOM (`disposeOnClose: false`).
+  A Base UI dialog unmounts when closed, and `parity.mjs` compares the modals under `.sim-ui` as a
+  set — so without it the port is a diff on every spec.
+
+  **A named portal.** With a `container`, Base UI's portal renders a wrapper of its own, and unnamed
+  it is a classless `<div>` among the sim root's children that no gate can pick out. `Dialog` now
+  gives it `sim-dialog-portal`, and `parity.mjs` treats that one class as the whole dialog: it is
+  the Base UI counterpart of a Bootstrap `.modal`, placeheld the same way so the placeholder count
+  stays aligned as modals port one at a time. The two sides' dialogs are then excluded from the
+  set comparison — different markup by design — and each side is *required* to have exactly one, so
+  reverting the port fails rather than passing quietly.
+
+  The stylesheet merge was one selector, `.modal-body` → `.sim-dialog-body`. The gate for all of it
+  is `encounter.mjs`, which went shape-agnostic a commit earlier; its one imprecision surfaced
+  immediately, since it asked whether a backdrop *existed* — true for Bootstrap only while open, but
+  permanently true for a kept-mounted Base UI dialog. It asks whether it is shown now.
 
 - 2026-09-06 **The Base UI `Dialog` adapter exists, with no consumer yet** — deliberately: the point
   was to establish the contract and find where Base UI cannot reproduce Bootstrap, before a port is
