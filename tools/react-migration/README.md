@@ -36,6 +36,7 @@ node tools/react-migration/sidebar-popover.mjs
 node tools/react-migration/talents.mjs
 node tools/react-migration/header-toolbar.mjs
 node tools/react-migration/settings-tab.mjs
+node tools/react-migration/unused.mjs   # static, no browser needed
 
 # mount-once needs a dev server, not a build — see the table
 node_modules/.bin/vite --port 3403 --strictPort &
@@ -56,6 +57,7 @@ defaults to five specs from different classes. Ports come from `BASE_PORT` / `RE
 | `talents.mjs`         | the talents tab, which is almost entirely click behaviour — the DOM at load says nothing about whether spending a point works. Records the pane's structure, then spends, unspends and resets points, reading the talents string out of the autosaved settings. Set `PORT` to pick a build; the whole output should be identical on both                                            |
 | `settings-tab.mjs`    | the settings tab's **behaviour**, where `panes-parity.mjs` covers only its shape at rest. Records every picker keyed on its `id` — or, for the icon inputs that have none, the wowhead action its anchor points at — with the label text, `for=`, `size=` and inline styles `SERIALIZE` excludes, then operates a boolean, a number, a select and an icon input and reads the effect out of the autosaved settings blob rather than the picker's own DOM. Asserts the `showWhen` pair (`#simui-profession1` → the Engineering consumables row) in both directions, and the `enableWhen` pair (`#tank-assignment` → the healing-model inputs). Set `PORT` to pick a build; the whole output should be identical on both |
 | `header-toolbar.mjs`  | the header, the toolbar and the two dropdowns — the region the shell migration rewrites. The menus open on **hover**, not click (`bootstrap_overrides.ts` adds a capturing `mouseover`; Bootstrap's click data-API then toggles), and the sticky `.stuck` class is an IntersectionObserver measured off the header's own height at construction — none of it visible at load. Set `PORT` to pick a build; the whole output should be identical on both |
+| `unused.mjs`          | ui-kit components nothing imports — Phase 2 builds a primitive when its first consumer ports, and this is that rule with teeth. Static: no browser, no build, no servers, so it costs nothing to run. Not an allowlist — a component excused in `ALLOWED` that has since gained an importer fails too |
 | `mount-once.mjs`      | a shell constructed twice by StrictMode's double-invoked effects — **run it against a dev server**; every build embeds React's production bundle, where StrictMode is a no-op                                                                                                                                                                                                       |
 
 The four tab checks read the strip and the panes through `window.simTabsProbe`, installed by

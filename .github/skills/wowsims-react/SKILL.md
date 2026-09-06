@@ -330,14 +330,14 @@ of the duplication sweep was to build each shape once.
 | `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
-| `LegacyHost` | `ui/ui-kit/LegacyHost/LegacyHost.tsx` | — (bridge) | `create`, `deps` | mounting an un-ported `Component` inside React |
 | `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
-| `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads | the popup's markup and styling, and that the contents arrive asynchronously |
+| `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads — whose entries are *either* a vanilla `open()` or a React dialog it renders | the popup's markup and styling, that the contents arrive asynchronously, and which dialog is open |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
+| `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
@@ -869,6 +869,9 @@ a textarea in the body, a copy button and an optional download button in the foo
 subclasses of which most add no markup at all. That is where the `.<cssClass> .modal-body` stylesheet
 merge gets proven at scale.
 
+**Done, 2026-09-06** — see the change log entry. It also settled how a React dialog is *opened* from
+a place that has no React: the header registry now holds either an `open()` or a component.
+
 ### Hands off: log / log_runner — 2026-09-06
 
 The user is refactoring `log_runner` and the log pipeline in parallel with this migration. **Do not
@@ -878,14 +881,6 @@ current queue needs them — but a future session picking work "by difficulty or
 straight into it.
 
 ### Findings waiting on a decision
-
-- **Four React `ui-kit` components have no consumer at all** — `LegacyHost`, `ContentBlock`,
-  `NumberListPicker`, `AdaptiveStringPicker` — which is precisely what the Phase 2 rule at the top of
-  this file exists to prevent, and they were built before it was written down. They are not equal:
-  `LegacyHost` is superseded, since every port that needed it reached for `useLegacyMount` instead
-  and the two do different things to the DOM; the other three have obvious consumers coming (tab
-  bodies for `ContentBlock`, apl and gear for the two pickers). Worth a decision — delete
-  `LegacyHost`, keep the rest — rather than a silent deletion of work that is about to be wanted.
 
 Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
 would be an unrequested markup change with a parity divergence attached.
@@ -1206,6 +1201,82 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **`LegacyHost` is deleted, and the rule that would have caught it is now a gate.**
+
+  It was never used. Every port that needed to mount a vanilla `Component` reached for
+  `useLegacyMount` instead, and the two are not interchangeable: `LegacyHost` renders a wrapper
+  `<div>` of its own, which changes a pane's DOM, and `panes-parity.mjs` compares panes element for
+  element. The hook mounts into the React element that is already there. That is why nothing picked
+  it, and why it goes rather than waiting for a caller that would fail the gate.
+
+  Three others also have no importer — `ContentBlock`, `NumberListPicker`, `AdaptiveStringPicker` —
+  and they stay, because each ships a `.parity.test.tsx` comparing it attribute by attribute against
+  a vanilla twin that is still live (14, 4 and 4 callers). Those tests do real work today: they pin
+  that the port is correct while it waits for apl, gear and the tab bodies.
+
+  `tools/react-migration/unused.mjs` reports any ui-kit component nothing imports. It is static —
+  no browser, no build — and it is not an allowlist: an entry excused in `ALLOWED` that has since
+  gained an importer fails too, so a component stops being excused the moment it stops needing to
+  be. Same discipline `INTENDED` follows in `parity.mjs`.
+
+- 2026-09-06 **The exporters are React, and the class hierarchy is gone.** `Exporter` +
+  `IndividualExporter` + six subclasses became one component and six objects. Nothing above
+  `getData` varied between them, so everything above `getData` is props: `title`, `allowDownload`,
+  `selectCategories`. `features/import-export/exporters/` holds the six definitions — not `model/`,
+  which forbids `window`, and the link exporter reads `window.location.href`.
+
+  **The registry is what made this a design question.** A React dialog has no `open()` for
+  `ImportExportRegistry` to call — it has state. So an entry is now *either* a vanilla thing with an
+  `open()` **or** a `ComponentType<{open, onOpenChange}>`, and `ImportExportMenu` renders the second
+  kind and owns which one is showing. The importers are untouched on the vanilla path. The dialogs
+  render as **siblings of `Menu.Root`, not inside `Menu.Popup`**: clicking an item closes the menu,
+  which unmounts the popup, and a dialog rendered in there would go with it.
+
+  `app/individual_sim_ui.tsx` still carries the vanilla JSX pragma, so it cannot write the element —
+  `exporterDialog(DEFINITION)` binds one and it registers the result, one line per exporter where it
+  used to construct one class per exporter. That is also why `SimHeader.addExportLink` is now dead
+  code with no caller; it was left alone because that file carries the pragma.
+
+  **`sim_header.addExportLink` aside, one vanilla file survives on purpose.** `view/exporter.tsx`
+  and `LogExporter` stay, because `log_runner` still opens the log exporter through a
+  `(getLogData) => {open}` factory and the results feature is hands-off. So `.exporter` is worn by
+  both stacks at once, which is what the stylesheet and the parity rule both had to absorb.
+
+  **The stylesheet merge, which is why this unit was chosen.** Only one file selects on `.exporter`
+  (`scss/core/components/_exporters.scss`), and it needed two changes. `.exporter .modal-footer .btn`
+  became `.modal-footer, .sim-dialog-footer` — dual-keyed, because the log exporter is still a
+  Bootstrap modal. And `.exporter-category-pickers` had `gap: … var(--bs-modal-padding)`, which is
+  emitted inside `.modal` and nowhere else, so it resolved to nothing the moment the row moved into
+  a portaled popup: `--modal-padding` is the seam token, same value. That is the trap the `Dialog`
+  docstring names, found for real. Nine stylesheets select `.<cssClass> .modal-*`; this was one of
+  them, and `_importers.scss`, `_selector_modal.scss`, `_filters_menu.scss`,
+  `_progress_tracker_modal.scss` and `sim_ui/_shared.scss` still carry the rest.
+
+  **`parity.mjs` grew from one ported dialog to a list, and the log exporter is why it is not a
+  one-liner.** The baseline has six `.exporter` modals, five of which ported; the sixth is
+  byte-identical to three of the five, so no class tells them apart and "drop five" would depend on
+  sort order. All six leave the baseline, the one React still builds leaves the React side, and that
+  pair is asserted against each other directly — so nothing loses coverage. Counts are exact on both
+  sides; verified by tightening `['exporter', 6]` to 5, which fails with
+  `base: 6 modals matching "exporter", expected 5`. Markers are matched on a subtree's **first two
+  lines**, because the React exporters carry `.exporter` on their popup three levels below the
+  portal that identifies them.
+
+  **Three vanilla defects, all measured, all fixed by the port rather than carried:**
+  `CopyButton.getContent` read the textarea's `innerHTML`, which is HTML-escaped — on the CLI export
+  that copied 221,660 characters where the field held 221,598, the 62 being `2×&amp; + 7×&lt; +
+  11×&gt;`, so `Tinkers & Bloodbath` reached the clipboard as `Tinkers &amp; Bloodbath`. `open()`
+  passed `this.header.title` to `trackPageView` — `this.header` is the `.modal-header` *element*, so
+  every export page view was logged with an empty title and the slug `/export/`. And the WoWHead
+  exporter's constructor called `this.getData()` and discarded it.
+
+  The gates: `header-toolbar.mjs` identical on both builds with
+  `items=["Link","JSON","WoWHead","Pawn EP","CLI"]`; `parity.mjs` shows no shell, modal or pruned
+  problem on all three specs; and a throwaway probe opened all five on both builds and compared the
+  title, the generated text, the footer buttons and their widths, the category pickers' labels and
+  `for=`, what the copy button copies, what the download button writes, and Escape — identical
+  except the `<h5>`→`<h2>` title the adapter already records, and the copy defect above.
 
 - 2026-09-06 **`a11y.mjs` covers the settings pane, on a ceiling rather than an assertion.** The gap
   was real — that region has 161 unnamed controls and 34 `_blank` links with no `rel`, almost all of
