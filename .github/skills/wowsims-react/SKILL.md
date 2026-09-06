@@ -338,6 +338,8 @@ of the duplication sweep was to build each shape once.
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads | the popup's markup and styling, and that the contents arrive asynchronously |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
+| `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
+| `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1135,11 +1137,8 @@ assumption that `Dialog` gates this tab. It does not gate *anything* here: the t
 `AdvancedEncounterModal`, already handled inside the ported `EncounterPicker`, and `SavedDataManager`
 uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks stat-weights and gear.
 
-5. **Other-settings inputs** — three already-ported pickers, no new primitive, no store write. Worth
-   doing first for a structural reason rather than its size: it shares a `ContentBlock` body with the
-   ported `ItemSwapPicker`, so folding both into one component deletes the append-ordering dependency
-   that block currently documents in a comment. Also the first place to replace the `.input-root` →
-   `input-inline` DOM walk with `PickerShell`'s `inline` prop.
+5. ~~**Other-settings inputs**~~ — **done.** It deleted the append-ordering dependency as intended,
+   and produced `InputPicker`, the dispatcher items 6 and 7 will reuse.
 6. **The two external-cooldown blocks** — identical to each other, fully generic, and `IconPicker`
    only *by construction*: their 3-argument call omits `simUI`, which a `MultiIconPicker` would crash
    on. They establish the shared stat-option component that Buffs and Debuffs later reuse. The
@@ -1179,6 +1178,30 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The other-settings block is React, and it took the append-ordering dependency with
+  it.** While its inputs were vanilla, `ItemSwapPicker` had to be portalled in *after* them, and the
+  settings tab carried a comment explaining that. Both halves are one component now, so the order is
+  the order they are written in.
+
+  It also produced **`InputPicker`**, which is the React shape of `buildInputPickers` — the
+  dispatcher every generic section walks its `InputSection` through. The external-cooldown blocks and
+  custom sections reuse it, which is most of why this block went first despite being the smallest.
+
+  `inline` is forced rather than read off the config, because the vanilla walk added `input-inline`
+  to every `.input-root` in that body *after* construction — including to a config that says
+  `inline: false`. `PickerShell` de-duplicates, so the configs that also carry it in
+  `extraCssClasses` are unaffected.
+
+  Two findings. **The swap-slots half of the block's guard is unreachable**: `applyDefaultConfigOptions`
+  always prepends Challenge Mode, so `otherInputs.inputs` is non-empty on all 34 specs and the block
+  always exists. Preserved as written rather than "simplified", since it is the config surface that
+  would have to change. And **no store writes to extract** — every `setValue` is already a closure in
+  `features/settings/model/other_inputs.ts`.
+
+  **A gate gap worth naming, pre-existing rather than introduced:** `a11y.mjs` covers only the header
+  and sidebar regions, so the `aria-describedby`/`aria-labelledby` Base UI's `Field` puts on these
+  pickers is asserted by nothing. The encounter block has the same hole.
 
 - 2026-09-06 **`Dialog` has its first consumer: the advanced encounter modal.** Both halves inside it
   stay vanilla — `addEncounterFieldPickers` is shared with the React block rather than duplicated,

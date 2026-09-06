@@ -35,8 +35,8 @@ import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	/** Where React renders the encounter block. Filled in `buildEncounterSettings`. */
 	encounterContainer!: HTMLElement;
-	/** Where React renders the item-swap block — only on specs that declare swap slots. */
-	itemSwapContainer?: HTMLElement;
+	/** Where React renders the other-settings block. Absent when that block is not built at all. */
+	otherSettingsContainer?: HTMLElement;
 
 	protected simUI: IndividualSimUI<any>;
 
@@ -186,16 +186,10 @@ export class SettingsTab extends SimTab {
 				header: { title: i18n.t('settings_tab.other.title') },
 			});
 
-			if (settings.length > 0) {
-				this.configureInputSection(contentBlock.bodyElement, this.simUI.individualConfig.otherInputs);
-				contentBlock.bodyElement.querySelectorAll('.input-root').forEach(elem => {
-					elem.classList.add('input-inline');
-				});
-			}
-
-			// Same deal as the encounter block: React renders this one, into the body the vanilla
-			// inputs above have already filled. A portal appends, so the order is what it was.
-			if (swapSlots.length > 0) this.itemSwapContainer = contentBlock.bodyElement;
+			// Built empty: `SimApp` portals the React `OtherSettings` into it, which renders the
+			// generic inputs and the item-swap block as siblings in one tree. Whether the block
+			// exists at all is still decided here, because the ContentBlock is still vanilla.
+			this.otherSettingsContainer = contentBlock.bodyElement;
 		}
 	}
 
