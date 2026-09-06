@@ -45,7 +45,6 @@ import type { IndividualSimHost } from '@features/sim_host';
 import type { SpecDefinition } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
-import { StatWeightsResult } from '@generated/proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
@@ -85,8 +84,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	raidSimResultsManager: SimResultsManager | null;
 	epWeightsModal: EpWeightsMenu | null = null;
 
-	prevEpIterations: number;
-	prevEpSimResult: StatWeightsResult | null;
 	get dpsRefStat(): Stat | undefined {
 		return this.player.getRefStat('dpsRefStat');
 	}
@@ -129,8 +126,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
 		this.raidSimResultsManager = null;
-		this.prevEpIterations = 0;
-		this.prevEpSimResult = null;
 		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey('__statweight_settings__'));
 
 		if ((config.itemSwapSlots || []).length > 0 && !itemSwapEnabledSpecs.includes(player.getSpec())) {

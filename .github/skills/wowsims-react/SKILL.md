@@ -28,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns; `Toast`, `Dialog` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**; the `Dialog` adapter next, which unblocks stat-weights and the advanced encounter modal |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**, **settings done**, **import-export done**, **stat-weights units 1-2 (the model and opener seams, no React) done**; stat-weights unit 3 — the React dialog — next |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -920,6 +920,12 @@ a dozen `ref`s and a `ResultsViewer` threaded through them. Extracting "build th
 element" from that is a substantial refactor of a vanilla file, which is what the dual-stack rule
 tells you not to do.
 
+**"No seam" was too strong, corrected 2026-09-06.** There is no *body-island* seam, which is what
+rules out the `AdvancedEncounterModal` shape. There is a **model** seam, and it was taken: ~200 of
+the 841 lines were DOM-free and are now `features/stat-weights/model/`. The shape stat-weights
+actually ports in is the talents/settings one — the whole view becomes React and only
+`renderSavedEPWeights` (second consumer: `reforge_panel.tsx`) and `ResultsViewer` stay islands.
+
 The tractable second consumer is `Exporter` (`features/import-export/view/exporter.tsx`, 72 lines):
 a textarea in the body, a copy button and an optional download button in the footer, and nine
 subclasses of which most add no markup at all. That is where the `.<cssClass> .modal-body` stylesheet
@@ -1262,7 +1268,12 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    all in `scss/shared/`), drop `CritCapRow`'s `--bs-border-opacity` spacer, and correct the two
    mis-spelled names in `Dialog.tsx`'s comment.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
-   bulk, ~~import-export~~, apl, gear, results. **import-export is done** — the five header exporters
+   bulk, ~~import-export~~, apl, gear, results. **stat-weights is under way** — it is four units, and
+   units 1 (the model extraction) and 2 (the opener seam) landed 2026-09-06 with no React in the
+   change. Unit 3 is the React dialog, unit 4 the SCSS co-location, and its 16 recorded defects are
+   unit 3's `AskUserQuestion`; all three live in `stat-weights-plan.md`, which is a *session*
+   scratchpad file and not in this repo — as `scratchpad/base-ui-tabs-plan.md` above already is.
+   Ask the user for it rather than re-deriving it. **import-export is done** — the five header exporters
    landed first, the four individual importers followed. What is left of the feature is two dialogs
    whose openers live inside un-ported tabs and which therefore port with those tabs, not with this
    one: `LogExporter` (results, hands-off) and `BulkGearJsonImporter` (bulk). `view/exporter.tsx`,
@@ -1273,6 +1284,40 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Stat-weights units 1 and 2: the model seam and the opener seam, no React in the
+  change.** Same shape as queue item 8's settings extraction. `features/stat-weights/model/` is three
+  DOM-free files — `ep_unit_stats.ts` (the stat set and the row-visibility filter), `ep_math.ts`
+  (`calculateEp` and its private `normaliseEpValue`, `emptyStatWeightsResult`, the two ratio folds,
+  the excluded-stat merge) and `stats_table.ts` (the 13 columns as data, taking its five accessors as
+  callbacks rather than values, so each is invoked at the moment the view invoked it before).
+  `stat_weights_panel.tsx` keeps the pragma and imports them; across both units it lost 277 lines and
+  gained 30, and the refs stay in the view. `parity.mjs` and `panes-parity.mjs` are byte-identical,
+  which is the whole claim.
+
+  **A 16th defect, found while checking that claim:** `tippy` resolves a function-valued `content`
+  once in `evaluateProps` at `createTippy` (`tippy.esm.js:430,595`), not per show, so the ref-stat
+  half of each column's label tooltip — `makeUpdateWeights`' `title()` — is frozen at construction
+  and never follows a change of reference stat. Pre-existing, carried, and unit 3's to fix.
+
+  **`IndividualSimHost.epWeightsModal` is `{ open(): void } | null` now**, and
+  `prevEpIterations` / `prevEpSimResult` are gone from the host surface into private fields of
+  `EpWeightsMenu`. Nothing outside the panel ever read them; they were host fields only because the
+  vanilla modal is constructed after the shell. `reforge_panel.tsx` — the only external consumer —
+  calls `.open()` and needed no change, so unit 3 can swap a React controller in behind that type
+  without touching reforge. Goldens stayed at "34 specs match golden", as they must: neither field is
+  serialised.
+
+  **Current behaviour is pinned, quirks included.** 37 vitest tests, six of them mutation-checked
+  by reverting the behaviour and watching exactly one fail: the `refWeight === 0 ? 0 :` guard, the
+  clone in `calculateEp`, the ratio index order, the excluded-pseudo-stat loop, the tps column's ref
+  stat being the *dps* one, and the asymmetry where "Show all stats" reveals extra `Stat`s but never
+  extra pseudo-stats. The defects the port investigation found are deliberately **not** fixed here —
+  they belong to unit 3, where the vanilla view is deleted rather than edited.
+
+  One thing worth not rediscovering: under the vitest i18n stub (`resources: {}`) `i18n.t(key)`
+  returns the key, so a label assertion in a model test does pin column identity rather than
+  comparing two empty strings.
 
 - 2026-09-06 **Comments stripped across the whole of PR 1567, per the `comment-checker` hook.**
   The user's standing rule — rationale lives in the commit message and here, not in the code — is

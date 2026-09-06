@@ -21,6 +21,9 @@ import { ref } from 'tsx-vanilla';
 
 import { trackEvent, trackPageView } from '../../../tracking/analytics';
 import { ResultsViewer } from '../../results/view/results_viewer';
+import { calculateEp, combineScaledEpValues, combineScaledWeights, emptyStatWeightsResult, EpRefStats, epWeightsWithoutExcluded } from '../model/ep_math';
+import { isEpStat, visibleEpUnitStats } from '../model/ep_unit_stats';
+import { StatsTableColumn, statsTableColumns } from '../model/stats_table';
 import { renderSavedEPWeights } from './saved_ep_weights';
 
 export const addStatWeightsAction = (simUI: IndividualSimHost<any>, settings: StatWeightActionSettings) => {
@@ -56,6 +59,8 @@ export class EpWeightsMenu extends BaseModal {
 	private epPseudoStats: PseudoStat[];
 	private epReferenceStat: Stat;
 	private showAllStats = false;
+	private prevEpIterations = 0;
+	private prevEpSimResult: StatWeightsResult | null = null;
 
 	constructor(simUI: IndividualSimHost<any>, settings: StatWeightActionSettings) {
 		super(simUI.rootElem, 'ep-weights-menu', { ...getModalConfig(simUI), disposeOnClose: false });
@@ -207,7 +212,7 @@ export class EpWeightsMenu extends BaseModal {
 		updateType();
 
 		const updateEpRefStat = () => {
-			this.simUI.prevEpSimResult = this.calculateEp(this.getPrevSimResult());
+			this.prevEpSimResult = calculateEp(this.getPrevSimResult(), this.epRefStats());
 			this.updateTable();
 		};
 
@@ -312,8 +317,8 @@ export class EpWeightsMenu extends BaseModal {
 			if (!waitAbort) calcButton.disabled = false;
 
 			if (!result) return;
-			this.simUI.prevEpIterations = iterations;
-			this.simUI.prevEpSimResult = this.calculateEp(result);
+			this.prevEpIterations = iterations;
+			this.prevEpSimResult = calculateEp(result, this.epRefStats());
 			this.updateTable();
 		});
 
@@ -394,28 +399,9 @@ export class EpWeightsMenu extends BaseModal {
 			const results = this.getPrevSimResult();
 			const epRatios = this.simUI.player.getEpRatios();
 			if (this.statsType === 'ep') {
-				const scaledDpsEp = Stats.fromProto(results.dps!.epValues).scale(epRatios[0]);
-				const scaledHpsEp = Stats.fromProto(results.hps!.epValues).scale(epRatios[1]);
-				const scaledTpsEp = Stats.fromProto(results.tps!.epValues).scale(epRatios[2]);
-				const scaledDtpsEp = Stats.fromProto(results.dtps!.epValues).scale(epRatios[3]);
-				const scaledTmiEp = Stats.fromProto(results.tmi!.epValues).scale(epRatios[4]);
-				const scaledPDeathEp = Stats.fromProto(results.pDeath!.epValues).scale(epRatios[5]);
-				const newEp = scaledDpsEp.add(scaledHpsEp).add(scaledTpsEp).add(scaledDtpsEp).add(scaledTmiEp).add(scaledPDeathEp);
-				this.setEpWeightsWithoutExcluded(newEp);
+				this.setEpWeightsWithoutExcluded(combineScaledEpValues(results, epRatios));
 			} else {
-				const scaledDpsWeights = Stats.fromProto(results.dps!.weights).scale(epRatios[0]);
-				const scaledHpsWeights = Stats.fromProto(results.hps!.weights).scale(epRatios[1]);
-				const scaledTpsWeights = Stats.fromProto(results.tps!.weights).scale(epRatios[2]);
-				const scaledDtpsWeights = Stats.fromProto(results.dtps!.weights).scale(epRatios[3]);
-				const scaledTmiWeights = Stats.fromProto(results.tmi!.weights).scale(epRatios[4]);
-				const scaledPDeathWeights = Stats.fromProto(results.pDeath!.weights).scale(epRatios[5]);
-				const newWeights = scaledDpsWeights
-					.add(scaledHpsWeights)
-					.add(scaledTpsWeights)
-					.add(scaledDtpsWeights)
-					.add(scaledTmiWeights)
-					.add(scaledPDeathWeights);
-				this.setEpWeightsWithoutExcluded(newWeights);
+				this.setEpWeightsWithoutExcluded(combineScaledWeights(results, epRatios));
 			}
 			this.updateTable();
 		});
@@ -428,25 +414,15 @@ export class EpWeightsMenu extends BaseModal {
 	 * @param newWeights
 	 */
 	private setEpWeightsWithoutExcluded(newWeights: Stats) {
-		const { excludedStats, excludedPseudoStats } = this.settings;
-		const oldWeights = this.simUI.player.getEpWeights();
-		for (const stat of excludedStats) {
-			newWeights = newWeights.withStat(stat, oldWeights.getStat(stat));
-		}
-		for (const pseudoStat of excludedPseudoStats) {
-			newWeights = newWeights.withPseudoStat(pseudoStat, oldWeights.getPseudoStat(pseudoStat));
-		}
-		this.simUI.player.setEpWeights(newWeights);
+		this.simUI.player.setEpWeights(epWeightsWithoutExcluded(newWeights, this.simUI.player.getEpWeights(), this.settings));
 	}
 
-	/**
-	 * Check if a specific stat is included in the EP stats for this spec.
-	 * @param stat
-	 * @returns
-	 */
-	private isEpStat(stat: UnitStat) {
-		if (stat.isStat()) return this.epStats.includes(stat.getStat());
-		return this.epPseudoStats.includes(stat.getPseudoStat());
+	private epStatSet() {
+		return { epStats: this.epStats, epPseudoStats: this.epPseudoStats };
+	}
+
+	private epRefStats(): EpRefStats {
+		return { dps: this.simUI.dpsRefStat, heal: this.simUI.healRefStat, tank: this.simUI.tankRefStat };
 	}
 
 	private setSimProgress(progress: ProgressMetrics) {
@@ -468,14 +444,7 @@ export class EpWeightsMenu extends BaseModal {
 
 	private updateTable() {
 		const tempTable = <></>;
-		EpWeightsMenu.epUnitStats.forEach(stat => {
-			// Don't show extra stats when 'Show all stats' is not selected
-			if (
-				(!this.showAllStats && stat.isStat() && !this.epStats.includes(stat.getStat())) ||
-				(stat.isPseudoStat() && !this.epPseudoStats.includes(stat.getPseudoStat()))
-			) {
-				return;
-			}
+		visibleEpUnitStats(this.epStatSet(), this.showAllStats).forEach(stat => {
 			const row = this.makeTableRow(stat);
 			tempTable.appendChild(row);
 		});
@@ -483,7 +452,7 @@ export class EpWeightsMenu extends BaseModal {
 	}
 
 	private makeTableRow(stat: UnitStat): HTMLElement {
-		const result = !this.settings.isUnitStatExcludedFromCalc(stat) ? this.simUI.prevEpSimResult : null;
+		const result = !this.settings.isUnitStatExcludedFromCalc(stat) ? this.prevEpSimResult : null;
 		const epRatios = this.simUI.player.getEpRatios();
 
 		const rowTotalEp = scaledEpValue(stat, epRatios, result);
@@ -503,7 +472,7 @@ export class EpWeightsMenu extends BaseModal {
 			</tr>
 		) as HTMLElement;
 
-		if (includeToggleRef.value && this.isEpStat(stat)) {
+		if (includeToggleRef.value && isEpStat(stat, this.epStatSet())) {
 			new BooleanPicker(includeToggleRef.value, this, {
 				id: 'sw-stat-toggle-' + stat.getFullName(this.simUI.player.getClass()),
 				getValue: epWeightsModal => !epWeightsModal.settings.isUnitStatExcludedFromCalc(stat),
@@ -576,7 +545,7 @@ export class EpWeightsMenu extends BaseModal {
 	}
 
 	private makeTableCellContents(value: number, stdev: number) {
-		const iterations = this.simUI.prevEpIterations || 1;
+		const iterations = this.prevEpIterations || 1;
 		return (
 			<>
 				<span className="results-avg">{value.toFixed(2)}</span>
@@ -586,37 +555,6 @@ export class EpWeightsMenu extends BaseModal {
 				</span>
 			</>
 		) as HTMLElement;
-	}
-
-	private calculateEp(weights: StatWeightsResult) {
-		const result = StatWeightsResult.clone(weights);
-
-		if (this.simUI.dpsRefStat !== undefined) {
-			EpWeightsMenu.normaliseEpValue(this.simUI.dpsRefStat, result.dps!);
-			EpWeightsMenu.normaliseEpValue(this.simUI.dpsRefStat, result.tps!);
-		}
-		if (this.simUI.healRefStat !== undefined) {
-			EpWeightsMenu.normaliseEpValue(this.simUI.healRefStat, result.hps!);
-		}
-		if (this.simUI.tankRefStat !== undefined) {
-			EpWeightsMenu.normaliseEpValue(this.simUI.tankRefStat, result.dtps!);
-			EpWeightsMenu.normaliseEpValue(this.simUI.tankRefStat, result.tmi!);
-			EpWeightsMenu.normaliseEpValue(this.simUI.tankRefStat, result.pDeath!);
-		}
-		return result;
-	}
-
-	private static normaliseEpValue(refStat: Stat, values: StatWeightValues) {
-		const refUnitStat = UnitStat.fromStat(refStat);
-		const refWeight = refUnitStat.getProtoValue(values.weights!);
-		const refStdev = refUnitStat.getProtoValue(values.weightsStdev!);
-		EpWeightsMenu.epUnitStats.forEach(stat => {
-			const value = stat.getProtoValue(values.weights!);
-			stat.setProtoValue(values.epValues!, refWeight === 0 ? 0 : value / refWeight);
-
-			const valueStdev = stat.getProtoValue(values.weightsStdev!);
-			stat.setProtoValue(values.epValuesStdev!, refStdev === 0 ? 0 : valueStdev / refStdev);
-		});
 	}
 
 	private getDpsEpRefStat(): Stat {
@@ -632,210 +570,25 @@ export class EpWeightsMenu extends BaseModal {
 	}
 
 	private getPrevSimResult(): StatWeightsResult {
-		return (
-			this.simUI.prevEpSimResult ||
-			StatWeightsResult.create({
-				dps: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-				hps: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-				tps: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-				dtps: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-				tmi: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-				pDeath: {
-					weights: new Stats().toProto(),
-					weightsStdev: new Stats().toProto(),
-					epValues: new Stats().toProto(),
-					epValuesStdev: new Stats().toProto(),
-				},
-			})
-		);
+		return this.prevEpSimResult || emptyStatWeightsResult();
 	}
-
-	private static epUnitStats: UnitStat[] = UnitStat.getAll().filter(stat => {
-		if (stat.isStat()) {
-			return true;
-		} else {
-			return [
-				PseudoStat.PseudoStatMainHandDps,
-				PseudoStat.PseudoStatOffHandDps,
-				PseudoStat.PseudoStatRangedDps,
-				PseudoStat.PseudoStatPhysicalHitPercent,
-				PseudoStat.PseudoStatSpellHitPercent,
-				PseudoStat.PseudoStatPhysicalCritPercent,
-				PseudoStat.PseudoStatSpellCritPercent,
-			].includes(stat.getPseudoStat());
-		}
-	});
 
 	private buildSavedEPWeightsPicker() {
 		renderSavedEPWeights(this.sidebar, this.simUI);
 	}
 
 	private buildStatsTable(): StatsTableEntry[] {
-		const copyToCurrentEpText = i18n.t('sidebar.buttons.stat_weights.modal.tooltips.copy_to_current_ep');
-		const createRefs = () => ({
-			metricRef: ref<HTMLButtonElement>(),
-			ratioRef: ref<HTMLTableCellElement>(),
-		});
-		return [
-			{
-				metric: 'damage',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.dps_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.dps_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().dps!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'damage',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.dps_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.dps_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().dps!.epValues,
-				getEpRefStat: () => this.getDpsEpRefStat(),
-				...createRefs(),
-			},
-			{
-				metric: 'healing',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.hps_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.hps_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().hps!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'healing',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.hps_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.hps_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().hps!.epValues,
-				getEpRefStat: () => this.getHealEpRefStat(),
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.tps_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.tps_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().tps!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.tps_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.tps_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().tps!.epValues,
-				getEpRefStat: () => this.getDpsEpRefStat(),
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.dtps_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.dtps_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().dtps!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.dtps_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.dtps_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().dtps!.epValues,
-				getEpRefStat: () => this.getTankEpRefStat(),
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.tmi_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.tmi_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().tmi!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.tmi_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.tmi_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().tmi!.epValues,
-				getEpRefStat: () => this.getTankEpRefStat(),
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'weight',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.death_weight.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.death_weight.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().pDeath!.weights,
-				...createRefs(),
-			},
-			{
-				metric: 'threat',
-				type: 'ep',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.death_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.death_ep.tooltip'),
-				actionTooltip: copyToCurrentEpText,
-				getWeights: () => this.getPrevSimResult().pDeath!.epValues,
-				getEpRefStat: () => this.getTankEpRefStat(),
-				...createRefs(),
-			},
-			{
-				type: 'action',
-				label: i18n.t('sidebar.buttons.stat_weights.modal.current_ep.label'),
-				labelTooltip: i18n.t('sidebar.buttons.stat_weights.modal.current_ep.tooltip'),
-				actionTooltip: i18n.t('sidebar.buttons.stat_weights.modal.tooltips.restore_default_ep'),
-				getWeights: () => this.simUI.individualConfig.defaults.epWeights.toProto(),
-				...createRefs(),
-			},
-		];
+		return statsTableColumns({
+			getPrevSimResult: () => this.getPrevSimResult(),
+			getDefaultEpWeights: () => this.simUI.individualConfig.defaults.epWeights.toProto(),
+			getDpsEpRefStat: () => this.getDpsEpRefStat(),
+			getHealEpRefStat: () => this.getHealEpRefStat(),
+			getTankEpRefStat: () => this.getTankEpRefStat(),
+		}).map(column => ({ ...column, metricRef: ref<HTMLButtonElement>(), ratioRef: ref<HTMLTableCellElement>() }));
 	}
 }
 
-type StatsTableEntry = {
-	metric?: 'damage' | 'healing' | 'threat';
-	type: 'ep' | 'weight' | 'action';
-	label: string;
-	labelTooltip: string;
-	actionTooltip: string;
-	getWeights: () => UnitStats | undefined;
-	getEpRefStat?: () => Stat;
+type StatsTableEntry = StatsTableColumn & {
 	metricRef: ReturnType<typeof ref<HTMLButtonElement>>;
 	ratioRef: ReturnType<typeof ref<HTMLTableCellElement>>;
 };
