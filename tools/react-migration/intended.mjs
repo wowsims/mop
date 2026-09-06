@@ -19,8 +19,14 @@ export const INTENDED = [
 	{
 		base: 'label.form-label',
 		react: 'span.form-label',
-		max: 1,
-		why: "item swap's label names the icon group rather than a control, so it is a <span> and the group carries role=group + aria-labelledby",
+		max: 5,
+		why: 'a <label> with no control is not a label. Item swap and the four visible consume rows each name an icon group, so the label is a <span> and the group it names carries role=group + aria-labelledby',
+	},
+	{
+		base: 'label.form-label.multi-icon-picker-label',
+		react: 'span.form-label.multi-icon-picker-label',
+		max: 8,
+		why: "same rule as the entry above, for MultiIconPicker's own caption: it names the picker's icon group, so the root carries role=group + aria-labelledby",
 	},
 	{
 		base: 'button.apl-validations.list-picker-item-action',

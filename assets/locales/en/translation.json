@@ -568,7 +568,8 @@
 				"combat": "Combat Potion"
 			},
 			"elixirs": {
-				"title": "Elixirs"
+				"title": "Elixirs",
+				"separator": "or"
 			},
 			"food": {
 				"title": "Food"

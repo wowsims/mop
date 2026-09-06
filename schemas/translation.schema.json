@@ -2022,10 +2022,13 @@
 							"properties": {
 								"title": {
 									"type": "string"
+								},
+								"separator": {
+									"type": "string"
 								}
 							},
 							"additionalProperties": false,
-							"required": ["title"]
+							"required": ["title", "separator"]
 						},
 						"food": {
 							"type": "object",

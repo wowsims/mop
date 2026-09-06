@@ -10,7 +10,7 @@ import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 export interface MultiIconPickerProps<ModObject> {
 	modObject: ModObject;
@@ -80,8 +80,11 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 
 	const { iconUrl } = useActionId(config.categoryId ?? actionId ?? undefined);
 
+	const labelId = useId();
+	const groupProps = config.label ? { role: 'group', 'aria-labelledby': labelId } : {};
+
 	return (
-		<div className={clsx('multi-icon-picker-root', 'icon-picker', hidden && 'hide')}>
+		<div className={clsx('multi-icon-picker-root', 'icon-picker', hidden && 'hide')} {...groupProps}>
 			<div className="dropend" ref={setDropend}>
 				{/* A dropdown is not a modal surface, and Bootstrap's was not one either. */}
 				<Menu.Root modal={false}>
@@ -133,8 +136,14 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 					</Menu.Portal>
 				</Menu.Root>
 			</div>
-			{/* Vanilla removes the label element entirely when the config names none. */}
-			{config.label && <label className="multi-icon-picker-label form-label">{config.label}</label>}
+			{/* Vanilla removes the label element entirely when the config names none. A `<label>` that
+			    labels nothing is not a label: this names the icon group, so the root carries
+			    role=group + aria-labelledby and this is a span. */}
+			{config.label && (
+				<span className="multi-icon-picker-label form-label" id={labelId}>
+					{config.label}
+				</span>
+			)}
 		</div>
 	);
 };

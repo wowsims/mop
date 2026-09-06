@@ -91,9 +91,13 @@ describe('MultiIconPicker', () => {
 		expect(options.slice(1).every(option => option.querySelector('.icon-picker-root'))).toBe(true);
 	});
 
-	it('renders the label only when the config names one', () => {
+	it('renders the label only when the config names one, and names the group with it', () => {
 		const withLabel = mount(new Buffs());
-		expect(root().querySelector('label.multi-icon-picker-label.form-label')?.textContent).toBe('Stats');
+		// A <span>, not a <label>: it names the icon group, which is not a form control.
+		const caption = root().querySelector('span.multi-icon-picker-label.form-label');
+		expect(caption?.textContent).toBe('Stats');
+		expect(root().getAttribute('role')).toBe('group');
+		expect(root().getAttribute('aria-labelledby')).toBe(caption!.id);
 		withLabel.unmount();
 
 		mount(new Buffs(), configFor({ label: undefined }));

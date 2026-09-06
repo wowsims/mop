@@ -6,7 +6,7 @@ import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
 import clsx from 'clsx';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useId, useMemo } from 'react';
 
 export interface ConsumeRowProps {
 	/** The key under `settings_tab.consumables` whose `title` labels the row. */
@@ -37,13 +37,16 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	// `subscribeAll` builds a new source on every call, and `useStoreSubscribe` re-subscribes whenever
 	// that identity changes.
 	const subscribe = useMemo(() => subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), [player]);
+	const labelId = useId();
 	const shown = useStoreSubscribe(subscribe, () => !configs || configs.some(config => iconEnumPickerShown(config, player)));
 
 	return (
-		<div className={clsx('consumes-row', 'input-root', 'input-inline', !shown && 'hide')}>
-			{/* Vanilla's element, kept: it names the row's icon group rather than a control, so it is a
-			    label that labels nothing. Flagged rather than changed — see the port's report. */}
-			<label className="form-label">{i18n.t(`settings_tab.consumables.${name}.title`)}</label>
+		<div className={clsx('consumes-row', 'input-root', 'input-inline', !shown && 'hide')} role="group" aria-labelledby={labelId}>
+			{/* A `<label>` that labels nothing is not a label: this names the row's icon group, which is
+			    not a form control. The row says so itself instead. */}
+			<span className="form-label" id={labelId}>
+				{i18n.t(`settings_tab.consumables.${name}.title`)}
+			</span>
 			{children}
 		</div>
 	);

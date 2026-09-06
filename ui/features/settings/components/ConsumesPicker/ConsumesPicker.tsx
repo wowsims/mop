@@ -3,6 +3,7 @@ import { Database } from '@domain/proto_utils/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import { usePlayer } from '@features/SimHostContext';
 import type { Stat } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import type { IconInputConfig } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { IconPicker } from '@ui-kit/IconPicker';
@@ -56,9 +57,10 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<div className="consumes-flasks">
 						<IconEnumPicker modObject={player} config={configs.flask} />
 					</div>
-					{/* Not translated on either build — `_shared.scss` sizes it as a spacer between the
-					    flask and the elixirs. Flagged rather than changed. */}
-					<span className="elixir-space">or</span>
+					{/* `_shared.scss` sizes this as a spacer between the flask and the elixirs. Vanilla
+					    hardcoded the English word; it is the only string in the block that was not
+					    translated. */}
+					<span className="elixir-space">{i18n.t('settings_tab.consumables.elixirs.separator')}</span>
 					<div className="consumes-battle-elixirs">
 						<IconEnumPicker modObject={player} config={configs.battleElixir} />
 					</div>

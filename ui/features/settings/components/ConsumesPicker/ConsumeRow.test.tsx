@@ -65,14 +65,24 @@ beforeEach(() => {
 });
 
 describe('ConsumeRow', () => {
-	it('builds vanilla’s row: the label first, then whatever it was given', () => {
+	it('builds vanilla’s row: the caption first, then whatever it was given', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
 		expect(element.className.split(' ').sort().join(' ')).toBe('consumes-row input-inline input-root');
+		// A <span>, not vanilla's <label>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
-			'label.form-label',
+			'span.form-label',
 			'div.picker-group icon-group consumes-row-inputs consumes-engi',
 		]);
+	});
+
+	it('names the row group with its caption', () => {
+		const element = row(new Options(), [configFor(() => true)]);
+		const caption = element.querySelector('span.form-label')!;
+
+		expect(element.getAttribute('role')).toBe('group');
+		expect(element.getAttribute('aria-labelledby')).toBe(caption.id);
+		expect(caption.id).not.toBe('');
 	});
 
 	it('hides the row when every picker in it is hidden, and shows it again', () => {

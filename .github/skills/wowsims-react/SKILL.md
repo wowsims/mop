@@ -922,15 +922,19 @@ would be an unrequested markup change with a parity divergence attached.
   element against a build that keeps those elements. That is a constraint of the gate, not a design
   choice — when Phase 5 retires the vanilla comparison, the idiom becomes a conditional render as
   the plan always said. Do not read the comments defending it as permanent.
-- **A consumes row's `<label class="form-label">` names an icon group, not a control** — the same
-  defect item swap already carries an `INTENDED` entry for (`label` → `span` plus `role="group"` and
-  `aria-labelledby`). Five instances, one per row. Ported faithfully; the options are to apply item
-  swap's fix here too, to leave both, or to decide the whole `.form-label`-over-an-icon-group shape
-  at once, since the player and buffs blocks have it as well.
-- **`<span class="elixir-space">or</span>` is untranslated English**, between the flask picker and
-  the two elixir pickers. Every other string in this block goes through `i18n.t`. Adding a
-  translation key is a `translation.json` change on both locales rather than a markup one, so it was
-  left alone.
+
+Both of the settings-tab findings below were **decided on 2026-09-06 and are now fixed** — kept here
+only so the reasoning is not re-derived:
+
+- ~~A consumes row's `<label>` names an icon group~~ — settled everywhere at once, as the user asked,
+  rather than one block at a time. `ConsumeRow` and `MultiIconPicker` now emit a `<span>` and put
+  `role="group"` + `aria-labelledby` on the element that actually holds the icons. `PlayerSettings`
+  needed no change of its own: it composes those two. `PickerShell` keeps its `<label>`, because that
+  one is a real label with `htmlFor` pointing at a real control.
+- ~~`elixir-space` was untranslated English~~ — now `settings_tab.consumables.elixirs.separator`, in
+  both locales plus `schemas/translation.schema.json`, whose `consumables` block is
+  `additionalProperties: false` with a `required` list, so a new key has to be declared in three
+  files, not two.
 
 ### What the `@jsx-vanilla` pragma rule actually forbids
 
@@ -1240,6 +1244,28 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The `.form-label`-over-an-icon-group shape is settled across the settings tab.** A
+  `<label>` with no control is not a label, and the tab had the shape in three places. `ConsumeRow`
+  (one per consume row) and `MultiIconPicker` (its own caption) now render a `<span>` and name the
+  group from the element that holds the icons, matching what item swap already did; `PlayerSettings`
+  composes both, so it needed nothing. `PickerShell`'s label stays a `<label>` — it has `htmlFor`
+  and a real control behind it, which is the distinction that decides this every time.
+
+  Two `INTENDED` entries carry it: the plain pair rises to `max: 5` (item swap plus the four visible
+  consume rows) and a new `label.form-label.multi-icon-picker-label` pair sits at `max: 8`. **The
+  multi-icon count varies by spec — 6 on arms and fire, 7 on beast_mastery and windwalker, 8 on
+  shadow and protection** — because the number of `MultiIconPicker`s is a per-spec fact, so the
+  ceiling is the maximum across the six gate specs rather than a single expected count.
+
+  The two tests that asserted the `<label>` were not merely retargeted at `span`: they now assert
+  `role="group"` and that `aria-labelledby` resolves to the caption's own id, which is the part worth
+  pinning.
+
+  Also: `elixir-space`'s hardcoded "or" is now `settings_tab.consumables.elixirs.separator`. Adding a
+  key touches **three** files — both locales and `schemas/translation.schema.json`, whose
+  `consumables` block is `additionalProperties: false` with an explicit `required` list, so a key
+  absent from the schema fails validation rather than being ignored.
 
 - 2026-09-06 **Consumes is React, and the row's `hide` stopped being an inversion.** The block was
   queued last because every picker in it is an `IconEnumPicker`, and it carried the one shape in
