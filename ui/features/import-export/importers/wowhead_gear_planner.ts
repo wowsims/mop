@@ -140,7 +140,6 @@ function readHash(e: string): WowheadGearPlannerImportJSON {
 	return t;
 }
 
-// Function to parse glyphs from the glyph string
 function parseGlyphs(glyphStr: string): number[] {
 	const glyphIds = Array(6).fill(0);
 	if (!glyphStr) {
@@ -179,7 +178,6 @@ function parseTalentString(e: number[]) {
 }
 
 export function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
-	// Extract the part after '<domain>/gear-planner/'
 	const match = link.match(new RegExp(`${WOWHEAD_DOMAIN}/gear-planner/(.+)`));
 	if (!match) {
 		throw new Error(`Invalid WCL URL ${link}, must look like "${WOWHEAD_GEAR_PLANNER_URL}/CLASS/RACE/XXXX"`);
@@ -276,7 +274,6 @@ export const WOWHEAD_GEAR_PLANNER_IMPORTER: ImporterDefinition = {
 				itemSpec.reforging = item.reforge;
 			}
 			if (item.upgradeRank && dbItem) {
-				// If the upgrade step does not exust assume highest upgrade step.
 				itemSpec.upgradeStep = dbItem.scalingOptions[item.upgradeRank]
 					? (item.upgradeRank as ItemLevelState)
 					: Object.keys(dbItem.scalingOptions).length - 2;

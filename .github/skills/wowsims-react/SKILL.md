@@ -1287,8 +1287,17 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   docstring — it is the pragma that switches a file onto the vanilla runtime, and removing it breaks
   the whole vanilla stack. It also flags `// oxlint-disable-next-line` and deliberately commented-out
   code (the 60U registrations). All three are excluded by rule in the sweep script, not by hand.
-  The hook does not inspect SCSS; the 188 `//` lines the PR adds there are untouched and unreviewed.
-  `ui/features/spec_config.ts` and `ui/sims/**` were skipped as frozen.
+  The hook does not inspect SCSS, so the 188 `//` lines the PR adds there were swept by hand under the
+  same ladder: 32 removed, 22 trimmed to the sentence carrying a measured value or a cascade reason
+  (`display: block` on purpose, the flat-`opacity` unmount trap, `.dropdown-menu` being `display:
+  none` without the plugin), 13 one-word section headings kept. On the user's decision the moved
+  vanilla comments went too, except provenance (`Taken from Wowhead`), TODOs, and the two data-format
+  facts; and `spec_config.ts`'s comment was removed as a comment-only exception to the freeze — the
+  freeze protects the `defineSpec` contract, not a remark about it. `ui/sims/**` untouched.
+
+  One matcher lesson: the hook once reported a comment together with the code line after it
+  (`stat_display.ts`, where the same `//` text occurs twice), and text-matching deleted both. The
+  guard is `git diff HEAD | grep '^[-+]'` filtered to non-comment lines — it must be empty.
 
 - 2026-09-06 **The wowhead and tooltip anchor attributes come from one helper each.**
   `wowheadAnchorProps()` in `ui-kit/wowhead.ts` and `tooltipAnchorProps()` in

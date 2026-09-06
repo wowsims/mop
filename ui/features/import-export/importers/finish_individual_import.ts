@@ -28,7 +28,6 @@ export const finishIndividualImport = async (
 
 	const gear = host.sim.db.lookupEquipmentSpec(equipmentSpec);
 
-	// Now update settings using the parsed values.
 	batch(() => {
 		host.player.setRace(race);
 		host.player.setGear(gear);

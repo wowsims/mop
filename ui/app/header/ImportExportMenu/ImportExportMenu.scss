@@ -1,7 +1,3 @@
-// Bootstrap's dropdown, re-expressed. The popup is portaled to `<body>`, so nothing here can be a
-// descendant of `.sim-header`, and `--bs-dropdown-*` is unavailable — those are emitted inside
-// `.dropdown-menu`, a class this markup does not carry. The `--dropdown-*` tokens in
-// `shared/_variables.scss` are the seam.
 .sim-dropdown-positioner {
 	z-index: var(--dropdown-zindex);
 }
@@ -13,8 +9,6 @@
 	background-color: var(--dropdown-bg);
 	color: var(--dropdown-link-color);
 	font-size: var(--dropdown-font-size);
-	// Bootstrap's menu is a <ul>; Base UI's popup is a <div>, so there is no marker to remove and
-	// nothing to reset here beyond the box itself.
 }
 
 .sim-dropdown-item {
@@ -30,16 +24,13 @@
 	cursor: pointer;
 	transition: var(--dropdown-item-transition);
 
-	// `data-highlighted` is Base UI's, and it covers pointer *and* keyboard — Bootstrap's `:hover`
-	// only ever covered the pointer, so arrowing through the menu now highlights as it should.
 	&[data-highlighted] {
 		background-color: var(--dropdown-link-hover-bg);
 		color: var(--dropdown-link-hover-color);
 	}
 
 	&[data-disabled] {
-		// Left hoverable on purpose: the item carries its own "Currently unsupported" tooltip, and a
-		// tooltip on a pointer-events-none element never opens.
+		// Left hoverable on purpose: the item carries its own "Currently unsupported" tooltip, and a tooltip on a pointer-events-none element never opens.
 		pointer-events: auto;
 		opacity: 0.5;
 		cursor: not-allowed;

@@ -1,11 +1,5 @@
 @import 'shared/tokens';
 
-// The strip, copied off the Bootstrap nav it replaces rather than extending it — the goal is for
-// `.nav`/`.nav-tabs`/`.nav-link` to have no top-level callers left. The three nested Bootstrap tab
-// strips (bulk, detailed results, selector modal) still use those, so their rules stay put.
-//
-// Both wrappers are laid out away: `.sim-header-container` is a flex row and `.sim-tabs` is one of
-// its items, so anything in between has to not participate.
 .sim-tabs-mount,
 .sim-tabs-root {
 	display: contents;
@@ -23,13 +17,9 @@
 .sim-tab-link {
 	display: flex;
 	align-items: center;
-	// No `height: 100%`: Bootstrap's `.nav-link` resolved that against the `<li>` wrapping it, whose
-	// own height was the link's, so it was a no-op. Against the strip it is not — the strip is
-	// shorter than a tab, and the tabs overflow it downward by design (`align-items: flex-end`).
+	// No `height: 100%`: Bootstrap's `.nav-link` resolved that against the `<li>` wrapping it, whose own height was the link's, so it was a no-op.
 	margin: 0;
 	border: 0;
-	// Tokens we own — see `shared/_variables.scss`. Not `--bs-nav-link-*`, which `.nav` emits and
-	// this element deliberately is not, and not Bootstrap's Sass variables, which go with Bootstrap.
 	padding: var(--tab-padding-y) var(--tab-padding-x);
 	background: none;
 	color: var(--tab-color);
@@ -45,7 +35,6 @@
 		color: var(--tab-color-hover);
 	}
 
-	// Base UI marks the selected tab; there is no `.active` class any more.
 	&[data-active] {
 		position: relative;
 		color: var(--tab-color-active);
@@ -61,19 +50,14 @@
 		}
 	}
 
-	// Bootstrap's `.nav-link:focus-visible` ring, carried over rather than invented: measured on the
-	// parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`.
+	// Bootstrap's `.nav-link:focus-visible` ring, carried over rather than invented: measured on the parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`.
 	&:focus-visible {
 		outline: 0;
 		box-shadow: var(--focus-ring);
 	}
 }
 
-// The pane fade, which is enter-only: Bootstrap hid the outgoing pane instantly
-// (`.tab-content > .tab-pane { display: none }`), and `keepMounted` reproduces that with a real
-// `hidden` attribute, which the reboot already styles `display: none !important`. So only the
-// incoming panel transitions, from `[data-starting-style]`. The panel open on load gets no
-// `[data-starting-style]` — Base UI starts `mounted` equal to `open` — so it does not fade in.
+// The pane fade, which is enter-only: Bootstrap hid the outgoing pane instantly (`.tab-content > .tab-pane { display: none }`), and `keepMounted` reproduces that with a real `hidden` attribute, which the reboot already styles `display: none !important`.
 .sim-tab-panel {
 	max-width: 100%;
 	flex-grow: 1;

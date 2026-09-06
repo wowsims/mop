@@ -16,10 +16,6 @@
 		}
 
 		th {
-			// Was `--bs-table-accent-bg`, which nothing defines here — so the whole declaration was
-			// invalid and the header had no rule under it. Bootstrap's own `$table-accent-bg` is
-			// `transparent`, which would have been valid, invisible, and 2px of extra layout; the
-			// intent was clearly a visible underline, so it takes the border colour we own.
 			border-bottom: 2px solid var(--border-color);
 		}
 	}

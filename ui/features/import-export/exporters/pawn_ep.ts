@@ -53,7 +53,6 @@ export const PAWN_EP_EXPORTER: ExporterDefinition = {
 				return;
 			}
 
-			// Need to add together stats with the same name (e.g. hit/crit/haste).
 			if (namesToWeights[statName]) {
 				namesToWeights[statName] += weight;
 			} else {

@@ -1,7 +1,4 @@
-// `.exporter` is worn by two stacks at once and has to keep working for both. The five header
-// exporters are React `Dialog`s, whose popup carries this class and whose parts are `.sim-dialog-*`;
-// the results tab's log exporter is still a vanilla `BaseModal` with Bootstrap's `.modal-*`, because
-// its only opener lives inside the un-ported log runner.
+// `.exporter` is worn by two stacks at once and has to keep working for both.
 .exporter {
 	.exporter-textarea {
 		width: 100%;
@@ -12,8 +9,7 @@
 	.exporter-category-pickers {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		// `--bs-modal-padding` is emitted inside `.modal` and nowhere else, so it resolved to nothing
-		// once this row moved into a portaled popup. `--modal-padding` is the seam token, same value.
+		// `--bs-modal-padding` is emitted inside `.modal` and nowhere else, so it resolved to nothing once this row moved into a portaled popup.
 		gap: var(--spacer-1) var(--modal-padding);
 
 		@include media-breakpoint-down(md) {

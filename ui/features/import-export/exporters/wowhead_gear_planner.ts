@@ -39,7 +39,6 @@ function writeTalents(talentStr: string): number[] {
 	return writeBits(t);
 }
 
-// Function to write glyphs (reverse of parseGlyphs)
 function writeGlyphs(glyphIds: number[]): string {
 	const e = [0];
 	Object.keys(glyphIds)
@@ -57,30 +56,22 @@ function writeGlyphs(glyphIds: number[]): string {
 	return glyphStr;
 }
 
-// Function to write the hash (reverse of readHash)
 function writeHash(data: WowheadGearPlannerData): string {
 	let hash = '';
 
-	// Initialize bits array
 	const bits: number[] = [4];
 
-	// Write the expansion environment ID
 	bits.push(...writeBits(WOWHEAD_EXPANSION_ENV));
 
-	// Gender (assuming genderId is 1 or 2)
 	bits.push(1);
 
-	// Level
 	bits.push(...writeBits(data.level ?? 0));
 
-	// Spec Index
 	bits.push(data.specIndex ?? 0);
 
-	// Talents
 	const talentBits = writeTalents(data.talents);
 	bits.push(...talentBits);
 
-	// Glyphs
 	const glyphStr = [writeGlyphs(data.glyphs ?? [])];
 	bits.push(...writeBits(glyphStr.length));
 	glyphStr.forEach(e => {
@@ -88,7 +79,6 @@ function writeHash(data: WowheadGearPlannerData): string {
 		bits.push(...e.split('').map(e => c.indexOf(e)));
 	});
 
-	// Items
 	const items = data.items ?? [];
 	bits.push(...writeBits(items.length));
 	items.forEach(e => {
@@ -107,11 +97,9 @@ function writeHash(data: WowheadGearPlannerData): string {
 		((t <<= 2), (t |= l.length), l.forEach(e => n.push(...writeBits(e))), bits.push(...writeBits(t)), bits.push(...n));
 	});
 
-	// Encode bits into characters
 	let hashData = '';
 	for (let e = 0; e < bits.length; e++) hashData += c.charAt(bits[e]);
 
-	// Append the hash data to the URL
 	if (hashData) {
 		hash += hashData;
 	}
@@ -221,7 +209,7 @@ export const WOWHEAD_GEAR_PLANNER_EXPORTER: ExporterDefinition = {
 				}
 
 				if (ItemSlot.ItemSlotHands == itemSlot) {
-					//Todo: IF Hands we want to append any tinkers if existing
+					// Todo: IF Hands we want to append any tinkers if existing
 				}
 
 				if (item._gems) {

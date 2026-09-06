@@ -83,8 +83,6 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 	// Used to generate schemed components. E.g. 'shaman', 'druid', 'raid'
 	cssScheme: string;
 
-	// `ReactNode`, not `string`: an issue may name a link or a spell, and the header renders it as
-	// content rather than parsing it out of markup the way `innerHTML` used to.
 	knownIssues?: Array<ReactNode>;
 	warnings?: Array<(simUI: IndividualSimHost<SpecType>) => SimWarning>;
 	consumableStats?: Array<Stat>;

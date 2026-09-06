@@ -26,14 +26,11 @@ export const statDisplayString = (player: Player<any>, racial: RacialBonuses, de
 	if (unitStat.equalsStat(Stat.StatMasteryRating) && includeBase) {
 		derivedPercentOrPointsValue = derivedPercentOrPointsValue! + player.getBaseMastery();
 	} else if (rootStat === Stat.StatHitRating && includeBase && racial.hasRacialHitBonus) {
-		// Remove the rating display and only show %
 		if (rootRatingValue !== null && rootRatingValue > 0) {
 			rootRatingValue -= Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
 		}
 	} else if (unitStat.equalsStat(Stat.StatExpertiseRating) && includeBase) {
 		const [mhWeaponExpertiseActive, ohWeaponExpertiseActive] = racial.activeRacialExpertiseBonuses;
-
-		// Remove the rating display and only show %
 		if (rootRatingValue !== null && rootRatingValue > 0 && mhWeaponExpertiseActive) {
 			rootRatingValue -= Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION * 4;
 		}

@@ -1,9 +1,6 @@
 .character-stats-root {
 	width: 100%;
 
-	// An `<h3>`, so it carries the heading semantics a `<label>` with no control never had. The
-	// styling is the label's: `label { font-weight: bold }` and the inherited body size are what it
-	// used to pick up globally, and a heading brings its own size and margins instead.
 	.character-stats-label {
 		display: inline-block;
 		margin: 0 0 var(--spacer-2);
@@ -52,7 +49,6 @@
 }
 
 .sim-tooltip.bonus-stats-popover {
-	// The cell this renders inside is right-aligned; the popover is not.
 	text-align: left;
 
 	.number-picker-root {

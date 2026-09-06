@@ -100,10 +100,7 @@
 		.sim-sidebar-socials {
 			display: flex;
 			justify-content: center;
-			// `gap`, not `& > *:not(:last-child) { margin-right }`. Identical spacing for three items
-			// in a row, and immune to a react-tooltip node appearing among the children: it renders in
-			// place rather than portaling, so it would otherwise take `:last-child` off the last link
-			// and give it a trailing margin the moment you hovered.
+			// Identical spacing for three items in a row, and immune to a react-tooltip node appearing among the children: it renders in place rather than portaling, so it would otherwise take `:last-child` off the last link and give it a trailing margin the moment you hovered.
 			gap: var(--spacer-3);
 		}
 	}

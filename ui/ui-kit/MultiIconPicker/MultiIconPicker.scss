@@ -1,10 +1,4 @@
-// Bootstrap's dropdown, re-expressed. The popup carries its own class rather than `.dropdown-menu`
-// for two reasons: `.dropdown-menu` is `display: none` until Bootstrap's plugin adds `.show`, and
-// `bootstrap_overrides.ts` binds a capturing `mouseleave` on every `.dropdown-menu:not(.no-hover)`
-// that reads `previousElementSibling` as the toggle — which, inside Base UI's positioner, is null.
-//
-// Everything below is a measured value from the vanilla menu, not a re-reading of Bootstrap's
-// source: grey background, no border, no padding, `list-style: none`, `grid-auto-flow: column`.
+// The popup carries its own class rather than `.dropdown-menu` for two reasons: `.dropdown-menu` is `display: none` until Bootstrap's plugin adds `.show`, and `bootstrap_overrides.ts` binds a capturing `mouseleave` on every `.dropdown-menu:not(.no-hover)` that reads `previousElementSibling` as the toggle — which, inside Base UI's positioner, is null.
 .multi-icon-picker-positioner {
 	z-index: var(--dropdown-zindex);
 }
@@ -19,9 +13,7 @@
 	list-style: none;
 }
 
-// `.icon-picker .icon-dropdown-option` already sizes and borders this anchor; what came from
-// `.icon-picker .dropdown-menu .icon-dropdown-option` is the dimming, which has to out-specify that
-// rule's `filter: grayscale(1)`.
+// `.icon-picker .icon-dropdown-option` already sizes and borders this anchor; what came from `.icon-picker .dropdown-menu .icon-dropdown-option` is the dimming, which has to out-specify that rule's `filter: grayscale(1)`.
 .icon-picker .multi-icon-picker-menu .icon-dropdown-option {
 	padding: 0;
 	filter: opacity(0.7);

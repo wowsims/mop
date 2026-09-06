@@ -25,11 +25,10 @@ function glyphNameToID(glyphName: string, glyphsConfig: Record<number, GlyphConf
 
 export function glyphToID(glyph: string | JsonObject, db: Database, glyphsConfig: Record<number, GlyphConfig>): number {
 	if (typeof glyph === 'string') {
-		// Legacy version: AddOn exports Glyphs by name (string) only. Names must be in English.
+		// Names must be in English.
 		return glyphNameToID(glyph, glyphsConfig);
 	}
 
-	// Cata version exports glyph information in a table that includes the name and the glyph spell ID.
 	return db.glyphSpellToItemId(glyph.spellID as number);
 }
 
@@ -63,7 +62,6 @@ export const ADDON_IMPORTER: ImporterDefinition = {
 			new Toast({ variant: 'warning', body: `Addon is not up to date. Addon version : '${importJson['version']}', Latest version : '${addonVersion}'` });
 		}
 
-		// Parse all the settings.
 		const charClass = nameToClass((importJson['class'] as string) || '');
 		if (charClass == Class.ClassUnknown) {
 			throw new Error('Could not parse Class!');

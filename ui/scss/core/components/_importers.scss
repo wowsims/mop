@@ -1,7 +1,4 @@
-// `.importer` is worn by two stacks at once, the same way `.exporter` is. The header's importers are
-// React `Dialog`s, whose popup carries this class and whose parts are `.sim-dialog-*`; the bulk
-// tab's bag importer is still a vanilla `BaseModal` with Bootstrap's `.modal-*`, because its only
-// opener lives inside the un-ported bulk tab.
+// `.importer` is worn by two stacks at once, the same way `.exporter` is.
 .importer {
 	.importer-textarea {
 		width: 100%;

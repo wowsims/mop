@@ -1,9 +1,4 @@
-// Generic page entry for every spec site.
-//
-// A spec page is `/mop/<class>/<spec>/`, which mirrors the folder tree (vite's
-// root is `ui/`), so the module to load is derivable from the URL — no
-// per-spec `index.ts`. The glob is lazy, so each `spec.ts` (and the presets it
-// pulls in) lands in its own chunk and only the visited spec is fetched.
+// Generic page entry for every spec site. A spec page is `/mop/<class>/<spec>/`, which mirrors the folder tree (vite's root is `ui/`), so the module to load is derivable from the URL — no per-spec `index.ts`.
 import { browserEnv } from '@app/browser_env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
@@ -30,6 +25,7 @@ const specModuleKey = (pathname: string): string => {
 
 // An async IIFE rather than top-level await: the vite build target does not
 // support TLA and downgrades it to a tolerated transform.
+// An async IIFE rather than top-level await: the vite build target does not support TLA and downgrades it to a tolerated transform.
 void (async () => {
 	const key = specModuleKey(location.pathname);
 	const loadSpec = modules[`${key}.ts`] || modules[`${key}.tsx`];
@@ -39,17 +35,13 @@ void (async () => {
 
 	const def = (await loadSpec()).default;
 
-	// Ordering constraint, documented here once: `new Player()` resolves the
-	// spec's config out of the registry in its constructor, so the definition has
-	// to be registered before the player is built.
+	// `new Player()` resolves the spec's config out of the registry in its constructor, so the definition has to be registered before the player is built.
+
 	registerSpecConfig(def.spec, def);
 
 	const sim = new Sim({ env: browserEnv });
 	const playerSpec = PlayerSpecs.fromProto(def.spec);
 	const player = new Player(playerSpec, sim);
-	// Tanks and healers sim their own healing output. That follows from the spec
-	// itself, so it is derived from the registry rather than restated per spec;
-	// `enableHealing` on the definition is the override for the exceptions.
 	if (def.enableHealing ?? (playerSpec.isTankSpec || playerSpec.isHealingSpec)) player.enableHealing();
 
 	sim.raid.setPlayer(0, player);

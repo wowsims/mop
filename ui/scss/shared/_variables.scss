@@ -152,9 +152,6 @@ $resource-colors: (
 	mana: $mana-color,
 	rage: $rage-color,
 	holy-power: $holy-power-color,
-	// Balance druid's two. Defined above since forever but never listed here, so the theme loop never
-	// emitted `--bs-lunar-energy` / `--bs-solar-energy` — and the four timeline rules that read them
-	// resolved to nothing, leaving those rows uncoloured.
 	lunar-energy: $lunar-energy-color,
 	solar-energy: $solar-energy-color,
 );
@@ -353,9 +350,6 @@ $dropdown-padding-y: 0;
 	--dropdown-link-hover-bg: #{$dropdown-link-hover-bg};
 	--dropdown-padding-y: #{$dropdown-padding-y};
 
-	// Added for the ported dropdowns, which carry no Bootstrap class and so resolve none of the
-	// `--bs-dropdown-*` set: those are emitted inside `.dropdown-menu`. Same seam as the block at the
-	// end of this file, in the place that already owned the name `--dropdown-*`.
 	--dropdown-zindex: #{$zindex-dropdown};
 	--dropdown-min-width: #{$dropdown-min-width};
 	--dropdown-border-color: #{$dropdown-border-color};
@@ -402,8 +396,6 @@ $modal-header-padding: 1.25rem;
 $modal-inner-padding: 1.25rem;
 
 :root {
-	// Add custom variables to reuse outside Bootstrap's `.modal*` classes, which is where every
-	// `--bs-modal-*` is emitted — see the seam block at the end of this file.
 	--modal-zindex: #{$zindex-modal};
 	--modal-margin: #{$modal-dialog-margin-y-sm-up};
 	--modal-width-sm: #{$modal-sm};
@@ -418,9 +410,7 @@ $modal-inner-padding: 1.25rem;
 	--modal-fade-transform: #{$modal-fade-transform};
 
 	--modal-header-padding: #{$modal-header-padding};
-	// Not the same 1.25rem: Bootstrap derives these two from `$modal-inner-padding` *before* the
-	// override above raises it, so the header bar is padded 1.25rem while the close button — which
-	// is inset by half of these — is padded 0.5rem. Measured, and both are load-bearing.
+	// Not the same 1.25rem: Bootstrap derives these two from `$modal-inner-padding` *before* the override above raises it, so the header bar is padded 1.25rem while the close button — which is inset by half of these — is padded 0.5rem.
 	--modal-header-padding-y: #{$modal-header-padding-y};
 	--modal-header-padding-x: #{$modal-header-padding-x};
 	--modal-header-border-width: #{$modal-header-border-width};
@@ -466,8 +456,6 @@ $tooltip-body-padding-y: var(--spacer-2);
 	--bs-tooltip-body-padding-x: #{$tooltip-body-padding-x};
 	--bs-tooltip-body-padding-y: #{$tooltip-body-padding-y};
 
-	// Owned spelling of the block above, for the seam at the end of this file: the `--bs-` names
-	// go with Bootstrap, and this family already had a home here.
 	--tooltip-bg: #{$tooltip-bg};
 	--tooltip-border: #{$tooltip-border};
 	--tooltip-body-color: #{$tooltip-body-color};
@@ -488,21 +476,7 @@ $toast-header-background-color: $toast-background-color;
 $toast-padding-x: var(--spacer-3);
 $toast-padding-y: var(--spacer-3);
 
-// Tokens we own, for components that no longer carry Bootstrap classes
-//
-// Two things disappear when Bootstrap does, and one is already gone for ported components:
-//
-// - Its **component-scoped** custom properties (`--bs-nav-link-*`, `--bs-btn-*`, `--bs-modal-*`,
-//   `--bs-toast-*`) are emitted inside `.nav`, `.btn` and friends, not at `:root`. A component that
-//   drops those classes stops resolving them *today* — re-measured on the running page 2026-09-06:
-//   of the 117 `--bs-*` names this tree uses, 87 resolve at `:root` and 30 do not (26 are
-//   component-scoped, 4 are declared nowhere at all).
-// - Its **Sass** variables are compile-time, so they vanish with the dependency rather than
-//   degrading.
-//
-// So a ported component reads from here instead. The right-hand sides still come from Bootstrap
-// today, deliberately: this block is the single seam, and removing Bootstrap means changing these
-// values and nothing else.
+// The right-hand sides still come from Bootstrap today, deliberately: this block is the single seam, and removing Bootstrap means changing these values and nothing else.
 :root {
 	--focus-ring: #{$focus-ring-box-shadow};
 	--transition-fade: #{$transition-fade};
@@ -515,11 +489,7 @@ $toast-padding-y: var(--spacer-3);
 	--tab-color-hover: #{$nav-link-hover-color};
 	--tab-color-active: #{$nav-tabs-link-active-color};
 
-	// Typography. These three are the only names in this block that alias rather than interpolate,
-	// because the `--bs-*` spellings are not Bootstrap's: the project declares them itself, at
-	// `:root`, in `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`. They survive
-	// Bootstrap's removal, and `--body-font-size` is responsive there (14px, 16px at the 1080p
-	// breakpoint), so an alias is the only spelling that cannot silently drift from it.
+	// These three are the only names in this block that alias rather than interpolate, because the `--bs-*` spellings are not Bootstrap's: the project declares them itself, at `:root`, in `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`. They survive Bootstrap's removal, and `--body-font-size` is responsive there (14px, 16px at the 1080p breakpoint), so an alias is the only spelling that cannot silently drift from it.
 	--body-font-family: var(--bs-body-font-family);
 	--body-font-size: var(--bs-body-font-size);
 	--body-line-height: var(--bs-body-line-height);
@@ -624,8 +594,7 @@ $toast-padding-y: var(--spacer-3);
 
 	// Table colors
 	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};
-	// The same colour as three HSL channels, for the one consumer that wants to re-alpha it
-	// (`hsla(var(--…-hsl), 0.9)`). It read `--bs-table-row-even-bg-hsl`, which nothing defined.
+	// The same colour as three HSL channels, for the one consumer that wants to re-alpha it (`hsla(var(--…-hsl), 0.9)`).
 	--table-row-even-bg-hsl:
 		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'hue', $space: hsl)},
 		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'saturation', $space: hsl)},

@@ -33,7 +33,6 @@ export const SIXTY_UPGRADES_IMPORTER: ImporterDefinition = {
 			throw new Error('Please use a valid Sixty Upgrades export.');
 		}
 
-		// Parse all the settings.
 		const charClass = nameToClass((importJson?.character?.gameClass as string) || '');
 		if (charClass == Class.ClassUnknown) {
 			throw new Error('Could not parse Class!');
@@ -63,9 +62,7 @@ export const SIXTY_UPGRADES_IMPORTER: ImporterDefinition = {
 				itemSpec.gems = (itemJson.gems as Array<any>).filter(gemJson => gemJson?.id).map(gemJson => gemJson.id);
 			}
 
-			// As long as 60U exports the wrong suffixes we should
-			// inform the user that they need to manually add them.
-			// Due to this we also remove the reforge on the item.
+			// As long as 60U exports the wrong suffixes we should inform the user that they need to manually add them.
 			if (itemJson.suffixId) {
 				hasRemovedRandomSuffix = true;
 				if (itemJson.reforge?.id) {

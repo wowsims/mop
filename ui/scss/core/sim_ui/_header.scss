@@ -53,7 +53,6 @@
 		}
 	}
 
-	// `.sim-tabs` is the Base UI tab list; the rest of its rules are in app/SimTabs.scss.
 	.sim-tabs,
 	.import-export,
 	.sim-toolbar {
@@ -70,7 +69,6 @@
 			font-size: var(--bs-nav-link-font-size);
 			transition: var(--nav-link-transition);
 
-			// Base UI's open marker. Bootstrap wrote `.show` here; the class is gone with the plugin.
 			&[data-popup-open] {
 				color: var(--bs-white);
 			}
@@ -112,10 +110,6 @@
 
 	.sim-dropdown-menu {
 		display: flex;
-		// Kept from the Bootstrap layout: `.dropdown` sets `position: relative`, and the header
-		// scrolls on x. The menu itself can no longer be clipped by that — Base UI portals it to the
-		// body — but this element is still a flex child of `.import-export` and positioning it would
-		// change that. The popup's own styles live in `app/header/ImportExportMenu/`.
 		position: unset;
 	}
 }
