@@ -14,7 +14,18 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
 const IS_BASE = PORT === PORTS.base;
 
-const REGIONS = ['.sim-header .sim-toolbar', '.sim-header .import-export', '.sim-sidebar-socials', '.sim-sidebar-stats'];
+// A region React fully owns must be clean. One that is half-ported carries a ceiling instead: the
+// counts below are what its *still vanilla* markup has, they may only fall, and lowering them is
+// part of porting a block. A hard assertion on a half-ported region would be red from the day it was
+// added, which gates nothing.
+const REGIONS = [
+	{ selector: '.sim-header .sim-toolbar' },
+	{ selector: '.sim-header .import-export' },
+	{ selector: '.sim-sidebar-socials' },
+	{ selector: '.sim-sidebar-stats' },
+	{ selector: '.settings-tab', ceiling: { unnamed: 161, shown: 3, unsafe: 34, untyped: 4 } },
+];
+const SELECTORS = REGIONS.map(region => region.selector);
 
 // The tab strip is deliberately absent: it is Base UI's markup, and `useButton` does not default
 // `type` either, which is its own question for whoever ports the last of it.
@@ -23,7 +34,7 @@ const CHECKS = regions => {
 	for (const selector of regions) {
 		const scope = [...document.querySelectorAll(selector)];
 		if (!scope.length) {
-			out[selector] = [[false, 'region not found']];
+			out[selector] = [{ key: 'missing', bad: 1, of: 0, what: 'region not found' }];
 			continue;
 		}
 		const within = sel => scope.flatMap(el => [...el.querySelectorAll(sel)]);
@@ -42,10 +53,10 @@ const CHECKS = regions => {
 		const untyped = buttons.filter(el => !el.getAttribute('type'));
 
 		out[selector] = [
-			[unnamed.length === 0, `${controls.length - unnamed.length}/${controls.length} controls have an accessible name`],
-			[shown.length === 0, `${icons.length - shown.length}/${icons.length} icons are aria-hidden`],
-			[unsafe.length === 0, `${blank.length - unsafe.length}/${blank.length} _blank links carry rel=noopener noreferrer`],
-			[untyped.length === 0, `${buttons.length - untyped.length}/${buttons.length} buttons declare a type`],
+			{ key: 'unnamed', bad: unnamed.length, of: controls.length, what: 'controls have an accessible name' },
+			{ key: 'shown', bad: shown.length, of: icons.length, what: 'icons are aria-hidden' },
+			{ key: 'unsafe', bad: unsafe.length, of: blank.length, what: '_blank links carry rel=noopener noreferrer' },
+			{ key: 'untyped', bad: untyped.length, of: buttons.length, what: 'buttons declare a type' },
 		];
 	}
 	return out;
@@ -82,15 +93,20 @@ await page.waitForTimeout(2000);
 
 console.log(`${SPEC} on :${PORT}${IS_BASE ? '  (baseline — failures here are the findings)' : ''}\n`);
 let failed = 0;
-for (const [region, checks] of Object.entries(await page.evaluate(CHECKS, REGIONS))) {
+const ceilings = Object.fromEntries(REGIONS.map(region => [region.selector, region.ceiling ?? {}]));
+for (const [region, checks] of Object.entries(await page.evaluate(CHECKS, SELECTORS))) {
 	console.log(`  ${region}`);
-	for (const [ok, text] of checks) {
+	for (const check of checks) {
+		const allowed = ceilings[region][check.key] ?? 0;
+		const ok = check.bad <= allowed;
 		if (!ok) failed++;
-		console.log(`    ${ok ? 'PASS' : 'FAIL'}  ${text}`);
+		const ceiling = allowed ? ` (ceiling ${allowed})` : '';
+		console.log(`    ${ok ? 'PASS' : 'FAIL'}  ${check.of - check.bad}/${check.of} ${check.what}${ceiling}`);
 	}
 }
+
 // Focus, not hover: a keyboard user is the one this chain exists for.
-for (const region of REGIONS) {
+for (const region of SELECTORS) {
 	// The first *visible* one: the toolbar's first anchor is the known-issues link, which ships
 	// hidden on a launched spec and cannot be focused.
 	const anchors = await page.locator(`${region} [data-tooltip-id]`).all();

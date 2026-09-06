@@ -1173,6 +1173,20 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **`a11y.mjs` covers the settings pane, on a ceiling rather than an assertion.** The gap
+  was real — that region has 161 unnamed controls and 34 `_blank` links with no `rel`, almost all of
+  it in markup that has not ported — so a hard "must be zero" would have been red the day it was
+  added, which gates nothing.
+
+  A region React fully owns still asserts zero. A half-ported one declares a ceiling of what its
+  vanilla half currently has; the numbers may only fall, and lowering them is part of porting a
+  block. Verified it fails when tightened by one.
+
+  That is the second ratchet in the gates, after `REACT_DANGLING_MAX` in `settings-tab.mjs`. Both
+  exist for the same reason: a defect that is being *removed* a block at a time cannot be expressed
+  as an equality until the last block lands, and an exact expectation would need editing on every
+  port. A ceiling only ever moves the right way.
+
 - 2026-09-06 **The settings tab's store writes are out of the view, and no React went in.** Doing it
   as its own step is what made the encounter rules land cleanly, and it is worth repeating: a pure
   move is far easier to review — and to revert — than a move tangled up in a port.
