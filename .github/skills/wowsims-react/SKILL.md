@@ -856,6 +856,20 @@ would be an unrequested markup change with a parity divergence attached.
   choice — when Phase 5 retires the vanilla comparison, the idiom becomes a conditional render as
   the plan always said. Do not read the comments defending it as permanent.
 
+### What the `@jsx-vanilla` pragma rule actually forbids
+
+"Never touch a file carrying the pragma" is how this gets repeated, and it is not what the migration
+does. `sim_ui.tsx`, `individual_sim_ui.tsx`, `sim_header.tsx`, `settings_tab.tsx` and
+`preset_configuration_picker.tsx` all carry it, and every one has been edited — that is how a React
+block gets mounted at all: the vanilla owner stops filling a container and exposes it instead.
+
+The rule is about **feature views that have not been ported**: do not rewrite them, do not convert
+their JSX, do not tidy them. Editing a vanilla *shell* file to hand React a container, delete a
+builder that has moved, or expose a registry is the migration working as designed.
+
+State it that way when briefing an agent. Told the blunt version, an agent will refuse the one edit
+the port requires — or worse, work around it.
+
 ### Flag invalid markup, do not port it — standing rule, 2026-09-05
 
 While reading vanilla markup for a port, keep a running list of anything invalid or spec-violating:
@@ -1068,6 +1082,29 @@ Two things specific to this migration:
   two expected class diffs and the environmental console errors. Use Playwright, not the Chrome
   extension — the extension reports false "renderer frozen" on this app.
 
+## The settings tab, surveyed — 2026-09-06
+
+Seven content blocks remain. Three shared shapes cover most of them: the generic input walk
+(number/boolean/enum — all three React pickers exist), the icon-group walk (`icon` → `IconPicker`,
+ported; `iconEnum` → `IconEnumPicker`, **not** ported), and the stat-option walk that Buffs, Debuffs
+and the two cooldown blocks share.
+
+**`IconEnumPicker` was missing from this file's "still missing" list, and it is the real gate.** It
+blocks *all* of Consumes — every picker there is `iconEnum` — and Player settings on the majority of
+specs, since `makeClassOptionsEnumIconInput` is how most classes declare their options. Three of the
+six gate specs are affected. `MultiIconPicker` was listed and blocks Buffs and Debuffs, eleven
+instances between them. Both are Bootstrap-dropdown shaped, so both are ports onto the `Menu`
+adapter that already landed — not new adapters.
+
+**Dead, found while surveying; delete rather than port:** the deprecated `customSections` function
+form on `IndividualSimUIConfig` (declared, looped over, and declared by no spec);
+`DEBUFFS_MISC_CONFIG`, which is `[]`, making the debuffs misc branch unreachable; and a bare
+`this.simUI.player;` expression statement in the saved-settings block.
+
+**One quirk to preserve rather than improve:** each `presets.itemSwaps` entry bakes in a snapshot of
+*load-time* settings via `...this.getCurrentSavedSettings()`. Computing it lazily would read better
+and would be a behaviour change.
+
 ## What is queued, and in what order — 2026-09-06
 
 Kept here rather than in a head, so a fresh session picks up where this one left off. Strike an item
@@ -1091,12 +1128,46 @@ by them):
    the rule. `panes-parity.mjs` already covers structure at rest; this covers operating the controls,
    and in particular a `showWhen` pair flipping the `hide` class both ways.
 
-**Then, in this order:**
+**Then, in this order** — the settings ordering below is the surveyed one, and it corrects the
+assumption that `Dialog` gates this tab. It does not gate *anything* here: the tab's only modal is
+`AdvancedEncounterModal`, already handled inside the ported `EncounterPicker`, and `SavedDataManager`
+uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks stat-weights and gear.
 
-5. Wire `Dialog`'s first consumer. `AdvancedEncounterModal` is the natural one — it is the last
-   vanilla piece of an otherwise ported feature, and `encounter.mjs` already opens and closes it, so
-   the gate exists. `SettingsMenu` is the second.
-6. Port the settings tab blocks, in the order item 3 recommends, cheapest first.
+5. **Other-settings inputs** — three already-ported pickers, no new primitive, no store write. Worth
+   doing first for a structural reason rather than its size: it shares a `ContentBlock` body with the
+   ported `ItemSwapPicker`, so folding both into one component deletes the append-ordering dependency
+   that block currently documents in a comment. Also the first place to replace the `.input-root` →
+   `input-inline` DOM walk with `PickerShell`'s `inline` prop.
+6. **The two external-cooldown blocks** — identical to each other, fully generic, and `IconPicker`
+   only *by construction*: their 3-argument call omits `simUI`, which a `MultiIconPicker` would crash
+   on. They establish the shared stat-option component that Buffs and Debuffs later reuse. The
+   subtlety is reproducing "no `ContentBlock` at all when the option list is empty" — absence, not
+   `.hide`.
+7. **Custom sections** — cheap, but sequenced *after* the cooldown blocks because it has **zero gate
+   coverage**: only the two shaman specs declare `sections`, and neither is in `SPECS`. Prove the
+   pattern where the gate can see it first, then either extend `SPECS` for that run or verify by
+   hand. The deprecated `customSections` function form goes away here — no spec declares it.
+8. **Extract the store writes, with no React in the change.** `PresetConfigurationPicker.applyBuild`
+   (a static that writes ~20 fields in one `batch` and already has a non-view caller in
+   `individual_sim_ui.tsx`), and `getCurrentSavedSettings` + the 14-setter `setData` batch out of
+   `settings_tab.tsx`. Doing this while the views are still vanilla is what made the encounter rules
+   land cleanly. Pin the ordering with a test the way `target_dummies` does.
+9. **`MultiIconPicker` onto Base UI `Menu`, then Buffs and Debuffs together.** One primitive unblocks
+   eleven instances. Do not split the two blocks: Debuffs interleaves three `IconPicker`s and two
+   `MultiIconPicker`s *in config order*, and while a vanilla node can be placed among React siblings
+   (`EncounterPicker` does it with `insertBefore`), doing that for a config-ordered list of five is
+   not worth the fragility.
+10. **`IconEnumPicker` onto `Menu`, then Player settings** — Player is the smaller consumer and
+   exercises the three existing pickers alongside the new primitive. Keep the inline
+   `gridTemplateColumns`: `SERIALIZE` ignores inline style, so the gate cannot catch its absence.
+11. **Consumes** — last, because every one of its pickers is `iconEnum`. Two extra costs: its
+   `waitForInit` dependency is a *hard* one (`Database.getSync()`), not inherited; and `updateRow`
+   inverts React's data flow, since a row's `hide` depends on its children's `showWhen()` results and
+   the icon pickers override `showWhen`.
+12. **Preset configuration and the saved-data managers do not port with this tab** — four and six
+   consumers respectively, across gear, rotation and talents. Mount them through `useLegacyMount`
+   into a React-owned right panel when the tab body becomes `SettingsTabBody.tsx`, exactly as
+   `TalentsTabBody` does.
 7. Switch ported components onto the owned tokens from item 1, and decide the component-scoped 35.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
    bulk, import-export, apl, gear, results.
