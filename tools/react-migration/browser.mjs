@@ -368,6 +368,67 @@ export const dropSubtrees = (dom, within, re) => {
 	return { dom: out.join('\n'), dropped };
 };
 
+/**
+ * Rewrites every line equal to `from` into `to`, inside each subtree matching `within`, and reports
+ * how many it changed. For an element that survives the port intact but under a different class —
+ * where `collapseWrappers` would wrongly delete it and `dropSubtrees` would wrongly delete its
+ * children.
+ *
+ * Scoped and counted for the same reason as the others: a bare rename would quietly relabel every
+ * `ul.dropdown-menu` in the tree, and the caller is expected to assert the count against something
+ * it computed rather than a number typed in.
+ */
+export const renameWithin = (dom, within, from, to) => {
+	const out = [];
+	let renamed = 0;
+	let scope = null;
+	for (const line of dom.split('\n')) {
+		const indent = line.length - line.trimStart().length;
+		const trimmed = line.trim();
+		if (scope !== null && indent <= scope) scope = null;
+		if (scope === null && within.test(trimmed)) scope = indent;
+		if (scope !== null && trimmed === from) {
+			renamed++;
+			out.push(line.slice(0, indent) + to);
+			continue;
+		}
+		out.push(line);
+	}
+	return { dom: out.join('\n'), renamed };
+};
+
+/**
+ * Folds a ported `MultiIconPicker` back into the shape the Bootstrap one had, on the React side.
+ *
+ * Base UI's `Menu` cannot be arranged into `.dropend > a + ul`: `Menu.Portal` is mandatory,
+ * `Positioner` must be its child and `Popup` the Positioner's, and each renders a real element. And
+ * the `<ul>` cannot keep `.dropdown-menu`, because `shared/bootstrap_overrides.ts` binds a capturing
+ * `mouseleave` to that class and reads `previousElementSibling` as the toggle — inside a positioner
+ * that is null, and Bootstrap then throws.
+ *
+ * Every count is asserted against the number of pickers actually found rather than a number typed
+ * in, so a wrapper appearing somewhere else, or one of these going missing, is a failure. Used by
+ * both tree comparisons — `parity.mjs` sees these in the settings pane too — and **only on the React
+ * side**: the baseline builds the same picker roots, so running it there reports it as missing
+ * wrappers it never had.
+ */
+export const normaliseMultiIconMenus = dom => {
+	const root = /\.multi-icon-picker-root(\.|$)/;
+	const pickers = dom.split('\n').filter(line => root.test(line.trim())).length;
+	const problems = [];
+	if (!pickers) return { dom, problems };
+
+	let current = dom;
+	for (const wrapper of [/^div\.multi-icon-picker-portal$/, /^div\.multi-icon-picker-positioner$/]) {
+		const collapsed = collapseWrappers(current, root, wrapper);
+		if (collapsed.dropped !== pickers) problems.push(`collapsed ${collapsed.dropped} of ${pickers} ${wrapper.source}`);
+		current = collapsed.dom;
+	}
+	const renamed = renameWithin(current, root, 'ul.multi-icon-picker-menu', 'ul.dropdown-menu');
+	if (renamed.renamed !== pickers) problems.push(`renamed ${renamed.renamed} of ${pickers} multi-icon menus`);
+	return { dom: renamed.dom, problems };
+};
+
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */

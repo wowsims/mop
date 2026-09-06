@@ -34,6 +34,12 @@ export interface IconEnumPickerStatOption extends PickerStatOption<typeof IconEn
 
 export type ItemStatOptions<T> = ItemStatOption<T>;
 export type PickerStatOptions = IconPickerStatOption | MultiIconPickerStatOption | IconEnumPickerStatOption;
+/**
+ * The two members `StatOptionIcons` can render. Narrower than `PickerStatOptions` on purpose:
+ * `IconEnumPicker` has no React port, and a runtime dispatch returning `null` for it would render a
+ * section silently short — so an option list that gains one has to fail to compile instead.
+ */
+export type RenderableStatOptions = IconPickerStatOption | MultiIconPickerStatOption;
 export type StatOptions<T, Options extends ItemStatOptions<T> | PickerStatOptions> = Array<Options>;
 
 export function relevantStatOptions<T, OptionsType extends ItemStatOptions<T> | PickerStatOptions>(

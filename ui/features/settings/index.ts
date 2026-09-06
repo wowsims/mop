@@ -6,3 +6,5 @@ export { StatOptionIcons } from './components/StatOptionIcons';
 export type { StatOptionIconsProps } from './components/StatOptionIcons';
 export { CustomSection } from './components/CustomSection';
 export type { CustomSectionProps } from './components/CustomSection';
+export { RaidBuffs } from './components/RaidBuffs';
+export type { RaidBuffsProps } from './components/RaidBuffs';

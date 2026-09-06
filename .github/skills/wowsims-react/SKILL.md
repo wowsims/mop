@@ -75,7 +75,7 @@ import-export 168 · item-swap 105.
 |---|---|---|---|
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
 | **Talents** — **done** | 19 | `TalentsPicker` + `PetSpecPicker` are React; `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and two `SavedDataManager`s stay vanilla behind `useLegacyMount` | `GlyphSelectorModal` needs `Dialog`; the shared four need their other consumers |
-| **Settings** | 492 | `EncounterPicker` 996, settings views 434, `ItemSwapPicker` 105 | `MultiIconPicker` ×2 (`Menu`, or an island), `ListPicker` island, `AdvancedEncounterModal` island |
+| **Settings** | 492 | most of it — see the queue | `IconEnumPicker` (`Menu`) for Player and Consumes; `ListPicker` island; the preset picker and saved-data managers, deferred to their other tabs |
 | **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
 | **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
@@ -338,6 +338,8 @@ of the duplication sweep was to build each shape once.
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
+| `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
+| `RaidBuffs` | `ui/features/settings/components/RaidBuffs/` | the buffs block's `relevantStatOptions` walk plus its misc bundle | the option list | that the misc bundle is a `MultiIconPickerConfig` assembled from `IconPickerConfig`s, as the vanilla builder did |
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
@@ -1176,11 +1178,9 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    `shaman/elemental` and `shaman/enhancement`, the only two specs that declare `sections`.
 8. ~~**Extract the store writes**~~ — **done**, with no React in the change:
    `features/settings/model/apply_build.ts` and `features/settings/model/saved_settings.ts`.
-9. **`MultiIconPicker` onto Base UI `Menu`, then Buffs and Debuffs together.** One primitive unblocks
-   eleven instances. Do not split the two blocks: Debuffs interleaves three `IconPicker`s and two
-   `MultiIconPicker`s *in config order*, and while a vanilla node can be placed among React siblings
-   (`EncounterPicker` does it with `insertBefore`), doing that for a config-ordered list of five is
-   not worth the fragility.
+9. ~~**`MultiIconPicker` onto Base UI `Menu`, then Buffs and Debuffs**~~ — **done.** The interleaving
+   was handled by widening `StatOptionIcons` into a dispatch rather than by placing vanilla nodes
+   among React siblings.
 10. **`IconEnumPicker` onto `Menu`, then Player settings** — Player is the smaller consumer and
    exercises the three existing pickers alongside the new primitive. Keep the inline
    `gridTemplateColumns`: `SERIALIZE` ignores inline style, so the gate cannot catch its absence.
@@ -1201,6 +1201,50 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Buffs and Debuffs are React, on a `MultiIconPicker` ported to Base UI `Menu`** — and
+  the port could not reproduce the markup, which is the interesting part.
+
+  `Menu.Portal` is mandatory, `Positioner` must be its child and `Popup` the Positioner's, and each
+  renders a real element, so there is no arrangement that yields `.dropend > a + ul`. The `<ul>` also
+  cannot keep `.dropdown-menu`: `shared/bootstrap_overrides.ts` binds a capturing `mouseleave` to
+  that class and reads `previousElementSibling` as the toggle, which inside a positioner is null, and
+  Bootstrap then throws on it.
+
+  Both tree gates therefore normalise the React side through `normaliseMultiIconMenus` in
+  `browser.mjs`: two wrappers collapsed, the popup's class renamed back. Every count is asserted
+  against the number of picker roots actually found rather than a number typed in, and it runs on the
+  React side only — the baseline has the same roots, so normalising both reports the baseline as
+  missing wrappers it never had. That mistake cost a run.
+
+  **Clicking inside the menu must not close it**, which is why nothing in the popup is a `Menu.Item`;
+  verified with real pointer clicks rather than synthetic ones, since a synthetic `.click()` never
+  exercises Base UI's dismissal. `sideOffset={-1}` reproduces Bootstrap's `[0, -1]` on the pixel.
+
+  Two divergences recorded rather than fixed. The popup is a `role="menu"` whose `<li>`s carry no
+  `menuitem` role — making them `Menu.Item`s would close on click, the one behaviour that must not
+  change. And Base UI's `markOthers` sets `pointer-events: none` on the rest of the page while a menu
+  is open regardless of `modal={false}`; that is **pre-existing**, measured on the header's own
+  menus, not introduced here.
+
+- 2026-09-06 **The exporters are React, and the class hierarchy is gone.** Nothing above `getData`
+  varied between the six, so everything above it became props and each exporter became a plain
+  object. The registry now holds either a vanilla thing with `open()` or a component the menu
+  renders; the dialogs are siblings of `Menu.Root`, not inside `Menu.Popup`, because clicking an item
+  closes the menu and unmounts the popup — a dialog in there would go with it.
+
+  The stylesheet merge this unit was chosen to prove cost two changes, not one. `.modal-footer .btn`
+  is now dual-keyed with `.sim-dialog-footer`, because the log exporter is still a Bootstrap modal
+  and wears `.exporter` at the same time. And `--bs-modal-padding` in the category row is emitted
+  inside `.modal` only, so that whole `gap` declaration would have gone invalid the moment the row
+  moved into a portaled popup — the exact trap the `Dialog` docstring names, hit for real.
+
+  **Three vanilla defects fixed rather than carried.** `CopyButton` read the textarea's `innerHTML`,
+  so the CLI export put `&amp;` on the clipboard where the field held `&` — 62 characters' difference on
+  one export. `trackPageView` passed `this.header.title`, where `this.header` is the header
+  *element*, so every export page view reached analytics with an empty title and a slug of
+  `/export/`. And the WoWHead exporter called `getData()` in its constructor and discarded the
+  result.
 
 - 2026-09-06 **`LegacyHost` is deleted, and the rule that would have caught it is now a gate.**
 

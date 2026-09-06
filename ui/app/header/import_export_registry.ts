@@ -1,14 +1,29 @@
 import type { Exporter } from '@features/import-export/view/exporter';
 import type { Importer } from '@features/import-export/view/importer';
+import type { ComponentType } from 'react';
 
 export type ImportExportKind = 'import' | 'export';
 
+/** What the menu hands a React dialog. Nothing else about it is the menu's business. */
+export interface ImportExportDialogProps {
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+}
+
 export interface ImportExportEntry {
 	label: string;
-	/** Both expose `open()`; nothing here needs to know which it has. */
-	open: () => void;
 	/** Rendered greyed out with a "Currently unsupported" tooltip instead of opening anything. */
 	isUnsupported: boolean;
+	/**
+	 * A vanilla importer or exporter: it owns a Bootstrap modal and shows it itself. Exactly one of
+	 * this and `Dialog` is set.
+	 */
+	open?: () => void;
+	/**
+	 * A React dialog. It has no `open()` — it has state — so the menu renders it and owns which one
+	 * is open, the same way it owns whether the menu itself is.
+	 */
+	Dialog?: ComponentType<ImportExportDialogProps>;
 }
 
 /**
@@ -33,8 +48,18 @@ export class ImportExportRegistry {
 
 	readonly getEntries = (kind: ImportExportKind): ReadonlyArray<ImportExportEntry> => this.entries[kind];
 
+	/** A vanilla importer or exporter. Both expose `open()`; nothing here needs to know which it has. */
 	add(kind: ImportExportKind, label: string, importerExporter: Importer | Exporter, isUnsupported: boolean) {
-		this.entries = { ...this.entries, [kind]: [...this.entries[kind], { label, open: () => importerExporter.open(), isUnsupported }] };
+		this.push(kind, { label, isUnsupported, open: () => importerExporter.open() });
+	}
+
+	/** A React dialog, rendered by the menu. */
+	addDialog(kind: ImportExportKind, label: string, Dialog: ComponentType<ImportExportDialogProps>, isUnsupported = false) {
+		this.push(kind, { label, isUnsupported, Dialog });
+	}
+
+	private push(kind: ImportExportKind, entry: ImportExportEntry) {
+		this.entries = { ...this.entries, [kind]: [...this.entries[kind], entry] };
 		for (const listener of this.listeners) listener();
 	}
 }

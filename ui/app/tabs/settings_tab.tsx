@@ -24,7 +24,6 @@ import * as IconInputs from '@ui-kit/icon_inputs';
 import { Input } from '@ui-kit/input';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
-import { MultiIconPicker } from '@ui-kit/pickers/multi_icon_picker';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
@@ -41,6 +40,9 @@ export class SettingsTab extends SimTab {
 	/** The two external-cooldown blocks. Absent on a spec whose option list filters to nothing. */
 	externalDamageCooldownContainer?: HTMLElement;
 	externalDefensiveCooldownContainer?: HTMLElement;
+	/** The buffs and debuffs blocks, which are built on every spec. */
+	buffsContainer!: HTMLElement;
+	debuffsContainer!: HTMLElement;
 
 	protected simUI: IndividualSimUI<any>;
 
@@ -200,26 +202,14 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
 			header: { title: i18n.t('settings_tab.raid_buffs.title'), tooltip: i18n.t('settings_tab.raid_buffs.tooltip') },
 		});
+		// The header stays here with the block: React fills the body only.
 		contentBlock.headerElement?.appendChild(<p className="fs-body">{i18n.t('settings_tab.raid_buffs.description')}</p>);
 
-		const buffOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, this.simUI);
-		this.configureIconSection(
-			contentBlock.bodyElement,
-			buffOptions.map(options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any, this.simUI)),
-		);
-
-		const miscBuffOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_MISC_CONFIG, this.simUI);
-		if (miscBuffOptions.length > 0) {
-			new MultiIconPicker(
-				contentBlock.bodyElement,
-				this.simUI.player,
-				{
-					inputs: miscBuffOptions.map(option => option.config),
-					label: i18n.t('settings_tab.raid_buffs.misc.label'),
-				},
-				this.simUI,
-			);
-		}
+		// What `configureIconSection` did for this block, without the picker construction it counted:
+		// hide the body when the spec's stats filter every buff out. The misc bundle was appended
+		// afterwards and never counted towards it.
+		if (relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, this.simUI).length === 0) contentBlock.bodyElement.classList.add('hide');
+		this.buffsContainer = contentBlock.bodyElement;
 	}
 
 	private raidExternalDamageCooldowns() {
@@ -254,24 +244,9 @@ export class SettingsTab extends SimTab {
 			header: { title: i18n.t('settings_tab.debuffs.title'), tooltip: i18n.t('settings_tab.debuffs.tooltip') },
 		});
 
-		const debuffOptions = relevantStatOptions(BuffDebuffInputs.DEBUFFS_CONFIG, this.simUI);
-		this.configureIconSection(
-			contentBlock.bodyElement,
-			debuffOptions.map(options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any, this.simUI)),
-		);
-
-		const miscDebuffOptions = relevantStatOptions(BuffDebuffInputs.DEBUFFS_MISC_CONFIG, this.simUI);
-		if (miscDebuffOptions.length) {
-			new MultiIconPicker(
-				contentBlock.bodyElement,
-				this.simUI.player,
-				{
-					inputs: miscDebuffOptions.map(options => options.config),
-					label: i18n.t('settings_tab.debuffs.misc.label'),
-				},
-				this.simUI,
-			);
-		}
+		// As above. The misc branch that stood here is gone with `DEBUFFS_MISC_CONFIG`, which was `[]`.
+		if (relevantStatOptions(BuffDebuffInputs.DEBUFFS_CONFIG, this.simUI).length === 0) contentBlock.bodyElement.classList.add('hide');
+		this.debuffsContainer = contentBlock.bodyElement;
 	}
 
 	private buildPresetConfigurationPicker() {

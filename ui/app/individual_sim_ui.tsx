@@ -22,13 +22,15 @@ import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
-	// Individual60UEPExporter,
-	IndividualCLIExporter,
-	IndividualJsonExporter,
-	IndividualLinkExporter,
-	IndividualPawnEPExporter,
-	IndividualWowheadGearPlannerExporter,
-} from '@features/import-export/view/exporters';
+	CLI_EXPORTER,
+	createLink,
+	exporterDialog,
+	JSON_EXPORTER,
+	LINK_EXPORTER,
+	PAWN_EP_EXPORTER,
+	// SIXTY_UPGRADES_EP_EXPORTER,
+	WOWHEAD_GEAR_PLANNER_EXPORTER,
+} from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import {
 	// Individual60UImporter,
@@ -352,12 +354,15 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.simHeader.addImportLink('WoWHead', new IndividualWowheadGearPlannerImporter(this.rootElem, this));
 		this.simHeader.addImportLink('Addon', new IndividualAddonImporter(this.rootElem, this));
 
-		this.simHeader.addExportLink('Link', new IndividualLinkExporter(this.rootElem, this));
-		this.simHeader.addExportLink('JSON', new IndividualJsonExporter(this.rootElem, this));
-		this.simHeader.addExportLink('WoWHead', new IndividualWowheadGearPlannerExporter(this.rootElem, this));
-		// this.simHeader.addExportLink('60U Cata EP', new Individual60UEPExporter(this.rootElem, this));
-		this.simHeader.addExportLink('Pawn EP', new IndividualPawnEPExporter(this.rootElem, this));
-		this.simHeader.addExportLink('CLI', new IndividualCLIExporter(this.rootElem, this));
+		// The exporters are React dialogs: they have no `open()` for `addExportLink` to call, so the
+		// header menu renders them and owns which one is open. The importers are unchanged.
+		const exportRegistry = this.simHeader.importExport;
+		exportRegistry.addDialog('export', 'Link', exporterDialog(LINK_EXPORTER));
+		exportRegistry.addDialog('export', 'JSON', exporterDialog(JSON_EXPORTER));
+		exportRegistry.addDialog('export', 'WoWHead', exporterDialog(WOWHEAD_GEAR_PLANNER_EXPORTER));
+		// exportRegistry.addDialog('export', '60U Cata EP', exporterDialog(SIXTY_UPGRADES_EP_EXPORTER));
+		exportRegistry.addDialog('export', 'Pawn EP', exporterDialog(PAWN_EP_EXPORTER));
+		exportRegistry.addDialog('export', 'CLI', exporterDialog(CLI_EXPORTER));
 	}
 
 	applyDefaultRotation() {
@@ -470,7 +475,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	toLink(): string {
-		return IndividualLinkExporter.createLink(this);
+		return createLink(this);
 	}
 
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {

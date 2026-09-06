@@ -34,6 +34,9 @@ export const ImportExportMenu = ({ kind, registry, icon, title }: ImportExportMe
 	);
 	const unsupportedId = useId();
 	const [open, setOpen] = useState(false);
+	// Which React dialog is showing, by label. A vanilla entry opens its own Bootstrap modal and is
+	// not tracked here; a React one has no `open()` to call, so this is where "open" lives.
+	const [openDialog, setOpenDialog] = useState<string | null>(null);
 	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill. Bootstrap's click data-API
 	// toggled a hover-opened menu shut and it stayed shut, because re-opening needed a fresh
 	// `mouseover` and the pointer had not moved. Base UI re-evaluates hover immediately, so the menu
@@ -65,7 +68,12 @@ export const ImportExportMenu = ({ kind, registry, icon, title }: ImportExportMe
 									// Kept on the disabled branch too: the tooltip anchors on the item, and
 									// `Menu.Item` does not stop it being hovered.
 									{...(entry.isUnsupported ? { 'data-tooltip-id': unsupportedId } : {})}
-									onClick={() => !entry.isUnsupported && entry.open()}>
+									onClick={() => {
+										if (entry.isUnsupported) return;
+										// A vanilla entry shows its own Bootstrap modal; a React one only has state.
+										if (entry.Dialog) setOpenDialog(entry.label);
+										else entry.open?.();
+									}}>
 									{entry.label}
 								</Menu.Item>
 							))}
@@ -73,6 +81,14 @@ export const ImportExportMenu = ({ kind, registry, icon, title }: ImportExportMe
 					</Menu.Positioner>
 				</Menu.Portal>
 			</Menu.Root>
+			{/* Outside `Menu.Root`, not inside its popup: clicking an item closes the menu, which unmounts
+			    the popup, and a dialog rendered in there would go with it. Each dialog portals itself
+			    to the sim root anyway, so this is a React-tree parent only. */}
+			{entries.map(entry =>
+				entry.Dialog ? (
+					<entry.Dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
+				) : null,
+			)}
 			<Tooltip id={unsupportedId} content="Currently unsupported" />
 		</div>
 	);

@@ -1,7 +1,7 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
-import { CustomSection, OtherSettings, StatOptionIcons } from '@features/settings';
+import { CustomSection, OtherSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
@@ -96,6 +96,21 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						createPortal(
 							<OtherSettings inputs={def.otherInputs.inputs} itemSlots={def.itemSwapSlots ?? []} />,
 							simUI.settingsTab.otherSettingsContainer,
+						)}
+					{/* Buffs and debuffs port together: debuffs interleaves the two picker kinds in config
+					    order, so neither block can be half React. */}
+					{ready &&
+						createPortal(
+							<RaidBuffs
+								options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, simUI)}
+								miscOptions={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_MISC_CONFIG, simUI)}
+							/>,
+							simUI.settingsTab.buffsContainer,
+						)}
+					{ready &&
+						createPortal(
+							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.DEBUFFS_CONFIG, simUI)} />,
+							simUI.settingsTab.debuffsContainer,
 						)}
 					{/* Both cooldown blocks are the same shape; the tab decides whether each exists. */}
 					{ready &&

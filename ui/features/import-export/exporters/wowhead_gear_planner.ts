@@ -1,12 +1,11 @@
 import { CHARACTER_LEVEL } from '@domain/constants/mechanics';
 import { raceNames } from '@domain/proto_utils/names';
 import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
-import { ItemSlot, Spec } from '@generated/proto/common';
+import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
-import type { IndividualSimHost } from '../../../sim_host';
-import { IndividualWowheadGearPlannerImporter } from '../importers';
-import { IndividualExporter } from './individual_exporter';
+import { IndividualWowheadGearPlannerImporter } from '../view/importers';
+import type { ExporterDefinition } from './types';
 
 const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
@@ -154,14 +153,11 @@ export function createWowheadGearPlannerLink(data: WowheadGearPlannerData): stri
 	return baseUrl + hash;
 }
 
-export class IndividualWowheadGearPlannerExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
-		super(parent, simUI, { title: i18n.t('export.wowhead.title'), allowDownload: true });
-		this.getData();
-	}
-
-	getData(): string {
-		const player = this.simUI.player;
+export const WOWHEAD_GEAR_PLANNER_EXPORTER: ExporterDefinition = {
+	title: i18n.t('export.wowhead.title'),
+	allowDownload: true,
+	getData: host => {
+		const player = host.player;
 
 		const converWowheadRace = (raceName: string): string => {
 			const alliancePrefix = raceName.endsWith('(A)') ? 'alliance-' : undefined;
@@ -174,7 +170,7 @@ export class IndividualWowheadGearPlannerExporter<SpecType extends Spec> extends
 		const url = `${WOWHEAD_GEAR_PLANNER_URL}/${classStr}/${raceStr}/`;
 
 		const addGlyph = (glyphItemId: number): number => {
-			const spellId = this.simUI.sim.db.glyphItemToSpellId(glyphItemId);
+			const spellId = host.sim.db.glyphItemToSpellId(glyphItemId);
 			if (!spellId) {
 				return 0;
 			}
@@ -245,5 +241,5 @@ export class IndividualWowheadGearPlannerExporter<SpecType extends Spec> extends
 		const hash = createWowheadGearPlannerLink(data);
 
 		return url + hash;
-	}
-}
+	},
+};

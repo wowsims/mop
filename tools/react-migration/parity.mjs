@@ -12,6 +12,7 @@ import {
 	collapseWrappers,
 	collectSubtrees,
 	dropSubtrees,
+	normaliseMultiIconMenus,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -41,15 +42,36 @@ const PRUNED = /\.(sim-tabs(-mount)?|sim-main)(\.|$)/;
 // aligned as modals port one at a time: each side has exactly one per dialog either way.
 const MODAL = /\.(modal|sim-dialog-portal)(\.|$)/;
 
-// The dialog whose shape the port changes. Its markup is Base UI's rather than Bootstrap's, so the
-// set comparison below cannot compare it against its twin — it is removed from both sides, and
-// required to have been on both. `encounter.mjs` is its gate: it opens the modal, closes it with
-// Escape, and reads the backdrop, the body lock, the target count and the header groups, byte for
-// byte across the two builds.
-const PORTED_DIALOG = 'advanced-encounter-picker-modal';
+// The dialogs whose shape the port changes. Their markup is Base UI's rather than Bootstrap's, so
+// the set comparison below cannot compare them against their twins — they are removed from both
+// sides by exact count, so reverting a port fails here rather than passing quietly. `encounter.mjs`
+// gates the advanced encounter modal; `header-toolbar.mjs` and a browser probe gate the exporters.
+//
+// `exporter` is six baseline modals of which five have ported. The sixth is the results tab's log
+// exporter, whose only opener lives inside the un-ported log runner, so React still builds it as a
+// Bootstrap modal. It is byte-identical to three of the five — no class tells them apart — so all
+// six leave the baseline, the one React still builds leaves the React side, and that pair is
+// asserted against each other below instead of by the set comparison.
+const PORTED_DIALOGS = [
+	['advanced-encounter-picker-modal', 1],
+	['exporter', 6],
+];
 
-// What each side calls the ported dialog inside its modal set.
-const PORTED_DIALOG_REACT = 'sim-dialog-portal';
+// One Base UI portal per ported dialog: the encounter modal plus five exporters.
+const PORTED_DIALOG_REACT = ['sim-dialog-portal', 6];
+
+// Bootstrap on both sides still, and taken out of the React set only so the counts line up.
+const VANILLA_ON_BOTH = ['exporter', 1];
+
+// Matched on the subtree's first two lines — the `.modal` wrapper and the box inside it, or the
+// portal and its backdrop. A class deeper in the contents must not pick a modal out by accident:
+// the React exporters carry `.exporter` on their popup, three levels below their portal.
+const takeModals = (grabbed, [marker, expected], side, problems) => {
+	const taken = grabbed.modals.filter(modal => modal.split('\n').slice(0, 2).join('\n').includes(marker));
+	if (taken.length !== expected) problems.push(`${side}: ${taken.length} modals matching "${marker}", expected ${expected}`);
+	grabbed.modals = grabbed.modals.filter(modal => !taken.includes(modal));
+	return taken;
+};
 
 // The one divergence that is a deletion rather than a changed line, so `INTENDED` cannot hold it.
 //
@@ -79,6 +101,9 @@ const SIM_TITLE = /\.sim-title(\.|$)/;
 const SIM_TITLE_MENU_COUNT = 1;
 
 const grab = async (browser, port, spec) => {
+	// The baseline has the same picker roots; only the React one has Base UI's wrappers around their
+	// menus, so normalising both sides would report the baseline as missing what it never had.
+	const isReact = port === PORTS.react;
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
 	const tree = await page.evaluate(SERIALIZE, '.sim-ui');
@@ -86,9 +111,22 @@ const grab = async (browser, port, spec) => {
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const panes = {};
-	for (const id of ids) if (id) panes[id] = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
+	const paneProblems = [];
+	for (const id of ids) {
+		if (!id) continue;
+		const pane = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
+		// The React side only: see `normaliseMultiIconMenus`. On the baseline it is a no-op, because
+		// nothing there carries the class it looks for.
+		if (!isReact) {
+			panes[id] = pane;
+			continue;
+		}
+		const normalised = normaliseMultiIconMenus(pane);
+		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
+		panes[id] = normalised.dom;
+	}
 	await page.close();
-	return { ids, shell, panes, modals, errors };
+	return { ids, shell, panes, modals, paneProblems, errors };
 };
 
 const browser = await launch();
@@ -98,7 +136,7 @@ let fail = 0;
 for (const spec of specsFromArgv()) {
 	const a = await grab(browser, PORTS.base, spec);
 	const b = await grab(browser, PORTS.react, spec);
-	const problems = [];
+	const problems = [...a.paneProblems, ...b.paneProblems];
 
 	const socials = collapseWrappers(a.shell, SOCIALS, SOCIAL_WRAPPER);
 	a.shell = socials.dom;
@@ -136,17 +174,16 @@ for (const spec of specsFromArgv()) {
 	if (pruned !== 2 + b.modals.length) {
 		problems.push(`${pruned} pruned subtrees in the shell, expected ${2 + b.modals.length} (the strip, .sim-main, and ${b.modals.length} modals)`);
 	}
-	// Each side keeps a placeholder for the ported dialog, so the shell still lines up, but their
-	// contents are different markup by design and cannot be compared against each other. Both are
-	// required to be present, so reverting the port fails here rather than passing quietly.
-	for (const [side, grabbed, marker] of [
-		['base', a, PORTED_DIALOG],
-		['react', b, PORTED_DIALOG_REACT],
-	]) {
-		const kept = grabbed.modals.filter(modal => !modal.includes(marker));
-		if (grabbed.modals.length - kept.length !== 1)
-			problems.push(`${side}: ${grabbed.modals.length - kept.length} ported dialogs in the modal set, expected 1`);
-		grabbed.modals = kept;
+	// Each side keeps a placeholder for every ported dialog, so the shell still lines up, but their
+	// contents are different markup by design and cannot be compared against each other. The counts
+	// are exact, so reverting a port fails here rather than passing quietly.
+	const basePorted = [];
+	for (const ported of PORTED_DIALOGS) basePorted.push(...takeModals(a, ported, 'base', problems));
+	takeModals(b, PORTED_DIALOG_REACT, 'react', problems);
+	// The one exporter React still builds as a Bootstrap modal. The set comparison cannot see it —
+	// the baseline's copy left with the five that ported — so it is compared here.
+	for (const modal of takeModals(b, VANILLA_ON_BOTH, 'react', problems)) {
+		if (!basePorted.includes(modal)) problems.push('react: the still-vanilla exporter modal matches none of the baseline exporters');
 	}
 	if (a.modals.length !== b.modals.length) problems.push(`base has ${a.modals.length} modals, react has ${b.modals.length}`);
 	else {
