@@ -45,23 +45,30 @@ const MODAL = /\.(modal|sim-dialog-portal)(\.|$)/;
 // The dialogs whose shape the port changes. Their markup is Base UI's rather than Bootstrap's, so
 // the set comparison below cannot compare them against their twins — they are removed from both
 // sides by exact count, so reverting a port fails here rather than passing quietly. `encounter.mjs`
-// gates the advanced encounter modal; `header-toolbar.mjs` and a browser probe gate the exporters.
+// gates the advanced encounter modal; `header-toolbar.mjs` and a browser probe gate the exporters
+// and the importers.
 //
 // `exporter` is six baseline modals of which five have ported. The sixth is the results tab's log
 // exporter, whose only opener lives inside the un-ported log runner, so React still builds it as a
 // Bootstrap modal. It is byte-identical to three of the five — no class tells them apart — so all
 // six leave the baseline, the one React still builds leaves the React side, and that pair is
 // asserted against each other below instead of by the set comparison.
+//
+// `importer` is the same arrangement one step earlier: three baseline importers are built into the
+// header at load, and they port one at a time. All three leave the baseline; whichever React still
+// builds as Bootstrap modals leave the React side and are asserted against their twins.
 const PORTED_DIALOGS = [
 	['advanced-encounter-picker-modal', 1],
 	['exporter', 6],
+	['importer', 3],
 ];
 
-// One Base UI portal per ported dialog: the encounter modal plus five exporters.
-const PORTED_DIALOG_REACT = ['sim-dialog-portal', 6];
+// One Base UI portal per ported dialog: the encounter modal, five exporters and three importers.
+const PORTED_DIALOG_REACT = ['sim-dialog-portal', 9];
 
-// Bootstrap on both sides still, and taken out of the React set only so the counts line up.
-const VANILLA_ON_BOTH = ['exporter', 1];
+// Bootstrap on both sides still, and taken out of the React set only so the counts line up. Each one
+// is asserted byte-identical to one of the baseline dialogs its marker pulled out.
+const VANILLA_ON_BOTH = [['exporter', 1]];
 
 // Matched on the subtree's first two lines — the `.modal` wrapper and the box inside it, or the
 // portal and its backdrop. A class deeper in the contents must not pick a modal out by accident:
@@ -180,10 +187,12 @@ for (const spec of specsFromArgv()) {
 	const basePorted = [];
 	for (const ported of PORTED_DIALOGS) basePorted.push(...takeModals(a, ported, 'base', problems));
 	takeModals(b, PORTED_DIALOG_REACT, 'react', problems);
-	// The one exporter React still builds as a Bootstrap modal. The set comparison cannot see it —
-	// the baseline's copy left with the five that ported — so it is compared here.
-	for (const modal of takeModals(b, VANILLA_ON_BOTH, 'react', problems)) {
-		if (!basePorted.includes(modal)) problems.push('react: the still-vanilla exporter modal matches none of the baseline exporters');
+	// The dialogs React still builds as Bootstrap modals. The set comparison cannot see them — the
+	// baseline's copies left with the ones that ported — so they are compared here.
+	for (const vanilla of VANILLA_ON_BOTH) {
+		for (const modal of takeModals(b, vanilla, 'react', problems)) {
+			if (!basePorted.includes(modal)) problems.push(`react: a still-vanilla "${vanilla[0]}" modal matches none of the baseline dialogs`);
+		}
 	}
 	if (a.modals.length !== b.modals.length) problems.push(`base has ${a.modals.length} modals, react has ${b.modals.length}`);
 	else {

@@ -22,22 +22,20 @@ import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
+	AddonImporterDialog,
 	CLI_EXPORTER,
 	createLink,
 	exporterDialog,
 	JSON_EXPORTER,
+	JsonImporterDialog,
 	LINK_EXPORTER,
 	PAWN_EP_EXPORTER,
 	// SIXTY_UPGRADES_EP_EXPORTER,
+	// SixtyUpgradesImporterDialog,
 	WOWHEAD_GEAR_PLANNER_EXPORTER,
+	WowheadImporterDialog,
 } from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
-import {
-	// Individual60UImporter,
-	IndividualAddonImporter,
-	IndividualJsonImporter,
-	IndividualWowheadGearPlannerImporter,
-} from '@features/import-export/view/importers';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
@@ -349,13 +347,14 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addTopbarComponents() {
-		this.simHeader.addImportLink('JSON', new IndividualJsonImporter(this.rootElem, this));
-		// this.simHeader.addImportLink('60U Cata', new Individual60UImporter(this.rootElem, this));
-		this.simHeader.addImportLink('WoWHead', new IndividualWowheadGearPlannerImporter(this.rootElem, this));
-		this.simHeader.addImportLink('Addon', new IndividualAddonImporter(this.rootElem, this));
+		// A React dialog has no `open()` for `addImportLink`/`addExportLink` to call — it has state —
+		// so the header menu renders it and owns which one is open. Registration order is menu order.
+		const importRegistry = this.simHeader.importExport;
+		importRegistry.addDialog('import', 'JSON', JsonImporterDialog);
+		// importRegistry.addDialog('import', '60U Cata', SixtyUpgradesImporterDialog);
+		importRegistry.addDialog('import', 'WoWHead', WowheadImporterDialog);
+		importRegistry.addDialog('import', 'Addon', AddonImporterDialog);
 
-		// The exporters are React dialogs: they have no `open()` for `addExportLink` to call, so the
-		// header menu renders them and owns which one is open. The importers are unchanged.
 		const exportRegistry = this.simHeader.importExport;
 		exportRegistry.addDialog('export', 'Link', exporterDialog(LINK_EXPORTER));
 		exportRegistry.addDialog('export', 'JSON', exporterDialog(JSON_EXPORTER));

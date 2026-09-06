@@ -4,7 +4,7 @@ import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
-import { IndividualWowheadGearPlannerImporter } from '../view/importers';
+import { WOWHEAD_SLOT_IDS } from '../importers';
 import type { ExporterDefinition } from './types';
 
 const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -197,14 +197,14 @@ export const WOWHEAD_GEAR_PLANNER_EXPORTER: ExporterDefinition = {
 		const gear = player.getGear();
 
 		gear.getItemSlots()
-			.sort((slot1, slot2) => IndividualWowheadGearPlannerImporter.slotIDs[slot1] - IndividualWowheadGearPlannerImporter.slotIDs[slot2])
+			.sort((slot1, slot2) => WOWHEAD_SLOT_IDS[slot1] - WOWHEAD_SLOT_IDS[slot2])
 			.forEach(itemSlot => {
 				const item = gear.getEquippedItem(itemSlot);
 				if (!item) {
 					return;
 				}
 
-				const slotId = IndividualWowheadGearPlannerImporter.slotIDs[itemSlot];
+				const slotId = WOWHEAD_SLOT_IDS[itemSlot];
 				const itemData = {
 					slotId: slotId,
 					itemId: item.id,

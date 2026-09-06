@@ -1,13 +1,10 @@
-/** @jsxImportSource @jsx-vanilla */
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
-import type { IndividualSimHost } from '@features/sim_host';
-import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { ref } from 'tsx-vanilla';
 
-import { showImportWarning } from '../importer';
-import { IndividualImporter } from './individual_importer';
+import { finishIndividualImport } from './finish_individual_import';
+import type { ImporterDefinition } from './types';
 
 const i = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
@@ -181,7 +178,8 @@ function parseTalentString(e: number[]) {
 	return t;
 }
 
-function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
+/** Exported for its own tests; the importer below is the only other caller. */
+export function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 	// Extract the part after '<domain>/gear-planner/'
 	const match = link.match(new RegExp(`${WOWHEAD_DOMAIN}/gear-planner/(.+)`));
 	if (!match) {
@@ -191,30 +189,33 @@ function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 	return readHash(e);
 }
 
-export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
-		super(parent, simUI, { title: i18n.t('import.wowhead.title'), allowFileUpload: true });
+/**
+ * Wowhead's own slot numbering, shared with the gear-planner *exporter* — it was a `static` on the
+ * vanilla importer class and the exporter reached across for it, so the direction is unchanged.
+ */
+export const WOWHEAD_SLOT_IDS: Record<ItemSlot, number> = {
+	[ItemSlot.ItemSlotHead]: 1,
+	[ItemSlot.ItemSlotNeck]: 2,
+	[ItemSlot.ItemSlotShoulder]: 3,
+	[ItemSlot.ItemSlotBack]: 15,
+	[ItemSlot.ItemSlotChest]: 5,
+	[ItemSlot.ItemSlotWrist]: 9,
+	[ItemSlot.ItemSlotHands]: 10,
+	[ItemSlot.ItemSlotWaist]: 6,
+	[ItemSlot.ItemSlotLegs]: 7,
+	[ItemSlot.ItemSlotFeet]: 8,
+	[ItemSlot.ItemSlotFinger1]: 11,
+	[ItemSlot.ItemSlotFinger2]: 12,
+	[ItemSlot.ItemSlotTrinket1]: 13,
+	[ItemSlot.ItemSlotTrinket2]: 14,
+	[ItemSlot.ItemSlotMainHand]: 16,
+	[ItemSlot.ItemSlotOffHand]: 17,
+};
 
-		const warningRef = ref<HTMLDivElement>();
-		this.descriptionElem.appendChild(
-			<div>
-				<p>
-					{i18n.t('import.wowhead.description')}{' '}
-					<a href={WOWHEAD_GEAR_PLANNER_URL} target="_blank">
-						{i18n.t('import.wowhead.gear_planner_link')}
-					</a>
-					.
-				</p>
-				<p>{i18n.t('import.wowhead.feature_description')}</p>
-				<p>{i18n.t('import.wowhead.instructions')}</p>
-				<div ref={warningRef} />
-			</div>,
-		);
-
-		if (warningRef.value) showImportWarning(warningRef.value, 'import.wowhead.tinker_warning.title', 'import.wowhead.tinker_warning.message');
-	}
-
-	async onImport(url: string) {
+export const WOWHEAD_GEAR_PLANNER_IMPORTER: ImporterDefinition = {
+	title: i18n.t('import.wowhead.title'),
+	allowFileUpload: true,
+	onImport: async (host, url) => {
 		const match = url.match(new RegExp(`www\\.wowhead\\.com/${WOWHEAD_DOMAIN}/gear-planner/([a-z\\-]+)/([a-z\\-]+)/([a-zA-Z0-9_\\-]+)`));
 		if (!match) {
 			throw new Error(i18n.t('import.wowhead.error_invalid_url', { url }));
@@ -244,7 +245,7 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 		const equipmentSpec = EquipmentSpec.create();
 
 		parsed.items.forEach(item => {
-			const dbItem = this.simUI.sim.db.getItemById(item.itemId);
+			const dbItem = host.sim.db.getItemById(item.itemId);
 			if (!dbItem) {
 				missingItems.push(item.itemId);
 				return;
@@ -254,7 +255,7 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 			const slotId = item.slotId;
 			if (!!item.enchantIds?.length) {
 				item.enchantIds.forEach(enchantSpellId => {
-					const enchant = this.simUI.sim.db.enchantSpellIdToEnchant(enchantSpellId);
+					const enchant = host.sim.db.enchantSpellIdToEnchant(enchantSpellId);
 					const isTinker = enchant?.requiredProfession === Profession.Engineering;
 					if (!enchant) {
 						missingEnchants.push(enchantSpellId);
@@ -285,22 +286,22 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 					? (item.upgradeRank as ItemLevelState)
 					: Object.keys(dbItem.scalingOptions).length - 2;
 			}
-			const itemSlotEntry = Object.entries(IndividualWowheadGearPlannerImporter.slotIDs).find(e => e[1] == slotId);
+			const itemSlotEntry = Object.entries(WOWHEAD_SLOT_IDS).find(e => e[1] == slotId);
 			if (itemSlotEntry != null) {
 				equipmentSpec.items.push(itemSpec);
 			}
 		});
 
 		const glyphs = Glyphs.create({
-			major1: this.simUI.sim.db.glyphSpellToItemId(glyphIds[0]),
-			major2: this.simUI.sim.db.glyphSpellToItemId(glyphIds[1]),
-			major3: this.simUI.sim.db.glyphSpellToItemId(glyphIds[2]),
-			minor1: this.simUI.sim.db.glyphSpellToItemId(glyphIds[3]),
-			minor2: this.simUI.sim.db.glyphSpellToItemId(glyphIds[4]),
-			minor3: this.simUI.sim.db.glyphSpellToItemId(glyphIds[5]),
+			major1: host.sim.db.glyphSpellToItemId(glyphIds[0]),
+			major2: host.sim.db.glyphSpellToItemId(glyphIds[1]),
+			major3: host.sim.db.glyphSpellToItemId(glyphIds[2]),
+			minor1: host.sim.db.glyphSpellToItemId(glyphIds[3]),
+			minor2: host.sim.db.glyphSpellToItemId(glyphIds[4]),
+			minor3: host.sim.db.glyphSpellToItemId(glyphIds[5]),
 		});
 
-		this.finishIndividualImport(this.simUI, {
+		await finishIndividualImport(host, {
 			charClass,
 			race,
 			equipmentSpec,
@@ -310,24 +311,5 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 			missingEnchants,
 			missingItems,
 		});
-	}
-
-	static slotIDs: Record<ItemSlot, number> = {
-		[ItemSlot.ItemSlotHead]: 1,
-		[ItemSlot.ItemSlotNeck]: 2,
-		[ItemSlot.ItemSlotShoulder]: 3,
-		[ItemSlot.ItemSlotBack]: 15,
-		[ItemSlot.ItemSlotChest]: 5,
-		[ItemSlot.ItemSlotWrist]: 9,
-		[ItemSlot.ItemSlotHands]: 10,
-		[ItemSlot.ItemSlotWaist]: 6,
-		[ItemSlot.ItemSlotLegs]: 7,
-		[ItemSlot.ItemSlotFeet]: 8,
-		[ItemSlot.ItemSlotFinger1]: 11,
-		[ItemSlot.ItemSlotFinger2]: 12,
-		[ItemSlot.ItemSlotTrinket1]: 13,
-		[ItemSlot.ItemSlotTrinket2]: 14,
-		[ItemSlot.ItemSlotMainHand]: 16,
-		[ItemSlot.ItemSlotOffHand]: 17,
-	};
-}
+	},
+};

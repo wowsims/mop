@@ -1,9 +1,5 @@
-import { Database } from '@domain/proto_utils/database';
-import { classNames } from '@domain/proto_utils/names';
-import { batch } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
-import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@generated/proto/common';
-import Toast from '@ui-kit/toast';
+import { Spec } from '@generated/proto/common';
 
 import type { IndividualSimHost } from '../../../sim_host';
 import { Importer, ImporterOptions } from '../importer';
@@ -20,63 +16,8 @@ export abstract class IndividualImporter<SpecType extends Spec> extends Importer
 		this.simUI = simUI;
 	}
 
-	protected async finishIndividualImport<SpecType extends Spec>(
-		simUI: IndividualSimHost<SpecType>,
-		{
-			charClass,
-			race,
-			equipmentSpec,
-			talentsStr,
-			glyphs,
-			professions,
-			missingEnchants = [],
-			missingItems = [],
-		}: {
-			charClass: Class;
-			race: Race;
-			equipmentSpec: EquipmentSpec;
-			talentsStr: string;
-			glyphs: Glyphs | null;
-			professions: Profession[];
-			missingEnchants?: number[];
-			missingItems?: number[];
-		},
-	): Promise<void> {
-		if (charClass != simUI.player.getClass()) {
-			throw new Error(`Wrong Class! Expected ${simUI.player.getPlayerClass().friendlyName} but found ${classNames.get(charClass)}!`);
-		}
-
-		await Database.loadLeftoversIfNecessary(equipmentSpec);
-
-		const gear = simUI.sim.db.lookupEquipmentSpec(equipmentSpec);
-
-		// Now update settings using the parsed values.
-		batch(() => {
-			simUI.player.setRace(race);
-			simUI.player.setGear(gear);
-			if (talentsStr && talentsStr != '--') {
-				simUI.player.setTalentsString(talentsStr);
-			}
-			if (glyphs) {
-				simUI.player.setGlyphs(glyphs);
-			}
-			if (professions.length > 0) {
-				simUI.player.setProfessions(professions);
-			}
-		});
-
-		this.close();
-
-		if (missingItems.length == 0 && missingEnchants.length == 0) {
-			new Toast({ variant: 'success', body: `Import successful!` });
-		} else {
-			new Toast({
-				variant: 'info',
-				body:
-					'Import successful, but the following IDs were not found in the sim database:' +
-					(missingItems.length == 0 ? '' : '\n\nItems: ' + missingItems.join(', ')) +
-					(missingEnchants.length == 0 ? '' : '\n\nEnchants: ' + missingEnchants.join(', ')),
-			});
-		}
-	}
+	// `finishIndividualImport` used to live here. Its four callers are React now, and it moved with
+	// them to `features/import-export/importers/finish_individual_import.ts`, minus the
+	// `this.close()` the dialog does for itself. `BulkGearJsonImporter`, the one subclass left,
+	// never called it.
 }

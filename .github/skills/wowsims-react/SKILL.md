@@ -338,6 +338,8 @@ of the duplication sweep was to build each shape once.
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
+| `Importer` | `ui/features/import-export/components/Importer/` | `IndividualImporter`'s four concrete subclasses (**deleted**); `view/importer.tsx` and `IndividualImporter` stay for `BulkGearJsonImporter`, whose opener is in the un-ported bulk tab | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The four `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write |
+| `ImportWarning` | `ui/features/import-export/components/Importer/ImportWarning.tsx` | `showImportWarning` in `view/importer.tsx` (**deleted**) | `titleKey`, `messageKey` | the pinned, undismissable warning toast, that its body is a real `<div>`, and its teardown — `Toast` is not a `Component`, so this is `useLegacyMount`'s shape written by hand |
 | `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
 | `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` (still live, dual-stack — the cooldowns picker, in the rotation tab, is the last vanilla consumer) | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote. `iconEnumPickerShown(config, modObject)` is its `showWhen()` override, exported because a caller can need the answer without the picker |
 | `PlayerSettings` | `ui/features/settings/components/PlayerSettings/` | `buildPlayerSettings` in `app/tabs/settings_tab.tsx`, and with it `configureIconSection`, `configureInputSection` and `buildInputPickers` (**deleted** — no caller left) | the spec's `playerIconInputs` and `playerInputs.inputs` | the block's order, the hand-rolled race and profession configs, and the icon group's inline `gridTemplateColumns` |
@@ -1260,13 +1262,103 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    all in `scss/shared/`), drop `CritCapRow`'s `--bs-border-opacity` spacer, and correct the two
    mis-spelled names in `Dialog.tsx`'s comment.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
-   bulk, import-export, apl, gear, results.
+   bulk, ~~import-export~~, apl, gear, results. **import-export is done** — the five header exporters
+   landed first, the four individual importers followed. What is left of the feature is two dialogs
+   whose openers live inside un-ported tabs and which therefore port with those tabs, not with this
+   one: `LogExporter` (results, hands-off) and `BulkGearJsonImporter` (bulk). `view/exporter.tsx`,
+   `view/importer.tsx` and `IndividualImporter` stay alive for exactly those two.
 
 **Not queued, deliberately.** The three dropdown pickers could go on Base UI `Menu` now that the
 adapter exists, but every one of their callers is still vanilla — a React picker with no consumer is
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The wowhead and tooltip anchor attributes come from one helper each.**
+  `wowheadAnchorProps()` in `ui-kit/wowhead.ts` and `tooltipAnchorProps()` in
+  `ui-kit/Tooltip/utils.ts`. Neither collapsed to a flat constant, because both had an exception
+  that turned out to be load-bearing:
+
+  `MultiIconPicker`'s trigger emits only `data-disable-wowhead-touch-tooltip`, not the pair — it
+  carries no `href`, so wowhead has no icon to swap in, and the vanilla build does the same. Hence
+  the `icon` option. The icon-enum pickers drop `data-tooltip-id` entirely when a value has no
+  tooltip text, because an anchor pointing at a tooltip with nothing to say still opens an empty
+  one; hence the nullable id. They also pass the text as `data-tooltip-content` so one `Tooltip`
+  serves every option rather than one element per option, and an empty string is kept as distinct
+  from absent.
+
+  Attribute-preserving, verified against the running baseline rather than assumed: `data-whtticon`
+  263 and `data-disable-wowhead-touch-tooltip` 152, identical on both builds. The vanilla stack
+  still hand-writes these in `ui-kit/pickers/*`; they go when those files do.
+
+  **`mount-once.mjs` passes with `errors=0`.** Two separate ports have now reported it failing on
+  the `IconPicker` nested-anchor warning; both were wrong. That warning is a React *dev* build
+  warning, and `:3402` serves a production build — `vite build` embeds the production React bundle
+  regardless of mode, which the StrictMode note further up this file already says. Re-measure before
+  recording this gate as red.
+
+- 2026-09-06 **The importers are React too, and `.importer` joined `.exporter` as a dual-stack
+  class.** Same shape as the exporters a day earlier: `Importer` + `IndividualImporter` + four
+  concrete subclasses became one component and four objects, because nothing above `onImport` varied
+  between them. `features/import-export/importers/` holds the definitions and the two shared pieces —
+  `finish_individual_import.ts` and Wowhead's hash reader — and each importer has a small
+  `*ImporterDialog.tsx` of its own rather than an `importerDialog(def)` binder, because the one part
+  that stays JSX is the description.
+
+  **`BulkGearJsonImporter` is why `view/importer.tsx` survives**, exactly as `LogExporter` is why
+  `view/exporter.tsx` does: its only opener is `bulk_tab.tsx:752`, inside a tab that has not ported.
+  So `IndividualImporter` stays as its base, minus `finishIndividualImport`, whose four callers all
+  moved. The 60U importer *was* ported even though its registration is commented out — the 60U
+  exporter set that precedent, and it is what let the shared tail stop existing twice.
+
+  **`WOWHEAD_SLOT_IDS` stopped being a `static` on a view class.** The ported gear-planner *exporter*
+  was reaching into `IndividualWowheadGearPlannerImporter.slotIDs` across the `view/` boundary; it is
+  a `const` in `importers/wowhead_gear_planner.ts` now and the direction of the dependency is
+  unchanged.
+
+  **Five vanilla defects, all fixed by the port rather than carried.** `open()` passed
+  `this.header.title` to `trackPageView` — `this.header` is the `.modal-header` *element*, so every
+  import page view was logged with an empty title and the slug `/import/`, the same bug the exporter
+  port found. The upload handler wrote `textarea.textContent`, which is a textarea's *default* value,
+  so a field the user had already typed in ignored the upload and imported the typed text; and it
+  read `files[0]` unguarded, so cancelling the picker threw inside the listener. Addon, WoWHead and
+  60U all called `finishIndividualImport` **without `await`**, so its "Wrong Class!" rejection was
+  unhandled — importing a mage export on a warrior page changed nothing and said nothing. And 60U
+  called `sim.db.lookupEquipmentSpec` once for nothing before `finishIndividualImport` called it for
+  real. Awaiting has one sequencing consequence worth naming: 60U's random-suffix warning toast now
+  follows the success toast instead of preceding it, and only appears when the import actually
+  succeeded.
+
+  **`SimHeader.addImportLink` is dead code with no caller now**, the way `addExportLink` has been
+  since the exporters ported. Both were left alone because `sim_header.tsx` carries the vanilla
+  pragma, and `ImportExportRegistry.add()` is still reached through them. The vanilla
+  `Importer.open()`'s `/import/` slug bug is likewise still there for `BulkGearJsonImporter` — the
+  dual-stack rule says fix it when bulk ports, not from here.
+
+  **`animation: false` on the standing warning toast is not cosmetic, and the reason generalises.**
+  Bootstrap's `Toast.show()` queues its "done showing" callback behind `transitionend` *plus* a
+  timeout even when nothing transitions, and that callback reads `this._element` — which `dispose()`
+  nulls. A React ref callback that constructs a toast and disposes it in its cleanup therefore throws
+  `Cannot read properties of null (reading 'classList')` under StrictMode's mount/cleanup/mount, and
+  `mount-once.mjs` is the only gate that runs StrictMode at all. Nothing is lost: the toast is built
+  while its dialog is closed, so its fade-in was never on screen. Expect this for any Bootstrap
+  widget hosted from a ref callback.
+
+  **The `rel` on the two external description links is not a change.** The baseline on 3401 is
+  `feature/ui-restructure`, which has no `externalRel` in its JSX shim; on this branch the vanilla
+  importers already emitted `rel="noopener noreferrer"` and the React ones spell it out. A throwaway
+  probe opened all three importers on both builds and compared the title, the description
+  paragraphs, the external links, the warning toast and whether it is shown, the textarea and its
+  `spellcheck`, the footer controls with their computed widths, and the upload label's `for` against
+  the input's id: **`rel` was the only difference**, and the two class *orders* the probe normalises
+  (`Button` emits `btn btn-primary` first where the vanilla markup put its own class first).
+
+  **`parity.mjs` gained `['importer', 3]` and `VANILLA_ON_BOTH` became a list.** Three `.importer`
+  Bootstrap modals are in the baseline at load — the bulk one is constructed on click, so it is not —
+  and they ported one at a time, which is what forced the second half: the still-vanilla React
+  dialogs of *two* different markers now have to be taken out and asserted against their baseline
+  twins. Verified by tightening `['importer', 3]` to 2, which fails with
+  `base: 3 modals matching "importer", expected 2`.
 
 - 2026-09-06 **Three loose ends cleared, and a fourth deliberately deferred.**
 
