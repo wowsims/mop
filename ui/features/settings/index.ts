@@ -4,3 +4,5 @@ export { OtherSettings } from './components/OtherSettings';
 export type { OtherSettingsProps } from './components/OtherSettings';
 export { StatOptionIcons } from './components/StatOptionIcons';
 export type { StatOptionIconsProps } from './components/StatOptionIcons';
+export { CustomSection } from './components/CustomSection';
+export type { CustomSectionProps } from './components/CustomSection';

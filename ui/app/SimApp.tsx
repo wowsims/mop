@@ -1,7 +1,7 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
-import { OtherSettings, StatOptionIcons } from '@features/settings';
+import { CustomSection, OtherSettings, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
@@ -109,6 +109,11 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						createPortal(
 							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN, simUI)} />,
 							simUI.settingsTab.externalDefensiveCooldownContainer,
+						)}
+					{/* One per `sections` entry the spec declares; most declare none. */}
+					{ready &&
+						simUI.settingsTab.customSectionContainers.map(({ section, body }) =>
+							createPortal(<CustomSection section={section} />, body, section.id),
 						)}
 				</SimHostProvider>
 			)}

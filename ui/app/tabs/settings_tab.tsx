@@ -37,6 +37,8 @@ export class SettingsTab extends SimTab {
 	encounterContainer!: HTMLElement;
 	/** Where React renders the other-settings block. Absent when that block is not built at all. */
 	otherSettingsContainer?: HTMLElement;
+	/** One per declared `sections` entry, paired with the config React needs to fill it. */
+	customSectionContainers: Array<{ section: CustomSection<any>; body: HTMLElement }> = [];
 	/** The two external-cooldown blocks. Absent on a spec whose option list filters to nothing. */
 	externalDamageCooldownContainer?: HTMLElement;
 	externalDefensiveCooldownContainer?: HTMLElement;
@@ -163,14 +165,13 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildCustomSettingsSections() {
-		(this.simUI.individualConfig.sections || []).forEach(section => {
-			buildCustomSection(this.column2, this.simUI.player, section).rootElem.classList.add('custom-section');
-		});
-		// Deprecated function form; specs should declare `sections` instead.
-		(this.simUI.individualConfig.customSections || []).forEach(customSection => {
-			const section = customSection(this.column2, this.simUI);
-			section.rootElem.classList.add('custom-section');
-		});
+		// The block, its `custom-section` class and its `when` visibility stay here; React fills the
+		// body. `when` toggles `hide` on the block's *root*, which React does not own.
+		for (const section of this.simUI.individualConfig.sections || []) {
+			const contentBlock = buildCustomSection(this.column2, this.simUI.player, section);
+			contentBlock.rootElem.classList.add('custom-section');
+			this.customSectionContainers.push({ section, body: contentBlock.bodyElement });
+		}
 	}
 
 	private buildConsumesSection() {
@@ -458,21 +459,7 @@ export function buildCustomSection<SpecType extends Spec>(parentElem: HTMLElemen
 		header: { title: section.title, tooltip: section.tooltip },
 	});
 
-	if (section.iconInputs?.length) {
-		const iconGroup = Input.newGroupContainer(section.iconGroupCssClass);
-		iconGroup.classList.add('icon-group');
-		contentBlock.bodyElement.appendChild(iconGroup);
-		section.iconInputs.forEach(iconInput => IconInputs.buildIconInput(iconGroup, player, iconInput));
-	}
-
-	if (section.inputs?.length) {
-		buildInputPickers(contentBlock.bodyElement, player, section.inputs);
-	}
-
-	contentBlock.bodyElement.querySelectorAll('.input-root').forEach(elem => {
-		elem.classList.add('input-inline');
-	});
-
+	// The body is left empty: `SimApp` portals the React `CustomSection` into it.
 	const when = section.when;
 	if (when) {
 		const applyVisibility = () => contentBlock.rootElem.classList.toggle('hide', !when(player));

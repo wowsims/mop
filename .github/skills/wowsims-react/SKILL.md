@@ -341,6 +341,7 @@ of the duplication sweep was to build each shape once.
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
+| `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection`'s body half in `app/tabs/settings_tab.tsx` | a `CustomSection` config — its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1142,10 +1143,8 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    and produced `InputPicker`, the dispatcher items 6 and 7 will reuse.
 6. ~~**The two external-cooldown blocks**~~ — **done.** They produced `StatOptionIcons`, and showed
    that `configureIconSection` was doing nothing for them at all.
-7. **Custom sections** — cheap, but sequenced *after* the cooldown blocks because it has **zero gate
-   coverage**: only the two shaman specs declare `sections`, and neither is in `SPECS`. Prove the
-   pattern where the gate can see it first, then either extend `SPECS` for that run or verify by
-   hand. The deprecated `customSections` function form goes away here — no spec declares it.
+7. ~~**Custom sections**~~ — **done**, verified by running both gates explicitly on
+   `shaman/elemental` and `shaman/enhancement`, the only two specs that declare `sections`.
 8. **Extract the store writes, with no React in the change.** `PresetConfigurationPicker.applyBuild`
    (a static that writes ~20 fields in one `batch` and already has a non-view caller in
    `individual_sim_ui.tsx`), and `getCurrentSavedSettings` + the 14-setter `setData` batch out of
@@ -1176,6 +1175,27 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Custom sections are React**, and the deprecated `customSections` function form is
+  gone from the tab — no spec declared it. The field is still on `IndividualSimUIConfig`, which is
+  the frozen surface, so it is now declared and read by nothing; removing it is a spec-schema change
+  and wants asking first.
+
+  The split is the same as everywhere else, one line further out than usual: the `ContentBlock`, its
+  `custom-section` class *and* its `when` visibility stay vanilla, because `when` toggles `hide` on
+  the block's **root**, which React does not own. It only reads the player, so there was nothing to
+  move to `model/`.
+
+  `inline` is forced on everything including the icon pickers, because the vanilla builder walked
+  every `.input-root` in the body afterwards — the same trap the other-settings port hit. An
+  `iconEnum` input would need a picker that is not ported; the narrowing throws rather than rendering
+  a section short, so a spec that adds one fails loudly.
+
+  **This block had zero gate coverage** — only `shaman/elemental` and `shaman/enhancement` declare
+  `sections` and neither is in `SPECS`, which is why it was sequenced after the cooldown blocks
+  rather than before. Verified by running `panes-parity` and `settings-tab` explicitly on both, and
+  by checking the probe actually lists the six Totems pickers rather than passing on an absent
+  section.
 
 - 2026-09-06 **Both external-cooldown blocks are React**, on one component. `StatOptionIcons` is
   typed to `IconPickerStatOption` rather than the wider union its input list can hold: the other two
