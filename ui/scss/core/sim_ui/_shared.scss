@@ -154,20 +154,3 @@ th {
 	}
 }
 // END TODO
-
-// Hide all tank EP weights/actions
-// due to inaccurate reforge results causing confusion
-.sim-type--tank {
-	.ep-weights-menu {
-		.results-ep-table thead th:nth-child(2), // Update checkbox
-		.results-ep-table tbody td:nth-child(2), // Update checkbox
-		.modal-footer,
-		.ep-ratios,
-		.ep-reference-options,
-		.damage-metrics,
-		.healing-metrics,
-		.threat-metrics {
-			display: none !important;
-		}
-	}
-}

@@ -2291,6 +2291,7 @@
 					"title": "Calculer les Poids des Statistiques",
 					"ep": "PE",
 					"weights": "Poids",
+				"stats_type": "Type d'affichage des statistiques",
 					"show_all_stats": "Afficher toutes les Statistiques",
 					"dps_tps_reference": "Référence DPS/TPS :",
 					"healing_reference": "Référence de soins :",

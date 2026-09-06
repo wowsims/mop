@@ -7,9 +7,11 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 export interface EnumPickerProps<ModObject> {
 	modObject: ModObject;
 	config: EnumPickerConfig<ModObject>;
+	/** For a select with no visible label. `config.label` renders one; this names it without adding markup. */
+	ariaLabel?: string;
 }
 
-export const EnumPicker = <ModObject,>({ modObject, config }: EnumPickerProps<ModObject>) => {
+export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const selectRef = useRef<HTMLSelectElement>(null);
 
@@ -30,7 +32,13 @@ export const EnumPicker = <ModObject,>({ modObject, config }: EnumPickerProps<Mo
 
 	return (
 		<PickerShell config={config} cssClass="enum-picker-root" hidden={hidden} disabled={disabled}>
-			<Field.Control render={<select />} ref={selectRef} id={config.id} className="enum-picker-selector form-select" disabled={disabled}>
+			<Field.Control
+				render={<select />}
+				ref={selectRef}
+				id={config.id}
+				className="enum-picker-selector form-select"
+				aria-label={ariaLabel}
+				disabled={disabled}>
 				{config.values.map(entry => (
 					<option key={entry.value} value={String(entry.value)} title={entry.tooltip}>
 						{entry.name}

@@ -1,19 +1,26 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // `Database.get` memoises its load in module scope, so every case resets the module registry to get
 // a fresh memo rather than sharing one across tests.
+// Fake timers are installed *after* the dynamic import, not in `beforeEach`: the module loader's own
+// microtasks run on a frozen clock otherwise, and the retry case fails intermittently.
 const freshDatabase = async () => {
 	vi.resetModules();
-	return (await import('./database')).Database;
+	const { Database } = await import('./database');
+	vi.useFakeTimers();
+	return Database;
 };
 
 const okResponse = () => ({ json: () => Promise.resolve({}) });
 
-describe('Database.get', () => {
-	beforeEach(() => {
-		vi.useFakeTimers();
-	});
+// `runAllTimersAsync` drains what is scheduled when it is called; the retry schedules its next
+// backoff from inside a rejection handler, so under load the third attempt can be scheduled after
+// the drain has already finished. Advancing until the call count settles is deterministic.
+const drainRetries = async (fetchMock: { mock: { calls: unknown[] } }, until: number) => {
+	for (let i = 0; i < 20 && fetchMock.mock.calls.length < until; i++) await vi.advanceTimersByTimeAsync(1000);
+};
 
+describe('Database.get', () => {
 	afterEach(() => {
 		vi.useRealTimers();
 		vi.unstubAllGlobals();
@@ -25,7 +32,7 @@ describe('Database.get', () => {
 
 		const Database = await freshDatabase();
 		const loaded = expect(Database.get()).resolves.toBeDefined();
-		await vi.runAllTimersAsync();
+		await drainRetries(fetchMock, 3);
 		await loaded;
 
 		expect(fetchMock).toHaveBeenCalledTimes(3);
@@ -41,14 +48,15 @@ describe('Database.get', () => {
 		// The assertion is attached before the timers run: `get()` rejects while they are draining,
 		// and a rejection with no handler yet attached surfaces as an unhandled rejection.
 		const first = expect(Database.get()).rejects.toThrow('offline');
-		await vi.runAllTimersAsync();
+		await drainRetries(fetchMock, 3);
 		await first;
 
 		const attemptsWhileFailing = fetchMock.mock.calls.length;
 		fetchMock.mockResolvedValue(okResponse());
 
+		const attemptsBeforeSecond = fetchMock.mock.calls.length;
 		const second = expect(Database.get()).resolves.toBeDefined();
-		await vi.runAllTimersAsync();
+		await drainRetries(fetchMock, attemptsBeforeSecond + 1);
 		await second;
 		expect(fetchMock.mock.calls.length).toBeGreaterThan(attemptsWhileFailing);
 	});

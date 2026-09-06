@@ -27,8 +27,8 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 |---|---|
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
-| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns; `Toast`, `Dialog` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**, **settings done**, **import-export done**, **stat-weights units 1-2 (the model and opener seams, no React) done**; stat-weights unit 3 — the React dialog — next |
+| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; `Toast` and the three dropdown pickers wait for their first consumer |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**, **settings done**, **import-export done**, **stat-weights done** (all four units); bulk, apl, gear and results remain |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -336,6 +336,8 @@ of the duplication sweep was to build each shape once.
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads — whose entries are *either* a vanilla `open()` or a React dialog it renders | the popup's markup and styling, that the contents arrive asynchronously, and which dialog is open |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
+| `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/sims/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
+| `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
 | `Importer` | `ui/features/import-export/components/Importer/` | `IndividualImporter`'s four concrete subclasses (**deleted**); `view/importer.tsx` and `IndividualImporter` stay for `BulkGearJsonImporter`, whose opener is in the un-ported bulk tab | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The four `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write |
@@ -924,7 +926,10 @@ tells you not to do.
 rules out the `AdvancedEncounterModal` shape. There is a **model** seam, and it was taken: ~200 of
 the 841 lines were DOM-free and are now `features/stat-weights/model/`. The shape stat-weights
 actually ports in is the talents/settings one — the whole view becomes React and only
-`renderSavedEPWeights` (second consumer: `reforge_panel.tsx`) and `ResultsViewer` stay islands.
+`renderSavedEPWeights` (second consumer: `reforge_panel.tsx`) stays an island.
+
+**Done, 2026-09-06** — see the change log. `ResultsViewer` turned out **not** to be an island either:
+it was there to host the run overlay, and the run is a `ProgressTrackerDialog` now.
 
 The tractable second consumer is `Exporter` (`features/import-export/view/exporter.tsx`, 72 lines):
 a textarea in the body, a copy button and an optional download button in the footer, and nine
@@ -1130,8 +1135,17 @@ If one is ever clipped, the fix is `positionStrategy="fixed"` on the `Tooltip` p
   `Tooltip` component passes. The library's `REACT_TOOLTIP_DISABLE_*_STYLES` env vars are useless in
   a browser bundle — the guard around them tests `typeof process`, which is `undefined` there. An
   injected `<style>` lands in `<head>` after the bundle, so it silently outranks a component theme.
-- **Sim progress bypasses the store.** The worker progress callback writes DOM directly, per tick,
-  unbatched. Route it into a slice or hold it behind a ref and throttle — never `setState` per tick.
+- **Sim progress bypasses the store, and it is not as fast as it looks.** The worker progress
+  callback writes DOM directly, unbatched — never `setState` per tick. But "per tick" is **~10/s on
+  wasm and ~2/s on the native host**, not per worker message: `sim/core/sim.go:336` reports at most
+  once per 100 ms per sim, `ui/domain/wasm/sim.ts:118` decimates by worker count
+  (`progressCounter % running`), `wasm/stat_weights.ts` runs its sims sequentially so nothing
+  multiplies, and `worker/worker_http.ts:47` polls at 500 ms. So a `requestAnimationFrame` coalescer
+  caps at 60/s and would never collapse a single tick — it is insurance, not an optimisation. Split
+  by frequency instead: the discrete stage is React state, and every continuous value (the counters,
+  the bar width, the elapsed clock) is a ref plus a `textContent` / custom-property write.
+  `ProgressTrackerDialog` is the worked example. `startTransition` and `useDeferredValue` are the
+  wrong answer — they change render *priority*, not render *count*.
 - **Goldens do not cover the shell.** `tools/state-snapshots/snapshot.ts` imports
   `IndividualSimUIConfig` as a *type* and hand-mirrors `applyDefaults`. They prove no state write
   leaked into a component. They say nothing about whether anything rendered.
@@ -1268,12 +1282,11 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    all in `scss/shared/`), drop `CritCapRow`'s `--bs-border-opacity` spacer, and correct the two
    mis-spelled names in `Dialog.tsx`'s comment.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
-   bulk, ~~import-export~~, apl, gear, results. **stat-weights is under way** — it is four units, and
-   units 1 (the model extraction) and 2 (the opener seam) landed 2026-09-06 with no React in the
-   change. Unit 3 is the React dialog, unit 4 the SCSS co-location, and its 16 recorded defects are
-   unit 3's `AskUserQuestion`; all three live in `stat-weights-plan.md`, which is a *session*
-   scratchpad file and not in this repo — as `scratchpad/base-ui-tabs-plan.md` above already is.
-   Ask the user for it rather than re-deriving it. **import-export is done** — the five header exporters
+   bulk, ~~import-export~~, apl, gear, results. **~~stat-weights~~ is done** — all four units, the
+   model and opener seams on 2026-09-06 and the React dialog plus its SCSS the same day, with all
+   sixteen recorded defects fixed. The investigation is
+   `.github/skills/wowsims-react/plans/stat-weights.md`, in this repo, units struck.
+   **import-export is done** — the five header exporters
    landed first, the four individual importers followed. What is left of the feature is two dialogs
    whose openers live inside un-ported tabs and which therefore port with those tabs, not with this
    one: `LogExporter` (results, hands-off) and `BulkGearJsonImporter` (bulk). `view/exporter.tsx`,
@@ -1284,6 +1297,95 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Stat-weights units 3 and 4: the dialog is React, and all sixteen recorded defects are
+  fixed.** `features/stat-weights/components/EpWeightsDialog/` is nine components plus `types.ts` and
+  `utils.ts`; `view/stat_weights_panel.tsx` is deleted. Only `renderSavedEPWeights` stays vanilla,
+  behind `useLegacyMount`, because `reforge_panel.tsx` is its second consumer. `ResultsViewer` is
+  **not** an island here — with the overlay gone the dependency went with it.
+
+  **The running state is a progress-tracker dialog, not the blur.** Vanilla added `blurred` to
+  `simUI.rootElem` — a `classList` write on an element whose className is React's, wholesale — and
+  hung a Stop button off `rootElem`'s *sibling*, outside the modal's focus trap. Both are gone.
+  `ui/ui-kit/ProgressTrackerDialog/` is a React twin of `progress_tracker_modal.tsx` on the `Dialog`
+  adapter with `preventClose` + `keepMounted`; the vanilla one is untouched, it has three consumers
+  and one is inside frozen `ui/sims/**`. The EP dialog renders the twin **inside its own `Dialog`'s
+  children**, which is how Base UI knows the two are nested — a sibling would make the inner popup's
+  backdrop an outside press on the outer one, and cancelling a run would abort-on-close. Measured in
+  the browser: the popup carries `--nested-dialogs`, and Cancel leaves the EP dialog open.
+
+  **The progress split, and the rate that decides it.** See "Things that will bite" above: the
+  callback fires ~10/s on wasm, so a rAF coalescer is insurance rather than a throttle. `stage` is
+  React state; the caption, the bar, its text and the clock are DOM writes through
+  `ProgressTrackerHandle.setProgress` and an interval that writes `textContent`. Measured with
+  `Profiler`: **100 progress ticks produce zero renders**, a stage transition produces exactly one,
+  and the 100 ms clock produces none. `keepMounted` is what makes the interval a real leak, so its
+  cleanup is asserted on close *and* on unmount, mutation-checked.
+
+  **The progress dialog is rendered only while a run is in flight.** Rendered unconditionally it is
+  an 11th `sim-dialog-portal` under `.sim-ui` with nothing on the baseline to match, and `parity.mjs`
+  failed on the extra `[pruned]` line — caught, not reasoned about. Conditional rendering is also
+  what vanilla did with `pendingDiv`. `PORTED_DIALOGS` gains `['ep-weights-menu', 1]` and
+  `PORTED_DIALOG_REACT` goes 9 → 10.
+
+  **`INTENDED` cannot hold this port's divergences, and that is a property of the gate.** `SERIALIZE`
+  records tag and sorted classes only — never an id — and `parity.mjs` removes every ported dialog
+  from both trees by exact count, so nothing inside `.ep-weights-menu` is compared at all. An entry
+  for the duplicate ids, the `--xl` popup class or the compact-layout selector would fail
+  `unobservedIntended` on the next run. They live in `tools/react-migration/stat-weights.mjs`
+  instead, which opens the dialog on both builds and prints the contrast: baseline 6 duplicate
+  `ep-ratio-N` ids, spaces in every toggle id, 15 untyped buttons, 3 unnamed reference selects, 0
+  options with a `value`, a size that does not move, and — at a 900px viewport, where the block is
+  live at all — the compact layout applied to a spec that hides threat metrics. React clean on all
+  seven. Three more assertions have no baseline counterpart and run on the React build only: the
+  progress popup's vertical centring, the run itself (progress → Cancel → a completed table), and a
+  header tooltip's rectangle, because `react-tooltip` renders **in place** and `.sim-dialog-body` is
+  `position: relative; overflow: auto` — the one clipping risk the port introduces. Measured inside
+  the popup and on screen; tippy appended to `<body>` and could not be clipped.
+
+  **Two facts worth not rediscovering.** The reforge optimiser builds a *vanilla* `ProgressTrackerModal`
+  at load, so an unscoped `.progress-tracker-modal-*` selector answers for **its** bar, not the EP
+  one — every progress read has to be scoped to `.progress-tracker-dialog`, which is also why the
+  React twin's root class is not `progress-tracker-modal` (the global rule positions the Bootstrap
+  `.modal-dialog` and would fight Base UI's transform). And a tank spec has **no Calculate button**:
+  `.sim-type--tank` hides the whole footer, so the browser exercise runs on `warrior/arms` and
+  `priest/shadow` and asserts the layout on `warrior/protection`.
+
+  **Unit 4 moved three rules that die under the Dialog's markup.** `_stat_weights_action.scss` is
+  `EpWeightsDialog.scss`; `.sim-type--tank … .modal-footer` is `.sim-dialog-footer` (asserted on
+  `warrior/protection`: footer, ratios and reference options all `display: none`); `.modal .modal-scroll-table`
+  had exactly one consumer and its two declarations moved onto `.results-ep-table-container`. The
+  global `.modal-body { gap }` needed nothing — `Dialog.scss` already sets `gap` on `.sim-dialog-body`.
+  The co-located file reads the owned tokens (`--table-row-even-bg`, `--gray-500`, `--body-bg`) where
+  the original read `--bs-*`. **The sticky header does not work and never did**: nothing constrains
+  the container's height, so the dialog body is the scroller on both builds and the `<th>` scrolls
+  away (baseline `.modal-body` 319 → 152, React `.sim-dialog-body` 318 → 152, identical). The
+  declarations survived the move; the effect was never there. Not fixed here — it is a behaviour
+  change nobody asked for.
+
+  **The sixteen defects, and what each fix cost.** Ten are fixed by the port's shape: the dead
+  `epAvgElem;` expression becomes a computed class, the dead `.pending` class is not written, the
+  discarded unsubscribe is `useStoreSubscribe`'s, the frozen tippy tooltip is derived at render, the
+  `<option>`s carry the `Stat` enum through `EnumPicker`, the three reference selects get a real
+  `<label htmlFor>`, every `<button>` gets its `type` from `Button`, the dialog size follows
+  `showThreatMetrics` through `useStoreSubscribe`, `isRunning` resets in a `finally`, and the
+  floating `waitForInit().then(...)` chains get a `.catch`. Three needed a decision: ids are
+  `ep-ratio-${type}-${index}` and `sw-stat-toggle-${sanitizeId(name)}`, and the always-true
+  `.ep-weights-menu:not(.hide-threat-metrics)` is `.sim-ui:not(.hide-threat-metrics) .ep-weights-menu`
+  — which is a **visible change on every non-tank spec at narrow viewports**, where the compact
+  layout used to apply to everyone. Defect 5 (pseudo-stats not gated on `showAllStats`) is a
+  **behaviour change**: "Show all stats" now reveals the seven pseudo-stats too, and unit 1's
+  mutation-checked assertion of the asymmetry was inverted rather than deleted. Defect 15 is in
+  shared vanilla `base_modal.tsx` and was fixed minimally — `open()`'s four listener-removers are a
+  private per-open list now, `onHideCallbacks` stays the caller's; five open/close cycles left 20
+  entries before. Defect 9's `results_viewer.tsx:150` instance is in the results feature and was
+  **skipped**.
+
+  **Three deltas that are not defects.** The reference selects are bound to
+  `subscribePlayerField(player, 'epRefStat')`, so they follow an external write where vanilla set
+  `.value` once. The table re-renders on an `epWeights` change, so the positive/negative colouring is
+  live where vanilla only recoloured on a full rebuild. And a rejected pre-run `abortType` now raises
+  an error toast where vanilla logged and returned silently.
 
 - 2026-09-06 **Stat-weights units 1 and 2: the model seam and the opener seam, no React in the
   change.** Same shape as queue item 8's settings extraction. `features/stat-weights/model/` is three
@@ -1365,7 +1467,10 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   the `IconPicker` nested-anchor warning; both were wrong. That warning is a React *dev* build
   warning, and `:3402` serves a production build — `vite build` embeds the production React bundle
   regardless of mode, which the StrictMode note further up this file already says. Re-measure before
-  recording this gate as red.
+  recording this gate as red. **Which port it is pointed at decides the answer**, so say so when
+  quoting it: `:3402` (the build) is `errors=0`; `:3403` (vite dev, which the README's invocation
+  line names) is `errors=2`, both the nested-anchor warning from `SettingsTabBody`'s `IconPicker`s.
+  Re-measured 2026-09-06 with stat-weights: same two frames, no stat-weights frame in either stack.
 
 - 2026-09-06 **The importers are React too, and `.importer` joined `.exporter` as a dual-stack
   class.** Same shape as the exporters a day earlier: `Importer` + `IndividualImporter` + four

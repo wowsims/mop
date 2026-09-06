@@ -2290,6 +2290,7 @@
 					"title": "Calculate Stat Weights",
 					"ep": "EP",
 					"weights": "Weights",
+				"stats_type": "Stat display type",
 					"show_all_stats": "Show All Stats",
 					"dps_tps_reference": "DPS/TPS reference:",
 					"healing_reference": "Healing reference:",

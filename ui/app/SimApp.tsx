@@ -2,6 +2,7 @@ import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
+import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
 import type { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -65,6 +66,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
+					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
 				</SimHostProvider>
 			)}
 		</>

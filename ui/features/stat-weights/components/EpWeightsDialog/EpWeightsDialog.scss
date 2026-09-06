@@ -1,3 +1,5 @@
+@import 'shared/tokens';
+
 .ep-weights-menu {
 	.ep-weights-content {
 		width: 100%;
@@ -10,7 +12,7 @@
 	.ep-reference-options {
 		margin-bottom: var(--block-spacer);
 
-		span {
+		.form-label {
 			font-weight: bold;
 		}
 
@@ -19,8 +21,11 @@
 		}
 	}
 
+	// Was `.modal .modal-scroll-table`, whose only consumer was this table. Nothing constrains this element's height, so it never actually scrolls and the sticky `<th>` is inert — measured identical on the vanilla build.
 	.results-ep-table-container {
 		position: relative;
+		flex: 1;
+		overflow-y: auto;
 
 		.results-ep-table {
 			width: 100%;
@@ -38,14 +43,17 @@
 			}
 
 			th {
+				position: sticky;
+				top: 0;
 				padding-top: var(--spacer-2);
 				padding-bottom: var(--spacer-2);
 				padding-right: var(--spacer-2);
+				background: var(--body-bg);
 				text-align: left;
 			}
 
 			.ep-ratios {
-				background-color: var(--bs-table-row-even-bg);
+				background-color: var(--table-row-even-bg);
 
 				td {
 					padding: var(--table-cell-padding);
@@ -76,11 +84,11 @@
 
 			tbody {
 				tr:nth-child(even) {
-					background-color: var(--bs-table-row-even-bg);
+					background-color: var(--table-row-even-bg);
 				}
 
 				tr:nth-child(odd) {
-					background-color: var(--bs-table-row-odd-bg);
+					background-color: var(--table-row-odd-bg);
 				}
 
 				td {
@@ -121,12 +129,11 @@
 }
 
 .unused-ep {
-	color: var(--bs-gray-500) !important;
+	color: var(--gray-500) !important;
 }
 
-// Style overrides for the EP UI in tank mode
-.ep-weights-menu:not(.hide-threat-metrics) {
-	// Compact rendering of EP compute button
+// `hide-threat-metrics` is on the sim root, not on the dialog: `.ep-weights-menu:not(.hide-threat-metrics)` was always true, so every spec got the tank-mode compact layout.
+.sim-ui:not(.hide-threat-metrics) .ep-weights-menu {
 	@mixin compact-button {
 		.results-ep-table-container {
 			.results-ep-table {
@@ -137,7 +144,6 @@
 		}
 	}
 
-	// Compact rendering of number pickers
 	@mixin compact-input {
 		input {
 			text-align: center;
@@ -146,7 +152,6 @@
 		}
 	}
 
-	// Compact table display by shrinking padding
 	@mixin compact-table {
 		.results-ep-table-container {
 			.results-ep-table {
@@ -159,12 +164,10 @@
 		}
 	}
 
-	// Shorten the compute EP button on very small devices
 	@media (max-width: 471px) {
 		@include compact-button;
 	}
 
-	// More compact EP table on mobile viewports
 	@include media-breakpoint-only(xs) {
 		@include compact-table;
 
@@ -173,7 +176,6 @@
 		}
 	}
 
-	// Padding obscures part of the value on these sizes
 	@include media-breakpoint-between(sm, lg) {
 		.ep-ratios {
 			@include compact-input;
@@ -188,7 +190,6 @@
 		}
 	}
 
-	// Avoid awkward line wrapping of table headers
 	@include media-breakpoint-down(lg) {
 		@include compact-button;
 		@include compact-table;
@@ -203,12 +204,18 @@
 	}
 }
 
-.results-pending-overlay {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 10000;
-	background: var(--bs-black-alpha-50);
+// Hide all tank EP weights/actions due to inaccurate reforge results causing confusion. `.modal-footer` was the Calculate button's row; the Dialog renders `.sim-dialog-footer`.
+.sim-type--tank {
+	.ep-weights-menu {
+		.results-ep-table thead th:nth-child(2),
+		.results-ep-table tbody td:nth-child(2),
+		.sim-dialog-footer,
+		.ep-ratios,
+		.ep-reference-options,
+		.damage-metrics,
+		.healing-metrics,
+		.threat-metrics {
+			display: none !important;
+		}
+	}
 }

@@ -43,6 +43,7 @@ vi.mock('./individual_sim_ui', async () => {
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
+vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
 // Needs the real spec registry to list every class; what is under test here is the shell's gate.
 vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div className="sim-title-dropdown-root" /> }));
 

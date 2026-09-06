@@ -106,7 +106,7 @@ only because the vanilla modal is constructed after the shell. In React they bec
 
 ## Recommended units, smallest first
 
-### Unit 1 — model extraction. No React, no markup change. *(recommended first)*
+### ~~Unit 1 — model extraction.~~ **DONE 2026-09-06**, variant (i).
 
 Move the eight DOM-free items above into `ui/features/stat-weights/model/`
 (`ep_math.ts`, `stats_table.ts` — the 13 entries as data, `refs` split out and left in the view).
@@ -130,7 +130,7 @@ Pin **current** behaviour, including the quirks below — do not fix them here.
   `parity.mjs` / `panes-parity.mjs` byte-identical, since no DOM moved.
 - Dialog: not needed.
 
-### Unit 2 — the opener seam. Still no React in the panel.
+### ~~Unit 2 — the opener seam.~~ **DONE 2026-09-06.**
 
 - `ui/features/sim_host.ts:53` → `epWeightsModal: { open(): void } | null`.
   `reforge_panel.tsx:776,780` calls only `.open()`, so it compiles and behaves unchanged. This is
@@ -143,7 +143,7 @@ Pin **current** behaviour, including the quirks below — do not fix them here.
   "Edit weights" button.
 - Dialog: not needed.
 
-### Unit 3 — the React dialog. **`Dialog` as-is or extended, depending on Risk 1's fork.**
+### ~~Unit 3 — the React dialog.~~ **DONE 2026-09-06.** Neither fork: the blur and the sibling Stop button are gone, and the running state is a `ProgressTrackerDialog` rendered inside the EP `Dialog`'s children. See the skill's change log.
 
 `ui/features/stat-weights/components/EpWeightsDialog/` + `EpWeightsTable/`, `EpWeightsHeader/`,
 `EpRatiosRow/`, `StatWeightRow/` (one component per file, per `SKILL.md:725-728`).
@@ -192,7 +192,7 @@ Behavioural sub-decisions to make explicit in the PR:
   column order and row ids, runs a 100-iteration calculation, clicks Stop, asserts the modal is
   still open); `npm run test:unit`; goldens byte-identical.
 
-### Unit 4 — SCSS co-location. `.modal-*` casualties are the point.
+### ~~Unit 4 — SCSS co-location.~~ **DONE 2026-09-06.** All three rules re-keyed, except that the global `.modal-body { gap }` needed nothing — `Dialog.scss` already sets it. The sticky `<th>` was measured inert on *both* builds and left that way.
 
 `ui/scss/core/components/_stat_weights_action.scss` (203 lines) → `EpWeightsDialog.scss`.
 Three rules die silently under the Dialog's markup and must be re-keyed in the same commit:
@@ -261,7 +261,7 @@ Note that fork (a) is *not* "render the overlay in the popup" on its own: the po
 - `parity.mjs` compares modals as an order-free set (`:36-39`), so moving construction from the
   shell constructor into a React effect is already absorbed.
 
-## Defects noticed — recorded, not fixed
+## Defects noticed — ~~recorded, not fixed~~ **all sixteen fixed in unit 3**
 
 Batch into one `AskUserQuestion` per `SKILL.md:977-984`.
 

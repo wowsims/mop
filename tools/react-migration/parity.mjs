@@ -61,10 +61,14 @@ const PORTED_DIALOGS = [
 	['advanced-encounter-picker-modal', 1],
 	['exporter', 6],
 	['importer', 3],
+	['ep-weights-menu', 1],
 ];
 
-// One Base UI portal per ported dialog: the encounter modal, five exporters and three importers.
-const PORTED_DIALOG_REACT = ['sim-dialog-portal', 9];
+// One Base UI portal per ported dialog: the encounter modal, five exporters, three importers and the
+// EP weights dialog. The stat-weights *progress* dialog is not among them — it is rendered only
+// while a run is in flight, the way the vanilla overlay was inserted on Calculate and removed after,
+// so at load there is nothing here for the baseline to be missing a twin for.
+const PORTED_DIALOG_REACT = ['sim-dialog-portal', 10];
 
 // Bootstrap on both sides still, and taken out of the React set only so the counts line up. Each one
 // is asserted byte-identical to one of the baseline dialogs its marker pulled out.

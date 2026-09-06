@@ -29,8 +29,5 @@ export const isEpStat = (stat: UnitStat, { epStats, epPseudoStats }: EpStatSet):
 	return epPseudoStats.includes(stat.getPseudoStat());
 };
 
-export const visibleEpUnitStats = ({ epStats, epPseudoStats }: EpStatSet, showAllStats: boolean): UnitStat[] =>
-	EP_UNIT_STATS.filter(
-		stat =>
-			!((!showAllStats && stat.isStat() && !epStats.includes(stat.getStat())) || (stat.isPseudoStat() && !epPseudoStats.includes(stat.getPseudoStat()))),
-	);
+export const visibleEpUnitStats = (statSet: EpStatSet, showAllStats: boolean): UnitStat[] =>
+	EP_UNIT_STATS.filter(stat => showAllStats || isEpStat(stat, statSet));

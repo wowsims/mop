@@ -65,10 +65,12 @@ describe('visibleEpUnitStats', () => {
 		expect(names(shown)).toContain(UnitStat.fromStat(Stat.StatIntellect).getKey());
 	});
 
-	it('adds no pseudo-stat when showAllStats is on, unlike the Stat clause', () => {
-		expect(names(visibleEpUnitStats(statSet, true)).filter(key => key.startsWith('PseudoStat'))).toEqual([
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHitPercent).getKey(),
-		]);
+	// DEFECT FIXED. The pseudo-stat clause was not gated on `showAllStats`, so "Show all stats"
+	// revealed extra `Stat`s but never an extra pseudo-stat. Both clauses are the same clause now.
+	it('adds every listed pseudo-stat when showAllStats is on', () => {
+		expect(names(visibleEpUnitStats(statSet, true)).filter(key => key.startsWith('PseudoStat'))).toEqual(
+			names(EP_UNIT_STATS.filter(stat => stat.isPseudoStat())),
+		);
 	});
 
 	it('keeps EP_UNIT_STATS order', () => {

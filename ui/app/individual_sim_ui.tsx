@@ -44,12 +44,13 @@ import * as OtherInputs from '@features/settings/model/other_inputs';
 import type { IndividualSimHost } from '@features/sim_host';
 import type { SpecDefinition } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
-import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
+import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
+import { trackPageView } from '../tracking/analytics';
 import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
@@ -79,10 +80,10 @@ const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
 export class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
-	private readonly statWeightActionSettings: StatWeightActionSettings;
+	readonly statWeightActionSettings: StatWeightActionSettings;
 
 	raidSimResultsManager: SimResultsManager | null;
-	epWeightsModal: EpWeightsMenu | null = null;
+	readonly epWeightsModal = new EpWeightsOpener();
 
 	get dpsRefStat(): Stat | undefined {
 		return this.player.getRefStat('dpsRefStat');
@@ -285,9 +286,15 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	private addSidebarComponents() {
 		this.raidSimResultsManager = addSimResultsAction(this);
-		this.sim.waitForInit().then(() => {
-			this.epWeightsModal = addStatWeightsAction(this, this.statWeightActionSettings);
-		});
+		this.sim
+			.waitForInit()
+			.then(() => {
+				this.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
+					trackPageView('Stat Weights', '/stat-weights');
+					this.epWeightsModal.open();
+				});
+			})
+			.catch(console.error);
 	}
 
 	talentsTab!: TalentsTab<SpecType>;

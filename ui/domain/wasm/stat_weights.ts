@@ -20,7 +20,7 @@ const makeAndSendWeightsError = (err: string | ErrorOutcome, onProgress: WorkerP
 		console.error(err);
 		errRes.error = ErrorOutcome.create({ message: err });
 	} else {
-		console.error(err.message);
+		if (err.message) console.error(err.message);
 		errRes.error = err;
 	}
 	onProgress(ProgressMetrics.create({ finalWeightResult: errRes }));

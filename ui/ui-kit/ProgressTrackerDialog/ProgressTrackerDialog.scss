@@ -1,0 +1,17 @@
+@import 'shared/tokens';
+
+// The `.progress-tracker-modal-*` rules are shared with the vanilla ProgressTrackerModal and stay in scss/core/components/_progress_tracker_modal.scss until its three consumers port.
+.sim-dialog-popup.progress-tracker-dialog {
+	top: 50%;
+	transform: translateY(-50%);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		transform: translateY(-50%) var(--modal-fade-transform);
+	}
+
+	// The bar is filled from a custom property so the progress callback writes one value instead of a style string.
+	.progress-bar {
+		width: calc(var(--progress, 0) * 1%);
+	}
+}

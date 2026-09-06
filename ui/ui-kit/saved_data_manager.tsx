@@ -130,9 +130,11 @@ export class SavedDataManager<ModObject, T> extends Component {
 		const deleteButtonRef = ref<HTMLButtonElement>();
 		const dataElem = (
 			<div className="saved-data-set-chip badge rounded-pill">
-				<button className="saved-data-set-name">{config.name}</button>
+				<button type="button" className="saved-data-set-name">
+					{config.name}
+				</button>
 				{!this.config.loadOnly && !config.isPreset && (
-					<button ref={deleteButtonRef} className="saved-data-set-delete">
+					<button type="button" ref={deleteButtonRef} className="saved-data-set-delete">
 						<i className="fa fa-times fa-lg"></i>
 					</button>
 				)}
@@ -296,7 +298,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 			<div className="saved-data-create-container">
 				<label className="form-label">{this.config.nameLabel || i18n.t('common.name')}</label>
 				<input ref={saveInputRef} className="saved-data-save-input form-control" type="text" placeholder={i18n.t('common.name')} />
-				<button ref={saveButtonRef} className="saved-data-save-button btn btn-primary">
+				<button type="button" ref={saveButtonRef} className="saved-data-save-button btn btn-primary">
 					{this.config.saveButtonText || `Save ${this.config.label}`}
 				</button>
 			</div>
