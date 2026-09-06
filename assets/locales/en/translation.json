@@ -417,10 +417,6 @@
 		"debuffs": {
 			"title": "Debuffs",
 			"tooltip": "Debuffs applied by <strong>other</strong> raid members.",
-			"misc": {
-				"label": "Misc",
-				"tooltip": "Miscellaneous debuffs"
-			},
 			"armor_reduction": "Armor Reduction",
 			"phys_dmg_reduction": "Phys Dmg Reduction",
 			"cast_speed": "Cast Speed",

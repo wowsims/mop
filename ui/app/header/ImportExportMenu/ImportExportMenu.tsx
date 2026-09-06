@@ -1,6 +1,8 @@
 import './ImportExportMenu.scss';
 
 import { Menu } from '@base-ui/react/menu';
+import { Icon } from '@ui-kit/Icon';
+import type { IconName, IconStyle } from '@ui-kit/Icon/types';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useState, useSyncExternalStore } from 'react';
@@ -10,8 +12,9 @@ import type { ImportExportKind, ImportExportRegistry } from '../import_export_re
 export interface ImportExportMenuProps {
 	kind: ImportExportKind;
 	registry: ImportExportRegistry;
-	/** FontAwesome classes verbatim — these use the bare `fa` prefix, which `Icon` cannot emit. */
-	icon: string;
+	icon: IconName;
+	/** These menus were written with the bare `fa` prefix, which is what `base` emits. */
+	iconStyle?: IconStyle;
 	title: string;
 }
 
@@ -26,7 +29,7 @@ export interface ImportExportMenuProps {
  * are keyed on its own class and read the `--dropdown-*` tokens rather than Bootstrap's
  * `--bs-dropdown-*`, which are emitted inside `.dropdown-menu` and would resolve to nothing here.
  */
-export const ImportExportMenu = ({ kind, registry, icon, title }: ImportExportMenuProps) => {
+export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', title }: ImportExportMenuProps) => {
 	const entries = useSyncExternalStore(
 		registry.subscribe,
 		() => registry.getEntries(kind),
@@ -53,7 +56,7 @@ export const ImportExportMenu = ({ kind, registry, icon, title }: ImportExportMe
 			    not one either. */}
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
 				<Menu.Trigger openOnHover delay={0} className={`${kind}-link`}>
-					<i className={icon} aria-hidden="true" /> {title}
+					<Icon name={icon} style={iconStyle} /> {title}
 				</Menu.Trigger>
 				<Menu.Portal>
 					{/* Bootstrap landed the menu 1px over the header: its plugin default offset was [0, -1] and

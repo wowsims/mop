@@ -66,13 +66,8 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
 					{createPortal(
 						<>
-							<ImportExportMenu kind="import" registry={simUI.simHeader.importExport} icon="fa fa-download" title={i18n.t('import.title')} />
-							<ImportExportMenu
-								kind="export"
-								registry={simUI.simHeader.importExport}
-								icon="fa fa-right-from-bracket"
-								title={i18n.t('export.title')}
-							/>
+							<ImportExportMenu kind="import" registry={simUI.simHeader.importExport} icon="download" title={i18n.t('import.title')} />
+							<ImportExportMenu kind="export" registry={simUI.simHeader.importExport} icon="right-from-bracket" title={i18n.t('export.title')} />
 						</>,
 						simUI.simHeader.importExportContainer,
 					)}

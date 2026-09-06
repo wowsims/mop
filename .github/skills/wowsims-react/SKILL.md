@@ -1268,6 +1268,40 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **Three loose ends cleared, and a fourth deliberately deferred.**
+
+  `ImportExportMenu`'s `icon` is typed (`IconName` + `iconStyle` defaulting to `base`), which retires
+  the last string-typed icon prop and finishes the `Icon` sweep.
+
+  `settings_tab.debuffs.misc` is deleted from both locales and the schema — no reader, and no
+  dynamic key construction reaches it (the ones that exist are `settings_tab.player.profession_*`,
+  `settings_tab.consumables.*` and `common.phases.*`). **Its near-twin `settings_tab.raid_buffs.misc`
+  is live** — `RaidBuffs.tsx:34` reads `.label` — so the two must not be confused; that is why the
+  key survived earlier sweeps as "probably used". Removing it needs all three files, since the
+  schema is `additionalProperties: false` *and* listed `misc` in `required`.
+
+  Worth knowing while touching that schema: **it already fails validation at HEAD**, on
+  `title_badge` being an additional property the schema does not declare. Pre-existing, verified by
+  validating HEAD's locale against HEAD's schema, and the error set is byte-identical before and
+  after this change. Nothing here introduced it and nothing here fixes it.
+
+- 2026-09-06 **`IconPicker`'s nested anchors: invalid, inert, and deferred to Phase 5 — decided, do
+  not re-open.** Two `<a class="icon-input-improved">` sit inside the outer
+  `<a class="icon-picker-button">`. Measured on both builds: **68 nested pairs, identical**, and the
+  browser does not re-parent them because both stacks build this DOM through DOM APIs rather than
+  parsing HTML.
+
+  Both fixes cost more than the defect does today. Turning the inner anchors into spans breaks
+  `.icon-input-improved:not([href])`, which is how unfilled improved icons are hidden, and loses
+  their wowhead link. Turning the outer element into a button — which is what it behaves as, since it
+  `preventDefault`s every left click — drops the `href` that the wowhead tooltip script and
+  middle-click both read.
+
+  This is the third member of a set worth naming: **the parity gate pins vanilla's markup, so a
+  defect vanilla shares cannot be fixed in the port without an `INTENDED` entry and a behaviour
+  risk.** The other two are the `hide` class over a conditional render, and `CritCapRow`'s
+  `--bs-border-opacity` write. All three become free the moment the vanilla comparison retires.
+
 - 2026-09-06 **The seam block's colour tokens are namespaced by family, and one `--bs-*` write is
   load-bearing after all.** The 22 tokens added by the audit landed on bare words following the
   block's existing convention (`--uncommon`, `--health`), which left `--shadow` reading like a

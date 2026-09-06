@@ -1498,19 +1498,6 @@
 						"tooltip": {
 							"type": "string"
 						},
-						"misc": {
-							"type": "object",
-							"properties": {
-								"label": {
-									"type": "string"
-								},
-								"tooltip": {
-									"type": "string"
-								}
-							},
-							"additionalProperties": false,
-							"required": ["label", "tooltip"]
-						},
 						"armor_reduction": {
 							"type": "string"
 						},
@@ -1528,7 +1515,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "tooltip", "misc", "armor_reduction", "phys_dmg_reduction", "cast_speed", "phys_dmg", "spell_dmg"]
+					"required": ["title", "tooltip", "armor_reduction", "phys_dmg_reduction", "cast_speed", "phys_dmg", "spell_dmg"]
 				},
 				"other": {
 					"type": "object",
