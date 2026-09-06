@@ -1,11 +1,16 @@
 /** @jsxImportSource @jsx-vanilla */
 import { kebabCase } from '@domain/format';
-import { DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@domain/proto_utils/logs';
+import { CombatLog, DpsLog, ResourceGroupLog, ResourceLog, ThreatLogGroup } from '@domain/proto_utils/combat_log';
 import { resourceNames } from '@domain/proto_utils/names';
 import i18n from '@i18n/config';
 
-import { renderDamageResult } from '../log_lines';
+import { Results } from '../log/components/results';
 import { percentageResources } from './constants';
+
+function resourceGroupResult(log: ResourceLog): string {
+	const delta = log.valueAfter - log.valueBefore;
+	return delta < 0 ? delta.toFixed(1) : `+${delta.toFixed(1)}`;
+}
 
 export function DpsTooltip(log: DpsLog) {
 	return (
@@ -14,7 +19,7 @@ export function DpsTooltip(log: DpsLog) {
 				<span className="bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
 			<div className="timeline-tooltip-body">
-				<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => TooltipLogItem(damageLog, renderDamageResult(damageLog)))}</ul>
+				<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => TooltipLogItem(damageLog, Results(damageLog)))}</ul>
 				<div className="timeline-tooltip-body-row">
 					<span className="series-color">
 						{i18n.t('results_tab.details.timeline.tooltips.dps')}: {log.dps.toFixed(2)}
@@ -59,7 +64,7 @@ export function ThreatTooltip(log: ThreatLogGroup) {
 	);
 }
 
-export function ResourceTooltip(log: ResourceChangedLogGroup, maxValue: number, includeAuras: boolean) {
+export function ResourceTooltip(log: ResourceGroupLog, maxValue: number, includeAuras: boolean) {
 	const valToDisplayString = percentageResources.includes(log.resourceType)
 		? (val: number) => `${val.toFixed(1)} (${((val / maxValue) * 100).toFixed(0)}%)`
 		: (val: number) => `${val.toFixed(1)}`;
@@ -75,7 +80,7 @@ export function ResourceTooltip(log: ResourceChangedLogGroup, maxValue: number, 
 						{i18n.t('results_tab.details.timeline.tooltips.before')}: {valToDisplayString(log.valueBefore)}
 					</span>
 				</div>
-				<ul className="timeline-mana-events">{log.logs.map(manaChangedLog => TooltipLogItem(manaChangedLog, <>{manaChangedLog.resultString()}</>))}</ul>
+				<ul className="timeline-mana-events">{log.logs.map(resourceLog => TooltipLogItem(resourceLog, <>{resourceGroupResult(resourceLog)}</>))}</ul>
 				<div className="timeline-tooltip-body-row">
 					<span className="series-color">
 						{i18n.t('results_tab.details.timeline.tooltips.after')}: {valToDisplayString(log.valueAfter)}
@@ -87,7 +92,7 @@ export function ResourceTooltip(log: ResourceChangedLogGroup, maxValue: number, 
 	);
 }
 
-export function TooltipLogItem(log: SimLog, value: Element): JSX.Element {
+export function TooltipLogItem(log: CombatLog, value: Element): JSX.Element {
 	return (
 		<li>
 			{log.actionId && log.actionId.iconUrl && <img className="timeline-tooltip-icon" src={log.actionId.iconUrl}></img>}
@@ -97,7 +102,7 @@ export function TooltipLogItem(log: SimLog, value: Element): JSX.Element {
 	);
 }
 
-export function TooltipAurasSection(log: SimLog): JSX.Element | null {
+export function TooltipAurasSection(log: CombatLog): JSX.Element | null {
 	if (log.activeAuras.length == 0) {
 		return null;
 	}

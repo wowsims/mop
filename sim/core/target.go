@@ -267,6 +267,13 @@ func (target *Target) Disable(sim *Simulation, expireAuras bool) {
 		return
 	}
 
+	// A misconfigured encounter (e.g. a boss preset whose add was removed from the encounter,
+	// so the AI resolves its add unit to the boss itself) must never leave the sim with zero
+	// active targets. Keep the last one alive instead of panicking.
+	if len(sim.Encounter.ActiveTargets) == 1 {
+		return
+	}
+
 	target.CancelGCDTimer(sim)
 	target.AutoAttacks.CancelAutoSwing(sim)
 

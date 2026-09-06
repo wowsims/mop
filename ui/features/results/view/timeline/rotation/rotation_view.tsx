@@ -1,6 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { Component } from '@ui-kit/component';
+import { findScrollParent } from '@ui-kit/dom_utils';
 import tippy, { type Instance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -14,7 +15,7 @@ import { RotationFloatingActionBar } from './rotation_floating_action_bar';
 import { RowTrack } from './row_track';
 import { Ruler } from './ruler';
 import type { WindowHost } from './timeline_window';
-import { findScrollParent, TimelineWindow } from './timeline_window';
+import { TimelineWindow } from './timeline_window';
 import { VisibilityState } from './visibility';
 import { ZoomController } from './zoom';
 

@@ -1,98 +1,263 @@
 .log-runner-root {
-	.log-runner-actions {
-		display: flex;
-		margin-bottom: var(--spacer-3);
+	display: flex;
+	flex-direction: column;
+}
 
-		.log-search-input {
-			width: 25vw;
+.show-debug-picker {
+	width: unset;
+	margin-bottom: 0;
+
+	label {
+		margin-left: var(--spacer-1);
+	}
+}
+
+// Vertical scrolling belongs to the page, as it does for the timeline; this only carries the
+// sideways overflow of long lines, so the header above it can stick to the viewport.
+.log-runner-scroll {
+	position: relative;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.log-runner-list {
+	min-width: 100%;
+	width: var(--log-runner-list-width, max-content);
+}
+
+.log-runner-measurer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: max-content;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.log-runner-header,
+.log-runner-row {
+	display: grid;
+	grid-template-columns: 10ch 1fr;
+	column-gap: var(--spacer-2);
+	border-bottom: 1px solid var(--bs-border-color);
+}
+
+.log-runner-sticky {
+	position: sticky;
+	top: var(--log-sticky-top, 0px);
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-2);
+	padding-top: var(--spacer-2);
+	background: var(--bs-body-bg);
+}
+
+.log-search {
+	width: 100%;
+
+	@include media-breakpoint-up(lg) {
+		max-width: 50%;
+	}
+}
+
+.log-runner-header {
+	font-weight: bold;
+
+	div {
+		padding: var(--spacer-2);
+
+		&:first-child {
+			text-align: right;
 		}
+	}
+}
 
-		.show-debug-picker {
-			width: unset;
-			margin-bottom: 0;
-			margin-right: var(--block-spacer);
-			margin-left: auto;
+.log-timestamp,
+.log-event {
+	padding: var(--spacer-2);
+	// Uniform row height is what makes the virtual list's offsets correct, so a long
+	// line scrolls sideways instead of wrapping.
+	white-space: nowrap;
+}
 
-			label {
-				margin-left: var(--spacer-1);
-			}
-		}
+.log-timestamp {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.log-event {
+	.icon {
+		vertical-align: middle;
 	}
 
-	.log-runner-scroll {
-		overflow-y: auto;
-		overflow-x: auto;
+	.log-action {
+		color: var(--bs-brand);
+	}
+}
 
-		margin: 0 auto;
-		position: relative;
-		width: 100%;
-		box-sizing: border-box;
-		will-change: scroll-position;
-		height: 70vh;
+.log-content {
+	.dr-row {
+		padding: 0;
+	}
+}
+
+.log-floating-action-bar-root {
+	@include bottom-floating-action-bar(var(--spacer-2));
+	z-index: 4;
+	box-sizing: border-box;
+	margin-bottom: calc(-1 * var(--container-padding));
+}
+
+.log-fab-actions {
+	position: relative;
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	gap: var(--spacer-2);
+	flex-direction: column;
+
+	@include media-breakpoint-up(md) {
+		align-items: center;
+		flex-direction: row;
 	}
 
-	.log-runner-list {
-		min-width: 100%;
-		width: var(--log-runner-list-width, max-content);
-	}
-
-	.log-runner-measurer {
-		position: absolute;
-		top: 0;
-		left: 0;
-		visibility: hidden;
-		pointer-events: none;
-		width: max-content;
-	}
-
-	.log-runner-header,
-	.log-runner-row {
-		display: grid;
-		grid-template-columns: 10ch 1fr;
-		column-gap: var(--spacer-2);
-	}
-
-	.log-runner-header {
-		position: sticky;
-		top: 0;
-		z-index: 1;
+	.stuck & {
 		background: var(--bs-body-bg);
-		border-bottom: 1px solid var(--bs-border-color);
-		font-weight: bold;
+	}
+}
 
-		div {
-			padding: var(--spacer-2);
-		}
+.log-fab-toggle {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	gap: var(--spacer-2);
+	z-index: 1;
+}
 
-		div:first-child {
-			text-align: right;
-		}
+.log-fab-preview {
+	overflow: hidden;
+	opacity: 0.75;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.log-fab-controls {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-2);
+
+	@include media-breakpoint-up(md) {
+		margin-left: auto;
 	}
 
-	.log-runner-row {
-		border-bottom: 1px solid var(--bs-border-color);
-
-		.log-timestamp,
-		.log-event {
-			padding: var(--spacer-2);
-			// Uniform row height is what makes the virtual list's offsets correct, so a long
-			// line scrolls sideways instead of wrapping.
-			white-space: nowrap;
-		}
-
-		.log-timestamp {
-			text-align: right;
-			font-variant-numeric: tabular-nums;
-		}
-
-		.log-event {
-			.icon {
-				vertical-align: middle;
-			}
-
-			.log-action {
-				color: var(--bs-brand);
-			}
-		}
+	.btn {
+		white-space: nowrap;
 	}
+}
+
+.log-fab-clip {
+	position: absolute;
+	bottom: calc(100% - 1px);
+	right: 0;
+	left: 0;
+	overflow: hidden;
+
+	.log-floating-action-bar-root[data-expanded='false'] & {
+		pointer-events: none;
+	}
+}
+
+.log-fab-panel {
+	transform: translate3d(0, 100%, 0);
+	border: var(--bs-border-width) solid var(--bs-border-color);
+	background: var(--bs-body-bg);
+	transition: transform 150ms ease;
+
+	// none, not translate3d(0, 0, 0): a transformed panel is the containing block for the
+	// pickers' fixed-position menus, and the clip above would cut them off with it.
+	.log-floating-action-bar-root[data-expanded='true'] & {
+		transform: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+.log-fab-panel-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.log-search-bar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-2);
+}
+
+.log-fab-filters {
+	max-height: min(45vh, 26rem);
+	padding: var(--spacer-2);
+	overflow-y: auto;
+}
+
+.log-search-group {
+	max-width: 250px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-2);
+	padding: var(--apl-spacer);
+	border: var(--apl-border);
+	border-radius: 0;
+	background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
+	transition: all 0.2s ease;
+
+	&:hover {
+		background-color: color-mix(in srgb, var(--bs-body-bg) 85%, transparent);
+		border-color: var(--bs-border-color);
+	}
+}
+
+.log-search-group-head {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-2);
+	font-size: var(--content-font-size);
+
+	// The chip styles its delete only inside .saved-data-set-chip; the group head has no chip.
+	.saved-data-set-delete {
+		padding: var(--spacer-2) 0;
+		color: $body-color;
+	}
+}
+
+.log-search-group-field {
+	font-size: var(--btn-font-size);
+	line-height: 1.5;
+}
+
+.log-search-group-join {
+	margin-left: auto;
+}
+
+// The same override the APL applies inside its picker root: the button is sitting inline in a
+// row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
+.log-search-add-field,
+.log-search-group-items {
+	.dropdown-picker-button {
+		padding: 0;
+		border: 0;
+	}
+}
+
+.log-search-group-input {
+	width: 8rem;
+}
+
+.log-search-chip {
+	// Everything else - the outline, the pill, the hover, the delete button - is
+	// .saved-data-set-chip's, so that a query chip and a saved-data pill are the same control.
+	white-space: nowrap;
 }

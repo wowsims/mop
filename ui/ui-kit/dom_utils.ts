@@ -4,8 +4,19 @@ import { environmentOf, Environments } from '@domain/env';
 
 export const existsInDOM = (element: HTMLElement | null) => document.body.contains(element);
 
-export const downloadString = (data: string, fileName: string) => {
-	const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
+// Nearest ancestor the user can scroll vertically, or null when the page itself is it. An
+// overflow-y: hidden box is skipped: it clips but never scrolls, and the log's sideways scroller
+// is one, sitting between the rows and the pane that really moves them.
+export const findScrollParent = (elem: HTMLElement): HTMLElement | null => {
+	for (let node = elem.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+		const overflowY = getComputedStyle(node).overflowY;
+		if (overflowY === 'auto' || overflowY === 'scroll') return node;
+	}
+	return null;
+};
+
+export const downloadString = (data: string, fileName: string, mimeType = 'text/json') => {
+	const dataStr = `data:${mimeType};charset=utf-8,` + encodeURIComponent(data);
 	const downloadAnchorNode = document.createElement('a');
 	downloadAnchorNode.setAttribute('href', dataStr);
 	downloadAnchorNode.setAttribute('download', fileName);

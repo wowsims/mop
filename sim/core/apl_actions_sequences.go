@@ -119,6 +119,10 @@ type APLActionStrictSequence struct {
 	curIdx     int
 
 	subactionSpells []*Spell
+
+	// The queue action currently hooked to advance this sequence, and the callback it replaced.
+	hookedQueueAction *PendingAction
+	hookedOnAction    func(*Simulation)
 }
 
 func (rot *APLRotation) newActionStrictSequence(config *proto.APLActionStrictSequence) APLActionImpl {
@@ -151,6 +155,7 @@ func (action *APLActionStrictSequence) PostFinalize(rot *APLRotation) {
 }
 func (action *APLActionStrictSequence) Reset(*Simulation) {
 	action.curIdx = 0
+	action.unhookQueueAction()
 	action.unit.Rotation.inSequence = false
 }
 func (action *APLActionStrictSequence) IsReady(sim *Simulation) bool {
@@ -179,6 +184,7 @@ func (action *APLActionStrictSequence) Execute(sim *Simulation) {
 }
 func (action *APLActionStrictSequence) relinquishControl() {
 	action.curIdx = 0
+	action.unhookQueueAction()
 	action.unit.Rotation.inSequence = false
 	action.unit.Rotation.popControllingAction(action)
 }
@@ -207,12 +213,7 @@ func (action *APLActionStrictSequence) GetNextAction(sim *Simulation) *APLAction
 		// The spell was already queued at this timestep; modify it to advance the sequence when it executes
 		// and return nil to wait for the GCD to become ready.
 		queueAction := action.unit.QueuedSpell.queueAction
-		oldFunc := queueAction.OnAction
-		queueAction.OnAction = func(sim *Simulation) {
-			oldFunc(sim)
-			action.advanceSequence()
-			queueAction.OnAction = oldFunc
-		}
+		action.hookQueueAction(queueAction)
 		action.unit.SetRotationTimer(sim, queueAction.NextActionAt+time.Duration(1))
 
 		return nil
@@ -225,6 +226,37 @@ func (action *APLActionStrictSequence) GetNextAction(sim *Simulation) *APLAction
 		// Return nil to wait for the GCD to become ready.
 		return nil
 	}
+}
+
+// hookQueueAction makes the queued spell's action advance this sequence when it fires.
+// Must stay idempotent: the rotation can be re-evaluated within a timestep, and a second
+// wrapper would advance twice and strand a stale hook on the queue action, which is reused
+// for later unrelated spells. The wrapper unhooks itself first, so any callback that manages
+// OnAction gets the last word; the guard keeps it off another action's hook.
+func (action *APLActionStrictSequence) hookQueueAction(queueAction *PendingAction) {
+	if action.hookedQueueAction == queueAction {
+		return
+	}
+	action.unhookQueueAction()
+
+	oldFunc := queueAction.OnAction
+	action.hookedQueueAction = queueAction
+	action.hookedOnAction = oldFunc
+	queueAction.OnAction = func(sim *Simulation) {
+		if action.hookedQueueAction == queueAction {
+			action.unhookQueueAction()
+		}
+		oldFunc(sim)
+		action.advanceSequence()
+	}
+}
+func (action *APLActionStrictSequence) unhookQueueAction() {
+	if action.hookedQueueAction == nil {
+		return
+	}
+	action.hookedQueueAction.OnAction = action.hookedOnAction
+	action.hookedQueueAction = nil
+	action.hookedOnAction = nil
 }
 func (action *APLActionStrictSequence) String() string {
 	return "Strict Sequence(" + strings.Join(MapSlice(action.subactions, func(subaction *APLAction) string { return fmt.Sprintf("(%s)", subaction) }), "+") + ")"

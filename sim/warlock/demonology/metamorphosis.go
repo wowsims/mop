@@ -26,7 +26,7 @@ func (demo *DemonologyWarlock) registerMetamorphosis() {
 			queueMetaCost(sim)
 
 			// update cast cost
-			drainLifeManaCost = demo.DrainLife.Cost
+			drainLifeManaCost = demo.DrainLife.Cost.ResourceCostImpl
 			demo.DrainLife.Cost.ResourceCostImpl = NewDemonicFuryCost(0)
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {

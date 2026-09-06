@@ -1,3 +1,5 @@
+import { findScrollParent } from './dom_utils';
+
 /**
  * A fixed-row-height virtual list.
  *
@@ -17,7 +19,9 @@ export interface VirtualListDataSource {
 }
 
 export interface VirtualListOptions {
-	scrollElem: HTMLElement;
+	// The element that scrolls the list, with the rows starting at its top. Omit when the list
+	// sits inside a larger scroller - the nearest scrolling ancestor, or the page - and shares it.
+	scrollElem?: HTMLElement;
 	// Where rows are written. May be the same element as scrollElem.
 	contentElem: HTMLElement;
 	dataSource: VirtualListDataSource;
@@ -32,11 +36,17 @@ export interface VirtualListOptions {
 	// Called after the mounted window changes, for state that depends on which rows are in
 	// the DOM. Not called per scroll event - only when the window actually moves.
 	onRender?: () => void;
+	// Shared scroller only: pixels of it covered by sticky chrome above the rows.
+	topInset?: () => number;
 }
 
 export class VirtualList {
-	private readonly scrollElem: HTMLElement;
+	// Given up front, or resolved on the first render for a shared scroller: a list built before
+	// it is in the document would walk up from a detached node and find nothing.
+	private scroller: HTMLElement | Window | null;
+	private readonly ownScroller: boolean;
 	private readonly contentElem: HTMLElement;
+	private readonly topInset: () => number;
 	private readonly dataSource: VirtualListDataSource;
 	private readonly keepParity: boolean;
 	private readonly onRender?: () => void;
@@ -56,8 +66,10 @@ export class VirtualList {
 	private disposed = false;
 
 	constructor(options: VirtualListOptions) {
-		this.scrollElem = options.scrollElem;
+		this.scroller = options.scrollElem ?? null;
+		this.ownScroller = !!options.scrollElem;
 		this.contentElem = options.contentElem;
+		this.topInset = options.topInset ?? (() => 0);
 		this.dataSource = options.dataSource;
 		this.keepParity = options.keepParity ?? false;
 		this.onRender = options.onRender;
@@ -70,16 +82,37 @@ export class VirtualList {
 		this.bottomSpacer = document.createElement(tag);
 
 		this.onScroll = this.onScroll.bind(this);
-		this.scrollElem.addEventListener('scroll', this.onScroll, { passive: true });
-
 		if (typeof ResizeObserver !== 'undefined') {
-			this.resizeObserver = new ResizeObserver(() => {
-				// A resize changes how many rows fit, and can change row height itself.
+			let contentWidth = -1;
+			this.resizeObserver = new ResizeObserver(entries => {
+				// A resize changes how many rows fit, and can change row height itself. The content
+				// element is only watched for its width: every render changes its height through the
+				// spacers, and reacting to that from inside the observer is a loop.
+				const content = entries.find(entry => entry.target === this.contentElem && !this.ownScroller);
+				if (content) {
+					if (content.contentRect.width === contentWidth && entries.length === 1) return;
+					contentWidth = content.contentRect.width;
+				}
 				this.measured = false;
-				this.render();
+				this.onScroll();
 			});
-			this.resizeObserver.observe(this.scrollElem);
+			this.resizeObserver.observe(options.scrollElem ?? this.contentElem);
 		}
+		if (this.scroller) this.listen(this.scroller);
+	}
+
+	private listen(scroller: HTMLElement | Window) {
+		scroller.addEventListener('scroll', this.onScroll, { passive: true });
+		if (scroller instanceof HTMLElement) this.resizeObserver?.observe(scroller);
+		else window.addEventListener('resize', this.onScroll, { passive: true });
+	}
+
+	private attachScroller(): HTMLElement | Window | null {
+		if (!this.scroller && this.contentElem.isConnected) {
+			this.scroller = findScrollParent(this.contentElem) ?? window;
+			this.listen(this.scroller);
+		}
+		return this.scroller;
 	}
 
 	// Re-reads the row count. Call after the data source's contents change.
@@ -90,7 +123,13 @@ export class VirtualList {
 	}
 
 	scrollToTop() {
-		this.scrollElem.scrollTop = 0;
+		const scroller = this.attachScroller();
+		if (this.ownScroller) {
+			(scroller as HTMLElement).scrollTop = 0;
+		} else if (scroller) {
+			const top = this.contentElem.getBoundingClientRect().top - this.visibleTop(scroller);
+			if (top < 0) scroller.scrollBy({ top });
+		}
 		this.update();
 	}
 
@@ -102,7 +141,8 @@ export class VirtualList {
 
 	dispose() {
 		this.disposed = true;
-		this.scrollElem.removeEventListener('scroll', this.onScroll);
+		this.scroller?.removeEventListener('scroll', this.onScroll);
+		window.removeEventListener('resize', this.onScroll);
 		this.resizeObserver?.disconnect();
 		if (this.frame != null) cancelAnimationFrame(this.frame);
 	}
@@ -117,6 +157,7 @@ export class VirtualList {
 	}
 
 	private render() {
+		this.attachScroller();
 		const total = this.dataSource.count();
 		if (total === 0) {
 			this.invalidate();
@@ -124,9 +165,9 @@ export class VirtualList {
 			return;
 		}
 
-		const viewportHeight = this.scrollElem.clientHeight || this.rowHeight;
+		const { scrollTop, viewportHeight } = this.viewport();
 		const visibleCount = Math.ceil(viewportHeight / this.rowHeight) + OVERSCAN_ROWS * 2;
-		const first = Math.min(total - 1, Math.max(0, Math.floor(this.scrollElem.scrollTop / this.rowHeight) - OVERSCAN_ROWS));
+		const first = Math.min(total - 1, Math.max(0, Math.floor(scrollTop / this.rowHeight) - OVERSCAN_ROWS));
 		const last = Math.min(total - 1, first + visibleCount);
 
 		if (first === this.firstIndex && last === this.lastIndex) return;
@@ -152,6 +193,26 @@ export class VirtualList {
 
 		if (!this.measured) this.measureRowHeight(rows[0]);
 		this.onRender?.();
+	}
+
+	private visibleTop(scroller: HTMLElement | Window): number {
+		return (scroller instanceof HTMLElement ? scroller.getBoundingClientRect().top : 0) + this.topInset();
+	}
+
+	// In a shared scroller the rows' own top edge stands in for scrollTop: the top spacer sits
+	// inside contentElem, so that edge does not move as the window does.
+	private viewport(): { scrollTop: number; viewportHeight: number } {
+		const scroller = this.scroller;
+		if (this.ownScroller) {
+			const elem = scroller as HTMLElement;
+			return { scrollTop: elem.scrollTop, viewportHeight: elem.clientHeight || this.rowHeight };
+		}
+		const visibleTop = scroller ? this.visibleTop(scroller) : this.topInset();
+		const height = scroller instanceof HTMLElement ? scroller.clientHeight : window.innerHeight;
+		return {
+			scrollTop: Math.max(0, visibleTop - this.contentElem.getBoundingClientRect().top),
+			viewportHeight: Math.max(this.rowHeight, height - this.topInset()),
+		};
 	}
 
 	private invalidate() {

@@ -1,5 +1,5 @@
 import type { ActionId } from '@domain/proto_utils/action_id';
-import type { AuraUptimeLog, CastLog, DamageDealtLog, ResourceChangedLogGroup } from '@domain/proto_utils/logs';
+import type { AuraUptimeLog, CastLog, DamageLog, ResourceGroupLog } from '@domain/proto_utils/combat_log';
 import type SecondaryResource from '@domain/proto_utils/secondary_resource';
 import type { UnitMetrics } from '@domain/proto_utils/sim_result';
 
@@ -35,7 +35,7 @@ export interface TickItem {
 	kind: 'tick';
 	start: number;
 	end: number;
-	log: DamageDealtLog;
+	log: DamageLog;
 }
 
 export interface AuraStackSegment {
@@ -63,7 +63,7 @@ export interface ResourceItem {
 	display: ResourceDisplay;
 	fillPercent: number;
 	text: string;
-	log: ResourceChangedLogGroup;
+	log: ResourceGroupLog;
 }
 
 export type RowItem = CastItem | TickItem | AuraItem | ResourceItem;

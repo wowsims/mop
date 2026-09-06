@@ -7088,10 +7088,39 @@
 								},
 								"show_debug": {
 									"type": "string"
+								},
+								"search_placeholder": {
+									"type": "string"
+								},
+								"search_add_filter": {
+									"type": "string"
+								},
+								"search_add_value": {
+									"type": "string"
+								},
+								"floatingActionBar": {
+										"type": "object",
+										"properties": {
+												"toggle": {
+														"type": "string"
+												},
+												"none": {
+														"type": "string"
+												},
+												"active": {
+														"type": "string"
+												},
+												"clear": {
+														"type": "string"
+												}
+										},
+										"additionalProperties": false,
+										"required": ["toggle", "none", "active", "clear"]
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_add_value",
+ "floatingActionBar"]
 						},
 						"tabs": {
 							"type": "object",

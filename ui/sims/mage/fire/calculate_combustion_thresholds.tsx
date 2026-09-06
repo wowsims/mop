@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { sum } from '@domain/math';
 import { ActionId } from '@domain/proto_utils/action_id';
-import { AuraEventLog, SimLog, SimLogParams } from '@domain/proto_utils/logs';
+import { AuraLog, AuraUptimeLog, CombatLog, computeActionIdAsString, isAura, PlainLog } from '@domain/proto_utils/combat_log';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { sleep } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
@@ -204,46 +204,53 @@ export class CalculateCombustionThresholds extends Component {
 		};
 	}
 
-	private async parseLogs(logs: string[]): Promise<SimLog[]> {
+	private async parseLogs(logs: string[]): Promise<CombatLog[]> {
 		this.progressTrackerModal.updateProgress({
 			stage: 'calculating',
 			message: i18n.t('fire_mage.combustion_thresholds.parsing_logs'),
 		});
 		await sleep(200);
-		return logs
-			.map((log, index) => {
-				const params: SimLogParams = {
-					raw: log,
-					logIndex: index,
-					timestamp: 0,
-					source: null,
-					target: null,
-					actionId: null,
-					spellSchool: null,
-					threat: 0,
-				};
-				const timestampMatch = params.raw.match(/\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/);
-				const auraMatch = params.raw.match(/Aura ((gained)|(faded)|(refreshed)): (.*)/);
-				if (!timestampMatch?.[1]) {
-					return new SimLog(params);
-				}
+		return logs.map((raw, logIndex) => {
+			const base = {
+				raw,
+				logIndex,
+				timestamp: 0,
+				source: null,
+				target: null,
+				actionId: null,
+				actionIdAsString: null,
+				spellSchool: null,
+				threat: 0,
+				activeAuras: [] as Array<AuraUptimeLog>,
+			};
 
-				params.timestamp = parseFloat(timestampMatch[1]);
+			const timestampMatch = raw.match(/\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/);
+			if (!timestampMatch?.[1]) return { ...base, kind: 'plain' } satisfies PlainLog;
+			const timestamp = parseFloat(timestampMatch[1]);
 
-				if (auraMatch && auraMatch[5]) {
-					const actionId = ActionId.fromLogString(auraMatch[5]);
-					params.actionId = actionId;
-					const event = auraMatch[1];
-					return new AuraEventLog(params, event == 'gained', event == 'faded', event == 'refreshed');
-				}
+			const auraMatch = raw.match(/Aura ((gained)|(faded)|(refreshed)): (.*)/);
+			if (auraMatch?.[5]) {
+				const actionId = ActionId.fromLogString(auraMatch[5]);
+				const actionIdAsString = computeActionIdAsString(actionId);
+				const event = auraMatch[1];
+				return {
+					...base,
+					kind: 'aura',
+					timestamp,
+					actionId,
+					actionIdAsString,
+					isGained: event == 'gained',
+					isFaded: event == 'faded',
+					isRefreshed: event == 'refreshed',
+				} satisfies AuraLog;
+			}
 
-				return new SimLog(params);
-			})
-			.filter((log): log is SimLog => !!log);
+			return { ...base, kind: 'plain', timestamp } satisfies PlainLog;
+		});
 	}
 
-	private groupLogsByIteration(logs: SimLog[]): SimLog[][] {
-		return logs.reduce<SimLog[][]>((buckets, log) => {
+	private groupLogsByIteration(logs: CombatLog[]): CombatLog[][] {
+		return logs.reduce<CombatLog[][]>((buckets, log) => {
 			if (log.raw.includes('-SIMSTART-')) {
 				buckets.push([]);
 				return buckets;
@@ -258,7 +265,7 @@ export class CalculateCombustionThresholds extends Component {
 		}, []);
 	}
 
-	private extractCombustionCategoryValues(logs: SimLog[]): CombustionCategoryValues {
+	private extractCombustionCategoryValues(logs: CombatLog[]): CombustionCategoryValues {
 		const BLOODLUST_SPELL_ID = 2825;
 		const ALTER_TIME_SPELL_ID = 108978;
 
@@ -266,7 +273,7 @@ export class CalculateCombustionThresholds extends Component {
 		const auraTimeline: Array<{ timestamp: number; auraId: number; gained: boolean }> = [];
 
 		logs.forEach(log => {
-			if (log.isAuraEvent?.()) {
+			if (isAura(log)) {
 				if (log.actionId?.spellId === BLOODLUST_SPELL_ID || log.actionId?.spellId === ALTER_TIME_SPELL_ID) {
 					auraTimeline.push({
 						timestamp: log.timestamp,
@@ -316,7 +323,7 @@ export class CalculateCombustionThresholds extends Component {
 		const categories = this.emptyCategoryValues();
 
 		logs.forEach(log => {
-			if (Object.getPrototypeOf(log) !== SimLog.prototype) {
+			if (log.kind !== 'plain') {
 				return;
 			}
 

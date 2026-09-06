@@ -13,6 +13,8 @@ import { trackPageView } from '../../../tracking/analytics';
 export interface ExporterOptions {
 	title: string;
 	allowDownload?: boolean;
+	downloadFileName?: string;
+	downloadMimeType?: string;
 	header?: boolean;
 }
 
@@ -47,7 +49,7 @@ export abstract class Exporter extends BaseModal {
 			const downloadButton = downloadBtnRef.value!;
 			downloadButton.addEventListener('click', _event => {
 				const data = this.textElem.textContent!;
-				downloadString(data, 'wowsims.json');
+				downloadString(data, options.downloadFileName ?? 'wowsims.json', options.downloadMimeType);
 			});
 		}
 	}
