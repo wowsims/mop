@@ -23,17 +23,16 @@ const BLOCK = () => {
 	};
 };
 
-// `BaseModal`'s `rootCssClass` lands on the `.modal-dialog`; Bootstrap puts `show` on the `.modal`
-// that wraps it, and `modal-open` on the body. Reading the dialog's own classList says "closed"
-// forever — on both builds, which is how this was caught.
+// Read through `simModalProbe` so this survives the Base UI `Dialog` swap: the caller's own class is
+// the only thing both shapes put in the same place, and everything else about "is it open" moves.
 const MODAL = () => {
-	const dialog = document.querySelector('.advanced-encounter-picker-modal');
+	const dialog = window.simModalProbe.find('advanced-encounter-picker-modal');
 	if (!dialog) return { present: false };
 	return {
 		present: true,
-		open: !!dialog.closest('.modal')?.classList.contains('show'),
-		backdrop: !!document.querySelector('.modal-backdrop'),
-		bodyLocked: document.body.classList.contains('modal-open'),
+		open: window.simModalProbe.isOpen(dialog),
+		backdrop: window.simModalProbe.backdrop(),
+		bodyLocked: window.simModalProbe.bodyLocked(),
 		targets: dialog.querySelectorAll('.targets-picker .list-picker-item').length,
 		headerGroups: dialog.querySelectorAll('.encounter-header .picker-group').length,
 	};

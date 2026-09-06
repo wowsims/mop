@@ -252,6 +252,25 @@ const PROBE = () => {
 		// (`import-link` / `export-link`) and must keep doing so through the swap.
 		nameOf: toggle => [...toggle.classList].find(name => name.endsWith('-link')) ?? null,
 	};
+
+	// And the same for modals, ahead of the Base UI `Dialog` swap.
+	//
+	// The one thing both shapes agree on is the caller's own class: `BaseModal` puts its
+	// `rootCssClass` on the `.modal-dialog`, and `Dialog` puts the same `cssClass` on the popup. So a
+	// gate finds its modal by that name and asks this for everything else — because everything else
+	// moves. Bootstrap marks the `.modal` *wrapper* `.show` and the body `.modal-open`; Base UI marks
+	// the popup `data-open` and writes an inline `overflow` on the body instead, and its backdrop is
+	// a different element entirely.
+	window.simModalProbe = {
+		find: cssClass => document.querySelector('.' + cssClass),
+		isOpen: dialog => {
+			if (!dialog) return false;
+			const wrapper = dialog.closest('.modal');
+			return wrapper ? wrapper.classList.contains('show') : dialog.hasAttribute('data-open');
+		},
+		backdrop: () => !!document.querySelector('.modal-backdrop, .sim-dialog-backdrop'),
+		bodyLocked: () => document.body.classList.contains('modal-open') || document.body.style.overflow === 'hidden',
+	};
 };
 
 /**
