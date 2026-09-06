@@ -21,9 +21,11 @@ export interface StatRowProps {
 	attribution: StatAttribution;
 	/** `statDisplayString` with the player and its racial bonuses already bound. */
 	show: (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => string;
+	/** The first `computeStats` round trip has not returned yet, so there is no value to show. */
+	pending?: boolean;
 }
 
-export const StatRow = ({ unitStat, bonusStats, attribution, show }: StatRowProps) => {
+export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: StatRowProps) => {
 	const player = usePlayer();
 	const id = useId();
 	const isMastery = unitStat.equalsStat(Stat.StatMasteryRating);
@@ -38,43 +40,51 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show }: StatRowProp
 				{isMastery && <div>{translateMasterySpellName(player.getSpec())}</div>}
 			</td>
 			<td className="character-stats-table-value">
-				<div className="stat-value-link-container">
-					<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} data-tooltip-id={id}>
-						{`${show(attribution.final, unitStat, true)} `}
-					</Button>
-					{isMastery &&
-						modifiers.map((modifier, index) => (
-							<Button
-								as="a"
-								variant="unstyled"
-								key={index}
-								href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
-								className={clsx('stat-value-link-mastery', contextualClass)}
-								target="_blank"
-								rel="noopener noreferrer">
-								{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
+				{pending ? (
+					<span className="character-stats-skeleton" />
+				) : (
+					<>
+						<div className="stat-value-link-container">
+							<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} data-tooltip-id={id}>
+								{`${show(attribution.final, unitStat, true)} `}
 							</Button>
-						))}
-				</div>
-				{unitStat.hasRootStat() && <BonusStatsLink rootStat={unitStat.getRootStat()} />}
-				<Tooltip
-					id={id}
-					content={
-						<div>
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.base')} value={show(attribution.base, unitStat, true)} />
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.gear')} value={show(attribution.gear, unitStat)} />
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.talents')} value={show(attribution.talents, unitStat)} />
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.buffs')} value={show(attribution.buffs, unitStat)} />
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.consumes')} value={show(attribution.consumes, unitStat)} />
-							{bonusStatValue !== 0 && <TooltipRow label={i18n.t('sidebar.character_stats.tooltip.bonus')} value={show(bonusStats, unitStat)} />}
-							<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.total')} value={show(attribution.final, unitStat, true)} />
-							{unitStat.isPseudoStat() && unitStat.getPseudoStat() === PseudoStat.PseudoStatSpellHitPercent && (
-								<TooltipNote text="Total Includes Expertise" />
-							)}
-							{unitStat.isStat() && unitStat.getStat() === Stat.StatExpertiseRating && <TooltipNote text="Contributes to Spell Hit" />}
+							{isMastery &&
+								modifiers.map((modifier, index) => (
+									<Button
+										as="a"
+										variant="unstyled"
+										key={index}
+										href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
+										className={clsx('stat-value-link-mastery', contextualClass)}
+										target="_blank"
+										rel="noopener noreferrer">
+										{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
+									</Button>
+								))}
 						</div>
-					}
-				/>
+						{unitStat.hasRootStat() && <BonusStatsLink rootStat={unitStat.getRootStat()} />}
+						<Tooltip
+							id={id}
+							content={
+								<div>
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.base')} value={show(attribution.base, unitStat, true)} />
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.gear')} value={show(attribution.gear, unitStat)} />
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.talents')} value={show(attribution.talents, unitStat)} />
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.buffs')} value={show(attribution.buffs, unitStat)} />
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.consumes')} value={show(attribution.consumes, unitStat)} />
+									{bonusStatValue !== 0 && (
+										<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.bonus')} value={show(bonusStats, unitStat)} />
+									)}
+									<TooltipRow label={i18n.t('sidebar.character_stats.tooltip.total')} value={show(attribution.final, unitStat, true)} />
+									{unitStat.isPseudoStat() && unitStat.getPseudoStat() === PseudoStat.PseudoStatSpellHitPercent && (
+										<TooltipNote text="Total Includes Expertise" />
+									)}
+									{unitStat.isStat() && unitStat.getStat() === Stat.StatExpertiseRating && <TooltipNote text="Contributes to Spell Hit" />}
+								</div>
+							}
+						/>
+					</>
+				)}
 			</td>
 		</tr>
 	);

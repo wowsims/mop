@@ -1,5 +1,6 @@
 import type { Sim } from '@domain/sim';
-import { useEffect, useState } from 'react';
+
+import { useSimStatus } from './useSimStatus';
 
 /**
  * `true` once `sim.waitForInit()` has resolved — the database is loaded and saved settings have been
@@ -17,14 +18,4 @@ import { useEffect, useState } from 'react';
  * something a generic widget kit knows. `useStoreSubscribe` and `useActionId` reach into `@domain`
  * because their subject genuinely is domain state; this one's subject is the composition root.
  */
-export const useSimReady = (sim: Sim): boolean => {
-	const [ready, setReady] = useState(false);
-	useEffect(() => {
-		let live = true;
-		sim.waitForInit().then(() => live && setReady(true));
-		return () => {
-			live = false;
-		};
-	}, [sim]);
-	return ready;
-};
+export const useSimReady = (sim: Sim): boolean => useSimStatus(sim).status === 'ready';

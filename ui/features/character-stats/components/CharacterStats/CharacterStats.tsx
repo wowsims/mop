@@ -41,6 +41,9 @@ export const CharacterStats = () => {
 			overwriteDisplayStats ? overwriteDisplayStats(player) : undefined,
 		);
 		return {
+			// `currentStats` is seeded empty and only `computeStats` fills `finalStats`, so this is
+			// "the first round trip has not landed yet" rather than "the player has no stats".
+			pending: !player.getCurrentStats().finalStats,
 			racial,
 			bonusStats,
 			attribution,
@@ -49,19 +52,19 @@ export const CharacterStats = () => {
 		};
 	});
 
-	const { racial, bonusStats, attribution, critCap } = snapshot;
+	const { pending, racial, bonusStats, attribution, critCap } = snapshot;
 	const show = (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => statDisplayString(player, racial, deltaStats, unitStat, includeBase);
 
 	return (
 		<div className="character-stats-root">
 			{/* A heading, not a form label: it labels the table, not a control. */}
 			<h3 className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</h3>
-			<table className="character-stats-table">
+			<table className="character-stats-table" aria-busy={pending || undefined}>
 				{rows.map(group => (
 					<tbody key={group.key}>
 						{group.rows.map(row =>
 							row.kind === 'stat' ? (
-								<StatRow key={row.id} unitStat={row.unitStat} bonusStats={bonusStats} attribution={attribution} show={show} />
+								<StatRow key={row.id} unitStat={row.unitStat} bonusStats={bonusStats} attribution={attribution} show={show} pending={pending} />
 							) : (
 								critCap && <CritCapRow key={row.id} info={critCap.info} text={critCap.text} />
 							),
