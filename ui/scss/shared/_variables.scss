@@ -423,6 +423,17 @@ $tooltip-body-padding-y: var(--spacer-2);
 	--bs-tooltip-max-width-sm: #{$tooltip-max-width-sm};
 	--bs-tooltip-body-padding-x: #{$tooltip-body-padding-x};
 	--bs-tooltip-body-padding-y: #{$tooltip-body-padding-y};
+
+	// Owned spelling of the block above, for the seam at the end of this file: the `--bs-` names
+	// go with Bootstrap, and this family already had a home here.
+	--tooltip-bg: #{$tooltip-bg};
+	--tooltip-border: #{$tooltip-border};
+	--tooltip-body-color: #{$tooltip-body-color};
+	--tooltip-max-width: #{$tooltip-max-width};
+	--tooltip-max-width-lg: #{$tooltip-max-width-lg};
+	--tooltip-max-width-sm: #{$tooltip-max-width-sm};
+	--tooltip-body-padding-x: #{$tooltip-body-padding-x};
+	--tooltip-body-padding-y: #{$tooltip-body-padding-y};
 }
 
 // Toast
@@ -460,4 +471,83 @@ $toast-padding-y: var(--spacer-3);
 	--tab-color: #{$nav-link-color};
 	--tab-color-hover: #{$nav-link-hover-color};
 	--tab-color-active: #{$nav-tabs-link-active-color};
+
+	// Base colors and links
+	--white: #{$white};
+	--white-rgb: #{to-rgb($white)};
+	--black: #{$black};
+	--black-alpha-50: #{map-get($custom-alpha, 'black-alpha-50')};
+	--black-alpha-75: #{map-get($custom-alpha, 'black-alpha-75')};
+	--primary: #{$primary};
+	--primary-rgb: #{to-rgb($primary)};
+	--body-bg: #{$body-bg};
+	--body-color: #{$body-color};
+	--link-color: #{$link-color};
+	--link-color-rgb: #{to-rgb($link-color)};
+	--link-hover-color-rgb: #{to-rgb($link-hover-color)};
+
+	// Grays
+	--gray: #{$gray-600};
+	--gray-300: #{$gray-300};
+	--gray-500: #{$gray-500};
+	--gray-600: #{$gray-600};
+	--gray-700: #{$gray-700};
+	--gray-800: #{$gray-800};
+	--gray-900: #{$gray-900};
+
+	// Theme colors
+	--border-color: #{$border-color};
+	--border-width: #{$border-width};
+	--danger: #{$danger};
+	--warning: #{$warning};
+	--secondary: #{$secondary};
+	--secondary-color: #{$body-secondary-color};
+	--orange: #{$orange};
+
+	// Custom theme colors
+	--brand: #{$brand};
+	--expansion: #{$expansion};
+	--off-white: #{map-get($custom-colors, 'off-white')};
+	--success: #{$success};
+
+	// Item quality colors
+	--junk: #{$item-quality-junk};
+	--uncommon: #{$item-quality-uncommon};
+
+	// Resource colors
+	--health: #{$health-color};
+	--mana: #{$mana-color};
+	--rage: #{$rage-color};
+	--energy: #{$energy-color};
+	--focus: #{$focus-color};
+	--combo-points: #{$combo-points-color};
+	--holy-power: #{$holy-power-color};
+
+	// Secondary resource colors
+	--arcane-charges: #{$arcane-charges-color};
+	--shadow-orbs: #{$shadow-orbs-color};
+	--demonic-fury: #{$demonic-fury-color};
+	--burning-embers: #{$burning-embers-color};
+	--soul-shards: #{$soul-shards-color};
+
+	// Damage colors
+	--hit: #{$damage-hit};
+	--crit: #{$damage-crit};
+	--partial: #{$damage-partial};
+	--miss: #{$damage-miss};
+	--cancel: #{$damage-cancel};
+	--cancel-rgb: #{to-rgb($damage-cancel)};
+	--dps: #{$damage-dps};
+	--threat: #{$damage-threat};
+
+	// Link colors
+	--link-danger: #{map-get($link-colors, 'link-danger')};
+	--link-warning: #{map-get($link-colors, 'link-warning')};
+
+	// Talent colors
+	--talent-full: #{map-get($talent-colors, 'talent-full')};
+
+	// Table colors
+	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};
+	--table-row-odd-bg: #{map-get($table-colors, 'table-row-odd-bg')};
 }
