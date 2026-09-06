@@ -12,7 +12,7 @@ import {
 	collapseWrappers,
 	collectSubtrees,
 	dropSubtrees,
-	normaliseMultiIconMenus,
+	normaliseBaseUiMenus,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -115,13 +115,13 @@ const grab = async (browser, port, spec) => {
 	for (const id of ids) {
 		if (!id) continue;
 		const pane = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
-		// The React side only: see `normaliseMultiIconMenus`. On the baseline it is a no-op, because
-		// nothing there carries the class it looks for.
+		// The React side only: see `normaliseBaseUiMenus`. On the baseline it is a no-op, because
+		// nothing there carries the classes it looks for.
 		if (!isReact) {
 			panes[id] = pane;
 			continue;
 		}
-		const normalised = normaliseMultiIconMenus(pane);
+		const normalised = normaliseBaseUiMenus(pane);
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 		panes[id] = normalised.dom;
 	}

@@ -9,7 +9,7 @@
 // Selectors here go through `window.simTabsProbe` (browser.mjs) so that one script drives the
 // Bootstrap strip on the parent branch and the Base UI strip that replaces it. Tabs are clicked by
 // position rather than by class, which is why the tab-id lists are compared first.
-import { dropRootClasses, launch, openSpec, overusedIntended, PORTS, normaliseMultiIconMenus, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+import { dropRootClasses, launch, openSpec, overusedIntended, PORTS, normaliseBaseUiMenus, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
 import { INTENDED } from './intended.mjs';
 
 // Deferred tab bodies build on first show; the same wait applies to both sides.
@@ -41,7 +41,7 @@ for (const spec of specsFromArgv()) {
 				if (open.join() !== id) problems.push(`${side} ${id}: clicking it left [${open}] open`);
 				dom[side] = dropRootClasses(await sides[side].page.evaluate(SERIALIZE, '#' + id));
 				if (side === 'react') {
-					const normalised = normaliseMultiIconMenus(dom[side]);
+					const normalised = normaliseBaseUiMenus(dom[side]);
 					dom[side] = normalised.dom;
 					problems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 				}

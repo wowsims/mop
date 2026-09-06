@@ -1,5 +1,4 @@
 /** @jsxImportSource @jsx-vanilla */
-import { getEnumValues } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
@@ -15,24 +14,20 @@ import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
-import { Profession, Spec } from '@generated/proto/common';
+import { Spec } from '@generated/proto/common';
 import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { translateProfession, translateRace } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
-import * as IconInputs from '@ui-kit/icon_inputs';
-import { Input } from '@ui-kit/input';
-import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
-import { EnumPicker } from '@ui-kit/pickers/enum_picker';
-import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
-import { CustomSection, IndividualSimUI, InputConfig, InputSection } from '../individual_sim_ui';
+import { CustomSection, IndividualSimUI } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	/** Where React renders the encounter block. Filled in `buildEncounterSettings`. */
 	encounterContainer!: HTMLElement;
+	/** Where React renders the player block, which every spec builds. */
+	playerSettingsContainer!: HTMLElement;
 	/** Where React renders the other-settings block. Absent when that block is not built at all. */
 	otherSettingsContainer?: HTMLElement;
 	/** One per declared `sections` entry, paired with the config React needs to fill it. */
@@ -98,71 +93,12 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildPlayerSettings() {
-		const column = this.column1;
-		const contentBlock = new ContentBlock(column, 'player-settings', {
+		const contentBlock = new ContentBlock(this.column1, 'player-settings', {
 			header: { title: i18n.t('settings_tab.player.title') },
 		});
-
-		const playerIconGroup = Input.newGroupContainer();
-		playerIconGroup.classList.add('player-icon-group', 'icon-group');
-		contentBlock.bodyElement.appendChild(playerIconGroup);
-
-		this.configureIconSection(
-			playerIconGroup,
-			this.simUI.individualConfig.playerIconInputs.map(iconInput => IconInputs.buildIconInput(playerIconGroup, this.simUI.player, iconInput)),
-			true,
-		);
-
-		const races = this.simUI.player.getPlayerClass().races;
-		const _racePicker = new EnumPicker(contentBlock.bodyElement, this.simUI.player, {
-			id: 'simui-race',
-			label: i18n.t('settings_tab.player.race'),
-			values: races.map(race => {
-				return {
-					name: translateRace(race),
-					value: race,
-				};
-			}),
-			storeSubscribe: sim => subscribePlayerField(sim, 'race'),
-			getValue: sim => sim.getRace(),
-			setValue: (sim, newValue) => sim.setRace(newValue),
-		});
-
-		if (this.simUI.individualConfig.playerInputs?.inputs.length) {
-			this.configureInputSection(contentBlock.bodyElement, this.simUI.individualConfig.playerInputs);
-		}
-
-		const professionGroup = Input.newGroupContainer();
-		contentBlock.bodyElement.appendChild(professionGroup);
-
-		const professions = getEnumValues(Profession).filter(proff => proff != Profession.Archeology) as Array<Profession>;
-		const _profession1Picker = new EnumPicker(professionGroup, this.simUI.player, {
-			id: 'simui-profession1',
-			label: i18n.t('settings_tab.player.profession_1'),
-			values: professions.map(p => {
-				return {
-					name: translateProfession(p),
-					value: p,
-				};
-			}),
-			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
-			getValue: sim => sim.getProfession1(),
-			setValue: (sim, newValue) => sim.setProfession1(newValue),
-		});
-
-		const _profession2Picker = new EnumPicker(professionGroup, this.simUI.player, {
-			id: 'simui-profession2',
-			label: i18n.t('settings_tab.player.profession_2'),
-			values: professions.map(p => {
-				return {
-					name: translateProfession(p),
-					value: p,
-				};
-			}),
-			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
-			getValue: sim => sim.getProfession2(),
-			setValue: (sim, newValue) => sim.setProfession2(newValue),
-		});
+		// Built empty: `SimApp` portals the React `PlayerSettings` into it, which renders the icon
+		// group, the race select, the spec's own inputs and the two professions as one tree.
+		this.playerSettingsContainer = contentBlock.bodyElement;
 	}
 
 	private buildCustomSettingsSections() {
@@ -347,36 +283,6 @@ export class SettingsTab extends SimTab {
 			});
 		});
 	}
-
-	private configureInputSection(sectionElem: HTMLElement, sectionConfig: InputSection) {
-		buildInputPickers(sectionElem, this.simUI.player, sectionConfig.inputs);
-	}
-
-	private configureIconSection(sectionElem: HTMLElement, iconPickers: Array<any>, adjustColumns?: boolean) {
-		if (iconPickers.length == 0) {
-			sectionElem.classList.add('hide');
-		} else if (adjustColumns) {
-			if (iconPickers.length <= 4) {
-				sectionElem.style.gridTemplateColumns = `repeat(${iconPickers.length}, 1fr)`;
-			} else if (iconPickers.length > 4 && iconPickers.length < 8) {
-				sectionElem.style.gridTemplateColumns = `repeat(${Math.ceil(iconPickers.length / 2)}, 1fr)`;
-			}
-		}
-	}
-}
-
-// Instantiates the picker for each `InputSection`-shaped config. Shared by the
-// standard sections and by the declarative `sections` renderer below.
-function buildInputPickers(sectionElem: HTMLElement, player: Player<any>, inputs: Array<InputConfig<Player<any>>>) {
-	inputs.forEach(inputConfig => {
-		if (inputConfig.type == 'number') {
-			new NumberPicker(sectionElem, player, inputConfig);
-		} else if (inputConfig.type == 'boolean') {
-			new BooleanPicker(sectionElem, player, { ...inputConfig, reverse: true });
-		} else if (inputConfig.type == 'enum') {
-			new EnumPicker(sectionElem, player, inputConfig);
-		}
-	});
 }
 
 // Renders a spec's declarative `CustomSection` (see @features/spec_config).

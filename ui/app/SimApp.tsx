@@ -1,7 +1,7 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
-import { CustomSection, OtherSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
+import { CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
@@ -89,6 +89,11 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						createPortal(
 							<EncounterPicker showExecuteProportion={def.encounterPicker.showExecuteProportion} />,
 							simUI.settingsTab.encounterContainer,
+						)}
+					{ready &&
+						createPortal(
+							<PlayerSettings iconInputs={def.playerIconInputs} inputs={def.playerInputs?.inputs ?? []} />,
+							simUI.settingsTab.playerSettingsContainer,
 						)}
 					{/* The block itself is absent when the spec declares neither inputs nor swap slots. */}
 					{ready &&

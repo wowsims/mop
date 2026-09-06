@@ -23,7 +23,13 @@ const REGIONS = [
 	{ selector: '.sim-header .import-export' },
 	{ selector: '.sim-sidebar-socials' },
 	{ selector: '.sim-sidebar-stats' },
-	{ selector: '.settings-tab', ceiling: { unnamed: 161, shown: 3, unsafe: 34, untyped: 4 } },
+	// Measured on this file's default spec, `warrior/arms`, which is what the other three are
+	// calibrated against too. `unnamed` was 161 and the React pane measures 155; the player port did
+	// not move it — every control that block renders is a `<select>` or an anchor that existed already,
+	// and the base-to-React delta is the same one control on a spec with a ported icon-enum picker and
+	// on one without. So this is an earlier port's slack, taken up now rather than left as room a later
+	// one could grow into. The baseline is 162 on the same spec.
+	{ selector: '.settings-tab', ceiling: { unnamed: 155, shown: 3, unsafe: 34, untyped: 4 } },
 ];
 const SELECTORS = REGIONS.map(region => region.selector);
 

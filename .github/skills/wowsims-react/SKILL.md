@@ -339,8 +339,10 @@ of the duplication sweep was to build each shape once.
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
 | `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
+| `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` (still live, dual-stack — Consumes and the cooldowns picker) | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote |
+| `PlayerSettings` | `ui/features/settings/components/PlayerSettings/` | `buildPlayerSettings` in `app/tabs/settings_tab.tsx`, and with it `configureIconSection`, `configureInputSection` and `buildInputPickers` (**deleted** — no caller left) | the spec's `playerIconInputs` and `playerInputs.inputs` | the block's order, the hand-rolled race and profession configs, and the icon group's inline `gridTemplateColumns` |
 | `RaidBuffs` | `ui/features/settings/components/RaidBuffs/` | the buffs block's `relevantStatOptions` walk plus its misc bundle | the option list | that the misc bundle is a `MultiIconPickerConfig` assembled from `IconPickerConfig`s, as the vanilla builder did |
-| `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
+| `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (**deleted** — the player block was its last caller) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
 | `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection`'s body half in `app/tabs/settings_tab.tsx` | a `CustomSection` config — its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards |
@@ -1122,16 +1124,17 @@ Two things specific to this migration:
 ## The settings tab, surveyed — 2026-09-06
 
 Seven content blocks remain. Three shared shapes cover most of them: the generic input walk
-(number/boolean/enum — all three React pickers exist), the icon-group walk (`icon` → `IconPicker`,
-ported; `iconEnum` → `IconEnumPicker`, **not** ported), and the stat-option walk that Buffs, Debuffs
+(number/boolean/enum — all three React pickers exist), the icon-group walk (`icon` → `IconPicker`
+and `iconEnum` → `IconEnumPicker`, both ported now), and the stat-option walk that Buffs, Debuffs
 and the two cooldown blocks share.
 
-**`IconEnumPicker` was missing from this file's "still missing" list, and it is the real gate.** It
-blocks *all* of Consumes — every picker there is `iconEnum` — and Player settings on the majority of
+**`IconEnumPicker` was missing from this file's "still missing" list, and it was the real gate.** It
+blocked *all* of Consumes — every picker there is `iconEnum` — and Player settings on the majority of
 specs, since `makeClassOptionsEnumIconInput` is how most classes declare their options. Three of the
-six gate specs are affected. `MultiIconPicker` was listed and blocks Buffs and Debuffs, eleven
-instances between them. Both are Bootstrap-dropdown shaped, so both are ports onto the `Menu`
-adapter that already landed — not new adapters.
+six gate specs are affected. It landed 2026-09-06 with the player block; Consumes is still to wire.
+`MultiIconPicker` was listed and blocked Buffs and Debuffs, eleven instances between them. Both are
+Bootstrap-dropdown shaped, so both were ports onto the `Menu` adapter that already landed — not new
+adapters.
 
 **Dead, found while surveying; delete rather than port:** the deprecated `customSections` function
 form on `IndividualSimUIConfig` (declared, looped over, and declared by no spec);
@@ -1181,9 +1184,9 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
 9. ~~**`MultiIconPicker` onto Base UI `Menu`, then Buffs and Debuffs**~~ — **done.** The interleaving
    was handled by widening `StatOptionIcons` into a dispatch rather than by placing vanilla nodes
    among React siblings.
-10. **`IconEnumPicker` onto `Menu`, then Player settings** — Player is the smaller consumer and
-   exercises the three existing pickers alongside the new primitive. Keep the inline
-   `gridTemplateColumns`: `SERIALIZE` ignores inline style, so the gate cannot catch its absence.
+10. ~~**`IconEnumPicker` onto `Menu`, then Player settings**~~ — **done.** The inline
+   `gridTemplateColumns` is kept and is still invisible to the tree gates; `settings-tab.mjs`'s
+   `playerIcons()` is the only thing that reads it.
 11. **Consumes** — last, because every one of its pickers is `iconEnum`. Two extra costs: its
    `waitForInit` dependency is a *hard* one (`Database.getSync()`), not inherited; and `updateRow`
    inverts React's data flow, since a row's `hide` depends on its children's `showWhen()` results and
@@ -1201,6 +1204,63 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Player settings are React, on an `IconEnumPicker` ported to Base UI `Menu`** — the
+  second picker on that adapter, and it wants the opposite of what the first one did.
+
+  **`Menu.Item` is right here.** Bootstrap's `clearMenus` hides on any click inside the menu whose
+  target is not an `input`/`select`/`option`/`textarea`, so choosing an option always closed this
+  one — the behaviour `MultiIconPicker` had to suppress. Each `<li>` is the item, not the anchor
+  inside it, because Base UI's press-drag-release gesture dispatches its click on the item element,
+  and `preventDefault` from there still cancels the anchor's navigation.
+
+  **The popup is portalled into a slot element of our own**, an empty `<div>` where vanilla's `<ul>`
+  sat. `Menu.Portal` appends its element to the container in a later commit than React places the
+  root's own children, so a portal aimed at the root lands *after* the trailing `<label>` — proved
+  by mutation, and the unit test asserts the child order for it. Three wrappers instead of
+  `MultiIconPicker`'s two; `.icon-enum-picker-slot` and the portal are `display: contents`, so the
+  box tree is vanilla's exactly and the absolutely-positioned popup is not a flex item.
+
+  **React refuses to render the button's `href`.** Vanilla builds it as `javascript:void(0)`;
+  React 19 substitutes a `javascript:` URL that *throws when followed*, which is worse than the
+  no-op vanilla wrote. The port omits the attribute instead — `settings-tab.mjs`'s row key,
+  and everything else that reads it, treats both spellings as "no link" — and `nativeButton={false}`
+  is what keeps the anchor focusable without one. The stale-href quirk further up this file is not
+  reproduced, as that note says it should not be.
+
+  **Measured against the vanilla menu, opened on both builds:** `sideOffset={-1}` reproduces
+  Bootstrap's `[0, -1]` on the pixel (dx 0, dy -1), the popup box matches (35x140 on mage, 175x315
+  on hunter, `grid-template-columns` resolving to `35px 35px 35px 35px 35px` from `numColumns: 5`),
+  and every declaration on the `<ul>`, the `<li>` and the option anchor is identical. Two move
+  rather than change: `position: absolute` and `z-index: 1000` are the positioner's now, and the
+  effective stacking context is still 1000.
+
+  **What Base UI cannot reproduce.** Keyboard navigation visits options wearing `hide`, because
+  `keepMounted` puts them in the composite list where Bootstrap instead filtered its focusable
+  children by visibility. And the popup is nameless: Base UI points its `aria-labelledby` at the
+  trigger, which is a bare anchor carrying a background image — `MultiIconPicker` fixed that with
+  `config.label`, and an icon-enum picker has none to use.
+
+  **There is no `*.parity.test.tsx`**, for `MultiIconPicker`'s reason: `mountBoth` compares the two
+  trees index-aligned, and this one has three wrappers the vanilla tree does not, so it cannot line
+  them up. The tree gates plus `normaliseBaseUiMenus` are the element-for-element oracle instead, and
+  `IconEnumPicker.test.tsx` covers the behaviour — 22 cases, three of them mutation-checked.
+
+  **Tooltips are one react-tooltip per picker**, serving the button and every option through
+  `data-tooltip-content` on the anchor rather than one instance each — a pet picker has 31 options.
+  It renders in place, which is a new container for a `Tooltip`, so it was measured: same text, same
+  width as tippy's, and clipped by nothing between it and `<body>`.
+
+  **Three gate changes.** `normaliseMultiIconMenus` is `normaliseBaseUiMenus`, a table of ported
+  menus rather than one function per picker, so `dropdown_picker` adds an entry instead of a call
+  site. Its icon-enum entry counts *slots* rather than picker roots, because that picker is half
+  ported — Consumes still builds the vanilla one and those roots have no wrappers to fold — and the
+  roots are then asserted to be a superset. `REACT_DANGLING_MAX` is 0, not 3: measured on eleven
+  specs across ten classes — three that build no player icon inputs, one whose only one is an `icon`,
+  and seven with a ported picker — and no label in the React pane names anything that is not there.
+  `a11y.mjs`'s `unnamed` ceiling is 155, not 161. Neither number moved *because* of this port: both
+  were already slack from an earlier one, and taking them up now is cheaper than leaving room a
+  later port could grow into.
 
 - 2026-09-06 **Buffs and Debuffs are React, on a `MultiIconPicker` ported to Base UI `Menu`** — and
   the port could not reproduce the markup, which is the interesting part.

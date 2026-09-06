@@ -25,9 +25,9 @@ const isMultiIcon = (option: RenderableStatOptions): option is MultiIconPickerSt
  * Debuffs interleaves `IconPicker` and `MultiIconPicker` entries *in config order*, which is why
  * this dispatches rather than being two components rendered one after the other.
  *
- * `RenderableStatOptions` is narrower than the `PickerStatOptions` union its input lists can hold —
- * `IconEnumPicker` has no React port, and the type is what stops a section being wired up half
- * working. See that type.
+ * `RenderableStatOptions` is narrower than the `PickerStatOptions` union its input lists can hold:
+ * no live option list names an `IconEnumPicker`, so this has no branch for one, and the type is what
+ * stops a section being wired up half working. See that type.
  */
 export const StatOptionIcons = ({ options }: StatOptionIconsProps) => {
 	const player = usePlayer();

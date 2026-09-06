@@ -20,9 +20,9 @@ export interface CustomSectionProps {
  * only reads the player, so there is nothing to move into `model/`.
  *
  * `inline` is forced on everything, icon pickers included, because the vanilla builder walked every
- * `.input-root` in the body afterwards. `iconEnum` inputs would need a picker that is not ported
- * yet; neither live section declares one, and the narrowing below means a spec that adds one fails
- * to compile rather than rendering a section silently short.
+ * `.input-root` in the body afterwards. Neither live section declares an `iconEnum` input, so this
+ * has no branch for one even though `IconEnumPicker` is ported; the narrowing below means a spec
+ * that adds one fails to compile rather than rendering a section silently short.
  */
 export const CustomSection = ({ section }: CustomSectionProps) => {
 	const player = usePlayer() as Player<Spec>;

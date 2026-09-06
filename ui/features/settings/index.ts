@@ -6,5 +6,7 @@ export { StatOptionIcons } from './components/StatOptionIcons';
 export type { StatOptionIconsProps } from './components/StatOptionIcons';
 export { CustomSection } from './components/CustomSection';
 export type { CustomSectionProps } from './components/CustomSection';
+export { PlayerSettings } from './components/PlayerSettings';
+export type { PlayerSettingsProps } from './components/PlayerSettings';
 export { RaidBuffs } from './components/RaidBuffs';
 export type { RaidBuffsProps } from './components/RaidBuffs';

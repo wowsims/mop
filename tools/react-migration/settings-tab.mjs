@@ -296,8 +296,13 @@ for (const [index, block] of blocks.entries()) {
 const dangling = await page.evaluate(
 	() => [...document.querySelectorAll('.settings-tab label[for]')].filter(label => !document.getElementById(label.getAttribute('for'))).length,
 );
-// Lower this as blocks port. At 0 the defect is gone from the tab and this can become an equality.
-const REACT_DANGLING_MAX = 3;
+// At 0 this is an equality: no label in the React pane names anything that is not there. Measured
+// on eleven specs across ten classes — three of them build no player icon inputs at all, one builds
+// only an `icon`, and seven build the ported `IconEnumPicker`. The buffs and debuffs port is what
+// took the `for="undefined"` icon labels this tracked; the player port found none left to take, so
+// this is the earlier port's slack rather than a count this one moved. Raising it means a port put
+// one back.
+const REACT_DANGLING_MAX = 0;
 const danglingOk = IS_BASE ? dangling > 0 : dangling <= REACT_DANGLING_MAX;
 say(`  labels naming nothing: ${danglingOk ? 'as-recorded' : `UNEXPECTED(${dangling})`} — falls as blocks port; see REACT_DANGLING_MAX`);
 if (!danglingOk)

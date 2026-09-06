@@ -398,35 +398,72 @@ export const renameWithin = (dom, within, from, to) => {
 };
 
 /**
- * Folds a ported `MultiIconPicker` back into the shape the Bootstrap one had, on the React side.
+ * Every Bootstrap dropdown the migration has re-expressed on Base UI's `Menu`, and what it takes to
+ * fold each one back into the shape it had. A new port adds an entry here rather than a call site.
  *
- * Base UI's `Menu` cannot be arranged into `.dropend > a + ul`: `Menu.Portal` is mandatory,
- * `Positioner` must be its child and `Popup` the Positioner's, and each renders a real element. And
- * the `<ul>` cannot keep `.dropdown-menu`, because `shared/bootstrap_overrides.ts` binds a capturing
- * `mouseleave` to that class and reads `previousElementSibling` as the toggle — inside a positioner
- * that is null, and Bootstrap then throws.
+ * The wrappers are not avoidable: `Menu.Portal` is mandatory, `Positioner` must be its child and
+ * `Popup` the Positioner's, and each renders a real element. Nor can the popup keep `.dropdown-menu`
+ * — `shared/bootstrap_overrides.ts` binds a capturing `mouseleave` to that class and reads
+ * `previousElementSibling` as the toggle, which inside a positioner is null, and Bootstrap throws.
  *
- * Every count is asserted against the number of pickers actually found rather than a number typed
- * in, so a wrapper appearing somewhere else, or one of these going missing, is a failure. Used by
- * both tree comparisons — `parity.mjs` sees these in the settings pane too — and **only on the React
- * side**: the baseline builds the same picker roots, so running it there reports it as missing
- * wrappers it never had.
+ * `count` is what every fold is asserted against, and the two entries count different things on
+ * purpose:
+ *
+ * - `MultiIconPicker` is fully ported, so the number of picker roots is the number of menus, and
+ *   asserting against it catches a root that somehow has no wrappers.
+ * - `IconEnumPicker` is half ported — Consumes still builds the vanilla one, and those roots have
+ *   no wrappers to fold — so the ported ones are counted by the slot element only React renders.
+ *   `roots` below is then asserted to be a superset, which is what would catch a slot appearing
+ *   somewhere that is not a picker.
  */
-export const normaliseMultiIconMenus = dom => {
-	const root = /\.multi-icon-picker-root(\.|$)/;
-	const pickers = dom.split('\n').filter(line => root.test(line.trim())).length;
-	const problems = [];
-	if (!pickers) return { dom, problems };
+const PORTED_MENUS = [
+	{
+		what: 'multi-icon',
+		root: /\.multi-icon-picker-root(\.|$)/,
+		count: /\.multi-icon-picker-root(\.|$)/,
+		wrappers: [/^div\.multi-icon-picker-portal$/, /^div\.multi-icon-picker-positioner$/],
+		popup: ['ul.multi-icon-picker-menu', 'ul.dropdown-menu'],
+	},
+	{
+		what: 'icon-enum',
+		root: /\.icon-enum-picker-root(\.|$)/,
+		// The slot holds the place vanilla's `<ul>` had between the button and the caption, which a
+		// portal aimed at the root cannot: Base UI appends its element in a later commit than React
+		// places the root's own children.
+		count: /^div\.icon-enum-picker-slot$/,
+		wrappers: [/^div\.icon-enum-picker-slot$/, /^div\.icon-enum-picker-portal$/, /^div\.icon-enum-picker-positioner$/],
+		popup: ['ul.icon-enum-picker-menu', 'ul.dropdown-menu'],
+	},
+];
 
+/**
+ * Folds every ported menu in `dom` back into its Bootstrap shape, and reports anything that did not
+ * fold as expected. Used by both tree comparisons and **only on the React side**: the baseline
+ * builds the same picker roots, so running it there reports it as missing wrappers it never had.
+ * That mistake cost a run.
+ *
+ * Every count is asserted against something computed from the tree rather than typed in, so a
+ * wrapper appearing somewhere else, or one of them going missing, is a failure.
+ */
+export const normaliseBaseUiMenus = dom => {
+	const problems = [];
 	let current = dom;
-	for (const wrapper of [/^div\.multi-icon-picker-portal$/, /^div\.multi-icon-picker-positioner$/]) {
-		const collapsed = collapseWrappers(current, root, wrapper);
-		if (collapsed.dropped !== pickers) problems.push(`collapsed ${collapsed.dropped} of ${pickers} ${wrapper.source}`);
-		current = collapsed.dom;
+	for (const menu of PORTED_MENUS) {
+		const lines = current.split('\n').map(line => line.trim());
+		const expected = lines.filter(line => menu.count.test(line)).length;
+		const roots = lines.filter(line => menu.root.test(line)).length;
+		if (!expected) continue;
+		if (roots < expected) problems.push(`${menu.what}: ${expected} menus under ${roots} picker roots`);
+		for (const wrapper of menu.wrappers) {
+			const collapsed = collapseWrappers(current, menu.root, wrapper);
+			if (collapsed.dropped !== expected) problems.push(`${menu.what}: collapsed ${collapsed.dropped} of ${expected} ${wrapper.source}`);
+			current = collapsed.dom;
+		}
+		const renamed = renameWithin(current, menu.root, ...menu.popup);
+		if (renamed.renamed !== expected) problems.push(`${menu.what}: renamed ${renamed.renamed} of ${expected} menus`);
+		current = renamed.dom;
 	}
-	const renamed = renameWithin(current, root, 'ul.multi-icon-picker-menu', 'ul.dropdown-menu');
-	if (renamed.renamed !== pickers) problems.push(`renamed ${renamed.renamed} of ${pickers} multi-icon menus`);
-	return { dom: renamed.dom, problems };
+	return { dom: current, problems };
 };
 
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });

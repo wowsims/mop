@@ -1,0 +1,45 @@
+// Bootstrap's dropdown, re-expressed — the same trade `MultiIconPicker.scss` records, and for the
+// same two reasons: `.dropdown-menu` is `display: none` until Bootstrap's plugin adds `.show`, and
+// `bootstrap_overrides.ts` binds a capturing `mouseleave` on every `.dropdown-menu:not(.no-hover)`
+// that reads `previousElementSibling` as the toggle — which, inside Base UI's positioner, is null.
+//
+// The declarations are the same because the vanilla selector chain was the same one
+// (`.icon-picker .dropdown-menu` over Bootstrap's base, whose `$dropdown-padding-y` is 0 here).
+// What this picker adds is the nested anchor, which the multi picker's options do not have.
+
+// Base UI's portal and the slot it renders into are plumbing, not boxes. `.icon-picker` is a flex
+// row, so a static wrapper would become a flex item where vanilla's absolutely-positioned `<ul>`
+// was out of flow entirely.
+.icon-enum-picker-slot,
+.icon-enum-picker-portal {
+	display: contents;
+}
+
+.icon-enum-picker-positioner {
+	z-index: var(--dropdown-zindex);
+}
+
+.icon-picker .icon-enum-picker-menu {
+	display: grid;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background-color: grey;
+	list-style: none;
+}
+
+// `.icon-picker .icon-dropdown-option` already sizes and borders the `<li>`; what came from
+// `.icon-picker .dropdown-menu .icon-dropdown-option` is the dimming, which has to out-specify that
+// rule's `filter: grayscale(1)`, and the 1px pull that laps the anchor over the `<li>`'s border.
+.icon-picker .icon-enum-picker-menu .icon-dropdown-option {
+	padding: 0;
+	filter: opacity(0.7);
+
+	&:hover {
+		filter: none;
+	}
+
+	.icon-picker-button {
+		margin: -1px;
+	}
+}
