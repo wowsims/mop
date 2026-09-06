@@ -1145,11 +1145,8 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    that `configureIconSection` was doing nothing for them at all.
 7. ~~**Custom sections**~~ — **done**, verified by running both gates explicitly on
    `shaman/elemental` and `shaman/enhancement`, the only two specs that declare `sections`.
-8. **Extract the store writes, with no React in the change.** `PresetConfigurationPicker.applyBuild`
-   (a static that writes ~20 fields in one `batch` and already has a non-view caller in
-   `individual_sim_ui.tsx`), and `getCurrentSavedSettings` + the 14-setter `setData` batch out of
-   `settings_tab.tsx`. Doing this while the views are still vanilla is what made the encounter rules
-   land cleanly. Pin the ordering with a test the way `target_dummies` does.
+8. ~~**Extract the store writes**~~ — **done**, with no React in the change:
+   `features/settings/model/apply_build.ts` and `features/settings/model/saved_settings.ts`.
 9. **`MultiIconPicker` onto Base UI `Menu`, then Buffs and Debuffs together.** One primitive unblocks
    eleven instances. Do not split the two blocks: Debuffs interleaves three `IconPicker`s and two
    `MultiIconPicker`s *in config order*, and while a vanilla node can be placed among React siblings
@@ -1175,6 +1172,22 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The settings tab's store writes are out of the view, and no React went in.** Doing it
+  as its own step is what made the encounter rules land cleanly, and it is worth repeating: a pure
+  move is far easier to review — and to revert — than a move tangled up in a port.
+
+  `applyBuild` was a `static` on `PresetConfigurationPicker` whose entire body is store writes, and
+  it already had a caller that is not a view (`IndividualSimUI` applies `defaultBuild` through it).
+  It is `features/settings/model/apply_build.ts` now. `getCurrentSavedSettings` and the fourteen-setter
+  `setData` batch became `readSavedSettings` / `applySavedSettings` in
+  `features/settings/model/saved_settings.ts`; the reader already had two callers, since the preset
+  item-swap list bakes a load-time snapshot into every entry.
+
+  Nine imports in `settings_tab.tsx` and three elsewhere were orphaned by the move and removed — all
+  of them proto message types that only the batch referenced. Every `|| X.create()` in that batch is
+  load-bearing rather than defensive: proto3 omits an empty message, so a saved entry with no debuffs
+  comes back with the field absent and the setter still needs a value.
 
 - 2026-09-06 **Custom sections are React**, and the deprecated `customSections` function form is
   gone from the tab — no spec declared it. The field is still on `IndividualSimUIConfig`, which is

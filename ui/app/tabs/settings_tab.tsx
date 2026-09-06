@@ -3,8 +3,6 @@ import { getEnumValues } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
-import { batch } from '@domain/state/batch';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -14,9 +12,10 @@ import {
 	subscribeRaidField,
 } from '@domain/state/subscriptions';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
-import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs, Spec } from '@generated/proto/common';
+import { Profession, Spec } from '@generated/proto/common';
 import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProfession, translateRace } from '@i18n/localization';
@@ -299,36 +298,8 @@ export class SettingsTab extends SimTab {
 			nameLabel: i18n.t('settings_tab.saved_settings.settings_name'),
 			saveButtonText: i18n.t('settings_tab.saved_settings.save_settings'),
 			storageKey: this.simUI.getSavedSettingsStorageKey(),
-			getData: () => {
-				return this.getCurrentSavedSettings();
-			},
-			setData: (simUI: IndividualSimUI<any>, newSettings: SavedSettings) => {
-				batch(() => {
-					simUI.sim.raid.setBuffs(newSettings.raidBuffs || RaidBuffs.create());
-					simUI.sim.raid.setDebuffs(newSettings.debuffs || Debuffs.create());
-					const party = simUI.player.getParty();
-					if (party) {
-						party.setBuffs(newSettings.partyBuffs || PartyBuffs.create());
-					}
-					simUI.player.setBuffs(newSettings.playerBuffs || IndividualBuffs.create());
-
-					simUI.player.setConsumes(newSettings.consumables || ConsumesSpec.create());
-
-					simUI.player.setRace(newSettings.race);
-					simUI.player.setProfessions(newSettings.professions);
-					simUI.player.itemSwapSettings.setItemSwapSettings(
-						newSettings.enableItemSwap,
-						simUI.sim.db.lookupItemSwap(newSettings.itemSwap || ItemSwap.create()),
-						Stats.fromProto(newSettings.itemSwap?.prepullBonusStats),
-					);
-					simUI.player.setReactionTime(newSettings.reactionTimeMs);
-					simUI.player.setChannelClipDelay(newSettings.channelClipDelayMs);
-					simUI.player.setInFrontOfTarget(newSettings.inFrontOfTarget);
-					simUI.player.setDistanceFromTarget(newSettings.distanceFromTarget);
-					simUI.player.setHealingModel(newSettings.healingModel || HealingModel.create());
-					simUI.player.setChallengeModeEnabled(newSettings.challengeMode);
-				});
-			},
+			getData: () => readSavedSettings(this.simUI),
+			setData: (simUI: IndividualSimUI<any>, newSettings: SavedSettings) => applySavedSettings(simUI, newSettings),
 			subscribe: subscribeAll([
 				subscribeRaidField(this.simUI.sim.raid, 'buffs'),
 				subscribeRaidField(this.simUI.sim.raid, 'debuffs'),
@@ -393,32 +364,12 @@ export class SettingsTab extends SimTab {
 					tooltip: presetItemSwap.tooltip,
 					isPreset: true,
 					data: SavedSettings.create({
-						...this.getCurrentSavedSettings(),
+						...readSavedSettings(this.simUI),
 						enableItemSwap: true,
 						itemSwap: presetItemSwap.itemSwap,
 					}),
 				});
 			});
-		});
-	}
-
-	getCurrentSavedSettings() {
-		return SavedSettings.create({
-			raidBuffs: this.simUI.sim.raid.getBuffs(),
-			partyBuffs: this.simUI.player.getParty()?.getBuffs() || PartyBuffs.create(),
-			playerBuffs: this.simUI.player.getBuffs(),
-			debuffs: this.simUI.sim.raid.getDebuffs(),
-			consumables: this.simUI.player.getConsumes(),
-			race: this.simUI.player.getRace(),
-			professions: this.simUI.player.getProfessions(),
-			enableItemSwap: this.simUI.player.itemSwapSettings.getEnableItemSwap(),
-			itemSwap: this.simUI.player.itemSwapSettings.toProto(),
-			reactionTimeMs: this.simUI.player.getReactionTime(),
-			channelClipDelayMs: this.simUI.player.getChannelClipDelay(),
-			inFrontOfTarget: this.simUI.player.getInFrontOfTarget(),
-			distanceFromTarget: this.simUI.player.getDistanceFromTarget(),
-			healingModel: this.simUI.player.getHealingModel(),
-			challengeMode: this.simUI.player.getChallengeModeEnabled(),
 		});
 	}
 

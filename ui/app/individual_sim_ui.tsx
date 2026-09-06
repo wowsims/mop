@@ -39,6 +39,7 @@ import {
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
+import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import type { IndividualSimHost } from '@features/sim_host';
 import type { SpecDefinition } from '@features/spec_config';
@@ -50,7 +51,6 @@ import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
-import { PresetConfigurationPicker } from './preset_configuration_picker';
 import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
@@ -460,7 +460,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			this.statWeightActionSettings.applyDefaults();
 
 			if (this.individualConfig.defaultBuild) {
-				PresetConfigurationPicker.applyBuild(this.individualConfig.defaultBuild, this);
+				applyBuild(this.individualConfig.defaultBuild, this);
 			}
 		});
 	}
