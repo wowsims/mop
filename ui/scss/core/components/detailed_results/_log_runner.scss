@@ -151,6 +151,10 @@
 	@include media-breakpoint-up(md) {
 		margin-left: auto;
 	}
+
+	.btn {
+		white-space: nowrap;
+	}
 }
 
 .log-fab-clip {
