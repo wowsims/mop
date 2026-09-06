@@ -56,7 +56,12 @@ export async function fillAndSetActionId(
 	setBackground: boolean,
 	options: { signal?: AbortSignal } = {},
 ): Promise<ActionId> {
-	const filled = await actionId.fill(undefined, options);
+	const filled = await actionId.fill();
+	// The lookup itself is shared and cannot be aborted, so the signal is honoured here instead —
+	// at the point where this function would otherwise write into an element the caller has dropped.
+	if (options.signal?.aborted) {
+		return filled;
+	}
 	if (setHref) {
 		setActionIdWowheadHref(filled, elem);
 	}

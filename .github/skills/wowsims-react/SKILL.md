@@ -446,6 +446,33 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
   ties `size` to every render instead of to typing. `BooleanPicker` stays controlled: a checkbox's
   `change` and React's `onChange` are the same event.
 
+### TanStack Query is not being adopted — decided 2026-09-06, do not re-open
+
+Researched in full against every async boundary in `ui/` and declined, for reasons that are
+structural rather than "not yet":
+
+- **The React surface is two call sites.** `SimToolbar`'s `/version` fetch and `useActionId`.
+  Every other async consumer carries the vanilla pragma — verified on all ten candidates
+  (`sim_ui`, `results_action`, `stat_weights_panel`, `bulk_tab`, `gear_picker`, `item_renderer`,
+  `glyphs_picker`, `consumes_picker`, `individual_addon_importer`, `multi_icon_picker`). A hook
+  cannot serve any of them.
+- **A sim run is a promise racing a stream, not a query.** `doAsyncRequest` races the final progress
+  message against the request reply because the wasm path returns its payload on the progress
+  channel. Cancellation is a protocol — an `AbortRequest` posted to the worker holding the task id —
+  not an `AbortSignal`. And caching is actively wrong: people press Simulate to get a *different*
+  answer.
+- **`computeStats` output is store state.** `PLAYER_CHANGE_FIELDS` drops `currentStats` precisely so
+  recomputation cannot re-trigger itself; a query cache rebuilds that loop across two systems.
+- **The configuration would be all-off.** `staleTime: Infinity`, `gcTime: Infinity`, `retry: false`,
+  no refetch on focus or reconnect — every one overriding a library default, leaving
+  `isPending`/`isError` bookkeeping as the entire benefit.
+
+The two defects it was supposed to fix were real, and were fixed in domain instead (below). Revisit
+only when gear, import-export or results port and a query gains its *first* React consumer — the
+same rule that governs every other primitive here. If it is ever adopted, the load-bearing rule is:
+**a `queryFn` calls the existing domain function, never the fetch itself**, or the cache forks and
+the vanilla side stops seeing the data.
+
 ### `ListPicker` stays vanilla for now — decided, do not re-open
 
 It is not being ported in Phase 2, and the reasons are structural rather than "it is big":
@@ -1204,6 +1231,80 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The sidebar showed the pre-load default player's stats all session** — and it was
+  never a React bug. `Sim.applyLoadedSettings` suppresses the stats recompute while the settings
+  load applies its many writes, but nothing recomputed when the load finished. The comment
+  justifying the skip claimed the stored settings "already carry the stats they were saved with";
+  they do not — `currentStats` is server-derived, seeded as an empty `PlayerStats.create()` and
+  written only by the `computeStats` round trip. The only compute that ran was the one
+  `raid.setPlayer()` triggered during construction, *before* the settings were applied, so an Arms
+  warrior displayed Strength 216 — the naked base value — until any later raid/encounter change
+  happened to trigger a fresh one. Editing gear "fixed" it, which is how it was reported.
+
+  Reproduced by toggling raid buffs (Strength 216 → 20153) and reloading: the reload came back at
+  216, byte-identical to the pre-load defaults. `applyLoadedSettings` now recomputes once on the way
+  out.
+
+  The same gap left unit metadata stale, because `updateCharacterStats` also drives
+  `player.updateMetadata()` — so `warrior/protection` rendered all 116 APL validations unclassified,
+  and now classifies 11 warnings and 2 informational. **This is a `feature/ui-restructure`
+  regression, not a port one** (the vanilla baseline shows the same naked values; production master
+  does not), so the React build now diverges from the parity baseline and three APL-validation
+  entries are recorded in `intended.mjs`. They stay: the restructure branch is being closed and this
+  branch PRs directly into master, so the baseline they compare against is going away rather than
+  being fixed.
+
+- 2026-09-06 **Three domain defects around the database load, found while declining react-query.**
+  `Database.get()` assigned `loadPromise` once and never cleared it, so one transient failure was
+  cached as a rejected promise for the page lifetime — with ~30 `waitForInit().then(...)` sites
+  hanging off it and no `.catch` between them, including React's own readiness hook. It now clears
+  the memo on rejection (the rule `getSharedWasmModule` already states: *"Never memoize a
+  failure"*), retries a couple of times first because a failed `db.json` is fatal to the page rather
+  than to one widget, and `enchants.ts` gets the same reset. Pinned by `database.test.ts`, which was
+  mutation-checked — the memo case fails when the reset is removed.
+
+  It also **stopped taking an `AbortSignal`**. The promise is shared by the whole page, so honouring
+  one caller's signal aborts the database for everyone; it was safe only by the accident that
+  `Sim`'s constructor calls it first without one. `getItemIconData` two methods below already
+  documented this rule about its own shared request. The signal is now honoured where it can be —
+  `fillAndSetActionId` checks it before writing into an element the caller has dropped — and
+  `ActionId.fill`'s dead `options` parameter is gone. `getCharacterStatsForGear` (zero callers) was
+  deleted at the same time.
+
+- 2026-09-06 **`useSimStatus`, and a skeleton that does not key off it.** Init is a
+  `'loading' | 'ready' | 'error'` status with a rejection handler, where before a failed load left
+  the boolean `false` forever and rendered nothing. `useSimReady` is a one-line wrapper, so `SimApp`
+  is untouched. The CharacterStats skeleton deliberately keys off `currentStats.finalStats` instead:
+  `waitForInit()` resolves *before* the first `computeStats` returns, so a ready-gated skeleton
+  would vanish while the values were still empty.
+
+- 2026-09-06 **External links get `rel="noopener noreferrer"` from three seams, not from call
+  sites.** `isExternalHref`/`externalRel` in `ui/domain/links.ts`, applied by `Button` for React, by
+  the `@jsx-vanilla` runtime for every `<a href>` written as JSX in the vanilla stack, and by
+  `setExternalAwareHref` for the ActionId writer, which assigns `href` after the element exists
+  where the JSX seam cannot see it. 8 of 227 external anchors carried it before; 151 do now, the
+  remainder being `elem.href = ...` inside un-ported feature views. Externality is not an origin
+  comparison — `ui/domain` may not touch DOM globals, and every internal link here is relative.
+
+  **This is why the picker parity oracle exists.** The vanilla twins picked the attribute up and
+  React's `IconPicker` did not, and `mountBoth` failed 22 assertions on the asymmetry. The browser
+  parity gate cannot see it: it compares elements and classes, not attributes.
+
+- 2026-09-06 **`Icon` absorbs the last raw glyphs, and two of its aliases were wrong.** Three call
+  sites still passed FontAwesome classes as strings, each documenting the same cause: they use the
+  bare `fa` prefix and `Icon` always emitted a style class. That is now `style="base"`, and
+  `SocialLink`, `ToolbarItem`, `Exporter` and `TalentTreePicker` are typed. `ui/domain` cannot
+  import `IconName`, so SOCIALS keeps its literals narrow with `as const` and they are checked where
+  they are rendered.
+
+  `ICON_ALIASES` mapped `rotate-left` → `arrow-rotate-left` and `arrow-right-from-bracket` →
+  `right-from-bracket`. In the pinned 6.0.0 CSS those are four distinct glyphs (\f2ea vs \f0e2,
+  \f2f5 vs \f08b), so each mapping silently swapped the icon — and the test asserted the wrong one.
+  Both are canonical names now. **No FontAwesome npm package**:
+  `@fortawesome/fontawesome-common-types` does export `IconName`, but 2,699 of its 4,837 members do
+  not resolve against the pinned 6.0.0 CDN, which trades a hand-checked 52-name union that is 100%
+  accurate for one that is 44% accurate.
 
 - 2026-09-06 **Player settings are React, on an `IconEnumPicker` ported to Base UI `Menu`** — the
   second picker on that adapter, and it wants the opposite of what the first one did.

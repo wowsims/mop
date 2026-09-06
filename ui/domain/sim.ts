@@ -10,7 +10,6 @@ import {
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
-	PlayerStats,
 	ProgressMetrics,
 	Raid as RaidProto,
 	RaidSimRequest,
@@ -772,40 +771,6 @@ export class Sim {
 
 	// Returns the stats for Player 0 without triggering any metadata updates.
 	// Can be used for Suggest Gems / Batch Simming without interfering with the UI.
-	async getCharacterStatsForGear(gear: Gear): Promise<PlayerStats> {
-		await this.waitForInit();
-
-		const raidProto = this.raid.toProto(false, true);
-		this.modifyRaidProto(raidProto);
-
-		const player = raidProto.parties[0].players[0];
-
-		const isBlacksmith = hasBlacksmithing(player);
-
-		// Remove bonus sockets if not blacksmith.
-		if (!isBlacksmith) {
-			gear = gear.withoutBlacksmithSockets();
-		}
-
-		player.database = gear.toDatabase(this.db);
-		player.equipment = gear.asSpec();
-
-		extendPlayerProtoWithMissingEffects(player, this.db);
-		raidProto.parties[0].players[0] = player;
-
-		const req = ComputeStatsRequest.create({
-			raid: raidProto,
-			encounter: this.encounter.toProto(),
-		});
-
-		const result = await this.workerPool.computeStats(req);
-		if (result.errorResult != '') {
-			this.crashEmitter.emit(new SimError(result.errorResult));
-		}
-
-		return result.raidStats!.parties[0].players[0];
-	}
-
 	async reforgeOptimize(config: ReforgeOptimizeConfig): Promise<ReforgeOptimizeResult> {
 		const signals = this.signalManager.registerRunning(RequestTypes.ReforgeOptimize);
 		try {

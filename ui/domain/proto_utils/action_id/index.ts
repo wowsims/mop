@@ -263,7 +263,7 @@ export class ActionId {
 
 	// Returns an ActionId with the name and iconUrl fields filled.
 	// playerIndex is the optional index of the player to whom this ID corresponds.
-	async fill(playerIndex?: number, options: { signal?: AbortSignal } = {}): Promise<ActionId> {
+	async fill(playerIndex?: number): Promise<ActionId> {
 		if (this.name || this.iconUrl) {
 			return this;
 		}
@@ -271,7 +271,7 @@ export class ActionId {
 		if (this.otherId) {
 			return this;
 		}
-		const tooltipData = await ActionId.getTooltipData(this, { signal: options?.signal });
+		const tooltipData = await ActionId.getTooltipData(this);
 
 		const baseName = tooltipData['name'];
 		let name = baseName;
@@ -959,7 +959,7 @@ export class ActionId {
 
 		const iconOverrideId = this.spellTooltipOverride || this.spellIconOverride;
 		if (iconOverrideId) {
-			const overrideTooltipData = await ActionId.getTooltipData(iconOverrideId, { signal: options?.signal });
+			const overrideTooltipData = await ActionId.getTooltipData(iconOverrideId);
 			iconUrl = ActionId.makeIconUrl(overrideTooltipData['icon']);
 		}
 
@@ -1155,12 +1155,14 @@ export class ActionId {
 		return wowheadIconUrl(iconLabel);
 	}
 
-	static async getTooltipData(actionId: ActionId, options: { signal?: AbortSignal } = {}): Promise<IconData> {
+	// Takes no signal: the icon request is shared between callers and the database load beneath it is
+	// shared by the whole page, so neither can honour one caller's abort. Callers that care whether
+	// they were aborted check their own signal after awaiting, which is what `useActionId` does.
+	static async getTooltipData(actionId: ActionId): Promise<IconData> {
 		if (actionId.itemId) {
-			return Database.getItemIconData(actionId.itemId, { signal: options?.signal });
-		} else {
-			return Database.getSpellIconData(actionId.spellId, { signal: options?.signal });
+			return Database.getItemIconData(actionId.itemId);
 		}
+		return Database.getSpellIconData(actionId.spellId);
 	}
 
 	get spellIconOverride(): ActionId | null {

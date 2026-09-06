@@ -39,19 +39,18 @@ export class Database {
 	private static loadPromise: Promise<Database> | null = null;
 	private static instance: Database | null = null;
 
-	static async get(options: { signal?: AbortSignal } = {}): Promise<Database> {
+	/**
+	 * The whole page hangs off this one load, so it takes no `AbortSignal`: the promise is shared by
+	 * every caller, and honouring one caller's signal would abort the database for all of them. The
+	 * icon requests below already say this about themselves; this is the same rule one level up.
+	 *
+	 * A failure here is fatal to the page rather than to one widget, so it retries a couple of times
+	 * before giving up, and the memo is cleared on the way out so a later caller can try again.
+	 */
+	static async get(): Promise<Database> {
 		if (!Database.loadPromise) {
 			Database.loadPromise = (async () => {
-				let dbData: UIDatabase;
-				if (READ_JSON) {
-					const resp = await fetch(dbUrlJson, { signal: options?.signal });
-					const json = await resp.json();
-					dbData = UIDatabase.fromJson(json);
-				} else {
-					const buf = await fetch(dbUrlBin, { signal: options?.signal }).then(r => r.arrayBuffer());
-					const bytes = new Uint8Array(buf);
-					dbData = UIDatabase.fromBinary(bytes);
-				}
+				const dbData = await Database.loadWithRetry();
 				const db = new Database(dbData);
 				Database.instance = db;
 				return db;
@@ -64,6 +63,23 @@ export class Database {
 			});
 		}
 		return Database.loadPromise;
+	}
+
+	private static async loadWithRetry(attempts = 3, backoffMs = 250): Promise<UIDatabase> {
+		for (let attempt = 1; ; attempt++) {
+			try {
+				if (READ_JSON) {
+					const resp = await fetch(dbUrlJson);
+					return UIDatabase.fromJson(await resp.json());
+				}
+				const buf = await fetch(dbUrlBin).then(r => r.arrayBuffer());
+				return UIDatabase.fromBinary(new Uint8Array(buf));
+			} catch (error) {
+				if (attempt >= attempts) throw error;
+				console.warn(`Database load attempt ${attempt} failed, retrying:`, error);
+				await new Promise(resolve => setTimeout(resolve, backoffMs * attempt));
+			}
+		}
 	}
 
 	static getSync(): Database {
@@ -386,8 +402,8 @@ export class Database {
 		return Array.from(this.presetTargets.values());
 	}
 
-	static async getItemIconData(itemId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const db = await Database.get({ signal: options?.signal });
+	static async getItemIconData(itemId: number): Promise<IconData> {
+		const db = await Database.get();
 		const data = db.itemIcons[itemId];
 		if (!data?.icon) {
 			// The request is shared between callers, so it must not inherit any one caller's signal.
@@ -396,8 +412,8 @@ export class Database {
 		return db.itemIcons[itemId];
 	}
 
-	static async getSpellIconData(spellId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const db = await Database.get({ signal: options?.signal });
+	static async getSpellIconData(spellId: number): Promise<IconData> {
+		const db = await Database.get();
 		const data = db.spellIcons[spellId];
 		if (!data?.icon) {
 			db.spellIcons[spellId] = await Database.sharedIconRequest(`spell-${spellId}`, () => Database.getWowheadSpellTooltipData(spellId));

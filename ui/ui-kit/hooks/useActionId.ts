@@ -64,7 +64,7 @@ export const useActionId = (actionId: ActionId | undefined): ActionIdState => {
 		if (!id || stateOf(id).ready) return;
 
 		const controller = new AbortController();
-		id.fill(undefined, { signal: controller.signal })
+		id.fill()
 			.then(filled => {
 				if (!controller.signal.aborted) setState({ iconUrl: filled.iconUrl, name: filled.name, href: hrefOf(filled), ready: true });
 			})
