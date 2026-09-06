@@ -853,6 +853,14 @@ brings its own size and margins.
 
 ### Findings waiting on a decision
 
+- **Four React `ui-kit` components have no consumer at all** — `LegacyHost`, `ContentBlock`,
+  `NumberListPicker`, `AdaptiveStringPicker` — which is precisely what the Phase 2 rule at the top of
+  this file exists to prevent, and they were built before it was written down. They are not equal:
+  `LegacyHost` is superseded, since every port that needed it reached for `useLegacyMount` instead
+  and the two do different things to the DOM; the other three have obvious consumers coming (tab
+  bodies for `ContentBlock`, apl and gear for the two pickers). Worth a decision — delete
+  `LegacyHost`, keep the rest — rather than a silent deletion of work that is about to be wanted.
+
 Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
 would be an unrequested markup change with a parity divergence attached.
 
