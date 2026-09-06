@@ -26,6 +26,7 @@ import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import * as InputHelpers from '@ui-kit/input_helpers';
 import { SavedDataConfig } from '@ui-kit/saved_data_manager';
+import type { ReactNode } from 'react';
 
 import type { EncounterPickerConfig } from './encounter/view/encounter_picker';
 import type { ReforgeOptimizerOptions } from './reforge/model/reforge_optimizer';
@@ -82,7 +83,7 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 	// Used to generate schemed components. E.g. 'shaman', 'druid', 'raid'
 	cssScheme: string;
 
-	knownIssues?: Array<string>;
+	knownIssues?: Array<ReactNode>;
 	warnings?: Array<(simUI: IndividualSimHost<SpecType>) => SimWarning>;
 	consumableStats?: Array<Stat>;
 	gemStats?: Array<Stat>;

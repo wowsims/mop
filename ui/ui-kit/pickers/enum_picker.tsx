@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Input, InputConfig } from '../input';
 export interface EnumValueConfig {
 	name: string;

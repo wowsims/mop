@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { formatToCompactNumber, formatToPercent } from '@domain/format';
 import { spellSchoolNames } from '@domain/proto_utils/names';
 import { SpellSchool } from '@generated/proto/common';

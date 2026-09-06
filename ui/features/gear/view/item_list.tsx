@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { SortDirection } from '@domain/constants/other';
 import { formatDeltaTextElem } from '@domain/format';
 import { Player } from '@domain/player';

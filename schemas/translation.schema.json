@@ -1498,19 +1498,6 @@
 						"tooltip": {
 							"type": "string"
 						},
-						"misc": {
-							"type": "object",
-							"properties": {
-								"label": {
-									"type": "string"
-								},
-								"tooltip": {
-									"type": "string"
-								}
-							},
-							"additionalProperties": false,
-							"required": ["label", "tooltip"]
-						},
 						"armor_reduction": {
 							"type": "string"
 						},
@@ -1528,7 +1515,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "tooltip", "misc", "armor_reduction", "phys_dmg_reduction", "cast_speed", "phys_dmg", "spell_dmg"]
+					"required": ["title", "tooltip", "armor_reduction", "phys_dmg_reduction", "cast_speed", "phys_dmg", "spell_dmg"]
 				},
 				"other": {
 					"type": "object",
@@ -2022,10 +2009,13 @@
 							"properties": {
 								"title": {
 									"type": "string"
+								},
+								"separator": {
+									"type": "string"
 								}
 							},
 							"additionalProperties": false,
-							"required": ["title"]
+							"required": ["title", "separator"]
 						},
 						"food": {
 							"type": "object",
@@ -7098,10 +7088,39 @@
 								},
 								"show_debug": {
 									"type": "string"
+								},
+								"search_placeholder": {
+									"type": "string"
+								},
+								"search_add_filter": {
+									"type": "string"
+								},
+								"search_add_value": {
+									"type": "string"
+								},
+								"floatingActionBar": {
+										"type": "object",
+										"properties": {
+												"toggle": {
+														"type": "string"
+												},
+												"none": {
+														"type": "string"
+												},
+												"active": {
+														"type": "string"
+												},
+												"clear": {
+														"type": "string"
+												}
+										},
+										"additionalProperties": false,
+										"required": ["toggle", "none", "active", "clear"]
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_add_value",
+ "floatingActionBar"]
 						},
 						"tabs": {
 							"type": "object",
@@ -8061,6 +8080,9 @@
 										"weights": {
 											"type": "string"
 										},
+									"stats_type": {
+										"type": "string"
+									},
 										"show_all_stats": {
 											"type": "string"
 										},
@@ -8329,7 +8351,7 @@
 										"title",
 										"ep",
 										"weights",
-										"show_all_stats",
+										"stats_type", "show_all_stats",
 										"dps_tps_reference",
 										"healing_reference",
 										"mitigation_reference",
@@ -8845,6 +8867,9 @@
 						"bonus_prefix": {
 							"type": "string"
 						},
+						"bonus_action": {
+							"type": "string"
+						},
 						"points_suffix": {
 							"type": "string"
 						},
@@ -8853,7 +8878,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "melee_crit_cap", "tooltip", "attack_table", "crit_cap", "bonus_prefix", "points_suffix", "percent_suffix"]
+					"required": ["title", "melee_crit_cap", "tooltip", "attack_table", "crit_cap", "bonus_prefix", "bonus_action", "points_suffix", "percent_suffix"]
 				}
 			},
 			"additionalProperties": false,

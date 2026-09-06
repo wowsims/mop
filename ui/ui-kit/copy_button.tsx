@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import i18n from '@i18n/config';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';

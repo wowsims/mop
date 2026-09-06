@@ -1,6 +1,6 @@
 import { kebabCase } from '@domain/format';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@domain/proto_utils/action_id';
-import type { AuraUptimeLog, CastLog, ResourceChangedLogGroup } from '@domain/proto_utils/logs';
+import type { AuraUptimeLog, CastLog, ResourceGroupLog } from '@domain/proto_utils/combat_log';
 import { resourceNames } from '@domain/proto_utils/names';
 import type { UnitMetrics } from '@domain/proto_utils/sim_result';
 import { ResourceType } from '@generated/proto/spell';
@@ -34,12 +34,25 @@ import type {
 import { ROW_HEIGHTS } from './types';
 
 function castOutcome(castLog: CastLog): CastOutcome {
-	if (castLog.damageDealtLogs.length === 0) return castLog.cancelTime ? 'cancelled' : 'none';
+	if (castLog.damageDealtLogs.length === 0) return castLog.castCancelledLog ? 'cancelled' : 'none';
 	const ddl = castLog.damageDealtLogs[0];
-	if (ddl.miss || ddl.dodge || ddl.parry) return 'miss';
-	if (ddl.glance || ddl.block || ddl.partialResist1_4 || ddl.partialResist2_4 || ddl.partialResist3_4) return 'partial';
-	if (ddl.crit) return 'crit';
-	return 'hit';
+	switch (ddl.outcome) {
+		case 'miss':
+		case 'dodge':
+		case 'parry':
+			return 'miss';
+		// A pre-union CriticalBlock set both `block` and `crit`, and the old chain tested
+		// `block` first, so it read as partial rather than crit. Same for a plain block/glance.
+		case 'block':
+		case 'glance':
+		case 'blocked-glance':
+		case 'critical-block':
+			return 'partial';
+		case 'crit':
+			return 'crit';
+		default:
+			return 'hit';
+	}
 }
 
 function sortAndPrefixMax(items: Array<RowItem>): Array<number> {
@@ -74,8 +87,8 @@ function castRowItems(castLogs: ReadonlyArray<CastLog>, mergedAuras: ReadonlyArr
 	const items: Array<RowItem> = [];
 	castLogs.forEach(castLog => {
 		const start = castLog.timestamp;
-		const width = castLog.cancelTime || castLog.castTime + castLog.travelTime;
-		const cancelled = !!castLog.cancelTime;
+		const cancelled = !!castLog.castCancelledLog;
+		const width = cancelled ? castLog.cancelTime : castLog.castTime + castLog.travelTime;
 		const hasTravelTime = !cancelled && castLog.travelTime != 0;
 		items.push({
 			kind: 'cast',
@@ -93,8 +106,8 @@ function castRowItems(castLogs: ReadonlyArray<CastLog>, mergedAuras: ReadonlyArr
 	return items;
 }
 
-function resourceItems(resourceType: ResourceType, resourceLogs: Array<ResourceChangedLogGroup>, duration: number): Array<ResourceItem> {
-	const startValue = (group: ResourceChangedLogGroup): number => (group.maxValue == null ? resourceLogs[0].valueBefore : group.maxValue);
+function resourceItems(resourceType: ResourceType, resourceLogs: Array<ResourceGroupLog>, duration: number): Array<ResourceItem> {
+	const startValue = (group: ResourceGroupLog): number => (group.maxValue == null ? resourceLogs[0].valueBefore : group.maxValue);
 	const display: ResourceDisplay = PERCENTAGE_RESOURCES.includes(resourceType)
 		? 'percent'
 		: resourceType == ResourceType.ResourceTypeEnergy ||
@@ -167,7 +180,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		return section;
 	};
 
-	const addResourceRow = (section: Section, resourceType: ResourceType, resourceLogs: Array<ResourceChangedLogGroup>) => {
+	const addResourceRow = (section: Section, resourceType: ResourceType, resourceLogs: Array<ResourceGroupLog>) => {
 		if (resourceLogs.length == 0) return;
 
 		let label = resourceNames.get(resourceType)!;

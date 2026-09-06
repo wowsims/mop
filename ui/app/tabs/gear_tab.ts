@@ -21,8 +21,8 @@ export class GearTab extends SimTab {
 	readonly leftPanel: HTMLElement;
 	readonly rightPanel: HTMLElement;
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'gear-tab', title: i18n.t('gear_tab.title') });
+	constructor(simUI: IndividualSimUI<any>) {
+		super(simUI, { identifier: 'gear-tab', title: i18n.t('gear_tab.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = document.createElement('div');

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
@@ -140,7 +141,7 @@ export class ItemRenderer extends Component {
 
 		newItem
 			.asActionId()
-			.fill(undefined, { signal: this.signal })
+			.fill()
 			.then(filledId => {
 				if (this.signal?.aborted) return;
 				setActionIdBackgroundAndHref(filledId, this.iconElem);

@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { omitDeep } from '@domain/collections';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
@@ -33,8 +34,8 @@ export class RotationTab extends SimTab {
 	readonly simpleTab: HTMLElement;
 	readonly aplTab: HTMLElement;
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'rotation-tab', title: i18n.t('rotation_tab.title') });
+	constructor(simUI: IndividualSimUI<any>) {
+		super(simUI, { identifier: 'rotation-tab', title: i18n.t('rotation_tab.title') });
 		this.simUI = simUI;
 
 		this.autoTab = (<div className="rotation-tab rotation-tab-auto" />) as HTMLElement;

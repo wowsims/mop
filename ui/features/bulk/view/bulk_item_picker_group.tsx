@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import type { IndividualSimHost } from '@features/sim_host';

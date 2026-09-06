@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import Toast, { ToastOptions } from '@ui-kit/toast';
 

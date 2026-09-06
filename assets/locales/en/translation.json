@@ -417,10 +417,6 @@
 		"debuffs": {
 			"title": "Debuffs",
 			"tooltip": "Debuffs applied by <strong>other</strong> raid members.",
-			"misc": {
-				"label": "Misc",
-				"tooltip": "Miscellaneous debuffs"
-			},
 			"armor_reduction": "Armor Reduction",
 			"phys_dmg_reduction": "Phys Dmg Reduction",
 			"cast_speed": "Cast Speed",
@@ -568,7 +564,8 @@
 				"combat": "Combat Potion"
 			},
 			"elixirs": {
-				"title": "Elixirs"
+				"title": "Elixirs",
+				"separator": "or"
 			},
 			"food": {
 				"title": "Food"
@@ -762,7 +759,8 @@
 		}
 	},
 	"bulk_tab": {
-		"title": "Batch (<span class=\"text-success\">New</span>)",
+		"title": "Batch",
+		"title_badge": "New",
 		"description": "<span className=\"bold\">Batch Simming</span> is a new feature akin to the <span className=\"bold\">Top Gear</span> sim on <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> that allows you to select multiple items and sim them find the best combinations.<br />This is an <span className=\"text-brand\">Alpha</span> feature, so if you have feedback or find a bug, please report it!",
 		"download_native": "Download the local sim for faster results.",
 		"tabs": {
@@ -2023,7 +2021,16 @@
 				"export_button": "Export Log",
 				"time_column": "Time",
 				"event_column": "Event",
-				"show_debug": "Show Debug Statements"
+				"show_debug": "Show Debug Statements",
+				"search_placeholder": "Search logs…",
+				"search_add_filter": "Add filter",
+				"search_add_value": "Add value",
+				"floatingActionBar": {
+					"toggle": "Toggle filters",
+					"none": "No filters",
+					"active": "{{count}} active",
+					"clear": "Clear filters"
+				}
 			},
 			"tabs": {
 				"damage": "Damage",
@@ -2292,6 +2299,7 @@
 					"title": "Calculate Stat Weights",
 					"ep": "EP",
 					"weights": "Weights",
+				"stats_type": "Stat display type",
 					"show_all_stats": "Show All Stats",
 					"dps_tps_reference": "DPS/TPS reference:",
 					"healing_reference": "Healing reference:",
@@ -2514,6 +2522,7 @@
 				"under_by": "Under by"
 			},
 			"bonus_prefix": "Bonus",
+			"bonus_action": "Add bonus {{stat}}",
 			"points_suffix": "Points",
 			"percent_suffix": "%"
 		}

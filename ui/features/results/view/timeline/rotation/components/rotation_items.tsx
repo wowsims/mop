@@ -1,9 +1,10 @@
+/** @jsxImportSource @jsx-vanilla */
 import { setActionIdBackground } from '@domain/proto_utils/action_id/dom';
-import type { AuraUptimeLog, CastLog, DamageDealtLog } from '@domain/proto_utils/logs';
+import type { AuraUptimeLog, CastLog, DamageLog } from '@domain/proto_utils/combat_log';
 import i18n from '@i18n/config';
 import clsx from 'clsx';
 
-import { renderDamageResult } from '../../../log_lines';
+import { Results } from '../../../log/components/results';
 import { ResourceTooltip } from '../../tooltip_content';
 import { addTooltip } from '../../tooltips';
 import type { AuraItem, AuraStackSegment, CastItem, ContentRow, ResourceItem, RowItem, TickItem } from '../model';
@@ -18,12 +19,13 @@ const setSpan = (elem: HTMLElement, item: RowItem) => {
 
 const CastTooltip = (log: CastLog) => {
 	const travelTime = log.travelTime == 0 ? '' : ` + ${log.travelTime.toFixed(2)}s travel time`;
-	const totalDamage = log.totalDamage();
+	const totalDamage = log.damageDealtLogs.reduce((total, ddl) => total + ddl.amount, 0);
 	return (
 		<div className="timeline-tooltip">
 			<span>
-				{log.actionId!.name} from {log.timestamp.toFixed(2)}s to {(log.castCancelledLog?.timestamp || log.timestamp + log.castTime).toFixed(2)}s
-				{log.castCancelledLog?.timestamp
+				{log.actionId!.name} from {log.timestamp.toFixed(2)}s to{' '}
+				{(log.castCancelledLog ? log.castCancelledLog.timestamp : log.timestamp + log.castTime).toFixed(2)}s
+				{log.castCancelledLog
 					? ` (Cancelled after ${log.cancelTime.toFixed(2)}s)`
 					: ` (${log.castTime > 0 ? `${log.castTime.toFixed(2)}s, ` : ''}${log.effectiveTime.toFixed(2)}s GCD Time)`}
 				{travelTime.length > 0 && travelTime}
@@ -38,9 +40,9 @@ const CastTooltip = (log: CastLog) => {
 					{log.damageDealtLogs.map(ddl => (
 						<li>
 							<span>
-								{ddl.timestamp.toFixed(2)}s - {renderDamageResult(ddl)}
+								{ddl.timestamp.toFixed(2)}s - {Results(ddl)}
 							</span>
-							{ddl.source?.isTarget && (
+							{!ddl.source?.isTarget && (
 								<span className="threat-metrics">
 									{' '}
 									({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
@@ -54,12 +56,12 @@ const CastTooltip = (log: CastLog) => {
 	);
 };
 
-const TickTooltip = (log: DamageDealtLog) => (
+const TickTooltip = (log: DamageLog) => (
 	<div className="timeline-tooltip">
 		<span>
-			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {renderDamageResult(log)}
+			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {Results(log)}
 		</span>
-		{log.source?.isTarget && (
+		{!log.source?.isTarget && (
 			<span className="threat-metrics">
 				{' '}
 				({log.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})

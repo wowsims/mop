@@ -30,18 +30,14 @@ const (
 	FireBreathDebuff    // Dragonhawk: Magic Dmg Taken ↑
 	LightningBreath     // Wind Serpent: Magic Dmg Taken ↑
 	SporeCloud          // Spore Bat: Reduce Cast Speed
-	TailSpin            // Fox: Reduce Cast Speed
-	Trample             // Goat: Reduce Cast Speed
 	LavaBreath          // Corehound: Exotic Cast Speed Debuff
 	DustCloud           // Tallstrider: Reduce Armor
 	TearArmor           // Raptor: Reduce Armor
 
 	// Utility
-	BurrowAttack        // Worm: AoE Damage
 	FroststormBreathAoE // Chimera: AoE Damage
 
 	MonstrousBite // Devilsaur: Reduce Healing
-	SpiritMend    // Spirit Beast: Healing
 
 	// Basic Attacks
 	Bite  // FocusDump: Bite
@@ -75,24 +71,16 @@ func (hp *HunterPet) NewPetAbility(abilityType PetAbilityType, isPrimary bool) *
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 24844, CD: time.Second * 30, School: core.SpellSchoolFire, DebuffAura: core.LightningBreathDebuff, MaxRange: 40})
 	case SporeCloud:
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 50274, CD: time.Second * 8, School: core.SpellSchoolFire, DebuffAura: core.SporeCloud, MaxRange: 6})
-	case TailSpin:
-		return hp.newTailSpin()
-	case Trample:
-		return hp.newTrample()
 	case LavaBreath:
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 58604, CD: time.Second * 8, School: core.SpellSchoolFire, DebuffAura: core.LavaBreathAura, MaxRange: 30})
 	case DustCloud:
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 50285, CD: time.Second * 25, School: core.SpellSchoolNature, DebuffAura: core.WeakenedArmorAura, Stacks: 3, MaxRange: core.MaxMeleeRange})
 	case TearArmor:
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 50498, CD: time.Second * 6, School: core.SpellSchoolNature, DebuffAura: core.WeakenedArmorAura, Stacks: 1, MaxRange: core.MaxMeleeRange})
-	case BurrowAttack:
-		return hp.newBurrowAttack()
 	case FroststormBreathAoE:
 		return hp.newFrostStormBreath()
 	case MonstrousBite:
 		return hp.newPetDebuff(PetDebuffSpellConfig{SpellID: 54680, CD: time.Second * 8, School: core.SpellSchoolNature, DebuffAura: core.MortalWoundsAura, MaxRange: core.MaxMeleeRange})
-	case SpiritMend:
-		return hp.newSpiritMend()
 
 	case Bite:
 		return hp.newBite()
@@ -345,12 +333,6 @@ func (hp *HunterPet) newFrostStormBreath() *core.Spell {
 	})
 	return hp.frostStormBreath
 }
-
-func (hp *HunterPet) newTailSpin() *core.Spell { panic("newTailSpin not implemented") }
-func (hp *HunterPet) newTrample() *core.Spell  { panic("newTrample not implemented") }
-
-func (hp *HunterPet) newBurrowAttack() *core.Spell { panic("newBurrowAttack not implemented") }
-func (hp *HunterPet) newSpiritMend() *core.Spell   { panic("newSpiritMend not implemented") }
 
 func (hp *HunterPet) registerRabidCD() {
 	hunter := hp.hunterOwner

@@ -60,6 +60,33 @@
 		}
 	}
 
+	// The React picker makes the container the anchor's sibling; the vanilla one still nests it and
+	// keeps the rule above. `2px` is the anchor's two 1px `--border-default` borders, so the box lands
+	// where `width: 100%` plus `margin: 1px` put it inside the anchor, and the negative inline margin
+	// leaves the container zero outer width so the label after it does not move.
+	.icon-picker-button + .icon-input-level-container {
+		--icon-input-level-size: calc(var(--icon-size-md) - 2px);
+
+		// The root is a flex item that shrinks, and without this the container joins the label in
+		// absorbing that instead of staying the size of the anchor it covers.
+		flex-shrink: 0;
+		width: var(--icon-input-level-size);
+		height: var(--icon-input-level-size);
+		margin: 2px 0 0 calc(-1 * var(--icon-input-level-size));
+		// Outside the anchor, the container would swallow every hover and click over what it covers,
+		// and the counter would stay green while the anchor is grey.
+		pointer-events: none;
+		filter: grayscale(1);
+
+		.icon-input-improved {
+			pointer-events: auto;
+		}
+	}
+
+	.icon-picker-button.active + .icon-input-level-container {
+		filter: none;
+	}
+
 	label {
 		margin-left: var(--spacer-2);
 		margin-bottom: 0;

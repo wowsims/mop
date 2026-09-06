@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { LaunchStatus } from '@domain/constants/other';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';

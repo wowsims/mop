@@ -31,20 +31,23 @@ export const renderSavedEPWeights = (
 		...options,
 	});
 
-	simUI.sim.waitForInit().then(() => {
-		savedEPWeightsManager.loadUserData();
-		simUI.individualConfig.presets.epWeights.forEach(({ name, epWeights, enableWhen, onLoad }) => {
-			savedEPWeightsManager.addSavedData({
-				name: name,
-				isPreset: true,
-				data: SavedEPWeights.create({
-					epWeights: epWeights.toProto(),
-				}),
-				enableWhen,
-				onLoad,
+	simUI.sim
+		.waitForInit()
+		.then(() => {
+			savedEPWeightsManager.loadUserData();
+			simUI.individualConfig.presets.epWeights.forEach(({ name, epWeights, enableWhen, onLoad }) => {
+				savedEPWeightsManager.addSavedData({
+					name: name,
+					isPreset: true,
+					data: SavedEPWeights.create({
+						epWeights: epWeights.toProto(),
+					}),
+					enableWhen,
+					onLoad,
+				});
 			});
-		});
-	});
+		})
+		.catch(console.error);
 
 	return savedEPWeightsManager;
 };

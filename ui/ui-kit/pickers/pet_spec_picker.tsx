@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import type { HunterSpecs } from '@domain/proto_utils/spec_types';
 import { subscribePlayerField } from '@domain/state/subscriptions';

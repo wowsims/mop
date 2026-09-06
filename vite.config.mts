@@ -30,6 +30,7 @@ export const UI_ALIASES: Record<string, string> = {
 	'@app': path.resolve(BASE_PATH, 'app'),
 	'@specs': path.resolve(BASE_PATH, 'sims'),
 	'@i18n': path.resolve(BASE_PATH, 'i18n'),
+	'@jsx-vanilla': path.resolve(BASE_PATH, 'shared/jsx-vanilla'),
 };
 
 function serveExternalAssets() {
@@ -140,6 +141,7 @@ export default defineConfig(({ command, mode }) => {
 		css: {
 			preprocessorOptions: {
 				scss: {
+					loadPaths: [path.resolve(__dirname, 'ui', 'scss')],
 					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
 				},
 			},
@@ -172,12 +174,12 @@ export default defineConfig(({ command, mode }) => {
 			}),
 		],
 		oxc: {
+			// React owns the default. Files still building real DOM nodes opt out per-file with
+			// `/** @jsxImportSource @jsx-vanilla */`; see ui/shared/jsx-vanilla/jsx-runtime.ts.
 			jsx: {
-				runtime: 'classic',
-				pragma: 'element',
-				pragmaFrag: 'fragment',
+				runtime: 'automatic',
+				importSource: 'react',
 			},
-			jsxInject: "import { element, fragment } from 'tsx-vanilla';",
 		},
 		build: {
 			...baseConfig.build,

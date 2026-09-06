@@ -1,4 +1,4 @@
-import { DpsLog, ResourceChangedLogGroup, ThreatLogGroup } from '@domain/proto_utils/logs';
+import { DpsLog, ResourceGroupLog, ThreatLogGroup } from '@domain/proto_utils/combat_log';
 import { resourceColors, resourceNames } from '@domain/proto_utils/names';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
 import { UnitMetrics } from '@domain/proto_utils/sim_result';
@@ -117,7 +117,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: 
 	};
 }
 
-export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<ResourceChangedLogGroup>; maxMana: number } | null {
+export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<ResourceGroupLog>; maxMana: number } | null {
 	const logs = unit.groupedResourceLogs[ResourceType.ResourceTypeMana].filter(log => log.timestamp >= 0);
 	if (logs.length == 0) return null;
 	const maxMana = logs[0].valueBefore;
@@ -141,8 +141,8 @@ export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<Resou
 // the DPS line. Mana keeps its own labelled axis; these share one hidden 0-100% axis,
 // because a rage bar and a rune count have nothing comparable about their raw numbers and
 // one visible axis per resource would bury the chart.
-export function resourceDatasets(unit: UnitMetrics, secondaryResource: SecondaryResource | null | undefined): Array<TimelineDataset<ResourceChangedLogGroup>> {
-	const datasets: Array<TimelineDataset<ResourceChangedLogGroup>> = [];
+export function resourceDatasets(unit: UnitMetrics, secondaryResource: SecondaryResource | null | undefined): Array<TimelineDataset<ResourceGroupLog>> {
+	const datasets: Array<TimelineDataset<ResourceGroupLog>> = [];
 
 	// Health is only informative where staying alive is the job; on a damage spec it is a
 	// flat line that just adds a trace to read past.

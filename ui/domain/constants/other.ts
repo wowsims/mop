@@ -27,6 +27,21 @@ export const REPO_RELEASES_URL = `${REPO_URL}/releases`;
 export const REPO_NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 export const REPO_CHOOSE_NEW_ISSUE_URL = `${REPO_NEW_ISSUE_URL}/choose`;
 
+export const SOCIALS = [
+	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'discord-link link-alt', icon: 'discord', tooltip: 'info.discord' },
+	{ key: 'github', href: REPO_URL, className: 'github-link link-alt', icon: 'github', tooltip: 'info.github' },
+	{
+		key: 'patreon',
+		href: 'https://patreon.com/wowsims',
+		className: 'patreon-link link-alt',
+		icon: 'patreon',
+		tooltip: 'info.patreon',
+		label: ' Patreon',
+	},
+] as const;
+
+export type Social = (typeof SOCIALS)[number];
+
 // Root-relative path of the individual sim page for the given spec. Resolve it
 // against the page origin at the point of use (see SimTitleDropdown) — this
 // layer has no `window`. Lives here rather than in proto_utils/utils so that

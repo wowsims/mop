@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { isDevMode } from '@domain/env';
 import { Player } from '@domain/player';
@@ -17,38 +18,40 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
-import { CharacterStats } from '@features/character-stats/view/character_stats';
+import { watchTargetDummies } from '@features/encounter/model/target_dummies';
+import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
-	// Individual60UEPExporter,
-	IndividualCLIExporter,
-	IndividualJsonExporter,
-	IndividualLinkExporter,
-	IndividualPawnEPExporter,
-	IndividualWowheadGearPlannerExporter,
-} from '@features/import-export/view/exporters';
+	AddonImporterDialog,
+	CLI_EXPORTER,
+	createLink,
+	exporterDialog,
+	JSON_EXPORTER,
+	JsonImporterDialog,
+	LINK_EXPORTER,
+	PAWN_EP_EXPORTER,
+	// SIXTY_UPGRADES_EP_EXPORTER,
+	// SixtyUpgradesImporterDialog,
+	WOWHEAD_GEAR_PLANNER_EXPORTER,
+	WowheadImporterDialog,
+} from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
-import {
-	// Individual60UImporter,
-	IndividualAddonImporter,
-	IndividualJsonImporter,
-	IndividualWowheadGearPlannerImporter,
-} from '@features/import-export/view/importers';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
+import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import type { IndividualSimHost } from '@features/sim_host';
 import type { SpecDefinition } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
-import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
-import { StatWeightsResult } from '@generated/proto/api';
+import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { trackPageView } from '../tracking/analytics';
+import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
 import { RotationTab } from './tabs/rotation_tab';
@@ -77,13 +80,11 @@ const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
 export class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
-	private readonly statWeightActionSettings: StatWeightActionSettings;
+	readonly statWeightActionSettings: StatWeightActionSettings;
 
 	raidSimResultsManager: SimResultsManager | null;
-	epWeightsModal: EpWeightsMenu | null = null;
+	readonly epWeightsModal = new EpWeightsOpener();
 
-	prevEpIterations: number;
-	prevEpSimResult: StatWeightsResult | null;
 	get dpsRefStat(): Stat | undefined {
 		return this.player.getRefStat('dpsRefStat');
 	}
@@ -115,20 +116,17 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	readonly bt: BulkTab | null = null;
 	reforger: ReforgeOptimizer | null = null;
 
-	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
-		super(parentElem, player.sim, {
+	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
+		super(dom, player.sim, {
 			cssClass: config.cssClass,
 			cssScheme: config.cssScheme,
 			spec: player.getPlayerSpec(),
 			knownIssues: config.knownIssues,
 			simStatus: player.getPlayerSpec().launch,
 		});
-		this.rootElem.classList.add('individual-sim-ui');
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
 		this.raidSimResultsManager = null;
-		this.prevEpIterations = 0;
-		this.prevEpSimResult = null;
 		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey('__statweight_settings__'));
 
 		if ((config.itemSwapSlots || []).length > 0 && !itemSwapEnabledSpecs.includes(player.getSpec())) {
@@ -235,6 +233,10 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.addSidebarComponents();
 		this.addGearTab();
 		this.addSettingsTab();
+		this.sim.waitForInit().then(() => {
+			repairTargetInputs(this.sim.encounter);
+			watchTargetDummies(this.player, this.sim);
+		});
 		this.addTalentsTab();
 		this.addRotationTab();
 
@@ -284,27 +286,30 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	private addSidebarComponents() {
 		this.raidSimResultsManager = addSimResultsAction(this);
-		this.sim.waitForInit().then(() => {
-			this.epWeightsModal = addStatWeightsAction(this, this.statWeightActionSettings);
-		});
+		this.sim
+			.waitForInit()
+			.then(() => {
+				this.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
+					trackPageView('Stat Weights', '/stat-weights');
+					this.epWeightsModal.open();
+				});
+			})
+			.catch(console.error);
+	}
 
-		new CharacterStats(
-			this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement,
-			this,
-			this.player,
-			this.individualConfig.displayStats,
-			this.individualConfig.modifyDisplayStats,
-			this.individualConfig.overwriteDisplayStats,
-		);
+	talentsTab!: TalentsTab<SpecType>;
+	settingsTab!: SettingsTab;
+
+	get sidebarStatsContainer(): HTMLElement {
+		return this.dom.sidebarStats;
 	}
 
 	private addGearTab() {
-		const gearTab = new GearTab(this.simTabContentsContainer, this);
-		gearTab.rootElem.classList.add('active', 'show');
+		new GearTab(this);
 	}
 
 	private addBulkTab(): BulkTab {
-		const bulkTab = new BulkTab(this.simTabContentsContainer, this);
+		const bulkTab = new BulkTab(this);
 		//bulkTab.navLink.hidden = !this.sim.getShowExperimental();
 		//this.sim.showExperimentalChangeEmitter.on(() => {
 		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
@@ -313,15 +318,15 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addSettingsTab() {
-		new SettingsTab(this.simTabContentsContainer, this);
+		this.settingsTab = new SettingsTab(this);
 	}
 
 	private addTalentsTab() {
-		new TalentsTab(this.simTabContentsContainer, this);
+		this.talentsTab = new TalentsTab(this);
 	}
 
 	private addRotationTab() {
-		new RotationTab(this.simTabContentsContainer, this);
+		new RotationTab(this);
 	}
 
 	private addDetailedResultsTab() {
@@ -332,17 +337,19 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addTopbarComponents() {
-		this.simHeader.addImportLink('JSON', new IndividualJsonImporter(this.rootElem, this));
-		// this.simHeader.addImportLink('60U Cata', new Individual60UImporter(this.rootElem, this));
-		this.simHeader.addImportLink('WoWHead', new IndividualWowheadGearPlannerImporter(this.rootElem, this));
-		this.simHeader.addImportLink('Addon', new IndividualAddonImporter(this.rootElem, this));
+		const importRegistry = this.simHeader.importExport;
+		importRegistry.addDialog('import', 'JSON', JsonImporterDialog);
+		// importRegistry.addDialog('import', '60U Cata', SixtyUpgradesImporterDialog);
+		importRegistry.addDialog('import', 'WoWHead', WowheadImporterDialog);
+		importRegistry.addDialog('import', 'Addon', AddonImporterDialog);
 
-		this.simHeader.addExportLink('Link', new IndividualLinkExporter(this.rootElem, this));
-		this.simHeader.addExportLink('JSON', new IndividualJsonExporter(this.rootElem, this));
-		this.simHeader.addExportLink('WoWHead', new IndividualWowheadGearPlannerExporter(this.rootElem, this));
-		// this.simHeader.addExportLink('60U Cata EP', new Individual60UEPExporter(this.rootElem, this));
-		this.simHeader.addExportLink('Pawn EP', new IndividualPawnEPExporter(this.rootElem, this));
-		this.simHeader.addExportLink('CLI', new IndividualCLIExporter(this.rootElem, this));
+		const exportRegistry = this.simHeader.importExport;
+		exportRegistry.addDialog('export', 'Link', exporterDialog(LINK_EXPORTER));
+		exportRegistry.addDialog('export', 'JSON', exporterDialog(JSON_EXPORTER));
+		exportRegistry.addDialog('export', 'WoWHead', exporterDialog(WOWHEAD_GEAR_PLANNER_EXPORTER));
+		// exportRegistry.addDialog('export', '60U Cata EP', exporterDialog(SIXTY_UPGRADES_EP_EXPORTER));
+		exportRegistry.addDialog('export', 'Pawn EP', exporterDialog(PAWN_EP_EXPORTER));
+		exportRegistry.addDialog('export', 'CLI', exporterDialog(CLI_EXPORTER));
 	}
 
 	applyDefaultRotation() {
@@ -445,7 +452,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			this.statWeightActionSettings.applyDefaults();
 
 			if (this.individualConfig.defaultBuild) {
-				PresetConfigurationPicker.applyBuild(this.individualConfig.defaultBuild, this);
+				applyBuild(this.individualConfig.defaultBuild, this);
 			}
 		});
 	}
@@ -455,7 +462,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	toLink(): string {
-		return IndividualLinkExporter.createLink(this);
+		return createLink(this);
 	}
 
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {

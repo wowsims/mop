@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
 import { isDevMode } from '@domain/env';
 import { PlayerSpec, SimStatus } from '@domain/player_spec';
@@ -7,7 +8,7 @@ import { SimResult } from '@domain/proto_utils/sim_result';
 import { RunSimOptions, Sim, SimError } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
-import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { subscribeSimField } from '@domain/state/subscriptions';
 import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
@@ -16,18 +17,17 @@ import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
-import { SimTab } from '@ui-kit/sim_tab';
+import { SimTabRegistry } from '@ui-kit/tab_registry';
 import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
+import type { ReactNode } from 'react';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
-import { SimTitleDropdown } from './header/sim_title_dropdown';
-import { SocialLinks } from './header/social_links';
 import { NoticeNativeSim } from './notice_native_sim';
+import type { ShellDom } from './shell_dom';
 const URLMAXLEN = 2048;
-const globalKnownIssues: Array<string> = [];
 
 export interface SimUIConfig {
 	// Additional css class to add to the root element.
@@ -37,7 +37,7 @@ export interface SimUIConfig {
 	// The spec of the individual sim.
 	spec: PlayerSpec<any>;
 	simStatus: SimStatus;
-	knownIssues?: Array<string>;
+	knownIssues?: Array<ReactNode>;
 	noticeText?: string;
 }
 
@@ -57,110 +57,26 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly simActionsContainer: HTMLElement;
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
+	readonly tabs: SimTabRegistry;
+	protected readonly dom: ShellDom;
 
-	constructor(parentElem: HTMLElement, sim: Sim, config: SimUIConfig) {
-		super(parentElem, 'sim-ui');
+	constructor(dom: ShellDom, sim: Sim, config: SimUIConfig) {
+		super(null, undefined, dom.root);
+		this.dom = dom;
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
 
-		const container = (
-			<>
-				<div className="sim-root">
-					<div className="sim-bg" />
-					{config.noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div> : null}
-					<div className="sim-container">
-						<aside className="sim-sidebar">
-							<div className="sim-title" />
-							<div className="sim-sidebar-content">
-								<div className="sim-sidebar-actions" />
-								<div className="sim-sidebar-results" />
-								<div className="sim-sidebar-stats" />
-								<div className="sim-sidebar-socials" />
-							</div>
-						</aside>
-						<div className="sim-content container-fluid" />
-					</div>
-				</div>
-				<div className="sim-toast-container p-3 bottom-0 right-0" id="toastContainer" />
-			</>
-		);
-
-		this.rootElem.appendChild(container);
-
-		this.simContentContainer = this.rootElem.querySelector('.sim-content') as HTMLElement;
-		this.simHeader = new SimHeader(this.simContentContainer, this);
-		this.simMain = document.createElement('main');
-		this.simMain.classList.add('sim-main', 'tab-content');
-		this.simContentContainer.appendChild(this.simMain);
-
-		this.rootElem.classList.add(this.config.cssClass);
-
-		if (this.config.spec.isHealingSpec) {
-			this.rootElem.classList.add('sim-type--heal');
-		} else if (this.config.spec.isTankSpec) {
-			this.rootElem.classList.add('sim-type--tank');
-		} else if (this.config.spec.isMeleeDpsSpec || this.config.spec.isRangedDpsSpec) {
-			this.rootElem.classList.add('sim-type--dps', this.config.spec.isMeleeDpsSpec ? 'sim-type--melee' : 'sim-type--ranged');
-		}
+		this.simContentContainer = dom.content;
+		this.simHeader = new SimHeader(dom, this);
+		this.simMain = dom.main;
+		this.tabs = new SimTabRegistry(this.simMain);
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
-		const updateShowDamageMetrics = () => {
-			if (this.sim.getShowDamageMetrics()) this.rootElem.classList.remove('hide-damage-metrics');
-			else this.rootElem.classList.add('hide-damage-metrics');
-		};
-		updateShowDamageMetrics();
-		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowDamageMetrics);
-
-		const updateShowThreatMetrics = () => {
-			if (this.sim.getShowThreatMetrics()) this.rootElem.classList.remove('hide-threat-metrics');
-			else this.rootElem.classList.add('hide-threat-metrics');
-		};
-		updateShowThreatMetrics();
-		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowThreatMetrics);
-
-		const updateShowHealingMetrics = () => {
-			if (this.sim.getShowHealingMetrics()) this.rootElem.classList.remove('hide-healing-metrics');
-			else this.rootElem.classList.add('hide-healing-metrics');
-		};
-		updateShowHealingMetrics();
-		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowHealingMetrics);
-
-		const updateShowEpRatios = () => {
-			// Threat metrics *always* shows multiple columns, so
-			// always show ratios when they are shown
-			if (this.sim.getShowThreatMetrics()) {
-				this.rootElem.classList.remove('hide-ep-ratios');
-				// This case doesn't currently happen, but who knows
-				// what the future holds...
-			} else if (this.sim.getShowDamageMetrics() && this.sim.getShowHealingMetrics()) {
-				this.rootElem.classList.remove('hide-ep-ratios');
-			} else {
-				this.rootElem.classList.add('hide-ep-ratios');
-			}
-		};
-
-		updateShowEpRatios();
-		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowEpRatios);
-		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowEpRatios);
-		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowEpRatios);
-
-		const updateShowExperimental = () => {
-			if (this.sim.getShowExperimental()) this.rootElem.classList.remove('hide-experimental');
-			else this.rootElem.classList.add('hide-experimental');
-		};
-		updateShowExperimental();
-		subscribeUiField(this.sim, 'showExperimental')(updateShowExperimental);
-
-		this.addKnownIssues(config);
-
 		// Sidebar Contents
 
-		const titleElem = this.rootElem.querySelector('.sim-title') as HTMLElement;
-		new SimTitleDropdown(titleElem, config.spec);
-
-		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
+		this.simActionsContainer = dom.sidebarActions;
 
 		this.sim.waitForInit().then(() => {
 			this.addNoticeForNativeSim();
@@ -183,15 +99,10 @@ export abstract class SimUI extends Component implements SimHost {
 			},
 		}).rootElem;
 
-		const resultsViewerElem = this.rootElem.querySelector('.sim-sidebar-results') as HTMLElement;
+		const resultsViewerElem = dom.sidebarResults;
 		this.resultsViewer = new ResultsViewer(resultsViewerElem);
 
-		const socialsContainer = this.rootElem.querySelector('.sim-sidebar-socials') as HTMLElement;
-		socialsContainer.appendChild(SocialLinks.buildDiscordLink());
-		socialsContainer.appendChild(SocialLinks.buildGitHubLink());
-		socialsContainer.appendChild(SocialLinks.buildPatreonLink());
-
-		this.simTabContentsContainer = this.rootElem.querySelector('.sim-main.tab-content') as HTMLElement;
+		this.simTabContentsContainer = dom.main;
 
 		if (this.disabled) {
 			resultsViewerElem.appendChild(
@@ -259,43 +170,18 @@ export abstract class SimUI extends Component implements SimHost {
 
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
-		const isFirstTab = this.simTabContentsContainer.children.length == 0;
 
-		this.simHeader.addTab(title, contentId);
-		this.simTabContentsContainer.appendChild(
-			<div id={contentId} className={clsx('tab-pane fade', isFirstTab && 'active show')}>
+		const pane = (
+			<div id={contentId} className="sim-tab">
 				{content}
-			</div>,
-		);
-	}
+			</div>
+		) as HTMLElement;
 
-	addSimTab(tab: SimTab) {
-		this.simHeader.addSimTabLink(tab);
+		this.tabs.attach({ id: contentId, title, pane, ariaControlsOnItem: true });
 	}
 
 	addWarning(warning: SimWarning) {
 		this.resultsViewer.addWarning(warning);
-	}
-
-	private addKnownIssues(config: SimUIConfig) {
-		let statusStr = '';
-		switch (config.simStatus.status) {
-			case LaunchStatus.Unlaunched:
-				statusStr = i18n.t('info.status.unlaunched');
-				break;
-			case LaunchStatus.Alpha:
-				statusStr = i18n.t('info.status.alpha');
-				break;
-			case LaunchStatus.Beta:
-				statusStr = i18n.t('info.status.beta');
-				break;
-		}
-
-		if (statusStr) {
-			config.knownIssues = [statusStr].concat(config.knownIssues || []);
-		}
-		config.knownIssues?.forEach(issue => this.simHeader.addKnownIssue(issue));
-		globalKnownIssues?.forEach(issue => this.simHeader.addKnownIssue(issue));
 	}
 
 	// Returns a key suitable for the browser's localStorage feature.

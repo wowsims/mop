@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { isDevMode } from '@domain/env';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { Emitter } from '@domain/state/events';
@@ -17,7 +18,7 @@ import { DamageMetricsTable } from './damage_metrics';
 import { DpsHistogram } from './dps_histogram';
 import { DtpsMetricsTable } from './dtps_metrics';
 import { HealingMetricsTable } from './healing_metrics';
-import { LogExporterFactory, LogRunner } from './log_runner';
+import { LogExporterFactory, LogView } from './log/log_view';
 import { ResourceMetricsTable } from './resource_metrics';
 import { ResultComponent, SimResultData } from './result_component';
 import { SimResultsManager } from './results_action';
@@ -301,7 +302,7 @@ export class DetailedResults extends Component {
 			combatReplay.stopPlayback();
 		});
 
-		const logRunner = new LogRunner(
+		const logView = new LogView(
 			{
 				parent: this.rootElem.querySelector('.log')!,
 				resultsEmitter: this.resultsEmitter,
@@ -309,7 +310,7 @@ export class DetailedResults extends Component {
 			},
 			makeLogExporter,
 		);
-		deferUntilShown(logRunner, 'logTab');
+		deferUntilShown(logView, 'logTab');
 
 		this.rootElem.classList.add('hide-threat-metrics');
 

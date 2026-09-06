@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';

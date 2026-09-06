@@ -7,6 +7,7 @@ import type { Player } from '@domain/player';
 import type { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Profession } from '@generated/proto/common';
 
+import { setExternalAwareHref } from '../../links';
 import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
 import { ActionId } from './index';
 
@@ -18,9 +19,9 @@ export function setActionIdBackground(actionId: ActionId, elem: HTMLElement) {
 
 export function setActionIdWowheadHref(actionId: ActionId, elem: HTMLAnchorElement) {
 	if (actionId.itemId) {
-		elem.href = ActionId.makeItemUrl(actionId.itemId, actionId.randomSuffixId, actionId.reforgeId, actionId.upgradeStep);
+		setExternalAwareHref(elem, ActionId.makeItemUrl(actionId.itemId, actionId.randomSuffixId, actionId.reforgeId, actionId.upgradeStep));
 	} else if (actionId.spellId) {
-		elem.href = ActionId.makeSpellUrl(actionId.spellIdTooltipOverride || actionId.spellId);
+		setExternalAwareHref(elem, ActionId.makeSpellUrl(actionId.spellIdTooltipOverride || actionId.spellId));
 	}
 }
 
@@ -55,7 +56,10 @@ export async function fillAndSetActionId(
 	setBackground: boolean,
 	options: { signal?: AbortSignal } = {},
 ): Promise<ActionId> {
-	const filled = await actionId.fill(undefined, options);
+	const filled = await actionId.fill();
+	if (options.signal?.aborted) {
+		return filled;
+	}
 	if (setHref) {
 		setActionIdWowheadHref(filled, elem);
 	}

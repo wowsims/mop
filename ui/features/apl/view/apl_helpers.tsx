@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { CacheHandler } from '@domain/cache_handler';
 import { getEnumValues } from '@domain/collections';
 import { Player, UnitMetadata } from '@domain/player';
@@ -1092,7 +1093,7 @@ export function reactionTimeCheckbox(): APLPickerBuilderFieldConfig<any, any> {
 	});
 }
 
-export function useDotBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
+export function makeUseDotBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
 	return booleanFieldConfig('useBaseValue', i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value'), {
 		labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value_tooltip'),
 	});
@@ -1132,7 +1133,7 @@ export function damageAmpTypeFieldConfig(field: string): APLPickerBuilderFieldCo
 	};
 }
 
-export function useRuneRegenBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
+export function makeUseRuneRegenBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
 	return booleanFieldConfig('useBaseValue', 'Use base value', {
 		labelTooltip: 'If checked, will return your base (unmodified by procs/lust etc) rune regen rate',
 	});
@@ -1198,9 +1199,9 @@ export function makeCommonFieldConfig(descriptor: CommonFieldDescriptor): APLPic
 		case 'reactionTime':
 			return reactionTimeCheckbox();
 		case 'useDotBaseValue':
-			return useDotBaseValueCheckbox();
+			return makeUseDotBaseValueCheckbox();
 		case 'useRuneRegenBaseValue':
-			return useRuneRegenBaseValueCheckbox();
+			return makeUseRuneRegenBaseValueCheckbox();
 	}
 }
 

@@ -11,6 +11,11 @@ function fetchEnchantDescriptions(): Promise<Record<number, string>> {
 					descriptionsMap[parseInt(idStr)] = json[idStr];
 				}
 				return descriptionsMap;
+			})
+			// Never memoize a failure: same reset as Database.get.
+			.catch(error => {
+				descriptionsPromise = null;
+				throw error;
 			});
 	}
 	return descriptionsPromise;

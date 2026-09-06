@@ -1,3 +1,4 @@
+// `.importer` is worn by two stacks at once, the same way `.exporter` is.
 .importer {
 	.importer-textarea {
 		width: 100%;
@@ -5,7 +6,8 @@
 		resize: none;
 	}
 
-	.modal-footer {
+	.modal-footer,
+	.sim-dialog-footer {
 		.btn {
 			width: 12rem;
 		}

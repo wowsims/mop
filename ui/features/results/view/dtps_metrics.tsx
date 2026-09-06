@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { formatToCompactNumber, formatToNumber, formatToPercent } from '@domain/format';
 import { ActionMetrics } from '@domain/proto_utils/sim_result';
 import i18n from '@i18n/config';

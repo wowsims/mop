@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import clsx from 'clsx';
 
 import type { ContentRow, HeaderRow, SeparatorRow } from '../model';

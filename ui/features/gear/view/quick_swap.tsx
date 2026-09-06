@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';

@@ -39,25 +39,38 @@ export class Database {
 	private static loadPromise: Promise<Database> | null = null;
 	private static instance: Database | null = null;
 
-	static async get(options: { signal?: AbortSignal } = {}): Promise<Database> {
+	/** Shared by the whole page, so it takes no AbortSignal; retries, and clears the memo on failure. */
+	static async get(): Promise<Database> {
 		if (!Database.loadPromise) {
 			Database.loadPromise = (async () => {
-				let dbData: UIDatabase;
-				if (READ_JSON) {
-					const resp = await fetch(dbUrlJson, { signal: options?.signal });
-					const json = await resp.json();
-					dbData = UIDatabase.fromJson(json);
-				} else {
-					const buf = await fetch(dbUrlBin, { signal: options?.signal }).then(r => r.arrayBuffer());
-					const bytes = new Uint8Array(buf);
-					dbData = UIDatabase.fromBinary(bytes);
-				}
+				const dbData = await Database.loadWithRetry();
 				const db = new Database(dbData);
 				Database.instance = db;
 				return db;
-			})();
+			})().catch(error => {
+				// Never memoize a failure (cf. getSharedWasmModule): one transient error must not brick every later caller.
+				Database.loadPromise = null;
+				throw error;
+			});
 		}
 		return Database.loadPromise;
+	}
+
+	private static async loadWithRetry(attempts = 3, backoffMs = 250): Promise<UIDatabase> {
+		for (let attempt = 1; ; attempt++) {
+			try {
+				if (READ_JSON) {
+					const resp = await fetch(dbUrlJson);
+					return UIDatabase.fromJson(await resp.json());
+				}
+				const buf = await fetch(dbUrlBin).then(r => r.arrayBuffer());
+				return UIDatabase.fromBinary(new Uint8Array(buf));
+			} catch (error) {
+				if (attempt >= attempts) throw error;
+				console.warn(`Database load attempt ${attempt} failed, retrying:`, error);
+				await new Promise(resolve => setTimeout(resolve, backoffMs * attempt));
+			}
+		}
 	}
 
 	static getSync(): Database {
@@ -380,8 +393,8 @@ export class Database {
 		return Array.from(this.presetTargets.values());
 	}
 
-	static async getItemIconData(itemId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const db = await Database.get({ signal: options?.signal });
+	static async getItemIconData(itemId: number): Promise<IconData> {
+		const db = await Database.get();
 		const data = db.itemIcons[itemId];
 		if (!data?.icon) {
 			// The request is shared between callers, so it must not inherit any one caller's signal.
@@ -390,8 +403,8 @@ export class Database {
 		return db.itemIcons[itemId];
 	}
 
-	static async getSpellIconData(spellId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const db = await Database.get({ signal: options?.signal });
+	static async getSpellIconData(spellId: number): Promise<IconData> {
+		const db = await Database.get();
 		const data = db.spellIcons[spellId];
 		if (!data?.icon) {
 			db.spellIcons[spellId] = await Database.sharedIconRequest(`spell-${spellId}`, () => Database.getWowheadSpellTooltipData(spellId));

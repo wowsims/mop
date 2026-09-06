@@ -1,4 +1,5 @@
 /* stylelint-disable scss/dollar-variable-first-in-block */
+@use 'sass:color';
 @use 'sass:map';
 
 // Define and overwrite Bootstrap Variables
@@ -151,6 +152,8 @@ $resource-colors: (
 	mana: $mana-color,
 	rage: $rage-color,
 	holy-power: $holy-power-color,
+	lunar-energy: $lunar-energy-color,
+	solar-energy: $solar-energy-color,
 );
 $theme-colors: map-merge($theme-colors, $resource-colors);
 
@@ -238,6 +241,7 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 	--section-spacer: var(--section-spacer-sm);
 
 	--block-spacer: 0.75rem;
+	--dr-filling-pane-min-height: 70vh;
 	--gap-width: 1.5rem;
 	--gap-width-sm: 0.5rem;
 }
@@ -346,6 +350,14 @@ $dropdown-padding-y: 0;
 	--dropdown-link-hover-color: #{$dropdown-link-hover-color};
 	--dropdown-link-hover-bg: #{$dropdown-link-hover-bg};
 	--dropdown-padding-y: #{$dropdown-padding-y};
+
+	--dropdown-zindex: #{$zindex-dropdown};
+	--dropdown-min-width: #{$dropdown-min-width};
+	--dropdown-border-color: #{$dropdown-border-color};
+	--dropdown-font-size: #{$dropdown-font-size};
+	--dropdown-item-padding-y: #{$dropdown-item-padding-y};
+	--dropdown-item-padding-x: #{$dropdown-item-padding-x};
+	--dropdown-item-transition: #{$transition-base};
 }
 
 // Form
@@ -384,6 +396,38 @@ $modal-header-border-color: $border-color;
 $modal-header-padding: 1.25rem;
 $modal-inner-padding: 1.25rem;
 
+:root {
+	--modal-zindex: #{$zindex-modal};
+	--modal-margin: #{$modal-dialog-margin-y-sm-up};
+	--modal-width-sm: #{$modal-sm};
+	--modal-width-md: #{$modal-md};
+	--modal-width-lg: #{$modal-lg};
+	--modal-width-xl: #{$modal-xl};
+	--modal-bg: #{$modal-content-bg};
+	--modal-border-width: #{$modal-content-border-width};
+	--modal-border-color: #{$modal-content-border-color};
+	--modal-padding: #{$modal-inner-padding};
+	--modal-transition: #{$modal-transition};
+	--modal-fade-transform: #{$modal-fade-transform};
+
+	--modal-header-padding: #{$modal-header-padding};
+	// Not the same 1.25rem: Bootstrap derives these two from `$modal-inner-padding` *before* the override above raises it, so the header bar is padded 1.25rem while the close button — which is inset by half of these — is padded 0.5rem.
+	--modal-header-padding-y: #{$modal-header-padding-y};
+	--modal-header-padding-x: #{$modal-header-padding-x};
+	--modal-header-border-width: #{$modal-header-border-width};
+	--modal-header-border-color: #{$modal-header-border-color};
+	--modal-title-font-size: #{$h5-font-size};
+	--modal-title-line-height: #{$modal-title-line-height};
+	--modal-close-color: #{$btn-close-color};
+
+	--modal-footer-border-width: #{$modal-footer-border-width};
+	--modal-footer-border-color: #{$modal-footer-border-color};
+
+	--modal-backdrop-zindex: #{$zindex-modal-backdrop};
+	--modal-backdrop-bg: #{$modal-backdrop-bg};
+	--modal-backdrop-opacity: #{$modal-backdrop-opacity};
+}
+
 // Nav
 $nav-link-font-size: 0.875rem;
 $nav-link-padding-y: var(--spacer-3);
@@ -412,6 +456,15 @@ $tooltip-body-padding-y: var(--spacer-2);
 	--bs-tooltip-max-width-sm: #{$tooltip-max-width-sm};
 	--bs-tooltip-body-padding-x: #{$tooltip-body-padding-x};
 	--bs-tooltip-body-padding-y: #{$tooltip-body-padding-y};
+
+	--tooltip-bg: #{$tooltip-bg};
+	--tooltip-border: #{$tooltip-border};
+	--tooltip-body-color: #{$tooltip-body-color};
+	--tooltip-max-width: #{$tooltip-max-width};
+	--tooltip-max-width-lg: #{$tooltip-max-width-lg};
+	--tooltip-max-width-sm: #{$tooltip-max-width-sm};
+	--tooltip-body-padding-x: #{$tooltip-body-padding-x};
+	--tooltip-body-padding-y: #{$tooltip-body-padding-y};
 }
 
 // Toast
@@ -423,3 +476,129 @@ $toast-header-color: $toast-color;
 $toast-header-background-color: $toast-background-color;
 $toast-padding-x: var(--spacer-3);
 $toast-padding-y: var(--spacer-3);
+
+// The right-hand sides still come from Bootstrap today, deliberately: this block is the single seam, and removing Bootstrap means changing these values and nothing else.
+:root {
+	--focus-ring: #{$focus-ring-box-shadow};
+	--transition-fade: #{$transition-fade};
+
+	--tab-padding-y: #{$nav-link-padding-y};
+	--tab-padding-x: #{$nav-link-padding-x};
+	--tab-font-size: #{$nav-link-font-size};
+	--tab-transition: #{$nav-link-transition};
+	--tab-color: #{$nav-link-color};
+	--tab-color-hover: #{$nav-link-hover-color};
+	--tab-color-active: #{$nav-tabs-link-active-color};
+
+	// These three are the only names in this block that alias rather than interpolate, because the `--bs-*` spellings are not Bootstrap's: the project declares them itself, at `:root`, in `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`. They survive Bootstrap's removal, and `--body-font-size` is responsive there (14px, 16px at the 1080p breakpoint), so an alias is the only spelling that cannot silently drift from it.
+	--body-font-family: var(--bs-body-font-family);
+	--body-font-size: var(--bs-body-font-size);
+	--body-line-height: var(--bs-body-line-height);
+
+	// Base colors and links
+	--white: #{$white};
+	--white-rgb: #{to-rgb($white)};
+	--black: #{$black};
+	--black-alpha-50: #{map-get($custom-alpha, 'black-alpha-50')};
+	--black-alpha-75: #{map-get($custom-alpha, 'black-alpha-75')};
+	--primary: #{$primary};
+	--primary-rgb: #{to-rgb($primary)};
+	--body-bg: #{$body-bg};
+	--body-color: #{$body-color};
+	--link-color: #{$link-color};
+	--link-color-rgb: #{to-rgb($link-color)};
+	--link-hover-color-rgb: #{to-rgb($link-hover-color)};
+
+	// Grays
+	--gray: #{$gray-600};
+	--gray-300: #{$gray-300};
+	--gray-500: #{$gray-500};
+	--gray-600: #{$gray-600};
+	--gray-700: #{$gray-700};
+	--gray-800: #{$gray-800};
+	--gray-900: #{$gray-900};
+
+	// Theme colors
+	--border-color: #{$border-color};
+	--border-width: #{$border-width};
+	--danger: #{$danger};
+	--warning: #{$warning};
+	--secondary: #{$secondary};
+	--secondary-color: #{$body-secondary-color};
+	--orange: #{$orange};
+
+	// Custom theme colors
+	--brand: #{$brand};
+	--expansion: #{$expansion};
+	--off-white: #{map-get($custom-colors, 'off-white')};
+	--success: #{$success};
+
+	// Item quality colors
+	--quality-junk: #{$item-quality-junk};
+	--quality-common: #{$item-quality-common};
+	--quality-uncommon: #{$item-quality-uncommon};
+	--quality-rare: #{$item-quality-rare};
+	--quality-epic: #{$item-quality-epic};
+	--quality-legendary: #{$item-quality-legendary};
+	--quality-artifact: #{$item-quality-artifact};
+	--quality-heirloom: #{$item-quality-heirloom};
+
+	// Spell school colors
+	--school-physical: #{map-get($spell-school-colors, 'physical')};
+	--school-arcane: #{map-get($spell-school-colors, 'arcane')};
+	--school-fire: #{map-get($spell-school-colors, 'fire')};
+	--school-frost: #{map-get($spell-school-colors, 'frost')};
+	--school-holy: #{map-get($spell-school-colors, 'holy')};
+	--school-nature: #{map-get($spell-school-colors, 'nature')};
+	--school-shadow: #{map-get($spell-school-colors, 'shadow')};
+	--school-chaos: #{map-get($spell-school-colors, 'chaos')};
+
+	// Faction colors
+	--faction-horde: #{map-get($faction-colors, 'horde')};
+	--faction-alliance: #{map-get($faction-colors, 'alliance')};
+
+	// Resource colors
+	--resource-health: #{$health-color};
+	--resource-mana: #{$mana-color};
+	--resource-rage: #{$rage-color};
+	--resource-energy: #{$energy-color};
+	--resource-focus: #{$focus-color};
+	--resource-chi: #{$chi-color};
+	--resource-combo-points: #{$combo-points-color};
+	--resource-holy-power: #{$holy-power-color};
+	--resource-lunar-energy: #{$lunar-energy-color};
+	--resource-solar-energy: #{$solar-energy-color};
+
+	// Secondary resource colors
+	--resource-arcane-charges: #{$arcane-charges-color};
+	--resource-shadow-orbs: #{$shadow-orbs-color};
+	--resource-demonic-fury: #{$demonic-fury-color};
+	--resource-burning-embers: #{$burning-embers-color};
+	--resource-soul-shards: #{$soul-shards-color};
+
+	// Damage colors
+	--damage-hit: #{$damage-hit};
+	--damage-crit: #{$damage-crit};
+	--partial: #{$damage-partial};
+	--miss: #{$damage-miss};
+	--cancel: #{$damage-cancel};
+	--cancel-rgb: #{to-rgb($damage-cancel)};
+	--dps: #{$damage-dps};
+	--threat: #{$damage-threat};
+
+	// Link colors
+	--link-danger: #{map-get($link-colors, 'link-danger')};
+	--link-warning: #{map-get($link-colors, 'link-warning')};
+
+	// Talent colors
+	--talent-full: #{map-get($talent-colors, 'talent-full')};
+
+	// Table colors
+	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};
+	// The same colour as three HSL channels, for the one consumer that wants to re-alpha it (`hsla(var(--…-hsl), 0.9)`).
+	--table-row-even-bg-hsl:
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'hue', $space: hsl)},
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'saturation', $space: hsl)},
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'lightness', $space: hsl)};
+	--table-row-odd-bg: #{map-get($table-colors, 'table-row-odd-bg')};
+}

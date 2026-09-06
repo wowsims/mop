@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import {
 	BulkSimProgressConfig,
 	NATIVE_COMBINATIONS_LIMIT,
@@ -123,8 +124,8 @@ export class BulkTab extends SimTab {
 	private availableSetBonusesMemo: BulkSetBonusOption[] | null = null;
 	private canSatisfySetBonusMemo = new Map<string, boolean>();
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimHost<any>) {
-		super(parentElem, simUI, { identifier: 'bulk-tab', title: i18n.t('bulk_tab.title') });
+	constructor(simUI: IndividualSimHost<any>) {
+		super(simUI, { identifier: 'bulk-tab', title: i18n.t('bulk_tab.title'), badge: i18n.t('bulk_tab.title_badge') });
 
 		this.simUI = simUI;
 		this.playerCanDualWield = getBulkPlayerCanDualWield(this.simUI.player);

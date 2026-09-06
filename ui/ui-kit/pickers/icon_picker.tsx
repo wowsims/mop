@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { isRightClick } from '@domain/env';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { fillAndSetActionId } from '@domain/proto_utils/action_id/dom';

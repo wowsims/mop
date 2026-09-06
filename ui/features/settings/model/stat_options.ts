@@ -34,6 +34,7 @@ export interface IconEnumPickerStatOption extends PickerStatOption<typeof IconEn
 
 export type ItemStatOptions<T> = ItemStatOption<T>;
 export type PickerStatOptions = IconPickerStatOption | MultiIconPickerStatOption | IconEnumPickerStatOption;
+export type RenderableStatOptions = IconPickerStatOption | MultiIconPickerStatOption;
 export type StatOptions<T, Options extends ItemStatOptions<T> | PickerStatOptions> = Array<Options>;
 
 export function relevantStatOptions<T, OptionsType extends ItemStatOptions<T> | PickerStatOptions>(

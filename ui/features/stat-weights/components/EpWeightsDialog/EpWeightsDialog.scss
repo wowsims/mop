@@ -1,0 +1,221 @@
+@import 'shared/tokens';
+
+.ep-weights-menu {
+	.ep-weights-content {
+		width: 100%;
+	}
+
+	.ep-weights-options {
+		margin-bottom: var(--block-spacer);
+	}
+
+	.ep-reference-options {
+		margin-bottom: var(--block-spacer);
+
+		.form-label {
+			font-weight: bold;
+		}
+
+		p {
+			margin-top: var(--block-spacer);
+		}
+	}
+
+	// Was `.modal .modal-scroll-table`, whose only consumer was this table. Nothing constrains this element's height, so it never actually scrolls and the sticky `<th>` is inert — measured identical on the vanilla build.
+	.results-ep-table-container {
+		position: relative;
+		flex: 1;
+		overflow-y: auto;
+
+		.results-ep-table {
+			width: 100%;
+
+			&.stats-type-ep .type-weight,
+			&.stats-type-weight .type-ep {
+				display: none;
+			}
+
+			th,
+			td {
+				&[class*='type-'] {
+					text-align: right;
+				}
+			}
+
+			th {
+				position: sticky;
+				top: 0;
+				padding-top: var(--spacer-2);
+				padding-bottom: var(--spacer-2);
+				padding-right: var(--spacer-2);
+				background: var(--body-bg);
+				text-align: left;
+			}
+
+			.ep-ratios {
+				background-color: var(--table-row-even-bg);
+
+				td {
+					padding: var(--table-cell-padding);
+				}
+
+				.input-root {
+					align-items: flex-end;
+				}
+
+				input {
+					text-align: right;
+					max-width: 100px;
+				}
+
+				.compute-ep {
+					white-space: nowrap;
+
+					.not-tiny {
+						display: inline;
+					}
+
+					.fas {
+						display: inline;
+						vertical-align: middle;
+					}
+				}
+			}
+
+			tbody {
+				tr:nth-child(even) {
+					background-color: var(--table-row-even-bg);
+				}
+
+				tr:nth-child(odd) {
+					background-color: var(--table-row-odd-bg);
+				}
+
+				td {
+					padding: var(--table-cell-padding);
+
+					.fas {
+						display: inline;
+					}
+				}
+			}
+
+			.input-root {
+				margin-bottom: 0;
+			}
+
+			.results-avg.notapplicable {
+				padding-right: 25px;
+				font-weight: bold;
+			}
+
+			.results-stdev {
+				font-size: 0.625rem;
+			}
+
+			.col-action {
+				margin-left: var(--spacer-1);
+			}
+		}
+	}
+}
+
+.ep-weights-sidebar {
+	min-width: 170px;
+
+	.saved-data-create-container {
+		max-width: 200px;
+	}
+}
+
+.unused-ep {
+	color: var(--gray-500) !important;
+}
+
+// `hide-threat-metrics` is on the sim root, not on the dialog: `.ep-weights-menu:not(.hide-threat-metrics)` was always true, so every spec got the tank-mode compact layout.
+.sim-ui:not(.hide-threat-metrics) .ep-weights-menu {
+	@mixin compact-button {
+		.results-ep-table-container {
+			.results-ep-table {
+				.not-tiny {
+					display: none !important;
+				}
+			}
+		}
+	}
+
+	@mixin compact-input {
+		input {
+			text-align: center;
+			padding-left: 0;
+			padding-right: 3px;
+		}
+	}
+
+	@mixin compact-table {
+		.results-ep-table-container {
+			.results-ep-table {
+				padding-right: 0;
+
+				td {
+					padding-left: 0;
+				}
+			}
+		}
+	}
+
+	@media (max-width: 471px) {
+		@include compact-button;
+	}
+
+	@include media-breakpoint-only(xs) {
+		@include compact-table;
+
+		.ep-ratios {
+			@include compact-input;
+		}
+	}
+
+	@include media-breakpoint-between(sm, lg) {
+		.ep-ratios {
+			@include compact-input;
+		}
+	}
+
+	@include media-breakpoint-only(lg) {
+		.results-ep-table {
+			th {
+				padding-right: 0;
+			}
+		}
+	}
+
+	@include media-breakpoint-down(lg) {
+		@include compact-button;
+		@include compact-table;
+
+		.results-ep-table {
+			@include compact-input;
+
+			th[class*='type-'] {
+				text-align: center;
+			}
+		}
+	}
+}
+
+// Hide all tank EP weights/actions due to inaccurate reforge results causing confusion. `.modal-footer` was the Calculate button's row; the Dialog renders `.sim-dialog-footer`.
+.sim-type--tank {
+	.ep-weights-menu {
+		.results-ep-table thead th:nth-child(2),
+		.results-ep-table tbody td:nth-child(2),
+		.sim-dialog-footer,
+		.ep-ratios,
+		.ep-reference-options,
+		.damage-metrics,
+		.healing-metrics,
+		.threat-metrics {
+			display: none !important;
+		}
+	}
+}

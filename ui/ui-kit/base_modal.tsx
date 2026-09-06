@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Modal } from 'bootstrap';
 import { ref } from 'tsx-vanilla';
 
@@ -41,6 +42,8 @@ export class BaseModal extends Component {
 
 	isOpen = false;
 	onHideCallbacks: Array<() => void> = [];
+	// Registered per open and cleared on hide; `onHideCallbacks` is the caller's list and lives as long as the modal does.
+	private openCallbacks: Array<() => void> = [];
 
 	readonly modal: Modal;
 	readonly dialog: HTMLElement;
@@ -116,10 +119,12 @@ export class BaseModal extends Component {
 		this.rootElem.addEventListener('hide.bs.modal', hideBSFn);
 		this.rootElem.addEventListener('hidden.bs.modal', hiddenBSFn);
 
-		this.addOnHideCallback(() => document.removeEventListener('keydown', closeModalOnEscKey));
-		this.addOnHideCallback(() => this.rootElem.removeEventListener('show.bs.modal', showBSFn));
-		this.addOnHideCallback(() => this.rootElem.removeEventListener('hide.bs.modal', hideBSFn));
-		this.addOnHideCallback(() => this.rootElem.removeEventListener('hidden.bs.modal', hiddenBSFn));
+		this.openCallbacks = [
+			() => document.removeEventListener('keydown', closeModalOnEscKey),
+			() => this.rootElem.removeEventListener('show.bs.modal', showBSFn),
+			() => this.rootElem.removeEventListener('hide.bs.modal', hideBSFn),
+			() => this.rootElem.removeEventListener('hidden.bs.modal', hiddenBSFn),
+		];
 
 		this.modal.show();
 		this.isOpen = true;
@@ -142,6 +147,9 @@ export class BaseModal extends Component {
 
 	protected onHide(_e: Event) {
 		this.onHideCallbacks.forEach(callback => callback());
+		const openCallbacks = this.openCallbacks;
+		this.openCallbacks = [];
+		openCallbacks.forEach(callback => callback());
 		return;
 	}
 

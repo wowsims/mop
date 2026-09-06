@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Emitter } from '@domain/state/events';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import clsx, { ClassValue } from 'clsx';

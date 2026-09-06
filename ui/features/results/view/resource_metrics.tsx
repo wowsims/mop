@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { resourceNames } from '@domain/proto_utils/names';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
 import { ResourceMetrics } from '@domain/proto_utils/sim_result';

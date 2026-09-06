@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import clsx from 'clsx';
 
 const Element = ({ children, buttonClassName, linkRef, ...props }: SimToolbarItemProps) =>

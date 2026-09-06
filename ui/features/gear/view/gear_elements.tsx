@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import type { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';

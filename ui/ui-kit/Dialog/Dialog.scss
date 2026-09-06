@@ -1,0 +1,150 @@
+@import 'shared/tokens';
+
+// The popup is portaled, so no ancestor selector reaches it and it may not be inside `.sim-ui` at all.
+.sim-dialog-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: var(--modal-backdrop-zindex);
+	background-color: var(--modal-backdrop-bg);
+	opacity: var(--modal-backdrop-opacity);
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}
+
+// It stays `display: block` on purpose — centring it with flex would make the popup a flex item, and a flex item with `width: auto` shrinks to its content instead of filling out to its `max-width`.
+.sim-dialog-viewport {
+	position: fixed;
+	inset: 0;
+	z-index: var(--modal-zindex);
+	overflow-x: hidden;
+	overflow-y: auto;
+	opacity: 1;
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}
+
+.sim-dialog-popup {
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	margin: var(--modal-margin) auto;
+	max-width: var(--modal-width-lg);
+	border: var(--modal-border-width) solid var(--modal-border-color);
+	background-color: var(--modal-bg);
+	background-clip: padding-box;
+	outline: 0;
+	transition: var(--modal-transition);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		transform: var(--modal-fade-transform);
+	}
+
+	@include media-breakpoint-down(lg) {
+		max-width: calc(100vw - 2 * var(--modal-margin));
+	}
+
+	&--sm {
+		max-width: var(--modal-width-sm);
+	}
+
+	&--md {
+		max-width: var(--modal-width-md);
+	}
+
+	&--xl {
+		max-width: var(--modal-width-xl);
+	}
+
+	&--scroll {
+		max-height: calc(100vh - 2 * var(--modal-margin));
+
+		.sim-dialog-body {
+			overflow: auto;
+		}
+	}
+}
+
+.sim-dialog-header {
+	display: flex;
+	flex-shrink: 0;
+	align-items: flex-start;
+	margin: 0 var(--modal-header-padding);
+	padding: var(--modal-header-padding) 0;
+	border-bottom: var(--modal-header-border-width) solid var(--modal-header-border-color);
+
+	&--bare {
+		margin: 0;
+		padding: 0;
+		border-bottom: 0;
+	}
+}
+
+// Base UI's `Dialog.Title` is an `<h2>`; vanilla's was an `<h5>`, so the size the heading brings is spelled out here.
+.sim-dialog-title {
+	margin-bottom: 0;
+	font-size: var(--modal-title-font-size);
+	line-height: var(--modal-title-line-height);
+}
+
+.sim-dialog-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: content-box;
+	width: 1em;
+	height: 1em;
+	margin: calc(-0.5 * var(--modal-header-padding-y)) calc(-1 * var(--spacer-1)) calc(-0.5 * var(--modal-header-padding-y)) auto;
+	padding: calc(0.5 * var(--modal-header-padding-y)) calc(0.5 * var(--modal-header-padding-x));
+	border: 0;
+	background: none;
+	color: var(--modal-close-color);
+	cursor: pointer;
+	transition: var(--link-transition);
+	z-index: 1000;
+
+	&:hover {
+		color: var(--bs-white);
+	}
+
+	&:focus-visible {
+		outline: 0;
+		box-shadow: var(--focus-ring);
+	}
+}
+
+.sim-dialog-body {
+	display: flex;
+	position: relative;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: var(--modal-padding);
+	padding: var(--modal-padding);
+}
+
+.sim-dialog-footer {
+	display: flex;
+	flex-shrink: 0;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	margin: 0 var(--modal-header-padding);
+	padding: var(--modal-padding) 0;
+	border-top: var(--modal-footer-border-width) solid var(--modal-footer-border-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sim-dialog-backdrop,
+	.sim-dialog-viewport,
+	.sim-dialog-popup {
+		transition: none;
+	}
+}

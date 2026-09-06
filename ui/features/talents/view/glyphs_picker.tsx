@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { stringComparator } from '@domain/collections';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';

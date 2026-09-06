@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';

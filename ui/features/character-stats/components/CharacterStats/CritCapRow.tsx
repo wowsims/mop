@@ -1,0 +1,57 @@
+import type { MeleeCritCapInfo } from '@domain/player';
+import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import clsx from 'clsx';
+import { type CSSProperties, useId } from 'react';
+
+import { TooltipRow } from './TooltipRow';
+import { critCapClass } from './utils/stat_display';
+
+export interface CritCapRowProps {
+	info: MeleeCritCapInfo;
+	text: string;
+}
+
+// Bootstrap's border utilities set border-color !important, so an inline borderColor loses; zero the variable they read.
+const SPACER_STYLE = { '--bs-border-opacity': '0' } as CSSProperties;
+
+export const CritCapRow = ({ info, text }: CritCapRowProps) => {
+	const id = useId();
+	return (
+		<tr className="character-stats-table-row">
+			<td className="character-stats-table-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
+			<td className="character-stats-table-value">
+				<div className="stat-value-link-container">
+					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} {...tooltipAnchorProps(id)}>
+						{`${text} `}
+					</Button>
+				</div>
+				<span className="px-2 border-start border-end border-body border-brand" style={SPACER_STYLE} />
+				<Tooltip
+					id={id}
+					content={
+						<div>
+							<TooltipRow label={i18n.t('sidebar.character_stats.attack_table.glancing')} value={`${info.glancing.toFixed(2)}%`} />
+							<TooltipRow label={i18n.t('sidebar.character_stats.attack_table.suppression')} value={`${info.suppression.toFixed(2)}%`} />
+							<TooltipRow label={i18n.t('sidebar.character_stats.attack_table.to_hit_cap')} value={`${info.remainingMeleeHitCap.toFixed(2)}%`} />
+							<TooltipRow label={i18n.t('sidebar.character_stats.attack_table.to_exp_cap')} value={`${info.remainingExpertiseCap.toFixed(2)}%`} />
+							{info.specSpecificOffset !== 0 && (
+								<TooltipRow
+									label={i18n.t('sidebar.character_stats.attack_table.spec_offsets')}
+									value={`${info.specSpecificOffset.toFixed(2)}%`}
+								/>
+							)}
+							<TooltipRow label={i18n.t('sidebar.character_stats.attack_table.final_crit_cap')} value={`${info.baseCritCap.toFixed(2)}%`} />
+							<hr />
+							<TooltipRow
+								label={i18n.t('sidebar.character_stats.attack_table.can_raise_by')}
+								value={`${(info.remainingExpertiseCap + info.remainingMeleeHitCap).toFixed(2)}%`}
+							/>
+						</div>
+					}
+				/>
+			</td>
+		</tr>
+	);
+};

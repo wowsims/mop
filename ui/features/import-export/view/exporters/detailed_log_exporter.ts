@@ -14,6 +14,8 @@ export class LogExporter extends Exporter {
 		super(parent, {
 			title: i18n.t('results_tab.details.logs.export_button'),
 			allowDownload: true,
+			downloadFileName: 'wowsims-log.csv',
+			downloadMimeType: 'text/csv',
 		});
 
 		this.simUI = simUI;

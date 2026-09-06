@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { randomUUID } from '@domain/utils';

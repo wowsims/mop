@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { Component } from '@ui-kit/component';
 import { SimToolbarItem } from '@ui-kit/sim_toolbar_item';

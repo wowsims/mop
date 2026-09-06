@@ -1,3 +1,4 @@
+// `.exporter` is worn by two stacks at once and has to keep working for both.
 .exporter {
 	.exporter-textarea {
 		width: 100%;
@@ -8,14 +9,16 @@
 	.exporter-category-pickers {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: var(--spacer-1) var(--bs-modal-padding);
+		// `--bs-modal-padding` is emitted inside `.modal` and nowhere else, so it resolved to nothing once this row moved into a portaled popup.
+		gap: var(--spacer-1) var(--modal-padding);
 
 		@include media-breakpoint-down(md) {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	.modal-footer {
+	.modal-footer,
+	.sim-dialog-footer {
 		.btn {
 			width: 12rem;
 		}

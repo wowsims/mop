@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import * as Mechanics from '@domain/constants/mechanics';
 import { formatToNumber } from '@domain/format';
 import { Player } from '@domain/player';

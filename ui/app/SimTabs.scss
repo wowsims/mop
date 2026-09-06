@@ -1,0 +1,75 @@
+@import 'shared/tokens';
+
+.sim-tabs-mount,
+.sim-tabs-root {
+	display: contents;
+}
+
+.sim-tabs {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-end;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sim-tab-link {
+	display: flex;
+	align-items: center;
+	// No `height: 100%`: Bootstrap's `.nav-link` resolved that against the `<li>` wrapping it, whose own height was the link's, so it was a no-op.
+	margin: 0;
+	border: 0;
+	padding: var(--tab-padding-y) var(--tab-padding-x);
+	background: none;
+	color: var(--tab-color);
+	font-family: inherit;
+	font-size: var(--tab-font-size);
+	font-weight: bold;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition: var(--tab-transition);
+
+	&:hover {
+		color: var(--tab-color-hover);
+	}
+
+	&[data-active] {
+		position: relative;
+		color: var(--tab-color-active);
+
+		&::after {
+			content: '';
+			position: absolute;
+			height: 2px;
+			background: var(--tab-color-active);
+			bottom: 0;
+			left: 0;
+			right: 0;
+		}
+	}
+
+	// Bootstrap's `.nav-link:focus-visible` ring, carried over rather than invented: measured on the parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`.
+	&:focus-visible {
+		outline: 0;
+		box-shadow: var(--focus-ring);
+	}
+}
+
+// The pane fade, which is enter-only: Bootstrap hid the outgoing pane instantly (`.tab-content > .tab-pane { display: none }`), and `keepMounted` reproduces that with a real `hidden` attribute, which the reboot already styles `display: none !important`.
+.sim-tab-panel {
+	max-width: 100%;
+	flex-grow: 1;
+	padding-top: var(--gap-width);
+	opacity: 1;
+	transition: var(--transition-fade);
+
+	&[data-starting-style] {
+		opacity: 0;
+	}
+
+	@include media-breakpoint-down(lg) {
+		padding-top: calc(var(--gap-width-sm) * 2);
+	}
+}

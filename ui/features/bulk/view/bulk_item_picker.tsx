@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEligibleItemSlots } from '@domain/proto_utils/items';

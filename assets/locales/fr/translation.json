@@ -417,10 +417,6 @@
         "debuffs": {
             "title": "Debuffs",
             "tooltip": "Debuffs appliqués par d'autres membres du raid.",
-            "misc": {
-                "label": "Divers",
-                "tooltip": "Debuffs divers"
-            },
             "armor_reduction": "Réduction d'armure",
             "phys_dmg_reduction": "Réduction dégâts physique",
             "cast_speed": "Vitesse de sort",
@@ -568,7 +564,8 @@
                 "combat": "Potion en combat"
             },
             "elixirs": {
-                "title": "Élixirs"
+                "title": "Élixirs",
+                "separator": "ou"
             },
             "food": {
                 "title": "Nourriture"
@@ -762,7 +759,8 @@
         }
     },
     "bulk_tab": {
-        "title": "Lot (<span class=\"text-success\">Nouveau</span>)",
+        "title": "Lot",
+        "title_badge": "Nouveau",
         "description": "<span className=\"bold\">Simulation par lot</span> est une nouvelle fonctionnalité similaire à la simulation <span className=\"bold\">Top Gear</span> sur <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> qui vous permet de sélectionner plusieurs objets et de les simuler pour trouver les meilleures combinaisons.<br />C'est une fonctionnalité <span className=\"text-brand\">Alpha</span>, donc si vous avez des commentaires ou trouvez un bug, veuillez le signaler !",
         "download_native": "Téléchargez le simulateur en local pour des résultats plus rapides.",
         "tabs": {
@@ -2024,7 +2022,16 @@
 				"export_button": "Exporter le Journal",
 				"time_column": "Temps",
 				"event_column": "Événement",
-				"show_debug": "Afficher les messages de débogage"
+				"show_debug": "Afficher les messages de débogage",
+				"search_placeholder": "Rechercher dans le journal…",
+				"search_add_filter": "Ajouter un filtre",
+				"search_add_value": "Ajouter une valeur",
+				"floatingActionBar": {
+					"toggle": "Afficher ou masquer les filtres",
+					"none": "Aucun filtre",
+					"active": "{{count}} actif(s)",
+					"clear": "Effacer les filtres"
+				}
 			},
 			"tabs": {
 				"damage": "Dégâts",
@@ -2293,6 +2300,7 @@
 					"title": "Calculer les Poids des Statistiques",
 					"ep": "PE",
 					"weights": "Poids",
+				"stats_type": "Type d'affichage des statistiques",
 					"show_all_stats": "Afficher toutes les Statistiques",
 					"dps_tps_reference": "Référence DPS/TPS :",
 					"healing_reference": "Référence de soins :",
@@ -2515,6 +2523,7 @@
 				"under_by": "En-dessous de"
 			},
 			"bonus_prefix": "Bonus",
+			"bonus_action": "Ajouter un bonus de {{stat}}",
 			"points_suffix": "Points",
 			"percent_suffix": "%"
 		}

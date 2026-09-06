@@ -1,5 +1,5 @@
 import { ActionId } from '@domain/proto_utils/action_id';
-import type { AuraUptimeLog, CastLog } from '@domain/proto_utils/logs';
+import type { AuraUptimeLog, CastLog } from '@domain/proto_utils/combat_log';
 import type { UnitMetrics } from '@domain/proto_utils/sim_result';
 import { APLActionItemSwap_SwapSet } from '@generated/proto/apl';
 import { OtherAction } from '@generated/proto/common';

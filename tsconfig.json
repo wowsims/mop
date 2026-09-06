@@ -11,9 +11,8 @@
 		"resolveJsonModule": true,
 		"types": ["node", "gtag.js", "golang-wasm-exec"],
 		"esModuleInterop": true,
-		"jsx": "preserve",
-		"jsxFactory": "element",
-		"jsxFragmentFactory": "fragment",
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
 		"skipLibCheck": true,
 		"paths": {
 			"@domain/*": ["./ui/domain/*"],
@@ -23,7 +22,8 @@
 			"@features/*": ["./ui/features/*"],
 			"@app/*": ["./ui/app/*"],
 			"@specs/*": ["./ui/sims/*"],
-			"@i18n/*": ["./ui/i18n/*"]
+			"@i18n/*": ["./ui/i18n/*"],
+			"@jsx-vanilla/*": ["./ui/shared/jsx-vanilla/*"]
 		}
 	},
 	"include": ["."],

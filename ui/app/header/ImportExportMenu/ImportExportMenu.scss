@@ -1,0 +1,38 @@
+.sim-dropdown-positioner {
+	z-index: var(--dropdown-zindex);
+}
+
+.sim-dropdown-popup {
+	min-width: var(--dropdown-min-width);
+	padding: var(--dropdown-padding-y) 0;
+	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
+	background-color: var(--dropdown-bg);
+	color: var(--dropdown-link-color);
+	font-size: var(--dropdown-font-size);
+}
+
+.sim-dropdown-item {
+	display: block;
+	width: 100%;
+	padding: var(--dropdown-item-padding-y) var(--dropdown-item-padding-x);
+	border: 0;
+	background-color: transparent;
+	color: var(--dropdown-link-color);
+	font-weight: 400;
+	text-align: left;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: var(--dropdown-item-transition);
+
+	&[data-highlighted] {
+		background-color: var(--dropdown-link-hover-bg);
+		color: var(--dropdown-link-hover-color);
+	}
+
+	&[data-disabled] {
+		// Left hoverable on purpose: the item carries its own "Currently unsupported" tooltip, and a tooltip on a pointer-events-none element never opens.
+		pointer-events: auto;
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}

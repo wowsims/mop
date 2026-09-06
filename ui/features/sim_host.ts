@@ -5,7 +5,7 @@ import type { SimResult } from '@domain/proto_utils/sim_result';
 import type { RunSimOptions } from '@domain/sim';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import type { WorkerProgressCallback } from '@domain/worker_pool';
-import type { ErrorOutcome, RaidSimRequest, RaidSimResult, StatWeightsResult } from '@generated/proto/api';
+import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SimUIHost } from '@ui-kit/sim_host';
@@ -14,7 +14,6 @@ import type { BulkTab } from './bulk/view/bulk_tab';
 import type { ReforgeOptimizer } from './reforge/view/reforge_panel';
 import type { ResultsViewer } from './results/view/results_viewer';
 import type { IndividualSimUIConfig } from './spec_config';
-import type { EpWeightsMenu } from './stat-weights/view/stat_weights_panel';
 
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {
@@ -50,9 +49,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizer | null;
-	epWeightsModal: EpWeightsMenu | null;
-	prevEpIterations: number;
-	prevEpSimResult: StatWeightsResult | null;
+	epWeightsModal: { open(): void } | null;
 	dpsRefStat: Stat | undefined;
 	healRefStat: Stat | undefined;
 	tankRefStat: Stat | undefined;
@@ -61,6 +58,9 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
 	getStorageKey(keyPart: string): string;
 	getSavedEPWeightsStorageKey(): string;
+	getSavedTalentsStorageKey(): string;
+	getSavedEncounterStorageKey(): string;
+	getSavedSettingsStorageKey(): string;
 }
 
 // `instanceof IndividualSimUI` is not available to features (the shell lives in

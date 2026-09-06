@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdBackground, setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';

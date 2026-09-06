@@ -12,7 +12,7 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { IconPicker } from '@ui-kit/pickers/icon_picker';
 import { MultiIconPicker } from '@ui-kit/pickers/multi_icon_picker';
 
-import { IconPickerStatOption, PickerStatOptions } from './stat_options';
+import { IconPickerStatOption, RenderableStatOptions } from './stat_options';
 
 ///////////////////////////////////////////////////////////////////////////
 //                                 RAID BUFFS
@@ -255,7 +255,7 @@ export const RAID_BUFFS_CONFIG = [
 		picker: MultiIconPicker,
 		stats: [Stat.StatStamina],
 	},
-] as PickerStatOptions[];
+] as RenderableStatOptions[];
 
 export const RAID_BUFFS_MISC_CONFIG = [
 	{
@@ -348,6 +348,4 @@ export const DEBUFFS_CONFIG = [
 		picker: MultiIconPicker,
 		stats: [Stat.StatStamina],
 	},
-] as PickerStatOptions[];
-
-export const DEBUFFS_MISC_CONFIG = [] as IconPickerStatOption[];
+] as RenderableStatOptions[];

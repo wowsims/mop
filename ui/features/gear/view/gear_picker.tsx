@@ -1,3 +1,4 @@
+/** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
 import { setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
