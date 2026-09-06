@@ -851,6 +851,24 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+### `Dialog` does not unblock stat-weights — checked 2026-09-06
+
+The queue said stat-weights was waiting on the `Dialog` adapter. It is not. `Dialog` is necessary
+and not sufficient, and the difference is worth knowing before someone schedules it as "cheap now".
+
+`AdvancedEncounterModal` ported in an afternoon because its body was two clean seams — a shared
+`addEncounterFieldPickers` and a `ListPicker` — so the React version mounts two islands and owns
+nothing else. `EpWeightsMenu` has no such seam: 841 lines that build the body, the footer *and* an
+extra header title inside the constructor, against `this.body` / `this.footer` / `this.header`, with
+a dozen `ref`s and a `ResultsViewer` threaded through them. Extracting "build the body into this
+element" from that is a substantial refactor of a vanilla file, which is what the dual-stack rule
+tells you not to do.
+
+The tractable second consumer is `Exporter` (`features/import-export/view/exporter.tsx`, 72 lines):
+a textarea in the body, a copy button and an optional download button in the footer, and nine
+subclasses of which most add no markup at all. That is where the `.<cssClass> .modal-body` stylesheet
+merge gets proven at scale.
+
 ### Hands off: log / log_runner — 2026-09-06
 
 The user is refactoring `log_runner` and the log pipeline in parallel with this migration. **Do not
