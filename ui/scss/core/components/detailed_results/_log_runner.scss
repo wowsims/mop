@@ -39,6 +39,7 @@
 	display: grid;
 	grid-template-columns: 10ch 1fr;
 	column-gap: var(--spacer-2);
+	border-bottom: 1px solid var(--bs-border-color);
 }
 
 .log-runner-sticky {
@@ -61,20 +62,15 @@
 }
 
 .log-runner-header {
-	border-bottom: 1px solid var(--bs-border-color);
 	font-weight: bold;
-}
 
-.log-runner-header div {
-	padding: var(--spacer-2);
-}
+	div {
+		padding: var(--spacer-2);
 
-.log-runner-header div:first-child {
-	text-align: right;
-}
-
-.log-runner-row {
-	border-bottom: 1px solid var(--bs-border-color);
+		&:first-child {
+			text-align: right;
+		}
+	}
 }
 
 .log-timestamp,
@@ -90,12 +86,14 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.log-event .icon {
-	vertical-align: middle;
-}
+.log-event {
+	.icon {
+		vertical-align: middle;
+	}
 
-.log-event .log-action {
-	color: var(--bs-brand);
+	.log-action {
+		color: var(--bs-brand);
+	}
 }
 
 .log-content {
