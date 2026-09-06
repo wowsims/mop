@@ -395,6 +395,42 @@ $modal-header-border-color: $border-color;
 $modal-header-padding: 1.25rem;
 $modal-inner-padding: 1.25rem;
 
+:root {
+	// Add custom variables to reuse outside Bootstrap's `.modal*` classes, which is where every
+	// `--bs-modal-*` is emitted — see the seam block at the end of this file.
+	--modal-zindex: #{$zindex-modal};
+	--modal-margin: #{$modal-dialog-margin-y-sm-up};
+	--modal-width-sm: #{$modal-sm};
+	--modal-width-md: #{$modal-md};
+	--modal-width-lg: #{$modal-lg};
+	--modal-width-xl: #{$modal-xl};
+	--modal-bg: #{$modal-content-bg};
+	--modal-border-width: #{$modal-content-border-width};
+	--modal-border-color: #{$modal-content-border-color};
+	--modal-padding: #{$modal-inner-padding};
+	--modal-transition: #{$modal-transition};
+	--modal-fade-transform: #{$modal-fade-transform};
+
+	--modal-header-padding: #{$modal-header-padding};
+	// Not the same 1.25rem: Bootstrap derives these two from `$modal-inner-padding` *before* the
+	// override above raises it, so the header bar is padded 1.25rem while the close button — which
+	// is inset by half of these — is padded 0.5rem. Measured, and both are load-bearing.
+	--modal-header-padding-y: #{$modal-header-padding-y};
+	--modal-header-padding-x: #{$modal-header-padding-x};
+	--modal-header-border-width: #{$modal-header-border-width};
+	--modal-header-border-color: #{$modal-header-border-color};
+	--modal-title-font-size: #{$h5-font-size};
+	--modal-title-line-height: #{$modal-title-line-height};
+	--modal-close-color: #{$btn-close-color};
+
+	--modal-footer-border-width: #{$modal-footer-border-width};
+	--modal-footer-border-color: #{$modal-footer-border-color};
+
+	--modal-backdrop-zindex: #{$zindex-modal-backdrop};
+	--modal-backdrop-bg: #{$modal-backdrop-bg};
+	--modal-backdrop-opacity: #{$modal-backdrop-opacity};
+}
+
 // Nav
 $nav-link-font-size: 0.875rem;
 $nav-link-padding-y: var(--spacer-3);

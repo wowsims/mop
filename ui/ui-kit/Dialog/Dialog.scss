@@ -1,0 +1,173 @@
+@import 'shared/tokens';
+
+// Bootstrap's modal, re-expressed. Everything here was read off the built page rather than off the
+// Sass, and every box it produces was then measured against that page: identical in all four sizes
+// and with `scrollContents`.
+//
+// The popup is portaled, so no ancestor selector reaches it and it may not be inside `.sim-ui` at
+// all. Two consequences: `--bs-modal-*` is unavailable, because Bootstrap emits it inside `.modal`
+// — the `--modal-*` tokens in `shared/_variables.scss` are the seam — and every other value read
+// here has to resolve at `:root`, which is why the chrome uses no `--bs-primary*` and no
+// `--theme-*`. What it does inherit from `<body>` is the reboot: SimDefaultFont, #fff, 14px.
+.sim-dialog-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: var(--modal-backdrop-zindex);
+	background-color: var(--modal-backdrop-bg);
+	opacity: var(--modal-backdrop-opacity);
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}
+
+// `.modal`: the full-screen layer, and the scroll container when the popup is not capped. It stays
+// `display: block` on purpose — centring it with flex would make the popup a flex item, and a flex
+// item with `width: auto` shrinks to its content instead of filling out to its `max-width`.
+.sim-dialog-viewport {
+	position: fixed;
+	inset: 0;
+	z-index: var(--modal-zindex);
+	overflow-x: hidden;
+	overflow-y: auto;
+	opacity: 1;
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}
+
+// `.modal-dialog` and `.modal-content` in one element. `margin: <y> auto` is what centres it, and
+// `max-width` is what sizes it — the same pair vanilla used.
+.sim-dialog-popup {
+	display: flex;
+	// `.modal-content` was the containing block for anything absolutely positioned inside a modal.
+	position: relative;
+	flex-direction: column;
+	margin: var(--modal-margin) auto;
+	max-width: var(--modal-width-lg);
+	border: var(--modal-border-width) solid var(--modal-border-color);
+	background-color: var(--modal-bg);
+	background-clip: padding-box;
+	outline: 0;
+	transition: var(--modal-transition);
+
+	// Bootstrap's `.modal.fade .modal-dialog` enter state, which `.show` then cleared.
+	&[data-starting-style],
+	&[data-ending-style] {
+		transform: var(--modal-fade-transform);
+	}
+
+	@include media-breakpoint-down(lg) {
+		max-width: calc(100vw - 2 * var(--modal-margin));
+	}
+
+	&--sm {
+		max-width: var(--modal-width-sm);
+	}
+
+	&--md {
+		max-width: var(--modal-width-md);
+	}
+
+	&--xl {
+		max-width: var(--modal-width-xl);
+	}
+
+	// `scrollContents`. Vanilla capped the *dialog* at this height always and the content only here,
+	// which left the body overflowing a border painted at the cap (measured: an 1758px body inside a
+	// 671px bordered box). Capping the popup instead keeps the border around its contents, so the
+	// choice this makes is only which element scrolls.
+	&--scroll {
+		max-height: calc(100vh - 2 * var(--modal-margin));
+
+		.sim-dialog-body {
+			overflow: auto;
+		}
+	}
+}
+
+.sim-dialog-header {
+	display: flex;
+	flex-shrink: 0;
+	align-items: flex-start;
+	margin: 0 var(--modal-header-padding);
+	padding: var(--modal-header-padding) 0;
+	border-bottom: var(--modal-header-border-width) solid var(--modal-header-border-color);
+
+	&--bare {
+		margin: 0;
+		padding: 0;
+		border-bottom: 0;
+	}
+}
+
+// Base UI's `Dialog.Title` is an `<h2>`; vanilla's was an `<h5>`, so the size the heading brings is
+// spelled out here. Weight (700) and the 1px letter-spacing are global heading rules an `h2`
+// inherits too, and the measured 17.5px/26.25px box is unchanged.
+.sim-dialog-title {
+	margin-bottom: 0;
+	font-size: var(--modal-title-font-size);
+	line-height: var(--modal-title-line-height);
+}
+
+// `margin-left: auto` is what pushes it right — vanilla's header is not `space-between` either.
+.sim-dialog-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: content-box;
+	width: 1em;
+	height: 1em;
+	margin: calc(-0.5 * var(--modal-header-padding-y)) calc(-1 * var(--spacer-1)) calc(-0.5 * var(--modal-header-padding-y)) auto;
+	padding: calc(0.5 * var(--modal-header-padding-y)) calc(0.5 * var(--modal-header-padding-x));
+	border: 0;
+	background: none;
+	color: var(--modal-close-color);
+	cursor: pointer;
+	transition: var(--link-transition);
+	z-index: 1000;
+
+	&:hover {
+		color: var(--bs-white);
+	}
+
+	&:focus-visible {
+		outline: 0;
+		box-shadow: var(--focus-ring);
+	}
+}
+
+.sim-dialog-body {
+	display: flex;
+	position: relative;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: var(--modal-padding);
+	padding: var(--modal-padding);
+}
+
+.sim-dialog-footer {
+	display: flex;
+	flex-shrink: 0;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	margin: 0 var(--modal-header-padding);
+	padding: var(--modal-padding) 0;
+	border-top: var(--modal-footer-border-width) solid var(--modal-footer-border-color);
+}
+
+// Bootstrap disabled all three of these under reduced motion; measured on the built page as
+// `.modal.fade .modal-dialog { transition: none }`.
+@media (prefers-reduced-motion: reduce) {
+	.sim-dialog-backdrop,
+	.sim-dialog-viewport,
+	.sim-dialog-popup {
+		transition: none;
+	}
+}

@@ -336,6 +336,7 @@ of the duplication sweep was to build each shape once.
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads | the popup's markup and styling, and that the contents arrive asynchronously |
+| `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1177,6 +1178,45 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The Base UI `Dialog` adapter exists, with no consumer yet** — deliberately: the point
+  was to establish the contract and find where Base UI cannot reproduce Bootstrap, before a port is
+  riding on it. Every box in all four sizes was measured pixel-identical to vanilla in a throwaway
+  harness. Class names are ours, not `.modal-*`: those rules read `--bs-modal-*`, which Bootstrap
+  emits inside `.modal` and nowhere else, so a portaled popup wearing `.modal-body` would get an
+  empty padding rather than 1.25rem. A `--modal-*` family joins the seam.
+
+  **The finding that changes how every dialog gets mounted: a body portal escapes the spec theme.**
+  `scss/sims/sim.scss` applies `theme-color()` to `.<spec>-sim-ui`, so `--bs-primary`,
+  `--bs-primary-dampened`, `--bs-hover-color` and the `--theme-*` set only resolve inside `.sim-ui`.
+  Vanilla modals are children of `simUI.rootElem` and inherit it. Measured on `warrior/arms`: a
+  `.btn-primary` inside a body-portaled dialog is Bootstrap blue on white; inside a `.sim-ui`
+  portal it is the spec's brown on black, and three of those properties do not resolve at all
+  outside. Hence the `container` prop. Any dialog whose *contents* use `.btn-primary` or a
+  `--bs-primary*` must pass it.
+
+  **Four vanilla behaviours that do not survive, all measured.** `BaseModal` never gave `.modal` a
+  `tabindex`, so Bootstrap's `_element.focus()` was a no-op and focus stayed on the trigger — Base UI
+  focuses the close button, which vanilla styled with no focus ring, so one was added under
+  `:focus-visible`. Bootstrap put `role="dialog" aria-modal="true"` on the wrapper and left the
+  title unreferenced, so the dialog had no accessible name; Base UI supplies `aria-labelledby` and
+  aria-hides siblings instead. The title is an `<h2>`, not an `<h5>`. And vanilla capped
+  `.modal-dialog` at the viewport height while only `.modal-content` scrolled, so a tall non-scroll
+  modal painted its border at 671px with the body spilling below it — merging the two elements ends
+  that, and the content is equally reachable either way.
+
+  **Vanilla defects found while reading, reported not fixed.** `preventClose` modals are permanently
+  2% oversized: `.modal-static` is Bootstrap's transient shake class and `base_modal.tsx` sets it
+  once at construction, so the `scale(1.02)` never comes off. `onHideCallbacks` is never cleared, so
+  every reopen of a `disposeOnClose: false` modal pushes four more entries. `closeButton.fixed` and
+  `header: false` have zero callers.
+
+  **What the first consumer will have to widen.** `headerChildren` — two callers put content beside
+  the title. `disposeOnClose` → `Portal keepMounted`. `shown.bs.modal` → `onOpenChangeComplete`. And
+  the big one: nine stylesheets select `.<cssClass> .modal-body`/`-header`/`-footer`, so each port is
+  a stylesheet merge rather than a class rename. Stacked modals are real today — `item_list.tsx`
+  builds a `FiltersMenu` from inside `SelectorModal`, which is what the backdrop-relocation hack
+  existed for; Base UI nests natively.
 
 - 2026-09-06 **The sim title dropdown is Base UI too, and the one thing it fights the library over
   is documented in its stylesheet.** `Menu.SubmenuRoot` per class, `Menu.LinkItem` per spec so each
