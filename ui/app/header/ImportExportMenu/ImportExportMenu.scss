@@ -11,7 +11,7 @@
 	padding: var(--dropdown-padding-y) 0;
 	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
 	background-color: var(--dropdown-bg);
-	color: var(--dropdown-color);
+	color: var(--dropdown-link-color);
 	font-size: var(--dropdown-font-size);
 	// Bootstrap's menu is a <ul>; Base UI's popup is a <div>, so there is no marker to remove and
 	// nothing to reset here beyond the box itself.
@@ -23,7 +23,7 @@
 	padding: var(--dropdown-item-padding-y) var(--dropdown-item-padding-x);
 	border: 0;
 	background-color: transparent;
-	color: var(--dropdown-color);
+	color: var(--dropdown-link-color);
 	font-weight: 400;
 	text-align: left;
 	white-space: nowrap;
@@ -33,8 +33,8 @@
 	// `data-highlighted` is Base UI's, and it covers pointer *and* keyboard — Bootstrap's `:hover`
 	// only ever covered the pointer, so arrowing through the menu now highlights as it should.
 	&[data-highlighted] {
-		background-color: var(--dropdown-hover-bg);
-		color: var(--dropdown-hover-color);
+		background-color: var(--dropdown-link-hover-bg);
+		color: var(--dropdown-link-hover-color);
 	}
 
 	&[data-disabled] {
