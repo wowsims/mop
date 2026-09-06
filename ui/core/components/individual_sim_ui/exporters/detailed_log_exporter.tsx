@@ -12,6 +12,8 @@ export class LogExporter extends Exporter {
 		super(parent, {
 			title: 'Export Log',
 			allowDownload: true,
+			downloadFileName: 'wowsims-log.csv',
+			downloadMimeType: 'text/csv',
 		});
 
 		this.simUI = simUI;
