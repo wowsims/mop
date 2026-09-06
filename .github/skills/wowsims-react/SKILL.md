@@ -664,23 +664,45 @@ without anyone noticing:
 - **Sass variables.** `$nav-link-padding-y`, `$focus-ring-box-shadow`, `$transition-fade` are
   compile-time, so they do not degrade — they vanish with the dependency.
 
-Measured, on the built page: this tree uses **104 distinct `--bs-*` names**, of which **68 resolve
-at `:root`** and **35 do not**. The 35 are Bootstrap's component-scoped set plus a few the project
-defines on a local selector or through a mixin (`--bs-border-default` in `_detailed_results.scss`,
-`--bs-primary-dampened` and `--bs-hover-color` from `shared/_mixins.scss`) — those are fine, they
-travel with the rules that use them. Reproduce the audit with a `getComputedStyle(documentElement)`
-sweep over the names; do not reason about it from the Sass.
+Re-measured on the running page 2026-09-06, and the earlier figures here were wrong in two ways:
+this tree uses **117 distinct `--bs-*` names**, of which **87 resolve at `:root`** and **30 do
+not**. The earlier "104" counted six *prose* prefixes (`--bs-btn-`, `--bs-modal-`… only ever written
+as `--bs-btn-*` in a comment) as names, and missed nineteen real ones, because
+`shared/_global.scss:192-219` builds them by interpolation — `var(--bs-#{$label})` inside five
+`@each` loops, so `.item-quality-rare` compiles to `var(--bs-rare)`. A literal grep cannot see those;
+expand the five maps. Drop the six and the literal set is 98 = 68 at `:root` + 30 not, so the old
+**68 was right** and the old 35 was the 30 plus five prose prefixes.
+
+Of the 30, 26 are Bootstrap's component-scoped set and **4 are declared nowhere at all** — and all
+four turn out to appear only *inside comments* recording bugs already fixed, so there is no broken
+`--bs-*` declaration in the tree today. Two of the four are also mis-spelled, here and in
+`Dialog.tsx`: `shared/_mixins.scss:23-24` declares `--primary-dampened` and `--hover-color`
+**without** the `--bs-` prefix, on `.<spec>-sim-ui`. The `--bs-`-prefixed spellings exist nowhere.
+
+The full table — every name, its use sites, whether it resolves at `:root`, and which scope it
+resolves in when it does not — plus the per-component recommendations for the 26, is the audit
+deliverable. Reproduce it with a `getComputedStyle(documentElement)` sweep for the `:root` column and
+a CSSOM walk of every `CSSStyleRule` for the declaring selector; do not reason about it from the
+Sass. Read/write matters: most component-scoped hits are `.btn-primary { --bs-btn-hover-bg: … }`,
+Bootstrap's intended theming hook, not a token we should own.
 
 **The rule.** A ported component reads tokens we own, never a `--bs-*` and never a Bootstrap Sass
 variable. They live in one `:root` block at the end of `ui/scss/shared/_variables.scss`, and the
 right-hand sides still come from Bootstrap today *on purpose*: that block is the single seam, so
 removing the dependency means changing those values and nothing else. Add what your component needs
-there rather than reaching sideways. `--focus-ring`, `--transition-fade` and the `--tab-*` set are
-the first entries, from the Base UI tab port.
+there rather than reaching sideways. `--focus-ring`, `--transition-fade` and the `--tab-*` set were
+the first entries, from the Base UI tab port; `--modal-*` and `--dropdown-*` followed with the
+`Dialog` and `Menu` adapters.
 
-Note this is separate from the 68 that do resolve at `:root`: many of those are emitted by
-Bootstrap's own `:root`, so they need re-homing into the same block when the time comes. That sweep
-is its own unit, not something to do component by component.
+**The `:root` half is now re-homed.** Every one of the 87 names that resolves at `:root` has an owned
+twin in that block, spelled by stripping `--bs-` — `--bs-primary` → `--primary`, `--bs-junk` →
+`--junk` — which is the convention to follow when adding more. 65 already existed; 22 were added
+2026-09-06 (item qualities, spell schools, factions, `--chi`, the two balance-druid resources, and
+the typography three). No consumer was switched: that is the next unit, together with the 26
+component-scoped names. Three of the 22 **alias** (`--body-font-size: var(--bs-body-font-size)`)
+rather than interpolate, because those three `--bs-*` names are the project's own — declared at
+`:root` by `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`, one of them
+responsively — so interpolating would freeze a value that is supposed to move.
 
 ## Co-located SCSS, in practice
 
@@ -1192,22 +1214,19 @@ Kept here rather than in a head, so a fresh session picks up where this one left
 when it lands and add its change-log entry in the same commit.
 
 **In flight** (four parallel agents; their work lands in the working tree for review, never committed
-by them):
+by them). All four have landed:
 
-1. **Bootstrap CSS vars, audited and re-homed.** Measure which of the ~104 `--bs-*` names `ui/` uses
-   actually resolve at `:root`, then add owned tokens for those to the seam block — additively, with
-   no consumer changed. The ~35 component-scoped ones are the interesting half and need per-component
-   decisions; the audit is the deliverable that tells us which are which.
-2. **The Base UI `Dialog` adapter**, built against a contract measured from the running page rather
-   than read off `base_modal.tsx`. No consumer wired: the point is that the adapter exists and its
-   contract is written down, including anywhere Base UI cannot reproduce the vanilla behaviour.
-3. **A port plan for the settings tab's seven remaining content blocks** — which are generic
-   (`configureInputSection`/`configureIconSection` walking `InputConfig` arrays, so one component
-   covers many) versus hand-rolled, what each constructs, what writes to the store, what needs
-   `waitForInit`, and a recommended order.
-4. **`settings-tab.mjs`, a behaviour gate for that region** — landing before the ports it gates, per
-   the rule. `panes-parity.mjs` already covers structure at rest; this covers operating the controls,
-   and in particular a `showWhen` pair flipping the `hide` class both ways.
+1. ~~**Bootstrap CSS vars, audited and re-homed.**~~ — **done.** 117 names, not 104; 87 at `:root`,
+   30 not, and the "35 component-scoped" was 30 plus five prose prefixes. All 87 now have an owned
+   twin in the seam block (65 already did, 22 were added), no consumer changed. The 26 genuinely
+   component-scoped ones are grouped with a recommendation each in the audit, and are item 7's input;
+   the remaining 4 turned out to be comment text, not references. See the section above.
+2. ~~**The Base UI `Dialog` adapter**~~ — **done**, `ui/ui-kit/Dialog/`, registry row present, no
+   consumer wired as intended.
+3. ~~**A port plan for the settings tab's seven remaining content blocks**~~ — **done**, and then
+   executed: the survey above is the plan, and items 5-12 below are the blocks, all struck.
+4. ~~**`settings-tab.mjs`, a behaviour gate for that region**~~ — **done**,
+   `tools/react-migration/settings-tab.mjs`, and it runs.
 
 **Then, in this order** — the settings ordering below is the surveyed one, and it corrects the
 assumption that `Dialog` gates this tab. It does not gate *anything* here: the tab's only modal is
@@ -1235,7 +1254,11 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    Both still vanilla, mounted through `useLegacyMount` into the React-owned right panel of
    `SettingsTabBody.tsx`, exactly as `TalentsTabBody` does. The tab body is React and
    `settings_tab.tsx` is 18 lines.
-7. Switch ported components onto the owned tokens from item 1, and decide the component-scoped 35.
+7. Switch ported components onto the owned tokens from item 1, and decide the component-scoped 26 —
+   the audit groups them by consumer with a recommendation each. Three are cheap and independent of
+   any port: rename `--bs-form-check-*-bg-image` (project-invented names, two writers and two readers,
+   all in `scss/shared/`), drop `CritCapRow`'s `--bs-border-opacity` spacer, and correct the two
+   mis-spelled names in `Dialog.tsx`'s comment.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
    bulk, import-export, apl, gear, results.
 
@@ -1244,6 +1267,35 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The `--bs-*` audit, and the `:root` half re-homed into the seam block.** 22 owned
+  tokens added to `scss/shared/_variables.scss` — item qualities, spell schools, factions, `--chi`,
+  the two balance-druid resources, and `--body-font-family` / `--body-font-size` /
+  `--body-line-height`. Purely additive: no consumer changed, and verified by dumping **every**
+  custom property that resolves at `:root` before and after — 447 → 469, nothing changed, nothing
+  removed, and each new token painted through a probe element to match its `--bs-*` twin's computed
+  colour rather than its text.
+
+  **The old counts were wrong in both directions, and the fix is a method note.** A literal grep for
+  `--bs-[a-z-]+` over-counts, because `--bs-btn-*` in a comment looks like a name, and under-counts,
+  because `shared/_global.scss:192-219` writes `var(--bs-#{$label})` inside five `@each` loops —
+  nineteen real names (`--bs-rare`, `--bs-fire`, `--bs-horde`…) that no grep can see. 117, not 104.
+  The 68-at-`:root` figure survived unchanged; the "35 component-scoped" was 30, five of them prose.
+
+  **Every live `--bs-*` reference in the tree resolves somewhere.** The four that resolve nowhere —
+  `--bs-hover-color`, `--bs-primary-dampened`, `--bs-table-accent-bg`, `--bs-table-row-even-bg-hsl` —
+  appear *only inside comments* recording bugs already fixed. Two of them are mis-spelled there and
+  were mis-spelled in this file: `shared/_mixins.scss:23-24` declares `--primary-dampened` and
+  `--hover-color` without the prefix.
+
+  **Read vs write is the distinction that shrinks the remaining 26.** Most component-scoped hits are
+  `.btn-primary { --bs-btn-hover-bg: … }` — Bootstrap's intended theming hook, not a token to own.
+  Ten of the twelve `--bs-btn-*` are writes; the only reads are two lines in `_sidebar.scss`, which
+  resolve today because the ported sidebar button still carries `.btn.btn-primary` and will need a
+  `--btn-disabled-*` pair the day `Button` stops emitting variant classes. The three `--bs-nav-link-*`
+  need no new family either: `--tab-padding-y/-x` and `--tab-font-size` already hold the same values
+  from the same Sass variables — but `--bs-nav-link-padding-x` is `1rem` inside `.nav` and `0` inside
+  `.navbar-nav`, so no single token covers both scopes.
 
 - 2026-09-06 **The settings tab body is React, and it gave `ContentBlock` its first consumer.**
   `settings_tab.tsx` went from 306 lines to 18 — the same shape `talents_tab.tsx` has, registering the

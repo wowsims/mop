@@ -494,8 +494,9 @@ $toast-padding-y: var(--spacer-3);
 //
 // - Its **component-scoped** custom properties (`--bs-nav-link-*`, `--bs-btn-*`, `--bs-modal-*`,
 //   `--bs-toast-*`) are emitted inside `.nav`, `.btn` and friends, not at `:root`. A component that
-//   drops those classes stops resolving them *today* — measured: 35 of the 104 `--bs-*` names this
-//   tree uses are undefined at `:root`.
+//   drops those classes stops resolving them *today* — re-measured on the running page 2026-09-06:
+//   of the 117 `--bs-*` names this tree uses, 87 resolve at `:root` and 30 do not (26 are
+//   component-scoped, 4 are declared nowhere at all).
 // - Its **Sass** variables are compile-time, so they vanish with the dependency rather than
 //   degrading.
 //
@@ -513,6 +514,15 @@ $toast-padding-y: var(--spacer-3);
 	--tab-color: #{$nav-link-color};
 	--tab-color-hover: #{$nav-link-hover-color};
 	--tab-color-active: #{$nav-tabs-link-active-color};
+
+	// Typography. These three are the only names in this block that alias rather than interpolate,
+	// because the `--bs-*` spellings are not Bootstrap's: the project declares them itself, at
+	// `:root`, in `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`. They survive
+	// Bootstrap's removal, and `--body-font-size` is responsive there (14px, 16px at the 1080p
+	// breakpoint), so an alias is the only spelling that cannot silently drift from it.
+	--body-font-family: var(--bs-body-font-family);
+	--body-font-size: var(--bs-body-font-size);
+	--body-line-height: var(--bs-body-line-height);
 
 	// Base colors and links
 	--white: #{$white};
@@ -554,7 +564,27 @@ $toast-padding-y: var(--spacer-3);
 
 	// Item quality colors
 	--junk: #{$item-quality-junk};
+	--common: #{$item-quality-common};
 	--uncommon: #{$item-quality-uncommon};
+	--rare: #{$item-quality-rare};
+	--epic: #{$item-quality-epic};
+	--legendary: #{$item-quality-legendary};
+	--artifact: #{$item-quality-artifact};
+	--heirloom: #{$item-quality-heirloom};
+
+	// Spell school colors
+	--physical: #{map-get($spell-school-colors, 'physical')};
+	--arcane: #{map-get($spell-school-colors, 'arcane')};
+	--fire: #{map-get($spell-school-colors, 'fire')};
+	--frost: #{map-get($spell-school-colors, 'frost')};
+	--holy: #{map-get($spell-school-colors, 'holy')};
+	--nature: #{map-get($spell-school-colors, 'nature')};
+	--shadow: #{map-get($spell-school-colors, 'shadow')};
+	--chaos: #{map-get($spell-school-colors, 'chaos')};
+
+	// Faction colors
+	--horde: #{map-get($faction-colors, 'horde')};
+	--alliance: #{map-get($faction-colors, 'alliance')};
 
 	// Resource colors
 	--health: #{$health-color};
@@ -562,8 +592,11 @@ $toast-padding-y: var(--spacer-3);
 	--rage: #{$rage-color};
 	--energy: #{$energy-color};
 	--focus: #{$focus-color};
+	--chi: #{$chi-color};
 	--combo-points: #{$combo-points-color};
 	--holy-power: #{$holy-power-color};
+	--lunar-energy: #{$lunar-energy-color};
+	--solar-energy: #{$solar-energy-color};
 
 	// Secondary resource colors
 	--arcane-charges: #{$arcane-charges-color};
@@ -593,7 +626,8 @@ $toast-padding-y: var(--spacer-3);
 	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};
 	// The same colour as three HSL channels, for the one consumer that wants to re-alpha it
 	// (`hsla(var(--…-hsl), 0.9)`). It read `--bs-table-row-even-bg-hsl`, which nothing defined.
-	--table-row-even-bg-hsl: #{color.channel(map-get($table-colors, 'table-row-even-bg'), 'hue', $space: hsl)},
+	--table-row-even-bg-hsl:
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'hue', $space: hsl)},
 		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'saturation', $space: hsl)},
 		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'lightness', $space: hsl)};
 	--table-row-odd-bg: #{map-get($table-colors, 'table-row-odd-bg')};
