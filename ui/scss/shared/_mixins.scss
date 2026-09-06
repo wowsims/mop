@@ -20,8 +20,8 @@
 	--bs-primary-rgb: #{to-rgb($base-color)};
 
 	// Custom variants we use for styling some components
-	--bs-primary-dampened: #{color.mix($black, $base-color, 75%)};
-	--bs-hover-color: #{$hover-color};
+	--primary-dampened: #{color.mix($black, $base-color, 75%)};
+	--hover-color: #{$hover-color};
 
 	.btn-primary {
 		--bs-btn-bg: #{$base-color};

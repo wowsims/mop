@@ -116,13 +116,13 @@
 
 .tippy-box[data-theme='metrics-table'],
 .metrics-table {
-	--bs-border-default: rgba(var(--bs-white-rgb), 0.2);
+	--detailed-results-border: rgba(var(--bs-white-rgb), 0.2);
 	width: 100%;
 
 	th,
 	td {
-		border-left: 1px solid var(--bs-border-default);
-		border-right: 1px solid var(--bs-border-default);
+		border-left: 1px solid var(--detailed-results-border);
+		border-right: 1px solid var(--detailed-results-border);
 
 		&:first-child {
 			border-left: 0;
@@ -145,7 +145,7 @@
 }
 
 .metrics-table-body tr {
-	border-bottom: 1px solid var(--bs-border-default);
+	border-bottom: 1px solid var(--detailed-results-border);
 
 	&:nth-child(even) {
 		background-color: rgba(var(--bs-white-rgb), 0.05);

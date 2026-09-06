@@ -1,4 +1,5 @@
 /* stylelint-disable scss/dollar-variable-first-in-block */
+@use 'sass:color';
 @use 'sass:map';
 
 // Define and overwrite Bootstrap Variables
@@ -151,6 +152,11 @@ $resource-colors: (
 	mana: $mana-color,
 	rage: $rage-color,
 	holy-power: $holy-power-color,
+	// Balance druid's two. Defined above since forever but never listed here, so the theme loop never
+	// emitted `--bs-lunar-energy` / `--bs-solar-energy` — and the four timeline rules that read them
+	// resolved to nothing, leaving those rows uncoloured.
+	lunar-energy: $lunar-energy-color,
+	solar-energy: $solar-energy-color,
 );
 $theme-colors: map-merge($theme-colors, $resource-colors);
 
@@ -585,5 +591,10 @@ $toast-padding-y: var(--spacer-3);
 
 	// Table colors
 	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};
+	// The same colour as three HSL channels, for the one consumer that wants to re-alpha it
+	// (`hsla(var(--…-hsl), 0.9)`). It read `--bs-table-row-even-bg-hsl`, which nothing defined.
+	--table-row-even-bg-hsl: #{color.channel(map-get($table-colors, 'table-row-even-bg'), 'hue', $space: hsl)},
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'saturation', $space: hsl)},
+		#{color.channel(map-get($table-colors, 'table-row-even-bg'), 'lightness', $space: hsl)};
 	--table-row-odd-bg: #{map-get($table-colors, 'table-row-odd-bg')};
 }
