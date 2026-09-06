@@ -55,7 +55,13 @@ export class Database {
 				const db = new Database(dbData);
 				Database.instance = db;
 				return db;
-			})();
+			})().catch(error => {
+				// Never memoize a failure: one transient fetch error must not leave every later
+				// caller awaiting the same rejection for the page lifetime (cf. getSharedWasmModule
+				// in ui/domain/worker_pool.ts). Everything downstream hangs off waitForInit().
+				Database.loadPromise = null;
+				throw error;
+			});
 		}
 		return Database.loadPromise;
 	}
