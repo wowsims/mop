@@ -48,7 +48,7 @@ func TestDemonology(t *testing.T) {
 			Class:      proto.Class_ClassWarlock,
 			Race:       proto.Race_RaceOrc,
 			OtherRaces: []proto.Race{proto.Race_RaceTroll},
-			GearSet:    core.GetGearSet("../../../ui/warlock/demonology/gear_sets", "p5"),
+			GearSet:    core.GetGearSet("../../../ui/sims/warlock/demonology/gear_sets", "p5"),
 			Talents:    "231221",
 			Glyphs: &proto.Glyphs{
 				Major1: int32(proto.WarlockMajorGlyph_GlyphOfSoulstone),
@@ -58,7 +58,7 @@ func TestDemonology(t *testing.T) {
 			Consumables:      fullConsumesSpec,
 			SpecOptions:      core.SpecOptionsCombo{Label: "Demonology Warlock", SpecOptions: defaultDemonologyWarlock},
 			OtherSpecOptions: []core.SpecOptionsCombo{},
-			Rotation:         core.GetAplRotation("../../../ui/warlock/demonology/apls", "default"),
+			Rotation:         core.GetAplRotation("../../../ui/sims/warlock/demonology/apls", "default"),
 			ItemFilter:       itemFilter,
 			StartingDistance: 25,
 		},

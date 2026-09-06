@@ -22,7 +22,7 @@ func TestSurvival(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/hunter/survival/gear_sets", "p5"),
+			GearSet: core.GetGearSet("../../../ui/sims/hunter/survival/gear_sets", "p5"),
 
 			Talents:         SurvivalTalents,
 			OtherTalentSets: talentSets,
@@ -49,7 +49,7 @@ func TestSurvival(t *testing.T) {
 				},
 			}},
 
-			Rotation: core.GetAplRotation("../../../ui/hunter/survival/apls", "sv"),
+			Rotation: core.GetAplRotation("../../../ui/sims/hunter/survival/apls", "sv"),
 
 			Profession1: proto.Profession_Engineering,
 			Profession2: proto.Profession_Tailoring,

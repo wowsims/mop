@@ -28,11 +28,11 @@ func TestFeral(t *testing.T) {
 		Race:       proto.Race_RaceWorgen,
 		OtherRaces: []proto.Race{proto.Race_RaceTroll},
 
-		GearSet:     core.GetGearSet("../../../ui/druid/feral/gear_sets", "p5"),
-		ItemSwapSet: core.GetItemSwapGearSet("../../../ui/druid/feral/gear_sets", "p5_item_swap"),
+		GearSet:     core.GetGearSet("../../../ui/sims/druid/feral/gear_sets", "p5"),
+		ItemSwapSet: core.GetItemSwapGearSet("../../../ui/sims/druid/feral/gear_sets", "p5_item_swap"),
 		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/druid/feral/gear_sets", "preraid"),
-			core.GetGearSet("../../../ui/druid/feral/gear_sets", "p4"),
+			core.GetGearSet("../../../ui/sims/druid/feral/gear_sets", "preraid"),
+			core.GetGearSet("../../../ui/sims/druid/feral/gear_sets", "p4"),
 		},
 
 		Talents: StandardTalents,
@@ -42,9 +42,9 @@ func TestFeral(t *testing.T) {
 			{Label: "DB-Incarn-NV", Talents: "200203", Glyphs: StandardGlyphs},
 		},
 
-		Rotation: core.GetAplRotation("../../../ui/druid/feral/apls", "default"),
+		Rotation: core.GetAplRotation("../../../ui/sims/druid/feral/apls", "default"),
 		OtherRotations: []core.RotationCombo{
-			core.GetAplRotation("../../../ui/druid/feral/apls", "aoe"),
+			core.GetAplRotation("../../../ui/sims/druid/feral/apls", "aoe"),
 		},
 
 		Consumables:      FullConsumesSpec,

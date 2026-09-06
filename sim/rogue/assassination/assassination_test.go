@@ -20,11 +20,11 @@ func TestAssassination(t *testing.T) {
 			Class:      proto.Class_ClassRogue,
 			Race:       proto.Race_RaceHuman,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
-			GearSet:    core.GetGearSet("../../../ui/rogue/assassination/gear_sets", "preraid_assassination"),
+			GearSet:    core.GetGearSet("../../../ui/sims/rogue/assassination/gear_sets", "preraid_assassination"),
 
 			OtherGearSets: []core.GearSetCombo{
-				//core.GetGearSet("../../../ui/rogue/assassination/gear_sets", "p3_assassination"),
-				//core.GetGearSet("../../../ui/rogue/assassination/gear_sets", "p4_assassination"),
+				//core.GetGearSet("../../../ui/sims/rogue/assassination/gear_sets", "p3_assassination"),
+				//core.GetGearSet("../../../ui/sims/rogue/assassination/gear_sets", "p4_assassination"),
 			},
 
 			Talents:     AssassinationTalents,
@@ -32,7 +32,7 @@ func TestAssassination(t *testing.T) {
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Assassination", SpecOptions: PlayerOptionsAssassination},
 
-			Rotation:       core.GetAplRotation("../../../ui/rogue/assassination/apls", "assassination"),
+			Rotation:       core.GetAplRotation("../../../ui/sims/rogue/assassination/apls", "assassination"),
 			OtherRotations: []core.RotationCombo{},
 
 			ItemFilter: core.ItemFilter{

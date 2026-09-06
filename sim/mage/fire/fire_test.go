@@ -20,16 +20,16 @@ func TestFire(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			GearSet: core.GetGearSet("../../../ui/mage/fire/gear_sets", "p1_bis"),
+			GearSet: core.GetGearSet("../../../ui/sims/mage/fire/gear_sets", "p1_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/mage/fire/gear_sets", "p1_prebis"),
+				core.GetGearSet("../../../ui/sims/mage/fire/gear_sets", "p1_prebis"),
 			},
 			Talents:         FireTalents,
 			OtherTalentSets: core.GenerateTalentVariationsForRows(FireTalents, FireGlyphs, []int{4, 5}),
 			Glyphs:          FireGlyphs,
 			Consumables:     FullFireConsumesSpec,
 			SpecOptions:     core.SpecOptionsCombo{Label: "Fire", SpecOptions: PlayerOptionsFire},
-			Rotation:        core.GetAplRotation("../../../ui/mage/fire/apls", "fire"),
+			Rotation:        core.GetAplRotation("../../../ui/sims/mage/fire/apls", "fire"),
 
 			ItemFilter: ItemFilter,
 		},

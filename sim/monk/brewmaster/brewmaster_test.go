@@ -19,19 +19,19 @@ func init() {
 
 func TestBrewmaster(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "horridon_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "sha_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/sims/monk/brewmaster/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/sims/monk/brewmaster/builds", "horridon_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/sims/monk/brewmaster/builds", "sha_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/sims/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:      proto.Class_ClassMonk,
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p5_bis_dw"),
+			GearSet: core.GetGearSet("../../../ui/sims/monk/brewmaster/gear_sets", "p5_bis_dw"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p5_bis_offensive_dw"),
-				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "prebis"),
+				core.GetGearSet("../../../ui/sims/monk/brewmaster/gear_sets", "p5_bis_offensive_dw"),
+				core.GetGearSet("../../../ui/sims/monk/brewmaster/gear_sets", "prebis"),
 			},
 			Talents: BrewmasterDefaultTalents,
 			OtherTalentSets: []core.TalentsCombo{
@@ -44,7 +44,7 @@ func TestBrewmaster(t *testing.T) {
 			Glyphs:      BrewmasterDefaultGlyphs,
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBrewmaster},
-			Rotation:    core.GetAplRotation("../../../ui/monk/brewmaster/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/sims/monk/brewmaster/apls", "default"),
 
 			IsTank:          true,
 			InFrontOfTarget: true,

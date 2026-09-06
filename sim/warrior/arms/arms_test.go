@@ -22,15 +22,15 @@ func TestArms(t *testing.T) {
 			OtherRaces:       []proto.Race{proto.Race_RaceWorgen},
 			StartingDistance: 25,
 
-			GearSet: core.GetGearSet("../../../ui/warrior/arms/gear_sets", "p5_arms_bis"),
+			GearSet: core.GetGearSet("../../../ui/sims/warrior/arms/gear_sets", "p5_arms_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/warrior/arms/gear_sets", "p4_arms_bis"),
+				core.GetGearSet("../../../ui/sims/warrior/arms/gear_sets", "p4_arms_bis"),
 			},
 			Talents:     ArmsTalents,
 			Glyphs:      ArmsDefaultGlyphs,
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsArms},
-			Rotation:    core.GetAplRotation("../../../ui/warrior/arms/apls", "arms"),
+			Rotation:    core.GetAplRotation("../../../ui/sims/warrior/arms/apls", "arms"),
 
 			ItemFilter: ItemFilter,
 		},

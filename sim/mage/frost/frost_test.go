@@ -21,18 +21,18 @@ func TestFrost(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/mage/frost/gear_sets", "p5_bis"),
+			GearSet: core.GetGearSet("../../../ui/sims/mage/frost/gear_sets", "p5_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_prebis"),
+				core.GetGearSet("../../../ui/sims/mage/frost/gear_sets", "p1_prebis"),
 			},
 			Talents:         FrostTalents,
 			OtherTalentSets: core.GenerateTalentVariationsForRows(FrostTalents, FrostDefaultGlyphs, []int{4, 5}),
 			Glyphs:          FrostDefaultGlyphs,
 			Consumables:     DefaultConsumables,
 			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-			Rotation:        core.GetAplRotation("../../../ui/mage/frost/apls", "frost"),
+			Rotation:        core.GetAplRotation("../../../ui/sims/mage/frost/apls", "frost"),
 			OtherRotations: []core.RotationCombo{
-				core.GetAplRotation("../../../ui/mage/frost/apls", "frost_aoe"),
+				core.GetAplRotation("../../../ui/sims/mage/frost/apls", "frost_aoe"),
 			},
 
 			ItemFilter: ItemFilter,

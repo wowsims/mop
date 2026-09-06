@@ -19,14 +19,14 @@ func init() {
 
 func TestProtection(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/paladin/protection/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/paladin/protection/builds", "horridon_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/paladin/protection/builds", "sha_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/sims/paladin/protection/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/sims/paladin/protection/builds", "horridon_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/sims/paladin/protection/builds", "sha_default", ItemFilter, nil, nil),
 		{
 			Class: proto.Class_ClassPaladin,
 			Race:  proto.Race_RaceBloodElf,
 
-			GearSet:     core.GetGearSet("../../../ui/paladin/protection/gear_sets", "p5_balanced"),
+			GearSet:     core.GetGearSet("../../../ui/sims/paladin/protection/gear_sets", "p5_balanced"),
 			Talents:     StandardTalents,
 			Glyphs:      StandardGlyphs,
 			Consumables: FullConsumesSpec,
@@ -35,7 +35,7 @@ func TestProtection(t *testing.T) {
 				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
 				{Label: "Seal of Truth", SpecOptions: SealOfTruth},
 			},
-			Rotation: core.GetAplRotation("../../../ui/paladin/protection/apls", "iron_juggernaut"),
+			Rotation: core.GetAplRotation("../../../ui/sims/paladin/protection/apls", "iron_juggernaut"),
 
 			IsTank:          true,
 			InFrontOfTarget: true,

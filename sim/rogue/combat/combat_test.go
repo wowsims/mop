@@ -20,17 +20,17 @@ func TestCombat(t *testing.T) {
 			Class:         proto.Class_ClassRogue,
 			Race:          proto.Race_RaceHuman,
 			OtherRaces:    []proto.Race{proto.Race_RaceOrc},
-			GearSet:       core.GetGearSet("../../../ui/rogue/combat/gear_sets", "preraid_combat"),
+			GearSet:       core.GetGearSet("../../../ui/sims/rogue/combat/gear_sets", "preraid_combat"),
 			OtherGearSets: []core.GearSetCombo{
-				//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p3_combat"),
-				//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p4_combat"),
+				//core.GetGearSet("../../../ui/sims/rogue/combat/gear_sets", "p3_combat"),
+				//core.GetGearSet("../../../ui/sims/rogue/combat/gear_sets", "p4_combat"),
 			},
 			Talents:     CombatTalents,
 			Glyphs:      CombatGlyphs,
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Combat", SpecOptions: PlayerOptions},
 
-			Rotation:       core.GetAplRotation("../../../ui/rogue/combat/apls", "combat"),
+			Rotation:       core.GetAplRotation("../../../ui/sims/rogue/combat/apls", "combat"),
 			OtherRotations: []core.RotationCombo{},
 			ItemFilter: core.ItemFilter{
 				ArmorType: proto.ArmorType_ArmorTypeLeather,

@@ -2696,6 +2696,9 @@
 				"title": {
 					"type": "string"
 				},
+				"title_badge": {
+					"type": "string"
+				},
 				"description": {
 					"type": "string"
 				},
@@ -3055,6 +3058,7 @@
 			"additionalProperties": false,
 			"required": [
 				"title",
+				"title_badge",
 				"description",
 				"download_native",
 				"tabs",
