@@ -1221,9 +1221,13 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   verified with real pointer clicks rather than synthetic ones, since a synthetic `.click()` never
   exercises Base UI's dismissal. `sideOffset={-1}` reproduces Bootstrap's `[0, -1]` on the pixel.
 
-  Two divergences recorded rather than fixed. The popup is a `role="menu"` whose `<li>`s carry no
-  `menuitem` role — making them `Menu.Item`s would close on click, the one behaviour that must not
-  change. And Base UI's `markOthers` sets `pointer-events: none` on the rest of the page while a menu
+  The popup is `role="group"`, not the `menu` Base UI gives it. A menu's children must be menuitems
+  and these are icon toggles; `Menu.Item` would close the popup on every click, which is the one
+  behaviour that must not change. Naming the trigger is what makes the group usable — it is a bare
+  anchor carrying a background image, so it announced nothing, and Base UI points the popup's
+  `aria-labelledby` at it, which would have left the group nameless too. Both fixed by one
+  `aria-label`; measured resolving to "Stats". One divergence stays recorded rather than fixed:
+  Base UI's `markOthers` sets `pointer-events: none` on the rest of the page while a menu
   is open regardless of `modal={false}`; that is **pre-existing**, measured on the header's own
   menus, not introduced here.
 

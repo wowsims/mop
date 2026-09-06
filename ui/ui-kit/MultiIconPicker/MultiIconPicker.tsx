@@ -91,6 +91,10 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						openOnHover
 						delay={0}
 						className={clsx('icon-picker-button', actionId && 'active')}
+						// The trigger is a bare anchor carrying a background image, so it announced nothing
+						// — and Base UI points the popup's `aria-labelledby` at it, which would have made
+						// the group nameless too. Naming it fixes both.
+						aria-label={config.label}
 						data-disable-wowhead-touch-tooltip="true"
 						// `fillAndSetActionId(id, elem, false, true)` — background only. The vanilla
 						// button never carries an `href`, which is why the settings gate keys these
@@ -106,7 +110,13 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						    `bootstrap_overrides.ts` set the plugin's offset to [0, -1] — measured as a
 						    1px overlap of the button's right border. */}
 						<Menu.Positioner side="right" align="start" sideOffset={-1} className="multi-icon-picker-positioner">
-							<Menu.Popup render={<ul />} className="multi-icon-picker-menu">
+							{/* `role="group"`, not the `menu` Base UI would give it. A menu's children must be
+							    menuitems, and these are icon toggles — `Menu.Item` would close the popup on
+							    every click, and toggling several buffs in one visit is the whole point of
+							    this control. So the popup keeps the behaviour and drops the role that would
+							    be lying about it. Vanilla had no roles here at all. The name comes from Base
+							    UI's `aria-labelledby`, which points at the trigger. */}
+							<Menu.Popup render={<ul />} role="group" className="multi-icon-picker-menu">
 								<li>
 									{/* The blank "clear" option. An anchor with no `href`, as vanilla built it. */}
 									<a className="icon-dropdown-option dropdown-option" onClick={onClear} />
