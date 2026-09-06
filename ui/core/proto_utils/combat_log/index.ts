@@ -1,14 +1,5 @@
 export { computeActionIdAsString, matchTimestampPrefix, parseAll, rawWithoutTimestamp } from './parse';
-export {
-	buildAuraUptimes,
-	buildCastLogs,
-	buildDpsLogs,
-	buildResourceGroups,
-	buildThreatGroups,
-	DPS_WINDOW,
-	groupDuplicateTimestamps,
-	populateActiveAuras,
-} from './derive';
+export { buildAuraUptimes, buildCastLogs, buildDpsLogs, buildResourceGroups, buildThreatGroups, populateActiveAuras } from './derive';
 export {
 	Entity,
 	formattedTimestamp,

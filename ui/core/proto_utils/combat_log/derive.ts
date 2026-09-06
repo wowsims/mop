@@ -27,9 +27,9 @@ import {
 	ThreatLogGroup,
 } from './types';
 
-export const DPS_WINDOW = 15; // Window over which to calculate DPS.
+const DPS_WINDOW = 15; // Window over which to calculate DPS.
 
-export function groupDuplicateTimestamps<T extends BaseLog>(logs: Array<T>): Array<Array<T>> {
+function groupDuplicateTimestamps<T extends BaseLog>(logs: Array<T>): Array<Array<T>> {
 	const grouped: Array<Array<T>> = [];
 	let curGroup: Array<T> = [];
 
@@ -188,10 +188,10 @@ type UnmatchedGained = { gained: AuraLog; stacks: Array<AuraStacksLog> };
 export function buildAuraUptimes(logs: Array<CombatLog>, entity: Entity, encounterDuration: number): Array<AuraUptimeLog> {
 	// openEntries preserves the same append-only order as the old flat unmatchedGainedLogs
 	// array; openByKey buckets its indices by equalsIgnoringTag identity so a fade/stacks event
-	// finds its match in O(1) instead of rescanning every still-open aura. Old code's findIndex
-	// predicate was `equals(x) || equalsIgnoringTag(x)`, which reduces to equalsIgnoringTag since
-	// equals() implies it (action_id.ts:187), so bucketing on that key changes nothing about which
-	// entry a given event resolves to.
+	// finds its match in O(1) instead of rescanning every still-open aura. Within a bucket an
+	// exact-tag match wins over the earliest open instance: the same spell id can be open under
+	// two tags at once (Steady Focus and its counter share 53224), which master's
+	// `equals(x) || equalsIgnoringTag(x)` predicate collapsed into the tag-blind half.
 	const openEntries: Array<UnmatchedGained | null> = [];
 	const openByKey = new Map<string, Array<number>>();
 	const uptimeLogs: Array<AuraUptimeLog> = [];
@@ -208,17 +208,22 @@ export function buildAuraUptimes(logs: Array<CombatLog>, entity: Entity, encount
 			openByKey.set(key, [index]);
 		}
 	};
+	const findOpen = (actionId: ActionId): { indices: Array<number>; pos: number } | null => {
+		const indices = openByKey.get(keyFor(actionId));
+		if (!indices || indices.length == 0) return null;
+		const exact = indices.findIndex(index => openEntries[index]!.gained.actionId!.equals(actionId));
+		return { indices, pos: exact >= 0 ? exact : 0 };
+	};
 	// Mutates the matched entry in place without removing it, mirroring the old code's
 	// unmatchedGainedLogs[idx].stacks.push - a stacks-change log doesn't close the aura.
 	const peekOpen = (actionId: ActionId): UnmatchedGained | null => {
-		const indices = openByKey.get(keyFor(actionId));
-		if (!indices || indices.length == 0) return null;
-		return openEntries[indices[0]];
+		const found = findOpen(actionId);
+		return found ? openEntries[found.indices[found.pos]] : null;
 	};
 	const removeOpen = (actionId: ActionId): UnmatchedGained | null => {
-		const indices = openByKey.get(keyFor(actionId));
-		if (!indices || indices.length == 0) return null;
-		const index = indices.shift()!;
+		const found = findOpen(actionId);
+		if (!found) return null;
+		const index = found.indices.splice(found.pos, 1)[0];
 		const entry = openEntries[index];
 		openEntries[index] = null;
 		return entry;
@@ -360,7 +365,7 @@ function buildCastLog(
 		castTime = castCompletedLog.timestamp - castBeganLog.timestamp;
 		effectiveTime = castCompletedLog.timestamp - castBeganLog.timestamp;
 	}
-	const cancelTime = castCancelledLog?.cancelTime || 0;
+	const cancelTime = castCancelledLog?.cancelTime ?? 0;
 
 	let travelTime = 0;
 	if (castCompletedLog && damageDealtLogs.length >= 1 && castCompletedLog.timestamp < damageDealtLogs[0].timestamp && !damageDealtLogs[0].tick) {
@@ -433,18 +438,7 @@ export function buildCastLogs(logs: Array<CombatLog>): Array<CastLog> {
 		for (let cbIdx = 0; cbIdx < abilityCastsBegan.length; cbIdx++) {
 			const cbLog = abilityCastsBegan[cbIdx];
 
-			// Assume cast completed log is the same index because they always come in pairs.
-			// Only exception is final pair, where there might be a cast began without a cast completed.
-			let ccLog: CastCompletedLog | null = null;
 			let cCancelLog: CastCancelledLog | null = null;
-			let nextCcLog: CastCompletedLog | null = null;
-			if (abilityCastsCompleted && cbIdx < abilityCastsCompleted.length) {
-				ccLog = abilityCastsCompleted[cbIdx + castSkipIdx];
-				if (cbIdx + castSkipIdx + 1 < abilityCastsCompleted.length) {
-					nextCcLog = abilityCastsCompleted[cbIdx + castSkipIdx + 1];
-				}
-			}
-
 			if (abilityCastsCancelled) {
 				while (cancelCursor < abilityCastsCancelled.length && abilityCastsCancelled[cancelCursor].timestamp < cbLog.timestamp) {
 					cancelCursor++;
@@ -454,8 +448,20 @@ export function buildCastLogs(logs: Array<CombatLog>): Array<CastLog> {
 				if (candidate && (!nextBegan || candidate.timestamp <= nextBegan.timestamp)) {
 					cCancelLog = candidate;
 					cancelCursor++;
-					castSkipIdx--;
 				}
+			}
+
+			// The k-th completed log belongs to the k-th began that was not cancelled, so a cancelled
+			// began takes none and shifts every later pairing by one. The final began may have no
+			// completed log at all.
+			let ccLog: CastCompletedLog | null = null;
+			let nextCcLog: CastCompletedLog | null = null;
+			if (cCancelLog) {
+				castSkipIdx--;
+			} else if (abilityCastsCompleted) {
+				const ccIdx = cbIdx + castSkipIdx;
+				if (ccIdx < abilityCastsCompleted.length) ccLog = abilityCastsCompleted[ccIdx];
+				if (ccIdx + 1 < abilityCastsCompleted.length) nextCcLog = abilityCastsCompleted[ccIdx + 1];
 			}
 
 			// Find all damage dealt logs between the cur and next cast completed logs.

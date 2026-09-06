@@ -9,7 +9,7 @@ import { BooleanPicker } from '../../pickers/boolean_picker.js';
 import { VirtualList } from '../../virtual_scroll/virtual_list';
 import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component.js';
 import { LogLineElem } from './components/log_line';
-import { LogIndex, SuggestionSource } from './search/indexes';
+import { EMPTY_SUGGESTIONS, LogIndex, SortedInts } from './search/indexes';
 import { LogSearchBar } from './search/search_bar';
 
 const DEBUG_MARKER = '[DEBUG]';
@@ -22,7 +22,6 @@ function selectedTargetNumber(resultData: SimResultData): number | null {
 	const selected = resultData.result.getTargets(resultData.filter);
 	return selected.length === 1 ? selected[0].index + 1 : null;
 }
-const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [], spellIcons: new Map() };
 
 export class LogView extends ResultComponent {
 	private readonly virtualList: VirtualList;
@@ -44,7 +43,7 @@ export class LogView extends ResultComponent {
 	private listWidth = 0;
 	private logs: Array<CombatLog> = [];
 	private logIndex: LogIndex | null = null;
-	private visibleIndexes: Array<number> = [];
+	private visibleIndexes: SortedInts = [];
 	// The results filter's selected target, as the number the log prints, or null for all.
 	private targetNumber: number | null = null;
 
@@ -135,7 +134,7 @@ export class LogView extends ResultComponent {
 	}
 
 	private refreshVisible(): void {
-		this.visibleIndexes = this.logIndex ? this.logIndex.filter(this.searchBar.clauses, this.showDebug, this.targetNumber) : [];
+		this.visibleIndexes = this.logIndex ? this.logIndex.filter(this.searchBar.groups, this.searchBar.keywords, this.showDebug, this.targetNumber) : [];
 		this.virtualList.scrollToTop();
 	}
 
@@ -156,6 +155,7 @@ export class LogView extends ResultComponent {
 		const logs = resultData.result.logs.filter(log => !isCastCompleted(log));
 		this.logs = logs;
 		this.logIndex = new LogIndex(logs, i => logs[i].raw.includes(DEBUG_MARKER));
+		this.searchBar.refresh();
 	}
 
 	private seedListWidth() {
@@ -190,7 +190,7 @@ export class LogView extends ResultComponent {
 		return (
 			<div className="log-runner-row">
 				<div className="log-timestamp">{formattedTimestamp(log)}</div>
-				<div className="log-event">{LogLineElem(log, false)}</div>
+				<div className="log-event">{LogLineElem(log)}</div>
 			</div>
 		) as HTMLDivElement;
 	}

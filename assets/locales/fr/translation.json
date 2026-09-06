@@ -2025,9 +2025,9 @@
 				"time_column": "Temps",
 				"event_column": "Événement",
 				"show_debug": "Afficher les messages de débogage",
-				"search_placeholder": "Search logs…",
-				"search_add_filter": "Add filter",
-				"search_add_value": "Add value"
+				"search_placeholder": "Rechercher dans le journal…",
+				"search_add_filter": "Ajouter un filtre",
+				"search_add_value": "Ajouter une valeur"
 			},
 			"tabs": {
 				"damage": "Dégâts",

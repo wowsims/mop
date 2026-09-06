@@ -21,8 +21,9 @@ const CastTooltip = (log: CastLog) => {
 	return (
 		<div className="timeline-tooltip">
 			<span>
-				{log.actionId!.name} from {log.timestamp.toFixed(2)}s to {(log.castCancelledLog?.timestamp || log.timestamp + log.castTime).toFixed(2)}s
-				{log.castCancelledLog?.timestamp
+				{log.actionId!.name} from {log.timestamp.toFixed(2)}s to{' '}
+				{(log.castCancelledLog ? log.castCancelledLog.timestamp : log.timestamp + log.castTime).toFixed(2)}s
+				{log.castCancelledLog
 					? ` (Cancelled after ${log.cancelTime.toFixed(2)}s)`
 					: ` (${log.castTime > 0 ? `${log.castTime.toFixed(2)}s, ` : ''}${log.effectiveTime.toFixed(2)}s GCD Time)`}
 				{travelTime.length > 0 && travelTime}
@@ -39,7 +40,7 @@ const CastTooltip = (log: CastLog) => {
 							<span>
 								{ddl.timestamp.toFixed(2)}s - {Results(ddl)}
 							</span>
-							{ddl.source?.isTarget && (
+							{!ddl.source?.isTarget && (
 								<span className="threat-metrics">
 									{' '}
 									({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
@@ -58,7 +59,7 @@ const TickTooltip = (log: DamageLog) => (
 		<span>
 			{log.timestamp.toFixed(2)}s - {log.actionId!.name} {Results(log)}
 		</span>
-		{log.source?.isTarget && (
+		{!log.source?.isTarget && (
 			<span className="threat-metrics">
 				{' '}
 				({log.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})

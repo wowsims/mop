@@ -5,7 +5,7 @@ import { kebabCase } from '../../../utils';
 import { Results } from '../log/components/results';
 import { percentageResources } from './constants';
 
-export function resourceGroupResult(log: ResourceLog): string {
+function resourceGroupResult(log: ResourceLog): string {
 	const delta = log.valueAfter - log.valueBefore;
 	return delta < 0 ? delta.toFixed(1) : `+${delta.toFixed(1)}`;
 }

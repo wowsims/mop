@@ -2,14 +2,16 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../../i18n/config';
+import type { Outcome } from '../../../../proto_utils/combat_log/types';
 import { OUTCOMES } from '../../../../proto_utils/combat_log/types';
 import { TypedEvent } from '../../../../typed_event';
 import { Component } from '../../../component';
 import type { DropdownValueConfig } from '../../../pickers/dropdown_picker';
 import { DropdownPicker, TextDropdownPicker } from '../../../pickers/dropdown_picker';
+import { OUTCOME_LABEL } from '../components/results';
 import type { SuggestionSource } from './indexes';
 import { isNumericFilter, TYPE_SUGGESTIONS } from './indexes';
-import type { ClauseField, QueryNode } from './query';
+import type { ClauseField, SearchGroup } from './query';
 import { FIELD_NAMES } from './query';
 
 // Matches the debounce master's log search used.
@@ -23,13 +25,25 @@ const TYPED_FIELDS: Partial<Record<ClauseField, string>> = { time: '10-30', amou
 // cannot change what a query selects.
 const sentenceCase = (text: string): string => (text ? text.charAt(0).toUpperCase() + text.slice(1) : text);
 
+// Tokens take the words the log lines use, so a chip reads like the rows it selects.
+function labelOf(field: ClauseField, value: string): string {
+	switch (field) {
+		case 'outcome':
+			return OUTCOME_LABEL[value as Outcome] ?? value;
+		case 'type':
+			return sentenceCase(value.replace(/-/g, ' '));
+		default:
+			return value;
+	}
+}
+
 type ValueOption = DropdownValueConfig<string> & { label: string; iconUrl?: string };
 
 // The chip's delete and the group's delete are the same control; .saved-data-set-delete carries
 // the look, this carries the markup.
-function DeleteButton(extraClass: string, onClick: () => void): HTMLButtonElement {
+function DeleteButton(onClick: () => void): HTMLButtonElement {
 	const elem = (
-		<button type="button" className={clsx('saved-data-set-delete', extraClass)}>
+		<button type="button" className="saved-data-set-delete">
 			<i className="fa fa-times fa-lg" />
 		</button>
 	) as HTMLButtonElement;
@@ -37,25 +51,19 @@ function DeleteButton(extraClass: string, onClick: () => void): HTMLButtonElemen
 	return elem;
 }
 
-// A field, the values picked under it, and how they join.
-type SearchGroup = { field: ClauseField; join: 'and' | 'or'; values: Array<string> };
-
-function clauseOf(field: ClauseField, value: string): QueryNode {
-	return { kind: 'clause', clause: { field, values: [value] } };
-}
-
-// A group only filters once it has something in it, so a field picked but not yet filled is
-// invisible to the query rather than matching nothing.
-function groupToNode(group: SearchGroup): QueryNode | null {
-	if (!group.values.length) return null;
-	if (group.values.length === 1) return clauseOf(group.field, group.values[0]);
-	return { kind: group.join, children: group.values.map(value => clauseOf(group.field, value)) };
+// Quoted phrases stay whole, everything else splits on whitespace.
+function keywordsOf(text: string): Array<string> {
+	const keywords: Array<string> = [];
+	for (const match of text.matchAll(/"([^"]+)"|\S+/g)) keywords.push(match[1] ?? match[0]);
+	return keywords;
 }
 
 export class LogSearchBar extends Component {
 	readonly changeEmitter = new TypedEvent<void>('Log Search');
 
-	private groups: Array<SearchGroup> = [];
+	private searchGroups: Array<SearchGroup> = [];
+	// Typed values not yet committed, kept across the re-render every other edit triggers.
+	private readonly drafts = new WeakMap<SearchGroup, string>();
 	private pendingTimer: number | null = null;
 	private readonly inputElem: HTMLInputElement;
 	private readonly groupsElem: HTMLDivElement;
@@ -95,7 +103,7 @@ export class LogSearchBar extends Component {
 		this.inputElem = inputRef.value!;
 		this.addFieldElem = addFieldRef.value!;
 
-		// Plain substring search: anything structured is built with the filters below it.
+		// Keywords, all of which must match; anything structured is built with the filters below it.
 		this.inputElem.addEventListener('input', () => {
 			if (this.pendingTimer !== null) clearTimeout(this.pendingTimer);
 			this.pendingTimer = window.setTimeout(() => {
@@ -106,17 +114,17 @@ export class LogSearchBar extends Component {
 		this.renderGroups();
 	}
 
-	get clauses(): ReadonlyArray<QueryNode> {
-		const built = this.groups.map(groupToNode).filter((node): node is QueryNode => node !== null);
-		const text = this.inputElem.value.trim();
-		if (!text) return built;
-		return [...built, { kind: 'clause', clause: { field: null, values: [text] } }];
+	get groups(): ReadonlyArray<SearchGroup> {
+		return this.searchGroups;
 	}
 
-	clear() {
-		this.groups = [];
-		this.inputElem.value = '';
-		this.update();
+	get keywords(): ReadonlyArray<string> {
+		return keywordsOf(this.inputElem.value);
+	}
+
+	// The value pickers snapshot their options, so a new result has to rebuild them.
+	refresh() {
+		this.renderGroups();
 	}
 
 	// Every edit does the same two things, so they are one call rather than a pair that a new
@@ -134,7 +142,7 @@ export class LogSearchBar extends Component {
 			if (node !== this.addFieldElem) stale.push(node);
 		});
 		stale.forEach(node => this.groupsElem.removeChild(node));
-		this.groups.forEach((group, i) => this.groupsElem.insertBefore(this.renderGroup(group, i), this.addFieldElem));
+		this.searchGroups.forEach((group, i) => this.groupsElem.insertBefore(this.renderGroup(group, i), this.addFieldElem));
 		this.renderAddField();
 	}
 
@@ -151,7 +159,7 @@ export class LogSearchBar extends Component {
 				getValue: () => null,
 				setValue: (_eventID, _obj, field) => {
 					if (!field) return;
-					this.groups.push({ field, join: 'or', values: [] });
+					this.searchGroups.push({ field, join: 'or', values: [] });
 					this.update();
 				},
 			}),
@@ -180,7 +188,7 @@ export class LogSearchBar extends Component {
 							</button>
 						))}
 					</div>
-					{DeleteButton('log-search-group-remove', () => this.removeGroup(index))}
+					{DeleteButton(() => this.removeGroup(index))}
 				</div>
 				<div ref={itemsRef} className="log-search-group-items d-flex flex-wrap align-items-center gap-1">
 					<div ref={addRef} className="input-group"></div>
@@ -190,7 +198,7 @@ export class LogSearchBar extends Component {
 
 		group.values.forEach((value, valueIndex) =>
 			itemsRef.value!.insertBefore(
-				this.renderTag(value, () => this.removeValue(index, valueIndex)),
+				this.renderTag(labelOf(group.field, value), () => this.removeValue(index, valueIndex)),
 				addRef.value!,
 			),
 		);
@@ -208,17 +216,24 @@ export class LogSearchBar extends Component {
 							placeholder={placeholder}
 							autocomplete="off"
 						/>
-						<button ref={submitRef} type="button" className="log-search-group-submit btn btn-sm btn-primary" attributes={{ 'aria-label': 'Add' }}>
+						<button
+							ref={submitRef}
+							type="button"
+							className="btn btn-sm btn-primary"
+							attributes={{ 'aria-label': i18n.t('results_tab.details.logs.search_add_value') }}>
 							<i className="fa fa-check" />
 						</button>
 					</>
 				) as unknown as HTMLElement,
 			);
+			valueRef.value!.value = this.drafts.get(group) ?? '';
+			valueRef.value!.addEventListener('input', () => this.drafts.set(group, valueRef.value!.value));
 			const commit = () => {
 				const value = valueRef.value!.value.trim();
 				// A value that cannot be parsed would match nothing, which reads as a broken filter
 				// rather than a rejected one, so it is refused here instead.
 				if (!value || !isNumericFilter(value) || group.values.includes(value)) return;
+				this.drafts.delete(group);
 				group.values.push(value);
 				this.update();
 			};
@@ -228,14 +243,7 @@ export class LogSearchBar extends Component {
 					commit();
 				}
 			});
-			valueRef.value!.addEventListener('blur', commit);
-			// mousedown, not click: the button's own click would blur the input first, and the
-			// commit that blur triggers re-renders the group and takes the button away before the
-			// click ever lands on it.
-			submitRef.value!.addEventListener('mousedown', e => {
-				e.preventDefault();
-				commit();
-			});
+			submitRef.value!.addEventListener('click', commit);
 			return elem;
 		}
 		this.pickers.push(
@@ -246,7 +254,7 @@ export class LogSearchBar extends Component {
 				values: this.valueOptions(group.field),
 				setOptionContent: (button, valueConfig) => {
 					const option = valueConfig as ValueOption;
-					if (option.iconUrl) button.appendChild((<img className="log-search-option-icon" src={option.iconUrl} />) as HTMLElement);
+					if (option.iconUrl) button.appendChild((<img className="icon-sm me-1" src={option.iconUrl} />) as HTMLElement);
 					button.appendChild(document.createTextNode(option.label));
 				},
 				getValue: () => null,
@@ -262,25 +270,25 @@ export class LogSearchBar extends Component {
 	private renderTag(label: string, onRemove: () => void): HTMLElement {
 		return (
 			<div className="log-search-chip saved-data-set-chip badge rounded-pill">
-				<span className="log-search-chip-text saved-data-set-name">{sentenceCase(label)}</span>
-				{DeleteButton('log-search-chip-remove', onRemove)}
+				<span className="saved-data-set-name">{label}</span>
+				{DeleteButton(onRemove)}
 			</div>
 		) as HTMLElement;
 	}
 
 	private removeGroup(index: number) {
-		this.groups.splice(index, 1);
+		this.searchGroups.splice(index, 1);
 		this.update();
 	}
 
 	private removeValue(groupIndex: number, valueIndex: number) {
-		this.groups[groupIndex]?.values.splice(valueIndex, 1);
+		this.searchGroups[groupIndex]?.values.splice(valueIndex, 1);
 		this.update();
 	}
 
 	private valueOptions(field: ClauseField): Array<ValueOption> {
 		const icons = this.config.suggestions().spellIcons;
-		return this.valueCandidates(field).map(value => ({ value, label: sentenceCase(value), iconUrl: icons.get(value) }));
+		return this.valueCandidates(field).map(value => ({ value, label: labelOf(field, value), iconUrl: icons.get(value) }));
 	}
 
 	private valueCandidates(field: ClauseField): ReadonlyArray<string> {

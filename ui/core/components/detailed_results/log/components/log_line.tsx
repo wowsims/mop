@@ -20,26 +20,15 @@ import { ActionLink } from './action_link';
 import { EntityLabel } from './entity_label';
 import { Results } from './results';
 
-function Prefix(log: CombatLog, includeTimestamp: boolean): JSX.Element {
-	const prefix = includeTimestamp ? `[${log.timestamp.toFixed(2)}]` : '';
-	return (
-		<>
-			{prefix}
-			{log.source && EntityLabel(log.source)}
-		</>
-	);
+function Prefix(log: CombatLog): JSX.Element {
+	return <>{log.source && EntityLabel(log.source)}</>;
 }
 
-function DefaultLogElem(log: CombatLog, includeTimestamp: boolean): JSX.Element {
-	let html: JSX.Element = <>{log.raw}</>;
-	if (!includeTimestamp) {
-		// Group 3 only: combat_log's own rawWithoutTimestamp keeps the entity bracket for plain-text
-		// export, while this path drops it because EntityLabel supplies a styled replacement.
-		const captureArr = matchTimestampPrefix(log.raw);
-		if (captureArr) {
-			html = <>{captureArr[3]}</>;
-		}
-	}
+function DefaultLogElem(log: CombatLog): JSX.Element {
+	// Group 3 only: combat_log's own rawWithoutTimestamp keeps the entity bracket for plain-text
+	// export, while this path drops it because EntityLabel supplies a styled replacement.
+	const captureArr = matchTimestampPrefix(log.raw);
+	let html: JSX.Element = <>{captureArr ? captureArr[3] : log.raw}</>;
 	if (log.source) {
 		html = (
 			<>
@@ -50,17 +39,17 @@ function DefaultLogElem(log: CombatLog, includeTimestamp: boolean): JSX.Element 
 	return html;
 }
 
-function DamageLogElem(log: DamageLog, includeTimestamp: boolean): JSX.Element {
+function DamageLogElem(log: DamageLog): JSX.Element {
 	const threatPostfix = log.source?.isTarget ? '' : ` (${log.threat.toFixed(2)} Threat)`;
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} {ActionLink(log.actionId!)} {Results(log)}
+			{Prefix(log)} {ActionLink(log.actionId!)} {Results(log)}
 			{threatPostfix}
 		</>
 	);
 }
 
-function ResourceLogElem(log: ResourceLog, includeTimestamp: boolean): JSX.Element {
+function ResourceLogElem(log: ResourceLog): JSX.Element {
 	const signedDiff = (log.valueAfter - log.valueBefore) * (log.isSpend ? -1 : 1);
 	const isHealth = log.resourceType == ResourceType.ResourceTypeHealth;
 	const verb = isHealth ? (log.isSpend ? 'Lost' : 'Recovered') : log.isSpend ? 'Spent' : 'Gained';
@@ -70,7 +59,7 @@ function ResourceLogElem(log: ResourceLog, includeTimestamp: boolean): JSX.Eleme
 
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} {verb}{' '}
+			{Prefix(log)} {verb}{' '}
 			<strong className={resourceClass}>
 				{signedDiff.toFixed(1)} {resourceName}
 			</strong>
@@ -80,115 +69,115 @@ function ResourceLogElem(log: ResourceLog, includeTimestamp: boolean): JSX.Eleme
 	);
 }
 
-function AuraLogElem(log: AuraLog, includeTimestamp: boolean): JSX.Element {
+function AuraLogElem(log: AuraLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)}
+			{Prefix(log)}
 			{`  Aura  `}
 			{log.isGained ? 'gained' : log.isFaded ? 'faded' : 'refreshed'}: {ActionLink(log.actionId!, true)}.
 		</>
 	);
 }
 
-function AuraStacksLogElem(log: AuraStacksLog, includeTimestamp: boolean): JSX.Element {
+function AuraStacksLogElem(log: AuraStacksLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} {ActionLink(log.actionId!, true)} stacks: {log.oldStacks} &rarr; {log.newStacks}.
+			{Prefix(log)} {ActionLink(log.actionId!, true)} stacks: {log.oldStacks} &rarr; {log.newStacks}.
 		</>
 	);
 }
 
-function MajorCooldownLogElem(log: MajorCooldownLog, includeTimestamp: boolean): JSX.Element {
+function MajorCooldownLogElem(log: MajorCooldownLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Major cooldown used: {ActionLink(log.actionId!)}.
+			{Prefix(log)} Major cooldown used: {ActionLink(log.actionId!)}.
 		</>
 	);
 }
 
-function CastBeganLogElem(log: CastBeganLog, includeTimestamp: boolean): JSX.Element {
+function CastBeganLogElem(log: CastBeganLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Casting {ActionLink(log.actionId!)} (Cast time: {log.castTime.toFixed(2)}s, Cost: {log.manaCost.toFixed(1)} Mana).
+			{Prefix(log)} Casting {ActionLink(log.actionId!)} (Cast time: {log.castTime.toFixed(2)}s, Cost: {log.manaCost.toFixed(1)} Mana).
 		</>
 	);
 }
 
-function CastCancelledLogElem(log: CastCancelledLog, includeTimestamp: boolean): JSX.Element {
+function CastCancelledLogElem(log: CastCancelledLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Cancelled {ActionLink(log.actionId!)} after {log.cancelTime.toFixed(2)}s.
+			{Prefix(log)} Cancelled {ActionLink(log.actionId!)} after {log.cancelTime.toFixed(2)}s.
 		</>
 	);
 }
 
-function CastCompletedLogElem(log: CastCompletedLog, includeTimestamp: boolean): JSX.Element {
+function CastCompletedLogElem(log: CastCompletedLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Completed cast {log.actionId!.name}.
+			{Prefix(log)} Completed cast {log.actionId!.name}.
 		</>
 	);
 }
 
-function StatChangeLogElem(log: StatChangeLog, includeTimestamp: boolean): JSX.Element {
+function StatChangeLogElem(log: StatChangeLog): JSX.Element {
 	if (log.isGain) {
 		return (
 			<>
-				{Prefix(log, includeTimestamp)} Gained {log.stats} from {ActionLink(log.actionId!)}.
+				{Prefix(log)} Gained {log.stats} from {ActionLink(log.actionId!)}.
 			</>
 		);
 	}
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Lost {log.stats} from fading {ActionLink(log.actionId!)}.
+			{Prefix(log)} Lost {log.stats} from fading {ActionLink(log.actionId!)}.
 		</>
 	);
 }
 
-function ResourceGroupLogElem(log: ResourceGroupLog, includeTimestamp: boolean): JSX.Element {
+function ResourceGroupLogElem(log: ResourceGroupLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} {resourceNames.get(log.resourceType)}: {log.valueBefore.toFixed(1)} &rarr; {log.valueAfter.toFixed(1)}
+			{Prefix(log)} {resourceNames.get(log.resourceType)}: {log.valueBefore.toFixed(1)} &rarr; {log.valueAfter.toFixed(1)}
 		</>
 	);
 }
 
-function CastLogElem(log: CastLog, includeTimestamp: boolean): JSX.Element {
+function CastLogElem(log: CastLog): JSX.Element {
 	return (
 		<>
-			{Prefix(log, includeTimestamp)} Casting {log.actionId!.name} (Cast time = {log.castTime.toFixed(2)}s).
+			{Prefix(log)} Casting {log.actionId!.name} (Cast time = {log.castTime.toFixed(2)}s).
 		</>
 	);
 }
 
-export function LogLineElem(log: CombatLog, includeTimestamp: boolean): JSX.Element {
+export function LogLineElem(log: CombatLog): JSX.Element {
 	switch (log.kind) {
 		case 'damage':
-			return DamageLogElem(log, includeTimestamp);
+			return DamageLogElem(log);
 		case 'resource':
-			return ResourceLogElem(log, includeTimestamp);
+			return ResourceLogElem(log);
 		case 'aura':
-			return AuraLogElem(log, includeTimestamp);
+			return AuraLogElem(log);
 		case 'aura-stacks':
-			return AuraStacksLogElem(log, includeTimestamp);
+			return AuraStacksLogElem(log);
 		case 'major-cooldown':
-			return MajorCooldownLogElem(log, includeTimestamp);
+			return MajorCooldownLogElem(log);
 		case 'cast-began':
-			return CastBeganLogElem(log, includeTimestamp);
+			return CastBeganLogElem(log);
 		case 'cast-cancelled':
-			return CastCancelledLogElem(log, includeTimestamp);
+			return CastCancelledLogElem(log);
 		case 'cast-completed':
-			return CastCompletedLogElem(log, includeTimestamp);
+			return CastCompletedLogElem(log);
 		case 'stat-change':
-			return StatChangeLogElem(log, includeTimestamp);
+			return StatChangeLogElem(log);
 		case 'resource-group':
-			return ResourceGroupLogElem(log, includeTimestamp);
+			return ResourceGroupLogElem(log);
 		case 'cast':
-			return CastLogElem(log, includeTimestamp);
+			return CastLogElem(log);
 		case 'plain':
 		case 'dps':
 		case 'threat-group':
 		case 'aura-uptime':
-			return DefaultLogElem(log, includeTimestamp);
+			return DefaultLogElem(log);
 	}
 }

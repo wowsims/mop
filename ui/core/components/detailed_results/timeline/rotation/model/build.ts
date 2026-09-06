@@ -33,7 +33,7 @@ import type {
 import { ROW_HEIGHTS } from './types';
 
 function castOutcome(castLog: CastLog): CastOutcome {
-	if (castLog.damageDealtLogs.length === 0) return castLog.cancelTime ? 'cancelled' : 'none';
+	if (castLog.damageDealtLogs.length === 0) return castLog.castCancelledLog ? 'cancelled' : 'none';
 	const ddl = castLog.damageDealtLogs[0];
 	switch (ddl.outcome) {
 		case 'miss':
@@ -86,8 +86,8 @@ function castRowItems(castLogs: ReadonlyArray<CastLog>, mergedAuras: ReadonlyArr
 	const items: Array<RowItem> = [];
 	castLogs.forEach(castLog => {
 		const start = castLog.timestamp;
-		const width = castLog.cancelTime || castLog.castTime + castLog.travelTime;
-		const cancelled = !!castLog.cancelTime;
+		const cancelled = !!castLog.castCancelledLog;
+		const width = cancelled ? castLog.cancelTime : castLog.castTime + castLog.travelTime;
 		const hasTravelTime = !cancelled && castLog.travelTime != 0;
 		items.push({
 			kind: 'cast',

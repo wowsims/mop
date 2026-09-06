@@ -4,7 +4,7 @@ import type { DamageLog, Outcome } from '../../../../proto_utils/combat_log';
 import { spellSchoolNames } from '../../../../proto_utils/names';
 import { EntityLabel } from './entity_label';
 
-const OUTCOME_LABEL: Record<Outcome, string> = {
+export const OUTCOME_LABEL: Record<Outcome, string> = {
 	miss: 'Miss',
 	dodge: 'Dodge',
 	parry: 'Parry',

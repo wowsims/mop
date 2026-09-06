@@ -1,6 +1,4 @@
 .log-runner-root {
-	--log-runner-list-width: max-content;
-
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 auto;
@@ -42,7 +40,7 @@
 
 .log-runner-list {
 	min-width: 100%;
-	width: var(--log-runner-list-width);
+	width: var(--log-runner-list-width, max-content);
 }
 
 .log-runner-measurer {
@@ -139,6 +137,12 @@
 	align-items: center;
 	gap: var(--spacer-2);
 	font-size: var(--content-font-size);
+
+	// The chip styles its delete only inside .saved-data-set-chip; the group head has no chip.
+	.saved-data-set-delete {
+		padding: var(--spacer-2) 0;
+		color: $body-color;
+	}
 }
 
 .log-search-group-field {
@@ -166,14 +170,6 @@
 
 .log-search-group-input {
 	width: 8rem;
-}
-
-// Wowhead serves these at their intrinsic 56px, which is a tile rather than a list icon.
-.log-search-option-icon {
-	width: var(--icon-size-sm);
-	height: var(--icon-size-sm);
-	margin-right: var(--spacer-1);
-	vertical-align: text-bottom;
 }
 
 .log-search-chip {
