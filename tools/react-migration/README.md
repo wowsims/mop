@@ -8,6 +8,13 @@ are what the view layer is actually gated on.
 They compare a build of the migration branch against a build of its parent, so both have to be built
 and served first:
 
+**One browser at a time.** These probes each launch Chromium, and the dev environment is WSL2 —
+running several at once, or backgrounding them with `&`, makes it thrash. Run the gates one after
+another, close every browser you open (including on an error path: a throw that skips
+`browser.close()` leaves it resident), and prefer `type-check` and `vitest` while iterating, saving
+the browser passes for the end. `parity.mjs` and `panes-parity.mjs` also exceed a 120s tool timeout
+at six specs — split them into two runs of three rather than backgrounding one run of six.
+
 **Name the worktrees.** "the parent worktree" is `~/personal/wowsims-mop-restructure`
 (`feature/ui-restructure`) — *not* `~/personal/wowsims-mop`, which is `master`. Serving master on
 3401 does not fail loudly: the comparison still runs, and every spec fails on a line 0 that differs
