@@ -6,6 +6,7 @@ import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { IconEnumPicker } from './IconEnumPicker';
+import { iconEnumPickerShown } from './utils';
 
 // A filled ActionId as fill() returns one, so useActionId renders synchronously and no test touches
 // the network — the same pattern IconPicker.test.tsx and MultiIconPicker.test.tsx use.
@@ -403,5 +404,37 @@ describe('IconEnumPicker', () => {
 		// `update()` runs after `setInputValue`, so the backup branch's own `setActive(false)` never
 		// survives: a non-zero value is active whether or not the list carries it.
 		expect(button().classList.contains('active')).toBe(true);
+	});
+});
+
+// The picker's own `showWhen()` override, asserted directly because a caller outside the component
+// depends on it: a `.consumes-row` hides when every picker in it is hidden, and it has only the
+// configs to ask.
+describe('iconEnumPickerShown', () => {
+	const options = new Options();
+
+	it('needs a value that carries an actionId', () => {
+		expect(
+			iconEnumPickerShown(
+				configFor({
+					values: [
+						{ value: 0, color: 'grey' },
+						{ value: 1, iconUrl: 'raw.jpg' },
+					],
+				}),
+				options,
+			),
+		).toBe(false);
+		expect(iconEnumPickerShown(configFor(), options)).toBe(true);
+	});
+
+	it('ignores an actionId value that is itself hidden', () => {
+		const hiddenOption = configFor({ values: [{ value: 0 }, { actionId: frostId, value: 1, showWhen: () => false }] });
+		expect(iconEnumPickerShown(hiddenOption, options)).toBe(false);
+	});
+
+	it('honours the config’s own showWhen as well', () => {
+		expect(iconEnumPickerShown(configFor({ showWhen: () => false }), options)).toBe(false);
+		expect(iconEnumPickerShown(configFor({ showWhen: () => true }), options)).toBe(true);
 	});
 });

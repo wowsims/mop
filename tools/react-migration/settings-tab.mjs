@@ -223,9 +223,11 @@ const INSTALL = () => {
 		// Chosen because the input that hides is not the input that changed — `#simui-profession1`
 		// lives in the Player block and the Engineering consumables row lives in the Consumables one —
 		// and because the single change drives *two* separate mechanisms a port could decouple:
-		// `ConsumesPicker.updateRow` toggles `hide` on the `.consumes-row`, while `Input.update`
-		// toggles it on the explosives `.icon-enum-picker-root` inside it. Keyed on the `.consumes-engi`
-		// class rather than the row's "Engineering" label, which is i18n text.
+		// the row toggles `hide` on the `.consumes-row` from its children's visibility, while the
+		// picker's own `showWhen` toggles it on the explosives `.icon-enum-picker-root` inside it —
+		// `ConsumesPicker.updateRow` and `Input.update` on the baseline, `ConsumeRow` and
+		// `iconEnumPickerShown` in React. Keyed on the `.consumes-engi` class rather than the row's
+		// "Engineering" label, which is i18n text.
 		engineering: () => {
 			const inputs = pane().querySelector('.consumes-engi');
 			const row = inputs?.closest('.consumes-row');

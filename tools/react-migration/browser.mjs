@@ -411,10 +411,15 @@ export const renameWithin = (dom, within, from, to) => {
  *
  * - `MultiIconPicker` is fully ported, so the number of picker roots is the number of menus, and
  *   asserting against it catches a root that somehow has no wrappers.
- * - `IconEnumPicker` is half ported — Consumes still builds the vanilla one, and those roots have
- *   no wrappers to fold — so the ported ones are counted by the slot element only React renders.
- *   `roots` below is then asserted to be a superset, which is what would catch a slot appearing
- *   somewhere that is not a picker.
+ * - `IconEnumPicker` is still dual-stack: `CooldownsPicker` builds a vanilla one per cooldown row in
+ *   the **rotation** pane, always at least one, and those roots have no wrappers to fold. So the
+ *   ported ones are counted by the slot element only React renders, and the root count cannot be
+ *   used until that picker ports.
+ *
+ * The counts are nonetheless exact rather than a superset, because this runs **per pane** and no
+ * pane mixes the two stacks: settings is React throughout, rotation is vanilla throughout, and a
+ * pane with no slots is skipped entirely. A vanilla icon-enum root appearing beside the React ones
+ * is what that equality catches.
  */
 const PORTED_MENUS = [
 	{
@@ -453,7 +458,7 @@ export const normaliseBaseUiMenus = dom => {
 		const expected = lines.filter(line => menu.count.test(line)).length;
 		const roots = lines.filter(line => menu.root.test(line)).length;
 		if (!expected) continue;
-		if (roots < expected) problems.push(`${menu.what}: ${expected} menus under ${roots} picker roots`);
+		if (roots !== expected) problems.push(`${menu.what}: ${expected} menus under ${roots} picker roots`);
 		for (const wrapper of menu.wrappers) {
 			const collapsed = collapseWrappers(current, menu.root, wrapper);
 			if (collapsed.dropped !== expected) problems.push(`${menu.what}: collapsed ${collapsed.dropped} of ${expected} ${wrapper.source}`);

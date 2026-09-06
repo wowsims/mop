@@ -1,3 +1,5 @@
+export { ConsumesPicker } from './components/ConsumesPicker';
+export type { ConsumesPickerProps } from './components/ConsumesPicker';
 export { InputPicker } from './components/InputPicker';
 export type { InputPickerProps } from './components/InputPicker';
 export { OtherSettings } from './components/OtherSettings';

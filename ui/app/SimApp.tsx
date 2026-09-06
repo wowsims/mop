@@ -1,8 +1,9 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
-import { CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
+import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
@@ -94,6 +95,18 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						createPortal(
 							<PlayerSettings iconInputs={def.playerIconInputs} inputs={def.playerInputs?.inputs ?? []} />,
 							simUI.settingsTab.playerSettingsContainer,
+						)}
+					{/* Reads the database synchronously, so `ready` is a hard gate here rather than the
+					    container-exists one it is for the blocks around it. */}
+					{ready &&
+						createPortal(
+							<ConsumesPicker
+								consumableStats={def.consumableStats ?? def.epStats}
+								conjuredOptions={relevantStatOptions(ConsumablesInputs.CONJURED_CONFIG, simUI)}
+								explosiveOptions={relevantStatOptions(ConsumablesInputs.EXPLOSIVE_CONFIG, simUI)}
+								petInputs={def.petConsumeInputs ?? []}
+							/>,
+							simUI.settingsTab.consumesContainer,
 						)}
 					{/* The block itself is absent when the spec declares neither inputs nor swap slots. */}
 					{ready &&

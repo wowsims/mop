@@ -13,7 +13,6 @@ import {
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
-import { ConsumesPicker } from '@features/settings/view/consumes_picker';
 import { Spec } from '@generated/proto/common';
 import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
@@ -28,6 +27,8 @@ export class SettingsTab extends SimTab {
 	encounterContainer!: HTMLElement;
 	/** Where React renders the player block, which every spec builds. */
 	playerSettingsContainer!: HTMLElement;
+	/** Where React renders the consumables block, which every spec builds. */
+	consumesContainer!: HTMLElement;
 	/** Where React renders the other-settings block. Absent when that block is not built at all. */
 	otherSettingsContainer?: HTMLElement;
 	/** One per declared `sections` entry, paired with the config React needs to fill it. */
@@ -115,7 +116,9 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column2, 'consumes-settings', {
 			header: { title: i18n.t('settings_tab.consumables.title') },
 		});
-		ConsumesPicker.create(contentBlock.bodyElement, this.simUI);
+		// Built empty: `SimApp` portals the React `ConsumesPicker` into it, which renders the five
+		// labelled rows and every picker in them.
+		this.consumesContainer = contentBlock.bodyElement;
 	}
 
 	private buildOtherSettings() {

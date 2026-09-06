@@ -1,5 +1,18 @@
-import type { IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
+import type { IconEnumPickerConfig, IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import type { CSSProperties } from 'react';
+
+/**
+ * `IconEnumPicker.showWhen()` — the picker's own override, not `Input`'s. The control disappears
+ * unless its config says to show it *and* some value both carries an `actionId` and is itself shown,
+ * so a list whose every real option has gone away takes the picker with it.
+ *
+ * Exported because a caller can need the answer without the picker: a consumes row hides when every
+ * picker in it is hidden, which vanilla computed by asking each constructed instance. Nothing else
+ * can answer it — `useInput`'s `hidden` is the config's own `showWhen` alone.
+ */
+export const iconEnumPickerShown = <ModObject, T>(config: IconEnumPickerConfig<ModObject, T>, modObject: ModObject): boolean =>
+	(!config.showWhen || config.showWhen(modObject)) &&
+	config.values.some(valueConfig => !!valueConfig.actionId && (!valueConfig.showWhen || valueConfig.showWhen(modObject)));
 
 /** `setActionIdBackground`: the background is written only once the id has an icon to write. */
 export const actionIconStyle = (iconUrl: string): CSSProperties | undefined => (iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined);

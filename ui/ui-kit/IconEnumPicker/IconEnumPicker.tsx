@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { IconEnumOption } from './IconEnumOption';
-import { actionIconStyle, iconStyleOf } from './utils';
+import { actionIconStyle, iconEnumPickerShown, iconStyleOf } from './utils';
 
 export interface IconEnumPickerProps<ModObject, T> {
 	modObject: ModObject;
@@ -47,16 +47,16 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 	// The portal renders into the slot below, which does not exist on the first pass. `null` is the
 	// "not resolved yet" value Base UI waits on; anything else falls back to `<body>`.
 	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
-	const { value, setValue, hidden: configHidden, disabled, revision } = useInput(modObject, config);
+	const { value, setValue, disabled, revision } = useInput(modObject, config);
 	const tooltipId = useId();
 
 	// `showValueWhen()` also tests `!actionId || actionId != null`, which is true whichever way the
 	// actionId goes, so the option's own `showWhen` is all of it.
 	const shows = (valueConfig: IconEnumValueConfig<ModObject, T>) => !valueConfig.showWhen || valueConfig.showWhen(modObject);
 
-	// `showWhen()` is overridden on the vanilla picker: the whole control also disappears unless some
-	// option both carries an actionId and is itself shown.
-	const hidden = configHidden || !config.values.some(valueConfig => !!valueConfig.actionId && shows(valueConfig));
+	// `showWhen()` is overridden on the vanilla picker, so `useInput`'s own `hidden` is not the whole
+	// answer and is not read. The override lives in `utils` because the consumes rows need it too.
+	const hidden = !iconEnumPickerShown(config, modObject);
 
 	const selected = config.values.find(valueConfig => config.equals(valueConfig.value, value));
 	const selectedHidden = !!selected && !shows(selected);

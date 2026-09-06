@@ -24,10 +24,10 @@ describe('Database.get', () => {
 		vi.stubGlobal('fetch', fetchMock);
 
 		const Database = await freshDatabase();
-		const loaded = Database.get();
+		const loaded = expect(Database.get()).resolves.toBeDefined();
 		await vi.runAllTimersAsync();
+		await loaded;
 
-		await expect(loaded).resolves.toBeDefined();
 		expect(fetchMock).toHaveBeenCalledTimes(3);
 	});
 
@@ -38,16 +38,18 @@ describe('Database.get', () => {
 		vi.stubGlobal('fetch', fetchMock);
 
 		const Database = await freshDatabase();
-		const first = Database.get();
+		// The assertion is attached before the timers run: `get()` rejects while they are draining,
+		// and a rejection with no handler yet attached surfaces as an unhandled rejection.
+		const first = expect(Database.get()).rejects.toThrow('offline');
 		await vi.runAllTimersAsync();
-		await expect(first).rejects.toThrow('offline');
+		await first;
 
 		const attemptsWhileFailing = fetchMock.mock.calls.length;
 		fetchMock.mockResolvedValue(okResponse());
 
-		const second = Database.get();
+		const second = expect(Database.get()).resolves.toBeDefined();
 		await vi.runAllTimersAsync();
-		await expect(second).resolves.toBeDefined();
+		await second;
 		expect(fetchMock.mock.calls.length).toBeGreaterThan(attemptsWhileFailing);
 	});
 

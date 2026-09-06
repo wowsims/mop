@@ -75,7 +75,7 @@ import-export 168 · item-swap 105.
 |---|---|---|---|
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
 | **Talents** — **done** | 19 | `TalentsPicker` + `PetSpecPicker` are React; `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and two `SavedDataManager`s stay vanilla behind `useLegacyMount` | `GlyphSelectorModal` needs `Dialog`; the shared four need their other consumers |
-| **Settings** | 492 | most of it — see the queue | `IconEnumPicker` (`Menu`) for Player and Consumes; `ListPicker` island; the preset picker and saved-data managers, deferred to their other tabs |
+| **Settings** | 492 | most of it — see the queue | every content block is React now; the preset picker and the saved-data managers are deferred to their other tabs |
 | **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
 | **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
@@ -339,13 +339,14 @@ of the duplication sweep was to build each shape once.
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
 | `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
-| `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` (still live, dual-stack — Consumes and the cooldowns picker) | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote |
+| `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` (still live, dual-stack — the cooldowns picker, in the rotation tab, is the last vanilla consumer) | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote. `iconEnumPickerShown(config, modObject)` is its `showWhen()` override, exported because a caller can need the answer without the picker |
 | `PlayerSettings` | `ui/features/settings/components/PlayerSettings/` | `buildPlayerSettings` in `app/tabs/settings_tab.tsx`, and with it `configureIconSection`, `configureInputSection` and `buildInputPickers` (**deleted** — no caller left) | the spec's `playerIconInputs` and `playerInputs.inputs` | the block's order, the hand-rolled race and profession configs, and the icon group's inline `gridTemplateColumns` |
 | `RaidBuffs` | `ui/features/settings/components/RaidBuffs/` | the buffs block's `relevantStatOptions` walk plus its misc bundle | the option list | that the misc bundle is a `MultiIconPickerConfig` assembled from `IconPickerConfig`s, as the vanilla builder did |
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (**deleted** — the player block was its last caller) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
 | `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
 | `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection`'s body half in `app/tabs/settings_tab.tsx` | a `CustomSection` config — its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards |
+| `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -921,6 +922,15 @@ would be an unrequested markup change with a parity divergence attached.
   element against a build that keeps those elements. That is a constraint of the gate, not a design
   choice — when Phase 5 retires the vanilla comparison, the idiom becomes a conditional render as
   the plan always said. Do not read the comments defending it as permanent.
+- **A consumes row's `<label class="form-label">` names an icon group, not a control** — the same
+  defect item swap already carries an `INTENDED` entry for (`label` → `span` plus `role="group"` and
+  `aria-labelledby`). Five instances, one per row. Ported faithfully; the options are to apply item
+  swap's fix here too, to leave both, or to decide the whole `.form-label`-over-an-icon-group shape
+  at once, since the player and buffs blocks have it as well.
+- **`<span class="elixir-space">or</span>` is untranslated English**, between the flask picker and
+  the two elixir pickers. Every other string in this block goes through `i18n.t`. Adding a
+  translation key is a `translation.json` change on both locales rather than a markup one, so it was
+  left alone.
 
 ### What the `@jsx-vanilla` pragma rule actually forbids
 
@@ -1158,10 +1168,10 @@ and the two cooldown blocks share.
 **`IconEnumPicker` was missing from this file's "still missing" list, and it was the real gate.** It
 blocked *all* of Consumes — every picker there is `iconEnum` — and Player settings on the majority of
 specs, since `makeClassOptionsEnumIconInput` is how most classes declare their options. Three of the
-six gate specs are affected. It landed 2026-09-06 with the player block; Consumes is still to wire.
-`MultiIconPicker` was listed and blocked Buffs and Debuffs, eleven instances between them. Both are
-Bootstrap-dropdown shaped, so both were ports onto the `Menu` adapter that already landed — not new
-adapters.
+six gate specs are affected. It landed 2026-09-06 with the player block, and Consumes followed the
+same day. `MultiIconPicker` was listed and blocked Buffs and Debuffs, eleven instances between them.
+Both are Bootstrap-dropdown shaped, so both were ports onto the `Menu` adapter that already landed —
+not new adapters.
 
 **Dead, found while surveying; delete rather than port:** the deprecated `customSections` function
 form on `IndividualSimUIConfig` (declared, looped over, and declared by no spec);
@@ -1214,10 +1224,9 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
 10. ~~**`IconEnumPicker` onto `Menu`, then Player settings**~~ — **done.** The inline
    `gridTemplateColumns` is kept and is still invisible to the tree gates; `settings-tab.mjs`'s
    `playerIcons()` is the only thing that reads it.
-11. **Consumes** — last, because every one of its pickers is `iconEnum`. Two extra costs: its
-   `waitForInit` dependency is a *hard* one (`Database.getSync()`), not inherited; and `updateRow`
-   inverts React's data flow, since a row's `hide` depends on its children's `showWhen()` results and
-   the icon pickers override `showWhen`.
+11. ~~**Consumes**~~ — **done.** Both extra costs were real and both are recorded in the change log:
+   the `waitForInit` dependency is a hard one, and `updateRow`'s inversion was answered by exporting
+   the picker's `showWhen()` override so the row asks the configs rather than the instances.
 12. **Preset configuration and the saved-data managers do not port with this tab** — four and six
    consumers respectively, across gear, rotation and talents. Mount them through `useLegacyMount`
    into a React-owned right panel when the tab body becomes `SettingsTabBody.tsx`, exactly as
@@ -1231,6 +1240,41 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Consumes is React, and the row's `hide` stopped being an inversion.** The block was
+  queued last because every picker in it is an `IconEnumPicker`, and it carried the one shape in
+  this tab that runs the wrong way: `updateRow` decided a `.consumes-row`'s `hide` by asking each
+  *constructed picker* `showWhen()`, so the parent's class depended on its children's state.
+
+  The answer is that `showWhen()` is a pure function of the config and the mod object, so it does
+  not need an instance. It is `iconEnumPickerShown(config, modObject)` in `IconEnumPicker/utils.ts`
+  now, `IconEnumPicker` itself reads it — `useInput`'s own `hidden` is the config's `showWhen`
+  alone, which is only half the override — and `ConsumeRow` reads it for the two rows vanilla called
+  `updateRow` for. Data flows down again, and the predicate has its own three assertions, one
+  mutation-checked.
+
+  **The row watches the two professions and nothing else**, as vanilla did. That is narrower than
+  what its own pickers watch and narrower than what their values depend on — a value's `showWhen`
+  tests faction, hence race — so a row whose last option goes away for some other reason stays shown
+  until a profession changes. Matched rather than corrected.
+
+  **`Database.getSync()` is a hard `waitForInit` dependency, not an inherited one.** Every other
+  ported settings block would merely render early without `SimApp`'s `ready` gate; this one throws.
+  The item lists are read once in a memo, as the vanilla `create()` factory read them once.
+
+  **The gate entry was tightened as far as it goes, which is not all the way.** `normaliseBaseUiMenus`
+  still counts *slots* rather than picker roots, because `CooldownsPicker` builds a vanilla
+  icon-enum picker per cooldown row — always at least one, in the rotation pane — so the picker is
+  still dual-stack. What changed is `roots < expected` → `roots !== expected`: the fold runs per
+  pane and no pane mixes the two stacks, so a vanilla root appearing beside the React ones now
+  fails. Root-counting waits for the rotation tab.
+
+  Nothing moved in `a11y.mjs` (`unnamed` sits at its 155 ceiling either way — the port renders the
+  same anchors vanilla did) and `settings-tab.mjs`'s whole output is still byte-identical on both
+  builds, including the showWhen pair it exists for. Two defects were carried rather than fixed,
+  both flagged for a decision: `ConsumeRow`'s `<label class="form-label">` names an icon group and
+  not a control, the same shape item swap has an `INTENDED` entry for; and the `<span
+  class="elixir-space">or</span>` between the flask and the elixirs is untranslated English.
 
 - 2026-09-06 **The sidebar showed the pre-load default player's stats all session** — and it was
   never a React bug. `Sim.applyLoadedSettings` suppresses the stats recompute while the settings
