@@ -1068,6 +1068,43 @@ Two things specific to this migration:
   two expected class diffs and the environmental console errors. Use Playwright, not the Chrome
   extension — the extension reports false "renderer frozen" on this app.
 
+## What is queued, and in what order — 2026-09-06
+
+Kept here rather than in a head, so a fresh session picks up where this one left off. Strike an item
+when it lands and add its change-log entry in the same commit.
+
+**In flight** (four parallel agents; their work lands in the working tree for review, never committed
+by them):
+
+1. **Bootstrap CSS vars, audited and re-homed.** Measure which of the ~104 `--bs-*` names `ui/` uses
+   actually resolve at `:root`, then add owned tokens for those to the seam block — additively, with
+   no consumer changed. The ~35 component-scoped ones are the interesting half and need per-component
+   decisions; the audit is the deliverable that tells us which are which.
+2. **The Base UI `Dialog` adapter**, built against a contract measured from the running page rather
+   than read off `base_modal.tsx`. No consumer wired: the point is that the adapter exists and its
+   contract is written down, including anywhere Base UI cannot reproduce the vanilla behaviour.
+3. **A port plan for the settings tab's seven remaining content blocks** — which are generic
+   (`configureInputSection`/`configureIconSection` walking `InputConfig` arrays, so one component
+   covers many) versus hand-rolled, what each constructs, what writes to the store, what needs
+   `waitForInit`, and a recommended order.
+4. **`settings-tab.mjs`, a behaviour gate for that region** — landing before the ports it gates, per
+   the rule. `panes-parity.mjs` already covers structure at rest; this covers operating the controls,
+   and in particular a `showWhen` pair flipping the `hide` class both ways.
+
+**Then, in this order:**
+
+5. Wire `Dialog`'s first consumer. `AdvancedEncounterModal` is the natural one — it is the last
+   vanilla piece of an otherwise ported feature, and `encounter.mjs` already opens and closes it, so
+   the gate exists. `SettingsMenu` is the second.
+6. Port the settings tab blocks, in the order item 3 recommends, cheapest first.
+7. Switch ported components onto the owned tokens from item 1, and decide the component-scoped 35.
+8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
+   bulk, import-export, apl, gear, results.
+
+**Not queued, deliberately.** The three dropdown pickers could go on Base UI `Menu` now that the
+adapter exists, but every one of their callers is still vanilla — a React picker with no consumer is
+the thing Phase 2's rule exists to prevent. They port when a caller does.
+
 ## Change log (keep current — this skill documents itself)
 
 - 2026-09-06 **The sim title dropdown is Base UI too, and the one thing it fights the library over
