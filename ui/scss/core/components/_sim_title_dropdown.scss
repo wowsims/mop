@@ -13,23 +13,11 @@
 
 		.sim-link-dropdown {
 			height: 100%;
-
-			& > .dropdown-menu {
-				width: 100%;
-			}
 		}
 	}
 
-	.dropdown-menu {
-		background: var(--bs-body-bg);
-		border: none;
-		z-index: 1500;
-
-		.dropdown-menu {
-			min-width: 300px;
-		}
-	}
-
+	// Only the trigger is left in here: the menus portal to the body and carry their own styles, in
+	// app/header/SimTitleDropdown/.
 	.sim-link {
 		background: var(--bs-body-bg);
 		height: 100%;
@@ -38,7 +26,7 @@
 		&:hover,
 		&:focus,
 		&.active,
-		&.show {
+		&[data-popup-open] {
 			background: var(--dropdown-link-hover-bg);
 		}
 

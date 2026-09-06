@@ -43,6 +43,8 @@ vi.mock('./individual_sim_ui', async () => {
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 vi.mock('@features/encounter', () => ({ EncounterPicker: () => <div className="encounter-picker-root" /> }));
+// Needs the real spec registry to list every class; what is under test here is the shell's gate.
+vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div className="sim-title-dropdown-root" /> }));
 
 // The toolbar asks a local sim host whether it is outdated, and happy-dom's hostname is localhost,
 // so it takes that branch. Left in flight, the request is aborted at teardown and the rejection is

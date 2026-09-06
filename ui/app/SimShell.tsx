@@ -6,6 +6,7 @@ import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
@@ -47,8 +48,8 @@ export interface SimShellProps {
  *
  * - Every container still in `ShellDom` is filled imperatively afterwards. React must not own their
  *   children, and a re-render that re-created any of these nodes would take the vanilla content with
- *   it. `.sim-toolbar` and `.sim-sidebar-socials` are the exceptions and no longer in the bundle: their
- *   contents are React's, and a container leaves `ShellDom` as that becomes true of it.
+ *   it. `.sim-toolbar`, `.sim-sidebar-socials` and `.sim-title` are the exceptions and no longer in the
+ *   bundle: their contents are React's, and a container leaves `ShellDom` as that becomes true of it.
  * - `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` while the tabs are constructed, so
  *   the header has to be laid out in this first render, not a later one.
  *
@@ -59,7 +60,6 @@ export interface SimShellProps {
  */
 export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
-	const title = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
 	const sidebarResults = useRef<HTMLDivElement>(null);
 	const sidebarStats = useRef<HTMLDivElement>(null);
@@ -103,7 +103,6 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	useLayoutEffect(() => {
 		domRef.current = {
 			root: root.current!,
-			title: title.current!,
 			sidebarActions: sidebarActions.current!,
 			sidebarResults: sidebarResults.current!,
 			sidebarStats: sidebarStats.current!,
@@ -122,7 +121,9 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 				{noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{noticeText}</div> : null}
 				<div className="sim-container">
 					<aside className="sim-sidebar">
-						<div ref={title} className="sim-title" />
+						<div className="sim-title">
+							<SimTitleDropdown currentSpec={spec} />
+						</div>
 						<div className="sim-sidebar-content">
 							<div ref={sidebarActions} className="sim-sidebar-actions" />
 							<div ref={sidebarResults} className="sim-sidebar-results" />

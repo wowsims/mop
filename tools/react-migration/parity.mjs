@@ -58,6 +58,13 @@ const IMPORT_EXPORT = /\.import-export(\.|$)/;
 const DROPDOWN_MENU = /^ul\.dropdown-menu$/;
 const DROPDOWN_COUNT = 2;
 
+// Same story for the sim title, and a much bigger subtree: Bootstrap built all eleven classes and
+// every one of their specs into the page up front. One drop takes the lot, because the class
+// submenus are nested inside the root `<ul>`. `sim-title.mjs` compares them opened instead — which
+// is the only way the spec links, the way every other sim is reached, get looked at at all.
+const SIM_TITLE = /\.sim-title(\.|$)/;
+const SIM_TITLE_MENU_COUNT = 1;
+
 const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
@@ -87,6 +94,10 @@ for (const spec of specsFromArgv()) {
 	const menus = dropSubtrees(a.shell, IMPORT_EXPORT, DROPDOWN_MENU);
 	a.shell = menus.dom;
 	if (menus.dropped !== DROPDOWN_COUNT) problems.push(`dropped ${menus.dropped} dropdown menus from the baseline, expected ${DROPDOWN_COUNT}`);
+
+	const title = dropSubtrees(a.shell, SIM_TITLE, DROPDOWN_MENU);
+	a.shell = title.dom;
+	if (title.dropped !== SIM_TITLE_MENU_COUNT) problems.push(`dropped ${title.dropped} sim-title menus, expected ${SIM_TITLE_MENU_COUNT}`);
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);

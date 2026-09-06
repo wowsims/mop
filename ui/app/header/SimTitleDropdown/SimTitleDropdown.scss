@@ -1,0 +1,58 @@
+// The popups portal to `<body>`, so none of `.sim-title`'s rules reach them. What follows is those
+// rules re-keyed onto the popup's own classes — deliberately not a bare `.sim-link`, which the
+// homepage also uses for a different layout.
+.sim-title-positioner {
+	// Above the sidebar, as `.sim-title .dropdown-menu` was.
+	z-index: 1500;
+
+	// Browsing between classes, which Base UI otherwise takes away.
+	//
+	// Opening a submenu makes it mark the rest of the floating tree inert (`markOthers`, from its
+	// floating-ui fork) and the parent menu's rows come back `pointer-events: none`. Measured, not
+	// inferred: `elementFromPoint` over the second class row returns this positioner. The effect is
+	// that you open one class and then cannot move to another — which is the whole point of the menu.
+	// `modal={false}` on `Menu.Root` does not lift it and `SubmenuRoot` has no `modal` of its own.
+	//
+	// `!important` because the library sets it inline. Scoped to this menu so nothing else that uses
+	// a Base UI popup inherits the decision.
+	&[data-base-ui-inert],
+	&[data-base-ui-inert] * {
+		pointer-events: auto !important;
+	}
+}
+
+.sim-title-popup {
+	// Bootstrap's menu took the trigger's width from `.sim-link-dropdown > .dropdown-menu`.
+	width: var(--anchor-width);
+	border: none;
+	background: var(--bs-body-bg);
+
+	// The class submenus are wider than the row that opens them.
+	&--specs {
+		width: auto;
+		min-width: 300px;
+	}
+
+	.sim-link {
+		display: block;
+		width: 100%;
+		border: 0;
+		background: var(--bs-body-bg);
+		text-align: left;
+		text-decoration: none;
+
+		// `data-highlighted` covers pointer and keyboard alike; `data-popup-open` is the open class
+		// submenu, which Bootstrap marked with `.show`.
+		&:hover,
+		&:focus,
+		&[data-highlighted],
+		&[data-popup-open] {
+			background: var(--dropdown-link-hover-bg);
+		}
+	}
+
+	.sim-link-content {
+		padding-left: var(--gap-width);
+		padding-right: var(--gap-width);
+	}
+}

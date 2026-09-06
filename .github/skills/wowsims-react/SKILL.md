@@ -28,7 +28,7 @@ Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, stacked on
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns; `Toast`, `Dialog` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns on Base UI `Menu`**; the `Dialog` adapter next, which unblocks stat-weights and the advanced encounter modal |
+| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**; the `Dialog` adapter next, which unblocks stat-weights and the advanced encounter modal |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -845,37 +845,6 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
-### The sim title dropdown is BLOCKED on Base UI's submenu modality — attempted 2026-09-06
-
-The port was written, worked, and was reverted. Do not start it again without deciding the question
-below first.
-
-`Menu.SubmenuRoot` maps onto the markup exactly — a class row per `SubmenuTrigger`, each spec a
-`Menu.LinkItem` so it stays a real, middle-clickable link — and it rendered correctly: 11 classes in
-the right order with the right colour tokens, all 34 spec links with the right hrefs, icons, labels
-and launch statuses. What it cannot do is let you *browse*.
-
-When a submenu opens, Base UI marks the parent tree inert (`markOthers` from its floating-ui fork,
-`data-base-ui-inert`), and the parent's rows come back `pointer-events: none`. Measured, not
-inferred: `elementFromPoint` over the second class row returns the positioner, not the row. So you
-can open one class and then cannot move to another — the whole point of the menu. `modal={false}`
-on `Menu.Root` does not lift it, and `SubmenuRoot` has no `modal` prop of its own.
-
-The open question is which way out:
-
-- Accept modal submenus and give the menu a different shape — one flat popup with a group per class,
-  say — which changes the interaction rather than fighting the library.
-- Override `pointer-events` on the inert parent. Cheap, but `markOthers` also sets `aria-hidden` on
-  it, so the class list would be pointer-reachable and invisible to a screen reader at the same
-  time. That is worse than what is there now.
-- Keep this one on Bootstrap until Base UI offers a non-modal submenu.
-
-`tools/react-migration/sim-title.mjs` landed anyway and is green on both ports: it opens the menu,
-walks all eleven classes, and compares every spec link's tag, colour, label, title, launch status,
-href and icon — 34 links. It is the gate this port needs, and it exists before the port, which is
-the rule. It also covers what `parity.mjs` would lose: Bootstrap builds all 361 lines of that menu
-into the page up front, and a portaled popup takes them out of the tree comparison.
-
 ### Findings waiting on a decision
 
 Batch these into the next `AskUserQuestion`; they are recorded rather than fixed because each one
@@ -1100,6 +1069,27 @@ Two things specific to this migration:
   extension — the extension reports false "renderer frozen" on this app.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **The sim title dropdown is Base UI too, and the one thing it fights the library over
+  is documented in its stylesheet.** `Menu.SubmenuRoot` per class, `Menu.LinkItem` per spec so each
+  stays a real, middle-clickable link. `.sim-title` left `ShellDom`.
+
+  Opening a submenu makes Base UI mark the rest of the floating tree inert (`markOthers`), and the
+  parent menu's rows come back `pointer-events: none` — so you could open one class and then not
+  move to another, which is the whole point of the menu. `modal={false}` does not lift it and
+  `SubmenuRoot` has no `modal`. One scoped `!important` on `[data-base-ui-inert]` restores it.
+
+  **The cost that was feared is not real, and this corrects an earlier note here.** `markOthers` was
+  assumed to also set `aria-hidden` on the parent, which would have made the class list
+  mouse-reachable and invisible to a screen reader. Measured: `aria-hidden` is `null` and there is no
+  `inert` attribute — `data-base-ui-inert` is a marker with an inline `pointer-events` style, and
+  overriding it costs nothing.
+
+  `parity.mjs` drops the baseline's menu subtree, all 361 lines of it: Bootstrap built every class
+  and every spec into the page up front and Base UI renders a popup only while it is open.
+  `sim-title.mjs` covers them instead, and it landed a commit *before* this one — it walks all eleven
+  classes and compares every spec link's tag, colour, label, title, launch status, href and icon.
+  Identical on both ports.
 
 - 2026-09-06 **The header's import/export dropdowns are Base UI `Menu`s — the last Bootstrap JS in
   the header is gone.** Styling was re-expressed rather than inherited: the popup portals to

@@ -25,7 +25,6 @@ import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
-import { SimTitleDropdown } from './header/sim_title_dropdown';
 import { NoticeNativeSim } from './notice_native_sim';
 import type { ShellDom } from './shell_dom';
 const URLMAXLEN = 2048;
@@ -79,8 +78,6 @@ export abstract class SimUI extends Component implements SimHost {
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
 		// Sidebar Contents
-
-		new SimTitleDropdown(dom.title, config.spec);
 
 		this.simActionsContainer = dom.sidebarActions;
 
