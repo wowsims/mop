@@ -16,7 +16,7 @@ import { DamageMetricsTable } from './detailed_results/damage_metrics';
 import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
-import { LogRunner } from './detailed_results/log_runner';
+import { LogView } from './detailed_results/log/log_view';
 import { ResourceMetricsTable } from './detailed_results/resource_metrics';
 import { ResultComponent, SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
@@ -301,7 +301,7 @@ export class DetailedResults extends Component {
 			combatReplay.stopPlayback();
 		});
 
-		const logRunner = new LogRunner(
+		const logView = new LogView(
 			{
 				parent: this.rootElem.querySelector('.log')!,
 				resultsEmitter: this.resultsEmitter,
@@ -309,7 +309,7 @@ export class DetailedResults extends Component {
 			},
 			this.simUI,
 		);
-		deferUntilShown(logRunner, 'logTab');
+		deferUntilShown(logView, 'logTab');
 
 		this.rootElem.classList.add('hide-threat-metrics');
 

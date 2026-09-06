@@ -51,6 +51,37 @@
 		padding-top: 0;
 		padding-bottom: 0;
 	}
+
+	// Panes whose content sizes itself from the pane rather than the other way round - a
+	// virtualised list, a canvas, a scroller - cannot use height:100%: every ancestor up to
+	// .sim-root is content-driven, so there is no definite height to resolve against, and the pane
+	// collapses to its own toolbar. They share one floor here instead of each inventing its own vh
+	// number or magic pixel offset. The panes that are just tables are left alone; a floor would
+	// only add whitespace under a short one.
+	// Guarded twice, because `display` here outranks both of the rules that hide these panes:
+	// Bootstrap's `.tab-content > .tab-pane { display: none }` for an inactive tab, and
+	// `.dr-no-results .dr-row` for a sim that has not been run. Without the guards the panes lay
+	// out behind whichever tab is open, and an empty timeline renders under "Run a simulation".
+	// The log is not here: the page scrolls it, so its height is its rows.
+	&:not(.dr-no-results) > .tab-content > .tab-pane.dr-tab-content {
+		&.timeline-content.active,
+		&.replay-content.active {
+			display: flex;
+			flex-direction: column;
+			min-height: var(--dr-filling-pane-min-height);
+
+			// The pane, its row and the component's mount point are the same scaffolding in both
+			// cases (detailed_results.tsx:179-188), so they fill here. Whether the component
+			// inside then stretches is the component's own call.
+			> .dr-row,
+			> .dr-row > * {
+				display: flex;
+				flex-direction: column;
+				flex: 1 1 auto;
+				min-height: 0;
+			}
+		}
+	}
 }
 
 .dr-toolbar {

@@ -2024,7 +2024,16 @@
 				"export_button": "Exporter le Journal",
 				"time_column": "Temps",
 				"event_column": "Événement",
-				"show_debug": "Afficher les messages de débogage"
+				"show_debug": "Afficher les messages de débogage",
+				"search_placeholder": "Rechercher dans le journal…",
+				"search_add_filter": "Ajouter un filtre",
+				"search_add_value": "Ajouter une valeur",
+				"floatingActionBar": {
+					"toggle": "Afficher ou masquer les filtres",
+					"none": "Aucun filtre",
+					"active": "{{count}} actif(s)",
+					"clear": "Effacer les filtres"
+				}
 			},
 			"tabs": {
 				"damage": "Dégâts",
