@@ -3,8 +3,6 @@ import { formattedTimestamp } from '../../../../proto_utils/combat_log/types';
 import { spellSchoolNames } from '../../../../proto_utils/names';
 import type { ClauseField, SearchGroup } from './query';
 
-// `spellIcons` is a name -> icon URL side table rather than a richer option type, so this module
-// stays a plain data layer: the URL is a string the picker happens to put in an <img>.
 export type SuggestionSource = { spells: Array<string>; units: Array<string>; schools: Array<string>; spellIcons: Map<string, string> };
 
 export const EMPTY_SUGGESTIONS: SuggestionSource = { spells: [], units: [], schools: [], spellIcons: new Map() };
@@ -19,9 +17,6 @@ type TypeFilter = { kinds: ReadonlyArray<LogKind> } | { effect: DamageEffect } |
 
 // One row per token the Type filter offers. The dropdown lists these keys and matchType reads the
 // same rows, so a token cannot be offered without a matcher, or matched without being offered.
-//
-// 'cast' unions every cast-related kind because a user picking it means "show me the casts", not
-// the specific began/cancelled/completed split. 'buff' is a plainer synonym for 'aura'.
 //
 // damage/heal/shield select an effect, not a kind: the 'damage' kind tags every damage-dealt line,
 // heals and shields included, so routing them through the kind index would make type:damage and
@@ -113,7 +108,6 @@ function upperBound(arr: Float64Array, value: number): number {
 	return lo;
 }
 
-// Values in ascending order, plus the log-order row each came from.
 type SortedNumeric = { values: Float64Array; indexes: Int32Array };
 
 function sortedPermutation(indexes: Int32Array, byRow: Float64Array): SortedNumeric {
@@ -224,10 +218,6 @@ export class LogIndex {
 		private readonly isDebug: (i: number) => boolean,
 	) {}
 
-	// `targetNumber` is the results filter's selected target, as the 1-based number the log itself
-	// prints. It restricts to lines naming that target at either endpoint, which is the log-shaped
-	// equivalent of the unit list Timeline and CombatReplay narrow. It is applied here rather than
-	// by rebuilding the index, so changing the dropdown costs an intersection, not a reindex.
 	filter(groups: ReadonlyArray<SearchGroup>, keywords: ReadonlyArray<string>, showDebug: boolean, targetNumber: number | null = null): SortedInts {
 		this.ensureRowSets();
 		// An explicit type:debug filter asks for the lines the toggle hides, so it wins over the toggle.
@@ -274,8 +264,6 @@ export class LogIndex {
 		return candidates;
 	}
 
-	// Sorted once: the sets never change after the index is built, and every value picker rebuilds
-	// from this.
 	suggestions(): SuggestionSource {
 		this.ensureIndexes();
 		return (this.suggestionSource ??= {

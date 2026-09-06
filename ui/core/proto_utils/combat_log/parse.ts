@@ -26,9 +26,6 @@ const SPELL_SCHOOL_REGEX = / \(SpellSchool: (-?[0-9]+)\)/;
 const THREAT_REGEX = / \(Threat: (-?[0-9]+\.[0-9]+)\)/;
 const TIMESTAMP_REGEX = /\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/;
 
-// parseAll does not use this - the old SimLog.toHTML and rawWithoutTimestamp did, and the log/
-// display components own that now. Both callers want different capture groups out of the same
-// pattern, so the match is shared rather than the pattern being written out twice.
 // Groups: 1 = timestamp, 2 = entity bracket, 3 = the rest.
 export function matchTimestampPrefix(raw: string): RegExpExecArray | null {
 	const captureArr = TIMESTAMP_PREFIX_REGEX.exec(raw);
@@ -252,8 +249,6 @@ const LOG_MATCHERS: Array<LogMatcher> = [
 ];
 
 type MatchedLine = { matcher: LogMatcher; match: RegExpExecArray };
-// The per-line object the builders finish. Allocated fully shaped in the classify pass, including
-// the fields the resolve pass fills in, so no builder ever adds a property to a completed object.
 type PendingLog = Mutable<Omit<BaseLog, 'kind'>> & { kind: LogKind };
 type PendingEntry = { log: PendingLog; matcher: LogMatcher | null; match: RegExpExecArray | null; key: string };
 type ActionIdRequest = { logString: string; playerIndex: number | undefined };

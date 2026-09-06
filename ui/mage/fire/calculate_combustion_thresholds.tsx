@@ -204,10 +204,6 @@ export class CalculateCombustionThresholds extends Component {
 		};
 	}
 
-	// Parses the small per-iteration slice this modal fetches itself (-SIMSTART-, Combustion
-	// Dot Estimate and Aura lines only), not the full result the main log pipeline is given.
-	// Builds PlainLog/AuraLog objects directly rather than the main parser's matcher table,
-	// which the sim never hands these lines to.
 	private async parseLogs(logs: string[]): Promise<CombatLog[]> {
 		this.progressTrackerModal.updateProgress({
 			stage: 'calculating',

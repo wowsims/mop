@@ -35,8 +35,6 @@ export class LogView extends ResultComponent {
 		contentContainer: HTMLDivElement;
 	};
 
-	// The page scrolls the log, the same as the timeline, so the search box and column header stick
-	// under the results toolbar and the virtual list is told how much viewport all three cover.
 	private toolbar: HTMLElement | null = null;
 	private stickyTop = 0;
 	private readonly chromeObserver = new ResizeObserver(() => this.measureStickyTop());
@@ -47,7 +45,6 @@ export class LogView extends ResultComponent {
 	private logs: Array<CombatLog> = [];
 	private logIndex: LogIndex | null = null;
 	private visibleIndexes: SortedInts = [];
-	// The results filter's selected target, as the number the log prints, or null for all.
 	private targetNumber: number | null = null;
 
 	constructor(config: ResultComponentConfig, simUi: SimUI) {
@@ -170,7 +167,6 @@ export class LogView extends ResultComponent {
 		this.measureStickyTop();
 	}
 
-	// The measurement the rotation makes for its ruler (rotation_view.tsx measureStickyTop).
 	private measureStickyTop() {
 		const toolbar = this.toolbar;
 		this.stickyTop = toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0;

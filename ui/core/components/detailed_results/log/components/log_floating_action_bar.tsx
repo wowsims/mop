@@ -5,9 +5,6 @@ import { Component } from '../../../component';
 import type { SuggestionSource } from '../search/indexes';
 import { labelOf, LogSearchBar, sentenceCase } from '../search/search_bar';
 
-// The log's counterpart of the timeline's row-visibility bar: a bottom-sticky strip that keeps
-// the structured filters behind a toggle, plus whatever the log mounts in `actionsElem`. The
-// keyword box is not in here; it stays above the rows, where master had it.
 export class LogFloatingActionBar extends Component {
 	readonly searchBar: LogSearchBar;
 	readonly actionsElem: HTMLDivElement;

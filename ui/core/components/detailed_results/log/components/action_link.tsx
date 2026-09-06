@@ -13,7 +13,6 @@ export function ActionLink(actionId: ActionId, isAura?: boolean): HTMLAnchorElem
 	anchor.rel = 'noopener noreferrer';
 	actionId.setBackground(iconElem);
 	actionId.setWowheadHref(anchor);
-	// The only slow part, the buff-aura lookup, is already memoised in Database.
 	actionId.setWowheadDataset(anchor, { useBuffAura: isAura }).catch(() => {});
 	return anchor;
 }

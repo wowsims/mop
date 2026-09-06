@@ -94,8 +94,6 @@ export class VirtualList {
 					contentWidth = content.contentRect.width;
 				}
 				this.measured = false;
-				// A frame later, not now: rendering moves the spacers, and resizing an observed
-				// element from inside its own observer is the loop the browser reports.
 				this.onScroll();
 			});
 			this.resizeObserver.observe(options.scrollElem ?? this.contentElem);
@@ -129,8 +127,6 @@ export class VirtualList {
 		if (this.ownScroller) {
 			(scroller as HTMLElement).scrollTop = 0;
 		} else if (scroller) {
-			// Only when the first row is above the fold; scrolling up to it otherwise would drag the
-			// scroller away from whatever sits above the list.
 			const top = this.contentElem.getBoundingClientRect().top - this.visibleTop(scroller);
 			if (top < 0) scroller.scrollBy({ top });
 		}
@@ -199,7 +195,6 @@ export class VirtualList {
 		this.onRender?.();
 	}
 
-	// The viewport edge the first visible row sits under, in client coordinates.
 	private visibleTop(scroller: HTMLElement | Window): number {
 		return (scroller instanceof HTMLElement ? scroller.getBoundingClientRect().top : 0) + this.topInset();
 	}
