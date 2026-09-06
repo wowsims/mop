@@ -13,7 +13,13 @@ export interface CritCapRowProps {
 	text: string;
 }
 
-// Bootstrap border utilities at zero opacity: a spacer sized like the value it replaces.
+// A spacer sized like the value it replaces, its border hidden by zeroing Bootstrap's opacity var.
+//
+// This is the one place a ported component writes a `--bs-*` name, and it has to until the parity
+// gate retires. The class list is what `panes-parity.mjs` compares, so `border-body border-brand`
+// cannot be dropped; those utilities set `border-color` with `!important`, so an inline
+// `borderColor: transparent` loses to them and the border paints solid orange — measured, not
+// assumed. Zeroing the variable the utility itself reads is the only lever left.
 const SPACER_STYLE = { '--bs-border-opacity': '0' } as CSSProperties;
 
 export const CritCapRow = ({ info, text }: CritCapRowProps) => {

@@ -563,51 +563,51 @@ $toast-padding-y: var(--spacer-3);
 	--success: #{$success};
 
 	// Item quality colors
-	--junk: #{$item-quality-junk};
-	--common: #{$item-quality-common};
-	--uncommon: #{$item-quality-uncommon};
-	--rare: #{$item-quality-rare};
-	--epic: #{$item-quality-epic};
-	--legendary: #{$item-quality-legendary};
-	--artifact: #{$item-quality-artifact};
-	--heirloom: #{$item-quality-heirloom};
+	--quality-junk: #{$item-quality-junk};
+	--quality-common: #{$item-quality-common};
+	--quality-uncommon: #{$item-quality-uncommon};
+	--quality-rare: #{$item-quality-rare};
+	--quality-epic: #{$item-quality-epic};
+	--quality-legendary: #{$item-quality-legendary};
+	--quality-artifact: #{$item-quality-artifact};
+	--quality-heirloom: #{$item-quality-heirloom};
 
 	// Spell school colors
-	--physical: #{map-get($spell-school-colors, 'physical')};
-	--arcane: #{map-get($spell-school-colors, 'arcane')};
-	--fire: #{map-get($spell-school-colors, 'fire')};
-	--frost: #{map-get($spell-school-colors, 'frost')};
-	--holy: #{map-get($spell-school-colors, 'holy')};
-	--nature: #{map-get($spell-school-colors, 'nature')};
-	--shadow: #{map-get($spell-school-colors, 'shadow')};
-	--chaos: #{map-get($spell-school-colors, 'chaos')};
+	--school-physical: #{map-get($spell-school-colors, 'physical')};
+	--school-arcane: #{map-get($spell-school-colors, 'arcane')};
+	--school-fire: #{map-get($spell-school-colors, 'fire')};
+	--school-frost: #{map-get($spell-school-colors, 'frost')};
+	--school-holy: #{map-get($spell-school-colors, 'holy')};
+	--school-nature: #{map-get($spell-school-colors, 'nature')};
+	--school-shadow: #{map-get($spell-school-colors, 'shadow')};
+	--school-chaos: #{map-get($spell-school-colors, 'chaos')};
 
 	// Faction colors
-	--horde: #{map-get($faction-colors, 'horde')};
-	--alliance: #{map-get($faction-colors, 'alliance')};
+	--faction-horde: #{map-get($faction-colors, 'horde')};
+	--faction-alliance: #{map-get($faction-colors, 'alliance')};
 
 	// Resource colors
-	--health: #{$health-color};
-	--mana: #{$mana-color};
-	--rage: #{$rage-color};
-	--energy: #{$energy-color};
-	--focus: #{$focus-color};
-	--chi: #{$chi-color};
-	--combo-points: #{$combo-points-color};
-	--holy-power: #{$holy-power-color};
-	--lunar-energy: #{$lunar-energy-color};
-	--solar-energy: #{$solar-energy-color};
+	--resource-health: #{$health-color};
+	--resource-mana: #{$mana-color};
+	--resource-rage: #{$rage-color};
+	--resource-energy: #{$energy-color};
+	--resource-focus: #{$focus-color};
+	--resource-chi: #{$chi-color};
+	--resource-combo-points: #{$combo-points-color};
+	--resource-holy-power: #{$holy-power-color};
+	--resource-lunar-energy: #{$lunar-energy-color};
+	--resource-solar-energy: #{$solar-energy-color};
 
 	// Secondary resource colors
-	--arcane-charges: #{$arcane-charges-color};
-	--shadow-orbs: #{$shadow-orbs-color};
-	--demonic-fury: #{$demonic-fury-color};
-	--burning-embers: #{$burning-embers-color};
-	--soul-shards: #{$soul-shards-color};
+	--resource-arcane-charges: #{$arcane-charges-color};
+	--resource-shadow-orbs: #{$shadow-orbs-color};
+	--resource-demonic-fury: #{$demonic-fury-color};
+	--resource-burning-embers: #{$burning-embers-color};
+	--resource-soul-shards: #{$soul-shards-color};
 
 	// Damage colors
-	--hit: #{$damage-hit};
-	--crit: #{$damage-crit};
+	--damage-hit: #{$damage-hit};
+	--damage-crit: #{$damage-crit};
 	--partial: #{$damage-partial};
 	--miss: #{$damage-miss};
 	--cancel: #{$damage-cancel};

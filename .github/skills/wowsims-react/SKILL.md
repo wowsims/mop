@@ -1268,6 +1268,35 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **The seam block's colour tokens are namespaced by family, and one `--bs-*` write is
+  load-bearing after all.** The 22 tokens added by the audit landed on bare words following the
+  block's existing convention (`--uncommon`, `--health`), which left `--shadow` reading like a
+  box-shadow token beside `--focus-ring`. All five families are now prefixed —
+  `--quality-*`, `--school-*`, `--faction-*`, `--resource-*`, `--damage-*`, 35 declarations — so the
+  block has one convention rather than two.
+
+  **The rename was safe for a reason worth recording: those tokens have zero `var()` readers.** The
+  live code still reads the `--bs-*` twins, so all 35 occurrences are declarations in one file.
+  Checking that took a precise search, because `_timeline.scss` contains
+  `.secondary-resource--arcane-charges` — a *class name* that a naive `--arcane-charges` search
+  matches. A blind rename would have silently recoloured the timeline, and no gate would have caught
+  it: parity compares elements and classes, not computed values. Verified instead by reading all 35
+  off `getComputedStyle(:root)` on the running page — old names absent, new present, every value
+  equal to its `--bs-*` twin.
+
+  Phase C: the `--bs-form-check-{box,radio}-bg-image` pair is renamed without the prefix (they were
+  project inventions — Bootstrap has neither), and `Dialog.tsx`'s comment now cites
+  `--primary-dampened` / `--hover-color`, the spellings `_mixins.scss` actually declares.
+
+  **`CritCapRow`'s `--bs-border-opacity: 0` was attempted and reverted, and that is the interesting
+  half.** The rule says a ported component never writes a `--bs-*` name. Here it must, until the
+  parity gate retires: `panes-parity.mjs` pins the class list, so `border-body border-brand` cannot
+  be dropped, and Bootstrap's border-colour utilities carry `!important` — an inline
+  `borderColor: 'transparent'` loses to them and paints the spacer solid orange. Measured on both
+  builds: React `rgb(224, 163, 53)` against the baseline's `rgba(224, 163, 53, 0)`. Zeroing the
+  variable the utility itself reads is the only lever the gate leaves. Same shape as the `hide`-class
+  note: a constraint of the gate, not a design choice, and it resolves in Phase 5.
+
 - 2026-09-06 **The `--bs-*` audit, and the `:root` half re-homed into the seam block.** 22 owned
   tokens added to `scss/shared/_variables.scss` — item qualities, spell schools, factions, `--chi`,
   the two balance-druid resources, and `--body-font-family` / `--body-font-size` /

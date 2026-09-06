@@ -91,12 +91,12 @@ $gray-800: #323232;
 
 	&:checked[type='checkbox'] {
 		background-color: var(--bs-primary);
-		background-image: var(--bs-form-check-box-bg-image);
+		background-image: var(--form-check-box-bg-image);
 	}
 
 	&:checked[type='radio'] {
 		background-color: var(--bs-primary);
-		background-image: var(--bs-form-check-radio-bg-image);
+		background-image: var(--form-check-radio-bg-image);
 	}
 }
 

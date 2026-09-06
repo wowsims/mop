@@ -43,8 +43,8 @@ export interface DialogProps {
 	 * Where the popup is portaled. Base UI's default is `<body>`, and that is outside `.sim-ui` —
 	 * which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`,
 	 * `--bs-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the
-	 * same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--bs-primary-dampened`,
-	 * `--bs-hover-color` and `--theme-component-text-color` do not resolve at all. Every vanilla
+	 * same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--primary-dampened`,
+	 * `--hover-color` and `--theme-component-text-color` do not resolve at all. Every vanilla
 	 * modal is a child of `simUI.rootElem` for exactly this reason, so any dialog whose contents use
 	 * `.btn-primary` or a `--bs-primary*` has to pass it. The chrome here does not — it reads only
 	 * tokens that resolve at `:root`.

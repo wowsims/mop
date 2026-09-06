@@ -59,10 +59,10 @@
 	}
 
 	// These are custom variables but parsed SVGs can't use CSS vars so we need to assign them with Sass
-	--bs-form-check-box-bg-image: #{escape-svg(
+	--form-check-box-bg-image: #{escape-svg(
 			url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='none' stroke='#{$text-color}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/></svg>")
 		)};
-	--bs-form-check-radio-bg-image: #{escape-svg(
+	--form-check-radio-bg-image: #{escape-svg(
 			url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='#{$text-color}'/></svg>")
 		)};
 }
