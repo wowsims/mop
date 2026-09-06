@@ -44,8 +44,8 @@ export function loadIndividualSettings(
 	const env = opts.player.sim.env;
 	// Declared before the batch: its flush can already schedule a persist.
 	let persistTimer: ReturnType<typeof setTimeout> | null = null;
-	// The stats recompute is skipped for this batch; the stored settings already
-	// carry the stats they were saved with (Sim.applyLoadedSettings).
+	// The stats recompute is skipped for this batch and run once when it finishes
+	// (Sim.applyLoadedSettings).
 	opts.player.sim.applyLoadedSettings(() =>
 		batch(() => {
 			host.applyDefaults();

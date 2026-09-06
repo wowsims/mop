@@ -172,7 +172,8 @@ export class Sim {
 
 		// Stats recompute on any raid/encounter change — one selector, so a batch
 		// touching both recomputes once. Skipped while the initial settings load
-		// is applying: those settings already carry the stats they were saved with.
+		// is applying, so the load's many writes cost one recompute, which
+		// applyLoadedSettings runs when it finishes.
 		subscribeStatsInputs(this)(() => {
 			if (this.applyingLoadedSettings) return;
 			this.updateCharacterStats();
@@ -196,6 +197,9 @@ export class Sim {
 			return apply();
 		} finally {
 			this.applyingLoadedSettings = false;
+			// `currentStats` is server-derived and is not part of the stored settings, so
+			// without this the display keeps the stats computed from the pre-load defaults.
+			this.updateCharacterStats();
 		}
 	}
 

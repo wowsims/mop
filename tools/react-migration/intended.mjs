@@ -23,6 +23,24 @@ export const INTENDED = [
 		why: "item swap's label names the icon group rather than a control, so it is a <span> and the group carries role=group + aria-labelledby",
 	},
 	{
+		base: 'button.apl-validations.list-picker-item-action',
+		react: 'button.apl-validation-warning.apl-validations.list-picker-item-action',
+		max: 11,
+		why: 'APL validation severity needs unit metadata, which the vanilla side never refreshes after the settings load because Sim.applyLoadedSettings suppressed the recompute and nothing ran it afterwards (fixed in sim.ts); baseline leaves all 116 validations unclassified. Delete this entry once the fix reaches feature/ui-restructure',
+	},
+	{
+		base: 'button.apl-validations.list-picker-item-action',
+		react: 'button.apl-validation-information.apl-validations.list-picker-item-action',
+		max: 2,
+		why: 'same recompute fix as the warning entry above, for the informational severity',
+	},
+	{
+		base: 'i.fa.fa-exclamation-triangle.fa-xl',
+		react: 'i.fa.fa-info-circle.fa-xl',
+		max: 2,
+		why: 'an informational validation gets the info glyph; the baseline shows every validation with the warning triangle because none are classified',
+	},
+	{
 		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
 		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
 		describe: 'react drops hide-healing-metrics on a tank spec',
