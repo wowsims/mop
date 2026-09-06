@@ -4,6 +4,7 @@ import { usePlayer } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { translatePlayerSpec } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
+import { Icon } from '@ui-kit/Icon';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';
 
@@ -44,9 +45,9 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 					className="talent-tree-reset link-danger"
 					data-tooltip-id={resetTooltipId}
 					onClick={() => onChange(clearedTalentsString())}>
-					{/* `fa fa-times`, not `Icon`'s `fas fa-times`: the class list is what the pane parity gate
-					    compares, and normalising this glyph to FontAwesome 6 is a change, not a port. */}
-					<i className="fa fa-times" />
+					{/* `style="base"` keeps the bare `fa` prefix: the class list is what the pane parity
+					    gate compares, and normalising this glyph to `fas` is a change, not a port. */}
+					<Icon name="times" style="base" />
 				</Button>
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />
 			</div>

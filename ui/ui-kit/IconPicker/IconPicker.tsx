@@ -1,4 +1,5 @@
 import { isRightClick } from '@domain/env';
+import { externalRel } from '@domain/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
@@ -91,6 +92,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 			data-disable-wowhead-touch-tooltip="true"
 			target="_blank"
 			href={href || undefined}
+			rel={externalRel(href, undefined)}
 			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
 			{...disabledAttribute}
 			onClick={event => {

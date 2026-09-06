@@ -1,6 +1,7 @@
 import type { Social } from '@domain/constants/other';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
+import { Icon } from '@ui-kit/Icon';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useId } from 'react';
 
@@ -23,7 +24,7 @@ export const SocialLink = ({ social }: SocialLinkProps) => {
 	return (
 		<>
 			<Button as="a" variant="unstyled" href={social.href} target="_blank" className={social.className} aria-label={tooltip} data-tooltip-id={id}>
-				<i className={social.icon} aria-hidden="true" />
+				<Icon name={social.icon} style="brands" size="lg" />
 				{'label' in social && social.label}
 			</Button>
 			{/* tippy's default placement, which the socials took and the rest of the toolbar did not. */}

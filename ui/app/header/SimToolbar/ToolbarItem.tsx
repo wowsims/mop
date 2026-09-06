@@ -1,15 +1,16 @@
 import { Button } from '@ui-kit/Button';
+import { Icon } from '@ui-kit/Icon';
+import type { IconName, IconSize, IconStyle } from '@ui-kit/Icon/types';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
 
 export interface ToolbarItemProps {
-	/**
-	 * FontAwesome classes verbatim. Not `Icon`: these use the bare `fa` prefix as well as `fas`/`fab`,
-	 * and `Icon` always emits a style class of its own, so routing them through it would change every
-	 * glyph in the toolbar.
-	 */
-	icon?: string;
+	icon?: IconName;
+	/** Toolbar glyphs are `fas` unless told otherwise; `base` is the bare `fa` prefix. */
+	iconStyle?: IconStyle;
+	/** Every toolbar glyph is `fa-lg` today, so that is the default rather than a repeated prop. */
+	iconSize?: IconSize;
 	tooltip?: ReactNode;
 	/** Vanilla's `addToolbarLink` placed these below; the socials used tippy's default, which is top. */
 	place?: 'top' | 'bottom';
@@ -24,7 +25,18 @@ export interface ToolbarItemProps {
  * One toolbar affordance: an `<a>` when it carries an href, a `<button>` otherwise — the split
  * `SimToolbarItem` made, and the reason the socials do not go through this component.
  */
-export const ToolbarItem = ({ icon, tooltip, place = 'bottom', className, href, onClick, hidden, children }: ToolbarItemProps) => {
+export const ToolbarItem = ({
+	icon,
+	iconStyle = 'solid',
+	iconSize = 'lg',
+	tooltip,
+	place = 'bottom',
+	className,
+	href,
+	onClick,
+	hidden,
+	children,
+}: ToolbarItemProps) => {
 	const id = useId();
 	const anchor = tooltip ? { 'data-tooltip-id': id } : {};
 	const classes = clsx(className, hidden && 'hide');
@@ -34,7 +46,7 @@ export const ToolbarItem = ({ icon, tooltip, place = 'bottom', className, href, 
 	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (
 		<>
-			{icon && <i className={icon} aria-hidden="true" />}
+			{icon && <Icon name={icon} style={iconStyle} size={iconSize} />}
 			{children}
 		</>
 	);

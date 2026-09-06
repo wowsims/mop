@@ -1,4 +1,5 @@
 import { isRightClick } from '@domain/env';
+import { externalRel } from '@domain/links';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { TalentConfig } from '@domain/talents/config';
 import { usePlayer } from '@features/SimHostContext';
@@ -86,6 +87,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 			ref={rootRef}
 			className="talent-picker-root"
 			href={href || undefined}
+			rel={externalRel(href, undefined)}
 			data-selected={String(selected)}
 			// The anchor is a wowhead link, so following it has to be suppressed; and `mousedown`
 			// rather than `click` is what commits, which is why a right click reaches it at all.

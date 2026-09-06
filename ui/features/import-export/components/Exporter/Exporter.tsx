@@ -6,6 +6,7 @@ import { CopyButton } from '@ui-kit/copy_button';
 import { Dialog } from '@ui-kit/Dialog';
 import { downloadString } from '@ui-kit/dom_utils';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
+import { Icon } from '@ui-kit/Icon';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackPageView } from '../../../../tracking/analytics';
@@ -96,7 +97,7 @@ export const Exporter = ({ open, onOpenChange, title, allowDownload = false, sel
 						<Button className="exporter-button download-button ms-2" onClick={() => downloadString(dataRef.current, 'wowsims.json')}>
 							{/* Bare `fa`, which `Icon`'s closed union cannot emit — the same case as the header's
 							    dropdown triggers. */}
-							<i className="fa fa-download me-1" aria-hidden="true" />
+							<Icon name="download" style="base" className="me-1" />
 							{i18n.t('export.json.download_button')}
 						</Button>
 					)}

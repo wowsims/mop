@@ -63,13 +63,11 @@ export const SimToolbar = ({ knownIssues, onOpenSettings }: SimToolbarProps) => 
 				{i18n.t('info.known_issues')}
 			</ToolbarItem>
 
-			<ToolbarItem href={REPO_CHOOSE_NEW_ISSUE_URL} icon="fas fa-bug fa-lg" tooltip={i18n.t('info.bug_report')} />
+			<ToolbarItem href={REPO_CHOOSE_NEW_ISSUE_URL} icon="bug" tooltip={i18n.t('info.bug_report')} />
 
-			{!isNative() && (
-				<ToolbarItem href={REPO_RELEASES_URL} icon="fas fa-gauge-high fa-lg" className="downbin" tooltip="Download simulator for faster simulating" />
-			)}
+			{!isNative() && <ToolbarItem href={REPO_RELEASES_URL} icon="gauge-high" className="downbin" tooltip="Download simulator for faster simulating" />}
 
-			<ToolbarItem className="sim-options" icon="fas fa-cog fa-lg" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
+			<ToolbarItem className="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
 			<div className="sim-toolbar-socials">
 				{SOCIALS.map(social => (
@@ -85,7 +83,7 @@ export const SimToolbar = ({ knownIssues, onOpenSettings }: SimToolbarProps) => 
 			{outdatedNativeSim && (
 				<ToolbarItem
 					href={REPO_RELEASES_URL}
-					icon="fas fa-gauge-high fa-lg"
+					icon="gauge-high"
 					className="downbin link-danger"
 					tooltip="Newer version of simulator available for download"
 				/>

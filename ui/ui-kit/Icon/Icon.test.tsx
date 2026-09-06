@@ -21,7 +21,9 @@ describe('Icon', () => {
 		expect(el(render(<Icon name="exclamation-triangle" />).container).className).toContain('fa-triangle-exclamation');
 		expect(el(render(<Icon name="triangle-exclamation" />).container).className).toContain('fa-triangle-exclamation');
 		expect(el(render(<Icon name="question-circle" />).container).className).toContain('fa-circle-question');
-		expect(el(render(<Icon name="rotate-left" />).container).className).toContain('fa-arrow-rotate-left');
+		// `rotate-left` is its own glyph (\f2ea), not a spelling of `arrow-rotate-left` (\f0e2).
+		expect(el(render(<Icon name="rotate-left" />).container).className).toContain('fa-rotate-left');
+		expect(el(render(<Icon name="arrow-rotate-left" />).container).className).toContain('fa-arrow-rotate-left');
 	});
 
 	it('emits exactly one glyph class', () => {

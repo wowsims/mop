@@ -1,3 +1,4 @@
+import { externalRel } from '@domain/links';
 import type { ActionId } from '@domain/proto_utils/action_id';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
@@ -20,6 +21,7 @@ export const ImprovedAnchor = ({ actionId, className, active, hidden }: Improved
 			data-whtticon="false"
 			data-disable-wowhead-touch-tooltip="true"
 			href={href || undefined}
+			rel={externalRel(href, undefined)}
 			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
 			hidden={hidden}
 		/>
