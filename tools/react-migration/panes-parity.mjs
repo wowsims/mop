@@ -9,7 +9,18 @@
 // Selectors here go through `window.simTabsProbe` (browser.mjs) so that one script drives the
 // Bootstrap strip on the parent branch and the Base UI strip that replaces it. Tabs are clicked by
 // position rather than by class, which is why the tab-id lists are compared first.
-import { dropRootClasses, launch, openSpec, overusedIntended, PORTS, normaliseBaseUiMenus, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+import {
+	dropRootClasses,
+	launch,
+	normaliseBaseUiMenus,
+	normaliseLiftedSubtrees,
+	openSpec,
+	overusedIntended,
+	PORTS,
+	SERIALIZE,
+	specsFromArgv,
+	unexpectedLines,
+} from './browser.mjs';
 import { INTENDED } from './intended.mjs';
 
 // Deferred tab bodies build on first show; the same wait applies to both sides.
@@ -34,18 +45,28 @@ for (const spec of specsFromArgv()) {
 	if (!problems.length)
 		for (const [index, id] of ids.entries()) {
 			const dom = {};
+			const levels = {};
 			for (const side of Object.keys(PORTS)) {
 				await sides[side].page.locator('.sim-tabs [role=tab]').nth(index).click();
 				await sides[side].page.waitForTimeout(SETTLE);
 				const open = await sides[side].page.evaluate(() => window.simTabsProbe.openIds());
 				if (open.join() !== id) problems.push(`${side} ${id}: clicking it left [${open}] open`);
-				dom[side] = dropRootClasses(await sides[side].page.evaluate(SERIALIZE, '#' + id));
+				// Both sides: see `normaliseLiftedSubtrees`. Its counts are compared across the two below.
+				const lifted = normaliseLiftedSubtrees(dropRootClasses(await sides[side].page.evaluate(SERIALIZE, '#' + id)));
+				problems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
+				levels[side] = lifted;
+				dom[side] = lifted.dom;
 				if (side === 'react') {
 					const normalised = normaliseBaseUiMenus(dom[side]);
 					dom[side] = normalised.dom;
 					problems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 				}
 			}
+			// What makes the lift an assertion rather than a fold: React must have nothing left to lift,
+			// and both sides must hold the same number of level containers either way.
+			if (levels.react.lifted) problems.push(`${id}: react still nests ${levels.react.lifted} level container(s) inside the picker anchor`);
+			if (levels.base.total !== levels.react.total)
+				problems.push(`${id}: ${levels.base.total} level containers on the baseline, ${levels.react.total} on react`);
 			const la = dom.base.split('\n');
 			const lb = dom.react.split('\n');
 			sizes.push(`${id}=${lb.length}`);

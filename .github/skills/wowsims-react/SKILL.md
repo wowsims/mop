@@ -312,7 +312,7 @@ of the duplication sweep was to build each shape once.
 
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
-| `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup, the click/mousedown event map, and the store-on-hide write |
+| `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup with the level container un-nested out of the picker's anchor, the click/mousedown event map, and the store-on-hide write |
 | `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — the nine settings blocks are React now, the other nine sites are gear, apl and bulk | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/testing/PickerOracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
@@ -902,6 +902,20 @@ An entry may also carry a `match(base, react)` predicate instead of a fixed pair
 text varies per spec — the root's class list carries the spec's own class, so the healing-metrics
 entry could not be written as two literals.
 
+`INTENDED` cannot express a port that **moves** an element, only one that changes a line in place, so
+there are three tools for the three shapes of change: `INTENDED` for a changed line,
+`collapseWrappers` for a deleted one, and `liftSubtrees` (`browser.mjs`, table `LIFTED_SUBTREES`) for
+a re-parented subtree. The one entry is `IconPicker`'s `.icon-input-level-container`, which vanilla
+builds inside the picker's anchor and React renders as its next sibling; it is the anchor's only
+child either way, so the fold is a dedent of its four lines. **The fold itself is a no-op for both
+tree comparisons** — `unexpectedLines` trims before comparing, so indentation is invisible to it, and
+disabling the table leaves every spec green. What is load-bearing is the `lifted` / `total` counts
+`normaliseLiftedSubtrees` returns: it runs on **both** sides, React must have nothing left to lift,
+and both sides must hold the same number of containers. Put the container back inside the anchor and
+both parity gates report `settings-tab: react still nests 34 level container(s) inside the picker
+anchor`; disable the table and that same revert passes again. Every pane but settings reports
+`lifted 0 total 0` on both builds.
+
 First entry: the sidebar's `.character-stats-label` is an `<h3>`, not a `<label>`. A `<label>` with
 no control labels nothing — it was a heading wearing the wrong element. The styling is unchanged and
 measured: same 41×18 box, 14px/700 SimDefaultFont, 17.5px line-height, 7px bottom margin, 1px
@@ -1298,6 +1312,45 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-06 **`IconPicker` un-nests its level container: no more `<a>` inside `<a>`.**
+  `.icon-input-level-container` is the anchor's next sibling instead of its only child, so the two
+  `ImprovedAnchor`s and the counter are no longer inside a link. 72 nested anchors across 36 pickers
+  on `warlock/demonology`'s settings tab go to zero, and the vanilla picker keeps the old shape — the
+  SCSS holds both, `.icon-picker-button > …` for it and `.icon-picker-button + …` for React.
+
+  **Overlaying a sibling costs three things the nesting gave for free**, all of them found by
+  measuring rather than by reading. `pointer-events: none` on the container with `auto` on
+  `.icon-input-improved`, or it swallows every hover and click over the 33×33 it covers and the
+  wowhead tooltips die. The same click handlers on the container as on the anchor, or a click on an
+  improved icon follows the link instead of changing the value. `filter: grayscale(1)`, `none` under
+  `.icon-picker-button.active`, or an inactive picker's counter stays green. And `flex-shrink: 0`:
+  the root is a flex item that shrinks, and without it the container joins the label in absorbing
+  that — the first attempt left containers 8 to 25 px wide instead of 33.
+
+  **Geometry is asserted by measurement, not by argument.** The box math is `calc(var(--icon-size-md)
+  - 2px)` for the size, `margin: 2px 0 0 calc(-1 * that)` for the position: 2px is the anchor's two
+  1px borders, and the negative inline margin leaves zero outer width so the form label after it does
+  not move. Vertical centring comes free because the margin box is exactly the anchor's height, which
+  is what a picker with a two-line label needs (`spell=57933`: root 39.38, anchor at y 2.19,
+  container at 4.19). Before/after on the same build: 108 box rows identical, 20 of 22 screenshots
+  byte-identical; and across `demonology`, `protection` and `arms`, 119 React pickers are box-
+  identical to the vanilla baseline on `:3401`. The two screenshots that move are the grayscale
+  recomposite of one inactive counter, 115 pixels at exactly 1/255 — `grayscale` is a linear matrix,
+  so applying it to the label separately is the same value rounded once more.
+
+  **a11y `unnamed` ceiling 155 → 125, and the reason it moved down rather than up.** Un-nesting takes
+  the counter `<span>` out of the picker's anchor, and on `warrior/arms` four multistate buff anchors
+  had that digit as their only text — `name()` reads `aria-label || textContent`, so they had been
+  counting as named on the strength of reading "0" or "4". Rather than raise the ceiling for four
+  anchors that were never really named, `IconPicker` now sets `aria-label` from the name
+  `useActionId` already resolves, which names every picker anchor on the pane: 34 more named on
+  `warrior/arms` (12 → 46 of 171), so unnamed falls 155 → 125.
+
+  The picker oracle catches this as a divergence, correctly — the port adds an attribute vanilla
+  never had. `mountBoth` gained a `portAdded` regex for it, named per picker rather than folded into
+  `BASE_UI_ADDED`, because a blanket rule would also hide a port that *dropped* an attribute vanilla
+  did have.
+
 - 2026-09-06 **Stat-weights units 3 and 4: the dialog is React, and all sixteen recorded defects are
   fixed.** `features/stat-weights/components/EpWeightsDialog/` is nine components plus `types.ts` and
   `utils.ts`; `view/stat_weights_panel.tsx` is deleted. Only `renderSavedEPWeights` stays vanilla,
@@ -1553,7 +1606,10 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   after this change. Nothing here introduced it and nothing here fixes it.
 
 - 2026-09-06 **`IconPicker`'s nested anchors: invalid, inert, and deferred to Phase 5 — decided, do
-  not re-open.** Two `<a class="icon-input-improved">` sit inside the outer
+  not re-open.** **Superseded the same day by the un-nesting entry at the top of this log**: the
+  third option neither of the two below considered is to move the container out of the anchor rather
+  than change what either element is, which keeps every `href` and costs `liftSubtrees` instead of an
+  `INTENDED` entry. Two `<a class="icon-input-improved">` sit inside the outer
   `<a class="icon-picker-button">`. Measured on both builds: **68 nested pairs, identical**, and the
   browser does not re-parent them because both stacks build this DOM through DOM APIs rather than
   parsing HTML.

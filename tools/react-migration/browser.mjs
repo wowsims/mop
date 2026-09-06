@@ -475,6 +475,93 @@ export const normaliseBaseUiMenus = dom => {
 	return { dom: current, problems };
 };
 
+/**
+ * Moves every subtree matching `lift` out of its parent and in after it, within each subtree
+ * matching `within`. `parent` must match the line the subtree hangs off and the subtree must be
+ * that parent's last child, which together make the move a pure dedent — the same lines in the same
+ * order, one indent level up. A lift that lands anywhere else is reported rather than performed.
+ *
+ * This is how a port that *re-parents* an element is compared, where `collapseWrappers` covers one
+ * that deletes an element and `INTENDED` covers one that changes a line in place. None of the three
+ * can stand in for the others: `INTENDED` substitutes line pairs at a fixed index, and re-parenting
+ * shifts the indent of every line in the subtree at once.
+ *
+ * `total` is every subtree the pattern found, lifted or already in place, so a caller can require
+ * the two sides to hold the same number of them.
+ */
+export const liftSubtrees = (dom, within, lift, parent) => {
+	const lines = dom.split('\n');
+	const indentOf = line => line.length - line.trimStart().length;
+	const out = lines.slice();
+	const problems = [];
+	let lifted = 0;
+	let total = 0;
+	let scope = null;
+	for (const [index, line] of lines.entries()) {
+		const indent = indentOf(line);
+		if (scope !== null && indent <= scope) scope = null;
+		if (scope === null) {
+			if (within.test(line.trim())) scope = indent;
+			continue;
+		}
+		if (!lift.test(line.trim())) continue;
+		total++;
+		const above = lines.slice(0, index).findLastIndex(candidate => indentOf(candidate) < indent);
+		if (!parent.test(lines[above]?.trim() ?? '')) continue;
+		let end = index + 1;
+		while (end < lines.length && indentOf(lines[end]) > indent) end++;
+		if (end < lines.length && indentOf(lines[end]) === indent) {
+			problems.push(`${line.trim()} is not the last child of ${lines[above].trim()}`);
+			continue;
+		}
+		for (let at = index; at < end; at++) out[at] = out[at].slice(2);
+		lifted++;
+	}
+	return { dom: out.join('\n'), lifted, total, problems };
+};
+
+/**
+ * Every subtree the migration re-parents, and what it hangs off before the port. A new one adds an
+ * entry here rather than a call site.
+ *
+ * `IconPicker` is the only one: vanilla builds the level container *inside* the picker's anchor, so
+ * its two `<a class="icon-input-improved">` are anchors inside an anchor, which the content model
+ * has no room for. React renders the container as the anchor's next sibling instead. It is the
+ * anchor's only child either way, so the two shapes are the same lines and the move is a dedent.
+ */
+const LIFTED_SUBTREES = [
+	{
+		what: 'icon-picker level',
+		within: /\.icon-picker-root(\.|$)/,
+		lift: /^div\.icon-input-level-container$/,
+		// `ImprovedAnchor` carries `icon-picker-button` as well, so matching that class alone would
+		// also name an improved anchor as a possible parent.
+		parent: /^a\.(?!.*icon-input-improved).*icon-picker-button/,
+	},
+];
+
+/**
+ * Folds every re-parented subtree in `dom` back into one shape. Unlike `normaliseBaseUiMenus` this
+ * runs on **both** sides: it is a no-op wherever the subtree is already lifted, so the React side
+ * reports `lifted 0` and the baseline reports one per picker. Comparing those two numbers is what
+ * makes it an assertion — put the container back inside the anchor on the React side and the count
+ * stops being zero, so `parity.mjs` fails on the revert rather than normalising it away.
+ */
+export const normaliseLiftedSubtrees = dom => {
+	const problems = [];
+	let current = dom;
+	let lifted = 0;
+	let total = 0;
+	for (const entry of LIFTED_SUBTREES) {
+		const result = liftSubtrees(current, entry.within, entry.lift, entry.parent);
+		current = result.dom;
+		lifted += result.lifted;
+		total += result.total;
+		problems.push(...result.problems.map(problem => `${entry.what}: ${problem}`));
+	}
+	return { dom: current, lifted, total, problems };
+};
+
 export const launch = async () => (await loadChromium()).launch({ headless: true, args: ['--no-sandbox'] });
 
 /** Opens a spec page and waits for the shell. `errors` collects page errors and non-environmental console errors. */

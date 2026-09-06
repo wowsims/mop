@@ -29,9 +29,10 @@ const BASE_UI_ADDED = /^(data-(disabled|filled|valid|invalid|dirty|touched|focus
 // Base UI generates ids for the label and description.
 const GENERATED_ID = /^base-ui-/;
 
-const serialize = (element: Element, depth = 0): string[] => {
+const serialize = (element: Element, depth = 0, portAdded?: RegExp): string[] => {
 	const attributes = Array.from(element.attributes)
 		.filter(attribute => !BASE_UI_ADDED.test(attribute.name))
+		.filter(attribute => !portAdded?.test(attribute.name))
 		.filter(attribute => !(attribute.name === 'id' && GENERATED_ID.test(attribute.value)))
 		.map(attribute => `${attribute.name}="${attribute.value}"`)
 		.sort()
@@ -42,7 +43,7 @@ const serialize = (element: Element, depth = 0): string[] => {
 		.map(node => node.textContent)
 		.join('');
 	const line = `${'  '.repeat(depth)}<${element.tagName.toLowerCase()} ${attributes}> bg=[${background}] text=[${text}] hidden=${(element as HTMLElement).hidden}${formState(element)}`;
-	return [line, ...Array.from(element.children).flatMap(child => serialize(child, depth + 1))];
+	return [line, ...Array.from(element.children).flatMap(child => serialize(child, depth + 1, portAdded))];
 };
 
 const withSortedClasses = (line = '') =>
@@ -62,11 +63,18 @@ export const mountBoth = async <ModObject, Config>({
 	React,
 	config,
 	makeModObject,
+	normaliseVanilla,
+	portAdded,
 }: {
 	Vanilla: new (parent: HTMLElement, modObject: ModObject, config: Config) => VanillaPicker;
 	React: (props: { modObject: ModObject; config: Config }) => ReactNode;
 	config: Config;
 	makeModObject: () => ModObject;
+	// A port that re-parents a subtree shifts every line's indent, which a line-by-line diff cannot express; folding the vanilla side into the new shape keeps the rest of the comparison byte for byte.
+	normaliseVanilla?: (lines: string[]) => string[];
+	// Attributes the port adds that vanilla never had. Named per picker rather than added to
+	// `BASE_UI_ADDED`: a blanket rule would also hide a port that *dropped* one vanilla did have.
+	portAdded?: RegExp;
 }): Promise<PickerPair<ModObject>> => {
 	const vanillaModObject = makeModObject();
 	const parent = document.createElement('div');
@@ -77,7 +85,8 @@ export const mountBoth = async <ModObject, Config>({
 	const reactModObject = makeModObject();
 	const { container, unmount } = render(<React modObject={reactModObject} config={config} />);
 
-	const allDiffs = () => compare(serialize(vanilla.rootElem), serialize(container.firstElementChild!));
+	const allDiffs = () =>
+		compare((normaliseVanilla ?? (lines => lines))(serialize(vanilla.rootElem, 0, portAdded)), serialize(container.firstElementChild!, 0, portAdded));
 
 	const associations = () => {
 		const root = container.firstElementChild!;

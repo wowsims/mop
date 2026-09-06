@@ -13,6 +13,7 @@ import {
 	collectSubtrees,
 	dropSubtrees,
 	normaliseBaseUiMenus,
+	normaliseLiftedSubtrees,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -122,22 +123,26 @@ const grab = async (browser, port, spec) => {
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const panes = {};
+	const levels = {};
 	const paneProblems = [];
 	for (const id of ids) {
 		if (!id) continue;
-		const pane = dropRootClasses(await page.evaluate(SERIALIZE, '#' + id));
+		// Both sides: see `normaliseLiftedSubtrees`. Its counts are compared across the two below.
+		const lifted = normaliseLiftedSubtrees(dropRootClasses(await page.evaluate(SERIALIZE, '#' + id)));
+		paneProblems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
+		levels[id] = { lifted: lifted.lifted, total: lifted.total };
 		// The React side only: see `normaliseBaseUiMenus`. On the baseline it is a no-op, because
 		// nothing there carries the classes it looks for.
 		if (!isReact) {
-			panes[id] = pane;
+			panes[id] = lifted.dom;
 			continue;
 		}
-		const normalised = normaliseBaseUiMenus(pane);
+		const normalised = normaliseBaseUiMenus(lifted.dom);
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 		panes[id] = normalised.dom;
 	}
 	await page.close();
-	return { ids, shell, panes, modals, paneProblems, errors };
+	return { ids, shell, panes, levels, modals, paneProblems, errors };
 };
 
 const browser = await launch();
@@ -164,6 +169,15 @@ for (const spec of specsFromArgv()) {
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);
 	if (!b.ids.length || b.ids.some(id => !id)) problems.push(`react tab identifiers unresolved: [${b.ids}]`);
+
+	// What makes the lift an assertion rather than a fold: React must have nothing left to lift, and
+	// the two sides must hold the same number of level containers whether they were lifted or not.
+	for (const id of b.ids.filter(Boolean)) {
+		const react = b.levels[id];
+		const base = a.levels[id];
+		if (react.lifted) problems.push(`${id}: react still nests ${react.lifted} level container(s) inside the picker anchor`);
+		if ((base?.total ?? -1) !== react.total) problems.push(`${id}: ${base?.total ?? 'no'} level containers on the baseline, ${react.total} on react`);
+	}
 
 	const regions = [['shell', a.shell, b.shell], ...b.ids.filter(Boolean).map(id => [id, a.panes[id] ?? `NO #${id}`, b.panes[id]])];
 	const sizes = [];

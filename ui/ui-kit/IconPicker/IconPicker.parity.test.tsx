@@ -51,8 +51,35 @@ const configFor = (extra: Partial<IconPickerConfig<Settings, number>> = {}): Ico
 	...extra,
 });
 
-const both = (level: number, extra: Partial<IconPickerConfig<Settings, number>>) =>
-	mountBoth({ Vanilla: VanillaIconPicker, React: IconPicker, config: configFor(extra), makeModObject: () => new Settings(level) });
+// Vanilla nests the level container inside the picker's anchor — an `<a>` inside an `<a>`, which the
+// content model has no room for. React makes it the anchor's next sibling, so its four lines carry
+// one level less indent and nothing else about them changes. Dedenting them on the vanilla side is
+// what keeps the rest of the tree compared character for character; the test below this file's
+// cases asserts that those four lines are the whole difference.
+// The port names the picker anchor from the ActionId it already resolves; the vanilla anchor, whose
+// only text was the counter, had no name at all.
+const PORT_ADDED = /^aria-label$/;
+
+const liftLevelContainer = (lines: string[]) => {
+	const at = lines.findIndex(line => line.includes('class="icon-input-level-container"'));
+	if (at < 0) throw new Error('the vanilla picker rendered no level container to lift');
+	const indent = lines[at].search(/\S/);
+	const out = [...lines];
+	for (let index = at; index < out.length && (index === at || out[index].search(/\S/) > indent); index++) out[index] = out[index].slice(2);
+	return out;
+};
+
+const mount = (level: number, extra: Partial<IconPickerConfig<Settings, number>>, normaliseVanilla?: (lines: string[]) => string[]) =>
+	mountBoth({
+		Vanilla: VanillaIconPicker,
+		React: IconPicker,
+		config: configFor(extra),
+		makeModObject: () => new Settings(level),
+		normaliseVanilla,
+		portAdded: PORT_ADDED,
+	});
+
+const both = (level: number, extra: Partial<IconPickerConfig<Settings, number>>) => mount(level, extra, liftLevelContainer);
 
 beforeEach(() => {
 	vi.spyOn(ActionId.prototype, 'fill').mockImplementation(async function (this: ActionId) {
@@ -96,6 +123,27 @@ describe('IconPicker matches the vanilla picker', () => {
 			});
 		}
 	}
+
+	it('differs from the vanilla tree only in the indent of the four lifted lines', async () => {
+		const pair = await mount(2, { states: 4, improvedId, improvedId2 });
+		const diffs = pair.allDiffs();
+		const pairs = diffs.map(entry =>
+			entry
+				.split('\n')
+				.slice(1)
+				.map(line => line.replace(/^ {2}(vanilla: |react: {3})/, '')),
+		);
+
+		expect(diffs).toHaveLength(4);
+		expect(pairs.map(([vanilla]) => vanilla.match(/class="([^"]*)"/)![1].split(' ')[0])).toEqual([
+			'icon-input-level-container',
+			'icon-picker-button',
+			'icon-picker-button',
+			'icon-picker-label',
+		]);
+		for (const [vanilla, react] of pairs) expect(react).toBe(vanilla.slice(2));
+		pair.dispose();
+	});
 
 	it('stays identical across every value transition at states 4', async () => {
 		const pair = await both(0, { states: 4, improvedId, improvedId2 });

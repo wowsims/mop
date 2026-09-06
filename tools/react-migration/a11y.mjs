@@ -35,7 +35,10 @@ const REGIONS = [
 	// glyph `aria-hidden`. `unsafe` went 34 → 0 when the external-link seams landed and was left slack;
 	// it is taken up here for the reason the other ratchets were, so a later port cannot grow into the
 	// room. Both are zero now, which is an equality rather than a ceiling.
-	{ selector: '.settings-tab', ceiling: { unnamed: 155, untyped: 4 } },
+	// `unnamed` 155 → 125. Un-nesting cost four multistate anchors the counter digit that was standing
+	// in for a name; rather than raise the ceiling for those, `IconPicker` takes a real name from the
+	// ActionId it already resolves, which names every picker anchor on the pane.
+	{ selector: '.settings-tab', ceiling: { unnamed: 125, untyped: 4 } },
 ];
 const SELECTORS = REGIONS.map(region => region.selector);
 
@@ -63,12 +66,18 @@ const CHECKS = regions => {
 		});
 		const buttons = within('button');
 		const untyped = buttons.filter(el => !el.getAttribute('type'));
+		// An anchor inside an anchor, which the content model has no room for. Every one of these is an
+		// icon picker's, whose improved icons vanilla builds inside the picker's own anchor, so scoping
+		// to the picker roots names what is being measured rather than catching it by accident.
+		const pickerAnchors = within('.icon-picker-root a');
+		const nested = within('.icon-picker-root a a');
 
 		out[selector] = [
 			{ key: 'unnamed', bad: unnamed.length, of: controls.length, what: 'controls have an accessible name' },
 			{ key: 'shown', bad: shown.length, of: icons.length, what: 'icons are aria-hidden' },
 			{ key: 'unsafe', bad: unsafe.length, of: blank.length, what: '_blank links carry rel=noopener noreferrer' },
 			{ key: 'untyped', bad: untyped.length, of: buttons.length, what: 'buttons declare a type' },
+			{ key: 'nested', bad: nested.length, of: pickerAnchors.length, what: 'picker anchors sit outside one another' },
 		];
 	}
 	return out;

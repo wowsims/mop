@@ -6,7 +6,7 @@ import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { wowheadAnchorProps } from '@ui-kit/wowhead';
 import clsx from 'clsx';
-import { useEffect, useRef } from 'react';
+import { type MouseEvent, useEffect, useRef } from 'react';
 
 import { ImprovedAnchor } from './ImprovedAnchor';
 
@@ -43,7 +43,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 		}
 	});
 
-	const { iconUrl, href } = useActionId(config.actionId);
+	const { iconUrl, href, name } = useActionId(config.actionId);
 
 	const useImprovedIcons = Boolean(config.improvedId);
 	const fillImproved1 = config.states >= 3 && !!config.improvedId;
@@ -69,34 +69,43 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	// `Input.update()` writes `disabled` on the input element as well as the class on the root, and `disabled` is not in React's anchor prop types because HTML has no such attribute on <a>.
 	const disabledAttribute = (disabled ? { disabled: true } : {}) as Record<string, boolean>;
 
-	// The nested anchors are what vanilla builds; React logs a validateDOMNesting warning for them in dev and vitest.
-	const main = (
-		<a
-			className={clsx(
-				'icon-picker-button',
-				useImprovedIcons && 'use-improved-icons',
-				config.improvedId2 && 'use-improved-icons2',
-				!useImprovedIcons && config.states > 2 && 'use-counter',
-				currentValue > 0 && 'active',
-			)}
-			{...wowheadAnchorProps()}
-			target="_blank"
-			href={href || undefined}
-			rel={externalRel(href, undefined)}
-			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
-			{...disabledAttribute}
-			onClick={event => {
+	// The level container overlays the anchor rather than sitting inside it, so a click on the improved icons reaches these only by carrying them on both.
+	const stateEvents = {
+		onClick: (event: MouseEvent) => {
+			event.preventDefault();
+			handleLeftClick();
+		},
+		onContextMenu: (event: MouseEvent) => event.preventDefault(),
+		onMouseDown: (event: MouseEvent) => {
+			if (isRightClick(event.nativeEvent)) {
 				event.preventDefault();
-				handleLeftClick();
-			}}
-			onContextMenu={event => event.preventDefault()}
-			onMouseDown={event => {
-				if (isRightClick(event.nativeEvent)) {
-					event.preventDefault();
-					handleRightClick();
-				}
-			}}>
-			<div className="icon-input-level-container">
+				handleRightClick();
+			}
+		},
+	};
+
+	const main = (
+		<>
+			<a
+				className={clsx(
+					'icon-picker-button',
+					useImprovedIcons && 'use-improved-icons',
+					config.improvedId2 && 'use-improved-icons2',
+					!useImprovedIcons && config.states > 2 && 'use-counter',
+					currentValue > 0 && 'active',
+				)}
+				{...wowheadAnchorProps()}
+				// The glyph is a background image and the counter is a sibling now, so without this the
+				// anchor announces nothing; `name` is empty until `useActionId` resolves.
+				aria-label={name || undefined}
+				target="_blank"
+				href={href || undefined}
+				rel={externalRel(href, undefined)}
+				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
+				{...disabledAttribute}
+				{...stateEvents}
+			/>
+			<div className="icon-input-level-container" {...stateEvents}>
 				<ImprovedAnchor
 					actionId={fillImproved1 ? config.improvedId : undefined}
 					className="icon-input-improved1"
@@ -113,7 +122,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					{showCounterText ? String(currentValue) : null}
 				</span>
 			</div>
-		</a>
+		</>
 	);
 
 	return (

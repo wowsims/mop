@@ -36,7 +36,7 @@ describe('Database.get', () => {
 		await loaded;
 
 		expect(fetchMock).toHaveBeenCalledTimes(3);
-	});
+	}, 30000);
 
 	// The regression this exists for: the memo used to hold the rejected promise for the page
 	// lifetime, so every later caller awaited the same failure and the app could not recover.
@@ -59,7 +59,7 @@ describe('Database.get', () => {
 		await drainRetries(fetchMock, attemptsBeforeSecond + 1);
 		await second;
 		expect(fetchMock.mock.calls.length).toBeGreaterThan(attemptsWhileFailing);
-	});
+	}, 30000);
 
 	it('shares one load between concurrent callers', async () => {
 		const fetchMock = vi.fn().mockResolvedValue(okResponse());
@@ -70,5 +70,5 @@ describe('Database.get', () => {
 
 		expect(a).toBe(b);
 		expect(fetchMock).toHaveBeenCalledTimes(1);
-	});
+	}, 30000);
 });

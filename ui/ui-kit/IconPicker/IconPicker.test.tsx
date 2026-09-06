@@ -283,4 +283,52 @@ describe('IconPicker', () => {
 		expect(mainAnchor().hasAttribute('disabled')).toBe(true);
 		expect(document.querySelector('.icon-picker-root')!.classList.contains('disabled')).toBe(true);
 	});
+
+	it("renders the level container as the anchor's next sibling, so no anchor sits inside another", () => {
+		const settings = new Settings(0);
+		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
+		const root = document.querySelector('.icon-picker-root')!;
+		const anchor = root.querySelector(':scope > a.icon-picker-button')!;
+		const container = root.querySelector('.icon-input-level-container')!;
+
+		expect(anchor.nextElementSibling).toBe(container);
+		expect(anchor.contains(container)).toBe(false);
+		expect(anchor.children).toHaveLength(0);
+		expect(document.querySelectorAll('a a')).toHaveLength(0);
+	});
+
+	it('keeps the improved anchors and the counter inside the container, with their href and hidden intact', () => {
+		const settings = new Settings(3);
+		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
+		const container = document.querySelector('.icon-input-level-container')!;
+		const [improved1, improved2] = Array.from(container.querySelectorAll('a'));
+
+		expect(container.children).toHaveLength(3);
+		expect(improved1.getAttribute('href')).toBe(ActionId.makeSpellUrl(2));
+		expect(improved2.getAttribute('href')).toBe(ActionId.makeSpellUrl(3));
+		expect(improved1.hidden).toBe(true);
+		expect(improved2.hidden).toBe(false);
+		expect(container.querySelector('.icon-picker-label')).toBeTruthy();
+	});
+
+	// The container overlays the anchor rather than living inside it, so what used to reach the picker
+	// by bubbling has to be carried on both: otherwise a click on an improved icon leaves the value
+	// alone and follows the wowhead link instead.
+	it('left-clicks, right-clicks and suppresses the context menu from the container as well', () => {
+		const settings = new Settings(1);
+		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
+		const improved = document.querySelector('.icon-input-improved1')!;
+		const container = document.querySelector('.icon-input-level-container')!;
+
+		fireEvent.click(improved);
+		expect(settings.level).toBe(2);
+
+		fireEvent.mouseDown(improved, { button: 2 });
+		expect(settings.level).toBe(1);
+
+		// fireEvent returns false when preventDefault() was called.
+		expect(fireEvent.contextMenu(container)).toBe(false);
+		expect(fireEvent.click(container)).toBe(false);
+		expect(settings.level).toBe(2);
+	});
 });
