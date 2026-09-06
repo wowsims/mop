@@ -2,3 +2,5 @@ export { InputPicker } from './components/InputPicker';
 export type { InputPickerProps } from './components/InputPicker';
 export { OtherSettings } from './components/OtherSettings';
 export type { OtherSettingsProps } from './components/OtherSettings';
+export { StatOptionIcons } from './components/StatOptionIcons';
+export type { StatOptionIconsProps } from './components/StatOptionIcons';

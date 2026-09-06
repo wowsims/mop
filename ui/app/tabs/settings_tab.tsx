@@ -37,6 +37,9 @@ export class SettingsTab extends SimTab {
 	encounterContainer!: HTMLElement;
 	/** Where React renders the other-settings block. Absent when that block is not built at all. */
 	otherSettingsContainer?: HTMLElement;
+	/** The two external-cooldown blocks. Absent on a spec whose option list filters to nothing. */
+	externalDamageCooldownContainer?: HTMLElement;
+	externalDefensiveCooldownContainer?: HTMLElement;
 
 	protected simUI: IndividualSimUI<any>;
 
@@ -226,12 +229,10 @@ export class SettingsTab extends SimTab {
 				header: { title: i18n.t('settings_tab.external_damage_cooldowns.title'), tooltip: i18n.t('settings_tab.external_damage_cooldowns.tooltip') },
 			});
 
-			this.configureIconSection(
-				contentBlock.bodyElement,
-				externalDamageCooldownOptions.map(
-					options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any),
-				),
-			);
+			// Built empty; React fills it. `configureIconSection` did nothing here — its only effect
+			// without `adjustColumns` is to hide an empty section, and the guard above already means
+			// this one is not empty.
+			this.externalDamageCooldownContainer = contentBlock.bodyElement;
 		}
 	}
 	private raidExternalDefensiveCooldowns() {
@@ -244,12 +245,7 @@ export class SettingsTab extends SimTab {
 				},
 			});
 
-			this.configureIconSection(
-				contentBlock.bodyElement,
-				externalDefensiveCooldownOptions.map(
-					options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any),
-				),
-			);
+			this.externalDefensiveCooldownContainer = contentBlock.bodyElement;
 		}
 	}
 

@@ -1,7 +1,9 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
 import { EncounterPicker } from '@features/encounter';
-import { OtherSettings } from '@features/settings';
+import { OtherSettings, StatOptionIcons } from '@features/settings';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import type { Spec } from '@generated/proto/common';
@@ -94,6 +96,19 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						createPortal(
 							<OtherSettings inputs={def.otherInputs.inputs} itemSlots={def.itemSwapSlots ?? []} />,
 							simUI.settingsTab.otherSettingsContainer,
+						)}
+					{/* Both cooldown blocks are the same shape; the tab decides whether each exists. */}
+					{ready &&
+						simUI.settingsTab.externalDamageCooldownContainer &&
+						createPortal(
+							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DAMAGE_COOLDOWN, simUI)} />,
+							simUI.settingsTab.externalDamageCooldownContainer,
+						)}
+					{ready &&
+						simUI.settingsTab.externalDefensiveCooldownContainer &&
+						createPortal(
+							<StatOptionIcons options={relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN, simUI)} />,
+							simUI.settingsTab.externalDefensiveCooldownContainer,
 						)}
 				</SimHostProvider>
 			)}

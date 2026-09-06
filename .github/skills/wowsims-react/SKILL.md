@@ -340,6 +340,7 @@ of the duplication sweep was to build each shape once.
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (still live — the player block and custom sections use it) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
 | `OtherSettings` | `ui/features/settings/components/OtherSettings/` | `buildOtherSettings`' input half, plus the `ItemSwapPicker` portal it used to order against | the spec's `inputs` and `itemSlots` | that item swap comes after the inputs — which is now the order they are written in, not an append |
+| `StatOptionIcons` | `ui/features/settings/components/StatOptionIcons/` | the `options.map(o => new o.picker(...))` in the two cooldown blocks | a `relevantStatOptions` list | that every entry is an `IconPicker` — typed, so Buffs and Debuffs cannot be wired up half-working before `MultiIconPicker` ports |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1139,11 +1140,8 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
 
 5. ~~**Other-settings inputs**~~ — **done.** It deleted the append-ordering dependency as intended,
    and produced `InputPicker`, the dispatcher items 6 and 7 will reuse.
-6. **The two external-cooldown blocks** — identical to each other, fully generic, and `IconPicker`
-   only *by construction*: their 3-argument call omits `simUI`, which a `MultiIconPicker` would crash
-   on. They establish the shared stat-option component that Buffs and Debuffs later reuse. The
-   subtlety is reproducing "no `ContentBlock` at all when the option list is empty" — absence, not
-   `.hide`.
+6. ~~**The two external-cooldown blocks**~~ — **done.** They produced `StatOptionIcons`, and showed
+   that `configureIconSection` was doing nothing for them at all.
 7. **Custom sections** — cheap, but sequenced *after* the cooldown blocks because it has **zero gate
    coverage**: only the two shaman specs declare `sections`, and neither is in `SPECS`. Prove the
    pattern where the gate can see it first, then either extend `SPECS` for that run or verify by
@@ -1178,6 +1176,26 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-06 **Both external-cooldown blocks are React**, on one component. `StatOptionIcons` is
+  typed to `IconPickerStatOption` rather than the wider union its input list can hold: the other two
+  members name pickers with no React port yet, and a runtime dispatch returning `null` for them would
+  render a section silently short. The type is what stops Buffs and Debuffs being wired up
+  half-working before `MultiIconPicker` lands.
+
+  `configureIconSection` turned out to do nothing for these two. Its only effect without
+  `adjustColumns` is to hide an empty section, and each block's own guard already means it is not
+  empty — so the call went rather than being reproduced.
+
+  **The behaviour gate earned itself here.** `panes-parity` was identical on all six specs, because
+  `SERIALIZE` compares tag and classes and nothing else. `settings-tab.mjs` caught what it cannot
+  see: vanilla writes `for="undefined"` on an icon input whose config has no id, and `PickerShell`
+  omits the attribute — so the port *fixes* a dangling label, and the probe diffed.
+
+  That is recorded as a **ratchet** rather than a count. An exact expectation would need editing on
+  every port, and "must be zero" is not true yet — three remain in blocks that are still vanilla. So
+  `REACT_DANGLING_MAX` may never rise, lowering it is part of porting a block, and at zero it becomes
+  an equality and both it and the defect are gone. Verified it fails when tightened.
 
 - 2026-09-06 **The other-settings block is React, and it took the append-ordering dependency with
   it.** While its inputs were vanilla, `ItemSwapPicker` had to be portalled in *after* them, and the

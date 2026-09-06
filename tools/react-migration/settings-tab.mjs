@@ -18,6 +18,7 @@ import { launch, openSpec, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/protection';
 const PORT = Number(process.env.PORT ?? PORTS.base);
+const IS_BASE = PORT === PORTS.base;
 
 // Installed once, after the tab is open, rather than written as separate `page.evaluate` arrows.
 // Three readers share one notion of "which control is this"; computing that key two different ways
@@ -126,13 +127,16 @@ const INSTALL = () => {
 					label: text(label),
 					htmlFor: !label
 						? '-'
-						: forAttr === null
-							? 'none'
-							: forAttr === 'undefined'
-								? 'undefined!'
-								: forAttr === control?.id
-									? 'ok'
-									: `BROKEN:${forAttr}`,
+						: forAttr === null || forAttr === 'undefined'
+							? // Both mean "this label names nothing". Vanilla writes the string `undefined`
+								// when the config has no id; `PickerShell` omits the attribute instead. That
+								// difference is a port fixing a defect, so it is counted below rather than
+								// printed per row, where it would make this probe differ between the builds
+								// for as long as the tab is half-ported.
+								'unset'
+							: forAttr === control?.id
+								? 'ok'
+								: `BROKEN:${forAttr}`,
 					value: valueOf(el),
 					hide: el.classList.contains('hide'),
 					// Two signals: `Input.update` writes the class on the root and the attribute on the
@@ -282,7 +286,26 @@ for (const [index, block] of blocks.entries()) {
 }
 
 // Pinned as a number so the pre-existing defect cannot grow unnoticed under a port.
-say(`  labels with for="undefined": ${rows.filter(row => row.htmlFor === 'undefined!').length} (pre-existing; see the header comment)`);
+// A dangling `for` — one naming an element that is not there — is the defect: vanilla writes the
+// literal string `undefined` wherever an icon input's config has no id, and `PickerShell` omits the
+// attribute instead. So the count falls as blocks port, which makes an exact expectation something
+// that would need editing every time and a `must be zero` something that is not true yet.
+//
+// A ratchet instead. It may never rise on the React build, and lowering it is part of porting a
+// block. Printed identically on both so this probe still matches across the ports.
+const dangling = await page.evaluate(
+	() => [...document.querySelectorAll('.settings-tab label[for]')].filter(label => !document.getElementById(label.getAttribute('for'))).length,
+);
+// Lower this as blocks port. At 0 the defect is gone from the tab and this can become an equality.
+const REACT_DANGLING_MAX = 3;
+const danglingOk = IS_BASE ? dangling > 0 : dangling <= REACT_DANGLING_MAX;
+say(`  labels naming nothing: ${danglingOk ? 'as-recorded' : `UNEXPECTED(${dangling})`} — falls as blocks port; see REACT_DANGLING_MAX`);
+if (!danglingOk)
+	problems.push(
+		IS_BASE
+			? `the baseline has no labels naming nothing — the defect this ratchet tracks is gone, so it and REACT_DANGLING_MAX can go too`
+			: `${dangling} labels name nothing, above the recorded ceiling of ${REACT_DANGLING_MAX} — a port put one back, or lower the ceiling if it removed some`,
+	);
 
 // Ids have to be unique for the readout above to mean anything: `configureInputSection` builds every
 // input from a config that names its own id, so a port that duplicates one makes `document
