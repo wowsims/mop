@@ -4,12 +4,14 @@ import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
+import { NumberPicker } from '@ui-kit/NumberPicker';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
-import { addEncounterFieldPickers, makeTargetsPicker } from '../../view/encounter_picker';
+import { makeTargetsPicker } from '../../view/encounter_picker';
+import { durationConfigs, executeConfigs } from '../EncounterPicker/utils/configs';
 
 export interface AdvancedEncounterModalProps {
 	open: boolean;
@@ -38,7 +40,8 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 		};
 	}, [encounter]);
 
-	const mountFields = useLegacyMount(parent => addEncounterFieldPickers(parent, encounter, true), [encounter]);
+	const duration = useMemo(() => durationConfigs(encounter), [encounter]);
+	const execute = useMemo(() => executeConfigs(encounter), [encounter]);
 	const mountTargets = useLegacyMount(parent => makeTargetsPicker(parent, encounter), [encounter]);
 
 	return (
@@ -49,7 +52,18 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			container={host.rootElem}
 			keepMounted
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
-			<div className="encounter-header" ref={mountFields} />
+			<div className="encounter-header">
+				<div className="picker-group">
+					{duration.map(config => (
+						<NumberPicker key={config.id} modObject={encounter} config={config} />
+					))}
+				</div>
+				<div className="picker-group execute-group">
+					{execute.map(config => (
+						<NumberPicker key={config.id} modObject={encounter} config={config} />
+					))}
+				</div>
+			</div>
 			<div className="encounter-targets" ref={mountTargets} />
 		</Dialog>
 	);

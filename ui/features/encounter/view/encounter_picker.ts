@@ -568,17 +568,6 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 	}
 }
 
-export function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
-	const durationGroup = Input.newGroupContainer();
-	rootElem.appendChild(durationGroup);
-	for (const config of durationConfigs(encounter)) new NumberPicker(durationGroup, encounter, config);
-
-	if (!showExecuteProportion) return;
-	const executeGroup = Input.newGroupContainer('execute-group');
-	rootElem.appendChild(executeGroup);
-	for (const config of executeConfigs(encounter)) new NumberPicker(executeGroup, encounter, config);
-}
-
 export function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targetIndex: number) {
 	return new ListPicker<Encounter, TargetInput>(parent, encounter, {
 		allowedActions: [],

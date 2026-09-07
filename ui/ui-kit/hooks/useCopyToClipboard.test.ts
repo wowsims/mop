@@ -8,15 +8,19 @@ let copied: string[];
 beforeEach(() => {
 	vi.useFakeTimers();
 	copied = [];
-	(document as unknown as { execCommand: unknown }).execCommand = vi.fn(() => {
-		copied.push(String(window.getSelection() ?? ''));
-		return true;
+	vi.stubGlobal('navigator', {
+		clipboard: {
+			writeText: vi.fn((text: string) => {
+				copied.push(text);
+				return Promise.resolve();
+			}),
+		},
 	});
 });
 
 afterEach(() => {
 	vi.useRealTimers();
-	delete (document as { execCommand?: unknown }).execCommand;
+	vi.unstubAllGlobals();
 });
 
 describe('useCopyToClipboard', () => {

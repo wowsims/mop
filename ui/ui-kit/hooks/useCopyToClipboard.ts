@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useCopyToClipboard as useClipboard } from 'react-use';
 
 const COPIED_DURATION_MS = 1500;
 
@@ -8,12 +7,11 @@ export interface CopyToClipboard {
 	copied: boolean;
 }
 
-/** Adds the vanilla `CopyButton`'s 1.5s copied window to `react-use`'s clipboard write, and nothing else. `getContent` is read at click time. The re-entrancy guard is a ref rather than `copied`, so two clicks in one task cannot copy twice. */
+/** `getContent` is read at click time: one caller lazily re-exports and fires analytics inside it, so a value captured at mount would export stale data. The re-entrancy guard is a ref rather than `copied`, because state has not flushed when a second click lands in the same task. */
 export const useCopyToClipboard = (getContent: () => string): CopyToClipboard => {
 	const getContentRef = useRef(getContent);
 	getContentRef.current = getContent;
 
-	const [, copyToClipboard] = useClipboard();
 	const [copied, setCopied] = useState(false);
 	const clickedRef = useRef(false);
 	const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -24,13 +22,13 @@ export const useCopyToClipboard = (getContent: () => string): CopyToClipboard =>
 		if (clickedRef.current) return;
 
 		clickedRef.current = true;
-		copyToClipboard(getContentRef.current());
+		navigator.clipboard.writeText(getContentRef.current()).catch(console.error);
 		setCopied(true);
 		timerRef.current = setTimeout(() => {
 			clickedRef.current = false;
 			setCopied(false);
 		}, COPIED_DURATION_MS);
-	}, [copyToClipboard]);
+	}, []);
 
 	return { copy, copied };
 };
