@@ -25,7 +25,8 @@ const SPEC = process.argv[2] ?? 'hunter/beast_mastery';
 const PORT = Number(process.env.PORT ?? PORTS.react);
 
 // Logged by `ActionId.toStringIgnoringTag()` for the merged pet-group parent rows, whose
-// `actionIdOverride` is an absent `petActionId`. Present identically on both builds.
+// `actionIdOverride` is an absent `petActionId`. Present on both builds; the count drops as tables
+// port, because a React name cell keys its icon on `equalityKey()`, which does not log.
 const BENIGN_CONSOLE = /Empty action id!/;
 
 const HEAD = 'metrics-table-header-cell';
@@ -144,11 +145,16 @@ const DEFAULT_SORT_PROBE = ({ root, column }) => {
 	return [...document.querySelectorAll(`${root} tbody tr`)].filter(row => !row.classList.contains('child-metric')).map(row => parse(row.cells[column]));
 };
 
+// Every probe below yields after a click before reading the result back. `TableSorter` mutates the
+// DOM inside its own listener, but a React table schedules the update and commits it in a
+// microtask — a difference in *when*, not in what, and a gate that could not tell the two apart
+// would fail the port for the right implementation.
+
 // Click every header twice and read the column back each time. One evaluate rather than one per
-// click: `TableSorter` sorts synchronously inside the listener, so there is nothing to wait for, and
-// a dispatched click also reaches the eight inner Bootstrap panes that are never displayed, where a
-// real mouse cannot.
-const SORT_PROBE = root => {
+// click: a dispatched click also reaches the eight inner Bootstrap panes that are never displayed,
+// where a real mouse cannot.
+const SORT_PROBE = async root => {
+	const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 	// `TableSorter.parseRowValues` verbatim.
 	const parse = cell => {
 		const raw = cell.dataset.text ?? cell.innerText;
@@ -160,16 +166,21 @@ const SORT_PROBE = root => {
 	const column = index => [...table.querySelectorAll('tbody tr')].filter(row => !row.classList.contains('child-metric')).map(row => parse(row.cells[index]));
 	// `sortDesc` starts all-true and `setSort` flips before applying, so the first click on any
 	// column — the default one included — is ascending and the second is descending.
-	return [...table.querySelectorAll('thead th')].map((th, index) => {
+	const out = [];
+	for (const [index, th] of [...table.querySelectorAll('thead th')].entries()) {
 		th.click();
+		await settle();
 		const asc = column(index);
 		th.click();
-		return { asc, desc: column(index) };
-	});
+		await settle();
+		out.push({ asc, desc: column(index) });
+	}
+	return out;
 };
 
 // Groups keyed by their whole row text: a pet's child rows can repeat a name ("Melee" twice).
-const GROUP_PROBE = ({ root, column }) => {
+const GROUP_PROBE = async ({ root, column }) => {
+	const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 	const parse = cell => {
 		const raw = cell.dataset.text ?? cell.innerText;
 		const num = parseFloat(raw);
@@ -191,35 +202,46 @@ const GROUP_PROBE = ({ root, column }) => {
 	};
 	const before = groups();
 	table.querySelectorAll('thead th')[column].click();
+	await settle();
 	return { before, after: groups() };
 };
 
-const EXPAND_PROBE = root => {
-	const rows = [...document.querySelectorAll(`${root} tbody tr`)];
-	const childrenOf = at => {
+const EXPAND_PROBE = async root => {
+	const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+	const bodyRows = () => [...document.querySelectorAll(`${root} tbody tr`)];
+	const childrenOf = (rows, at) => {
 		const out = [];
 		for (let i = at + 1; i < rows.length && rows[i].classList.contains('child-metric'); i++) out.push(rows[i]);
 		return out;
 	};
 	// The biggest group, so the assertion is about a block of children rather than about one row.
+	const initial = bodyRows();
 	let at = -1;
-	rows.forEach((row, index) => {
-		if (row.classList.contains('parent-metric') && (at === -1 || childrenOf(index).length > childrenOf(at).length)) at = index;
+	initial.forEach((row, index) => {
+		if (row.classList.contains('parent-metric') && (at === -1 || childrenOf(initial, index).length > childrenOf(initial, at).length)) at = index;
 	});
 	if (at === -1) return { missing: 'no parent-metric row' };
-	const parent = rows[at];
-	const children = childrenOf(at);
-	// Visibility, never `.hide`: vanilla hides a collapsed child with a class, a React table will
-	// unmount it, and `offsetParent === null` is true of both.
-	const state = () => ({
-		expand: parent.classList.contains('expand'),
-		visible: children.filter(child => child.isConnected && child.offsetParent !== null).length,
-	});
+	const parent = initial[at];
+	// Visibility, never `.hide`, and the children re-found each time rather than held: vanilla hides
+	// a collapsed child with a class and gives the same element back, a React table unmounts it and
+	// mounts a new one. Both read as zero visible children below the parent.
+	const state = () => {
+		const rows = bodyRows();
+		const index = rows.indexOf(parent);
+		const children = index === -1 ? [] : childrenOf(rows, index);
+		return {
+			expand: parent.classList.contains('expand'),
+			children: children.length,
+			visible: children.filter(child => child.offsetParent !== null).length,
+		};
+	};
 	const open = state();
 	parent.click();
+	await settle();
 	const collapsed = state();
 	parent.click();
-	return { count: children.length, open, collapsed, reopened: state() };
+	await settle();
+	return { count: open.children, open, collapsed, reopened: state() };
 };
 
 const TIPS = () => {
@@ -456,7 +478,7 @@ try {
 	);
 
 	const benign = errors.filter(error => BENIGN_CONSOLE.test(error));
-	if (benign.length) console.log(`\n  ----  ${benign.length} benign console errors (/${BENIGN_CONSOLE.source}/), identical on both builds`);
+	if (benign.length) console.log(`\n  ----  ${benign.length} benign console errors (/${BENIGN_CONSOLE.source}/); a ported table logs none`);
 	console.log(`\n${problems.length ? `${problems.length} checks fail` : 'all checks pass'}`);
 	for (const error of fatal()) console.log(`  ERROR ${error}`);
 	await page.close();

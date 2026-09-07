@@ -302,6 +302,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	talentsTab!: TalentsTab<SpecType>;
 	settingsTab!: SettingsTab;
+	detailedResults!: DetailedResults;
 
 	get sidebarStatsContainer(): HTMLElement {
 		return this.dom.sidebarStats;
@@ -336,7 +337,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
 		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
 
-		new DetailedResults(
+		this.detailedResults = new DetailedResults(
 			detailedResults,
 			this,
 			this.raidSimResultsManager!,

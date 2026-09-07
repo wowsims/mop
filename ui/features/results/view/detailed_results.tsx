@@ -12,7 +12,6 @@ import { ref } from 'tsx-vanilla';
 import { trackEvent } from '../../../tracking/analytics';
 import type { ResultChannel } from '../model/result_channel';
 import { AuraMetricsTable } from './aura_metrics';
-import { CastMetricsTable } from './cast_metrics';
 import { CombatReplay } from './combat_replay';
 import { DamageMetricsTable } from './damage_metrics';
 import { DpsHistogram } from './dps_histogram';
@@ -90,6 +89,8 @@ export class DetailedResults extends Component {
 	private resultsEmitter: ResultChannel;
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
+
+	readonly castMetricsContainer: HTMLElement;
 
 	constructor(parent: HTMLElement, simUI: SimHost, simResultsManager: SimResultsManager, makeLogExporter: LogExporterFactory, resultsEmitter: ResultChannel) {
 		super(parent, 'detailed-results-manager-root');
@@ -229,10 +230,8 @@ export class DetailedResults extends Component {
 			new ToplineResults({ parent: toplineResultsDiv, resultsEmitter: this.resultsEmitter });
 		});
 
-		new CastMetricsTable({
-			parent: this.rootElem.querySelector('.cast-metrics')!,
-			resultsEmitter: this.resultsEmitter,
-		});
+		this.castMetricsContainer = this.rootElem.querySelector<HTMLElement>('.cast-metrics')!;
+
 		new DamageMetricsTable({
 			parent: this.rootElem.querySelector('.damage-metrics')!,
 			resultsEmitter: this.resultsEmitter,

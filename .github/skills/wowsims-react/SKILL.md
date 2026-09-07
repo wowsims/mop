@@ -353,6 +353,9 @@ of the duplication sweep was to build each shape once.
 | `CustomSection` | `ui/features/settings/components/CustomSection/` | `buildCustomSection` in `app/tabs/settings_tab.tsx` (**deleted** — one caller) | a `CustomSection` config — its block, its icon row and its inputs | that `inline` is forced, matching the walk the builder did afterwards, and that `when` toggles `hide` on the block's root rather than on the body |
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
+| `useSimResult` | `ui/features/results/hooks/useSimResult.ts` | — (binding) | nothing — it reads `useSimHost().resultChannel` | that the channel replays its last value, so a component mounting after a run still sees it |
+| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — five vanilla tables left) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass`), `rows`, `sortColumnId`, `hasResult` | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
+| `CastMetricsTable` | `ui/features/results/components/CastMetricsTable/` | `features/results/view/cast_metrics.ts` (**deleted** — one consumer, not a dual-stack primitive) | nothing — it takes the result from `useSimResult` | the three columns, the pet grouping and `shouldCollapse` |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1312,6 +1315,50 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Results unit 3: the casts table, on `@tanstack/react-table@9.2.4`.** The first React
+  metrics table, and with it the shared core the other five land on. `MetricsTable` portals into the
+  `.cast-metrics` div `DetailedResults` still builds; `dr-root`, the nav strip and the panes stay
+  vanilla, because the log, replay and timeline still hang off `shown.bs.tab`.
+
+  **The dependency is adopted for one behaviour**: sorting must recurse into child rows with the same
+  column and direction, and expansion must keep children adjacent to their parent. v9's
+  `createSortedRowModel` recurses `subRows` with the same comparator and `createExpandedRowModel`
+  interleaves. That is `table_sorter.ts:53-59` and `metrics_table.tsx:149-163` exactly, so 145 lines
+  of hand-rolled model code — `TableSorter`, `addGroup`, `sortMetrics` — become four imports and
+  three flags. v9's API is not v8's: `useTable`, not `useReactTable`, and row models are slots inside
+  `tableFeatures({...})`, not table options. `@tanstack/react-virtual` is **not** installed; no
+  metrics table needs it. Cost, measured on a clean `dist` with and without the portal: **+13,419
+  bytes gzipped** across all 58 bundle chunks.
+
+  **Six defaults that would each have shipped a silent difference**, all configured in
+  `useMetricsTable.ts` and one test apiece: `enableSortingRemoval: false` (a third click clears
+  otherwise), `enableMultiSort: false` (shift-click adds a column otherwise), `sortDescFirst: false`
+  (`TableSorter`'s first click is ascending on every column, numeric included),
+  `initialState.expanded: true` (TanStack starts everything collapsed), `autoResetExpanded`'s default
+  re-expanding on a new `data` identity — which is why the rows are a `useMemo` over the channel's
+  stable snapshot, delta six. And one more that is not a default: every column gets an explicit
+  `sortFn` reproducing `TableSorter.sortFunc`, because `sortFn: 'auto'` picks `sortFn_text` for the
+  Name column, which is not `localeCompare`.
+
+  **Three declared divergences.** The Name column sorts by `metric.name` rather than by the rendered
+  cell's `innerText`. The expand toggle is a real focusable `<button>` with `aria-expanded` — free,
+  because it lives in a `<td>` that only exists after a sim, where no gate compares trees; the `<tr>`
+  keeps its click handler so a click anywhere on a parent row still toggles, and the button
+  `stopPropagation`s so the two do not cancel. And the port emits **fewer** `Empty action id!`
+  console errors, because a React name cell keys on `useActionId`'s `equalityKey()` while
+  `nameCellConfig` keyed its icon cache on `toString()`, which logs — 2 per sim on master, 1 now.
+  The fourth divergence in the plan, a `<button>` inside every `<th>` with `aria-sort`, is **not**
+  here: it inserts an element into the at-load shell that neither `INTENDED` nor `collapseWrappers`
+  can express. It belongs in unit 8, once all six tables are React and it is one baseline change.
+
+  **`results-tables.mjs`'s three click probes now yield before reading the result back.** They read
+  the DOM in the same turn as the click, which worked only because `TableSorter` mutates inside its
+  own listener; React schedules the commit in a microtask, so the gate saw the previous order and
+  failed the port for the right implementation. `EXPAND_PROBE` also re-finds the child rows on every
+  read instead of holding element references, because a React table unmounts a collapsed child and
+  mounts a *new* one when it reopens. Both changes are behaviour-preserving on the vanilla build —
+  the gate is green on `:3401` and `:3402`.
 
 - 2026-09-07 **Results units 1 and 2: the result seam, and a gate that runs a real sim.** No React and
   no markup yet. `ui/features/results/model/result_channel.ts` is a `ResultChannel` — an `Emitter`
