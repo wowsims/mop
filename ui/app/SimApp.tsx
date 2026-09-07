@@ -3,6 +3,8 @@ import { CharacterStats } from '@features/character-stats';
 import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';
 import { CastMetricsTable } from '@features/results/components/CastMetricsTable';
 import { DamageMetricsTable } from '@features/results/components/DamageMetricsTable';
+import { DtpsMetricsTable } from '@features/results/components/DtpsMetricsTable';
+import { HealingMetricsTable } from '@features/results/components/HealingMetricsTable';
 import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
@@ -69,6 +71,8 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					)}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<DamageMetricsTable />, simUI.detailedResults.damageMetricsContainer)}
+					{createPortal(<HealingMetricsTable />, simUI.detailedResults.healingMetricsContainer)}
+					{createPortal(<DtpsMetricsTable />, simUI.detailedResults.dtpsMetricsContainer)}
 					{createPortal(<CastMetricsTable />, simUI.detailedResults.castMetricsContainer)}
 					{createPortal(<AuraMetricsTable useDebuffs={false} />, simUI.detailedResults.buffMetricsContainer)}
 					{createPortal(<AuraMetricsTable useDebuffs={true} />, simUI.detailedResults.debuffMetricsContainer)}

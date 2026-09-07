@@ -13,8 +13,6 @@ import { trackEvent } from '../../../tracking/analytics';
 import type { ResultChannel } from '../model/result_channel';
 import { CombatReplay } from './combat_replay';
 import { DpsHistogram } from './dps_histogram';
-import { DtpsMetricsTable } from './dtps_metrics';
-import { HealingMetricsTable } from './healing_metrics';
 import { LogExporterFactory, LogView } from './log/log_view';
 import { ResultComponent } from './result_component';
 import { SimResultsManager } from './results_action';
@@ -88,6 +86,8 @@ export class DetailedResults extends Component {
 	private rootDiv: Element;
 
 	readonly damageMetricsContainer: HTMLElement;
+	readonly healingMetricsContainer: HTMLElement;
+	readonly dtpsMetricsContainer: HTMLElement;
 	readonly castMetricsContainer: HTMLElement;
 	readonly buffMetricsContainer: HTMLElement;
 	readonly debuffMetricsContainer: HTMLElement;
@@ -232,22 +232,15 @@ export class DetailedResults extends Component {
 		});
 
 		this.damageMetricsContainer = this.rootElem.querySelector<HTMLElement>('.damage-metrics')!;
+		this.healingMetricsContainer = this.rootElem.querySelector<HTMLElement>('.healing-spell-metrics')!;
+		this.dtpsMetricsContainer = this.rootElem.querySelector<HTMLElement>('.dtps-metrics')!;
 		this.castMetricsContainer = this.rootElem.querySelector<HTMLElement>('.cast-metrics')!;
 		this.buffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.buff-aura-metrics')!;
 		this.debuffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.debuff-aura-metrics')!;
 		this.resourceMetricsContainer = this.rootElem.querySelector<HTMLElement>('.resource-metrics')!;
 
-		new HealingMetricsTable({
-			parent: this.rootElem.querySelector('.healing-spell-metrics')!,
-			resultsEmitter: this.resultsEmitter,
-		});
 		new DpsHistogram({
 			parent: this.rootElem.querySelector('.dps-histogram')!,
-			resultsEmitter: this.resultsEmitter,
-		});
-
-		new DtpsMetricsTable({
-			parent: this.rootElem.querySelector('.dtps-metrics')!,
 			resultsEmitter: this.resultsEmitter,
 		});
 

@@ -354,11 +354,14 @@ of the duplication sweep was to build each shape once.
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 | `useSimResult` | `ui/features/results/hooks/useSimResult.ts` | — (binding) | nothing — it reads `useSimHost().resultChannel` | that the channel replays its last value, so a component mounting after a run still sees it |
-| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — two vanilla tables left: healing, dtps) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass` / `meta.tooltipId` / `meta.headerTooltipId` + `meta.headerTooltip`), `rows`, `sortColumnId`, `hasResult`, `rowClassName` (`customizeRowElem`) | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. A column carrying `meta.tooltipId` turns each of its `<td>`s into that column's one tooltip anchor, with `data-row-id` for the row, keyed by `getRowId`, which is `model/grouping.ts`'s `metricRowId` so `indexMetricRows` cannot drift from it. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
-| `MetricsTotalBar` | `ui/features/results/components/MetricsTotalBar/` | `features/results/view/metrics_table/metrics_total_bar.tsx` (still live, dual-stack — healing, dtps and the vanilla tooltip table still import it) | `percentage`, `max`, `total`, `value`, `overlayValue` (shielding, healing's only), `spellSchool`, `classColor` | the `--percentage` custom property both fills are driven by, and that a null `max` divides by 1 |
-| `MetricsCombinedTooltip` | `ui/features/results/components/MetricsCombinedTooltip/` | `MetricsCombinedTooltipTable` in `features/results/view/metrics_table/metrics_combined_tooltip_table.tsx` (still live, dual-stack — healing and dtps) | `groups`, `headerValues` (Type / Count / Average overrides, by position), `hasMetricBars` | the tooltip **body** only — the nested `table.metrics-table`, the zero-value filter, the value-descending order, the average column appearing only when an entry has one, and the group header row only when more than one named group survives. The anchor, the opening and the veto are the column's one `<Tooltip>`, not this |
+| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (**no importer left** — every table is React; the two files survive only until unit 8 deletes them) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass` / `meta.tooltipId` / `meta.headerTooltipId` + `meta.headerTooltip`), `rows`, `sortColumnId`, `hasResult`, `rowClassName` (`customizeRowElem`) | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. A column carrying `meta.tooltipId` turns each of its `<td>`s into that column's one tooltip anchor, with `data-row-id` for the row, keyed by `getRowId`, which is `model/grouping.ts`'s `metricRowId` so `indexMetricRows` cannot drift from it. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>`; `metricForAnchor(byRowId)` beside it is the reader for that `data-row-id`, so the writer and the reader of the attribute ship together |
+| `MetricsTotalBar` | `ui/features/results/components/MetricsTotalBar/` | `features/results/view/metrics_table/metrics_total_bar.tsx` (**no importer left outside `metrics_table/` itself** — only the vanilla tooltip table, which nothing constructs any more) | `percentage`, `max`, `total`, `value`, `overlayValue` (shielding, healing's only), `spellSchool`, `classColor` | the `--percentage` custom property both fills are driven by, and that a null `max` divides by 1 |
+| `MetricsCombinedTooltip` | `ui/features/results/components/MetricsCombinedTooltip/` | `MetricsCombinedTooltipTable` in `features/results/view/metrics_table/metrics_combined_tooltip_table.tsx` (**no consumer left** — it is what set the dead `metrics-table` tippy theme) | `groups`, `headerValues` (Type / Count / Average overrides, by position), `hasMetricBars` | the tooltip **body** only — the nested `table.metrics-table`, the zero-value filter, the value-descending order, the average column appearing only when an entry has one, and the group header row only when more than one named group survives. The anchor, the opening and the veto are the column's one `<Tooltip>`, not this |
 | `CastMetricsTable` | `ui/features/results/components/CastMetricsTable/` | `features/results/view/cast_metrics.ts` (**deleted** — one consumer, not a dual-stack primitive) | nothing — it takes the result from `useSimResult` | the three columns, the pet grouping and `shouldCollapse` |
-| `DamageMetricsTable` | `ui/features/results/components/DamageMetricsTable/` | `features/results/view/damage_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the ten columns, the pet grouping through `ActionMetrics.joinById`, the `threat-metrics` row class, and the seven column tooltips plus the Avg Cast header's |
+| `attackMetricsColumns` | `ui/features/results/components/AttackMetricsColumns/` | the column and tooltip-group blocks the damage, damage-taken and healing tables would each hand-roll | **the column set, its order, and every column's bindings** — the caller composes its own array and passes each builder the metric fields, the header key and the tooltip ids. `name`, `primary` (`total` / `value` / `percentage` / `max` / `overlay` / `tooltipId`), `casts`, `withTicks` (`value` / `tick` / `format` / `zeroWhen` / `dashWhen`) and `rate`, plus `damageBreakdownGroup` / `castsGroup` / `hitGroups` / `missGroup` / `threatGroup` / `threatTooltip` and `useMetricMax` | **only how one named shape renders**: the Name cell's markup, the primary cell's bar and its two class tokens, the `value (tick)` pair, and the rate column's `text-success` / `text-body`. Deliberately *not* the layout — the three consumers already disagree on order (damage puts Crit % before Miss %, dtps after) and healing shares four of its twelve columns, so a builder keyed on a table *kind* would have been bypassed. A shape none of these covers is written inline with `createMetricsColumnHelper` and dropped into the same array: an entry added, never a fork |
+| `DamageMetricsTable` | `ui/features/results/components/DamageMetricsTable/` | `features/results/view/damage_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the ten columns in their order, the pet grouping through `ActionMetrics.joinById`, the `threat-metrics` row class, and the seven column tooltips plus the Avg Cast header's. Composed from `attackMetricsColumns`; only Miss %, DPET and the tooltip bodies are its own |
+| `HealingMetricsTable` | `ui/features/results/components/HealingMetricsTable/` | `features/results/view/healing_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the twelve columns, the `hps > 0` filter, the shielding overlay (the only `overlayValue` user), the `threat-metrics` row class, and five column tooltips of which three are threat-vetoed, plus three header tooltips |
+| `DtpsMetricsTable` | `ui/features/results/components/DtpsMetricsTable/` | `features/results/view/dtps_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult`; it reads **no** threat flag, because it shows no threat | the nine columns (Miss % before Crit %, the reverse of damage), that the rows are the *targets'* damage actions and not the player's, `shouldCollapse: () => true` because a target is never a pet, and four column tooltips plus two header tooltips — none of them threat |
 | `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
 | `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource` |
 
@@ -1322,6 +1325,86 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Results unit 7: the damage-taken and healing tables, and the shared attack-column
+  builder.** Three consumers is the count the duplication survey measured, so this is where the axis
+  could be read rather than guessed. `attackMetricsColumns` **parameterises the column set, its order
+  and every column's bindings; it fixes only how one named shape renders.** The plan's
+  `buildAttackMetricsColumns(kind)` would have fixed layout, and layout is precisely what varies:
+  damage puts Crit % before Miss %, dtps puts it after, and healing shares four of its twelve columns
+  with either. So the module exports five column builders (`name`, `primary`, `casts`, `withTicks`,
+  `rate`) that a caller composes in its own order, and any shape they do not cover is written inline
+  with `createMetricsColumnHelper` and dropped into the same array — an entry added, never a fork of
+  the markup. Healing exercises that on purpose: eight of its twelve columns are inline and only four come from the builder. Beside them
+  live the five tooltip-group builders (`damageBreakdownGroup`, `castsGroup`, `hitGroups`, `missGroup`
+  shared damage↔dtps verbatim; `threatGroup` / `threatTooltip` shared damage↔healing) and
+  `useMetricMax`. **`DamageMetricsTable` was refactored onto it in the same change** — that is what
+  makes it a three-consumer abstraction rather than a two-consumer one with a bystander — and its gate
+  numbers did not move: 19 rows, 14/19 icons resolved, 13 parent rows, 240 neighbours compared, 3
+  groups of which 2 have one child, on both ports.
+
+  **One shared-core addition, and it is an attribute reader.** `metricForAnchor(byRowId)` moves the
+  four-line `activeAnchor → data-row-id → metric` resolve out of the three tables and into
+  `MetricsTable/`, next to `MetricsTableRow`, which is what writes the attribute. Writer and reader
+  now ship together. Nothing else in the core changed — no new props, no new options, no fork.
+
+  **Plan defect 12, the missing dtps `shouldCollapse`, is a no-op and is now written out as one.**
+  `shouldCollapse: () => true`, unit 5's exact form, because the pet exception cannot fire here:
+  dtps rows come from `SimResult.getTargets(filter)`, whose members are either `encounterMetrics.targets`
+  — every one built by `UnitMetrics.makeNewTarget`, which passes `petActionId = null` literally
+  (`sim_result.ts:614`) — or `getUnitWithIndex`, which searches `units = players.concat(targets)`
+  (`:158`) where `players` are party members built with `isPet = false` (`:319`). `isPet` is
+  `petActionId != null` (`:474`), and both `forTarget` (`:1229`) and `merge` (`:1251`) carry `unit`
+  through unchanged. So `!metric.unit?.isPet` is `true` on every reachable row and the override the
+  plan calls missing would change nothing. The vanilla `actionIdOverride: metrics[0].unit?.petActionId`
+  is kept for the same reason it is harmless — it always evaluates to `undefined`.
+
+  **Plan defect 14, the missing dtps threat veto, is not an omission.** dtps has no threat *content*
+  to veto: its Avg Cast, Avg Hit and DTPS columns carry no tooltip at all, so of its six tooltips
+  (four cell, two header) not one shows a threat number, while damage and healing veto exactly the
+  three each that do. And the whole tab is threat-gated one level up — the Damage Taken tab button
+  carries `threat-metrics-tab`, which `_shared.scss:131-136` hides under `.hide-threat-metrics`.
+  Reproduced deliberately: `DtpsMetricsTable` subscribes to **no** store field, because a dead read is
+  worse than none. Confirmed in the browser on `:3402` (warrior/protection): four tooltips on the
+  table, all four with a nested `table.metrics-table`, none of them threat.
+
+  **What the gate cannot see.** `results-tables.mjs` runs `hunter/beast_mastery`, where dtps has
+  **zero rows**, so its only dtps assertions are the nine-column shell at load and hide-when-empty.
+  Everything below dtps's `<thead>` is unverified by the default gate. Covered instead by (i) a
+  vitest suite in the damage mould, and (ii) a **supplementary** run
+  `node tools/react-migration/results-tables.mjs warrior/protection`, which does produce a dtps row
+  and exercises default-sort, sort-every-column and all four tooltips. That run is not a gate: it fails
+  two checks on the baseline too (dtps's single target row resolves no icon, and prot's damage table
+  has no pet so `EXPAND_PROBE` finds no parent), and its damage `neighbours compared` counter drifts
+  188/189/192 run to run on one build, because a row whose column value is `NaN` compares equal to
+  everything and its landing place among real numbers is not pinned. The default spec is untouched.
+
+  **Five divergences declared, none silent.** (i) `useMetricMax` returns `null`, not `Math.max(...[])`,
+  so plan defect 2 is gone for all three tables. (ii) The threat veto reads the store, deleting the
+  last three `document.querySelector('.hide-threat-metrics')` calls — plan defect 11 is now fully
+  gone. (iii) Healing's rate cell gains `fallbackString: '-'`, which vanilla omitted; unreachable,
+  since `getHealingActions().filter(hps > 0)` cannot yield a falsy `hps`. (iv) Damage's Crit % cell
+  becomes a fragment instead of a template string — same text, and `data-text` comes from the accessor
+  either way. (v) A threat tooltip whose value is 0 renders nothing rather than an empty table, which
+  is unit 6's shape carried to healing. **Reproduced rather than fixed, and flagged:** dtps's Avg Cast
+  sorts a passive action as 0 while still printing its value (damage prints a dash — the `zeroWhen` /
+  `dashWhen` split in `withTicks` is exactly this asymmetry); healing's Hits cell ends in a stray
+  `{' '}`; healing's two tooltip group names, `'Hits'` and `'Ticks'`, are untranslated literals; and
+  dtps carries a Miss % header tooltip that damage does not.
+
+  **The plan's map is wrong about healing's grouping.** §1 says healing groups "same shape" as damage
+  — player actions plus one group per pet. It does not: `getGroupedMetrics` is
+  `ActionMetrics.groupById(player.getHealingActions().filter(hps > 0))` with no pet groups at all, so
+  healing's own `shouldCollapse: !isPet` is *also* a no-op today. It is reproduced verbatim because it
+  is vanilla's, unlike dtps's, which had to be chosen.
+
+  **The vanilla `metrics_table/` island is now closed.** `/usr/bin/grep -rn` finds no importer of
+  `metrics_table.tsx`, `table_sorter.ts`, `metrics_total_bar.tsx` or
+  `metrics_combined_tooltip_table.tsx` from outside those four files — they only reference each other.
+  With that, **`.tippy-box[data-theme='metrics-table']` is dead**: the theme is set only at
+  `metrics_combined_tooltip_table.tsx:46`, which nothing constructs. Unit 8 deletes all of it, and must
+  split rather than delete `_detailed_results.scss:148`, where the dead tippy selector shares a rule
+  with the very-much-live `.metrics-table`.
 
 - 2026-09-07 **Results unit 6: the damage table, and the tooltip shape every later table copies.**
   Ten columns, seven of them with a tooltip, plus one on the Avg Cast header. **One `<Tooltip>` per

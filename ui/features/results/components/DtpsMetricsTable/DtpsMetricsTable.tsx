@@ -1,9 +1,5 @@
-import { bucket } from '@domain/collections';
 import { ActionMetrics } from '@domain/proto_utils/sim_result';
-import { subscribeUiField } from '@domain/state/subscriptions';
-import { useSim } from '@features/SimHostContext';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 
@@ -18,7 +14,6 @@ import {
 	damageBreakdownGroup,
 	hitGroups,
 	missGroup,
-	threatTooltip,
 	useMetricMax,
 } from '../AttackMetricsColumns';
 import { MetricsCombinedTooltip } from '../MetricsCombinedTooltip';
@@ -29,49 +24,35 @@ const helper = createMetricsColumnHelper<ActionMetrics>();
 const NO_ROWS: Array<MetricRow<ActionMetrics>> = [];
 
 const TOOLTIP = {
-	damage: 'damage-metrics-damage',
-	casts: 'damage-metrics-casts',
-	avgCast: 'damage-metrics-avg-cast',
-	avgCastHeader: 'damage-metrics-avg-cast-header',
-	hits: 'damage-metrics-hits',
-	avgHit: 'damage-metrics-avg-hit',
-	missPercent: 'damage-metrics-miss-percent',
-	dps: 'damage-metrics-dps',
+	damageTaken: 'dtps-metrics-damage-taken',
+	casts: 'dtps-metrics-casts',
+	avgCastHeader: 'dtps-metrics-avg-cast-header',
+	hits: 'dtps-metrics-hits',
+	missPercent: 'dtps-metrics-miss-percent',
+	missPercentHeader: 'dtps-metrics-miss-percent-header',
 };
 
-const damageGroups = (resultData: SimResultData): Array<Array<ActionMetrics>> => {
+const dtpsGroups = (resultData: SimResultData): Array<Array<ActionMetrics>> => {
 	const players = resultData.result.getRaidIndexedPlayers(resultData.filter);
 	if (!players.length) return [];
 
 	const player = players[0];
-	const actions = player.getDamageActions().map(action => action.forTarget(resultData.filter));
-	const petsByName = bucket(player.pets, pet => pet.name);
-	const petGroups = Object.values(petsByName).map(pets =>
-		ActionMetrics.joinById(
-			pets.flatMap(pet => pet.getDamageActions().map(action => action.forTarget(resultData.filter))),
-			true,
-		),
-	);
+	const targetActions = resultData.result
+		.getTargets(resultData.filter)
+		.flatMap(target => target.getDamageActions().map(action => action.forTarget({ player: player.unitIndex })));
 
-	return ActionMetrics.groupById(actions).concat(petGroups);
+	return ActionMetrics.groupById(targetActions);
 };
 
 const grouping: MetricGrouping<ActionMetrics> = {
 	merge: metrics => ActionMetrics.merge(metrics, { removeTag: true, actionIdOverride: metrics[0].unit?.petActionId || undefined }),
-	shouldCollapse: metric => !metric.unit?.isPet,
+	shouldCollapse: () => true,
 };
 
-const rowClassName = (metric: ActionMetrics) => (metric.hitAttempts == 0 && metric.dps == 0 ? 'threat-metrics' : undefined);
-
-export const DamageMetricsTable = () => {
+export const DtpsMetricsTable = () => {
 	const resultData = useSimResult();
-	const sim = useSim();
-	const showThreatMetrics = useStoreSubscribe(
-		useMemo(() => subscribeUiField(sim, 'showThreatMetrics'), [sim]),
-		() => sim.getShowThreatMetrics(),
-	);
 
-	const rows = useMemo(() => (resultData ? buildMetricRows(damageGroups(resultData), grouping) : NO_ROWS), [resultData]);
+	const rows = useMemo(() => (resultData ? buildMetricRows(dtpsGroups(resultData), grouping) : NO_ROWS), [resultData]);
 	const metricsByRowId = useMemo(() => indexMetricRows(rows), [rows]);
 	const maxDamage = useMetricMax(rows, metric => metric.damage);
 
@@ -80,13 +61,13 @@ export const DamageMetricsTable = () => {
 			helper.columns([
 				attackMetricsColumns.name(),
 				attackMetricsColumns.primary({
-					id: 'damage-done',
-					header: i18n.t('results_tab.details.columns.damage_done'),
+					id: 'damage-taken',
+					header: i18n.t('results_tab.details.columns.damage_taken'),
 					total: metric => metric.avgDamage,
 					value: metric => metric.damage,
-					percentage: metric => metric.totalDamagePercent,
+					percentage: metric => metric.totalDamageTakenPercent,
 					max: maxDamage,
-					tooltipId: TOOLTIP.damage,
+					tooltipId: TOOLTIP.damageTaken,
 				}),
 				attackMetricsColumns.casts({ tooltipId: TOOLTIP.casts }),
 				attackMetricsColumns.withTicks({
@@ -96,12 +77,7 @@ export const DamageMetricsTable = () => {
 					tick: metric => metric.avgCastTick,
 					format: attackFormat.compact,
 					zeroWhen: metric => metric.isPassiveAction,
-					dashWhen: metric => metric.isPassiveAction,
-					meta: {
-						tooltipId: TOOLTIP.avgCast,
-						headerTooltipId: TOOLTIP.avgCastHeader,
-						headerTooltip: i18n.t('results_tab.details.tooltips.damage_avg_cast_tooltip'),
-					},
+					meta: { headerTooltipId: TOOLTIP.avgCastHeader, headerTooltip: i18n.t('results_tab.details.tooltips.damage_avg_cast_tooltip') },
 				}),
 				attackMetricsColumns.withTicks({
 					id: 'hits',
@@ -117,7 +93,16 @@ export const DamageMetricsTable = () => {
 					value: metric => metric.avgHit,
 					tick: metric => metric.avgTick,
 					format: attackFormat.compact,
-					meta: { tooltipId: TOOLTIP.avgHit },
+				}),
+				helper.accessor(row => row.metric.totalMissesPercent, {
+					id: 'miss-percent',
+					header: i18n.t('results_tab.details.columns.miss_percent'),
+					meta: {
+						tooltipId: TOOLTIP.missPercent,
+						headerTooltipId: TOOLTIP.missPercentHeader,
+						headerTooltip: i18n.t('results_tab.details.tooltips.hit_miss_percent_tooltip'),
+					},
+					cell: info => attackFormat.percent(info.getValue()),
 				}),
 				attackMetricsColumns.withTicks({
 					id: 'crit-percent',
@@ -126,22 +111,10 @@ export const DamageMetricsTable = () => {
 					tick: metric => metric.critTickPercent,
 					format: attackFormat.percent,
 				}),
-				helper.accessor(row => row.metric.totalMissesPercent, {
-					id: 'miss-percent',
-					header: i18n.t('results_tab.details.columns.miss_percent'),
-					meta: { tooltipId: TOOLTIP.missPercent },
-					cell: info => attackFormat.percent(info.getValue()),
-				}),
-				helper.accessor(row => row.metric.damageThroughput, {
-					id: 'dpet',
-					header: i18n.t('results_tab.details.columns.dpet'),
-					cell: info => attackFormat.compact(info.getValue()),
-				}),
 				attackMetricsColumns.rate({
-					id: 'dps',
-					header: i18n.t('results_tab.details.columns.dps'),
+					id: 'dtps',
+					header: i18n.t('results_tab.details.columns.dtps'),
 					value: metric => metric.dps,
-					tooltipId: TOOLTIP.dps,
 				}),
 			]),
 		[maxDamage],
@@ -151,17 +124,11 @@ export const DamageMetricsTable = () => {
 
 	return (
 		<>
-			<MetricsTable
-				rootClassName="damage-metrics-root"
-				columns={columns}
-				rows={rows}
-				sortColumnId="dps"
-				hasResult={!!resultData}
-				rowClassName={rowClassName}
-			/>
+			<MetricsTable rootClassName="dtps-metrics-root" columns={columns} rows={rows} sortColumnId="dtps" hasResult={!!resultData} />
 			<Tooltip id={TOOLTIP.avgCastHeader} />
+			<Tooltip id={TOOLTIP.missPercentHeader} />
 			<Tooltip
-				id={TOOLTIP.damage}
+				id={TOOLTIP.damageTaken}
 				className="metrics-table-tooltip"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => <MetricsCombinedTooltip headerValues={amountHeader()} groups={[damageBreakdownGroup(metric)]} />)
@@ -177,15 +144,6 @@ export const DamageMetricsTable = () => {
 				}
 			/>
 			<Tooltip
-				id={TOOLTIP.avgCast}
-				className="metrics-table-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						!metric.avgCastHit && !metric.avgCastTick ? null : threatTooltip(metric, metric.avgCastThreat, showThreatMetrics),
-					)
-				}
-			/>
-			<Tooltip
 				id={TOOLTIP.hits}
 				className="metrics-table-tooltip"
 				render={({ activeAnchor }) =>
@@ -195,21 +153,11 @@ export const DamageMetricsTable = () => {
 				}
 			/>
 			<Tooltip
-				id={TOOLTIP.avgHit}
-				className="metrics-table-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => threatTooltip(metric, metric.avgHitThreat, showThreatMetrics))}
-			/>
-			<Tooltip
 				id={TOOLTIP.missPercent}
 				className="metrics-table-tooltip"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => (metric.totalMissesPercent ? <MetricsCombinedTooltip groups={[missGroup(metric)]} /> : null))
 				}
-			/>
-			<Tooltip
-				id={TOOLTIP.dps}
-				className="metrics-table-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => (metric.dps ? threatTooltip(metric, metric.tps, showThreatMetrics) : null))}
 			/>
 		</>
 	);

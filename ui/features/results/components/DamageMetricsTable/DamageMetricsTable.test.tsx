@@ -151,6 +151,15 @@ describe('DamageMetricsTable', () => {
 		]);
 	});
 
+	it('dashes a passive action on Avg Cast and sorts it as 0', () => {
+		result = playerResult([metric('Steady Shot', { dps: 30 }), metric('Serpent Sting', { isPassiveAction: true, avgCastHit: 5, dps: 20 })]);
+		const { container } = render(<DamageMetricsTable />);
+
+		const passive = rows(container).find(row => row.cells[0].textContent === 'Serpent Sting')!;
+		expect(passive.cells[3].getAttribute('data-text')).toBe('0');
+		expect(passive.cells[3].textContent).toBe('-');
+	});
+
 	it('opens the damage breakdown from the primary-metric cell', async () => {
 		result = playerResult([metric('Steady Shot')]);
 		const { container } = render(<DamageMetricsTable />);

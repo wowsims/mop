@@ -35,6 +35,8 @@ vi.mock('./individual_sim_ui', async () => {
 			// through the constructed `DetailedResults` rather than owning the pane.
 			readonly detailedResults = {
 				damageMetricsContainer: document.createElement('div'),
+				healingMetricsContainer: document.createElement('div'),
+				dtpsMetricsContainer: document.createElement('div'),
 				castMetricsContainer: document.createElement('div'),
 				buffMetricsContainer: document.createElement('div'),
 				debuffMetricsContainer: document.createElement('div'),
@@ -59,6 +61,8 @@ vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
 vi.mock('@features/results/components/CastMetricsTable', () => ({ CastMetricsTable: () => <div className="cast-metrics-root" /> }));
 vi.mock('@features/results/components/DamageMetricsTable', () => ({ DamageMetricsTable: () => <div className="damage-metrics-root" /> }));
+vi.mock('@features/results/components/HealingMetricsTable', () => ({ HealingMetricsTable: () => <div className="healing-metrics-root" /> }));
+vi.mock('@features/results/components/DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div className="dtps-metrics-root" /> }));
 vi.mock('@features/results/components/AuraMetricsTable', () => ({
 	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div className={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
 }));
@@ -129,6 +133,8 @@ describe('SimApp', () => {
 	it('portals every ported metrics table into the div the results pane built', () => {
 		render(<SimApp player={player} def={def} />);
 		expect(resultsContainers[0].damageMetricsContainer.querySelectorAll('.damage-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].healingMetricsContainer.querySelectorAll('.healing-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].dtpsMetricsContainer.querySelectorAll('.dtps-metrics-root')).toHaveLength(1);
 		expect(resultsContainers[0].castMetricsContainer.querySelectorAll('.cast-metrics-root')).toHaveLength(1);
 		expect(resultsContainers[0].buffMetricsContainer.querySelectorAll('.buff-metrics-root')).toHaveLength(1);
 		expect(resultsContainers[0].debuffMetricsContainer.querySelectorAll('.debuff-metrics-root')).toHaveLength(1);
