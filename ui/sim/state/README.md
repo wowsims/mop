@@ -18,15 +18,15 @@ with no store changes. There is no separate event system any more.
 `Sim.store` is created by `createSimStore()` (`sim_store.ts`, wrapped in
 `subscribeWithSelector`). Slices:
 
-| Slice                   | Owner facade                                       | Contents                                                                                                    |
-| ----------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `ui`                    | `Sim`                                              | show* flags, language, wasmConcurrency (presentation; `Sim` keeps the derived getters)                      |
-| `sim`                   | `Sim`                                              | iterations, phase, faction, fixedRngSeed, filters, lastUsedRngSeed(+version), metadataVersion               |
-| `encounter`             | `Encounter`                                        | duration, execute proportions, useHealth, targets (replace-on-write)                                        |
-| `raid`                  | `Raid` / `Party`                                   | buffs, debuffs, tanks, targetDummies, numActiveParties, partyBuffs[5], composition[5][5] (player storeKeys) |
-| `players[storeKey]`     | `Player` / `ItemSwapSettings`                      | 23 settings fields + per-field version counters (`v`)                                                       |
-| `reforge[storeKey]`     | `ReforgeSettings`                                  | 12 reforge-optimizer settings + counters                                                                    |
-| `statWeights[storeKey]` | `StatWeightActionSettings`                         | excluded stats + counter                                                                                    |
+| Slice                   | Owner facade                                    | Contents                                                                                                    |
+| ----------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `ui`                    | `Sim`                                           | show* flags, language, wasmConcurrency (presentation; `Sim` keeps the derived getters)                      |
+| `sim`                   | `Sim`                                           | iterations, phase, faction, fixedRngSeed, filters, lastUsedRngSeed(+version), metadataVersion               |
+| `encounter`             | `Encounter`                                     | duration, execute proportions, useHealth, targets (replace-on-write)                                        |
+| `raid`                  | `Raid` / `Party`                                | buffs, debuffs, tanks, targetDummies, numActiveParties, partyBuffs[5], composition[5][5] (player storeKeys) |
+| `players[storeKey]`     | `Player` / `ItemSwapSettings`                   | 23 settings fields + per-field version counters (`v`)                                                       |
+| `reforge[storeKey]`     | `ReforgeSettings`                               | 12 reforge-optimizer settings + counters                                                                    |
+| `statWeights[storeKey]` | `StatWeightActionSettings`                      | excluded stats + counter                                                                                    |
 | `bulk[storeKey]`        | `BulkSettingsStore` (`ui/sim/bulk_settings.ts`) | version counters only (the `BulkTab` keeps the values)                                                      |
 
 Class-side by design: the Party↔Player object graph (composition in the store is

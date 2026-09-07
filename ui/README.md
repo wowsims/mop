@@ -128,7 +128,7 @@ override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
 
 | Alias          | Resolves to      |
 | -------------- | ---------------- |
-| `@sim/*`    | `ui/sim/*`    |
+| `@sim/*`       | `ui/sim/*`       |
 | `@generated/*` | `ui/generated/*` |
 | `@worker/*`    | `ui/worker/*`    |
 | `@ui-kit/*`    | `ui/ui-kit/*`    |
