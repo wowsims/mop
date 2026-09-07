@@ -192,7 +192,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async runIndividualSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			await this.sim.signalManager.abortType(RequestTypes.All);
+			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
 			const result = await this.sim.runSim({ ...options, onProgress, raw: false });
 			this.notifyIfCancelled(result);
 			return result;
@@ -202,11 +202,9 @@ export abstract class SimUI extends Component implements SimHost {
 		}
 	}
 
-	// Runs a lightweight version of the sim that uses a gear set and doesn't compute combat logs or other expensive data,
-	// and returns the raw result from the sim worker.
 	async runGearSim(gear: Gear, onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		try {
-			await this.sim.signalManager.abortType(RequestTypes.All);
+			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
 			return this.sim.runSim({ ...options, gear, onProgress, raw: true });
 		} catch (e) {
 			this.handleCrash(e);
@@ -216,6 +214,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async runSingleIteration(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
+			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
 			const result = await this.sim.runSim({ debug: true, singleIteration: true, ...options, raw: false });
 			this.notifyIfCancelled(result);
 			return result;
