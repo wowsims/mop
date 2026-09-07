@@ -31,6 +31,7 @@
 		"@base-ui/react": "^1.7.0",
 		"@popperjs/core": "^2.11.8",
 		"@tanstack/react-table": "9.2.4",
+		"@tanstack/react-virtual": "3.14.10",
 		"@types/golang-wasm-exec": "^1.15.2",
 		"@types/pako": "^2.0.0",
 		"ajv": "^8.17.1",
