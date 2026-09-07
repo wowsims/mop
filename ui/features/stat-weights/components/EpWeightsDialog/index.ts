@@ -7,4 +7,5 @@ export { EpWeightsTable, type EpWeightsTableProps } from './EpWeightsTable';
 export { StatWeightCells, type StatWeightCellsProps } from './StatWeightCells';
 export { StatWeightRow, type StatWeightRowProps } from './StatWeightRow';
 export { StatWeightValue, type StatWeightValueProps } from './StatWeightValue';
-export type { EpColumn, StatsType } from './types';
+export type { EpColumn } from './types';
+export { StatsType } from './types';

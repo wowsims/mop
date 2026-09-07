@@ -18,7 +18,10 @@ export interface GlyphData {
 	spellId: number;
 }
 
-export type GlyphKind = 'major' | 'minor';
+export enum GlyphKind {
+	Major = 'major',
+	Minor = 'minor',
+}
 
 export const majorGlyphFields = ['major1', 'major2', 'major3'] as const;
 export const minorGlyphFields = ['minor1', 'minor2', 'minor3'] as const;
@@ -35,8 +38,8 @@ export const emptyGlyphData: GlyphData = {
 };
 
 export const glyphData = (glyphsConfig: GlyphsConfig, playerClass: Class, glyph: number, db: Database): GlyphData => {
-	const glyphType: GlyphKind = glyphsConfig.majorGlyphs[glyph] ? 'major' : 'minor';
-	const glyphConfig = glyphType === 'major' ? glyphsConfig.majorGlyphs[glyph] : glyphsConfig.minorGlyphs[glyph];
+	const glyphType: GlyphKind = glyphsConfig.majorGlyphs[glyph] ? GlyphKind.Major : GlyphKind.Minor;
+	const glyphConfig = glyphType === GlyphKind.Major ? glyphsConfig.majorGlyphs[glyph] : glyphsConfig.minorGlyphs[glyph];
 	const translationKey = `${getClassI18nKey(playerClass)}.${glyphType}.${glyphConfig.name
 		.toLowerCase()
 		.replace(/[':]/g, '')
@@ -53,7 +56,7 @@ export const glyphData = (glyphsConfig: GlyphsConfig, playerClass: Class, glyph:
 };
 
 export const buildGlyphOptions = (glyphsConfig: GlyphsConfig, kind: GlyphKind, playerClass: Class, db: Database): GlyphData[] =>
-	Object.keys(kind === 'major' ? glyphsConfig.majorGlyphs : glyphsConfig.minorGlyphs)
+	Object.keys(kind === GlyphKind.Major ? glyphsConfig.majorGlyphs : glyphsConfig.minorGlyphs)
 		.map(idStr => glyphData(glyphsConfig, playerClass, Number(idStr), db))
 		.sort((a, b) => stringComparator(a.name, b.name));
 

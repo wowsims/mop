@@ -1339,6 +1339,25 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **Four more string unions became string enums, and the header-anchor note was closed as
+  stale rather than fixed.** `ResultsPanelStage`, `GlyphKind`, `StatsType` and `ImportExportKind`
+  follow `SimRunKind`'s pattern exactly — plain `export enum`, values unchanged. One consequence
+  worth knowing before the next conversion: a bare string literal is not assignable to a
+  string-enum-typed prop, so `<ImportExportMenu kind="import">` in `SimApp.tsx` had to move with the
+  eight `addDialog` call sites. Three lookalikes were checked and left: `EpWeightsDialog`'s
+  `stage: 'running'` is a different progress union, `StatsTableColumn.type` is a superset with a
+  third variant, and `GlyphsPicker.test.tsx`'s `'major' | 'minor'` is a local CSS-selector helper.
+  `DialogSize`, `IconSize`, `IconStyle`, `TooltipPlace` and `ButtonVariant` stay literal unions on
+  purpose — they mirror CSS and vendor vocabularies where the literal *is* the value — and the five
+  in `results/view/timeline/rotation/` wait for that subtree's port rather than being touched twice.
+
+  The recorded "header tooltip anchor is not focusable" item was **re-audited and is not a defect**:
+  every anchor there is a real `<a href>` or `<button>` through `Button`, and the one non-native
+  control is Base UI's disabled menu item, which sets `focusableWhenDisabled: true` deliberately.
+  This skill had already closed the same question on 2026-09-05, and `a11y.mjs` asserts it per
+  region. The backlog entry was a duplicate of a closed finding — worth saying out loud, because a
+  stale note that reads like an open defect costs the same to re-investigate as a real one.
+
 - 2026-09-07 **`SavedDataPanel` extracted out of `SavedEpWeights`, so the other four saved-data
   slots have a React component to port onto.** Three of the five remaining `useLegacyMount` islands
   are `SavedDataManager` mounts, and four of the six named saved-data hooks had no caller for exactly

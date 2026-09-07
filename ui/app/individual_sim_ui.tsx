@@ -53,6 +53,7 @@ import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
 import { trackPageView } from '../tracking/analytics';
+import { ImportExportKind } from './header/import_export_registry';
 import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
@@ -376,18 +377,18 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	private addTopbarComponents() {
 		const importRegistry = this.simHeader.importExport;
-		importRegistry.addDialog('import', 'JSON', JsonImporterDialog);
-		// importRegistry.addDialog('import', '60U Cata', SixtyUpgradesImporterDialog);
-		importRegistry.addDialog('import', 'WoWHead', WowheadImporterDialog);
-		importRegistry.addDialog('import', 'Addon', AddonImporterDialog);
+		importRegistry.addDialog(ImportExportKind.Import, 'JSON', JsonImporterDialog);
+		// importRegistry.addDialog(ImportExportKind.Import, '60U Cata', SixtyUpgradesImporterDialog);
+		importRegistry.addDialog(ImportExportKind.Import, 'WoWHead', WowheadImporterDialog);
+		importRegistry.addDialog(ImportExportKind.Import, 'Addon', AddonImporterDialog);
 
 		const exportRegistry = this.simHeader.importExport;
-		exportRegistry.addDialog('export', 'Link', exporterDialog(LINK_EXPORTER));
-		exportRegistry.addDialog('export', 'JSON', exporterDialog(JSON_EXPORTER));
-		exportRegistry.addDialog('export', 'WoWHead', exporterDialog(WOWHEAD_GEAR_PLANNER_EXPORTER));
-		// exportRegistry.addDialog('export', '60U Cata EP', exporterDialog(SIXTY_UPGRADES_EP_EXPORTER));
-		exportRegistry.addDialog('export', 'Pawn EP', exporterDialog(PAWN_EP_EXPORTER));
-		exportRegistry.addDialog('export', 'CLI', exporterDialog(CLI_EXPORTER));
+		exportRegistry.addDialog(ImportExportKind.Export, 'Link', exporterDialog(LINK_EXPORTER));
+		exportRegistry.addDialog(ImportExportKind.Export, 'JSON', exporterDialog(JSON_EXPORTER));
+		exportRegistry.addDialog(ImportExportKind.Export, 'WoWHead', exporterDialog(WOWHEAD_GEAR_PLANNER_EXPORTER));
+		// exportRegistry.addDialog(ImportExportKind.Export, '60U Cata EP', exporterDialog(SIXTY_UPGRADES_EP_EXPORTER));
+		exportRegistry.addDialog(ImportExportKind.Export, 'Pawn EP', exporterDialog(PAWN_EP_EXPORTER));
+		exportRegistry.addDialog(ImportExportKind.Export, 'CLI', exporterDialog(CLI_EXPORTER));
 	}
 
 	applyDefaultRotation() {

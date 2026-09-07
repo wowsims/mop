@@ -26,7 +26,7 @@ import { SavedEpWeights } from '../SavedEpWeights';
 import { EpReferenceOptions } from './EpReferenceOptions';
 import { EpWeightsOptions } from './EpWeightsOptions';
 import { EpWeightsTable } from './EpWeightsTable';
-import type { StatsType } from './types';
+import { StatsType } from './types';
 import { buildEpColumns, EP_TOOLTIP_ID } from './utils';
 
 export interface EpWeightsDialogProps {
@@ -45,7 +45,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 	const epPseudoStats = useMemo(() => individualConfig.epPseudoStats || [], [individualConfig]);
 	const epStatSet = useMemo(() => ({ epStats, epPseudoStats }), [epStats, epPseudoStats]);
 
-	const [statsType, setStatsType] = useState<StatsType>('ep');
+	const [statsType, setStatsType] = useState<StatsType>(StatsType.Ep);
 	const [showAllStats, setShowAllStats] = useState(false);
 	const [iterations, setIterations] = useState(0);
 	const [simResult, setSimResult] = useState<StatWeightsResult | null>(null);
@@ -108,7 +108,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 	);
 
 	const onComputeEp = useCallback(() => {
-		const combine = statsType === 'ep' ? combineScaledEpValues : combineScaledWeights;
+		const combine = statsType === StatsType.Ep ? combineScaledEpValues : combineScaledWeights;
 		applyWeights(combine(prevSimResult, player.getEpRatios()));
 	}, [statsType, prevSimResult, player, applyWeights]);
 

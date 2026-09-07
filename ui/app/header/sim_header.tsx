@@ -7,7 +7,7 @@ import { trackPageView } from '../../tracking/analytics';
 import { SettingsMenu } from '../settings_menu';
 import type { ShellDom } from '../shell_dom';
 import { SimUI } from '../sim_ui';
-import { ImportExportRegistry } from './import_export_registry';
+import { ImportExportKind, ImportExportRegistry } from './import_export_registry';
 
 export class SimHeader extends Component {
 	private simUI: SimUI;
@@ -35,9 +35,9 @@ export class SimHeader extends Component {
 	}
 
 	addImportLink(label: string, importer: Importer, isUnsupported = false) {
-		this.importExport.add('import', label, importer, isUnsupported);
+		this.importExport.add(ImportExportKind.Import, label, importer, isUnsupported);
 	}
 	addExportLink(label: string, exporter: Exporter, isUnsupported = false) {
-		this.importExport.add('export', label, exporter, isUnsupported);
+		this.importExport.add(ImportExportKind.Export, label, exporter, isUnsupported);
 	}
 }

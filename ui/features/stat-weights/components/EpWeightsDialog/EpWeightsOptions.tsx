@@ -3,14 +3,14 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { useRef } from 'react';
 
-import type { StatsType } from './types';
+import { StatsType } from './types';
 
 export interface EpWeightsOptionsProps {
 	onStatsTypeChange: (statsType: StatsType) => void;
 	onShowAllStatsChange: (showAllStats: boolean) => void;
 }
 
-const STATS_TYPES: StatsType[] = ['ep', 'weight'];
+const STATS_TYPES: StatsType[] = [StatsType.Ep, StatsType.Weight];
 
 /** Both values are UI-local, so they live in a ref the pickers read back: `useInput` re-reads its source synchronously on its own write, which is before a `useState` has committed. */
 export const EpWeightsOptions = ({ onStatsTypeChange, onShowAllStatsChange }: EpWeightsOptionsProps) => {

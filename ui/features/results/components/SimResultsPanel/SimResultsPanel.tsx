@@ -5,7 +5,7 @@ import type { WarningsRegistry } from '@features/results/model/warnings';
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { AbortButton } from './AbortButton';
-import type { ResultsPanelStore } from './results_panel_store';
+import { ResultsPanelStage, type ResultsPanelStore } from './results_panel_store';
 import { SimProgress } from './SimProgress';
 import { SimWarnings } from './SimWarnings';
 import { UnlaunchedNotice } from './UnlaunchedNotice';
@@ -31,10 +31,10 @@ export const SimResultsPanel = ({ panel, warnings }: SimResultsPanelProps) => {
 
 	return (
 		<div className="results-viewer">
-			<div className="results-pending" hidden={stage !== 'pending' && stage !== 'running'}>
-				{stage === 'running' ? <SimProgress panel={panel} /> : <div className="loader" />}
+			<div className="results-pending" hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
+				{stage === ResultsPanelStage.Running ? <SimProgress panel={panel} /> : <div className="loader" />}
 			</div>
-			<div ref={contentRef} className="results-content" hidden={stage !== 'result'} />
+			<div ref={contentRef} className="results-content" hidden={stage !== ResultsPanelStage.Result} />
 			<div className="button-zone text-center" hidden={!buttonsVisible}>
 				{abortHandler && <AbortButton onAbort={abortHandler} />}
 			</div>

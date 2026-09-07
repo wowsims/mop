@@ -2,7 +2,10 @@ import type { Exporter } from '@features/import-export/view/exporter';
 import type { Importer } from '@features/import-export/view/importer';
 import type { ComponentType } from 'react';
 
-export type ImportExportKind = 'import' | 'export';
+export enum ImportExportKind {
+	Import = 'import',
+	Export = 'export',
+}
 
 export interface ImportExportDialogProps {
 	open: boolean;
@@ -17,7 +20,7 @@ export interface ImportExportEntry {
 }
 
 export class ImportExportRegistry {
-	private entries: Record<ImportExportKind, ReadonlyArray<ImportExportEntry>> = { import: [], export: [] };
+	private entries: Record<ImportExportKind, ReadonlyArray<ImportExportEntry>> = { [ImportExportKind.Import]: [], [ImportExportKind.Export]: [] };
 	private readonly listeners = new Set<() => void>();
 
 	readonly subscribe = (listener: () => void): (() => void) => {

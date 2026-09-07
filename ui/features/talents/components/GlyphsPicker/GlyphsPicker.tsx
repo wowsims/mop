@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GlyphPicker } from './GlyphPicker';
 import { GlyphSelectorDialog } from './GlyphSelectorDialog';
-import { buildGlyphOptions, type GlyphField, glyphOfField, majorGlyphFields, minorGlyphFields, setGlyph } from './utils';
+import { buildGlyphOptions, type GlyphField, GlyphKind, glyphOfField, majorGlyphFields, minorGlyphFields, setGlyph } from './utils';
 
 export const GlyphsPicker = () => {
 	const player = usePlayer();
@@ -33,8 +33,8 @@ export const GlyphsPicker = () => {
 		};
 	}, []);
 
-	const majorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, 'major', playerClass, db) : []), [db, glyphsConfig, playerClass]);
-	const minorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, 'minor', playerClass, db) : []), [db, glyphsConfig, playerClass]);
+	const majorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Major, playerClass, db) : []), [db, glyphsConfig, playerClass]);
+	const minorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Minor, playerClass, db) : []), [db, glyphsConfig, playerClass]);
 
 	const glyphsSubscribe = useMemo(() => subscribePlayerField(player, 'glyphs'), [player]);
 	const glyphs = useStoreSubscribe(glyphsSubscribe, () => player.getGlyphs());

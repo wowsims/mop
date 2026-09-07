@@ -1,7 +1,7 @@
 import { ProgressMetrics } from '@generated/proto/api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ResultsPanelStore } from './results_panel_store';
+import { ResultsPanelStage, ResultsPanelStore } from './results_panel_store';
 
 const tick = (completed: number) => ProgressMetrics.create({ dps: completed, hps: 0, completedIterations: completed, totalIterations: 100 });
 
@@ -13,7 +13,7 @@ describe('ResultsPanelStore', () => {
 	});
 
 	it('starts idle with the buttons down', () => {
-		expect(store.getStage()).toBe('idle');
+		expect(store.getStage()).toBe(ResultsPanelStage.Idle);
 		expect(store.getButtonsVisible()).toBe(false);
 		expect(store.getAbortHandler()).toBeNull();
 	});
@@ -74,7 +74,7 @@ describe('ResultsPanelStore', () => {
 		store.setContent(topline);
 
 		expect(replaceChildren).toHaveBeenCalledWith(topline);
-		expect(store.getStage()).toBe('result');
+		expect(store.getStage()).toBe(ResultsPanelStage.Result);
 	});
 
 	it('hides the button zone without removing the button, the way an aborted run does', () => {

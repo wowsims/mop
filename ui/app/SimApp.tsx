@@ -16,6 +16,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { ImportExportMenu } from './header/ImportExportMenu';
+import { ImportExportKind } from './header/import_export_registry';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
@@ -66,8 +67,18 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
 					{createPortal(
 						<>
-							<ImportExportMenu kind="import" registry={simUI.simHeader.importExport} icon="download" title={i18n.t('import.title')} />
-							<ImportExportMenu kind="export" registry={simUI.simHeader.importExport} icon="right-from-bracket" title={i18n.t('export.title')} />
+							<ImportExportMenu
+								kind={ImportExportKind.Import}
+								registry={simUI.simHeader.importExport}
+								icon="download"
+								title={i18n.t('import.title')}
+							/>
+							<ImportExportMenu
+								kind={ImportExportKind.Export}
+								registry={simUI.simHeader.importExport}
+								icon="right-from-bracket"
+								title={i18n.t('export.title')}
+							/>
 						</>,
 						simUI.simHeader.importExportContainer,
 					)}
