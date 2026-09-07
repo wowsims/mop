@@ -1,9 +1,26 @@
-.tippy-box[data-theme='tooltip-quick-swap'] {
-	opacity: 1;
+@import 'shared/tokens';
+
+.gear-picker-root {
+	.item-picker-icon,
+	.item-picker-name-container,
+	.item-picker-enchant,
+	.item-picker-tinker,
+	.item-picker-reforge,
+	.gem-socket-container {
+		&:focus-visible {
+			outline: 1px solid var(--bs-link-color);
+			outline-offset: 1px;
+		}
+	}
+}
+
+.sim-tooltip.tooltip-quick-swap {
+	max-width: none;
 	width: 220px;
+	text-align: start;
 	cursor: default;
 
-	.tippy-content {
+	[class*='styles-module_content'] {
 		padding: 0;
 	}
 
@@ -68,6 +85,11 @@
 
 	&.active {
 		border-color: var(--bs-success);
+	}
+
+	&:focus-visible {
+		outline: 1px solid var(--bs-link-color);
+		outline-offset: -1px;
 	}
 }
 

@@ -34,6 +34,7 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly resultsPanel = {} as never;
 			readonly warnings = {} as never;
 			// React fills the talents tab body through this, the same way it fills the sidebar.
+			readonly gearTab = { contentContainer: document.createElement('div') };
 			readonly talentsTab = { contentContainer: document.createElement('div') };
 			readonly settingsTab = { contentContainer: document.createElement('div') };
 			// The metrics tables portal into divs the vanilla results pane builds, so React reaches them
@@ -63,6 +64,7 @@ vi.mock('./individual_sim_ui', async () => {
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
 vi.mock('@features/results/components/SimResultsPanel', () => ({ SimResultsPanel: () => <div className="results-viewer" /> }));
+vi.mock('./tabs/GearTabBody', () => ({ GearTabBody: () => <div className="gear-tab-left" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));

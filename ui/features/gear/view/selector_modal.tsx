@@ -20,9 +20,8 @@ import { ref } from 'tsx-vanilla';
 
 import { enchantsTabData, gemsTabData, itemsTabData, randomSuffixesTabData, reforgesTabData, tinkersTabData, upgradesTabData } from '../model/item_data';
 import { resolveSelectedTab } from '../model/tab_eligibility';
-import { GearData, getTranslatedTabLabel, ItemData, ItemListType, SelectorModalTabs } from '../types';
+import { GearData, getTranslatedTabLabel, ItemData, ItemListType, SelectorModalTabs, SlotRailEntry } from '../types';
 import { createGemContainer, getEmptySlotIconUrl, setGemInContainer } from './gear_elements';
-import GearPicker from './gear_picker';
 import ItemList from './item_list';
 
 type SelectorModalOptions = {
@@ -34,7 +33,7 @@ type SelectorModalOptions = {
 export default class SelectorModal extends BaseModal {
 	private readonly simUI: SimHost;
 	private player: Player<any>;
-	private gearPicker: GearPicker | undefined;
+	private readonly slotRail: SlotRailEntry[];
 	private ilists: ItemList<ItemListType>[] = [];
 
 	private readonly itemSlotTabElems: HTMLElement[] = [];
@@ -47,12 +46,12 @@ export default class SelectorModal extends BaseModal {
 	private disabledTabs: SelectorModalTabs[] = [];
 	private options: SelectorModalOptions;
 
-	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>, gearPicker?: GearPicker, options?: Partial<SelectorModalOptions>) {
+	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>, slotRail?: SlotRailEntry[], options?: Partial<SelectorModalOptions>) {
 		super(parent, 'selector-modal', { disposeOnClose: false, size: 'xl' });
 
 		this.simUI = simUI;
 		this.player = player;
-		this.gearPicker = gearPicker;
+		this.slotRail = slotRail ?? [];
 		this.options = { id: randomUUID(), ...options };
 		this.disabledTabs = this.options.disabledTabs || [];
 
@@ -92,7 +91,7 @@ export default class SelectorModal extends BaseModal {
 	}
 
 	onShow() {
-		if (this.gearPicker) {
+		if (this.slotRail.length) {
 			// Allow you to switch between gear picker slots with the up and down arrows
 			const switchToPreviousItemSlotTab = this.switchToPreviousItemSlotTab.bind(this);
 			const switchToNextItemSlotTab = this.switchToNextItemSlotTab.bind(this);
@@ -194,24 +193,24 @@ export default class SelectorModal extends BaseModal {
 	}
 
 	private addItemSlotTabs() {
-		if (!this.gearPicker) {
+		if (!this.slotRail.length) {
 			return;
 		}
 
 		this.dialog.prepend(
 			<div className="gear-picker-modal-slots">
-				{this.gearPicker.itemPickers.map(picker => {
+				{this.slotRail.map(entry => {
 					const anchorRef = ref<HTMLAnchorElement>();
 					const wrapper = (
-						<div className="item-picker-icon-wrapper" dataset={{ slot: picker.slot }}>
+						<div className="item-picker-icon-wrapper" dataset={{ slot: entry.slot }}>
 							<a
 								ref={anchorRef}
 								className="item-picker-icon"
 								href="javascript:void(0)"
 								onclick={(e: Event) => {
 									e.preventDefault();
-									if (picker.slot != this.currentSlot) {
-										picker.openSelectorModal(this.currentTab);
+									if (entry.slot != this.currentSlot) {
+										entry.open(this.currentTab);
 									}
 								}}
 								dataset={{ whtticon: 'false' }}
@@ -220,22 +219,22 @@ export default class SelectorModal extends BaseModal {
 					) as HTMLElement;
 
 					const setItemData = () => {
-						if (picker.item) {
-							setEquippedItemWowheadData(this.player, picker.item, anchorRef.value!);
-							picker.item
-								.asActionId()
+						const item = entry.getItem();
+						if (item) {
+							setEquippedItemWowheadData(this.player, item, anchorRef.value!);
+							item.asActionId()
 								.fill()
 								.then(filledId => {
 									setActionIdBackgroundAndHref(filledId, anchorRef.value!);
 								});
 						} else {
-							anchorRef.value!.style.backgroundImage = `url('${getEmptySlotIconUrl(picker.slot)}')`;
+							anchorRef.value!.style.backgroundImage = `url('${getEmptySlotIconUrl(entry.slot)}')`;
 						}
 					};
 					setItemData();
-					picker.onUpdate(() => setItemData());
+					this.addOnDisposeCallback(entry.subscribe(setItemData));
 					tippy(anchorRef.value!, {
-						content: `Edit ${translateSlotName(picker.slot)}`,
+						content: `Edit ${translateSlotName(entry.slot)}`,
 						placement: 'left',
 					});
 					this.itemSlotTabElems.push(wrapper);
@@ -256,18 +255,18 @@ export default class SelectorModal extends BaseModal {
 	}
 
 	private switchToPreviousItemSlotTab(event: KeyboardEvent) {
-		if (event.key === 'ArrowUp' && this.gearPicker) {
+		if (event.key === 'ArrowUp' && this.slotRail.length) {
 			event.preventDefault();
 			const newSlot = mod(this.currentSlot - 1, Object.keys(ItemSlot).length / 2) as unknown as ItemSlot;
-			this.gearPicker.itemPickers[newSlot].openSelectorModal(this.currentTab);
+			this.slotRail.find(entry => entry.slot === newSlot)?.open(this.currentTab);
 		}
 	}
 
 	private switchToNextItemSlotTab(event: KeyboardEvent) {
-		if (event.key === 'ArrowDown' && this.gearPicker) {
+		if (event.key === 'ArrowDown' && this.slotRail.length) {
 			event.preventDefault();
 			const newSlot = mod(this.currentSlot + 1, Object.keys(ItemSlot).length / 2) as unknown as ItemSlot;
-			this.gearPicker.itemPickers[newSlot].openSelectorModal(this.currentTab);
+			this.slotRail.find(entry => entry.slot === newSlot)?.open(this.currentTab);
 		}
 	}
 

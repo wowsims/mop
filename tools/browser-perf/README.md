@@ -78,3 +78,9 @@ two-line.
 row on every render pass (64 → 93, 149 → 178, 607 → 636). It is `setExternalAwareHref` writing
 `rel="noopener noreferrer"` beside every row anchor's `href` — cross-origin hardening the branch has
 and master does not. Not a regression, and not a number to "recover" in the port.
+
+Re-run after gear units 2 and 5 (the tab body, the three summaries, `ItemCell` and `GearPicker` in
+React), master re-recorded in the same session: every count above is reproduced to the unit — 636
+modal mutations on the open, 382 on the favourite toggle, 93 per keystroke, 178 on the tab switch,
+443 on the scroll, pool 1658 / 29 mounted / 56 px rows — and every timing falls inside the recorded
+range. Those units do not touch the item list, which is what the counts confirm.

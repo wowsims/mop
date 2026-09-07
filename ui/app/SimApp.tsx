@@ -21,6 +21,7 @@ import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
+import { GearTabBody } from './tabs/GearTabBody';
 import { SettingsTabBody } from './tabs/SettingsTabBody';
 import { TalentsTabBody } from './tabs/TalentsTabBody';
 
@@ -79,6 +80,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<AuraMetricsTable useDebuffs={false} />, simUI.detailedResults.buffMetricsContainer)}
 					{createPortal(<AuraMetricsTable useDebuffs={true} />, simUI.detailedResults.debuffMetricsContainer)}
 					{createPortal(<ResourceMetricsTable />, simUI.detailedResults.resourceMetricsContainer)}
+					{createPortal(<GearTabBody />, simUI.gearTab.contentContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />

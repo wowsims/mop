@@ -1,7 +1,7 @@
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { StoreSubscribe } from '@domain/state/subscriptions';
-import { ItemLevelState, ItemQuality, ItemRandomSuffix } from '@generated/proto/common';
+import { ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
@@ -64,4 +64,15 @@ export function getTranslatedTabLabel(tab: SelectorModalTabs): string {
 		default:
 			return tab;
 	}
+}
+
+export interface SelectorModalOpener {
+	openTab(selectedSlot: ItemSlot, selectedTab: SelectorModalTabs, gearData: GearData): void;
+}
+
+export interface SlotRailEntry {
+	slot: ItemSlot;
+	getItem: () => EquippedItem | null;
+	subscribe: StoreSubscribe;
+	open: (tab: SelectorModalTabs) => void;
 }

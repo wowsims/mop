@@ -365,11 +365,13 @@ of the duplication sweep was to build each shape once.
 | `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
 | `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource`. Owns `ResourceMetricsTable.scss`, co-located from `scss/core/components/detailed_results/_resource_metrics.scss` |
 | `SimResultsPanel` | `ui/features/results/components/SimResultsPanel/` | `features/results/view/results_viewer.tsx` (**deleted** — one consumer, a feature view), and with it the last importer of `ui-kit/sim_toolbar_item.tsx` (**deleted** too; `app/header/SimToolbar/ToolbarItem.tsx` had already superseded it everywhere else) | `panel` (the `ResultsPanelStore` the shell drives) and `warnings` (the `WarningsRegistry`); `disabled` and the healing flag come from the host | the four zones in order and the visibility table across them — `setPending` and `setContent` leave the button zone alone, `hideAll` takes it down without removing the button — plus the same split `ProgressTrackerDialog` exists for: the stage is React state, and dps, hps and the iteration counter are `textContent` writes off `ResultsPanelStore.onProgress`, never renders. **`.results-content` is rendered here and never given a React child**: `SimResultsManager` still `replaceChildren`s the finished topline into it, and its builder has three consumers, one the bulk renderer — which is why the running block renders inside `.results-pending` instead, and why the previous run's topline sits there hidden and inert for the length of the next run. Two seams are load-bearing and neither is visible to a browser gate: the store's `notify` is `flushSync`, because the run action reads the panel back in the click's own task, and `latestProgress` is a mutable field **outside** the `useSyncExternalStore` snapshot that `SimProgress` reads in a mount layout effect, because tick one carries both the stage change and the first numbers. Beside it: `SimProgress` (the running block and its three refs), `SimWarnings` (the zone, the `hide` toggle and the tooltip — read through `useStoreSubscribe`, because `getContents()` builds a fresh array per call), `AbortButton` (Stop, which `flushSync`es its own relabel and disable before calling the handler) and `UnlaunchedNotice` (folded in from `sim_ui.tsx`, so it can no longer render before the panel it is supposed to follow). Owns `SimResultsPanel.scss` — `.results-pending .loader` from `_sim_action.scss` and `.warning-zone [data-tippy-root]` from `_sidebar.scss`, re-keyed to `.warning-zone .sim-tooltip`; `.results-sim*` deliberately stays global, the bulk renderer emits it |
+| `ItemCell` | `ui/features/gear/components/ItemCell/` | the cell shape nine sites hand-roll; it absorbs gear's own — `GearPicker`'s sixteen. `view/item_renderer.tsx` stays and stays dual-stack, because bulk's picker and its results renderer are un-ported callers and `glyphs_picker.tsx` is a talents island | the six axes the duplication survey found varying: the icon element and how its image is set, whether there is an item-level badge and whether it carries the `+N` upgrade span, what the name row holds, the enchant/tinker/reforge stack, whether there are sockets and what they do, and a trailing action slot. `ilvl` and `sockets` are three-state on purpose — omitted drops the element, `null` keeps the empty one an unfilled gear slot renders | the class vocabulary (`item-picker-root`, `-icon-wrapper`, `-ilvl`, `-sockets-container`, `-name-row`, `-name-container`, `-labels-container`) and the nesting order, and nothing else. That is the whole lesson of `ItemRenderer`, which fixed the icon, the badge, the name row, the sockets and the labels as well and was bypassed by seven of its nine callers. Beside it: `ItemCellAnchor`, which is how `href="javascript:void(0)"` ports — React refuses that URL, and an `<a>` with no `href` is not tabbable, so the anchor takes `tabIndex` and Enter/Space instead; and `GemSocket`, the socket anchor with its gem icon, its empty-socket icon and its Wowhead link. **No co-located stylesheet**: `.item-picker-*` is worn by `bulk_item_search`, `bulk_item_picker`, `gear_change_icon`, `icon_item_swap_picker`, `glyphs_picker` and `_suggest_reforges_action.scss`, so `_gear_picker.scss` stays global until they port |
+| `GearPicker` | `ui/features/gear/components/GearPicker/` | `features/gear/view/gear_picker.tsx` (**deleted** — with `quick_swap.tsx`, `quick_enchant_popover.ts` and `quick_gem_popover.ts`) | `ready`, and only that: the shell's init order is the one thing a cell cannot read for itself, and `useSimReady` lives in `app/`, which features may not import | the two columns and their slot lists, and what each cell does — open the selector modal at the right tab, and the two favourites popovers. Beside it: `ItemPickerCell` (one slot), `EnchantLabel`, `ItemNoticeIcon`, and `QuickSwapList` / `QuickEnchantList` / `QuickGemList`. **The popovers read the store themselves**, inside `Tooltip`'s children, which react-tooltip does not build until the tooltip first opens: that is what keeps 16–64 `filters` subscribers off the pane, and it is also how the recorded stale-closure bug stays fixed — no `EquippedItem` is captured at all, `active` is derived at render and the click reads the slot again. Owns `GearPicker.scss`: the cells' `:focus-visible` rings, and `_quick_swap.scss` re-keyed from `.tippy-box[data-theme='tooltip-quick-swap']` to `.sim-tooltip.tooltip-quick-swap` — which needs `max-width: none`, because `Tooltip.scss` caps every tooltip at 192px and tippy capped nothing. The popovers render **inside** the cell, not beside it: react-tooltip's box lives in the React tree, and a sibling would take a child index in the column and move the `:nth-child(6)` weapon separator |
+| `SummaryTable` | `ui/features/gear/components/SummaryTable/` | `features/gear/view/{gem,reforge,upgrade_costs}_summary.tsx` (**all three deleted** — one consumer each) | `title`, the block's modifier class, whether the header carries it too, `empty`, and what resetting means | the hidden-when-empty root, the `ContentBlock`, and the reset button's place in its header — the three-class vocabulary all three blocks agreed on. `SummaryTableRow` beside it fixes the row's own three classes. `GemSummary`, `ReforgeSummary` and `UpgradeCostsSummary` sit in the same folder and read `model/summary_totals.ts`. Owns `SummaryTable.scss`, co-located from `scss/core/components/individual_sim_ui/_summary_table.scss` — every class in it was gear's alone. **They render from state on the first paint**, where the vanilla blocks filled themselves only from a `gear` notification and so painted empty until one arrived |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
-(the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`; then the feature-shaped ones,
-of which `SummaryTableRow` + `SummaryResetButton` is the cheapest and `ItemCell` the largest.
+(the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`.
 
 ### Adding a component to the registry
 
@@ -1326,6 +1328,78 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Gear units 2 and 5, merged: the gear tab body, the three summaries, `ItemCell` and
+  `GearPicker` are React, and the gear-picker-to-modal cycle is cut.** The plan listed the tab body
+  and `GearPicker` as separate units, and unit 2 as written hosted the vanilla picker through
+  `useLegacyMount` — which costs two throwaway fixes (defects 8 and 11a) to code unit 5 then deletes,
+  purely to sequence. Merged, `gear_picker.tsx` is never edited and never hosted. Deleted with it:
+  `quick_swap.tsx`, the two popover binders, and the three summary views.
+
+  **The cycle had to be cut here, not in unit 4.** `selector_modal.tsx` read
+  `gearPicker.itemPickers[i].slot/.item/.onUpdate/.openSelectorModal` for its slot rail and for
+  ArrowUp/ArrowDown, and a React picker has no `itemPickers`. It now takes a `SlotRailEntry[]` —
+  `{ slot, getItem, subscribe, open }`, four fields — which `gear_tab.ts` builds from the player
+  alone. `bulk_tab.tsx` and `icon_item_swap_picker.tsx` pass `undefined` and compile unchanged. Only
+  that constructor parameter and the two index sites moved; unit 4's opener narrowing for bulk is
+  still open.
+
+  **The modal stays in the vanilla tab constructor, and that is what keeps `mount-once` honest.** It
+  is appended to `simUI.rootElem`, outside any pane, so a React owner would be disposing an element
+  it never rendered — defect 11a. Measured: on the dev server's StrictMode double-mount this branch
+  holds 10 `.selector-modal`s where a build holds 6, and all four extras are `IconItemSwapPicker`'s,
+  which was already mounted that way. The gear picker's is exactly one. Features reach it through
+  `IndividualSimHost.gearSelectorModal`, the `epWeightsModal: { open() }` shape.
+
+  **The summaries' first paint is the one behaviour that changed, and no gate can see it.** The
+  vanilla blocks only ever filled themselves from a `gear` notification, and `subscribeGated` does
+  not fire on subscribe, so they painted empty until the first one; React reads the same state at
+  render. Both parity gates sample after the spec's default gear has landed, so all six specs are
+  **byte-identical** — 360/404/377/421/409/399 lines, unchanged. There is therefore **no `INTENDED`
+  entry**, and adding one would have failed as never-observed. `GemSummary.test.tsx` is where the
+  improvement is asserted instead, against a subscription that never fires.
+
+  **Two new gates.** `tools/react-migration/gear-tab.mjs` reads everything `SERIALIZE` excludes
+  (item levels, names, quality classes, icon backgrounds, hrefs, wowhead datasets, label text, socket
+  visibility) and then operates the pane: the modal opened from a cell, the rail walked three ways,
+  an enchant favourited in the modal and equipped from the popover, the copy payload off a stubbed
+  clipboard, and the four gear-writing buttons judged by how many equipment slots moved. Identical
+  output on both builds. And `a11y.mjs` gains a `#gear-tab` region — id-scoped, because `.gear-tab`
+  also names the tab strip's own button and silently added a control to one side only. Its ceilings
+  are a ratchet at what React measures now: `_blank` links go 0/5 → 5/5, typed buttons 0/10 → 9/10,
+  `aria-hidden` icons 0/5 → 4/5, and the one left in each is the vanilla `CopyButton`.
+
+  **Two React-specific traps this pane sets, both invisible to the tree gates.** A `useStoreSubscribe`
+  bails out when the snapshot is `Object.is`-equal, so `UpgradeCostsSummary` cannot subscribe to
+  `race` and read the gear: on a race change the `Gear` reference is the same one and the honor
+  currency icon never flips faction, where vanilla's `updateTable` re-ran and did. It takes a second
+  subscription reading `getFaction()`. And react-tooltip renders its box **in the React tree**, so a
+  `<Tooltip>` rendered beside a cell becomes a child of `.gear-picker-left` the moment it first
+  opens — and `_gear_picker.scss:29` is `.item-picker-root:nth-child(6)`, the weapon-group separator,
+  which `:nth-child` counts positionally whether or not the interloper is out of flow. Measured: the
+  separator jumped from Wrist up to Chest. The popovers therefore render **inside** the cell, at the
+  end of the label stack, where no `:nth-child` rule counts — which then made it inherit the right
+  column's `text-align: right` (measured `right` against master's `start`), so the popover sets
+  `text-align: start` of its own. `gear-tab.mjs` keeps both asserted, and hovers one cell in each
+  column: the `:nth-child` trap is left-only and the inheritance trap right-only, and one hover
+  cannot see both.
+
+  **Two things the plan got wrong.** `ItemNotice.registerSetBonusNotices` does not move to `model/`:
+  the class survives for `item_list` and `item_renderer`, so `individual_sim_ui.tsx` needs no change,
+  and the function builds DOM, which `model/` lint forbids. And `GearTabBody` lives in `app/tabs/`
+  rather than `features/gear/components/`, because it constructs `PresetConfigurationPicker`, which
+  is in `app/` — the same place `TalentsTabBody` and `SettingsTabBody` are, for the same reason.
+
+  `SummaryTable.scss` moved out of `scss/core/components/individual_sim_ui/` because every class in
+  it was gear's alone; `_gear_picker.scss` did not, because `.item-picker-*` has six other wearers.
+  The move was checked by reading computed style on both builds rather than by inspection — the
+  container's `display`/`gap`, the body's flex axis and gap, the reset button's margin and colour, the
+  row's box, the gem icon's size and the link's layout, plus the container's bounding rect: identical.
+
+  Perf: `gear-selector-timing.js` re-run on both builds. Every count is identical to the pre-port
+  baseline — 636 modal mutations on the open, 382 on a favourite toggle, 93 per keystroke, 178 on the
+  tab switch, 443 on the scroll, pool 1658 / 29 mounted / 56 px rows — and the timings sit inside the
+  recorded ranges. This unit does not touch the item list, and the numbers say so.
 
 - 2026-09-07 **Sim progress units 4 and 5: the sidebar panel is React, and `results_viewer.tsx` is
   gone.** `SimResultsPanel` renders the four zones, `SimProgress` the running block, `SimWarnings`

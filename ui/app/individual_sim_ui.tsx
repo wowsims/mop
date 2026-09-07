@@ -20,6 +20,7 @@ import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from 
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
+import type { SelectorModalOpener } from '@features/gear/types';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
 	AddonImporterDialog,
@@ -300,16 +301,21 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			.catch(console.error);
 	}
 
+	gearTab!: GearTab;
 	talentsTab!: TalentsTab<SpecType>;
 	settingsTab!: SettingsTab;
 	detailedResults!: DetailedResults;
+
+	get gearSelectorModal(): SelectorModalOpener | null {
+		return this.gearTab?.selectorModal ?? null;
+	}
 
 	get sidebarStatsContainer(): HTMLElement {
 		return this.dom.sidebarStats;
 	}
 
 	private addGearTab() {
-		new GearTab(this);
+		this.gearTab = new GearTab(this);
 	}
 
 	private addBulkTab(): BulkTab {

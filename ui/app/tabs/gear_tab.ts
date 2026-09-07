@@ -1,107 +1,29 @@
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
-import { batch } from '@domain/state/batch';
-import { subscribePlayerChange } from '@domain/state/subscriptions';
-import GearPicker from '@features/gear/view/gear_picker';
-import { GemSummary } from '@features/gear/view/gem_summary';
-import { ReforgeSummary } from '@features/gear/view/reforge_summary';
-import { UpgradeCostsSummary } from '@features/gear/view/upgrade_costs_summary';
-import { EquipmentSpec, UnitStats } from '@generated/proto/common';
-import { SavedGearSet } from '@generated/proto/ui';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import { ALL_ITEM_SLOTS, createGearData } from '@features/gear/model/gear_data';
+import type { SelectorModalOpener, SelectorModalTabs, SlotRailEntry } from '@features/gear/types';
+import SelectorModal from '@features/gear/view/selector_modal';
 import i18n from '@i18n/config';
-import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
 import { IndividualSimUI } from '../individual_sim_ui';
-import { PresetConfigurationPicker } from '../preset_configuration_picker';
-export class GearTab extends SimTab {
-	protected simUI: IndividualSimUI<any>;
 
-	readonly leftPanel: HTMLElement;
-	readonly rightPanel: HTMLElement;
+export class GearTab extends SimTab {
+	readonly selectorModal: SelectorModalOpener;
 
 	constructor(simUI: IndividualSimUI<any>) {
 		super(simUI, { identifier: 'gear-tab', title: i18n.t('gear_tab.title') });
-		this.simUI = simUI;
 
-		this.leftPanel = document.createElement('div');
-		this.leftPanel.classList.add('gear-tab-left', 'tab-panel-left');
+		const player = simUI.player;
+		const slotRail: SlotRailEntry[] = ALL_ITEM_SLOTS.map(slot => ({
+			slot,
+			getItem: () => player.getEquippedItem(slot),
+			subscribe: subscribePlayerField(player, 'gear'),
+			open: (tab: SelectorModalTabs) => modal.openTab(slot, tab, createGearData(player, slot)),
+		}));
+		const modal = new SelectorModal(simUI.rootElem, simUI, player, slotRail, { id: 'gear-picker-selector-modal' });
 
-		this.rightPanel = document.createElement('div');
-		this.rightPanel.classList.add('gear-tab-right', 'tab-panel-right');
-
-		this.contentContainer.appendChild(this.leftPanel);
-		this.contentContainer.appendChild(this.rightPanel);
-
-		this.buildTabContent();
+		this.selectorModal = modal;
 	}
 
-	protected buildTabContent() {
-		this.buildGearPickers();
-		this.buildSummaryTablesContainer();
-		this.buildPresetConfigurationPicker();
-		this.buildSavedGearsetPicker();
-	}
-
-	private buildSummaryTablesContainer() {
-		const container = document.createElement('div');
-		container.classList.add('summary-tables-container');
-		this.leftPanel.appendChild(container);
-
-		new GemSummary(container, this.simUI, this.simUI.player);
-		new ReforgeSummary(container, this.simUI, this.simUI.player);
-		new UpgradeCostsSummary(container, this.simUI, this.simUI.player);
-	}
-
-	private buildGearPickers() {
-		new GearPicker(this.leftPanel, this.simUI, this.simUI.player);
-	}
-
-	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Gear]);
-	}
-
-	private buildSavedGearsetPicker() {
-		const savedGearManager = new SavedDataManager<Player<any>, SavedGearSet>(this.rightPanel, this.simUI.player, {
-			header: { title: i18n.t('gear_tab.gear_sets.title') },
-			label: i18n.t('gear_tab.gear_sets.gear_set'),
-			nameLabel: i18n.t('gear_tab.gear_sets.gear_set_name'),
-			saveButtonText: i18n.t('gear_tab.gear_sets.save_gear_set'),
-			storageKey: this.simUI.getSavedGearStorageKey(),
-			getData: (player: Player<any>) => {
-				return SavedGearSet.create({
-					gear: player.getGear().asSpec(),
-					bonusStatsStats: player.getBonusStats().toProto(),
-				});
-			},
-			setData: (player: Player<any>, newSavedGear: SavedGearSet) => {
-				batch(() => {
-					player.setGear(this.simUI.sim.db.lookupEquipmentSpec(newSavedGear.gear || EquipmentSpec.create()));
-					player.setBonusStats(Stats.fromProto(newSavedGear.bonusStatsStats || UnitStats.create()));
-				});
-			},
-			subscribe: subscribePlayerChange(this.simUI.player),
-			toJson: (a: SavedGearSet) => SavedGearSet.toJson(a),
-			fromJson: (obj: any) => SavedGearSet.fromJson(obj),
-		});
-
-		this.simUI.sim.waitForInit().then(() => {
-			savedGearManager.loadUserData();
-			this.simUI.individualConfig.presets.gear.forEach(presetGear => {
-				savedGearManager.addSavedData({
-					name: presetGear.name,
-					tooltip: presetGear.tooltip,
-					isPreset: true,
-					data: SavedGearSet.create({
-						// Convert to gear and back so order is always the same.
-						gear: this.simUI.sim.db.lookupEquipmentSpec(presetGear.gear).asSpec(),
-						bonusStatsStats: new Stats().toProto(),
-					}),
-					enableWhen: presetGear.enableWhen,
-					onLoad: presetGear.onLoad,
-				});
-			});
-		});
-	}
+	protected buildTabContent() {}
 }

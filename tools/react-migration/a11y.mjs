@@ -39,6 +39,20 @@ const REGIONS = [
 	// in for a name; rather than raise the ceiling for those, `IconPicker` takes a real name from the
 	// ActionId it already resolves, which names every picker anchor on the pane.
 	{ selector: '.settings-tab', ceiling: { unnamed: 125, untyped: 4 } },
+	// Half ported: the cells and the three summary blocks are React, the preset picker, the saved-gear
+	// manager and the reforge summary's copy button are still vanilla islands inside it. So this
+	// carries ceilings rather than equalities, measured on `warrior/arms` like the block above.
+	//
+	// `shown` and `untyped` are both 1, and both are the vanilla `CopyButton`: its `<i>` is not marked
+	// decorative and its `<button>` has no `type`. Every other icon and button on the pane is React's
+	// now — the baseline has 5 unmarked icons and 10 untyped buttons. `unsafe` is an equality: the gem
+	// summary's five `target="_blank"` links carry `rel` from the moment they render, where the
+	// baseline writes the href from a resolved fill and reads 0/5 at two seconds.
+	//
+	// `unnamed` is 57 of 109 and does not move: an item cell's icon anchor has no text, and naming it
+	// would be a markup change the parity gates pin. It falls when the selector modal ports and these
+	// anchors stop needing to look like links.
+	{ selector: '#gear-tab', ceiling: { unnamed: 57, shown: 1, untyped: 1 } },
 ];
 const SELECTORS = REGIONS.map(region => region.selector);
 
