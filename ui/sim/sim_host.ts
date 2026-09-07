@@ -62,6 +62,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	getSavedGearStorageKey(): string;
 	getSavedTalentsStorageKey(): string;
 	getSavedEncounterStorageKey(): string;
+	getSavedRotationStorageKey(): string;
 	getSavedSettingsStorageKey(): string;
 }
 

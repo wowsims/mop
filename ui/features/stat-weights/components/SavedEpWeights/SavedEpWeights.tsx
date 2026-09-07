@@ -8,7 +8,6 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
-import { useTypedLocalStorage } from '@ui-kit/hooks/useTypedLocalStorage';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -16,13 +15,13 @@ import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { trackEvent } from '../../../../tracking/analytics';
 import { SavedEpWeightsChip } from './SavedEpWeightsChip';
 import type { SavedEpWeightsEntry } from './types';
-import { entriesFrom, epWeightsData, makeEntry, parseStoredEpWeights, serializeEpWeights, type StoredEpWeights, storedFrom } from './utils';
+import { useSavedEpWeights } from '../../hooks/useSavedEpWeights';
+import { epWeightsData, makeEntry, serializeEpWeights } from './utils';
 
 export const SavedEpWeights = () => {
 	const host = useSimHost();
 	const { player, sim, individualConfig } = host;
 	const ready = useSimReady(sim);
-	const storageKey = host.getSavedEPWeightsStorageKey();
 	const tooltipId = useId();
 	const nameInputId = useId();
 
@@ -32,8 +31,7 @@ export const SavedEpWeights = () => {
 	const [name, setName] = useState('');
 	const [loadedName, setLoadedName] = useState<string | null>(null);
 
-	const [stored, setStored] = useTypedLocalStorage<StoredEpWeights>(storageKey, parseStoredEpWeights);
-	const userData = useMemo(() => entriesFrom(stored), [stored]);
+	const { entries: userData, save, remove } = useSavedEpWeights();
 
 	const presets = useMemo(
 		() =>
@@ -80,23 +78,18 @@ export const SavedEpWeights = () => {
 			return;
 		}
 
-		const entry = makeEntry(name, epWeightsData(player.getEpWeights()), false);
-		const next = userData.some(existing => existing.name === name)
-			? userData.map(existing => (existing.name === name ? entry : existing))
-			: [...userData, entry];
-
-		setStored(storedFrom(next));
+		save(name, epWeightsData(player.getEpWeights()));
 		trackEvent({ action: 'settings', category: 'save', label });
-	}, [name, label, player, userData, setStored]);
+	}, [name, label, player, save]);
 
 	const onDelete = useCallback(
 		(entry: SavedEpWeightsEntry) => {
 			if (!confirm(`Delete saved ${label} '${entry.name}'?`)) return;
 
-			setStored(storedFrom(userData.filter(existing => existing.name !== entry.name)));
+			remove(entry.name);
 			trackEvent({ action: 'settings', category: 'delete', label });
 		},
-		[label, userData, setStored],
+		[label, remove],
 	);
 
 	const renderChip = (entry: SavedEpWeightsEntry) => (
