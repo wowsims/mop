@@ -1,10 +1,9 @@
-import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { Emitter } from '@domain/state/events';
 import { Component } from '@ui-kit/component';
-export interface SimResultData {
-	result: SimResult;
-	filter: SimResultFilter;
-}
+
+import type { SimResultData } from '../model/result_data';
+
+export type { SimResultData };
 
 export interface ResultComponentConfig {
 	parent: HTMLElement;

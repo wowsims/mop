@@ -12,6 +12,7 @@ import type { SimUIHost } from '@ui-kit/sim_host';
 
 import type { BulkTab } from './bulk/view/bulk_tab';
 import type { ReforgeOptimizer } from './reforge/view/reforge_panel';
+import type { ResultChannel } from './results/model/result_channel';
 import type { ResultsViewer } from './results/view/results_viewer';
 import type { IndividualSimUIConfig } from './spec_config';
 
@@ -50,6 +51,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizer | null;
 	epWeightsModal: { open(): void } | null;
+	readonly resultChannel: ResultChannel;
 	dpsRefStat: Stat | undefined;
 	healRefStat: Stat | undefined;
 	tankRefStat: Stat | undefined;

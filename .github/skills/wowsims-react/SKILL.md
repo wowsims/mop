@@ -1313,6 +1313,45 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **Results units 1 and 2: the result seam, and a gate that runs a real sim.** No React and
+  no markup yet. `ui/features/results/model/result_channel.ts` is a `ResultChannel` — an `Emitter`
+  that also holds the last value, so `getSnapshot` returns the **same object** until the next emit.
+  A getter that built a fresh one re-renders forever under `useSyncExternalStore`. `IndividualSimUI`
+  owns it as `readonly resultChannel = new ResultChannel()` and passes it into `DetailedResults`,
+  which no longer constructs its own emitter; `IndividualSimHost` exposes it, so React reaches
+  results through `useSimHost().resultChannel`. Ownership sits on the host rather than on
+  `DetailedResults` because the tab is built mid-constructor, and reading it back would force a
+  nullable host field.
+
+  `SimResultData` moved to `ui/features/results/model/result_data.ts` and is re-exported from
+  `view/result_component.ts`, so its fifteen view importers are untouched. It is `{ result, filter }`
+  — pure data that happened to live in a view file, and the seam would otherwise have made
+  model-imports-view a precedent.
+
+  `tools/react-migration/results-tables.mjs` is the behaviour gate, landed green on the **vanilla
+  build first**, then green again unchanged after the seam. That order is the whole point: neither
+  parity gate ever runs a sim, so they compare an empty table shell and see nothing of what these
+  tables do. It asserts the shell's exact column classes, then runs one iteration and checks the row
+  invariants — sort in both directions on every column judged by `TableSorter`'s own comparator,
+  children staying with their parent, expand/collapse, the combined tooltip and its threat veto both
+  ways, and the resource containers. `PORT` picks a build; it must exit 0 on both. Default spec is
+  `hunter/beast_mastery`, because a permanent pet is what guarantees the grouped-row assertions have
+  a parent row to run on. It was proved non-vacuous by inverting three expectations and confirming 12
+  failures.
+
+  Two things the gate had to be shaped around. `TableSorter`'s comparator is not a total order: a row
+  with no hits yields the **string** `'NaN'`, so a sorted column has no adjacent-pair guarantee at
+  those boundaries and the gate skips mixed-type neighbours and prints the count. And collapsed
+  children are asserted **invisible, never `.hide`**, so unit 3 stays free to unmount them and to
+  make the expand toggle a real `<button>`.
+
+  **Defect recorded, not fixed: merged pet-group parent rows carry an empty `ActionId`.**
+  `mergeMetrics` passes `metrics[0].unit?.petActionId || undefined`, and a pet without one logs
+  `Empty action id!` and renders an anchor with no href and no icon. Present on master too: 2 console
+  errors per sim, 5 of 19 damage rows and 9 of 38 casts rows. The gate whitelists that one console
+  line and asserts `resolved > 0` rather than per-row **because of** this; fix it and the assertion
+  should tighten.
+
 - 2026-09-07 **The parity baseline is `master`, not `feature/ui-restructure`.** The restructure was
   never going to merge on its own, so gating against it measured half the diff and let a restructure
   regression pass as a baseline fact. `:3401` now serves a build of `~/personal/wowsims-mop`

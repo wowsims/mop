@@ -1,7 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { isDevMode } from '@domain/env';
 import { SimResult } from '@domain/proto_utils/sim_result';
-import { Emitter } from '@domain/state/events';
 import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
 import type { IndividualSimHost, SimHost } from '@features/sim_host';
 import { SimRun, SimRunData } from '@generated/proto/ui';
@@ -11,6 +10,7 @@ import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../../../tracking/analytics';
+import type { ResultChannel } from '../model/result_channel';
 import { AuraMetricsTable } from './aura_metrics';
 import { CastMetricsTable } from './cast_metrics';
 import { CombatReplay } from './combat_replay';
@@ -20,7 +20,7 @@ import { DtpsMetricsTable } from './dtps_metrics';
 import { HealingMetricsTable } from './healing_metrics';
 import { LogExporterFactory, LogView } from './log/log_view';
 import { ResourceMetricsTable } from './resource_metrics';
-import { ResultComponent, SimResultData } from './result_component';
+import { ResultComponent } from './result_component';
 import { SimResultsManager } from './results_action';
 import { ResultsFilter } from './results_filter';
 import { Timeline } from './timeline';
@@ -87,14 +87,15 @@ export class DetailedResults extends Component {
 
 	private currentSimResult: SimResult | null = null;
 	// Event: a (possibly filtered) result is ready for the sub-views.
-	private resultsEmitter = new Emitter<SimResultData | null>();
+	private resultsEmitter: ResultChannel;
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
-	constructor(parent: HTMLElement, simUI: SimHost, simResultsManager: SimResultsManager, makeLogExporter: LogExporterFactory) {
+	constructor(parent: HTMLElement, simUI: SimHost, simResultsManager: SimResultsManager, makeLogExporter: LogExporterFactory, resultsEmitter: ResultChannel) {
 		super(parent, 'detailed-results-manager-root');
 
 		this.simUI = simUI;
+		this.resultsEmitter = resultsEmitter;
 
 		// Kept as the tabs are built, below. Looking them up afterwards meant a document-wide
 		// querySelector per tab, matching on the data attribute Bootstrap uses.

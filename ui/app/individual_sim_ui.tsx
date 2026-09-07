@@ -37,6 +37,7 @@ import {
 } from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import { ResultChannel } from '@features/results/model/result_channel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
@@ -84,6 +85,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	raidSimResultsManager: SimResultsManager | null;
 	readonly epWeightsModal = new EpWeightsOpener();
+	readonly resultChannel = new ResultChannel();
 
 	get dpsRefStat(): Stat | undefined {
 		return this.player.getRefStat('dpsRefStat');
@@ -334,7 +336,13 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
 		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
 
-		new DetailedResults(detailedResults, this, this.raidSimResultsManager!, getLogData => new LogExporter(this.rootElem, this, getLogData));
+		new DetailedResults(
+			detailedResults,
+			this,
+			this.raidSimResultsManager!,
+			getLogData => new LogExporter(this.rootElem, this, getLogData),
+			this.resultChannel,
+		);
 	}
 
 	private addTopbarComponents() {
