@@ -228,6 +228,14 @@ const back = await page.evaluate(() => window.gearProbe.modal());
 say(`  ArrowUp     title=${JSON.stringify(back.title)} active=${back.railActive}`);
 if (back.railActive !== '0') problems.push(`ArrowUp left rail slot ${back.railActive} active, expected 0`);
 
+// Wrapping is what tells an index walk apart from an enum walk: both land on 15 here today, because
+// gear's rail is all 16 slots in enum order, but only the index walk still wraps on a sparse rail.
+await page.keyboard.press('ArrowUp');
+await page.waitForTimeout(600);
+const wrapped = await page.evaluate(() => window.gearProbe.modal());
+say(`  ArrowUp     active=${wrapped.railActive} (wrapped)`);
+if (wrapped.railActive !== '15') problems.push(`ArrowUp from the first slot left ${wrapped.railActive} active, expected it to wrap to 15`);
+
 // Clicking a rail icon is the third reader of the entry, and the one a cell never triggers.
 await page.click('.modal.show .gear-picker-modal-slots .item-picker-icon-wrapper:nth-of-type(3) .item-picker-icon');
 await page.waitForTimeout(700);

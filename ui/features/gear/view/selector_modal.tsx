@@ -254,19 +254,26 @@ export default class SelectorModal extends BaseModal {
 		});
 	}
 
+	// Steps the rail's own indices rather than the ItemSlot enum. Identical for gear, whose rail is
+	// all 16 slots in enum order, but a rail with gaps in it landed on a slot it does not contain and
+	// then moved nothing, having already swallowed the key.
+	private stepItemSlotTab(offset: number) {
+		const index = this.slotRail.findIndex(entry => entry.slot === this.currentSlot);
+		if (index < 0) return;
+		this.slotRail[mod(index + offset, this.slotRail.length)].open(this.currentTab);
+	}
+
 	private switchToPreviousItemSlotTab(event: KeyboardEvent) {
 		if (event.key === 'ArrowUp' && this.slotRail.length) {
 			event.preventDefault();
-			const newSlot = mod(this.currentSlot - 1, Object.keys(ItemSlot).length / 2) as unknown as ItemSlot;
-			this.slotRail.find(entry => entry.slot === newSlot)?.open(this.currentTab);
+			this.stepItemSlotTab(-1);
 		}
 	}
 
 	private switchToNextItemSlotTab(event: KeyboardEvent) {
 		if (event.key === 'ArrowDown' && this.slotRail.length) {
 			event.preventDefault();
-			const newSlot = mod(this.currentSlot + 1, Object.keys(ItemSlot).length / 2) as unknown as ItemSlot;
-			this.slotRail.find(entry => entry.slot === newSlot)?.open(this.currentTab);
+			this.stepItemSlotTab(1);
 		}
 	}
 

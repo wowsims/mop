@@ -1339,6 +1339,19 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **The selector modal's slot rail steps its own indices instead of the ItemSlot enum.**
+  `switchToNext/PreviousItemSlotTab` computed `mod(currentSlot ± 1, enumSize)` and then looked that
+  slot up in the rail, so a rail with gaps in it `preventDefault()`ed the key and then moved nothing.
+  Identical for gear, whose rail is all 16 slots in enum order — which is why this could sit there —
+  and it is what a sparse rail (item swap's four slots) needs before one is viable. `gear-tab.mjs`
+  gained the assertion that separates the two implementations: ArrowUp from the first slot has to
+  **wrap** to the last. Both walks wrap on a full contiguous rail, so the assertion is about the next
+  rail, not this one.
+
+  `node --check` passed the version of that gate that referenced an undefined `SETTLE`, exactly as it
+  passed the dangling `logViews` in `panes-parity.mjs` earlier. It only parses. **Run a gate you
+  edited, do not syntax-check it.**
+
 - 2026-09-07 **Two recorded defects fixed, a third audited clean, and a new gate for the class the
   third belongs to.** `SavedDataManager`'s preset-name-collision guard read
   `newName in this.presets` — `presets` is an array, so `in` tested indices and the guard never
