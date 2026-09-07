@@ -336,7 +336,7 @@ of the duplication sweep was to build each shape once.
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads — whose entries are *either* a vanilla `open()` or a React dialog it renders | the popup's markup and styling, that the contents arrive asynchronously, and which dialog is open |
-| `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, and `container` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
+| `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, `container`, and `elevated` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/sims/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
@@ -1802,6 +1802,23 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   errors per sim, 5 of 19 damage rows and 9 of 38 casts rows. The gate whitelists that one console
   line and asserts `resolved > 0` rather than per-row **because of** this; fix it and the assertion
   should tighten.
+
+- 2026-09-07 **`Dialog` gains `elevated`, for a dialog opened from another dialog.** The progress
+  tracker's backdrop did not cover the stat-weights dialog underneath it, and the obvious diagnosis
+  was wrong on its own. Both dialogs did share one z-index tier — the backdrop sits at
+  `$zindex-modal-backdrop` and every viewport at `$zindex-modal`, so a nested backdrop is below the
+  popup that opened it by construction. But raising it fixed nothing, because **Base UI renders no
+  backdrop for a nested dialog at all**: `DialogBackdrop.js:48` is `enabled: forceRender || !nested`.
+  There was no element to raise. `elevated` therefore does two things — passes `forceRender` so the
+  backdrop exists, and adds a modifier to the backdrop and the viewport that moves both to a new
+  tier ten above the modal one, which is under `--toast-z-index` on purpose so a failure toast during
+  a run stays readable over the tracker.
+
+  Measured in the browser rather than assumed: stat-weights backdrop 1050 and viewport 1055, tracker
+  backdrop 1060 and viewport 1065, and the tracker's viewport wins a hit test at the centre of the
+  dialog beneath it. **A standalone dialog cannot reproduce this** — it gets a backdrop either way,
+  so the first version of the test passed with `forceRender` deleted. The committed test nests one
+  dialog inside another, and fails without it.
 
 - 2026-09-07 **The parity baseline is `master`, not `feature/ui-restructure`.** The restructure was
   never going to merge on its own, so gating against it measured half the diff and let a restructure

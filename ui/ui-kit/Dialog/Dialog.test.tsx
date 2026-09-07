@@ -170,4 +170,33 @@ describe('Dialog', () => {
 		expect(popup.hasAttribute('data-open')).toBe(false);
 		expect(popup.hasAttribute('data-ending-style')).toBe(true);
 	});
+
+	// Base UI suppresses the backdrop of a *nested* dialog, so this only reproduces with one dialog
+	// inside another — a standalone elevated dialog gets a backdrop either way and proves nothing.
+	// Without it the inner dialog has nothing to dim the outer one with, and no z-index can help
+	// because there is no element to raise.
+	it('gives a dialog nested inside another its own raised backdrop', () => {
+		render(
+			<Dialog open onOpenChange={() => {}} title="Outer">
+				<Dialog open onOpenChange={() => {}} elevated title="Working">
+					body
+				</Dialog>
+			</Dialog>,
+		);
+
+		expect(document.querySelectorAll('.sim-dialog-backdrop--elevated')).toHaveLength(1);
+		expect(document.querySelectorAll('.sim-dialog-viewport--elevated')).toHaveLength(1);
+	});
+
+	it('leaves a nested dialog without one when it is not elevated', () => {
+		render(
+			<Dialog open onOpenChange={() => {}} title="Outer">
+				<Dialog open onOpenChange={() => {}} title="Working">
+					body
+				</Dialog>
+			</Dialog>,
+		);
+
+		expect(document.querySelectorAll('.sim-dialog-backdrop--elevated')).toHaveLength(0);
+	});
 });

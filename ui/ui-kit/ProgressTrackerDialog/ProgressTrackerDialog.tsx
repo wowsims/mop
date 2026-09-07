@@ -32,7 +32,8 @@ export const ProgressTrackerDialog = ({ open, title, state, cssClass, warning, h
 		size="md"
 		title={title}
 		preventClose
-		keepMounted>
+		keepMounted
+		elevated>
 		<div className="progress-tracker-modal-content" data-stage={state.stage}>
 			{warning && <div className="progress-tracker-modal-warning">{warning}</div>}
 			{hasProgressBar && <ProgressTrackerBar running={open} ref={ref} />}

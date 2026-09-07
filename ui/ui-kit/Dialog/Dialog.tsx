@@ -27,6 +27,8 @@ export interface DialogProps {
 	preventClose?: boolean;
 	/** Keep the dialog in the DOM while closed, which is what `disposeOnClose: false` meant — and what eight of the ten vanilla callers got. */
 	keepMounted?: boolean;
+	/** For a dialog opened from another dialog. Without it both share one z-index tier, so this one's backdrop renders under the dialog that opened it instead of over it. */
+	elevated?: boolean;
 	children?: ReactNode;
 }
 
@@ -43,6 +45,7 @@ export const Dialog = ({
 	scrollContents = false,
 	preventClose = false,
 	keepMounted = false,
+	elevated = false,
 	children,
 }: DialogProps) => (
 	<BaseDialog.Root
@@ -56,8 +59,9 @@ export const Dialog = ({
 		}}>
 		{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
 		<BaseDialog.Portal className="sim-dialog-portal" container={container} keepMounted={keepMounted}>
-			<BaseDialog.Backdrop className="sim-dialog-backdrop" />
-			<BaseDialog.Viewport className="sim-dialog-viewport">
+			{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
+			<BaseDialog.Backdrop className={clsx('sim-dialog-backdrop', elevated && 'sim-dialog-backdrop--elevated')} forceRender={elevated} />
+			<BaseDialog.Viewport className={clsx('sim-dialog-viewport', elevated && 'sim-dialog-viewport--elevated')}>
 				<BaseDialog.Popup className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', cssClass)}>
 					{(title != null || headerChildren != null || !preventClose) && (
 						<div className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}>

@@ -424,6 +424,8 @@ $modal-inner-padding: 1.25rem;
 	--modal-footer-border-color: #{$modal-footer-border-color};
 
 	--modal-backdrop-zindex: #{$zindex-modal-backdrop};
+	--modal-elevated-backdrop-zindex: #{$zindex-modal-backdrop + 10};
+	--modal-elevated-zindex: #{$zindex-modal + 10};
 	--modal-backdrop-bg: #{$modal-backdrop-bg};
 	--modal-backdrop-opacity: #{$modal-backdrop-opacity};
 }
