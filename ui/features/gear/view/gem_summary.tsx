@@ -4,7 +4,6 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
-import { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
@@ -12,10 +11,7 @@ import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../../../tracking/analytics';
-interface GemSummaryData {
-	gem: Gem;
-	count: number;
-}
+import { gemSummaryRows } from '../model/summary_totals';
 
 export class GemSummary extends Component {
 	private readonly simUI: SimHost;
@@ -44,23 +40,8 @@ export class GemSummary extends Component {
 		this.rootElem.classList[!hasGems ? 'add' : 'remove']('hide');
 
 		if (hasGems) {
-			const gemCounts: Record<string, GemSummaryData> = {};
-
-			for (const gem of fullGemList) {
-				if (gemCounts[gem.name]) {
-					gemCounts[gem.name].count += 1;
-				} else {
-					gemCounts[gem.name] = {
-						gem: gem,
-						count: 1,
-					};
-				}
-			}
-
-			const sortedGemNames = Object.keys(gemCounts).sort((a, b) => a.localeCompare(b));
-
-			for (const gemName of sortedGemNames) {
-				const gemData = gemCounts[gemName];
+			for (const gemData of gemSummaryRows(fullGemList)) {
+				const gemName = gemData.gem.name;
 				const linkRef = ref<HTMLAnchorElement>();
 				const iconRef = ref<HTMLImageElement>();
 				const row = (

@@ -9,12 +9,12 @@ import { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 
-import { GearData } from './item_list';
+import { GearData, SelectorModalTabs } from '../types';
 import { ItemRenderer } from './item_renderer';
 import { addQuickEnchantPopover } from './quick_enchant_popover';
 import { addQuickGemPopover } from './quick_gem_popover';
 import QuickSwapList from './quick_swap';
-import SelectorModal, { SelectorModalTabs } from './selector_modal';
+import SelectorModal from './selector_modal';
 export const LEFT_ITEM_PICKERS = [
 	ItemSlot.ItemSlotHead,
 	ItemSlot.ItemSlotNeck,
@@ -194,7 +194,7 @@ export class ItemPicker extends Component {
 			const socketIdx = Number(element.dataset.socketIdx) || 0;
 			element.addEventListener('click', event => {
 				event.preventDefault();
-				openGemDetailTab(0);
+				openGemDetailTab(socketIdx);
 			});
 			const popover = addQuickGemPopover(this.player, element, this._equippedItem!, this.slot, socketIdx, () => openGemDetailTab(socketIdx));
 			if (!this.player.sim.getShowQuickSwap()) popover.tooltip?.disable();

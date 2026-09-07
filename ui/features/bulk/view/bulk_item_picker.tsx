@@ -11,9 +11,8 @@ import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { GearData } from '../../gear/view/item_list';
+import { GearData, SelectorModalTabs } from '../../gear/types';
 import { ItemRenderer } from '../../gear/view/item_renderer';
-import { SelectorModalTabs } from '../../gear/view/selector_modal';
 import { BulkTab } from './bulk_tab';
 
 export default class BulkItemPicker extends Component {

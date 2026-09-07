@@ -4,15 +4,14 @@ import { formatDeltaTextElem } from '@domain/format';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
-import { getUniqueEnchantString } from '@domain/proto_utils/enchants';
-import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/items';
 import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@domain/proto_utils/names';
 import { Sim } from '@domain/sim';
-import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
+import { subscribeBulkField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { isIndividualSimHost } from '@features/sim_host';
-import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@generated/proto/common';
+import { Class, GemColor, ItemSlot, ItemSpec } from '@generated/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
@@ -28,39 +27,18 @@ import {
 	makeShowEPValuesSelector,
 	makeShowMatchingGemsSelector,
 } from '../../settings/view/other_inputs';
+import { applyFavourite, isItemFavourited } from '../model/favourites';
+import { getItemIdByItemType } from '../model/item_ids';
+import { matchesSearch } from '../model/item_search';
+import { defaultSortBy, ItemListSortBy, sortItemIdxs } from '../model/item_sort';
+import { GearData, getTranslatedTabLabel, ItemData, ItemListType, SelectorModalTabs } from '../types';
 import { FiltersMenu } from './filters_menu';
 import { createNameDescriptionLabel } from './gear_elements';
 import { ItemNotice } from './item_notice';
-import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
-export interface ItemData<T extends ItemListType> {
-	item: T;
-	name: string | HTMLElement;
-	id: number;
-	actionId: ActionId;
-	quality: ItemQuality;
-	phase: number;
-	ilvl?: number;
-	ignoreEPFilter: boolean;
-	nameDescription: string;
-	onEquip: (item: T) => void;
-}
 
 interface ItemDataWithIdx<T extends ItemListType> {
 	idx: number;
 	data: ItemData<T>;
-}
-
-export interface GearData {
-	equipItem: (equippedItem: EquippedItem | null) => void;
-	getEquippedItem: () => EquippedItem | null;
-	// Fires when the equipped item for this slot changes.
-	subscribe: StoreSubscribe;
-}
-
-export type ItemListType = Item | Enchant | Gem | ReforgeData | ItemRandomSuffix | ItemLevelState;
-enum ItemListSortBy {
-	EP,
-	ILVL,
 }
 
 export default class ItemList<T extends ItemListType> {
@@ -68,7 +46,7 @@ export default class ItemList<T extends ItemListType> {
 	private readonly simUI: SimHost;
 	private readonly player: Player<any>;
 	public id: string;
-	public label: string;
+	public label: SelectorModalTabs;
 	private slot: ItemSlot;
 	private itemData: Array<ItemData<T>>;
 	private itemsToDisplay: Array<number>;
@@ -82,7 +60,7 @@ export default class ItemList<T extends ItemListType> {
 	private onItemClick: (itemData: ItemData<T>) => void;
 	private scroller: VirtualList;
 
-	private sortBy = ItemListSortBy.ILVL;
+	private sortBy: ItemListSortBy;
 	private sortDirection = SortDirection.DESC;
 
 	constructor(
@@ -92,7 +70,7 @@ export default class ItemList<T extends ItemListType> {
 		currentSlot: ItemSlot,
 		currentTab: SelectorModalTabs,
 		player: Player<any>,
-		label: string,
+		label: SelectorModalTabs,
 		gearData: GearData,
 		itemData: Array<ItemData<T>>,
 		socketColor: GemColor,
@@ -114,6 +92,7 @@ export default class ItemList<T extends ItemListType> {
 		this.slot = currentSlot;
 		this.gearData = gearData;
 		this.currentFilters = this.player.sim.getFilters();
+		this.sortBy = defaultSortBy(currentSlot, label);
 
 		const selected = label === currentTab;
 
@@ -290,31 +269,10 @@ export default class ItemList<T extends ItemListType> {
 		this.scroller.dispose();
 	}
 
-	private getItemIdByItemType(item: ItemListType | null | undefined) {
-		switch (this.label) {
-			case SelectorModalTabs.Enchants:
-				return (item as Enchant)?.effectId;
-			case SelectorModalTabs.Tinkers:
-				return (item as Enchant)?.effectId;
-			case SelectorModalTabs.Reforging:
-				return (item as ReforgeData)?.reforge!.id;
-			case SelectorModalTabs.Items:
-			case SelectorModalTabs.Gem1:
-			case SelectorModalTabs.Gem2:
-			case SelectorModalTabs.Gem3:
-			case SelectorModalTabs.RandomSuffixes:
-				return (item as Item | Gem | ItemRandomSuffix)?.id;
-			case SelectorModalTabs.Upgrades:
-				return item as ItemLevelState;
-			default:
-				return null;
-		}
-	}
-
 	public updateSelected() {
 		const newEquippedItem = this.gearData.getEquippedItem();
 		const newItem = this.equippedToItemFn(newEquippedItem);
-		const newItemId = this.getItemIdByItemType(newItem);
+		const newItemId = getItemIdByItemType(this.label, newItem);
 		const newEP = newItem !== undefined && newItem !== null ? this.computeEP(newItem) : 0;
 
 		this.scroller.updateVisible(item => {
@@ -361,53 +319,8 @@ export default class ItemList<T extends ItemListType> {
 				return false;
 			}
 
-			if (!!this.searchInput.value.length) {
-				const formatQuery = (value: string) => value.toLowerCase().replaceAll(/[^a-zA-Z0-9\s]/g, '');
-
-				const searchQuery = formatQuery(this.searchInput.value).split(' ');
-				const name = formatQuery(listItemData.name.toString());
-				const nameDescription = formatQuery(listItemData.nameDescription.toString());
-				const sourceNames: string[] = [];
-				if ('item' in listItemData && typeof listItemData.item == 'object' && 'sources' in listItemData.item) {
-					sourceNames.push(
-						...listItemData.item.sources
-							.map(src => {
-								let label = undefined;
-								const source = src.source;
-								if (source.oneofKind === 'drop') {
-									label = this.simUI.sim.db.getNpc(source.drop.npcId)?.name || source.drop.otherName;
-								} else if (source.oneofKind === 'soldBy') {
-									label = source.soldBy.npcName;
-								} else if (source.oneofKind === 'crafted') {
-									label = professionNames.get(source.crafted.profession);
-								}
-								return label?.toLowerCase();
-							})
-							.filter((name): name is string => !!name),
-					);
-				}
-				let include = true;
-				for (const v of searchQuery) {
-					if (!name.includes(v) && !nameDescription.includes(v) && !sourceNames.some(sourceName => sourceName.includes(v))) {
-						include = false;
-						break;
-					}
-				}
-
-				if (!include) {
-					return false;
-				}
-			}
-
-			return true;
+			return matchesSearch(this.searchInput.value, listItemData, npcId => this.simUI.sim.db.getNpc(npcId)?.name);
 		});
-
-		if ([ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2].includes(this.slot) || this.label === SelectorModalTabs.Upgrades) {
-			// Trinket EP is weird so just sort by ilvl instead.
-			this.sortBy = ItemListSortBy.ILVL;
-		} else {
-			this.sortBy = ItemListSortBy.EP;
-		}
 
 		itemIdxs = this.sortIdxs(itemIdxs);
 
@@ -429,34 +342,11 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	private sortIdxs(itemIdxs: Array<number>): number[] {
-		let sortFn = (itemA: T, itemB: T) => {
-			const first = (this.sortDirection === SortDirection.DESC ? itemB : itemA) as unknown as Item;
-			const second = (this.sortDirection === SortDirection.DESC ? itemA : itemB) as unknown as Item;
-			const diff = this.computeEP(first as T) - this.computeEP(second as T);
-			// if EP is same, sort by ilvl
-			if (Math.abs(diff) < 0.01)
-				return (first.scalingOptions?.[ItemLevelState.Base].ilvl || first.ilvl) - (second.scalingOptions?.[ItemLevelState.Base].ilvl || second.ilvl);
-			return diff;
-		};
-		switch (this.sortBy) {
-			case ItemListSortBy.ILVL:
-				sortFn = (itemA: T, itemB: T) => {
-					const first = (this.sortDirection === SortDirection.DESC ? itemB : itemA) as unknown as Item;
-					const second = (this.sortDirection === SortDirection.DESC ? itemA : itemB) as unknown as Item;
-					return (
-						(first.scalingOptions?.[ItemLevelState.Base].ilvl || first.ilvl) - (second.scalingOptions?.[ItemLevelState.Base].ilvl || second.ilvl)
-					);
-				};
-				break;
-		}
-
-		return itemIdxs.sort((dataA, dataB) => {
-			const itemA = this.itemData[dataA];
-			const itemB = this.itemData[dataB];
-			if (this.isItemFavorited(itemA) && !this.isItemFavorited(itemB)) return -1;
-			if (this.isItemFavorited(itemB) && !this.isItemFavorited(itemA)) return 1;
-
-			return sortFn(itemA.item, itemB.item);
+		return sortItemIdxs(itemIdxs, this.itemData, {
+			sortBy: this.sortBy,
+			sortDirection: this.sortDirection,
+			computeEP: this.computeEP,
+			isFavourited: itemData => this.isItemFavorited(itemData),
 		});
 	}
 
@@ -481,7 +371,7 @@ export default class ItemList<T extends ItemListType> {
 		const itemEP = this.computeEP(itemData.item);
 		const equippedItem = this.equippedToItemFn(this.gearData.getEquippedItem());
 		const hasItem = equippedItem !== null && equippedItem !== undefined;
-		const equippedItemID = this.getItemIdByItemType(equippedItem);
+		const equippedItemID = getItemIdByItemType(this.label, equippedItem);
 		const equippedItemEP = hasItem ? this.computeEP(equippedItem) : 0;
 
 		const labelCellElem = ref<HTMLDivElement>();
@@ -536,48 +426,7 @@ export default class ItemList<T extends ItemListType> {
 
 		const toggleFavorite = (isFavorite: boolean) => {
 			const filters = this.player.sim.getFilters();
-
-			let favMethodName: keyof DatabaseFilters;
-			let favId;
-			switch (this.label) {
-				case SelectorModalTabs.Items:
-					favMethodName = 'favoriteItems';
-					favId = itemData.id;
-					break;
-				case SelectorModalTabs.Enchants:
-					favMethodName = 'favoriteEnchants';
-					favId = getUniqueEnchantString(itemData.item as unknown as Enchant);
-					break;
-				case SelectorModalTabs.Tinkers:
-					favMethodName = 'favoriteEnchants';
-					favId = getUniqueEnchantString(itemData.item as unknown as Enchant);
-					break;
-				case SelectorModalTabs.Gem1:
-				case SelectorModalTabs.Gem2:
-				case SelectorModalTabs.Gem3:
-					favMethodName = 'favoriteGems';
-					favId = itemData.id;
-					break;
-				case SelectorModalTabs.RandomSuffixes:
-					favMethodName = 'favoriteRandomSuffixes';
-					favId = itemData.id;
-					break;
-				case SelectorModalTabs.Reforging:
-					favMethodName = 'favoriteReforges';
-					favId = itemData.id;
-					break;
-				default:
-					return;
-			}
-
-			if (isFavorite) {
-				filters[favMethodName].push(favId as never);
-			} else {
-				const favIdx = filters[favMethodName].indexOf(favId as never);
-				if (favIdx !== -1) {
-					filters[favMethodName].splice(favIdx, 1);
-				}
-			}
+			if (!applyFavourite(filters, this.label, itemData, isFavorite)) return;
 
 			favoriteElem.value!.classList.toggle('text-brand');
 			favoriteIconElem.value!.classList.toggle('fas');
@@ -650,20 +499,7 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	private isItemFavorited(itemData: ItemData<T>): boolean {
-		if (this.label === SelectorModalTabs.Items) {
-			return this.currentFilters.favoriteItems.includes(itemData.id);
-		} else if (this.label === SelectorModalTabs.Enchants) {
-			return this.currentFilters.favoriteEnchants.includes(getUniqueEnchantString(itemData.item as unknown as Enchant));
-		} else if (this.label === SelectorModalTabs.Tinkers) {
-			return this.currentFilters.favoriteEnchants.includes(getUniqueEnchantString(itemData.item as unknown as Enchant));
-		} else if (this.label.startsWith('Gem')) {
-			return this.currentFilters.favoriteGems.includes(itemData.id);
-		} else if (this.label === SelectorModalTabs.RandomSuffixes) {
-			return this.currentFilters.favoriteRandomSuffixes.includes(itemData.id);
-		} else if (this.label === SelectorModalTabs.Reforging) {
-			return this.currentFilters.favoriteReforges.includes(itemData.id);
-		}
-		return false;
+		return isItemFavourited(this.currentFilters, this.label, itemData);
 	}
 
 	private getSourceInfo(item: Item, sim: Sim): JSX.Element {

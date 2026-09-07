@@ -11,9 +11,7 @@ import { ContentBlock } from '@ui-kit/content_block';
 import { CopyButton } from '@ui-kit/copy_button';
 
 import { trackEvent } from '../../../tracking/analytics';
-type ReforgeSummaryTotal = {
-	[key in Stat]?: number;
-};
+import { reforgeTotals } from '../model/summary_totals';
 
 export class ReforgeSummary extends Component {
 	private readonly simUI: IndividualSimHost<any>;
@@ -38,21 +36,7 @@ export class ReforgeSummary extends Component {
 
 	private updateTable() {
 		const body = <></>;
-		const reforges = this.player.getGear().getAllReforges();
-		const totals: ReforgeSummaryTotal = {};
-
-		for (const [_, reforgeData] of reforges) {
-			const { fromStat, toStat, fromAmount, toAmount } = reforgeData;
-
-			if (typeof totals[fromStat] !== 'number') {
-				totals[fromStat] = 0;
-			}
-			if (typeof totals[toStat] !== 'number') {
-				totals[toStat] = 0;
-			}
-			if (fromAmount) totals[fromStat]! += fromAmount;
-			if (toAmount) totals[toStat]! += toAmount;
-		}
+		const totals = reforgeTotals(this.player.getGear().getAllReforges());
 
 		const hasReforgedItems = !!Object.keys(totals).length;
 		this.rootElem.classList[!hasReforgedItems ? 'add' : 'remove']('hide');

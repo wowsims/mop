@@ -1,46 +1,14 @@
 /** @jsxImportSource @jsx-vanilla */
 import { Player } from '@domain/player';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
-import { Faction, ItemQuality } from '@generated/proto/common';
+import { Faction } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
 
 import { trackEvent } from '../../../tracking/analytics';
-type UpgradeSummaryTotal = {
-	justicePoints: number;
-	honorPoints: number;
-	valorPoints: number;
-};
-
-export const COSTS = new Map<keyof UpgradeSummaryTotal, Map<ItemQuality, number>>([
-	[
-		'valorPoints',
-		new Map<ItemQuality, number>([
-			[ItemQuality.ItemQualityRare, 250],
-			[ItemQuality.ItemQualityEpic, 250],
-			[ItemQuality.ItemQualityLegendary, 250],
-		]),
-	],
-	[
-		'justicePoints',
-		new Map<ItemQuality, number>([
-			[ItemQuality.ItemQualityRare, 750],
-			[ItemQuality.ItemQualityEpic, 1000],
-			[ItemQuality.ItemQualityLegendary, 1000],
-		]),
-	],
-	[
-		'honorPoints',
-		new Map<ItemQuality, number>([
-			[ItemQuality.ItemQualityRare, 750],
-			[ItemQuality.ItemQualityEpic, 1000],
-			[ItemQuality.ItemQualityLegendary, 1000],
-		]),
-	],
-]);
+import { itemsWithUpgradeOptions, upgradeCostTotals } from '../model/summary_totals';
 
 export class UpgradeCostsSummary extends Component {
 	private readonly simUI: IndividualSimHost<any>;
@@ -65,37 +33,13 @@ export class UpgradeCostsSummary extends Component {
 
 	private updateTable() {
 		const body = <></>;
-		const itemsWithUpgrade = this.player
-			.getGear()
-			.asArray()
-			// Ensure to only pick items that have scaling options
-			.filter((item): item is EquippedItem => !!(item?._item.scalingOptions && item.getMaxUpgradeCount() > 0));
+		const itemsWithUpgrade = itemsWithUpgradeOptions(this.player.getGear().asArray());
 
 		const hasUpgradeItems = !!Object.keys(itemsWithUpgrade).length;
 		this.rootElem.classList[!hasUpgradeItems ? 'add' : 'remove']('hide');
 
 		if (hasUpgradeItems) {
-			const totals = itemsWithUpgrade.reduce<UpgradeSummaryTotal>(
-				(acc, item) => {
-					let key: keyof UpgradeSummaryTotal = 'justicePoints';
-
-					if (item._item.name.includes("Gladiator's")) {
-						key = 'honorPoints';
-					} else if (item._item.phase === 5) {
-						// Phase 5: Warforged items cost JP, everything else VP.
-						key = item._item.nameDescription.includes('Warforged') ? 'justicePoints' : 'valorPoints';
-					}
-
-					acc[key] += (COSTS.get(key)?.get(item._item.quality) || 0) * (item.getMaxUpgradeCount() - item.upgrade);
-
-					return acc;
-				},
-				{
-					valorPoints: 0,
-					justicePoints: 0,
-					honorPoints: 0,
-				},
-			);
+			const totals = upgradeCostTotals(itemsWithUpgrade);
 
 			Object.entries(totals).forEach(([key, points]) => {
 				if (points > 0) {
