@@ -4,9 +4,10 @@ import type { Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
-import { CopyButton } from '@ui-kit/copy_button';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
+import { Button } from '@ui-kit/Button';
+import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { Icon } from '@ui-kit/Icon';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -22,24 +23,16 @@ export const ReforgeSummary = () => {
 	const totals = useMemo(() => reforgeTotals(gear.getAllReforges()), [gear]);
 	const stats = Object.keys(totals).map(Number) as Stat[];
 
-	const mountCopyButton = useLegacyMount(
-		parent =>
-			new CopyButton(parent, {
-				extraCssClasses: ['btn-outline-primary'],
-				getContent: () => {
-					trackEvent({ action: 'click', category: 'reforging', label: 'copy' });
-					try {
-						// Lazy export so we always capture the most current state, matching optimizer button logic.
-						const proto = host.toProto();
-						return JSON.stringify(proto ? IndividualSimSettings.toJson(proto) : {});
-					} catch {
-						return '';
-					}
-				},
-				text: i18n.t('gear_tab.reforge_summary.copy_to_reforge_lite'),
-			}),
-		[host],
-	);
+	const { copy, copied } = useCopyToClipboard(() => {
+		trackEvent({ action: 'click', category: 'reforging', label: 'copy' });
+		try {
+			// Lazy export so we always capture the most current state, matching optimizer button logic.
+			const proto = host.toProto();
+			return JSON.stringify(proto ? IndividualSimSettings.toJson(proto) : {});
+		} catch {
+			return '';
+		}
+	});
 
 	return (
 		<SummaryTable
@@ -64,7 +57,12 @@ export const ReforgeSummary = () => {
 				);
 			})}
 			<div className="reforge-summary-footer mt-2">
-				<div className="d-flex w-100 justify-content-end" ref={mountCopyButton} />
+				<div className="d-flex w-100 justify-content-end">
+					<Button variant="outline-primary" className="copy-button" onClick={copy}>
+						<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+						{copied ? i18n.t('common.copy_button.copied') : i18n.t('gear_tab.reforge_summary.copy_to_reforge_lite')}
+					</Button>
+				</div>
 			</div>
 		</SummaryTable>
 	);

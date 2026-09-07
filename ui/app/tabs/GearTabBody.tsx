@@ -1,5 +1,6 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { useSimHost } from '@domain/context/SimHostContext';
+import { useSimReady } from '@domain/hooks/useSimReady';
 import type { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch } from '@domain/state/batch';
@@ -12,7 +13,6 @@ import i18n from '@i18n/config';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 
-import { useSimReady } from '@domain/hooks/useSimReady';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 
 export const GearTabBody = () => {

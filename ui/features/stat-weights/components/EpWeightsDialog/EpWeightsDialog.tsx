@@ -10,7 +10,6 @@ import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { ProgressTrackerDialog, type ProgressTrackerHandle, type ProgressTrackerState } from '@ui-kit/ProgressTrackerDialog';
@@ -23,7 +22,7 @@ import { calculateEp, combineScaledEpValues, combineScaledWeights, emptyStatWeig
 import { visibleEpUnitStats } from '../../model/ep_unit_stats';
 import type { EpWeightsOpener } from '../../model/ep_weights_opener';
 import { statsTableColumns } from '../../model/stats_table';
-import { renderSavedEPWeights } from '../../view/saved_ep_weights';
+import { SavedEpWeights } from '../SavedEpWeights';
 import { EpReferenceOptions } from './EpReferenceOptions';
 import { EpWeightsOptions } from './EpWeightsOptions';
 import { EpWeightsTable } from './EpWeightsTable';
@@ -167,8 +166,6 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 		setSimResult(result);
 	}, [sim, player, settings, epStats, epPseudoStats, epReferenceStat]);
 
-	const mountSavedEpWeights = useLegacyMount(parent => renderSavedEPWeights(parent, host), [host]);
-
 	return (
 		<Dialog
 			open={open}
@@ -209,7 +206,9 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 						onComputeEp={onComputeEp}
 					/>
 				</div>
-				<div className="ep-weights-sidebar sticky-lg-top order-0 order-lg-1" ref={mountSavedEpWeights} />
+				<div className="ep-weights-sidebar sticky-lg-top order-0 order-lg-1">
+					<SavedEpWeights />
+				</div>
 			</div>
 			<Tooltip id={EP_TOOLTIP_ID} />
 			{running && (

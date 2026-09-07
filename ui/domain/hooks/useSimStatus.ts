@@ -1,5 +1,6 @@
-import type { Sim } from '../sim';
 import { useEffect, useState } from 'react';
+
+import type { Sim } from '../sim';
 
 export type SimStatus = 'loading' | 'ready' | 'error';
 

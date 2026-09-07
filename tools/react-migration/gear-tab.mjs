@@ -93,12 +93,22 @@ const INSTALL = () => {
 		// `navigator.clipboard` does not exist under a headless origin, and the copy button falls back
 		// to `alert` there, which openSpec stubs to a noop. Recording the write is the only way to see
 		// the payload at all.
+		// Both write paths, because the button has used each: the vanilla class called
+		// `navigator.clipboard.writeText`, and `react-use` copies through `copy-to-clipboard`, which
+		// selects a detached node and runs `document.execCommand('copy')` without touching
+		// `navigator.clipboard` at all. Stubbing only one makes this read `null` and blames the button
+		// for a probe that missed.
 		stubClipboard: () => {
 			window.__copied = null;
 			Object.defineProperty(navigator, 'clipboard', {
 				configurable: true,
 				value: { writeText: value => ((window.__copied = value), Promise.resolve()) },
 			});
+			const execCommand = document.execCommand?.bind(document);
+			document.execCommand = command => {
+				if (command === 'copy') window.__copied = String(window.getSelection());
+				return execCommand ? execCommand(command) : true;
+			};
 		},
 		copied: () => window.__copied,
 		// Offsets down each column, so a popover that lands in the flow between two cells — and moves

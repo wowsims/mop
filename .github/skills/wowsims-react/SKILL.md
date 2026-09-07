@@ -339,6 +339,10 @@ of the duplication sweep was to build each shape once.
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, `container`, and `elevated` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/sims/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
+| `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on; a `CopyButton` component would have fixed exactly that | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
+| `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); `EnchantLabel`, `ItemPickerCell` and `MetricsActionCell` still hand-roll it and **two of those have no staleness guard** | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
+| `SavedEpWeights` | `ui/features/stat-weights/components/SavedEpWeights/` | the `renderSavedEPWeights` call in `EpWeightsDialog` only — that helper **and** `ui-kit/saved_data_manager.tsx` both stay, because `reforge_panel.tsx` calls the helper with three options this component deliberately does not grow | nothing — storage key, presets and player all come from the host | the chip sections and their `hide` rule, the create row, and the active-check. Storage is `react-use`'s `useLocalStorage` on the shared key **the still-vanilla reforge widget also reads**, so its tests drive the real vanilla manager in both directions rather than hand-building JSON. Its focus rings are keyed on `.ep-weights-sidebar`, not a class of its own: the modal subtree is compared by tag plus sorted class list, so a stack-specific root class is a tree diff |
+| `GlyphsPicker` | `ui/features/talents/components/GlyphsPicker/` | `features/talents/view/glyphs_picker.tsx` (**deleted** — one consumer) | nothing — the class comes from the host | the two blocks of three slots, the one dialog all six share, and that it **still wears** gear's `item-picker-*` and `selector-modal-*` class names to inherit those stylesheets, which stay global. Only the `.glyph*` rules co-located, checked by a before/after build rule-stream diff rather than by reading specificity |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
 | `Importer` | `ui/features/import-export/components/Importer/` | `IndividualImporter`'s four concrete subclasses (**deleted**); `view/importer.tsx` and `IndividualImporter` stay for `BulkGearJsonImporter`, whose opener is in the un-ported bulk tab | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The four `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write |
@@ -1819,6 +1823,40 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   dialog beneath it. **A standalone dialog cannot reproduce this** — it gets a backdrop either way,
   so the first version of the test passed with `forceRender` deleted. The committed test nests one
   dialog inside another, and fails without it.
+
+- 2026-09-07 **Four legacy islands go, and `react-use` is adopted.** The copy button, the saved EP
+  weights sidebar and the glyphs picker all leave `useLegacyMount`; the talents copy button went with
+  the glyphs work since it was the same file.
+
+  **The copy button ports as a hook, not a component.** Its three consumers differ only in css class,
+  label, tooltip and content getter — all button concerns — so a shared component would have fixed
+  the one axis that varies. `react-use` is pinned exactly at 17.6.1 and **the convention is the root
+  barrel**: barrel and deep-ESM produce byte-identical raw output, so it tree-shakes clean at about
+  1.2 KB gzip, while `react-use/lib/…` is the CommonJS build and costs 4 KB more. One agent guessed
+  the `lib` path because it could not see the other's measurement; both are on the barrel now.
+
+  **Its write path changed and one probe had to move with it.** `copy-to-clipboard` runs
+  `document.execCommand('copy')` and never touches `navigator.clipboard`, so `gear-tab.mjs`'s stub
+  recorded nothing. It now stubs **both** paths, so a future switch back does not break it again.
+  Recorded, not fixed: `execCommand` is deprecated, its no-permission fallback would put a whole
+  settings blob in a blocking prompt, and it refuses empty strings — so the reforge summary's error
+  fallback now says Copied while copying nothing.
+
+  **The saved EP weights key is shared with a still-vanilla widget.** The reforge panel's `loadOnly`
+  manager reads the same key, so an encoding drift would silently empty that popover rather than
+  merely losing sets on upgrade. The tests drive the real vanilla manager in both directions.
+
+  **A stack-specific root class is a tree diff.** Focus rings scoped under a new root class showed up
+  in the modal-subtree comparison, which records tag plus *sorted class list* while `tabindex`,
+  `aria-label` and `for`/`id` are all invisible to it.
+
+  **A new ported dialog costs two counts, not one.** The glyph selector needed an entry in
+  `PORTED_DIALOGS` to remove the baseline's Bootstrap modal *and* a bump to the React portal total.
+  Missing either fails every spec at once, which is the count doing its job.
+
+  Recorded, not fixed: the shared saved-data manager's name-collision check tests membership against
+  an array with `in`, so it fires for `map`, `length` and `"0"` and never for a real name, and there
+  is no check against existing user data at all.
 
 - 2026-09-07 **The parity baseline is `master`, not `feature/ui-restructure`.** The restructure was
   never going to merge on its own, so gating against it measured half the diff and let a restructure

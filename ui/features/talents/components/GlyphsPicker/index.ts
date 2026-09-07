@@ -1,0 +1,1 @@
+export { GlyphsPicker } from './GlyphsPicker';

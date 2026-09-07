@@ -2,12 +2,12 @@ import { useSimHost } from '@domain/context/SimHostContext';
 import { kebabCase } from '@domain/format';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
-import { CopyButton } from '@ui-kit/copy_button';
 import { Dialog } from '@ui-kit/Dialog';
 import { downloadString } from '@ui-kit/dom_utils';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
+import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { Icon } from '@ui-kit/Icon';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { trackPageView } from '../../../../tracking/analytics';
 import { defaultExportCategories, type ExporterDefinition } from '../../exporters';
@@ -43,16 +43,8 @@ export const Exporter = ({ open, onOpenChange, title, allowDownload = false, sel
 		trackPageView(title, `/export/${kebabCase(title)}`);
 	}, [open, title]);
 
-	const mountCopyButton = useLegacyMount(
-		parent =>
-			new CopyButton(parent, {
-				extraCssClasses: ['btn-primary'],
-				getContent: () => dataRef.current,
-				text: i18n.t('export.json.copy_button'),
-				tooltip: i18n.t('export.json.copy_tooltip'),
-			}),
-		[],
-	);
+	const copyTooltipId = useId();
+	const { copy, copied } = useCopyToClipboard(() => dataRef.current);
 
 	return (
 		<Dialog
@@ -64,13 +56,17 @@ export const Exporter = ({ open, onOpenChange, title, allowDownload = false, sel
 			title={title}
 			footer={
 				<>
-					<div ref={mountCopyButton} />
+					<Button className="copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+						<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+						{copied ? i18n.t('common.copy_button.copied') : i18n.t('export.json.copy_button')}
+					</Button>
 					{allowDownload && (
 						<Button className="exporter-button download-button ms-2" onClick={() => downloadString(dataRef.current, 'wowsims.json')}>
 							<Icon name="download" style="base" className="me-1" />
 							{i18n.t('export.json.download_button')}
 						</Button>
 					)}
+					<Tooltip id={copyTooltipId} content={i18n.t('export.json.copy_tooltip')} />
 				</>
 			}>
 			{selectCategories && <ExporterCategoryPickers categories={categories.current} onChange={onCategoryChange} />}

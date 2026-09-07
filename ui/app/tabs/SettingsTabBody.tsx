@@ -1,6 +1,7 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { useSimHost } from '@domain/context/SimHostContext';
 import type { Encounter } from '@domain/encounter';
+import { useSimReady } from '@domain/hooks/useSimReady';
 import type { IndividualSimHost } from '@domain/sim_host';
 import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
 import { EncounterPicker } from '@features/encounter';
@@ -16,7 +17,6 @@ import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { useMemo } from 'react';
 
-import { useSimReady } from '@domain/hooks/useSimReady';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 
 export const SettingsTabBody = () => {

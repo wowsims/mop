@@ -45,7 +45,7 @@ vi.mock('@i18n/localization', () => ({
 	translatePseudoStat: (pseudoStat: PseudoStat) => (pseudoStat === PseudoStat.PseudoStatSpellHitPercent ? 'Spell Hit Percent' : `Pseudo ${pseudoStat}`),
 }));
 
-vi.mock('../../view/saved_ep_weights', () => ({ renderSavedEPWeights: () => undefined }));
+vi.mock('../SavedEpWeights', () => ({ SavedEpWeights: () => null }));
 
 // The vitest i18n stub has no resources, so `t` answers with the key and never interpolates — which
 // would make the reference-stat half of a column tooltip invisible. This keeps the key and shows the

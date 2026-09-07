@@ -1,17 +1,17 @@
 import { usePlayer } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
 import type { TalentsConfig } from '@domain/talents/config';
-import { classGlyphsConfig } from '@domain/talents/factory';
-import { GlyphsPicker } from '@features/talents/view/glyphs_picker';
-import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { CopyButton } from '@ui-kit/copy_button';
+import { Button } from '@ui-kit/Button';
+import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { useInput } from '@ui-kit/hooks/useInput';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
+import { Icon } from '@ui-kit/Icon';
 import type { InputConfig } from '@ui-kit/input';
 import { PickerShell } from '@ui-kit/PickerShell';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId } from 'react';
 
+import { GlyphsPicker } from '../GlyphsPicker';
 import { TalentTreePicker } from './TalentTreePicker';
 
 export interface TalentsPickerConfig<ModObject, TalentsProto> extends InputConfig<ModObject, string> {
@@ -27,29 +27,26 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 	const fallbackId = useId();
 	const { value, setValue, hidden, disabled } = useInput(player, config);
 
-	const mountActions = useLegacyMount(
-		parent =>
-			new CopyButton(parent, {
-				extraCssClasses: ['btn-sm', 'btn-outline-primary', 'copy-talents'],
-				getContent: () => player.getTalentsString(),
-				text: i18n.t('talents_tab.copy_button.label'),
-				tooltip: i18n.t('talents_tab.copy_button.tooltip'),
-			}),
-		[player],
-	);
-
-	const mountGlyphs = useLegacyMount(parent => new GlyphsPicker(parent, player, classGlyphsConfig[player.getClass() as Class]), [player]);
+	const copyTooltipId = useId();
+	const { copy, copied } = useCopyToClipboard(() => player.getTalentsString());
 
 	return (
-		<PickerShell ref={mountGlyphs} config={{ ...config, id: config.id ?? fallbackId }} cssClass="talents-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={{ ...config, id: config.id ?? fallbackId }} cssClass="talents-picker-root" hidden={hidden} disabled={disabled}>
 			<div className="talents-picker-inner">
 				<div className="talents-picker-header">
-					<div className="talents-picker-actions" ref={mountActions} />
+					<div className="talents-picker-actions">
+						<Button variant="outline-primary" size="sm" className="copy-talents copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+							<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+							{copied ? i18n.t('common.copy_button.copied') : i18n.t('talents_tab.copy_button.label')}
+						</Button>
+						<Tooltip id={copyTooltipId} content={i18n.t('talents_tab.copy_button.tooltip')} />
+					</div>
 				</div>
 				<div id="talents" className="talents-picker-list">
 					<TalentTreePicker config={config.tree} talentsString={value} onChange={setValue} />
 				</div>
 			</div>
+			<GlyphsPicker />
 		</PickerShell>
 	);
 };

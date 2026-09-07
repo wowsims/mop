@@ -1,0 +1,11 @@
+@import 'shared/tokens';
+
+.ep-weights-sidebar {
+	.saved-data-set-name,
+	.saved-data-set-delete {
+		&:focus-visible {
+			outline: 1px solid var(--bs-link-color);
+			outline-offset: 1px;
+		}
+	}
+}
