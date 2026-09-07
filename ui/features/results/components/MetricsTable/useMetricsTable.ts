@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-import { compareMetricValues, type MetricRow } from '../../model/grouping';
+import { compareMetricValues, type MetricRow, metricRowId } from '../../model/grouping';
 import type { MetricsColumnMeta } from './types';
 
 export const metricsTableFeatures = tableFeatures({
@@ -33,6 +33,8 @@ const sortByMetricValue: SortFn<MetricsTableFeatures, MetricRow<any>> = (rowA, r
 
 const getSubRows = <T>(row: MetricRow<T>) => row.subRows;
 
+const getRowId = <T>(_row: MetricRow<T>, index: number, parent?: { id: string }) => metricRowId(index, parent?.id);
+
 export interface UseMetricsTableOptions<T> {
 	columns: Array<MetricsColumnDef<T>>;
 	rows: Array<MetricRow<T>>;
@@ -50,6 +52,7 @@ export const useMetricsTable = <T>({ columns, rows, sortColumnId }: UseMetricsTa
 			columns: sortedColumns,
 			data: rows,
 			getSubRows,
+			getRowId,
 			// `TableSorter`'s cycle: first click ascending on every column, no removal, no multi-sort.
 			enableSortingRemoval: false,
 			enableMultiSort: false,

@@ -244,8 +244,16 @@ const EXPAND_PROBE = async root => {
 	return { count: open.children, open, collapsed, reopened: state() };
 };
 
+// Shape-agnostic, for the same reason the expansion probe is. Vanilla's tooltip is a tippy instance
+// portaled to <body>; a ported table's is a react-tooltip node rendered in place, next to the table.
+// Both are counted, and `withTable` is the assertion either way — a tooltip that opened without its
+// nested table is a failure on both builds, and a veto that stopped working shows as `open > 0`
+// whichever library drew it.
 const TIPS = () => {
-	const boxes = [...document.querySelectorAll('.tippy-box')].filter(box => box.getAttribute('data-state') === 'visible');
+	const boxes = [
+		...[...document.querySelectorAll('.tippy-box')].filter(box => box.getAttribute('data-state') === 'visible'),
+		...document.querySelectorAll('.react-tooltip__show'),
+	];
 	return { open: boxes.length, withTable: boxes.filter(box => box.querySelector('table.metrics-table')).length };
 };
 

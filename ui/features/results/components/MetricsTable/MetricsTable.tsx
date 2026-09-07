@@ -1,5 +1,6 @@
 import './MetricsTable.scss';
 
+import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
 import type { MetricRow } from '../../model/grouping';
@@ -14,9 +15,11 @@ export interface MetricsTableProps<T> {
 	sortColumnId: string;
 	/** Whether a run has completed. A table with no rows hides only once one has — never at load. */
 	hasResult: boolean;
+	/** `customizeRowElem`: an extra class taken from the row's own metric. */
+	rowClassName?: (metric: T) => string | undefined;
 }
 
-export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, hasResult }: MetricsTableProps<T>) => {
+export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, hasResult, rowClassName }: MetricsTableProps<T>) => {
 	const table = useMetricsTable({ columns, rows, sortColumnId });
 
 	return (
@@ -33,7 +36,8 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 										header.column.columnDef.meta?.columnClass,
 										header.column.columnDef.meta?.headerCellClass,
 									)}
-									onClick={header.column.getToggleSortingHandler()}>
+									onClick={header.column.getToggleSortingHandler()}
+									{...tooltipAnchorProps(header.column.columnDef.meta?.headerTooltipId, header.column.columnDef.meta?.headerTooltip)}>
 									<span>
 										<table.FlexRender header={header} />
 									</span>
@@ -44,7 +48,7 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 				</thead>
 				<tbody className="metrics-table-body">
 					{table.getRowModel().rows.map(row => (
-						<MetricsTableRow key={row.id} row={row} />
+						<MetricsTableRow key={row.id} row={row} rowClassName={rowClassName} />
 					))}
 				</tbody>
 			</table>

@@ -12,7 +12,6 @@ import { ref } from 'tsx-vanilla';
 import { trackEvent } from '../../../tracking/analytics';
 import type { ResultChannel } from '../model/result_channel';
 import { CombatReplay } from './combat_replay';
-import { DamageMetricsTable } from './damage_metrics';
 import { DpsHistogram } from './dps_histogram';
 import { DtpsMetricsTable } from './dtps_metrics';
 import { HealingMetricsTable } from './healing_metrics';
@@ -88,6 +87,7 @@ export class DetailedResults extends Component {
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
+	readonly damageMetricsContainer: HTMLElement;
 	readonly castMetricsContainer: HTMLElement;
 	readonly buffMetricsContainer: HTMLElement;
 	readonly debuffMetricsContainer: HTMLElement;
@@ -231,15 +231,11 @@ export class DetailedResults extends Component {
 			new ToplineResults({ parent: toplineResultsDiv, resultsEmitter: this.resultsEmitter });
 		});
 
+		this.damageMetricsContainer = this.rootElem.querySelector<HTMLElement>('.damage-metrics')!;
 		this.castMetricsContainer = this.rootElem.querySelector<HTMLElement>('.cast-metrics')!;
 		this.buffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.buff-aura-metrics')!;
 		this.debuffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.debuff-aura-metrics')!;
 		this.resourceMetricsContainer = this.rootElem.querySelector<HTMLElement>('.resource-metrics')!;
-
-		new DamageMetricsTable({
-			parent: this.rootElem.querySelector('.damage-metrics')!,
-			resultsEmitter: this.resultsEmitter,
-		});
 
 		new HealingMetricsTable({
 			parent: this.rootElem.querySelector('.healing-spell-metrics')!,

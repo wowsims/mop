@@ -1,0 +1,1 @@
+export { DamageMetricsTable } from './DamageMetricsTable';

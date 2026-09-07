@@ -326,7 +326,7 @@ of the duplication sweep was to build each shape once.
 | `BooleanPicker` | `ui/ui-kit/BooleanPicker/` | `ui-kit/pickers/boolean_picker.ts` (still live, dual-stack) | the `BooleanPickerConfig` it is given | the `input-root`/`form-check` markup and where the input sits |
 | `useInput` | `ui/ui-kit/hooks/useInput.ts` | `Input`'s init/refresh/update cycle | a `ModObject` + an `InputConfig` | reading, writing, `showWhen`, `enableWhen`, `defaultValue` |
 | `Button` | `ui/ui-kit/Button/` | 132 clickables — 91 `<button>`, 41 `<a>` — across 12 areas | the element (`as`), `variant` (incl. `unstyled`, which emits no `btn` at all), `size`, any native props | `type="button"`, and that `as="a"` carries an `href`. The `<button>` branch is Base UI's `Button`; the `<a>` branch is **deliberately not** |
-| `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
+| `Tooltip` | `ui/ui-kit/Tooltip/` | `tippy()`, 62 call sites / 33 files | `content` (any node), `render` (per-anchor content, for one Tooltip serving many anchors — return nothing and no tooltip is drawn at all, which is how tippy's `onShow: () => false` is expressed), `place`, `clickable`, `openOnClick`, the anchor (`data-tooltip-id`) | the theme, the close events of a popover, and that unmount removes it |
 | `Icon` | `ui/ui-kit/Icon/` | hand-written `<i className="fas fa-…">`, 64 sites / 37 files / 11 features | `name` (closed union incl. FA5 aliases), `style`, `size`, `spin` | glyph identity, size validity, style spelling |
 | `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
@@ -354,8 +354,11 @@ of the duplication sweep was to build each shape once.
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 | `useSimResult` | `ui/features/results/hooks/useSimResult.ts` | — (binding) | nothing — it reads `useSimHost().resultChannel` | that the channel replays its last value, so a component mounting after a run still sees it |
-| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — three vanilla tables left: damage, healing, dtps) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass`), `rows`, `sortColumnId`, `hasResult` | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
+| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — two vanilla tables left: healing, dtps) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass` / `meta.tooltipId` / `meta.headerTooltipId` + `meta.headerTooltip`), `rows`, `sortColumnId`, `hasResult`, `rowClassName` (`customizeRowElem`) | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. A column carrying `meta.tooltipId` turns each of its `<td>`s into that column's one tooltip anchor, with `data-row-id` for the row, keyed by `getRowId`, which is `model/grouping.ts`'s `metricRowId` so `indexMetricRows` cannot drift from it. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
+| `MetricsTotalBar` | `ui/features/results/components/MetricsTotalBar/` | `features/results/view/metrics_table/metrics_total_bar.tsx` (still live, dual-stack — healing, dtps and the vanilla tooltip table still import it) | `percentage`, `max`, `total`, `value`, `overlayValue` (shielding, healing's only), `spellSchool`, `classColor` | the `--percentage` custom property both fills are driven by, and that a null `max` divides by 1 |
+| `MetricsCombinedTooltip` | `ui/features/results/components/MetricsCombinedTooltip/` | `MetricsCombinedTooltipTable` in `features/results/view/metrics_table/metrics_combined_tooltip_table.tsx` (still live, dual-stack — healing and dtps) | `groups`, `headerValues` (Type / Count / Average overrides, by position), `hasMetricBars` | the tooltip **body** only — the nested `table.metrics-table`, the zero-value filter, the value-descending order, the average column appearing only when an entry has one, and the group header row only when more than one named group survives. The anchor, the opening and the veto are the column's one `<Tooltip>`, not this |
 | `CastMetricsTable` | `ui/features/results/components/CastMetricsTable/` | `features/results/view/cast_metrics.ts` (**deleted** — one consumer, not a dual-stack primitive) | nothing — it takes the result from `useSimResult` | the three columns, the pet grouping and `shouldCollapse` |
+| `DamageMetricsTable` | `ui/features/results/components/DamageMetricsTable/` | `features/results/view/damage_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the ten columns, the pet grouping through `ActionMetrics.joinById`, the `threat-metrics` row class, and the seven column tooltips plus the Avg Cast header's |
 | `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
 | `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource` |
 
@@ -1194,8 +1197,10 @@ If one is ever clipped, the fix is `positionStrategy="fixed"` on the `Tooltip` p
   appends both elements itself instead of leaving placement to React — React only reasserts order
   afterwards. Any React-rendered pane in Phase 2+ hits this: fix the lookups before moving the pane
   into a component's render, or they silently find nothing.
-- **Tooltips portal to `<body>`**, so they outlive their component's subtree. Unmount cleanup is
-  load-bearing; assert it in the component's test.
+- **A tooltip outlives the render that opened it**, so unmount cleanup is load-bearing; assert it in
+  the component's test. It does **not** portal to `<body>` — that was tippy. See "A react-tooltip
+  renders where you declare it" above: react-tooltip's node is a child of wherever the `<Tooltip>`
+  sits in the React tree.
 - **`localization.tsx` walks the DOM** for `[data-i18n]` and writes `textContent`. React
   reconciliation clobbers that — React components need `useTranslation`. Checked in Phase 1: the
   only page that depends on the walk is the landing page (`ui/index.html` + `ui/index.ts`, 132 nodes
@@ -1317,6 +1322,67 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Results unit 6: the damage table, and the tooltip shape every later table copies.**
+  Ten columns, seven of them with a tooltip, plus one on the Avg Cast header. **One `<Tooltip>` per
+  column, never one per cell** — 8 instances instead of the ~133 a 19-row table would otherwise mount.
+  The `<td>` is the anchor, as `cellElem` was tippy's, so the hover target is the whole cell; it
+  carries `data-tooltip-id` from `meta.tooltipId` and `data-row-id` from the row, and the column's one
+  `Tooltip` resolves the hovered row through `indexMetricRows`. `getRowId` and that index share
+  `metricRowId`, so the map cannot drift from table-core's ids
+  (`coreRowsFeature.utils.js:208`, `parent ? \`${parent.id}.${index}\` : String(index)`), and a test
+  hovers a **child** row's cell to prove the dotted path resolves to the child and not its parent.
+
+  **What the gates can and cannot see of it.** react-tooltip renders **in place**, not in a portal —
+  the node is a child of `div.damage-metrics`, beside `.damage-metrics-root` — and it renders `null`
+  until first opened. So at load the pane is byte-identical and `parity.mjs` / `panes-parity.mjs` stay
+  at 605 lines on both ports; after a sim, no gate serialises anything. `results-tables.mjs` is the
+  only gate that sees a tooltip at all, and its probe was tippy-shaped
+  (`.tippy-box[data-state="visible"]`); it now counts `.react-tooltip__show` as well and still asserts
+  `withTable`, so the same four assertions hold on both builds. **That probe was rewritten and proved
+  green on `:3401` before any table code moved**, which is the "a gate rewritten in the same commit
+  proves nothing" rule applied without a commit to sequence.
+
+  **Four shared-core changes, all small, none a fork.** `MetricsColumnMeta` gains `tooltipId`,
+  `headerTooltipId` and `headerTooltip`; `MetricsTableRow` spreads the cell anchor and takes
+  `rowClassName` (`customizeRowElem`, which no earlier table used); `MetricsTable` spreads the header
+  anchor and threads `rowClassName`; `useMetricsTable` passes `getRowId`. Attributes only — `SERIALIZE`
+  records neither, so none of them is visible to a tree gate. `Tooltip` gains `render`, passed straight
+  through to react-tooltip.
+
+  **The threat veto is `render` returning nothing**, which is the closest mirror of tippy's
+  `onShow: () => false`: the anchor stays on the cell, the flag is read from the store through
+  `subscribeUiField(sim, 'showThreatMetrics')`, and a `render` that returns nothing leaves
+  `hasContent` false so no node is created at all
+  (`react-tooltip.cjs:1547`). That deletes three `document.querySelector('.hide-threat-metrics')`
+  calls, plan defect 11, for this table. The same mechanism is how a cell with nothing to show — no
+  landed hits, no misses, a passive action — stays shut, which is vanilla's early `return`.
+
+  **`buildAttackMetricsColumns` was NOT built, deliberately.** The plan puts it in this unit; the
+  duplication survey it cites measured **three** consumers, and unit 6 has one. `SKILL.md:395-414`
+  says an abstraction built against a single consumer fixes the wrong axis, so the damage columns are
+  written as damage columns and unit 7 — which lands dtps and healing together — is where the axis can
+  actually be measured. The tooltip *body* is shared now, because it genuinely has three consumers.
+
+  **Three declared divergences.** `maxDamage` is `null` rather than `Math.max(...[])` when a run
+  yields no rows, so plan defect 2's `-Infinity` (and its `-0%` bars) disappears by construction; it
+  is held in a **ref** so the column defs stay referentially stable across results.
+  `MetricsCombinedTooltip` copies before sorting, so plan defect 6's in-place mutation of a prop array
+  is gone. And `placement: 'auto'` has no react-tooltip equivalent: the tooltip takes the primitive's
+  default `place="top"` and flips on its own. Checked in the browser on `:3402`, which is the
+  once-per-new-container rule for `div.damage-metrics`: all three shapes open, none is clipped by
+  `body` or by `.sim-ui` (both `overflow: auto`, neither in the containing-block chain), none leaves
+  the viewport, the table keeps `font-size: 12px` and `max-width: none`. The only visible difference
+  from tippy is which side is chosen for a top row.
+
+  **Plan defect 7 is gone by construction** — react-tooltip cleans up on unmount, asserted in the
+  table's own test. The `Empty action id!` console line the gate whitelists now prints **zero** times
+  on the port. Master logs 2 — one from the casts table, one from damage — and unit 3 took it to 1;
+  this unit removes the last one.
+
+  **The tippy theme stays.** `.tippy-box[data-theme='metrics-table']` in `_detailed_results.scss` is
+  still healing's and dtps's; the React twin is a co-located
+  `.sim-tooltip.metrics-table-tooltip` in `MetricsCombinedTooltip.scss`. Unit 8 merges them.
 
 - 2026-09-07 **Results units 4 and 5: buffs, debuffs and the fifteen resource tables.** Almost pure
   configuration on top of unit 3 — no change to `MetricsTable`, `MetricsActionCell`,
