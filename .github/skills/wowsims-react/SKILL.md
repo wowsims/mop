@@ -1339,6 +1339,20 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **Two decided divergences from master, both deliberate.** `ItemCellAnchor` drops
+  `role="button"` whenever it has an `href`. An `<a href>` is a link — Enter activates it, Space
+  scrolls, and it still offers middle-click and open-in-new-tab — so the role was promising a Space
+  activation that never worked. The decision is in the component, not the six call sites, so they
+  keep passing `role="button"` uniformly and the hrefless anchor (which wires its own keys and takes
+  `tabIndex`) still carries it, where it is accurate. Screen readers now say "link" for a filled gear
+  cell, which is what it is.
+
+  Item swap's `getEquippedItem` gains `.withChallengeMode(...).withDynamicStats()`, mirroring gear's.
+  The selector modal is the same modal in both cases, so the same item was showing two different sets
+  of numbers depending on which picker opened it. This is a real behaviour change against master with
+  no gate over the numbers themselves; the test double needed both decorators before it would even
+  return, which is how the unit suite caught the omission.
+
 - 2026-09-07 **The four remaining `SavedDataManager` islands port onto `SavedDataPanel`, and the
   crash that came with them is the lesson.** Gear, talents, settings and encounter each get a thin
   wrapper over the shared panel, wired to the four `useSaved*` hooks that had no caller. Three

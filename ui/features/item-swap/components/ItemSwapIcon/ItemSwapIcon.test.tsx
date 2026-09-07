@@ -44,6 +44,14 @@ const SLOTS = [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.Ite
 const equippedItem = (itemId: number, socketColors: GemColor[] = []) =>
 	({
 		asActionId: () => ({ itemId }),
+		// The selector modal reads a swap item through the same decorators the gear picker uses, so the
+		// double has to answer them or `createItemSwapGearData` throws before it returns anything.
+		withChallengeMode() {
+			return this;
+		},
+		withDynamicStats() {
+			return this;
+		},
 		allSocketColors: () => socketColors,
 		gems: socketColors.map(() => null),
 		numPossibleSockets: socketColors.length,
@@ -56,6 +64,7 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 	const player = {
 		itemSwapSettings: { getItem: (slot: ItemSlot) => swap.get(slot) ?? null, equipItem },
 		isBlacksmithing: () => false,
+		getChallengeModeEnabled: () => false,
 	} as unknown as Player<any>;
 	const host = { player, itemSwapSelectorModal: { openTab } } as unknown as IndividualSimHost<any>;
 	const view = render(

@@ -11,6 +11,7 @@ export const ItemCellAnchor = ({ href, onActivate, children, ...rest }: ItemCell
 	<a
 		{...rest}
 		href={href || undefined}
+		role={href ? undefined : rest.role}
 		rel={externalRel(href, rest.rel)}
 		tabIndex={rest.tabIndex ?? (onActivate && !href ? 0 : undefined)}
 		onClick={

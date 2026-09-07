@@ -6,6 +6,6 @@ import type { ItemSlot } from '@generated/proto/common';
 
 export const createItemSwapGearData = (player: Player<any>, slot: ItemSlot): GearData => ({
 	equipItem: (equippedItem: EquippedItem | null) => player.itemSwapSettings.equipItem(slot, equippedItem),
-	getEquippedItem: () => player.itemSwapSettings.getItem(slot),
+	getEquippedItem: () => player.itemSwapSettings.getItem(slot)?.withChallengeMode(player.getChallengeModeEnabled()).withDynamicStats() || null,
 	subscribe: subscribePlayerField(player, 'itemSwap'),
 });
