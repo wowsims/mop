@@ -3,19 +3,19 @@ import { Icon } from '@ui-kit/Icon';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
-import type { SavedEpWeightsEntry } from './types';
+import type { SavedDataPanelEntry } from './types';
 
-export interface SavedEpWeightsChipProps {
-	entry: SavedEpWeightsEntry;
+export interface SavedDataChipProps<T> {
+	entry: SavedDataPanelEntry<T>;
 	active: boolean;
 	disabled: boolean;
 	deleteLabel?: string;
 	deleteTooltipId?: string;
-	onLoad: (entry: SavedEpWeightsEntry) => void;
-	onDelete?: (entry: SavedEpWeightsEntry) => void;
+	onLoad: (entry: SavedDataPanelEntry<T>) => void;
+	onDelete?: (entry: SavedDataPanelEntry<T>) => void;
 }
 
-export const SavedEpWeightsChip = ({ entry, active, disabled, deleteLabel, deleteTooltipId, onLoad, onDelete }: SavedEpWeightsChipProps) => (
+export const SavedDataChip = <T,>({ entry, active, disabled, deleteLabel, deleteTooltipId, onLoad, onDelete }: SavedDataChipProps<T>) => (
 	<div className={clsx('saved-data-set-chip badge rounded-pill', active && 'active', disabled && 'disabled')}>
 		<Button variant="unstyled" className="saved-data-set-name" onClick={() => onLoad(entry)}>
 			{entry.name}
