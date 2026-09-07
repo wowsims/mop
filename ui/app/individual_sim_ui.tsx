@@ -266,6 +266,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			derived.apply(this.player, this.sim);
 			derived.subscribe(this.player, this.sim)(() => derived.apply(this.player, this.sim));
 		}
+
+		this.addStatWeightsAction();
 	}
 
 	applyDefaultConfigOptions(config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {
@@ -290,15 +292,31 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	private addSidebarComponents() {
 		this.raidSimResultsManager = addSimResultsAction(this);
-		this.sim
-			.waitForInit()
-			.then(() => {
-				this.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
-					trackPageView('Stat Weights', '/stat-weights');
-					this.epWeightsModal.open();
-				});
-			})
-			.catch(console.error);
+	}
+
+	private addStatWeightsAction() {
+		const button = this.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
+			trackPageView('Stat Weights', '/stat-weights');
+			this.epWeightsModal.open();
+		});
+		button.classList.add('loading');
+		button.disabled = true;
+		button.setAttribute('aria-busy', 'true');
+
+		const settle = () => {
+			button.classList.remove('loading');
+			button.removeAttribute('aria-busy');
+		};
+		this.sim.waitForInit().then(
+			() => {
+				settle();
+				button.disabled = this.disabled;
+			},
+			error => {
+				settle();
+				console.error(error);
+			},
+		);
 	}
 
 	gearTab!: GearTab;

@@ -212,7 +212,7 @@ export class CombatReplay extends ResultComponent {
 					<div className="cr-empty-desc">{i18n.t('combat_replay.empty_desc')}</div>
 				</div>
 				<div ref={sceneRef} className="cr-scene" style="display:none">
-					<div className="cr-scene-vignette" aria-hidden="true" />
+					<div className="cr-scene-vignette" attributes={{ 'aria-hidden': 'true' }} />
 					<div className="cr-arena">
 						<div className="cr-ticker-outer">
 							<div ref={tickerTrackRef} className="cr-ticker-track" />
@@ -243,7 +243,7 @@ export class CombatReplay extends ResultComponent {
 								◀
 							</button>
 							<button ref={playBtnRef} type="button" className="cr-play-btn cr-ctrl-btn" title="Play / Pause">
-								<i ref={playIconRef} className="fas fa-play" aria-hidden="true" />
+								<i ref={playIconRef} className="fas fa-play" attributes={{ 'aria-hidden': 'true' }} />
 							</button>
 							<button className="cr-ctrl-btn" dataset={{ seek: '1' }} title={i18n.t('combat_replay.seek_fwd', { time: 1 })}>
 								▶

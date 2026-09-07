@@ -122,7 +122,7 @@ export abstract class SimUI extends Component implements SimHost {
 			<button className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass)} onclick={onClick} disabled={this.disabled}>
 				{label}
 				<span className="sim-sidebar-action-button-loading-icon">
-					<i className="fas fa-spinner fa-spin"></i>
+					<i className="fas fa-spinner fa-spin" attributes={{ 'aria-hidden': 'true' }}></i>
 				</span>
 			</button>,
 		) as HTMLButtonElement;

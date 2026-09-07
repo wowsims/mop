@@ -132,7 +132,13 @@ await page.addInitScript(() => {
 	window.alert = () => {};
 });
 await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-await page.waitForSelector('.sim-sidebar-actions .ep-weights-action', { timeout: 60000 });
+// `:not(.loading)` is what "the button exists" used to mean on its own. The button is built up
+// front now and wears `.loading` until `waitForInit` resolves, so waiting on the bare class would
+// return before the sim has initialised — and `setIterations` below would then be overwritten by
+// `loadSettings()`, which restores the stored iteration count from the same callback. On the
+// baseline nothing ever adds the class, so this waits on exactly what it waited on before.
+// `:enabled` would not do: an unlaunched spec's button is disabled for good.
+await page.waitForSelector('.sim-sidebar-actions .ep-weights-action:not(.loading)', { timeout: 60000 });
 await page.waitForTimeout(2500);
 
 console.log(`${SPEC} on :${PORT}${IS_BASE ? '  (baseline — the three defect assertions are expected to fail here)' : ''}\n`);

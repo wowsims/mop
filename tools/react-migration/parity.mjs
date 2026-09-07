@@ -113,6 +113,23 @@ const DROPDOWN_COUNT = 2;
 const SIM_TITLE = /\.sim-title(\.|$)/;
 const SIM_TITLE_MENU_COUNT = 1;
 
+// The native-sim notice, which the stat-weights button now has to be compared without.
+//
+// Both are children of `.sim-sidebar-actions`, and on the baseline their order is an accident of
+// microtask registration: each was appended from a `.then` on `waitForInit`, and `SimUI`'s handler
+// is registered first because it runs during `super()`. The button is built synchronously now, so
+// that it can be on screen in a loading state while the sim initialises, and the toast — still
+// async — lands after it rather than before. Nothing moves on screen either way:
+// `.toast-notice-native-download` carries `order: 100` and is painted last from either position.
+//
+// Dropped from both sides rather than pruned to a placeholder, because a placeholder preserves the
+// ordinal position and the position is the only thing that differs. The count is asserted per side
+// and the two subtrees are compared against each other, so what stops being gated is the toast's
+// place among its siblings and nothing else — the same trade the modal set comparison makes.
+const SIDEBAR_ACTIONS = /\.sim-sidebar-actions(\.|$)/;
+const NATIVE_SIM_NOTICE = /\.toast-notice-native-download(\.|$)/;
+const NATIVE_SIM_NOTICE_COUNT = 1;
+
 const grab = async (browser, port, spec) => {
 	// The baseline has the same picker roots; only the React one has Base UI's wrappers around their
 	// menus, so normalising both sides would report the baseline as missing what it never had.
@@ -120,7 +137,8 @@ const grab = async (browser, port, spec) => {
 	const { page, errors } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
 	const tree = await page.evaluate(SERIALIZE, '.sim-ui');
-	const shell = pruneSubtrees(pruneSubtrees(tree, MODAL), PRUNED);
+	const notice = dropSubtrees(pruneSubtrees(pruneSubtrees(tree, MODAL), PRUNED), SIDEBAR_ACTIONS, NATIVE_SIM_NOTICE);
+	const shell = notice.dom;
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const panes = {};
@@ -145,7 +163,7 @@ const grab = async (browser, port, spec) => {
 		panes[id] = buttons.dom;
 	}
 	await page.close();
-	return { ids, shell, panes, levels, modals, paneProblems, errors };
+	return { ids, shell, panes, levels, modals, notices: collectSubtrees(tree, NATIVE_SIM_NOTICE), noticesDropped: notice.dropped, paneProblems, errors };
 };
 
 const browser = await launch();
@@ -168,6 +186,18 @@ for (const spec of specsFromArgv()) {
 	const title = dropSubtrees(a.shell, SIM_TITLE, DROPDOWN_MENU);
 	a.shell = title.dom;
 	if (title.dropped !== SIM_TITLE_MENU_COUNT) problems.push(`dropped ${title.dropped} sim-title menus, expected ${SIM_TITLE_MENU_COUNT}`);
+
+	// What keeps the drop above an assertion: the notice has to have been in the sidebar actions on
+	// both sides, and the two copies have to be the same markup.
+	for (const [side, grabbed] of [
+		['base', a],
+		['react', b],
+	]) {
+		if (grabbed.noticesDropped !== NATIVE_SIM_NOTICE_COUNT) {
+			problems.push(`${side}: dropped ${grabbed.noticesDropped} native-sim notices from the sidebar actions, expected ${NATIVE_SIM_NOTICE_COUNT}`);
+		}
+	}
+	if (a.notices.join('\n') !== b.notices.join('\n')) problems.push('the native-sim notice differs in content between the two builds');
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);
