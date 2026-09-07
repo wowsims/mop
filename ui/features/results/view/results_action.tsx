@@ -38,7 +38,7 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 				if (waitAbort) return;
 				try {
 					waitAbort = true;
-					await simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
+					await simUI.sim.signalManager.abortType(RequestTypes.IndividualSim);
 				} catch (error) {
 					console.error('Error on sim abort!');
 					console.error(error);
@@ -48,7 +48,7 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 				}
 			});
 
-			await simUI.runSim((progress: ProgressMetrics) => {
+			await simUI.runIndividualSim((progress: ProgressMetrics) => {
 				resultsManager.setSimProgress(progress);
 			});
 

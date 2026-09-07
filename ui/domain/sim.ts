@@ -97,6 +97,10 @@ export type RunSimOptions = {
 	debug?: boolean;
 	singleIteration?: boolean; // If true, only run a single iteration (for testing purposes).
 	iterations?: number;
+	// Replaces the request player's equipment and database, rather than merging into them.
+	gear?: Gear;
+	onProgress?: WorkerProgressCallback;
+	raw?: boolean;
 };
 
 // Core Sim module which deals only with api types, no UI-related stuff.
@@ -291,31 +295,46 @@ export class Sim {
 		});
 	}
 
-	async runRaidSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome> {
+	private requireRunnableSetup() {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
+	}
 
-		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
+	runSim(options: RunSimOptions & { raw: true }): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome>;
+	runSim(options?: RunSimOptions & { raw?: false }): Promise<SimResult | ErrorOutcome>;
+	async runSim(options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome | [RaidSimRequest, RaidSimResult]> {
+		this.requireRunnableSetup();
+
+		const signals = this.signalManager.registerRunning(RequestTypes.IndividualSim);
 		try {
 			await this.waitForInit();
 
 			const request = this.makeRaidSimRequest(options);
+			const player = request.raid!.parties[0].players[0];
 
-			let result;
-			// Only use worker base concurrency when running wasm. Local sim has native threading.
-			if (await this.shouldUseWasmConcurrency()) {
-				result = await runConcurrentSim(request, this.workerPool, onProgress, signals);
-			} else {
-				result = await this.workerPool.raidSimAsync(request, onProgress, signals);
+			if (options.gear) {
+				const gear = Sim.prepareGear(options.gear, hasBlacksmithing(player));
+				player.database = gear.toDatabase(this.db);
+				player.equipment = gear.asSpec();
 			}
+
+			const onProgress = options.onProgress ?? noop;
+			// Only use worker based concurrency when running wasm (local sim has native threading),
+			// and never for a lone iteration, which has nothing to split.
+			const result =
+				request.simOptions!.iterations > 1 && (await this.shouldUseWasmConcurrency())
+					? await runConcurrentSim(request, this.workerPool, onProgress, signals)
+					: await this.workerPool.raidSimAsync(request, onProgress, signals);
 
 			if (result.error) {
 				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
 				throw new SimError(result.error.message);
 			}
+
+			if (options.raw) return [request, result];
 
 			const simResult = await SimResult.makeNew(request, result);
 			if (!options.silent) {
@@ -325,69 +344,14 @@ export class Sim {
 		} catch (error) {
 			if (error instanceof SimError) throw error;
 			console.error(error);
-			throw new Error('Something went wrong running your raid sim. Reload the page and try again.');
+			throw new Error('Something went wrong running your sim. Reload the page and try again.');
 		} finally {
 			this.signalManager.unregisterRunning(signals);
 		}
 	}
 
-	// Runs a lightweight version of the sim that uses a gear set and doesn't compute combat logs or other expensive data,
-	// and returns the raw result from the sim worker.
-	async runRaidSimLightweight(
-		gear: Gear,
-		onProgress: WorkerProgressCallback,
-		options: RunSimOptions = {},
-	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
-
-		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
-		try {
-			await this.waitForInit();
-
-			const request = this.makeRaidSimRequest(options);
-			const player = request.raid!.parties[0].players[0];
-
-			const isBlacksmith = hasBlacksmithing(player);
-
-			// Remove bonus sockets if not blacksmith.
-			if (!isBlacksmith) {
-				gear = gear.withoutBlacksmithSockets();
-			}
-
-			player.database = gear.toDatabase(this.db);
-			player.equipment = gear.asSpec();
-
-			request.raid!.parties[0].players[0] = player;
-
-			let result;
-			// Only use worker base concurrency when running wasm. Local sim has native threading.
-			if (await this.shouldUseWasmConcurrency()) {
-				result = await runConcurrentSim(request, this.workerPool, onProgress, signals);
-			} else {
-				result = await this.workerPool.raidSimAsync(request, onProgress, signals);
-			}
-
-			if (result.error) {
-				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
-				throw new SimError(result.error.message);
-			}
-
-			return [request, result];
-		} catch (error) {
-			if (error instanceof SimError) throw error;
-			console.error(error);
-			throw new Error('Something went wrong running your lightweight raid sim. Reload the page and try again.');
-		} finally {
-			this.signalManager.unregisterRunning(signals);
-		}
-	}
-
-	// Normalizes gear for a bulk/reforge request
-	private static prepareBulkGear(gear: Gear, isBlacksmith: boolean): Gear {
+	// Normalizes gear for a sim/bulk/reforge request
+	private static prepareGear(gear: Gear, isBlacksmith: boolean): Gear {
 		if (!isBlacksmith) {
 			gear = gear.withoutBlacksmithSockets();
 		}
@@ -426,13 +390,9 @@ export class Sim {
 		onCacheRestoreProgress?: (progress: BulkSimReforgeCacheProgress) => void,
 		abortSignal?: AbortSignal,
 	): Promise<BulkSimResult | ErrorOutcome> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
+		this.requireRunnableSetup();
 
-		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
+		const signals = this.signalManager.registerRunning(RequestTypes.IndividualSim);
 		try {
 			await this.waitForInit();
 
@@ -444,7 +404,7 @@ export class Sim {
 
 			const player = baseRequest.raid!.parties[0].players[0];
 			const isBlacksmith = hasBlacksmithing(player);
-			const prepareGear = (gear: Gear) => Sim.prepareBulkGear(gear, isBlacksmith);
+			const prepareGear = (gear: Gear) => Sim.prepareGear(gear, isBlacksmith);
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
@@ -656,7 +616,7 @@ export class Sim {
 		const baseRequest = this.makeRaidSimRequest();
 		const player = baseRequest.raid!.parties[0].players[0];
 		const isBlacksmith = hasBlacksmithing(player);
-		const baselineGear = Sim.prepareBulkGear(this.raid.getActivePlayers()[0].getGear(), isBlacksmith);
+		const baselineGear = Sim.prepareGear(this.raid.getActivePlayers()[0].getGear(), isBlacksmith);
 		const bulkGearDatabase = makeBulkItemDatabaseFromSpecs(this.db, baselineGear, bulkSettings.items);
 		player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 		player.equipment = baselineGear.asSpec();
@@ -665,11 +625,7 @@ export class Sim {
 	}
 
 	async getBulkCombinationCount(bulkSettings: BulkSettings): Promise<BulkCombinationCountResult> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
+		this.requireRunnableSetup();
 
 		await this.waitForInit();
 		const baseRequest = this.makeBulkBaseRequest(bulkSettings);
@@ -681,11 +637,7 @@ export class Sim {
 	}
 
 	async getBulkCandidates(bulkSettings: BulkSettings): Promise<BulkCandidatesResult> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
+		this.requireRunnableSetup();
 
 		await this.waitForInit();
 		const baseRequest = this.makeBulkBaseRequest(bulkSettings);
@@ -694,36 +646,6 @@ export class Sim {
 			bulkSettings,
 		});
 		return await this.workerPool.bulkCandidates(request);
-	}
-
-	async runRaidSimWithLogs(options: RunSimOptions = {}): Promise<SimResult | null> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
-
-		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
-		try {
-			await this.waitForInit();
-
-			const request = this.makeRaidSimRequest({ debug: true, ...options });
-			const result = await this.workerPool.raidSimAsync(request, noop, signals);
-			if (result.error) {
-				throw new SimError(result.error.message);
-			}
-			const simResult = await SimResult.makeNew(request, result);
-			if (!options.silent) {
-				this.simResultEmitter.emit(simResult);
-			}
-			return simResult;
-		} catch (error) {
-			if (error instanceof SimError) throw error;
-			console.error(error);
-			throw new Error('Something went wrong running your raid sim. Reload the page and try again.');
-		} finally {
-			this.signalManager.unregisterRunning(signals);
-		}
 	}
 
 	// This should be invoked internally whenever stats might have changed.
@@ -819,11 +741,7 @@ export class Sim {
 		epReferenceStat: Stat,
 		onProgress: WorkerProgressCallback,
 	): Promise<StatWeightsResult> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.getTargets().length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
+		this.requireRunnableSetup();
 
 		await this.waitForInit();
 

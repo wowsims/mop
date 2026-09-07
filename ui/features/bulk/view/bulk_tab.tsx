@@ -1513,7 +1513,7 @@ export class BulkTab extends SimTab {
 		};
 
 		try {
-			await this.simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
+			await this.simUI.sim.signalManager.abortType(RequestTypes.IndividualSim);
 			this.simStart = new Date().getTime();
 			this.originalGear = this.simUI.player.getGear();
 

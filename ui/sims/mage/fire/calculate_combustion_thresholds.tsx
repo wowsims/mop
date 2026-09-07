@@ -131,7 +131,7 @@ export class CalculateCombustionThresholds extends Component {
 				this.throwIfAborted(abortSignal);
 
 				const response = await this.runWithAbort(
-					this.simUI.runSimLightweight(this.simUI.player.getGear(), progress => onProgress(index, progress), {
+					this.simUI.runGearSim(this.simUI.player.getGear(), progress => onProgress(index, progress), {
 						debug: true,
 						iterations,
 					}),
@@ -526,7 +526,7 @@ export class CalculateCombustionThresholds extends Component {
 
 		try {
 			this.isCancelling = true;
-			await this.simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
+			await this.simUI.sim.signalManager.abortType(RequestTypes.IndividualSim);
 			if (!this.simAbortController?.signal.aborted) {
 				this.simAbortController?.abort();
 				this.simAbortController = null;

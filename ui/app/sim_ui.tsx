@@ -14,7 +14,7 @@ import { ResultsPanelStore } from '@features/results/components/SimResultsPanel'
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
-import { ErrorOutcomeType } from '@generated/proto/api';
+import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
@@ -180,18 +180,21 @@ export abstract class SimUI extends Component implements SimHost {
 		return SHARED_SAVED_ENCOUNTER_STORAGE_KEY;
 	}
 
-	async runSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
+	private notifyIfCancelled(result: SimResult | ErrorOutcome) {
+		if (result instanceof SimResult || result.type != ErrorOutcomeType.ErrorOutcomeAborted) return;
+		new Toast({
+			variant: 'info',
+			body: i18n.t('sim.notifications.sim_cancelled'),
+		});
+		this.resultsViewer.hideAll();
+	}
+
+	async runIndividualSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
 			await this.sim.signalManager.abortType(RequestTypes.All);
-			const result = await this.sim.runRaidSim(onProgress, options);
-			if (!(result instanceof SimResult) && result.type == ErrorOutcomeType.ErrorOutcomeAborted) {
-				new Toast({
-					variant: 'info',
-					body: i18n.t('sim.notifications.sim_cancelled'),
-				});
-				this.resultsViewer.hideAll();
-			}
+			const result = await this.sim.runSim({ ...options, onProgress, raw: false });
+			this.notifyIfCancelled(result);
 			return result;
 		} catch (e) {
 			this.resultsViewer.hideAll();
@@ -201,19 +204,21 @@ export abstract class SimUI extends Component implements SimHost {
 
 	// Runs a lightweight version of the sim that uses a gear set and doesn't compute combat logs or other expensive data,
 	// and returns the raw result from the sim worker.
-	async runSimLightweight(gear: Gear, onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
+	async runGearSim(gear: Gear, onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		try {
 			await this.sim.signalManager.abortType(RequestTypes.All);
-			return this.sim.runRaidSimLightweight(gear, onProgress, options);
+			return this.sim.runSim({ ...options, gear, onProgress, raw: true });
 		} catch (e) {
 			this.handleCrash(e);
 		}
 	}
 
-	async runSimOnce(options: RunSimOptions = {}) {
+	async runSingleIteration(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			return await this.sim.runRaidSimWithLogs({ debug: true, singleIteration: true, ...options });
+			const result = await this.sim.runSim({ debug: true, singleIteration: true, ...options, raw: false });
+			this.notifyIfCancelled(result);
+			return result;
 		} catch (e) {
 			this.resultsViewer.hideAll();
 			this.handleCrash(e);

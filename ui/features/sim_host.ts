@@ -36,13 +36,9 @@ export interface SimHost extends SimUIHost {
 	readonly simTabContentsContainer: HTMLElement;
 	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement;
 	addActionGroup(groups: ActionGroupItem[], groupOptions?: { cssClass?: string }): { group: HTMLDivElement; children: HTMLButtonElement[] };
-	runSim(onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
-	runSimLightweight(
-		gear: Gear,
-		onProgress: WorkerProgressCallback,
-		options?: RunSimOptions,
-	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome | undefined>;
-	runSimOnce(options?: RunSimOptions): Promise<SimResult | null | undefined>;
+	runIndividualSim(onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
+	runGearSim(gear: Gear, onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome | undefined>;
+	runSingleIteration(options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
 	handleCrash(error: any): Promise<void>;
 }
 

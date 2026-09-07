@@ -296,7 +296,7 @@ export class DetailedResults extends Component {
 				category: 'simulate',
 				label: 'once',
 			});
-			this.simUI?.runSimOnce();
+			this.simUI?.runSingleIteration();
 		});
 
 		const deathButton = deathButtonRef.value!;
@@ -316,7 +316,7 @@ export class DetailedResults extends Component {
 				}
 			}
 
-			this.simUI?.runSimOnce();
+			this.simUI?.runSingleIteration();
 		});
 
 		simResultsManager.currentChangeEmitter.on(async () => {
