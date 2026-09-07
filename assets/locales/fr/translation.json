@@ -2285,6 +2285,7 @@
 	"sidebar": {
 		"iterations": "Itérations",
 		"warnings": {
+			"label": "Avertissements",
 			"profession_requirement": "{{itemName}} nécessite {{professionName}}, mais elle n'est pas sélectionnée.",
 			"too_many_jc_gems": "Seulement 2 gemmes de joaillerie sont autorisées, mais {{count}} sont équipées.",
 			"unspent_talent_points": "Points de talent manquants dans les rangées {{rowNumbers}}.",
@@ -2429,6 +2430,8 @@
 			"phase": "{{phase}} - {{status}}"
 		},
 		"results": {
+			"stop": "Arrêter",
+			"stopping": "Arrêt en cours...",
 			"progress": {
 				"presim_running": "pré-simulations en cours",
 				"iterations_complete": "itérations terminées"

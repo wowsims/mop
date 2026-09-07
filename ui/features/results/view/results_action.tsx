@@ -96,23 +96,7 @@ export class SimResultsManager {
 			this.simUI.resultsViewer.hideAll();
 			return;
 		}
-		this.simUI.resultsViewer.setContent(
-			<div className="results-sim">
-				<div className="results-sim-dps damage-metrics">
-					<span className="topline-result-avg">{progress.dps.toFixed(2)}</span>
-				</div>
-				<div className="results-sim-hps healing-metrics">
-					<span className="topline-result-avg">{progress.hps.toFixed(2)}</span>
-				</div>
-				<div>
-					{progress.presimRunning
-						? i18n.t('sidebar.results.progress.presim_running')
-						: `${progress.completedIterations} / ${progress.totalIterations}`}
-					<br />
-					{i18n.t('sidebar.results.progress.iterations_complete')}
-				</div>
-			</div>,
-		);
+		this.simUI.resultsViewer.setProgress(progress);
 	}
 
 	setSimResult(simResult: SimResult) {
@@ -152,7 +136,7 @@ export class SimResultsManager {
 		);
 
 		const setResultTooltip = (selector: string, content: Element | HTMLElement | string) => {
-			const resultDivElem = this.simUI.resultsViewer.contentElem.querySelector<HTMLElement>(selector);
+			const resultDivElem = this.simUI.resultsViewer.contentElem?.querySelector<HTMLElement>(selector);
 			if (resultDivElem) {
 				const tooltip = tippy(resultDivElem, { content, placement: 'right' });
 				this.addOnResetCallback(() => tooltip.destroy());
@@ -183,7 +167,7 @@ export class SimResultsManager {
 			</>,
 		);
 
-		const simReferenceSetButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-set-reference');
+		const simReferenceSetButton = this.simUI.resultsViewer.contentElem?.querySelector<HTMLSpanElement>('.results-sim-set-reference');
 		if (simReferenceSetButton) {
 			const onSetReferenceClickHandler = () => {
 				this.referenceData = this.currentData;
@@ -198,7 +182,7 @@ export class SimResultsManager {
 			});
 		}
 
-		const simReferenceSwapButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-reference-swap');
+		const simReferenceSwapButton = this.simUI.resultsViewer.contentElem?.querySelector<HTMLSpanElement>('.results-sim-reference-swap');
 		if (simReferenceSwapButton) {
 			const onSwapClickHandler = () => {
 				batch(() => {
@@ -226,7 +210,7 @@ export class SimResultsManager {
 				simReferenceSwapButton?.removeEventListener('click', onSwapClickHandler);
 			});
 		}
-		const simReferenceDeleteButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-reference-delete');
+		const simReferenceDeleteButton = this.simUI.resultsViewer.contentElem?.querySelector<HTMLSpanElement>('.results-sim-reference-delete');
 		if (simReferenceDeleteButton) {
 			const onDeleteReferenceClickHandler = () => {
 				this.referenceData = null;
@@ -251,13 +235,13 @@ export class SimResultsManager {
 	updateReference() {
 		if (!this.referenceData || !this.currentData) {
 			// Remove references
-			this.simUI.resultsViewer.contentElem.querySelector('.results-sim-reference')?.classList.remove('has-reference');
-			this.simUI.resultsViewer.contentElem.querySelectorAll('.results-reference').forEach(e => e.classList.add('hide'));
+			this.simUI.resultsViewer.contentElem?.querySelector('.results-sim-reference')?.classList.remove('has-reference');
+			this.simUI.resultsViewer.contentElem?.querySelectorAll('.results-reference').forEach(e => e.classList.add('hide'));
 			return;
 		} else {
 			// Add references references
-			this.simUI.resultsViewer.contentElem.querySelector('.results-sim-reference')?.classList.add('has-reference');
-			this.simUI.resultsViewer.contentElem.querySelectorAll('.results-reference').forEach(e => e.classList.remove('hide'));
+			this.simUI.resultsViewer.contentElem?.querySelector('.results-sim-reference')?.classList.add('has-reference');
+			this.simUI.resultsViewer.contentElem?.querySelectorAll('.results-reference').forEach(e => e.classList.remove('hide'));
 		}
 
 		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dps']} .results-reference-diff`, res => res.raidMetrics.dps, 2);
@@ -282,7 +266,7 @@ export class SimResultsManager {
 		lowerIsBetter?: boolean,
 		preNormalizedErrors?: boolean,
 	) {
-		const elem = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>(querySelector);
+		const elem = this.simUI.resultsViewer.contentElem?.querySelector<HTMLSpanElement>(querySelector);
 		if (!elem) {
 			return;
 		}

@@ -2284,6 +2284,7 @@
 	"sidebar": {
 		"iterations": "Iterations",
 		"warnings": {
+			"label": "Warnings",
 			"profession_requirement": "{{itemName}} requires {{professionName}}, but it is not selected.",
 			"too_many_jc_gems": "Only 2 Jewelcrafting Gems are allowed, but {{count}} are equipped.",
 			"unspent_talent_points": "Missing required talent selections in row {{rowNumbers}}.",
@@ -2428,6 +2429,8 @@
 			"phase": "{{phase}} - {{status}}"
 		},
 		"results": {
+			"stop": "Stop",
+			"stopping": "Stopping...",
 			"progress": {
 				"presim_running": "presimulations running",
 				"iterations_complete": "iterations complete"

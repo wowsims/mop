@@ -1,39 +1,39 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { WarningsRegistry } from '@features/results/model/warnings';
+import type { ProgressMetrics } from '@generated/proto/api';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { SimToolbarItem } from '@ui-kit/sim_toolbar_item';
 import tippy, { inlinePositioning, Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-// Config for displaying a warning to the user whenever a condition is met.
-interface SimWarning {
-	updateOn: StoreSubscribe;
-	getContent: () => string | Array<string>;
-}
+import type { ResultsPanelHandle } from './results_panel_handle';
 
 interface WarningLinkArgs {
 	parent: HTMLElement;
 	href?: string;
 	text?: string;
 	icon?: string;
+	label?: string;
 	tooltip?: HTMLElement | Element;
 	classes?: string;
 }
 
 const TOOLTIP_HTML_BASE = <ul className="text-start ps-3 mb-0"></ul>;
 
-export class ResultsViewer extends Component {
+export class ResultsViewer extends Component implements ResultsPanelHandle {
 	readonly pendingElem: HTMLDivElement;
 	readonly contentElem: HTMLDivElement;
 	readonly warningElem: HTMLDivElement;
 	readonly buttonWrapperElem: HTMLDivElement;
 	private warningsLink: HTMLElement;
 
-	private warnings: Array<SimWarning> = [];
+	private readonly warnings: WarningsRegistry;
 	private warningsTooltip: TippyInstance | null = null;
 
-	constructor(parentElem: HTMLElement) {
+	constructor(parentElem: HTMLElement, warnings: WarningsRegistry) {
 		super(parentElem, 'results-viewer');
+		this.warnings = warnings;
 
 		const pendingElemRef = ref<HTMLDivElement>();
 		const contentElemRef = ref<HTMLDivElement>();
@@ -56,18 +56,21 @@ export class ResultsViewer extends Component {
 		this.buttonWrapperElem = buttonElemRef.value!;
 
 		this.warningsLink = this.addWarningsLink();
+		this.addOnDisposeCallback(this.warnings.subscribe(() => this.updateWarnings()));
 		this.updateWarnings();
 
 		this.hideAll();
 	}
 
-	private addWarningLink({ parent, tooltip, classes, text, ...itemArgs }: WarningLinkArgs): HTMLElement {
+	private addWarningLink({ parent, tooltip, classes, text, label, ...itemArgs }: WarningLinkArgs): HTMLElement {
 		const itemRef = ref<HTMLButtonElement>();
 		parent.appendChild(
 			<SimToolbarItem linkRef={itemRef} buttonClassName={classes} {...itemArgs}>
 				{text}
 			</SimToolbarItem>,
 		);
+
+		if (label) itemRef.value!.setAttribute('aria-label', label);
 
 		if (tooltip) {
 			this.warningsTooltip = tippy(itemRef.value!, {
@@ -86,23 +89,14 @@ export class ResultsViewer extends Component {
 		return this.addWarningLink({
 			parent: this.warningElem,
 			icon: 'fas fa-exclamation-triangle fa-3x',
+			label: i18n.t('sidebar.warnings.label'),
 			tooltip: TOOLTIP_HTML_BASE,
 			classes: 'warning link-warning',
 		}) as HTMLElement;
 	}
 
-	addWarning(warning: SimWarning) {
-		this.warnings.push(warning);
-		const unsub = warning.updateOn(() => this.updateWarnings());
-		this.addOnDisposeCallback(unsub);
-		this.updateWarnings();
-	}
-
 	private updateWarnings() {
-		const activeWarnings = this.warnings
-			.map(warning => warning.getContent())
-			.flat()
-			.filter(content => content !== '');
+		const activeWarnings = this.warnings.getContents();
 
 		const list = ((this.warningsTooltip?.props.content as Element)?.cloneNode(true) || <></>) as HTMLElement;
 		if (list) list.innerHTML = '';
@@ -139,20 +133,40 @@ export class ResultsViewer extends Component {
 		this.pendingElem.style.display = 'none';
 	}
 
+	setProgress(progress: ProgressMetrics) {
+		this.setContent(
+			<div className="results-sim">
+				<div className="results-sim-dps damage-metrics">
+					<span className="topline-result-avg">{progress.dps.toFixed(2)}</span>
+				</div>
+				<div className="results-sim-hps healing-metrics">
+					<span className="topline-result-avg">{progress.hps.toFixed(2)}</span>
+				</div>
+				<div>
+					{progress.presimRunning
+						? i18n.t('sidebar.results.progress.presim_running')
+						: `${progress.completedIterations} / ${progress.totalIterations}`}
+					<br />
+					{i18n.t('sidebar.results.progress.iterations_complete')}
+				</div>
+			</div>,
+		);
+	}
+
 	addAbortButton(abortClicked: (event: MouseEvent) => void) {
 		const buttonRef = ref<HTMLButtonElement>();
 		const onClick = (event: MouseEvent) => {
 			if (buttonRef.value) {
 				buttonRef.value.disabled = true;
-				buttonRef.value.innerText = 'Stopping...';
+				buttonRef.value.innerText = i18n.t('sidebar.results.stopping');
 			}
 			abortClicked?.(event);
 		};
 
 		this.buttonWrapperElem.replaceChildren(
-			<button ref={buttonRef} className="sim-abort-button" onclick={onClick}>
+			<button ref={buttonRef} type="button" className="sim-abort-button" onclick={onClick}>
 				<i className="fa fa-times fa-lg me-1" />
-				Stop
+				{i18n.t('sidebar.results.stop')}
 			</button>,
 		);
 		this.buttonWrapperElem.style.display = 'block';

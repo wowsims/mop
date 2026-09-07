@@ -10,6 +10,7 @@ import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
 import { subscribeSimField } from '@domain/state/subscriptions';
 import { WorkerProgressCallback } from '@domain/worker_pool';
+import { WarningsRegistry } from '@features/results/model/warnings';
 import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
 import { ErrorOutcomeType } from '@generated/proto/api';
@@ -50,6 +51,7 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly disabled: boolean;
 
 	readonly resultsViewer: ResultsViewer;
+	readonly warnings = new WarningsRegistry();
 	readonly simHeader: SimHeader;
 
 	readonly simContentContainer: HTMLElement;
@@ -100,7 +102,7 @@ export abstract class SimUI extends Component implements SimHost {
 		}).rootElem;
 
 		const resultsViewerElem = dom.sidebarResults;
-		this.resultsViewer = new ResultsViewer(resultsViewerElem);
+		this.resultsViewer = new ResultsViewer(resultsViewerElem, this.warnings);
 
 		this.simTabContentsContainer = dom.main;
 
@@ -128,6 +130,10 @@ export abstract class SimUI extends Component implements SimHost {
 				</div>,
 			);
 		}
+	}
+
+	get sidebarResultsContainer(): HTMLElement {
+		return this.dom.sidebarResults;
 	}
 
 	addNoticeForNativeSim() {
@@ -181,7 +187,7 @@ export abstract class SimUI extends Component implements SimHost {
 	}
 
 	addWarning(warning: SimWarning) {
-		this.resultsViewer.addWarning(warning);
+		this.warnings.add(warning);
 	}
 
 	// Returns a key suitable for the browser's localStorage feature.

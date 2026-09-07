@@ -8031,6 +8031,9 @@
 				"warnings": {
 					"type": "object",
 					"properties": {
+						"label": {
+							"type": "string"
+						},
 						"profession_requirement": {
 							"type": "string"
 						},
@@ -8052,6 +8055,7 @@
 					},
 					"additionalProperties": false,
 					"required": [
+						"label",
 						"profession_requirement",
 						"too_many_jc_gems",
 						"unspent_talent_points",
@@ -8556,6 +8560,12 @@
 				"results": {
 					"type": "object",
 					"properties": {
+						"stop": {
+							"type": "string"
+						},
+						"stopping": {
+							"type": "string"
+						},
 						"progress": {
 							"type": "object",
 							"properties": {
@@ -8749,7 +8759,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["progress", "reference", "metrics"]
+					"required": ["stop", "stopping", "progress", "reference", "metrics"]
 				},
 				"character_stats": {
 					"type": "object",
