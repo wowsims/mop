@@ -38,6 +38,15 @@ describe('MetricsActionCell', () => {
 		expect(filled.getAttribute('rel')).toBe('noopener noreferrer');
 	});
 
+	it('names the icon anchor, which is a link with no text of its own', () => {
+		resolved.state = { iconUrl: 'https://icons/kc.jpg', name: 'Kill Command', href: 'https://wowhead/spell=34026', ready: true };
+		const icon = cell().container.querySelector<HTMLAnchorElement>('a.metrics-action-icon')!;
+
+		expect(icon.textContent).toBe('');
+		expect(icon.getAttribute('aria-label')).toBe('Kill Command');
+		expect(screen.getByRole('link', { name: 'Kill Command' })).toBe(icon);
+	});
+
 	it('writes the wowhead tooltip dataset for its action id', () => {
 		wowhead.calls.length = 0;
 		cell({ useBuffAura: true });

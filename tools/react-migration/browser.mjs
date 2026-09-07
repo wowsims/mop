@@ -475,6 +475,37 @@ export const normaliseBaseUiMenus = dom => {
 	return { dom: current, problems };
 };
 
+// A sortable column header and the button the React shell puts inside it. The class list SERIALIZE
+// emits is sorted, so `metrics-table-header-cell` can sit anywhere in it.
+const SORT_HEADER = /^th\.(.*\.)?metrics-table-header-cell(\.|$)/;
+const SORT_BUTTON = /^button\.metrics-table-sort$/;
+
+/**
+ * Folds the sortable header's `<button>` back out of every `<th>`, on the **React side only** — the
+ * baseline has no button to fold, so running it there reports 132 header cells missing one each.
+ *
+ * Vanilla hangs a bare `click` listener on the `<th>`, so a column is sortable only with a mouse and
+ * a screen reader is never told the sort changed. The fix is a real focusable control inside the
+ * cell, which *inserts* an element into the shell both tree gates compare at load. `INTENDED`
+ * substitutes one line for another at a fixed index and cannot express an insertion; `dropSubtrees`
+ * would take the label with it. Collapsing the wrapper is the one tool that restores the alignment
+ * while still comparing the `<th>`'s class list, the `<span>` inside and everything below them byte
+ * for byte.
+ *
+ * `expected` is the pane's own header-cell count, so this is an assertion, not a fold: a column that
+ * renders no button, or a second button under one `<th>`, fails. That the baseline has the same
+ * number of header cells falls out of the byte comparison afterwards.
+ */
+export const normaliseSortButtons = dom => {
+	const expected = dom.split('\n').filter(line => SORT_HEADER.test(line.trim())).length;
+	if (!expected) return { dom, problems: [] };
+	const collapsed = collapseWrappers(dom, SORT_HEADER, SORT_BUTTON);
+	return {
+		dom: collapsed.dom,
+		problems: collapsed.dropped === expected ? [] : [`sort buttons: collapsed ${collapsed.dropped} of ${expected} header cells`],
+	};
+};
+
 /**
  * Moves every subtree matching `lift` out of its parent and in after it, within each subtree
  * matching `within`. `parent` must match the line the subtree hangs off and the subtree must be

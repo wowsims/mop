@@ -14,6 +14,7 @@ import {
 	dropSubtrees,
 	normaliseBaseUiMenus,
 	normaliseLiftedSubtrees,
+	normaliseSortButtons,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -131,15 +132,17 @@ const grab = async (browser, port, spec) => {
 		const lifted = normaliseLiftedSubtrees(dropRootClasses(await page.evaluate(SERIALIZE, '#' + id)));
 		paneProblems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
 		levels[id] = { lifted: lifted.lifted, total: lifted.total };
-		// The React side only: see `normaliseBaseUiMenus`. On the baseline it is a no-op, because
-		// nothing there carries the classes it looks for.
+		// The React side only: see `normaliseBaseUiMenus` and `normaliseSortButtons`. On the baseline
+		// the first is a no-op and the second would report every header cell as missing a button.
 		if (!isReact) {
 			panes[id] = lifted.dom;
 			continue;
 		}
 		const normalised = normaliseBaseUiMenus(lifted.dom);
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
-		panes[id] = normalised.dom;
+		const buttons = normaliseSortButtons(normalised.dom);
+		paneProblems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
+		panes[id] = buttons.dom;
 	}
 	await page.close();
 	return { ids, shell, panes, levels, modals, paneProblems, errors };

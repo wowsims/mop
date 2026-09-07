@@ -1,3 +1,5 @@
+import './MetricsTotalBar.scss';
+
 import { formatToCompactNumber, formatToPercent } from '@domain/format';
 import { spellSchoolNames } from '@domain/proto_utils/names';
 import type { SpellSchool } from '@generated/proto/common';

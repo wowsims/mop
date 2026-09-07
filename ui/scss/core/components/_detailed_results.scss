@@ -1,7 +1,6 @@
 @import './detailed_results/combat_replay';
 @import './detailed_results/dps_histogram';
 @import './detailed_results/log_runner';
-@import './detailed_results/resource_metrics';
 @import './detailed_results/results_filter';
 @import './detailed_results/rotation_floating_action_bar';
 @import './detailed_results/timeline';
@@ -140,12 +139,10 @@
 }
 
 .damage-content .metrics-table,
-.healing-content .metrics-table,
-.tippy-box[data-theme='metrics-table'] {
+.healing-content .metrics-table {
 	font-size: 12px;
 }
 
-.tippy-box[data-theme='metrics-table'],
 .metrics-table {
 	--detailed-results-border: rgba(var(--bs-white-rgb), 0.2);
 	width: 100%;
@@ -199,91 +196,4 @@
 
 .metrics-table-body td:not(:first-child) {
 	text-align: right;
-}
-
-.metrics-action {
-	display: flex;
-	align-items: center;
-	gap: var(--spacer-2);
-	white-space: initial;
-
-	.expand-toggle {
-		margin-left: auto;
-	}
-}
-
-.metrics-action-icon {
-	@include wowhead-background-icon;
-	height: 24px;
-	width: 24px;
-	vertical-align: middle;
-	margin-right: 4px;
-}
-
-.parent-metric {
-	cursor: pointer;
-}
-
-.child-metric > *:first-child {
-	padding-left: 20px;
-}
-
-tr:not(.parent-metric) .expand-toggle {
-	display: none;
-}
-
-.parent-metric.expand .fa-caret-right,
-.parent-metric:not(.expand) .fa-caret-down {
-	display: none;
-}
-
-.metrics-total {
-	--total-percentage-width: 7ch;
-	--total-amount-width: 7ch;
-	--total-bar-min-width: 50px;
-	min-width: calc(var(--total-percentage-width) + var(--total-amount-width) + var(--total-bar-min-width));
-}
-
-.metrics-total-percentage {
-	flex-shrink: 0;
-}
-
-.metrics-total-percentage {
-	width: var(--total-percentage-width);
-}
-
-.metrics-total-amount {
-	width: var(--total-amount-width);
-}
-
-.metrics-total-bar {
-	position: absolute;
-	left: var(--total-percentage-width);
-	right: var(--total-amount-width);
-	height: 100%;
-	flex-shrink: 1;
-	flex-grow: 1;
-	background-color: color-mix(in srgb, var(--bs-white) 5%, transparent);
-}
-
-.metrics-total-bar-fill {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: var(--percentage);
-	height: 100%;
-	background-color: currentColor;
-}
-
-.tippy-box[data-theme='metrics-table'] {
-	@include media-breakpoint-down(sm) {
-		max-width: 300px;
-	}
-
-	thead {
-		th {
-			padding-top: 0;
-			text-align: center;
-		}
-	}
 }

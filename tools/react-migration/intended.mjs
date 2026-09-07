@@ -35,6 +35,12 @@ export const INTENDED = [
 		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Four is the settings pane's ceiling: buffs, debuffs and the two external-cooldown blocks, all four together only on warrior/protection. It rises as further tabs stop building vanilla ContentBlocks",
 	},
 	{
+		base: 'table.metrics-table.tablesorter',
+		react: 'table.metrics-table',
+		max: 21,
+		why: '`.tablesorter` is the hook of the jQuery plugin the hand-rolled TableSorter replaced, and TableSorter is now gone too — no stylesheet, no script and no vendor bundle in ui/ or assets/ reads it. 21 is the results pane\'s whole table count, the six metric tables plus the fifteen resource ones, and no other pane has any',
+	},
+	{
 		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
 		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
 		describe: 'react drops hide-healing-metrics on a tank spec',

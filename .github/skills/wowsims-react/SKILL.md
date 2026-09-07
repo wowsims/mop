@@ -354,16 +354,16 @@ of the duplication sweep was to build each shape once.
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 | `useSimResult` | `ui/features/results/hooks/useSimResult.ts` | — (binding) | nothing — it reads `useSimHost().resultChannel` | that the channel replays its last value, so a component mounting after a run still sees it |
-| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (**no importer left** — every table is React; the two files survive only until unit 8 deletes them) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass` / `meta.tooltipId` / `meta.headerTooltipId` + `meta.headerTooltip`), `rows`, `sortColumnId`, `hasResult`, `rowClassName` (`customizeRowElem`) | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. A column carrying `meta.tooltipId` turns each of its `<td>`s into that column's one tooltip anchor, with `data-row-id` for the row, keyed by `getRowId`, which is `model/grouping.ts`'s `metricRowId` so `indexMetricRows` cannot drift from it. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>`; `metricForAnchor(byRowId)` beside it is the reader for that `data-row-id`, so the writer and the reader of the attribute ship together |
-| `MetricsTotalBar` | `ui/features/results/components/MetricsTotalBar/` | `features/results/view/metrics_table/metrics_total_bar.tsx` (**no importer left outside `metrics_table/` itself** — only the vanilla tooltip table, which nothing constructs any more) | `percentage`, `max`, `total`, `value`, `overlayValue` (shielding, healing's only), `spellSchool`, `classColor` | the `--percentage` custom property both fills are driven by, and that a null `max` divides by 1 |
-| `MetricsCombinedTooltip` | `ui/features/results/components/MetricsCombinedTooltip/` | `MetricsCombinedTooltipTable` in `features/results/view/metrics_table/metrics_combined_tooltip_table.tsx` (**no consumer left** — it is what set the dead `metrics-table` tippy theme) | `groups`, `headerValues` (Type / Count / Average overrides, by position), `hasMetricBars` | the tooltip **body** only — the nested `table.metrics-table`, the zero-value filter, the value-descending order, the average column appearing only when an entry has one, and the group header row only when more than one named group survives. The anchor, the opening and the veto are the column's one `<Tooltip>`, not this |
+| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (**deleted**) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass` / `meta.tooltipId` / `meta.headerTooltipId` + `meta.headerTooltip`), `rows`, `sortColumnId`, `hasResult`, `rowClassName` (`customizeRowElem`) | the whole shell — `table.metrics-table`, the header row, a `<button class="metrics-table-sort">` wrapping a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. **The sort handler stays on the `<th>`** and the button carries none of its own: activating it by mouse, Enter or Space raises a click that reaches the cell's, so the whole cell is still the hit area and `aria-sort` on the `<th>` reports the direction. `parity.mjs` folds the button back out with `normaliseSortButtons`, counted against the pane's own header-cell count. Owns `MetricsTable.scss` — `.metrics-action*`, `.parent-metric`, `.child-metric`, the caret and expand-toggle rules, co-located from `_detailed_results.scss`, plus `@import 'shared/tokens'` for `wowhead-background-icon`. A column carrying `meta.tooltipId` turns each of its `<td>`s into that column's one tooltip anchor, with `data-row-id` for the row, keyed by `getRowId`, which is `model/grouping.ts`'s `metricRowId` so `indexMetricRows` cannot drift from it. `MetricsActionCell` beside it is the Name cell: icon anchor — `aria-label` from the metric name, because the anchor has no text of its own — the name, and the expand toggle as a real `<button>`; `metricForAnchor(byRowId)` beside it is the reader for that `data-row-id`, so the writer and the reader of the attribute ship together |
+| `MetricsTotalBar` | `ui/features/results/components/MetricsTotalBar/` | `features/results/view/metrics_table/metrics_total_bar.tsx` (**deleted**) | `percentage`, `max`, `total`, `value`, `overlayValue` (shielding, healing's only), `spellSchool`, `classColor` | the `--percentage` custom property both fills are driven by, and that a null `max` divides by 1. Owns `MetricsTotalBar.scss` — the five `.metrics-total*` rules, co-located from `_detailed_results.scss` |
+| `MetricsCombinedTooltip` | `ui/features/results/components/MetricsCombinedTooltip/` | `MetricsCombinedTooltipTable` in `features/results/view/metrics_table/metrics_combined_tooltip_table.tsx` (**deleted**, and with it the `.tippy-box[data-theme='metrics-table']` rules it was the only setter of) | `groups`, `headerValues` (Type / Count / Average overrides, by position), `hasMetricBars` | the tooltip **body** only — the nested `table.metrics-table`, the zero-value filter, the value-descending order, the average column appearing only when an entry has one, and the group header row only when more than one named group survives. The anchor, the opening and the veto are the column's one `<Tooltip>`, not this |
 | `CastMetricsTable` | `ui/features/results/components/CastMetricsTable/` | `features/results/view/cast_metrics.ts` (**deleted** — one consumer, not a dual-stack primitive) | nothing — it takes the result from `useSimResult` | the three columns, the pet grouping and `shouldCollapse` |
 | `attackMetricsColumns` | `ui/features/results/components/AttackMetricsColumns/` | the column and tooltip-group blocks the damage, damage-taken and healing tables would each hand-roll | **the column set, its order, and every column's bindings** — the caller composes its own array and passes each builder the metric fields, the header key and the tooltip ids. `name`, `primary` (`total` / `value` / `percentage` / `max` / `overlay` / `tooltipId`), `casts`, `withTicks` (`value` / `tick` / `format` / `zeroWhen` / `dashWhen`) and `rate`, plus `damageBreakdownGroup` / `castsGroup` / `hitGroups` / `missGroup` / `threatGroup` / `threatTooltip` and `useMetricMax` | **only how one named shape renders**: the Name cell's markup, the primary cell's bar and its two class tokens, the `value (tick)` pair, and the rate column's `text-success` / `text-body`. Deliberately *not* the layout — the three consumers already disagree on order (damage puts Crit % before Miss %, dtps after) and healing shares four of its twelve columns, so a builder keyed on a table *kind* would have been bypassed. A shape none of these covers is written inline with `createMetricsColumnHelper` and dropped into the same array: an entry added, never a fork |
 | `DamageMetricsTable` | `ui/features/results/components/DamageMetricsTable/` | `features/results/view/damage_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the ten columns in their order, the pet grouping through `ActionMetrics.joinById`, the `threat-metrics` row class, and the seven column tooltips plus the Avg Cast header's. Composed from `attackMetricsColumns`; only Miss %, DPET and the tooltip bodies are its own |
 | `HealingMetricsTable` | `ui/features/results/components/HealingMetricsTable/` | `features/results/view/healing_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult` and the threat flag from the store | the twelve columns, the `hps > 0` filter, the shielding overlay (the only `overlayValue` user), the `threat-metrics` row class, and five column tooltips of which three are threat-vetoed, plus three header tooltips |
 | `DtpsMetricsTable` | `ui/features/results/components/DtpsMetricsTable/` | `features/results/view/dtps_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult`; it reads **no** threat flag, because it shows no threat | the nine columns (Miss % before Crit %, the reverse of damage), that the rows are the *targets'* damage actions and not the player's, `shouldCollapse: () => true` because a target is never a pet, and four column tooltips plus two header tooltips — none of them threat |
 | `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
-| `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource` |
+| `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource`. Owns `ResourceMetricsTable.scss`, co-located from `scss/core/components/detailed_results/_resource_metrics.scss` |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1325,6 +1325,73 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Results unit 8: the vanilla island deleted, the SCSS co-located, and the two deferred
+  accessibility changes landed.** `metrics_table.tsx`, `table_sorter.ts`, `metrics_total_bar.tsx` and
+  `metrics_combined_tooltip_table.tsx` go — 485 lines with no importer since unit 7 — and with them
+  `.tippy-box[data-theme='metrics-table']`, whose only setter they were. `_detailed_results.scss:148`
+  was **split, not deleted**: the dead tippy selector shared a rule with the live `.metrics-table`.
+
+  **The sortable header is now a real `<button>`, and the gate change is the point of the unit.**
+  A `<button class="metrics-table-sort">` inside every `<th>`, with `aria-sort` on the `<th>` from
+  `column.getIsSorted()`. That *inserts* 132 elements into the at-load shell both tree gates compare,
+  which `INTENDED` cannot express (it substitutes one line for another at a fixed index) and
+  `dropSubtrees` would over-delete (it would take the label with it). `browser.mjs` gains
+  `normaliseSortButtons`, which `collapseWrappers` the button out of each header cell **on the React
+  side only** and asserts the count against the pane's own header-cell count — so a column with no
+  button, or two under one `<th>`, fails; the `<th>`'s class list, the `<span>` and everything below
+  are still compared byte for byte. Proved by running it against the *old* dist first, where it read
+  `sort buttons: collapsed 0 of 132 header cells`.
+
+  **The handler stays on the `<th>`.** The button carries none of its own, so activating it — mouse,
+  Enter or Space — raises a click that reaches the cell's. That keeps the whole cell as the hit area,
+  leaves every computed style on `.metrics-table-header-cell` untouched, and needs no change to
+  `results-tables.mjs`'s `th.click()` probes. Verified in the browser: Tab reaches
+  `button.metrics-table-sort` type=button, Enter sorts ascending and `aria-sort` follows, Space sorts
+  descending, focus is kept, and exactly one of the ten headers is ever non-`none`. **Caveat:**
+  `scss/shared/_global.scss:62` puts `outline: none` on every `button` in the tree, so the focus is
+  real but invisible — an app-wide finding, not this unit's to fix.
+
+  **The wowhead icon anchor takes `aria-label` from the metric name.** The alternative — the link
+  spanning the name text with an `aria-hidden` icon — was rejected on **behaviour**, not structure:
+  the row's click handler toggles expansion, so a link over the name would navigate to Wowhead
+  instead of expanding a parent row. `aria-label` costs a name that duplicates the adjacent visible
+  text for a screen reader; it leaves `results-tables.mjs`'s `a.metrics-action-icon` / `href` probes
+  untouched, and it is the documented technique (ARIA8) for a link whose content is a background
+  image.
+
+  **`.tablesorter` is gone**, with an `INTENDED` entry capped at 21 — the pane's whole table count,
+  six metric tables plus fifteen resource ones, and no other pane has any. `results-tables.mjs`
+  asserts the class list *exactly* on each side through an `IS_BASE` branch, `a11y.mjs` style, rather
+  than relaxing to a containment test that would stop noticing a stray class on either. Its
+  `labelled` check moves from "the span is the cell's first element child" to "a span holds the whole
+  of the cell's text", which stops catching an element inserted around the span — the change — and
+  starts catching a label that leaked out of it. Both rewrites were proved green on `:3401` before
+  any table code moved.
+
+  **SCSS co-location is a merge, and most of the named region did not move.** `.metrics-table`,
+  `.metrics-table-header-row`, `.metrics-table-header-cell` and the four `.metrics-table-body` rules
+  **stay global**: `features/results/view/results_action.tsx:540-556` builds the same skeleton for the
+  sidebar's topline table and `detailed_results/_topline_results.scss` overrides it there, so they are
+  not the component's to own. What moved is what only these components emit — `.metrics-action*`,
+  `.parent-metric`, `.child-metric`, the caret and toggle rules into `MetricsTable.scss` (which now
+  needs `@import 'shared/tokens'` for `wowhead-background-icon`), the five `.metrics-total*` rules
+  into a new `MetricsTotalBar.scss`, and `_resource_metrics.scss` into `ResourceMetricsTable.scss`.
+  No `@extend` anywhere in the tree names a metrics class. A computed-style diff across the two ports
+  confirms the move is behaviour-neutral: 95 values compared, and every difference is either
+  data-dependent (`table-layout: auto` column widths after two unseeded sims) or one of three
+  unit-3 markup divergences — vanilla renders **two** `span.expand-toggle.fa-caret-*` as flex children
+  of `.metrics-action` on *every* row, React renders one `<button>` on parents only.
+
+  **The results pane was considered as an `a11y.mjs` region and declined, on measurement.** The pane
+  would report `controls 37 → 169` (all 132 new buttons named), `untyped 13` unchanged (they are the
+  iteration buttons, the combat-replay controls and a dropdown picker — all vanilla), and
+  `firstVisibleAnchor: null` on both ports, because every header tooltip anchor sits in an inactive
+  inner Bootstrap pane, so the describedby half would read as skipped. It would need three ceilings
+  of pure vanilla slack and it runs at load, where the table has **no rows** — so it could never see
+  the icon anchor, which is half of what this unit fixed. Both changes are asserted where they can be:
+  the button by `normaliseSortButtons` across six specs and by `MetricsTable.test.tsx`, the anchor by
+  `MetricsActionCell.test.tsx`. The region belongs to whoever ports the timeline, replay and log.
 
 - 2026-09-07 **Results unit 7: the damage-taken and healing tables, and the shared attack-column
   builder.** Three consumers is the count the duplication survey measured, so this is where the axis

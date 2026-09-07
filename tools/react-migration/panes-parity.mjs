@@ -14,6 +14,7 @@ import {
 	launch,
 	normaliseBaseUiMenus,
 	normaliseLiftedSubtrees,
+	normaliseSortButtons,
 	openSpec,
 	overusedIntended,
 	PORTS,
@@ -61,6 +62,9 @@ for (const spec of specsFromArgv()) {
 					const normalised = normaliseBaseUiMenus(dom[side]);
 					dom[side] = normalised.dom;
 					problems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
+					const buttons = normaliseSortButtons(dom[side]);
+					dom[side] = buttons.dom;
+					problems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
 				}
 			}
 			// What makes the lift an assertion rather than a fold: React must have nothing left to lift,

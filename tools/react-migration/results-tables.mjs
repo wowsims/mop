@@ -12,6 +12,10 @@
 // expected to exit 0 on **both** ports — on the baseline because that is what proves the invariants
 // describe today's behaviour, and on the port because that is what proves the rebuild kept them.
 //
+// One assertion is port-conditional rather than invariant, `a11y.mjs` style: the table's class list,
+// because `.tablesorter` is a dead class the React shell drops. Branching keeps it exact on each
+// side, which is stronger than the containment test that would have covered both.
+//
 // Deliberately shape-agnostic where the port will differ: collapsed children are asserted invisible
 // (`offsetParent === null`), never `.hide`, because vanilla hides them with a class and a React
 // table will unmount them instead. `.expand` on the *parent* is still asserted — the stylesheet
@@ -23,6 +27,11 @@ import { launch, openSpec, PORTS, SERIALIZE } from './browser.mjs';
 // on. The gate asserts those parents exist rather than skipping when it finds none.
 const SPEC = process.argv[2] ?? 'hunter/beast_mastery';
 const PORT = Number(process.env.PORT ?? PORTS.react);
+// The one thing here that is not a build-independent invariant. `.tablesorter` is dead on both
+// builds and the React shell stops emitting it, so the class list is asserted exactly on each side
+// rather than relaxed to a containment test that would stop noticing a stray class on either.
+const IS_BASE = PORT === PORTS.base;
+const TABLE_CLASSES = IS_BASE ? 'metrics-table.tablesorter' : 'metrics-table';
 
 // Logged by `ActionId.toStringIgnoringTag()` for the merged pet-group parent rows, whose
 // `actionIdOverride` is an absent `petActionId`. Present on both builds; the count drops as tables
@@ -102,8 +111,15 @@ const SHELL = roots =>
 			tbody: tbody ? classesOf(tbody) : null,
 			rows: tbody ? tbody.querySelectorAll('tr').length : null,
 			headers: headers.map(classesOf),
-			// Every `<th>` wraps its label in a span. The stylesheet reads it and the port must keep it.
-			labelled: headers.filter(th => th.firstElementChild?.tagName === 'SPAN' && th.textContent.trim()).length,
+			// Every `<th>` wraps its whole label in a span, and nothing else in the cell carries text.
+			// Not "the span is the cell's first element child": the React shell puts the label's span
+			// inside the focusable `<button>` a sortable header needs, which vanilla has no room for.
+			// So this stops catching an element inserted around the span — which is the change — and
+			// starts catching a label that leaked out of it.
+			labelled: headers.filter(th => {
+				const label = th.querySelector('span')?.textContent.trim();
+				return !!label && label === th.textContent.trim();
+			}).length,
 		};
 	});
 
@@ -296,7 +312,7 @@ try {
 		const expected = table.headers;
 		const ok =
 			!seen.missing &&
-			seen.table === 'metrics-table.tablesorter' &&
+			seen.table === TABLE_CLASSES &&
 			seen.thead === 'metrics-table-header' &&
 			seen.headerRow === 'metrics-table-header-row' &&
 			seen.tbody === 'metrics-table-body' &&

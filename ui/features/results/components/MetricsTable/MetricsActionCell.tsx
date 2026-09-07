@@ -28,6 +28,7 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 			<a
 				ref={iconRef}
 				className="metrics-action-icon"
+				aria-label={name}
 				href={href || undefined}
 				rel={externalRel(href, undefined)}
 				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}

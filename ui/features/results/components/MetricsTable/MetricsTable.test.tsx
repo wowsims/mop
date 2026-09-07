@@ -49,20 +49,45 @@ const column = (container: HTMLElement, index: number, filter?: (row: HTMLTableR
 
 const parents = (row: HTMLTableRowElement) => !row.classList.contains('child-metric');
 
+const sortButton = (header: HTMLElement) => header.querySelector('button')!;
+
+const ariaSorts = (container: HTMLElement) => table(container).headers.map(header => header.getAttribute('aria-sort'));
+
 describe('MetricsTable', () => {
 	it('builds the whole shell before any result, with an empty body and no hide', () => {
 		const { container } = render(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />);
 
 		expect(container.querySelector('.test-metrics-root')?.className).toBe('test-metrics-root');
-		expect(container.querySelector('table')?.className).toBe('metrics-table tablesorter');
+		expect(container.querySelector('table')?.className).toBe('metrics-table');
 		expect(container.querySelector('thead')?.className).toBe('metrics-table-header');
 		expect(container.querySelector('thead tr')?.className).toBe('metrics-table-header-row');
 		expect(container.querySelector('tbody')?.className).toBe('metrics-table-body');
 		expect(table(container).headers.map(header => [header.className, header.firstElementChild?.tagName, header.textContent])).toEqual([
-			['metrics-table-header-cell', 'SPAN', 'Name'],
-			['metrics-table-header-cell', 'SPAN', 'Value'],
+			['metrics-table-header-cell', 'BUTTON', 'Name'],
+			['metrics-table-header-cell', 'BUTTON', 'Value'],
 		]);
+		expect(table(container).headers.map(header => header.querySelector('span')?.textContent)).toEqual(['Name', 'Value']);
 		expect(table(container).rows).toHaveLength(0);
+	});
+
+	it('makes every sortable header a real button and reports the sort on the cell', () => {
+		const { container } = render(
+			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+		);
+		const buttons = table(container).headers.map(sortButton);
+
+		expect(buttons.map(button => [button.tagName, button.getAttribute('type'), button.className])).toEqual([
+			['BUTTON', 'button', 'metrics-table-sort'],
+			['BUTTON', 'button', 'metrics-table-sort'],
+		]);
+		expect(ariaSorts(container)).toEqual(['none', 'descending']);
+
+		fireEvent.click(buttons[1]);
+		expect(column(container, 1, parents)).toEqual(['10', '30', '70']);
+		expect(ariaSorts(container)).toEqual(['none', 'ascending']);
+
+		fireEvent.click(buttons[0]);
+		expect(ariaSorts(container)).toEqual(['ascending', 'none']);
 	});
 
 	it('hides the root only once a result has produced no rows', () => {

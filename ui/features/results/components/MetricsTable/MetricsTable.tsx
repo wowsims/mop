@@ -1,11 +1,15 @@
 import './MetricsTable.scss';
 
+import type { SortDirection } from '@tanstack/react-table';
+import { Button } from '@ui-kit/Button';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
 import type { MetricRow } from '../../model/grouping';
 import { MetricsTableRow } from './MetricsTableRow';
 import { type MetricsColumnDef, useMetricsTable } from './useMetricsTable';
+
+const ariaSort = (direction: false | SortDirection) => (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none');
 
 export interface MetricsTableProps<T> {
 	/** The root div's class, which the stylesheet and the gates address the table by. */
@@ -24,7 +28,7 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 
 	return (
 		<div className={clsx(rootClassName, hasResult && !rows.length && 'hide')}>
-			<table className="metrics-table tablesorter">
+			<table className="metrics-table">
 				<thead className="metrics-table-header">
 					{table.getHeaderGroups().map(headerGroup => (
 						<tr className="metrics-table-header-row" key={headerGroup.id}>
@@ -36,11 +40,14 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 										header.column.columnDef.meta?.columnClass,
 										header.column.columnDef.meta?.headerCellClass,
 									)}
+									aria-sort={ariaSort(header.column.getIsSorted())}
 									onClick={header.column.getToggleSortingHandler()}
 									{...tooltipAnchorProps(header.column.columnDef.meta?.headerTooltipId, header.column.columnDef.meta?.headerTooltip)}>
-									<span>
-										<table.FlexRender header={header} />
-									</span>
+									<Button variant="unstyled" className="metrics-table-sort">
+										<span>
+											<table.FlexRender header={header} />
+										</span>
+									</Button>
 								</th>
 							))}
 						</tr>
