@@ -649,7 +649,10 @@ export class Sim {
 	}
 
 	// This should be invoked internally whenever stats might have changed.
+	private characterStatsVersion = 0;
+
 	async updateCharacterStats() {
+		const version = ++this.characterStatsVersion;
 		await this.waitForInit();
 		// Capture the current players so we avoid issues if something changes while
 		// request is in-flight.
@@ -660,6 +663,9 @@ export class Sim {
 			encounter: this.encounter.toProto(),
 		});
 		const result = await this.workerPool.computeStats(req);
+		// Two recomputes can be in flight at once and they settle in any order, so a reply that has
+		// already been superseded must not write: it would overwrite newer stats with older ones.
+		if (version !== this.characterStatsVersion) return;
 		if (result.errorResult != '') {
 			this.crashEmitter.emit(new SimError(result.errorResult));
 			return;

@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 	runConcurrentSim: vi.fn(),
 	isWasm: vi.fn(() => Promise.resolve(false)),
 	getNumWorkers: vi.fn(() => 1),
+	computeStats: vi.fn(() => new Promise(() => {})),
 }));
 
 vi.mock('./worker_pool', () => ({
@@ -20,7 +21,7 @@ vi.mock('./worker_pool', () => ({
 		getNumWorkers = mocks.getNumWorkers;
 		isWasm = mocks.isWasm;
 		raidSimAsync = mocks.raidSimAsync;
-		computeStats = () => new Promise(() => {});
+		computeStats = mocks.computeStats;
 	},
 }));
 
@@ -197,5 +198,79 @@ describe('Sim.runSim', () => {
 		await sim.runSim({ onProgress, raw: true });
 
 		expect(mocks.raidSimAsync.mock.calls[0][1]).toBe(onProgress);
+	});
+});
+
+describe('Sim.updateCharacterStats', () => {
+	const statsResult = (health: number) => ({
+		errorResult: '',
+		raidStats: { parties: [{ players: [{ finalStats: { stats: [health] } }] }] },
+		encounterStats: { targets: [] },
+	});
+
+	const makeStatsSim = () => {
+		const sim = makeSim();
+		vi.spyOn(sim, 'getModifiedRaidProto').mockReturnValue({} as any);
+		vi.spyOn(sim.encounter, 'toProto').mockReturnValue({} as any);
+		vi.spyOn(sim.encounter.targetsMetadata, 'update').mockResolvedValue(false);
+		return sim;
+	};
+
+	beforeEach(() => {
+		mocks.computeStats.mockReset();
+	});
+
+	// The hazard: both calls build a request from current state, and whichever reply lands last
+	// writes. Without a guard the older one can land last and overwrite the newer stats.
+	it('discards a reply that a newer recompute has already superseded', async () => {
+		const sim = makeStatsSim();
+		const player = { setCurrentStats: vi.fn(), updateMetadata: vi.fn(async () => false) };
+		vi.spyOn(sim.raid, 'getPlayers').mockReturnValue([player] as any);
+
+		let settleFirst!: (value: unknown) => void;
+		mocks.computeStats
+			.mockImplementationOnce(() => new Promise(resolve => (settleFirst = resolve)))
+			.mockImplementationOnce(() => Promise.resolve(statsResult(200)));
+
+		const stale = sim.updateCharacterStats();
+		const fresh = sim.updateCharacterStats();
+		await fresh;
+		settleFirst(statsResult(100));
+		await stale;
+
+		expect(player.setCurrentStats).toHaveBeenCalledTimes(1);
+		expect(player.setCurrentStats.mock.calls[0][0]).toEqual({ finalStats: { stats: [200] } });
+	});
+
+	it('writes when nothing has superseded it', async () => {
+		const sim = makeStatsSim();
+		const player = { setCurrentStats: vi.fn(), updateMetadata: vi.fn(async () => false) };
+		vi.spyOn(sim.raid, 'getPlayers').mockReturnValue([player] as any);
+		mocks.computeStats.mockResolvedValue(statsResult(300));
+
+		await sim.updateCharacterStats();
+
+		expect(player.setCurrentStats).toHaveBeenCalledWith({ finalStats: { stats: [300] } });
+	});
+
+	// A stale error would otherwise raise a crash toast for work whose result nobody wants.
+	it('does not report an error from a superseded reply', async () => {
+		const sim = makeStatsSim();
+		vi.spyOn(sim.raid, 'getPlayers').mockReturnValue([] as any);
+		const crashes: unknown[] = [];
+		sim.crashEmitter.on(e => crashes.push(e));
+
+		let settleFirst!: (value: unknown) => void;
+		mocks.computeStats
+			.mockImplementationOnce(() => new Promise(resolve => (settleFirst = resolve)))
+			.mockImplementationOnce(() => Promise.resolve(statsResult(400)));
+
+		const stale = sim.updateCharacterStats();
+		const fresh = sim.updateCharacterStats();
+		await fresh;
+		settleFirst({ errorResult: 'boom' });
+		await stale;
+
+		expect(crashes).toEqual([]);
 	});
 });
