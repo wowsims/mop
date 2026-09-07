@@ -1,7 +1,7 @@
+import { useSimHost } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import IconItemSwapPicker from '@features/gear/view/icon_item_swap_picker';
-import { useSimHost } from '@features/SimHostContext';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';

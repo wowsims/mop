@@ -11,9 +11,9 @@ import { ReforgeGearCache } from '@domain/reforge_cache';
 import { ReforgeSettings as ReforgeSettingsState } from '@domain/reforge_settings';
 import type { ReforgeOptimizeConfig, Sim } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
+import type { IndividualSimUIConfig } from '@domain/spec_config';
 import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/state/reforge_request';
 import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
-import type { IndividualSimUIConfig } from '@features/spec_config';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { Class, ItemSlot, Spec, Stat } from '@generated/proto/common';
 

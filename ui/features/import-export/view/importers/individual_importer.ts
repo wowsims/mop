@@ -1,7 +1,7 @@
+import type { IndividualSimHost } from '@domain/sim_host';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
 import { Spec } from '@generated/proto/common';
 
-import type { IndividualSimHost } from '../../../sim_host';
 import { Importer, ImporterOptions } from '../importer';
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export abstract class IndividualImporter<SpecType extends Spec> extends Importer {

@@ -1,7 +1,7 @@
+import { usePlayer } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
-import { usePlayer } from '@features/SimHostContext';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { IconInputConfig } from '@ui-kit/icon_inputs';

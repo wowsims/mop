@@ -1,4 +1,5 @@
 import { Player } from '@domain/player';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import { APLAction, APLPrepullAction, APLValue } from '@generated/proto/apl';
@@ -7,7 +8,6 @@ import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
-import type { IndividualSimHost } from '../../sim_host';
 import { APLActionPicker } from './apl_actions';
 import { APLValuePicker } from './apl_values';
 import { APLHidePicker } from './hide_picker';

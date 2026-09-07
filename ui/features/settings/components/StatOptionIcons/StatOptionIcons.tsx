@@ -1,7 +1,7 @@
+import { usePlayer, useSim } from '@domain/context/SimHostContext';
 import { subscribeSimChange } from '@domain/state/subscriptions';
 import { clearMultiIconInputs } from '@features/settings/model/multi_icon';
 import type { MultiIconPickerStatOption, RenderableStatOptions } from '@features/settings/model/stat_options';
-import { usePlayer, useSim } from '@features/SimHostContext';
 import { IconPicker } from '@ui-kit/IconPicker';
 import { MultiIconPicker } from '@ui-kit/MultiIconPicker';
 import { useMemo } from 'react';

@@ -1,5 +1,5 @@
+import { useSimHost } from '@domain/context/SimHostContext';
 import { subscribePlayerField } from '@domain/state/subscriptions';
-import { useSimHost } from '@features/SimHostContext';
 import type { Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';

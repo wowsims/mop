@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
-import { itemSwapEnabledSpecs } from '@features/spec_config';
+import { itemSwapEnabledSpecs } from '@domain/spec_config';
 import {
 	APLValue,
 	APLValueActionGroupUsed,

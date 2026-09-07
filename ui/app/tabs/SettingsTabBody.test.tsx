@@ -1,4 +1,4 @@
-import { SimHostProvider } from '@features/SimHostContext';
+import { SimHostProvider } from '@domain/context/SimHostContext';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

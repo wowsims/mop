@@ -1,5 +1,5 @@
-import { SimHostProvider } from '@features/SimHostContext';
-import type { CustomSection as CustomSectionConfig } from '@features/spec_config';
+import { SimHostProvider } from '@domain/context/SimHostContext';
+import type { CustomSection as CustomSectionConfig } from '@domain/spec_config';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

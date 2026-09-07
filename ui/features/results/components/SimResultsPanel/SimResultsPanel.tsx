@@ -1,7 +1,7 @@
 import './SimResultsPanel.scss';
 
+import { useSimHost } from '@domain/context/SimHostContext';
 import type { WarningsRegistry } from '@features/results/model/warnings';
-import { useSimHost } from '@features/SimHostContext';
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { AbortButton } from './AbortButton';

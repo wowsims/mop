@@ -1,7 +1,7 @@
 import type { SimSettingCategories } from '@domain/constants/sim_settings';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
 import { jsonStringifyWithFlattenedPaths } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 

@@ -1,11 +1,11 @@
 import { Player } from '@domain/player';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { APLGroup } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
-import type { IndividualSimHost } from '../../sim_host';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLGroupEditor } from './apl_group_editor';
 import { APLNameModal } from './apl_name_modal';

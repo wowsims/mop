@@ -1,6 +1,6 @@
+import { useSimHost } from '@domain/context/SimHostContext';
 import { setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { subscribeAll, subscribePlayerField, subscribeUiField } from '@domain/state/subscriptions';
-import { useSimHost } from '@features/SimHostContext';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';

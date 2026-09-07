@@ -6,9 +6,9 @@ import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from '@domai
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { Stats } from '@domain/proto_utils/stats';
+import type { SimHost } from '@domain/sim_host';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
-import type { SimHost } from '@features/sim_host';
 import { GemColor, ItemLevelState, ItemRandomSuffix, ItemSlot, Profession } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';

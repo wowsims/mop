@@ -1,7 +1,7 @@
+import { usePlayer } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
 import type { TalentsConfig } from '@domain/talents/config';
 import { classGlyphsConfig } from '@domain/talents/factory';
-import { usePlayer } from '@features/SimHostContext';
 import { GlyphsPicker } from '@features/talents/view/glyphs_picker';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';

@@ -1,6 +1,6 @@
 import { Player } from '@domain/player';
+import type { DerivedSetting } from '@domain/spec_config';
 import { subscribePlayerField } from '@domain/state/subscriptions';
-import type { DerivedSetting } from '@features/spec_config';
 import { MonkTalents } from '@generated/proto/monk';
 
 /**

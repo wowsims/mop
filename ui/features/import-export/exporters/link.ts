@@ -1,7 +1,7 @@
 import { arrayEquals } from '@domain/collections';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
-import type { IndividualSimHost } from '@features/sim_host';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { default as pako } from 'pako';

@@ -32,7 +32,7 @@ import {
 	subscribeStatWeightsChange,
 	subscribeUnitMetadata,
 } from '../../ui/domain/state/subscriptions';
-import { registerSpecConfig } from '../../ui/features/spec_config';
+import { registerSpecConfig } from '../../ui/domain/spec_config';
 import { APLRotation } from '../../ui/generated/proto/apl';
 import { Race, Spec, Stat } from '../../ui/generated/proto/common';
 import armsWarriorSpec from '../../ui/sims/warrior/arms/spec';

@@ -1,5 +1,7 @@
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
+import { useSimHost } from '@domain/context/SimHostContext';
 import type { Encounter } from '@domain/encounter';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
 import { EncounterPicker } from '@features/encounter';
 import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
@@ -7,8 +9,6 @@ import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
-import type { IndividualSimHost } from '@features/sim_host';
-import { useSimHost } from '@features/SimHostContext';
 import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/ContentBlock';
@@ -16,7 +16,7 @@ import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { useMemo } from 'react';
 
-import { useSimReady } from '../hooks/useSimReady';
+import { useSimReady } from '@domain/hooks/useSimReady';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 
 export const SettingsTabBody = () => {

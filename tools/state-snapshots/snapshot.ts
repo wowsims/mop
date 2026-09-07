@@ -14,7 +14,7 @@ import { Database } from '../../ui/domain/proto_utils/database';
 import { Sim } from '../../ui/domain/sim';
 import { batch } from '../../ui/domain/state/batch';
 import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
-import { registerSpecConfig } from '../../ui/features/spec_config';
+import { registerSpecConfig } from '../../ui/domain/spec_config';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/generated/proto/apl';
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/generated/proto/common';
 import bloodDeathKnightSpec from '../../ui/sims/death_knight/blood/spec';

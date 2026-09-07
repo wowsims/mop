@@ -142,7 +142,8 @@
 									"@specs",
 									"@specs/**"
 								],
-								"message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
+								"message": "ui/domain must not depend at runtime on ui-kit/features/app/specs (see ui/README.md dependency direction).",
+								"allowTypeImports": true
 							}
 						]
 					}

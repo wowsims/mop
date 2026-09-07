@@ -1,6 +1,6 @@
+import { usePlayer } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
-import { usePlayer } from '@features/SimHostContext';
-import type { InputConfig } from '@features/spec_config';
+import type { InputConfig } from '@domain/spec_config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';

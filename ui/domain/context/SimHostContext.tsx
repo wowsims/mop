@@ -1,8 +1,8 @@
-import type { Sim } from '@domain/sim';
 import type { Spec } from '@generated/proto/common';
 import { createContext, type ReactNode, useContext } from 'react';
 
-import type { IndividualSimHost } from './sim_host';
+import type { Sim } from '../sim';
+import type { IndividualSimHost } from '../sim_host';
 
 const SimHostContext = createContext<IndividualSimHost<any> | null>(null);
 

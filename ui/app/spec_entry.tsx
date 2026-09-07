@@ -3,8 +3,8 @@ import { browserEnv } from '@app/browser_env';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
 import { Sim } from '@domain/sim';
-import type { SpecDefinition } from '@features/spec_config';
-import { registerSpecConfig } from '@features/spec_config';
+import type { SpecDefinition } from '@domain/spec_config';
+import { registerSpecConfig } from '@domain/spec_config';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 

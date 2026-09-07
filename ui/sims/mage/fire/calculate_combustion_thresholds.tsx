@@ -2,9 +2,9 @@
 import { sum } from '@domain/math';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { AuraLog, AuraUptimeLog, CombatLog, computeActionIdAsString, isAura, PlainLog } from '@domain/proto_utils/combat_log';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { sleep } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
 import { ProgressMetrics, RaidSimResult } from '@generated/proto/api';
 import { Spec } from '@generated/proto/common';
 import { FireMage_Rotation } from '@generated/proto/mage';

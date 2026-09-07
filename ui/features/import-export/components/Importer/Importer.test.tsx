@@ -2,8 +2,8 @@
 // handed to `onImport`, what happens to the dialog when it resolves and when it rejects, the two
 // upload-path defects the port fixes, and the analytics slug — which was wrong in vanilla and is
 // therefore the one thing here with no baseline to compare against.
-import type { IndividualSimHost } from '@features/sim_host';
-import { SimHostProvider } from '@features/SimHostContext';
+import { SimHostProvider } from '@domain/context/SimHostContext';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

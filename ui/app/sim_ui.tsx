@@ -6,6 +6,7 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { Gear } from '@domain/proto_utils/gear';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { RunSimOptions, Sim, SimError } from '@domain/sim';
+import type { ActionGroupItem, SimHost, SimWarning } from '@domain/sim_host';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
 import { subscribeSimField } from '@domain/state/subscriptions';
@@ -13,7 +14,6 @@ import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
-import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
 import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
@@ -43,7 +43,7 @@ export interface SimUIConfig {
 	noticeText?: string;
 }
 
-export type { ActionGroupItem, SimWarning } from '@features/sim_host';
+export type { ActionGroupItem, SimWarning } from '@domain/sim_host';
 
 // Shared UI for all individual sims.
 export abstract class SimUI extends Component implements SimHost {

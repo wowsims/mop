@@ -1,4 +1,4 @@
-import { usePlayer } from '@features/SimHostContext';
+import { usePlayer } from '@domain/context/SimHostContext';
 import { Spec } from '@generated/proto/common';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';

@@ -6,6 +6,9 @@ import { PlayerSpecs } from '@domain/player_specs';
 import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats } from '@domain/proto_utils/stats';
 import { getTalentPoints } from '@domain/proto_utils/utils';
+import type { IndividualSimHost } from '@domain/sim_host';
+import type { SpecDefinition } from '@domain/spec_config';
+import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@domain/spec_config';
 import { StatWeightActionSettings } from '@domain/stat_weight_settings';
 import { batch } from '@domain/state/batch';
 import { loadIndividualSettings } from '@domain/state/persistence';
@@ -43,9 +46,6 @@ import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
-import type { IndividualSimHost } from '@features/sim_host';
-import type { SpecDefinition } from '@features/spec_config';
-import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
@@ -70,8 +70,8 @@ export type {
 	Settings,
 	SpecBehaviors,
 	SpecDefinition,
-} from '@features/spec_config';
-export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@features/spec_config';
+} from '@domain/spec_config';
+export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@domain/spec_config';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';

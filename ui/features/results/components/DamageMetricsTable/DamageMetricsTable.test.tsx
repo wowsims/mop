@@ -10,8 +10,8 @@ let showThreatMetrics = true;
 
 vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 vi.mock('../MetricsTable/MetricsActionCell', () => ({ MetricsActionCell: ({ name }: { name: string }) => <span>{name}</span> }));
-vi.mock('@features/SimHostContext', async importOriginal => ({
-	...(await importOriginal<typeof import('@features/SimHostContext')>()),
+vi.mock('@domain/context/SimHostContext', async importOriginal => ({
+	...(await importOriginal<typeof import('@domain/context/SimHostContext')>()),
 	useSim: () => ({ getShowThreatMetrics: () => showThreatMetrics }),
 }));
 vi.mock('@domain/state/subscriptions', async importOriginal => ({

@@ -2,8 +2,8 @@
 import { Player } from '@domain/player';
 import { fillAndSetActionId, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import type { SimHost } from '@domain/sim_host';
 import { subscribePlayerField } from '@domain/state/subscriptions';
-import type { SimHost } from '@features/sim_host';
 import { ItemSlot } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';

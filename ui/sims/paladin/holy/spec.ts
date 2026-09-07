@@ -1,8 +1,8 @@
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@domain/proto_utils/stats';
+import { defineSpec } from '@domain/spec_config';
 import * as OtherInputs from '@features/settings/model/other_inputs';
-import { defineSpec } from '@features/spec_config';
 import { APLRotation } from '@generated/proto/apl';
 import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 

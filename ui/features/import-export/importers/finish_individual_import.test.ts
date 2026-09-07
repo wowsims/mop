@@ -2,7 +2,7 @@
 // guard, which now reaches the caller instead of becoming an unhandled rejection, and which of the
 // two closing toasts is shown.
 import { classNames } from '@domain/proto_utils/names';
-import type { IndividualSimHost } from '@features/sim_host';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

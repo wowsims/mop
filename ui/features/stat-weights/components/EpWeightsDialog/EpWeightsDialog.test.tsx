@@ -1,8 +1,8 @@
 // The vanilla panel's sixteen recorded defects are the reason most of these assertions exist; each
 // one that fixes a defect says so. The store, the worker and the saved-data manager are stubbed —
 // what is under test is the view, and every source it reads is driven directly.
+import { SimHostProvider } from '@domain/context/SimHostContext';
 import { Stats, UnitStat } from '@domain/proto_utils/stats';
-import { SimHostProvider } from '@features/SimHostContext';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Class, PseudoStat, Stat } from '@generated/proto/common';
 import { act, fireEvent, render } from '@testing-library/react';

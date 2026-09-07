@@ -1,6 +1,6 @@
 import type { Player } from '@domain/player';
+import type { InputConfig } from '@domain/spec_config';
 import { ItemSwapPicker } from '@features/item-swap';
-import type { InputConfig } from '@features/spec_config';
 import type { ItemSlot } from '@generated/proto/common';
 
 import { InputPicker } from '../InputPicker';

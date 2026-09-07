@@ -1,8 +1,8 @@
 import './CharacterStats.scss';
 
+import { useSimHost } from '@domain/context/SimHostContext';
 import { computeStatAttribution, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
-import { useSimHost } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { useMemo } from 'react';

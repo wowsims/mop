@@ -1,5 +1,5 @@
 import { Player } from '@domain/player';
-import { itemSwapEnabledSpecs } from '@features/spec_config';
+import { itemSwapEnabledSpecs } from '@domain/spec_config';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,

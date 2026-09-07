@@ -1,21 +1,21 @@
-import type { SimSettingCategories } from '@domain/constants/sim_settings';
-import type { Player } from '@domain/player';
-import type { Gear } from '@domain/proto_utils/gear';
-import type { SimResult } from '@domain/proto_utils/sim_result';
-import type { RunSimOptions } from '@domain/sim';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
-import type { WorkerProgressCallback } from '@domain/worker_pool';
+import type { BulkTab } from '@features/bulk/view/bulk_tab';
+import type { SelectorModalOpener } from '@features/gear/types';
+import type { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import type { ResultChannel } from '@features/results/model/result_channel';
+import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SimUIHost } from '@ui-kit/sim_host';
 
-import type { BulkTab } from './bulk/view/bulk_tab';
-import type { SelectorModalOpener } from './gear/types';
-import type { ReforgeOptimizer } from './reforge/view/reforge_panel';
-import type { ResultChannel } from './results/model/result_channel';
-import type { ResultsPanelHandle } from './results/model/results_panel_handle';
+import type { SimSettingCategories } from './constants/sim_settings';
+import type { Player } from './player';
+import type { Gear } from './proto_utils/gear';
+import type { SimResult } from './proto_utils/sim_result';
+import type { RunSimOptions } from './sim';
 import type { IndividualSimUIConfig } from './spec_config';
+import type { StoreSubscribe } from './state/subscriptions';
+import type { WorkerProgressCallback } from './worker_pool';
 
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {

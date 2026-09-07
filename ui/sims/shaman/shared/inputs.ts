@@ -1,8 +1,8 @@
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { ShamanSpecs } from '@domain/proto_utils/spec_types';
+import type { CustomSection } from '@domain/spec_config';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
-import type { CustomSection } from '@features/spec_config';
 import { Spec } from '@generated/proto/common';
 import { ShamanImbue, ShamanShield } from '@generated/proto/shaman';
 import i18n from '@i18n/config';

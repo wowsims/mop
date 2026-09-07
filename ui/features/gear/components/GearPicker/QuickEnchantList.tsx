@@ -1,5 +1,5 @@
+import { usePlayer } from '@domain/context/SimHostContext';
 import { subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
-import { usePlayer } from '@features/SimHostContext';
 import { ItemSlot, Profession } from '@generated/proto/common';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';

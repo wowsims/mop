@@ -1,5 +1,5 @@
+import { useSimHost } from '@domain/context/SimHostContext';
 import { kebabCase } from '@domain/format';
-import { useSimHost } from '@features/SimHostContext';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { CopyButton } from '@ui-kit/copy_button';

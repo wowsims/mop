@@ -1,4 +1,6 @@
+import { SimHostProvider } from '@domain/context/SimHostContext';
 import type { Player } from '@domain/player';
+import type { SpecDefinition } from '@domain/spec_config';
 import { CharacterStats } from '@features/character-stats';
 import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';
 import { CastMetricsTable } from '@features/results/components/CastMetricsTable';
@@ -7,8 +9,6 @@ import { DtpsMetricsTable } from '@features/results/components/DtpsMetricsTable'
 import { HealingMetricsTable } from '@features/results/components/HealingMetricsTable';
 import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
 import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
-import { SimHostProvider } from '@features/SimHostContext';
-import type { SpecDefinition } from '@features/spec_config';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
 import type { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';

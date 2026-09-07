@@ -3,8 +3,8 @@
 // Progress is refs and DOM writes; only a stage change renders. `sim-progress.mjs` drives the real
 // thing in a browser, but it waits for text to appear, so it passes on tick two and can never see
 // that tick one's numbers were dropped — that gap is what the "same commit" case below covers.
-import type { IndividualSimHost, SimWarning } from '@features/sim_host';
-import { SimHostProvider } from '@features/SimHostContext';
+import { SimHostProvider } from '@domain/context/SimHostContext';
+import type { IndividualSimHost, SimWarning } from '@domain/sim_host';
 import { ProgressMetrics } from '@generated/proto/api';
 import { act, render } from '@testing-library/react';
 import { Profiler } from 'react';

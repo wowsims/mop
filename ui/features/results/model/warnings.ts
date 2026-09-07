@@ -1,5 +1,5 @@
+import type { SimWarning } from '@domain/sim_host';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
-import type { SimWarning } from '@features/sim_host';
 
 export class WarningsRegistry {
 	private readonly warnings: Array<SimWarning> = [];

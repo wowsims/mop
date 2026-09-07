@@ -1,7 +1,7 @@
 import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { batch } from '@domain/state/batch';
-import type { IndividualSimHost } from '@features/sim_host';
 import type { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';
 

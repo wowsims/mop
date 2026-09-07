@@ -1,4 +1,4 @@
-import type { IndividualSimHost } from '@features/sim_host';
+import type { IndividualSimHost } from '@domain/sim_host';
 
 export interface ImporterDefinition {
 	title: string;

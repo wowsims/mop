@@ -5,9 +5,9 @@ import * as AplUtils from '@domain/proto_utils/apl_utils';
 import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { RelativeStatCap } from '@domain/reforge_settings';
+import { defineSpec } from '@domain/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
-import { defineSpec } from '@features/spec_config';
 import { APLAction, APLListItem, APLPrepullAction, APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '@generated/proto/common';
 import {

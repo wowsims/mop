@@ -1,7 +1,7 @@
 import type { PresetBuild } from '@domain/presets/types';
 import { Stats } from '@domain/proto_utils/stats';
+import type { IndividualSimHost } from '@domain/sim_host';
 import { batch } from '@domain/state/batch';
-import type { IndividualSimHost } from '@features/sim_host';
 
 export const applyBuild = (
 	{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings, reforgeSettings }: PresetBuild,

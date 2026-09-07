@@ -1,10 +1,5 @@
-import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
-import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from '@domain/presets/types';
-import type { SpecOptions, SpecRotation } from '@domain/proto_utils/spec_types';
-import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
-import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import type { Sim } from '@domain/sim';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { EncounterPickerConfig } from '@features/encounter/view/encounter_picker';
+import type { ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	ConsumesSpec,
@@ -22,15 +17,19 @@ import {
 	Stat,
 } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';
-import { ContentBlock } from '@ui-kit/content_block';
-import * as IconInputs from '@ui-kit/icon_inputs';
-import * as InputHelpers from '@ui-kit/input_helpers';
-import { SavedDataConfig } from '@ui-kit/saved_data_manager';
+import type * as IconInputs from '@ui-kit/icon_inputs';
+import type * as InputHelpers from '@ui-kit/input_helpers';
+import type { SavedDataConfig } from '@ui-kit/saved_data_manager';
 import type { ReactNode } from 'react';
 
-import type { EncounterPickerConfig } from './encounter/view/encounter_picker';
-import type { ReforgeOptimizerOptions } from './reforge/model/reforge_optimizer';
+import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
+import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './presets/types';
+import type { SpecOptions, SpecRotation } from './proto_utils/spec_types';
+import type { StatMods, StatWrites } from './proto_utils/stats';
+import { StatCap, Stats, UnitStat } from './proto_utils/stats';
+import type { Sim } from './sim';
 import type { IndividualSimHost, SimWarning } from './sim_host';
+import type { StoreSubscribe } from './state/subscriptions';
 
 export type InputConfig<ModObject> =
 	| InputHelpers.TypedBooleanPickerConfig<ModObject>
@@ -155,8 +154,6 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 
 	// Extra settings-tab sections, as data (e.g. Shaman totems).
 	sections?: Array<CustomSection<SpecType>>;
-	/** @deprecated Declare `sections` instead — a spec should never build DOM. */
-	customSections?: Array<(parentElem: HTMLElement, simUI: IndividualSimHost<SpecType>) => ContentBlock>;
 
 	encounterPicker: EncounterPickerConfig;
 

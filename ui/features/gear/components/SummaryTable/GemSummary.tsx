@@ -1,7 +1,7 @@
+import { usePlayer } from '@domain/context/SimHostContext';
 import { externalRel } from '@domain/links';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { subscribePlayerField } from '@domain/state/subscriptions';
-import { usePlayer } from '@features/SimHostContext';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { itemQualityCssClass } from '@ui-kit/css_utils';

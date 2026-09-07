@@ -1,6 +1,6 @@
+import type { SimHost } from '@domain/sim_host';
 import i18n from '@i18n/config';
 
-import type { SimHost } from '../../../sim_host';
 import { Exporter } from '../exporter';
 
 export class LogExporter extends Exporter {
