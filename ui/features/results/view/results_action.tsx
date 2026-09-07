@@ -1,11 +1,11 @@
 /** @jsxImportSource @jsx-vanilla */
-import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@domain/format';
-import { zTest } from '@domain/math';
-import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
-import type { SimHost } from '@domain/sim_host';
-import { RequestTypes } from '@domain/sim_signal_manager';
-import { batch } from '@domain/state/batch';
-import { Emitter } from '@domain/state/events';
+import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@sim/format';
+import { zTest } from '@sim/math';
+import { ActionMetrics, SimResult, SimResultFilter } from '@sim/proto_utils/sim_result';
+import type { SimHost } from '@sim/sim_host';
+import { RequestTypes } from '@sim/sim_signal_manager';
+import { batch } from '@sim/state/batch';
+import { Emitter } from '@sim/state/events';
 import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@generated/proto/api';
 import { Encounter as EncounterProto, Spec } from '@generated/proto/common';

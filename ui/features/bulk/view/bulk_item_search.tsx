@@ -1,10 +1,10 @@
 /** @jsxImportSource @jsx-vanilla */
-import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdBackground, setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
-import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/items';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { Emitter } from '@domain/state/events';
+import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@sim/bulk/utils';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdBackground, setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
+import { canEquipItem, getEligibleItemSlots } from '@sim/proto_utils/items';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { Emitter } from '@sim/state/events';
 import { ItemLevelState, ItemSpec } from '@generated/proto/common';
 import { UIItem, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';

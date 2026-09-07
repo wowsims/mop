@@ -1,6 +1,6 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { TalentsConfig } from '@domain/talents/config';
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { TalentsConfig } from '@sim/talents/config';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';

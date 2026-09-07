@@ -1,8 +1,8 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@domain/format';
-import { Player } from '@domain/player';
-import { Sim } from '@domain/sim';
-import { subscribeSimField } from '@domain/state/subscriptions';
+import { kebabCase } from '@sim/format';
+import { Player } from '@sim/player';
+import { Sim } from '@sim/sim';
+import { subscribeSimField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import { SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';

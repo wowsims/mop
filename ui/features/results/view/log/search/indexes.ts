@@ -1,6 +1,6 @@
-import type { CombatLog, DamageEffect, LogKind, Outcome, ParsedKind } from '@domain/proto_utils/combat_log/types';
-import { formattedTimestamp } from '@domain/proto_utils/combat_log/types';
-import { spellSchoolNames } from '@domain/proto_utils/names';
+import type { CombatLog, DamageEffect, LogKind, Outcome, ParsedKind } from '@sim/proto_utils/combat_log/types';
+import { formattedTimestamp } from '@sim/proto_utils/combat_log/types';
+import { spellSchoolNames } from '@sim/proto_utils/names';
 
 import type { ClauseField, SearchGroup } from './query';
 

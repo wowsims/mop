@@ -1,6 +1,6 @@
 import './SimResultsPanel.scss';
 
-import { useSimHost } from '@domain/context/SimHostContext';
+import { useSimHost } from '@sim/context/SimHostContext';
 import type { WarningsRegistry } from '@features/results/model/warnings';
 import { useCallback, useSyncExternalStore } from 'react';
 

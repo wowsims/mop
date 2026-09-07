@@ -1,14 +1,14 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { EquippedItem } from '@domain/proto_utils/equipped_item';
-import type { IndividualSimHost } from '@domain/sim_host';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { IndividualSimHost } from '@sim/sim_host';
 import { Faction, ItemQuality } from '@generated/proto/common';
 import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const { listeners } = vi.hoisted(() => ({ listeners: new Map<string, Set<() => void>>() }));
 
-vi.mock('@domain/state/subscriptions', () => ({
+vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerField: (_player: unknown, field: string) => (callback: () => void) => {
 		const forField = listeners.get(field) ?? new Set<() => void>();
 		listeners.set(field, forField);

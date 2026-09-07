@@ -1,4 +1,4 @@
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ALL_ITEM_SLOTS, createGearData } from '@features/gear/model/gear_data';
 import type { SelectorModalOpener, SelectorModalTabs, SlotRailEntry } from '@features/gear/types';
 import SelectorModal from '@features/gear/view/selector_modal';

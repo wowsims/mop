@@ -1,5 +1,5 @@
-import type { IndividualSimHost } from '@domain/sim_host';
-import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';
 import { Spec } from '@generated/proto/common';
 
 import { Importer, ImporterOptions } from '../importer';

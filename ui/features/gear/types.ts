@@ -1,6 +1,6 @@
-import { ActionId } from '@domain/proto_utils/action_id';
-import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
-import { StoreSubscribe } from '@domain/state/subscriptions';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { EquippedItem, ReforgeData } from '@sim/proto_utils/equipped_item';
+import { StoreSubscribe } from '@sim/state/subscriptions';
 import { ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';

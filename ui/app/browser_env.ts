@@ -1,6 +1,6 @@
 // The browser implementation of the domain's `Env` adapter (domain/state/env.ts).
 // Every access is lazy so importing this module never touches a global.
-import type { Env } from '@domain/state/env';
+import type { Env } from '@sim/state/env';
 
 export const browserEnv: Env = {
 	get storage() {

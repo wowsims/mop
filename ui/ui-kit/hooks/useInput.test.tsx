@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, render } from '@testing-library/react';
 import type { InputConfig } from '@ui-kit/input';
 import { describe, expect, it } from 'vitest';

@@ -1,9 +1,9 @@
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { useSimHost } from '@domain/context/SimHostContext';
-import type { Encounter } from '@domain/encounter';
-import { useSimReady } from '@domain/hooks/useSimReady';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimHost } from '@sim/context/SimHostContext';
+import type { Encounter } from '@sim/encounter';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { EncounterPicker } from '@features/encounter';
 import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';

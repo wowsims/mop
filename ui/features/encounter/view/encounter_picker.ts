@@ -1,7 +1,7 @@
-import { Encounter } from '@domain/encounter';
-import { Stats } from '@domain/proto_utils/stats';
-import { subscribeEncounterField } from '@domain/state/subscriptions';
-import { randomUUID } from '@domain/utils';
+import { Encounter } from '@sim/encounter';
+import { Stats } from '@sim/proto_utils/stats';
+import { subscribeEncounterField } from '@sim/state/subscriptions';
+import { randomUUID } from '@sim/utils';
 import { InputType, MobType, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';

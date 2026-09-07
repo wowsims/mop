@@ -1,5 +1,5 @@
-import { Sim } from '@domain/sim';
-import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { Sim } from '@sim/sim';
+import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';

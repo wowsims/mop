@@ -22,13 +22,13 @@ export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
 // layering rules in .oxlintrc.json; shared with vite.harness.mts from here so the two vite
 // configs cannot drift.
 export const UI_ALIASES: Record<string, string> = {
-	'@domain': path.resolve(BASE_PATH, 'domain'),
+	'@sim': path.resolve(BASE_PATH, 'sim'),
 	'@generated': path.resolve(BASE_PATH, 'generated'),
 	'@worker': path.resolve(BASE_PATH, 'worker'),
 	'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
 	'@features': path.resolve(BASE_PATH, 'features'),
 	'@app': path.resolve(BASE_PATH, 'app'),
-	'@specs': path.resolve(BASE_PATH, 'sims'),
+	'@specs': path.resolve(BASE_PATH, 'specs'),
 	'@i18n': path.resolve(BASE_PATH, 'i18n'),
 	'@jsx-vanilla': path.resolve(BASE_PATH, 'shared/jsx-vanilla'),
 };

@@ -19,7 +19,7 @@ func TestUnholy(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet: core.GetGearSet("../../../ui/sims/death_knight/unholy/gear_sets", "p5"),
+			GearSet: core.GetGearSet("../../../ui/specs/death_knight/unholy/gear_sets", "p5"),
 
 			Talents: "300010",
 			OtherTalentSets: []core.TalentsCombo{
@@ -49,7 +49,7 @@ func TestUnholy(t *testing.T) {
 				},
 			}},
 
-			Rotation: core.GetAplRotation("../../../ui/sims/death_knight/unholy/apls", "default"),
+			Rotation: core.GetAplRotation("../../../ui/specs/death_knight/unholy/apls", "default"),
 
 			Profession1: proto.Profession_Engineering,
 			Profession2: proto.Profession_Herbalism,

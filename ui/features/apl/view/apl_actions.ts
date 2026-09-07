@@ -1,5 +1,5 @@
-import { Player } from '@domain/player';
-import { randomUUID } from '@domain/utils';
+import { Player } from '@sim/player';
+import { randomUUID } from '@sim/utils';
 import { APLAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';

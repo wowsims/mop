@@ -1,5 +1,5 @@
-import type { SimSettingCategories } from '@domain/constants/sim_settings';
-import type { IndividualSimHost } from '@domain/sim_host';
+import type { SimSettingCategories } from '@sim/constants/sim_settings';
+import type { IndividualSimHost } from '@sim/sim_host';
 
 export type ExportCategories = Record<SimSettingCategories, boolean>;
 

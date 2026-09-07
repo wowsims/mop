@@ -22,7 +22,7 @@ func TestMarksmanship(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/sims/hunter/marksmanship/gear_sets", "p5"),
+			GearSet: core.GetGearSet("../../../ui/specs/hunter/marksmanship/gear_sets", "p5"),
 
 			Talents:         MarksmanshipTalents,
 			OtherTalentSets: talentSets,
@@ -49,7 +49,7 @@ func TestMarksmanship(t *testing.T) {
 				},
 			}},
 
-			Rotation: core.GetAplRotation("../../../ui/sims/hunter/marksmanship/apls", "mm"),
+			Rotation: core.GetAplRotation("../../../ui/specs/hunter/marksmanship/apls", "mm"),
 
 			Profession1: proto.Profession_Engineering,
 			Profession2: proto.Profession_Herbalism,

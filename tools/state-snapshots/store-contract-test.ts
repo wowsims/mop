@@ -6,15 +6,15 @@
 // HARNESS_ENTRY=tools/state-snapshots/store-contract-test.ts vite build -c vite.harness.mts
 // && HARNESS_BUNDLE=store-contract-test.js node tools/state-snapshots/run.mjs
 
-import { Player } from '../../ui/domain/player';
-import { PlayerSpecs } from '../../ui/domain/player_specs';
-import { Database } from '../../ui/domain/proto_utils/database';
-import { ItemSwapGear } from '../../ui/domain/proto_utils/gear';
-import { ReforgeSettings } from '../../ui/domain/reforge_settings';
-import { Sim } from '../../ui/domain/sim';
-import { StatWeightActionSettings } from '../../ui/domain/stat_weight_settings';
-import { batch } from '../../ui/domain/state/batch';
-import { Emitter } from '../../ui/domain/state/events';
+import { Player } from '../../ui/sim/player';
+import { PlayerSpecs } from '../../ui/sim/player_specs';
+import { Database } from '../../ui/sim/proto_utils/database';
+import { ItemSwapGear } from '../../ui/sim/proto_utils/gear';
+import { ReforgeSettings } from '../../ui/sim/reforge_settings';
+import { Sim } from '../../ui/sim/sim';
+import { StatWeightActionSettings } from '../../ui/sim/stat_weight_settings';
+import { batch } from '../../ui/sim/state/batch';
+import { Emitter } from '../../ui/sim/state/events';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -31,11 +31,11 @@ import {
 	subscribeStatsInputs,
 	subscribeStatWeightsChange,
 	subscribeUnitMetadata,
-} from '../../ui/domain/state/subscriptions';
-import { registerSpecConfig } from '../../ui/domain/spec_config';
+} from '../../ui/sim/state/subscriptions';
+import { registerSpecConfig } from '../../ui/sim/spec_config';
 import { APLRotation } from '../../ui/generated/proto/apl';
 import { Race, Spec, Stat } from '../../ui/generated/proto/common';
-import armsWarriorSpec from '../../ui/sims/warrior/arms/spec';
+import armsWarriorSpec from '../../ui/specs/warrior/arms/spec';
 import { makeMemoryEnv } from './memory_env';
 
 registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);

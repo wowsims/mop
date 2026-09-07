@@ -1,11 +1,11 @@
 import './SimTitleDropdown.scss';
 
 import { Menu } from '@base-ui/react/menu';
-import type { PlayerClass } from '@domain/player_class';
-import { PlayerClasses } from '@domain/player_classes/index';
-import type { PlayerSpec } from '@domain/player_spec';
-import { PlayerSpecs } from '@domain/player_specs/index';
-import { textCssClassForClass, textCssClassForSpec } from '@domain/proto_utils/utils';
+import type { PlayerClass } from '@sim/player_class';
+import { PlayerClasses } from '@sim/player_classes/index';
+import type { PlayerSpec } from '@sim/player_spec';
+import { PlayerSpecs } from '@sim/player_specs/index';
+import { textCssClassForClass, textCssClassForSpec } from '@sim/proto_utils/utils';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';

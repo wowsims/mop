@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { arrayEquals } from '@domain/collections';
+import { arrayEquals } from '@sim/collections';
 import i18n from '@i18n/config';
 import { Dropdown } from 'bootstrap';
 import clsx from 'clsx';

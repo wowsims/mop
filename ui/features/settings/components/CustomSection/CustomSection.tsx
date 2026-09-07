@@ -1,7 +1,7 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { CustomSection as CustomSectionConfig } from '@domain/spec_config';
-import { type StoreSubscribe, subscribePlayerChange } from '@domain/state/subscriptions';
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
+import { type StoreSubscribe, subscribePlayerChange } from '@sim/state/subscriptions';
 import type { Spec } from '@generated/proto/common';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';

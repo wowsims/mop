@@ -1,4 +1,4 @@
-import type { MeleeCritCapInfo } from '@domain/player';
+import type { MeleeCritCapInfo } from '@sim/player';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

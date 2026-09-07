@@ -1,6 +1,6 @@
-import { batch, subscribeGated } from '@domain/state/batch';
-import { createSimStore, patchSlice, type SimState, type SimStore } from '@domain/state/sim_store';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { batch, subscribeGated } from '@sim/state/batch';
+import { createSimStore, patchSlice, type SimState, type SimStore } from '@sim/state/sim_store';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { render } from '@testing-library/react';
 import { act } from 'react';
 import { describe, expect, it } from 'vitest';

@@ -1,5 +1,5 @@
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { ActionId } from '@sim/proto_utils/action_id';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { IconPicker as VanillaIconPicker, type IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

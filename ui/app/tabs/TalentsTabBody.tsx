@@ -1,9 +1,9 @@
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { useSimHost } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import { batch } from '@domain/state/batch';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
-import { classTalentsConfig } from '@domain/talents/factory';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimHost } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import { batch } from '@sim/state/batch';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { classTalentsConfig } from '@sim/talents/factory';
 import { TalentsPicker } from '@features/talents/components/TalentsPicker';
 import { Class, Glyphs } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';

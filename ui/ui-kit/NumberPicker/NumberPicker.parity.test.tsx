@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act } from '@testing-library/react';
 import { NumberPicker as VanillaNumberPicker, type NumberPickerConfig } from '@ui-kit/pickers/number_picker';
 import type { PickerPair } from '@ui-kit/testing/PickerOracle';

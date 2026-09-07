@@ -1,6 +1,6 @@
-import type { Player } from '@domain/player';
-import type { Sim } from '@domain/sim';
-import { subscribePlayerChange } from '@domain/state/subscriptions';
+import type { Player } from '@sim/player';
+import type { Sim } from '@sim/sim';
+import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 
 // Monks' dummy count is talent-driven (sims/monk/shared/derived.ts), so the rule below is not theirs to apply — their picker is hidden and the count is set for them.

@@ -1,10 +1,10 @@
 import './MultiIconPicker.scss';
 
 import { Menu } from '@base-ui/react/menu';
-import { isRightClick } from '@domain/env';
-import type { Player } from '@domain/player';
-import type { ActionId } from '@domain/proto_utils/action_id';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { isRightClick } from '@sim/env';
+import type { Player } from '@sim/player';
+import type { ActionId } from '@sim/proto_utils/action_id';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';

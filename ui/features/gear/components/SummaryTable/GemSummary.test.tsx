@@ -1,11 +1,11 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { IndividualSimHost } from '@domain/sim_host';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { IndividualSimHost } from '@sim/sim_host';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const noopSubscribe = () => () => {};
-vi.mock('@domain/state/subscriptions', () => ({ subscribeAll: () => noopSubscribe, subscribePlayerField: () => noopSubscribe }));
+vi.mock('@sim/state/subscriptions', () => ({ subscribeAll: () => noopSubscribe, subscribePlayerField: () => noopSubscribe }));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 
 const { GemSummary } = await import('./GemSummary');

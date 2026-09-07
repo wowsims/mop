@@ -1,8 +1,8 @@
-import { Party } from '@domain/party';
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { Raid } from '@domain/raid';
-import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import { Party } from '@sim/party';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { Raid } from '@sim/raid';
+import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
 import * as InputHelpers from './input_helpers';

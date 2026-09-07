@@ -1,4 +1,4 @@
-import type { PlayerSpec } from '@domain/player_spec';
+import type { PlayerSpec } from '@sim/player_spec';
 import clsx from 'clsx';
 
 export interface MetricVisibility {

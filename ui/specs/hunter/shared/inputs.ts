@@ -1,0 +1,25 @@
+import type { HunterSpecs } from '@sim/proto_utils/spec_types';
+import { makePetTypeInputConfig } from '@features/talents/view/hunter_pet';
+import i18n from '@i18n/config';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
+// // Configuration for class-specific UI elements on the settings tab.
+// // These don't need to be in a separate file but it keeps things cleaner.
+
+export const PetTypeInput = <SpecType extends HunterSpecs>() => makePetTypeInputConfig<SpecType>();
+
+export const PetUptime = <SpecType extends HunterSpecs>() =>
+	InputHelpers.makeClassOptionsNumberInput<SpecType>({
+		fieldName: 'petUptime',
+		label: i18n.t('settings_tab.other.pet_uptime.label'),
+		labelTooltip: i18n.t('settings_tab.other.pet_uptime.tooltip'),
+		percent: true,
+	});
+
+export const GlaiveTossChance = <SpecType extends HunterSpecs>() =>
+	InputHelpers.makeClassOptionsNumberInput<SpecType>({
+		fieldName: 'glaiveTossSuccess',
+		label: i18n.t('settings_tab.other.glaive_toss_chance.label'),
+		labelTooltip: i18n.t('settings_tab.other.glaive_toss_chance.tooltip'),
+		percent: true,
+	});

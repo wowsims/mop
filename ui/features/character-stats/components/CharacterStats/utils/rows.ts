@@ -1,5 +1,5 @@
-import { Player } from '@domain/player';
-import { UnitStat } from '@domain/proto_utils/stats';
+import { Player } from '@sim/player';
+import { UnitStat } from '@sim/proto_utils/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
 
 import { shouldShowMeleeCritCap } from './stat_display';

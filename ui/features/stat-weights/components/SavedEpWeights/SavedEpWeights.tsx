@@ -1,9 +1,9 @@
 import './SavedEpWeights.scss';
 
-import { useSimHost } from '@domain/context/SimHostContext';
-import { useSimReady } from '@domain/hooks/useSimReady';
-import { Stats } from '@domain/proto_utils/stats';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import { Stats } from '@sim/proto_utils/stats';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';

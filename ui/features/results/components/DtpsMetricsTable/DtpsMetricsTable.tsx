@@ -1,4 +1,4 @@
-import { ActionMetrics } from '@domain/proto_utils/sim_result';
+import { ActionMetrics } from '@sim/proto_utils/sim_result';
 import i18n from '@i18n/config';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';

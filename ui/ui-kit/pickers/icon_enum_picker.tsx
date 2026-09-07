@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import { ActionId } from '@domain/proto_utils/action_id';
-import { fillAndSetActionId } from '@domain/proto_utils/action_id/dom';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { fillAndSetActionId } from '@sim/proto_utils/action_id/dom';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 

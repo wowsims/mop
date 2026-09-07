@@ -2,8 +2,8 @@
 // beside the port and diffed. Two comparisons, because the browser gate only sees the first:
 // `parity.mjs` serialises tag plus sorted class list, which must be identical, and the attribute
 // deltas are asserted one by one so an unrecorded one fails as loudly as a missing one.
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import { Stats } from '@domain/proto_utils/stats';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { Stats } from '@sim/proto_utils/stats';
 import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
 import { act, render } from '@testing-library/react';
@@ -13,7 +13,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { SavedEpWeights } from './SavedEpWeights';
 
 const source = vi.hoisted(() => ({ subscribe: () => () => undefined }));
-vi.mock('@domain/state/subscriptions', () => ({ subscribePlayerField: () => source.subscribe }));
+vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => source.subscribe }));
 
 const STRINGS = vi.hoisted(
 	() =>

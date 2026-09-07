@@ -1,7 +1,7 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import { getStatName } from '@domain/proto_utils/names';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import { getStatName } from '@sim/proto_utils/names';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';

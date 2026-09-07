@@ -1,10 +1,10 @@
 /** @jsxImportSource @jsx-vanilla */
-import { BulkSimItemSlot } from '@domain/bulk/utils';
-import { LaunchStatus } from '@domain/constants/other';
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { PlayerClass } from '@domain/player_class';
-import { PlayerSpec } from '@domain/player_spec';
-import { resourceNames } from '@domain/proto_utils/names';
+import { BulkSimItemSlot } from '@sim/bulk/utils';
+import { LaunchStatus } from '@sim/constants/other';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { PlayerClass } from '@sim/player_class';
+import { PlayerSpec } from '@sim/player_spec';
+import { resourceNames } from '@sim/proto_utils/names';
 import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';

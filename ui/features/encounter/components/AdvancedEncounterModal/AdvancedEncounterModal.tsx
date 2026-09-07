@@ -1,6 +1,6 @@
-import { useSimHost } from '@domain/context/SimHostContext';
-import type { Encounter } from '@domain/encounter';
-import { subscribeEncounterChange } from '@domain/state/subscriptions';
+import { useSimHost } from '@sim/context/SimHostContext';
+import type { Encounter } from '@sim/encounter';
+import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';

@@ -1,6 +1,6 @@
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { EquippedItem, ReforgeData } from '@sim/proto_utils/equipped_item';
 import { ItemLevelState, ItemQuality, ItemRandomSuffix } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import { translateProtoStatName, translateStat } from '@i18n/localization';

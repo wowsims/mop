@@ -1,5 +1,5 @@
-import type { Player } from '@domain/player';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { Player } from '@sim/player';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';

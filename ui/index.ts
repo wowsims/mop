@@ -1,11 +1,11 @@
 /// <reference types="vite/client" />
 import './shared/bootstrap_overrides';
 
-import { LaunchStatus } from '@domain/constants/other';
-import { PlayerClass } from '@domain/player_class';
-import { PlayerClasses } from '@domain/player_classes/index';
-import { PlayerSpec } from '@domain/player_spec';
-import { textCssClassForClass, textCssClassForSpec } from '@domain/proto_utils/utils';
+import { LaunchStatus } from '@sim/constants/other';
+import { PlayerClass } from '@sim/player_class';
+import { PlayerClasses } from '@sim/player_classes/index';
+import { PlayerSpec } from '@sim/player_spec';
+import { textCssClassForClass, textCssClassForSpec } from '@sim/proto_utils/utils';
 import { Class } from '@generated/proto/common';
 import * as Popper from '@popperjs/core';
 import { Dropdown, Modal, Tab } from 'bootstrap';

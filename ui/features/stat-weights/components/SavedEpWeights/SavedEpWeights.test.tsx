@@ -1,5 +1,5 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import { Stats } from '@domain/proto_utils/stats';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { Stats } from '@sim/proto_utils/stats';
 import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
 import { act, fireEvent, render } from '@testing-library/react';
@@ -20,7 +20,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@domain/state/subscriptions', () => ({
+vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerField: () => source.subscribe,
 }));
 

@@ -1,4 +1,4 @@
-import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
+import { EquippedItem, ReforgeData } from '@sim/proto_utils/equipped_item';
 import { ItemQuality, ItemSlot, Stat } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
 import { describe, expect, it } from 'vitest';

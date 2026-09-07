@@ -1,5 +1,5 @@
-import { distinct, stringComparator } from '@domain/collections';
-import { UnitMetrics } from '@domain/proto_utils/sim_result';
+import { distinct, stringComparator } from '@sim/collections';
+import { UnitMetrics } from '@sim/proto_utils/sim_result';
 import { actionColors } from '@features/results/model/color_settings';
 import { Chart, Plugin } from 'chart.js';
 

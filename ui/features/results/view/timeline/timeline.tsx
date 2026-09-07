@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import SecondaryResource from '@domain/proto_utils/secondary_resource';
-import { UnitMetrics } from '@domain/proto_utils/sim_result';
+import SecondaryResource from '@sim/proto_utils/secondary_resource';
+import { UnitMetrics } from '@sim/proto_utils/sim_result';
 import i18n from '@i18n/config';
 import { ref } from 'tsx-vanilla';
 

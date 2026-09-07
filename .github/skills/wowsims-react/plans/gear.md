@@ -331,7 +331,7 @@ open anyway. A React dialog should therefore **not** `keepMounted` nine virtuali
    `2 + itemSwapSlots.length` (gear picker `gear_picker.tsx:64`, bulk `bulk_tab.tsx:222`, one per
    swap slot `icon_item_swap_picker.tsx:39` via `ItemSwapPicker.tsx:48`). Across the six gate specs
    that is **6, 6, 10, 6, 6, 6** — `hunter/beast_mastery` declares eight swap slots
-   (`ui/sims/hunter/beast_mastery/spec.ts:50-58`). `PORTED_DIALOGS` entries are `[marker, integer]`
+   (`ui/specs/hunter/beast_mastery/spec.ts:50-58`). `PORTED_DIALOGS` entries are `[marker, integer]`
    and `takeModals` (`parity.mjs`) fails on `!==`, so the gate needs a per-spec count or a predicate
    — the same escape hatch `INTENDED` has in its `match(base, react)` form — **before** any of this
    can land.
@@ -371,7 +371,7 @@ server only. `SelectorModal.dispose()` is called from nowhere in the tree (verif
 `addOnDisposeCallback`s at `:426` and `:709-715` are unreachable code today; the moment `GearPicker`
 lives inside a ref callback that disposes on cleanup, that stops being harmless.
 
-**Risk 4 — frozen surfaces.** `ui/sims/**` and `ui/features/spec_config.ts` are read only:
+**Risk 4 — frozen surfaces.** `ui/specs/**` and `ui/features/spec_config.ts` are read only:
 `itemSwapSlots` (`spec_config.ts:154`), `presets.gear` (`gear_tab.ts:91`), `defaults.gear`
 (`individual_sim_ui.tsx:399`). None of them changes. A spec-file diff in any of these units is a
 reject.
@@ -413,7 +413,7 @@ The port keeps it by **never letting an `EquippedItem` into a closure at all**:
   (`quick_enchant_popover.ts:23`, `quick_gem_popover.ts:24`) and is refreshed by
   `gear_picker.tsx:134-142`'s `filters` subscription calling `update()`. In React that is a second
   `useStoreSubscribe` on `subscribeSimField(sim,'filters')` and the `update()` path goes away too.
-  `Sim.getFilters()` returns `DatabaseFilters.clone(...)` (`ui/domain/sim.ts:952-955`), so this is
+  `Sim.getFilters()` returns `DatabaseFilters.clone(...)` (`ui/sim/sim.ts:952-955`), so this is
   **not** the `ListPicker` in-place-mutation trap (`SKILL.md:1166-1171`) — the snapshot is safe to
   hold between notifications.
 
@@ -549,9 +549,9 @@ after phase and class-allowlist filtering (below):
 4. scrolling the list to the bottom: frames, mutation count, and peak row count in the DOM.
 
 **Row counts in practice**, computed from `assets/database/db.json` (14,944 items) with
-`canEquipItem`'s real gates — `classAllowlist` (`ui/domain/proto_utils/items.ts:34`),
+`canEquipItem`'s real gates — `classAllowlist` (`ui/sim/proto_utils/items.ts:34`),
 `armorTypes[0] >= item.armorType` (`:70`) — and `phase <= CURRENT_PHASE` (`Phase5`,
-`ui/domain/constants/other.ts:12`, applied at `item_list.tsx:360`):
+`ui/sim/constants/other.ts:12`, applied at `item_list.tsx:360`):
 
 | slot | warrior (plate) | mage (cloth) |
 |---|---|---|
@@ -688,7 +688,7 @@ unusual for this list.
 - `icon_item_swap_picker.tsx:39` constructs its `SelectorModal` with no `id`, so
   `randomUUID()` (`selector_modal.tsx:91`) supplies non-deterministic tab ids. `SERIALIZE`
   (`browser.mjs:39-41`) excludes ids for exactly this reason, so no gate sees it.
-- `Sim.getFilters()` clones (`ui/domain/sim.ts:952-955`), so the in-place `push`/`splice` at
+- `Sim.getFilters()` clones (`ui/sim/sim.ts:952-955`), so the in-place `push`/`splice` at
   `item_list.tsx:574-578` and throughout `filters_menu.tsx` mutates a copy. Not the `ListPicker`
   trap.
 

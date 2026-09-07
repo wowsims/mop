@@ -1,9 +1,9 @@
 /** @jsxImportSource @jsx-vanilla */
-import { TopGearResult } from '@domain/bulk/types';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
-import { formatDeltaTextElem, formatToNumber } from '@domain/format';
-import { stDevToConf95 } from '@domain/math';
-import type { IndividualSimHost } from '@domain/sim_host';
+import { TopGearResult } from '@sim/bulk/types';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
+import { formatDeltaTextElem, formatToNumber } from '@sim/format';
+import { stDevToConf95 } from '@sim/math';
+import type { IndividualSimHost } from '@sim/sim_host';
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';

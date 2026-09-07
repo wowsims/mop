@@ -1,10 +1,10 @@
 /** @jsxImportSource @jsx-vanilla */
-import { isRightClick } from '@domain/env';
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { fillAndSetActionId } from '@domain/proto_utils/action_id/dom';
-import { batch } from '@domain/state/batch';
-import { subscribeSimChange } from '@domain/state/subscriptions';
+import { isRightClick } from '@sim/env';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { fillAndSetActionId } from '@sim/proto_utils/action_id/dom';
+import { batch } from '@sim/state/batch';
+import { subscribeSimChange } from '@sim/state/subscriptions';
 import { ref } from 'tsx-vanilla';
 
 import { Component } from '../component';

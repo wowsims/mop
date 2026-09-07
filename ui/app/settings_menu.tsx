@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Sim } from '@domain/sim';
-import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { Sim } from '@sim/sim';
+import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { setLang, supportedLanguages } from '@i18n/locale_service';
 import { BaseModal } from '@ui-kit/base_modal';

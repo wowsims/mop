@@ -11,7 +11,7 @@
 // Specifiers are resolved against the pre-move tree, so relative imports in a
 // file that itself moves still resolve. A specifier is rewritten only when the
 // importer moved or its target moved — untouched pairs keep the exact text they
-// had. Cross-layer results are emitted in alias form (`@domain/…`), everything
+// had. Cross-layer results are emitted in alias form (`@sim/…`), everything
 // else stays relative; `tools/` always gets relative specifiers.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -24,7 +24,7 @@ const UI_ROOT = path.join(REPO_ROOT, 'ui');
 // Top-level ui/ directory -> import alias. Directories missing from this table
 // (shared/, types/, tracking/) are always relative.
 const DIR_TO_ALIAS = {
-	domain: '@domain',
+	domain: '@sim',
 	generated: '@generated',
 	worker: '@worker',
 	'ui-kit': '@ui-kit',

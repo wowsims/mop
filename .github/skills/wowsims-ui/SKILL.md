@@ -1,6 +1,6 @@
 ---
 name: wowsims-ui
-description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/domain (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/domain/state, batching, persistence/serialization), ui/ui-kit (base classes/pickers), ui/features, ui/generated/proto, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
+description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/domain (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/sim/state, batching, persistence/serialization), ui/ui-kit (base classes/pickers), ui/features, ui/generated/proto, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
 ---
 
 # wowsims-ui
@@ -17,13 +17,13 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
 
 ui/generated/proto                   generated protobuf (alias @generated/proto)
-ui/domain/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
-ui/domain/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
-ui/domain/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
+ui/sim/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
+ui/sim/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
+ui/sim/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
                                      facade classes over the store; public API unchanged
-ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,worker_pool,…}
-ui/domain/{math,format,collections,env,utils}.ts   the old utils grab bag, split by topic
-ui/domain/proto_utils/action_id/{index,dom}.ts     the ActionId value object and the writers
+ui/sim/{talents,constants,bulk,wasm,player_classes,player_specs,worker_pool,…}
+ui/sim/{math,format,collections,env,utils}.ts   the old utils grab bag, split by topic
+ui/sim/proto_utils/action_id/{index,dom}.ts     the ActionId value object and the writers
                                      that enrich an element with its icon, href and tooltip
                                      dataset. The writers take the element, they never create
                                      one, and touch no browser global, so they sit in domain.
@@ -38,10 +38,10 @@ ui/app/                              composition root; browser_env.ts, header/, 
                                      settings_menu.tsx, notice_native_sim.tsx,
                                      preset_configuration_picker.tsx, sim_ui.tsx,
                                      individual_sim_ui.tsx, preset_utils.ts (PR 6b/6c, PR 8b)
-ui/sims/<class>/<spec>/               spec data + SimUI subclass — may import everything
+ui/specs/<class>/<spec>/               spec data + SimUI subclass — may import everything
                                      (no html here; ui/index_template.html is the one spec page)
-BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
-BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
+BANNED: ui/sim/** → @ui-kit/** @features/** @app/** @specs/**
+BANNED: ui/sim/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
 BANNED: ui/i18n/** → @app/** @features/** @ui-kit/** @specs/** (domain is allowed)
 BANNED: ui/ui-kit/** → @features/** @app/** @specs/**;  ui/features/** → @app/** @specs/**
 BANNED: ui/features/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
@@ -55,10 +55,10 @@ list, don't use `!`.
 
 ## State: one Zustand store per page
 
-`Sim.store` (`createSimStore()` in `ui/domain/state/sim_store.ts`, `subscribeWithSelector`).
+`Sim.store` (`createSimStore()` in `ui/sim/state/sim_store.ts`, `subscribeWithSelector`).
 Slices: `ui`, `sim` (both owned by `Sim`), `encounter`, `raid` (+ `partyBuffs[5]`, `composition`), `players[storeKey]`,
 `reforge[storeKey]`, `statWeights[storeKey]`, `bulk[storeKey]` (counters only).
-Read `ui/domain/state/README.md` before adding a field — it has the add-a-field recipe
+Read `ui/sim/state/README.md` before adding a field — it has the add-a-field recipe
 (player fields must also be appended to `PLAYER_FIELDS` in sim_store.ts).
 
 Pickers that hand a list to `ListPicker` must return a COPY from `getValue` (`.slice()`), never
@@ -82,11 +82,11 @@ stale. Target writes go through `encounter.modifyTarget(eventID, i, draft => ...
 
 React seam: `InputConfig.storeSubscribe: obj => StoreSubscribe` replaces `changedEvent` for a picker
 (`storeSubscribe: player => subscribePlayerField(player, 'gear')`; omit it for parent-synced inputs).
-Field helpers live in `ui/domain/state/subscriptions.ts` (`subscribePlayerField(player, 'gear')`,
+Field helpers live in `ui/sim/state/subscriptions.ts` (`subscribePlayerField(player, 'gear')`,
 `subscribeSimField`, `subscribeEncounterField`, `subscribeRaidField`, `subscribeUiField`) and the
 `input_helpers.ts` factories already pass them. `subscribeAll([...])` folds selector sources into one
 selector (one notification per write/batch) — prefer it over hand-written combined selectors. Direct store subscribers go through
-`subscribeGated` (`ui/domain/state/batch.ts`): deferred while a `batch()` is open,
+`subscribeGated` (`ui/sim/state/batch.ts`): deferred while a `batch()` is open,
 fired once at the end with final state. React later: `useStore(sim.store, selector)`.
 
 ## Notifications: state vs events (the rule the next dev gets wrong)
@@ -96,8 +96,8 @@ fired once at the end with final state. React later: `useStore(sim.store, select
   stat-weight settings) are tracked by version counters in their slice — bump the counter where
   the old emitter fired; never content-hash.
 - **Events** (something happened: sim result, crash, reference set, progress) → `Emitter<T>` in
-  `ui/domain/state/events.ts`. No EventID, no batching, no dedup. Never put these in the store.
-- `EventID` / `nextEventID()` live in `ui/domain/state/batch.ts`; setters keep the `eventID` param
+  `ui/sim/state/events.ts`. No EventID, no batching, no dedup. Never put these in the store.
+- `EventID` / `nextEventID()` live in `ui/sim/state/batch.ts`; setters keep the `eventID` param
   as an opaque action id (oxlint `no-unused-vars` has `args: "none"` for exactly this reason).
   `batch()` replaced `freezeAllAndDo`.
 
@@ -145,7 +145,7 @@ Then `http://localhost:3333/mop/<class>/<spec>/` runs sims natively (stats, Simu
 swap, timeline tooltips all work). Without `dist/mop/assets` the page half-renders with JSON
 parse errors from the DB fetch.
 
-## Persistence contract (ui/domain/state/persistence.ts)
+## Persistence contract (ui/sim/state/persistence.ts)
 
 Load order, do not reorder: defaults → localStorage → URL-hash link (partial categories keep
 the rest) → clear hash → `setName('Player')` → subscribe autosave LAST → stat-weight load.
@@ -157,16 +157,16 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 - Tabs, single quotes, `simple-import-sort` (run `npm run lint:js:fix` on touched files).
 - Never commit fixtures/goldens without asking; never run `gen_db` concurrently.
 - Spec configs are pure data; `Player` consumes only the narrow `SpecConfigData` subset.
-  All 34 specs are a single `ui/sims/<class>/<spec>/spec.ts` (or `.tsx` for `mage/arcane` and
+  All 34 specs are a single `ui/specs/<class>/<spec>/spec.ts` (or `.tsx` for `mage/arcane` and
   `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
   `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
   `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass anywhere; `ui/app/spec_entry.ts` loads
-  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/domain/player_specs`, and a
+  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/sim/player_specs`, and a
   `$sim-themes` map entry in `ui/scss/sims/sim.scss` (PR 8a: 68 per-spec scss files collapsed
   into one shared `sim.scss` + `mage_fire.scss` for fire mage's extra rules); the `spec-pages` vite
-  plugin globs `ui/sims/*/*/spec.ts(x)` so the page at `/mop/<class>/<spec>/` follows automatically
+  plugin globs `ui/specs/*/*/spec.ts(x)` so the page at `/mop/<class>/<spec>/` follows automatically
   — no html to add, in the source tree or the build config.
-  Rules shared by several specs of one class live in `ui/sims/<class>/shared/`.
+  Rules shared by several specs of one class live in `ui/specs/<class>/shared/`.
   See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
 
@@ -199,7 +199,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `ui/<class>/<spec>/` directories exist any more — the 34 class dirs, the `ui/*/*/index.html`
   `.gitignore` line, `makefile`'s `PAGE_INDECES` and both `sed`-the-template rules
   (`ui/%/index.html` and `$(OUT_DIR)/%/index.html`) are gone. `tools/vite/spec_pages.mts` replaces
-  them: `discoverSpecPages()` globs `ui/sims/*/*/spec.ts(x)`, `configureServer` answers
+  them: `discoverSpecPages()` globs `ui/specs/*/*/spec.ts(x)`, `configureServer` answers
   `/mop/<class>/<spec>/{,index.html}` with `ui/index_template.html` through `transformIndexHtml`
   (base-stripped url, so the inline-script html-proxy ids resolve), and an `enforce: 'post'`
   `generateBundle` re-emits the page vite already processed as `<class>/<spec>/index.html` ×34 and
@@ -231,7 +231,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `tools/database/gen_bulksim_constants.ts.go` + `gen_character_constants_ts.go` (emitted import
   strings), `ui/README.md`.
 - 2026-09-02: fixed the "Empty action id!" console error + broken pet icon on the hunter "No Pet"
-  picker entry. `ActionId` (`ui/domain/proto_utils/action_id/index.ts`) gained a `static empty(name,
+  picker entry. `ActionId` (`ui/sim/proto_utils/action_id/index.ts`) gained a `static empty(name,
   iconUrl?)` factory (sets a private `isEmptyPlaceholder` flag) for INTENTIONALLY empty ids —
   `toStringIgnoringTag()` skips its `console.error` only for those, so accidental empties (e.g. a
   bad `fromPetName`/`fromProto` call) still log. `hunter_pet.ts`'s "No Pet" entry now uses
@@ -248,15 +248,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   blocks with a throwaway violating file each (all five fired, then deleted). `ui/README.md`
   dropped the "in progress"/`EXISTS` framing (the tree is final) and the `core/` row now reads
   "proto/ only (generated)". No empty directories found under `ui/`.
-- 2026-09-02 UI restructure PR 9c: the 11 class source dirs moved `ui/<class>/` → `ui/sims/<class>/` via the move tool (`@specs` alias in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts` now resolves to `ui/sims`; `move.mjs`'s `DIR_TO_ALIAS` table key renamed `specs` → `sims`). The generated page location and URL are unchanged: `makefile`'s `PAGE_INDECES` now derives `ui/<class>/<spec>/index.html` from `ui/sims/*/*/spec.ts(x)` (the `ui/%/index.html` rule gained a `mkdir -p $(@D)` since the class/spec dirs no longer pre-exist), and `spec_entry.ts`'s glob/module-key both gained a `sims/` segment. 34/34 golden specs still match.
+- 2026-09-02 UI restructure PR 9c: the 11 class source dirs moved `ui/<class>/` → `ui/specs/<class>/` via the move tool (`@specs` alias in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts` now resolves to `ui/sims`; `move.mjs`'s `DIR_TO_ALIAS` table key renamed `specs` → `sims`). The generated page location and URL are unchanged: `makefile`'s `PAGE_INDECES` now derives `ui/<class>/<spec>/index.html` from `ui/specs/*/*/spec.ts(x)` (the `ui/%/index.html` rule gained a `mkdir -p $(@D)` since the class/spec dirs no longer pre-exist), and `spec_entry.ts`'s glob/module-key both gained a `sims/` segment. 34/34 golden specs still match.
 - 2026-09-02 UI restructure PR 9b (part 1): EP-weight and talent presets become JSON under `ui/<class>/<spec>/presets/{ep,talents}/` (enum NAMES as keys; `makePresetEpWeightsFromJSON` / `makePresetTalentsFromJSON` in `app/preset_utils.tsx`); computed presets (`.withStat`, glyph spreads, `onLoad`) stay in TS. Done: warrior, death_knight, druid, hunter, mage; the other six classes follow the same recipe.
 - 2026-09-02 UI restructure PR 9b (part 2): same recipe applied to monk, paladin, priest, rogue, shaman, warlock — all 12 specs converted. Presets left in TS: shaman/enhancement P1/P3 EP (pseudoStat values computed via `Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT`/`PHYSICAL_HIT_RATING_PER_HIT_PERCENT` multipliers); shaman/elemental `TalentsCleave`/`TalentsAoE` (spread another preset's glyphs); priest discipline/holy `StandardTalents`/`EnlightenmentTalents` and shaman/restoration `TankHealingTalents`/`RaidHealingTalents` (fully commented-out talentsString/glyphs, nothing literal to move). All 34 golden specs still match; `tsc`/`oxlint`/`vite build` clean.
 - 2026-09-02 UI restructure PR 9a: shared lift. Every class now has fixed-name
   `<class>/shared/{inputs,presets}.ts` (root `<class>/inputs.ts` / `<class>/shared.ts` /
   `<class>/presets.ts` moved in via the move tool; DK's split inputs.ts merged into one file,
   monk's `utils.ts` folded into `shared/derived.ts`, its only caller). Added
-  `ui/domain/presets/stat_caps.ts` (`meleeHitExpertiseCaps`/`expertiseCap`/`spellHitCap`) and
-  `ui/domain/presets/encounters.ts` (`singleTargetEncounterProto`/`malkorokEncounterProto`) for
+  `ui/sim/presets/stat_caps.ts` (`meleeHitExpertiseCaps`/`expertiseCap`/`spellHitCap`) and
+  `ui/sim/presets/encounters.ts` (`singleTargetEncounterProto`/`malkorokEncounterProto`) for
   the byte-identical `statCaps`/encounter-proto copies across specs — 19 `statCaps` copies and
   both Malkorok proto builders (warrior 144s/5s/100% vs. death knight 300s/30s/0%, kept
   divergent on purpose) converted; 6 `statCaps` variants left inline (monk/windwalker,
@@ -297,7 +297,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   (still 34) and all 34 `index.html` were regenerated — `make` is no longer a footgun.
   **Found and fixed a latent bug from `b4a3d0a0f` (the ui/domain move):** `tools/database/gen_{bulksim_constants.ts,
   character_constants_ts}.go` still emitted `'../proto/common'` / `'../../proto/api'` in the
-  three `*_auto_gen.ts` files after their output paths moved to `ui/domain/**`, so any `make`
+  three `*_auto_gen.ts` files after their output paths moved to `ui/sim/**`, so any `make`
   run broke `tsc`; they now emit `@core/proto/{common,api}`.
 - 2026-09-02 UI restructure PR 7b: converted 25 more specs to `spec.ts`/`spec.tsx` (27 of 34
   total, on top of the two PR 7a pilots). `spec_entry.ts`'s glob is now
@@ -355,7 +355,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `@app`/`@features`/`@ui-kit`/`@specs/**` (domain allowed) — this is now enforced, not
   "deliberate but unenforced" as PR 6b left it. `ui/i18n/entity_mapping.ts` imported
   `LaunchStatus` from `../launched_sims` (a relative reach into `ui/app/`, broken by the move
-  and disallowed either way); `LaunchStatus` moved to `ui/domain/constants/other.ts` next to
+  and disallowed either way); `LaunchStatus` moved to `ui/sim/constants/other.ts` next to
   `Phase`, and `ui/app/launched_sims.tsx` re-exports it so its other consumers are untouched.
 - 2026-09-02 UI restructure PR 6b: `ui/core/` is now **proto only**. The shells moved to
   `ui/app/`: `sim_ui.tsx`, `individual_sim_ui.tsx`, `preset_utils.tsx`, `launched_sims.tsx`;
@@ -376,7 +376,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   go to `ui/domain` as planned because it names `@ui-kit` types (`InputHelpers`, `IconInputs`,
   `ContentBlock`, `SavedDataConfig`) and `@features/encounter`'s `EncounterPickerConfig`.
   `app/individual_sim_ui.tsx` re-exports it so the 34 spec `sim.ts` files are untouched.
-  The preset types (`PresetGear`/`PresetEpWeights`/…) moved to `ui/domain/presets/types.ts`
+  The preset types (`PresetGear`/`PresetEpWeights`/…) moved to `ui/sim/presets/types.ts`
   (`preset_utils.tsx` re-exports them) so domain can name them; `required_talents.ts` now takes
   `Pick<SpecConfigData, 'requiredTalentRows'>` instead of the whole UI config, and
   `requiredTalentRows` was added to `SpecConfigData` — there is still ONE registry
@@ -411,7 +411,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   renamed off "raid"). The toasts / progress modal / `onReforge*` handlers stayed in the view: they
   are DOM. Feature `model/` files must stay browser-global-free (lint) and must not import a `view/`.
 
-- 2026-09-02 UI restructure PR 3 "physical moves": `ui/domain/` and `ui/ui-kit/` now exist (140 files
+- 2026-09-02 UI restructure PR 3 "physical moves": `ui/sim/` and `ui/ui-kit/` now exist (140 files
   moved, 1261 import specifiers rewritten by `tools/restructure/move.mjs` — the reusable move tool;
   `from -> to` list, `--dry-run`, alias form across layers, relative within). `ui/core/` keeps only
   `proto/`, `components/`, `sim_ui.tsx`, `individual_sim_ui.tsx`, `preset_utils.tsx`,
@@ -420,17 +420,17 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `spec_entry.ts`). `Env` gained `location.href`, `location.hostname` and `hardwareConcurrency` —
   `sim.ts` reads wasm-concurrency storage + core count through it, `reforge_cache.ts` takes an `Env`
   (`ReforgeGearCache.get(spec, env)`). DOM-free splits: talent/glyph config types + `newTalentsConfig`
-  → `ui/domain/talents/config.ts`; the SimLog classes + parsing → `ui/domain/proto_utils/logs.ts` with
+  → `ui/sim/talents/config.ts`; the SimLog classes + parsing → `ui/sim/proto_utils/logs.ts` with
   the JSX in `ui/features/results/view/log_lines.tsx` (`renderLog` / `renderDamageResult` /
   `renderEntity` replace `log.toHTML()` / `.result()`); the generic ActionId DOM writers →
-  `ui/domain/proto_utils/action_id/dom.ts`, beside the value object (they enrich an element they
+  `ui/sim/proto_utils/action_id/dom.ts`, beside the value object (they enrich an element they
   are handed, they do not render one, so they stay clear of the domain globals rule);
   the `document`/`location` helpers out of `utils.ts` → `ui/ui-kit/dom_utils.ts` (`getEnvironment`
   keeps the browser probe; `environmentOf(hostname)` is the pure half in domain). `worker_pool.ts`
   uses bare `Worker` / `setTimeout` (`window.Worker` would throw in a worker context anyway); dead
   `SPEC_DIRECTORY` deleted from `constants/other.ts` (it read `window.location.pathname` at module
   scope). Lint: the layer `no-restricted-imports` groups went `*` → `**` (see the layer map) and
-  `ui/domain/**` also bans `@core/components/**`, keeping the guarantee the old `ui/core/*` scope
+  `ui/sim/**` also bans `@core/components/**`, keeping the guarantee the old `ui/core/*` scope
   had. Generator output paths, `AUTO_GEN_FILES_TS`, `.gitignore`, `.oxfmtrc.json` follow the moves.
   **Module-evaluation-order trap** (cost an afternoon): `getSpecSitePath` moved from
   `proto_utils/utils.ts` to `constants/other.ts`. `player_specs/<class>.ts` calls it at module scope,
@@ -566,7 +566,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `feature/state-ui-separation` pending review. Skill lives in `.github/skills/` (shared).
 - 2026-09-02 PR 8b: one spec registry. `ui/app/launched_sims.tsx` (hand-maintained
   `Record<Spec, {phase, status}>`) deleted; every `PlayerSpec` class now carries its own
-  `readonly launch: { phase: Phase; status: LaunchStatus }` (base type in `ui/domain/player_spec.ts`).
+  `readonly launch: { phase: Phase; status: LaunchStatus }` (base type in `ui/sim/player_spec.ts`).
   Consumers (`sim_ui.tsx`, `individual_sim_ui.tsx`, `sim_title_dropdown.tsx`) read
   `spec.launch`/`player.getPlayerSpec().launch` instead of the old lookup table. The landing page
   (`ui/index.html`) no longer hand-writes its ~34 `<a href="/mop/<class>/<spec>/">` sim-link

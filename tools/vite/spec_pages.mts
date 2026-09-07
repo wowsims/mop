@@ -16,7 +16,7 @@ export const SPEC_PAGE_TEMPLATE = 'index_template.html';
 
 /**
  * Every spec that owns a page, as `<class>/<spec>`, from the same source of truth the
- * makefile's `PAGE_INDECES` used: `ui/sims/<class>/<spec>/spec.ts(x)`.
+ * makefile's `PAGE_INDECES` used: `ui/specs/<class>/<spec>/spec.ts(x)`.
  */
 export function discoverSpecPages(uiRoot: string): string[] {
 	const specsRoot = path.join(uiRoot, 'sims');

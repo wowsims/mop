@@ -1,4 +1,4 @@
-import type { SimHost } from '@domain/sim_host';
+import type { SimHost } from '@sim/sim_host';
 import i18n from '@i18n/config';
 
 import { Exporter } from '../exporter';

@@ -1,5 +1,5 @@
 import { Field } from '@base-ui/react/field';
-import { arrayEquals } from '@domain/collections';
+import { arrayEquals } from '@sim/collections';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
 import { PickerShell } from '@ui-kit/PickerShell';

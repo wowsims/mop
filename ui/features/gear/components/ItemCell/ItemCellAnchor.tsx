@@ -1,4 +1,4 @@
-import { externalRel } from '@domain/links';
+import { externalRel } from '@sim/links';
 import type { ComponentPropsWithRef, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 
 export interface ItemCellAnchorProps extends Omit<ComponentPropsWithRef<'a'>, 'onClick' | 'href'> {

@@ -1,25 +1,25 @@
 /** @jsxImportSource @jsx-vanilla */
-import { SimSettingCategories } from '@domain/constants/sim_settings';
-import { isDevMode } from '@domain/env';
-import { Player } from '@domain/player';
-import { PlayerSpecs } from '@domain/player_specs';
-import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
-import { pseudoStatHasCap, StatCap, Stats } from '@domain/proto_utils/stats';
-import { getTalentPoints } from '@domain/proto_utils/utils';
-import type { IndividualSimHost } from '@domain/sim_host';
-import type { SpecDefinition } from '@domain/spec_config';
-import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@domain/spec_config';
-import { StatWeightActionSettings } from '@domain/stat_weight_settings';
-import { batch } from '@domain/state/batch';
-import { loadIndividualSettings } from '@domain/state/persistence';
+import { SimSettingCategories } from '@sim/constants/sim_settings';
+import { isDevMode } from '@sim/env';
+import { Player } from '@sim/player';
+import { PlayerSpecs } from '@sim/player_specs';
+import { armorTypeNames, professionNames } from '@sim/proto_utils/names';
+import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto_utils/stats';
+import { getTalentPoints } from '@sim/proto_utils/utils';
+import type { IndividualSimHost } from '@sim/sim_host';
+import type { SpecDefinition } from '@sim/spec_config';
+import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
+import { StatWeightActionSettings } from '@sim/stat_weight_settings';
+import { batch } from '@sim/state/batch';
+import { loadIndividualSettings } from '@sim/state/persistence';
 import {
 	applyIndividualSimSettings,
 	IndividualSimSerializationContext,
 	individualSimSettingsToProto,
 	updateIndividualSimProtoVersion,
-} from '@domain/state/serialization';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/requirements';
+} from '@sim/state/serialization';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
+import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
@@ -70,8 +70,8 @@ export type {
 	Settings,
 	SpecBehaviors,
 	SpecDefinition,
-} from '@domain/spec_config';
-export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@domain/spec_config';
+} from '@sim/spec_config';
+export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@sim/spec_config';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';

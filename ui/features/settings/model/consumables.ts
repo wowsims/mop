@@ -1,7 +1,7 @@
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { batch } from '@domain/state/batch';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { batch } from '@sim/state/batch';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
 import { Consumable } from '@generated/proto/db';
 import i18n from '@i18n/config';

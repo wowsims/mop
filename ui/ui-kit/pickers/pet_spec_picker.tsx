@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
-import type { HunterSpecs } from '@domain/proto_utils/spec_types';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Player } from '@sim/player';
+import type { HunterSpecs } from '@sim/proto_utils/spec_types';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';

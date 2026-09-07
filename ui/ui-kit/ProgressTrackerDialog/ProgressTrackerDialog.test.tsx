@@ -1,7 +1,7 @@
 // What this pins is the split the dialog is built on: the stage is React state and everything that
 // moves with a worker message is a DOM write. The measured rate is ~10 progress callbacks a second
 // on wasm (sim/core/sim.go:336 throttles each sim to one report per 100 ms, and
-// ui/domain/wasm/sim.ts:118 decimates by worker count) and ~2/s on the native host, so the reason
+// ui/sim/wasm/sim.ts:118 decimates by worker count) and ~2/s on the native host, so the reason
 // for the refs is not the frequency — it is that `keepMounted` leaves this dialog in the page for
 // the life of the tab.
 import { act, fireEvent, render, screen } from '@testing-library/react';

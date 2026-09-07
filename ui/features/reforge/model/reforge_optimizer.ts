@@ -1,19 +1,19 @@
 // DOM-free half of the reforge optimizer: settings access, EP / soft-cap math and
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
 // ../view/reforge_panel.tsx and owns every button, tooltip, toast and modal.
-import * as Mechanics from '@domain/constants/mechanics';
-import { isDevMode } from '@domain/env';
-import { Player } from '@domain/player';
-import { Gear } from '@domain/proto_utils/gear';
-import { getReforgeCacheGearKey } from '@domain/proto_utils/items';
-import { StatCap, Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
-import { ReforgeGearCache } from '@domain/reforge_cache';
-import { ReforgeSettings as ReforgeSettingsState } from '@domain/reforge_settings';
-import type { ReforgeOptimizeConfig, Sim } from '@domain/sim';
-import { RequestTypes } from '@domain/sim_signal_manager';
-import type { IndividualSimUIConfig } from '@domain/spec_config';
-import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/state/reforge_request';
-import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
+import * as Mechanics from '@sim/constants/mechanics';
+import { isDevMode } from '@sim/env';
+import { Player } from '@sim/player';
+import { Gear } from '@sim/proto_utils/gear';
+import { getReforgeCacheGearKey } from '@sim/proto_utils/items';
+import { StatCap, Stats, UnitStat, UnitStatPresets } from '@sim/proto_utils/stats';
+import { ReforgeGearCache } from '@sim/reforge_cache';
+import { ReforgeSettings as ReforgeSettingsState } from '@sim/reforge_settings';
+import type { ReforgeOptimizeConfig, Sim } from '@sim/sim';
+import { RequestTypes } from '@sim/sim_signal_manager';
+import type { IndividualSimUIConfig } from '@sim/spec_config';
+import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@sim/state/reforge_request';
+import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@sim/state/subscriptions';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { Class, ItemSlot, Spec, Stat } from '@generated/proto/common';
 
@@ -147,7 +147,7 @@ export class ReforgeOptimizerModel {
 		return weights;
 	}
 
-	// Settings API — delegates to this.settings (ui/domain/reforge_settings.ts).
+	// Settings API — delegates to this.settings (ui/sim/reforge_settings.ts).
 	setStatCaps(newStatCaps: Stats) {
 		this.settings.setStatCaps(newStatCaps);
 	}

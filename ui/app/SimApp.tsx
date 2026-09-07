@@ -1,6 +1,6 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { SpecDefinition } from '@domain/spec_config';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { SpecDefinition } from '@sim/spec_config';
 import { CharacterStats } from '@features/character-stats';
 import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';
 import { CastMetricsTable } from '@features/results/components/CastMetricsTable';

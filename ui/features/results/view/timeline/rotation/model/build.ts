@@ -1,8 +1,8 @@
-import { kebabCase } from '@domain/format';
-import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@domain/proto_utils/action_id';
-import type { AuraUptimeLog, CastLog, ResourceGroupLog } from '@domain/proto_utils/combat_log';
-import { resourceNames } from '@domain/proto_utils/names';
-import type { UnitMetrics } from '@domain/proto_utils/sim_result';
+import { kebabCase } from '@sim/format';
+import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@sim/proto_utils/action_id';
+import type { AuraUptimeLog, CastLog, ResourceGroupLog } from '@sim/proto_utils/combat_log';
+import { resourceNames } from '@sim/proto_utils/names';
+import type { UnitMetrics } from '@sim/proto_utils/sim_result';
 import { ResourceType } from '@generated/proto/spell';
 
 import {

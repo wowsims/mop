@@ -1,4 +1,4 @@
-import type { Social } from '@domain/constants/other';
+import type { Social } from '@sim/constants/other';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';

@@ -27,7 +27,7 @@ No .html and no `makefile` rule are needed (they used to be; see
 [Sim pages are not files](adding_sim.md#sim-pages-are-not-real-files) if an older checkout left
 generated pages behind). `tools/vite/spec_pages.mts` generates the page for
 `/mop/$CLASS/$SPEC/` from `ui/index_template.html`, in both `vite build` and the dev server. A
-directory is picked up as a sim page as soon as it holds `ui/sims/$CLASS/$SPEC/spec.ts` (or
+directory is picked up as a sim page as soon as it holds `ui/specs/$CLASS/$SPEC/spec.ts` (or
 `spec.tsx`).
 
 When you're ready to try out the site, run `make host` and navigate to `http://localhost:8080/mop/$SPEC`.
@@ -37,7 +37,7 @@ Each sim is served at `/mop/$CLASS/$SPEC/` and these pages used to be written in
 Vite serves those pages now (`tools/vite/spec_pages.mts`), in both `vite build` and the dev
 server, so there is nothing to generate or list. `ui/index_template.html` carries nothing
 per-spec, so it is processed once and served at every spec URL; a directory becomes a sim page as
-soon as it holds `ui/sims/$CLASS/$SPEC/spec.ts` (or `spec.tsx`). See `ui/README.md` for the whole
+soon as it holds `ui/specs/$CLASS/$SPEC/spec.ts` (or `spec.tsx`). See `ui/README.md` for the whole
 picture.
 
 **Changing a sim**

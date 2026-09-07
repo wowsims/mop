@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { EnumPicker as VanillaEnumPicker, type EnumPickerConfig, type EnumValueConfig } from '@ui-kit/pickers/enum_picker';
 import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';

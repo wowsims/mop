@@ -4,7 +4,7 @@
 //
 // The class names below are load-bearing outside the app too — the browser sweeps
 // and timing protocols in tools/browser-perf select on `.results-sim-*`.
-import type { SimResult } from '@domain/proto_utils/sim_result';
+import type { SimResult } from '@sim/proto_utils/sim_result';
 import type { Raid as RaidProto } from '@generated/proto/api';
 import type { Encounter as EncounterProto } from '@generated/proto/common';
 

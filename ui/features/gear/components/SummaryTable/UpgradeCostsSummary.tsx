@@ -1,5 +1,5 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Faction } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';

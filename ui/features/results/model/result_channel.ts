@@ -1,4 +1,4 @@
-import { Emitter } from '@domain/state/events';
+import { Emitter } from '@sim/state/events';
 
 import type { SimResultData } from './result_data';
 

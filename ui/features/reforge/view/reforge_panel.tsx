@@ -1,14 +1,14 @@
 /** @jsxImportSource @jsx-vanilla */
-import { isDevMode } from '@domain/env';
-import { Player } from '@domain/player';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { Gear } from '@domain/proto_utils/gear';
-import { statCapTypeNames } from '@domain/proto_utils/names';
-import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { RelativeStatCap } from '@domain/reforge_settings';
-import type { ActionGroupItem, IndividualSimHost } from '@domain/sim_host';
-import { batch } from '@domain/state/batch';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@domain/state/subscriptions';
+import { isDevMode } from '@sim/env';
+import { Player } from '@sim/player';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { Gear } from '@sim/proto_utils/gear';
+import { statCapTypeNames } from '@sim/proto_utils/names';
+import { StatCap, Stats, UnitStat } from '@sim/proto_utils/stats';
+import { RelativeStatCap } from '@sim/reforge_settings';
+import type { ActionGroupItem, IndividualSimHost } from '@sim/sim_host';
+import { batch } from '@sim/state/batch';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@sim/state/subscriptions';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import { ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { ItemSlot, Stat } from '@generated/proto/common';

@@ -1,8 +1,8 @@
 /** @jsxImportSource @jsx-vanilla */
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { subscribeSimChange } from '@domain/state/subscriptions';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { isEqualAPLRotation } from '@sim/proto_utils/apl_utils';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { subscribeSimChange } from '@sim/state/subscriptions';
 import { applyBuild } from '@features/settings/model/apply_build';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';

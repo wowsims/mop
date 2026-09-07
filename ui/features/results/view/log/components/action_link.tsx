@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
+import type { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
 
 export function ActionLink(actionId: ActionId, isAura?: boolean): HTMLAnchorElement {
 	const iconElem = (<span className="icon icon-sm"></span>) as HTMLSpanElement;

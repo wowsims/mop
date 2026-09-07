@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@domain/format';
-import type { SimHost } from '@domain/sim_host';
-import { Emitter } from '@domain/state/events';
+import { kebabCase } from '@sim/format';
+import type { SimHost } from '@sim/sim_host';
+import { Emitter } from '@sim/state/events';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { CopyButton } from '@ui-kit/copy_button';

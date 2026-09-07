@@ -1,7 +1,7 @@
-import type { Encounter } from '@domain/encounter';
-import type { Player } from '@domain/player';
-import type { Raid } from '@domain/raid';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import type { Encounter } from '@sim/encounter';
+import type { Player } from '@sim/player';
+import type { Raid } from '@sim/raid';
+import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';

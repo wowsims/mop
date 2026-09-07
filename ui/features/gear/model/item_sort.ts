@@ -1,4 +1,4 @@
-import { SortDirection } from '@domain/constants/other';
+import { SortDirection } from '@sim/constants/other';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 

@@ -1,6 +1,6 @@
-// In-memory implementation of the domain's Env adapter (ui/domain/state/env.ts)
+// In-memory implementation of the domain's Env adapter (ui/sim/state/env.ts)
 // for the snapshot / contract harnesses: no window, no localStorage, no page.
-import type { Env } from '../../ui/domain/state/env';
+import type { Env } from '../../ui/sim/state/env';
 
 export interface MemoryEnv extends Env {
 	// The backing map, so tests can assert what was written.

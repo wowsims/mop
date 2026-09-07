@@ -54,9 +54,9 @@ func TestAffliction(t *testing.T) {
 			Class:      proto.Class_ClassWarlock,
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceGoblin, proto.Race_RaceHuman},
-			GearSet:    core.GetGearSet("../../../ui/sims/warlock/affliction/gear_sets", "p5"),
+			GearSet:    core.GetGearSet("../../../ui/specs/warlock/affliction/gear_sets", "p5"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/sims/warlock/affliction/gear_sets", "p3"),
+				core.GetGearSet("../../../ui/specs/warlock/affliction/gear_sets", "p3"),
 			},
 			Talents: "231211",
 			Glyphs: &proto.Glyphs{
@@ -67,9 +67,9 @@ func TestAffliction(t *testing.T) {
 			Consumables:      fullConsumesSpec,
 			SpecOptions:      core.SpecOptionsCombo{Label: "Affliction Warlock", SpecOptions: defaultAfflictionWarlock},
 			OtherSpecOptions: []core.SpecOptionsCombo{},
-			Rotation:         core.GetAplRotation("../../../ui/sims/warlock/affliction/apls", "default"),
+			Rotation:         core.GetAplRotation("../../../ui/specs/warlock/affliction/apls", "default"),
 			OtherRotations: []core.RotationCombo{
-				core.GetAplRotation("../../../ui/sims/warlock/affliction/apls", "multitarget"),
+				core.GetAplRotation("../../../ui/specs/warlock/affliction/apls", "multitarget"),
 			},
 			ItemFilter:       itemFilter,
 			StartingDistance: 25,

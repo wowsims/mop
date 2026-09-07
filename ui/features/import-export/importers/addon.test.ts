@@ -1,8 +1,8 @@
 // The addon export carries glyphs two ways — the legacy string form and the Cata table form — and
 // the two take different routes to an item id. That branch is the piece of this importer that is
 // pure enough to pin here; the rest of `onImport` is proto plumbing over a live `Database`.
-import type { Database } from '@domain/proto_utils/database';
-import type { GlyphConfig } from '@domain/talents/config';
+import type { Database } from '@sim/proto_utils/database';
+import type { GlyphConfig } from '@sim/talents/config';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // `getWSEVersion()` runs at module evaluation, exactly as the vanilla `static` initialiser did, so

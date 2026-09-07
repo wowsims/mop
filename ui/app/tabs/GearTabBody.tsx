@@ -1,10 +1,10 @@
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { useSimHost } from '@domain/context/SimHostContext';
-import { useSimReady } from '@domain/hooks/useSimReady';
-import type { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
-import { batch } from '@domain/state/batch';
-import { subscribePlayerChange } from '@domain/state/subscriptions';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import type { Player } from '@sim/player';
+import { Stats } from '@sim/proto_utils/stats';
+import { batch } from '@sim/state/batch';
+import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { GearPicker } from '@features/gear/components/GearPicker';
 import { GemSummary, ReforgeSummary, UpgradeCostsSummary } from '@features/gear/components/SummaryTable';
 import { EquipmentSpec, UnitStats } from '@generated/proto/common';

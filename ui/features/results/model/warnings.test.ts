@@ -1,5 +1,5 @@
-import type { SimWarning } from '@domain/sim_host';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { SimWarning } from '@sim/sim_host';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { describe, expect, it } from 'vitest';
 
 import { WarningsRegistry } from './warnings';

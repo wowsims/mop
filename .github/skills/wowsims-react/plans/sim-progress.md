@@ -224,7 +224,7 @@ The prior research is **confirmed on every leg**, with two line corrections and 
 |---|---|---|
 | The sim itself | `sim/core/sim.go:336-345` | `if sim.ProgressReport != nil && time.Since(st) > time.Millisecond*100` — **≤10 reports/second per sim**. `st` is the zero `time.Time` on the first pass, so the first report is immediate |
 | Native concurrency | `sim/core/sim_concurrent.go:560-565` | `progressCounter % int(threads) == 0`, `threads = runtime.NumCPU()` (`:493`). The Go host aggregates N sims back to ~10/s before it ever reaches the wire |
-| wasm concurrency | `ui/domain/wasm/sim.ts:119-120` | `progressCounter++; if (progressCounter % running == 0)`. **The claim cited `:118`; the increment is `:119` and the modulo `:120`** (`:117` is `csp.updateProgress`). `running` decrements as workers finish (`:125`), so the divisor shrinks to 1 near the end of a run — the decimation is weakest exactly when it matters least |
+| wasm concurrency | `ui/sim/wasm/sim.ts:119-120` | `progressCounter++; if (progressCounter % running == 0)`. **The claim cited `:118`; the increment is `:119` and the modulo `:120`** (`:117` is `csp.updateProgress`). `running` decrements as workers finish (`:125`), so the divisor shrinks to 1 near the end of a run — the decimation is weakest exactly when it matters least |
 | The native transport | `ui/worker/worker_http.ts:37-48` | The async handler polls `asyncProgress` in a `while` loop with `await sleep(500)` — **~2 reports/second**, and this is where the "2/s on the native host" figure comes from. Confirmed from source, not measured (no browser was launched for this plan) |
 
 One thing the original claim does not say and the plan depends on: **the wasm decimation is on the
@@ -455,7 +455,7 @@ removeAbortButton(): void
 
 The spec surface is **frozen** (`SKILL.md:302-307`): `spec_config.ts:87` declares
 `warnings?: Array<(simUI: IndividualSimHost<SpecType>) => SimWarning>` and exactly two specs use it
-— `ui/sims/shaman/elemental/spec.ts:24-34` and `ui/sims/shaman/enhancement/spec.ts:24-34`, both the
+— `ui/specs/shaman/elemental/spec.ts:24-34` and `ui/specs/shaman/enhancement/spec.ts:24-34`, both the
 Fire Elemental autocast warning. Five more specs declare `warnings: []`. **Whatever replaces the
 plumbing must keep accepting that exact callback shape** (`SKILL.md:861-863`).
 
@@ -746,7 +746,7 @@ defect 7.
 
 - Progress must not drive per-tick React state — satisfied by the handle, and asserted by the
   `Profiler` test in unit 4.
-- `ui/sims/**` and `ui/features/spec_config.ts` untouched. `spec_config.ts:87`'s `warnings` callback
+- `ui/specs/**` and `ui/features/spec_config.ts` untouched. `spec_config.ts:87`'s `warnings` callback
   shape is preserved exactly; the two shaman spec files are read, never written.
 - `SimUI.addWarning`'s signature is unchanged, so `individual_sim_ui.tsx` needs no edit at all.
 - `makeToplineResultsContent` does not port (three consumers) — fork A(b) is what makes that
@@ -801,7 +801,7 @@ gate would lock them in.
 
 **Naming, in a file this plan does not touch**
 
-9. `ui/domain/player.ts:1268-1284` — `hasArmorSpecializationBonus()` returns `true` when **some**
+9. `ui/sim/player.ts:1268-1284` — `hasArmorSpecializationBonus()` returns `true` when **some**
    slot has the *wrong* armor type, i.e. when the bonus is **missing**. The warning at
    `individual_sim_ui.tsx:196` reads correctly ("Equip {{armorType}} gear in each slot…") only
    because the method is inverted relative to its name. Behaviour is right; the name is a trap.

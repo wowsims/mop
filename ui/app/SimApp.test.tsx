@@ -1,5 +1,5 @@
-import { LaunchStatus, Phase } from '@domain/constants/other';
-import { createSimStore } from '@domain/state/sim_store';
+import { LaunchStatus, Phase } from '@sim/constants/other';
+import { createSimStore } from '@sim/state/sim_store';
 import { render } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

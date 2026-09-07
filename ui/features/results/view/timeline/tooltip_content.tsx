@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@domain/format';
-import { CombatLog, DpsLog, ResourceGroupLog, ResourceLog, ThreatLogGroup } from '@domain/proto_utils/combat_log';
-import { resourceNames } from '@domain/proto_utils/names';
+import { kebabCase } from '@sim/format';
+import { CombatLog, DpsLog, ResourceGroupLog, ResourceLog, ThreatLogGroup } from '@sim/proto_utils/combat_log';
+import { resourceNames } from '@sim/proto_utils/names';
 import i18n from '@i18n/config';
 
 import { Results } from '../log/components/results';

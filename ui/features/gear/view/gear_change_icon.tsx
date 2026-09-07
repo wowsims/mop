@@ -1,8 +1,8 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
-import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
+import { Player } from '@sim/player';
+import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { getEmptyGemSocketIconUrl } from '@sim/proto_utils/gems';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';

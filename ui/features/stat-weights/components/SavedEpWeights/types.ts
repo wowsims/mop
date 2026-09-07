@@ -1,4 +1,4 @@
-import type { Player } from '@domain/player';
+import type { Player } from '@sim/player';
 import type { SavedEPWeights } from '@generated/proto/ui';
 
 export interface SavedEpWeightsEntry {

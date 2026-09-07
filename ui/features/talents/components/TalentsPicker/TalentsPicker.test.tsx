@@ -1,7 +1,7 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { IndividualSimHost } from '@domain/sim_host';
-import type { TalentsConfig } from '@domain/talents/config';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { IndividualSimHost } from '@sim/sim_host';
+import type { TalentsConfig } from '@sim/talents/config';
 import { act, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

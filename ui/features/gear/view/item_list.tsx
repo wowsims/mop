@@ -1,16 +1,16 @@
 /** @jsxImportSource @jsx-vanilla */
-import { SortDirection } from '@domain/constants/other';
-import { formatDeltaTextElem } from '@domain/format';
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdWowheadHref } from '@domain/proto_utils/action_id/dom';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/items';
-import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@domain/proto_utils/names';
-import { Sim } from '@domain/sim';
-import type { SimHost } from '@domain/sim_host';
-import { isIndividualSimHost } from '@domain/sim_host';
-import { subscribeBulkField } from '@domain/state/subscriptions';
+import { SortDirection } from '@sim/constants/other';
+import { formatDeltaTextElem } from '@sim/format';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { getPVPSeasonFromItem, isPVPItem } from '@sim/proto_utils/items';
+import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@sim/proto_utils/names';
+import { Sim } from '@sim/sim';
+import type { SimHost } from '@sim/sim_host';
+import { isIndividualSimHost } from '@sim/sim_host';
+import { subscribeBulkField } from '@sim/state/subscriptions';
 import { Class, GemColor, ItemSlot, ItemSpec } from '@generated/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';

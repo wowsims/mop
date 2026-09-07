@@ -1,9 +1,9 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
-import { fillAndSetActionId, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import type { SimHost } from '@domain/sim_host';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Player } from '@sim/player';
+import { fillAndSetActionId, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { SimHost } from '@sim/sim_host';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';

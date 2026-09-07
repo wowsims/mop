@@ -1,4 +1,4 @@
-import type { Stats } from '@domain/proto_utils/stats';
+import type { Stats } from '@sim/proto_utils/stats';
 import { SavedEPWeights } from '@generated/proto/ui';
 import type { JsonValue } from '@protobuf-ts/runtime';
 

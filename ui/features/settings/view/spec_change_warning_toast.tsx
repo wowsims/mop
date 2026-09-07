@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
+import { Player } from '@sim/player';
 import Toast, { ToastOptions } from '@ui-kit/toast';
 
 export type SpecCheckWarning = {

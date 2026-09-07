@@ -17,7 +17,7 @@ func TestAbort(t *testing.T) {
 		Name:      "John",
 		Race:      proto.Race_RaceOrc,
 		Class:     proto.Class_ClassWarrior,
-		Equipment: core.GetGearSet("../../../ui/sims/warrior/arms/gear_sets", "p1_arms_bis").GearSet,
+		Equipment: core.GetGearSet("../../../ui/specs/warrior/arms/gear_sets", "p1_arms_bis").GearSet,
 		Rotation:  &proto.APLRotation{},
 		Consumes:  &proto.Consumes{},
 		Spec: &proto.Player_ArmsWarrior{

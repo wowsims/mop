@@ -1,7 +1,7 @@
 import './MetricsTotalBar.scss';
 
-import { formatToCompactNumber, formatToPercent } from '@domain/format';
-import { spellSchoolNames } from '@domain/proto_utils/names';
+import { formatToCompactNumber, formatToPercent } from '@sim/format';
+import { spellSchoolNames } from '@sim/proto_utils/names';
 import type { SpellSchool } from '@generated/proto/common';
 import clsx from 'clsx';
 import type { CSSProperties } from 'react';

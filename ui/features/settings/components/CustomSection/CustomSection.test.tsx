@@ -1,5 +1,5 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { CustomSection as CustomSectionConfig } from '@domain/spec_config';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,7 +9,7 @@ const source = vi.hoisted(() => {
 	const listeners = new Set<() => void>();
 	return { listeners, subscribed: 0, notify: () => listeners.forEach(listener => listener()) };
 });
-vi.mock('@domain/state/subscriptions', () => ({
+vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerChange: () => {
 		source.subscribed++;
 		return (onChange: () => void) => {

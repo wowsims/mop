@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Emitter } from '@domain/state/events';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { Emitter } from '@sim/state/events';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import clsx, { ClassValue } from 'clsx';
 import tippy, { Content as TippyContent } from 'tippy.js';
 

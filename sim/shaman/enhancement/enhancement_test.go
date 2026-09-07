@@ -21,7 +21,7 @@ func TestEnhancement(t *testing.T) {
 			OtherRaces: []proto.Race{proto.Race_RaceDwarf, proto.Race_RaceTroll, proto.Race_RaceDraenei, proto.Race_RaceAlliancePandaren},
 
 			// The above line is the actual line for the ring but it is causing an error in the test
-			GearSet: core.GetGearSet("../../../ui/sims/shaman/enhancement/gear_sets", "simtest"),
+			GearSet: core.GetGearSet("../../../ui/specs/shaman/enhancement/gear_sets", "simtest"),
 			Talents: TalentsASEB,
 			Glyphs:  StandardGlyphs,
 			OtherTalentSets: []core.TalentsCombo{
@@ -38,7 +38,7 @@ func TestEnhancement(t *testing.T) {
 			},
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Standard", SpecOptions: PlayerOptionsStandard},
-			Rotation:    core.GetAplRotation("../../../ui/sims/shaman/enhancement/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/specs/shaman/enhancement/apls", "default"),
 
 			ItemFilter: core.ItemFilter{
 				WeaponTypes: []proto.WeaponType{

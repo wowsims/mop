@@ -1,7 +1,7 @@
-import { useSim } from '@domain/context/SimHostContext';
-import { formatToNumber } from '@domain/format';
-import { ActionMetrics } from '@domain/proto_utils/sim_result';
-import { subscribeUiField } from '@domain/state/subscriptions';
+import { useSim } from '@sim/context/SimHostContext';
+import { formatToNumber } from '@sim/format';
+import { ActionMetrics } from '@sim/proto_utils/sim_result';
+import { subscribeUiField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Tooltip } from '@ui-kit/Tooltip';

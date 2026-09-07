@@ -1,4 +1,4 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -34,7 +34,7 @@ vi.mock('@features/settings/model/saved_settings', () => ({ readSavedSettings: (
 
 // The store sources need a player with a live zustand store; the managers below never read them.
 const noopSubscribe = () => () => {};
-vi.mock('@domain/state/subscriptions', () => ({
+vi.mock('@sim/state/subscriptions', () => ({
 	subscribeAll: () => noopSubscribe,
 	subscribeEncounterChange: () => noopSubscribe,
 	subscribePartyBuffs: () => noopSubscribe,

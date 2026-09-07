@@ -1,7 +1,7 @@
-import { Database } from '@domain/proto_utils/database';
-import { nameToClass, nameToProfession, nameToRace } from '@domain/proto_utils/names';
-import type { GlyphConfig } from '@domain/talents/config';
-import { classGlyphsConfig } from '@domain/talents/factory';
+import { Database } from '@sim/proto_utils/database';
+import { nameToClass, nameToProfession, nameToRace } from '@sim/proto_utils/names';
+import type { GlyphConfig } from '@sim/talents/config';
+import { classGlyphsConfig } from '@sim/talents/factory';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { JsonObject } from '@protobuf-ts/runtime';

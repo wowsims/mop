@@ -1,5 +1,5 @@
-import { usePlayer, useSim } from '@domain/context/SimHostContext';
-import { subscribeSimChange } from '@domain/state/subscriptions';
+import { usePlayer, useSim } from '@sim/context/SimHostContext';
+import { subscribeSimChange } from '@sim/state/subscriptions';
 import { clearMultiIconInputs } from '@features/settings/model/multi_icon';
 import type { IconPickerStatOption, RenderableStatOptions } from '@features/settings/model/stat_options';
 import i18n from '@i18n/config';

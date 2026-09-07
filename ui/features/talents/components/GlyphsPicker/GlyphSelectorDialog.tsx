@@ -1,4 +1,4 @@
-import { useSimHost } from '@domain/context/SimHostContext';
+import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 import { itemQualityCssClass } from '@ui-kit/css_utils';
 import { Dialog } from '@ui-kit/Dialog';

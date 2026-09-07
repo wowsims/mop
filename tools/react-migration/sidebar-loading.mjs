@@ -12,7 +12,7 @@
 // The window is a few hundred milliseconds on a static server, so it has to be opened deliberately:
 // the database request is routed and *held* until the reads are done, rather than delayed by a
 // number that then has to be raced. **It is `db.json`, not `db.bin`** — `READ_JSON` in
-// `ui/domain/proto_utils/database.ts` is `true`, so a route pattern aimed at `db.bin` intercepts
+// `ui/sim/proto_utils/database.ts` is `true`, so a route pattern aimed at `db.bin` intercepts
 // nothing, the page loads at full speed and every assertion below reads the settled state and
 // passes for the wrong reason. `**/assets/database/db.*` covers both and cannot go stale. The
 // interception is asserted for the same reason.

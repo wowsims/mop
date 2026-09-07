@@ -1,10 +1,10 @@
 /** @jsxImportSource @jsx-vanilla */
-import { formatDurationSeconds } from '@domain/format';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
-import { AuraStacksLog, CastBeganLog, DamageLog, Entity, isCastBegan, isDamage, isResource, ResourceLog } from '@domain/proto_utils/combat_log';
-import { resourceColors, resourceNames } from '@domain/proto_utils/names';
-import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
+import { formatDurationSeconds } from '@sim/format';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
+import { AuraStacksLog, CastBeganLog, DamageLog, Entity, isCastBegan, isDamage, isResource, ResourceLog } from '@sim/proto_utils/combat_log';
+import { resourceColors, resourceNames } from '@sim/proto_utils/names';
+import { ActionMetrics, SimResult, SimResultFilter } from '@sim/proto_utils/sim_result';
 import { OtherAction } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import i18n from '@i18n/config';

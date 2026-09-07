@@ -1,6 +1,6 @@
-import { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
-import { getEnchantDescription } from '@domain/proto_utils/enchants';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
+import { getEnchantDescription } from '@sim/proto_utils/enchants';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';

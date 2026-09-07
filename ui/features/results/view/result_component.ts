@@ -1,4 +1,4 @@
-import { Emitter } from '@domain/state/events';
+import { Emitter } from '@sim/state/events';
 import { Component } from '@ui-kit/component';
 
 import type { SimResultData } from '../model/result_data';

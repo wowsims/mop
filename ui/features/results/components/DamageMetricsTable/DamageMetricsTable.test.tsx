@@ -1,4 +1,4 @@
-import { ActionMetrics } from '@domain/proto_utils/sim_result';
+import { ActionMetrics } from '@sim/proto_utils/sim_result';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,12 +10,12 @@ let showThreatMetrics = true;
 
 vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 vi.mock('../MetricsTable/MetricsActionCell', () => ({ MetricsActionCell: ({ name }: { name: string }) => <span>{name}</span> }));
-vi.mock('@domain/context/SimHostContext', async importOriginal => ({
-	...(await importOriginal<typeof import('@domain/context/SimHostContext')>()),
+vi.mock('@sim/context/SimHostContext', async importOriginal => ({
+	...(await importOriginal<typeof import('@sim/context/SimHostContext')>()),
 	useSim: () => ({ getShowThreatMetrics: () => showThreatMetrics }),
 }));
-vi.mock('@domain/state/subscriptions', async importOriginal => ({
-	...(await importOriginal<typeof import('@domain/state/subscriptions')>()),
+vi.mock('@sim/state/subscriptions', async importOriginal => ({
+	...(await importOriginal<typeof import('@sim/state/subscriptions')>()),
 	subscribeUiField: () => () => () => {},
 }));
 

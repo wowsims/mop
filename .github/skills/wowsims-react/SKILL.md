@@ -301,7 +301,7 @@ break every caller that has not moved yet.
 
 ## Frozen for the whole migration
 
-`ui/sims/**` (all 34 spec definitions) and the `defineSpec` schema in `ui/features/spec_config.ts`
+`ui/specs/**` (all 34 spec definitions) and the `defineSpec` schema in `ui/features/spec_config.ts`
 — `IndividualSimUIConfig`, `InputConfig`, `IconInputConfig`, `CustomSection`, `SpecBehaviors` — are
 the contract React renders against. A spec-file diff in a migration PR is a reject, not a nit. This
 is the surface a mechanical port is most likely to "improve" in passing.
@@ -332,12 +332,12 @@ of the duplication sweep was to build each shape once.
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
 | `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
-| `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@domain/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
+| `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@sim/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads — whose entries are *either* a vanilla `open()` or a React dialog it renders | the popup's markup and styling, that the contents arrive asynchronously, and which dialog is open |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, `container`, and `elevated` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
-| `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/sims/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
+| `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on; a `CopyButton` component would have fixed exactly that | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
 | `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); `EnchantLabel`, `ItemPickerCell` and `MetricsActionCell` still hand-roll it and **two of those have no staleness guard** | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
@@ -753,7 +753,7 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   an explicit `displayName`, not an inner named function. Two things this costs: arrows are not
   hoisted, so a helper used above its declaration has to move up, and a generic in a `.tsx` file
   needs the trailing comma (`<T,>`) that a `.ts` file must not have.
-  This applies to `ui-kit`, `app` and ported feature components. `ui/domain/**` and un-ported
+  This applies to `ui-kit`, `app` and ported feature components. `ui/sim/**` and un-ported
   `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
 - **A component folder holds only components at its top level.** Everything else is a named
@@ -876,7 +876,7 @@ dismissed toast that should have come back and cannot.
 **A store/context for registration is right, though**, and is the next step for them. Today only
 something holding a `simUI` can call `addWarning`, which is why every warning lives in
 `individual_sim_ui.tsx` or a spec file — a ported feature component has no way to contribute one.
-The hard constraint is that `warnings: [simUI => SimWarning]` in `ui/sims/**/spec.ts` is part of the
+The hard constraint is that `warnings: [simUI => SimWarning]` in `ui/specs/**/spec.ts` is part of the
 **frozen** spec surface, so whatever replaces the plumbing keeps accepting that exact shape; only
 the delivery mechanism changes. Do it after the shell's C3, since `addWarning` is one of the five
 imperative APIs C2 deliberately leaves untouched.
@@ -1171,7 +1171,7 @@ If one is ever clipped, the fix is `positionStrategy="fixed"` on the `Tooltip` p
 - **Sim progress bypasses the store, and it is not as fast as it looks.** The worker progress
   callback writes DOM directly, unbatched — never `setState` per tick. But "per tick" is **~10/s on
   wasm and ~2/s on the native host**, not per worker message: `sim/core/sim.go:336` reports at most
-  once per 100 ms per sim, `ui/domain/wasm/sim.ts:118` decimates by worker count
+  once per 100 ms per sim, `ui/sim/wasm/sim.ts:118` decimates by worker count
   (`progressCounter % running`), `wasm/stat_weights.ts` runs its sims sequentially so nothing
   multiplies, and `worker/worker_http.ts:47` polls at 500 ms. So a `requestAnimationFrame` coalescer
   caps at 60/s and would never collapse a single tick — it is insurance, not an optimisation. Split
@@ -1931,7 +1931,7 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   hung a Stop button off `rootElem`'s *sibling*, outside the modal's focus trap. Both are gone.
   `ui/ui-kit/ProgressTrackerDialog/` is a React twin of `progress_tracker_modal.tsx` on the `Dialog`
   adapter with `preventClose` + `keepMounted`; the vanilla one is untouched, it has three consumers
-  and one is inside frozen `ui/sims/**`. The EP dialog renders the twin **inside its own `Dialog`'s
+  and one is inside frozen `ui/specs/**`. The EP dialog renders the twin **inside its own `Dialog`'s
   children**, which is how Base UI knows the two are nested — a sibling would make the inner popup's
   backdrop an outside press on the outer one, and cancelling a run would abort-on-close. Measured in
   the browser: the popup carries `--nested-dialogs`, and Cancel leaves the EP dialog open.
@@ -2062,7 +2062,7 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   none` without the plugin), 13 one-word section headings kept. On the user's decision the moved
   vanilla comments went too, except provenance (`Taken from Wowhead`), TODOs, and the two data-format
   facts; and `spec_config.ts`'s comment was removed as a comment-only exception to the freeze — the
-  freeze protects the `defineSpec` contract, not a remark about it. `ui/sims/**` untouched.
+  freeze protects the `defineSpec` contract, not a remark about it. `ui/specs/**` untouched.
 
   One matcher lesson: the hook once reported a comment together with the code line after it
   (`stat_display.ts`, where the same `//` text occurs twice), and text-matching deleted both. The
@@ -2405,7 +2405,7 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   would vanish while the values were still empty.
 
 - 2026-09-06 **External links get `rel="noopener noreferrer"` from three seams, not from call
-  sites.** `isExternalHref`/`externalRel` in `ui/domain/links.ts`, applied by `Button` for React, by
+  sites.** `isExternalHref`/`externalRel` in `ui/sim/links.ts`, applied by `Button` for React, by
   the `@jsx-vanilla` runtime for every `<a href>` written as JSX in the vanilla stack, and by
   `setExternalAwareHref` for the ActionId writer, which assigns `href` after the element exists
   where the JSX seam cannot see it. 8 of 227 external anchors carried it before; 151 do now, the
@@ -2973,7 +2973,7 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 - 2026-09-05 **The sidebar's social links are React too, and every clickable in the header now goes
   through `Button`.** `SocialLink` is one component for both places — it renders the anchor and
   nothing around it, because what wraps it is exactly what differs (the toolbar's
-  `div.sim-toolbar-item`, the sidebar's nothing). `SOCIALS` moved to `@domain/constants/other`
+  `div.sim-toolbar-item`, the sidebar's nothing). `SOCIALS` moved to `@sim/constants/other`
   beside the `REPO_*` URLs it already used. The vanilla `SocialLinks` class is deleted;
   `sidebarSocials` left `ShellDom` the way `toolbar` did.
 

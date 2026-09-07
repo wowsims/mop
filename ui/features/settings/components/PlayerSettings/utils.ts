@@ -1,6 +1,6 @@
-import { getEnumValues } from '@domain/collections';
-import type { Player } from '@domain/player';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { getEnumValues } from '@sim/collections';
+import type { Player } from '@sim/player';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Profession } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProfession, translateRace } from '@i18n/localization';

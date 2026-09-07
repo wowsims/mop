@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { NumberListPicker as VanillaNumberListPicker, type NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
 import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';

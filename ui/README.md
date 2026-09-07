@@ -10,7 +10,7 @@ ui/
   domain/            DOM-free, node-runnable model: sim/player/raid/party/encounter facades,
                      state/, proto_utils/, player_classes/, player_specs/, talents data + trees,
                      bulk request builders, wasm/, constants, utils, worker_pool, reforge_cache,
-                     wowhead, cache_handler. alias @domain
+                     wowhead, cache_handler. alias @sim
   ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
                      sim_host (SimUIHost/SimHeaderHost — the shell slice ui-kit is allowed to name),
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
@@ -85,9 +85,9 @@ generated → worker → {domain, i18n} → ui-kit → features → app → spec
 `domain` and `i18n` are peers: both are leaves everything above them may depend on, and each
 may depend on the other (i18n's entity/status label maps name domain enums; domain in turn calls
 into i18n for label lookups). Each layer may only import from layers to its left. `.oxlintrc.json` enforces this with
-`no-restricted-imports` on the alias forms (see overrides for `ui/domain/**`, `ui/ui-kit/**`,
+`no-restricted-imports` on the alias forms (see overrides for `ui/sim/**`, `ui/ui-kit/**`,
 `ui/features/**`, `ui/app/**`), plus `no-restricted-globals` (window/document/localStorage/
-location/navigator) on `ui/domain/**` and `ui/features/*/model/**`.
+location/navigator) on `ui/sim/**` and `ui/features/*/model/**`.
 
 The `no-restricted-imports` groups use `**` (not `*`): oxlint matches these patterns one
 path segment at a time, so `@features/*` would not catch `@features/gear/view/item_list`.
@@ -111,7 +111,7 @@ holds the `make*` builders and re-exports the types.
 
 Proto-serialisable preset data lives as JSON, never as a TS literal: gear (`gear_sets/*.gear.json`),
 APLs (`apls/*.apl.json`), builds (`builds/*.build.json`), EP weights (`presets/ep/*.ep.json`) and
-talents (`presets/talents/*.talents.json`) under `ui/sims/<class>/<spec>/`. EP/talent JSON stores enum
+talents (`presets/talents/*.talents.json`) under `ui/specs/<class>/<spec>/`. EP/talent JSON stores enum
 fields by name (e.g. `"StatCritRating"`, `"GlyphOfBullRush"`) rather than numeric value, so the
 file stays stable across proto regenerations; `PresetUtils.makePresetEpWeightsFromJSON` /
 `makePresetTalentsFromJSON` resolve the names back through the enum (`Stat`/`PseudoStat`, and the
@@ -128,7 +128,7 @@ override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
 
 | Alias          | Resolves to      |
 | -------------- | ---------------- |
-| `@domain/*`    | `ui/domain/*`    |
+| `@sim/*`    | `ui/sim/*`    |
 | `@generated/*` | `ui/generated/*` |
 | `@worker/*`    | `ui/worker/*`    |
 | `@ui-kit/*`    | `ui/ui-kit/*`    |
@@ -145,7 +145,7 @@ explicit extension on every specifier).
 
 ## How to author a spec
 
-A spec is data. `ui/sims/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
+A spec is data. `ui/specs/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
 the only code file the spec owns (besides `presets.ts` / `inputs.ts`):
 
 ```ts
@@ -226,10 +226,10 @@ whenever `subscribe`'s source fires — including when the defaults land.
 All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no `IndividualSimUI`
 subclass anywhere. Adding a spec is:
 
-1. `ui/sims/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
+1. `ui/specs/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.
-2. An entry in `ui/domain/player_specs/index.ts`, i.e. a `PlayerSpec` class (in
-   `ui/domain/player_specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
+2. An entry in `ui/sim/player_specs/index.ts`, i.e. a `PlayerSpec` class (in
+   `ui/sim/player_specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
@@ -241,7 +241,7 @@ anywhere else. `ui/index_template.html` is the _one_ spec page, and `tools/vite/
 `/mop/<class>/<spec>/` and `.../index.html` with it through `transformIndexHtml` in dev, and a
 `post` `generateBundle` takes the page vite already processed, drops its own output path from the
 bundle, and re-emits it as `<class>/<spec>/index.html` for every spec. Both halves discover the
-spec list from `ui/sims/*/*/spec.ts(x)` (`discoverSpecPages`) — the same glob `PAGE_INDECES` used
+spec list from `ui/specs/*/*/spec.ts(x)` (`discoverSpecPages`) — the same glob `PAGE_INDECES` used
 before the makefile stopped generating pages — and `spec_entry.ts`'s `import.meta.glob` then picks
 the spec module up from the URL. A new spec's page therefore appears with no build-config edit.
 
@@ -256,7 +256,7 @@ derives class/spec from `location.pathname` the same way `specModuleKey` does ab
 to `data-class`/`data-spec` attributes only if present (the landing page has neither and keeps its
 `data-i18n` behaviour).
 
-Rules shared by several specs of the same class live in `ui/sims/<class>/shared/` (e.g.
+Rules shared by several specs of the same class live in `ui/specs/<class>/shared/` (e.g.
 `rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
 A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` is invariant in
 `S`, so a rule typed against a spec union is not assignable into any one spec's
@@ -269,7 +269,7 @@ one caller) hold what used to sit at `<class>/inputs.ts`, `<class>/shared.ts`, o
 `DefaultRaidBuffs` where all (or a class-consistent subset of) that class's specs share one
 raid-buff default. Cross-spec constants used by more than one class (the melee hit/expertise and
 spell-hit `statCaps` builders, the single-target and Malkorok encounter protos) live in
-`ui/domain/presets/{stat_caps,encounters}.ts` instead — `domain/` can't import `@app`, so these
+`ui/sim/presets/{stat_caps,encounters}.ts` instead — `domain/` can't import `@app`, so these
 export raw protos/`Stats` for a class's `shared/presets.ts` to wrap with `PresetUtils`.
 
 ## How to move a file

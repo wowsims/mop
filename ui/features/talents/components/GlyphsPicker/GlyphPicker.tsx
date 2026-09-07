@@ -1,4 +1,4 @@
-import { usePlayer } from '@domain/context/SimHostContext';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import { PickerShell } from '@ui-kit/PickerShell';

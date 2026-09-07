@@ -89,7 +89,7 @@
 									"seedKeyed",
 									"deleteKeyed"
 								],
-								"message": "Features must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
+								"message": "Features must not write the store directly — go through a facade (e.g. ui/sim/bulk_settings.ts)."
 							}
 						]
 					}
@@ -124,7 +124,7 @@
 		},
 		{
 			"files": [
-				"ui/domain/**"
+				"ui/sim/**"
 			],
 			"rules": {
 				"no-restricted-imports": [
@@ -142,7 +142,7 @@
 									"@specs",
 									"@specs/**"
 								],
-								"message": "ui/domain must not depend at runtime on ui-kit/features/app/specs (see ui/README.md dependency direction).",
+								"message": "ui/sim must not depend at runtime on ui-kit/features/app/specs (see ui/README.md dependency direction).",
 								"allowTypeImports": true
 							}
 						]

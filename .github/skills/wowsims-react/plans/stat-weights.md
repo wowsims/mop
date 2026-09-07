@@ -44,7 +44,7 @@ imperatively from a handler, exactly as `Importer` does.
 | `buildStatsTable`, minus its `ref`s | `:698-828` |
 | `isEpStat` | `:447-450` |
 
-`scaledEpValue` (`ui/domain/proto_utils/stats.ts:567`) and `stDevToConf90` are already in domain.
+`scaledEpValue` (`ui/sim/proto_utils/stats.ts:567`) and `stDevToConf90` are already in domain.
 `ui/features/stat-weights/model/` is lint-enforced DOM-free (`.oxlintrc.json:160-172`), precedent
 `ui/features/settings/model/apply_build.ts`.
 
@@ -62,8 +62,8 @@ imperatively from a handler, exactly as `Importer` does.
   and an `.ep-ratios` row `:150-164`; `<tbody>` rebuilt wholesale by `updateTable()` `:469-483`
   (`replaceChildren`), rows from `makeTableRow` `:485-530` / `makeTableRowCells` `:532-576` /
   `makeTableCellContents` `:578-589`. 13 column entries from `buildStatsTable` `:698-828`.
-- **Result write-back**: `sim.statWeights` (`ui/domain/sim.ts:815`) via
-  `player.computeStatWeights` (`ui/domain/player.ts:602`) →
+- **Result write-back**: `sim.statWeights` (`ui/sim/sim.ts:815`) via
+  `player.computeStatWeights` (`ui/sim/player.ts:602`) →
   `simUI.prevEpIterations` / `simUI.prevEpSimResult` (`:315-316`) → `updateTable()` (`:317`).
   `prevEpSimResult` is also written by the ref-stat selects (`:210`).
 - **Progress**: `setSimProgress` `:452-467` → `resultsViewer.setContent(<div class="results-sim">…)`.
@@ -76,10 +76,10 @@ imperatively from a handler, exactly as `Importer` does.
   per-row `NumberPicker` (`:521`).
 - **Store writes**: `player.setEpWeights` `:439`, `:525`; `player.setEpRatios` `:377`;
   `settings.setStatExcluded` `:510` (→ `statWeights[storeKey]` slice,
-  `ui/domain/stat_weight_settings.ts:110-118`); `simUI.dps/heal/tankRefStat` setters
+  `ui/sim/stat_weight_settings.ts:110-118`); `simUI.dps/heal/tankRefStat` setters
   `:217,226,234` which are getters/setters over `player.setRefStat`
-  (`ui/app/individual_sim_ui.tsx:90-107` → `ui/domain/player.ts:410-413`,
-  version field `'epRefStat'`, `ui/domain/state/sim_store.ts:154`).
+  (`ui/app/individual_sim_ui.tsx:90-107` → `ui/sim/player.ts:410-413`,
+  version field `'epRefStat'`, `ui/sim/state/sim_store.ts:154`).
 - UI-local, not store: `statsType` `:54`, `showAllStats` `:58` (the source-less `useInput`
   case named in `SKILL.md:594`).
 
@@ -98,7 +98,7 @@ Two callers: `stat_weights_panel.tsx:695` and `reforge_panel.tsx:792` (with `loa
 | `ui/app/individual_sim_ui.tsx:86` / `ui/features/sim_host.ts:53` | `epWeightsModal: EpWeightsMenu \| null` |
 | **`ui/features/reforge/view/reforge_panel.tsx:776,780`** | `simUI.epWeightsModal && …epWeightsModal?.open()` — the only external behavioural consumer. Built lazily inside a tippy `onShow` (`reforge_panel.tsx:537`), so there is **no** ordering race with `waitForInit` |
 | `ui/features/sim_host.ts:54-58`, `individual_sim_ui.tsx:88-89,132-133` | `prevEpIterations`, `prevEpSimResult`, `dps/heal/tankRefStat` |
-| `ui/domain/state/persistence.ts:41`, `subscriptions.ts:172` | `StatWeightActionSettings` — domain, untouched |
+| `ui/sim/state/persistence.ts:41`, `subscriptions.ts:172` | `StatWeightActionSettings` — domain, untouched |
 | `tools/state-snapshots/store-contract-test.ts:230,308-310` | `StatWeightActionSettings`, `setRefStat` — untouched |
 
 `prevEpIterations` / `prevEpSimResult` have **no reader outside the panel**. They are host fields
@@ -252,7 +252,7 @@ Note that fork (a) is *not* "render the overlay in the popup" on its own: the po
 
 **Constraint checks**
 - Progress must not drive per-tick React state — satisfied by keeping `ResultsViewer` an island.
-- `ui/sims/**` and `ui/features/spec_config.ts` are untouched. The panel reads
+- `ui/specs/**` and `ui/features/spec_config.ts` are untouched. The panel reads
   `individualConfig.epStats` / `epPseudoStats` / `epReferenceStat` / `defaults.epWeights`
   (`:66-68,824`) and `presets.epWeights` (`saved_ep_weights.ts:36`) — all reads.
 - `renderSavedEPWeights` must not port (reforge is its second consumer) — it stays vanilla behind

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
-import type { IndividualSimHost } from '@domain/sim_host';
+import { Player } from '@sim/player';
+import type { IndividualSimHost } from '@sim/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListPicker } from '@ui-kit/pickers/list_picker';

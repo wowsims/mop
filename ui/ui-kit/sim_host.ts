@@ -1,4 +1,4 @@
-import type { Sim } from '@domain/sim';
+import type { Sim } from '@sim/sim';
 
 import type { SimTabRegistry } from './tab_registry';
 

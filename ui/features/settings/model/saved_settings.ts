@@ -1,6 +1,6 @@
-import { Stats } from '@domain/proto_utils/stats';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { batch } from '@domain/state/batch';
+import { Stats } from '@sim/proto_utils/stats';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { batch } from '@sim/state/batch';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, RaidBuffs } from '@generated/proto/common';
 import { SavedSettings } from '@generated/proto/ui';
 

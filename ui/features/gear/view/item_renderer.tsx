@@ -1,9 +1,9 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@domain/proto_utils/action_id/dom';
-import { getEnchantDescription } from '@domain/proto_utils/enchants';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
+import { getEnchantDescription } from '@sim/proto_utils/enchants';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';

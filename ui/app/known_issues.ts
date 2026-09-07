@@ -1,5 +1,5 @@
-import { LaunchStatus } from '@domain/constants/other';
-import type { SimStatus } from '@domain/player_spec';
+import { LaunchStatus } from '@sim/constants/other';
+import type { SimStatus } from '@sim/player_spec';
 import i18n from '@i18n/config';
 import type { ReactNode } from 'react';
 

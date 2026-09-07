@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { Outcome } from '@domain/proto_utils/combat_log/types';
-import { OUTCOMES } from '@domain/proto_utils/combat_log/types';
-import { Emitter } from '@domain/state/events';
+import type { Outcome } from '@sim/proto_utils/combat_log/types';
+import { OUTCOMES } from '@sim/proto_utils/combat_log/types';
+import { Emitter } from '@sim/state/events';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import type { DropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';

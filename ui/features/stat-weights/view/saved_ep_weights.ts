@@ -1,8 +1,8 @@
-import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { batch } from '@domain/state/batch';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Player } from '@sim/player';
+import { Stats } from '@sim/proto_utils/stats';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { batch } from '@sim/state/batch';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { SavedEPWeights } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { SavedDataManager, SavedDataManagerConfig } from '@ui-kit/saved_data_manager';

@@ -15,13 +15,13 @@
 		"jsxImportSource": "react",
 		"skipLibCheck": true,
 		"paths": {
-			"@domain/*": ["./ui/domain/*"],
+			"@sim/*": ["./ui/sim/*"],
 			"@generated/*": ["./ui/generated/*"],
 			"@worker/*": ["./ui/worker/*"],
 			"@ui-kit/*": ["./ui/ui-kit/*"],
 			"@features/*": ["./ui/features/*"],
 			"@app/*": ["./ui/app/*"],
-			"@specs/*": ["./ui/sims/*"],
+			"@specs/*": ["./ui/specs/*"],
 			"@i18n/*": ["./ui/i18n/*"],
 			"@jsx-vanilla/*": ["./ui/shared/jsx-vanilla/*"]
 		}

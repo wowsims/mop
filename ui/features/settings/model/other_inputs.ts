@@ -1,6 +1,6 @@
-import { Player } from '@domain/player';
-import { emptyUnitReference } from '@domain/proto_utils/utils';
-import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import { Player } from '@sim/player';
+import { emptyUnitReference } from '@sim/proto_utils/utils';
+import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
 

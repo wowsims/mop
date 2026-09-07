@@ -1,6 +1,6 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';

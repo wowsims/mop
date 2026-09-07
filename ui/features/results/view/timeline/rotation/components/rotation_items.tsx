@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { setActionIdBackground } from '@domain/proto_utils/action_id/dom';
-import type { AuraUptimeLog, CastLog, DamageLog } from '@domain/proto_utils/combat_log';
+import { setActionIdBackground } from '@sim/proto_utils/action_id/dom';
+import type { AuraUptimeLog, CastLog, DamageLog } from '@sim/proto_utils/combat_log';
 import i18n from '@i18n/config';
 import clsx from 'clsx';
 

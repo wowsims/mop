@@ -1,5 +1,5 @@
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { ActionId } from '@sim/proto_utils/action_id';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
 import { type IconEnumPickerConfig, IconEnumPickerDirection } from '@ui-kit/pickers/icon_enum_picker';
 import { StrictMode } from 'react';

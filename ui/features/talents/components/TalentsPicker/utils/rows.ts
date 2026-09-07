@@ -1,4 +1,4 @@
-import type { TalentConfig } from '@domain/talents/config';
+import type { TalentConfig } from '@sim/talents/config';
 
 export const buildTalentRows = <TalentsProto>(talents: ReadonlyArray<TalentConfig<TalentsProto>>): Array<Array<TalentConfig<TalentsProto>>> =>
 	talents.reduce<Array<Array<TalentConfig<TalentsProto>>>>((rows, talent) => {

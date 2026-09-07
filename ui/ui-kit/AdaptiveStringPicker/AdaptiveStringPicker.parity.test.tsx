@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { AdaptiveStringPicker as VanillaAdaptiveStringPicker, type StringPickerConfig } from '@ui-kit/pickers/string_picker';
 import { mountBoth } from '@ui-kit/testing/PickerOracle';
 import { describe, expect, it } from 'vitest';

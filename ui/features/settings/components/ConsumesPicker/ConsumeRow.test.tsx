@@ -1,4 +1,4 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, render } from '@testing-library/react';
 import type { IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -17,7 +17,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@domain/state/subscriptions', () => ({
+vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerField: (_player: unknown, field: string) => {
 		source.fields.push(field);
 		return (onChange: () => void) => {

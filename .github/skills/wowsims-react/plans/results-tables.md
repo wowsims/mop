@@ -3,7 +3,7 @@
 Worktree `~/personal/wowsims-mop-react`, branch `feature/ui-react`. Nothing was modified.
 
 **Line numbers.** The six table files and the four `metrics_table/` files are unconflicted and are
-cited as they sit in the working tree. `detailed_results.tsx` and `ui/domain/proto_utils/sim_result.ts`
+cited as they sit in the working tree. `detailed_results.tsx` and `ui/sim/proto_utils/sim_result.ts`
 carry live `<<<<<<<` conflict markers right now (`git status`: `UU`), so **every cite to those two is
 against `git show HEAD:<path>`**, and is marked `@HEAD`.
 
@@ -16,7 +16,7 @@ none of `metrics_table/**` is conflicted or touched.** The one merge-touched fil
 `MajorCooldownUsedLog`→`MajorCooldownLog`, and the four `X.fromLogs` statics becoming free functions
 (`buildDpsLogs`, `buildCastLogs`, `buildThreatGroups`, `buildAuraUptimes`, `buildResourceGroups`).
 `ActionMetrics`, `AuraMetrics`, `ResourceMetrics` and `UnitMetrics` — everything the tables read — are
-**byte-identical on both sides**. Verified by diffing `git show HEAD:ui/domain/proto_utils/sim_result.ts`
+**byte-identical on both sides**. Verified by diffing `git show HEAD:ui/sim/proto_utils/sim_result.ts`
 against `git show origin/master:ui/core/proto_utils/sim_result.ts` below the import block: 103 diff
 lines, every one a log type.
 
@@ -169,7 +169,7 @@ ui/features/results/view/resource_metrics.tsx
 | `combat_replay.tsx` (1,086, rAF) and `timeline/chart/**` (Chart.js), `dps_histogram.ts` (Chart.js) | Canvas. Not virtualisation targets, no instruction has changed for them, and `combat_replay.tsx` is conflicted right now. |
 | `results_action.tsx` (648), `results_viewer.tsx`, `topline_results.ts` | The sidebar results panel and the run manager. `topline_results.ts:23` calls `SimResultsManager.makeToplineResultsContent` — a static on `results_action.tsx`. Out. |
 | `results_filter.ts` | **A seam, not out of scope — see Risk 3.** The tables need its `getFilter()` output; the filter itself does not port. |
-| `ui/sims/**`, `ui/features/spec_config.ts` | Frozen (`SKILL.md:301-306`). The tables read neither. Verified: no import of either in any in-scope file. |
+| `ui/specs/**`, `ui/features/spec_config.ts` | Frozen (`SKILL.md:301-306`). The tables read neither. Verified: no import of either in any in-scope file. |
 
 **Out of *this plan*, but no longer permanently out of bounds:** `log/log_view.tsx` and
 `timeline/rotation/rotation_view.tsx`. The Phase-4 island framing (`SKILL.md:32,81`) is out of date for
@@ -473,7 +473,7 @@ already run shows nothing. **It must return the same object identity until the n
 `useReactTable` re-initialises when `data`'s identity moves (§3, delta 6). Store the last emitted
 value in a field and return it; never build one in the getter.
 
-**A sim result stays an event, not store state** (`ui/domain/state/README.md:81-82`). The channel is
+**A sim result stays an event, not store state** (`ui/sim/state/README.md:81-82`). The channel is
 deliberately *not* a Zustand slice, for the reason `SKILL.md:787-789` gives: the sim store is written
 constantly and everything in it re-renders every consumer. And the constraint that matters most:
 **the worker progress callback must never drive per-tick React state** (`SKILL.md:1152-1156`,
@@ -647,7 +647,7 @@ means React tables need nothing from the filter directly — the channel already
 `{ result, filter }` and re-fires. **Do not port the filter, do not subscribe to its emitter, and do
 not lift it.** If a later unit is tempted to, that is the moment to re-read this line.
 
-**Risk 4 — frozen surfaces.** `ui/sims/**` and `features/spec_config.ts` (`SKILL.md:301-306`). No
+**Risk 4 — frozen surfaces.** `ui/specs/**` and `features/spec_config.ts` (`SKILL.md:301-306`). No
 in-scope file imports either; the only spec-shaped input is
 `(simUI as IndividualSimHost<any>)?.player?.secondaryResource` at `detailed_results.tsx@HEAD:247`,
 which is a read. A spec-file diff in this PR is a reject.

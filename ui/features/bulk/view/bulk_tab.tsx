@@ -6,7 +6,7 @@ import {
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
 	WEB_ITERATIONS_LIMIT,
-} from '@domain/bulk/types';
+} from '@sim/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
@@ -15,22 +15,22 @@ import {
 	getBulkFreezeWeaponTypes,
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
-} from '@domain/bulk/utils';
-import { BulkSettingsStore } from '@domain/bulk_settings';
-import { getEnumValues } from '@domain/collections';
-import { REPO_RELEASES_URL } from '@domain/constants/other';
-import { isDevMode } from '@domain/env';
-import { formatDurationSeconds, formatToNumber } from '@domain/format';
-import { Z_95, zTest } from '@domain/math';
-import { isSpecDualWield2HCapable } from '@domain/player_classes/capabilities';
-import { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { Gear } from '@domain/proto_utils/gear';
-import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@domain/proto_utils/items';
-import { RelativeStatCap } from '@domain/reforge_settings';
-import { ReforgeOptimizeConfig } from '@domain/sim';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { RequestTypes } from '@domain/sim_signal_manager';
-import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
+} from '@sim/bulk/utils';
+import { BulkSettingsStore } from '@sim/bulk_settings';
+import { getEnumValues } from '@sim/collections';
+import { REPO_RELEASES_URL } from '@sim/constants/other';
+import { isDevMode } from '@sim/env';
+import { formatDurationSeconds, formatToNumber } from '@sim/format';
+import { Z_95, zTest } from '@sim/math';
+import { isSpecDualWield2HCapable } from '@sim/player_classes/capabilities';
+import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { Gear } from '@sim/proto_utils/gear';
+import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@sim/proto_utils/items';
+import { RelativeStatCap } from '@sim/reforge_settings';
+import { ReforgeOptimizeConfig } from '@sim/sim';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { RequestTypes } from '@sim/sim_signal_manager';
+import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';

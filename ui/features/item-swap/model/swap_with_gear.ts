@@ -1,5 +1,5 @@
-import type { Player } from '@domain/player';
-import { batch } from '@domain/state/batch';
+import type { Player } from '@sim/player';
+import { batch } from '@sim/state/batch';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 
 /** Exchanges the equipped item and the swap item in each of `itemSlots`, in one batch so the two writes land as a single notification. */

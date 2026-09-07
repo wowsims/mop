@@ -1,6 +1,6 @@
-import type { Player } from '@domain/player';
-import type { Stats, UnitStat } from '@domain/proto_utils/stats';
-import type { StatWeightActionSettings } from '@domain/stat_weight_settings';
+import type { Player } from '@sim/player';
+import type { Stats, UnitStat } from '@sim/proto_utils/stats';
+import type { StatWeightActionSettings } from '@sim/stat_weight_settings';
 import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
 import clsx from 'clsx';

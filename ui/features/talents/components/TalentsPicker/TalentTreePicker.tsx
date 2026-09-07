@@ -1,6 +1,6 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import { PlayerSpecs } from '@domain/player_specs';
-import type { TalentTreeConfig } from '@domain/talents/config';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { PlayerSpecs } from '@sim/player_specs';
+import type { TalentTreeConfig } from '@sim/talents/config';
 import i18n from '@i18n/config';
 import { translatePlayerSpec } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';

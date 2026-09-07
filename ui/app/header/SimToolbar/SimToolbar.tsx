@@ -1,5 +1,5 @@
-import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@domain/constants/other';
-import { noop } from '@domain/utils';
+import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@sim/constants/other';
+import { noop } from '@sim/utils';
 import i18n from '@i18n/config';
 import { isNative } from '@ui-kit/dom_utils';
 import { type ReactNode, useEffect, useState } from 'react';

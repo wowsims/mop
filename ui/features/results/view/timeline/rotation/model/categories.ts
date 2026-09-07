@@ -1,4 +1,4 @@
-import type { ActionId } from '@domain/proto_utils/action_id';
+import type { ActionId } from '@sim/proto_utils/action_id';
 import { OtherAction } from '@generated/proto/common';
 
 export const MELEE_ACTION_CATEGORY = 1;

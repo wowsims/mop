@@ -1,5 +1,5 @@
-import { Player } from '@domain/player';
-import { randomUUID } from '@domain/utils';
+import { Player } from '@sim/player';
+import { randomUUID } from '@sim/utils';
 import {
 	APLValue,
 	APLValueCompare_ComparisonOperator as ComparisonOperator,

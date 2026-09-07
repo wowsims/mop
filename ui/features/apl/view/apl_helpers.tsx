@@ -1,12 +1,12 @@
 /** @jsxImportSource @jsx-vanilla */
-import { CacheHandler } from '@domain/cache_handler';
-import { getEnumValues } from '@domain/collections';
-import { Player, UnitMetadata } from '@domain/player';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
-import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
-import { randomUUID } from '@domain/utils';
+import { CacheHandler } from '@sim/cache_handler';
+import { getEnumValues } from '@sim/collections';
+import { Player, UnitMetadata } from '@sim/player';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '@sim/proto_utils/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
+import { renameAPLReference } from '@sim/proto_utils/apl_utils';
+import { subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
+import { randomUUID } from '@sim/utils';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,

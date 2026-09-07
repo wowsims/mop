@@ -1,4 +1,4 @@
-import type { TalentLocation } from '@domain/talents/config';
+import type { TalentLocation } from '@sim/talents/config';
 
 /** MoP trees are six rows of three, and the vanilla picker hardcodes the six: `getTalentsString()` builds `Array.from(Array(6), …)` whatever the config holds. */
 export const TALENT_ROWS = 6;

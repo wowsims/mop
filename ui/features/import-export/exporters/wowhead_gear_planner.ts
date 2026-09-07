@@ -1,6 +1,6 @@
-import { CHARACTER_LEVEL } from '@domain/constants/mechanics';
-import { raceNames } from '@domain/proto_utils/names';
-import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@domain/wowhead';
+import { CHARACTER_LEVEL } from '@sim/constants/mechanics';
+import { raceNames } from '@sim/proto_utils/names';
+import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@sim/wowhead';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 

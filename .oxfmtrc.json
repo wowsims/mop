@@ -16,6 +16,6 @@
     "ui/**/builds/*.build.json",
     "ui/**/gear_sets/*.gear.json",
     "ui/**/presets/**/*.json",
-    "ui/domain/talents/trees/*.json"
+    "ui/sim/talents/trees/*.json"
   ]
 }

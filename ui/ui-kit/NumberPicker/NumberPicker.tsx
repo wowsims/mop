@@ -1,5 +1,5 @@
 import { Field } from '@base-ui/react/field';
-import { formatToNumber } from '@domain/format';
+import { formatToNumber } from '@sim/format';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
 import { PickerShell } from '@ui-kit/PickerShell';

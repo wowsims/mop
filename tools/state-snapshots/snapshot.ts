@@ -8,49 +8,49 @@
 //
 // Every spec is a declarative `spec.ts` default export, registered explicitly below.
 import { IndividualSimUIConfig } from '../../ui/app/individual_sim_ui';
-import { getSpecConfig, Player } from '../../ui/domain/player';
-import { PlayerSpecs } from '../../ui/domain/player_specs';
-import { Database } from '../../ui/domain/proto_utils/database';
-import { Sim } from '../../ui/domain/sim';
-import { batch } from '../../ui/domain/state/batch';
-import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
-import { registerSpecConfig } from '../../ui/domain/spec_config';
+import { getSpecConfig, Player } from '../../ui/sim/player';
+import { PlayerSpecs } from '../../ui/sim/player_specs';
+import { Database } from '../../ui/sim/proto_utils/database';
+import { Sim } from '../../ui/sim/sim';
+import { batch } from '../../ui/sim/state/batch';
+import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/sim/state/serialization';
+import { registerSpecConfig } from '../../ui/sim/spec_config';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/generated/proto/apl';
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/generated/proto/common';
-import bloodDeathKnightSpec from '../../ui/sims/death_knight/blood/spec';
-import frostDeathKnightSpec from '../../ui/sims/death_knight/frost/spec';
-import unholyDeathKnightSpec from '../../ui/sims/death_knight/unholy/spec';
-import balanceDruidSpec from '../../ui/sims/druid/balance/spec';
-import feralDruidSpec from '../../ui/sims/druid/feral/spec';
-import guardianDruidSpec from '../../ui/sims/druid/guardian/spec';
-import restorationDruidSpec from '../../ui/sims/druid/restoration/spec';
-import beastMasteryHunterSpec from '../../ui/sims/hunter/beast_mastery/spec';
-import marksmanshipHunterSpec from '../../ui/sims/hunter/marksmanship/spec';
-import survivalHunterSpec from '../../ui/sims/hunter/survival/spec';
-import arcaneMageSpec from '../../ui/sims/mage/arcane/spec';
-import fireMageSpec from '../../ui/sims/mage/fire/spec';
-import frostMageSpec from '../../ui/sims/mage/frost/spec';
-import brewmasterMonkSpec from '../../ui/sims/monk/brewmaster/spec';
-import mistweaverMonkSpec from '../../ui/sims/monk/mistweaver/spec';
-import windwalkerMonkSpec from '../../ui/sims/monk/windwalker/spec';
-import holyPaladinSpec from '../../ui/sims/paladin/holy/spec';
-import protectionPaladinSpec from '../../ui/sims/paladin/protection/spec';
-import retributionPaladinSpec from '../../ui/sims/paladin/retribution/spec';
-import disciplinePriestSpec from '../../ui/sims/priest/discipline/spec';
-import holyPriestSpec from '../../ui/sims/priest/holy/spec';
-import shadowPriestSpec from '../../ui/sims/priest/shadow/spec';
-import assassinationRogueSpec from '../../ui/sims/rogue/assassination/spec';
-import combatRogueSpec from '../../ui/sims/rogue/combat/spec';
-import subtletyRogueSpec from '../../ui/sims/rogue/subtlety/spec';
-import elementalShamanSpec from '../../ui/sims/shaman/elemental/spec';
-import enhancementShamanSpec from '../../ui/sims/shaman/enhancement/spec';
-import restorationShamanSpec from '../../ui/sims/shaman/restoration/spec';
-import afflictionWarlockSpec from '../../ui/sims/warlock/affliction/spec';
-import demonologyWarlockSpec from '../../ui/sims/warlock/demonology/spec';
-import destructionWarlockSpec from '../../ui/sims/warlock/destruction/spec';
-import armsWarriorSpec from '../../ui/sims/warrior/arms/spec';
-import furyWarriorSpec from '../../ui/sims/warrior/fury/spec';
-import protectionWarriorSpec from '../../ui/sims/warrior/protection/spec';
+import bloodDeathKnightSpec from '../../ui/specs/death_knight/blood/spec';
+import frostDeathKnightSpec from '../../ui/specs/death_knight/frost/spec';
+import unholyDeathKnightSpec from '../../ui/specs/death_knight/unholy/spec';
+import balanceDruidSpec from '../../ui/specs/druid/balance/spec';
+import feralDruidSpec from '../../ui/specs/druid/feral/spec';
+import guardianDruidSpec from '../../ui/specs/druid/guardian/spec';
+import restorationDruidSpec from '../../ui/specs/druid/restoration/spec';
+import beastMasteryHunterSpec from '../../ui/specs/hunter/beast_mastery/spec';
+import marksmanshipHunterSpec from '../../ui/specs/hunter/marksmanship/spec';
+import survivalHunterSpec from '../../ui/specs/hunter/survival/spec';
+import arcaneMageSpec from '../../ui/specs/mage/arcane/spec';
+import fireMageSpec from '../../ui/specs/mage/fire/spec';
+import frostMageSpec from '../../ui/specs/mage/frost/spec';
+import brewmasterMonkSpec from '../../ui/specs/monk/brewmaster/spec';
+import mistweaverMonkSpec from '../../ui/specs/monk/mistweaver/spec';
+import windwalkerMonkSpec from '../../ui/specs/monk/windwalker/spec';
+import holyPaladinSpec from '../../ui/specs/paladin/holy/spec';
+import protectionPaladinSpec from '../../ui/specs/paladin/protection/spec';
+import retributionPaladinSpec from '../../ui/specs/paladin/retribution/spec';
+import disciplinePriestSpec from '../../ui/specs/priest/discipline/spec';
+import holyPriestSpec from '../../ui/specs/priest/holy/spec';
+import shadowPriestSpec from '../../ui/specs/priest/shadow/spec';
+import assassinationRogueSpec from '../../ui/specs/rogue/assassination/spec';
+import combatRogueSpec from '../../ui/specs/rogue/combat/spec';
+import subtletyRogueSpec from '../../ui/specs/rogue/subtlety/spec';
+import elementalShamanSpec from '../../ui/specs/shaman/elemental/spec';
+import enhancementShamanSpec from '../../ui/specs/shaman/enhancement/spec';
+import restorationShamanSpec from '../../ui/specs/shaman/restoration/spec';
+import afflictionWarlockSpec from '../../ui/specs/warlock/affliction/spec';
+import demonologyWarlockSpec from '../../ui/specs/warlock/demonology/spec';
+import destructionWarlockSpec from '../../ui/specs/warlock/destruction/spec';
+import armsWarriorSpec from '../../ui/specs/warrior/arms/spec';
+import furyWarriorSpec from '../../ui/specs/warrior/fury/spec';
+import protectionWarriorSpec from '../../ui/specs/warrior/protection/spec';
 import { makeMemoryEnv } from './memory_env';
 
 registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);
@@ -90,7 +90,7 @@ registerSpecConfig(subtletyRogueSpec.spec, subtletyRogueSpec);
 
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).
-// When the defaults logic moves into ui/domain/state/, replace this mirror with
+// When the defaults logic moves into ui/sim/state/, replace this mirror with
 // a call to the real implementation — snapshot diffs then verify the move.
 function applySpecDefaults(sim: Sim, player: Player<any>, config: IndividualSimUIConfig<any>) {
 	batch(() => {

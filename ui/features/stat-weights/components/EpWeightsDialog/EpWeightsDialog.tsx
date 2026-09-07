@@ -1,10 +1,10 @@
 import './EpWeightsDialog.scss';
 
-import { useSimHost } from '@domain/context/SimHostContext';
-import { Stats } from '@domain/proto_utils/stats';
-import { RequestTypes } from '@domain/sim_signal_manager';
-import type { StatWeightActionSettings } from '@domain/stat_weight_settings';
-import { subscribePlayerField, subscribeUiField } from '@domain/state/subscriptions';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { Stats } from '@sim/proto_utils/stats';
+import { RequestTypes } from '@sim/sim_signal_manager';
+import type { StatWeightActionSettings } from '@sim/stat_weight_settings';
+import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';

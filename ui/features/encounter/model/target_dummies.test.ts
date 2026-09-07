@@ -1,7 +1,7 @@
-import type { Player } from '@domain/player';
-import type { Sim } from '@domain/sim';
-import { createSimStore, patchKeyed, seedKeyed } from '@domain/state/sim_store';
-import { PLAYER_CHANGE_FIELDS } from '@domain/state/subscriptions';
+import type { Player } from '@sim/player';
+import type { Sim } from '@sim/sim';
+import { createSimStore, patchKeyed, seedKeyed } from '@sim/state/sim_store';
+import { PLAYER_CHANGE_FIELDS } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { beforeEach, describe, expect, it } from 'vitest';
 

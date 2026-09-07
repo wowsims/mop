@@ -1,4 +1,4 @@
-import { Stats } from '@domain/proto_utils/stats';
+import { Stats } from '@sim/proto_utils/stats';
 import { StatWeightsResult } from '@generated/proto/api';
 import { Stat, UnitStats } from '@generated/proto/common';
 import { describe, expect, it, vi } from 'vitest';

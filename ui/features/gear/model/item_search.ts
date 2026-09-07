@@ -1,4 +1,4 @@
-import { professionNames } from '@domain/proto_utils/names';
+import { professionNames } from '@sim/proto_utils/names';
 
 import { ItemData, ItemListType } from '../types';
 

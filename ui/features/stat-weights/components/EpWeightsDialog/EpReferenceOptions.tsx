@@ -1,6 +1,6 @@
-import { useSimHost } from '@domain/context/SimHostContext';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import { useSimHost } from '@sim/context/SimHostContext';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { EnumPicker } from '@ui-kit/EnumPicker';

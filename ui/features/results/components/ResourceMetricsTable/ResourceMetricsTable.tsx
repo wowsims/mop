@@ -1,8 +1,8 @@
 import './ResourceMetricsTable.scss';
 
-import { usePlayer } from '@domain/context/SimHostContext';
-import { ResourceMetrics } from '@domain/proto_utils/sim_result';
-import { orderedResourceTypes } from '@domain/proto_utils/utils';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { ResourceMetrics } from '@sim/proto_utils/sim_result';
+import { orderedResourceTypes } from '@sim/proto_utils/utils';
 import { ResourceType } from '@generated/proto/spell';
 import i18n from '@i18n/config';
 import { translateResourceType } from '@i18n/localization';

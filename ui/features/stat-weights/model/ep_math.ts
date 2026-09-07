@@ -1,4 +1,4 @@
-import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import { Stats, UnitStat } from '@sim/proto_utils/stats';
 import { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
 import { PseudoStat, Stat, UnitStats } from '@generated/proto/common';
 

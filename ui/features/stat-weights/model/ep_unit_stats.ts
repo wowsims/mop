@@ -1,4 +1,4 @@
-import { UnitStat } from '@domain/proto_utils/stats';
+import { UnitStat } from '@sim/proto_utils/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
 
 export type EpStatSet = {

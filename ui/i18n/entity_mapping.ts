@@ -1,6 +1,6 @@
-import { BulkSimItemSlot } from '@domain/bulk/utils';
-import { LaunchStatus } from '@domain/constants/other';
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
+import { BulkSimItemSlot } from '@sim/bulk/utils';
+import { LaunchStatus } from '@sim/constants/other';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import {
 	ArmorType,
 	Class,

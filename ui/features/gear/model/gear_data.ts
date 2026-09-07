@@ -1,6 +1,6 @@
-import type { Player } from '@domain/player';
-import type { EquippedItem } from '@domain/proto_utils/equipped_item';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { Player } from '@sim/player';
+import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 
 import type { GearData } from '../types';

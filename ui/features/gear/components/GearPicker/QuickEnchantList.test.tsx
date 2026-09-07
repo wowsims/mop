@@ -1,12 +1,12 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import type { IndividualSimHost } from '@domain/sim_host';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import type { IndividualSimHost } from '@sim/sim_host';
 import { ItemSlot } from '@generated/proto/common';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const noopSubscribe = () => () => {};
-vi.mock('@domain/state/subscriptions', () => ({ subscribePlayerField: () => noopSubscribe, subscribeSimField: () => noopSubscribe }));
+vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => noopSubscribe, subscribeSimField: () => noopSubscribe }));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 
 const { QuickEnchantList } = await import('./QuickEnchantList');

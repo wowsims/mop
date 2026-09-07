@@ -1,6 +1,6 @@
 import './MetricsCombinedTooltip.scss';
 
-import { formatToCompactNumber } from '@domain/format';
+import { formatToCompactNumber } from '@sim/format';
 import type { SpellSchool } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import clsx from 'clsx';

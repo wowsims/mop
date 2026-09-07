@@ -235,7 +235,7 @@ func protoOverride(name string, className string) string {
 	return name
 }
 func generateTsFile(data ClassData) error {
-	dirPath := "./ui/domain/talents"
+	dirPath := "./ui/sim/talents"
 	if err := os.MkdirAll(dirPath, 0755); err != nil {
 		return fmt.Errorf("error creating directory %s: %w", dirPath, err)
 	}
@@ -281,7 +281,7 @@ type TalentTabConfig struct {
 
 func generateTalentJson(tab TalentTabConfig, className string) error {
 	// Create the directory if it doesn't exist
-	dirPath := "ui/domain/talents/trees"
+	dirPath := "ui/sim/talents/trees"
 	if err := os.MkdirAll(dirPath, 0755); err != nil {
 		return fmt.Errorf("error creating directory %s: %w", dirPath, err)
 	}

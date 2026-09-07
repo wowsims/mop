@@ -22,7 +22,7 @@ func TestBeastMastery(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/sims/hunter/beast_mastery/gear_sets", "p5"),
+			GearSet: core.GetGearSet("../../../ui/specs/hunter/beast_mastery/gear_sets", "p5"),
 
 			Talents:         BeastMasteryTalents,
 			OtherTalentSets: talentSets,
@@ -49,7 +49,7 @@ func TestBeastMastery(t *testing.T) {
 				},
 			}},
 
-			Rotation: core.GetAplRotation("../../../ui/sims/hunter/beast_mastery/apls", "bm"),
+			Rotation: core.GetAplRotation("../../../ui/specs/hunter/beast_mastery/apls", "bm"),
 
 			Profession1: proto.Profession_Engineering,
 			Profession2: proto.Profession_Herbalism,

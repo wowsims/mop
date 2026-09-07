@@ -1,7 +1,7 @@
-import { Player } from '@domain/player';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { subscribePlayerField } from '@domain/state/subscriptions';
-import { randomUUID } from '@domain/utils';
+import { Player } from '@sim/player';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import { randomUUID } from '@sim/utils';
 import { APLAction, APLPrepullAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';

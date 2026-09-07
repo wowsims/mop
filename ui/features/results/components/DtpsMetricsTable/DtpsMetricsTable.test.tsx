@@ -1,4 +1,4 @@
-import { ActionMetrics } from '@domain/proto_utils/sim_result';
+import { ActionMetrics } from '@sim/proto_utils/sim_result';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

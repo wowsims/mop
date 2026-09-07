@@ -1,16 +1,16 @@
 /** @jsxImportSource @jsx-vanilla */
-import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
-import { isDevMode } from '@domain/env';
-import { PlayerSpec, SimStatus } from '@domain/player_spec';
-import { ActionId } from '@domain/proto_utils/action_id';
-import { Gear } from '@domain/proto_utils/gear';
-import { SimResult } from '@domain/proto_utils/sim_result';
-import { RunSimOptions, Sim, SimError } from '@domain/sim';
-import type { ActionGroupItem, SimHost, SimWarning } from '@domain/sim_host';
-import { RequestTypes } from '@domain/sim_signal_manager';
-import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
-import { subscribeSimField } from '@domain/state/subscriptions';
-import { WorkerProgressCallback } from '@domain/worker_pool';
+import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@sim/constants/other';
+import { isDevMode } from '@sim/env';
+import { PlayerSpec, SimStatus } from '@sim/player_spec';
+import { ActionId } from '@sim/proto_utils/action_id';
+import { Gear } from '@sim/proto_utils/gear';
+import { SimResult } from '@sim/proto_utils/sim_result';
+import { RunSimOptions, Sim, SimError } from '@sim/sim';
+import type { ActionGroupItem, SimHost, SimWarning } from '@sim/sim_host';
+import { RequestTypes } from '@sim/sim_signal_manager';
+import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@sim/state/persistence';
+import { subscribeSimField } from '@sim/state/subscriptions';
+import { WorkerProgressCallback } from '@sim/worker_pool';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
@@ -43,7 +43,7 @@ export interface SimUIConfig {
 	noticeText?: string;
 }
 
-export type { ActionGroupItem, SimWarning } from '@domain/sim_host';
+export type { ActionGroupItem, SimWarning } from '@sim/sim_host';
 
 // Shared UI for all individual sims.
 export abstract class SimUI extends Component implements SimHost {

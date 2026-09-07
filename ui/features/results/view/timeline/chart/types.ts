@@ -1,4 +1,4 @@
-import { CombatLog } from '@domain/proto_utils/combat_log';
+import { CombatLog } from '@sim/proto_utils/combat_log';
 import { ChartDataset, ChartOptions } from 'chart.js';
 
 export interface TimelinePoint<L extends CombatLog = CombatLog> {

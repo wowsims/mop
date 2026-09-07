@@ -1,9 +1,9 @@
-import { stringComparator } from '@domain/collections';
-import type { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { Database } from '@domain/proto_utils/database';
-import { subscribePlayerField } from '@domain/state/subscriptions';
-import type { GlyphsConfig } from '@domain/talents/config';
+import { stringComparator } from '@sim/collections';
+import type { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import type { Database } from '@sim/proto_utils/database';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import type { GlyphsConfig } from '@sim/talents/config';
 import { type Class, type Glyphs, ItemQuality } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';

@@ -1,8 +1,8 @@
-import { usePlayer } from '@domain/context/SimHostContext';
-import { isRightClick } from '@domain/env';
-import { externalRel } from '@domain/links';
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { TalentConfig } from '@domain/talents/config';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { isRightClick } from '@sim/env';
+import { externalRel } from '@sim/links';
+import { ActionId } from '@sim/proto_utils/action_id';
+import type { TalentConfig } from '@sim/talents/config';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
 import { useActionId } from '@ui-kit/hooks/useActionId';

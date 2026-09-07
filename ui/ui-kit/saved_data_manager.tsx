@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';

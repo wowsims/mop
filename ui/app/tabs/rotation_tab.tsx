@@ -1,10 +1,10 @@
 /** @jsxImportSource @jsx-vanilla */
-import { omitDeep } from '@domain/collections';
-import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
-import { Player } from '@domain/player';
-import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
-import { batch } from '@domain/state/batch';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { omitDeep } from '@sim/collections';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { Player } from '@sim/player';
+import { isEqualAPLRotation } from '@sim/proto_utils/apl_utils';
+import { batch } from '@sim/state/batch';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { APLGroupListPicker } from '@features/apl/view/apl_group_list_picker';
 import { APLVariablesListPicker } from '@features/apl/view/apl_variables_list_picker';
 import { APLPrePullListPicker } from '@features/apl/view/pre_pull_list_picker';

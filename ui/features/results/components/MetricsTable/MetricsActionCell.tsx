@@ -1,6 +1,6 @@
-import { externalRel } from '@domain/links';
-import type { ActionId } from '@domain/proto_utils/action_id';
-import { setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
+import { externalRel } from '@sim/links';
+import type { ActionId } from '@sim/proto_utils/action_id';
+import { setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';

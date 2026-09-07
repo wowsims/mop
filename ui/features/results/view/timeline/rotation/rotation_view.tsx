@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
 import { Component } from '@ui-kit/component';
 import { findScrollParent } from '@ui-kit/dom_utils';
 import tippy, { type Instance } from 'tippy.js';

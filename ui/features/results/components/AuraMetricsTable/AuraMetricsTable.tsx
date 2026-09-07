@@ -1,4 +1,4 @@
-import { AuraMetrics } from '@domain/proto_utils/sim_result';
+import { AuraMetrics } from '@sim/proto_utils/sim_result';
 import i18n from '@i18n/config';
 import { useMemo } from 'react';
 

@@ -1,16 +1,16 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { Player } from '@domain/player';
-import { Database } from '@domain/proto_utils/database';
-import type { IndividualSimHost } from '@domain/sim_host';
-import { classGlyphsConfig } from '@domain/talents/factory';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player';
+import { Database } from '@sim/proto_utils/database';
+import type { IndividualSimHost } from '@sim/sim_host';
+import { classGlyphsConfig } from '@sim/talents/factory';
 import { Class, Glyphs } from '@generated/proto/common';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const listeners = vi.hoisted(() => new Set<() => void>());
 
-vi.mock('@domain/state/subscriptions', async importOriginal => ({
-	...(await importOriginal<typeof import('@domain/state/subscriptions')>()),
+vi.mock('@sim/state/subscriptions', async importOriginal => ({
+	...(await importOriginal<typeof import('@sim/state/subscriptions')>()),
 	subscribePlayerField: () => (listener: () => void) => {
 		listeners.add(listener);
 		return () => listeners.delete(listener);

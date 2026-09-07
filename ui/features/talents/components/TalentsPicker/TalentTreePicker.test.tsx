@@ -1,5 +1,5 @@
-import { SimHostProvider } from '@domain/context/SimHostContext';
-import type { TalentTreeConfig } from '@domain/talents/config';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { TalentTreeConfig } from '@sim/talents/config';
 import { Class, Spec } from '@generated/proto/common';
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';

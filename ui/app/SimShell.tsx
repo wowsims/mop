@@ -1,7 +1,7 @@
-import { SOCIALS } from '@domain/constants/other';
-import type { PlayerSpec } from '@domain/player_spec';
-import type { Sim } from '@domain/sim';
-import { subscribeAll, subscribeUiField } from '@domain/state/subscriptions';
+import { SOCIALS } from '@sim/constants/other';
+import type { PlayerSpec } from '@sim/player_spec';
+import type { Sim } from '@sim/sim';
+import { subscribeAll, subscribeUiField } from '@sim/state/subscriptions';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';

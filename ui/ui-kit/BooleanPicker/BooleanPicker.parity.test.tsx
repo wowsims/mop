@@ -1,4 +1,4 @@
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { fireEvent } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import { BooleanPicker as VanillaBooleanPicker, type BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';

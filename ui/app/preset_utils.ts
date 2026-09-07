@@ -1,4 +1,4 @@
-import { Player } from '@domain/player';
+import { Player } from '@sim/player';
 import type {
 	PresetBuild,
 	PresetBuildOptions,
@@ -15,10 +15,10 @@ import type {
 	PresetSettings,
 	PresetTalents,
 	PresetTalentsOptions,
-} from '@domain/presets/types';
-import { specTypeFunctions } from '@domain/proto_utils/spec_functions';
-import type { SpecRotation } from '@domain/proto_utils/spec_types';
-import { Stats } from '@domain/proto_utils/stats';
+} from '@sim/presets/types';
+import { specTypeFunctions } from '@sim/proto_utils/spec_functions';
+import type { SpecRotation } from '@sim/proto_utils/spec_types';
+import { Stats } from '@sim/proto_utils/stats';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	Cooldowns,
@@ -52,7 +52,7 @@ export type {
 	PresetSettings,
 	PresetTalents,
 	PresetTalentsOptions,
-} from '@domain/presets/types';
+} from '@sim/presets/types';
 
 export const makePresetGear = (name: string, gearJson: any, options?: PresetGearOptions): PresetGear => {
 	const gear = EquipmentSpec.fromJson(gearJson);

@@ -1,4 +1,4 @@
-import { useSimHost } from '@domain/context/SimHostContext';
+import { useSimHost } from '@sim/context/SimHostContext';
 import { useSyncExternalStore } from 'react';
 
 import type { SimResultData } from '../model/result_data';

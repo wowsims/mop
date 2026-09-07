@@ -1,6 +1,6 @@
-import type { Player } from '@domain/player';
-import type { HunterSpecs } from '@domain/proto_utils/spec_types';
-import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { Player } from '@sim/player';
+import type { HunterSpecs } from '@sim/proto_utils/spec_types';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

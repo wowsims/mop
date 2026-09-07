@@ -1,4 +1,4 @@
-import { ActionId } from '@domain/proto_utils/action_id';
+import { ActionId } from '@sim/proto_utils/action_id';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { ActionIdState } from '@ui-kit/hooks/useActionId';
 import { describe, expect, it, vi } from 'vitest';
@@ -9,7 +9,7 @@ const resolved = vi.hoisted(() => ({ state: { iconUrl: '', name: '', href: '', r
 const wowhead = vi.hoisted(() => ({ calls: [] as Array<unknown> }));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => resolved.state }));
-vi.mock('@domain/proto_utils/action_id/dom', () => ({ setActionIdWowheadDataset: (...args: Array<unknown>) => wowhead.calls.push(args) }));
+vi.mock('@sim/proto_utils/action_id/dom', () => ({ setActionIdWowheadDataset: (...args: Array<unknown>) => wowhead.calls.push(args) }));
 
 const actionId = ActionId.empty('Kill Command');
 

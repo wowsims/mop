@@ -1,4 +1,4 @@
-import { stDevToConf90 } from '@domain/math';
+import { stDevToConf90 } from '@sim/math';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 

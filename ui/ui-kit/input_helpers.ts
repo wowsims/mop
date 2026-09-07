@@ -1,10 +1,10 @@
-import { formatToNumber } from '@domain/format';
-import { Player } from '@domain/player';
-import { ActionId } from '@domain/proto_utils/action_id';
-import type { ClassOptions, SpecOptions, SpecRotation } from '@domain/proto_utils/spec_types';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
-import { subscribePlayerField } from '@domain/state/subscriptions';
-import { randomUUID } from '@domain/utils';
+import { formatToNumber } from '@sim/format';
+import { Player } from '@sim/player';
+import { ActionId } from '@sim/proto_utils/action_id';
+import type { ClassOptions, SpecOptions, SpecRotation } from '@sim/proto_utils/spec_types';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import { randomUUID } from '@sim/utils';
 import { Spec } from '@generated/proto/common';
 
 import { BooleanPickerConfig } from './pickers/boolean_picker';
