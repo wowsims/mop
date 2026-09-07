@@ -19,7 +19,7 @@ export const SPEC_PAGE_TEMPLATE = 'index_template.html';
  * makefile's `PAGE_INDECES` used: `ui/specs/<class>/<spec>/spec.ts(x)`.
  */
 export function discoverSpecPages(uiRoot: string): string[] {
-	const specsRoot = path.join(uiRoot, 'sims');
+	const specsRoot = path.join(uiRoot, 'specs');
 	return glob
 		.sync(path.join(specsRoot, '*/*/spec.{ts,tsx}').replace(/\\/g, '/'))
 		.map(specFile => path.relative(specsRoot, path.dirname(specFile)).split(path.sep).join('/'))
@@ -28,6 +28,7 @@ export function discoverSpecPages(uiRoot: string): string[] {
 
 export function specPages(uiRoot: string): Plugin {
 	const specs = discoverSpecPages(uiRoot);
+	if (!specs.length) throw new Error(`spec-pages: no spec pages found under ${path.join(uiRoot, 'specs')}.`);
 	const templatePath = path.resolve(uiRoot, SPEC_PAGE_TEMPLATE);
 
 	return {

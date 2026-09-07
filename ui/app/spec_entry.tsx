@@ -10,9 +10,9 @@ import { createRoot } from 'react-dom/client';
 
 import { SimApp } from './SimApp';
 
-const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../sims/*/*/spec.{ts,tsx}');
+const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../specs/*/*/spec.{ts,tsx}');
 
-// '/mop/warrior/arms/' -> '../sims/warrior/arms/spec' (then tried as .ts and .tsx —
+// '/mop/warrior/arms/' -> '../specs/warrior/arms/spec' (then tried as .ts and .tsx —
 // a couple of specs need real JSX for their reforge tooltips).
 const specModuleKey = (pathname: string): string => {
 	const base = import.meta.env.BASE_URL || '/';
@@ -20,7 +20,7 @@ const specModuleKey = (pathname: string): string => {
 		.replace(/^\/+/, '')
 		.replace(/index\.html$/, '')
 		.replace(/\/+$/, '');
-	return `../sims/${rel}/spec`;
+	return `../specs/${rel}/spec`;
 };
 
 // An async IIFE rather than top-level await: the vite build target does not

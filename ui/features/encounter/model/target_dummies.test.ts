@@ -69,7 +69,7 @@ describe('watchTargetDummies', () => {
 		expect(dummies).toBe(3);
 	});
 
-	// Monks' count is talent-driven (sims/monk/shared/derived.ts) — the rule would fight the code
+	// Monks' count is talent-driven (specs/monk/shared/derived.ts) — the rule would fight the code
 	// that sets it.
 	it.each([Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk])('never arms for a monk (%i)', spec => {
 		watchTargetDummies(makePlayer({ getSpec: () => spec }), sim);
