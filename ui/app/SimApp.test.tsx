@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
-const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement }> = [];
+const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }> = [];
 // Recorded rather than read off the document: the results pane is vanilla, so its metrics divs are
 // only ever children of a shell this test does not build.
 const resultsContainers: Array<Record<string, HTMLElement>> = [];
@@ -28,6 +28,11 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly tabs = new SimTabRegistry(this.simTabContentsContainer);
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			readonly sidebarStatsContainer: HTMLElement;
+			readonly sidebarResultsContainer: HTMLElement;
+			// The sidebar panel is React now; the shell only owns the store it drives and the registry
+			// the warnings zone reads.
+			readonly resultsPanel = {} as never;
+			readonly warnings = {} as never;
 			// React fills the talents tab body through this, the same way it fills the sidebar.
 			readonly talentsTab = { contentContainer: document.createElement('div') };
 			readonly settingsTab = { contentContainer: document.createElement('div') };
@@ -44,11 +49,12 @@ vi.mock('./individual_sim_ui', async () => {
 			};
 			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
 			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
-			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement }) {
+			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }) {
 				constructions.push(dom);
 				resultsContainers.push(this.detailedResults);
 				dom.root.classList.add('sim-ui');
 				this.sidebarStatsContainer = dom.sidebarStats;
+				this.sidebarResultsContainer = dom.sidebarResults;
 			}
 		},
 	};
@@ -56,6 +62,7 @@ vi.mock('./individual_sim_ui', async () => {
 
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
+vi.mock('@features/results/components/SimResultsPanel', () => ({ SimResultsPanel: () => <div className="results-viewer" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
@@ -128,6 +135,11 @@ describe('SimApp', () => {
 	it('portals the sidebar stats into the container the shell built', () => {
 		render(<SimApp player={player} def={def} />);
 		expect(constructions[0].sidebarStats.querySelectorAll('.character-stats-root')).toHaveLength(1);
+	});
+
+	it('portals the results panel into the container the shell built', () => {
+		render(<SimApp player={player} def={def} />);
+		expect(constructions[0].sidebarResults.querySelectorAll('.results-viewer')).toHaveLength(1);
 	});
 
 	it('portals every ported metrics table into the div the results pane built', () => {

@@ -10,8 +10,9 @@ import { RequestTypes } from '@domain/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
 import { subscribeSimField } from '@domain/state/subscriptions';
 import { WorkerProgressCallback } from '@domain/worker_pool';
+import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
+import { ResultsPanelStore } from '@features/results/model/results_panel_store';
 import { WarningsRegistry } from '@features/results/model/warnings';
-import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
 import { ErrorOutcomeType } from '@generated/proto/api';
 import i18n from '@i18n/config';
@@ -50,7 +51,7 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly config: SimUIConfig;
 	readonly disabled: boolean;
 
-	readonly resultsViewer: ResultsViewer;
+	readonly resultsPanel = new ResultsPanelStore();
 	readonly warnings = new WarningsRegistry();
 	readonly simHeader: SimHeader;
 
@@ -101,35 +102,11 @@ export abstract class SimUI extends Component implements SimHost {
 			},
 		}).rootElem;
 
-		const resultsViewerElem = dom.sidebarResults;
-		this.resultsViewer = new ResultsViewer(resultsViewerElem, this.warnings);
-
 		this.simTabContentsContainer = dom.main;
+	}
 
-		if (this.disabled) {
-			resultsViewerElem.appendChild(
-				<div className="sim-ui-unlaunched-container d-flex flex-column align-items-center text-center mt-auto mb-auto ms-auto me-auto">
-					<i className="fas fa-ban fa-3x mb-2" />
-					<h6>{i18n.t('sim.unlaunched.title')}</h6>
-					<p>
-						{i18n.t('sim.unlaunched.contribute_message')}
-						<br />
-						{i18n.t('sim.unlaunched.discord_message')}{' '}
-						<a href="https://discord.gg/p3DgvmnDCS" target="_blank">
-							Discord
-						</a>
-						!
-					</p>
-					{this.config.spec.isHealingSpec && (
-						<p>
-							{i18n.t('sim.unlaunched.healing_message')}
-							<br />
-							{i18n.t('sim.unlaunched.qe_live_message')} <a href="https://questionablyepic.com/live/">QE Live</a>!
-						</p>
-					)}
-				</div>,
-			);
-		}
+	get resultsViewer(): ResultsPanelHandle {
+		return this.resultsPanel;
 	}
 
 	get sidebarResultsContainer(): HTMLElement {

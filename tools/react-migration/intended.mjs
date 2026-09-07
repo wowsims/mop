@@ -35,6 +35,12 @@ export const INTENDED = [
 		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Four is the settings pane's ceiling: buffs, debuffs and the two external-cooldown blocks, all four together only on warrior/protection. It rises as further tabs stop building vanilla ContentBlocks",
 	},
 	{
+		base: 'i.fa-3x.fa-exclamation-triangle.fas',
+		react: 'i.fa-3x.fa-triangle-exclamation.fas',
+		max: 1,
+		why: "the sidebar's warning trigger draws its glyph through Icon, which spells FA6's canonical name where the vanilla button hardcoded FA5's alias. Same glyph in the pinned 6.0.0 CSS. One warning trigger per sidebar, and the sidebar is in parity.mjs's shell region, so the cap is exact",
+	},
+	{
 		base: 'table.metrics-table.tablesorter',
 		react: 'table.metrics-table',
 		max: 21,

@@ -13,7 +13,7 @@ import type { SimUIHost } from '@ui-kit/sim_host';
 import type { BulkTab } from './bulk/view/bulk_tab';
 import type { ReforgeOptimizer } from './reforge/view/reforge_panel';
 import type { ResultChannel } from './results/model/result_channel';
-import type { ResultsPanelHandle } from './results/view/results_panel_handle';
+import type { ResultsPanelHandle } from './results/model/results_panel_handle';
 import type { IndividualSimUIConfig } from './spec_config';
 
 // Config for displaying a warning to the user whenever a condition is met.

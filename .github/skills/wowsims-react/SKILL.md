@@ -364,6 +364,7 @@ of the duplication sweep was to build each shape once.
 | `DtpsMetricsTable` | `ui/features/results/components/DtpsMetricsTable/` | `features/results/view/dtps_metrics.tsx` (**deleted** — one consumer) | nothing — the result comes from `useSimResult`; it reads **no** threat flag, because it shows no threat | the nine columns (Miss % before Crit %, the reverse of damage), that the rows are the *targets'* damage actions and not the player's, `shouldCollapse: () => true` because a target is never a pet, and four column tooltips plus two header tooltips — none of them threat |
 | `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
 | `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource`. Owns `ResourceMetricsTable.scss`, co-located from `scss/core/components/detailed_results/_resource_metrics.scss` |
+| `SimResultsPanel` | `ui/features/results/components/SimResultsPanel/` | `features/results/view/results_viewer.tsx` (**deleted** — one consumer, a feature view), and with it the last importer of `ui-kit/sim_toolbar_item.tsx` (**deleted** too; `app/header/SimToolbar/ToolbarItem.tsx` had already superseded it everywhere else) | `panel` (the `ResultsPanelStore` the shell drives) and `warnings` (the `WarningsRegistry`); `disabled` and the healing flag come from the host | the four zones in order and the visibility table across them — `setPending` and `setContent` leave the button zone alone, `hideAll` takes it down without removing the button — plus the same split `ProgressTrackerDialog` exists for: the stage is React state, and dps, hps and the iteration counter are `textContent` writes off `ResultsPanelStore.onProgress`, never renders. **`.results-content` is rendered here and never given a React child**: `SimResultsManager` still `replaceChildren`s the finished topline into it, and its builder has three consumers, one the bulk renderer — which is why the running block renders inside `.results-pending` instead, and why the previous run's topline sits there hidden and inert for the length of the next run. Two seams are load-bearing and neither is visible to a browser gate: the store's `notify` is `flushSync`, because the run action reads the panel back in the click's own task, and `latestProgress` is a mutable field **outside** the `useSyncExternalStore` snapshot that `SimProgress` reads in a mount layout effect, because tick one carries both the stage change and the first numbers. Beside it: `SimProgress` (the running block and its three refs), `SimWarnings` (the zone, the `hide` toggle and the tooltip — read through `useStoreSubscribe`, because `getContents()` builds a fresh array per call), `AbortButton` (Stop, which `flushSync`es its own relabel and disable before calling the handler) and `UnlaunchedNotice` (folded in from `sim_ui.tsx`, so it can no longer render before the panel it is supposed to follow). Owns `SimResultsPanel.scss` — `.results-pending .loader` from `_sim_action.scss` and `.warning-zone [data-tippy-root]` from `_sidebar.scss`, re-keyed to `.warning-zone .sim-tooltip`; `.results-sim*` deliberately stays global, the bulk renderer emits it |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1325,6 +1326,72 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Sim progress units 4 and 5: the sidebar panel is React, and `results_viewer.tsx` is
+  gone.** `SimResultsPanel` renders the four zones, `SimProgress` the running block, `SimWarnings`
+  the trigger and its tooltip, `AbortButton` the Stop button, and `UnlaunchedNotice` the block
+  `sim_ui.tsx` used to append after the viewer — which is the reason it was folded in rather than
+  left imperative: a portal renders after construction, so leaving it there would have reversed the
+  two at load. Deleting the viewer took the last importer of `ui-kit/sim_toolbar_item.tsx` with it;
+  `app/header/SimToolbar/ToolbarItem.tsx` had already superseded it at both remaining call sites, so
+  that file goes too.
+
+  **The seam is `ResultsPanelStore` in `features/results/model/`, and two of its properties are
+  load-bearing in ways no browser gate can see.** First, `notify()` is `flushSync`. React schedules
+  an update from outside React on a microtask, and `addSimResultsAction` reads the panel back **in
+  the click's own task** — `sim-progress.mjs`'s `START` clicks and calls `getComputedStyle` inside
+  one `evaluate`, deliberately (`:95-98`). Measured before writing anything: a plain `notify()` left
+  the spinner, the Stop button and the French relabel a task behind, six red lines. There was no
+  `flushSync` anywhere in `ui/` before this. Second, `latestProgress` is a mutable field **outside**
+  the `useSyncExternalStore` snapshot, and `SimProgress` reads it in a mount layout effect: tick one
+  carries both the stage change and the first numbers, and the block it mounts does not exist when
+  the callback returns. The gate waits for text to appear, so it passes on tick two and can never
+  catch that — `SimResultsPanel.test.tsx` pins it, and deleting the read fails exactly that case.
+  Everything from tick two on goes to a listener that writes `textContent`; 100 ticks, zero commits,
+  Profiler-checked.
+
+  **`.results-content` is rendered by React and never given a React child.** `SimResultsManager`
+  still `replaceChildren`s the finished topline into it, and `makeToplineResultsContent` has three
+  consumers — one of them the bulk renderer — so it does not port here. That is why the running block
+  renders inside `.results-pending` instead of beside the topline: the one deliberate divergence, and
+  the gate prints the block's parent rather than asserting it for exactly that reason. Consequence
+  worth knowing before someone reads it as a leak: the previous run's topline now sits in
+  `.results-content`, hidden and inert, for the length of the next run. `reset()` has already
+  destroyed every tooltip and listener on it. The invariant holds only while React's child list for
+  that node stays `null`; the test mutation-checks it, and a real child there fails it.
+
+  **Load-time parity is unchanged but for one line.** Eight of the panel's nine serialised lines are
+  byte-identical on all six specs; the ninth is `i.fa-3x.fa-exclamation-triangle.fas` becoming
+  `i.fa-3x.fa-triangle-exclamation.fas`, because `Icon` resolves FA5's alias to FA6's canonical name.
+  New `INTENDED` entry, `max: 1` — the sidebar is in `parity.mjs`'s shell region, so the cap is exact,
+  and `parity.mjs` then requires it to still be observed. A hidden zone uses the `hidden` attribute,
+  which borrows `[hidden]{display:none!important}` from Bootstrap's reboot; inside `.results-pending`
+  the spinner/block swap is a plain conditional render, because no tree gate ever sees that subtree
+  in its running state.
+
+  **SCSS: two rules moved, and the second one had died.** `.results-pending .loader { margin: auto }`
+  from `_sim_action.scss` and `.warning-zone [data-tippy-root] { width: 100% }` from
+  `_sidebar.scss`, the latter **re-keyed** to `.warning-zone .sim-tooltip` because react-tooltip
+  renders in place and creates no positioning wrapper — so the old selector would have matched
+  nothing. `.results-sim` and `.results-sim-*` deliberately stayed global: `bulk_tab.tsx`,
+  `bulk_sim_results_renderer.tsx` and `results_action.tsx` all emit those names. Measured rather than
+  assumed: the loader's `margin` computes to `0px` on **both** builds, because `.results-viewer`
+  shrink-to-fits its widest visible child and while pending that child is the 120px loader — the rule
+  is inert in this layout on either build, moved as-is rather than deleted. The tooltip is the
+  prescribed once-per-new-container screenshot: not clipped in `.warning-zone`, so no
+  `positionStrategy="fixed"`. It does change width — 273px under tippy, 192px under react-tooltip,
+  where `Tooltip.scss`'s `max-width` now caps a box that used to be a wrapper — which is why no
+  cross-build width assertion was added to the gate. Master's version overflows
+  `.sim-sidebar-content` by 5px; the React one sits 40px inside it.
+
+  **Two focus rings, because `scss/shared/_global.scss:62` clears `outline` on every button.**
+  Measured on both ports: the warning trigger and the Stop button report `outline-style: none` on
+  master and a 1px solid ring here. Invisible to `parity.mjs` (a computed style), so it is recorded
+  here rather than in `INTENDED`.
+
+  **The gate was not touched.** All thirty `sim-progress.mjs` invariants pass on `:3402` with no edit
+  to the file, and the three defect assertions still fail on `:3401`, which is what keeps them
+  evidence. The only gate change in the unit is the one `INTENDED` entry.
 
 - 2026-09-07 **Results unit 8: the vanilla island deleted, the SCSS co-located, and the two deferred
   accessibility changes landed.** `metrics_table.tsx`, `table_sorter.ts`, `metrics_total_bar.tsx` and

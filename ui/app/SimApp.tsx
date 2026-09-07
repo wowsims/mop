@@ -6,6 +6,7 @@ import { DamageMetricsTable } from '@features/results/components/DamageMetricsTa
 import { DtpsMetricsTable } from '@features/results/components/DtpsMetricsTable';
 import { HealingMetricsTable } from '@features/results/components/HealingMetricsTable';
 import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
+import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
@@ -69,6 +70,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						</>,
 						simUI.simHeader.importExportContainer,
 					)}
+					{createPortal(<SimResultsPanel panel={simUI.resultsPanel} warnings={simUI.warnings} />, simUI.sidebarResultsContainer)}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<DamageMetricsTable />, simUI.detailedResults.damageMetricsContainer)}
 					{createPortal(<HealingMetricsTable />, simUI.detailedResults.healingMetricsContainer)}
