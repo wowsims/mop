@@ -237,7 +237,17 @@ export class ReforgeOptimizerModel {
 		});
 	}
 
-	async optimizeReforges(gear?: Gear) {
+	optimizeReforges(gear?: Gear) {
+		return this.sim.runs.start('reforge-optimize', () => this.runReforgeOptimization(gear));
+	}
+
+	// Left unconditional rather than routed through `SimRuns.abort`: bulk's pre-pass registers under
+	// this type without going through `start`, so a store-gated abort would silently miss it.
+	async abortReforgeOptimization() {
+		await this.sim.signalManager.abortType(RequestTypes.ReforgeOptimize);
+	}
+
+	private async runReforgeOptimization(gear?: Gear) {
 		if (isDevMode()) console.log('Starting Reforge optimization...');
 		const previousGear = gear || this.player.getGear();
 		this.previousGear = previousGear;
@@ -293,10 +303,6 @@ export class ReforgeOptimizerModel {
 		return unitStat.equalsStat(Stat.StatMasteryRating)
 			? ((value / Mechanics.MASTERY_RATING_PER_MASTERY_POINT) * this.player.getMasteryPerPointModifier()).toFixed(2)
 			: unitStat.convertDefaultUnitsToPercent(value)!.toFixed(2);
-	}
-
-	async abortReforgeOptimization() {
-		await this.sim.signalManager.abortType(RequestTypes.ReforgeOptimize);
 	}
 
 	fromProto(proto: ReforgeSettings) {

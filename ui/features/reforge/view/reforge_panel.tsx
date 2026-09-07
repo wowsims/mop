@@ -8,7 +8,7 @@ import { StatCap, Stats, UnitStat } from '@sim/proto_utils/stats';
 import { RelativeStatCap } from '@sim/reforge_settings';
 import type { ActionGroupItem, IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@sim/state/subscriptions';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField, subscribeRunState } from '@sim/state/subscriptions';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import { ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { ItemSlot, Stat } from '@generated/proto/common';
@@ -118,6 +118,7 @@ export class ReforgeOptimizer {
 			label: i18n.t('sidebar.buttons.suggest_reforges.title'),
 			cssClass: 'suggest-reforges-action-button flex-grow-1',
 			onClick: async () => {
+				if (simUI.sim.runs.isRunning('reforge-optimize')) return;
 				this.reforgeDoneToast?.hide();
 				this.reforgeDoneToast = null;
 
@@ -159,6 +160,15 @@ export class ReforgeOptimizer {
 			children: [startReforgeOptimizationButton, contextMenuButton],
 		} = simUI.addActionGroup([startReforgeOptimizationEntry, contextMenuEntry], {
 			cssClass: 'suggest-reforges-settings-group',
+		});
+
+		// The button had a cancelling guard and no running flag, so a second click started a second
+		// solve. It reads the run slice through the same helper every other picker here uses.
+		subscribeRunState(
+			simUI.sim,
+			'reforge-optimize',
+		)(() => {
+			startReforgeOptimizationButton.disabled = simUI.sim.runs.isRunning('reforge-optimize');
 		});
 
 		if (this.softCapsConfig)

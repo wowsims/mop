@@ -1513,7 +1513,9 @@ export class BulkTab extends SimTab {
 		};
 
 		try {
-			await this.simUI.sim.signalManager.abortType(RequestTypes.IndividualSim);
+			// Bulk owns its own request type now, so this has to name both: a batch still replaces an
+			// in-flight single sim, and it still replaces a previous batch, which naming one would drop.
+			await this.simUI.sim.signalManager.abortType(RequestTypes.IndividualSim | RequestTypes.BulkSim);
 			this.simStart = new Date().getTime();
 			this.originalGear = this.simUI.player.getGear();
 
@@ -1627,7 +1629,10 @@ export class BulkTab extends SimTab {
 		}
 
 		this.bulkSimAbortPromise = (async () => {
-			const abortTasks: Promise<unknown>[] = [this.simUI.sim.signalManager.abortType(RequestTypes.All)];
+			// Narrower than `All`: cancelling a batch must not also cancel a stat-weights run, which is
+			// the whole point of bulk having its own type. Reforge stays in because the batch's own
+			// pre-pass registers under it.
+			const abortTasks: Promise<unknown>[] = [this.simUI.sim.signalManager.abortType(RequestTypes.BulkSim | RequestTypes.ReforgeOptimize)];
 			if (this.simUI.reforger) {
 				abortTasks.push(this.simUI.reforger.abortReforgeOptimization());
 			}

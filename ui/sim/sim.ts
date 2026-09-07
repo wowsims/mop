@@ -395,7 +395,7 @@ export class Sim {
 	): Promise<BulkSimResult | ErrorOutcome> {
 		this.requireRunnableSetup();
 
-		const signals = this.signalManager.registerRunning(RequestTypes.IndividualSim);
+		const signals = this.signalManager.registerRunning(RequestTypes.BulkSim);
 		try {
 			await this.waitForInit();
 

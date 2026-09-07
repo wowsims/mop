@@ -1338,6 +1338,28 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **Run controller units 4 and 5: bulk gets its own request type, and the reforge button
+  finally disables.** `runBulkSim` registers under `RequestTypes.BulkSim` (0x8) instead of borrowing
+  the individual sim's, so the two can be told apart. Both of bulk's masks had to be widened rather
+  than simply renamed: the pre-run abort names `IndividualSim | BulkSim`, because a batch still has
+  to replace an in-flight single sim *and* a previous batch — naming one would silently drop the
+  other — and the cancel drops from `All` to `BulkSim | ReforgeOptimize`, keeping the batch's own
+  reforge pre-pass while leaving a stat-weights run alone, which is the whole point of the split.
+
+  `optimizeReforges` runs through `SimRuns.start`, and `reforge_panel.tsx` subscribes to the slice
+  through `subscribeRunState` — the same helper every other picker on that panel already uses — so
+  a vanilla component gains a running flag without porting. That is what unit 5 exists to
+  demonstrate. `abortReforgeOptimization` deliberately keeps calling `signalManager.abortType`
+  directly rather than `SimRuns.abort`: bulk's pre-pass registers under that type *without* going
+  through `start`, so a store-gated abort would silently miss it.
+
+  **Neither unit has automated cover, and the manager test does not reach either.** Flipping the
+  registration back to `IndividualSim` leaves all four `sim_signal_manager` tests green, because
+  those exercise the manager directly and never call `runBulkSim`. There are no reforge tests at
+  all. The reforge claim was checked in the browser instead — a `MutationObserver` on the button's
+  `disabled` attribute records `[false, true, false]` across one solve. Bulk's remains manual: start
+  a batch and a stat-weights run and confirm they no longer cancel each other.
+
 - 2026-09-07 **Named saved-data hooks, one per storage slot, over a generic `useSavedData`.** The
   six saved-data keys — EP weights, gear, talents, rotations, settings, encounters — all write the
   same thing: `Record<name, toJson(data)>` under one key. Read side by side, only the key and the
