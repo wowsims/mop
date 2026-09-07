@@ -16,10 +16,14 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 
 import { trackEvent } from '../../../tracking/analytics';
+import { SimRunKind } from '@sim/state/sim_store';
 
 export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
-	let isRunning = false;
+	const runs = simUI.sim.runs;
+	// Not `runs.isAborting`: that tracks the kind's run, which the facade clears as the run settles,
+	// while this tracks whether *this click's* abort is still in flight. Substituting one for the
+	// other leaves the button disabled and the Stop zone up after the next run completes.
 	let waitAbort = false;
 
 	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
@@ -31,20 +35,18 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 		});
 		const button = ev.target as HTMLButtonElement;
 		button.disabled = true;
-		if (!isRunning) {
-			isRunning = true;
-
+		if (!runs.isRunning(SimRunKind.IndividualSim)) {
 			resultsViewer.addAbortButton(async () => {
 				if (waitAbort) return;
 				try {
 					waitAbort = true;
-					await simUI.sim.signalManager.abortType(RequestTypes.IndividualSim);
+					await runs.abort(SimRunKind.IndividualSim);
 				} catch (error) {
 					console.error('Error on sim abort!');
 					console.error(error);
 				} finally {
 					waitAbort = false;
-					if (!isRunning) button.disabled = false;
+					if (!runs.isRunning(SimRunKind.IndividualSim)) button.disabled = false;
 				}
 			});
 
@@ -54,7 +56,6 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 
 			resultsViewer.removeAbortButton();
 			if (!waitAbort) button.disabled = false;
-			isRunning = false;
 		}
 	});
 

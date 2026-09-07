@@ -28,6 +28,7 @@ import { ref } from 'tsx-vanilla';
 import { trackEvent, trackPageView } from '../../../tracking/analytics';
 import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
 import { renderSavedEPWeights } from '../../stat-weights/view/saved_ep_weights';
+import { SimRunKind } from '@sim/state/sim_store';
 
 // The model types are part of the panel's public surface — spec configs import
 // `ReforgeOptimizer` and `ReforgeOptimizerOptions` from this module.
@@ -118,7 +119,7 @@ export class ReforgeOptimizer {
 			label: i18n.t('sidebar.buttons.suggest_reforges.title'),
 			cssClass: 'suggest-reforges-action-button flex-grow-1',
 			onClick: async () => {
-				if (simUI.sim.runs.isRunning('reforge-optimize')) return;
+				if (simUI.sim.runs.isRunning(SimRunKind.ReforgeOptimize)) return;
 				this.reforgeDoneToast?.hide();
 				this.reforgeDoneToast = null;
 
@@ -166,9 +167,9 @@ export class ReforgeOptimizer {
 		// solve. It reads the run slice through the same helper every other picker here uses.
 		subscribeRunState(
 			simUI.sim,
-			'reforge-optimize',
+			SimRunKind.ReforgeOptimize,
 		)(() => {
-			startReforgeOptimizationButton.disabled = simUI.sim.runs.isRunning('reforge-optimize');
+			startReforgeOptimizationButton.disabled = simUI.sim.runs.isRunning(SimRunKind.ReforgeOptimize);
 		});
 
 		if (this.softCapsConfig)

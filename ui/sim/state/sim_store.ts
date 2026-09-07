@@ -204,9 +204,16 @@ export interface BulkSlice {
 }
 
 // One user-visible operation, not one worker request: the combustion calculator
-// issues ten requests under one bar and one stop button.
-export const SIM_RUN_KINDS = ['individual-sim', 'bulk-sim', 'stat-weights', 'reforge-optimize'] as const;
-export type SimRunKind = (typeof SIM_RUN_KINDS)[number];
+// issues ten requests under one bar and one stop button. The values are in-memory store keys only,
+// so they are free to change; they read as they do to stay legible in a devtools store dump.
+export enum SimRunKind {
+	IndividualSim = 'individual-sim',
+	BulkSim = 'bulk-sim',
+	StatWeights = 'stat-weights',
+	ReforgeOptimize = 'reforge-optimize',
+}
+
+export const SIM_RUN_KINDS: ReadonlyArray<SimRunKind> = Object.values(SimRunKind);
 
 export interface RunSlice {
 	isRunning: boolean;

@@ -16,6 +16,7 @@ import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@sim/state
 import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@sim/state/subscriptions';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@generated/proto/api';
 import { Class, ItemSlot, Spec, Stat } from '@generated/proto/common';
+import { SimRunKind } from '@sim/state/sim_store';
 
 export type StatTooltipContent = { [key in Stat]?: () => Element | string };
 
@@ -238,7 +239,7 @@ export class ReforgeOptimizerModel {
 	}
 
 	optimizeReforges(gear?: Gear) {
-		return this.sim.runs.start('reforge-optimize', () => this.runReforgeOptimization(gear));
+		return this.sim.runs.start(SimRunKind.ReforgeOptimize, () => this.runReforgeOptimization(gear));
 	}
 
 	// Left unconditional rather than routed through `SimRuns.abort`: bulk's pre-pass registers under

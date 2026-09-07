@@ -1,12 +1,12 @@
 import { RequestTypes } from './sim_signal_manager';
-import type { SimRunKind, SimStore } from './state/sim_store';
-import { patchRun, SIM_RUN_KINDS } from './state/sim_store';
+import type { SimStore } from './state/sim_store';
+import { patchRun, SIM_RUN_KINDS, SimRunKind } from './state/sim_store';
 
 const REQUEST_TYPE: Record<SimRunKind, RequestTypes> = {
-	'individual-sim': RequestTypes.IndividualSim,
-	'bulk-sim': RequestTypes.BulkSim,
-	'stat-weights': RequestTypes.StatWeights,
-	'reforge-optimize': RequestTypes.ReforgeOptimize,
+	[SimRunKind.IndividualSim]: RequestTypes.IndividualSim,
+	[SimRunKind.BulkSim]: RequestTypes.BulkSim,
+	[SimRunKind.StatWeights]: RequestTypes.StatWeights,
+	[SimRunKind.ReforgeOptimize]: RequestTypes.ReforgeOptimize,
 };
 
 export interface RunContext<TProgress> {

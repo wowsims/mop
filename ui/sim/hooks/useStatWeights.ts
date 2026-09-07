@@ -6,6 +6,7 @@ import { usePlayer } from '../context/SimHostContext';
 import { useSim } from '../context/SimHostContext';
 import type { SimRunState } from './useSimRun';
 import { useSimRun } from './useSimRun';
+import { SimRunKind } from '../state/sim_store';
 
 export interface StatWeightsArgs {
 	epStats: Array<Stat>;
@@ -24,7 +25,7 @@ export interface UseStatWeightsResult extends SimRunState {
 export const useStatWeights = ({ onProgress }: UseStatWeightsOptions = {}): UseStatWeightsResult => {
 	const sim = useSim();
 	const player = usePlayer();
-	const run = useSimRun('stat-weights');
+	const run = useSimRun(SimRunKind.StatWeights);
 
 	// Read at emit time, so a caller may pass a fresh closure every render without restarting.
 	const progressRef = useRef(onProgress);
@@ -32,7 +33,7 @@ export const useStatWeights = ({ onProgress }: UseStatWeightsOptions = {}): UseS
 
 	const start = useCallback(
 		(args: StatWeightsArgs) =>
-			sim.runs.start<StatWeightsResult, ProgressMetrics>('stat-weights', ctx =>
+			sim.runs.start<StatWeightsResult, ProgressMetrics>(SimRunKind.StatWeights, ctx =>
 				player.computeStatWeights(args.epStats, args.epPseudoStats, args.epReferenceStat, metrics => {
 					ctx.emit(metrics);
 					progressRef.current?.(metrics);

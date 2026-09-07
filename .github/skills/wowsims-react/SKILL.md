@@ -1338,6 +1338,27 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **`SimRunKind` is an enum, and the `results_action` dedup is settled — two of its three
+  flags, not three.** The kind was a string union; it is now a string enum, so every call site reads
+  `SimRunKind.StatWeights` and a rename is a rename rather than a grep. The values are in-memory
+  store keys only — nothing persists them and the goldens are untouched — so they stay spelled as
+  they were, to keep a devtools store dump legible. `SIM_RUN_KINDS` derives from `Object.values`,
+  which is why this is a plain `enum` and not a `const enum` like `RequestTypes`.
+
+  **The audit the dedup was blocked on:** exactly three things hold `individual-sim` — the Simulate
+  button, and the "Sim Once" and "Sim Death" buttons in the detailed-results tab. All three are user
+  clicks; nothing starts a run automatically. So a guard that is global to the kind is correct, and
+  the earlier theory that `runSingleIteration` was firing under the gate was wrong.
+
+  **Bisected one substitution at a time, rebuilding and re-running `sim-progress.mjs` between each.**
+  Reading `isRunning` from the slice: green. Aborting through `SimRuns.abort`: green. Replacing
+  `waitAbort` with `runs.isAborting`: **red**, four checks. The two are not the same thing —
+  `waitAbort` means "this click's abort is still in flight", while the slice's `isAborting` tracks
+  the kind's run and is cleared as that run settles. Substituting one for the other leaves the
+  button disabled and the Stop zone up after the *next* run completes. So `isRunning` and the abort
+  call dedup; `waitAbort` stays local, with a comment saying why. A three-flag component became a
+  one-flag component, which is the win that was actually available.
+
 - 2026-09-07 **Run controller units 4 and 5: bulk gets its own request type, and the reforge button
   finally disables.** `runBulkSim` registers under `RequestTypes.BulkSim` (0x8) instead of borrowing
   the individual sim's, so the two can be told apart. Both of bulk's masks had to be widened rather
