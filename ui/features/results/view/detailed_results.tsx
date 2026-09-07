@@ -11,14 +11,12 @@ import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../../../tracking/analytics';
 import type { ResultChannel } from '../model/result_channel';
-import { AuraMetricsTable } from './aura_metrics';
 import { CombatReplay } from './combat_replay';
 import { DamageMetricsTable } from './damage_metrics';
 import { DpsHistogram } from './dps_histogram';
 import { DtpsMetricsTable } from './dtps_metrics';
 import { HealingMetricsTable } from './healing_metrics';
 import { LogExporterFactory, LogView } from './log/log_view';
-import { ResourceMetricsTable } from './resource_metrics';
 import { ResultComponent } from './result_component';
 import { SimResultsManager } from './results_action';
 import { ResultsFilter } from './results_filter';
@@ -91,6 +89,9 @@ export class DetailedResults extends Component {
 	private rootDiv: Element;
 
 	readonly castMetricsContainer: HTMLElement;
+	readonly buffMetricsContainer: HTMLElement;
+	readonly debuffMetricsContainer: HTMLElement;
+	readonly resourceMetricsContainer: HTMLElement;
 
 	constructor(parent: HTMLElement, simUI: SimHost, simResultsManager: SimResultsManager, makeLogExporter: LogExporterFactory, resultsEmitter: ResultChannel) {
 		super(parent, 'detailed-results-manager-root');
@@ -231,6 +232,9 @@ export class DetailedResults extends Component {
 		});
 
 		this.castMetricsContainer = this.rootElem.querySelector<HTMLElement>('.cast-metrics')!;
+		this.buffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.buff-aura-metrics')!;
+		this.debuffMetricsContainer = this.rootElem.querySelector<HTMLElement>('.debuff-aura-metrics')!;
+		this.resourceMetricsContainer = this.rootElem.querySelector<HTMLElement>('.resource-metrics')!;
 
 		new DamageMetricsTable({
 			parent: this.rootElem.querySelector('.damage-metrics')!,
@@ -241,26 +245,6 @@ export class DetailedResults extends Component {
 			parent: this.rootElem.querySelector('.healing-spell-metrics')!,
 			resultsEmitter: this.resultsEmitter,
 		});
-		new ResourceMetricsTable({
-			parent: this.rootElem.querySelector('.resource-metrics')!,
-			resultsEmitter: this.resultsEmitter,
-			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
-		});
-		new AuraMetricsTable(
-			{
-				parent: this.rootElem.querySelector('.buff-aura-metrics')!,
-				resultsEmitter: this.resultsEmitter,
-			},
-			false,
-		);
-		new AuraMetricsTable(
-			{
-				parent: this.rootElem.querySelector('.debuff-aura-metrics')!,
-				resultsEmitter: this.resultsEmitter,
-			},
-			true,
-		);
-
 		new DpsHistogram({
 			parent: this.rootElem.querySelector('.dps-histogram')!,
 			resultsEmitter: this.resultsEmitter,

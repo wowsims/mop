@@ -354,8 +354,10 @@ of the duplication sweep was to build each shape once.
 | `ConsumesPicker` | `ui/features/settings/components/ConsumesPicker/` | the `ConsumesPicker` class in `features/settings/view/consumes_picker.tsx` (**deleted** — one consumer) | `consumableStats`, the two stat-option lists and `petInputs` | the five rows, which consumables field each picker writes, and that a row's `hide` is decided by its children's visibility |
 | `useSimReady` | `ui/app/hooks/useSimReady.ts` | — (binding) | a `Sim` | that a portal target built inside a `waitForInit` callback does not exist before it. In `app/`, not `ui-kit/`: it encodes this shell's init order, not domain state |
 | `useSimResult` | `ui/features/results/hooks/useSimResult.ts` | — (binding) | nothing — it reads `useSimHost().resultChannel` | that the channel replays its last value, so a component mounting after a run still sees it |
-| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — five vanilla tables left) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass`), `rows`, `sortColumnId`, `hasResult` | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
+| `MetricsTable` | `ui/features/results/components/MetricsTable/` | `features/results/view/metrics_table/metrics_table.tsx` + `table_sorter.ts` (still live, dual-stack — three vanilla tables left: damage, healing, dtps) | `rootClassName`, `columns` (TanStack column defs, `meta.columnClass` / `meta.headerCellClass`), `rows`, `sortColumnId`, `hasResult` | the whole shell — `table.metrics-table.tablesorter`, the header row, a `<span>` in every `<th>`, `.parent-metric.expand` / `.child-metric`, `data-text` on every cell — and the six ways TanStack's defaults differ from `TableSorter`. `MetricsActionCell` beside it is the Name cell: icon anchor, name, and the expand toggle as a real `<button>` |
 | `CastMetricsTable` | `ui/features/results/components/CastMetricsTable/` | `features/results/view/cast_metrics.ts` (**deleted** — one consumer, not a dual-stack primitive) | nothing — it takes the result from `useSimResult` | the three columns, the pet grouping and `shouldCollapse` |
+| `AuraMetricsTable` | `ui/features/results/components/AuraMetricsTable/` | `features/results/view/aura_metrics.ts` (**deleted** — both consumers ported) | `useDebuffs`, the one axis vanilla's constructor branched on — it picks the root class *and* the data source | the four columns, that a debuff run reads `getDebuffMetrics` while a buff run reads the player's own auras plus one group per pet, and that `useBuffAura` reaches the wowhead dataset |
+| `ResourceMetricsTable` | `ui/features/results/components/ResourceMetricsTable/` | `features/results/view/resource_metrics.tsx` — both classes (**deleted** — one consumer) | nothing at the root; `ResourceMetricsSection` beside it takes `resourceType`, `title`, `columns` and `resultData`, so the six column defs are built once and shared by all 15 | that all 15 `orderedResourceTypes` containers are always in the DOM in order, that a container carries `hide` exactly while its table has no rows, and the generic-resource title coming from the spec's `secondaryResource` |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -1315,6 +1317,51 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **Results units 4 and 5: buffs, debuffs and the fifteen resource tables.** Almost pure
+  configuration on top of unit 3 — no change to `MetricsTable`, `MetricsActionCell`,
+  `useMetricsTable` or `grouping.ts`, so all six TanStack deltas are satisfied by reuse and none of
+  these three tables needed a table-specific override. `AuraMetricsTable` takes `useDebuffs`, the one
+  axis vanilla's constructor branched on. `ResourceMetricsTable` renders `div.resource-metrics-root`,
+  reads the channel once and builds the six column defs once, then maps `orderedResourceTypes` to 15
+  `ResourceMetricsSection`s; the section owns the `.resource-metrics-table-container` and its `hide`,
+  which deletes `onUpdate` from the vanilla `MetricsTable` — that emitter's only consumer was the
+  container hide/show, so the field, both `.emit()` calls and the now-unused `Emitter` import go.
+  **None of these three tables has a tooltip** — no `tooltip` on any column config, no `fillCell` — so
+  the per-column `<Tooltip data-tooltip-id>` decision is still unexercised and unit 6 is its first
+  consumer.
+
+  **The plan's unit-5 sentence is wrong and the gate is right.** §4 says the container should "render
+  the container's title and table only when the model has rows"; `results-tables.mjs` asserts at load
+  that all 15 containers are hidden **and** that each still holds one table with six `<th>`s. Fork
+  A(a) says the same. The container is therefore always fully rendered and only its `hide` class
+  moves — `hide` iff the table has no rows, which is true at load without needing `hasResult`,
+  exactly as vanilla constructs it.
+
+  **Plan defect 13, resolved as a no-op rather than an oversight.** `resource_metrics.tsx` has no
+  `shouldCollapse` override, and it cannot matter: the only source is
+  `players[0].getResourceMetrics(type)` (`sim_result.ts:560`), which filters one raid-indexed
+  player's own `resources` array, and a raid-indexed player is never a pet — so `!metric.unit?.isPet`
+  and the base class's `true` agree on every reachable input. Written out as
+  `shouldCollapse: () => true`. **The same argument retires plan §2 item 4's claim about
+  `aura_metrics.ts:69`**: that override is dead too, for the reason in the next paragraph.
+
+  **Defect found, reproduced verbatim, not fixed: the buffs table's pet groups are always empty.**
+  `filterMetrics` drops any aura whose `unit.isPet`, and vanilla applies it to the pet branch as well
+  as the player's — `player.pets.map(pet => this.filterMetrics(pet.auras))`. A pet's auras carry that
+  pet as their `unit` (`sim_result.ts:595`, via `makeNewPlayer(..., isPet=true)`), so every pet group
+  empties, `buildMetricRows` drops it, and the buffs table has never rendered a `.parent-metric` row.
+  With it, `shouldCollapse: metric => !metric.unit?.isPet` and the `petActionId` merge override are
+  both unreachable. The port keeps all three so the one-line fix stays obvious; `results-tables.mjs`
+  already skips its sub-row check when a table has no parents, on both builds.
+
+  **Declared divergence: `useBuffAura` was dead in every production build.**
+  `nameCellConfig` passed `useBuffAura: data.metricType === 'AuraMetrics'`, where `metricType` is
+  `metric.constructor.name`. The minifier emits the class as `qm=class e{…}`, so the name is `e` and
+  the comparison is false in `dist` — the wowhead tooltip never asked for the buff aura outside the
+  dev server. The React name cell takes `useBuffAura` as a prop, so the aura table sets it literally
+  and it now works in production. No gate sees it (`SERIALIZE` records neither attributes nor text);
+  it is the same category as unit 3's Name-column sort delta, not a fix slipped in.
 
 - 2026-09-07 **Results unit 3: the casts table, on `@tanstack/react-table@9.2.4`.** The first React
   metrics table, and with it the shared core the other five land on. `MetricsTable` portals into the

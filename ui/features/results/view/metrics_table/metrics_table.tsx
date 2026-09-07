@@ -3,7 +3,6 @@ import { CacheHandler } from '@domain/cache_handler';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@domain/proto_utils/action_id/dom';
 import { ActionMetrics, AuraMetrics, ResourceMetrics, UnitMetrics } from '@domain/proto_utils/sim_result';
-import { Emitter } from '@domain/state/events';
 import i18n from '@i18n/config';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -39,8 +38,6 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 	protected readonly tableElem: HTMLElement;
 	protected readonly bodyElem: HTMLTableSectionElement;
 	private readonly sorter: TableSorter;
-
-	readonly onUpdate = new Emitter<void>();
 
 	constructor(config: ResultComponentConfig, columnConfigs: Array<MetricsColumnConfig<T>>) {
 		super(config);
@@ -172,13 +169,11 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 			this.rootElem.classList.remove('hide');
 		} else {
 			this.rootElem.classList.add('hide');
-			this.onUpdate.emit();
 			return;
 		}
 
 		groupedMetrics.forEach(group => this.addGroup(group));
 		this.sorter.update();
-		this.onUpdate.emit();
 	}
 
 	reset() {

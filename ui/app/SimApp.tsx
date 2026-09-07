@@ -1,6 +1,8 @@
 import type { Player } from '@domain/player';
 import { CharacterStats } from '@features/character-stats';
+import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';
 import { CastMetricsTable } from '@features/results/components/CastMetricsTable';
+import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
 import { SimHostProvider } from '@features/SimHostContext';
 import type { SpecDefinition } from '@features/spec_config';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
@@ -66,6 +68,9 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					)}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{createPortal(<CastMetricsTable />, simUI.detailedResults.castMetricsContainer)}
+					{createPortal(<AuraMetricsTable useDebuffs={false} />, simUI.detailedResults.buffMetricsContainer)}
+					{createPortal(<AuraMetricsTable useDebuffs={true} />, simUI.detailedResults.debuffMetricsContainer)}
+					{createPortal(<ResourceMetricsTable />, simUI.detailedResults.resourceMetricsContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />

@@ -7,9 +7,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
 const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement }> = [];
-// Recorded rather than read off the document: the results pane is vanilla, so its casts div is only
-// ever a child of a shell this test does not build.
-const castMetricsContainers: Array<HTMLElement> = [];
+// Recorded rather than read off the document: the results pane is vanilla, so its metrics divs are
+// only ever children of a shell this test does not build.
+const resultsContainers: Array<Record<string, HTMLElement>> = [];
 const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
@@ -31,14 +31,19 @@ vi.mock('./individual_sim_ui', async () => {
 			// React fills the talents tab body through this, the same way it fills the sidebar.
 			readonly talentsTab = { contentContainer: document.createElement('div') };
 			readonly settingsTab = { contentContainer: document.createElement('div') };
-			// The casts table portals into a div the vanilla results pane builds, so React reaches it
+			// The metrics tables portal into divs the vanilla results pane builds, so React reaches them
 			// through the constructed `DetailedResults` rather than owning the pane.
-			readonly detailedResults = { castMetricsContainer: document.createElement('div') };
+			readonly detailedResults = {
+				castMetricsContainer: document.createElement('div'),
+				buffMetricsContainer: document.createElement('div'),
+				debuffMetricsContainer: document.createElement('div'),
+				resourceMetricsContainer: document.createElement('div'),
+			};
 			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
 			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
 			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement }) {
 				constructions.push(dom);
-				castMetricsContainers.push(this.detailedResults.castMetricsContainer);
+				resultsContainers.push(this.detailedResults);
 				dom.root.classList.add('sim-ui');
 				this.sidebarStatsContainer = dom.sidebarStats;
 			}
@@ -52,6 +57,10 @@ vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
 vi.mock('@features/results/components/CastMetricsTable', () => ({ CastMetricsTable: () => <div className="cast-metrics-root" /> }));
+vi.mock('@features/results/components/AuraMetricsTable', () => ({
+	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div className={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
+}));
+vi.mock('@features/results/components/ResourceMetricsTable', () => ({ ResourceMetricsTable: () => <div className="resource-metrics-root" /> }));
 // Needs the real spec registry to list every class; what is under test here is the shell's gate.
 vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div className="sim-title-dropdown-root" /> }));
 
@@ -88,7 +97,7 @@ const def = { cssClass: 'arms-warrior-sim-ui', encounterPicker: { showExecutePro
 describe('SimApp', () => {
 	beforeEach(() => {
 		constructions.length = 0;
-		castMetricsContainers.length = 0;
+		resultsContainers.length = 0;
 	});
 
 	it('constructs the shell once', () => {
@@ -115,9 +124,12 @@ describe('SimApp', () => {
 		expect(constructions[0].sidebarStats.querySelectorAll('.character-stats-root')).toHaveLength(1);
 	});
 
-	it('portals the casts table into the div the results pane built', () => {
+	it('portals every ported metrics table into the div the results pane built', () => {
 		render(<SimApp player={player} def={def} />);
-		expect(castMetricsContainers[0].querySelectorAll('.cast-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].castMetricsContainer.querySelectorAll('.cast-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].buffMetricsContainer.querySelectorAll('.buff-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].debuffMetricsContainer.querySelectorAll('.debuff-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].resourceMetricsContainer.querySelectorAll('.resource-metrics-root')).toHaveLength(1);
 	});
 
 	it('portals it exactly once under StrictMode', () => {
