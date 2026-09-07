@@ -89,7 +89,7 @@
 									"seedKeyed",
 									"deleteKeyed"
 								],
-								"message": "Features must not write the store directly \u2014 go through a facade (e.g. ui/domain/bulk_settings.ts)."
+								"message": "Features must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
 							}
 						]
 					}
@@ -200,6 +200,62 @@
 		{
 			"files": [
 				"ui/features/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@app",
+									"@app/**",
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/features/*/model/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"@app",
+									"@app/**",
+									"@specs",
+									"@specs/**"
+								],
+								"message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
+							},
+							{
+								"group": [
+									"react",
+									"react-dom",
+									"react/**",
+									"react-dom/**"
+								],
+								"message": "A feature's model layer is framework-free — keep React out of it (see ui/README.md dependency direction)."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"ui/features/*/model/**/*.test.ts",
+				"ui/features/*/model/**/*.test.tsx"
 			],
 			"rules": {
 				"no-restricted-imports": [

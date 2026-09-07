@@ -1,11 +1,11 @@
 import './SimResultsPanel.scss';
 
-import type { ResultsPanelStore } from '@features/results/model/results_panel_store';
 import type { WarningsRegistry } from '@features/results/model/warnings';
 import { useSimHost } from '@features/SimHostContext';
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { AbortButton } from './AbortButton';
+import type { ResultsPanelStore } from './results_panel_store';
 import { SimProgress } from './SimProgress';
 import { SimWarnings } from './SimWarnings';
 import { UnlaunchedNotice } from './UnlaunchedNotice';

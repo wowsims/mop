@@ -1,7 +1,8 @@
-import type { ResultsPanelStore } from '@features/results/model/results_panel_store';
 import type { ProgressMetrics } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import { useLayoutEffect, useRef } from 'react';
+
+import type { ResultsPanelStore } from './results_panel_store';
 
 export interface SimProgressProps {
 	panel: ResultsPanelStore;

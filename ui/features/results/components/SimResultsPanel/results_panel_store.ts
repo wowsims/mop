@@ -1,7 +1,6 @@
+import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import type { ProgressMetrics } from '@generated/proto/api';
 import { flushSync } from 'react-dom';
-
-import type { ResultsPanelHandle } from './results_panel_handle';
 
 export type ResultsPanelStage = 'idle' | 'pending' | 'running' | 'result';
 

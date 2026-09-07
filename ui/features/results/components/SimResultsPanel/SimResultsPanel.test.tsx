@@ -10,8 +10,8 @@ import { act, render } from '@testing-library/react';
 import { Profiler } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ResultsPanelStore } from '../../model/results_panel_store';
 import { WarningsRegistry } from '../../model/warnings';
+import { ResultsPanelStore } from './results_panel_store';
 import { SimResultsPanel } from './SimResultsPanel';
 
 const host = (disabled = false, isHealingSpec = false) =>
