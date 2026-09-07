@@ -8,15 +8,15 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useTypedLocalStorage } from '@ui-kit/hooks/useTypedLocalStorage';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { useLocalStorage } from 'react-use';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { SavedEpWeightsChip } from './SavedEpWeightsChip';
 import type { SavedEpWeightsEntry } from './types';
-import { entriesFrom, epWeightsData, makeEntry, serializeEpWeights, type StoredEpWeights, storedFrom } from './utils';
+import { entriesFrom, epWeightsData, makeEntry, parseStoredEpWeights, serializeEpWeights, type StoredEpWeights, storedFrom } from './utils';
 
 export const SavedEpWeights = () => {
 	const host = useSimHost();
@@ -32,7 +32,7 @@ export const SavedEpWeights = () => {
 	const [name, setName] = useState('');
 	const [loadedName, setLoadedName] = useState<string | null>(null);
 
-	const [stored, setStored] = useLocalStorage<StoredEpWeights>(storageKey);
+	const [stored, setStored] = useTypedLocalStorage<StoredEpWeights>(storageKey, parseStoredEpWeights);
 	const userData = useMemo(() => entriesFrom(stored), [stored]);
 
 	const presets = useMemo(

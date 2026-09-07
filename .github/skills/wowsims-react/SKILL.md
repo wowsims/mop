@@ -341,6 +341,9 @@ of the duplication sweep was to build each shape once.
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on; a `CopyButton` component would have fixed exactly that | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
 | `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); all five call sites converted | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
+| `SearchBar` | `ui/ui-kit/SearchBar/` | the search `<input>` hand-rolled in `gear/view/item_list.tsx`, `bulk/view/bulk_item_search.tsx` and `results/view/log/search/search_bar.tsx` (all three still live, dual-stack — only `GlyphSelectorDialog` adopts today) | `value`/`onChange`, `label`, `debounceMs` (0 by default — bulk, gear and glyph never debounced, the log hand-rolled 150 ms), `clearable`/`clearLabel` (bulk's only), `placeholder`, `id`, `autoComplete`, `autoFocus`, and `className` — applied to the `<input>` itself so a caller's squatting global class (`.selector-modal-search`) still targets the real control | `Field.Root`/`Field.Label` wrapping via Base UI, the native `form-control` input, and — when `clearable` — that the clear button lives inside the input group and clears through one call |
+| `useTypedLocalStorage` | `ui/ui-kit/hooks/useTypedLocalStorage.ts` | the raw `react-use` `useLocalStorage<T>()` call in `SavedEpWeights` | a storage `key` and a **required** `parse: (value: unknown) => T \| undefined` | the deserializer only — `react-use` still owns read/write/remove. `parse` is required because react-use's generic types the deserialized value as `T` with no proof, so a stale key from an old schema comes back typed as the new shape. Anything `parse` rejects folds into the same `undefined` react-use already returns for an absent key, so callers keep one falsy state instead of two |
+| `SimRuns` / `useSimRun` / `useStatWeights` | `ui/sim/sim_runs.ts`, `ui/sim/hooks/` | the abort-then-run preamble copied at each entry point, and `EpWeightsDialog`'s `running` state plus its two guard refs | `useSimRun(kind)` takes only the kind and returns `isRunning`/`isAborting`/`abort` — **no `start`**, so a run can only be begun through a named hook that knows its arguments; `useStatWeights({ onProgress })` binds `computeStatWeights`'s three arguments and its progress shape | that a run is one user-visible operation rather than one worker request, that its two flags live in the store beside every other piece of sim state (so vanilla reads them through `subscribeRunState` and React through `useSyncExternalStore`), and that progress never touches the store — it stays a callback, with `lastProgress` for a consumer that mounts mid-run |
 | `SavedEpWeights` | `ui/features/stat-weights/components/SavedEpWeights/` | the `renderSavedEPWeights` call in `EpWeightsDialog` only — that helper **and** `ui-kit/saved_data_manager.tsx` both stay, because `reforge_panel.tsx` calls the helper with three options this component deliberately does not grow | nothing — storage key, presets and player all come from the host | the chip sections and their `hide` rule, the create row, and the active-check. Storage is `react-use`'s `useLocalStorage` on the shared key **the still-vanilla reforge widget also reads**, so its tests drive the real vanilla manager in both directions rather than hand-building JSON. Its focus rings are keyed on `.ep-weights-sidebar`, not a class of its own: the modal subtree is compared by tag plus sorted class list, so a stack-specific root class is a tree diff |
 | `GlyphsPicker` | `ui/features/talents/components/GlyphsPicker/` | `features/talents/view/glyphs_picker.tsx` (**deleted** — one consumer) | nothing — the class comes from the host | the two blocks of three slots, the one dialog all six share, and that it **still wears** gear's `item-picker-*` and `selector-modal-*` class names to inherit those stylesheets, which stay global. Only the `.glyph*` rules co-located, checked by a before/after build rule-stream diff rather than by reading specificity |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
@@ -1333,6 +1336,63 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **One front door for starting and aborting a sim, and one record of what is running.**
+  `SimRuns` (`ui/sim/sim_runs.ts`) owns a `runs` slice — two booleans per kind, for
+  `individual-sim`, `bulk-sim`, `stat-weights` and `reforge-optimize` — plus the abort-then-run
+  preamble, progress fan-out and `lastProgress`. It went in the **store**, not a seventh bespoke
+  subscribe-and-snapshot object, because a slice gets folding, batching and the React adapter for
+  nothing and is the only shape vanilla code can read through the helpers it already uses
+  (`subscribeRunState`). `useSimRun(kind)` reads it from anywhere and can stop a run; it returns no
+  `start`, so a run can only begin through a named hook — `useStatWeights` is the first, and the EP
+  dialog drops its `running` state, both guard refs and its abort preamble for it.
+
+  **Three things this cost, and each is worth keeping.** First, `start` is deliberately **not**
+  `async`: it writes the running flag in the caller's own task, because `sidebar-loading.mjs` reads
+  the spinner back before the vanilla click handler returns and an injected `flushSync` (passed in
+  from `spec_entry.tsx`, keeping React out of `ui/sim`) cannot reach a write that lands a microtask
+  later. `sim_runs.test.ts` pins it — restore the old `await this.abort(kind)` shape and three tests
+  go red. Second, the pre-run `abortType` is **unconditional**, not gated on the store's own flag: a
+  first attempt that skipped it when the kind looked idle passed every unit test and then made the
+  run *after* an abort come back aborted, with no console error. Third, it lives inside the `try`,
+  so a rejecting abort still clears the flag it already wrote.
+
+  **`results_action.tsx` was left alone, and that is a finding.** Rewriting its two private flags to
+  read the slice fails `sim-progress.mjs` (the run after an abort produces no metrics, and Simulate
+  stays disabled) — bisected by reverting that one file. Its `isRunning` is local to the Simulate
+  button, while the slice's is global to the kind, and `runSingleIteration` now claims the same kind
+  from `detailed_results.tsx`. Dedup that only after auditing who else holds `individual-sim`.
+
+  `RequestTypes.BulkSim = 0x8` is claimed and mapped, but nothing registers under it yet: bulk still
+  runs as `IndividualSim`, and giving it its own bit is a separate unit with no browser gate over it.
+
+- 2026-09-07 **`SearchBar` replaces `GlyphSelectorDialog`'s raw `<input>`, the one form control in
+  `ui/features/*/components/` and `ui/ui-kit/*/` still bypassing Base UI `Field`.** A sweep of every
+  non-`@jsx-vanilla` `.tsx` for raw `<input>`/`<select>`/`<textarea>` found six sites: this one
+  (fixed), the importer's hidden file input (exempt — a file picker, not a field), two ref-driven
+  `<textarea>`s in `Importer`/`Exporter` (left — bare and unlabelled like their vanilla twins, and
+  `Importer.test.tsx` pins the flat parent-child shape a `Field.Root` wrapper would break), and
+  `SavedEpWeights`'s name input (left — parity-locked by `SavedEpWeights.parity.test.tsx` against the
+  still-vanilla `SavedDataManager`, whose markup has no `Field` either). `EnumPicker` and
+  `BooleanPicker` were already correct.
+
+  The component itself is new rather than a port: the vanilla search inputs in gear, bulk and the log
+  stay untouched, but all four were read first to find the axis. They disagree on label, clear button
+  and debounce, so those are props; `className` lands on the `<input>` rather than the wrapper so a
+  caller's squatting global class still resolves, which is why `GlyphsPicker.test.tsx`'s
+  `.selector-modal-search` query needed no change.
+
+- 2026-09-07 **`useLocalStorage` gets a typed proxy.** `useTypedLocalStorage` wraps `react-use`'s
+  `useLocalStorage<T>` with a required per-key `parse`, wired into react-use's own `deserializer`
+  rather than re-implementing get/set/remove. The point is the type hole react-use leaves open: its
+  generic types a deserialized value as `T` with zero proof, so a stale key from an old schema
+  deserializes to whatever it was and the type system says nothing. A rejecting `parse` folds into
+  the same `undefined` an absent key already gives. `SavedEpWeights` is the only adopter; its
+  `parseStoredEpWeights` checks the container is a plain object and the pre-existing per-entry
+  `SavedEPWeights.fromJson` validation stays where it was. Left alone: the vanilla `Component`
+  storage users (`notice_native_sim.tsx`, `saved_data_manager.tsx`) and `i18n/locale_service.ts`,
+  which is called from i18next init, from `ui/sim/**` and from bare module scope, so no hook can
+  reach it. `ui/sim/**` keeps `Env.storage` as its only path into storage; the two do not converge.
 
 - 2026-09-07 **The `sims`→`specs` rename left two string literals behind, and they took the build
   with them.** `tools/vite/spec_pages.mts` globbed `ui/sims/*/*/spec.{ts,tsx}` and so emitted no spec

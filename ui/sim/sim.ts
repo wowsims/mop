@@ -63,6 +63,7 @@ import { SimResult } from './proto_utils/sim_result';
 import { StatCap, Stats } from './proto_utils/stats';
 import { hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid';
+import { SimRuns } from './sim_runs';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { batch } from './state/batch';
 import type { Env } from './state/env';
@@ -135,6 +136,7 @@ export class Sim {
 	private modifyRaidProto: (raidProto: RaidProto) => void = noop;
 
 	readonly signalManager: SimSignalManager;
+	readonly runs: SimRuns;
 
 	constructor({ type, env }: SimProps) {
 		this.type = type ?? SimType.SimTypeIndividual;
@@ -164,6 +166,7 @@ export class Sim {
 		this.setWasmConcurrency(wasmConcurrencySetting);
 
 		this.signalManager = new SimSignalManager();
+		this.runs = new SimRuns(this.store, this.signalManager);
 
 		this._initPromise = Database.get().then(async db => {
 			this.db_ = db;

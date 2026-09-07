@@ -2,7 +2,7 @@ import './EpWeightsDialog.scss';
 
 import { useSimHost } from '@sim/context/SimHostContext';
 import { Stats } from '@sim/proto_utils/stats';
-import { RequestTypes } from '@sim/sim_signal_manager';
+import { useStatWeights } from '@sim/hooks/useStatWeights';
 import type { StatWeightActionSettings } from '@sim/stat_weight_settings';
 import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
@@ -49,11 +49,21 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 	const [showAllStats, setShowAllStats] = useState(false);
 	const [iterations, setIterations] = useState(0);
 	const [simResult, setSimResult] = useState<StatWeightsResult | null>(null);
-	const [running, setRunning] = useState(false);
 	const [progress, setProgress] = useState<ProgressTrackerState>({ stage: 'initializing' });
-	const runningRef = useRef(false);
-	const cancellingRef = useRef(false);
 	const progressRef = useRef<ProgressTrackerHandle>(null);
+	const {
+		isRunning,
+		isAborting,
+		abort,
+		start: startStatWeights,
+	} = useStatWeights({
+		onProgress: metrics =>
+			progressRef.current?.setProgress({
+				title: `${metrics.completedSims} / ${metrics.totalSims} ${i18n.t('sidebar.buttons.stat_weights.modal.progress.simulations_complete')}`,
+				current: metrics.completedIterations,
+				total: metrics.totalIterations,
+			}),
+	});
 
 	const showThreatMetrics = useStoreSubscribe(
 		useMemo(() => subscribeUiField(sim, 'showThreatMetrics'), [sim]),
@@ -105,49 +115,34 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 	const onOpenChange = useCallback(
 		(next: boolean) => {
 			opener.setOpen(next);
-			if (!next) sim.signalManager.abortType(RequestTypes.StatWeights).catch(console.error);
+			if (!next) abort().catch(console.error);
 		},
-		[opener, sim],
+		[opener, abort],
 	);
 
 	const onCancel = useCallback(() => {
-		if (cancellingRef.current) return;
-		cancellingRef.current = true;
-		sim.signalManager
-			.abortType(RequestTypes.StatWeights)
-			.catch(error => {
-				console.error('Error on stat weight abort!');
-				console.error(error);
-			})
-			.finally(() => {
-				cancellingRef.current = false;
-			});
-	}, [sim]);
+		if (isAborting) return;
+		abort().catch(error => {
+			console.error('Error on stat weight abort!');
+			console.error(error);
+		});
+	}, [abort, isAborting]);
 
 	const onCalculate = useCallback(async () => {
 		trackEvent({ action: 'sim', category: 'stat_weights', label: 'calculate' });
-		if (runningRef.current) return;
-		runningRef.current = true;
-		setRunning(true);
+		if (isRunning) return;
 		setProgress({ stage: 'initializing' });
 
 		let result: StatWeightsResult | null = null;
 		let runIterations = 0;
 		try {
-			await sim.signalManager.abortType(RequestTypes.StatWeights);
 			runIterations = sim.getIterations();
 			setProgress({ stage: 'running' });
-			result = await player.computeStatWeights(
-				epStats.filter(stat => !settings.isStatExcludedFromCalc(stat)),
-				epPseudoStats.filter(pseudoStat => !settings.isPseudoStatExcludedFromCalc(pseudoStat)),
+			result = await startStatWeights({
+				epStats: epStats.filter(stat => !settings.isStatExcludedFromCalc(stat)),
+				epPseudoStats: epPseudoStats.filter(pseudoStat => !settings.isPseudoStatExcludedFromCalc(pseudoStat)),
 				epReferenceStat,
-				metrics =>
-					progressRef.current?.setProgress({
-						title: `${metrics.completedSims} / ${metrics.totalSims} ${i18n.t('sidebar.buttons.stat_weights.modal.progress.simulations_complete')}`,
-						current: metrics.completedIterations,
-						total: metrics.totalIterations,
-					}),
-			);
+			});
 			if (result.error) {
 				if (result.error.type === ErrorOutcomeType.ErrorOutcomeAborted) new Toast({ variant: 'info', body: 'Statweight sim cancelled.' });
 				result = null;
@@ -156,9 +151,6 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 			console.error(error);
 			new Toast({ variant: 'error', body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.' });
 			result = null;
-		} finally {
-			runningRef.current = false;
-			setRunning(false);
 		}
 
 		if (!result) return;
@@ -177,7 +169,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 			keepMounted
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
-				<Button className="calc-weights" disabled={running} onClick={() => void onCalculate()}>
+				<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
 					<Icon name="calculator" className="me-1" />
 					{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
 				</Button>
@@ -211,7 +203,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 				</div>
 			</div>
 			<Tooltip id={EP_TOOLTIP_ID} />
-			{running && (
+			{isRunning && (
 				<ProgressTrackerDialog
 					ref={progressRef}
 					open

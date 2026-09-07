@@ -6,6 +6,9 @@ import type { SavedEpWeightsEntry } from './types';
 
 export type StoredEpWeights = Record<string, JsonValue>;
 
+export const parseStoredEpWeights = (value: unknown): StoredEpWeights | undefined =>
+	value !== null && typeof value === 'object' && !Array.isArray(value) ? (value as StoredEpWeights) : undefined;
+
 export const epWeightsData = (weights: Stats): SavedEPWeights => SavedEPWeights.create({ epWeights: weights.toProto() });
 
 export const serializeEpWeights = (data: SavedEPWeights): string => JSON.stringify(SavedEPWeights.toJson(data));

@@ -203,7 +203,18 @@ export interface BulkSlice {
 	v: { settings: number; items: number };
 }
 
+// One user-visible operation, not one worker request: the combustion calculator
+// issues ten requests under one bar and one stop button.
+export const SIM_RUN_KINDS = ['individual-sim', 'bulk-sim', 'stat-weights', 'reforge-optimize'] as const;
+export type SimRunKind = (typeof SIM_RUN_KINDS)[number];
+
+export interface RunSlice {
+	isRunning: boolean;
+	isAborting: boolean;
+}
+
 export interface SimState {
+	runs: Record<SimRunKind, RunSlice>;
 	reforge: { [storeKey: number]: ReforgeSlice };
 	statWeights: { [storeKey: number]: StatWeightsSlice };
 	bulk: { [storeKey: number]: BulkSlice };
@@ -215,6 +226,7 @@ export interface SimState {
 }
 
 const initialState = (): SimState => ({
+	runs: Object.fromEntries(SIM_RUN_KINDS.map(kind => [kind, { isRunning: false, isAborting: false }])) as Record<SimRunKind, RunSlice>,
 	sim: {
 		iterations: 12500,
 		phase: CURRENT_PHASE,
@@ -273,6 +285,10 @@ export function createSimStore() {
 // every call site.
 function sliceUpdate<N extends keyof SimState>(slice: N, value: SimState[N]): Partial<SimState> {
 	return { [slice]: value } as Partial<SimState>;
+}
+
+export function patchRun(store: SimStore, kind: SimRunKind, patch: Partial<RunSlice>) {
+	store.setState(s => ({ runs: { ...s.runs, [kind]: { ...s.runs[kind], ...patch } } }));
 }
 
 type UnkeyedSlice = 'sim' | 'ui' | 'encounter' | 'raid';

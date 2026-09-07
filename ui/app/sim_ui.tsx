@@ -192,8 +192,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async runIndividualSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
-			const result = await this.sim.runSim({ ...options, onProgress, raw: false });
+			const result = await this.sim.runs.start('individual-sim', () => this.sim.runSim({ ...options, onProgress, raw: false }));
 			this.notifyIfCancelled(result);
 			return result;
 		} catch (e) {
@@ -214,8 +213,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async runSingleIteration(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
-			const result = await this.sim.runSim({ debug: true, singleIteration: true, ...options, raw: false });
+			const result = await this.sim.runs.start('individual-sim', () => this.sim.runSim({ debug: true, singleIteration: true, ...options, raw: false }));
 			this.notifyIfCancelled(result);
 			return result;
 		} catch (e) {

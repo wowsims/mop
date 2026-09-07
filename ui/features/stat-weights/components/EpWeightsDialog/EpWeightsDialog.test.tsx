@@ -8,6 +8,9 @@ import { Class, PseudoStat, Stat } from '@generated/proto/common';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { SimRuns } from '@sim/sim_runs';
+import { createSimStore } from '@sim/state/sim_store';
+
 import { emptyStatWeightsResult } from '../../model/ep_math';
 import { EpWeightsOpener } from '../../model/ep_weights_opener';
 import { EpWeightsDialog } from './EpWeightsDialog';
@@ -27,10 +30,15 @@ const source = vi.hoisted(() => {
 	};
 });
 
+// The run flags live in the real store, so this one delegates instead of using the fake source:
+// `useSimRun` reads them back through `useSyncExternalStore` and needs a notification that fires.
+const runsStore = vi.hoisted(() => ({ store: null as { subscribe: (onChange: () => void) => () => void } | null }));
+
 vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerField: (_player: unknown, field: string) => source.subscribe(`player:${field}`),
 	subscribeUiField: (_sim: unknown, field: string) => source.subscribe(`ui:${field}`),
 	subscribeStatWeightsChange: () => source.subscribe('statWeights'),
+	subscribeRunState: () => (onChange: () => void) => runsStore.store!.subscribe(onChange),
 }));
 
 // Real stat names, because the vitest i18n stub answers with the enum key and the id-sanitising
@@ -144,6 +152,9 @@ const setup = () => {
 	settings = new FakeSettings();
 	opener = new EpWeightsOpener();
 	abortType = vi.fn().mockResolvedValue(undefined);
+	const store = createSimStore();
+	runsStore.store = store;
+	const runs = new SimRuns(store, { abortType: abortType as unknown as (mask: number) => Promise<void> });
 	const refStats: { dps?: Stat; heal?: Stat; tank?: Stat } = {};
 	host = {
 		rootElem,
@@ -154,6 +165,8 @@ const setup = () => {
 				return this.showThreatMetrics;
 			},
 			getIterations: () => 1000,
+			store,
+			runs,
 			signalManager: { abortType },
 		},
 		individualConfig: {
@@ -556,6 +569,29 @@ describe('EpWeightsDialog', () => {
 			expect(player.computeStatWeights).toHaveBeenCalledTimes(1);
 		});
 
+		it('aborts the run in flight when the dialog is closed', async () => {
+			let settle!: (result: StatWeightsResult) => void;
+			player.computeStatWeights.mockReturnValueOnce(new Promise<StatWeightsResult>(resolve => (settle = resolve)));
+			renderDialog();
+
+			await act(async () => {
+				fireEvent.click(calculate());
+			});
+			expect(calculate().disabled).toBe(true);
+			// The pre-run abort has already fired; this counts only the one the close triggers.
+			abortType.mockClear();
+
+			await act(async () => {
+				fireEvent.click(popup().querySelector('button.sim-dialog-close')!);
+			});
+			expect(abortType).toHaveBeenCalledTimes(1);
+
+			await act(async () => {
+				settle(weightsResult([[STRENGTH, 2]]));
+			});
+			expect(calculate().disabled).toBe(false);
+		});
+
 		it('reports a thrown run and stays usable', async () => {
 			player.computeStatWeights.mockRejectedValueOnce(new Error('sim exploded'));
 			renderDialog();
@@ -569,7 +605,7 @@ describe('EpWeightsDialog', () => {
 		});
 	});
 
-	it('opens from the opener and aborts on close', async () => {
+	it('opens from the opener, and closing with nothing running aborts nothing', async () => {
 		renderDialog();
 		expect(popup().hasAttribute('hidden')).toBe(false);
 		abortType.mockClear();
@@ -578,7 +614,7 @@ describe('EpWeightsDialog', () => {
 			fireEvent.click(popup().querySelector('button.sim-dialog-close')!);
 		});
 		expect(opener.isOpen()).toBe(false);
-		expect(abortType).toHaveBeenCalledTimes(1);
+		expect(abortType).not.toHaveBeenCalled();
 	});
 
 	// DEFECT FIXED. The panel discarded the unsubscribe its table-level `subscribePlayerField`

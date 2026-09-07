@@ -2,6 +2,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 import { itemQualityCssClass } from '@ui-kit/css_utils';
 import { Dialog } from '@ui-kit/Dialog';
+import { SearchBar } from '@ui-kit/SearchBar';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 
@@ -29,15 +30,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 			container={host.rootElem}
 			keepMounted
 			title={i18n.t('talents_tab.glyphs.modal.title')}>
-			<div className="input-root">
-				<input
-					className="selector-modal-search form-control"
-					type="text"
-					placeholder={i18n.t('common.search')}
-					value={search}
-					onChange={event => setSearch(event.target.value)}
-				/>
-			</div>
+			<SearchBar className="selector-modal-search" placeholder={i18n.t('common.search')} value={search} onChange={setSearch} />
 			<ul className="selector-modal-list">
 				{entries.map(entry => (
 					<li

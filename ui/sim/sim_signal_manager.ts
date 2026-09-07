@@ -2,6 +2,7 @@ export const enum RequestTypes {
 	IndividualSim = 0x1,
 	StatWeights = 0x2,
 	ReforgeOptimize = 0x4,
+	BulkSim = 0x8,
 	All = 0xf,
 }
 

@@ -6,6 +6,7 @@ import { Sim } from '@sim/sim';
 import type { SpecDefinition } from '@sim/spec_config';
 import { registerSpecConfig } from '@sim/spec_config';
 import { StrictMode } from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
 import { SimApp } from './SimApp';
@@ -40,6 +41,9 @@ void (async () => {
 	registerSpecConfig(def.spec, def);
 
 	const sim = new Sim({ env: browserEnv });
+	// A run flag written from a vanilla click handler has to reach React in that same task:
+	// `sidebar-loading.mjs` reads the spinner back before the handler returns.
+	sim.runs.setFlush(flushSync);
 	const playerSpec = PlayerSpecs.fromProto(def.spec);
 	const player = new Player(playerSpec, sim);
 	if (def.enableHealing ?? (playerSpec.isTankSpec || playerSpec.isHealingSpec)) player.enableHealing();

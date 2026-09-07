@@ -10,7 +10,7 @@ import type { ReforgeSettings } from '../reforge_settings';
 import type { Sim } from '../sim';
 import type { StatWeightActionSettings } from '../stat_weight_settings';
 import { subscribeGated } from './batch';
-import type { EncounterSlice, PlayerField, RaidSlice, ReforgeField, SimSettingsSlice, SimState, SimStore, UISlice } from './sim_store';
+import type { EncounterSlice, PlayerField, RaidSlice, ReforgeField, SimRunKind, SimSettingsSlice, SimState, SimStore, UISlice } from './sim_store';
 import { PLAYER_FIELDS } from './sim_store';
 
 // Fields whose change counts as a "player settings change" for aggregate
@@ -59,6 +59,14 @@ export function subscribeAll(subs: Array<StoreSubscribe>): StoreSubscribe {
 
 export function subscribePlayerField(player: Player<any>, field: PlayerField): StoreSubscribe {
 	return fromSelector(player.sim.store, s => s.players[player.storeKey]?.v[field]);
+}
+
+export function subscribeRunState(sim: Sim, kind: SimRunKind): StoreSubscribe {
+	return fromSelector(
+		sim.store,
+		s => s.runs[kind],
+		(a, b) => a.isRunning === b.isRunning && a.isAborting === b.isAborting,
+	);
 }
 
 export function subscribeSimField(sim: Sim, field: keyof SimSettingsSlice): StoreSubscribe {
