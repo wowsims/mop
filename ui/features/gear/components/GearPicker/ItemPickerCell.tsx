@@ -1,5 +1,5 @@
 import { useSimHost } from '@sim/context/SimHostContext';
-import { setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
+import { equippedItemWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
 import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -7,9 +7,10 @@ import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/
 import { itemQualityCssClass } from '@ui-kit/css_utils';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import { Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { useCallback, useEffect, useId, useMemo, useRef } from 'react';
+import { useCallback, useId, useMemo, useRef } from 'react';
 
 import { createGearData } from '../../model/gear_data';
 import { SelectorModalTabs } from '../../types';
@@ -57,12 +58,11 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
 
-	useEffect(() => {
-		const elements = [iconRef.current, nameRef.current].filter((element): element is HTMLAnchorElement => !!element);
-		elements.forEach(element => element.removeAttribute('data-wowhead'));
+	const resolveTooltip = useMemo(() => {
 		const equipped = gear.getEquippedItem(slot);
-		if (equipped) setEquippedItemWowheadData(player, equipped, elements);
+		return equipped ? () => equippedItemWowheadTooltipData(player, equipped, isBlacksmithing) : null;
 	}, [player, gear, slot, isBlacksmithing]);
+	useWowheadDataset([iconRef, nameRef], resolveTooltip);
 
 	const emptySlotIconUrl = getEmptySlotIconUrl(slot);
 	const reforgeData = item?.getReforgeData();
@@ -125,6 +125,7 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 					role="button"
 					href={href || undefined}
 					onActivate={() => open(SelectorModalTabs.Items)}
+					data-whtticon={item ? 'false' : undefined}
 					style={{ backgroundImage: `url('${(item && iconUrl) || emptySlotIconUrl}')` }}
 				/>
 			}
@@ -136,7 +137,8 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 						className={clsx('item-picker-name-container', itemQualityCssClass(item?.item.quality))}
 						role="button"
 						href={href || undefined}
-						onActivate={() => open(SelectorModalTabs.Items)}>
+						onActivate={() => open(SelectorModalTabs.Items)}
+						data-whtticon={item ? 'false' : undefined}>
 						{item ? (
 							<>
 								<span className="item-picker-name">

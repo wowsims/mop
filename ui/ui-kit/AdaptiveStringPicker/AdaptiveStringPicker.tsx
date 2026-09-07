@@ -1,4 +1,4 @@
-import { Field } from '@base-ui/react/field';
+import { Input } from '@base-ui/react/input';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { StringPickerConfig } from '@ui-kit/pickers/string_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
@@ -38,14 +38,7 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 
 	return (
 		<PickerShell config={config} cssClass="adaptive-string-picker-root" hidden={hidden} disabled={disabled}>
-			<Field.Control
-				render={<input type="text" />}
-				ref={inputRef}
-				id={config.id}
-				className="form-control"
-				disabled={disabled}
-				onInput={() => updateSize(inputRef.current)}
-			/>
+			<Input type="text" ref={inputRef} id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(inputRef.current)} />
 		</PickerShell>
 	);
 };

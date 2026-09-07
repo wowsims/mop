@@ -328,6 +328,10 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		return this.gearTab?.selectorModal ?? null;
 	}
 
+	get itemSwapSelectorModal(): SelectorModalOpener | null {
+		return this.settingsTab?.itemSwapSelectorModal ?? null;
+	}
+
 	get sidebarStatsContainer(): HTMLElement {
 		return this.dom.sidebarStats;
 	}

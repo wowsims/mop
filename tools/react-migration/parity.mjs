@@ -15,6 +15,7 @@ import {
 	normaliseBaseUiMenus,
 	normaliseLiftedSubtrees,
 	normaliseSortButtons,
+	normaliseSwapIcons,
 	dropRootClasses,
 	launch,
 	openSpec,
@@ -87,6 +88,45 @@ const takeModals = (grabbed, [marker, expected], side, problems) => {
 	return taken;
 };
 
+// Item swap owns one selector modal instead of one per slot. On the baseline every swap icon built
+// its own inside its constructor (`icon_item_swap_picker.tsx`) and never disposed it; React asks the
+// shell for a single modal, built on first open, so at load it has none at all. Nothing inside a
+// selector modal is built until it is opened, so the surplus copies serialise identically to the one
+// bulk still builds and cannot be told apart from it — they can only be counted, and the count comes
+// off the page as the number of swap icons the pane rendered. Dropping that many from the baseline
+// stays an assertion: revert the port and both sides hold the same N, so taking N off one of them
+// fails the count comparison instead of passing quietly.
+const SWAP_ICONS = '.item-swap-picker-root .icon-group > *';
+const SELECTOR_MODAL = 'selector-modal';
+// The gear picker's is the one selector modal with a slot rail, so its markup differs and it must
+// not be counted among the interchangeable ones.
+const SLOT_RAIL = 'gear-picker-modal-slots';
+
+const dropSwapModals = (grabbed, count, problems) => {
+	if (!count) return;
+	const railless = grabbed.modals.filter(modal => modal.split('\n').slice(0, 2).join('\n').includes(SELECTOR_MODAL) && !modal.includes(SLOT_RAIL));
+	if (railless.length < count) {
+		problems.push(`base: ${railless.length} railless selector modals, expected at least ${count} — one per item-swap icon`);
+		return;
+	}
+	if (new Set(railless).size > 1) {
+		problems.push('base: the railless selector modals are not all the same markup, so the item-swap surplus cannot be counted off');
+		return;
+	}
+	for (let taken = 0; taken < count; taken++) grabbed.modals.splice(grabbed.modals.indexOf(railless[0]), 1);
+
+	// The shell keeps one pruned line per modal, and the swap ones are appended to `simUI.rootElem`
+	// last, so they are its final lines. Dropping them by count stays the same assertion the modal
+	// multiset is: revert the port and react grows the same lines back, so the shells stop matching.
+	const lines = grabbed.shell.split('\n');
+	const tail = lines.slice(-count);
+	if (tail.some(line => line.trim() !== PRUNED_LINE)) {
+		problems.push(`base: the last ${count} shell lines are not all pruned modals, so the item-swap surplus cannot be counted off`);
+		return;
+	}
+	grabbed.shell = lines.slice(0, -count).join('\n');
+};
+
 // The one divergence that is a deletion rather than a changed line, so `INTENDED` cannot hold it.
 //
 // Each social link used to be `div.sim-toolbar-item > button > a`. `SimToolbarItem` produced that by
@@ -142,8 +182,10 @@ const grab = async (browser, port, spec) => {
 	const shell = notice.dom;
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
+	const swapIcons = await page.evaluate(selector => document.querySelectorAll(selector).length, SWAP_ICONS);
 	const panes = {};
 	const levels = {};
+	const swap = { active: 0, sockets: 0 };
 	const paneProblems = [];
 	for (const id of ids) {
 		if (!id) continue;
@@ -151,20 +193,36 @@ const grab = async (browser, port, spec) => {
 		const lifted = normaliseLiftedSubtrees(dropRootClasses(await page.evaluate(SERIALIZE, '#' + id)));
 		paneProblems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
 		levels[id] = { lifted: lifted.lifted, total: lifted.total };
+		// Both sides: see `normaliseSwapIcons`. The baseline's counts are asserted to be zero below.
+		const swapped = normaliseSwapIcons(lifted.dom);
+		swap.active += swapped.active;
+		swap.sockets += swapped.sockets;
 		// The React side only: see `normaliseBaseUiMenus` and `normaliseSortButtons`. On the baseline
 		// the first is a no-op and the second would report every header cell as missing a button.
 		if (!isReact) {
-			panes[id] = lifted.dom;
+			panes[id] = swapped.dom;
 			continue;
 		}
-		const normalised = normaliseBaseUiMenus(lifted.dom);
+		const normalised = normaliseBaseUiMenus(swapped.dom);
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 		const buttons = normaliseSortButtons(normalised.dom);
 		paneProblems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
 		panes[id] = buttons.dom;
 	}
 	await page.close();
-	return { ids, shell, panes, levels, modals, notices: collectSubtrees(tree, NATIVE_SIM_NOTICE), noticesDropped: notice.dropped, paneProblems, errors };
+	return {
+		ids,
+		shell,
+		panes,
+		levels,
+		modals,
+		swapIcons,
+		swap,
+		notices: collectSubtrees(tree, NATIVE_SIM_NOTICE),
+		noticesDropped: notice.dropped,
+		paneProblems,
+		errors,
+	};
 };
 
 const browser = await launch();
@@ -187,6 +245,14 @@ for (const spec of specsFromArgv()) {
 	const title = dropSubtrees(a.shell, SIM_TITLE, DROPDOWN_MENU);
 	a.shell = title.dom;
 	if (title.dropped !== SIM_TITLE_MENU_COUNT) problems.push(`dropped ${title.dropped} sim-title menus, expected ${SIM_TITLE_MENU_COUNT}`);
+
+	// See `SWAP_ICONS`. Both sides must render the same icons; only the baseline's modals come off.
+	if (a.swapIcons !== b.swapIcons) problems.push(`base renders ${a.swapIcons} item-swap icons, react ${b.swapIcons}`);
+	// See `normaliseSwapIcons`. The fold is only sound while the baseline paints nothing at rest.
+	if (a.swap.active || a.swap.sockets) {
+		problems.push(`base paints ${a.swap.active} active swap icon(s) and ${a.swap.sockets} socket line(s) at rest, so the fold hides a real difference`);
+	}
+	dropSwapModals(a, a.swapIcons, problems);
 
 	// What keeps the drop above an assertion: the notice has to have been in the sidebar actions on
 	// both sides, and the two copies have to be the same markup.

@@ -49,6 +49,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	reforger: ReforgeOptimizer | null;
 	epWeightsModal: { open(): void } | null;
 	readonly gearSelectorModal: SelectorModalOpener | null;
+	readonly itemSwapSelectorModal: SelectorModalOpener | null;
 	readonly resultChannel: ResultChannel;
 	dpsRefStat: Stat | undefined;
 	healRefStat: Stat | undefined;

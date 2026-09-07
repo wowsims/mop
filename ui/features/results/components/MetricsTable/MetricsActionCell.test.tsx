@@ -1,5 +1,5 @@
 import { ActionId } from '@sim/proto_utils/action_id';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ActionIdState } from '@ui-kit/hooks/useActionId';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -9,7 +9,12 @@ const resolved = vi.hoisted(() => ({ state: { iconUrl: '', name: '', href: '', r
 const wowhead = vi.hoisted(() => ({ calls: [] as Array<unknown> }));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => resolved.state }));
-vi.mock('@sim/proto_utils/action_id/dom', () => ({ setActionIdWowheadDataset: (...args: Array<unknown>) => wowhead.calls.push(args) }));
+vi.mock('@sim/proto_utils/action_id/dom', () => ({
+	actionIdWowheadTooltipData: (...args: Array<unknown>) => {
+		wowhead.calls.push(args);
+		return Promise.resolve('spell=34026');
+	},
+}));
 
 const actionId = ActionId.empty('Kill Command');
 
@@ -47,11 +52,13 @@ describe('MetricsActionCell', () => {
 		expect(screen.getByRole('link', { name: 'Kill Command' })).toBe(icon);
 	});
 
-	it('writes the wowhead tooltip dataset for its action id', () => {
+	it('writes the wowhead tooltip dataset for its action id', async () => {
 		wowhead.calls.length = 0;
-		cell({ useBuffAura: true });
+		const { container } = cell({ useBuffAura: true });
+
 		expect(wowhead.calls).toHaveLength(1);
-		expect(wowhead.calls[0]).toMatchObject([actionId, expect.anything(), { useBuffAura: true }]);
+		expect(wowhead.calls[0]).toMatchObject([actionId, { useBuffAura: true }]);
+		await waitFor(() => expect(container.querySelector<HTMLElement>('a.metrics-action-icon')!.dataset.wowhead).toBe('spell=34026'));
 	});
 
 	it('exposes the toggle as a focusable button reporting its state', () => {

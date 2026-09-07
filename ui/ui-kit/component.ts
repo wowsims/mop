@@ -18,10 +18,18 @@ export abstract class Component {
 	}
 
 	addOnDisposeCallback(callback: () => void) {
+		if (this.disposed) {
+			callback();
+			return;
+		}
 		this.disposeCallbacks.push(callback);
 	}
 
 	addChild<C extends Component>(child: C): C {
+		if (this.disposed) {
+			child.dispose();
+			return child;
+		}
 		this.children.push(child);
 		return child;
 	}

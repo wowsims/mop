@@ -1,12 +1,12 @@
+import './ItemSwapPicker.scss';
+
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import IconItemSwapPicker from '@features/gear/view/icon_item_swap_picker';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
 import { swapWithGear } from '../../model/swap_with_gear';
+import { ItemSwapIcon } from '../ItemSwapIcon';
 
 export interface ItemSwapPickerProps {
 	itemSlots: ReadonlyArray<ItemSlot>;
@@ -45,8 +46,6 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 		[],
 	);
 
-	const mountIcons = useLegacyMount(parent => itemSlots.map(itemSlot => new IconItemSwapPicker(parent, host, player, itemSlot)), [host, player, itemSlots]);
-
 	return (
 		<div className="item-swap-picker-root">
 			<BooleanPicker modObject={player} config={enableConfig} />
@@ -63,7 +62,11 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					<Icon name="arrows-rotate" className="me-1" />
 				</Button>
 				<Tooltip id={swapId} content={swapTooltip} />
-				<div className="picker-group icon-group" role="group" aria-labelledby={labelId} ref={mountIcons} />
+				<div className="picker-group icon-group" role="group" aria-labelledby={labelId}>
+					{itemSlots.map(itemSlot => (
+						<ItemSwapIcon key={itemSlot} slot={itemSlot} />
+					))}
+				</div>
 			</div>
 			{note && <p className={clsx('form-text', !enabled && 'hide')}>{note}</p>}
 		</div>

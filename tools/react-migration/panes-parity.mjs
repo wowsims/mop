@@ -15,6 +15,7 @@ import {
 	normaliseBaseUiMenus,
 	normaliseLiftedSubtrees,
 	normaliseSortButtons,
+	normaliseSwapIcons,
 	openSpec,
 	overusedIntended,
 	PORTS,
@@ -48,6 +49,7 @@ for (const spec of specsFromArgv()) {
 		for (const [index, id] of ids.entries()) {
 			const dom = {};
 			const levels = {};
+			const swap = {};
 			for (const side of Object.keys(PORTS)) {
 				await sides[side].page.locator('.sim-tabs [role=tab]').nth(index).click();
 				await sides[side].page.waitForTimeout(SETTLE);
@@ -57,7 +59,10 @@ for (const spec of specsFromArgv()) {
 				const lifted = normaliseLiftedSubtrees(dropRootClasses(await sides[side].page.evaluate(SERIALIZE, '#' + id)));
 				problems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
 				levels[side] = lifted;
-				dom[side] = lifted.dom;
+				// Both sides: see `normaliseSwapIcons`. The baseline's counts are asserted to be zero below.
+				const swapped = normaliseSwapIcons(lifted.dom);
+				swap[side] = swapped;
+				dom[side] = swapped.dom;
 				if (side === 'react') {
 					const normalised = normaliseBaseUiMenus(dom[side]);
 					dom[side] = normalised.dom;
@@ -70,6 +75,10 @@ for (const spec of specsFromArgv()) {
 			// What makes the lift an assertion rather than a fold: React must have nothing left to lift,
 			// and both sides must hold the same number of level containers either way.
 			if (levels.react.lifted) problems.push(`${id}: react still nests ${levels.react.lifted} level container(s) inside the picker anchor`);
+			// See `normaliseSwapIcons`. The fold is only sound while the baseline paints nothing at rest.
+			if (swap.base.active || swap.base.sockets) {
+				problems.push(`${id}: base paints ${swap.base.active} active swap icon(s) and ${swap.base.sockets} socket line(s) at rest, so the fold hides a real difference`);
+			}
 			if (levels.base.total !== levels.react.total)
 				problems.push(`${id}: ${levels.base.total} level containers on the baseline, ${levels.react.total} on react`);
 			const la = dom.base.split('\n');

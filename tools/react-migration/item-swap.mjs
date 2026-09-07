@@ -23,6 +23,12 @@ const STATE = () => {
 		swap: [...root.querySelectorAll('.icon-group .icon-picker-button')].map(icon =>
 			icon.classList.contains('active') ? (icon.getAttribute('href')?.match(/item=(\d+)/)?.[1] ?? 'active') : 'empty',
 		),
+	
+		// Paint state, which is where the two builds legitimately differ at rest: vanilla's `update()`
+		// only ran from an `itemSwap` change, so a spec that loads a swap preset renders four blank,
+		// unpainted slots until the set is next touched. Run this on `warrior/protection` to see it.
+		sockets: [...root.querySelectorAll('.item-picker-sockets-container')].map(container => container.children.length),
+		painted: [...root.querySelectorAll('.icon-group .icon-picker-button')].map(icon => !!icon.style.backgroundImage),
 	};
 };
 
@@ -44,6 +50,14 @@ console.log(`at rest      ${JSON.stringify(await page.evaluate(STATE))}`);
 await page.click('#enable-item-swap');
 await page.waitForTimeout(600);
 console.log(`toggled      ${JSON.stringify(await page.evaluate(STATE))}`);
+
+// A spec whose swap set starts enabled (warrior/protection) is hidden by the toggle above rather
+// than shown, and the swap button goes with it.
+if ((await page.evaluate(STATE)).hidden) {
+	await page.click('#enable-item-swap');
+	await page.waitForTimeout(600);
+	console.log(`re-toggled   ${JSON.stringify(await page.evaluate(STATE))}`);
+}
 
 // The swap button exchanges equipped gear with the swap set. Starting from an empty swap set, that
 // means the equipped items move into it — visible as placeholders becoming wowhead links.

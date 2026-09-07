@@ -38,7 +38,7 @@ const REGIONS = [
 	// `unnamed` 155 → 125. Un-nesting cost four multistate anchors the counter digit that was standing
 	// in for a name; rather than raise the ceiling for those, `IconPicker` takes a real name from the
 	// ActionId it already resolves, which names every picker anchor on the pane.
-	{ selector: '.settings-tab', ceiling: { unnamed: 125, untyped: 4 } },
+	{ selector: '.settings-tab', ceiling: { unnamed: 121, untyped: 4 } },
 	// Half ported: the cells and the three summary blocks are React, the preset picker, the saved-gear
 	// manager and the reforge summary's copy button are still vanilla islands inside it. So this
 	// carries ceilings rather than equalities, measured on `warrior/arms` like the block above.

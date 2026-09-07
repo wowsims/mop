@@ -555,10 +555,16 @@ export const liftSubtrees = (dom, within, lift, parent) => {
  * Every subtree the migration re-parents, and what it hangs off before the port. A new one adds an
  * entry here rather than a call site.
  *
- * `IconPicker` is the only one: vanilla builds the level container *inside* the picker's anchor, so
- * its two `<a class="icon-input-improved">` are anchors inside an anchor, which the content model
- * has no room for. React renders the container as the anchor's next sibling instead. It is the
- * anchor's only child either way, so the two shapes are the same lines and the move is a dedent.
+ * `IconPicker`: vanilla builds the level container *inside* the picker's anchor, so its two
+ * `<a class="icon-input-improved">` are anchors inside an anchor, which the content model has no
+ * room for. React renders the container as the anchor's next sibling instead. It is the anchor's
+ * only child either way, so the two shapes are the same lines and the move is a dedent.
+ *
+ * The item-swap icons are the same shape and the same reason: `icon_item_swap_picker.tsx` built the
+ * sockets container inside the icon's own anchor, and a filled socket is an `<a>` with an href, so a
+ * swap set with gems in it was anchors inside an anchor — which `a11y.mjs` counts as `nested` and
+ * allows none of on `.settings-tab`. `ItemSwapIcon` renders the container as the anchor's sibling.
+ * Empty or not the container is always there, so the count matches on both sides at rest.
  */
 const LIFTED_SUBTREES = [
 	{
@@ -569,7 +575,71 @@ const LIFTED_SUBTREES = [
 		// also name an improved anchor as a possible parent.
 		parent: /^a\.(?!.*icon-input-improved).*icon-picker-button/,
 	},
+	{
+		what: 'item-swap sockets',
+		within: /\.icon-picker-root(\.|$)/,
+		lift: /^div\.item-picker-sockets-container$/,
+		parent: /^a\..*icon-picker-button/,
+	},
 ];
+
+/**
+ * The item-swap icons paint their loaded state on the React side and not on the baseline: vanilla's
+ * `IconItemSwapPicker.update()` only ever ran from an `itemSwap` change, so a spec that loads a swap
+ * preset (warrior/protection ships two) shows four blank slots until the set is next touched. React
+ * renders from state, so a filled slot is `.active` and carries its gem sockets from the first paint.
+ *
+ * Both sides are folded to the baseline's shape — `.active` off the icon anchor, the sockets
+ * container emptied — and the two counts come back so `parity.mjs` can assert the baseline's are
+ * zero. That keeps the fold honest in the direction that can regress silently: if master ever paints
+ * at rest, the assertion fails and the fold has to go rather than quietly hiding a real difference.
+ */
+const SWAP_PICKER_ROOT = /\.item-swap-picker-root(\.|$)/;
+const SWAP_ICON_ANCHOR = /^a\..*icon-picker-button/;
+const SWAP_SOCKETS = /^div\.item-picker-sockets-container$/;
+
+export const normaliseSwapIcons = dom => {
+	const out = [];
+	let rootAt = null;
+	let socketsAt = null;
+	let active = 0;
+	let sockets = 0;
+	for (const line of dom.split('\n')) {
+		const indent = line.length - line.trimStart().length;
+		const trimmed = line.trim();
+		if (rootAt !== null && indent <= rootAt) rootAt = null;
+		if (rootAt === null) {
+			if (SWAP_PICKER_ROOT.test(trimmed)) rootAt = indent;
+			out.push(line);
+			continue;
+		}
+		if (socketsAt !== null) {
+			if (indent > socketsAt) {
+				sockets++;
+				continue;
+			}
+			socketsAt = null;
+		}
+		if (SWAP_SOCKETS.test(trimmed)) {
+			socketsAt = indent;
+			out.push(line);
+			continue;
+		}
+		if (SWAP_ICON_ANCHOR.test(trimmed) && trimmed.split('.').includes('active')) {
+			active++;
+			out.push(
+				line.slice(0, indent) +
+					trimmed
+						.split('.')
+						.filter(cls => cls !== 'active')
+						.join('.'),
+			);
+			continue;
+		}
+		out.push(line);
+	}
+	return { dom: out.join('\n'), active, sockets };
+};
 
 /**
  * Folds every re-parented subtree in `dom` back into one shape. Unlike `normaliseBaseUiMenus` this

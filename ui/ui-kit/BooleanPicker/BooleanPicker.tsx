@@ -1,4 +1,4 @@
-import { Field } from '@base-ui/react/field';
+import { Input } from '@base-ui/react/input';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
@@ -12,8 +12,8 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	const { value, setValue, hidden, disabled } = useInput(modObject, config);
 
 	const input = (
-		<Field.Control
-			render={<input type="checkbox" />}
+		<Input
+			type="checkbox"
 			id={config.id}
 			className="boolean-picker-input form-check-input"
 			checked={value}

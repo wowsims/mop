@@ -340,7 +340,7 @@ of the duplication sweep was to build each shape once.
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on; a `CopyButton` component would have fixed exactly that | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
-| `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); `EnchantLabel`, `ItemPickerCell` and `MetricsActionCell` still hand-roll it and **two of those have no staleness guard** | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
+| `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); all five call sites converted | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
 | `SavedEpWeights` | `ui/features/stat-weights/components/SavedEpWeights/` | the `renderSavedEPWeights` call in `EpWeightsDialog` only — that helper **and** `ui-kit/saved_data_manager.tsx` both stay, because `reforge_panel.tsx` calls the helper with three options this component deliberately does not grow | nothing — storage key, presets and player all come from the host | the chip sections and their `hide` rule, the create row, and the active-check. Storage is `react-use`'s `useLocalStorage` on the shared key **the still-vanilla reforge widget also reads**, so its tests drive the real vanilla manager in both directions rather than hand-building JSON. Its focus rings are keyed on `.ep-weights-sidebar`, not a class of its own: the modal subtree is compared by tag plus sorted class list, so a stack-specific root class is a tree diff |
 | `GlyphsPicker` | `ui/features/talents/components/GlyphsPicker/` | `features/talents/view/glyphs_picker.tsx` (**deleted** — one consumer) | nothing — the class comes from the host | the two blocks of three slots, the one dialog all six share, and that it **still wears** gear's `item-picker-*` and `selector-modal-*` class names to inherit those stylesheets, which stay global. Only the `.glyph*` rules co-located, checked by a before/after build rule-stream diff rather than by reading specificity |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
@@ -371,6 +371,7 @@ of the duplication sweep was to build each shape once.
 | `SimResultsPanel` | `ui/features/results/components/SimResultsPanel/` | `features/results/view/results_viewer.tsx` (**deleted** — one consumer, a feature view), and with it the last importer of `ui-kit/sim_toolbar_item.tsx` (**deleted** too; `app/header/SimToolbar/ToolbarItem.tsx` had already superseded it everywhere else) | `panel` (the `ResultsPanelStore` the shell drives) and `warnings` (the `WarningsRegistry`); `disabled` and the healing flag come from the host | the four zones in order and the visibility table across them — `setPending` and `setContent` leave the button zone alone, `hideAll` takes it down without removing the button — plus the same split `ProgressTrackerDialog` exists for: the stage is React state, and dps, hps and the iteration counter are `textContent` writes off `ResultsPanelStore.onProgress`, never renders. **`.results-content` is rendered here and never given a React child**: `SimResultsManager` still `replaceChildren`s the finished topline into it, and its builder has three consumers, one the bulk renderer — which is why the running block renders inside `.results-pending` instead, and why the previous run's topline sits there hidden and inert for the length of the next run. Two seams are load-bearing and neither is visible to a browser gate: the store's `notify` is `flushSync`, because the run action reads the panel back in the click's own task, and `latestProgress` is a mutable field **outside** the `useSyncExternalStore` snapshot that `SimProgress` reads in a mount layout effect, because tick one carries both the stage change and the first numbers. Beside it: `SimProgress` (the running block and its three refs), `SimWarnings` (the zone, the `hide` toggle and the tooltip — read through `useStoreSubscribe`, because `getContents()` builds a fresh array per call), `AbortButton` (Stop, which `flushSync`es its own relabel and disable before calling the handler) and `UnlaunchedNotice` (folded in from `sim_ui.tsx`, so it can no longer render before the panel it is supposed to follow). Owns `SimResultsPanel.scss` — `.results-pending .loader` from `_sim_action.scss` and `.warning-zone [data-tippy-root]` from `_sidebar.scss`, re-keyed to `.warning-zone .sim-tooltip`; `.results-sim*` deliberately stays global, the bulk renderer emits it |
 | `ItemCell` | `ui/features/gear/components/ItemCell/` | the cell shape nine sites hand-roll; it absorbs gear's own — `GearPicker`'s sixteen. `view/item_renderer.tsx` stays and stays dual-stack, because bulk's picker and its results renderer are un-ported callers and `glyphs_picker.tsx` is a talents island | the six axes the duplication survey found varying: the icon element and how its image is set, whether there is an item-level badge and whether it carries the `+N` upgrade span, what the name row holds, the enchant/tinker/reforge stack, whether there are sockets and what they do, and a trailing action slot. `ilvl` and `sockets` are three-state on purpose — omitted drops the element, `null` keeps the empty one an unfilled gear slot renders | the class vocabulary (`item-picker-root`, `-icon-wrapper`, `-ilvl`, `-sockets-container`, `-name-row`, `-name-container`, `-labels-container`) and the nesting order, and nothing else. That is the whole lesson of `ItemRenderer`, which fixed the icon, the badge, the name row, the sockets and the labels as well and was bypassed by seven of its nine callers. Beside it: `ItemCellAnchor`, which is how `href="javascript:void(0)"` ports — React refuses that URL, and an `<a>` with no `href` is not tabbable, so the anchor takes `tabIndex` and Enter/Space instead; and `GemSocket`, the socket anchor with its gem icon, its empty-socket icon and its Wowhead link. **No co-located stylesheet**: `.item-picker-*` is worn by `bulk_item_search`, `bulk_item_picker`, `gear_change_icon`, `icon_item_swap_picker`, `glyphs_picker` and `_suggest_reforges_action.scss`, so `_gear_picker.scss` stays global until they port |
 | `GearPicker` | `ui/features/gear/components/GearPicker/` | `features/gear/view/gear_picker.tsx` (**deleted** — with `quick_swap.tsx`, `quick_enchant_popover.ts` and `quick_gem_popover.ts`) | `ready`, and only that: the shell's init order is the one thing a cell cannot read for itself, and `useSimReady` lives in `app/`, which features may not import | the two columns and their slot lists, and what each cell does — open the selector modal at the right tab, and the two favourites popovers. Beside it: `ItemPickerCell` (one slot), `EnchantLabel`, `ItemNoticeIcon`, and `QuickSwapList` / `QuickEnchantList` / `QuickGemList`. **The popovers read the store themselves**, inside `Tooltip`'s children, which react-tooltip does not build until the tooltip first opens: that is what keeps 16–64 `filters` subscribers off the pane, and it is also how the recorded stale-closure bug stays fixed — no `EquippedItem` is captured at all, `active` is derived at render and the click reads the slot again. Owns `GearPicker.scss`: the cells' `:focus-visible` rings, and `_quick_swap.scss` re-keyed from `.tippy-box[data-theme='tooltip-quick-swap']` to `.sim-tooltip.tooltip-quick-swap` — which needs `max-width: none`, because `Tooltip.scss` caps every tooltip at 192px and tippy capped nothing. The popovers render **inside** the cell, not beside it: react-tooltip's box lives in the React tree, and a sibling would take a child index in the column and move the `:nth-child(6)` weapon separator |
+| `ItemSwapIcon` | `ui/features/item-swap/components/ItemSwapIcon/` | `features/gear/view/icon_item_swap_picker.tsx` (**deleted** — one consumer, and the last one) | `slot`, and only that: everything else is read from the host, and the picker renders only under `SettingsTabBody`'s `ready` gate, which is what replaces the vanilla `waitForInit` the click was wired inside | that a swap slot is a picker root with an icon button and a sockets container — **not** an `ItemCell`; that vocabulary is the gear cell's and the swap icon wears none of it beyond `item-picker-sockets-container`. Reuses `useActionId` (the `(setHref, setBackground) = (true, true)` pair the vanilla `fillAndSetActionId` passed, as `href` and `iconUrl`), `useWowheadDataset`, `GemSocket` and `getEmptySlotIconUrl`. Fixes four defects: the modal is the shell's one `itemSwapSelectorModal`, not one `new SelectorModal(simUI.rootElem, …)` per icon appended to an element React does not own; the `itemSwap` subscription's unsubscribe is no longer discarded; the last profession subscription is no longer stranded; and the icons paint their loaded state, which vanilla never did because `update()` only ever ran from an `itemSwap` change. And it un-nests, the way `IconPicker` did — vanilla built the sockets **inside** the icon anchor, so a gemmed swap set was anchors inside an anchor, which `a11y.mjs` allows none of on `.settings-tab`; `browser.mjs` carries the matching `LIFTED_SUBTREES` entry. Owns `ItemSwapPicker.scss`: the two `:focus-visible` rings and `position: relative` on the picker root, which is where the lifted sockets container now takes its containing block from. `_item_swap_picker.scss` **stays global** — `.item-swap-picker-root .icon-picker-button` and `.icon-picker .icon-picker-button` are both (0,2,0) and only source order separates them |
 | `SummaryTable` | `ui/features/gear/components/SummaryTable/` | `features/gear/view/{gem,reforge,upgrade_costs}_summary.tsx` (**all three deleted** — one consumer each) | `title`, the block's modifier class, whether the header carries it too, `empty`, and what resetting means | the hidden-when-empty root, the `ContentBlock`, and the reset button's place in its header — the three-class vocabulary all three blocks agreed on. `SummaryTableRow` beside it fixes the row's own three classes. `GemSummary`, `ReforgeSummary` and `UpgradeCostsSummary` sit in the same folder and read `model/summary_totals.ts`. Owns `SummaryTable.scss`, co-located from `scss/core/components/individual_sim_ui/_summary_table.scss` — every class in it was gear's alone. **They render from state on the first paint**, where the vanilla blocks filled themselves only from a `gear` notification and so painted empty until one arrived |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1332,6 +1333,99 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-07 **The `sims`→`specs` rename left two string literals behind, and they took the build
+  with them.** `tools/vite/spec_pages.mts` globbed `ui/sims/*/*/spec.{ts,tsx}` and so emitted no spec
+  pages at all, and `ui/app/spec_entry.tsx` resolved its dynamic import through the same path and
+  threw `No spec module for /mop/warrior/arms/`. Nothing in the CLI gate set can see a string
+  literal, so type-check, lint, 761 tests, the goldens and both builds stayed green while a fresh
+  dist had 34 missing pages. It hid for two commits because `dist/` is never cleaned: the pages from
+  the last good build survived, kept serving a pre-rename bundle, and every browser gate run on
+  `838ff1a6e` and `e82d5654a` was therefore measuring code that predates them. **When a rename
+  touches a directory, grep the tree for its name as a string, not only as an import specifier**, and
+  check a `dist/` page's `<script src>` hash against the newest bundle before trusting a gate run.
+  `specPages` now throws when it discovers no specs.
+
+- 2026-09-07 **Item swap is React, and the feature has one selector modal instead of one per slot.**
+  `icon_item_swap_picker.tsx` deleted — the last `useLegacyMount` in the feature, and the file's only
+  importer. `ItemSwapIcon` is ~60 lines against `useActionId`, `useWowheadDataset`, `GemSocket` and
+  `getEmptySlotIconUrl`; `ItemCell` is deliberately not its base, because a swap slot is a picker
+  root with an icon button and a sockets container and shares none of the cell's name/label/ilvl
+  vocabulary.
+
+  **Four defects close, and only the first needed a design decision.** Each icon built
+  `new SelectorModal(simUI.rootElem, this.player)` in its own constructor, appended to an element the
+  React component did not own, never registered as a child, never disposed — six `.selector-modal`s
+  on the baseline where React now holds two. It now asks the shell: `SettingsTab` owns one, built
+  lazily on first open, reached through `IndividualSimHost.itemSwapSelectorModal` beside
+  `gearSelectorModal`. Lazy rather than eager so a spec with no swap slots builds nothing. Two more
+  went with the file: the `itemSwap` subscription discarded its unsubscribe outright, and the
+  profession subscription was released on each update but never at dispose.
+
+  **The fourth is visible on screen.** Vanilla painted nothing until the first `itemSwap` change —
+  `update()` ran only from the subscription — so a spec that loads a swap preset showed four blank,
+  unpainted slots. `warrior/protection` ships two swap presets and has the row enabled by default, so
+  on master its swap main-hand (item 87176, two gems) is invisible until the set is next touched.
+  React renders from state, so the slot is filled from the first paint. `parity.mjs` and
+  `panes-parity.mjs` fold this away through `normaliseSwapIcons`, which strips `.active` off the icon
+  anchor and empties the sockets container on **both** sides and returns the counts — and both gates
+  assert the baseline's are zero, so the fold fails rather than hides if master ever starts painting.
+  `item-swap.mjs` records `sockets` and `painted` per icon and takes a spec argument: run it on
+  `warrior/protection` and the two builds differ **only** in the at-rest line.
+
+  **The rail is omitted, not rebuilt.** The gear picker's rail entries open with *equipped* gear, so
+  reusing that modal would have turned the first ArrowUp into a silent switch to editing main gear.
+  Vanilla passed no rail either: `addItemSlotTabs` returns early, `onShow` registers no keydown
+  listeners at all, `setActiveItemSlotTab` iterates nothing — a path `bulk_tab.tsx` already
+  exercises. A *swap* rail would not have worked as written:
+  `switchToNext/PreviousItemSlotTab` steps the ItemSlot **enum** and then looks the result up in the
+  rail, so every gap in a sparse rail is a dead arrow key.
+
+  **The sockets container is lifted out of the icon anchor**, the second `LIFTED_SUBTREES` entry.
+  Vanilla nested it, and a filled socket is an `<a href>`, so a gemmed swap set was anchors inside an
+  anchor — `a11y.mjs` counts that as `nested` and allows none on `.settings-tab`. It passed only
+  because the swap set is empty at rest. `.settings-tab`'s `unnamed` ceiling ratchets 125 → 121: the
+  icons carry an `aria-label` now.
+
+  **Two gate scripts moved with it.** `parity.mjs` compares modals as a multiset and asserts equal
+  counts, so it reads the swap-icon count off the page and drops that many railless selector modals
+  from the baseline — asserting first that there are that many and that they are identical markup —
+  plus the same number of pruned modal lines off the end of the baseline's shell. That reconciliation
+  has to run **before** the region comparison, not after: placed with the other modal bookkeeping it
+  left the shell four lines short on every spec with swap slots.
+
+- 2026-09-07 **`useWowheadDataset` adopted at all five call sites; `Component` registration after
+  dispose now fires immediately.** `EnchantLabel`, `ItemPickerCell`, `MetricsActionCell` and
+  `ItemSwapIcon` use the hook. The first two had no staleness guard at all; the third had neither a
+  guard nor an attribute clear despite the registry listing it as guarded — `if (iconRef.current)` is
+  a null check, not a race guard. `dom.ts` grew `actionIdWowheadTooltipData` and
+  `equippedItemWowheadTooltipData` (pure resolvers) and both writers delegate to them with signatures
+  unchanged. `equippedItemWowheadTooltipData` takes `isBlacksmithing` explicitly so the React dep
+  array is honest rather than carrying a dependency the resolver reads off `player` behind its back.
+  One thing the hook cannot carry: `data-whtticon`, which vanilla writes sticky-on-first-equip from
+  inside the writer — `ItemPickerCell` and `ItemSwapIcon` render it as `item ? 'false' : undefined`,
+  which matches master on first paint and differs only after an unequip, where it is inert.
+  `Component.addOnDisposeCallback` now invokes the callback when already disposed and `addChild`
+  disposes the child; all ~40 callback bodies were audited (every one a pure teardown), no
+  `Component.dispose` override exists, `disposed` is never reset, and the only post-construction
+  `addChild` is `list_picker.tsx:255` where immediate disposal is correct. `dispose()` sets
+  `disposed` before draining, so this also closes the case where a callback registered *during*
+  disposal was appended mid-`forEach` and then dropped. That closes `PresetConfigurationPicker`'s
+  `waitForInit().then` subscription leak without touching the vanilla picker; its `tippy()` — the one
+  unowned tooltip instance left in the tree — now registers a `destroy()` alongside.
+
+- 2026-09-07 **The four remaining raw inputs go through Base UI's `Input`.** `NumberPicker`,
+  `AdaptiveStringPicker`, `NumberListPicker` and `BooleanPicker` swap
+  `<Field.Control render={<input type="…"/>}>` for `<Input type="…">`. Provably a runtime no-op:
+  `@base-ui/react/input/Input.mjs` is a `forwardRef` that renders `Field.Control` and nothing else.
+  **`NumberField` was rejected for `NumberPicker`, and the reason is worth keeping**: its `Input` has
+  no native-`change` listener and its `onKeyDown` returns early on Enter (in `NAVIGATE_KEYS`), so
+  Enter would stop committing. Four more blockers behind that one — `NumberField.Root` renders a div
+  that becomes the flex item, the input hard-codes `value` so it cannot stay uncontrolled for
+  `useInput`, parsing kills `parseInt('12abc') → 12`, and it adds five attributes outside
+  `PickerOracle`'s `BASE_UI_ADDED`. `Checkbox`/`Switch` were rejected for `BooleanPicker` for one
+  reason: both render a span plus a hidden input, and Bootstrap's `.form-check-input` sizes the input
+  itself.
 
 - 2026-09-07 **Gear units 2 and 5, merged: the gear tab body, the three summaries, `ItemCell` and
   `GearPicker` are React, and the gear-picker-to-modal cycle is cut.** The plan listed the tab body

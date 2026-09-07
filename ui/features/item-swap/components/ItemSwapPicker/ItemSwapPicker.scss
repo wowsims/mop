@@ -1,0 +1,13 @@
+.item-swap-picker-root {
+	.icon-picker-root {
+		position: relative;
+	}
+
+	.icon-picker-button,
+	.gem-socket-container {
+		&:focus-visible {
+			outline: 1px solid var(--bs-link-color);
+			outline-offset: 1px;
+		}
+	}
+}

@@ -1,7 +1,8 @@
 import { ActionId } from '@sim/proto_utils/action_id';
-import { setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
+import { actionIdWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
 import { getEnchantDescription } from '@sim/proto_utils/enchants';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
+import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -41,12 +42,8 @@ export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: Ench
 		};
 	}, [enchant]);
 
-	useEffect(() => {
-		const element = anchorRef.current;
-		if (!element) return;
-		element.removeAttribute('data-wowhead');
-		if (actionId) setActionIdWowheadDataset(actionId, element);
-	}, [actionId]);
+	const resolveTooltip = useMemo(() => (actionId ? () => actionIdWowheadTooltipData(actionId) : null), [actionId]);
+	useWowheadDataset(anchorRef, resolveTooltip);
 
 	const href = actionId ? (actionId.spellId ? ActionId.makeSpellUrl(actionId.spellId) : ActionId.makeItemUrl(actionId.itemId)) : undefined;
 

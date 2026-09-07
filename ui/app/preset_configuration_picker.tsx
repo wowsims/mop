@@ -105,7 +105,7 @@ export class PresetConfigurationPicker extends Component {
 
 				categories = [...new Set(categories)].sort();
 
-				tippy(dataElemRef.value!, {
+				const tooltip = tippy(dataElemRef.value!, {
 					content: (
 						<>
 							<p className="mb-1">{i18n.t('common.preset.description')}</p>
@@ -117,6 +117,7 @@ export class PresetConfigurationPicker extends Component {
 						</>
 					),
 				});
+				this.addOnDisposeCallback(() => tooltip.destroy());
 
 				const checkActive = () => dataElemRef.value!.classList[this.isBuildActive(build) ? 'add' : 'remove']('active');
 
