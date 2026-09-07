@@ -1339,6 +1339,28 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **Two recorded defects fixed, a third audited clean, and a new gate for the class the
+  third belongs to.** `SavedDataManager`'s preset-name-collision guard read
+  `newName in this.presets` — `presets` is an array, so `in` tested indices and the guard never
+  fired once. Now `this.presets.some(preset => preset.name === newName)`; overwriting an existing
+  *user* entry of the same name stays allowed, because that is `addSavedData`'s overwrite-by-index
+  path and is deliberate.
+
+  `action_id/index.ts` lost **seven** dead spellId overrides, not the five the backlog claimed. The
+  backlog never listed them, so the set was re-derived from scratch with `/usr/bin/grep -rn` from
+  the repo root, `.go` included — and that re-derivation is what saved 47897 ("Shadowflame Dot"),
+  which is live in `ui/sim/talents/trees/warlock.json`. Three (37212, 37223, 37447) override icons
+  for items that exist only in `leftover_db.json`; one (123180) is a transposed-digit typo, since
+  `sim/paladin/items.go:46` shows the real id is 123108; three (96228/96229/96230) are Cataclysm's
+  three-way Synapse Springs split, which MoP consolidated into one spell (126734,
+  `sim/common/mop/enchants.go:214`). **Record the identifiers when recording a finding** — a count
+  without a list costs the next pass the whole investigation again.
+
+  The `--bs-modal-*` sweep found **nothing to fix**: Bootstrap 5.3.8 declares those on `.modal`
+  itself, and every remaining reference under `ui/scss/` is inside a `BaseModal` subtree, which
+  always carries that class. The progress tracker was the exception because it is a React popup with
+  no `.modal` ancestor at all. `css-vars.mjs` now asserts that independently — and agrees.
+
 - 2026-09-07 **Four more string unions became string enums, and the header-anchor note was closed as
   stale rather than fixed.** `ResultsPanelStage`, `GlyphKind`, `StatsType` and `ImportExportKind`
   follow `SimRunKind`'s pattern exactly — plain `export enum`, values unchanged. One consequence
