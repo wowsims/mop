@@ -5,13 +5,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Every block's contents are somebody else's component and are tested where they live. What is under
 // test here is the assembly: which column a block lands in, in what order, whether it exists at all,
 // and that nothing exists before the sim is ready.
-vi.mock('@features/encounter', () => ({ EncounterPicker: () => <div className="encounter-picker-root" /> }));
+vi.mock('@features/encounter', () => ({
+	EncounterPicker: () => <div className="encounter-picker-root" />,
+	SavedEncounter: () => <div className="saved-encounter-root" />,
+}));
 vi.mock('@features/settings', () => ({
 	ConsumesPicker: () => <div className="consumes-picker-root" />,
 	CustomSection: ({ section }: { section: { id: string } }) => <div className="custom-section-stub" data-id={section.id} />,
 	OtherSettings: () => <div className="other-settings-root" />,
 	PlayerSettings: () => <div className="player-settings-root" />,
 	RaidBuffs: () => <div className="raid-buffs-root" />,
+	SavedSettings: () => <div className="saved-settings-root" />,
 	StatOptionIcons: ({ options }: { options: ReadonlyArray<unknown> }) => <div className="stat-option-icons-root" data-count={options.length} />,
 }));
 
@@ -30,21 +34,10 @@ const lists = vi.hoisted(() => ({ value: {} as Record<string, Array<unknown>> })
 vi.mock('@features/settings/model/stat_options', () => ({
 	relevantStatOptions: (config: string) => lists.value[config] ?? [],
 }));
-vi.mock('@features/settings/model/saved_settings', () => ({ readSavedSettings: () => ({}), applySavedSettings: () => {} }));
 
-// The store sources need a player with a live zustand store; the managers below never read them.
-const noopSubscribe = () => () => {};
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeAll: () => noopSubscribe,
-	subscribeEncounterChange: () => noopSubscribe,
-	subscribePartyBuffs: () => noopSubscribe,
-	subscribePlayerField: () => noopSubscribe,
-	subscribeRaidField: () => noopSubscribe,
-}));
-
-// The two components the tab deliberately does *not* port. They are constructed straight into the
-// React-rendered panel, so what matters is that they land there and that nothing wraps them.
-const built = vi.hoisted(() => ({ presets: 0, managers: 0 }));
+// The one component the tab deliberately does *not* port. It is constructed straight into the
+// React-rendered panel, so what matters is that it lands there and that nothing wraps it.
+const built = vi.hoisted(() => ({ presets: 0 }));
 class Legacy {
 	readonly rootElem: HTMLElement;
 	constructor(parent: HTMLElement, cssClass: string) {
@@ -60,16 +53,6 @@ vi.mock('../preset_configuration_picker', () => ({
 			super(parent, 'preset-configuration-picker-root');
 			built.presets++;
 		}
-	},
-}));
-vi.mock('@ui-kit/saved_data_manager', () => ({
-	SavedDataManager: class extends Legacy {
-		constructor(parent: HTMLElement) {
-			super(parent, 'saved-data-manager-root');
-			built.managers++;
-		}
-		loadUserData() {}
-		addSavedData() {}
 	},
 }));
 
@@ -128,7 +111,6 @@ describe('SettingsTabBody', () => {
 	beforeEach(() => {
 		lists.value = { buffs: [{}], debuffs: [{}], externalDamage: [{}], externalDefensive: [{}] };
 		built.presets = 0;
-		built.managers = 0;
 	});
 
 	it('renders the panels and the three columns before the sim is ready, and nothing in them', () => {
@@ -152,23 +134,19 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('.settings-left-col-2')!.firstElementChild!.className).toBe('custom-section-stub');
 	});
 
-	it('mounts the preset picker and both saved-data managers into the right panel itself', () => {
+	it('mounts the preset picker ahead of the two saved-data panels in the right panel itself', () => {
 		const container = mount();
 		const right = container.querySelector('.settings-tab-right')!;
 		// `useLegacyMount`, not a host component: a wrapper div here would change the pane's DOM and
-		// `panes-parity.mjs` compares it element for element.
-		expect([...right.children].map(child => child.className)).toEqual([
-			'preset-configuration-picker-root',
-			'saved-data-manager-root',
-			'saved-data-manager-root',
-		]);
+		// `panes-parity.mjs` compares it element for element. The preset picker is legacy-mounted and
+		// moved to the front with `insertBefore` so it still leads the two React saved-data panels.
+		expect([...right.children].map(child => child.className)).toEqual(['preset-configuration-picker-root', 'saved-encounter-root', 'saved-settings-root']);
 	});
 
 	it('builds the right panel once, and not again when the sim becomes ready', async () => {
 		mount();
 		await becomeReady();
 		expect(built.presets).toBe(1);
-		expect(built.managers).toBe(2);
 	});
 
 	it('omits the other-settings block when the spec declares neither inputs nor swap slots', async () => {

@@ -1339,6 +1339,37 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-07 **The four remaining `SavedDataManager` islands port onto `SavedDataPanel`, and the
+  crash that came with them is the lesson.** Gear, talents, settings and encounter each get a thin
+  wrapper over the shared panel, wired to the four `useSaved*` hooks that had no caller. Three
+  `useLegacyMount` islands shrink to just `PresetConfigurationPicker`; `SettingsTabBody` renders two
+  panels, because that pane was always two managers.
+
+  **Every gate passed and the app did not start.** type-check, 826 tests, the goldens and both
+  builds were green, and `#root` stayed empty: `SavedSettings`'s snapshot read
+  `readSavedSettings(host)`, which reaches `player.getConsumes()` and dereferences `sim.db` — and
+  `useSyncExternalStore` calls `getSnapshot` on the **first render**, long before `useSimReady` is
+  true. The presets memo was correctly gated; the snapshot was not, and nothing in the unit suite
+  builds a host whose `db` is still null. Caught only because the browser gates run on a real page.
+  The fix gates the read *and* puts `ready` in the subscription's dep list, because
+  `useStoreSubscribe` caches its snapshot and only drops it when the subscription changes — gating
+  the read alone would have left the panel showing nothing until the user's next edit.
+
+  **Ordering needed a trick worth remembering:** `Component`'s constructor only ever `appendChild`s,
+  so a React sibling declared as a JSX child of the ref'd div lands *before* the legacy picker, not
+  after. `parent.insertBefore(presets.rootElem, parent.firstChild)` after construction fixes it
+  without touching `Component`.
+
+  The panel grew two things ep-weights never exercised: a `tooltip` on `SavedDataPanelEntry`, and
+  `{{name}}` substitution in the confirm/alert strings — vanilla did `.replace('{{name}}', …)` and
+  talents' locale strings contain the placeholder, so it had been rendering literally. Parity needed
+  **no** `INTENDED` entries: the new `data-tooltip-*` are attributes, and the gate records tag and
+  sorted classes only.
+
+  `unused.mjs` now sweeps hooks as well as components, which is how the sixth slot stays honest:
+  `useSavedRotation` is the one still waiting, and it will need `SavedDataManager`'s optional
+  `equals` back, because rotations cannot be compared by their JSON.
+
 - 2026-09-07 **The selector modal's slot rail steps its own indices instead of the ItemSlot enum.**
   `switchToNext/PreviousItemSlotTab` computed `mod(currentSlot ± 1, enumSize)` and then looked that
   slot up in the rail, so a rail with gaps in it `preventDefault()`ed the key and then moved nothing.

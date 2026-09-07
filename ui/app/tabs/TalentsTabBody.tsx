@@ -1,16 +1,13 @@
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player';
-import { batch } from '@sim/state/batch';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classTalentsConfig } from '@sim/talents/factory';
+import { SavedTalents } from '@features/talents/components/SavedTalents';
 import { TalentsPicker } from '@features/talents/components/TalentsPicker';
-import { Class, Glyphs } from '@generated/proto/common';
-import { SavedTalents } from '@generated/proto/ui';
-import i18n from '@i18n/config';
+import { Class } from '@generated/proto/common';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { PetSpecPicker } from '@ui-kit/PetSpecPicker';
-import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../tracking/analytics';
@@ -36,39 +33,10 @@ export const TalentsTabBody = () => {
 	const mountRight = useLegacyMount(
 		parent => {
 			const presets = new PresetConfigurationPicker(parent, host, [PresetConfigurationCategory.Talents]);
-			const saved = new SavedDataManager<Player<any>, SavedTalents>(parent, player, {
-				label: i18n.t('talents_tab.saved_talents.label'),
-				header: { title: i18n.t('talents_tab.saved_talents.title') },
-				storageKey: host.getSavedTalentsStorageKey(),
-				getData: (subject: Player<any>) => SavedTalents.create({ talentsString: subject.getTalentsString(), glyphs: subject.getGlyphs() }),
-				setData: (subject: Player<any>, newTalents: SavedTalents) => {
-					batch(() => {
-						subject.setTalentsString(newTalents.talentsString);
-						subject.setGlyphs(newTalents.glyphs || Glyphs.create());
-					});
-				},
-				subscribe: subscribeAll([subscribePlayerField(player, 'talentsString'), subscribePlayerField(player, 'glyphs')]),
-				toJson: (a: SavedTalents) => SavedTalents.toJson(a),
-				fromJson: (obj: any) => SavedTalents.fromJson(obj),
-				nameLabel: i18n.t('talents_tab.saved_talents.name_label'),
-				saveButtonText: i18n.t('talents_tab.saved_talents.save_button'),
-				deleteTooltip: i18n.t('talents_tab.saved_talents.delete.tooltip'),
-				deleteConfirmMessage: i18n.t('talents_tab.saved_talents.delete.confirm'),
-				chooseNameAlert: i18n.t('talents_tab.saved_talents.alerts.choose_name'),
-				nameExistsAlert: i18n.t('talents_tab.saved_talents.alerts.name_exists'),
-			});
-
-			host.sim.waitForInit().then(() => {
-				saved.loadUserData();
-				host.individualConfig.presets.talents.forEach(config => {
-					config.isPreset = true;
-					saved.addSavedData({ name: config.name, isPreset: true, data: config.data, onLoad: config.onLoad });
-				});
-			});
-
-			return [presets, saved];
+			parent.insertBefore(presets.rootElem, parent.firstChild);
+			return [presets];
 		},
-		[player, host],
+		[host],
 	);
 
 	return (
@@ -77,7 +45,9 @@ export const TalentsTabBody = () => {
 				<TalentsPicker config={talentsConfig} />
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
 			</div>
-			<div className="talents-tab-right tab-panel-right" ref={mountRight} />
+			<div className="talents-tab-right tab-panel-right" ref={mountRight}>
+				<SavedTalents />
+			</div>
 		</>
 	);
 };

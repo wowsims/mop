@@ -11,13 +11,18 @@ export interface SavedDataChipProps<T> {
 	disabled: boolean;
 	deleteLabel?: string;
 	deleteTooltipId?: string;
+	chipTooltipId?: string;
 	onLoad: (entry: SavedDataPanelEntry<T>) => void;
 	onDelete?: (entry: SavedDataPanelEntry<T>) => void;
 }
 
-export const SavedDataChip = <T,>({ entry, active, disabled, deleteLabel, deleteTooltipId, onLoad, onDelete }: SavedDataChipProps<T>) => (
+export const SavedDataChip = <T,>({ entry, active, disabled, deleteLabel, deleteTooltipId, chipTooltipId, onLoad, onDelete }: SavedDataChipProps<T>) => (
 	<div className={clsx('saved-data-set-chip badge rounded-pill', active && 'active', disabled && 'disabled')}>
-		<Button variant="unstyled" className="saved-data-set-name" onClick={() => onLoad(entry)}>
+		<Button
+			variant="unstyled"
+			className="saved-data-set-name"
+			onClick={() => onLoad(entry)}
+			{...tooltipAnchorProps(entry.tooltip ? chipTooltipId : undefined, entry.tooltip)}>
 			{entry.name}
 		</Button>
 		{onDelete && (

@@ -47,6 +47,7 @@ export const SavedDataPanel = <T,>({
 	onDelete,
 }: SavedDataPanelProps<T>) => {
 	const tooltipId = useId();
+	const chipTooltipId = useId();
 	const nameInputId = useId();
 	const [name, setName] = useState('');
 	const [loadedName, setLoadedName] = useState<string | null>(null);
@@ -82,7 +83,7 @@ export const SavedDataPanel = <T,>({
 			return;
 		}
 		if (presets.some(preset => preset.name === name)) {
-			alert(nameExistsAlert ?? `${label} with name ${name} already exists.`);
+			alert(nameExistsAlert ? nameExistsAlert.replace('{{name}}', name) : `${label} with name ${name} already exists.`);
 			return;
 		}
 		onSave(name);
@@ -90,7 +91,7 @@ export const SavedDataPanel = <T,>({
 
 	const handleDelete = useCallback(
 		(entry: SavedDataPanelEntry<T>) => {
-			if (!confirm(deleteConfirmMessage ?? `Delete saved ${label} '${entry.name}'?`)) return;
+			if (!confirm(deleteConfirmMessage ? deleteConfirmMessage.replace('{{name}}', entry.name) : `Delete saved ${label} '${entry.name}'?`)) return;
 			onDelete(entry);
 		},
 		[label, deleteConfirmMessage, onDelete],
@@ -104,6 +105,7 @@ export const SavedDataPanel = <T,>({
 			disabled={!!entry.disabled}
 			deleteLabel={deleteText}
 			deleteTooltipId={tooltipId}
+			chipTooltipId={chipTooltipId}
 			onLoad={handleLoad}
 			onDelete={entry.isPreset || loadOnly ? undefined : handleDelete}
 		/>
@@ -136,6 +138,7 @@ export const SavedDataPanel = <T,>({
 				)}
 			</ContentBlock>
 			<Tooltip id={tooltipId} content={deleteText} />
+			<Tooltip id={chipTooltipId} place="bottom" />
 		</div>
 	);
 };

@@ -1,20 +1,14 @@
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
-import type { Encounter } from '@sim/encounter';
 import { useSimReady } from '@sim/hooks/useSimReady';
-import type { IndividualSimHost } from '@sim/sim_host';
-import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
-import { EncounterPicker } from '@features/encounter';
-import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, StatOptionIcons } from '@features/settings';
+import { EncounterPicker, SavedEncounter } from '@features/encounter';
+import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, SavedSettings, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
-import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
-import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
-import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { useMemo } from 'react';
 
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
@@ -43,97 +37,10 @@ export const SettingsTabBody = () => {
 	const mountRight = useLegacyMount(
 		parent => {
 			const presets = new PresetConfigurationPicker(parent, host, [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings]);
-
-			const savedEncounterManager = new SavedDataManager<Encounter, SavedEncounter>(parent, host.sim.encounter, {
-				label: i18n.t('settings_tab.saved_encounters.encounter'),
-				header: { title: i18n.t('settings_tab.saved_encounters.title') },
-				nameLabel: i18n.t('settings_tab.saved_encounters.encounter_name'),
-				saveButtonText: i18n.t('settings_tab.saved_encounters.save_encounter'),
-				storageKey: host.getSavedEncounterStorageKey(),
-				getData: (encounter: Encounter) => SavedEncounter.create({ encounter: encounter.toProto() }),
-				setData: (encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(newEncounter.encounter!),
-				subscribe: subscribeEncounterChange(host.sim.encounter),
-				toJson: (a: SavedEncounter) => SavedEncounter.toJson(a),
-				fromJson: (obj: any) => SavedEncounter.fromJson(obj),
-			});
-
-			const savedSettingsManager = new SavedDataManager<IndividualSimHost<any>, SavedSettings>(parent, host, {
-				label: i18n.t('settings_tab.saved_settings.settings'),
-				header: { title: i18n.t('settings_tab.saved_settings.title') },
-				nameLabel: i18n.t('settings_tab.saved_settings.settings_name'),
-				saveButtonText: i18n.t('settings_tab.saved_settings.save_settings'),
-				storageKey: host.getSavedSettingsStorageKey(),
-				getData: () => readSavedSettings(host),
-				setData: (subject: IndividualSimHost<any>, newSettings: SavedSettings) => applySavedSettings(subject, newSettings),
-				subscribe: subscribeAll([
-					subscribeRaidField(host.sim.raid, 'buffs'),
-					subscribeRaidField(host.sim.raid, 'debuffs'),
-					subscribePartyBuffs(host.player.getParty()!),
-					subscribePlayerField(host.player, 'buffs'),
-					subscribePlayerField(host.player, 'consumables'),
-					subscribePlayerField(host.player, 'race'),
-					subscribePlayerField(host.player, 'profession1'),
-					subscribePlayerField(host.player, 'profession2'),
-					subscribePlayerField(host.player, 'itemSwap'),
-					subscribePlayerField(host.player, 'reactionTime'),
-					subscribePlayerField(host.player, 'channelClipDelay'),
-					subscribePlayerField(host.player, 'inFrontOfTarget'),
-					subscribePlayerField(host.player, 'distanceFromTarget'),
-					subscribePlayerField(host.player, 'healingModel'),
-				]),
-				toJson: (a: SavedSettings) => SavedSettings.toJson(a),
-				fromJson: (obj: any) => SavedSettings.fromJson(obj),
-			});
-
-			host.sim.waitForInit().then(() => {
-				savedEncounterManager.loadUserData();
-				config.presets.encounters?.forEach(encounter => {
-					savedEncounterManager.addSavedData({
-						name: encounter.name,
-						tooltip: encounter.tooltip,
-						isPreset: true,
-						data: SavedEncounter.create({ encounter: encounter.encounter }),
-					});
-				});
-
-				savedSettingsManager.loadUserData();
-				config.presets.settings?.forEach(settings => {
-					savedSettingsManager.addSavedData({
-						name: settings.name,
-						tooltip: settings.tooltip,
-						isPreset: true,
-						data: SavedSettings.create({
-							race: settings.race,
-							raidBuffs: settings.raidBuffs,
-							playerBuffs: settings.buffs,
-							debuffs: settings.debuffs,
-							consumables: settings.consumables,
-							professions:
-								settings.playerOptions?.profession1 && settings.playerOptions?.profession2
-									? [settings.playerOptions.profession1, settings.playerOptions.profession2]
-									: undefined,
-							distanceFromTarget: settings.playerOptions?.distanceFromTarget,
-							reactionTimeMs: settings.playerOptions?.reactionTimeMs,
-							channelClipDelayMs: settings.playerOptions?.channelClipDelayMs,
-							inFrontOfTarget: settings.playerOptions?.inFrontOfTarget,
-							enableItemSwap: settings.playerOptions?.enableItemSwap,
-						}),
-					});
-				});
-
-				config.presets.itemSwaps?.forEach(presetItemSwap => {
-					savedSettingsManager.addSavedData({
-						name: presetItemSwap.name,
-						tooltip: presetItemSwap.tooltip,
-						isPreset: true,
-						data: SavedSettings.create({ ...readSavedSettings(host), enableItemSwap: true, itemSwap: presetItemSwap.itemSwap }),
-					});
-				});
-			});
-
-			return [presets, savedEncounterManager, savedSettingsManager];
+			parent.insertBefore(presets.rootElem, parent.firstChild);
+			return [presets];
 		},
-		[host, config],
+		[host],
 	);
 
 	return (
@@ -221,7 +128,10 @@ export const SettingsTabBody = () => {
 					)}
 				</div>
 			</div>
-			<div className="settings-tab-right tab-panel-right" ref={mountRight} />
+			<div className="settings-tab-right tab-panel-right" ref={mountRight}>
+				<SavedEncounter />
+				<SavedSettings />
+			</div>
 		</>
 	);
 };

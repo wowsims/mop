@@ -23,11 +23,17 @@ import { launch, openSpec, PORTS, specsFromArgv } from './browser.mjs';
 // Prefixes whose declaring scope is narrower than the components that reference them.
 const WATCHED = ['--bs-modal-', '--bs-offcanvas-', '--bs-accordion-'];
 
-// Clicked before the sweep so dialog content is in the DOM. A selector that matches nothing is
-// reported rather than skipped, because a renamed control would otherwise shrink coverage silently.
+// Clicked in order before the sweep so dialog content is in the DOM — these are the React popups,
+// which are the ones at risk: they have no `.modal` ancestor to inherit Bootstrap's variables from.
+// A selector that matches nothing is reported rather than skipped, because a renamed control would
+// otherwise shrink coverage silently.
 const OPENERS = [
-	['stat weights', '.ep-weights-action'],
-	['advanced encounter', '.advanced-button'],
+	['stat weights', ['.ep-weights-action']],
+	['advanced encounter', ['.advanced-button']],
+	// React-only: master's tab strip is Bootstrap `.nav-link` anchors with no stable per-tab hook, so
+	// this one reports NOT FOUND on the baseline by design. That costs nothing — the baseline reading
+	// a property needs comes from any element that resolves it, not from this dialog.
+	['glyph selector (react tabs only)', ['.sim-tab-link.talents-tab', '.major-glyphs .glyph-picker-root .glyph-link']],
 ];
 
 // Below this, the run learned nothing and the pass would be vacuous.
@@ -74,15 +80,18 @@ const RESOLVE = declarations =>
 const measure = async (browser, port, spec) => {
 	const { page } = await openSpec(browser, port, spec, { selector: '.sim-sidebar, .sim-ui' });
 	const opened = [];
-	for (const [label, selector] of OPENERS) {
-		const found = await page.$(selector);
-		if (!found) {
-			opened.push(`${label}: NOT FOUND`);
-			continue;
+	for (const [label, selectors] of OPENERS) {
+		let missing = null;
+		for (const selector of selectors) {
+			const found = await page.$(selector);
+			if (!found) {
+				missing = selector;
+				break;
+			}
+			await page.evaluate(element => element.click(), found);
+			await page.waitForTimeout(400);
 		}
-		await page.evaluate(element => element.click(), found);
-		await page.waitForTimeout(400);
-		opened.push(`${label}: opened`);
+		opened.push(missing ? `${label}: NOT FOUND (${missing})` : `${label}: opened`);
 	}
 
 	const hrefs = await page.evaluate(() =>
