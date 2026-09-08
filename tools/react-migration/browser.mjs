@@ -466,6 +466,47 @@ const PORTED_MENUS = [
 ];
 
 /**
+ * How many `within` subtrees contain at least one `re` line, and how many `re` lines they hold
+ * between them — the pair `normaliseBaseUiMenus` compares to say "one menu per picker root".
+ *
+ * It counts *scopes containing the marker* rather than every `within` line, because a pane can
+ * hold pickers from both stacks: the rotation tab has a React `DropdownField` in each of its
+ * type containers and a vanilla `TextDropdownPicker` in the APL navbar, and the two wear the same
+ * root classes. Counting bare roots there reported "1 menu under 2 picker roots" for markup that
+ * is exactly right. A React menu outside any root still fails, because it raises the marker count
+ * without raising the scope count.
+ */
+export const countScopesContaining = (dom, within, re) => {
+	let scopes = 0;
+	let scope = null;
+	let counted = false;
+	for (const line of dom.split('\n')) {
+		const indent = line.length - line.trimStart().length;
+		const trimmed = line.trim();
+		if (scope !== null && indent <= scope) {
+			scope = null;
+			counted = false;
+		}
+		if (scope === null) {
+			if (!within.test(trimmed)) continue;
+			scope = indent;
+			// `multi-icon` marks itself: its root line *is* the counted element, so the line that
+			// opens a scope has to be tested too.
+			if (re.test(trimmed)) {
+				scopes++;
+				counted = true;
+			}
+			continue;
+		}
+		if (!counted && re.test(trimmed)) {
+			scopes++;
+			counted = true;
+		}
+	}
+	return scopes;
+};
+
+/**
  * Folds every ported menu in `dom` back into its Bootstrap shape, and reports anything that did not
  * fold as expected. Used by both tree comparisons and **only on the React side**: the baseline
  * builds the same picker roots, so running it there reports it as missing wrappers it never had.
@@ -480,7 +521,7 @@ export const normaliseBaseUiMenus = dom => {
 	for (const menu of PORTED_MENUS) {
 		const lines = current.split('\n').map(line => line.trim());
 		const expected = lines.filter(line => menu.count.test(line)).length;
-		const roots = lines.filter(line => menu.root.test(line)).length;
+		const roots = countScopesContaining(current, menu.root, menu.count);
 		if (!expected) continue;
 		if (roots !== expected) problems.push(`${menu.what}: ${expected} menus under ${roots} picker roots`);
 		for (const wrapper of menu.wrappers) {

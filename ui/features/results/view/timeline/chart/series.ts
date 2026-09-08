@@ -1,13 +1,12 @@
+import { ResourceType } from '@generated/proto/spell';
 import { DpsLog, ResourceGroupLog, ThreatLogGroup } from '@sim/proto/combat_log';
 import { resourceColors, resourceNames } from '@sim/proto/names';
 import SecondaryResource from '@sim/proto/secondary_resource';
 import { UnitMetrics } from '@sim/proto/sim_result';
 import { orderedResourceTypes } from '@sim/proto/utils';
-import { ResourceType } from '@generated/proto/spell';
 import { ScaleOptions } from 'chart.js';
 
 import { THREAT_SERIES_NAME } from '../constants';
-import { DpsTooltip, ResourceTooltip, ThreatTooltip } from '../tooltip_content';
 import { AXIS_GRID_COLOR, cssVarColor } from './colors';
 import { TimelineDataset } from './types';
 
@@ -97,7 +96,7 @@ export function dpsDataset(unit: UnitMetrics, seriesId: string, borderColor: str
 			borderColor,
 			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.dps, log })),
-			renderTooltip: log => DpsTooltip(log),
+			tooltipSpec: { kind: 'dps' },
 		},
 	};
 }
@@ -113,7 +112,7 @@ export function threatDataset(unit: UnitMetrics, seriesId: string, borderColor: 
 		borderColor,
 		...LINE_DATASET,
 		data: logs.map(log => ({ x: log.timestamp, y: log.threatAfter, log })),
-		renderTooltip: log => ThreatTooltip(log),
+		tooltipSpec: { kind: 'threat' },
 	};
 }
 
@@ -132,7 +131,7 @@ export function manaDataset(unit: UnitMetrics): { dataset: TimelineDataset<Resou
 			borderColor: manaColor(),
 			...LINE_DATASET,
 			data: logs.map(log => ({ x: log.timestamp, y: log.valueAfter, log })),
-			renderTooltip: log => ResourceTooltip(log, maxMana, true),
+			tooltipSpec: { kind: 'resource', maxValue: maxMana, includeAuras: true },
 		},
 	};
 }
@@ -177,7 +176,7 @@ export function resourceDatasets(unit: UnitMetrics, secondaryResource: Secondary
 			...TRACE_DATASET,
 			// Percent of that resource's own maximum: the only scale they share.
 			data: logs.map(log => ({ x: log.timestamp, y: Number(((log.valueAfter / resourceMax) * 100).toFixed(2)), log })),
-			renderTooltip: log => ResourceTooltip(log, resourceMax, false),
+			tooltipSpec: { kind: 'resource', maxValue: resourceMax, includeAuras: false },
 		});
 	}
 

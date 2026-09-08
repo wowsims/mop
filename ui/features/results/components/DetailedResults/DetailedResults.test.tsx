@@ -57,15 +57,20 @@ vi.mock('@sim/proto/sim_result', async importOriginal => ({
 	SimResult: { fromProto: () => Promise.resolve({ getTargets: () => Array.from({ length: run.targets }, (_, index) => ({ index })) }) },
 }));
 
-vi.mock('../../view/timeline', async () => ({ Timeline: await island('timeline', 'timeline-root')() }));
 vi.mock('../../view/combat_replay', async () => ({ CombatReplay: await island('replay', 'combat-replay-root')() }));
-// The log pane is React now, so it is a prop reader rather than an island: what this pane owes it is
-// `active`, which is what its own deferral is built on.
-const logRunner = vi.hoisted(() => ({ active: [] as Array<boolean> }));
+// The log and timeline panes are React now, so they are prop readers rather than islands: what this
+// pane owes each is `active`, which is what their own deferral is built on.
+const panes = vi.hoisted(() => ({ log: [] as Array<boolean>, timeline: [] as Array<boolean> }));
 vi.mock('../LogRunner', () => ({
 	LogRunner: ({ active }: { active: boolean }) => {
-		logRunner.active.push(active);
+		panes.log.push(active);
 		return <div className="log-runner-root" />;
+	},
+}));
+vi.mock('../Timeline', () => ({
+	Timeline: ({ active }: { active: boolean }) => {
+		panes.timeline.push(active);
+		return <div className="timeline-root" />;
 	},
 }));
 
@@ -121,7 +126,8 @@ const tabButton = (container: HTMLElement, tabId: string) => container.querySele
 
 beforeEach(() => {
 	islands.records.clear();
-	logRunner.active.length = 0;
+	panes.log.length = 0;
+	panes.timeline.length = 0;
 	resultChannel = new ResultChannel();
 	currentChangeEmitter = new Emitter<void>();
 	runData = null;
@@ -180,11 +186,10 @@ describe('DetailedResults', () => {
 	it('builds each vanilla island into the div that used to be its parent, with no wrapper', () => {
 		const { container } = renderPane();
 		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
-		expect(islands.track('timeline').parents[0].className).toBe('timeline');
 		expect(islands.track('replay').parents[0].className).toBe('combat-replay');
-		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
-		// The log pane keeps the same container the island used to be built into, one level shallower.
+		// The log and timeline panes keep the same container their islands were built into, one level shallower.
 		expect(container.querySelectorAll('#logTab .dr-row > .log > .log-runner-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
@@ -205,22 +210,24 @@ describe('DetailedResults', () => {
 
 	it('tells only the newly opened deferred island that its tab is showing', () => {
 		const { container } = renderPane();
-		expect(islands.track('timeline').shown).toBe(0);
-		fireEvent.click(tabButton(container, 'timelineTab'));
-		expect(islands.track('timeline').shown).toBe(1);
+		expect(islands.track('replay').shown).toBe(0);
 		fireEvent.click(tabButton(container, 'replayTab'));
-		expect(islands.track('timeline').hidden).toBe(1);
 		expect(islands.track('replay').shown).toBe(1);
+		fireEvent.click(tabButton(container, 'timelineTab'));
+		expect(islands.track('replay').hidden).toBe(1);
 	});
 
-	// What `onTabShown` was to an island, `active` is to the React log pane.
-	it('tells the log pane whether its tab is the open one', () => {
+	// What `onTabShown` was to an island, `active` is to the React log and timeline panes.
+	it.each([
+		['log', 'logTab'],
+		['timeline', 'timelineTab'],
+	] as const)('tells the %s pane whether its tab is the open one', (pane, tabId) => {
 		const { container } = renderPane();
-		expect(logRunner.active.at(-1)).toBe(false);
-		fireEvent.click(tabButton(container, 'logTab'));
-		expect(logRunner.active.at(-1)).toBe(true);
+		expect(panes[pane].at(-1)).toBe(false);
+		fireEvent.click(tabButton(container, tabId));
+		expect(panes[pane].at(-1)).toBe(true);
 		fireEvent.click(tabButton(container, 'damageTab'));
-		expect(logRunner.active.at(-1)).toBe(false);
+		expect(panes[pane].at(-1)).toBe(false);
 	});
 
 	it('stops the replay when its tab closes', () => {

@@ -1,6 +1,6 @@
 export { buildRotationModel } from './build';
 export { IDS_TO_GROUP_FOR_ROTATION } from './buckets';
-export { computeOrder } from './order';
+export { computeOrder, rowAt } from './order';
 export type {
 	AuraItem,
 	AuraRow,

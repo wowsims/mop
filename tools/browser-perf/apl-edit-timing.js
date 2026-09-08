@@ -7,7 +7,15 @@
     await page.goto(url);
     await page.waitForSelector('.dps-action');
     await page.waitForTimeout(3000);
-    await page.evaluate(() => { const l = [...document.querySelectorAll('.nav-link')].find(a => /^Rotation$/i.test((a.textContent || '').trim())); l && l.click(); });
+    // Shape-agnostic: the strip is Bootstrap `.nav-link`s before the Base UI Tabs swap and role=tab
+    // buttons after it, so the tab is found by which pane it names rather than by its own markup.
+    await page.evaluate(() => {
+      const tabs = [...document.querySelectorAll('.sim-tabs [role=tab], .sim-tabs .nav-link')];
+      const names = el => [...el.classList, ...(el.closest('li')?.classList ?? [])];
+      const tab = tabs.find(el => names(el).includes('rotation-tab')) || tabs.find(el => /^Rotation$/i.test((el.textContent || '').trim()));
+      tab && tab.click();
+    });
+    await page.waitForSelector('#rotation-tab', { state: 'visible' });
     await page.waitForTimeout(1000);
     await page.evaluate(() => { const chips = [...document.querySelectorAll('.saved-data-set-name')].filter(e => e.textContent.trim() === 'Festerblight'); (chips.find(e => e.offsetParent) || chips[0])?.click(); });
     await page.waitForFunction(() => document.querySelectorAll('#rotation-tab .list-picker-item').length > 100);

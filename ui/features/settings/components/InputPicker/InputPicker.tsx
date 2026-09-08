@@ -7,17 +7,23 @@ import { NumberPicker } from '@ui-kit/NumberPicker';
 
 export interface InputPickerProps {
 	config: InputConfig<Player<any>>;
+	/**
+	 * Lay the label and the control on one line. The rotation tab's simple-rotation section sets it
+	 * for every input; the settings blocks do not.
+	 */
+	inline?: boolean;
 }
 
-export const InputPicker = ({ config }: InputPickerProps) => {
+export const InputPicker = ({ config, inline }: InputPickerProps) => {
 	const player = usePlayer();
+	const shared = inline ? { ...config, inline: true } : config;
 
-	switch (config.type) {
+	switch (shared.type) {
 		case 'number':
-			return <NumberPicker modObject={player} config={config} />;
+			return <NumberPicker modObject={player} config={shared} />;
 		case 'boolean':
-			return <BooleanPicker modObject={player} config={{ ...config, reverse: true }} />;
+			return <BooleanPicker modObject={player} config={{ ...shared, reverse: true }} />;
 		case 'enum':
-			return <EnumPicker modObject={player} config={config} />;
+			return <EnumPicker modObject={player} config={shared} />;
 	}
 };

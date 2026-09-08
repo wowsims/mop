@@ -90,4 +90,21 @@ describe('UnitPicker', () => {
 
 		expect([...root().querySelectorAll('img')].every(image => image.getAttribute('alt') === '')).toBe(true);
 	});
+	// The APL unit sets put `undefined` first — "Self" or "Current Target", depending on the set —
+	// and that is the entry whose text the trigger drops.
+	const withDefault: Array<UnitValue> = [{ value: undefined, text: 'Self', iconUrl: 'fa-user' }, ...options];
+
+	it('hides the text but keeps the icon on the trigger for the default unit, when asked', () => {
+		const { rerender } = render(<UnitPicker options={withDefault} value={undefined} onChange={vi.fn()} hideLabelWhenDefault />);
+		expect(trigger().textContent).toBe('');
+		expect(trigger().querySelector('.unit-picker-item-icon')).not.toBeNull();
+
+		rerender(<UnitPicker options={withDefault} value={targetRef(0)} onChange={vi.fn()} hideLabelWhenDefault />);
+		expect(trigger().textContent).not.toBe('');
+	});
+
+	it('keeps the text when the caller does not ask for it to be hidden', () => {
+		render(<UnitPicker options={withDefault} value={undefined} onChange={vi.fn()} />);
+		expect(trigger().textContent).not.toBe('');
+	});
 });

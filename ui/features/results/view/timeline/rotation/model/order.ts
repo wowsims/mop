@@ -1,4 +1,9 @@
-import type { RotationModel } from './types';
+import type { RotationModel, Row } from './types';
+
+// Every caller of the model's row index had `model.rows[model.byKey.get(key)!]` written out.
+export function rowAt(model: RotationModel, key: string): Row {
+	return model.rows[model.byKey.get(key)!];
+}
 
 export function computeOrder(model: RotationModel, hidden: ReadonlySet<string>): Array<string> {
 	const order: Array<string> = [];

@@ -3,7 +3,7 @@ import { isAvoidedOutcome } from '@sim/proto/combat_log/types';
 import { spellSchoolNames } from '@sim/proto/names';
 import clsx from 'clsx';
 
-import { EntityLabel } from './EntityLabel';
+import { EntityLabel } from '../EntityLabel';
 import { OUTCOME_LABEL } from './utils';
 
 export interface DamageResultProps {

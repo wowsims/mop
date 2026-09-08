@@ -1,89 +1,35 @@
-import type { ContentRow, RowItem } from './model';
+import type { ContentRow } from './model';
 
-export interface ItemRenderer {
-	build(item: RowItem): HTMLElement;
-	update(elem: HTMLElement, item: RowItem): void;
-}
+export const NO_ITEMS: ReadonlyArray<number> = [];
 
-export class RowTrack {
-	private readonly mounted = new Map<number, HTMLElement>();
-	private readonly wanted = new Set<number>();
-	private readonly free = new Map<string, Array<HTMLElement>>();
-	private lastLeft = NaN;
-	private lastRight = NaN;
-	private lastPps = NaN;
+/**
+ * The indexes of a row's items that overlap `[left, right]` pixels at `pps`, ascending.
+ *
+ * Items are ordered by `start`, so an upper bound finds the last one that begins before the right
+ * edge; from there the walk back is bounded by `maxRightUpTo`, the running maximum of every earlier
+ * item's end, which is what stops a long aura earlier in the row from forcing a scan of the whole
+ * array on every frame.
+ */
+export const visibleItems = (row: ContentRow, left: number, right: number, pps: number): ReadonlyArray<number> => {
+	const { items, maxRightUpTo } = row;
+	const leftTime = left / pps;
+	const rightTime = right / pps;
 
-	constructor(
-		private readonly row: ContentRow,
-		private readonly trackElem: HTMLElement,
-		private readonly renderer: ItemRenderer,
-	) {}
-
-	setWindow(left: number, right: number, pps: number) {
-		if (left === this.lastLeft && right === this.lastRight && pps === this.lastPps) return;
-		this.lastLeft = left;
-		this.lastRight = right;
-		this.lastPps = pps;
-
-		const { items, maxRightUpTo } = this.row;
-		const leftTime = left / pps;
-		const rightTime = right / pps;
-
-		let lo = 0;
-		let hi = items.length;
-		while (lo < hi) {
-			const mid = (lo + hi) >> 1;
-			if (items[mid].start <= rightTime) lo = mid + 1;
-			else hi = mid;
-		}
-
-		const wanted = this.wanted;
-		wanted.clear();
-		for (let i = lo - 1; i >= 0 && maxRightUpTo[i] >= leftTime; i--) {
-			if (items[i].end >= leftTime) wanted.add(i);
-		}
-
-		this.mounted.forEach((elem, index) => {
-			if (!wanted.has(index)) {
-				this.mounted.delete(index);
-				this.release(items[index].kind, elem);
-			}
-		});
-
-		for (const index of [...wanted].sort((a, b) => a - b)) {
-			if (this.mounted.has(index)) continue;
-			const elem = this.acquire(items[index]);
-			this.trackElem.appendChild(elem);
-			this.mounted.set(index, elem);
-		}
+	let lo = 0;
+	let hi = items.length;
+	while (lo < hi) {
+		const mid = (lo + hi) >> 1;
+		if (items[mid].start <= rightTime) lo = mid + 1;
+		else hi = mid;
 	}
 
-	clear() {
-		this.mounted.forEach(elem => elem.remove());
-		this.mounted.clear();
-		this.free.clear();
-		this.lastLeft = NaN;
-		this.lastRight = NaN;
-		this.lastPps = NaN;
+	const found: Array<number> = [];
+	for (let i = lo - 1; i >= 0 && maxRightUpTo[i] >= leftTime; i--) {
+		if (items[i].end >= leftTime) found.push(i);
 	}
+	if (found.length === 0) return NO_ITEMS;
+	return found.reverse();
+};
 
-	private acquire(item: RowItem): HTMLElement {
-		const elem = this.free.get(item.kind)?.pop();
-		if (!elem) return this.renderer.build(item);
-		this.renderer.update(elem, item);
-		return elem;
-	}
-
-	// tippy's delegate caches the rendered content against the element the first time it is
-	// hovered, so an element that already carries an instance cannot be handed to another item.
-	private release(kind: string, elem: HTMLElement) {
-		elem.remove();
-		if ((elem as { _tippy?: unknown })._tippy) return;
-		let pool = this.free.get(kind);
-		if (!pool) {
-			pool = [];
-			this.free.set(kind, pool);
-		}
-		pool.push(elem);
-	}
-}
+export const sameItems = (a: ReadonlyArray<number>, b: ReadonlyArray<number>): boolean =>
+	a === b || (a.length === b.length && a.every((index, at) => index === b[at]));

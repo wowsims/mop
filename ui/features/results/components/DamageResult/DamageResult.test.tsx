@@ -1,5 +1,5 @@
-import type { DamageLog, Entity } from '@sim/proto/combat_log';
 import type { SpellSchool as SpellSchoolValue } from '@generated/proto/common';
+import type { DamageLog, Entity } from '@sim/proto/combat_log';
 import { SpellSchool } from '@sim/proto/names';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';

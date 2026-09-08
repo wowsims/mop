@@ -18,9 +18,9 @@ import { resourceClassName, resourceNames } from '@sim/proto/names';
 import { SECONDARY_RESOURCES } from '@sim/proto/secondary_resource';
 import type { ComponentType } from 'react';
 
+import { DamageResult } from '../DamageResult';
+import { EntityLabel } from '../EntityLabel';
 import { ActionLink } from './ActionLink';
-import { DamageResult } from './DamageResult';
-import { EntityLabel } from './EntityLabel';
 
 // One component per log kind. They stay in this file rather than taking one each: they are private
 // one-expression renderers for a single discriminated union, and the file is their unit.

@@ -1,9 +1,9 @@
-import { SimRun, SimRunData } from '@generated/proto/ui';
 import { hideMetricsClassName } from '@features/results/model/sim_results';
-import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
-import { useShowExperimental } from '@sim/hooks/useShowExperimental';
+import { SimRun, SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
@@ -15,9 +15,7 @@ import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
 import type { LogExporterFactory } from '../../model/log_exporter';
 import { CombatReplay } from '../../view/combat_replay';
-import type { ResultComponent } from '../../view/result_component';
 import type { SimResultsManager } from '../../view/results_action';
-import { Timeline } from '../../view/timeline';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
 import { DamageMetricsTable } from '../DamageMetricsTable';
@@ -27,6 +25,7 @@ import { HealingMetricsTable } from '../HealingMetricsTable';
 import { LogRunner } from '../LogRunner';
 import { ResourceMetricsTable } from '../ResourceMetricsTable';
 import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../ResultsFilter';
+import { Timeline } from '../Timeline';
 import { ToplineResults } from '../ToplineResults';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
@@ -41,7 +40,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const host = useSimHost();
 	const sim = host.sim;
 	const resultsEmitter = host.resultChannel;
-	const secondaryResource = host.player.secondaryResource;
 
 	const settingsSubscribe = useMemo(() => subscribeSimSettingsChange(sim), [sim]);
 	const { damage: showDamage, threat: showThreat, healing: showHealing } = useDisplayMetrics(sim);
@@ -59,7 +57,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.
 	const emittedTarget = useRef(target);
-	const timeline = useRef<Timeline | null>(null);
 	const combatReplay = useRef<CombatReplay | null>(null);
 
 	const latestRun = useRef<SimRunData | null>(null);
@@ -67,13 +64,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const latestDeathSeeds = useRef<Array<bigint>>([]);
 	const recentlyEditedSeed = useRef(false);
 
-	const mountTimeline = useLegacyMount(
-		parent => {
-			timeline.current = new Timeline({ parent, resultsEmitter, secondaryResource, deferUntilShown: true });
-			return timeline.current;
-		},
-		[resultsEmitter, secondaryResource],
-	);
 	const mountCombatReplay = useLegacyMount(
 		parent => {
 			combatReplay.current = new CombatReplay({ parent, resultsEmitter, deferUntilShown: true });
@@ -169,13 +159,11 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		if (previous === activeId) return;
 		previousId.current = activeId;
 
-		const islands: Record<string, ResultComponent | null> = {
-			timelineTab: timeline.current,
-			replayTab: combatReplay.current,
-		};
-		islands[previous]?.onTabHidden();
-		if (previous === 'replayTab') combatReplay.current?.stopPlayback();
-		islands[activeId]?.onTabShown();
+		if (previous === 'replayTab') {
+			combatReplay.current?.onTabHidden();
+			combatReplay.current?.stopPlayback();
+		}
+		if (activeId === 'replayTab') combatReplay.current?.onTabShown();
 	}, [activeId]);
 
 	// Bootstrap set `active` first and `show` a frame later when switching, so its .15s fade ran; on the first render it set both at once.
@@ -326,7 +314,9 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 					</DetailedResultsPane>
 					<DetailedResultsPane id="timelineTab" className="timeline-content" {...paneState('timelineTab')}>
 						<div className="dr-row">
-							<div className="timeline" ref={mountTimeline} />
+							<div className="timeline">
+								<Timeline active={activeId === 'timelineTab'} />
+							</div>
 						</div>
 					</DetailedResultsPane>
 					<DetailedResultsPane id="replayTab" className="replay-content" {...paneState('replayTab')}>

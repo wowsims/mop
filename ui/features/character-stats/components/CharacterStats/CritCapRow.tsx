@@ -1,9 +1,10 @@
-import type { MeleeCritCapInfo } from '@sim/player/player';
 import i18n from '@i18n/config';
+import type { MeleeCritCapInfo } from '@sim/player/player';
 import { Button } from '@ui-kit/Button';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { cssVars } from '@ui-kit/utils/css';
 import clsx from 'clsx';
-import { type CSSProperties, useId } from 'react';
+import { useId } from 'react';
 
 import { TooltipRow } from './TooltipRow';
 import { critCapClass } from './utils/stat_display';
@@ -14,7 +15,7 @@ export interface CritCapRowProps {
 }
 
 // Bootstrap's border utilities set border-color !important, so an inline borderColor loses; zero the variable they read.
-const SPACER_STYLE = { '--bs-border-opacity': '0' } as CSSProperties;
+const SPACER_STYLE = cssVars({ '--bs-border-opacity': '0' });
 
 export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 	const id = useId();

@@ -6,6 +6,7 @@ import type { SimResultData } from '../../model/result_data';
 import type { SuggestionSource } from '../../view/log/search/indexes';
 import { TYPE_SUGGESTIONS } from '../../view/log/search/indexes';
 import type { ClauseField, SearchGroup } from '../../view/log/search/query';
+import { OUTCOME_LABEL } from '../DamageResult';
 
 /**
  * A `SearchGroup` with the identity React needs to keep a group's half-typed value across the removal
@@ -14,24 +15,6 @@ import type { ClauseField, SearchGroup } from '../../view/log/search/query';
 export type IdentifiedSearchGroup = SearchGroup & { id: number };
 
 export const DEBUG_MARKER = '[DEBUG]';
-
-/**
- * A copy of the map in `view/log/components/results.tsx`, which stays alive for the still-vanilla
- * timeline (`tooltip_content.tsx` and `rotation_items.tsx` both render its `Results`). Importing that
- * module here would pull `tsx-vanilla`'s JSX runtime into a React file for one constant; the two
- * collapse into this one when the timeline ports.
- */
-export const OUTCOME_LABEL: Record<Outcome, string> = {
-	miss: 'Miss',
-	dodge: 'Dodge',
-	parry: 'Parry',
-	'critical-block': 'Critical Block',
-	'blocked-glance': 'Blocked Glance',
-	block: 'Block',
-	glance: 'Glance',
-	crit: 'Crit',
-	hit: 'Hit',
-};
 
 /** Fields whose values are typed into a box rather than picked, and the placeholder each shows. */
 export const TYPED_FIELDS: Partial<Record<ClauseField, string>> = { time: '10-30', amount: '>5000' };

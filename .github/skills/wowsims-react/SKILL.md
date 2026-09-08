@@ -1484,6 +1484,41 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **The timeline is React, and the row-toggle scroll jump is fixed with a gate that proves
+  it.** 34 production files grouped as `Timeline/{chart,rotation,tooltips}/`, `index.ts` exporting only
+  `Timeline`. `DetailedResults` is down to **one** island, `CombatReplay`.
+  **The jump's cause, read from the code rather than guessed.** The rendering frame holds
+  `window.first`/`window.last` as **indexes into `order`**. Hiding a row produces a new `order`, so the
+  stored frame is measured against a list that no longer exists — vanilla answered that with
+  `unmountAll()` and re-windowed on the next scheduled frame, and the first port inherited the shape by
+  rendering an empty window for one commit. Either way the content is empty for a commit, the spacers
+  stop carrying the list height, the document is momentarily a whole rotation shorter, and the browser
+  clamps `scrollTop`. The height returns; the scroll does not. **1,105px of jump from a 32px change.**
+  The fix is to derive the frame for the new order **during the same render** from cached geometry, so
+  the spacers never stop carrying the full height. A render-phase `setFrame` was tried first and does
+  **not** work — React computed the right window and then reverted it, because the render-phase update
+  was never committed. Pure derivation is what sticks. `tools/react-migration/rotation-row-toggle.mjs`
+  passes on the port at both scroll positions and still fails on master, which is how it should read.
+  **Timing, paired against master:** the swap is ~2.5× under the 300 ms baseline. Sync rose 20–25 ms,
+  and the reason is the fix — deriving in render puts the row work inside the click where vanilla
+  deferred it a frame. Settle is 60–90 ms *faster*, mutations ~9% fewer, four long tasks became two,
+  and live tippy instances in the pane went **24 → 0**.
+  **Which support modules were already model, verified by reading them:** `rotation/model/*`,
+  `chart/series.ts`, `chart/build.ts` and `constants.ts` have zero DOM references and stayed put.
+  `colors.ts`, `annotations.ts`, `chart/zoom.ts`, `ruler.ts` and `rotation/zoom.ts` are *not* DOM-free by
+  nature (computed styles, canvas drawing, a pooled tick DOM) and stayed too. Two were converted to pure
+  geometry and unit-tested: `timeline_window.ts` (a DOM-mounting class with ten refs) and `row_track.ts`
+  (a pooling recycler), the binary search kept verbatim.
+  **Round five of the delivery loop caught a regression the port had introduced** — an effect resetting
+  the FAB drawer on every new result, where vanilla rebuilt the chips in place — and a vacuous probe
+  assertion that had been comparing "no tooltip" to "no tooltip", because the anchor sat under the
+  sticky row label. Six rounds to a fixed point.
+  Divergences kept and flagged: item and chart tooltips are one viewport-anchored overlay rather than
+  tippy (text compared, placement unverified); the chart is destroyed and rebuilt per result rather than
+  `update('none')`; and a *cleared* result with the DPS view open shows a blank canvas where vanilla
+  showed the waiting state, because `noData` conflates "never armed" with "armed, nothing" — a tri-state
+  fixes it.
+
 - 2026-09-08 **A React `ListPicker`, and the encounter target list as its first consumer.**
   `encounter_picker.ts` went from **629 lines to 7**. `ListPicker` uses `useInput` + `PickerShell` (the
   bound `NumberListPicker` pattern — all eleven callers are bound) and takes `renderItem` /

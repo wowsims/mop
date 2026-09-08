@@ -12,6 +12,11 @@ export interface UnitPickerProps {
 	options: Array<UnitValue>;
 	value: UnitReference | undefined;
 	onChange: (value: UnitReference | undefined) => void;
+	/**
+	 * Show the selected unit's icon but not its text while the default unit is selected — vanilla's
+	 * `hideLabelWhenDefaultSelected`, which the APL unit pickers all set.
+	 */
+	hideLabelWhenDefault?: boolean;
 	/** On the root, beside `unit-picker-root`. */
 	className?: ClassValue;
 }
@@ -27,7 +32,7 @@ const sameUnit = (a: UnitValue | undefined, b: UnitValue | undefined) =>
  * writing into the option `<button>`; there is no subclass here, and nothing about the menu is
  * re-stated.
  */
-export const UnitPicker = ({ id, options, value, onChange, className }: UnitPickerProps) => (
+export const UnitPicker = ({ id, options, value, onChange, hideLabelWhenDefault, className }: UnitPickerProps) => (
 	<DropdownPicker<UnitValue>
 		id={id}
 		className={['unit-picker-root', className]}
@@ -41,5 +46,6 @@ export const UnitPicker = ({ id, options, value, onChange, className }: UnitPick
 		onChange={unit => onChange(unit.value)}
 		equals={sameUnit}
 		defaultLabel="Unit"
+		hideLabelWhenDefault={hideLabelWhenDefault ? unit => !unit.value : undefined}
 	/>
 );

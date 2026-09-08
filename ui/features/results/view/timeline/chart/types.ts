@@ -7,11 +7,13 @@ export interface TimelinePoint<L extends CombatLog = CombatLog> {
 	log: L;
 }
 
-// renderTooltip is declared as a method so it stays bivariant and a
-// TimelineDataset<DpsLog> can live in an Array<TimelineDataset>.
+/** Which tooltip a series shows, as data: the renderer is a React component the chart wrapper owns. */
+export type TooltipSpec = { kind: 'dps' } | { kind: 'threat' } | { kind: 'resource'; maxValue: number; includeAuras: boolean };
+
 export interface TimelineDataset<L extends CombatLog = CombatLog> extends ChartDataset<'line', Array<TimelinePoint<L>>> {
 	seriesId: string;
-	renderTooltip(log: L): Element;
+	// Not `tooltip`: chart.js already has per-dataset tooltip options under that name.
+	tooltipSpec: TooltipSpec;
 }
 
 export interface CooldownBand {

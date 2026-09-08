@@ -1,8 +1,9 @@
 import './MetricsTotalBar.scss';
 
-import { formatToCompactNumber, formatToPercent } from '@sim/utils/format';
-import { spellSchoolNames } from '@sim/proto/names';
 import type { SpellSchool } from '@generated/proto/common';
+import { spellSchoolNames } from '@sim/proto/names';
+import { formatToCompactNumber, formatToPercent } from '@sim/utils/format';
+import { cssVars } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import type { CSSProperties } from 'react';
 
@@ -17,7 +18,7 @@ export interface MetricsTotalBarProps {
 	classColor?: string | undefined | null;
 }
 
-const fill = (value: number, max: number | null): CSSProperties => ({ '--percentage': formatToPercent((value / (max ?? 1)) * 100) }) as CSSProperties;
+const fill = (value: number, max: number | null): CSSProperties => cssVars({ '--percentage': formatToPercent((value / (max ?? 1)) * 100) });
 
 export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, spellSchool, classColor }: MetricsTotalBarProps) => {
 	const spellSchoolString = typeof spellSchool === 'number' ? spellSchoolNames.get(spellSchool) : undefined;
