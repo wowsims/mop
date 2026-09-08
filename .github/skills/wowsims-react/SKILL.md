@@ -502,6 +502,30 @@ round. `useInput(modObject, config)` is that fit, and every React picker is buil
   ties `size` to every render instead of to typing. `BooleanPicker` stays controlled: a checkbox's
   `change` and React's `onChange` are the same event.
 
+### Phase 5 open question: does `simUI.reforger` need to exist at all?
+
+Raised with the owner 2026-09-08 and **deliberately deferred to Phase 5**, when `ui/specs/**` unfreezes.
+Not a vague "revisit the reforger" — the question has a precise shape, and these are its five holders:
+
+- `ui/specs/{druid/guardian,warrior/arms,warrior/fury}/spec.ts` read `ctx.reforger.preCapEPs`. That is a
+  **pure derivation** over settings and player, and it lives in the reforge `utils.ts` now — a spec could
+  import and call it directly, with no handle involved.
+- `ui/specs/monk/windwalker/spec.ts:140` calls `host.reforger?.setUseSoftCapBreakpoints(false)`, with a
+  comment explaining that `host.reforger` is still null while the preset runs. That is a **settings
+  write**, and `ReforgeSettingsState` is already store-backed — the preset could write the store field
+  through the same facade the panel uses, and the null window disappears with the handle.
+- `ui/features/settings/model/apply_build.ts:66` calls `fromProto`, and the shell calls `applyDefaults()`
+  and reads `.settings` for persistence and autosave. All three are the **settings object**, not the
+  optimizer.
+- Nothing outside the panel calls the **service** half (`optimizeReforges`), which the panel already owns.
+
+So the likely Phase 5 answer is that `reforger` dissolves into three things that already exist
+separately — the store-backed settings facade, a module of pure derivations, and a service the panel
+owns — and `IndividualSimHost` loses the member. **Do not do this before Phase 5**: every one of the
+five holders above is either a frozen spec file or reads a frozen type, and de-classing the model
+(done 2026-09-08, a factory returning an object) already delivers the function-driven shape without
+touching any of them.
+
 ### TanStack Query is not being adopted — decided 2026-09-06, do not re-open
 
 Researched in full against every async boundary in `ui/` and declined, for reasons that are
