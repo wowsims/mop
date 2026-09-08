@@ -13,6 +13,7 @@ import { ContentBlock } from '@ui-kit/content_block';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import { buildCategories, isBuildActive } from './preset_build_state';
 import { PresetBuild } from './preset_utils';
 export class PresetConfigurationPicker extends Component {
 	readonly simUI: IndividualSimHost<Spec>;
@@ -63,47 +64,7 @@ export class PresetConfigurationPicker extends Component {
 					</button>,
 				);
 
-				let categories: string[] = [];
-
-				// Add main categories from build keys
-				Object.keys(build).forEach(c => {
-					if (!['name', 'encounter', 'settings', 'reforgeSettings'].includes(c) && build[c as PresetConfigurationCategory]) {
-						const category = c as PresetConfigurationCategory;
-						categories.push(translatePresetConfigurationCategory(category));
-					}
-				});
-
-				if (build.encounter?.encounter) {
-					categories.push(translatePresetConfigurationCategory(PresetConfigurationCategory.Encounter));
-				}
-
-				if (build.epWeights) {
-					categories.push(i18n.t('common.preset.stat_weights'));
-				}
-
-				if (build.reforgeSettings) {
-					categories.push('Reforge Settings');
-				}
-
-				if (build.settings) {
-					Object.keys(build.settings).forEach(c => {
-						if (['name', 'buffs', 'raidBuffs'].includes(c)) return;
-
-						if (c === 'options') {
-							categories.push(i18n.t('common.preset.class_spec_options'));
-						} else if (c === 'consumes') {
-							categories.push(i18n.t('common.preset.consumables'));
-						} else {
-							categories.push(i18n.t('common.preset.other_settings'));
-						}
-					});
-				}
-
-				if (build.settings?.buffs || build.settings?.raidBuffs) {
-					categories.push(i18n.t('common.preset.buffs'));
-				}
-
-				categories = [...new Set(categories)].sort();
+				const categories = buildCategories(build);
 
 				const tooltip = tippy(dataElemRef.value!, {
 					content: (
@@ -119,7 +80,7 @@ export class PresetConfigurationPicker extends Component {
 				});
 				this.addOnDisposeCallback(() => tooltip.destroy());
 
-				const checkActive = () => dataElemRef.value!.classList[this.isBuildActive(build) ? 'add' : 'remove']('active');
+				const checkActive = () => dataElemRef.value!.classList[isBuildActive(build, this.simUI) ? 'add' : 'remove']('active');
 
 				checkActive();
 				this.addOnDisposeCallback(subscribeSimChange(this.simUI.sim)(checkActive));
@@ -127,76 +88,4 @@ export class PresetConfigurationPicker extends Component {
 			contentBlock.bodyElement.replaceChildren(container);
 		});
 	}
-
-	private isBuildActive({ gear, rotation, rotationType, talents, epWeights, encounter, settings }: PresetBuild): boolean {
-		const hasGear = gear ? EquipmentSpec.equals(gear.gear, this.simUI.player.getGear().asSpec()) : true;
-		const hasTalents = talents
-			? SavedTalents.equals(
-					talents.data,
-					SavedTalents.create({
-						talentsString: this.simUI.player.getTalentsString(),
-						glyphs: this.simUI.player.getGlyphs(),
-					}),
-				)
-			: true;
-		let hasRotation = true;
-		if (rotationType) {
-			hasRotation = rotationType === this.simUI.player.getRotationType();
-		} else if (rotation?.rotation.rotation) {
-			const activeRotation = this.simUI.player.getResolvedAplRotation();
-			hasRotation = isEqualAPLRotation(this.simUI.player, activeRotation, rotation.rotation.rotation);
-		}
-		const hasEpWeights = epWeights ? this.simUI.player.getEpWeights().equals(epWeights.epWeights) : true;
-		const hasEncounter = encounter?.encounter
-			? Encounter.equals({ ...encounter.encounter, apiVersion: 0 }, { ...this.simUI.sim.encounter.toProto(), apiVersion: 0 })
-			: true;
-		const hasHealingModel = encounter?.healingModel ? HealingModel.equals(encounter.healingModel, this.simUI.player.getHealingModel()) : true;
-
-		const hasRace = settings?.race ? this.simUI.player.getRace() === settings.race : true;
-		const hasProfession1 = settings?.playerOptions?.profession1 === undefined || this.simUI.player.getProfession1() === settings.playerOptions.profession1;
-		const hasProfession2 = settings?.playerOptions?.profession2 === undefined || this.simUI.player.getProfession2() === settings.playerOptions.profession2;
-		const hasDistanceFromTarget =
-			settings?.playerOptions?.distanceFromTarget === undefined ||
-			this.simUI.player.getDistanceFromTarget() === settings.playerOptions.distanceFromTarget;
-		const hasEnableItemSwap =
-			settings?.playerOptions?.enableItemSwap === undefined ||
-			this.simUI.player.itemSwapSettings.getEnableItemSwap() === settings.playerOptions.enableItemSwap;
-		const hasItemSwap =
-			settings?.playerOptions?.itemSwap === undefined ||
-			ItemSwap.equals(stripItemSwapApiVersion(this.simUI.player.itemSwapSettings?.toProto()), stripItemSwapApiVersion(settings?.playerOptions?.itemSwap));
-		const hasSpecOptions = settings?.specOptions ? JSON.stringify(this.simUI.player.getSpecOptions()) == JSON.stringify(settings.specOptions) : true;
-		const hasConsumables = settings?.consumables ? ConsumesSpec.equals(this.simUI.player.getConsumes(), settings.consumables) : true;
-		const hasRaidBuffs = settings?.raidBuffs ? RaidBuffs.equals(this.simUI.sim.raid.getBuffs(), settings.raidBuffs) : true;
-		const hasBuffs = settings?.buffs ? IndividualBuffs.equals(this.simUI.player.getBuffs(), settings.buffs) : true;
-		const hasDebuffs = settings?.debuffs ? Debuffs.equals(this.simUI.sim.raid.getDebuffs(), settings.debuffs) : true;
-
-		return (
-			hasGear &&
-			hasTalents &&
-			hasRotation &&
-			hasEpWeights &&
-			hasEncounter &&
-			hasHealingModel &&
-			hasRace &&
-			hasProfession1 &&
-			hasProfession2 &&
-			hasDistanceFromTarget &&
-			hasEnableItemSwap &&
-			hasItemSwap &&
-			hasSpecOptions &&
-			hasConsumables &&
-			hasRaidBuffs &&
-			hasBuffs &&
-			hasDebuffs
-		);
-	}
-}
-
-/** Strips apiVersion from an ItemSwap and its nested UnitStats so preset comparisons aren't version-sensitive. */
-function stripItemSwapApiVersion(swap: ItemSwap | undefined): ItemSwap | undefined {
-	if (!swap) return swap;
-	return {
-		...swap,
-		prepullBonusStats: swap.prepullBonusStats ? { ...swap.prepullBonusStats, apiVersion: 0 } : swap.prepullBonusStats,
-	};
 }

@@ -1341,6 +1341,18 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **`preset_build_state.ts`: the preset picker's two pure halves lifted out of the vanilla
+  component, ahead of porting it.** `PresetConfigurationPicker` has four consumers and one of them
+  (`rotation_tab.tsx`) is still vanilla, so both stacks will coexist — and duplicating a 60-line
+  `isBuildActive` across them is how two implementations quietly stop agreeing. Extracting first
+  keeps one source of truth. Behaviour-neutral: 837 tests, the goldens and `panes-parity` unchanged.
+
+  Making `buildCategories` testable immediately paid: a build carrying `epWeights` lists it
+  **twice**, once as `category:epWeights` from the top-level key walk and once as "stat weights" from
+  its own rule, because `epWeights` is not in the walk's exclusion list the way `encounter`,
+  `settings` and `reforgeSettings` are. The test pins it as it behaves rather than as it reads;
+  whether the tooltip should say it once is a question for the owner.
+
 - 2026-09-08 **`useReadyStoreSubscribe`, so last night's crash cannot be written a second time.** The
   `SavedSettings` failure — every CLI gate green, `#root` empty — was a store snapshot reaching
   `sim.db` on the first render, before `useSimReady`. The fix was two things, and only one of them is
