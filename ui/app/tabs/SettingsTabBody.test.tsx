@@ -37,23 +37,10 @@ vi.mock('@features/settings/model/stat_options', () => ({
 
 // The one component the tab deliberately does *not* port. It is constructed straight into the
 // React-rendered panel, so what matters is that it lands there and that nothing wraps it.
-const built = vi.hoisted(() => ({ presets: 0 }));
-class Legacy {
-	readonly rootElem: HTMLElement;
-	constructor(parent: HTMLElement, cssClass: string) {
-		this.rootElem = document.createElement('div');
-		this.rootElem.className = cssClass;
-		parent.appendChild(this.rootElem);
-	}
-	dispose() {}
-}
-vi.mock('../preset_configuration_picker', () => ({
-	PresetConfigurationPicker: class extends Legacy {
-		constructor(parent: HTMLElement) {
-			super(parent, 'preset-configuration-picker-root');
-			built.presets++;
-		}
-	},
+// The preset picker is a React component now, so it renders for real. It needs only the builds list
+// off the host, and this host declares none — which is the common case: five specs ship no builds.
+vi.mock('../PresetConfigurationPicker', () => ({
+	PresetConfigurationPicker: () => <div className="preset-configuration-picker-root saved-data-manager-root" />,
 }));
 
 const { SettingsTabBody } = await import('./SettingsTabBody');
@@ -110,7 +97,6 @@ const bodyOf = (container: HTMLElement, cssClass: string) => container.querySele
 describe('SettingsTabBody', () => {
 	beforeEach(() => {
 		lists.value = { buffs: [{}], debuffs: [{}], externalDamage: [{}], externalDefensive: [{}] };
-		built.presets = 0;
 	});
 
 	it('renders the panels and the three columns before the sim is ready, and nothing in them', () => {
@@ -134,19 +120,26 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('.settings-left-col-2')!.firstElementChild!.className).toBe('custom-section-stub');
 	});
 
-	it('mounts the preset picker ahead of the two saved-data panels in the right panel itself', () => {
+	// No wrapper element around any of the three: `panes-parity.mjs` compares this pane against master
+	// element for element, and the preset picker has to keep leading the two saved-data panels.
+	it('renders the preset picker ahead of the two saved-data panels, with nothing wrapping them', () => {
 		const container = mount();
 		const right = container.querySelector('.settings-tab-right')!;
-		// `useLegacyMount`, not a host component: a wrapper div here would change the pane's DOM and
-		// `panes-parity.mjs` compares it element for element. The preset picker is legacy-mounted and
-		// moved to the front with `insertBefore` so it still leads the two React saved-data panels.
-		expect([...right.children].map(child => child.className)).toEqual(['preset-configuration-picker-root', 'saved-encounter-root', 'saved-settings-root']);
+
+		expect([...right.children].map(child => child.className)).toEqual([
+			'preset-configuration-picker-root saved-data-manager-root',
+			'saved-encounter-root',
+			'saved-settings-root',
+		]);
 	});
 
-	it('builds the right panel once, and not again when the sim becomes ready', async () => {
-		mount();
+	// It used to be legacy-mounted, where a second construction would have appended a second root.
+	// React re-renders instead, so this now guards against a duplicated element rather than a
+	// duplicated constructor call.
+	it('keeps one preset picker when the sim becomes ready', async () => {
+		const container = mount();
 		await becomeReady();
-		expect(built.presets).toBe(1);
+		expect(container.querySelectorAll('.preset-configuration-picker-root')).toHaveLength(1);
 	});
 
 	it('omits the other-settings block when the spec declares neither inputs nor swap slots', async () => {

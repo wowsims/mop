@@ -6,12 +6,13 @@ import { classTalentsConfig } from '@sim/talents/factory';
 import { SavedTalents } from '@features/talents/components/SavedTalents';
 import { TalentsPicker } from '@features/talents/components/TalentsPicker';
 import { Class } from '@generated/proto/common';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { PetSpecPicker } from '@ui-kit/PetSpecPicker';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../tracking/analytics';
-import { PresetConfigurationPicker } from '../preset_configuration_picker';
+import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
+
+const TALENT_PRESETS = [PresetConfigurationCategory.Talents];
 
 export const TalentsTabBody = () => {
 	const host = useSimHost();
@@ -30,22 +31,14 @@ export const TalentsTabBody = () => {
 		[player],
 	);
 
-	const mountRight = useLegacyMount(
-		parent => {
-			const presets = new PresetConfigurationPicker(parent, host, [PresetConfigurationCategory.Talents]);
-			parent.insertBefore(presets.rootElem, parent.firstChild);
-			return [presets];
-		},
-		[host],
-	);
-
 	return (
 		<>
 			<div className="talents-tab-left tab-panel-left">
 				<TalentsPicker config={talentsConfig} />
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
 			</div>
-			<div className="talents-tab-right tab-panel-right" ref={mountRight}>
+			<div className="talents-tab-right tab-panel-right">
+				<PresetConfigurationPicker categories={TALENT_PRESETS} />
 				<SavedTalents />
 			</div>
 		</>

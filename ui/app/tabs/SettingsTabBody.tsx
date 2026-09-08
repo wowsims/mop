@@ -8,10 +8,11 @@ import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { useMemo } from 'react';
 
-import { PresetConfigurationPicker } from '../preset_configuration_picker';
+import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
+
+const SETTINGS_PRESETS = [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings];
 
 export const SettingsTabBody = () => {
 	const host = useSimHost();
@@ -33,15 +34,6 @@ export const SettingsTabBody = () => {
 
 	const itemSwapSlots = config.itemSwapSlots || [];
 	const hasOtherSettings = config.otherInputs.inputs.length > 0 || itemSwapSlots.length > 0;
-
-	const mountRight = useLegacyMount(
-		parent => {
-			const presets = new PresetConfigurationPicker(parent, host, [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings]);
-			parent.insertBefore(presets.rootElem, parent.firstChild);
-			return [presets];
-		},
-		[host],
-	);
 
 	return (
 		<>
@@ -128,7 +120,8 @@ export const SettingsTabBody = () => {
 					)}
 				</div>
 			</div>
-			<div className="settings-tab-right tab-panel-right" ref={mountRight}>
+			<div className="settings-tab-right tab-panel-right">
+				<PresetConfigurationPicker categories={SETTINGS_PRESETS} />
 				<SavedEncounter />
 				<SavedSettings />
 			</div>

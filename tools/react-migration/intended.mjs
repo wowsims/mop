@@ -31,8 +31,8 @@ export const INTENDED = [
 	{
 		base: 'i.fa-question-circle.far',
 		react: 'i.fa-circle-question.far',
-		max: 4,
-		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Four is the settings pane's ceiling: buffs, debuffs and the two external-cooldown blocks, all four together only on warrior/protection. It rises as further tabs stop building vanilla ContentBlocks",
+		max: 5,
+		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Five is the settings pane's ceiling: buffs, debuffs, the two external-cooldown blocks and the preset picker, all five together only on warrior/protection. It rose from four when the preset picker stopped being a vanilla ContentBlock, and it rises again with every tab that follows",
 	},
 	{
 		base: 'i.fa-3x.fa-exclamation-triangle.fas',
