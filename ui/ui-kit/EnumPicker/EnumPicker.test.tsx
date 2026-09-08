@@ -151,8 +151,9 @@ describe('EnumPicker', () => {
 		expect(root.querySelector('select')!.className).toBe('enum-picker-selector form-select');
 	});
 
-	// InputConfig types both of these as string | Element, and reforge_panel.tsx:527 passes an
-	// Element. Stringifying it renders "[object HTMLDivElement]" with nothing to notice it.
+	// InputConfig types both of these as string | Element. The reforge panel was the last caller to
+	// pass an Element and it is React now, so nothing does today — but the type still allows it, and
+	// stringifying one renders "[object HTMLDivElement]" with nothing to notice it.
 	it('renders an Element description and tooltip rather than stringifying them', async () => {
 		const settings = new Settings();
 		const description = document.createElement('div');

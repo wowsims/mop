@@ -40,7 +40,7 @@ import {
 	WowheadImporterDialog,
 } from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import { ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
@@ -118,7 +118,11 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	readonly bt: BulkTab | null = null;
-	reforger: ReforgeOptimizer | null = null;
+	reforger: ReforgeOptimizerModel | null = null;
+	// The view's own inputs, resolved here because `config.reforge` may be a function and must run once.
+	reforgeOptions: ReforgeOptimizerOptions | null = null;
+	/** The empty action group `ReforgePanel` is portalled into. Built here so the group keeps its place in the sidebar's construction order. */
+	reforgeActionsContainer: HTMLElement | null = null;
 
 	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
 		super(dom, player.sim, {
@@ -261,7 +265,13 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			feature(this);
 		}
 		if (config.reforge) {
-			this.reforger = new ReforgeOptimizer(this, typeof config.reforge === 'function' ? config.reforge(this) : config.reforge);
+			this.reforgeOptions = typeof config.reforge === 'function' ? config.reforge(this) : config.reforge;
+			this.reforger = new ReforgeOptimizerModel(this.sim, this.player, {
+				...this.reforgeOptions,
+				defaults: this.individualConfig.defaults,
+				epStats: this.individualConfig.epStats,
+			});
+			this.reforgeActionsContainer = this.addActionGroup([], { cssClass: 'suggest-reforges-settings-group' }).group;
 		}
 		for (const derived of config.derivedSettings || []) {
 			derived.apply(this.player, this.sim);

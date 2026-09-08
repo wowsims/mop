@@ -1,6 +1,6 @@
 import type { BulkTab } from '@features/bulk/view/bulk_tab';
 import type { SelectorModalOpener } from '@features/gear/types';
-import type { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
 import type { ResultChannel } from '@features/results/model/result_channel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
@@ -59,7 +59,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	readonly bt: BulkTab | null;
-	reforger: ReforgeOptimizer | null;
+	reforger: ReforgeOptimizerModel | null;
 	epWeightsModal: { open(): void } | null;
 	readonly gearSelectorModal: SelectorModalOpener | null;
 	readonly itemSwapSelectorModal: SelectorModalOpener | null;

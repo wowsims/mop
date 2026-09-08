@@ -69,10 +69,19 @@ const PORTED_DIALOGS = [
 ];
 
 // One Base UI portal per ported dialog: the encounter modal, five exporters, three importers, the
-// EP weights dialog and the glyph selector. The stat-weights *progress* dialog is not among them — it
-// is rendered only while a run is in flight, the way the vanilla overlay was inserted on Calculate
-// and removed after, so at load there is nothing here for the baseline to be missing a twin for.
+// EP weights dialog and the glyph selector. Neither *progress* dialog is among them — both are
+// rendered only while a run is in flight, the way the vanilla stat-weights overlay was inserted on
+// Calculate and removed after, so at load there is nothing here for the baseline to be missing a
+// twin for. The reforge one is the exception the baseline has and React does not: `ReforgeOptimizer`
+// built its `ProgressTrackerModal` in its constructor, so master carries an empty one from load.
 const PORTED_DIALOG_REACT = ['sim-dialog-portal', 11];
+
+// The reforge progress tracker, whose count is per spec rather than fixed: only a spec that
+// configures `reforge` builds one, and the sidebar group React renders is the same condition. Taken
+// off the baseline by that count, so reverting the port — which would build the modal on both sides
+// — leaves the two multisets a modal apart and fails here.
+const REFORGE_PROGRESS = 'reforge-optimizer-progress-tracker';
+const REFORGE_GROUP = '.suggest-reforges-settings-group';
 
 // Bootstrap on both sides still, and taken out of the React set only so the counts line up. Each one
 // is asserted byte-identical to one of the baseline dialogs its marker pulled out.
@@ -122,6 +131,20 @@ const dropSwapModals = (grabbed, count, problems) => {
 	const tail = lines.slice(-count);
 	if (tail.some(line => line.trim() !== PRUNED_LINE)) {
 		problems.push(`base: the last ${count} shell lines are not all pruned modals, so the item-swap surplus cannot be counted off`);
+		return;
+	}
+	grabbed.shell = lines.slice(0, -count).join('\n');
+};
+
+// The reforge progress tracker's placeholder. `ReforgeOptimizer` was constructed after every tab and
+// before the stat-weights action, so on the baseline its modal is `simUI.rootElem`'s last child once
+// the item-swap surplus above has been taken off. Same trade as that one: the line is asserted to be
+// a pruned modal, and reverting the port grows it back on both sides so the shells stop matching.
+const dropReforgeProgressLine = (grabbed, count, problems) => {
+	if (!count) return;
+	const lines = grabbed.shell.split('\n');
+	if (lines.slice(-count).some(line => line.trim() !== PRUNED_LINE)) {
+		problems.push(`base: the last ${count} shell line(s) are not pruned modals, so the reforge progress tracker cannot be counted off`);
 		return;
 	}
 	grabbed.shell = lines.slice(0, -count).join('\n');
@@ -183,6 +206,7 @@ const grab = async (browser, port, spec) => {
 	// Each modal's own subtree, keyed by nothing: sorted and compared as a multiset below.
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const swapIcons = await page.evaluate(selector => document.querySelectorAll(selector).length, SWAP_ICONS);
+	const reforgeGroups = await page.evaluate(selector => document.querySelectorAll(selector).length, REFORGE_GROUP);
 	const panes = {};
 	const levels = {};
 	const swap = { active: 0, sockets: 0 };
@@ -217,6 +241,7 @@ const grab = async (browser, port, spec) => {
 		levels,
 		modals,
 		swapIcons,
+		reforgeGroups,
 		swap,
 		notices: collectSubtrees(tree, NATIVE_SIM_NOTICE),
 		noticesDropped: notice.dropped,
@@ -253,6 +278,10 @@ for (const spec of specsFromArgv()) {
 		problems.push(`base paints ${a.swap.active} active swap icon(s) and ${a.swap.sockets} socket line(s) at rest, so the fold hides a real difference`);
 	}
 	dropSwapModals(a, a.swapIcons, problems);
+	// See `REFORGE_PROGRESS`. Both sides must render the same reforge sidebar group; only the
+	// baseline's progress modal comes off, because React builds one only while a solve is running.
+	if (a.reforgeGroups !== b.reforgeGroups) problems.push(`base renders ${a.reforgeGroups} reforge action group(s), react ${b.reforgeGroups}`);
+	dropReforgeProgressLine(a, b.reforgeGroups, problems);
 
 	// What keeps the drop above an assertion: the notice has to have been in the sidebar actions on
 	// both sides, and the two copies have to be the same markup.
@@ -304,6 +333,7 @@ for (const spec of specsFromArgv()) {
 	// are exact, so reverting a port fails here rather than passing quietly.
 	const basePorted = [];
 	for (const ported of PORTED_DIALOGS) basePorted.push(...takeModals(a, ported, 'base', problems));
+	basePorted.push(...takeModals(a, [REFORGE_PROGRESS, b.reforgeGroups], 'base', problems));
 	takeModals(b, PORTED_DIALOG_REACT, 'react', problems);
 	// The dialogs React still builds as Bootstrap modals. The set comparison cannot see them — the
 	// baseline's copies left with the ones that ported — so they are compared here.

@@ -1,4 +1,4 @@
-/** The seam the vanilla side opens the dialog through: `individual_sim_ui` and `reforge_panel` hold this, React subscribes to it. Same shape as `ImportExportRegistry`. */
+/** The seam the vanilla side opens the dialog through: `individual_sim_ui` holds this and `ReforgePanel` opens through it, React subscribes to it. Same shape as `ImportExportRegistry`. */
 export class EpWeightsOpener {
 	private opened = false;
 	private readonly listeners = new Set<() => void>();

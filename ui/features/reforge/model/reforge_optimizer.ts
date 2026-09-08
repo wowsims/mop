@@ -1,6 +1,6 @@
 // DOM-free half of the reforge optimizer: settings access, EP / soft-cap math and
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
-// ../view/reforge_panel.tsx and owns every button, tooltip, toast and modal.
+// ../components/ReforgePanel and owns every button, tooltip, toast and modal.
 import * as Mechanics from '@sim/constants/mechanics';
 import { isDevMode } from '@sim/utils/env';
 import { Player } from '@sim/player/player';
