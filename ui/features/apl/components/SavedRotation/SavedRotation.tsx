@@ -18,7 +18,7 @@ import { serializeRotation } from './utils';
 export const SavedRotation = () => {
 	const host = useSimHost();
 	const player = host.player;
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('rotation_tab.saved_rotations.label');
 	const { entries: userData, save, remove } = useSavedRotation();

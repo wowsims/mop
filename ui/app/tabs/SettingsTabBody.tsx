@@ -17,7 +17,7 @@ const SETTINGS_PRESETS = [PresetConfigurationCategory.Encounter, PresetConfigura
 export const SettingsTabBody = () => {
 	const host = useSimHost();
 	const config = host.individualConfig;
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	const options = useMemo(
 		() => ({

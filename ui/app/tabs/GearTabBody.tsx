@@ -11,7 +11,7 @@ const GEAR_PRESETS = [PresetConfigurationCategory.Gear];
 
 export const GearTabBody = () => {
 	const host = useSimHost();
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	return (
 		<>

@@ -16,7 +16,7 @@ import { epWeightsData, serializeEpWeights } from './utils';
 export const SavedEpWeights = () => {
 	const host = useSimHost();
 	const { player, sim, individualConfig } = host;
-	const ready = useSimReady(sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('sidebar.buttons.stat_weights.modal.ep');
 	const { entries: userData, save, remove } = useSavedEpWeights();

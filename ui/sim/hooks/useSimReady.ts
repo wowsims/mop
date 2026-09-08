@@ -1,4 +1,5 @@
-import type { Sim } from '../sim';
+import { useSim } from '../context/SimHostContext';
 import { useSimStatus } from './useSimStatus';
 
-export const useSimReady = (sim: Sim): boolean => useSimStatus(sim).status === 'ready';
+/** `useSimStatus` keeps the `sim` parameter: it is the testable primitive, and this is the shorthand. */
+export const useSimReady = (): boolean => useSimStatus(useSim()).status === 'ready';

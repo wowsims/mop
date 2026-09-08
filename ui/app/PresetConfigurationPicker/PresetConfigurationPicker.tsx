@@ -4,6 +4,7 @@ import { useSimReady } from '@sim/hooks/useSimReady';
 import { subscribeSimChange } from '@sim/state/subscriptions';
 import { applyBuild } from '@features/settings/model/apply_build';
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
 import { useReadyStoreSubscribe } from '@ui-kit/hooks/useReadyStoreSubscribe';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -19,7 +20,7 @@ export interface PresetConfigurationPickerProps {
 
 export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPickerProps) => {
 	const host = useSimHost();
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 	const tooltipId = useId();
 
 	const builds = useMemo(
@@ -51,14 +52,15 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 					<div className="saved-data-container">
 						<div className="saved-data-presets">
 							{builds.map((build, index) => (
-								<button
+								<Button
 									key={build.name}
+									variant="unstyled"
 									className={clsx('saved-data-set-chip badge rounded-pill', active?.[index] && 'active')}
 									{...tooltipAnchorProps(tooltipId, build.name)}>
 									<span className="saved-data-set-name" role="button" onClick={() => applyBuild(build, host)}>
 										{build.name}
 									</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>

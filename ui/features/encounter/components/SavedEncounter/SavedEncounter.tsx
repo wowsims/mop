@@ -16,7 +16,7 @@ export const SavedEncounter = () => {
 	const host = useSimHost();
 	const { encounter } = host.sim;
 	const config = host.individualConfig;
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('settings_tab.saved_encounters.encounter');
 	const { entries: userData, save, remove } = useSavedEncounter();

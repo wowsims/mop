@@ -17,7 +17,7 @@ import { serializeTalents, talentsData } from './utils';
 export const SavedTalents = () => {
 	const host = useSimHost();
 	const { player, individualConfig } = host;
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('talents_tab.saved_talents.label');
 	const { entries: userData, save, remove } = useSavedTalents();

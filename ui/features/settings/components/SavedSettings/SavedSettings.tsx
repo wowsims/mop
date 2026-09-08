@@ -16,7 +16,7 @@ import { serializeSettings } from './utils';
 export const SavedSettings = () => {
 	const host = useSimHost();
 	const config = host.individualConfig;
-	const ready = useSimReady(host.sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('settings_tab.saved_settings.settings');
 	const { entries: userData, save, remove } = useSavedSettings();

@@ -18,7 +18,7 @@ import { gearSetData, serializeGearSet } from './utils';
 export const SavedGear = () => {
 	const host = useSimHost();
 	const { player, sim, individualConfig } = host;
-	const ready = useSimReady(sim);
+	const ready = useSimReady();
 
 	const label = i18n.t('gear_tab.gear_sets.gear_set');
 	const { entries: userData, save, remove } = useSavedGear();
