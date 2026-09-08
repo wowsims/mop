@@ -2,7 +2,7 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useMemo } from 'react';
 
 import { QuickSwapList } from './QuickSwapList';

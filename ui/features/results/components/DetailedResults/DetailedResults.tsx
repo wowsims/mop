@@ -1,13 +1,12 @@
 import { SimRun, SimRunData } from '@generated/proto/ui';
-import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
-import { useShowExperimental } from '@ui-kit/hooks/useShowExperimental';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

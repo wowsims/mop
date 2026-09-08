@@ -8,7 +8,7 @@ import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { mod } from '@sim/utils/math';
 import { sanitizeId } from '@sim/utils/format';
 import { Dialog } from '@ui-kit/Dialog';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';

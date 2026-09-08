@@ -5,7 +5,7 @@ import { isIndividualSimHost } from '@sim/sim_host';
 import { subscribeBulkField } from '@sim/state/subscriptions';
 import { Icon } from '@ui-kit/Icon';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';

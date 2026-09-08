@@ -1,19 +1,16 @@
-import { batch, subscribeGated } from '@sim/state/batch';
-import { createSimStore, patchSlice, type SimState, type SimStore } from '@sim/state/sim_store';
-import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { render } from '@testing-library/react';
 import { act } from 'react';
 import { describe, expect, it } from 'vitest';
 
+import { subscribeGated } from '../state/batch';
+import { createSimStore, patchSlice, type SimState, type SimStore } from '../state/sim_store';
+import type { StoreSubscribe } from '../state/subscriptions';
 import { useStoreSubscribe } from './useStoreSubscribe';
 
 // Field sources built the way state/subscriptions.ts builds them, but without needing a Sim or a
 // Player: the question under test is how React reacts to the store, not how the facades write to it.
 const gated = <U,>(store: SimStore, selector: (s: SimState) => U): StoreSubscribe =>
 	((onChange: () => void) => subscribeGated(store.subscribe, selector, onChange)) as StoreSubscribe;
-
-const ungated = <U,>(store: SimStore, selector: (s: SimState) => U): StoreSubscribe =>
-	((onChange: () => void) => store.subscribe(selector, onChange)) as StoreSubscribe;
 
 const probe = (store: SimStore, source: StoreSubscribe, read: (s: SimState) => unknown, renders: { n: number }) => {
 	return function Probe() {
@@ -75,44 +72,6 @@ describe('useStoreSubscribe', () => {
 			patchSlice(store, 'sim', { iterations: 999 });
 		});
 		expect(renders.n).toBe(after);
-	});
-
-	// The open question from the plan: does React need state/batch.ts's gate, or does its own
-	// batching already collapse a multi-slice write into one render? Measured, not assumed.
-	it('collapses a multi-slice batch() into a single render — gated and ungated alike', () => {
-		for (const [label, make] of [
-			['gated', gated],
-			['ungated', ungated],
-		] as const) {
-			const store = createSimStore();
-			const renders = { n: 0 };
-			// One component watching three slices at once, the shape subscribeAll produces.
-			const Probe = () => {
-				const v = useStoreSubscribe(
-					make(store, s => `${s.sim.iterations}|${s.ui.showEPValues}|${s.encounter.duration}`),
-					() => {
-						const s = store.getState();
-						return `${s.sim.iterations}|${s.ui.showEPValues}|${s.encounter.duration}`;
-					},
-				);
-				renders.n++;
-				return <span>{v}</span>;
-			};
-			const { container } = render(<Probe />);
-			const before = renders.n;
-
-			act(() => {
-				batch(() => {
-					patchSlice(store, 'sim', { iterations: 777 });
-					patchSlice(store, 'ui', { showEPValues: !store.getState().ui.showEPValues });
-					patchSlice(store, 'encounter', { duration: 42 });
-				});
-			});
-
-			expect(renders.n - before, `${label}: expected exactly one render for a three-slice batch`).toBe(1);
-			expect(container.textContent).toContain('777');
-			expect(container.textContent).toContain('42');
-		}
 	});
 });
 

@@ -6,7 +6,7 @@ import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { APLRotation } from '@generated/proto/apl';
 import { SavedRotation as SavedRotationProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';

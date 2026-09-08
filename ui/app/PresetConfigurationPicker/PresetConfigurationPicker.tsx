@@ -5,7 +5,7 @@ import { subscribeSimChange } from '@sim/state/subscriptions';
 import { applyBuild } from '@features/settings/model/apply_build';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
-import { useReadyStoreSubscribe } from '@ui-kit/hooks/useReadyStoreSubscribe';
+import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';

@@ -1,8 +1,8 @@
 import { SOCIALS } from '@sim/constants/other';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import type { Sim } from '@sim/sim';
-import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
-import { useShowExperimental } from '@ui-kit/hooks/useShowExperimental';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 

@@ -3,7 +3,7 @@ import { subscribePlayerField, subscribeSimField } from '@sim/state/subscription
 import { ItemSlot, Profession } from '@generated/proto/common';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useMemo } from 'react';
 
 import { QuickSwapList } from './QuickSwapList';

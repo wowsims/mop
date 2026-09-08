@@ -3,7 +3,7 @@ import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Faction } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { useMemo } from 'react';
 

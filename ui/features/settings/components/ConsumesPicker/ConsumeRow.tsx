@@ -2,7 +2,7 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
 import clsx from 'clsx';

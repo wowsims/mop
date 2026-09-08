@@ -61,9 +61,11 @@ means deleting that pragma.
 
 Shared React components get a folder of their own,
 `ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}` — including `LegacyHost`, which mounts
-a not-yet-ported `Component` inside the React tree. Hooks live in `ui-kit/hooks/`, one per file
-named after the hook (`useInput.ts`, `useStoreSubscribe.ts`, `useActionId.ts`), and test-only
-helpers in `ui-kit/testing/`. There is no `ui-kit/react/`: every component here is React now, so the
+a not-yet-ported `Component` inside the React tree. Hooks live one per file named after the hook:
+the store's React binding and everything built on it in `sim/hooks/` (`useStoreSubscribe.ts`,
+`useSimRun.ts`), the sim-agnostic ones in `ui-kit/hooks/` (`useInput.ts`, `useActionId.ts`), and
+test-only helpers in
+`ui-kit/testing/`. There is no `ui-kit/react/`: every component here is React now, so the
 qualifier distinguished nothing. See `.github/skills/wowsims-react/`
 for the component registry and the migration's current position.
 

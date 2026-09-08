@@ -6,7 +6,7 @@ import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { useMemo } from 'react';
 

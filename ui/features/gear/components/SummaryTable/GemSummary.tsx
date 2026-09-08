@@ -6,7 +6,7 @@ import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 

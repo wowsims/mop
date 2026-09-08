@@ -4,7 +4,7 @@ import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
 import { type StoreSubscribe, subscribePlayerChange } from '@sim/state/subscriptions';
 import type { Spec } from '@generated/proto/common';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import clsx from 'clsx';
 import { useMemo } from 'react';

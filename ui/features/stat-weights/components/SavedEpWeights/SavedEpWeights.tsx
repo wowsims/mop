@@ -4,7 +4,7 @@ import { Stats } from '@sim/proto/stats';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { SavedEPWeights } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import type { ClassValue } from 'clsx';

@@ -5,7 +5,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { itemQualityClassName } from '@ui-kit/utils/css';

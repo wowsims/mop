@@ -7,7 +7,7 @@ import { getEmptySlotIconUrl } from '@features/gear/view/gear_elements';
 import type { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';
 import { useMemo, useRef } from 'react';

@@ -7,7 +7,7 @@ import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

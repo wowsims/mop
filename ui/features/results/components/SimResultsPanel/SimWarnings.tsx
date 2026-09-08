@@ -1,7 +1,7 @@
 import type { WarningsRegistry } from '@features/results/model/warnings';
 import i18n from '@i18n/config';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Button } from '@ui-kit/Button';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';

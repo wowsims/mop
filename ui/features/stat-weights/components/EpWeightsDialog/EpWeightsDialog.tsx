@@ -1,5 +1,5 @@
 import './EpWeightsDialog.scss';
-import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 
 import { useSimHost } from '@sim/context/SimHostContext';
 import { Stats } from '@sim/proto/stats';
@@ -11,7 +11,7 @@ import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { ProgressTrackerDialog, type ProgressTrackerHandle, type ProgressTrackerState } from '@ui-kit/ProgressTrackerDialog';
 import Toast from '@ui-kit/toast';

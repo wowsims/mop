@@ -5,7 +5,7 @@ import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Glyphs } from '@generated/proto/common';
 import type { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';

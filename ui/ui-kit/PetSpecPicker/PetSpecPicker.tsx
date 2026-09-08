@@ -2,7 +2,7 @@ import type { Player } from '@sim/player/player';
 import type { HunterSpecs } from '@sim/proto/spec_types';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { PetSpec } from '@generated/proto/hunter';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';

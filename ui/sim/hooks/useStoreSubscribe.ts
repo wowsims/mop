@@ -1,6 +1,7 @@
 // For a plain selector read, prefer zustand's own `useStore(sim.store, selector)`.
-import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useCallback, useRef, useSyncExternalStore } from 'react';
+
+import type { StoreSubscribe } from '../state/subscriptions';
 
 /** Returning a new object from `getSnapshot` on every render is what React reports as "The result of getSnapshot should be cached to avoid an infinite loop", and most model getters here do exactly that. */
 export const useStoreSubscribe = <T>(subscribe: StoreSubscribe, read: () => T): T => {

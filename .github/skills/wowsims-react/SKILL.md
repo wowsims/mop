@@ -333,7 +333,7 @@ of the duplication sweep was to build each shape once.
 | `TalentsPicker` | `ui/features/talents/components/TalentsPicker/` | `features/talents/view/talents_picker.tsx` (**deleted** — one consumer, so not dual-stack) | the `TalentsPickerConfig` it is given | the tree/row/talent markup, and left-click-to-spend / right-click-to-clear |
 | `CharacterStats` | `ui/features/character-stats/components/CharacterStats/` | `features/character-stats/view/character_stats.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `statList`, `epReferenceStat`, `modifyDisplayStats`, `overwriteDisplayStats` | the group order, the crit-cap row, and the two tooltips per bonus-stat cell |
 | `SimHostProvider` / `useSimHost` | `ui/features/sim_host_context.tsx` | threading `host` and `player` down every level | nothing — the value is three stable references | that context carries **identity, never state** |
-| `useStoreSubscribe` | `ui/ui-kit/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
+| `useStoreSubscribe` | `ui/sim/hooks/useStoreSubscribe.ts` | — (binding) | a `StoreSubscribe` + a read | binding existing subscriptions to a component |
 | `SocialLink` | `ui/app/SocialLink/` | `app/header/social_links.tsx` (**deleted** — both consumers ported) | one `Social` from `SOCIALS` (`@sim/constants/other`) | the anchor, its tooltip and its accessible name. It renders the link and **nothing around it**, which is the axis that varies: the toolbar wraps each in `div.sim-toolbar-item`, the sidebar does not |
 | `EncounterPicker` | `ui/features/encounter/components/EncounterPicker/` | the `EncounterPicker` class in `features/encounter/view/encounter_picker.ts` (**deleted** — one consumer) | `showExecuteProportion`; everything else comes from the host | the block's field order, and that the target-input list and the advanced modal are still vanilla |
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
@@ -349,13 +349,13 @@ of the duplication sweep was to build each shape once.
 | `ToplineResults` | `ui/features/results/components/ToplineResults/` | `features/results/view/topline_results.ts`, **deleted** (28 lines) | nothing — and that is the finding: all three panes render it with no distinguishing prop, because they never had one. Same constructor, same emitter, same filter; column visibility is the manager root's `hide-*-metrics`, not per-pane | the `showOutOfMana` rule moved to `model/topline_metrics.ts` as `showsOutOfMana`, so the whole derivation is unit-testable without a DOM. Renders an empty root before the first run and clears on `emit(null)`, where the island kept stale content behind a hidden row |
 | `DpsHistogram` | `ui/features/results/components/DpsHistogram/` | `features/results/view/dps_histogram.ts`, **deleted** (75 lines) | nothing — reads `useSimResult()` | the wrapper is React and the canvas stays imperative, built into the ref'd root inside the effect exactly as vanilla did. One `chart.destroy()` per result instead of a dispose callback accumulated per run |
 | `FiltersMenu` | `ui/features/gear/components/FiltersMenu/` | `features/gear/view/filters_menu.tsx` (still live, dual-stack — `view/item_list.tsx:209` builds it for bulk and item swap) | `slot`, `open`, `onOpenChange`; player, sim and container come from the host | the section set a slot earns — armor types only when the class has more than one, weapon types and speeds with the off-hand pair only on `canDualWield`, ranged sections only for a class with ranged weapons, which vanilla expressed as a bare `return` mid-constructor. **It nests under the selector modal through the React tree, not the DOM**: the popup portals to `host.rootElem` as a *sibling* of the parent's portal, Base UI stamps `data-nested` from the React position, `elevated` gives it 1060/1065 over the parent's 1050/1055, and a press inside it is still not an outside press for the parent — which is why it renders inside `ItemList`'s JSX rather than behind an opener at `GearTabBody`. `keepMounted` is deliberately omitted: the pane remounts per request, nothing reads a closed menu, and no `ItemList` exists at load for `parity.mjs` to see. `Sim.ALL_SOURCES.sort()` no longer sorts the shared static array in place |
-| `useDisplayMetrics` · `useShowExperimental` | `ui/ui-kit/hooks/` | the same four-line `useStoreSubscribe(subscribeUiField(...))` block in `SimShell`, `DetailedResults`, both metrics tables and `EpWeightsDialog` | `sim` — they take it rather than reading the host, because `SimShell` renders before `IndividualSimUI` adopts its DOM and has no provider above it | one subscription over the three ui fields, and **a bitmask snapshot rather than the object**: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, so returning a fresh object there re-renders, and a caller holding an unstable `sim` loops. The mask makes the object rebuild only when a flag changes, which also makes it a stable memo dependency. `epRatios` is not among them — `showsEpRatios` owns that rule in `shell_classes.ts` and derives from the returned object |
+| `useDisplayMetrics` · `useShowExperimental` | `ui/sim/hooks/` | the same four-line `useStoreSubscribe(subscribeUiField(...))` block in `SimShell`, `DetailedResults`, both metrics tables and `EpWeightsDialog` | `sim` — they take it rather than reading the host, because `SimShell` renders before `IndividualSimUI` adopts its DOM and has no provider above it | one subscription over the three ui fields, and **a bitmask snapshot rather than the object**: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, so returning a fresh object there re-renders, and a caller holding an unstable `sim` loops. The mask makes the object rebuild only when a flag changes, which also makes it a stable memo dependency. `epRatios` is not among them — `showsEpRatios` owns that rule in `shell_classes.ts` and derives from the returned object |
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `className`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state, and what a worker message moves goes through `ProgressTrackerHandle.setProgress` — the clock stays a DOM write, the bar is now local state in `ProgressTrackerBar` (Base UI `Progress`), so a tick commits that leaf and never the dialog |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on. `CopyButton` now wraps this hook rather than competing with it — reach for the hook when a caller renders its own button, and for the component when it wants the vanilla one's shape | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
 | `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); all five call sites converted | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
 | `SearchBar` | `ui/ui-kit/SearchBar/` | the search `<input>` hand-rolled in `gear/view/item_list.tsx`, `bulk/view/bulk_item_search.tsx` and `results/view/log/search/search_bar.tsx` (all three still live, dual-stack — only `GlyphSelectorDialog` adopts today) | `value`/`onChange`, `label`, `debounceMs` (0 by default — bulk, gear and glyph never debounced, the log hand-rolled 150 ms), `clearable`/`clearLabel` (bulk's only), `placeholder`, `id`, `autoComplete`, `autoFocus`, and `className` — applied to the `<input>` itself so a caller's squatting global class (`.selector-modal-search`) still targets the real control | `Field.Root`/`Field.Label` wrapping via Base UI, the native `form-control` input, and — when `clearable` — that the clear button lives inside the input group and clears through one call |
-| `useReadyStoreSubscribe` | `ui/ui-kit/hooks/useReadyStoreSubscribe.ts` | the hand-rolled gate in `SavedSettings`, written the night the un-gated version crashed the app | `subscribe`, `read`, and `ready`; returns `T \| null` | **both halves of the guard**, which is the point — gating the read alone leaves `useStoreSubscribe`'s cached `null` in place until something else changes the subscription, so `ready` is folded into the subscription's identity too. Reach for it whenever a snapshot touches `sim.db`, which is null until init: `useSyncExternalStore` calls `getSnapshot` on the first render, long before any `useSimReady` gate |
+| `useReadyStoreSubscribe` | `ui/sim/hooks/useReadyStoreSubscribe.ts` | the hand-rolled gate in `SavedSettings`, written the night the un-gated version crashed the app | `subscribe`, `read`, and `ready`; returns `T \| null` | **both halves of the guard**, which is the point — gating the read alone leaves `useStoreSubscribe`'s cached `null` in place until something else changes the subscription, so `ready` is folded into the subscription's identity too. Reach for it whenever a snapshot touches `sim.db`, which is null until init: `useSyncExternalStore` calls `getSnapshot` on the first render, long before any `useSimReady` gate |
 | `useTypedLocalStorage` | `ui/ui-kit/hooks/useTypedLocalStorage.ts` | the raw `react-use` `useLocalStorage<T>()` call in `SavedEpWeights` | a storage `key` and a **required** `parse: (value: unknown) => T \| undefined` | the deserializer only — `react-use` still owns read/write/remove. `parse` is required because react-use's generic types the deserialized value as `T` with no proof, so a stale key from an old schema comes back typed as the new shape. Anything `parse` rejects folds into the same `undefined` react-use already returns for an absent key, so callers keep one falsy state instead of two. Its one consumer is now `useSavedData`, which is what components reach for |
 | `useSavedData` + six named proxies | `ui/ui-kit/hooks/useSavedData.ts`; `use{SavedEpWeights,SavedGear,SavedTalents,SavedRotation,SavedSettings,SavedEncounter}` under each feature's `hooks/` | the storage half of `ui-kit/saved_data_manager.tsx` (still live, dual-stack — five of the six slots are its vanilla islands) | **the key and the codec, and nothing else.** Every generated `MessageType` satisfies `SavedDataCodec` structurally, so a named proxy is one line: `useSavedData(host.getSavedGearStorageKey(), SavedGearSet)` | the record shape (`Record<name, toJson(data)>`, what `SavedDataManager` has always written), per-entry parse with warn-and-skip, the `json` string entries are compared by, and `save`/`remove`. **Not** presets, which come from config, and **not** identity — `SavedDataManager`'s optional `equals` exists because rotations cannot be compared by their JSON, so a rotation consumer will need that axis back |
 | `SimRuns` / `useSimRun` / `useStatWeights` | `ui/sim/sim_runs.ts`, `ui/sim/hooks/` | the abort-then-run preamble copied at each entry point, and `EpWeightsDialog`'s `running` state plus its two guard refs | `useSimRun(kind)` takes only the kind and returns `isRunning`/`isAborting`/`abort` — **no `start`**, so a run can only be begun through a named hook that knows its arguments; `useStatWeights({ onProgress })` binds `computeStatWeights`'s three arguments and its progress shape | that a run is one user-visible operation rather than one worker request, that its two flags live in the store beside every other piece of sim state (so vanilla reads them through `subscribeRunState` and React through `useSyncExternalStore`), and that progress never touches the store — it stays a callback, with `lastProgress` for a consumer that mounts mid-run |
@@ -827,11 +827,15 @@ and hooks cannot be called conditionally. And the facade read still needs
 `useMemo(() => read(), [version])`, so the snapshot cache does not disappear, it moves. It would
 relocate code and add a branch rather than remove either.
 
-**The batch gate is not a reason to prefer either — measured, not assumed.** The plan left open
-whether React needs `subscribeGated` at all. `store.test.tsx` answers it: a `batch()` writing three
-slices produces **exactly one render, gated and ungated alike**, because React coalesces
-same-tick updates and the read happens at render time, after the batch has closed. The gate stays
-because vanilla subscribers still need it, but nothing on the React side depends on it.
+**The batch gate is not a reason to prefer either — measured, and this time the file exists.** This
+paragraph used to cite `store.test.tsx`, which was never written; the real measurement is
+`ui/sim/hooks/useStoreSubscribe.gate.test.tsx`. A `batch()` writing three slices produces **exactly
+one render — gated, ungated and through zustand's `useStore` alike** — because React coalesces
+same-tick updates and the read happens at render time, after the batch has closed; no intermediate
+value is ever painted. At the *store* level the gate still earns its keep, one listener fire against
+three, which is what vanilla subscribers need. Nothing on the React side depends on it, and a
+`batch()` spanning an `await` helps nobody: it closes at the end of its synchronous body, so three
+`await`-separated writes are three renders under every binding.
 
 ## Ambient state: `useSimHost`, and the rule that keeps it cheap
 
@@ -1370,6 +1374,37 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **The Phase-0 open question is settled by measurement: React does not need
+  `subscribeGated`, and that was never why `useStoreSubscribe` exists.** The evidence lives in
+  `ui/sim/hooks/useStoreSubscribe.gate.test.tsx`, which binds the same store four ways and counts.
+  The gate is a **vanilla-only** concern: a three-slice `batch()` fires the store listener once gated
+  and three times ungated, and React collapses both to **one render**, because the read happens at
+  render time after the batch has closed. No intermediate value is ever painted, gated or not. A
+  `batch()` cannot span an `await` — it closes at the end of its synchronous body — so three
+  `await`-separated writes are three renders under every binding, and the gate buys nothing there for
+  anyone.
+  **The conversion to zustand's `useStore` was measured and declined.** `useStore(store, counterSelector)`
+  + `useMemo(read, [key])` is behaviourally identical to `useStoreSubscribe`: zero extra facade reads
+  across unrelated parent renders, one stable reference. So it buys nothing measurable, while costing
+  three things: it duplicates the `subscribe*` helpers at 30 call sites and leaks `player.storeKey` /
+  `player.sim.store` into components; `subscribeAll` folds to a fresh array per call and zustand 5
+  dropped `equalityFn` from `useStore`, so every folded source needs `useShallow` (**wrong** for
+  `raidTuple`, which returns a new outer array per write) or `useStoreWithEqualityFn` from
+  `zustand/traditional`; and **8 test files** deliberately stub `@sim/state/subscriptions` with opaque
+  sources over doubles that have no store at all, every one of which would need a real
+  `createSimStore()`. The `StoreSubscribe` *function* is the shared vanilla/React/test contract, and
+  the hook is its adapter — which is also why the frozen `InputConfig.storeSubscribe` path can never
+  convert.
+  Two facts worth carrying: `useStore` re-evaluates its selector on every render (~4× per change
+  against 1× for a `subscribeWithSelector` source), which is cheap for a counter and not for a
+  selector that allocates. And **the `?.` in `s.players[key]?.v[field]` is load-bearing under every
+  binding** — `subscribeWithSelector` runs every registered selector on every `setState`, so the gap
+  after `deleteKeyed` is always visible; `Player.dispose()`'s `setTimeout` deferral is the real
+  protection.
+  The live-call recount is **30 files**, and **four** are structurally non-convertible rather than
+  three: `useInput.ts`, `MultiIconPicker`, `PetSpecPicker` — and `SimWarnings.tsx`, whose source is
+  `WarningsRegistry.subscribe`, a hand-rolled listener list with an allocating `getContents()`.
+
 - 2026-09-08 **`FiltersMenu` is React, and a gate was lying about it.** The recorded "its own close
   button does not close it on either build" was a **probe artifact**: `selector-modal.mjs` matched
   `.modal.show .filters-menu` with a *descendant* combinator, and on the baseline the filters menu's
@@ -1439,9 +1474,9 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 - 2026-09-08 **`useDisplayMetrics` and `useShowExperimental`.** See the registry rows. The finding worth
   carrying: a `useStoreSubscribe` read that returns a fresh object is only safe while the subscription
   identity is stable, because the hook re-reads on subscription change — snapshot a primitive and
-  expand it with `useMemo` instead. They sit in `ui-kit/hooks/` rather than `sim/hooks/` because
-  `ui/sim/**` may not import `@ui-kit` at runtime and `useStoreSubscribe` lives there; the real fix is
-  moving that hook to `@sim/hooks`, which is where the store's React binding belongs.
+  expand it with `useMemo` instead. They first landed in `ui-kit/hooks/` only because `useStoreSubscribe` was
+  there and `ui/sim/**` may not import `@ui-kit` at runtime; **that was fixed the same day** by moving
+  the binding itself to `@sim/hooks`, and all four hooks now sit there.
 
 - 2026-09-08 **The detailed-results pane is React, and results has its first port.** Nothing in
   results had moved because almost every file's owner is another vanilla file; `DetailedResults` was

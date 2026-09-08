@@ -7,7 +7,7 @@ import { SortDirection } from '@sim/constants/other';
 import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
 import { Icon } from '@ui-kit/Icon';
 import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { VirtualList } from '@ui-kit/VirtualList';

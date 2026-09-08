@@ -1,10 +1,9 @@
 import { bucket } from '@sim/utils/collections';
-import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useSim } from '@sim/context/SimHostContext';
 import { ActionMetrics } from '@sim/proto/sim_result';
 import { subscribeUiField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 

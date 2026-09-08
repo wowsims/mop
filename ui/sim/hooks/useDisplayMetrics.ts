@@ -1,7 +1,7 @@
-import type { Sim } from '@sim/sim';
-import { subscribeAll, subscribeUiField } from '@sim/state/subscriptions';
 import { useMemo } from 'react';
 
+import type { Sim } from '../sim';
+import { subscribeAll, subscribeUiField } from '../state/subscriptions';
 import { useStoreSubscribe } from './useStoreSubscribe';
 
 export interface DisplayMetrics {

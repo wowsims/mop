@@ -4,7 +4,7 @@ import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidF
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { SavedSettings as SavedSettingsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useReadyStoreSubscribe } from '@ui-kit/hooks/useReadyStoreSubscribe';
+import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';

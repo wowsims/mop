@@ -1,6 +1,6 @@
-import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useMemo } from 'react';
 
+import type { StoreSubscribe } from '../state/subscriptions';
 import { useStoreSubscribe } from './useStoreSubscribe';
 
 const NEVER: StoreSubscribe = () => () => {};

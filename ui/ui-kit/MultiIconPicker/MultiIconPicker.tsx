@@ -6,7 +6,7 @@ import type { Player } from '@sim/player/player';
 import type { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
 import { wowheadAnchorProps } from '../utils/wowhead';

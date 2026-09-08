@@ -4,7 +4,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useMemo } from 'react';
 
 import { CritCapRow } from './CritCapRow';
