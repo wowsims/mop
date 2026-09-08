@@ -1,28 +1,8 @@
 /** @jsxImportSource @jsx-vanilla */
-import { SimSettingCategories } from '@sim/constants/sim_settings';
-import { isDevMode } from '@sim/utils/env';
-import { Player } from '@sim/player/player';
-import { PlayerSpecs } from '@sim/player/specs';
-import { armorTypeNames, professionNames } from '@sim/proto/names';
-import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto/stats';
-import { getTalentPoints } from '@sim/proto/utils';
-import type { IndividualSimHost } from '@sim/sim_host';
-import type { SpecDefinition } from '@sim/spec_config';
-import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
-import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import { batch } from '@sim/state/batch';
-import { loadIndividualSettings } from '@sim/state/persistence';
-import {
-	applyIndividualSimSettings,
-	IndividualSimSerializationContext,
-	individualSimSettingsToProto,
-	updateIndividualSimProtoVersion,
-} from '@sim/state/serialization';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
+import { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
 import type { SelectorModalOpener } from '@features/gear/types';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
@@ -42,7 +22,7 @@ import {
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import { ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
-import { DetailedResults } from '@features/results/view/detailed_results';
+import type { LogExporterFactory } from '@features/results/view/log/log_view';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
@@ -51,6 +31,27 @@ import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/pro
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { SimSettingCategories } from '@sim/constants/sim_settings';
+import { Player } from '@sim/player/player';
+import { PlayerSpecs } from '@sim/player/specs';
+import { armorTypeNames, professionNames } from '@sim/proto/names';
+import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto/stats';
+import { getTalentPoints } from '@sim/proto/utils';
+import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
+import type { IndividualSimHost } from '@sim/sim_host';
+import type { SpecDefinition } from '@sim/spec_config';
+import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
+import { batch } from '@sim/state/batch';
+import { loadIndividualSettings } from '@sim/state/persistence';
+import {
+	applyIndividualSimSettings,
+	IndividualSimSerializationContext,
+	individualSimSettingsToProto,
+	updateIndividualSimProtoVersion,
+} from '@sim/state/serialization';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
+import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
+import { isDevMode } from '@sim/utils/env';
 
 import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
@@ -87,6 +88,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	raidSimResultsManager: SimResultsManager | null;
 	readonly epWeightsModal = new EpWeightsOpener();
+	readonly gearSelectorModal = new GearSelectorModalOpener();
 	readonly resultChannel = new ResultChannel();
 
 	get dpsRefStat(): Stat | undefined {
@@ -334,11 +336,11 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	talentsTab!: TalentsTab<SpecType>;
 	settingsTab!: SettingsTab;
 	rotationTab!: RotationTab;
-	detailedResults!: DetailedResults;
+	/** The results pane is React; the shell only owns the div it renders into. */
+	detailedResultsContainer!: HTMLElement;
 
-	get gearSelectorModal(): SelectorModalOpener | null {
-		return this.gearTab?.selectorModal ?? null;
-	}
+	// The log exporter lives in another feature, and results/ must not import one — so the shell builds it and the pane is handed the factory.
+	readonly makeLogExporter: LogExporterFactory = getLogData => new LogExporter(this.rootElem, this, getLogData);
 
 	get itemSwapSelectorModal(): SelectorModalOpener | null {
 		return this.settingsTab?.itemSwapSelectorModal ?? null;
@@ -374,16 +376,8 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addDetailedResultsTab() {
-		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
-		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
-
-		this.detailedResults = new DetailedResults(
-			detailedResults,
-			this,
-			this.raidSimResultsManager!,
-			getLogData => new LogExporter(this.rootElem, this, getLogData),
-			this.resultChannel,
-		);
+		this.detailedResultsContainer = (<div className="detailed-results"></div>) as HTMLElement;
+		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', this.detailedResultsContainer);
 	}
 
 	private addTopbarComponents() {

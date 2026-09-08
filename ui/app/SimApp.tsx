@@ -1,23 +1,18 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player/player';
-import type { SpecDefinition } from '@sim/spec_config';
 import { CharacterStats } from '@features/character-stats';
-import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';
-import { CastMetricsTable } from '@features/results/components/CastMetricsTable';
-import { DamageMetricsTable } from '@features/results/components/DamageMetricsTable';
-import { DtpsMetricsTable } from '@features/results/components/DtpsMetricsTable';
-import { HealingMetricsTable } from '@features/results/components/HealingMetricsTable';
 import { ReforgePanel } from '@features/reforge/components/ReforgePanel';
-import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
+import { DetailedResults } from '@features/results/components/DetailedResults';
 import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
 import type { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player/player';
+import type { SpecDefinition } from '@sim/spec_config';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { ImportExportMenu } from './header/ImportExportMenu';
 import { ImportExportKind } from './header/import_export_registry';
+import { ImportExportMenu } from './header/ImportExportMenu';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
@@ -86,13 +81,11 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					)}
 					{createPortal(<SimResultsPanel panel={simUI.resultsPanel} warnings={simUI.warnings} />, simUI.sidebarResultsContainer)}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
-					{createPortal(<DamageMetricsTable />, simUI.detailedResults.damageMetricsContainer)}
-					{createPortal(<HealingMetricsTable />, simUI.detailedResults.healingMetricsContainer)}
-					{createPortal(<DtpsMetricsTable />, simUI.detailedResults.dtpsMetricsContainer)}
-					{createPortal(<CastMetricsTable />, simUI.detailedResults.castMetricsContainer)}
-					{createPortal(<AuraMetricsTable useDebuffs={false} />, simUI.detailedResults.buffMetricsContainer)}
-					{createPortal(<AuraMetricsTable useDebuffs={true} />, simUI.detailedResults.debuffMetricsContainer)}
-					{createPortal(<ResourceMetricsTable />, simUI.detailedResults.resourceMetricsContainer)}
+					{simUI.raidSimResultsManager &&
+						createPortal(
+							<DetailedResults resultsManager={simUI.raidSimResultsManager} makeLogExporter={simUI.makeLogExporter} />,
+							simUI.detailedResultsContainer,
+						)}
 					{createPortal(<GearTabBody />, simUI.gearTab.contentContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}

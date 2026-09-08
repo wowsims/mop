@@ -1,7 +1,7 @@
 import { getUniqueEnchantString } from '@sim/proto/enchants';
 import { DatabaseFilters, UIEnchant as Enchant } from '@generated/proto/ui';
 
-import { ItemData, ItemListType, SelectorModalTabs } from '../types';
+import { ItemDataFields, ItemListType, SelectorModalTabs } from '../types';
 
 export const favouriteFilterKey = (tab: SelectorModalTabs): keyof DatabaseFilters | null => {
 	switch (tab) {
@@ -23,14 +23,14 @@ export const favouriteFilterKey = (tab: SelectorModalTabs): keyof DatabaseFilter
 	}
 };
 
-export const favouriteId = <T extends ItemListType>(tab: SelectorModalTabs, itemData: ItemData<T>): number | string => {
+export const favouriteId = <T extends ItemListType>(tab: SelectorModalTabs, itemData: ItemDataFields<T>): number | string => {
 	if (tab === SelectorModalTabs.Enchants || tab === SelectorModalTabs.Tinkers) {
 		return getUniqueEnchantString(itemData.item as unknown as Enchant);
 	}
 	return itemData.id;
 };
 
-export const isItemFavourited = <T extends ItemListType>(filters: DatabaseFilters, tab: SelectorModalTabs, itemData: ItemData<T>): boolean => {
+export const isItemFavourited = <T extends ItemListType>(filters: DatabaseFilters, tab: SelectorModalTabs, itemData: ItemDataFields<T>): boolean => {
 	const key = favouriteFilterKey(tab);
 	if (!key) return false;
 	return (filters[key] as never[]).includes(favouriteId(tab, itemData) as never);
@@ -39,7 +39,7 @@ export const isItemFavourited = <T extends ItemListType>(filters: DatabaseFilter
 export const applyFavourite = <T extends ItemListType>(
 	filters: DatabaseFilters,
 	tab: SelectorModalTabs,
-	itemData: ItemData<T>,
+	itemData: ItemDataFields<T>,
 	isFavourite: boolean,
 ): boolean => {
 	const key = favouriteFilterKey(tab);

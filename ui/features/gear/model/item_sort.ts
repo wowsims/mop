@@ -2,7 +2,7 @@ import { SortDirection } from '@sim/constants/other';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 
-import { ItemData, ItemListType, SelectorModalTabs } from '../types';
+import { ItemDataFields, ItemListType, SelectorModalTabs } from '../types';
 
 export enum ItemListSortBy {
 	EP,
@@ -18,12 +18,12 @@ export type SortOptions<T extends ItemListType> = {
 	sortBy: ItemListSortBy;
 	sortDirection: SortDirection;
 	computeEP: (item: T) => number;
-	isFavourited: (itemData: ItemData<T>) => boolean;
+	isFavourited: (itemData: ItemDataFields<T>) => boolean;
 };
 
 export const sortItemIdxs = <T extends ItemListType>(
 	itemIdxs: Array<number>,
-	itemData: Array<ItemData<T>>,
+	itemData: Array<ItemDataFields<T>>,
 	{ sortBy, sortDirection, computeEP, isFavourited }: SortOptions<T>,
 ): number[] => {
 	const ordered = (itemA: T, itemB: T) =>

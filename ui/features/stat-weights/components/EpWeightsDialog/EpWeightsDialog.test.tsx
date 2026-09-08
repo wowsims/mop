@@ -35,6 +35,12 @@ const source = vi.hoisted(() => {
 const runsStore = vi.hoisted(() => ({ store: null as { subscribe: (onChange: () => void) => () => void } | null }));
 
 vi.mock('@sim/state/subscriptions', () => ({
+	// `useDisplayMetrics` folds its three ui fields into one source; the real `subscribeAll` collapses
+	// same-store selectors into one, which a mock cannot, so it fans out and unsubscribes each.
+	subscribeAll: (subs: Array<(onChange: () => void) => () => void>) => (onChange: () => void) => {
+		const unsubs = subs.map(sub => sub(onChange));
+		return () => unsubs.forEach(unsub => unsub());
+	},
 	subscribePlayerField: (_player: unknown, field: string) => source.subscribe(`player:${field}`),
 	subscribeUiField: (_sim: unknown, field: string) => source.subscribe(`ui:${field}`),
 	subscribeStatWeightsChange: () => source.subscribe('statWeights'),
@@ -164,6 +170,9 @@ const setup = () => {
 			getShowThreatMetrics() {
 				return this.showThreatMetrics;
 			},
+			// `useDisplayMetrics` reads all three through one subscription; only threat varies here.
+			getShowDamageMetrics: () => true,
+			getShowHealingMetrics: () => true,
 			getIterations: () => 1000,
 			store,
 			runs,

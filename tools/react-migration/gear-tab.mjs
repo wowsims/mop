@@ -5,14 +5,17 @@
 // plus sorted classes and excludes text and attributes, so item names, item levels, enchant labels,
 // wowhead hrefs, gem icons and everything that only happens after a click are invisible to it.
 //
-// The whole output should be identical on both builds. Two things it therefore reads rather than
-// asserts a fixed value for: the spec's default gear, and the selector modal's row counts.
+// The whole output should be identical on both builds apart from the selector modal's `rows=`, which
+// is how many rows the virtual list has in the DOM: the two lists window differently, so that number
+// is an implementation detail on each side and is read rather than asserted. Two things it therefore
+// reads rather than asserts a fixed value for: the spec's default gear, and those row counts.
 //
-// The item selector, its list and its filters menu are still vanilla on both builds. They are
-// exercised here anyway, because the cycle between the gear picker and the modal was cut for this
-// port: the modal used to read `gearPicker.itemPickers[i]` for the rail's icons and for its
-// ArrowUp/ArrowDown navigation, and now takes a `SlotRailEntry[]`. Opening the modal from a cell and
-// walking the rail is what proves that cut on both builds.
+// The item selector is a Bootstrap modal on the baseline and a Base UI dialog on the port, so every
+// selector below it is spelled under both roots; its filters menu is still vanilla on both. Opening
+// the modal from a cell and walking the rail is what proves the cycle between the gear picker and
+// the modal stayed cut — the modal used to read `gearPicker.itemPickers[i]` for the rail's icons and
+// for its ArrowUp/ArrowDown navigation, and now takes its slots from the player. `selector-modal.mjs`
+// is the one that operates the list, the tabs and the filters.
 import { launch, openSpec, PORTS } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
@@ -58,8 +61,9 @@ const INSTALL = () => {
 				};
 			}),
 		modal: () => {
-			// `.selector-modal` is on the `.modal-dialog`; `.show` lands on the `.modal` root above it.
-			const modal = document.querySelector('.modal.show .selector-modal');
+			// Two shapes: on Bootstrap `.selector-modal` is the `.modal-dialog` and `.show` lands on the
+			// `.modal` root above it; on Base UI it is the popup itself, marked `data-open`.
+			const modal = document.querySelector('.modal.show .selector-modal, .sim-dialog-popup.selector-modal[data-open]');
 			if (!modal) return { open: false };
 			return {
 				open: true,
@@ -139,6 +143,12 @@ const INSTALL = () => {
 	};
 };
 
+// A descendant selector has to be spelled out under each root — a bare comma between them binds
+// looser than the combinator and would match the modal root itself.
+const MODAL_ROOTS = ['.modal.show .selector-modal', '.sim-dialog-popup.selector-modal[data-open]'];
+const MODAL_OPEN = MODAL_ROOTS.join(', ');
+const inModal = suffix => MODAL_ROOTS.map(root => `${root} ${suffix}`).join(', ');
+
 const browser = await launch();
 const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
 await page.addInitScript(INSTALL);
@@ -206,7 +216,7 @@ say('\nselector modal, opened from a cell');
 const SLOT_OF_CELL = [0, 1, 2, 3, 4, 5, 14, 15, 6, 7, 8, 9, 10, 11, 12, 13];
 const cell = index => page.locator('#gear-tab .gear-picker-root .item-picker-root').nth(index);
 await cell(0).locator('.item-picker-icon').click();
-await page.waitForSelector('.modal.show .selector-modal', { timeout: 20000 });
+await page.waitForSelector(MODAL_OPEN, { timeout: 20000 });
 await page.waitForTimeout(600);
 const opened = await page.evaluate(() => window.gearProbe.modal());
 say(
@@ -237,7 +247,7 @@ say(`  ArrowUp     active=${wrapped.railActive} (wrapped)`);
 if (wrapped.railActive !== '15') problems.push(`ArrowUp from the first slot left ${wrapped.railActive} active, expected it to wrap to 15`);
 
 // Clicking a rail icon is the third reader of the entry, and the one a cell never triggers.
-await page.click('.modal.show .gear-picker-modal-slots .item-picker-icon-wrapper:nth-of-type(3) .item-picker-icon');
+await page.locator(inModal('.gear-picker-modal-slots .item-picker-icon-wrapper:nth-of-type(3) .item-picker-icon')).first().click();
 await page.waitForTimeout(700);
 const railClicked = await page.evaluate(() => window.gearProbe.modal());
 say(`  rail click  title=${JSON.stringify(railClicked.title)} active=${railClicked.railActive} rows=${railClicked.rows}`);
@@ -256,7 +266,7 @@ if (enchanted < 0) {
 } else {
 	const enchantLabel = cell(enchanted).locator('.item-picker-enchant');
 	await enchantLabel.click();
-	await page.waitForSelector('.modal.show .selector-modal', { timeout: 20000 });
+	await page.waitForSelector(MODAL_OPEN, { timeout: 20000 });
 	await page.waitForTimeout(700);
 	const enchantTab = await page.evaluate(() => window.gearProbe.modal());
 	say(`  modal       tab=${JSON.stringify(enchantTab.activeTab)} rows=${enchantTab.rows}`);
@@ -264,7 +274,7 @@ if (enchanted < 0) {
 	// The first row that is not the equipped one — `.active` marks that — so equipping the favourite
 	// afterwards is a change rather than a no-op. Favouriting the equipped enchant is how the first
 	// draft of this check passed while proving nothing.
-	const rows = page.locator('.modal.show .selector-modal-tab-pane.active .selector-modal-list-item');
+	const rows = page.locator(inModal('.selector-modal-tab-pane.active .selector-modal-list-item'));
 	const rowCount = await rows.count();
 	let target = -1;
 	for (let index = 0; index < rowCount; index++) {

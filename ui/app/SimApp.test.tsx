@@ -7,9 +7,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
 const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }> = [];
-// Recorded rather than read off the document: the results pane is vanilla, so its metrics divs are
-// only ever children of a shell this test does not build.
-const resultsContainers: Array<Record<string, HTMLElement>> = [];
+// Recorded rather than read off the document: the div the results pane portals into is only ever a
+// child of a shell this test does not build.
+const resultsContainers: Array<HTMLElement> = [];
 const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
@@ -38,22 +38,16 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly talentsTab = { contentContainer: document.createElement('div') };
 			readonly settingsTab = { contentContainer: document.createElement('div') };
 			readonly rotationTab = { contentContainer: document.createElement('div') };
-			// The metrics tables portal into divs the vanilla results pane builds, so React reaches them
-			// through the constructed `DetailedResults` rather than owning the pane.
-			readonly detailedResults = {
-				damageMetricsContainer: document.createElement('div'),
-				healingMetricsContainer: document.createElement('div'),
-				dtpsMetricsContainer: document.createElement('div'),
-				castMetricsContainer: document.createElement('div'),
-				buffMetricsContainer: document.createElement('div'),
-				debuffMetricsContainer: document.createElement('div'),
-				resourceMetricsContainer: document.createElement('div'),
-			};
+			// The results pane is React and owns its own metrics containers; the shell only builds the
+			// div it renders into, and the manager and exporter factory it is handed.
+			readonly detailedResultsContainer = document.createElement('div');
+			readonly raidSimResultsManager = {} as never;
+			readonly makeLogExporter = (() => ({ open: () => {} })) as never;
 			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
 			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
 			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }) {
 				constructions.push(dom);
-				resultsContainers.push(this.detailedResults);
+				resultsContainers.push(this.detailedResultsContainer);
 				dom.root.classList.add('sim-ui');
 				this.sidebarStatsContainer = dom.sidebarStats;
 				this.sidebarResultsContainer = dom.sidebarResults;
@@ -70,14 +64,8 @@ vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 vi.mock('./tabs/RotationTabBody', () => ({ RotationTabBody: () => <div className="rotation-tab rotation-tab-auto" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
-vi.mock('@features/results/components/CastMetricsTable', () => ({ CastMetricsTable: () => <div className="cast-metrics-root" /> }));
-vi.mock('@features/results/components/DamageMetricsTable', () => ({ DamageMetricsTable: () => <div className="damage-metrics-root" /> }));
-vi.mock('@features/results/components/HealingMetricsTable', () => ({ HealingMetricsTable: () => <div className="healing-metrics-root" /> }));
-vi.mock('@features/results/components/DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div className="dtps-metrics-root" /> }));
-vi.mock('@features/results/components/AuraMetricsTable', () => ({
-	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div className={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
-}));
-vi.mock('@features/results/components/ResourceMetricsTable', () => ({ ResourceMetricsTable: () => <div className="resource-metrics-root" /> }));
+// The pane builds six vanilla islands and seven tables of its own; DetailedResults.test.tsx is where those are asserted.
+vi.mock('@features/results/components/DetailedResults', () => ({ DetailedResults: () => <div className="detailed-results-manager-root" /> }));
 // Needs the real spec registry to list every class; what is under test here is the shell's gate.
 vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div className="sim-title-dropdown-root" /> }));
 
@@ -146,15 +134,9 @@ describe('SimApp', () => {
 		expect(constructions[0].sidebarResults.querySelectorAll('.results-viewer')).toHaveLength(1);
 	});
 
-	it('portals every ported metrics table into the div the results pane built', () => {
+	it('portals the results pane into the div the shell built', () => {
 		render(<SimApp player={player} def={def} />);
-		expect(resultsContainers[0].damageMetricsContainer.querySelectorAll('.damage-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].healingMetricsContainer.querySelectorAll('.healing-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].dtpsMetricsContainer.querySelectorAll('.dtps-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].castMetricsContainer.querySelectorAll('.cast-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].buffMetricsContainer.querySelectorAll('.buff-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].debuffMetricsContainer.querySelectorAll('.debuff-metrics-root')).toHaveLength(1);
-		expect(resultsContainers[0].resourceMetricsContainer.querySelectorAll('.resource-metrics-root')).toHaveLength(1);
+		expect(resultsContainers[0].querySelectorAll('.detailed-results-manager-root')).toHaveLength(1);
 	});
 
 	it('portals it exactly once under StrictMode', () => {

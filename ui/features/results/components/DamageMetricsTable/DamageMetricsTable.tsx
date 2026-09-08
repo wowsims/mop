@@ -1,4 +1,5 @@
 import { bucket } from '@sim/utils/collections';
+import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
 import { useSim } from '@sim/context/SimHostContext';
 import { ActionMetrics } from '@sim/proto/sim_result';
 import { subscribeUiField } from '@sim/state/subscriptions';
@@ -66,10 +67,7 @@ const rowClassName = (metric: ActionMetrics) => (metric.hitAttempts == 0 && metr
 export const DamageMetricsTable = () => {
 	const resultData = useSimResult();
 	const sim = useSim();
-	const showThreatMetrics = useStoreSubscribe(
-		useMemo(() => subscribeUiField(sim, 'showThreatMetrics'), [sim]),
-		() => sim.getShowThreatMetrics(),
-	);
+	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
 
 	const rows = useMemo(() => (resultData ? buildMetricRows(damageGroups(resultData), grouping) : NO_ROWS), [resultData]);
 	const metricsByRowId = useMemo(() => indexMetricRows(rows), [rows]);

@@ -1,4 +1,5 @@
 import type { BulkTab } from '@features/bulk/view/bulk_tab';
+import type { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
 import type { SelectorModalOpener } from '@features/gear/types';
 import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
 import type { ResultChannel } from '@features/results/model/result_channel';
@@ -61,7 +62,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizerModel | null;
 	epWeightsModal: { open(): void } | null;
-	readonly gearSelectorModal: SelectorModalOpener | null;
+	readonly gearSelectorModal: GearSelectorModalOpener | null;
 	readonly itemSwapSelectorModal: SelectorModalOpener | null;
 	readonly resultChannel: ResultChannel;
 	dpsRefStat: Stat | undefined;

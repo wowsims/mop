@@ -2,6 +2,7 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { GearPicker } from '@features/gear/components/GearPicker';
+import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { SavedGear } from '@features/gear/components/SavedGear';
 import { GemSummary, ReforgeSummary, UpgradeCostsSummary } from '@features/gear/components/SummaryTable';
 
@@ -27,6 +28,7 @@ export const GearTabBody = () => {
 				<PresetConfigurationPicker categories={GEAR_PRESETS} />
 				<SavedGear />
 			</div>
+			{host.gearSelectorModal && <SelectorModal opener={host.gearSelectorModal} />}
 		</>
 	);
 };

@@ -20,8 +20,6 @@ const UI_KIT = 'ui/ui-kit';
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
 const ALLOWED = {
-	VirtualList:
-		'the transform-layout replacement for ui-kit/virtual_list.ts. Both its callers are blocked, and not on effort: item_list.tsx cannot port until the selector modal has a React owner, and the modal is deliberately vanilla because it is appended to simUI.rootElem outside any pane; log_view.tsx sits under the vanilla results cluster, which is Phase 4',
 	NumberListPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 	AdaptiveStringPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 };

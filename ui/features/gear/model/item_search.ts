@@ -1,12 +1,12 @@
 import { professionNames } from '@sim/proto/names';
 
-import { ItemData, ItemListType } from '../types';
+import { ItemDataFields, ItemListType } from '../types';
 
 export type NpcNameLookup = (npcId: number) => string | undefined;
 
 export const formatSearchQuery = (value: string): string => value.toLowerCase().replaceAll(/[^a-zA-Z0-9\s]/g, '');
 
-export const itemSourceSearchNames = <T extends ItemListType>(itemData: ItemData<T>, getNpcName: NpcNameLookup): string[] => {
+export const itemSourceSearchNames = <T extends ItemListType>(itemData: ItemDataFields<T>, getNpcName: NpcNameLookup): string[] => {
 	if (!('item' in itemData) || typeof itemData.item != 'object' || !('sources' in itemData.item)) return [];
 	return itemData.item.sources
 		.map(src => {
@@ -24,7 +24,7 @@ export const itemSourceSearchNames = <T extends ItemListType>(itemData: ItemData
 		.filter((name): name is string => !!name);
 };
 
-export const matchesSearch = <T extends ItemListType>(query: string, itemData: ItemData<T>, getNpcName: NpcNameLookup): boolean => {
+export const matchesSearch = <T extends ItemListType>(query: string, itemData: ItemDataFields<T>, getNpcName: NpcNameLookup): boolean => {
 	if (!query.length) return true;
 
 	const searchQuery = formatSearchQuery(query).split(' ');

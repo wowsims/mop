@@ -1,8 +1,8 @@
 import { SOCIALS } from '@sim/constants/other';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import type { Sim } from '@sim/sim';
-import { subscribeAll, subscribeUiField } from '@sim/state/subscriptions';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
+import { useShowExperimental } from '@ui-kit/hooks/useShowExperimental';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
@@ -11,19 +11,6 @@ import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
 import { SocialLink } from '@ui-kit/SocialLink';
-
-type UiToggle = 'showDamageMetrics' | 'showThreatMetrics' | 'showHealingMetrics' | 'showExperimental';
-
-const DAMAGE_FIELDS: UiToggle[] = ['showDamageMetrics'];
-const THREAT_FIELDS: UiToggle[] = ['showThreatMetrics'];
-const HEALING_FIELDS: UiToggle[] = ['showHealingMetrics', 'showThreatMetrics'];
-const EXPERIMENTAL_FIELDS: UiToggle[] = ['showExperimental'];
-const EP_RATIO_FIELDS: UiToggle[] = ['showDamageMetrics', 'showHealingMetrics', 'showThreatMetrics'];
-
-const useMetricFlag = (sim: Sim, fields: UiToggle[], read: () => boolean) => {
-	const subscribe = useMemo(() => subscribeAll(fields.map(field => subscribeUiField(sim, field))), [sim, fields]);
-	return useStoreSubscribe(subscribe, read);
-};
 
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
@@ -46,14 +33,8 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 	const tabsMount = useRef<HTMLDivElement>(null);
 	const importExport = useRef<HTMLDivElement>(null);
 
-	const damage = useMetricFlag(sim, DAMAGE_FIELDS, () => sim.getShowDamageMetrics());
-	const threat = useMetricFlag(sim, THREAT_FIELDS, () => sim.getShowThreatMetrics());
-	const healing = useMetricFlag(sim, HEALING_FIELDS, () => sim.getShowHealingMetrics());
-	const experimental = useMetricFlag(sim, EXPERIMENTAL_FIELDS, () => sim.getShowExperimental());
-	const epRatios = useMetricFlag(sim, EP_RATIO_FIELDS, () =>
-		showsEpRatios({ damage: sim.getShowDamageMetrics(), healing: sim.getShowHealingMetrics(), threat: sim.getShowThreatMetrics() }),
-	);
-	const metrics = { damage, threat, healing, epRatios, experimental };
+	const display = useDisplayMetrics(sim);
+	const metrics = { ...display, epRatios: showsEpRatios(display), experimental: useShowExperimental(sim) };
 
 	const [stuck, setStuck] = useState(false);
 	useEffect(() => {

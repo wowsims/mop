@@ -1,4 +1,5 @@
 import './EpWeightsDialog.scss';
+import { useDisplayMetrics } from '@ui-kit/hooks/useDisplayMetrics';
 
 import { useSimHost } from '@sim/context/SimHostContext';
 import { Stats } from '@sim/proto/stats';
@@ -65,10 +66,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 			}),
 	});
 
-	const showThreatMetrics = useStoreSubscribe(
-		useMemo(() => subscribeUiField(sim, 'showThreatMetrics'), [sim]),
-		() => sim.getShowThreatMetrics(),
-	);
+	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
 	const refStats = useStoreSubscribe(
 		useMemo(() => subscribePlayerField(player, 'epRefStat'), [player]),
 		() => ({ dps: host.dpsRefStat, heal: host.healRefStat, tank: host.tankRefStat }),

@@ -1,0 +1,39 @@
+@import 'shared/tokens';
+
+// Bootstrap laid the rail out beside `.modal-content` through `.modal-dialog`'s own `display: flex`.
+// A Base UI popup is the box itself, so the rail is taken out of flow and hung off its left edge; it
+// is a child of the header only because that is unpositioned and the body is not.
+.selector-modal.sim-dialog-popup {
+	// Room for the rail on both sides of the centred popup: the viewport clips horizontally, and the
+	// second term keeps the gutter at `--modal-margin + rail/2` on any width narrower than the cap.
+	max-width: min(calc(var(--modal-width-xl) - var(--icon-size-md)), calc(100vw - (2 * var(--modal-margin)) - var(--icon-size-md)));
+
+	.gear-picker-modal-slots {
+		// The containing block is the popup's padding box, so the offset is pulled back over its
+		// border to line the rail's top edge up with the popup's.
+		position: absolute;
+		top: calc(-1 * var(--modal-border-width));
+		right: 100%;
+	}
+}
+
+// `SearchBar` wraps its input in a field and a group; the width cap belongs to the control, so the
+// wrappers have to stop stretching it in the filter row's flex line.
+.selector-modal-filters {
+	.search-bar-root,
+	.search-bar-input-group {
+		flex: 0 0 auto;
+	}
+}
+
+// Rows are absolutely positioned and moved with `transform`, so a row's place among its siblings is
+// its place in the window rather than in the list. `VirtualList` stamps the real parity instead.
+.selector-modal-list-item {
+	&[data-stripe='even'] {
+		background: var(--bs-table-row-odd-bg);
+	}
+
+	&[data-stripe='odd'] {
+		background: var(--bs-table-row-even-bg);
+	}
+}

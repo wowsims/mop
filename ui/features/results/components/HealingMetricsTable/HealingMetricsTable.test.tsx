@@ -12,7 +12,8 @@ vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 vi.mock('../MetricsTable/MetricsActionCell', () => ({ MetricsActionCell: ({ name }: { name: string }) => <span>{name}</span> }));
 vi.mock('@sim/context/SimHostContext', async importOriginal => ({
 	...(await importOriginal<typeof import('@sim/context/SimHostContext')>()),
-	useSim: () => ({ getShowThreatMetrics: () => showThreatMetrics }),
+	// `useDisplayMetrics` reads all three flags through one subscription; only threat varies per case here.
+	useSim: () => ({ getShowThreatMetrics: () => showThreatMetrics, getShowDamageMetrics: () => true, getShowHealingMetrics: () => true }),
 }));
 vi.mock('@sim/state/subscriptions', async importOriginal => ({
 	...(await importOriginal<typeof import('@sim/state/subscriptions')>()),

@@ -70,7 +70,7 @@
 			min-height: var(--dr-filling-pane-min-height);
 
 			// The pane, its row and the component's mount point are the same scaffolding in both
-			// cases (detailed_results.tsx:179-188), so they fill here. Whether the component
+			// cases (DetailedResults.tsx, the timeline and replay panes), so they fill here. Whether the component
 			// inside then stretches is the component's own call.
 			> .dr-row,
 			> .dr-row > * {

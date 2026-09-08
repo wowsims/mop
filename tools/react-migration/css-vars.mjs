@@ -34,6 +34,9 @@ const OPENERS = [
 	// this one reports NOT FOUND on the baseline by design. That costs nothing — the baseline reading
 	// a property needs comes from any element that resolves it, not from this dialog.
 	['glyph selector (react tabs only)', ['.sim-tab-link.talents-tab', '.major-glyphs .glyph-picker-root .glyph-link']],
+	// Last, because it opens over whatever the openers above left on screen. The gear tab is the one
+	// open at load on both builds, so a cell is clickable without touching either tab strip.
+	['gear selector modal', ['#gear-tab .gear-picker-root .item-picker-root .item-picker-icon']],
 ];
 
 // Below this, the run learned nothing and the pass would be vacuous.

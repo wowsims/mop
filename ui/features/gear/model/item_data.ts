@@ -7,7 +7,7 @@ import { translateProtoStatName, translateStat } from '@i18n/localization';
 
 import { GearData, ItemData } from '../types';
 
-export const itemsTabData = (player: Player<any>, gearData: GearData, items: Item[]): ItemData<Item>[] =>
+export const itemsTabData = (player: Player<any>, gearData: GearData, items: Item[]): ItemData<Item, string>[] =>
 	items.map(item => {
 		const equippedItem = new EquippedItem({ item, challengeMode: player.getChallengeModeEnabled() });
 		return {
@@ -38,7 +38,11 @@ const byEffectIdDescending = (itemA: Enchant, itemB: Enchant) => {
 	return 0;
 };
 
-const enchantRow = (enchant: Enchant, equip: (equippedItem: EquippedItem, enchant: Enchant) => EquippedItem, gearData: GearData): ItemData<Enchant> => ({
+const enchantRow = (
+	enchant: Enchant,
+	equip: (equippedItem: EquippedItem, enchant: Enchant) => EquippedItem,
+	gearData: GearData,
+): ItemData<Enchant, string> => ({
 	item: enchant,
 	id: enchant.effectId,
 	actionId: enchant.itemId ? ActionId.fromItemId(enchant.itemId) : ActionId.fromSpellId(enchant.spellId),
@@ -54,13 +58,13 @@ const enchantRow = (enchant: Enchant, equip: (equippedItem: EquippedItem, enchan
 	},
 });
 
-export const enchantsTabData = (gearData: GearData, enchants: Enchant[]): ItemData<Enchant>[] =>
+export const enchantsTabData = (gearData: GearData, enchants: Enchant[]): ItemData<Enchant, string>[] =>
 	enchants.sort(byEffectIdDescending).map(enchant => enchantRow(enchant, (equippedItem, value) => equippedItem.withEnchant(value), gearData));
 
-export const tinkersTabData = (gearData: GearData, tinkers: Enchant[]): ItemData<Enchant>[] =>
+export const tinkersTabData = (gearData: GearData, tinkers: Enchant[]): ItemData<Enchant, string>[] =>
 	tinkers.sort(byEffectIdDescending).map(tinker => enchantRow(tinker, (equippedItem, value) => equippedItem.withTinker(value), gearData));
 
-export const gemsTabData = (gearData: GearData, gems: Gem[], socketIdx: number): ItemData<Gem>[] =>
+export const gemsTabData = (gearData: GearData, gems: Gem[], socketIdx: number): ItemData<Gem, string>[] =>
 	gems.map(gem => ({
 		item: gem,
 		id: gem.id,
@@ -82,12 +86,12 @@ export type RandomSuffixNameParts = {
 	statString: string;
 };
 
-export const randomSuffixesTabData = (
+export const randomSuffixesTabData = <TName>(
 	player: Player<any>,
 	gearData: GearData,
 	equippedItem: EquippedItem,
-	renderName: (parts: RandomSuffixNameParts) => string | HTMLElement,
-): ItemData<ItemRandomSuffix>[] => {
+	renderName: (parts: RandomSuffixNameParts) => TName,
+): ItemData<ItemRandomSuffix, TName>[] => {
 	const itemProto = equippedItem.item;
 	return player.getRandomSuffixes(itemProto).map((randomSuffix: ItemRandomSuffix) => {
 		const equippedItemWithSuffix = equippedItem.withRandomSuffix(randomSuffix).getRandomSuffixStats();
@@ -123,12 +127,12 @@ export const randomSuffixesTabData = (
 	});
 };
 
-export const reforgesTabData = (
+export const reforgesTabData = <TName>(
 	player: Player<any>,
 	gearData: GearData,
 	equippedItem: EquippedItem,
-	renderName: (reforgeData: ReforgeData) => string | HTMLElement,
-): ItemData<ReforgeData>[] => {
+	renderName: (reforgeData: ReforgeData) => TName,
+): ItemData<ReforgeData, TName>[] => {
 	const itemProto = equippedItem.item;
 	return player.getAvailableReforgings(equippedItem).map(reforgeData => ({
 		item: reforgeData,
@@ -156,11 +160,11 @@ export type UpgradeNameParts = {
 	numberOfUpgrades: number;
 };
 
-export const upgradesTabData = (
+export const upgradesTabData = <TName>(
 	gearData: GearData,
 	equippedItem: EquippedItem,
-	renderName: (parts: UpgradeNameParts) => string | HTMLElement,
-): ItemData<ItemLevelState>[] => {
+	renderName: (parts: UpgradeNameParts) => TName,
+): ItemData<ItemLevelState, TName>[] => {
 	const itemProto = equippedItem.item;
 	const itemUpgradesAsEntries = Object.entries(equippedItem.getUpgrades());
 	const numberOfUpgrades = itemUpgradesAsEntries.length - 1;

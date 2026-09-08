@@ -31,7 +31,7 @@ import { applyFavourite, isItemFavourited } from '../model/favourites';
 import { getItemIdByItemType } from '../model/item_ids';
 import { matchesSearch } from '../model/item_search';
 import { defaultSortBy, ItemListSortBy, sortItemIdxs } from '../model/item_sort';
-import { GearData, getTranslatedTabLabel, ItemData, ItemListType, SelectorModalTabs } from '../types';
+import { GearData, getTranslatedTabLabel, ItemData, ItemDataFields, ItemListType, SelectorModalTabs } from '../types';
 import { FiltersMenu } from './filters_menu';
 import { createNameDescriptionLabel } from './gear_elements';
 import { ItemNotice } from './item_notice';
@@ -498,7 +498,7 @@ export default class ItemList<T extends ItemListType> {
 		return listItemElem;
 	}
 
-	private isItemFavorited(itemData: ItemData<T>): boolean {
+	private isItemFavorited(itemData: ItemDataFields<T>): boolean {
 		return isItemFavourited(this.currentFilters, this.label, itemData);
 	}
 
