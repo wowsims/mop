@@ -26,7 +26,7 @@ const Harness = ({ open = true, onCancel }: { open?: boolean; onCancel?: () => v
 			}}
 			open={open}
 			title="Calculate Stat Weights"
-			cssClass="ep-weights-progress"
+			className="ep-weights-progress"
 			state={state}
 			hasProgressBar
 			onCancel={onCancel}

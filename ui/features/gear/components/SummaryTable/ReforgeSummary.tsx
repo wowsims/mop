@@ -37,7 +37,7 @@ export const ReforgeSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.reforge_summary.title')}
-			cssClass="summary-table--reforge"
+			className="summary-table--reforge"
 			empty={!stats.length}
 			reset={{
 				label: i18n.t('gear_tab.reforge_summary.reset_reforges'),

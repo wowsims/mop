@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
-import { itemQualityCssClass } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/css_utils';
 import { Dialog } from '@ui-kit/Dialog';
 import { SearchBar } from '@ui-kit/SearchBar';
 import clsx from 'clsx';
@@ -26,7 +26,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			cssClass="glyph-modal"
+			className="glyph-modal"
 			container={host.rootElem}
 			keepMounted
 			title={i18n.t('talents_tab.glyphs.modal.title')}>
@@ -44,7 +44,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 								onSelect(entry.id);
 							}}>
 							<img className="selector-modal-list-item-icon" src={entry.iconUrl} />
-							<label className={clsx('selector-modal-list-item-name', itemQualityCssClass(entry.quality))}>{entry.name}</label>
+							<label className={clsx('selector-modal-list-item-name', itemQualityClassName(entry.quality))}>{entry.name}</label>
 							<span className="selector-modal-list-item-description">{entry.description}</span>
 						</a>
 					</li>

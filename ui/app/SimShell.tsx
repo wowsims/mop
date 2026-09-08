@@ -10,7 +10,7 @@ import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
-import { SocialLink } from './SocialLink';
+import { SocialLink } from '@ui-kit/SocialLink';
 
 type UiToggle = 'showDamageMetrics' | 'showThreatMetrics' | 'showHealingMetrics' | 'showExperimental';
 
@@ -28,14 +28,14 @@ const useMetricFlag = (sim: Sim, fields: UiToggle[], read: () => boolean) => {
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
 	sim: Sim;
-	cssClass: string;
+	className: string;
 	spec: PlayerSpec<any>;
 	noticeText?: string;
 	knownIssues: ReadonlyArray<ReactNode>;
 	onOpenSettings: () => void;
 }
 
-export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
+export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
 	const sidebarResults = useRef<HTMLDivElement>(null);
@@ -80,7 +80,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 	}, [domRef]);
 
 	return (
-		<div ref={root} className={simUiClasses({ cssClass, spec, metrics })}>
+		<div ref={root} className={simUiClasses({ className, spec, metrics })}>
 			<div className="sim-root">
 				<div className="sim-bg" />
 				{noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{noticeText}</div> : null}
@@ -106,7 +106,7 @@ export const SimShell = ({ domRef, sim, cssClass, spec, noticeText, knownIssues,
 								<div ref={tabsMount} className="sim-tabs-mount" />
 								<div ref={importExport} className="import-export nav" />
 								<div className="sim-toolbar nav">
-									<SimToolbar knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
+									<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
 								</div>
 							</div>
 						</header>

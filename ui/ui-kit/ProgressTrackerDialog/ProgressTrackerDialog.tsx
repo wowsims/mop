@@ -15,7 +15,7 @@ export interface ProgressTrackerDialogProps {
 	open: boolean;
 	title: string;
 	state: ProgressTrackerState;
-	cssClass?: string;
+	className?: string;
 	warning?: ReactNode;
 	hasProgressBar?: boolean;
 	onCancel?: () => void;
@@ -23,11 +23,11 @@ export interface ProgressTrackerDialogProps {
 	ref?: Ref<ProgressTrackerHandle>;
 }
 
-export const ProgressTrackerDialog = ({ open, title, state, cssClass, warning, hasProgressBar, onCancel, container, ref }: ProgressTrackerDialogProps) => (
+export const ProgressTrackerDialog = ({ open, title, state, className, warning, hasProgressBar, onCancel, container, ref }: ProgressTrackerDialogProps) => (
 	<Dialog
 		open={open}
 		onOpenChange={() => {}}
-		cssClass={clsx('progress-tracker-dialog', cssClass)}
+		className={clsx('progress-tracker-dialog', className)}
 		container={container}
 		size="md"
 		title={title}

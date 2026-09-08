@@ -16,7 +16,7 @@ const configFor = (extra: Partial<InputConfig<Mod, string>> = {}): InputConfig<M
 
 const shell = (config: InputConfig<Mod, string> & { id: string }, props: { hidden?: boolean; disabled?: boolean } = {}) =>
 	render(
-		<PickerShell config={config} cssClass="number-picker-root" hidden={!!props.hidden} disabled={!!props.disabled}>
+		<PickerShell config={config} className="number-picker-root" hidden={!!props.hidden} disabled={!!props.disabled}>
 			<input id={config.id} />
 		</PickerShell>,
 	);
@@ -89,7 +89,7 @@ describe('PickerShell', () => {
 			return detach;
 		};
 		const shellWith = (label: string) => (
-			<PickerShell ref={mount} config={configFor({ label })} cssClass="talents-picker-root" hidden={false} disabled={false} />
+			<PickerShell ref={mount} config={configFor({ label })} className="talents-picker-root" hidden={false} disabled={false} />
 		);
 
 		const { rerender, unmount } = render(shellWith('One'));
@@ -110,7 +110,7 @@ describe('PickerShell', () => {
 		const { container } = render(
 			<PickerShell
 				config={{ id: 'x', inline: true, extraCssClasses: ['input-inline', 'mb-0'], getValue: () => 0, setValue: () => {} }}
-				cssClass="number-picker-root"
+				className="number-picker-root"
 				hidden={false}
 				disabled={false}
 			/>,

@@ -5,7 +5,7 @@ import type { PlayerClass } from '@sim/player_class';
 import { PlayerClasses } from '@sim/player_classes/index';
 import type { PlayerSpec } from '@sim/player_spec';
 import { PlayerSpecs } from '@sim/player_specs/index';
-import { textCssClassForClass, textCssClassForSpec } from '@sim/proto_utils/utils';
+import { textClassNameForClass, textClassNameForSpec } from '@sim/proto_utils/utils';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';
@@ -20,7 +20,7 @@ export interface SimTitleDropdownProps {
 const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 	<Menu.SubmenuRoot>
 		{/* A real `<button>`: `SubmenuTrigger` renders a `<div>` by default, and this row is a control. */}
-		<Menu.SubmenuTrigger render={<button type="button" />} className={clsx('sim-link', textCssClassForClass(playerClass))}>
+		<Menu.SubmenuTrigger render={<button type="button" />} className={clsx('sim-link', textClassNameForClass(playerClass))}>
 			<SimLinkContent iconPath={playerClass.getIcon('large')} title={translatePlayerClass(playerClass)} />
 		</Menu.SubmenuTrigger>
 		<Menu.Portal>
@@ -30,7 +30,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 						<Menu.LinkItem
 							key={spec.simLink}
 							href={new URL(spec.simLink, window.location.href).toString()}
-							className={clsx('sim-link', textCssClassForSpec(spec))}>
+							className={clsx('sim-link', textClassNameForSpec(spec))}>
 							<SimLinkContent
 								iconPath={spec.getIcon('large')}
 								label={translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}
@@ -49,7 +49,7 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
 	<div className="sim-title-dropdown-root">
 		<div className="dropdown sim-link-dropdown">
 			<Menu.Root modal={false}>
-				<Menu.Trigger className={clsx('sim-link', textCssClassForSpec(currentSpec))}>
+				<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))}>
 					<SimLinkContent
 						iconPath={currentSpec.getIcon('large')}
 						label={i18n.t('sidebar.header.title')}

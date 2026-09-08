@@ -1,6 +1,6 @@
 import { ItemQuality } from '@generated/proto/common';
 
-const itemQualityCssClasses: Record<ItemQuality, string> = {
+const itemQualityClassNames: Record<ItemQuality, string> = {
 	[ItemQuality.ItemQualityJunk]: 'text-junk',
 	[ItemQuality.ItemQualityCommon]: 'text-common',
 	[ItemQuality.ItemQualityUncommon]: 'text-uncommon',
@@ -10,12 +10,12 @@ const itemQualityCssClasses: Record<ItemQuality, string> = {
 	[ItemQuality.ItemQualityArtifact]: 'text-artifact',
 	[ItemQuality.ItemQualityHeirloom]: 'text-heirloom',
 };
-export const itemQualityCssClass = (quality: ItemQuality | null | undefined): string | undefined => (quality ? itemQualityCssClasses[quality] : undefined);
+export const itemQualityClassName = (quality: ItemQuality | null | undefined): string | undefined => (quality ? itemQualityClassNames[quality] : undefined);
 
-export const setItemQualityCssClass = (elem: HTMLElement, quality: ItemQuality | null) => {
-	Object.values(itemQualityCssClasses).forEach(cssClass => elem.classList.remove(cssClass));
+export const setItemQualityClassName = (elem: HTMLElement, quality: ItemQuality | null) => {
+	Object.values(itemQualityClassNames).forEach(cssClass => elem.classList.remove(cssClass));
 
 	if (quality) {
-		elem.classList.add(itemQualityCssClasses[quality]);
+		elem.classList.add(itemQualityClassNames[quality]);
 	}
 };

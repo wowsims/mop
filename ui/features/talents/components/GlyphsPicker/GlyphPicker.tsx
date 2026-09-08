@@ -24,7 +24,7 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 	useWowheadDataset(anchorRef, resolveTooltip);
 
 	return (
-		<PickerShell config={config} cssClass="glyph-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="glyph-picker-root" hidden={hidden} disabled={disabled}>
 			<a
 				ref={anchorRef}
 				className="glyph-link"

@@ -9,7 +9,7 @@ import { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
-import { setItemQualityCssClass } from '@ui-kit/css_utils';
+import { setItemQualityClassName } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
 import { createItemSockets, createNameDescriptionLabel, getEmptySlotIconUrl } from './gear_elements';
@@ -185,7 +185,7 @@ export class ItemRenderer extends Component {
 		this.reforgeElem.classList.add('hide');
 
 		this.nameElem.textContent = translateSlotName(this.slot);
-		setItemQualityCssClass(this.nameElem, null);
+		setItemQualityClassName(this.nameElem, null);
 	}
 
 	protected renderLabels(newItem: EquippedItem) {
@@ -207,7 +207,7 @@ export class ItemRenderer extends Component {
 		if (newItem.item.nameDescription) {
 			this.nameElem.appendChild(createNameDescriptionLabel(newItem.item.nameDescription));
 		}
-		setItemQualityCssClass(this.nameElem, newItem.item.quality);
+		setItemQualityClassName(this.nameElem, newItem.item.quality);
 
 		this.notice = new ItemNotice(this.player, {
 			itemId: newItem.item.id,

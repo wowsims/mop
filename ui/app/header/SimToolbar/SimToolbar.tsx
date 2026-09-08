@@ -1,41 +1,23 @@
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@sim/constants/other';
-import { noop } from '@sim/utils';
+import { useOutdatedNativeSim } from '@sim/hooks/useOutdatedNativeSim';
+import type { Sim } from '@sim/sim';
 import i18n from '@i18n/config';
 import { isNative } from '@ui-kit/dom_utils';
-import { type ReactNode, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
-import { SocialLink } from '../../SocialLink';
+import { SocialLink } from '@ui-kit/SocialLink';
 import { ToolbarItem } from './ToolbarItem';
 
 export interface SimToolbarProps {
+	// The toolbar renders inside the shell, which is built before `IndividualSimUI` adopts it, so
+	// there is no `SimHostProvider` above it to read the sim from.
+	sim: Sim;
 	knownIssues: ReadonlyArray<ReactNode>;
 	onOpenSettings: () => void;
 }
 
-const useOutdatedNativeSim = () => {
-	const [outdated, setOutdated] = useState(false);
-	useEffect(() => {
-		if (!isNative()) return;
-		let cancelled = false;
-		fetch('/version')
-			.then(response =>
-				response
-					.json()
-					.then(versionInfo => {
-						if (!cancelled && versionInfo.outdated == 2) setOutdated(true);
-					})
-					.catch(() => console.warn('No version info found!')),
-			)
-			.catch(noop);
-		return () => {
-			cancelled = true;
-		};
-	}, []);
-	return outdated;
-};
-
-export const SimToolbar = ({ knownIssues, onOpenSettings }: SimToolbarProps) => {
-	const outdatedNativeSim = useOutdatedNativeSim();
+export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps) => {
+	const outdatedNativeSim = useOutdatedNativeSim(sim);
 
 	return (
 		<>

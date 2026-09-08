@@ -17,7 +17,7 @@ export interface MetricsCombinedTooltipEntry {
 
 export interface MetricsCombinedTooltipGroup {
 	name?: string;
-	cssClass?: string;
+	className?: string;
 	totalPercentage: number;
 	spellSchool?: SpellSchool | null;
 	data: Array<MetricsCombinedTooltipEntry>;
@@ -49,13 +49,13 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 				</tr>
 			</thead>
 			<tbody className="metrics-table-body">
-				{displayGroups.map(({ name: groupName, cssClass, data, spellSchool, totalPercentage }, groupIndex) => {
+				{displayGroups.map(({ name: groupName, className, data, spellSchool, totalPercentage }, groupIndex) => {
 					const maxValue = Math.max(...data.map(entry => entry.value));
 					const columnCount = data.some(entry => typeof entry.average === 'number') ? 3 : 2;
 					return (
 						<Fragment key={groupName ?? groupIndex}>
 							{groupName && displayGroups.length > 1 && (
-								<tr className={clsx('metrics-table-group-header', cssClass)}>
+								<tr className={clsx('metrics-table-group-header', className)}>
 									<th className="text-start fw-normal" colSpan={columnCount}>
 										{groupName}
 									</th>
@@ -64,7 +64,7 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 							{[...data]
 								.sort((a, b) => b.value - a.value)
 								.map(({ name, value, percentage, average }) => (
-									<tr className={clsx(cssClass)} key={name}>
+									<tr className={clsx(className)} key={name}>
 										<td>{name}</td>
 										<td>
 											{hasMetricBars ? (

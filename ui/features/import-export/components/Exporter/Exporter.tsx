@@ -50,7 +50,7 @@ export const Exporter = ({ open, onOpenChange, title, allowDownload = false, sel
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			cssClass="exporter"
+			className="exporter"
 			container={host.rootElem}
 			keepMounted
 			title={title}

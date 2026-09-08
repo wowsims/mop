@@ -14,7 +14,7 @@ describe('Dialog', () => {
 			<Dialog
 				open
 				onOpenChange={() => {}}
-				cssClass="advanced-encounter-picker-modal"
+				className="advanced-encounter-picker-modal"
 				size="xl"
 				title="Encounter"
 				footer={<button type="button">Done</button>}>
@@ -23,7 +23,7 @@ describe('Dialog', () => {
 		);
 
 		const popup = screen.getByRole('dialog');
-		// `cssClass` landed on `.modal-dialog` in vanilla; the popup is that element merged with
+		// `className` landed on `.modal-dialog` in vanilla; the popup is that element merged with
 		// `.modal-content`, so it is the one that carries it.
 		expect(Array.from(popup.classList).sort()).toEqual(['advanced-encounter-picker-modal', 'sim-dialog-popup', 'sim-dialog-popup--xl']);
 		expect(Array.from(popup.children).map(el => el.className)).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);

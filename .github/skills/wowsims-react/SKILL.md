@@ -314,7 +314,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup with the level container un-nested out of the picker's anchor, the click/mousedown event map, and the store-on-hide write |
-| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — the nine settings blocks are React now, the other nine sites are gear, apl and bulk | `cssClass`, the same `ContentBlockConfig`, `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
+| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — the nine settings blocks are React now, the other nine sites are gear, apl and bulk | `className` (a clsx `ClassValue`, so array notation works), its own `ContentBlockConfigProps` — `header` (`title`, `className`, `titleTag`, `tooltip`) and `bodyClassName` — `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/testing/PickerOracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/hooks/useActionId.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
@@ -381,7 +381,7 @@ of the duplication sweep was to build each shape once.
 | `ItemCell` | `ui/features/gear/components/ItemCell/` | the cell shape nine sites hand-roll; it absorbs gear's own — `GearPicker`'s sixteen. `view/item_renderer.tsx` stays and stays dual-stack, because bulk's picker and its results renderer are un-ported callers and `glyphs_picker.tsx` is a talents island | the six axes the duplication survey found varying: the icon element and how its image is set, whether there is an item-level badge and whether it carries the `+N` upgrade span, what the name row holds, the enchant/tinker/reforge stack, whether there are sockets and what they do, and a trailing action slot. `ilvl` and `sockets` are three-state on purpose — omitted drops the element, `null` keeps the empty one an unfilled gear slot renders | the class vocabulary (`item-picker-root`, `-icon-wrapper`, `-ilvl`, `-sockets-container`, `-name-row`, `-name-container`, `-labels-container`) and the nesting order, and nothing else. That is the whole lesson of `ItemRenderer`, which fixed the icon, the badge, the name row, the sockets and the labels as well and was bypassed by seven of its nine callers. Beside it: `ItemCellAnchor`, which is how `href="javascript:void(0)"` ports — React refuses that URL, and an `<a>` with no `href` is not tabbable, so the anchor takes `tabIndex` and Enter/Space instead; and `GemSocket`, the socket anchor with its gem icon, its empty-socket icon and its Wowhead link. **No co-located stylesheet**: `.item-picker-*` is worn by `bulk_item_search`, `bulk_item_picker`, `gear_change_icon`, `icon_item_swap_picker`, `glyphs_picker` and `_suggest_reforges_action.scss`, so `_gear_picker.scss` stays global until they port |
 | `GearPicker` | `ui/features/gear/components/GearPicker/` | `features/gear/view/gear_picker.tsx` (**deleted** — with `quick_swap.tsx`, `quick_enchant_popover.ts` and `quick_gem_popover.ts`) | `ready`, and only that: the shell's init order is the one thing a cell cannot read for itself, and `useSimReady` lives in `app/`, which features may not import | the two columns and their slot lists, and what each cell does — open the selector modal at the right tab, and the two favourites popovers. Beside it: `ItemPickerCell` (one slot), `EnchantLabel`, `ItemNoticeIcon`, and `QuickSwapList` / `QuickEnchantList` / `QuickGemList`. **The popovers read the store themselves**, inside `Tooltip`'s children, which react-tooltip does not build until the tooltip first opens: that is what keeps 16–64 `filters` subscribers off the pane, and it is also how the recorded stale-closure bug stays fixed — no `EquippedItem` is captured at all, `active` is derived at render and the click reads the slot again. Owns `GearPicker.scss`: the cells' `:focus-visible` rings, and `_quick_swap.scss` re-keyed from `.tippy-box[data-theme='tooltip-quick-swap']` to `.sim-tooltip.tooltip-quick-swap` — which needs `max-width: none`, because `Tooltip.scss` caps every tooltip at 192px and tippy capped nothing. The popovers render **inside** the cell, not beside it: react-tooltip's box lives in the React tree, and a sibling would take a child index in the column and move the `:nth-child(6)` weapon separator |
 | `ItemSwapIcon` | `ui/features/item-swap/components/ItemSwapIcon/` | `features/gear/view/icon_item_swap_picker.tsx` (**deleted** — one consumer, and the last one) | `slot`, and only that: everything else is read from the host, and the picker renders only under `SettingsTabBody`'s `ready` gate, which is what replaces the vanilla `waitForInit` the click was wired inside | that a swap slot is a picker root with an icon button and a sockets container — **not** an `ItemCell`; that vocabulary is the gear cell's and the swap icon wears none of it beyond `item-picker-sockets-container`. Reuses `useActionId` (the `(setHref, setBackground) = (true, true)` pair the vanilla `fillAndSetActionId` passed, as `href` and `iconUrl`), `useWowheadDataset`, `GemSocket` and `getEmptySlotIconUrl`. Fixes four defects: the modal is the shell's one `itemSwapSelectorModal`, not one `new SelectorModal(simUI.rootElem, …)` per icon appended to an element React does not own; the `itemSwap` subscription's unsubscribe is no longer discarded; the last profession subscription is no longer stranded; and the icons paint their loaded state, which vanilla never did because `update()` only ever ran from an `itemSwap` change. And it un-nests, the way `IconPicker` did — vanilla built the sockets **inside** the icon anchor, so a gemmed swap set was anchors inside an anchor, which `a11y.mjs` allows none of on `.settings-tab`; `browser.mjs` carries the matching `LIFTED_SUBTREES` entry. Owns `ItemSwapPicker.scss`: the two `:focus-visible` rings and `position: relative` on the picker root, which is where the lifted sockets container now takes its containing block from. `_item_swap_picker.scss` **stays global** — `.item-swap-picker-root .icon-picker-button` and `.icon-picker .icon-picker-button` are both (0,2,0) and only source order separates them |
-| `SummaryTable` | `ui/features/gear/components/SummaryTable/` | `features/gear/view/{gem,reforge,upgrade_costs}_summary.tsx` (**all three deleted** — one consumer each) | `title`, the block's modifier class, whether the header carries it too, `empty`, and what resetting means | the hidden-when-empty root, the `ContentBlock`, and the reset button's place in its header — the three-class vocabulary all three blocks agreed on. `SummaryTableRow` beside it fixes the row's own three classes. `GemSummary`, `ReforgeSummary` and `UpgradeCostsSummary` sit in the same folder and read `model/summary_totals.ts`. Owns `SummaryTable.scss`, co-located from `scss/core/components/individual_sim_ui/_summary_table.scss` — every class in it was gear's alone. **They render from state on the first paint**, where the vanilla blocks filled themselves only from a `gear` notification and so painted empty until one arrived |
+| `SummaryTable` | `ui/features/gear/components/SummaryTable/` | `features/gear/view/{gem,reforge,upgrade_costs}_summary.tsx` (**all three deleted** — one consumer each) | `title`, `className` (the block's modifier class), `headerClassName` (whether the header carries it too), `empty`, and what resetting means | the hidden-when-empty root, the `ContentBlock`, and the reset button's place in its header — the three-class vocabulary all three blocks agreed on. `SummaryTableRow` beside it fixes the row's own three classes. `GemSummary`, `ReforgeSummary` and `UpgradeCostsSummary` sit in the same folder and read `model/summary_totals.ts`. Owns `SummaryTable.scss`, co-located from `scss/core/components/individual_sim_ui/_summary_table.scss` — every class in it was gear's alone. **They render from state on the first paint**, where the vanilla blocks filled themselves only from a `gear` notification and so painted empty until one arrived |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
@@ -777,6 +777,20 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
   (`react/input.ts`, `react/store.ts`, `react/action_id.ts`) — their `.tsx` tests are only `.tsx`
   because the *fixtures* render — and `app/spec_entry.tsx`, which contains JSX but is the page entry
   script, named as one and referenced from `index_template.html` and `vite.config.mts`.
+
+- **A class-list prop is `className`, never `cssClass` or `extraCssClasses`.** Type it as clsx's
+  `ClassValue` and merge with `clsx`, which takes arrays, so a caller passing several classes writes
+  `className={['summary-table-container', className]}` instead of a second prop. What keeps the old
+  name is the frozen surface it belongs to: `IndividualSimUIConfig.cssClass` and
+  `CustomSection.{cssClass,iconGroupCssClass}` in `ui/sim/spec_config.ts`, `InputConfig.extraCssClasses`
+  (`ui-kit/input.tsx`, read by every React picker through `PickerShell`), `PlayerClasses.getCssClass`
+  — called from 33 spec files — and the vanilla stack's own `rootCssClass`/`buildColumn` parameters.
+  A React component that *reads* one of those fields still exposes `className` itself.
+- **Every hook lives in a `hooks/` folder** — `sim/hooks/`, `ui-kit/hooks/`, `features/<x>/hooks/` —
+  one hook per file, named after it. The single exception is a context's own accessors: `useSimHost`,
+  `usePlayer` and `useSim` stay in `sim/context/SimHostContext.tsx` because moving them would mean
+  exporting the context object, and the throw inside `useSimHost` is what makes a `null` host
+  unreachable. Those three read a field; everything in a `hooks/` folder subscribes or derives.
 
 ## Which store hook to reach for
 
@@ -1342,6 +1356,28 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-08 **`cssClass`/`extraCssClasses` props are `className`, and `ContentBlock` owns its own
+  props.** Five components took React's name for the prop (`ContentBlock`, `Dialog`, `PickerShell`,
+  `ProgressTrackerDialog`, `SummaryTable` — which also gained `headerClassName`), 47 call sites
+  moved, and the React `ContentBlock` stopped importing the vanilla `ContentBlockConfig`: it now
+  declares `ContentBlockConfigProps` with `header.className` and `bodyClassName`, and its own
+  `className` absorbed the block's `extraCssClasses`. Class-list props are clsx `ClassValue`s, so
+  `className={['a', cond && 'b']}` replaces the conditional arrays the config fields carried
+  (`CustomSection`'s visibility class is one). The parity test keeps its case table in the *vanilla*
+  config shape — it is the oracle — and the React adapter maps the names; `header: {}` must map to
+  an empty object, not `{className: undefined}`, or the empty-header rule inverts.
+  Also renamed for the same reason: `textCssClassForClass`/`textCssClassForSpec` →
+  `textClassNameFor*`, and `itemQualityCssClass`/`setItemQualityCssClass` → `itemQualityClassName`/
+  `setItemQualityClassName`. `PlayerClasses.getCssClass` cannot follow — 33 frozen spec files call it.
+- 2026-09-08 **`useOutdatedNativeSim` takes the sim, because `SimToolbar` renders outside the
+  provider.** The hook moved out of `SimToolbar.tsx` into `sim/hooks/`, and reading the sim through
+  `useSim()` crashed the app: `SimShell` is rendered *before* `IndividualSimUI` exists — it builds
+  the DOM the host adopts — so there is no `SimHostProvider` above it. It takes `sim: Sim` and calls
+  `useSimStatus(sim)`, which is why that primitive keeps its parameter while `useSimReady()` does
+  not. `SimShell` already had `sim` and passes it down. Only `SimApp.test.tsx` caught this; every
+  browser gate would have shown a blank page. Also moved: `useMetricsTable` and `useMetricMax` into
+  `features/results/hooks/`, `SocialLink` into `ui-kit/`.
 
 - 2026-09-08 **The rotation tab is React, and the vanilla `PresetConfigurationPicker` is deleted.**
   `rotation_tab.tsx` (12 KB) becomes a 30-line `rotation_tab.ts` that owns only the pane and the

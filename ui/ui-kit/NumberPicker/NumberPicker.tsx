@@ -64,7 +64,7 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 	}, [positive, float, maxDecimalDigits, setValue]);
 
 	return (
-		<PickerShell config={config} cssClass="number-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="number-picker-root" hidden={hidden} disabled={disabled}>
 			<Input
 				type="text"
 				ref={inputRef}

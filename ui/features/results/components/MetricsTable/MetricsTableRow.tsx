@@ -3,7 +3,7 @@ import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
 import type { MetricRow } from '../../model/grouping';
-import type { MetricsTableFeatures } from './useMetricsTable';
+import type { MetricsTableFeatures } from '../../hooks/useMetricsTable';
 
 export interface MetricsTableRowProps<T> {
 	row: Row<MetricsTableFeatures, MetricRow<T>>;

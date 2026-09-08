@@ -120,7 +120,7 @@ export const SavedDataPanel = <T,>({
 
 	return (
 		<div className={clsx('saved-data-manager-root', className)}>
-			<ContentBlock cssClass="saved-data" config={{ header: { title } }}>
+			<ContentBlock className="saved-data" config={{ header: { title } }}>
 				<div className="saved-data-container">
 					<div className={clsx('saved-data-presets', !presets.length && 'hide')}>{presets.map(renderChip)}</div>
 					<div className={clsx('saved-data-custom', !userData.length && 'hide')}>{userData.map(renderChip)}</div>

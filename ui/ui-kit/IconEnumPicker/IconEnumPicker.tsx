@@ -69,7 +69,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			cssClass={clsx('icon-enum-picker-root', 'icon-picker', horizontal ? 'dropend' : 'dropdown')}
+			className={clsx('icon-enum-picker-root', 'icon-picker', horizontal ? 'dropend' : 'dropdown')}
 			hidden={hidden}
 			disabled={disabled}>
 			<Menu.Root modal={false}>

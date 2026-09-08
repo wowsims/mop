@@ -43,7 +43,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 			<SimShell
 				domRef={domRef}
 				sim={player.sim}
-				cssClass={def.cssClass}
+				className={def.cssClass}
 				spec={player.getPlayerSpec()}
 				knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
 				onOpenSettings={() => simUIRef.current?.simHeader.openSettings()}

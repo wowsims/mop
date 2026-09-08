@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { MetricRow } from '../../model/grouping';
 import { MetricsTable } from './MetricsTable';
-import { createMetricsColumnHelper } from './useMetricsTable';
+import { createMetricsColumnHelper } from '../../hooks/useMetricsTable';
 
 interface Metric {
 	name: string;

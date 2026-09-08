@@ -4,7 +4,7 @@ import { ActionId } from '@sim/proto_utils/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { itemQualityCssClass } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/css_utils';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import clsx from 'clsx';
@@ -22,7 +22,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 	return (
 		<SummaryTableRow>
 			<a
-				className={clsx('summary-table-link', itemQualityCssClass(gem.quality))}
+				className={clsx('summary-table-link', itemQualityClassName(gem.quality))}
 				data-whtticon="false"
 				target="_blank"
 				href={href || undefined}
@@ -44,8 +44,8 @@ export const GemSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.gem_summary.title')}
-			cssClass="summary-table--gems"
-			headerCssClass="summary-table--gems"
+			className="summary-table--gems"
+			headerClassName="summary-table--gems"
 			empty={!rows.length}
 			reset={{
 				label: i18n.t('gear_tab.gem_summary.reset_gems'),

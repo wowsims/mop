@@ -11,7 +11,7 @@ export interface DialogProps {
 	open: boolean;
 	/** Not called for a close the user is not allowed to make — see `preventClose`. */
 	onOpenChange: (open: boolean) => void;
-	cssClass?: string;
+	className?: string;
 	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`, `--bs-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--primary-dampened`, `--hover-color` and `--theme-component-text-color` do not resolve at all. */
 	container?: HTMLElement | null;
 	size?: DialogSize;
@@ -35,7 +35,7 @@ export interface DialogProps {
 export const Dialog = ({
 	open,
 	onOpenChange,
-	cssClass,
+	className,
 	container,
 	size = 'lg',
 	title,
@@ -62,7 +62,7 @@ export const Dialog = ({
 			{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
 			<BaseDialog.Backdrop className={clsx('sim-dialog-backdrop', elevated && 'sim-dialog-backdrop--elevated')} forceRender={elevated} />
 			<BaseDialog.Viewport className={clsx('sim-dialog-viewport', elevated && 'sim-dialog-viewport--elevated')}>
-				<BaseDialog.Popup className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', cssClass)}>
+				<BaseDialog.Popup className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', className)}>
 					{(title != null || headerChildren != null || !preventClose) && (
 						<div className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}>
 							{title != null && <BaseDialog.Title className="sim-dialog-title">{title}</BaseDialog.Title>}

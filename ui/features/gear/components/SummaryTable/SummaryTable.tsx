@@ -3,22 +3,23 @@ import './SummaryTable.scss';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Icon } from '@ui-kit/Icon';
+import type { ClassValue } from 'clsx';
 import type { ReactNode } from 'react';
 
 export interface SummaryTableProps {
 	title: string;
-	cssClass: string;
-	headerCssClass?: string;
+	className: ClassValue;
+	headerClassName?: ClassValue;
 	empty: boolean;
 	reset: { label: string; onReset: () => void };
 	children?: ReactNode;
 }
 
-export const SummaryTable = ({ title, cssClass, headerCssClass, empty, reset, children }: SummaryTableProps) => (
+export const SummaryTable = ({ title, className, headerClassName, empty, reset, children }: SummaryTableProps) => (
 	<div className={empty ? 'summary-table-root hide' : 'summary-table-root'}>
 		<ContentBlock
-			cssClass="summary-table-container"
-			config={{ header: { title, extraCssClasses: headerCssClass ? [headerCssClass] : undefined }, extraCssClasses: [cssClass] }}
+			className={['summary-table-container', className]}
+			config={{ header: { title, className: headerClassName } }}
 			headerChildren={
 				!empty && (
 					<Button variant="link" size="sm" className="btn-reset summary-table-reset-button" onClick={reset.onReset}>

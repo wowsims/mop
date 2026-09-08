@@ -75,12 +75,12 @@ export const RotationTabBody = () => {
 							<div className="rotation-type-container" ref={mountSimpleType} />
 							<div className="simple-rotation-container">
 								<ContentBlock
-									cssClass="rotation-settings"
+									className="rotation-settings"
 									config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}
 									bodyRef={mountRotationInputs}
 								/>
 								<ContentBlock
-									cssClass="cooldown-settings"
+									className="cooldown-settings"
 									config={{ header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') } }}
 									bodyRef={mountCooldowns}
 								/>

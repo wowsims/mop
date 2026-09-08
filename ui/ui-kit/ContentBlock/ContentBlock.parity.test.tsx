@@ -45,9 +45,18 @@ class VanillaAdapter implements VanillaPicker {
 	}
 }
 
+// The case table below stays in the vanilla config shape — it is the oracle. React's props carry
+// the same class lists under React names, so the adapter maps them.
 const ReactAdapter = ({ modObject, config }: { modObject: ModObject; config: ContentBlockConfig }) => {
+	const { extraCssClasses: headerClasses, ...header } = config.header ?? ({} as ContentBlockHeaderConfig);
 	return (
-		<ContentBlock cssClass={modObject.cssClass} config={config} headerChildren={modObject.withHeaderChild && <p className="fs-body">Describes it</p>}>
+		<ContentBlock
+			className={[modObject.cssClass, config.extraCssClasses]}
+			config={{
+				header: config.header && { ...header, ...(headerClasses ? { className: headerClasses } : {}) },
+				bodyClassName: config.bodyClasses,
+			}}
+			headerChildren={modObject.withHeaderChild && <p className="fs-body">Describes it</p>}>
 			{modObject.withBodyChild && <span>Hello</span>}
 		</ContentBlock>
 	);

@@ -25,7 +25,7 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	return (
 		<PickerShell
 			config={config}
-			cssClass={config.reverse ? 'boolean-picker-root form-check form-check-reverse' : 'boolean-picker-root form-check'}
+			className={config.reverse ? 'boolean-picker-root form-check form-check-reverse' : 'boolean-picker-root form-check'}
 			hidden={hidden}
 			disabled={disabled}
 			leading={config.reverse ? undefined : input}>

@@ -7,7 +7,7 @@ import clsx from 'clsx';
 
 import type { MetricRow } from '../../model/grouping';
 import { MetricsTableRow } from './MetricsTableRow';
-import { type MetricsColumnDef, useMetricsTable } from './useMetricsTable';
+import { type MetricsColumnDef, useMetricsTable } from '../../hooks/useMetricsTable';
 
 const ariaSort = (direction: false | SortDirection) => (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none');
 

@@ -4,7 +4,7 @@ import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
-import { itemQualityCssClass } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/css_utils';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
@@ -134,7 +134,7 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 				<>
 					<ItemCellAnchor
 						ref={nameRef}
-						className={clsx('item-picker-name-container', itemQualityCssClass(item?.item.quality))}
+						className={clsx('item-picker-name-container', itemQualityClassName(item?.item.quality))}
 						role="button"
 						href={href || undefined}
 						onActivate={() => open(SelectorModalTabs.Items)}

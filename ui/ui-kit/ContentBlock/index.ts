@@ -1,2 +1,2 @@
 export { ContentBlock } from './ContentBlock';
-export type { ContentBlockProps } from './ContentBlock';
+export type { ContentBlockConfigProps, ContentBlockHeaderProps, ContentBlockProps } from './ContentBlock';

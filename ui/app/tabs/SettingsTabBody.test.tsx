@@ -92,7 +92,7 @@ const becomeReady = async () => {
 const blocks = (container: HTMLElement, column: string) =>
 	[...container.querySelectorAll(`.${column} > .content-block`)].map(block => [...block.classList].find(name => name !== 'content-block'));
 
-const bodyOf = (container: HTMLElement, cssClass: string) => container.querySelector(`.${cssClass} > .content-block-body`)!;
+const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > .content-block-body`)!;
 
 describe('SettingsTabBody', () => {
 	beforeEach(() => {

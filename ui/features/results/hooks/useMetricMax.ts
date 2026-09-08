@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import type { MetricRow } from '../../model/grouping';
+import type { MetricRow } from '../model/grouping';
 
 /** The bar denominator, held in a ref so a new result moves it without rebuilding the column defs. `null`, never `Math.max(...[])`, when a run yields no rows. */
 export const useMetricMax = <T>(rows: Array<MetricRow<T>>, of: (metric: T) => number) => {

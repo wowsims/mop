@@ -7,17 +7,17 @@ import { ContentBlock } from './ContentBlock';
 
 describe('ContentBlock', () => {
 	it('renders no header when config.header is absent', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{}} />);
+		const { container } = render(<ContentBlock className="my-block" config={{}} />);
 		expect(container.querySelector('.content-block-header')).toBeNull();
 	});
 
 	it('renders no header when config.header is an empty object', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: {} as ContentBlockHeaderConfig }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: {} as ContentBlockHeaderConfig }} />);
 		expect(container.querySelector('.content-block-header')).toBeNull();
 	});
 
 	it('renders the header with the title text when config.header has a title', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: { title: 'My Title' } }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} />);
 		const header = container.querySelector('.content-block-header');
 		expect(header).not.toBeNull();
 		const title = header!.querySelector('.content-block-title')!;
@@ -26,28 +26,28 @@ describe('ContentBlock', () => {
 	});
 
 	it('uses titleTag for the title element, defaulting to h6', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: { title: 'My Title', titleTag: 'h3' } }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: { title: 'My Title', titleTag: 'h3' } }} />);
 		expect(container.querySelector('.content-block-title')!.tagName).toBe('H3');
 	});
 
 	// The vanilla TooltipButton passes tippy `allowHTML: true`, and five of the eight shipped header
 	// tooltips are translation strings carrying <strong> or <br>.
 	it('renders a header tooltip as HTML, not as escaped text', () => {
-		render(<ContentBlock cssClass="my-block" config={{ header: { title: 'Raid Buffs', tooltip: 'Buffs by <strong>other</strong> members' } }} />);
+		render(<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs', tooltip: 'Buffs by <strong>other</strong> members' } }} />);
 		fireEvent.mouseEnter(screen.getByRole('button'));
 		expect(screen.getByText('other').tagName).toBe('STRONG');
 	});
 
 	it('renders headerChildren after the title, inside the header', () => {
 		const { container } = render(
-			<ContentBlock cssClass="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="fs-body">Describes it</p>} />,
+			<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="fs-body">Describes it</p>} />,
 		);
 		const header = container.querySelector('.content-block-header')!;
 		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title', 'fs-body']);
 	});
 
 	it('puts the tooltip button inside the title element, not the header', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: { title: 'My Title', tooltip: 'explains it' } }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: { title: 'My Title', tooltip: 'explains it' } }} />);
 		const title = container.querySelector('.content-block-title')!;
 		const button = title.querySelector('button.tooltip-button');
 		expect(button).not.toBeNull();
@@ -58,27 +58,27 @@ describe('ContentBlock', () => {
 	});
 
 	it('renders no tooltip button when config.header.tooltip is absent', () => {
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: { title: 'My Title' } }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} />);
 		expect(container.querySelector('.tooltip-button')).toBeNull();
 	});
 
 	it('points headerRef and bodyRef at the header and body elements', () => {
 		const headerRef = createRef<HTMLDivElement>();
 		const bodyRef = createRef<HTMLDivElement>();
-		const { container } = render(<ContentBlock cssClass="my-block" config={{ header: { title: 'My Title' } }} headerRef={headerRef} bodyRef={bodyRef} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} headerRef={headerRef} bodyRef={bodyRef} />);
 		expect(headerRef.current).toBe(container.querySelector('.content-block-header'));
 		expect(bodyRef.current).toBe(container.querySelector('.content-block-body'));
 	});
 
 	it('leaves headerRef null when there is no header', () => {
 		const headerRef = createRef<HTMLDivElement>();
-		render(<ContentBlock cssClass="my-block" config={{}} headerRef={headerRef} />);
+		render(<ContentBlock className="my-block" config={{}} headerRef={headerRef} />);
 		expect(headerRef.current).toBeNull();
 	});
 
 	it('renders children inside the body', () => {
 		const { container } = render(
-			<ContentBlock cssClass="my-block" config={{}}>
+			<ContentBlock className="my-block" config={{}}>
 				<span>child content</span>
 			</ContentBlock>,
 		);
@@ -86,14 +86,13 @@ describe('ContentBlock', () => {
 		expect(body.textContent).toBe('child content');
 	});
 
-	it('applies cssClass, extraCssClasses, bodyClasses and header.extraCssClasses', () => {
+	it('applies className, bodyClassName and header.className', () => {
 		const { container } = render(
 			<ContentBlock
-				cssClass="my-block"
+				className={['my-block', 'blk-extra']}
 				config={{
-					extraCssClasses: ['blk-extra'],
-					bodyClasses: ['body-extra'],
-					header: { title: 'My Title', extraCssClasses: ['header-extra'] },
+					bodyClassName: ['body-extra'],
+					header: { title: 'My Title', className: 'header-extra' },
 				}}
 			/>,
 		);

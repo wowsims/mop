@@ -30,7 +30,7 @@ export const UpgradeCostsSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.upgrade_summary.title')}
-			cssClass="summary-table--upgrade-costs"
+			className="summary-table--upgrade-costs"
 			empty={!upgradeable.length}
 			reset={{
 				label: i18n.t('gear_tab.upgrade_summary.reset_upgrades'),

@@ -1,7 +1,7 @@
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { Button } from '@ui-kit/Button';
-import { itemQualityCssClass } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/css_utils';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
 import { useMemo } from 'react';
@@ -35,7 +35,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 					onItemClick(entry.item);
 				}}>
 				<img alt={entry.item.name} className="tooltip-quick-swap__icon gem-icon flex-shrink-0" src={iconUrl || undefined} />
-				<span className={clsx('tooltip-quick-swap__label text-start', itemQualityCssClass(entry.item.quality))}>{entry.item.name}</span>
+				<span className={clsx('tooltip-quick-swap__label text-start', itemQualityClassName(entry.item.quality))}>{entry.item.name}</span>
 			</a>
 		</li>
 	);

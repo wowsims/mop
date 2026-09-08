@@ -46,7 +46,7 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 	return (
 		<div className="preset-configuration-picker-root saved-data-manager-root">
 			<ContentBlock
-				cssClass="saved-data"
+				className="saved-data"
 				config={{ header: { title: i18n.t('gear_tab.preset_configurations.title'), tooltip: i18n.t('gear_tab.preset_configurations.tooltip') } }}>
 				{ready && (
 					<div className="saved-data-container">

@@ -32,10 +32,10 @@ export const metricVisibilityClasses = (metrics: MetricVisibility): string =>
 	);
 
 export interface SimUiClassesArgs {
-	cssClass: string;
+	className: string;
 	spec: PlayerSpec<any>;
 	metrics: MetricVisibility;
 }
 
-export const simUiClasses = ({ cssClass, spec, metrics }: SimUiClassesArgs): string =>
-	clsx('sim-ui', cssClass, simTypeClasses(spec), metricVisibilityClasses(metrics));
+export const simUiClasses = ({ className, spec, metrics }: SimUiClassesArgs): string =>
+	clsx('sim-ui', className, simTypeClasses(spec), metricVisibilityClasses(metrics));

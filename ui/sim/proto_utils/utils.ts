@@ -18,11 +18,11 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
-export function textCssClassForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
+export function textClassNameForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return `text-${PlayerClasses.getCssClass(playerClass)}`;
 }
-export function textCssClassForSpec<SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): string {
-	return textCssClassForClass(PlayerSpecs.getPlayerClass(playerSpec));
+export function textClassNameForSpec<SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): string {
+	return textClassNameForClass(PlayerSpecs.getPlayerClass(playerSpec));
 }
 
 export const raceToFaction: Record<Race, Faction> = {

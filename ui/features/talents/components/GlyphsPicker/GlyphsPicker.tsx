@@ -48,10 +48,10 @@ export const GlyphsPicker = () => {
 
 	return (
 		<div className="glyphs-picker-root">
-			<ContentBlock cssClass="major-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.major'), extraCssClasses: ['border-0'] } }}>
+			<ContentBlock className="major-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.major'), className: 'border-0' } }}>
 				{!!db && majorGlyphFields.map(major => <GlyphPicker key={major} field={major} options={majorOptions} onOpen={onOpen} />)}
 			</ContentBlock>
-			<ContentBlock cssClass="minor-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.minor'), extraCssClasses: ['border-0'] } }}>
+			<ContentBlock className="minor-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.minor'), className: 'border-0' } }}>
 				{!!db && minorGlyphFields.map(minor => <GlyphPicker key={minor} field={minor} options={minorOptions} onOpen={onOpen} />)}
 			</ContentBlock>
 			<GlyphSelectorDialog

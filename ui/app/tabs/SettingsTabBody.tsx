@@ -41,10 +41,10 @@ export const SettingsTabBody = () => {
 				<div className="tab-panel-col settings-left-col-1">
 					{ready && (
 						<>
-							<ContentBlock cssClass="encounter-settings" config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
+							<ContentBlock className="encounter-settings" config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
 								<EncounterPicker showExecuteProportion={config.encounterPicker.showExecuteProportion} />
 							</ContentBlock>
-							<ContentBlock cssClass="player-settings" config={{ header: { title: i18n.t('settings_tab.player.title') } }}>
+							<ContentBlock className="player-settings" config={{ header: { title: i18n.t('settings_tab.player.title') } }}>
 								<PlayerSettings iconInputs={config.playerIconInputs} inputs={config.playerInputs?.inputs ?? []} />
 							</ContentBlock>
 						</>
@@ -56,7 +56,7 @@ export const SettingsTabBody = () => {
 							{config.sections?.map(section => (
 								<CustomSection key={section.id} section={section} />
 							))}
-							<ContentBlock cssClass="consumes-settings" config={{ header: { title: i18n.t('settings_tab.consumables.title') } }}>
+							<ContentBlock className="consumes-settings" config={{ header: { title: i18n.t('settings_tab.consumables.title') } }}>
 								<ConsumesPicker
 									consumableStats={config.consumableStats ?? config.epStats}
 									conjuredOptions={options.conjured}
@@ -65,7 +65,7 @@ export const SettingsTabBody = () => {
 								/>
 							</ContentBlock>
 							{hasOtherSettings && (
-								<ContentBlock cssClass="other-settings" config={{ header: { title: i18n.t('settings_tab.other.title') } }}>
+								<ContentBlock className="other-settings" config={{ header: { title: i18n.t('settings_tab.other.title') } }}>
 									<OtherSettings inputs={config.otherInputs.inputs} itemSlots={itemSwapSlots} />
 								</ContentBlock>
 							)}
@@ -76,17 +76,17 @@ export const SettingsTabBody = () => {
 					{ready && (
 						<>
 							<ContentBlock
-								cssClass="buffs-settings"
+								className="buffs-settings"
 								config={{
 									header: { title: i18n.t('settings_tab.raid_buffs.title'), tooltip: i18n.t('settings_tab.raid_buffs.tooltip') },
-									bodyClasses: options.buffs.length === 0 ? ['hide'] : undefined,
+									bodyClassName: options.buffs.length === 0 && 'hide',
 								}}
 								headerChildren={<p className="fs-body">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
 							</ContentBlock>
 							{options.externalDamageCooldowns.length > 0 && (
 								<ContentBlock
-									cssClass="buffs-settings"
+									className="buffs-settings"
 									config={{
 										header: {
 											title: i18n.t('settings_tab.external_damage_cooldowns.title'),
@@ -98,7 +98,7 @@ export const SettingsTabBody = () => {
 							)}
 							{options.externalDefensiveCooldowns.length > 0 && (
 								<ContentBlock
-									cssClass="buffs-settings"
+									className="buffs-settings"
 									config={{
 										header: {
 											title: i18n.t('settings_tab.external_defensive_cooldowns.title'),
@@ -109,10 +109,10 @@ export const SettingsTabBody = () => {
 								</ContentBlock>
 							)}
 							<ContentBlock
-								cssClass="debuffs-settings"
+								className="debuffs-settings"
 								config={{
 									header: { title: i18n.t('settings_tab.debuffs.title'), tooltip: i18n.t('settings_tab.debuffs.tooltip') },
-									bodyClasses: options.debuffs.length === 0 ? ['hide'] : undefined,
+									bodyClassName: options.debuffs.length === 0 && 'hide',
 								}}>
 								<StatOptionIcons options={options.debuffs} />
 							</ContentBlock>

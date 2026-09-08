@@ -40,7 +40,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			cssClass="importer"
+			className="importer"
 			container={host.rootElem}
 			keepMounted
 			title={title}

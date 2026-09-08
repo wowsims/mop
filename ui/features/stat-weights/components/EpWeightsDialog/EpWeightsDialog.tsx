@@ -162,7 +162,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			cssClass="ep-weights-menu"
+			className="ep-weights-menu"
 			container={host.rootElem}
 			size={showThreatMetrics ? 'xl' : 'lg'}
 			scrollContents
@@ -208,7 +208,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 					ref={progressRef}
 					open
 					container={host.rootElem}
-					cssClass="ep-weights-progress"
+					className="ep-weights-progress"
 					title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 					state={progress}
 					hasProgressBar

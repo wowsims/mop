@@ -14,7 +14,7 @@ import { subscribeBulkField } from '@sim/state/subscriptions';
 import { Class, GemColor, ItemSlot, ItemSpec } from '@generated/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { setItemQualityCssClass } from '@ui-kit/css_utils';
+import { setItemQualityClassName } from '@ui-kit/css_utils';
 import { VirtualList } from '@ui-kit/virtual_list';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -490,7 +490,7 @@ export default class ItemList<T extends ItemListType> {
 			iconElem.value!.src = filledId.iconUrl;
 		});
 
-		setItemQualityCssClass(nameElem.value!, itemData.quality);
+		setItemQualityClassName(nameElem.value!, itemData.quality);
 
 		const notice = new ItemNotice(this.player, { itemId: itemData.id });
 		if (notice.hasNotice) labelCellElem.value?.appendChild(notice.rootElem);

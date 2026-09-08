@@ -5,7 +5,7 @@ import { LaunchStatus } from '@sim/constants/other';
 import { PlayerClass } from '@sim/player_class';
 import { PlayerClasses } from '@sim/player_classes/index';
 import { PlayerSpec } from '@sim/player_spec';
-import { textCssClassForClass, textCssClassForSpec } from '@sim/proto_utils/utils';
+import { textClassNameForClass, textClassNameForSpec } from '@sim/proto_utils/utils';
 import { Class } from '@generated/proto/common';
 import * as Popper from '@popperjs/core';
 import { Dropdown, Modal, Tab } from 'bootstrap';
@@ -47,7 +47,7 @@ function buildLandingSpecLink(spec: PlayerSpec<any>): string {
 	const statusKey = LaunchStatus[spec.launch.status].toLowerCase();
 	return `
 		<li>
-			<a href="${spec.simLink}" class="sim-link ${textCssClassForSpec(spec)}">
+			<a href="${spec.simLink}" class="sim-link ${textClassNameForSpec(spec)}">
 				<div class="sim-link-content">
 					<img src="${spec.getIcon('large')}" class="sim-link-icon">
 					<div class="d-flex flex-column">
@@ -62,7 +62,7 @@ function buildLandingSpecLink(spec: PlayerSpec<any>): string {
 
 function buildLandingClassBlock(klass: PlayerClass<Class>): string {
 	const classSlugValue = specSlug(Object.values(klass.specs)[0]).classSlug;
-	const textKlass = textCssClassForClass(klass);
+	const textKlass = textClassNameForClass(klass);
 	const borderKlass = `border-${PlayerClasses.getCssClass(klass)}`;
 	const specLinks = Object.values(klass.specs).map(buildLandingSpecLink).join('');
 	return `

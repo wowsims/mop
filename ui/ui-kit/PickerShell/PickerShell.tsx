@@ -9,7 +9,7 @@ const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join
 
 export interface PickerShellProps<ModObject, T, V> {
 	config: InputConfig<ModObject, T, V> & { id: string };
-	cssClass: string;
+	className: string;
 	hidden: boolean;
 	disabled: boolean;
 	leading?: ReactNode;
@@ -17,10 +17,10 @@ export interface PickerShellProps<ModObject, T, V> {
 	ref?: Ref<HTMLDivElement>;
 }
 
-export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disabled, leading, children, ref }: PickerShellProps<ModObject, T, V>) => {
+export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabled, leading, children, ref }: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
 	if (tooltip !== undefined && typeof tooltip !== 'string' && !isNode(tooltip)) {
-		console.warn(`${cssClass} ${config.id}: labelTooltip is neither a string nor a node, so it is not rendered.`, tooltip);
+		console.warn(`${className} ${config.id}: labelTooltip is neither a string nor a node, so it is not rendered.`, tooltip);
 	}
 	const tooltipId = typeof tooltip === 'string' || isNode(tooltip) ? `${config.id}-tooltip` : undefined;
 	const tooltipNode = useMemo(
@@ -32,7 +32,9 @@ export const PickerShell = <ModObject, T, V>({ config, cssClass, hidden, disable
 		<Field.Root
 			ref={ref}
 			disabled={disabled}
-			className={dedupe(clsx('input-root', cssClass, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'))}>
+			className={dedupe(
+				clsx('input-root', className, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'),
+			)}>
 			{leading}
 			{config.label && (
 				// `htmlFor` explicitly rather than letting Field derive it.

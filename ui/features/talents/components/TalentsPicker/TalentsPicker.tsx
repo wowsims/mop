@@ -31,7 +31,7 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 	const { copy, copied } = useCopyToClipboard(() => player.getTalentsString());
 
 	return (
-		<PickerShell config={{ ...config, id: config.id ?? fallbackId }} cssClass="talents-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={{ ...config, id: config.id ?? fallbackId }} className="talents-picker-root" hidden={hidden} disabled={disabled}>
 			<div className="talents-picker-inner">
 				<div className="talents-picker-header">
 					<div className="talents-picker-actions">
