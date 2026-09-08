@@ -781,6 +781,19 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
 
 ## Conventions
 
+- **A function that returns JSX is a component, and gets rendered — not called.** `{deleteButton(onRemove)}`
+  becomes `<DeleteButton onClick={onRemove} />`. A called JSX function has no element identity, so React
+  cannot reconcile it, memoise it, or show it in the devtools tree, and its props are positional. Two
+  exceptions, both real: a **render prop**'s return value (react-tooltip's `render`, `VirtualList`'s
+  `renderRow`) is a value the caller places, not an element in this tree; and a **`ComponentType` stored
+  in data** is rendered by whoever holds it. Where a set of one-expression renderers covers a
+  discriminated union, keep them private in the union's own file — `LogLine.tsx` holds eleven — and pick
+  between them with a **mapped type**, which forces an entry per kind where a `switch` only warns about a
+  missing `return`.
+- **Never build JSX to ask a question.** `resultMetricTooltip(metric, layout) ? id : undefined` rendered a
+  whole tooltip tree to test truthiness; the predicate is `hasMetricTooltip`, and the renderer stays
+  separate.
+
 - **One component per file**, named after the component, in the component's folder. A folder that
   holds `CharacterStats.tsx` also holds `StatRow.tsx`, `CritCapRow.tsx`, `BonusStatsLink.tsx`,
   `TooltipRow.tsx` and `TooltipNote.tsx` — not one file with six functions in it.

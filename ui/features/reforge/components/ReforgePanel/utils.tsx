@@ -28,14 +28,14 @@ const DEFAULT_STAT_TOOLTIPS: Partial<Record<Stat, ReactNode>> = {
 };
 
 /** `StatTooltipContent` is the frozen spec surface and yields `Element | string`, so a spec's own entry is adopted rather than re-authored. */
-export const renderStatTooltip = (content: Element | string): ReactNode => (typeof content === 'string' ? content : <span ref={adoptNode(content)} />);
+export const StatTooltip = ({ content }: { content: Element | string }) => (typeof content === 'string' ? <>{content}</> : <span ref={adoptNode(content)} />);
 
 /** The panel's own entries, overridden per stat by the spec's. Evaluated once per popover open, which is the lifetime tippy's lazy `content` function had. */
 export const buildStatTooltips = (override: StatTooltipContent | undefined): Partial<Record<Stat, ReactNode>> => {
 	const tooltips: Partial<Record<Stat, ReactNode>> = { ...DEFAULT_STAT_TOOLTIPS };
 	for (const [stat, make] of Object.entries(override ?? {})) {
 		const content = make?.();
-		if (content !== undefined) tooltips[Number(stat) as Stat] = renderStatTooltip(content);
+		if (content !== undefined) tooltips[Number(stat) as Stat] = <StatTooltip content={content} />;
 	}
 	return tooltips;
 };

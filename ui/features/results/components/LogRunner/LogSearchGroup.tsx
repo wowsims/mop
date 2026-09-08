@@ -17,7 +17,7 @@ const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 
 // Nameless to a screen reader, exactly as vanilla's was: giving it one needs a translation key the
 // locale files do not have, and inventing untranslated English here is the worse trade. Flagged.
-const deleteButton = (onClick: () => void): ReactNode => (
+const DeleteButton = ({ onClick }: { onClick: () => void }) => (
 	<button type="button" className="saved-data-set-delete" onClick={onClick}>
 		<Icon name="times" style="base" size="lg" />
 	</button>
@@ -77,13 +77,13 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						</button>
 					))}
 				</div>
-				{deleteButton(onRemove)}
+				<DeleteButton onClick={onRemove} />
 			</div>
 			<div className="log-search-group-items d-flex flex-wrap align-items-center gap-1">
 				{group.values.map((value, valueIndex) => (
 					<div key={value} className="log-search-chip saved-data-set-chip badge rounded-pill">
 						<span className="saved-data-set-name">{labelOf(group.field, value)}</span>
-						{deleteButton(() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) }))}
+						<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />
 					</div>
 				))}
 				<div className="input-group">

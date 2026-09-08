@@ -32,13 +32,16 @@ const isPercentageMetric = (metric: keyof ResultMetrics): boolean => metric === 
 export const metricLabelPrefix = (metric: keyof ResultMetrics): string => (isPercentageMetric(metric) ? '% ' : ' ');
 
 /** The reference delta the sidebar's `updateReference` fills in; inert everywhere else. */
-export const resultReferenceDiff = (): ReactNode => (
+export const ResultReferenceDiff = () => (
 	<div className="results-reference hide">
 		<span className="results-reference-diff"></span> {i18n.t('sidebar.results.reference.vs_ref')}
 	</div>
 );
 
-/** The row layout gets the one-line form on every metric; the list gets the long form and skips out-of-mana. */
+/** Whether a metric draws a tooltip at all — asked before rendering one, so it must not build the content to answer. */
+export const hasMetricTooltip = (metric: keyof ResultMetrics | null, layout: ResultMetricLayout): boolean => !!metric && (layout === 'row' || metric !== 'oom');
+
+/** The row layout gets the one-line form on every metric; the list gets the long form and skips out-of-mana. Stays a function: it is a `render` prop's return value, not an element in a tree. */
 export const resultMetricTooltip = (metric: keyof ResultMetrics | null, layout: ResultMetricLayout): ReactNode => {
 	if (!metric) return null;
 

@@ -5,7 +5,7 @@ import { statCapTypeNames } from '@sim/proto/names';
 import type { StatCap } from '@sim/proto/stats';
 import { Fragment } from 'react';
 
-import { renderStatTooltip } from './utils';
+import { StatTooltip } from './utils';
 
 export interface ReforgeSoftCapsTooltipProps {
 	model: ReforgeOptimizerModel;
@@ -32,7 +32,9 @@ export const ReforgeSoftCapsTooltip = ({ model, softCaps, additionalInformation 
 							{extra !== undefined && (
 								<>
 									<tr>
-										<td colSpan={3}>{renderStatTooltip(extra)}</td>
+										<td colSpan={3}>
+											<StatTooltip content={extra} />
+										</td>
 									</tr>
 									<tr>
 										<td colSpan={3} className="pb-2" />

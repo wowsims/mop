@@ -14,7 +14,7 @@ export interface StatWeightCellsProps {
 	epDelta: number;
 }
 
-const notApplicable = () => <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
+const NotApplicable = () => <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
 
 export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, epRatio, epDelta }: StatWeightCellsProps) => {
 	const unused = !!statWeights && epRatio === 0;
@@ -31,7 +31,7 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 						iterations={iterations}
 					/>
 				) : (
-					notApplicable()
+					<NotApplicable />
 				)}
 			</td>
 			<td className={clsx('stdev-cell', 'type-ep', unused && 'unused-ep', metricClass)}>
@@ -43,7 +43,7 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 						className={delta}
 					/>
 				) : (
-					notApplicable()
+					<NotApplicable />
 				)}
 			</td>
 		</>

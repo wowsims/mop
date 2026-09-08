@@ -4,7 +4,7 @@ import { useId } from 'react';
 
 import type { ResultMetrics } from '../../model/sim_results';
 import type { ResultMetric } from '../../model/topline_metrics';
-import { formatAverage, formatStdev, metricLabelPrefix, type ResultMetricLayout, resultMetricTooltip, resultReferenceDiff } from './utils';
+import { formatAverage, formatStdev, hasMetricTooltip, metricLabelPrefix, ResultReferenceDiff, type ResultMetricLayout, resultMetricTooltip } from './utils';
 
 export interface ResultMetricListProps {
 	metrics: Array<ResultMetric>;
@@ -13,7 +13,7 @@ export interface ResultMetricListProps {
 
 export const ResultMetricList = ({ metrics, layout }: ResultMetricListProps) => {
 	const tooltipId = useId();
-	const anchorFor = (metric: keyof ResultMetrics) => tooltipAnchorProps(resultMetricTooltip(metric, layout) ? tooltipId : undefined);
+	const anchorFor = (metric: keyof ResultMetrics) => tooltipAnchorProps(hasMetricTooltip(metric, layout) ? tooltipId : undefined);
 
 	return (
 		<>
@@ -38,7 +38,7 @@ export const ResultMetricList = ({ metrics, layout }: ResultMetricListProps) => 
 											<i className="fas fa-plus-minus fa-xs"></i> {formatStdev(column, layout)}
 										</div>
 									) : undefined}
-									{resultReferenceDiff()}
+									<ResultReferenceDiff />
 								</td>
 							))}
 						</tr>
@@ -60,7 +60,7 @@ export const ResultMetricList = ({ metrics, layout }: ResultMetricListProps) => 
 								{formatStdev(column, layout)})
 							</span>
 						)}
-						{resultReferenceDiff()}
+						<ResultReferenceDiff />
 					</div>
 				))
 			)}
