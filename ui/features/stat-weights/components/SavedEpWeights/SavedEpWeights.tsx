@@ -7,13 +7,23 @@ import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
+import type { ClassValue } from 'clsx';
 import { useCallback, useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSavedEpWeights } from '../../hooks/useSavedEpWeights';
 import { epWeightsData, serializeEpWeights } from './utils';
 
-export const SavedEpWeights = () => {
+const NO_USER_DATA: Array<SavedDataPanelEntry<SavedEPWeights>> = [];
+
+export interface SavedEpWeightsProps {
+	className?: ClassValue;
+	loadOnly?: boolean;
+	// Presets only, which also means load only: the user's own saved sets are neither listed nor written.
+	presetsOnly?: boolean;
+}
+
+export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeightsProps) => {
 	const host = useSimHost();
 	const { player, sim, individualConfig } = host;
 	const ready = useSimReady();
@@ -71,11 +81,13 @@ export const SavedEpWeights = () => {
 
 	return (
 		<SavedDataPanel
+			className={className}
 			title={i18n.t('sidebar.buttons.stat_weights.saved_ep_weights.title')}
 			label={label}
 			nameLabel={i18n.t('sidebar.buttons.stat_weights.title')}
+			loadOnly={loadOnly || presetsOnly}
 			presets={presets}
-			userData={userData}
+			userData={presetsOnly ? NO_USER_DATA : userData}
 			currentJson={currentJson}
 			onLoad={onLoad}
 			onSave={onSave}

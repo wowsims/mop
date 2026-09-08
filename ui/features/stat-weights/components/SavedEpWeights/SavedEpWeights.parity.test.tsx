@@ -1,5 +1,5 @@
-// `renderSavedEPWeights` is still live for the reforge panel, so the vanilla manager can be built
-// beside the port and diffed. Two comparisons, because the browser gate only sees the first:
+// `SavedDataManager` is the oracle for this port: it is built beside the component from the same
+// config and diffed against it. Two comparisons, because the browser gate only sees the first:
 // `parity.mjs` serialises tag plus sorted class list, which must be identical, and the attribute
 // deltas are asserted one by one so an unrecorded one fails as loudly as a missing one.
 import { SimHostProvider } from '@sim/context/SimHostContext';

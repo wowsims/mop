@@ -27,7 +27,6 @@ import { ref } from 'tsx-vanilla';
 
 import { trackEvent, trackPageView } from '../../../tracking/analytics';
 import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
-import { renderSavedEPWeights } from '../../stat-weights/view/saved_ep_weights';
 import { SimRunKind } from '@sim/state/sim_store';
 
 // The model types are part of the panel's public surface — spec configs import
@@ -68,6 +67,26 @@ export class ReforgeOptimizer {
 	protected additionalSoftCapTooltipInformation: StatTooltipContent = {};
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
+
+	// Built once and moved into each freshly built popover, never rebuilt: `ReforgeEpWeights` portals into it.
+	readonly epWeightsHost = (<div />) as HTMLElement;
+	private epWeightsOpen = false;
+	private readonly epWeightsListeners = new Set<() => void>();
+
+	readonly subscribeEpWeightsOpen = (listener: () => void): (() => void) => {
+		this.epWeightsListeners.add(listener);
+		return () => {
+			this.epWeightsListeners.delete(listener);
+		};
+	};
+
+	readonly isEpWeightsOpen = (): boolean => this.epWeightsOpen;
+
+	private setEpWeightsOpen(open: boolean) {
+		if (this.epWeightsOpen === open) return;
+		this.epWeightsOpen = open;
+		for (const listener of this.epWeightsListeners) listener();
+	}
 
 	constructor(simUI: IndividualSimHost<any>, options?: ReforgeOptimizerOptions) {
 		this.simUI = simUI;
@@ -548,8 +567,10 @@ export class ReforgeOptimizer {
 						{this.buildEPWeightsToggle()}
 					</>,
 				);
+				this.setEpWeightsOpen(true);
 			},
 			onHidden: () => {
+				this.setEpWeightsOpen(false);
 				instance.setContent(<></>);
 			},
 		});
@@ -780,10 +801,9 @@ export class ReforgeOptimizer {
 	}
 
 	buildEPWeightsToggle() {
-		const epWeightsContainerRef = ref<HTMLDivElement>();
-		const content = (
+		return (
 			<>
-				<div ref={epWeightsContainerRef} />
+				{this.epWeightsHost}
 				{this.simUI.epWeightsModal && (
 					<button
 						className="btn btn-outline-primary mt-2"
@@ -796,23 +816,6 @@ export class ReforgeOptimizer {
 				)}
 			</>
 		);
-
-		const render = () => {
-			const container = epWeightsContainerRef.value;
-			if (container) {
-				const epPicker = renderSavedEPWeights(null, this.simUI, {
-					extraCssClasses: ['mt-3'],
-					loadOnly: true,
-					presetsOnly: !this.settings.useCustomEPValues,
-				});
-				container.replaceChildren(epPicker.rootElem);
-			}
-		};
-
-		subscribeReforgeField(this.settings, 'useCustomEPValues')(() => render());
-		render();
-
-		return content;
 	}
 
 	buildSoftCapBreakpointsLimiter({ useSoftCapBreakpointsInput }: { useSoftCapBreakpointsInput: BooleanPicker<Player<any>> | null }) {

@@ -7,6 +7,7 @@ import { CastMetricsTable } from '@features/results/components/CastMetricsTable'
 import { DamageMetricsTable } from '@features/results/components/DamageMetricsTable';
 import { DtpsMetricsTable } from '@features/results/components/DtpsMetricsTable';
 import { HealingMetricsTable } from '@features/results/components/HealingMetricsTable';
+import { ReforgeEpWeights } from '@features/reforge/components/ReforgeEpWeights';
 import { ResourceMetricsTable } from '@features/results/components/ResourceMetricsTable';
 import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
@@ -96,6 +97,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 					{createPortal(<RotationTabBody />, simUI.rotationTab.contentContainer)}
+					{simUI.reforger && createPortal(<ReforgeEpWeights panel={simUI.reforger} />, simUI.reforger.epWeightsHost)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
 				</SimHostProvider>
 			)}

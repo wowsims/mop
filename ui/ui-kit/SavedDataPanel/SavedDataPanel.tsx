@@ -2,6 +2,7 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Tooltip } from '@ui-kit/Tooltip';
+import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
@@ -17,7 +18,7 @@ export interface SavedDataPanelProps<T> {
 	deleteConfirmMessage?: string;
 	chooseNameAlert?: string;
 	nameExistsAlert?: string;
-	className?: string;
+	className?: ClassValue;
 	presets: Array<SavedDataPanelEntry<T>>;
 	userData: Array<SavedDataPanelEntry<T>>;
 	// Serialised form of the subject's live value, compared against each entry's `json`.
