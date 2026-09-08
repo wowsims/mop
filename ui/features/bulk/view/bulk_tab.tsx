@@ -1,15 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import {
-	BulkSimProgressConfig,
-	NATIVE_COMBINATIONS_LIMIT,
-	NATIVE_ITERATIONS_LIMIT,
-	TopGearResult,
-	WEB_COMBINATIONS_LIMIT,
-	WEB_ITERATIONS_LIMIT,
-} from '@sim/bulk/types';
+import { BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
-	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
 	BulkSimItemSlot,
 	dedupeGearSets,
 	getBulkFreezeWeaponTypes,
@@ -21,7 +13,6 @@ import { getEnumValues } from '@sim/utils/collections';
 import { REPO_RELEASES_URL } from '@sim/constants/other';
 import { isDevMode } from '@sim/utils/env';
 import { formatDurationSeconds, formatToNumber } from '@sim/utils/format';
-import { Z_95, zTest } from '@sim/utils/math';
 import { isSpecDualWield2HCapable } from '@sim/player/classes/capabilities';
 import { EquippedItem } from '@sim/proto/equipped_item';
 import { Gear } from '@sim/proto/gear';
@@ -35,7 +26,6 @@ import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, 
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
-import { isExternal } from '@ui-kit/utils/dom';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
 import { ProgressTrackerModal } from '@ui-kit/progress_tracker_modal';
@@ -50,14 +40,22 @@ import { trackEvent } from '../../../tracking/analytics';
 import SelectorModal from '../../gear/view/selector_modal';
 import { BulkGearJsonImporter } from '../../import-export/view/importers';
 import { runCoreBulkSim as runCoreBulkSimImpl } from '../model/core_sim';
+import { bulkCombinationsLimit, bulkIterationsLimit } from '../model/limits';
+import {
+	BulkSetBonusOption,
+	BulkSlotOptions,
+	canEnableRequiredFourPiece,
+	canEnableRequiredTwoPiece,
+	getAvailableBulkSetBonuses,
+	hasMatchingRequiredSetBonusCombination,
+	nextRequiredSetBonuses,
+	pruneRequiredSetBonuses,
+	sanitiseRequiredSetBonuses,
+} from '../model/set_bonuses';
+import { buildTieChains } from '../model/tie_chains';
 import BulkItemPickerGroup from './bulk_item_picker_group';
 import BulkItemSearch from './bulk_item_search';
 import BulkSimResultRenderer from './bulk_sim_results_renderer';
-type BulkSetBonusOption = {
-	setId: number;
-	setName: string;
-	totalPieces: number;
-};
 
 export class BulkTab extends SimTab {
 	readonly simUI: IndividualSimHost<any>;
@@ -368,7 +366,7 @@ export class BulkTab extends SimTab {
 			freezeWeaponSlot: this.frozenWeaponSlot,
 			freezeMainhandWeaponSlots: this.weaponTypeFilters.get(ItemSlot.ItemSlotMainHand)?.slice(),
 			freezeOffhandWeaponSlots: this.weaponTypeFilters.get(ItemSlot.ItemSlotOffHand)?.slice(),
-			requiredSetBonuses: this.getRequiredSetBonusesForSettings(),
+			requiredSetBonuses: pruneRequiredSetBonuses(this.requiredSetBonuses, this.getAvailableBulkSetBonuses()),
 		});
 	}
 
@@ -512,167 +510,28 @@ export class BulkTab extends SimTab {
 		return result;
 	}
 
+	// The batch's per-slot choices, equipped pieces included: the pickers are where they live, and
+	// the set-bonus model takes them as data rather than reaching into the DOM for them.
+	private getSlotOptions(): BulkSlotOptions {
+		return new Map(
+			Array.from(this.pickerGroups.entries()).map(([bulkSlot, pickerGroup]) => [
+				bulkSlot,
+				Array.from(pickerGroup.pickers.values()).map(picker => picker.item),
+			]),
+		);
+	}
+
 	private getAvailableBulkSetBonuses(): BulkSetBonusOption[] {
-		if (this.availableSetBonusesMemo) return this.availableSetBonusesMemo;
-		const setBonuses = new Map<number, BulkSetBonusOption & { itemIds: Set<number> }>();
-
-		for (const pickerGroup of this.pickerGroups.values()) {
-			for (const picker of pickerGroup.pickers.values()) {
-				const item = picker.item.item;
-				if (!item.setId || !item.setName) continue;
-
-				if (!setBonuses.has(item.setId)) {
-					setBonuses.set(item.setId, {
-						setId: item.setId,
-						setName: item.setName,
-						totalPieces: 0,
-						itemIds: new Set<number>(),
-					});
-				}
-				setBonuses.get(item.setId)!.itemIds.add(item.id);
-			}
-		}
-
-		this.availableSetBonusesMemo = Array.from(setBonuses.values())
-			.map(setBonus => ({
-				setId: setBonus.setId,
-				setName: setBonus.setName,
-				totalPieces: setBonus.itemIds.size,
-			}))
-			.filter(setBonus => setBonus.setName && setBonus.totalPieces >= 2)
-			.sort((a, b) => a.setName.localeCompare(b.setName) || a.setId - b.setId);
+		this.availableSetBonusesMemo ??= getAvailableBulkSetBonuses(this.getSlotOptions());
 		return this.availableSetBonusesMemo;
 	}
 
-	private getRequiredSetBonusesForSettings(): BulkRequiredSetBonus[] {
-		const setBonusesById = new Map(this.getAvailableBulkSetBonuses().map(setBonus => [setBonus.setId, setBonus]));
-		return Array.from(this.requiredSetBonuses.values())
-			.map(requiredSetBonus => {
-				const setBonus = setBonusesById.get(requiredSetBonus.setId);
-				if (!setBonus || requiredSetBonus.pieces > setBonus.totalPieces) return null;
-				return BulkRequiredSetBonus.create(requiredSetBonus);
-			})
-			.filter((requiredSetBonus): requiredSetBonus is BulkRequiredSetBonus => requiredSetBonus !== null)
-			.sort((a, b) => a.setId - b.setId);
-	}
-
-	private getRequiredFourPieceSetBonusId(): number | undefined {
-		return Array.from(this.requiredSetBonuses.entries()).find(([, requiredSetBonus]) => requiredSetBonus.pieces === 4)?.[0];
-	}
-
-	private hasOtherRequiredSetBonus(setId: number, pieces?: number): boolean {
-		return Array.from(this.requiredSetBonuses.entries()).some(
-			([requiredSetBonusId, requiredSetBonus]) => requiredSetBonusId !== setId && (pieces === undefined || requiredSetBonus.pieces === pieces),
-		);
-	}
-
 	private canEnableRequiredTwoPiece(setId: number): boolean {
-		if (this.requiredSetBonuses.get(setId)?.pieces === 2) return true;
-
-		const fourPieceSetBonusId = this.getRequiredFourPieceSetBonusId();
-		return (fourPieceSetBonusId === undefined || fourPieceSetBonusId === setId) && this.canSatisfyRequiredSetBonus(setId, 2);
+		return canEnableRequiredTwoPiece(this.requiredSetBonuses, setId, (id, pieces) => this.canSatisfyRequiredSetBonus(id, pieces));
 	}
 
 	private canEnableRequiredFourPiece(setBonus: BulkSetBonusOption): boolean {
-		if (this.requiredSetBonuses.get(setBonus.setId)?.pieces === 4) return true;
-
-		const fourPieceSetBonusId = this.getRequiredFourPieceSetBonusId();
-		return (
-			setBonus.totalPieces >= 4 &&
-			(fourPieceSetBonusId === undefined || fourPieceSetBonusId === setBonus.setId) &&
-			!this.hasOtherRequiredSetBonus(setBonus.setId, 2) &&
-			this.canSatisfyRequiredSetBonus(setBonus.setId, 4)
-		);
-	}
-
-	private hasMatchingRequiredSetBonusCombination(requiredSetBonuses: BulkRequiredSetBonus[]): boolean {
-		if (!requiredSetBonuses.length) return true;
-
-		const requiredSetBonusIndexes = new Map<number, number>();
-		requiredSetBonuses.forEach((requiredSetBonus, index) => {
-			requiredSetBonusIndexes.set(requiredSetBonus.setId, index);
-		});
-
-		const requiredPieces = requiredSetBonuses.map(requiredSetBonus => requiredSetBonus.pieces);
-		const baseGear = this.originalGear ?? this.simUI.player.getGear();
-		const baseCounts = new Array<number>(requiredSetBonuses.length).fill(0);
-		baseGear.getEquippedItems().forEach(equippedItem => this.addItemToRequiredSetBonusCounts(baseCounts, requiredSetBonusIndexes, equippedItem, 1));
-
-		const dimensions: number[][][] = [];
-
-		for (const [bulkItemSlot, pickerGroup] of this.pickerGroups.entries()) {
-			if (
-				pickerGroup.pickers.size === 0 ||
-				[
-					BulkSimItemSlot.ItemSlotMainHand,
-					BulkSimItemSlot.ItemSlotOffHand,
-					BulkSimItemSlot.ItemSlotHandWeapon,
-					BulkSimItemSlot.ItemSlotFinger,
-					BulkSimItemSlot.ItemSlotTrinket,
-				].includes(bulkItemSlot)
-			) {
-				continue;
-			}
-
-			const optionsForSlot: EquippedItem[] = Array.from(pickerGroup.pickers.values()).map(picker => picker.item);
-			const slotToUse = BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT.get(bulkItemSlot)!;
-			dimensions.push(optionsForSlot.map(option => this.getRequiredSetBonusOptionDeltas(baseGear, requiredSetBonusIndexes, [[slotToUse, option]])));
-		}
-
-		const clampCounts = (counts: number[]) => counts.map((count, index) => Math.min(requiredPieces[index], Math.max(0, count)));
-		let states = new Map<string, number[]>();
-		const initialState = clampCounts(baseCounts);
-		states.set(initialState.join(','), initialState);
-
-		for (const optionDeltas of dimensions) {
-			if (!optionDeltas.length) {
-				return false;
-			}
-
-			const nextStates = new Map<string, number[]>();
-			for (const counts of states.values()) {
-				for (const deltas of optionDeltas) {
-					const nextCounts = clampCounts(counts.map((count, index) => count + deltas[index]));
-					nextStates.set(nextCounts.join(','), nextCounts);
-				}
-			}
-
-			if (!nextStates.size) {
-				return false;
-			}
-			states = nextStates;
-		}
-
-		for (const counts of states.values()) {
-			if (counts.every((count, index) => count >= requiredPieces[index])) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private addItemToRequiredSetBonusCounts(counts: number[], requiredSetBonusIndexes: Map<number, number>, equippedItem: EquippedItem | null, delta: number) {
-		const item = equippedItem?.item;
-		if (!item?.setId) return;
-
-		const index = requiredSetBonusIndexes.get(item.setId);
-		if (index === undefined) return;
-
-		counts[index] += delta;
-	}
-
-	private getRequiredSetBonusOptionDeltas(
-		baseGear: Gear,
-		requiredSetBonusIndexes: Map<number, number>,
-		slotItems: Array<[ItemSlot, EquippedItem | null]>,
-	): number[] {
-		const deltas = new Array<number>(requiredSetBonusIndexes.size).fill(0);
-		for (const [slot, equippedItem] of slotItems) {
-			this.addItemToRequiredSetBonusCounts(deltas, requiredSetBonusIndexes, baseGear.getEquippedItem(slot), -1);
-			this.addItemToRequiredSetBonusCounts(deltas, requiredSetBonusIndexes, equippedItem, 1);
-		}
-		return deltas;
+		return canEnableRequiredFourPiece(this.requiredSetBonuses, setBonus, (id, pieces) => this.canSatisfyRequiredSetBonus(id, pieces));
 	}
 
 	protected async calculateBulkCombinations() {
@@ -707,7 +566,7 @@ export class BulkTab extends SimTab {
 
 		const requiredSetBonuses = Array.from(this.requiredSetBonuses.values()).filter(requiredSetBonus => requiredSetBonus.setId !== setId);
 		requiredSetBonuses.push(BulkRequiredSetBonus.create({ setId, pieces }));
-		const result = this.hasMatchingRequiredSetBonusCombination(requiredSetBonuses);
+		const result = hasMatchingRequiredSetBonusCombination(requiredSetBonuses, this.originalGear ?? this.simUI.player.getGear(), this.getSlotOptions());
 		this.canSatisfySetBonusMemo.set(memoKey, result);
 		return result;
 	}
@@ -781,32 +640,7 @@ export class BulkTab extends SimTab {
 			return;
 		}
 
-		const iterations = Math.max(1, this.simUI.sim.getIterations());
-		const isBaselineRow = (result: TopGearResult) => result === this.originalGearResults;
-		const pairTied = (upper: TopGearResult, lower: TopGearResult): boolean => {
-			let pairedError: number | undefined;
-			if (isBaselineRow(upper)) {
-				pairedError = lower.pairedErrorToBaseline;
-			} else if (isBaselineRow(lower)) {
-				pairedError = upper.pairedErrorToBaseline;
-			} else if (upper.backendRank !== undefined && lower.backendRank === upper.backendRank + 1) {
-				pairedError = upper.pairedErrorToNextResult;
-			}
-			if (pairedError) {
-				return Math.abs(upper.dpsMetrics.avg - lower.dpsMetrics.avg) <= Z_95 * pairedError;
-			}
-			return !zTest(iterations, upper.dpsMetrics.avg, upper.dpsMetrics.stdev, iterations, lower.dpsMetrics.avg, lower.dpsMetrics.stdev).isDiff;
-		};
-		const tieChains: TopGearResult[][] = [];
-		for (const topGearResult of this.topGearResults) {
-			const currentChain = tieChains[tieChains.length - 1];
-			const previousResult = currentChain?.[currentChain.length - 1];
-			if (previousResult && pairTied(previousResult, topGearResult)) {
-				currentChain.push(topGearResult);
-			} else {
-				tieChains.push([topGearResult]);
-			}
-		}
+		const tieChains = buildTieChains(this.topGearResults, this.originalGearResults, Math.max(1, this.simUI.sim.getIterations()));
 
 		// Build everything into a detached fragment and attach once: each renderer row is a
 		// sizeable subtree, and appending them live would relayout the tab per row.
@@ -959,31 +793,15 @@ export class BulkTab extends SimTab {
 	}
 
 	private setRequiredSetBonus(setBonus: BulkSetBonusOption, pieces: number) {
-		const currentValue = this.requiredSetBonuses.get(setBonus.setId)?.pieces ?? 0;
-		if (currentValue === pieces) return;
+		const next = nextRequiredSetBonuses(this.requiredSetBonuses, setBonus, pieces, (id, count) => this.canSatisfyRequiredSetBonus(id, count));
+		if (!next) return;
 
-		if (pieces === 4) {
-			if (!this.canEnableRequiredFourPiece(setBonus)) return;
-			this.requiredSetBonuses.clear();
-			this.requiredSetBonuses.set(setBonus.setId, BulkRequiredSetBonus.create({ setId: setBonus.setId, pieces }));
-		} else if (pieces === 2) {
-			if (!this.canEnableRequiredTwoPiece(setBonus.setId)) return;
-			this.requiredSetBonuses.set(setBonus.setId, BulkRequiredSetBonus.create({ setId: setBonus.setId, pieces }));
-		} else {
-			this.requiredSetBonuses.delete(setBonus.setId);
-		}
+		this.requiredSetBonuses = next;
 		this.bump('settings');
 	}
 
 	private setRequiredSetBonuses(requiredSetBonuses: BulkRequiredSetBonus[]) {
-		this.requiredSetBonuses.clear();
-		const requiredFourPieceSetBonus = requiredSetBonuses.find(requiredSetBonus => requiredSetBonus.setId > 0 && requiredSetBonus.pieces === 4);
-		const requiredSetBonusesToStore = requiredFourPieceSetBonus ? [requiredFourPieceSetBonus] : requiredSetBonuses;
-		requiredSetBonusesToStore.forEach(requiredSetBonus => {
-			if (requiredSetBonus.setId > 0 && [2, 4].includes(requiredSetBonus.pieces)) {
-				this.requiredSetBonuses.set(requiredSetBonus.setId, BulkRequiredSetBonus.create(requiredSetBonus));
-			}
-		});
+		this.requiredSetBonuses = sanitiseRequiredSetBonuses(requiredSetBonuses);
 		this.bump('settings');
 	}
 
@@ -1304,22 +1122,12 @@ export class BulkTab extends SimTab {
 		return this.iterations > this.getIterationsLimit();
 	}
 
-	// The web/native limit for this host: the async isNative probe wins once resolved, with
-	// the hostname heuristic as the pre-resolution fallback.
-	private limitForHost(webLimit: number, nativeLimit: number): number {
-		if (this.simUI.sim.isNative === undefined) {
-			return isExternal() ? webLimit : nativeLimit;
-		}
-
-		return this.simUI.sim.isNative ? nativeLimit : webLimit;
-	}
-
 	private getIterationsLimit(): number {
-		return this.limitForHost(WEB_ITERATIONS_LIMIT, NATIVE_ITERATIONS_LIMIT);
+		return bulkIterationsLimit(this.simUI.sim.isNative);
 	}
 
 	private getCombinationsLimit(): number {
-		return this.limitForHost(WEB_COMBINATIONS_LIMIT, NATIVE_COMBINATIONS_LIMIT);
+		return bulkCombinationsLimit(this.simUI.sim.isNative);
 	}
 
 	private setCandidateGearProgress({
