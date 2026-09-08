@@ -2,7 +2,7 @@ import * as Mechanics from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
-import { StatCap, UnitStat } from '@sim/proto_utils/stats';
+import { StatCap, UnitStat } from '@sim/proto/stats';
 import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';

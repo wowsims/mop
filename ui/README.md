@@ -12,7 +12,7 @@ ui/
                      player/ (player, player_class, player_spec, classes/, specs/),
                      raid/ (raid, party, encounter), settings/ (bulk, item_swap, reforge,
                      stat_weight), utils/ (collections, math, format, json, misc),
-                     workers/, cache/, state/, proto_utils/, talents data + trees, bulk/,
+                     workers/, cache/, state/, proto/, talents data + trees, bulk/,
                      wasm/, constants/, presets/, hooks/, context/. alias @sim
   ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,

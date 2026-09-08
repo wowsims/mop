@@ -2,7 +2,7 @@ import { Party as PartyProto, Player as PlayerProto } from '@generated/proto/api
 import { Class, PartyBuffs } from '@generated/proto/common';
 
 import { Player } from '../player/player';
-import { getPlayerSpecFromPlayer } from '../proto_utils/utils';
+import { getPlayerSpecFromPlayer } from '../proto/utils';
 import { Raid } from './raid';
 import { Sim } from '../sim';
 import { batch } from '../state/batch';

@@ -1,6 +1,6 @@
 import { DistributionMetrics } from '@generated/proto/api';
 
-import { Gear } from '../proto_utils/gear';
+import { Gear } from '../proto/gear';
 
 export const WEB_ITERATIONS_LIMIT = 1_000_000;
 export const NATIVE_ITERATIONS_LIMIT = 10_000_000;

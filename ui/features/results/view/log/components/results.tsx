@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { DamageLog, Outcome } from '@sim/proto_utils/combat_log';
-import { spellSchoolNames } from '@sim/proto_utils/names';
+import type { DamageLog, Outcome } from '@sim/proto/combat_log';
+import { spellSchoolNames } from '@sim/proto/names';
 import clsx from 'clsx';
 
 import { EntityLabel } from './entity_label';

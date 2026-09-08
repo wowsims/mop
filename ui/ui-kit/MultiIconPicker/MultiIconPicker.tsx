@@ -3,7 +3,7 @@ import './MultiIconPicker.scss';
 import { Menu } from '@base-ui/react/menu';
 import { isRightClick } from '@ui-kit/utils/dom';
 import type { Player } from '@sim/player/player';
-import type { ActionId } from '@sim/proto_utils/action_id';
+import type { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';

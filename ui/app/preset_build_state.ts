@@ -1,5 +1,5 @@
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { isEqualAPLRotation } from '@sim/proto_utils/apl_utils';
+import { isEqualAPLRotation } from '@sim/proto/apl_utils';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '@generated/proto/common';
 import { SavedTalents } from '@generated/proto/ui';

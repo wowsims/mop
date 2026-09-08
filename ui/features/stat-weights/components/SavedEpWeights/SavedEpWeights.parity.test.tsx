@@ -3,7 +3,7 @@
 // `parity.mjs` serialises tag plus sorted class list, which must be identical, and the attribute
 // deltas are asserted one by one so an unrecorded one fails as loudly as a missing one.
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
 import { act, render } from '@testing-library/react';

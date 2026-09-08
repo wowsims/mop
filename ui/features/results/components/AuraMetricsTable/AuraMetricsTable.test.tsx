@@ -1,4 +1,4 @@
-import type { AuraMetrics } from '@sim/proto_utils/sim_result';
+import type { AuraMetrics } from '@sim/proto/sim_result';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

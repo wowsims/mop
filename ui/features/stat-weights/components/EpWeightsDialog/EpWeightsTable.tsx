@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import type { Stats, UnitStat } from '@sim/proto_utils/stats';
+import type { Stats, UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';

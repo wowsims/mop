@@ -1,6 +1,6 @@
-import { ActionId } from '@sim/proto_utils/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
-import { getEnchantDescription } from '@sim/proto_utils/enchants';
+import { ActionId } from '@sim/proto/action_id';
+import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
+import { getEnchantDescription } from '@sim/proto/enchants';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';

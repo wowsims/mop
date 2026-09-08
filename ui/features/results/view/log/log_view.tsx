@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { CombatLog, formattedTimestamp, isCastCompleted, rawWithoutTimestamp } from '@sim/proto_utils/combat_log';
+import { CombatLog, formattedTimestamp, isCastCompleted, rawWithoutTimestamp } from '@sim/proto/combat_log';
 import { Emitter } from '@sim/state/events';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';

@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { ConsumesSpec, Debuffs, Profession, RaidBuffs } from '@generated/proto/common';
 import { HolyPaladin_Options as Paladin_Options, PaladinMajorGlyph as MajorGlyph, PaladinSeal } from '@generated/proto/paladin';
 

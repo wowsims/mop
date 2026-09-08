@@ -1,6 +1,6 @@
 import { bucket } from '@sim/utils/collections';
 import { useSim } from '@sim/context/SimHostContext';
-import { ActionMetrics } from '@sim/proto_utils/sim_result';
+import { ActionMetrics } from '@sim/proto/sim_result';
 import { subscribeUiField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';

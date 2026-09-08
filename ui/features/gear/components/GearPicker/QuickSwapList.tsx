@@ -1,4 +1,4 @@
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import type { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { Button } from '@ui-kit/Button';
 import { itemQualityClassName } from '@ui-kit/utils/css';

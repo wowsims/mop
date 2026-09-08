@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { Entity } from '@sim/proto_utils/combat_log';
+import type { Entity } from '@sim/proto/combat_log';
 
 export function EntityLabel(entity: Entity): JSX.Element {
 	if (entity.isTarget) {

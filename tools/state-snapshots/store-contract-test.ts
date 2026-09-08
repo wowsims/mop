@@ -8,8 +8,8 @@
 
 import { Player } from '../../ui/sim/player/player';
 import { PlayerSpecs } from '../../ui/sim/player/specs';
-import { Database } from '../../ui/sim/proto_utils/database';
-import { ItemSwapGear } from '../../ui/sim/proto_utils/gear';
+import { Database } from '../../ui/sim/proto/database';
+import { ItemSwapGear } from '../../ui/sim/proto/gear';
 import { ReforgeSettings } from '../../ui/sim/settings/reforge_settings';
 import { Sim } from '../../ui/sim/sim';
 import { StatWeightActionSettings } from '../../ui/sim/settings/stat_weight_settings';

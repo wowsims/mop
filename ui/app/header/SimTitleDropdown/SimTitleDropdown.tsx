@@ -5,7 +5,7 @@ import type { PlayerClass } from '@sim/player/player_class';
 import { PlayerClasses } from '@sim/player/classes/index';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import { PlayerSpecs } from '@sim/player/specs/index';
-import { textClassNameForClass, textClassNameForSpec } from '@sim/proto_utils/utils';
+import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';

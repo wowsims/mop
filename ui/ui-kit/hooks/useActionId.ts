@@ -1,4 +1,4 @@
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { useEffect, useRef, useState } from 'react';
 
 export interface ActionIdState {

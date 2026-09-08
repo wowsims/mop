@@ -2,7 +2,7 @@ import { ErrorOutcome, ErrorOutcomeType, RaidSimRequest, RaidSimResult } from '@
 import { Profession } from '@generated/proto/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Gear } from './proto_utils/gear';
+import type { Gear } from './proto/gear';
 import { Sim, SimError } from './sim';
 import type { Env } from './state/env';
 
@@ -31,7 +31,7 @@ vi.mock('./wasm', () => ({
 	runConcurrentStatWeights: vi.fn(),
 }));
 
-vi.mock('./proto_utils/database', () => ({
+vi.mock('./proto/database', () => ({
 	Database: { get: () => Promise.resolve({}) },
 }));
 

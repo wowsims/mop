@@ -1,5 +1,5 @@
 import { Encounter } from '@sim/raid/encounter';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { subscribeEncounterField } from '@sim/state/subscriptions';
 import { randomUUID } from '@sim/utils/misc';
 import { InputType, MobType, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';

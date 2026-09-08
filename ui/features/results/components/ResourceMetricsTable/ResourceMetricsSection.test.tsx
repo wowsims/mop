@@ -1,4 +1,4 @@
-import type { ResourceMetrics } from '@sim/proto_utils/sim_result';
+import type { ResourceMetrics } from '@sim/proto/sim_result';
 import { ResourceType } from '@generated/proto/spell';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';

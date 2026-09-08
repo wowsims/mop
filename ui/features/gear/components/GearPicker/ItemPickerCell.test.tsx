@@ -23,7 +23,7 @@ vi.mock('@sim/state/subscriptions', () => ({
 	subscribeAll: () => store.subscribe,
 }));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
-vi.mock('@sim/proto_utils/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/dom', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
 	actionIdWowheadTooltipData: () => new Promise<string>(() => {}),
 }));

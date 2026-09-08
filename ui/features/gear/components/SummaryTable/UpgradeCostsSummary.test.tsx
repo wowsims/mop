@@ -1,6 +1,6 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { Faction, ItemQuality } from '@generated/proto/common';
 import { act, render } from '@testing-library/react';

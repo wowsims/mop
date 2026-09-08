@@ -2,11 +2,11 @@
 import { SortDirection } from '@sim/constants/other';
 import { formatDeltaTextElem } from '@sim/utils/format';
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
-import { EquippedItem } from '@sim/proto_utils/equipped_item';
-import { getPVPSeasonFromItem, isPVPItem } from '@sim/proto_utils/items';
-import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@sim/proto_utils/names';
+import { ActionId } from '@sim/proto/action_id';
+import { setActionIdWowheadHref } from '@sim/proto/action_id/dom';
+import { EquippedItem } from '@sim/proto/equipped_item';
+import { getPVPSeasonFromItem, isPVPItem } from '@sim/proto/items';
+import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@sim/proto/names';
 import { Sim } from '@sim/sim';
 import type { SimHost } from '@sim/sim_host';
 import { isIndividualSimHost } from '@sim/sim_host';

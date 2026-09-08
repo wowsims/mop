@@ -1,7 +1,7 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { masterySpellIDs } from '@sim/proto_utils/names';
-import type { StatAttribution, Stats, UnitStat } from '@sim/proto_utils/stats';
+import { ActionId } from '@sim/proto/action_id';
+import { masterySpellIDs } from '@sim/proto/names';
+import type { StatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';

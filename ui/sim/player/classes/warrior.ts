@@ -3,7 +3,7 @@ import { Class } from '@generated/proto/common';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { ArmsWarrior, FuryWarrior, ProtectionWarrior } from '../specs/warrior';
-import type { WarriorSpecs } from '../../proto_utils/spec_types';
+import type { WarriorSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Warrior extends PlayerClass<Class.ClassWarrior> {

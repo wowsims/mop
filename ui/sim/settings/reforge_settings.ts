@@ -7,7 +7,7 @@ import { ReforgeSettings as ReforgeSettingsProto } from '@generated/proto/api';
 import { ItemSlot, Stat } from '@generated/proto/common';
 
 import type { Player } from '../player/player';
-import { StatCap, Stats, UnitStat } from '../proto_utils/stats';
+import { StatCap, Stats, UnitStat } from '../proto/stats';
 import { batch } from '../state/batch';
 import { patchKeyed, REFORGE_FIELDS, ReforgeField, ReforgeSlice, seedKeyed, SimStore, zeroVersions } from '../state/sim_store';
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.

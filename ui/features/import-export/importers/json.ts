@@ -1,4 +1,4 @@
-import { Database } from '@sim/proto_utils/database';
+import { Database } from '@sim/proto/database';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 

@@ -24,8 +24,8 @@ import { createStore } from 'zustand/vanilla';
 
 import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
 import { CURRENT_PHASE } from '../constants/other';
-import type { Gear, ItemSwapGear } from '../proto_utils/gear';
-import type { StatCap, Stats } from '../proto_utils/stats';
+import type { Gear, ItemSwapGear } from '../proto/gear';
+import type { StatCap, Stats } from '../proto/stats';
 
 // Presentation flags (owned by UISettings).
 export interface UISlice {

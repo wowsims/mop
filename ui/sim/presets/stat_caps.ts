@@ -1,7 +1,7 @@
 import { PseudoStat, Stat } from '@generated/proto/common';
 
 import * as Mechanics from '../constants/mechanics';
-import { Stats } from '../proto_utils/stats';
+import { Stats } from '../proto/stats';
 
 // Melee hit + expertise "can't be dodged/parried" cap, used by the default `statCaps` of most
 // melee DPS/tank specs. `expertiseCapPercent` is the expertise-side target (7.5% for DPS specs

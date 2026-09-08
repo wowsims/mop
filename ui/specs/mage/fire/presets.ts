@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@sim/raid/encounter';
-import { Stats, UnitStat, UnitStatPresets } from '@sim/proto_utils/stats';
+import { Stats, UnitStat, UnitStatPresets } from '@sim/proto/stats';
 import { ReforgeSettings } from '@generated/proto/api';
 import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec } from '@generated/proto/common';
 import {

@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { UnitStat, UnitStatPresets } from '@sim/proto_utils/stats';
+import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
 import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@generated/proto/monk';
 

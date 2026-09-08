@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { ActionID as ActionIdProto, Cooldown } from '@generated/proto/common';
 import i18n from '@i18n/config';

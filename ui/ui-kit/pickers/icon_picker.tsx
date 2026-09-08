@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { isRightClick } from '@ui-kit/utils/dom';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { fillAndSetActionId } from '@sim/proto_utils/action_id/dom';
+import { ActionId } from '@sim/proto/action_id';
+import { fillAndSetActionId } from '@sim/proto/action_id/dom';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { ref } from 'tsx-vanilla';
 

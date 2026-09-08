@@ -2,9 +2,9 @@
 import { CacheHandler } from '@sim/cache/cache_handler';
 import { getEnumValues } from '@sim/utils/collections';
 import { Player, UnitMetadata } from '@sim/player/player';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '@sim/proto_utils/action_id';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
-import { renameAPLReference } from '@sim/proto_utils/apl_utils';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '@sim/proto/action_id';
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto/action_id/dom';
+import { renameAPLReference } from '@sim/proto/apl_utils';
 import { subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { randomUUID } from '@sim/utils/misc';
 import {

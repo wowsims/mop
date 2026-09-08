@@ -1,5 +1,5 @@
-import SecondaryResource from '@sim/proto_utils/secondary_resource';
-import { UnitMetrics } from '@sim/proto_utils/sim_result';
+import SecondaryResource from '@sim/proto/secondary_resource';
+import { UnitMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
 
 import { majorCooldownAnnotations } from './annotations';

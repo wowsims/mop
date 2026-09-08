@@ -3,7 +3,7 @@ import { SavedStatWeightSettings } from '@generated/proto/ui';
 
 import { CURRENT_API_VERSION } from '../constants/other';
 import type { Player } from '../player/player';
-import { UnitStat } from '../proto_utils/stats';
+import { UnitStat } from '../proto/stats';
 import type { Env } from '../state/env';
 import { patchKeyed, seedKeyed, SimStore, StatWeightsSlice } from '../state/sim_store';
 import { subscribeStatWeightsChange } from '../state/subscriptions';

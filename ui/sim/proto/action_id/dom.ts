@@ -1,10 +1,10 @@
 // DOM writers for an ActionId — the icon background, the Wowhead href and the
 // Wowhead tooltip dataset. These used to be methods on ActionId itself, which
-// made a pure value object (ui/sim/proto_utils/action_id.ts) depend on the
+// made a pure value object (ui/sim/proto/action_id.ts) depend on the
 // DOM; ActionId is data now and the rendering lives here. They know nothing
 // beyond ActionId, so they sit in ui-kit rather than in a feature.
 import type { Player } from '../../player/player';
-import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { EquippedItem } from '../equipped_item';
 import { Profession } from '@generated/proto/common';
 
 import { setExternalAwareHref } from '../../utils/links';

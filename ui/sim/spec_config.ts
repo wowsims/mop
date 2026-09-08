@@ -24,9 +24,9 @@ import type { ReactNode } from 'react';
 
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player/player';
 import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './presets/types';
-import type { SpecOptions, SpecRotation } from './proto_utils/spec_types';
-import type { StatMods, StatWrites } from './proto_utils/stats';
-import { StatCap, Stats, UnitStat } from './proto_utils/stats';
+import type { SpecOptions, SpecRotation } from './proto/spec_types';
+import type { StatMods, StatWrites } from './proto/stats';
+import { StatCap, Stats, UnitStat } from './proto/stats';
 import type { Sim } from './sim';
 import type { IndividualSimHost, SimWarning } from './sim_host';
 import type { StoreSubscribe } from './state/subscriptions';

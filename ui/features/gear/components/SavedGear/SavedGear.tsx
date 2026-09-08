@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { batch } from '@sim/state/batch';
 import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { EquipmentSpec, UnitStats } from '@generated/proto/common';

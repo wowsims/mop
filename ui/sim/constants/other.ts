@@ -44,9 +44,9 @@ export type Social = (typeof SOCIALS)[number];
 
 // Root-relative path of the individual sim page for the given spec. Resolve it
 // against the page origin at the point of use (see SimTitleDropdown) — this
-// layer has no `window`. Lives here rather than in proto_utils/utils so that
+// layer has no `window`. Lives here rather than in proto/utils so that
 // player/specs/<class>.ts (which calls it at module scope) does not import the
-// proto_utils <-> player/specs cycle; the evaluation order of that cycle decides
+// proto <-> player/specs cycle; the evaluation order of that cycle decides
 // whether PlayerSpecs' lookup table is populated.
 export function getSpecSitePath(classString: string, specString: string): string {
 	return `/${REPO_NAME}/${classString}/${specString}/`;

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { Player } from '@sim/player/player';
-import { Database } from '@sim/proto_utils/database';
+import { Database } from '@sim/proto/database';
 import { Spec } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
 import tippy, { Instance as TippyInstance } from 'tippy.js';

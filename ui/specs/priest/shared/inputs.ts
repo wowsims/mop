@@ -1,5 +1,5 @@
-import { ActionId } from '@sim/proto_utils/action_id';
-import type { PriestSpecs } from '@sim/proto_utils/spec_types';
+import { ActionId } from '@sim/proto/action_id';
+import type { PriestSpecs } from '@sim/proto/spec_types';
 import { PriestOptions_Armor } from '@generated/proto/priest';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

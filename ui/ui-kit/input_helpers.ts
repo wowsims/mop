@@ -1,7 +1,7 @@
 import { formatToNumber } from '@sim/utils/format';
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import type { ClassOptions, SpecOptions, SpecRotation } from '@sim/proto_utils/spec_types';
+import { ActionId } from '@sim/proto/action_id';
+import type { ClassOptions, SpecOptions, SpecRotation } from '@sim/proto/spec_types';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { randomUUID } from '@sim/utils/misc';

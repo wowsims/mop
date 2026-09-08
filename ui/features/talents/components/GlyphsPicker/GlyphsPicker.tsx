@@ -1,7 +1,7 @@
 import './GlyphsPicker.scss';
 
 import { usePlayer } from '@sim/context/SimHostContext';
-import { Database } from '@sim/proto_utils/database';
+import { Database } from '@sim/proto/database';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classGlyphsConfig } from '@sim/talents/factory';
 import type { Class } from '@generated/proto/common';

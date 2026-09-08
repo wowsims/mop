@@ -17,7 +17,7 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
 
 ui/generated/proto                   generated protobuf (alias @generated/proto)
-ui/sim/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
+ui/sim/proto                      pure data + value objects (Gear, Stats, EquippedItem are immutable)
 ui/sim/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
 ui/sim/sim.ts, raid/{raid,party,encounter}.ts, player/player.ts + settings/*.ts
                                      facade classes over the store; public API unchanged
@@ -25,7 +25,7 @@ ui/sim/{talents,constants,bulk,wasm,workers,cache,presets,hooks,context,…}
 ui/sim/player/{player,player_class,player_spec}.ts + player/{classes,specs}/
 ui/sim/utils/{collections,math,format,json,misc}.ts   the old utils grab bag, split by topic
                                      (the DOM halves, env and links, moved to ui-kit/utils/)
-ui/sim/proto_utils/action_id/{index,dom}.ts     the ActionId value object and the writers
+ui/sim/proto/action_id/{index,dom}.ts     the ActionId value object and the writers
                                      that enrich an element with its icon, href and tooltip
                                      dataset. The writers take the element, they never create
                                      one, and touch no browser global, so they sit in domain.

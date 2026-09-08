@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import SecondaryResource from '@sim/proto_utils/secondary_resource';
+import SecondaryResource from '@sim/proto/secondary_resource';
 import { itemSwapEnabledSpecs } from '@sim/spec_config';
 import {
 	APLValue,

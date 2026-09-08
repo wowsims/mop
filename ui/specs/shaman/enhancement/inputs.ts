@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { ShamanImbue, ShamanSyncType } from '@generated/proto/shaman';

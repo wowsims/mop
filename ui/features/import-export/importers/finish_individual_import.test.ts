@@ -1,7 +1,7 @@
 // The tail three importers share. Two things here are behaviour rather than plumbing: the class
 // guard, which now reaches the caller instead of becoming an unhandled rejection, and which of the
 // two closing toasts is shown.
-import { classNames } from '@sim/proto_utils/names';
+import { classNames } from '@sim/proto/names';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { finishIndividualImport } from './finish_individual_import';
 
 const loadLeftovers = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
-vi.mock('@sim/proto_utils/database', () => ({ Database: { loadLeftoversIfNecessary: loadLeftovers } }));
+vi.mock('@sim/proto/database', () => ({ Database: { loadLeftoversIfNecessary: loadLeftovers } }));
 
 // The real one gates store notifications; here it only has to run the body.
 vi.mock('@sim/state/batch', () => ({ batch: (body: () => void) => body() }));

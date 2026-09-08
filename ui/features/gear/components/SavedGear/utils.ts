@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { SavedGearSet } from '@generated/proto/ui';
 
 export const gearSetData = (player: Player<any>): SavedGearSet =>

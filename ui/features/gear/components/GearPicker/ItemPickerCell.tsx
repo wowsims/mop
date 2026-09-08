@@ -1,5 +1,5 @@
 import { useSimHost } from '@sim/context/SimHostContext';
-import { equippedItemWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
+import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';

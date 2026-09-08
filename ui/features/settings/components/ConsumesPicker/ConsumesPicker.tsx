@@ -1,6 +1,6 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { Database } from '@sim/proto_utils/database';
+import { Database } from '@sim/proto/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';

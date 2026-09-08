@@ -1,4 +1,4 @@
-import { ReforgeData } from '@sim/proto_utils/equipped_item';
+import { ReforgeData } from '@sim/proto/equipped_item';
 import { ItemLevelState } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import { describe, expect, it } from 'vitest';

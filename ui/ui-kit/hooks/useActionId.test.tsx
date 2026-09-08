@@ -1,4 +1,4 @@
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { act, render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 

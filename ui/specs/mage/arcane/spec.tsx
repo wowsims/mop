@@ -4,7 +4,7 @@ import { formatToNumber } from '@sim/utils/format';
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';
 import { Mage } from '@sim/player/classes/mage';
-import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@sim/proto_utils/stats';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@sim/proto/stats';
 import { defineSpec } from '@sim/spec_config';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { StatCapType } from '@generated/proto/api';

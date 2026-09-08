@@ -8,7 +8,7 @@ import { UIGem as Gem } from '@generated/proto/ui';
 import { distinct } from '../utils/collections';
 import { SimSettingCategories } from '../constants/sim_settings';
 import type { Player } from '../player/player';
-import { Database } from '../proto_utils/database';
+import { Database } from '../proto/database';
 import { ReforgeGearCache } from '../cache/reforge_cache';
 import type { ReforgeOptimizeConfig } from '../sim';
 

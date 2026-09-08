@@ -10,8 +10,8 @@ import type { SimTabRegistry } from '@ui-kit/tab_registry';
 
 import type { SimSettingCategories } from './constants/sim_settings';
 import type { Player } from './player/player';
-import type { Gear } from './proto_utils/gear';
-import type { SimResult } from './proto_utils/sim_result';
+import type { Gear } from './proto/gear';
+import type { SimResult } from './proto/sim_result';
 import type { RunSimOptions, Sim } from './sim';
 import type { IndividualSimUIConfig } from './spec_config';
 import type { StoreSubscribe } from './state/subscriptions';

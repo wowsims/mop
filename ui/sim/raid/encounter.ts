@@ -13,7 +13,7 @@ import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
 import * as Mechanics from '../constants/mechanics';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { UnitMetadataList } from '../player/player';
-import { Stats } from '../proto_utils/stats';
+import { Stats } from '../proto/stats';
 import { Sim } from '../sim';
 import { batch } from '../state/batch';
 import { EncounterSlice, SimStore } from '../state/sim_store';

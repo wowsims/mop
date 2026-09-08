@@ -1,5 +1,5 @@
 import { formatToCompactNumber, formatToNumber, formatToPercent } from '@sim/utils/format';
-import type { ActionMetrics } from '@sim/proto_utils/sim_result';
+import type { ActionMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
 import type { RefObject } from 'react';
 

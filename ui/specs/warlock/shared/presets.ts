@@ -1,5 +1,5 @@
-import { UnitStat } from '@sim/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { UnitStat } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { PseudoStat, RaidBuffs } from '@generated/proto/common';
 
 export const DefaultRaidBuffs = RaidBuffs.create({

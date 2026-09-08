@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 const noopSubscribe = () => () => {};
 vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => noopSubscribe, subscribeAll: () => noopSubscribe }));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
-vi.mock('@sim/proto_utils/action_id/dom', () => ({ setEquippedItemWowheadData: () => {} }));
+vi.mock('@sim/proto/action_id/dom', () => ({ setEquippedItemWowheadData: () => {} }));
 vi.mock('@ui-kit/BooleanPicker', () => ({ BooleanPicker: () => <div className="boolean-picker-root" /> }));
 
 const { ItemSwapPicker } = await import('./ItemSwapPicker');

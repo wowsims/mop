@@ -1,8 +1,8 @@
-import { DpsLog, ResourceGroupLog, ThreatLogGroup } from '@sim/proto_utils/combat_log';
-import { resourceColors, resourceNames } from '@sim/proto_utils/names';
-import SecondaryResource from '@sim/proto_utils/secondary_resource';
-import { UnitMetrics } from '@sim/proto_utils/sim_result';
-import { orderedResourceTypes } from '@sim/proto_utils/utils';
+import { DpsLog, ResourceGroupLog, ThreatLogGroup } from '@sim/proto/combat_log';
+import { resourceColors, resourceNames } from '@sim/proto/names';
+import SecondaryResource from '@sim/proto/secondary_resource';
+import { UnitMetrics } from '@sim/proto/sim_result';
+import { orderedResourceTypes } from '@sim/proto/utils';
 import { ResourceType } from '@generated/proto/spell';
 import { ScaleOptions } from 'chart.js';
 

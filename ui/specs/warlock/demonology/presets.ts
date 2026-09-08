@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { UnitStat } from '@sim/proto_utils/stats';
+import { UnitStat } from '@sim/proto/stats';
 import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, Race } from '@generated/proto/common';
 import {
 	DemonologyWarlock_Options as WarlockOptions,

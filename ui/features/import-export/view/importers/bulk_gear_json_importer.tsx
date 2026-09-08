@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Database } from '@sim/proto_utils/database';
+import { Database } from '@sim/proto/database';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { EquipmentSpec, Spec } from '@generated/proto/common';
 import { t } from 'i18next';

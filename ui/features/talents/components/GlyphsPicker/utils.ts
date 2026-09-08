@@ -1,7 +1,7 @@
 import { stringComparator } from '@sim/utils/collections';
 import type { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import type { Database } from '@sim/proto_utils/database';
+import { ActionId } from '@sim/proto/action_id';
+import type { Database } from '@sim/proto/database';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { GlyphsConfig } from '@sim/talents/config';
 import { type Class, type Glyphs, ItemQuality } from '@generated/proto/common';

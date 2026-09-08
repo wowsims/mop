@@ -1,5 +1,5 @@
 import { useSimHost } from '@sim/context/SimHostContext';
-import { equippedItemWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
+import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { GemSocket, ItemCellAnchor } from '@features/gear/components/ItemCell';
 import { SelectorModalTabs } from '@features/gear/types';

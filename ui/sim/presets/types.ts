@@ -17,8 +17,8 @@ import {
 import { SavedRotation, SavedTalents } from '@generated/proto/ui';
 
 import type { Player } from '../player/player';
-import type { SpecOptions } from '../proto_utils/spec_types';
-import type { Stats } from '../proto_utils/stats';
+import type { SpecOptions } from '../proto/spec_types';
+import type { Stats } from '../proto/stats';
 
 export interface PresetBase {
 	name: string;

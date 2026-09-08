@@ -1,8 +1,8 @@
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
-import { UnitStat } from '@sim/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { UnitStat } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';

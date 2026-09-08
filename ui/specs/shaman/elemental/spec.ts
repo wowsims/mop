@@ -1,7 +1,7 @@
 import * as Mechanics from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '@sim/proto_utils/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '@sim/proto/stats';
 import { defineSpec } from '@sim/spec_config';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { AttackSpeedBuff } from '@features/settings/model/buffs_debuffs';

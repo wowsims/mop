@@ -1,7 +1,7 @@
 import './EpWeightsDialog.scss';
 
 import { useSimHost } from '@sim/context/SimHostContext';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { useStatWeights } from '@sim/hooks/useStatWeights';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';

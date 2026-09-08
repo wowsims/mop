@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { SavedEPWeights } from '@generated/proto/ui';
 import i18n from '@i18n/config';

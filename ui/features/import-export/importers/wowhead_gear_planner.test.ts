@@ -2,7 +2,7 @@
 // about it is readable, so the test that means anything is a round trip: the *exporter* beside it
 // carries an independent writer (`writeBits`/`writeHash`), and every field the reader recovers has
 // to come back out of what the writer put in.
-import { WOWHEAD_DOMAIN } from '@sim/proto_utils/wowhead';
+import { WOWHEAD_DOMAIN } from '@sim/proto/wowhead';
 import { describe, expect, it } from 'vitest';
 
 import { createWowheadGearPlannerLink, type WowheadGearPlannerData } from '../exporters/wowhead_gear_planner';

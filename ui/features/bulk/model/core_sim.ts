@@ -1,7 +1,7 @@
 import { BulkSimReforgeCacheProgress } from '@sim/bulk/reforge_cache';
 import { BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from '@sim/bulk/utils';
-import { Gear } from '@sim/proto_utils/gear';
+import { Gear } from '@sim/proto/gear';
 import { ReforgeOptimizeConfig } from '@sim/sim';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';

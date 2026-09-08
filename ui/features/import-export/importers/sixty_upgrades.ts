@@ -1,4 +1,4 @@
-import { nameToClass, nameToRace } from '@sim/proto_utils/names';
+import { nameToClass, nameToRace } from '@sim/proto/names';
 import { talentSpellIdsToTalentString } from '@sim/talents/factory';
 import { Class, EquipmentSpec, ItemSpec, Race } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';

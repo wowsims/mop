@@ -1,6 +1,6 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { getStatName } from '@sim/proto_utils/names';
+import { getStatName } from '@sim/proto/names';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';

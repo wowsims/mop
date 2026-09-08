@@ -1,6 +1,6 @@
 import { Party } from '@sim/raid/party';
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { Raid } from '@sim/raid/raid';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';

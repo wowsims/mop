@@ -1,5 +1,5 @@
-import { Database } from '@sim/proto_utils/database';
-import { nameToClass, nameToProfession, nameToRace } from '@sim/proto_utils/names';
+import { Database } from '@sim/proto/database';
+import { nameToClass, nameToProfession, nameToRace } from '@sim/proto/names';
 import type { GlyphConfig } from '@sim/talents/config';
 import { classGlyphsConfig } from '@sim/talents/factory';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';

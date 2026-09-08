@@ -1,9 +1,9 @@
 import { ItemSlot, ItemSpec, ItemSwap } from '@generated/proto/common';
 
 import type { Player } from '../player/player';
-import { EquippedItem } from '../proto_utils/equipped_item';
-import { ItemSwapGear } from '../proto_utils/gear';
-import { Stats } from '../proto_utils/stats';
+import { EquippedItem } from '../proto/equipped_item';
+import { ItemSwapGear } from '../proto/gear';
+import { Stats } from '../proto/stats';
 // Facade over the player's itemSwap* store fields (one shared `itemSwap`
 // version counter, see Player.patchItemSwap).
 export class ItemSwapSettings {

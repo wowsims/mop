@@ -3,8 +3,8 @@ import { ItemSlot, WeaponType } from '@generated/proto/common';
 
 import type { Player } from '../player/player';
 import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player/classes/capabilities';
-import { Gear } from '../proto_utils/gear';
-import { getGearIdentityKey } from '../proto_utils/items';
+import { Gear } from '../proto/gear';
+import { getGearIdentityKey } from '../proto/items';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,

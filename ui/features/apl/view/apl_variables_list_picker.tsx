@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { Player } from '@sim/player/player';
-import { renameAPLReference } from '@sim/proto_utils/apl_utils';
+import { renameAPLReference } from '@sim/proto/apl_utils';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { randomUUID } from '@sim/utils/misc';

@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { batch } from '@sim/state/batch';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';

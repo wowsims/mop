@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 

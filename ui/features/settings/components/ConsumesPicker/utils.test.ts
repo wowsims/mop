@@ -1,6 +1,6 @@
 import type { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import type { Database } from '@sim/proto_utils/database';
+import { ActionId } from '@sim/proto/action_id';
+import type { Database } from '@sim/proto/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import { Class, ConsumableType, Spec, type Stat } from '@generated/proto/common';
 import type { Consumable } from '@generated/proto/db';

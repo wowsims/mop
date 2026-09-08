@@ -1,5 +1,5 @@
-import { ActionId } from '@sim/proto_utils/action_id';
-import { getEmptyGemSocketIconUrl } from '@sim/proto_utils/gems';
+import { ActionId } from '@sim/proto/action_id';
+import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import type { GemColor } from '@generated/proto/common';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import { useActionId } from '@ui-kit/hooks/useActionId';

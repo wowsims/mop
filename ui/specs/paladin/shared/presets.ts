@@ -1,4 +1,4 @@
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { RaidBuffs } from '@generated/proto/common';
 
 export const DefaultRaidBuffs = RaidBuffs.create({

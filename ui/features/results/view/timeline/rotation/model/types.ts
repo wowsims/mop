@@ -1,7 +1,7 @@
-import type { ActionId } from '@sim/proto_utils/action_id';
-import type { AuraUptimeLog, CastLog, DamageLog, ResourceGroupLog } from '@sim/proto_utils/combat_log';
-import type SecondaryResource from '@sim/proto_utils/secondary_resource';
-import type { UnitMetrics } from '@sim/proto_utils/sim_result';
+import type { ActionId } from '@sim/proto/action_id';
+import type { AuraUptimeLog, CastLog, DamageLog, ResourceGroupLog } from '@sim/proto/combat_log';
+import type SecondaryResource from '@sim/proto/secondary_resource';
+import type { UnitMetrics } from '@sim/proto/sim_result';
 
 export const ROW_HEIGHTS = { cast: 32, aura: 32, resource: 32, header: 32, separator: 17 } as const;
 

@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@sim/raid/encounter';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs } from '@generated/proto/common';
 import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '@generated/proto/shaman';
 import { SavedTalents } from '@generated/proto/ui';

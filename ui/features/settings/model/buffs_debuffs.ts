@@ -1,4 +1,4 @@
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import {

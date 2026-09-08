@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@sim/bulk/utils';
-import { EquippedItem } from '@sim/proto_utils/equipped_item';
-import { getEligibleItemSlots } from '@sim/proto_utils/items';
+import { EquippedItem } from '@sim/proto/equipped_item';
+import { getEligibleItemSlots } from '@sim/proto/items';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { Emitter } from '@sim/state/events';
 import { subscribeBulkChange } from '@sim/state/subscriptions';

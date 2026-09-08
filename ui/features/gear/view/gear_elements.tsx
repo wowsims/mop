@@ -1,9 +1,9 @@
 /** @jsxImportSource @jsx-vanilla */
 import type { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
-import type { EquippedItem } from '@sim/proto_utils/equipped_item';
-import { getEmptyGemSocketIconUrl } from '@sim/proto_utils/gems';
+import { ActionId } from '@sim/proto/action_id';
+import { setActionIdWowheadHref } from '@sim/proto/action_id/dom';
+import type { EquippedItem } from '@sim/proto/equipped_item';
+import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { GemColor, ItemSlot } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';

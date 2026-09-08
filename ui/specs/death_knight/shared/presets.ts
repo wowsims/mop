@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 import { malkorokEncounterProto, singleTargetEncounterProto } from '@sim/presets/encounters';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { RaidBuffs } from '@generated/proto/common';
 
 // Shared by the frost and unholy DPS specs; blood tanks want a different mix.

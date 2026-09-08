@@ -3,9 +3,9 @@ import { ItemRandomSuffix, ItemSpec, ReforgeStat } from '@generated/proto/common
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@generated/proto/db';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
-import { Database } from '../proto_utils/database';
-import { EquippedItem } from '../proto_utils/equipped_item';
-import { Gear } from '../proto_utils/gear';
+import { Database } from '../proto/database';
+import { EquippedItem } from '../proto/equipped_item';
+import { Gear } from '../proto/gear';
 
 export const makeBulkGearDatabase = (db: Database, gearSets: Gear[], extraItems: EquippedItem[] = []): SimDatabase => {
 	const items = new Map<number, Item>();

@@ -16,9 +16,9 @@ import type {
 	PresetTalents,
 	PresetTalentsOptions,
 } from '@sim/presets/types';
-import { specTypeFunctions } from '@sim/proto_utils/spec_functions';
-import type { SpecRotation } from '@sim/proto_utils/spec_types';
-import { Stats } from '@sim/proto_utils/stats';
+import { specTypeFunctions } from '@sim/proto/spec_functions';
+import type { SpecRotation } from '@sim/proto/spec_types';
+import { Stats } from '@sim/proto/stats';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	Cooldowns,

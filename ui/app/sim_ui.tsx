@@ -2,9 +2,9 @@
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@sim/constants/other';
 import { isDevMode } from '@sim/utils/env';
 import { PlayerSpec, SimStatus } from '@sim/player/player_spec';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { Gear } from '@sim/proto_utils/gear';
-import { SimResult } from '@sim/proto_utils/sim_result';
+import { ActionId } from '@sim/proto/action_id';
+import { Gear } from '@sim/proto/gear';
+import { SimResult } from '@sim/proto/sim_result';
 import { RunSimOptions, Sim, SimError } from '@sim/sim';
 import type { ActionGroupItem, SimHost, SimWarning } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';

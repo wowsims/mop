@@ -1,6 +1,6 @@
 import { sanitizeId } from '@sim/utils/format';
 import type { Player } from '@sim/player/player';
-import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto_utils/stats';
+import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { subscribePlayerField, subscribeStatWeightsChange } from '@sim/state/subscriptions';
 import type { StatWeightsResult } from '@generated/proto/api';

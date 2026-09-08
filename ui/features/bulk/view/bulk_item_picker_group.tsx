@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { BulkSimItemSlot } from '@sim/bulk/utils';
-import { EquippedItem } from '@sim/proto_utils/equipped_item';
+import { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import i18n from '@i18n/config';
 import { getBulkSlotI18nKey } from '@i18n/entity_mapping';

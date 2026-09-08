@@ -1,5 +1,5 @@
-import { UnitStat, UnitStatPresets } from '@sim/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { Debuffs, PseudoStat, RaidBuffs } from '@generated/proto/common';
 
 export const LIVING_BOMB_BREAKPOINTS: UnitStatPresets = {

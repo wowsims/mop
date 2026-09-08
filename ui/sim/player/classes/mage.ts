@@ -3,7 +3,7 @@ import { Class } from '@generated/proto/common';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { ArcaneMage, FireMage, FrostMage } from '../specs/mage';
-import type { MageSpecs } from '../../proto_utils/spec_types';
+import type { MageSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Mage extends PlayerClass<Class.ClassMage> {

@@ -1,4 +1,4 @@
-import { SimResult, SimResultFilter } from '@sim/proto_utils/sim_result';
+import { SimResult, SimResultFilter } from '@sim/proto/sim_result';
 
 export interface SimResultData {
 	result: SimResult;

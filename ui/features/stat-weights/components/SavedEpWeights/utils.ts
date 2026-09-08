@@ -1,4 +1,4 @@
-import type { Stats } from '@sim/proto_utils/stats';
+import type { Stats } from '@sim/proto/stats';
 import { SavedEPWeights } from '@generated/proto/ui';
 
 export const epWeightsData = (weights: Stats): SavedEPWeights => SavedEPWeights.create({ epWeights: weights.toProto() });

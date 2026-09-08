@@ -2,7 +2,7 @@
 // one that fixes a defect says so. The store, the worker and the saved-data manager are stubbed —
 // what is under test is the view, and every source it reads is driven directly.
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import { Stats, UnitStat } from '@sim/proto_utils/stats';
+import { Stats, UnitStat } from '@sim/proto/stats';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Class, PseudoStat, Stat } from '@generated/proto/common';
 import { act, fireEvent, render } from '@testing-library/react';

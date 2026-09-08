@@ -1,6 +1,6 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import { externalRel } from '@sim/utils/links';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';

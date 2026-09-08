@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { sum } from '@sim/utils/math';
-import { ActionId } from '@sim/proto_utils/action_id';
-import { AuraLog, AuraUptimeLog, CombatLog, computeActionIdAsString, isAura, PlainLog } from '@sim/proto_utils/combat_log';
+import { ActionId } from '@sim/proto/action_id';
+import { AuraLog, AuraUptimeLog, CombatLog, computeActionIdAsString, isAura, PlainLog } from '@sim/proto/combat_log';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
 import { sleep } from '@sim/utils/misc';

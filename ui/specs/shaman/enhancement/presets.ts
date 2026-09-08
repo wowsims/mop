@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
 import * as Mechanics from '@sim/constants/mechanics';
-import { Stats } from '@sim/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
+import { Stats } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { Class, ConsumesSpec, Debuffs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '@generated/proto/common';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,

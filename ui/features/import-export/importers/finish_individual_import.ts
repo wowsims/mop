@@ -1,5 +1,5 @@
-import { Database } from '@sim/proto_utils/database';
-import { classNames } from '@sim/proto_utils/names';
+import { Database } from '@sim/proto/database';
+import { classNames } from '@sim/proto/names';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';
 import type { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';

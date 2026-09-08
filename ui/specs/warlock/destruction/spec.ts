@@ -2,7 +2,7 @@ import { HASTE_RATING_PER_HASTE_PERCENT } from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
-import { DEFAULT_CASTER_GEM_STATS, Stats, UnitStat } from '@sim/proto_utils/stats';
+import { DEFAULT_CASTER_GEM_STATS, Stats, UnitStat } from '@sim/proto/stats';
 import { defineSpec } from '@sim/spec_config';
 import { batch } from '@sim/state/batch';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';

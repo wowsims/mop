@@ -1,6 +1,6 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { EquippedItem } from '@sim/proto_utils/equipped_item';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import type { GearData } from '@features/gear/types';
 import { GemColor, ItemSlot } from '@generated/proto/common';
@@ -33,7 +33,7 @@ vi.mock('@ui-kit/hooks/useActionId', () => ({
 }));
 
 const tooltip = { settles: [] as Array<(url: string) => void> };
-vi.mock('@sim/proto_utils/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/dom', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
 }));
 

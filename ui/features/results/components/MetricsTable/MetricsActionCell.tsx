@@ -1,6 +1,6 @@
 import { externalRel } from '@sim/utils/links';
-import type { ActionId } from '@sim/proto_utils/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto_utils/action_id/dom';
+import type { ActionId } from '@sim/proto/action_id';
+import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';

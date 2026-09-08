@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import type { Database } from '@sim/proto_utils/database';
+import type { Database } from '@sim/proto/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { Class, ConsumableType, Spec, type Stat } from '@generated/proto/common';

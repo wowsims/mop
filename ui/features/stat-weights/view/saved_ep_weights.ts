@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';
 import { subscribePlayerField } from '@sim/state/subscriptions';

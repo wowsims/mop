@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { Faction, Stat } from '@generated/proto/common';
 import { IconEnumPicker, IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';

@@ -1,5 +1,5 @@
 import { Player } from '@sim/player/player';
-import { emptyUnitReference } from '@sim/proto_utils/utils';
+import { emptyUnitReference } from '@sim/proto/utils';
 import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';

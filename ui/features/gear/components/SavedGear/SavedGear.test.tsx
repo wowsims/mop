@@ -1,6 +1,6 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { subscribeGated } from '@sim/state/batch';
-import { Stats } from '@sim/proto_utils/stats';
+import { Stats } from '@sim/proto/stats';
 import { EquipmentSpec, ItemSpec } from '@generated/proto/common';
 import { SavedGearSet } from '@generated/proto/ui';
 import { act, fireEvent, render } from '@testing-library/react';

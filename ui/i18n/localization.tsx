@@ -4,7 +4,7 @@ import { LaunchStatus } from '@sim/constants/other';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { PlayerClass } from '@sim/player/player_class';
 import { PlayerSpec } from '@sim/player/player_spec';
-import { resourceNames } from '@sim/proto_utils/names';
+import { resourceNames } from '@sim/proto/names';
 import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';

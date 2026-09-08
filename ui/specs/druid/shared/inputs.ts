@@ -1,6 +1,6 @@
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
-import type { DruidSpecs } from '@sim/proto_utils/spec_types';
+import { ActionId } from '@sim/proto/action_id';
+import type { DruidSpecs } from '@sim/proto/spec_types';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 // Configuration for class-specific UI elements on the settings tab.

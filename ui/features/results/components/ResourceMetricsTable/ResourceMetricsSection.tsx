@@ -1,4 +1,4 @@
-import { ResourceMetrics } from '@sim/proto_utils/sim_result';
+import { ResourceMetrics } from '@sim/proto/sim_result';
 import type { ResourceType } from '@generated/proto/spell';
 import clsx from 'clsx';
 import { useMemo } from 'react';

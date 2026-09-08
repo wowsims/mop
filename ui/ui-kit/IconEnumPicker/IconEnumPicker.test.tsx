@@ -1,4 +1,4 @@
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
 import { type IconEnumPickerConfig, IconEnumPickerDirection } from '@ui-kit/pickers/icon_enum_picker';

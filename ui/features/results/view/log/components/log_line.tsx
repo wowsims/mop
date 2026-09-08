@@ -12,10 +12,10 @@ import type {
 	ResourceGroupLog,
 	ResourceLog,
 	StatChangeLog,
-} from '@sim/proto_utils/combat_log';
-import { matchTimestampPrefix } from '@sim/proto_utils/combat_log';
-import { resourceNames } from '@sim/proto_utils/names';
-import { SECONDARY_RESOURCES } from '@sim/proto_utils/secondary_resource';
+} from '@sim/proto/combat_log';
+import { matchTimestampPrefix } from '@sim/proto/combat_log';
+import { resourceNames } from '@sim/proto/names';
+import { SECONDARY_RESOURCES } from '@sim/proto/secondary_resource';
 import { ResourceType } from '@generated/proto/spell';
 
 import { ActionLink } from './action_link';

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { Outcome } from '@sim/proto_utils/combat_log/types';
-import { OUTCOMES } from '@sim/proto_utils/combat_log/types';
+import type { Outcome } from '@sim/proto/combat_log/types';
+import { OUTCOMES } from '@sim/proto/combat_log/types';
 import { Emitter } from '@sim/state/events';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';

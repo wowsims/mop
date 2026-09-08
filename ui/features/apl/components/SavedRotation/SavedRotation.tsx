@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
-import { isEqualAPLRotation } from '@sim/proto_utils/apl_utils';
+import { isEqualAPLRotation } from '@sim/proto/apl_utils';
 import { batch } from '@sim/state/batch';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { APLRotation } from '@generated/proto/apl';

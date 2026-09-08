@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 const tooltip = vi.hoisted(() => ({ settle: new Map<number, (url: string) => void>() }));
 
-vi.mock('@sim/proto_utils/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/dom', () => ({
 	actionIdWowheadTooltipData: (actionId: { spellId: number }) => new Promise<string>(resolve => tooltip.settle.set(actionId.spellId, resolve)),
 }));
-vi.mock('@sim/proto_utils/enchants', () => ({ getEnchantDescription: async (enchant: Enchant) => enchant.name }));
+vi.mock('@sim/proto/enchants', () => ({ getEnchantDescription: async (enchant: Enchant) => enchant.name }));
 
 const { EnchantLabel } = await import('./EnchantLabel');
 

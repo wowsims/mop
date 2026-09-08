@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto_utils/action_id';
+import { ActionId } from '@sim/proto/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { APLValidation } from '@generated/proto/api';
 import { LogLevel } from '@generated/proto/common';

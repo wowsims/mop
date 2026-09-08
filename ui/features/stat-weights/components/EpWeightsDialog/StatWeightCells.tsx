@@ -1,4 +1,4 @@
-import type { UnitStat } from '@sim/proto_utils/stats';
+import type { UnitStat } from '@sim/proto/stats';
 import type { StatWeightValues } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import clsx from 'clsx';

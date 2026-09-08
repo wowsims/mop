@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import type { RogueSpecs } from '@sim/proto_utils/spec_types';
+import type { RogueSpecs } from '@sim/proto/spec_types';
 import type { DerivedSetting } from '@sim/spec_config';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerChange } from '@sim/state/subscriptions';
 import { RogueOptions_PoisonOptions } from '@generated/proto/rogue';
