@@ -1,14 +1,15 @@
 /** @jsxImportSource @jsx-vanilla */
 import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@sim/utils/format';
 import { zTest } from '@sim/utils/math';
-import { ActionMetrics, SimResult, SimResultFilter } from '@sim/proto/sim_result';
+import { SimResult, SimResultFilter } from '@sim/proto/sim_result';
 import type { SimHost } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
 import { batch } from '@sim/state/batch';
 import { Emitter } from '@sim/state/events';
-import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
+import { ReferenceData, resultMetricClasses } from '@features/results/model/sim_results';
+import { type ResultMetric, type ToplineMetricsOptions, toplineResultMetrics } from '@features/results/model/topline_metrics';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@generated/proto/api';
-import { Encounter as EncounterProto, Spec } from '@generated/proto/common';
+import { Encounter as EncounterProto } from '@generated/proto/common';
 import { SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateResultMetricLabel, translateResultMetricTooltip } from '@i18n/localization';
@@ -67,11 +68,7 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 }
 
 export class SimResultsManager {
-	static resultMetricCategories = resultMetricCategories;
-
 	static resultMetricClasses = resultMetricClasses;
-
-	static metricsClasses = metricsClasses;
 
 	// Events (results arrived / reference set or swapped), not state.
 	readonly currentChangeEmitter = new Emitter<void>();
@@ -363,160 +360,11 @@ export class SimResultsManager {
 	}
 
 	static makeToplineResultsContent(simResult: SimResult, filter?: SimResultFilter, options: ToplineResultOptions = {}) {
-		const { showOutOfMana = false } = options;
-
-		const players = simResult.getRaidIndexedPlayers(filter);
-
-		const resultColumns: ResultMetric[] = [];
-
-		const playerMetrics = players[0];
-		const showHPSMetricsForTanks = [
-			Spec.SpecBloodDeathKnight,
-			Spec.SpecGuardianDruid,
-			Spec.SpecBrewmasterMonk,
-			Spec.SpecProtectionPaladin,
-			Spec.SpecProtectionWarrior,
-		].includes(players[0].spec?.specID);
-
-		if (playerMetrics.getTargetIndex(filter) === null) {
-			const { chanceOfDeath, dps: dpsMetrics, tps: tpsMetrics, dtps: dtpsMetrics, tmi: tmiMetrics } = playerMetrics;
-
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.dps.label'),
-				average: dpsMetrics.avg,
-				stdev: dpsMetrics.stdev,
-				classes: this.getResultsLineClasses('dps'),
-			});
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.tps.label'),
-				average: tpsMetrics.avg,
-				stdev: tpsMetrics.stdev,
-				classes: this.getResultsLineClasses('tps'),
-			});
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.dtps.label'),
-				average: dtpsMetrics.avg,
-				stdev: dtpsMetrics.stdev,
-				classes: this.getResultsLineClasses('dtps'),
-			});
-
-			if (showHPSMetricsForTanks) {
-				const { hps } = playerMetrics;
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.hps.label'),
-					average: hps.avg,
-					stdev: hps.stdev,
-					classes: this.getResultsLineClasses('hps'),
-				});
-			}
-
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.tmi.label'),
-				average: tmiMetrics.avg,
-				stdev: tmiMetrics.stdev,
-				classes: this.getResultsLineClasses('tmi'),
-				unit: 'percentage',
-			});
-
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.cod.label'),
-				average: chanceOfDeath.avg,
-				stdev: chanceOfDeath.stdev,
-				classes: this.getResultsLineClasses('cod'),
-				unit: 'percentage',
-			});
-		} else {
-			const actions = simResult.getRaidIndexedActionMetrics(filter);
-			if (!!actions.length) {
-				const { dps, tps } = ActionMetrics.merge(actions);
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.dps.label'),
-					average: dps,
-					classes: this.getResultsLineClasses('dps'),
-				});
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.tps.label'),
-					average: tps,
-					classes: this.getResultsLineClasses('tps'),
-				});
-			}
-
-			const targetActions = simResult
-				.getTargets(filter)
-				.map(target => target.actions)
-				.flat()
-				.map(action => action.forTarget({ player: playerMetrics.unitIndex }));
-			if (!!targetActions.length) {
-				const { dps: dtps } = ActionMetrics.merge(targetActions);
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.dtps.label'),
-					average: dtps,
-					classes: this.getResultsLineClasses('dtps'),
-				});
-			}
-
-			if (showHPSMetricsForTanks) {
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.hps.label'),
-					average: playerMetrics.hps.avg,
-					stdev: playerMetrics.hps.stdev,
-					classes: this.getResultsLineClasses('hps'),
-				});
-			}
-		}
-
-		if (!showHPSMetricsForTanks) {
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.tto.label'),
-				average: playerMetrics.tto.avg,
-				stdev: playerMetrics.tto.stdev,
-				classes: this.getResultsLineClasses('tto'),
-				unit: 'seconds',
-			});
-
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.hps.label'),
-				average: playerMetrics.hps.avg,
-				stdev: playerMetrics.hps.stdev,
-				classes: this.getResultsLineClasses('hps'),
-			});
-		}
-
-		if (simResult.request.encounter?.useHealth) {
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.dur.label'),
-				average: simResult.result.avgIterationDuration,
-				classes: this.getResultsLineClasses('dur'),
-				unit: 'seconds',
-			});
-		}
-
-		if (showOutOfMana) {
-			const player = players[0];
-			const secondsOOM = player.secondsOomAvg;
-			const percentOOM = secondsOOM / simResult.encounterMetrics.durationSeconds;
-			const dangerLevel = percentOOM < 0.01 ? 'safe' : percentOOM < 0.05 ? 'warning' : 'danger';
-
-			resultColumns.push({
-				name: i18n.t('sidebar.results.metrics.oom.label'),
-				average: secondsOOM,
-				classes: [this.getResultsLineClasses('oom'), dangerLevel].join(' '),
-				unit: 'seconds',
-			});
-		}
+		const resultColumns = toplineResultMetrics(simResult, filter, { showOutOfMana: options.showOutOfMana });
 
 		if (options.asList) return this.buildResultsList(resultColumns);
 
 		return this.buildResultsTable(resultColumns);
-	}
-
-	private static getResultsLineClasses(metric: keyof ResultMetrics): string {
-		const classes = [this.resultMetricClasses[metric]];
-		if (this.resultMetricCategories[metric]) classes.push(this.metricsClasses[this.resultMetricCategories[metric]]);
-
-		return classes.join(' ');
 	}
 
 	private static buildResultsTable(data: ResultMetric[]): Element {
@@ -619,15 +467,6 @@ export class SimResultsManager {
 	}
 }
 
-type ToplineResultOptions = {
-	showOutOfMana?: boolean;
+type ToplineResultOptions = ToplineMetricsOptions & {
 	asList?: boolean;
-};
-
-type ResultMetric = {
-	name: string;
-	average: number;
-	stdev?: number;
-	classes?: string;
-	unit?: 'percentage' | 'number' | 'seconds' | undefined;
 };

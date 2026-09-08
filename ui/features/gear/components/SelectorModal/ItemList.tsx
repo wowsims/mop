@@ -26,7 +26,7 @@ import { getItemIdByItemType } from '../../model/item_ids';
 import { matchesSearch } from '../../model/item_search';
 import { defaultSortBy, ItemListSortBy, sortItemIdxs } from '../../model/item_sort';
 import { type ItemDataFields, getTranslatedTabLabel, type ItemListType, SelectorModalTabs } from '../../types';
-import { FiltersMenu } from '../../view/filters_menu';
+import { FiltersMenu } from '../FiltersMenu';
 import { ItemListRow } from './ItemListRow';
 import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils';
 
@@ -52,7 +52,7 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 	const [sortBy, setSortBy] = useState(() => defaultSortBy(slot, label));
 	const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
 	const listRef = useRef<HTMLDivElement>(null);
-	const filtersMenu = useRef<FiltersMenu | null>(null);
+	const [filtersOpen, setFiltersOpen] = useState(false);
 	const tooltipId = useId();
 
 	const filters = useStoreSubscribe(
@@ -113,33 +113,17 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 	const mountMatchingGems = useLegacyMount(parent => makeShowMatchingGemsSelector(parent, sim), [sim]);
 	const mountShowEP = useLegacyMount(parent => makeShowEPValuesSelector(parent, sim), [sim]);
 
-	// The filters menu is still a Bootstrap `BaseModal`, and it lives inside the dialog for the same
-	// reason the vanilla one lived inside the modal body: a press inside the popup is not an outside
-	// press, so Base UI does not close the dialog underneath it.
-	const mountFiltersMenu = useCallback(
-		(parent: HTMLElement | null) => {
-			if (!parent) return;
-			const menu = new FiltersMenu(parent, player, slot);
-			filtersMenu.current = menu;
-			return () => {
-				filtersMenu.current = null;
-				menu.dispose();
-				menu.rootElem.remove();
-			};
-		},
-		[player, slot],
-	);
-
 	return (
 		<div id={id} role="tabpanel" aria-labelledby={tabId} className={clsx('selector-modal-tab-pane tab-pane fade', active && 'active show')}>
 			<div className="selector-modal-filters">
 				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search" />
 				{label === SelectorModalTabs.Items && (
 					<>
-						<button type="button" className="selector-modal-filters-button btn btn-primary" onClick={() => filtersMenu.current?.open()}>
+						<button type="button" className="selector-modal-filters-button btn btn-primary" onClick={() => setFiltersOpen(true)}>
 							{i18n.t('gear_tab.gear_picker.filters_button')}
 						</button>
-						<div ref={mountFiltersMenu} />
+						{/* Rendered inside the dialog's own React tree, which is how Base UI knows the two are nested: a press in this one is not an outside press for the selector modal underneath it. */}
+						<FiltersMenu slot={slot} open={filtersOpen} onOpenChange={setFiltersOpen} />
 					</>
 				)}
 				<div ref={mountPhase} className="selector-modal-phase-selector" />

@@ -56,12 +56,12 @@ vi.mock('../../view/results_filter', async () => {
 		},
 	};
 });
-vi.mock('../../view/topline_results', async () => ({ ToplineResults: await island('topline', 'topline-results-root')() }));
-vi.mock('../../view/dps_histogram', async () => ({ DpsHistogram: await island('histogram', 'dps-histogram-root')() }));
 vi.mock('../../view/timeline', async () => ({ Timeline: await island('timeline', 'timeline-root')() }));
 vi.mock('../../view/combat_replay', async () => ({ CombatReplay: await island('replay', 'combat-replay-root')() }));
 vi.mock('../../view/log/log_view', async () => ({ LogView: await island('log', 'log-runner-root')() }));
 
+vi.mock('../ToplineResults', () => ({ ToplineResults: () => <div className="topline-results-root" /> }));
+vi.mock('../DpsHistogram', () => ({ DpsHistogram: () => <div className="dps-histogram-root" /> }));
 vi.mock('../DamageMetricsTable', () => ({ DamageMetricsTable: () => <div className="damage-metrics-root" /> }));
 vi.mock('../HealingMetricsTable', () => ({ HealingMetricsTable: () => <div className="healing-metrics-root" /> }));
 vi.mock('../DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div className="dtps-metrics-root" /> }));
@@ -157,17 +157,13 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('#buffsTab .buff-aura-metrics > .buff-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#debuffsTab .debuff-aura-metrics > .debuff-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#resourcesTab .resource-metrics > .resource-metrics-root')).toHaveLength(1);
+		expect(container.querySelectorAll('.dr-row.topline-results > .topline-results-root')).toHaveLength(3);
+		expect(container.querySelectorAll('#damageTab .dr-row.dps-histogram > .dps-histogram-root')).toHaveLength(1);
 	});
 
 	it('builds each vanilla island into the div that used to be its parent, with no wrapper', () => {
 		const { container } = renderPane();
-		expect(islands.track('topline').parents.map(parent => parent.className)).toEqual([
-			'dr-row topline-results',
-			'dr-row topline-results',
-			'dr-row topline-results',
-		]);
 		expect(islands.track('filter').parents[0].className).toBe('results-filter');
-		expect(islands.track('histogram').parents[0].className).toBe('dr-row dps-histogram');
 		expect(islands.track('timeline').parents[0].className).toBe('timeline');
 		expect(islands.track('replay').parents[0].className).toBe('combat-replay');
 		expect(islands.track('log').parents[0].className).toBe('log');

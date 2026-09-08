@@ -37,6 +37,10 @@ const OPENERS = [
 	// Last, because it opens over whatever the openers above left on screen. The gear tab is the one
 	// open at load on both builds, so a cell is clickable without touching either tab strip.
 	['gear selector modal', ['#gear-tab .gear-picker-root .item-picker-root .item-picker-icon']],
+	// Opened from inside the modal above, so it has to follow it. Its two `--bs-modal-padding`
+	// references are the reason it is here: a Bootstrap modal nested in another modal resolves them,
+	// a portaled dialog does not, and no other element on the page would reveal that.
+	['gear filters menu', ['.selector-modal-filters-button']],
 ];
 
 // Below this, the run learned nothing and the pass would be vacuous.

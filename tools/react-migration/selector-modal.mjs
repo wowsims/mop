@@ -390,32 +390,83 @@ await page.keyboard.press('Escape');
 await settle(600);
 
 // ---------------------------------------------------------------------------
-// Last, because the filters menu's own close button does not close it on either build and the
-// modal it leaves on screen would sit over everything after it. What is asserted is the part the
-// port changes: it is a Bootstrap modal opening over a Base UI dialog, so a press inside it must
-// not read as an outside press and dismiss the dialog underneath.
+// Last, because it leaves a second dialog on screen and Escape here takes the selector modal with it
+// on one of the two builds. What is asserted is the part the port changes: it is a dialog opening
+// over another dialog, so a press inside it must not read as an outside press and dismiss the one
+// underneath. On the baseline that is a Bootstrap modal built inside the other modal's body; on the
+// port both are Base UI dialogs, nested through the React tree rather than the DOM, with the popup
+// portaled out to the sim root as a sibling of the parent's portal.
+//
+// `>` and not a descendant combinator, and this is not a nicety: on the baseline the filters menu's
+// own `.modal` sits INSIDE the selector modal's, so `.modal.show .filters-menu` matches through the
+// OUTER one and reads "open" whether or not this menu is. Under the descendant form this file
+// recorded the baseline's close button as broken; it is not, and neither was the menu open before
+// Filters was ever clicked.
+const FILTERS_ROOT = '.modal.show > .filters-menu, .sim-dialog-popup.filters-menu[data-open]';
+
 say('\nthe filters menu, opened over the modal');
 await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
 await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
 await pane().locator('.selector-modal-filters-button').click();
 await settle(900);
-const filtersMenu = await page.evaluate(() => {
-	const menu = document.querySelector('.modal.show .filters-menu');
+const filtersMenu = await page.evaluate(root => {
+	const menu = document.querySelector(root);
 	return {
 		open: !!menu,
 		selectorStillOpen: window.selectorProbe.open(),
 		sections: [...(menu?.querySelectorAll('.menu-section-title') ?? [])].map(title => (title.textContent ?? '').replace(/\s+/g, ' ').trim()),
+		pickers: [...(menu?.querySelectorAll('[id^=filter]') ?? [])].map(el => `${el.id}=${el.type === 'checkbox' ? el.checked : el.value}`),
 	};
-});
+}, FILTERS_ROOT);
 say(`  opened      ${filtersMenu.open} modalStillOpen=${filtersMenu.selectorStillOpen}`);
 say(`  sections    ${JSON.stringify(filtersMenu.sections)}`);
+say(`  pickers     ${filtersMenu.pickers.length}`);
+for (const picker of filtersMenu.pickers) say(`              ${picker}`);
+if (!filtersMenu.pickers.length) problems.push('the filters menu built no pickers');
 if (!filtersMenu.open) problems.push('the Filters button opened no filters menu');
 if (!filtersMenu.selectorStillOpen) problems.push('opening the filters menu closed the selector modal underneath it');
 await pane().locator('.selector-modal-search').fill('helm');
 await settle(700);
 if (!(await page.evaluate(() => window.selectorProbe.open()))) problems.push('typing behind the filters menu closed the selector modal');
 say(`  typing      modalStillOpen=${await page.evaluate(() => window.selectorProbe.open())}`);
+
+// Both builds close on their own close button — `BaseModal`'s `btn-close` calls `Modal.hide()`,
+// `Dialog`'s is a controlled `onOpenChange(false)`.
+const menuClosed = await page.evaluate(root => {
+	document.querySelector(root)?.querySelector('.btn-close, .sim-dialog-close')?.click();
+	return new Promise(resolve => setTimeout(() => resolve(!document.querySelector(root)), 700));
+}, FILTERS_ROOT);
+say(`  close       closed=${menuClosed}`);
+if (!menuClosed) problems.push('the filters menu did not close on its own close button');
+
+// The second recorded divergence, and the reason the menu is re-opened for it. `BaseModal.open()`
+// puts an Escape handler on `document` for every modal it opens and never scopes it to the topmost
+// one, so on the baseline Escape takes the selector modal down with the filters menu. Base UI
+// dismisses the innermost dialog of the floating tree and leaves the one underneath open.
+if (!(await page.evaluate(() => window.selectorProbe.open()))) {
+	await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
+	await page.waitForSelector(modalRoot, { timeout: 20000 });
+	await settle(900);
+}
+// Clicked through the DOM, not the locator: on the baseline the menu is still up from the step
+// above and its backdrop makes the button fail Playwright's actionability check.
+await page.evaluate(
+	({ roots, filtersRoot }) => {
+		if (document.querySelector(filtersRoot)) return;
+		document.querySelector(roots.map(root => `${root} .selector-modal-tab-pane.active .selector-modal-filters-button`).join(', '))?.click();
+	},
+	{ roots: ROOTS, filtersRoot: FILTERS_ROOT },
+);
+await settle(900);
+await page.keyboard.press('Escape');
+await settle(700);
+const afterEscape = await page.evaluate(root => ({ filters: !!document.querySelector(root), selector: window.selectorProbe.open() }), FILTERS_ROOT);
+const expectedEscape = { filters: false, selector: PORT !== PORTS.base };
+say(`  escape      ${JSON.stringify(afterEscape) === JSON.stringify(expectedEscape) ? 'as-recorded' : `UNEXPECTED ${JSON.stringify(afterEscape)}`}`);
+if (JSON.stringify(afterEscape) !== JSON.stringify(expectedEscape)) {
+	problems.push(`Escape over the filters menu left ${JSON.stringify(afterEscape)}, recorded as ${JSON.stringify(expectedEscape)}`);
+}
 
 say('');
 for (const problem of problems) say(`  PROBLEM ${problem}`);

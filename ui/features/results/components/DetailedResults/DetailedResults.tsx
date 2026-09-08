@@ -14,19 +14,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
 import { CombatReplay } from '../../view/combat_replay';
-import { DpsHistogram } from '../../view/dps_histogram';
 import { type LogExporterFactory, LogView } from '../../view/log/log_view';
 import type { ResultComponent } from '../../view/result_component';
 import type { SimResultsManager } from '../../view/results_action';
 import { ResultsFilter } from '../../view/results_filter';
 import { Timeline } from '../../view/timeline';
-import { ToplineResults } from '../../view/topline_results';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
 import { DamageMetricsTable } from '../DamageMetricsTable';
+import { DpsHistogram } from '../DpsHistogram';
 import { DtpsMetricsTable } from '../DtpsMetricsTable';
 import { HealingMetricsTable } from '../HealingMetricsTable';
 import { ResourceMetricsTable } from '../ResourceMetricsTable';
+import { ToplineResults } from '../ToplineResults';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
 import { DEFAULT_DETAILED_RESULTS_TAB, DETAILED_RESULTS_TABS } from './utils';
@@ -70,10 +70,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		},
 		[resultsEmitter],
 	);
-	const mountDamageTopline = useLegacyMount(parent => new ToplineResults({ parent, resultsEmitter }), [resultsEmitter]);
-	const mountHealingTopline = useLegacyMount(parent => new ToplineResults({ parent, resultsEmitter }), [resultsEmitter]);
-	const mountDamageTakenTopline = useLegacyMount(parent => new ToplineResults({ parent, resultsEmitter }), [resultsEmitter]);
-	const mountDpsHistogram = useLegacyMount(parent => new DpsHistogram({ parent, resultsEmitter }), [resultsEmitter]);
 	const mountTimeline = useLegacyMount(
 		parent => {
 			timeline.current = new Timeline({ parent, resultsEmitter, secondaryResource, deferUntilShown: true });
@@ -254,16 +250,22 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 						{i18n.t('results_tab.details.no_results')}
 					</div>
 					<DetailedResultsPane id="damageTab" className="damage-content" {...paneState('damageTab')}>
-						<div className="dr-row topline-results" ref={mountDamageTopline} />
+						<div className="dr-row topline-results">
+							<ToplineResults />
+						</div>
 						<div className="dr-row">
 							<div className="damage-metrics">
 								<DamageMetricsTable />
 							</div>
 						</div>
-						<div className="dr-row dps-histogram" ref={mountDpsHistogram} />
+						<div className="dr-row dps-histogram">
+							<DpsHistogram />
+						</div>
 					</DetailedResultsPane>
 					<DetailedResultsPane id="healingTab" className="healing-content" {...paneState('healingTab')}>
-						<div className="dr-row topline-results" ref={mountHealingTopline} />
+						<div className="dr-row topline-results">
+							<ToplineResults />
+						</div>
 						<div className="dr-row">
 							<div className="healing-spell-metrics">
 								<HealingMetricsTable />
@@ -271,7 +273,9 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 						</div>
 					</DetailedResultsPane>
 					<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" {...paneState('damageTakenTab')}>
-						<div className="dr-row topline-results" ref={mountDamageTakenTopline} />
+						<div className="dr-row topline-results">
+							<ToplineResults />
+						</div>
 						<div className="dr-row">
 							<div className="dtps-metrics">
 								<DtpsMetricsTable />

@@ -1,18 +1,24 @@
+import './DpsHistogram.scss';
+
 import i18n from '@i18n/config';
 import { Chart } from 'chart.js';
+import { useEffect, useRef } from 'react';
 
-import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
+import { useSimResult } from '../../hooks/useSimResult';
 
-export class DpsHistogram extends ResultComponent {
-	constructor(config: ResultComponentConfig) {
-		config.rootCssClass = 'dps-histogram-root';
-		super(config);
-	}
+const IN_STDEV = '#1E87F0';
+const OUT_OF_STDEV = '#FF6961';
 
-	onSimResult(resultData: SimResultData) {
-		const chartBounds = this.rootElem.getBoundingClientRect();
+export const DpsHistogram = () => {
+	const resultData = useSimResult();
+	const rootRef = useRef<HTMLDivElement>(null);
 
-		this.rootElem.textContent = '';
+	// Chart.js owns the canvas, so the canvas is built here rather than rendered; the root div is React's.
+	useEffect(() => {
+		const root = rootRef.current;
+		if (!resultData || !root) return;
+
+		const chartBounds = root.getBoundingClientRect();
 		const chartCanvas = document.createElement('canvas');
 		chartCanvas.height = chartBounds.height;
 		chartCanvas.width = chartBounds.width;
@@ -25,18 +31,14 @@ export class DpsHistogram extends ResultComponent {
 		const colors: Array<string> = [];
 
 		const labels = Object.keys(damageMetrics.hist);
-		labels.forEach((k, _i) => {
+		labels.forEach(k => {
 			vals.push(damageMetrics.hist[Number(k)]);
 			const val = parseInt(k);
-			if (val > min && val < max) {
-				colors.push('#1E87F0');
-			} else {
-				colors.push('#FF6961');
-			}
+			colors.push(val > min && val < max ? IN_STDEV : OUT_OF_STDEV);
 		});
 
 		const ctx = chartCanvas.getContext('2d')!;
-		this.rootElem.appendChild(chartCanvas);
+		root.replaceChildren(chartCanvas);
 
 		const chart = new Chart(ctx, {
 			type: 'bar',
@@ -70,6 +72,12 @@ export class DpsHistogram extends ResultComponent {
 				},
 			},
 		});
-		this.addOnDisposeCallback(() => chart.destroy());
-	}
-}
+
+		return () => {
+			chart.destroy();
+			root.replaceChildren();
+		};
+	}, [resultData]);
+
+	return <div className="dps-histogram-root" ref={rootRef} />;
+};
