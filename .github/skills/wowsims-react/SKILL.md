@@ -337,7 +337,8 @@ of the duplication sweep was to build each shape once.
 | `ItemSwapPicker` | `ui/features/item-swap/components/ItemSwapPicker/` | `features/item-swap/view/item_swap_picker.tsx` (**deleted** — one consumer) | `itemSlots`, `note` | the toggle, the swap button, and that the icon pickers are the group's own children |
 | `ImportExportMenu` | `ui/app/header/ImportExportMenu/` | Bootstrap's dropdown plugin + `SimHeader.addImportExportLink` | `kind`, `icon`, `title`, and the registry it reads — whose entries are *either* a vanilla `open()` or a React dialog it renders | the popup's markup and styling, that the contents arrive asynchronously, and which dialog is open |
 | `Dialog` | `ui/ui-kit/Dialog/` | `ui-kit/base_modal.tsx` (still live, dual-stack — ~15 subclasses) | `size`, `title`, `header`, `footer`, `preventClose`, `scrollContents`, `cssClass`, `container`, and `elevated` | the header/body/footer stack, the close button, and that the popup is the merge of `.modal-dialog` and `.modal-content` |
-| `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `cssClass`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state and everything a worker message moves — the caption, the bar, its text, the clock — is a DOM write through `ProgressTrackerHandle.setProgress`, never a render |
+| `Popover` | `ui/ui-kit/Popover/` | `tippy({ interactive: true, trigger: 'click' })` — the reforge settings panel's `buildContextMenu` in `features/reforge/view/reforge_panel.tsx` (still live, vanilla) | `trigger`, `triggerClassName` and `triggerProps` (the trigger is the only element the popover puts in the page's flow); `open`/`onOpenChange`, both optional, so omitting them gives an uncontrolled popover the trigger drives; `className` on the popup, `container`, `side`/`align`/`sideOffset`, and `initialFocus` | that it is `Popover` and not `Menu` — the content is a form, not items — `modal={false}`, the tooltip-token box tippy drew, and that closing unmounts the children |
+| `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `className`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state, and what a worker message moves goes through `ProgressTrackerHandle.setProgress` — the clock stays a DOM write, the bar is now local state in `ProgressTrackerBar` (Base UI `Progress`), so a tick commits that leaf and never the dialog |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
 | `useCopyToClipboard` | `ui/ui-kit/hooks/useCopyToClipboard.ts` | the copy half of `ui-kit/copy_button.tsx` (still live — the log exporter view and the reforge panel keep it) | **nothing about the button** — each caller renders its own `Button` with its own class, label and tooltip, which is the only axis its three consumers varied on; a `CopyButton` component would have fixed exactly that | the copy and its feedback: `getContent` read at click time (one caller lazily re-exports and fires analytics inside it), the vanilla 1.5s copied window, and a re-entrancy guard held in a **ref** — state has not flushed when a second click lands in the same task, so a state guard copies twice. Wraps `react-use`'s hook |
 | `useWowheadDataset` | `ui/ui-kit/hooks/useWowheadDataset.ts` | the `data-wowhead` effect in `GlyphPicker` (converted); all five call sites converted | the target ref and a resolver returning the url, `null` when nothing is selected | clearing the attribute before each resolve, and dropping a resolution that lost the race. `resolve`'s identity is what says the selection moved, so an inline arrow re-clears every render |
@@ -1356,6 +1357,63 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-08 **`ProgressTrackerBar` renders Base UI `Progress`, and the "never a render" rule became
+  "never a render above the bar".** The bar was imperative because worker progress must not reconcile
+  the dialog per tick; `Progress` is controlled, so the value now lives in `useState` **in the leaf**.
+  rAF coalescing was written and then dropped, on evidence: `EpWeightsDialog.test.tsx:452` does a
+  synchronous `act(() => report({…}))` and asserts the text in the same act, so a frame of latency
+  breaks a contract a consumer already relies on — and there is nothing to coalesce anyway, because
+  `sim/core/sim.go:336` throttles to one report per 100 ms and `wasm/sim.ts:118` decimates by worker
+  count, a ceiling of ~10 ticks/s. React batches whatever lands in one task. The guarantee moved from
+  *zero* commits to *one leaf commit per event-loop task*, and the test that pins it counts renders of
+  an ancestor `Harness`, not just commits — a commit count cannot tell a leaf render from a dialog
+  render. The indeterminate state is now `data-indeterminate` on Root and Indicator, which is also what
+  the stylesheet hides on, so the test and the SCSS cannot drift apart.
+- 2026-09-08 **`ui/ui-kit/Popover/` on Base UI `Popover`.** For an interactive form anchored to a
+  button — `Menu` is the wrong semantics, and this is what the reforge settings panel needs.
+  `sideOffset` defaults to 10 because tippy's default offset is `[0, 10]` and `ui/index.ts:103`
+  overrides only `arrow` and `allowHTML`, so every anchored popup in the tree already sits 10px off its
+  anchor. z-index is `--dropdown-zindex` (1000) rather than tippy's 9999: it clears the sidebar, header
+  and sticky toolbar but not modals, which is correct for a sidebar popover and is a real behaviour
+  change if anything opens a modal over an open panel. Under happy-dom the exit transition never
+  completes (the same fact `Dialog.test.tsx` records), so opened-then-closed unmount is a browser fact,
+  not a tested one; what is tested is that `unmount()` leaves no `[data-base-ui-portal]` node.
+
+- 2026-09-08 **`Popover`: the interactive tippy, as Base UI's `Popover`.** `ui/ui-kit/Popover/` covers the
+  one tippy shape `Tooltip` does not: `interactive: true, trigger: 'click'` with a *form* inside it — the
+  reforge settings panel. `Menu` is the wrong primitive for that (menu semantics, item roles); `Popover`
+  is the right one. Five things it settles:
+  **The trigger is the only element in the page's flow.** `Popover.Root` renders nothing and
+  `Popover.Trigger` *is* the button, so `<Popover>` drops straight into a grid slot — there is no
+  `div.dropdown` wrapper of the kind `ImportExportMenu` needs. `triggerProps` exists because the real
+  trigger is an icon-only cog that also anchors a hover tooltip: it carries the `aria-label` and the
+  `tooltipAnchorProps(id)` pair.
+  **Dismissal is entirely Base UI's, and a `keepOpenWithin` escape hatch was built and then cut.** The
+  concern it answered was real for tippy: a picker inside the panel portals its popup to `<body>`, which
+  is outside the popover by every measure, and it can dismiss through two paths — `outside-press`, and
+  `focus-out`, where `FloatingFocusManager`'s `closeOnFocusOut` defaults to `true` so that with
+  `modal={false}` focus leaving for a node outside the floating tree closes the popover on its own. It
+  does not apply to a React child: Base UI nests floating trees, so a Base UI picker inside the popup is
+  inside the tree and dismisses nothing. The prop only mattered for a tippy or Bootstrap dropdown inside
+  a React popover, which no port should be creating — and an opt-in cancel hook is exactly what gets
+  reached for later to paper over a nesting bug. If a non-Base-UI child ever does dismiss the panel,
+  `details.cancel()` is the lever (the one `Dialog`'s `preventClose` pulls), but fix the child first.
+  **Open/close is mount/unmount, and that is the whole mechanism.** Vanilla built the panel's content in
+  tippy's `onShow` and threw it away with `setContent(<></>)` in `onHidden` because tippy had no other
+  way to get fresh content per open. React re-renders on state change, so the portal is not
+  `keepMounted` and the props surface has no imperative content setter — do not port that hack.
+  **`initialFocus` defaults to `false`**, which is what `interactive: true` did: focus stays on the
+  trigger and Escape still closes, because the dismiss listener is on the document. `true` moves focus
+  to the first control in the popup, asynchronously — assert it with `waitFor`, not synchronously.
+  **A dismiss test whose outside node is created after the popup is green for the wrong reason.**
+  floating-ui ignores presses on elements injected after the floating element rendered (it reads them as
+  third-party injections), so every outside node in `Popover.test.tsx` is built before the trigger is
+  clicked, or the dismiss tests pass for a reason that has nothing to do with dismissal.
+  Two things deliberately left to the consumer: the panel's `min-width` and its small-screen clamp,
+  which are expressed in `--settings-button-width` and are the reforge sidebar's geometry rather than
+  the primitive's. z-index is `--dropdown-zindex`, the tier `sim-dropdown-positioner` already uses —
+  tippy sat at 9999, which also cleared modals, and a sidebar popover never needs that.
 
 - 2026-09-08 **`ui/sim` and `ui/ui-kit` are grouped by subject, and `tools/restructure/move.mjs`
   was lying about two aliases.** `player/{player,player_class,player_spec}.ts` + `player/{classes,specs}/`,

@@ -1,9 +1,9 @@
-// What this pins is the split the dialog is built on: the stage is React state and everything that
-// moves with a worker message is a DOM write. The measured rate is ~10 progress callbacks a second
+// What this pins is the split the dialog is built on: the stage is dialog state and everything that
+// moves with a worker message is state local to the bar, so a tick renders that leaf and not the
+// `keepMounted` dialog that outlives every run. The measured rate is ~10 progress callbacks a second
 // on wasm (sim/core/sim.go:336 throttles each sim to one report per 100 ms, and
-// ui/sim/wasm/sim.ts:118 decimates by worker count) and ~2/s on the native host, so the reason
-// for the refs is not the frequency — it is that `keepMounted` leaves this dialog in the page for
-// the life of the tab.
+// ui/sim/wasm/sim.ts:118 decimates by worker count) and ~2/s on the native host, which is why the
+// bar renders per message instead of coalescing across frames.
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Profiler, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,10 +14,12 @@ import type { ProgressTrackerHandle, ProgressTrackerState } from './types';
 
 let handle: ProgressTrackerHandle | null = null;
 let setStage: (state: ProgressTrackerState) => void = () => {};
+let harnessRenders = 0;
 
 const Harness = ({ open = true, onCancel }: { open?: boolean; onCancel?: () => void }) => {
 	const [state, setState] = useState<ProgressTrackerState>({ stage: 'initializing' });
 	setStage = setState;
+	harnessRenders++;
 
 	return (
 		<ProgressTrackerDialog
@@ -45,8 +47,9 @@ const renderDialog = (props: { open?: boolean; onCancel?: () => void } = {}) => 
 };
 
 const bar = () => screen.getByRole('progressbar');
-const barText = () => document.querySelector('.progress-tracker-modal-progress-text')!;
-const barTitle = () => document.querySelector('.progress-tracker-modal-progress-title')!;
+const barFill = () => document.querySelector<HTMLElement>('.progress-tracker-bar-indicator')!;
+const barText = () => document.querySelector('.progress-tracker-modal-progress-text');
+const barTitle = () => document.querySelector('.progress-tracker-modal-progress-title');
 
 describe('ProgressTrackerDialog', () => {
 	beforeEach(() => {
@@ -57,13 +60,13 @@ describe('ProgressTrackerDialog', () => {
 		renderDialog();
 		act(() => handle!.setProgress({ title: '3 / 12 simulations complete', current: 30, total: 120 }));
 
-		expect(barTitle().textContent).toBe('3 / 12 simulations complete');
-		expect(barTitle().classList.contains('d-none')).toBe(false);
-		expect(bar().style.getPropertyValue('--progress')).toBe('25');
+		expect(barTitle()!.textContent).toBe('3 / 12 simulations complete');
+		expect(barFill().style.width).toBe('25%');
 		expect(bar().getAttribute('aria-valuenow')).toBe('30');
 		expect(bar().getAttribute('aria-valuemax')).toBe('120');
 		expect(bar().getAttribute('aria-valuemin')).toBe('0');
-		expect(barText().textContent).toBe('30/120');
+		expect(bar().hasAttribute('data-progressing')).toBe(true);
+		expect(barText()!.textContent).toBe('30/120');
 	});
 
 	it('hides the bar and the caption while they have nothing to say', () => {
@@ -71,24 +74,33 @@ describe('ProgressTrackerDialog', () => {
 		act(() => handle!.setProgress({ title: '1 / 2', current: 1, total: 2 }));
 		act(() => handle!.setProgress({}));
 
-		expect(barTitle().classList.contains('d-none')).toBe(true);
-		expect(bar().classList.contains('d-none')).toBe(true);
-		expect(barText().classList.contains('d-none')).toBe(true);
+		expect(barTitle()).toBeNull();
+		expect(barText()).toBeNull();
+		// The track stays, empty: Base UI leaves the fill unsized and marks it unmeasured, which is what
+		// the stylesheet hides on.
+		expect(bar().hasAttribute('data-indeterminate')).toBe(true);
+		expect(bar().hasAttribute('aria-valuenow')).toBe(false);
+		expect(barFill().hasAttribute('data-indeterminate')).toBe(true);
+		expect(barFill().style.width).toBe('');
 	});
 
-	// The rule the skill states as "sim progress bypasses the store". With the DOM writes above the
-	// bound is zero, not merely small.
-	it('renders not once for a hundred progress ticks, and shows the last of them', () => {
+	// The rule the skill states as "sim progress bypasses the store". The bound is one commit of this
+	// leaf per batch of ticks — the dialog around it never re-renders.
+	it('renders once for a hundred progress ticks in one batch, and shows the last of them', () => {
 		const { commits } = renderDialog();
 		const atMount = commits.mock.calls.length;
+		const dialogRenders = harnessRenders;
 
 		act(() => {
 			for (let i = 1; i <= 100; i++) handle!.setProgress({ title: `${i} / 100`, current: i, total: 100 });
 		});
 
-		expect(commits.mock.calls.length).toBe(atMount);
-		expect(barText().textContent).toBe('100/100');
-		expect(bar().style.getPropertyValue('--progress')).toBe('100');
+		expect(commits.mock.calls.length).toBe(atMount + 1);
+		// The one commit is the bar alone: the component that owns the dialog never reconciled.
+		expect(harnessRenders).toBe(dialogRenders);
+		expect(barText()!.textContent).toBe('100/100');
+		expect(barFill().style.width).toBe('100%');
+		expect(bar().hasAttribute('data-complete')).toBe(true);
 	});
 
 	// A consumer that keeps the dialog mounted between runs would otherwise open the next one showing
@@ -96,14 +108,14 @@ describe('ProgressTrackerDialog', () => {
 	it('clears the bar when the next run opens it', () => {
 		const view = render(<Harness />);
 		act(() => handle!.setProgress({ title: '5 / 5 simulations complete', current: 5, total: 5 }));
-		expect(barText().textContent).toBe('5/5');
+		expect(barText()!.textContent).toBe('5/5');
 
 		view.rerender(<Harness open={false} />);
 		view.rerender(<Harness />);
 
-		expect(barText().textContent).toBe('');
-		expect(barText().classList.contains('d-none')).toBe(true);
-		expect(barTitle().classList.contains('d-none')).toBe(true);
+		expect(barText()).toBeNull();
+		expect(barTitle()).toBeNull();
+		expect(bar().hasAttribute('data-indeterminate')).toBe(true);
 	});
 
 	it('renders once for a stage transition', () => {

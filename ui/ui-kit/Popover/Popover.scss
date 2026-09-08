@@ -1,0 +1,32 @@
+@import 'shared/tokens';
+
+.sim-popover-positioner {
+	z-index: var(--dropdown-zindex);
+}
+
+// The box tippy drew for an interactive popover was `.tippy-content`, so the tokens are the tooltip's and not the dropdown's.
+.sim-popover-popup {
+	// Base UI sets both on the positioner; they are the space left between the anchor and the collision boundary, so a panel taller than its side scrolls instead of overflowing the viewport.
+	max-width: var(--available-width);
+	max-height: var(--available-height);
+	overflow-y: auto;
+	border: var(--bs-tooltip-border) 1px solid;
+	background-color: var(--bs-tooltip-bg);
+	padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+	color: var(--bs-tooltip-body-color);
+	font-size: var(--btn-font-size);
+	text-align: left;
+	opacity: 1;
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sim-popover-popup {
+		transition: none;
+	}
+}

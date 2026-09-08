@@ -6,7 +6,7 @@ export interface ProgressTrackerState {
 	message?: ReactNode;
 }
 
-/** The continuous half: written straight to the DOM through `ProgressTrackerHandle`, never through state. */
+/** The continuous half: pushed through `ProgressTrackerHandle` so a tick renders the bar alone, never the dialog. */
 export interface ProgressTrackerProgress {
 	title?: string;
 	current?: number;
