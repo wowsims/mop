@@ -1342,6 +1342,36 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **Gear's remainder: the ownership question is answered, and the unit is bigger than it
+  looked.** Decision taken with the owner: the gear `SelectorModal` becomes React, owned by
+  `GearTabBody`, registering its opener into `host.gearSelectorModal` — the seam `ItemPickerCell` and
+  `gear_tab.ts` already go through. The objection recorded when the gear tab landed ("a React owner
+  would dispose an element it does not own, because the modal sits outside every pane") applies to an
+  imperatively appended Bootstrap modal; a Base UI `Dialog` **portals itself**, so being outside every
+  pane is satisfied by construction.
+
+  `bulk_tab.tsx` turned out not to be a complication at all: it constructs its own railless instance
+  and never reads `host.gearSelectorModal`, so the vanilla class simply keeps one consumer. No new
+  duplication is created by porting the gear one.
+
+  **What the mapping actually established: `ItemList` and `SelectorModal` have to port together.**
+  Outside-in would leave the modal a React shell around imperative tab construction, because which
+  tabs exist is derived from data `ItemList` owns — sockets, available reforges, upgrade options — so
+  `setData` cannot become declarative while `ItemList` is a vanilla class that builds its own pane.
+  Wrapping that in an effect buys a React lifecycle and no declarative gain, for real risk. So the
+  unit is ~1,215 lines across both files, not the modal alone.
+
+  Three things that pass through it, worth knowing before starting:
+  - `_selector_modal.scss` and `_gear_picker.scss` reference `--bs-modal-padding`,
+    `--bs-modal-header-padding-y` and `--bs-modal-border-color`. Those resolve **only** because
+    `BaseModal` always carries `.modal`. A Base UI Dialog does not, so they go dead — and
+    `css-vars.mjs` will say so, which is what it exists for. They need the `--modal-*` treatment the
+    progress tracker got.
+  - `parity.mjs` needs a `PORTED_DIALOGS` entry and a `PORTED_DIALOG_REACT` bump; a new ported dialog
+    costs both, and missing either fails every spec.
+  - This is where `VirtualList`'s transform layout finally lands, so `log_view`-style `:nth-child`
+    striping has to become `[data-stripe]`, and both parity gates need the normaliser.
+
 - 2026-09-08 **The global `button { outline: none }` is gone, replaced by one `:focus-visible`
   rule.** Two resets in `_global.scss` stripped the focus ring from every `button` and `a`, which is
   why each ported component has been restoring its own — `SavedDataPanel`'s copy was the fifth. The
