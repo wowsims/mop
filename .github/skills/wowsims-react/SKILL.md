@@ -854,6 +854,16 @@ The loop is what separates "it compiles" from "it is delivered".
   This applies to `ui-kit`, `app` and ported feature components. `ui/sim/**` and un-ported
   `features/*/view/**` are model and vanilla code the migration does not own — leave them.
 - **Props interfaces are exported** and named `<Component>Props`, declared in the same file.
+- **Group a large feature into subfolders; do not flatten it.** A feature that lands a dozen components
+  gets sub-directories along its real seams, not one directory holding all of them — `Timeline/`
+  splits into `chart/` and `rotation/`, mirroring the vanilla tree's own structure. The top-level
+  `index.ts` exports only what leaves the folder: `DetailedResults` reaches for `Timeline`, never for a
+  rotation row. Each subfolder carries its own `utils.ts` and its own tests. Pure geometry and
+  measurement modules are **model, not components** — `zoom`, `ruler`, `timeline_window`, `series` stay
+  out of component folders even when the feature is their only caller. Candidate for the same treatment
+  once the timeline lands: `components/LogRunner/`, whose seven components split cleanly into `search/`
+  (`LogSearchBar`, `LogSearchGroup`) and `line/` (`LogLine`, `LogRow`, `ActionLink`, `EntityLabel`,
+  `DamageResult`).
 - **A component folder holds only components at its top level.** Everything else is a named
   companion: `types.ts` for types (`Icon/types.ts`), `utils.ts` for helpers — or `utils/` when there
   is more than one, as `CharacterStats/utils/{stat_display,rows}.ts` is. `index.ts` is the public
