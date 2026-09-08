@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import { type ReactNode, useId, useMemo } from 'react';
 
 import { ReforgeStatCapRow } from './ReforgeStatCapRow';
-import { INCLUDED_STATS } from './statTooltips';
+import { INCLUDED_STATS } from './utils';
 
 export interface ReforgeStatCapsProps {
 	model: ReforgeOptimizerModel;

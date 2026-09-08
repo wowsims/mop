@@ -6,7 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { ITEM_NOTICES } from './item_notices';
+import { ITEM_NOTICES } from '../../item_notices';
 import { ItemNoticeIcon } from './ItemNoticeIcon';
 
 const SPEC_SPECIFIC_ITEM = 90101;

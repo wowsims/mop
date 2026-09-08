@@ -10,7 +10,7 @@ import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
 
-import { INCLUDED_STATS } from './statTooltips';
+import { INCLUDED_STATS } from './utils';
 
 export interface ReforgeBreakpointLimitsProps {
 	model: ReforgeOptimizerModel;

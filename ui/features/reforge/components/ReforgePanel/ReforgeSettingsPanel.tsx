@@ -17,7 +17,7 @@ import { useReforgeField } from '../../hooks/useReforgeField';
 import { ReforgeBreakpointLimits } from './ReforgeBreakpointLimits';
 import { ReforgeFrozenSlots } from './ReforgeFrozenSlots';
 import { ReforgeStatCaps } from './ReforgeStatCaps';
-import { buildStatTooltips } from './statTooltips';
+import { buildStatTooltips } from './utils';
 
 export interface ReforgeSettingsPanelProps {
 	model: ReforgeOptimizerModel;

@@ -3,7 +3,7 @@ import type { Database } from '@sim/proto/database';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { noticeElement } from '../../view/item_notices';
+import { noticeElement } from './view/item_notices';
 import { ITEM_NOTICES, MISSING_RANDOM_SUFFIX_WARNING, registerSetBonusNotices, SET_BONUS_NOTICES } from './item_notices';
 
 const markup = (itemId: number, spec: Spec = Spec.SpecUnknown) => renderToStaticMarkup(ITEM_NOTICES.get(itemId)?.[spec]);

@@ -5,7 +5,7 @@ import { statCapTypeNames } from '@sim/proto/names';
 import type { StatCap } from '@sim/proto/stats';
 import { Fragment } from 'react';
 
-import { renderStatTooltip } from './statTooltips';
+import { renderStatTooltip } from './utils';
 
 export interface ReforgeSoftCapsTooltipProps {
 	model: ReforgeOptimizerModel;

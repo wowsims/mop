@@ -17,7 +17,7 @@ import { SelectorModalTabs } from '../../types';
 import { getEmptySlotIconUrl } from '../../view/gear_elements';
 import { GemSocket, ItemCell, ItemCellAnchor, NameDescriptionLabel } from '../ItemCell';
 import { EnchantLabel } from './EnchantLabel';
-import { MISSING_RANDOM_SUFFIX_WARNING } from './item_notices';
+import { MISSING_RANDOM_SUFFIX_WARNING } from '../../item_notices';
 import { ItemNoticeIcon } from './ItemNoticeIcon';
 import { QuickEnchantList } from './QuickEnchantList';
 import { QuickGemList } from './QuickGemList';

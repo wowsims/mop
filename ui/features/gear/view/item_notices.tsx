@@ -15,7 +15,7 @@ export {
 	SET_BONUS_NOTICES,
 	type ItemNoticeData,
 	type SetBonusNoticeData,
-} from '../components/GearPicker/item_notices';
+} from '../item_notices';
 
 // The notice bodies are React; the vanilla `ItemNotice` hands its content to tippy, which takes DOM.
 // They are static markup with no state or handlers, so one synchronous render is the whole bridge:

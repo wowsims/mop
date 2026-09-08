@@ -7,10 +7,10 @@ import type { ReactNode } from 'react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { registerSetBonusNotices } from '../components/GearPicker/item_notices';
+import { registerSetBonusNotices } from '../item_notices';
 import { ITEM_NOTICES, noticeElement } from './item_notices';
 
-export type { ItemNoticeData, SetBonusNoticeData } from '../components/GearPicker/item_notices';
+export type { ItemNoticeData, SetBonusNoticeData } from '../item_notices';
 
 type ItemNoticeConfig = {
 	itemId: number;

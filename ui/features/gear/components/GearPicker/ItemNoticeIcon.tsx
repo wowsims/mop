@@ -3,7 +3,7 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { type ReactNode, useId } from 'react';
 
-import { ITEM_NOTICES } from './item_notices';
+import { ITEM_NOTICES } from '../../item_notices';
 
 export interface ItemNoticeIconProps {
 	itemId: number;
