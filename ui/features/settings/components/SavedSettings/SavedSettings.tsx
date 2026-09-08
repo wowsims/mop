@@ -4,7 +4,7 @@ import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidF
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
 import { SavedSettings as SavedSettingsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
+import { useReadyStoreSubscribe } from '@ui-kit/hooks/useReadyStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';
@@ -49,7 +49,7 @@ export const SavedSettings = () => {
 		return [...settingsPresets, ...itemSwapPresets];
 	}, [ready, host, config]);
 
-	const settings = useStoreSubscribe(
+	const settings = useReadyStoreSubscribe(
 		useMemo(
 			() =>
 				subscribeAll([
@@ -68,13 +68,11 @@ export const SavedSettings = () => {
 					subscribePlayerField(host.player, 'distanceFromTarget'),
 					subscribePlayerField(host.player, 'healingModel'),
 				]),
-			// `ready` is a dependency so the subscription is rebuilt when the database lands, which is
-			// what makes `useStoreSubscribe` drop its cached snapshot and read the real settings.
-			[host, ready],
+			[host],
 		),
-		// Reading before the database is loaded reaches `player.getConsumes()` and dereferences a null
-		// `sim.db`. `useSyncExternalStore` calls this on the first render, long before `ready`.
-		() => (ready ? readSavedSettings(host) : null),
+		// Reaches `player.getConsumes()`, so it dereferences a null `sim.db` before the sim is ready.
+		() => readSavedSettings(host),
+		ready,
 	);
 	const currentJson = useMemo(() => (settings ? serializeSettings(settings) : ''), [settings]);
 

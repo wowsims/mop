@@ -1,5 +1,3 @@
-import './SavedEpWeights.scss';
-
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Stats } from '@sim/proto_utils/stats';
