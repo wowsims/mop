@@ -1,21 +1,20 @@
-import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
 import { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import type { Player } from '@sim/player/player';
+import type { ReforgeSettings } from '@sim/settings/reforge_settings';
 import { subscribeReforgeField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 
 export interface ReforgeFrozenSlotsProps {
-	model: ReforgeOptimizerModel;
+	settings: ReforgeSettings;
 	player: Player<any>;
 	freezeItemSlots: boolean;
 }
 
 /** Two slots per row, in the gear's own slot order. The slot list is read once per open, as the vanilla builder did. */
-export const ReforgeFrozenSlots = ({ model, player, freezeItemSlots }: ReforgeFrozenSlotsProps) => {
-	const settings = model.settings;
+export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: ReforgeFrozenSlotsProps) => {
 	const slotsByRow = useMemo(() => {
 		const allSlots = player.getGear().getItemSlots();
 		const numRows = Math.floor(allSlots.length / 2) + 1;
@@ -37,8 +36,8 @@ export const ReforgeFrozenSlots = ({ model, player, freezeItemSlots }: ReforgeFr
 										label: translateSlotName(slot),
 										inline: true,
 										storeSubscribe: () => subscribeReforgeField(settings, 'freezeItemSlots'),
-										getValue: () => model.getFrozenItemSlot(slot) || false,
-										setValue: (_player, newValue) => model.setFrozenItemSlot(slot, newValue),
+										getValue: () => settings.getFrozenItemSlot(slot) || false,
+										setValue: (_player, newValue) => settings.setFrozenItemSlot(slot, newValue),
 									}}
 								/>
 							</td>

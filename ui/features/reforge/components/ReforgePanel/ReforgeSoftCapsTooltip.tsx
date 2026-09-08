@@ -1,6 +1,8 @@
-import type { ReforgeOptimizerModel, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
+import type { StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
+import { breakpointValueToDisplayPercentage } from '@features/reforge/model/utils';
 import { StatCapType } from '@generated/proto/api';
 import i18n from '@i18n/config';
+import type { Player } from '@sim/player/player';
 import { statCapTypeNames } from '@sim/proto/names';
 import type { StatCap } from '@sim/proto/stats';
 import { Fragment } from 'react';
@@ -8,13 +10,13 @@ import { Fragment } from 'react';
 import { StatTooltip } from './utils';
 
 export interface ReforgeSoftCapsTooltipProps {
-	model: ReforgeOptimizerModel;
+	player: Player<any>;
 	softCaps: StatCap[];
 	additionalInformation: StatTooltipContent;
 }
 
 /** The breakpoint table hanging off the optimize button. Built per open, as tippy's `onShow` did, so the limits it shows are current. */
-export const ReforgeSoftCapsTooltip = ({ model, softCaps, additionalInformation }: ReforgeSoftCapsTooltipProps) => (
+export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation }: ReforgeSoftCapsTooltipProps) => (
 	<>
 		<p>{i18n.t('sidebar.buttons.suggest_reforges.breakpoints_implemented')}</p>
 		<table className="w-100">
@@ -25,7 +27,7 @@ export const ReforgeSoftCapsTooltip = ({ model, softCaps, additionalInformation 
 						<Fragment key={unitStat.getKey()}>
 							<tr>
 								<th className="text-nowrap" colSpan={2}>
-									{unitStat.getShortName(model.playerClass)}
+									{unitStat.getShortName(player.getClass())}
 								</th>
 								<td className="text-end">{statCapTypeNames.get(capType)}</td>
 							</tr>
@@ -51,7 +53,7 @@ export const ReforgeSoftCapsTooltip = ({ model, softCaps, additionalInformation 
 							</tr>
 							{breakpoints.map((breakpoint, breakpointIndex) => (
 								<tr key={breakpoint}>
-									<td className="text-end">{model.breakpointValueToDisplayPercentage(breakpoint, unitStat)}</td>
+									<td className="text-end">{breakpointValueToDisplayPercentage(player, breakpoint, unitStat)}</td>
 									<td colSpan={2} className="text-end">
 										{unitStat
 											.convertEpToRatingScale(capType === StatCapType.TypeThreshold ? postCapEPs[0] : postCapEPs[breakpointIndex])

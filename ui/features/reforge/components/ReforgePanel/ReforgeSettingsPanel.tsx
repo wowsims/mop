@@ -37,7 +37,8 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 	const freezeItemSlots = useReforgeField(settings, 'freezeItemSlots', () => settings.freezeItemSlots);
 
 	const statTooltips = useMemo(() => buildStatTooltips(options?.statTooltips), [options]);
-	const hasSoftCaps = !!model.softCapsConfig?.length;
+	const softCapsConfig = model.softCapsConfig;
+	const hasSoftCaps = !!softCapsConfig?.length;
 
 	const forcedProcSubscribe = useMemo(
 		() => subscribeAll([subscribeReforgeField(settings, 'relativeStatCapStat'), subscribePlayerField(player, 'gear')]),
@@ -75,7 +76,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					getValue: () => settings.useCustomEPValues,
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'use_custom_ep', value: newValue });
-						model.setUseCustomEPValues(newValue);
+						settings.setUseCustomEPValues(newValue);
 					},
 				}}
 			/>
@@ -103,7 +104,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 						getValue: () => settings.useSoftCapBreakpoints,
 						setValue: (_player, newValue) => {
 							trackEvent({ action: 'settings', category: 'reforging', label: 'softcap_breakpoints', value: newValue });
-							model.setUseSoftCapBreakpoints(newValue);
+							settings.setUseSoftCapBreakpoints(newValue);
 						},
 					}}
 				/>
@@ -117,11 +118,11 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					defaultValue: settings.relativeStatCapStat,
 					values: [
 						{ name: i18n.t('sidebar.buttons.suggest_reforges.any'), value: -1 },
-						...[...RelativeStatCap.relevantStats].map(stat => ({ name: UnitStat.fromStat(stat).getShortName(model.playerClass), value: stat })),
+						...[...RelativeStatCap.relevantStats].map(stat => ({ name: UnitStat.fromStat(stat).getShortName(player.getClass()), value: stat })),
 					],
 					storeSubscribe: () => forcedProcSubscribe,
 					getValue: () => settings.relativeStatCapStat,
-					setValue: (_player, newValue) => model.setRelativeStatCap(newValue),
+					setValue: (_player, newValue) => settings.setRelativeStatCap(newValue),
 					showWhen: () => {
 						// The vanilla `showWhen` derived `relativeStatCap` as a side effect; it writes no store field, so it stays here rather than becoming an effect.
 						const canEnable = RelativeStatCap.hasRoRo(player);
@@ -149,12 +150,12 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					],
 					storeSubscribe: () => precisionSubscribe,
 					getValue: () => settings.relativeStatCapPrecision,
-					setValue: (_player, newValue) => model.setRelativeStatCapPrecision(newValue),
+					setValue: (_player, newValue) => settings.setRelativeStatCapPrecision(newValue),
 					showWhen: () => RelativeStatCap.hasRoRo(player) && settings.relativeStatCapStat !== -1,
 				}}
 			/>
 			{model.enableBreakpointLimits && hasSoftCaps && (
-				<ReforgeBreakpointLimits model={model} player={player} useSoftCapBreakpoints={useSoftCapBreakpoints} />
+				<ReforgeBreakpointLimits settings={settings} softCapsConfig={softCapsConfig} player={player} useSoftCapBreakpoints={useSoftCapBreakpoints} />
 			)}
 			<BooleanPicker
 				modObject={player}
@@ -169,8 +170,8 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'include_gems', value: newValue });
 						batch(() => {
-							model.setIncludeGems(newValue);
-							model.setIncludeEOTBPGemSocket(player.sim.getPhase() >= 2);
+							settings.setIncludeGems(newValue);
+							settings.setIncludeEOTBPGemSocket(player.sim.getPhase() >= 2);
 						});
 					},
 				}}
@@ -186,7 +187,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					storeSubscribe: () => eotbpSubscribe,
 					getValue: () => settings.includeEOTBPGemSocket,
 					showWhen: () => settings.includeGems && player.hasEotBPItemEquipped(),
-					setValue: (_player, newValue) => model.setIncludeEOTBPGemSocket(newValue),
+					setValue: (_player, newValue) => settings.setIncludeEOTBPGemSocket(newValue),
 				}}
 			/>
 			<BooleanPicker
@@ -201,11 +202,11 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					getValue: () => settings.freezeItemSlots,
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'freeze_item_slots', value: newValue });
-						model.setFreezeItemSlots(newValue);
+						settings.setFreezeItemSlots(newValue);
 					},
 				}}
 			/>
-			<ReforgeFrozenSlots model={model} player={player} freezeItemSlots={freezeItemSlots} />
+			<ReforgeFrozenSlots settings={settings} player={player} freezeItemSlots={freezeItemSlots} />
 			<SavedEpWeights className="mt-3" loadOnly presetsOnly={!useCustomEPValues} />
 			{host.epWeightsModal && (
 				<Button

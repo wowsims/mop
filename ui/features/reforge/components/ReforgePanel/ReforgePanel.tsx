@@ -227,7 +227,11 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					const softCaps = model.softCapsConfigWithLimits;
 					if (!softCaps?.length) return null;
 					return (
-						<ReforgeSoftCapsTooltip model={model} softCaps={softCaps} additionalInformation={options?.additionalSoftCapTooltipInformation ?? {}} />
+						<ReforgeSoftCapsTooltip
+							player={player}
+							softCaps={softCaps}
+							additionalInformation={options?.additionalSoftCapTooltipInformation ?? {}}
+						/>
 					);
 				}}
 			/>

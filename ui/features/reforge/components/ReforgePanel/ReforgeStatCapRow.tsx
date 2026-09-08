@@ -1,4 +1,5 @@
 import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
+import { toDefaultUnitStatValue, toVisualUnitStatPercentage } from '@features/reforge/model/utils';
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import type { UnitStat } from '@sim/proto/stats';
@@ -28,9 +29,9 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip 
 	const tooltipId = useId();
 
 	const storeSubscribe = () => subscribe;
-	const getValue = () => model.toVisualUnitStatPercentage(model.statCaps.getUnitStat(unitStat), unitStat);
+	const getValue = () => toVisualUnitStatPercentage(player, settings.statCaps.getUnitStat(unitStat), unitStat);
 	const setValue = (_player: Player<any>, newValue: number) =>
-		model.setStatCaps(model.statCaps.withUnitStat(unitStat, model.toDefaultUnitStatValue(newValue, unitStat)));
+		settings.setStatCaps(settings.statCaps.withUnitStat(unitStat, toDefaultUnitStatValue(player, newValue, unitStat)));
 	const enableWhen = () => model.isAllowedToOverrideStatCaps || !model.softCapsConfig.some(config => config.unitStat.equals(unitStat));
 
 	const statPresets = model.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;

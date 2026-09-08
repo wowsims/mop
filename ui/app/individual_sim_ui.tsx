@@ -20,7 +20,7 @@ import {
 	WowheadImporterDialog,
 } from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
-import { ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
+import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
 import type { LogExporterFactory } from '@features/results/model/log_exporter';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
@@ -268,7 +268,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		}
 		if (config.reforge) {
 			this.reforgeOptions = typeof config.reforge === 'function' ? config.reforge(this) : config.reforge;
-			this.reforger = new ReforgeOptimizerModel(this.sim, this.player, {
+			this.reforger = createReforgeOptimizer(this.sim, this.player, {
 				...this.reforgeOptions,
 				defaults: this.individualConfig.defaults,
 				epStats: this.individualConfig.epStats,

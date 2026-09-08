@@ -1,7 +1,9 @@
-import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
+import { breakpointValueToDisplayPercentage } from '@features/reforge/model/utils';
 import { StatCapType } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
+import type { StatCap } from '@sim/proto/stats';
+import type { ReforgeSettings } from '@sim/settings/reforge_settings';
 import { subscribeReforgeField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -13,14 +15,14 @@ import { useId } from 'react';
 import { INCLUDED_STATS } from './utils';
 
 export interface ReforgeBreakpointLimitsProps {
-	model: ReforgeOptimizerModel;
+	settings: ReforgeSettings;
+	softCapsConfig: StatCap[];
 	player: Player<any>;
 	useSoftCapBreakpoints: boolean;
 }
 
 /** Caps the highest breakpoint the optimizer will chase, one select per soft-capped stat. */
-export const ReforgeBreakpointLimits = ({ model, player, useSoftCapBreakpoints }: ReforgeBreakpointLimitsProps) => {
-	const settings = model.settings;
+export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useSoftCapBreakpoints }: ReforgeBreakpointLimitsProps) => {
 	const tooltipId = useId();
 
 	return (
@@ -39,7 +41,7 @@ export const ReforgeBreakpointLimits = ({ model, player, useSoftCapBreakpoints }
 				</tr>
 			</thead>
 			<tbody>
-				{model.softCapsConfig
+				{softCapsConfig
 					.filter(
 						config => (config.capType === StatCapType.TypeThreshold || config.capType === StatCapType.TypeSoftCap) && config.breakpoints.length > 0,
 					)
@@ -61,7 +63,7 @@ export const ReforgeBreakpointLimits = ({ model, player, useSoftCapBreakpoints }
 											values: [
 												{ name: i18n.t('sidebar.buttons.suggest_reforges.no_limit_set'), value: 0 },
 												...breakpoints.map(breakpoint => ({
-													name: `${model.breakpointValueToDisplayPercentage(breakpoint, unitStat)}%`,
+													name: `${breakpointValueToDisplayPercentage(player, breakpoint, unitStat)}%`,
 													value: breakpoint,
 												})),
 											].sort((a, b) => a.value - b.value),
@@ -71,7 +73,7 @@ export const ReforgeBreakpointLimits = ({ model, player, useSoftCapBreakpoints }
 												return breakpoints.some(breakpoint => breakpoint == limit) ? limit : 0;
 											},
 											setValue: (_player, newValue) =>
-												model.setBreakpointLimits(settings.breakpointLimits.withUnitStat(unitStat, newValue)),
+												settings.setBreakpointLimits(settings.breakpointLimits.withUnitStat(unitStat, newValue)),
 										}}
 									/>
 								</td>

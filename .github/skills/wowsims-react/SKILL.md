@@ -1459,6 +1459,30 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **The reforge model is de-classed, and the frozen surface never required a class.**
+  `ReforgeOptimizerModel` is an interface; `createReforgeOptimizer(sim, player, options)` returns an
+  object literal built from closures. `ui/specs/**` constrains the **shape** — a getter satisfies
+  `ctx.reforger.preCapEPs` and a function property satisfies `host.reforger?.setUseSoftCapBreakpoints()`
+  identically — so the earlier reading that this had to wait for Phase 5 was wrong. What waits for
+  Phase 5 is *dropping* the handle, not de-classing it.
+  **The surface went from 34 members to 19, and the deletions are the result**: eight were one-line
+  delegations to the store-backed `settings` facade that consumers now call directly, eight had no
+  caller at all — `isTankSpec` was assigned and read by nothing, not even the model — and three became
+  free functions in `model/utils.ts` (`applyBreakpointLimits`, `clearSoftCappedStats`, the cap↔percentage
+  conversions), unit-testable without constructing anything. `breakpointValueToDisplayPercentage` had
+  been written twice in components; it is one import now. The three pass-throughs that survive exist
+  only for a frozen spec (`setUseSoftCapBreakpoints`) and for the still-vanilla `bulk_tab.tsx`.
+  **`toProto` had zero external callers** — `state/serialization.ts:99` calls it on
+  `reforger.settings`, not on the model, which the brief got wrong.
+  `ReforgeSettingsState` can take the same treatment when someone wants it: two `new` sites, no
+  `instanceof`, no subclass, and the subscription helpers only read its public `store`/`storeKey`. Two
+  wrinkles to respect — `relativeStatCap` is assigned from outside and `undershootCaps` is a real
+  setter, both expressible on an object literal. `RelativeStatCap` in the same file is **not** a
+  candidate: throwing constructor, statics, three `new` sites. It is a value type.
+  Behavioural proof is the browser solve, not the goldens: `test:snapshots` never constructs the
+  reforger (`snapshot.ts:92` says so), and `reforge-popover.mjs RUN_SOLVE=1` runs a real optimisation
+  and diffs identically against master apart from the one documented focus-tooltip line.
+
 - 2026-09-08 **The log runner is React — `VirtualList`'s second consumer, and the one that answers the
   striping question in general.** ~915 lines across seven files became `components/LogRunner/`;
   `search/indexes.ts` and `query.ts` stayed as pure model.

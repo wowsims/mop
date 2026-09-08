@@ -46,7 +46,7 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 								variant="unstyled"
 								className="d-inline ms-auto"
 								{...tooltipAnchorProps(resetTooltipId)}
-								onClick={() => model.setStatCaps(model.defaults.statCaps || new Stats())}>
+								onClick={() => settings.setStatCaps(model.defaults.statCaps || new Stats())}>
 								<Icon name="arrow-rotate-left" />
 							</Button>
 							<Tooltip id={capsTooltipId} content={i18n.t('sidebar.buttons.suggest_reforges.stat_caps_tooltip')} />
