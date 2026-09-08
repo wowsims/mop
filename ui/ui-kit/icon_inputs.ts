@@ -12,6 +12,16 @@ import { IconPicker } from './pickers/icon_picker';
 
 export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<ModObject, T> | InputHelpers.TypedIconEnumPickerConfig<ModObject, T>;
 
+/**
+ * How many equal columns an icon group of `count` icons gets — vanilla's `configureIconSection`
+ * with `adjustColumns`, which both the player settings block and the rotation tab's icon row use.
+ * Zero icons and eight or more are left to the stylesheet, as they were.
+ */
+export const iconGridColumns = (count: number): string | undefined => {
+	if (count === 0 || count >= 8) return undefined;
+	return `repeat(${count <= 4 ? count : Math.ceil(count / 2)}, 1fr)`;
+};
+
 export const buildIconInput = <SpecType extends Spec>(parent: HTMLElement, player: Player<SpecType>, inputConfig: IconInputConfig<Player<SpecType>, any>) => {
 	if (inputConfig.type == 'icon') {
 		return new IconPicker<Player<SpecType>, any>(parent, player, inputConfig);

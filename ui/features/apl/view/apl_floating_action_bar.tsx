@@ -58,7 +58,9 @@ export class AplFloatingActionBar extends Component {
 		});
 
 		new IntersectionObserver(
-			([e]) => {
+			// One delivery can carry several records, oldest first; the last is the current state.
+			entries => {
+				const e = entries[entries.length - 1];
 				e.target.classList.toggle('stuck');
 			},
 			{

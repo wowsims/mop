@@ -1,15 +1,13 @@
-import { getEnumValues } from '@sim/utils/collections';
-import type { Player } from '@sim/player/player';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Profession } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProfession, translateRace } from '@i18n/localization';
+import type { Player } from '@sim/player/player';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { getEnumValues } from '@sim/utils/collections';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 
-export const iconGridColumns = (count: number): string | undefined => {
-	if (count === 0 || count >= 8) return undefined;
-	return `repeat(${count <= 4 ? count : Math.ceil(count / 2)}, 1fr)`;
-};
+// Shared with the rotation tab's icon row, so the rule has one home.
+export { iconGridColumns } from '@ui-kit/icon_inputs';
 
 export const raceInput = (player: Player<any>): EnumPickerConfig<Player<any>> => ({
 	id: 'simui-race',

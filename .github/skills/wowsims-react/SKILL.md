@@ -553,7 +553,32 @@ same rule that governs every other primitive here. If it is ever adopted, the lo
 **a `queryFn` calls the existing domain function, never the fetch itself**, or the cache forks and
 the vanilla side stops seeing the data.
 
-### `ListPicker` stays vanilla for now — decided, do not re-open
+### `ListPicker` is React as of 2026-09-08 — the decision below expired by its own terms
+
+The reasoning is kept because it explains *why* it waited, and because the drag hazard it names is
+real and is now solved rather than avoided. Two corrections to it, both measured:
+
+**The caller count was wrong.** It said "six of its seven callers are APL, the seventh is the encounter
+target list". `/usr/bin/grep -rln "pickers/list_picker"` gives **ten importers, every one of them an APL
+view file** — and encounter has now ported, so the vanilla `list_picker.tsx` has **no non-APL consumer
+at all**. It is a Phase 5 deletion the moment APL lands, not a dual-stack survivor. `unused.mjs` cannot
+see it, because the path is lowercase.
+
+**The shared drag state is solved by construction, not by a guard.** `ui/ui-kit/ListPicker/drag_state.ts`
+is a React-owned module store holding data plus a `take()` closure — never a component, so a stale entry
+cannot retain a tree. Two stacks cannot collide because a user cannot begin two drags at once: a drag
+begun in vanilla writes `curDragData` and leaves the React slot `null`, every React drop test then
+fails, no handler calls `preventDefault`, and the browser paints no-drop. The reverse holds
+symmetrically. `subscribeDragEnd` also replaces vanilla's document-wide `querySelectorAll('.dragfrom,.dragto')`
+sweep: only the one or two items actually painting a cue hold a subscription.
+
+`sameGroupOnly` is on the config with **no consumer today**, deliberately. It replaces vanilla's
+`itemLabel !== 'Action'` cross-list rule, which is **locale-dependent** — the label resolves to
+`"Action"` only in English, and nested sequence lists use lowercase `'action'`. It is kept rather than
+deleted because its consumer (the APL group editor and priority list, stages 3d–3e) is imminent and the
+alternative is the next author re-deriving the broken comparison. That is a decision, not dead code.
+
+### The original reasoning — `ListPicker` stayed vanilla until APL
 
 It is not being ported in Phase 2, and the reasons are structural rather than "it is big":
 
@@ -1458,6 +1483,40 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-08 **A React `ListPicker`, and the encounter target list as its first consumer.**
+  `encounter_picker.ts` went from **629 lines to 7**. `ListPicker` uses `useInput` + `PickerShell` (the
+  bound `NumberListPicker` pattern — all eleven callers are bound) and takes `renderItem` /
+  `renderItemHeader` render props, the second replacing `getItemHeaderElem`'s sibling-walk DOM
+  contract. `makeActionElem` became the `ListItemAction` component.
+  The APL cluster proper (the field renderers, value and action pickers, the four lists, the navbar) is
+  **not** ported, and the reason is shape rather than time: `AplValuePicker` ↔ `AplFieldGroup` ↔ a
+  nested `ListPicker` are mutually recursive and cannot be half-wired. Three of the rotation tab's
+  seven `useLegacyMount` sites are gone.
+  **Carry-forward for whoever takes the rest, so it is not re-derived:** `APLPickerBuilder.makeFieldPicker`
+  passes field pickers **no** `storeSubscribe`, and `useStoreSubscribe`'s `stale.current || !snapshot.current`
+  guard means a React leaf without one freezes at its first render. Every APL field config needs
+  `storeSubscribe: () => subscribePlayerField(player, 'rotation')`.
+  **`DropdownPicker` was split** so a bound variant could exist without nesting a second root:
+  `DropdownMenu`, `DropdownMenuItems`, and a `DropdownField` whose root **is** the `PickerShell`. That
+  came out of the simplification sweep catching a wrapper div mid-write — the exact class of regression
+  the rotation tab has produced three times.
+  **A mutation survived first, and the test was vacuous.** happy-dom's synthetic `DragEvent` carries
+  `clientY: undefined`, so a "inserts after its midpoint" component test never evaluated the midpoint
+  branch. The rule moved to a pure test with real rects. A second test was wrong the other way: vanilla
+  computes a move destination against **pre-removal** positions, so a forward move lands one place later
+  than the drop cue — the code was right and the expectation was wrong.
+  Findings recorded rather than fixed: `headerText` is provably dead in the vanilla `DropdownPicker`
+  (filtered in the constructor *and* in `setOptions`), `configureInputSection` mutated
+  `InputConfig.extraCssClasses` **on the frozen spec object** (deleted), `configureIconSection`'s `hide`
+  branch was unreachable, and `TargetInputPicker`'s reuse guard compared a translated label against a
+  raw one.
+  `apl-edit-timing.js` itself needed fixing — it clicked `.nav-link`, which never opens a pane under
+  Base UI tabs. Its sync figure is 19–24 ms against master's 6–9 ms, and that gap is **pre-existing on
+  the branch**, A/B'd by reverting the port and re-timing at 18–23 ms.
+  The last two `([entry]) => …` observers are fixed with it — `ui-kit/sticky_toolbar.ts`, which is live
+  in the shell, and the unported `apl_floating_action_bar.tsx`. Every `IntersectionObserver` in the tree
+  now reads `entries[entries.length - 1]`.
 
 - 2026-09-08 **The reforge model is de-classed, and the frozen surface never required a class.**
   `ReforgeOptimizerModel` is an interface; `createReforgeOptimizer(sim, player, options)` returns an

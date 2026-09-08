@@ -57,3 +57,12 @@
 		background-color: var(--dropdown-link-active-bg);
 	}
 }
+
+// `_dropdown_picker.scss` styles this as `.tippy-box[data-theme='dropdown-tooltip']`, which a
+// react-tooltip box does not match. Re-keyed here, with the `max-width: none` the quick-swap
+// tooltip needed for the same reason: `Tooltip.scss` caps every tooltip at 192px and tippy capped
+// nothing, so an option's description would wrap to a column without it.
+.sim-tooltip.dropdown-tooltip {
+	max-width: 35vw;
+	text-align: left;
+}

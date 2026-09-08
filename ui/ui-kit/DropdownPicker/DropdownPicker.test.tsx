@@ -1,7 +1,8 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { type DropdownOption, DropdownPicker } from './DropdownPicker';
+import { DropdownPicker } from './DropdownPicker';
+import type { DropdownOption } from './types';
 
 interface Unit {
 	id: number;
@@ -136,6 +137,126 @@ describe('DropdownPicker', () => {
 
 			expect(positioner().getAttribute('data-side')).toBe('top');
 			expect(positioner().style.position).toBe('fixed');
+		});
+	});
+	describe('submenus', () => {
+		interface Kind {
+			id: string;
+		}
+		const sameKind = (a: Kind | undefined, b: Kind | undefined) => a?.id === b?.id;
+		const kinds: Array<DropdownOption<Kind>> = [
+			{ value: { id: 'none' }, label: 'None' },
+			{ value: { id: 'and' }, label: 'And', submenu: ['logic'] },
+			{ value: { id: 'or' }, label: 'Or', submenu: ['logic'] },
+			{ value: { id: 'chi' }, label: 'Chi', submenu: ['resources', 'chi'] },
+		];
+
+		const mountKinds = (onChange = vi.fn()) =>
+			render(<DropdownPicker options={kinds} value={undefined} onChange={onChange} equals={sameKind} defaultLabel="Pick" />);
+
+		it('puts categorised options behind a submenu trigger and leaves the rest at the root', async () => {
+			mountKinds();
+			await open();
+
+			const rows = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > *')];
+			expect(rows.map(row => row.textContent)).toEqual(['None', 'logic »', 'resources »']);
+			// Only the root-level option is a radio item; a trigger is a button in a `.dropend`.
+			expect(rows[0].getAttribute('role')).toBe('menuitemradio');
+			expect(rows[1].querySelector('.dropend > button.dropdown-item')).not.toBeNull();
+		});
+
+		it('renders the submenu contents once it is opened', async () => {
+			mountKinds();
+			await open();
+			const trigger = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > * button.dropdown-item')][0];
+
+			await act(() => void fireEvent.click(trigger));
+
+			const popup = document.querySelector('.dropdown-submenu')!;
+			expect([...popup.querySelectorAll('.dropdown-picker-item')].map(item => item.textContent)).toEqual(['And', 'Or']);
+			expect(popup.tagName).toBe('UL');
+		});
+
+		it('nests a two-segment path', async () => {
+			mountKinds();
+			await open();
+			const resources = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > * button.dropdown-item')][1];
+
+			await act(() => void fireEvent.click(resources));
+			const inner = [...document.querySelectorAll('.dropdown-submenu button.dropdown-item')];
+			expect(inner.map(node => node.textContent)).toEqual(['chi »']);
+		});
+
+		it('selects the option a submenu trigger stands for, when it stands for one', async () => {
+			const onChange = vi.fn();
+			const self = { value: { id: 'self' }, label: 'Self' };
+			const pet = { value: { id: 'pet' }, label: 'Pet', submenu: [{ id: 'self' }] };
+			render(<DropdownPicker options={[self, pet]} value={undefined} onChange={onChange} equals={sameKind} defaultLabel="Unit" />);
+			await open();
+
+			const trigger = root().querySelector('.dropend > button.dropdown-item')!;
+			expect(trigger.textContent).toBe('Self');
+			await act(() => void fireEvent.click(trigger));
+
+			expect(onChange).toHaveBeenCalledWith({ id: 'self' });
+		});
+	});
+
+	describe('per-option tooltips', () => {
+		const withTooltip: Array<DropdownOption<Unit>> = [
+			{ value: { id: 0, name: 'All' }, label: 'All Targets' },
+			{ value: { id: 1, name: 'One' }, label: 'Target 1', tooltip: '<p>short</p> full' },
+		];
+
+		it('renders no tooltip at all when no option carries one', async () => {
+			mount({ id: 0, name: 'All' });
+			expect(root().querySelector('.sim-tooltip')).toBeNull();
+			await open();
+			expect(items().every(item => !item.hasAttribute('data-tooltip-id'))).toBe(true);
+		});
+
+		it("anchors only the options that carry one on the list's single tooltip", async () => {
+			mount({ id: 0, name: 'All' }, vi.fn(), withTooltip);
+			await open();
+
+			expect(items()[0].hasAttribute('data-tooltip-id')).toBe(false);
+			expect(items()[1].getAttribute('data-tooltip-content')).toBe('<p>short</p> full');
+			// One tooltip for the whole menu, not one per option.
+			expect(root().querySelectorAll('[id$="-option"]')).toHaveLength(0);
+			expect(items()[1].getAttribute('data-tooltip-id')).toMatch(/-option$/);
+		});
+	});
+
+	describe('hideLabelWhenDefault', () => {
+		it('keeps the icon but drops the label on the trigger for the default selection', () => {
+			render(
+				<DropdownPicker
+					options={units}
+					value={{ id: 0, name: 'All' }}
+					onChange={vi.fn()}
+					equals={sameId}
+					defaultLabel="Unit"
+					hideLabelWhenDefault={value => value.id === 0}
+				/>,
+			);
+
+			expect(trigger().textContent).toBe('');
+		});
+
+		it('shows the label for any other selection', () => {
+			render(
+				<DropdownPicker
+					options={units}
+					value={{ id: 1, name: 'One' }}
+					onChange={vi.fn()}
+					equals={sameId}
+					defaultLabel="Unit"
+					hideLabelWhenDefault={value => value.id === 0}
+				/>,
+			);
+
+			expect(trigger().textContent).toBe('Target 1');
+			expect(trigger().querySelectorAll('img.unit-picker-item-icon')).toHaveLength(1);
 		});
 	});
 });

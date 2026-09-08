@@ -1,22 +1,19 @@
 /** @jsxImportSource @jsx-vanilla */
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import i18n from '@i18n/config';
 import { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
-import i18n from '@i18n/config';
-import * as IconInputs from '@ui-kit/icon_inputs';
+import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import clsx from 'clsx';
-import { Input } from '@ui-kit/input';
-import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
-import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
-import { EnumPicker } from '@ui-kit/pickers/enum_picker';
-import { NumberPicker } from '@ui-kit/pickers/number_picker';
 
-import type { InputSection } from '../individual_sim_ui';
-
-/** `parent` IS the `.rotation-type-container`; React renders that element so no wrapper appears. */
-export function makeRotationTypePicker(parent: HTMLElement, simUI: IndividualSimHost<any>) {
+/**
+ * The APL navbar's own copy of the rotation-type picker. The two in the Auto and Simple panes are
+ * `features/apl/components/RotationTypePicker` now; this one stays vanilla for as long as the
+ * navbar around it does.
+ */
+function makeRotationTypePicker(parent: HTMLElement, simUI: IndividualSimHost<any>) {
 	return new TextDropdownPicker(parent, simUI.player, {
 		id: 'rotation-tab-rotation-type',
 		defaultLabel: '',
@@ -39,47 +36,6 @@ export function makeRotationTypePicker(parent: HTMLElement, simUI: IndividualSim
 			});
 		},
 	});
-}
-
-export function configureInputSection(sectionElem: HTMLElement, player: Player<any>, sectionConfig: InputSection) {
-	sectionConfig.inputs.forEach(inputConfig => {
-		inputConfig.extraCssClasses = [...(inputConfig.extraCssClasses || []), 'input-inline'];
-		if (inputConfig.type == 'number') {
-			new NumberPicker(sectionElem, player, { ...inputConfig, inline: true });
-		} else if (inputConfig.type == 'boolean') {
-			new BooleanPicker(sectionElem, player, { ...inputConfig, inline: true, reverse: true });
-		} else if (inputConfig.type == 'enum') {
-			new EnumPicker(sectionElem, player, { ...inputConfig, inline: true });
-		}
-	});
-}
-
-export function configureIconSection(sectionElem: HTMLElement, iconPickers: Array<any>, adjustColumns?: boolean) {
-	if (!iconPickers.length) {
-		sectionElem.classList.add('hide');
-	} else if (adjustColumns) {
-		if (iconPickers.length <= 4) {
-			sectionElem.style.gridTemplateColumns = `repeat(${iconPickers.length}, 1fr)`;
-		} else if (iconPickers.length > 4 && iconPickers.length < 8) {
-			sectionElem.style.gridTemplateColumns = `repeat(${Math.ceil(iconPickers.length / 2)}, 1fr)`;
-		}
-	}
-}
-
-/** The rotation icon group, built into `parent` exactly as the vanilla tab appended it. */
-export function makeRotationIconGroup(parent: HTMLElement, simUI: IndividualSimHost<any>) {
-	const group = Input.newGroupContainer();
-	group.classList.add('rotation-icon-group', 'icon-group');
-	parent.appendChild(group);
-
-	if (simUI.individualConfig.rotationIconInputs?.length) {
-		configureIconSection(
-			group,
-			simUI.individualConfig.rotationIconInputs.map(iconInput => IconInputs.buildIconInput(group, simUI.player, iconInput)),
-			true,
-		);
-	}
-	return group;
 }
 
 const APL_PANES = [

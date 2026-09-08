@@ -1,13 +1,12 @@
-import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
+import { useSimHost } from '@sim/context/SimHostContext';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import { useMemo, useState } from 'react';
 
-import { makeTargetInputsPicker } from '../../view/encounter_picker';
 import { AdvancedEncounterModal } from '../AdvancedEncounterModal';
+import { TargetInputsPicker } from '../TargetsPicker';
 import { durationConfigs, executeConfigs, minBaseDamageConfig, numAlliesConfig, presetEncounterConfig } from './utils/configs';
 
 export interface EncounterPickerProps {
@@ -25,19 +24,10 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 	const allies = useMemo(() => numAlliesConfig(player), [player]);
 	const minBaseDamage = useMemo(() => minBaseDamageConfig(), []);
 
-	const mountTargetInputs = useLegacyMount(
-		parent => {
-			const picker = makeTargetInputsPicker(parent, encounter, 0);
-			parent.insertBefore(picker.rootElem, parent.querySelector('.advanced-button'));
-			return picker;
-		},
-		[encounter],
-	);
-
 	const [advancedOpen, setAdvancedOpen] = useState(false);
 
 	return (
-		<div className="encounter-picker-root" ref={mountTargetInputs}>
+		<div className="encounter-picker-root">
 			<div className="picker-group">
 				{duration.map(config => (
 					<NumberPicker key={config.id} modObject={encounter} config={config} />
@@ -53,6 +43,8 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 			<EnumPicker modObject={encounter} config={preset} />
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}
 			{player.getPlayerSpec().isTankSpec && <NumberPicker modObject={encounter} config={minBaseDamage} />}
+			{/* Vanilla built this into the block's root and then moved it here with `insertBefore`. */}
+			<TargetInputsPicker encounter={encounter} targetIndex={0} />
 			<Button className="advanced-button" onClick={() => setAdvancedOpen(true)}>
 				{i18n.t('settings_tab.encounter.advanced')}
 			</Button>

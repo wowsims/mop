@@ -1,17 +1,16 @@
+import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Encounter } from '@sim/raid/encounter';
 import { subscribeEncounterChange } from '@sim/state/subscriptions';
-import i18n from '@i18n/config';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
-import { makeTargetsPicker } from '../../view/encounter_picker';
 import { durationConfigs, executeConfigs } from '../EncounterPicker/utils/configs';
+import { TargetsPicker } from '../TargetsPicker';
 
 export interface AdvancedEncounterModalProps {
 	open: boolean;
@@ -42,7 +41,6 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 
 	const duration = useMemo(() => durationConfigs(encounter), [encounter]);
 	const execute = useMemo(() => executeConfigs(encounter), [encounter]);
-	const mountTargets = useLegacyMount(parent => makeTargetsPicker(parent, encounter), [encounter]);
 
 	return (
 		<Dialog
@@ -64,7 +62,9 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 					))}
 				</div>
 			</div>
-			<div className="encounter-targets" ref={mountTargets} />
+			<div className="encounter-targets">
+				<TargetsPicker encounter={encounter} />
+			</div>
 		</Dialog>
 	);
 };
