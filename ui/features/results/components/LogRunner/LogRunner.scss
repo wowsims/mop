@@ -20,6 +20,12 @@
 	position: relative;
 	overflow-x: auto;
 	overflow-y: hidden;
+	// A filter that matches nothing leaves the virtual list with no rows and therefore no height, and
+	// the floating action bar below it — which holds the chips and the Clear button — is in normal
+	// flow, so it leaps up the page and takes the only way of removing that filter with it. Reserving
+	// the height keeps the drawer where the pointer left it. Master collapses the same way; this is a
+	// deliberate divergence, and it is invisible to the tree gates, which compare tags and classes.
+	min-height: var(--log-runner-min-height, 12rem);
 }
 
 .log-runner-list {
