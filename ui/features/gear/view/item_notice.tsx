@@ -1,28 +1,21 @@
 /** @jsxImportSource @jsx-vanilla */
+import { Spec } from '@generated/proto/common';
 import { Player } from '@sim/player/player';
 import { Database } from '@sim/proto/database';
-import { Spec } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
+import type { ReactNode } from 'react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { GENERIC_MISSING_SET_BONUS_NOTICE_DATA, ITEM_NOTICES, SET_BONUS_NOTICES } from './item_notices';
+import { registerSetBonusNotices } from '../components/GearPicker/item_notices';
+import { ITEM_NOTICES, noticeElement } from './item_notices';
 
-export type ItemNoticeData = {
-	// SpecUnknown is used as default and should always be present
-	// False is used to disable the notice for a specific spec
-	[Spec.SpecUnknown]: JSX.Element | false;
-} & Record<number, JSX.Element | false>;
+export type { ItemNoticeData, SetBonusNoticeData } from '../components/GearPicker/item_notices';
 
 type ItemNoticeConfig = {
 	itemId: number;
-	additionalNoticeData?: JSX.Element;
+	additionalNoticeData?: ReactNode;
 };
-
-// Keys are item counts for each set bonus (typically 2 and 4), values are the
-// notice that should be displayed for each bonus. If null, will default to
-// GENERIC_MISSING_SET_BONUS_NOTICE_DATA.
-export type SetBonusNoticeData = Map<number, string> | null;
 
 export class ItemNotice extends Component {
 	itemId: number;
@@ -48,58 +41,48 @@ export class ItemNotice extends Component {
 		return ITEM_NOTICES.has(this.itemId) || !!this.additionalNoticeData;
 	}
 
-	private get noticeContent() {
-		if (!this.hasNotice) return null;
+	private get noticeContent(): ReactNode[] {
+		if (!this.hasNotice) return [];
 		const itemNotice = ITEM_NOTICES.get(this.itemId)!;
 		const genericSpecItemNotice = itemNotice?.[Spec.SpecUnknown];
 		const playerSpecItemNotice = itemNotice?.[this.player.getSpec()];
 
-		const specNotices = [];
+		const specNotices: ReactNode[] = [];
 
 		if (playerSpecItemNotice) {
-			specNotices.push(playerSpecItemNotice?.cloneNode(true));
+			specNotices.push(playerSpecItemNotice);
 		} else if (genericSpecItemNotice) {
-			specNotices.push(genericSpecItemNotice?.cloneNode(true));
+			specNotices.push(genericSpecItemNotice);
 		}
 
-		if (this.additionalNoticeData) specNotices.push(this.additionalNoticeData.cloneNode(true));
+		if (this.additionalNoticeData) specNotices.push(this.additionalNoticeData);
 
-		return !specNotices.length ? null : <>{specNotices.map(notice => notice)}</>;
+		return specNotices;
 	}
 
 	private get template() {
-		if (!this.hasNotice) return null;
-		const tooltipContent = this.noticeContent;
-		if (!tooltipContent) return null;
+		const notices = this.noticeContent;
+		if (!notices.length) return null;
 		const noticeIconRef = ref<HTMLButtonElement>();
 		const template = <button ref={noticeIconRef} className="warning fa fa-exclamation-triangle fa-xl me-2"></button>;
 
+		let content: DocumentFragment | null = null;
 		this.tooltip = tippy(noticeIconRef.value!, {
-			content: tooltipContent,
+			// The notices become DOM on the first show, not here. `noticeElement` renders them through
+			// React, and React defers a render started inside a commit — a bulk item picker builds its
+			// `ItemRenderer` from an effect, and there the eager build handed tippy an empty fragment
+			// with nothing logged in production. A show is always an event, never a commit.
+			onShow: instance => {
+				if (content) return;
+				content = noticeElement(...notices);
+				instance.setContent(content);
+			},
 		});
 
 		return template;
 	}
 
 	static registerSetBonusNotices(db: Database) {
-		SET_BONUS_NOTICES.forEach((value: SetBonusNoticeData, key: number) => {
-			const noticeData = value || GENERIC_MISSING_SET_BONUS_NOTICE_DATA;
-			const noticeContent = (
-				<>
-					<p className="mb-1"> This item set has the following warnings:</p>
-					<ul className="mb-0">
-						{Array.from(noticeData.keys()).map(key => (
-							<li>
-								{key.toFixed(0)}-piece: {noticeData.get(key)!}
-							</li>
-						))}
-					</ul>
-				</>
-			);
-
-			for (const id of db.getItemIdsForSet(key)) {
-				ITEM_NOTICES.set(id, { [Spec.SpecUnknown]: noticeContent });
-			}
-		});
+		registerSetBonusNotices(db);
 	}
 }

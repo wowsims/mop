@@ -1,23 +1,23 @@
-import { useSimHost } from '@sim/context/SimHostContext';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
-import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
-import { itemQualityClassName } from '@ui-kit/utils/css';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
+import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import { Tooltip } from '@ui-kit/Tooltip';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { useCallback, useId, useMemo, useRef } from 'react';
 
 import { createGearData } from '../../model/gear_data';
 import { SelectorModalTabs } from '../../types';
 import { getEmptySlotIconUrl } from '../../view/gear_elements';
-import { MISSING_RANDOM_SUFFIX_WARNING } from '../../view/item_notices';
-import { GemSocket, ItemCell, ItemCellAnchor } from '../ItemCell';
+import { GemSocket, ItemCell, ItemCellAnchor, NameDescriptionLabel } from '../ItemCell';
 import { EnchantLabel } from './EnchantLabel';
+import { MISSING_RANDOM_SUFFIX_WARNING } from './item_notices';
 import { ItemNoticeIcon } from './ItemNoticeIcon';
 import { QuickEnchantList } from './QuickEnchantList';
 import { QuickGemList } from './QuickGemList';
@@ -145,7 +145,7 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 									{item.item.name}
 									{!!item.randomSuffix && ` ${translateProtoStatName(item.randomSuffix.name)}`}
 								</span>
-								{!!item.item.nameDescription && <small className="heroic-label">({item.item.nameDescription})</small>}
+								{!!item.item.nameDescription && <NameDescriptionLabel nameDescription={item.item.nameDescription} />}
 							</>
 						) : (
 							translateSlotName(slot)
@@ -154,7 +154,7 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 					{!!item && (
 						<ItemNoticeIcon
 							itemId={item.item.id}
-							additionalNotice={item.hasRandomSuffixOptions() && !item.randomSuffix ? (MISSING_RANDOM_SUFFIX_WARNING as Element) : undefined}
+							additionalNotice={item.hasRandomSuffixOptions() && !item.randomSuffix ? MISSING_RANDOM_SUFFIX_WARNING : undefined}
 						/>
 					)}
 				</>

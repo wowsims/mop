@@ -1,102 +1,40 @@
 /** @jsxImportSource @jsx-vanilla */
-import { MISSING_ITEM_EFFECTS } from '@sim/constants/missing_effects_auto_gen';
-import { Spec } from '@generated/proto/common';
+import { createElement, Fragment, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
+// The one place a root is created outside the shell, and it is a shim, not an island: a throwaway
+// root that renders static markup once and unmounts before this returns. It dies with the vanilla
+// `ItemNotice` that needs DOM.
+// eslint-disable-next-line no-restricted-imports
+import { createRoot } from 'react-dom/client';
 
-import { ItemNoticeData, SetBonusNoticeData } from './item_notice';
+export {
+	GENERIC_MISSING_SET_BONUS_NOTICE_DATA,
+	ITEM_NOTICES,
+	MISSING_RANDOM_SUFFIX_WARNING,
+	registerSetBonusNotices,
+	SET_BONUS_NOTICES,
+	type ItemNoticeData,
+	type SetBonusNoticeData,
+} from '../components/GearPicker/item_notices';
 
-const WantToHelpMessage = () => <p className="mb-0">Want to help out by providing additional information? Contact us on our Discord!</p>;
+// The notice bodies are React; the vanilla `ItemNotice` hands its content to tippy, which takes DOM.
+// They are static markup with no state or handlers, so one synchronous render is the whole bridge:
+// mount a throwaway root, copy what it produced, unmount it again. Nothing outlives the call, which
+// is what the vanilla side needs — `item_list.tsx:495` builds an `ItemNotice` per row and never
+// disposes it, so a root kept alive here would leak one per row per list render.
+// `react-dom/server` would express this in one line and cost 57 kB gzipped in the entry chunk.
+//
+// Call this from an event or from plain code, never from a React commit — an effect, a layout effect
+// or a ref callback. `flushSync` is a no-op there, so the render is only scheduled and this returns
+// an empty fragment; dev logs a warning and production logs nothing at all. `item_notice.tsx` builds
+// its fragment in tippy's `onShow` for exactly that reason.
+export const noticeElement = (...notices: ReadonlyArray<ReactNode>): DocumentFragment => {
+	const host = document.createElement('div');
+	const root = createRoot(host);
+	flushSync(() => root.render(createElement(Fragment, null, ...notices)));
 
-export const MISSING_RANDOM_SUFFIX_WARNING = <p className="mb-0">Please select a random suffix</p>;
-
-const MISSING_IMPLEMENTATION_WARNING = (
-	<>
-		<p className="fw-bold">This item effect (on-use or proc) is not implemented!</p>
-		<p>We are working hard on gathering all the old resources to allow for an initial implementation.</p>
-		<WantToHelpMessage />
-	</>
-);
-
-const TENTATIVE_IMPLEMENTATION_WARNING = (
-	<>
-		<p>
-			This item <span className="fw-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.
-		</p>
-		<WantToHelpMessage />
-	</>
-);
-
-const WILL_NOT_BE_IMPLEMENTED_WARNING = <>The equip/use effect on this item will not be implemented!</>;
-
-const WILL_NOT_BE_IMPLEMENTED_ITEMS: number[] = [];
-
-const TENTATIVE_IMPLEMENTATION_ITEMS: number[] = [95346, 95347, 95344];
-
-export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
-	...WILL_NOT_BE_IMPLEMENTED_ITEMS.map((itemID): [number, ItemNoticeData] => [
-		itemID,
-		{
-			[Spec.SpecUnknown]: WILL_NOT_BE_IMPLEMENTED_WARNING,
-		},
-	]),
-	...TENTATIVE_IMPLEMENTATION_ITEMS.map((itemID): [number, ItemNoticeData] => [
-		itemID,
-		{
-			[Spec.SpecUnknown]: TENTATIVE_IMPLEMENTATION_WARNING,
-		},
-	]),
-	...[...MISSING_ITEM_EFFECTS].map(([itemID, tooltips]): [number, ItemNoticeData] => [
-		itemID,
-		{
-			[Spec.SpecUnknown]: !tooltips.length ? (
-				MISSING_IMPLEMENTATION_WARNING
-			) : (
-				<>
-					<p className="fw-bold">The following item effect (on-use or proc) is not implemented!</p>
-					<ul>
-						{tooltips
-							.filter(tooltip => !!tooltip)
-							.map(tooltip => (
-								<li>{tooltip}</li>
-							))}
-					</ul>
-				</>
-			),
-		},
-	]),
-
-	...[94523, 95665, 96037, 96409, 96781].map((itemID): [number, ItemNoticeData] => [
-		itemID,
-		{
-			[Spec.SpecUnknown]: (
-				<>
-					<p>
-						The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span className="fw-bold">not</span> implemented. The
-						DPS gain of these is around ~40 DPS.
-					</p>
-				</>
-			),
-		},
-	]),
-
-	...[].map((itemID): [number, ItemNoticeData] => [
-		itemID,
-		[Spec.SpecFrostMage, Spec.SpecArcaneMage, Spec.SpecFireMage].reduce<ItemNoticeData>(
-			(acc, spec) => {
-				acc[spec] = (
-					<>
-						<p>The proc has been implemented but currently does not work correctly with Mages Alter Time.</p>
-					</>
-				);
-				return acc;
-			},
-			{ [Spec.SpecUnknown]: false },
-		),
-	]),
-]);
-
-export const GENERIC_MISSING_SET_BONUS_NOTICE_DATA = new Map<number, string>([
-	[2, 'Not yet implemented'],
-	[4, 'Not yet implemented'],
-]);
-
-export const SET_BONUS_NOTICES = new Map<number, SetBonusNoticeData>([]);
+	const fragment = document.createDocumentFragment();
+	fragment.append(...[...host.childNodes].map(node => node.cloneNode(true)));
+	root.unmount();
+	return fragment;
+};

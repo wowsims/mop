@@ -192,6 +192,12 @@
 									"@specs/**"
 								],
 								"message": "ui/ui-kit must not depend on features/app/specs (see ui/README.md dependency direction)."
+							},
+							{
+								"group": [
+									"react-dom/client"
+								],
+								"message": "Only the shell creates React roots (see ui/README.md dependency direction). A feature or ui-kit component that needs one is the createRoot-per-leaf model this migration rejected."
 							}
 						]
 					}
@@ -215,6 +221,12 @@
 									"@specs/**"
 								],
 								"message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
+							},
+							{
+								"group": [
+									"react-dom/client"
+								],
+								"message": "Only the shell creates React roots (see ui/README.md dependency direction). A feature or ui-kit component that needs one is the createRoot-per-leaf model this migration rejected."
 							}
 						]
 					}
