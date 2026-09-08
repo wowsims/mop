@@ -1342,6 +1342,26 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **The global `button { outline: none }` is gone, replaced by one `:focus-visible`
+  rule.** Two resets in `_global.scss` stripped the focus ring from every `button` and `a`, which is
+  why each ported component has been restoring its own — `SavedDataPanel`'s copy was the fifth. The
+  replacement restores exactly what those two removed and no more: bare `a:focus-visible,
+  button:focus-visible`, so any component rule still outranks it, and inputs keep Bootstrap's own
+  treatment rather than gaining a second one.
+
+  `:focus-visible` is what the resets were really reaching for: it fires for keyboard focus and not
+  for a mouse click, which is the behaviour that made `outline: none` look reasonable. Verified by
+  tabbing on both builds — `button.sim-link` computes `solid 1px` on react against `none` on master.
+  Bootstrap `.btn` is unaffected; it draws its focus with a box-shadow, not an outline.
+
+  `[contenteditable]`'s reset is deliberately left: that one is an editing affordance, not a focus
+  style. The eight remaining per-component `:focus-visible` rules are now redundant where they match
+  and deliberate where they differ, so they stay until someone reads each one.
+
+  Also: a preset build carrying `epWeights` listed it twice, once from the top-level key walk and
+  once from its own rule. `epWeights` joins `encounter`, `settings` and `reforgeSettings` in the
+  walk's exclusion list, so every specially-handled category is named exactly once.
+
 - 2026-09-08 **`PresetConfigurationPicker` is React, and the gear, talents and settings tabs have no
   legacy mount left at all.** Five `useLegacyMount` sites are now two, and both survivors are the
   encounter islands that need a React `ListPicker` first. The three tab bodies also lose agent C's

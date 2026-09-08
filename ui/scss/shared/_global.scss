@@ -59,7 +59,6 @@ button {
 	padding: 0;
 	color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
 	text-decoration: none;
-	outline: none;
 	width: auto;
 	text-align: inherit;
 	font-weight: inherit;
@@ -75,7 +74,6 @@ button[class*='btn-link'] {
 	cursor: pointer;
 	border: 0;
 	padding: 0;
-	outline: none;
 	background-color: transparent;
 	transition: color 0.15s ease-in-out;
 
@@ -231,6 +229,15 @@ kbd {
 	.bg-spell-school-#{$label} {
 		background: $value;
 	}
+}
+
+// Restores exactly what the two resets above used to strip, and no more: `:focus-visible` fires for
+// keyboard focus and not for a mouse click, which is the behaviour those `outline: none` lines were
+// really reaching for. Bare element selectors, so any component rule still outranks this.
+a:focus-visible,
+button:focus-visible {
+	outline: 1px solid var(--bs-link-color);
+	outline-offset: 1px;
 }
 
 [contenteditable='true']:active,

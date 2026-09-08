@@ -33,11 +33,10 @@ describe('buildCategories', () => {
 		expect(categories).toEqual(['common.preset.other_settings']);
 	});
 
-	// `reforgeSettings` is excluded from the key walk and re-added by its own rule, so it reads once.
-	// `epWeights` is **not** excluded, so it is picked up by both and the tooltip lists the same thing
-	// twice under two names. Pinned as it behaves rather than as it reads.
-	it('lists reforge settings once, and stat weights twice, under two names', () => {
+	// Each of these is excluded from the key walk and re-added by its own rule, so it reads once
+	// rather than under two names. `epWeights` was the one that was not, and listed itself twice.
+	it('names each specially-handled category exactly once', () => {
 		expect(buildCategories(build({ reforgeSettings: {} }))).toEqual(['Reforge Settings']);
-		expect(buildCategories(build({ epWeights: {} }))).toEqual(['category:epWeights', 'common.preset.stat_weights']);
+		expect(buildCategories(build({ epWeights: {} }))).toEqual(['common.preset.stat_weights']);
 	});
 });

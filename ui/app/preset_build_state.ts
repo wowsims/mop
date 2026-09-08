@@ -13,7 +13,7 @@ export function buildCategories(build: PresetBuild): Array<string> {
 	const categories: Array<string> = [];
 
 	Object.keys(build).forEach(c => {
-		if (!['name', 'encounter', 'settings', 'reforgeSettings'].includes(c) && build[c as PresetConfigurationCategory]) {
+		if (!['name', 'encounter', 'settings', 'reforgeSettings', 'epWeights'].includes(c) && build[c as PresetConfigurationCategory]) {
 			categories.push(translatePresetConfigurationCategory(c as PresetConfigurationCategory));
 		}
 	});

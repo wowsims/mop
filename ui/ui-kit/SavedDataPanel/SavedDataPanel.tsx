@@ -1,5 +1,3 @@
-import './SavedDataPanel.scss';
-
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
