@@ -779,6 +779,30 @@ that page to all 34 spec URLs — nothing has to be registered anywhere.
 - A vendor stylesheet is imported from the TSX **before** the component's own, because in the
   emitted bundle import order is cascade order and most vendor rules are single-class.
 
+## The delivery loop — run before reporting, every time
+
+Three sweeps, in order. **If any sweep changes anything, start again from the top** — a simplification
+often exposes a duplicate, and removing a duplicate often exposes something else to simplify. Stop only
+when a full pass changes nothing.
+
+1. **Normalisation.** Does this already exist? Search before writing — `/usr/bin/grep -rn` for the
+   concept, not just the name. Today's sweep found `kebabCase` with eight users while three files
+   hand-rolled it, `metricsClasses` being re-interpolated at five sites, and `sim_result.ts:441`
+   re-implementing `PlayerClasses.getCssClass` inline. **Two of the three "new" helpers already
+   existed and were being bypassed.** Then: is the same expression written twice in this diff? Two
+   copies is a helper; the second copy is where drift starts (`crit` alone silently misses
+   `critical-block`).
+2. **Simplification.** Can it be smaller and still do the job? Dead branches (the `% ` prefix compared
+   a localized label and never fired); props nothing passes; an abstraction with one caller; JSX built
+   to answer a question; a wrapper element the baseline does not have. Prefer deleting to adding. If
+   200 lines could be 50, rewrite it.
+3. **Verification.** The full gate set, plus the browser gates the change can reach, plus a mutation
+   check on every test whose failure is not obvious. A test that passes when you break the code it
+   covers is worth less than no test, because it reads as coverage. Four vacuous gates were found this
+   way in one day, one of which had been reporting a defect that did not exist.
+
+The loop is what separates "it compiles" from "it is delivered".
+
 ## Conventions
 
 - **A function that returns JSX is a component, and gets rendered — not called.** `{deleteButton(onRemove)}`
