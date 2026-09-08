@@ -20,7 +20,6 @@ const UI_KIT = 'ui/ui-kit';
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
 const ALLOWED = {
-	NumberListPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 	AdaptiveStringPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
 };
 

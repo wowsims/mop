@@ -1,18 +1,20 @@
 /** @jsxImportSource @jsx-vanilla */
+import { EquipmentSpec } from '@generated/proto/common';
 import { Database } from '@sim/proto/database';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { EquipmentSpec, Spec } from '@generated/proto/common';
 import { t } from 'i18next';
 
 import { BulkTab } from '../../../bulk/view/bulk_tab';
-import { IndividualImporter } from './individual_importer';
+import { Importer } from '../importer';
 
-export class BulkGearJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
+export class BulkGearJsonImporter extends Importer {
+	protected readonly simUI: IndividualSimHost<any>;
 	private readonly bulkUI: BulkTab;
 
 	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, bulkUI: BulkTab) {
-		super(parent, simUI, { title: t('bulk_tab.import_modal.title'), allowFileUpload: true });
+		super(parent, { title: t('bulk_tab.import_modal.title'), allowFileUpload: true });
 
+		this.simUI = simUI;
 		this.bulkUI = bulkUI;
 		this.descriptionElem.appendChild(
 			<>
