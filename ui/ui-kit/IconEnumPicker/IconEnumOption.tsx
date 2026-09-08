@@ -2,7 +2,7 @@ import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import type { IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
-import { wowheadAnchorProps } from '@ui-kit/wowhead';
+import { wowheadAnchorProps } from '../utils/wowhead';
 import clsx from 'clsx';
 
 import { iconStyleOf } from './utils';

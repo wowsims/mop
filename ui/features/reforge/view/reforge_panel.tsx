@@ -1,11 +1,11 @@
 /** @jsxImportSource @jsx-vanilla */
-import { isDevMode } from '@sim/env';
-import { Player } from '@sim/player';
+import { isDevMode } from '@sim/utils/env';
+import { Player } from '@sim/player/player';
 import { EquippedItem } from '@sim/proto_utils/equipped_item';
 import { Gear } from '@sim/proto_utils/gear';
 import { statCapTypeNames } from '@sim/proto_utils/names';
 import { StatCap, Stats, UnitStat } from '@sim/proto_utils/stats';
-import { RelativeStatCap } from '@sim/reforge_settings';
+import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import type { ActionGroupItem, IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField, subscribeRunState } from '@sim/state/subscriptions';

@@ -1,4 +1,4 @@
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { Stats } from '@sim/proto_utils/stats';
 import { SavedGearSet } from '@generated/proto/ui';
 

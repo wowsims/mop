@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { formatDurationSeconds } from '@sim/format';
+import { formatDurationSeconds } from '@sim/utils/format';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto_utils/action_id/dom';
 import { AuraStacksLog, CastBeganLog, DamageLog, Entity, isCastBegan, isDamage, isResource, ResourceLog } from '@sim/proto_utils/combat_log';

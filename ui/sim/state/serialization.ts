@@ -8,10 +8,10 @@ import { IndividualSimSettings } from '@generated/proto/ui';
 
 import { CURRENT_API_VERSION } from '../constants/other';
 import { SimSettingCategories } from '../constants/sim_settings';
-import type { Player } from '../player';
+import type { Player } from '../player/player';
 import { migrateOldProto, ProtoConversionMap } from '../proto_utils/proto_migration';
 import { Stats } from '../proto_utils/stats';
-import type { ReforgeSettings } from '../reforge_settings';
+import type { ReforgeSettings } from '../settings/reforge_settings';
 import type { Sim } from '../sim';
 import { batch } from './batch';
 // The state surface the envelope serializes besides Player/Sim: the reforge

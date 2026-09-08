@@ -1,7 +1,7 @@
 // Automatic-runtime entry point for files carrying `/** @jsxImportSource @jsx-vanilla */`.
 // tsx-vanilla's `element` already accepts children inside `props`, so no adaptation is needed.
 // Exports no `JSX` namespace on purpose — TypeScript then uses the global one tsx-vanilla declares.
-import { externalRel } from '@sim/links';
+import { externalRel } from '@sim/utils/links';
 import { element, fragment } from 'tsx-vanilla';
 
 export const Fragment = fragment;

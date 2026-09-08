@@ -1,6 +1,6 @@
 import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
 import { StatCap, UnitStat } from '@sim/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';

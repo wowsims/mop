@@ -1357,6 +1357,33 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **`ui/sim` and `ui/ui-kit` are grouped by subject, and `tools/restructure/move.mjs`
+  was lying about two aliases.** `player/{player,player_class,player_spec}.ts` + `player/{classes,specs}/`,
+  `raid/{raid,party,encounter}.ts`, `settings/*.ts`, `utils/{collections,math,format,json,misc,env,links}.ts`,
+  `workers/`, `cache/`, and `proto_utils/wowhead.ts`; ui-kit's loose helpers became
+  `ui-kit/utils/{css,dom,wowhead}.ts`. 50 files moved, 526 import specifiers rewritten.
+  Three things this turned up:
+  **`move.mjs` still mapped `domain: '@sim'` and `sims: '@specs'`** — the pre-rename directory
+  names — so every `@sim/…` and `@specs/…` specifier silently resolved to nothing and was left
+  alone. The first dry run reported 214 rewrites in 94 files; the corrected map reports 498 in 274,
+  and only then did the 57 frozen spec files appear. A move tool that finds *no* work in a directory
+  full of importers is reporting a bug, not a clean tree.
+  **`env.ts` and `links.ts` are not view code.** Both were moved to `ui-kit/utils/` on the reasoning
+  that they name `MouseEvent` and `HTMLAnchorElement`; `no-restricted-imports` then failed six
+  `ui/sim` files that import them at runtime. Only `isRightClick` is genuinely view-layer (all five
+  callers are ui-kit or features) — it went to `ui-kit/utils/dom.ts`, and the rest came back to
+  `ui/sim/utils/`. `setExternalAwareHref` takes an element it does not create, which is the same
+  category as `proto_utils/action_id/dom.ts` and belongs in the model layer by the same rule.
+  **Two things outside `ui/` point at moved paths.** `tools/database/gen_character_constants_ts.go`
+  writes `capabilities_auto_gen.ts` by literal path and every `vite build` regenerates it, and
+  `sim.test.ts` mocked `'./worker_pool'` as a string. Neither is an import, so neither type-check
+  nor the move tool sees them — the test suite caught the mock, the build caught the generator.
+  `ui-kit/sim_host.ts` is gone: `SimUIHost`/`SimHeaderHost` moved into `@sim/sim_host` beside
+  `SimHost`/`IndividualSimHost`, so the host contract is one file and `ui/sim` no longer type-imports
+  back out of ui-kit. `formatDeltaTextElem` is marked in `utils/format.ts` — it writes `textContent`
+  and the positive/negative classes onto an element, so it becomes a `<DeltaText>` component once
+  `results_action.tsx`, `item_list.tsx` and `bulk_sim_results_renderer.tsx` port.
+
 - 2026-09-08 **`cssClass`/`extraCssClasses` props are `className`, and `ContentBlock` owns its own
   props.** Five components took React's name for the prop (`ContentBlock`, `Dialog`, `PickerShell`,
   `ProgressTrackerDialog`, `SummaryTable` — which also gained `headerClassName`), 47 call sites

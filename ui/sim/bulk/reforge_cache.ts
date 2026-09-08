@@ -3,13 +3,13 @@
 import { BulkGearCandidate, ReforgeOptimizeRequest } from '@generated/proto/api';
 import { Debuffs, EquipmentSpec, PartyBuffs, RaidBuffs } from '@generated/proto/common';
 
-import type { Player } from '../player';
+import type { Player } from '../player/player';
 import { Database } from '../proto_utils/database';
 import { Gear } from '../proto_utils/gear';
 import { getReforgeCacheGearKey } from '../proto_utils/items';
-import { ReforgeGearCache } from '../reforge_cache';
+import { ReforgeGearCache } from '../cache/reforge_cache';
 import { getReforgeConfigHash } from '../state/reforge_request';
-import { sleep } from '../utils';
+import { sleep } from '../utils/misc';
 import { throwIfAborted } from './utils';
 
 const BULK_CACHE_LOOKUP_BATCH_SIZE = 2000;

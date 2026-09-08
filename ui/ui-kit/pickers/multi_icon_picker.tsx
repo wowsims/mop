@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { isRightClick } from '@sim/env';
-import { Player } from '@sim/player';
+import { isRightClick } from '@ui-kit/utils/dom';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { fillAndSetActionId } from '@sim/proto_utils/action_id/dom';
 import { batch } from '@sim/state/batch';
@@ -8,8 +8,8 @@ import { subscribeSimChange } from '@sim/state/subscriptions';
 import { ref } from 'tsx-vanilla';
 
 import { Component } from '../component';
-import { existsInDOM } from '../dom_utils';
-import type { SimUIHost } from '../sim_host';
+import { existsInDOM } from '../utils/dom';
+import type { SimUIHost } from '@sim/sim_host';
 import { IconPicker, IconPickerConfig } from './icon_picker';
 export interface MultiIconPickerItemConfig<ModObject> extends IconPickerConfig<ModObject, any> {}
 

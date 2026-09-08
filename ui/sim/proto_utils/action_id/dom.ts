@@ -3,12 +3,12 @@
 // made a pure value object (ui/sim/proto_utils/action_id.ts) depend on the
 // DOM; ActionId is data now and the rendering lives here. They know nothing
 // beyond ActionId, so they sit in ui-kit rather than in a feature.
-import type { Player } from '@sim/player';
+import type { Player } from '../../player/player';
 import type { EquippedItem } from '@sim/proto_utils/equipped_item';
 import { Profession } from '@generated/proto/common';
 
-import { setExternalAwareHref } from '../../links';
-import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../../wowhead';
+import { setExternalAwareHref } from '../../utils/links';
+import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';
 import { ActionId } from './index';
 
 export function setActionIdBackground(actionId: ActionId, elem: HTMLElement) {

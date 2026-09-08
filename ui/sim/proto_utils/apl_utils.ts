@@ -1,7 +1,7 @@
 import { APLAction, APLPrepullAction, APLRotation, APLRotation_Type } from '@generated/proto/apl';
 import { ActionID as ActionIdProto, Cooldowns, Spec } from '@generated/proto/common';
 
-import { Player } from '../player';
+import { Player } from '../player/player';
 
 type APLRenameTarget =
 	| { type: 'variable'; oldName: string; newName: string }

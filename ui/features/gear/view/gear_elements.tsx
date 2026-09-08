@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
 import type { EquippedItem } from '@sim/proto_utils/equipped_item';

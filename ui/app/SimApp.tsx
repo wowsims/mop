@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { SpecDefinition } from '@sim/spec_config';
 import { CharacterStats } from '@features/character-stats';
 import { AuraMetricsTable } from '@features/results/components/AuraMetricsTable';

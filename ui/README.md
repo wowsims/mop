@@ -7,15 +7,17 @@ ui/
   worker/            NOT MOVED (Go package, go:embed highs.wasm). alias @worker
   generated/         proto/*, *_auto_gen.ts — tool output only. alias @generated
                      (*_auto_gen.ts still sit beside their consumers)
-  domain/            DOM-free, node-runnable model: sim/player/raid/party/encounter facades,
-                     state/, proto_utils/, player_classes/, player_specs/, talents data + trees,
-                     bulk request builders, wasm/, constants, utils, worker_pool, reforge_cache,
-                     wowhead, cache_handler. alias @sim
+  sim/               DOM-free, node-runnable model, grouped by subject: sim.ts + sim_host.ts +
+                     sim_runs.ts + sim_signal_manager.ts + spec_config.ts at the root, then
+                     player/ (player, player_class, player_spec, classes/, specs/),
+                     raid/ (raid, party, encounter), settings/ (bulk, item_swap, reforge,
+                     stat_weight), utils/ (collections, math, format, json, misc),
+                     workers/, cache/, state/, proto_utils/, talents data + trees, bulk/,
+                     wasm/, constants/, presets/, hooks/, context/. alias @sim
   ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
-                     sim_host (SimUIHost/SimHeaderHost — the shell slice ui-kit is allowed to name),
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
-                     css_utils, dom_utils, pickers/, vendor/. alias @ui-kit
+                     utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
                      apl/ (model/ action_id_sets + unit_sets + field_descriptors +
                      the value_kinds/action_kinds registries, view/ the pickers),
@@ -96,8 +98,8 @@ path segment at a time, so `@features/*` would not catch `@features/gear/view/it
 
 Features, ui-kit and domain must not name the app shells (`SimUI`, `IndividualSimUI`) even as a
 type: `import type` is erased at runtime but the lint bans the specifier either way. They use
-narrow host interfaces instead — `@ui-kit/sim_host` (`SimUIHost`, `SimHeaderHost`) and
-`@features/sim_host` (`SimHost`, `IndividualSimHost<Spec>`, `SimWarning`, `ActionGroupItem`,
+narrow host interfaces instead — all of them in `@sim/sim_host`: `SimUIHost` and `SimHeaderHost`
+(the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`, `ActionGroupItem`,
 plus the `isIndividualSimHost()` predicate that replaces `instanceof IndividualSimUI`). The
 shells declare `implements SimHost` / `implements IndividualSimHost` so the interfaces stay
 honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
@@ -228,8 +230,8 @@ subclass anywhere. Adding a spec is:
 
 1. `ui/specs/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.
-2. An entry in `ui/sim/player_specs/index.ts`, i.e. a `PlayerSpec` class (in
-   `ui/sim/player_specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
+2. An entry in `ui/sim/player/specs/index.ts`, i.e. a `PlayerSpec` class (in
+   `ui/sim/player/specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background

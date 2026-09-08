@@ -1,15 +1,15 @@
 import './MultiIconPicker.scss';
 
 import { Menu } from '@base-ui/react/menu';
-import { isRightClick } from '@sim/env';
-import type { Player } from '@sim/player';
+import { isRightClick } from '@ui-kit/utils/dom';
+import type { Player } from '@sim/player/player';
 import type { ActionId } from '@sim/proto_utils/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
-import { wowheadAnchorProps } from '@ui-kit/wowhead';
+import { wowheadAnchorProps } from '../utils/wowhead';
 import clsx from 'clsx';
 import { useId, useState } from 'react';
 

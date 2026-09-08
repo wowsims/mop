@@ -1,6 +1,6 @@
-import type { Encounter } from '@sim/encounter';
-import type { Player } from '@sim/player';
-import type { Raid } from '@sim/raid';
+import type { Encounter } from '@sim/raid/encounter';
+import type { Player } from '@sim/player/player';
+import type { Raid } from '@sim/raid/raid';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';

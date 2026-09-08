@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { formatDurationSeconds } from '@sim/format';
+import { formatDurationSeconds } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';

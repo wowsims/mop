@@ -1,6 +1,6 @@
 import './MetricsTotalBar.scss';
 
-import { formatToCompactNumber, formatToPercent } from '@sim/format';
+import { formatToCompactNumber, formatToPercent } from '@sim/utils/format';
 import { spellSchoolNames } from '@sim/proto_utils/names';
 import type { SpellSchool } from '@generated/proto/common';
 import clsx from 'clsx';

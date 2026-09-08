@@ -2,9 +2,9 @@
 import './shared/bootstrap_overrides';
 
 import { LaunchStatus } from '@sim/constants/other';
-import { PlayerClass } from '@sim/player_class';
-import { PlayerClasses } from '@sim/player_classes/index';
-import { PlayerSpec } from '@sim/player_spec';
+import { PlayerClass } from '@sim/player/player_class';
+import { PlayerClasses } from '@sim/player/classes/index';
+import { PlayerSpec } from '@sim/player/player_spec';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto_utils/utils';
 import { Class } from '@generated/proto/common';
 import * as Popper from '@popperjs/core';

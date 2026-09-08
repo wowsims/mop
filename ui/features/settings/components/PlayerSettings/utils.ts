@@ -1,5 +1,5 @@
-import { getEnumValues } from '@sim/collections';
-import type { Player } from '@sim/player';
+import { getEnumValues } from '@sim/utils/collections';
+import type { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Profession } from '@generated/proto/common';
 import i18n from '@i18n/config';

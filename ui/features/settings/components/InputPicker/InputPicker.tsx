@@ -1,5 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { InputConfig } from '@sim/spec_config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';

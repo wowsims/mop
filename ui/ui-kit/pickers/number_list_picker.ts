@@ -1,4 +1,4 @@
-import { arrayEquals } from '@sim/collections';
+import { arrayEquals } from '@sim/utils/collections';
 
 import { Input, InputConfig } from '../input';
 /**

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { APLAction, APLListItem } from '@generated/proto/apl';

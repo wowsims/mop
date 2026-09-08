@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Stats } from '@sim/proto_utils/stats';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';

@@ -1,4 +1,4 @@
-import { kebabCase } from '@sim/format';
+import { kebabCase } from '@sim/utils/format';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@sim/proto_utils/action_id';
 import type { AuraUptimeLog, CastLog, ResourceGroupLog } from '@sim/proto_utils/combat_log';
 import { resourceNames } from '@sim/proto_utils/names';

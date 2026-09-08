@@ -2,8 +2,8 @@ import { BulkSimRequest, ErrorOutcome, ErrorOutcomeType, ProgressMetrics, RaidSi
 import { queue } from 'async';
 
 import { SimSignals } from '../../sim_signal_manager';
-import { noop } from '../../utils';
-import { WorkerPool } from '../../worker_pool';
+import { noop } from '../../utils/misc';
+import { WorkerPool } from '../../workers/worker_pool';
 import { runConcurrentSim } from '../sim';
 import { cleanBulkSimDpsMetrics, mergeBulkSimCandidateResults } from './merge';
 import { BulkSimStageProgressEmitter } from './progress';

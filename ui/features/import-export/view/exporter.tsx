@@ -1,11 +1,11 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@sim/format';
+import { kebabCase } from '@sim/utils/format';
 import type { SimHost } from '@sim/sim_host';
 import { Emitter } from '@sim/state/events';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { CopyButton } from '@ui-kit/copy_button';
-import { downloadString } from '@ui-kit/dom_utils';
+import { downloadString } from '@ui-kit/utils/dom';
 import { ref } from 'tsx-vanilla';
 
 import { trackPageView } from '../../../tracking/analytics';

@@ -1,10 +1,10 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { ActionID as ActionIdProto, Cooldown } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
-import { existsInDOM } from '@ui-kit/dom_utils';
+import { existsInDOM } from '@ui-kit/utils/dom';
 import { IconEnumPicker, IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { NumberListPicker } from '@ui-kit/pickers/number_list_picker';
 import tippy from 'tippy.js';

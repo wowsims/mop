@@ -1,7 +1,7 @@
 import './ItemSwapPicker.scss';
 
 import { useSimHost } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';

@@ -3,7 +3,7 @@ import './EpWeightsDialog.scss';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { Stats } from '@sim/proto_utils/stats';
 import { useStatWeights } from '@sim/hooks/useStatWeights';
-import type { StatWeightActionSettings } from '@sim/stat_weight_settings';
+import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Stat } from '@generated/proto/common';

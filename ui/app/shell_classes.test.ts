@@ -1,4 +1,4 @@
-import type { PlayerSpec } from '@sim/player_spec';
+import type { PlayerSpec } from '@sim/player/player_spec';
 import { describe, expect, it } from 'vitest';
 
 import { metricVisibilityClasses, showsEpRatios, simTypeClasses, simUiClasses } from './shell_classes';

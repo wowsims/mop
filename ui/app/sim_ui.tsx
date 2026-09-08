@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@sim/constants/other';
-import { isDevMode } from '@sim/env';
-import { PlayerSpec, SimStatus } from '@sim/player_spec';
+import { isDevMode } from '@sim/utils/env';
+import { PlayerSpec, SimStatus } from '@sim/player/player_spec';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { Gear } from '@sim/proto_utils/gear';
 import { SimResult } from '@sim/proto_utils/sim_result';
@@ -10,7 +10,7 @@ import type { ActionGroupItem, SimHost, SimWarning } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@sim/state/persistence';
 import { subscribeSimField } from '@sim/state/subscriptions';
-import { WorkerProgressCallback } from '@sim/worker_pool';
+import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';

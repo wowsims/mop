@@ -4,7 +4,7 @@ import { subscribeAll, subscribePlayerField, subscribeUiField } from '@sim/state
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
-import { itemQualityClassName } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';

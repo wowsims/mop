@@ -1,5 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';

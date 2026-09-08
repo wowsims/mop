@@ -1,4 +1,4 @@
-import { findScrollParent } from './dom_utils';
+import { findScrollParent } from './utils/dom';
 
 /**
  * A fixed-row-height virtual list.

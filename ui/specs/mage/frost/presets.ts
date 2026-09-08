@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/encounter';
+import { Encounter } from '@sim/raid/encounter';
 import { ConsumesSpec, Profession, Race } from '@generated/proto/common';
 import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
 

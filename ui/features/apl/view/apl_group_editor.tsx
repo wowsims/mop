@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { renameAPLReference } from '@sim/proto_utils/apl_utils';
-import { randomUUID } from '@sim/utils';
+import { randomUUID } from '@sim/utils/misc';
 import { APLAction, APLGroup, APLListItem } from '@generated/proto/apl';
 import { UUID } from '@generated/proto/common';
 import i18n from '@i18n/config';

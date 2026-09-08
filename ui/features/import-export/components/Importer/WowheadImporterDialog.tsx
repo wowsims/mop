@@ -1,4 +1,4 @@
-import { WOWHEAD_GEAR_PLANNER_URL } from '@sim/wowhead';
+import { WOWHEAD_GEAR_PLANNER_URL } from '@sim/proto_utils/wowhead';
 import i18n from '@i18n/config';
 
 import { WOWHEAD_GEAR_PLANNER_IMPORTER } from '../../importers';

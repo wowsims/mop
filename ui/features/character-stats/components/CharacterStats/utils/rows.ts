@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { UnitStat } from '@sim/proto_utils/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
 

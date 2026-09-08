@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';

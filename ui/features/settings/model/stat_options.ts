@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { Faction, Stat } from '@generated/proto/common';

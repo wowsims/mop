@@ -3,9 +3,9 @@
 import { EnchantType, EquipmentSpec, HandType, ItemSlot, ItemType, Profession, RangedWeaponType, Spec, WeaponType } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
-import { intersection, swap } from '../collections';
-import { PlayerSpec } from '../player_spec';
-import { PlayerSpecs } from '../player_specs';
+import { intersection, swap } from '../utils/collections';
+import { PlayerSpec } from '../player/player_spec';
+import { PlayerSpecs } from '../player/specs';
 import { Stats } from './stats';
 
 export function isSharpWeaponType(weaponType: WeaponType): boolean {

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Input, InputConfig } from '@ui-kit/input';
 import { ListPicker } from '@ui-kit/pickers/list_picker';
 export class APLHidePicker extends Input<Player<any>, boolean> {

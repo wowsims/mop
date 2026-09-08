@@ -1,5 +1,5 @@
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
 import { UnitStat } from '@sim/proto_utils/stats';
 import { defineSpec } from '@sim/spec_config';

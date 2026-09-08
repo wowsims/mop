@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { itemSwapEnabledSpecs } from '@sim/spec_config';
 import {
 	APLAction,

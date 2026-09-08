@@ -1,4 +1,4 @@
-import { distinct, stringComparator } from '@sim/collections';
+import { distinct, stringComparator } from '@sim/utils/collections';
 import { UnitMetrics } from '@sim/proto_utils/sim_result';
 import { actionColors } from '@features/results/model/color_settings';
 import { Chart, Plugin } from 'chart.js';

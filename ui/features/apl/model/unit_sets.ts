@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 
 export type UNIT_SET = 'aura_sources' | 'aura_sources_targets_first' | 'targets' | 'players';

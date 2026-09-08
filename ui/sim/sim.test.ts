@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
 	computeStats: vi.fn(() => new Promise(() => {})),
 }));
 
-vi.mock('./worker_pool', () => ({
+vi.mock('./workers/worker_pool', () => ({
 	generateRequestId: () => 'test-request',
 	WorkerPool: class {
 		setNumWorkers() {}

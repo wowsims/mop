@@ -24,13 +24,13 @@ const UI_ROOT = path.join(REPO_ROOT, 'ui');
 // Top-level ui/ directory -> import alias. Directories missing from this table
 // (shared/, types/, tracking/) are always relative.
 const DIR_TO_ALIAS = {
-	domain: '@sim',
+	sim: '@sim',
 	generated: '@generated',
 	worker: '@worker',
 	'ui-kit': '@ui-kit',
 	features: '@features',
 	app: '@app',
-	sims: '@specs',
+	specs: '@specs',
 	i18n: '@i18n',
 };
 const ALIAS_TO_DIR = Object.fromEntries(Object.entries(DIR_TO_ALIAS).map(([dir, alias]) => [alias, dir]));

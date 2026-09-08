@@ -1,5 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
 import { type StoreSubscribe, subscribePlayerChange } from '@sim/state/subscriptions';
 import type { Spec } from '@generated/proto/common';

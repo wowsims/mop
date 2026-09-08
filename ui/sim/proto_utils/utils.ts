@@ -2,11 +2,11 @@ import { Player } from '@generated/proto/api';
 import { Class, Faction, Profession, Race, RaidBuffs, Spec, UnitReference, UnitReference_Type } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 
-import { getEnumValues } from '../collections';
-import { PlayerClass } from '../player_class';
-import { PlayerClasses } from '../player_classes';
-import { PlayerSpec } from '../player_spec';
-import { PlayerSpecs } from '../player_specs';
+import { getEnumValues } from '../utils/collections';
+import { PlayerClass } from '../player/player_class';
+import { PlayerClasses } from '../player/classes';
+import { PlayerSpec } from '../player/player_spec';
+import { PlayerSpecs } from '../player/specs';
 
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {

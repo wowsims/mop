@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';

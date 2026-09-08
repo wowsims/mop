@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { PaladinSpecs } from '@sim/proto_utils/spec_types';
 import { subscribePlayerChange } from '@sim/state/subscriptions';

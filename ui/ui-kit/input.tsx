@@ -5,7 +5,7 @@ import clsx, { ClassValue } from 'clsx';
 import tippy, { Content as TippyContent } from 'tippy.js';
 
 import { Component } from './component';
-import { existsInDOM } from './dom_utils';
+import { existsInDOM } from './utils/dom';
 /**
  * Data for creating a new input UI element.
  */

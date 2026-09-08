@@ -3,7 +3,7 @@ import { EquipmentSpec } from '@generated/proto/common';
 import { SimRequest } from '@worker/types';
 
 import { SimSignals } from '../sim_signal_manager';
-import { generateRequestId, WorkerPool } from '../worker_pool';
+import { generateRequestId, WorkerPool } from '../workers/worker_pool';
 
 // windows-1252 ('latin1') maps all 256 byte values to distinct code points, so this is an
 // injective byte-to-string encoding - one exact-length string, no intermediate array.

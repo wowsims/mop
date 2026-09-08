@@ -11,8 +11,8 @@
 import { IndividualSimSettings } from '@generated/proto/ui';
 
 import type { SimSettingCategories } from '../constants/sim_settings';
-import type { Player } from '../player';
-import type { StatWeightActionSettings } from '../stat_weight_settings';
+import type { Player } from '../player/player';
+import type { StatWeightActionSettings } from '../settings/stat_weight_settings';
 import { batch } from './batch';
 import { tryParseUrlLocation } from './sim_links';
 import type { StoreSubscribe } from './subscriptions';

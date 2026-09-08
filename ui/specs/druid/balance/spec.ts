@@ -1,7 +1,7 @@
 import * as Mechanics from '@sim/constants/mechanics';
-import { formatToNumber } from '@sim/format';
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { formatToNumber } from '@sim/utils/format';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@sim/proto_utils/stats';
 import { defineSpec } from '@sim/spec_config';

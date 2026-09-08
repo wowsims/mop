@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { emptyUnitReference } from '@sim/proto_utils/utils';
 import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';

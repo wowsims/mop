@@ -1,5 +1,5 @@
 import { Field } from '@base-ui/react/field';
-import { adoptNode, isNode } from '@ui-kit/dom_utils';
+import { adoptNode, isNode } from '../utils/dom';
 import type { InputConfig } from '@ui-kit/input';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';

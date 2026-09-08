@@ -2,8 +2,8 @@ import { EquipmentSpec, GemColor, HandType, ItemSlot, ItemSpec, Profession } fro
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@generated/proto/db';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
-import { distinct, equalsOrBothNull, getEnumValues } from '../collections';
-import { sum } from '../math';
+import { distinct, equalsOrBothNull, getEnumValues } from '../utils/collections';
+import { sum } from '../utils/math';
 import { Database } from './database';
 import { EquippedItem, ReforgeData } from './equipped_item';
 import { isBluntWeaponType, isSharpWeaponType, validWeaponCombo } from './items';

@@ -22,7 +22,7 @@ import type * as InputHelpers from '@ui-kit/input_helpers';
 import type { SavedDataConfig } from '@ui-kit/saved_data_manager';
 import type { ReactNode } from 'react';
 
-import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
+import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player/player';
 import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './presets/types';
 import type { SpecOptions, SpecRotation } from './proto_utils/spec_types';
 import type { StatMods, StatWrites } from './proto_utils/stats';

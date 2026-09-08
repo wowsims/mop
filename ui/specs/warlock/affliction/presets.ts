@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/encounter';
+import { Encounter } from '@sim/raid/encounter';
 import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, Race } from '@generated/proto/common';
 import {
 	AfflictionWarlock_Options as WarlockOptions,

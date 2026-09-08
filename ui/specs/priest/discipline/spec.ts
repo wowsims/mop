@@ -1,5 +1,5 @@
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@sim/proto_utils/stats';
 import { defineSpec } from '@sim/spec_config';
 import * as OtherInputs from '@features/settings/model/other_inputs';

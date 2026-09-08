@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@sim/format';
+import { kebabCase } from '@sim/utils/format';
 import type { SimHost } from '@sim/sim_host';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';

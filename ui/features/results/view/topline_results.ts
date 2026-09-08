@@ -1,8 +1,8 @@
-import { DeathKnight } from '@sim/player_classes/death_knight';
-import { Hunter } from '@sim/player_classes/hunter';
-import { Rogue } from '@sim/player_classes/rogue';
-import { Warrior } from '@sim/player_classes/warrior';
-import { PlayerSpecs } from '@sim/player_specs/index';
+import { DeathKnight } from '@sim/player/classes/death_knight';
+import { Hunter } from '@sim/player/classes/hunter';
+import { Rogue } from '@sim/player/classes/rogue';
+import { Warrior } from '@sim/player/classes/warrior';
+import { PlayerSpecs } from '@sim/player/specs/index';
 
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 import { SimResultsManager } from './results_action';

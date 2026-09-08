@@ -1,4 +1,4 @@
-import type { Encounter } from '@sim/encounter';
+import type { Encounter } from '@sim/raid/encounter';
 
 export const repairTargetInputs = (encounter: Encounter): void => {
 	const presets = encounter.sim.db.getAllPresetTargets();

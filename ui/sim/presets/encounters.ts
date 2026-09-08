@@ -1,7 +1,7 @@
 import { Encounter as EncounterProto, InputType, MobType } from '@generated/proto/common';
 
 import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
-import { Encounter } from '../encounter';
+import { Encounter } from '../raid/encounter';
 
 // Default single-target encounter proto shared by every class's preset list.
 export const singleTargetEncounterProto = (): EncounterProto => Encounter.defaultEncounterProto();

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@sim/format';
-import { zTest } from '@sim/math';
+import { formatDeltaTextElem, formatToNumber, formatToPercent } from '@sim/utils/format';
+import { zTest } from '@sim/utils/math';
 import { ActionMetrics, SimResult, SimResultFilter } from '@sim/proto_utils/sim_result';
 import type { SimHost } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';

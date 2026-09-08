@@ -1,10 +1,10 @@
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import * as StatCaps from '@sim/presets/stat_caps';
 import * as AplUtils from '@sim/proto_utils/apl_utils';
 import { UnitStat } from '@sim/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
-import { RelativeStatCap } from '@sim/reforge_settings';
+import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';

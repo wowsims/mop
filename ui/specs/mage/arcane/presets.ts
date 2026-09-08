@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/encounter';
-import { Player } from '@sim/player';
+import { Encounter } from '@sim/raid/encounter';
+import { Player } from '@sim/player/player';
 import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
 

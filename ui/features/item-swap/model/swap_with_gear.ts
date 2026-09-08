@@ -1,4 +1,4 @@
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { batch } from '@sim/state/batch';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
-import { kebabCase } from '@sim/format';
-import { Player } from '@sim/player';
+import { kebabCase } from '@sim/utils/format';
+import { Player } from '@sim/player/player';
 import { Sim } from '@sim/sim';
 import { subscribeSimField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';

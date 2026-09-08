@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { arrayEquals } from '@sim/collections';
+import { arrayEquals } from '@sim/utils/collections';
 import i18n from '@i18n/config';
 import { Dropdown } from 'bootstrap';
 import clsx from 'clsx';
@@ -7,7 +7,7 @@ import { shallowEqualArrays, shallowEqualObjects } from 'shallow-equal';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { existsInDOM } from '../dom_utils';
+import { existsInDOM } from '../utils/dom';
 import { Input, InputConfig } from '../input';
 export interface DropdownValueConfig<V> {
 	value: V;

@@ -1,8 +1,8 @@
 import { BulkSimRequest, BulkSimStage, BulkSimStageMetrics, DistributionMetrics, ErrorOutcome } from '@generated/proto/api';
 
-import { isDevMode } from '../../env';
+import { isDevMode } from '../../utils/env';
 import { SimSignals } from '../../sim_signal_manager';
-import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
+import { WorkerPool, WorkerProgressCallback } from '../../workers/worker_pool';
 import { BulkSimCandidateTransport, runBulkSimCandidateBatchOnWorkers, runSingleBulkSimCandidate } from './batch';
 import { bulkSimCarriedResults, bulkSimCarryOverCovers, ConcurrentBulkSimStageCarryOver } from './carry_over';
 import {

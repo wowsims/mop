@@ -1,14 +1,14 @@
 /** @jsxImportSource @jsx-vanilla */
-import { sanitizeId } from '@sim/format';
-import { mod } from '@sim/math';
-import { Player } from '@sim/player';
+import { sanitizeId } from '@sim/utils/format';
+import { mod } from '@sim/utils/math';
+import { Player } from '@sim/player/player';
 import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
 import { EquippedItem, ReforgeData } from '@sim/proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '@sim/proto_utils/gems';
 import { Stats } from '@sim/proto_utils/stats';
 import type { SimHost } from '@sim/sim_host';
 import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
-import { randomUUID } from '@sim/utils';
+import { randomUUID } from '@sim/utils/misc';
 import { GemColor, ItemLevelState, ItemRandomSuffix, ItemSlot, Profession } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';

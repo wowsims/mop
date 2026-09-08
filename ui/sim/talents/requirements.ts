@@ -1,6 +1,6 @@
 import { Spec } from '@generated/proto/common';
 
-import type { SpecConfigData } from '../player';
+import type { SpecConfigData } from '../player/player';
 
 export function getRequiredTalentRows<SpecType extends Spec>(specConfig: Pick<SpecConfigData<SpecType>, 'requiredTalentRows'>): number[] {
 	if (specConfig.requiredTalentRows) {

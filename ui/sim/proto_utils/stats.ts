@@ -2,7 +2,7 @@ import { StatCapConfig, StatCapType, StatWeightsResult, UIStat as UnitStatProto 
 import { Class, PseudoStat, Stat, UnitStats } from '@generated/proto/common';
 import { translatePseudoStat, translateStat } from '@i18n/localization';
 
-import { getEnumValues } from '../collections';
+import { getEnumValues } from '../utils/collections';
 import * as Mechanics from '../constants/mechanics';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { migrateOldProto, ProtoConversionMap } from './proto_migration';

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';

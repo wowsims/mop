@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Sim } from '@sim/sim';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';

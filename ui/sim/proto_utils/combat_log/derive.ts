@@ -1,7 +1,7 @@
 import { ResourceType } from '@generated/proto/spell';
 
-import { bucket, getEnumValues, stringComparator } from '../../collections';
-import { sum } from '../../math';
+import { bucket, getEnumValues, stringComparator } from '../../utils/collections';
+import { sum } from '../../utils/math';
 import type { ActionId } from '../action_id';
 import { computeActionIdAsString } from './parse';
 import {

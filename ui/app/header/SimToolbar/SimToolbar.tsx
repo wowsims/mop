@@ -2,7 +2,7 @@ import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@sim/cons
 import { useOutdatedNativeSim } from '@sim/hooks/useOutdatedNativeSim';
 import type { Sim } from '@sim/sim';
 import i18n from '@i18n/config';
-import { isNative } from '@ui-kit/dom_utils';
+import { isNative } from '@ui-kit/utils/dom';
 import type { ReactNode } from 'react';
 
 import { SocialLink } from '@ui-kit/SocialLink';

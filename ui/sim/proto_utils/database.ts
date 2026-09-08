@@ -16,10 +16,10 @@ import { Consumable, ItemEffectRandPropPoints, SimDatabase } from '@generated/pr
 import { SpellEffect } from '@generated/proto/spell';
 import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '@generated/proto/ui';
 
-import { CacheHandler } from '../cache_handler';
-import { distinct } from '../collections';
+import { CacheHandler } from '../cache/cache_handler';
+import { distinct } from '../utils/collections';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
-import { WOWHEAD_DOMAIN, WOWHEAD_EXPANSION_ENV } from '../wowhead';
+import { WOWHEAD_DOMAIN, WOWHEAD_EXPANSION_ENV } from './wowhead';
 import { EquippedItem } from './equipped_item';
 import { Gear, ItemSwapGear } from './gear';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';

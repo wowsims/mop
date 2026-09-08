@@ -10,7 +10,7 @@ import { UIItem, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateBulkSlotName } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
-import { setItemQualityClassName } from '@ui-kit/css_utils';
+import { setItemQualityClassName } from '@ui-kit/utils/css';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';

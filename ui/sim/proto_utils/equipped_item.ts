@@ -14,7 +14,7 @@ import {
 } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
-import { distinct } from '../collections';
+import { distinct } from '../utils/collections';
 import { MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { ActionId } from './action_id';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';

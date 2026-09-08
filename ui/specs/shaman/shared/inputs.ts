@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { ShamanSpecs } from '@sim/proto_utils/spec_types';
 import type { CustomSection } from '@sim/spec_config';

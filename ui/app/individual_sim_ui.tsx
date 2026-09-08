@@ -1,15 +1,15 @@
 /** @jsxImportSource @jsx-vanilla */
 import { SimSettingCategories } from '@sim/constants/sim_settings';
-import { isDevMode } from '@sim/env';
-import { Player } from '@sim/player';
-import { PlayerSpecs } from '@sim/player_specs';
+import { isDevMode } from '@sim/utils/env';
+import { Player } from '@sim/player/player';
+import { PlayerSpecs } from '@sim/player/specs';
 import { armorTypeNames, professionNames } from '@sim/proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto_utils/stats';
 import { getTalentPoints } from '@sim/proto_utils/utils';
 import type { IndividualSimHost } from '@sim/sim_host';
 import type { SpecDefinition } from '@sim/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
-import { StatWeightActionSettings } from '@sim/stat_weight_settings';
+import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { batch } from '@sim/state/batch';
 import { loadIndividualSettings } from '@sim/state/persistence';
 import {

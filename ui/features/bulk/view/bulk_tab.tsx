@@ -16,17 +16,17 @@ import {
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
 } from '@sim/bulk/utils';
-import { BulkSettingsStore } from '@sim/bulk_settings';
-import { getEnumValues } from '@sim/collections';
+import { BulkSettingsStore } from '@sim/settings/bulk_settings';
+import { getEnumValues } from '@sim/utils/collections';
 import { REPO_RELEASES_URL } from '@sim/constants/other';
-import { isDevMode } from '@sim/env';
-import { formatDurationSeconds, formatToNumber } from '@sim/format';
-import { Z_95, zTest } from '@sim/math';
-import { isSpecDualWield2HCapable } from '@sim/player_classes/capabilities';
+import { isDevMode } from '@sim/utils/env';
+import { formatDurationSeconds, formatToNumber } from '@sim/utils/format';
+import { Z_95, zTest } from '@sim/utils/math';
+import { isSpecDualWield2HCapable } from '@sim/player/classes/capabilities';
 import { EquippedItem } from '@sim/proto_utils/equipped_item';
 import { Gear } from '@sim/proto_utils/gear';
 import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@sim/proto_utils/items';
-import { RelativeStatCap } from '@sim/reforge_settings';
+import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import { ReforgeOptimizeConfig } from '@sim/sim';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
@@ -35,7 +35,7 @@ import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, 
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
-import { isExternal } from '@ui-kit/dom_utils';
+import { isExternal } from '@ui-kit/utils/dom';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
 import { ProgressTrackerModal } from '@ui-kit/progress_tracker_modal';

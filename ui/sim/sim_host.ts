@@ -6,16 +6,29 @@ import type { ResultsPanelHandle } from '@features/results/model/results_panel_h
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
-import type { SimUIHost } from '@ui-kit/sim_host';
+import type { SimTabRegistry } from '@ui-kit/tab_registry';
 
 import type { SimSettingCategories } from './constants/sim_settings';
-import type { Player } from './player';
+import type { Player } from './player/player';
 import type { Gear } from './proto_utils/gear';
 import type { SimResult } from './proto_utils/sim_result';
-import type { RunSimOptions } from './sim';
+import type { RunSimOptions, Sim } from './sim';
 import type { IndividualSimUIConfig } from './spec_config';
 import type { StoreSubscribe } from './state/subscriptions';
-import type { WorkerProgressCallback } from './worker_pool';
+import type { WorkerProgressCallback } from './workers/worker_pool';
+
+// The slice of the sim shell (app/sim_ui.tsx) that ui-kit widgets reach for.
+// ui-kit must not name the shell itself (see ui/README.md dependency direction).
+export interface SimHeaderHost {
+	readonly rootElem: HTMLElement;
+	activateTab(className: string): void;
+}
+
+export interface SimUIHost {
+	readonly sim: Sim;
+	readonly simHeader: SimHeaderHost;
+	readonly tabs: SimTabRegistry;
+}
 
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {

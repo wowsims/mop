@@ -1,6 +1,6 @@
 import { BulkSimStage, BulkSimStageMetrics, ProgressMetrics } from '@generated/proto/api';
 
-import { WorkerProgressCallback } from '../../worker_pool';
+import { WorkerProgressCallback } from '../../workers/worker_pool';
 import { ConcurrentBulkSimStageConfig } from './types';
 
 export const bulkSimStageLogName = (stage: BulkSimStage): string => {

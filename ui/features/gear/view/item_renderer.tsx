@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
 import { getEnchantDescription } from '@sim/proto_utils/enchants';
@@ -9,7 +9,7 @@ import { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
-import { setItemQualityClassName } from '@ui-kit/css_utils';
+import { setItemQualityClassName } from '@ui-kit/utils/css';
 import { ref } from 'tsx-vanilla';
 
 import { createItemSockets, createNameDescriptionLabel, getEmptySlotIconUrl } from './gear_elements';

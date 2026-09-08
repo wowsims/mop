@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { Database } from '@sim/proto_utils/database';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { classGlyphsConfig } from '@sim/talents/factory';

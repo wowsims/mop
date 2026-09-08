@@ -1,4 +1,4 @@
-import { getEnumValues } from '@sim/collections';
+import { getEnumValues } from '@sim/utils/collections';
 import { SimSettingCategories } from '@sim/constants/sim_settings';
 import { LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';
 import i18n from '@i18n/config';

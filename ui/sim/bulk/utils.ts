@@ -1,8 +1,8 @@
 import { BulkSimResult, BulkSimStage, DistributionMetrics } from '@generated/proto/api';
 import { ItemSlot, WeaponType } from '@generated/proto/common';
 
-import type { Player } from '../player';
-import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/capabilities';
+import type { Player } from '../player/player';
+import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player/classes/capabilities';
 import { Gear } from '../proto_utils/gear';
 import { getGearIdentityKey } from '../proto_utils/items';
 import {

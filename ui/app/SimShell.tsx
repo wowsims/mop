@@ -1,5 +1,5 @@
 import { SOCIALS } from '@sim/constants/other';
-import type { PlayerSpec } from '@sim/player_spec';
+import type { PlayerSpec } from '@sim/player/player_spec';
 import type { Sim } from '@sim/sim';
 import { subscribeAll, subscribeUiField } from '@sim/state/subscriptions';
 import { useStoreSubscribe } from '@ui-kit/hooks/useStoreSubscribe';

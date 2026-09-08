@@ -1,6 +1,6 @@
 import { Class, Spec } from '@generated/proto/common';
 
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec } from '../player/player_spec';
 import { specTypeFunctions } from '../proto_utils/spec_functions';
 import type { SpecTalents } from '../proto_utils/spec_types';
 import { GlyphsConfig, TalentsConfig } from './config';

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Spec } from '@generated/proto/common';
 import { ElementalShaman_Options_ThunderstormRange } from '@generated/proto/shaman';
 import i18n from '@i18n/config';

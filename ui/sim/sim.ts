@@ -50,11 +50,11 @@ import {
 	writeBulkSimReforgeCacheResults,
 } from './bulk/reforge_cache';
 import { throwIfAborted } from './bulk/utils';
-import { distinct, getEnumValues } from './collections';
+import { distinct, getEnumValues } from './utils/collections';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
-import { Encounter } from './encounter';
-import { environmentOf } from './env';
-import { Player, UnitMetadata } from './player';
+import { Encounter } from './raid/encounter';
+import { environmentOf } from './utils/env';
+import { Player, UnitMetadata } from './player/player';
 import { Database } from './proto_utils/database';
 import { Gear } from './proto_utils/gear';
 import { getReforgeCacheGearKey } from './proto_utils/items';
@@ -62,7 +62,7 @@ import { extendPlayerProtoWithMissingEffects } from './proto_utils/proto_migrati
 import { SimResult } from './proto_utils/sim_result';
 import { StatCap, Stats } from './proto_utils/stats';
 import { hasBlacksmithing } from './proto_utils/utils';
-import { Raid } from './raid';
+import { Raid } from './raid/raid';
 import { SimRuns } from './sim_runs';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { batch } from './state/batch';
@@ -71,9 +71,9 @@ import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
 import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
-import { hashString, noop, sleep } from './utils';
+import { hashString, noop, sleep } from './utils/misc';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
-import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
+import { generateRequestId, WorkerPool, WorkerProgressCallback } from './workers/worker_pool';
 
 export const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
 export type ReforgeOptimizeConfig = {

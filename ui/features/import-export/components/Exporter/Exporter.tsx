@@ -1,9 +1,9 @@
 import { useSimHost } from '@sim/context/SimHostContext';
-import { kebabCase } from '@sim/format';
+import { kebabCase } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
-import { downloadString } from '@ui-kit/dom_utils';
+import { downloadString } from '@ui-kit/utils/dom';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

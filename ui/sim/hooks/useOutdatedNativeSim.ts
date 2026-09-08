@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Sim } from '../sim';
-import { noop } from '../utils';
+import { noop } from '../utils/misc';
 import { useSimStatus } from './useSimStatus';
 
 /** Whether the local Go host is running an out-of-date build. Always false in the browser. */

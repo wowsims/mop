@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Database } from '@sim/proto_utils/database';
 import { Spec } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';

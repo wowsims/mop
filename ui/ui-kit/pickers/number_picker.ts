@@ -1,4 +1,4 @@
-import { formatToNumber } from '@sim/format';
+import { formatToNumber } from '@sim/utils/format';
 
 import { Input, InputConfig } from '../input';
 /**

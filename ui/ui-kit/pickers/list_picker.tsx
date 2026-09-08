@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { APLValidation } from '@generated/proto/api';
@@ -9,7 +9,7 @@ import { translateItemLabel } from '@i18n/localization';
 import clsx from 'clsx';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 
-import { existsInDOM } from '../dom_utils';
+import { existsInDOM } from '../utils/dom';
 import { Input, InputConfig } from '../input';
 import { TooltipButton } from '../tooltip_button';
 export type ListItemAction = 'create' | 'delete' | 'move' | 'copy';

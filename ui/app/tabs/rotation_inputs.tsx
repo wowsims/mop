@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';

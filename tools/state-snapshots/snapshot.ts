@@ -8,8 +8,8 @@
 //
 // Every spec is a declarative `spec.ts` default export, registered explicitly below.
 import { IndividualSimUIConfig } from '../../ui/app/individual_sim_ui';
-import { getSpecConfig, Player } from '../../ui/sim/player';
-import { PlayerSpecs } from '../../ui/sim/player_specs';
+import { getSpecConfig, Player } from '../../ui/sim/player/player';
+import { PlayerSpecs } from '../../ui/sim/player/specs';
 import { Database } from '../../ui/sim/proto_utils/database';
 import { Sim } from '../../ui/sim/sim';
 import { batch } from '../../ui/sim/state/batch';

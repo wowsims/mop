@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';

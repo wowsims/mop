@@ -1,5 +1,5 @@
-import { Player } from '@sim/player';
-import { PlayerClasses } from '@sim/player_classes';
+import { Player } from '@sim/player/player';
+import { PlayerClasses } from '@sim/player/classes';
 import { UnitStat } from '@sim/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto_utils/utils';
 import { defineSpec } from '@sim/spec_config';

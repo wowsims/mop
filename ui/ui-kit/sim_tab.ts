@@ -1,5 +1,5 @@
 import { Component } from './component';
-import type { SimUIHost } from './sim_host';
+import type { SimUIHost } from '@sim/sim_host';
 
 export interface SimTabConfig {
 	identifier: string;

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '@generated/proto/druid';

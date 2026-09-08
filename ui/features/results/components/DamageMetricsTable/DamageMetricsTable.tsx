@@ -1,4 +1,4 @@
-import { bucket } from '@sim/collections';
+import { bucket } from '@sim/utils/collections';
 import { useSim } from '@sim/context/SimHostContext';
 import { ActionMetrics } from '@sim/proto_utils/sim_result';
 import { subscribeUiField } from '@sim/state/subscriptions';

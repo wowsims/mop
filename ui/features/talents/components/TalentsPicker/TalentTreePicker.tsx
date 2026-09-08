@@ -1,5 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { PlayerSpecs } from '@sim/player_specs';
+import { PlayerSpecs } from '@sim/player/specs';
 import type { TalentTreeConfig } from '@sim/talents/config';
 import i18n from '@i18n/config';
 import { translatePlayerSpec } from '@i18n/localization';

@@ -1,4 +1,4 @@
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import type { DerivedSetting } from '@sim/spec_config';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { MonkTalents } from '@generated/proto/monk';

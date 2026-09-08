@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { isDevMode } from '@sim/env';
+import { isDevMode } from '@sim/utils/env';
 import { SimResult } from '@sim/proto_utils/sim_result';
 import type { IndividualSimHost, SimHost } from '@sim/sim_host';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';

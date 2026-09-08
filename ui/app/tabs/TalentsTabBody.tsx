@@ -1,6 +1,6 @@
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classTalentsConfig } from '@sim/talents/factory';
 import { SavedTalents } from '@features/talents/components/SavedTalents';

@@ -1,7 +1,7 @@
 /** @jsxImportSource @jsx-vanilla */
 import { SortDirection } from '@sim/constants/other';
-import { formatDeltaTextElem } from '@sim/format';
-import { Player } from '@sim/player';
+import { formatDeltaTextElem } from '@sim/utils/format';
+import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { setActionIdWowheadHref } from '@sim/proto_utils/action_id/dom';
 import { EquippedItem } from '@sim/proto_utils/equipped_item';
@@ -14,7 +14,7 @@ import { subscribeBulkField } from '@sim/state/subscriptions';
 import { Class, GemColor, ItemSlot, ItemSpec } from '@generated/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { setItemQualityClassName } from '@ui-kit/css_utils';
+import { setItemQualityClassName } from '@ui-kit/utils/css';
 import { VirtualList } from '@ui-kit/virtual_list';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';

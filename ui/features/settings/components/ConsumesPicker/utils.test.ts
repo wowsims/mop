@@ -1,4 +1,4 @@
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { Database } from '@sim/proto_utils/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';

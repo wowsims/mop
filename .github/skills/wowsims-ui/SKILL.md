@@ -19,10 +19,12 @@ generated → worker → {domain, i18n} → ui-kit → features → app → spec
 ui/generated/proto                   generated protobuf (alias @generated/proto)
 ui/sim/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
 ui/sim/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
-ui/sim/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
+ui/sim/sim.ts, raid/{raid,party,encounter}.ts, player/player.ts + settings/*.ts
                                      facade classes over the store; public API unchanged
-ui/sim/{talents,constants,bulk,wasm,player_classes,player_specs,worker_pool,…}
-ui/sim/{math,format,collections,env,utils}.ts   the old utils grab bag, split by topic
+ui/sim/{talents,constants,bulk,wasm,workers,cache,presets,hooks,context,…}
+ui/sim/player/{player,player_class,player_spec}.ts + player/{classes,specs}/
+ui/sim/utils/{collections,math,format,json,misc}.ts   the old utils grab bag, split by topic
+                                     (the DOM halves, env and links, moved to ui-kit/utils/)
 ui/sim/proto_utils/action_id/{index,dom}.ts     the ActionId value object and the writers
                                      that enrich an element with its icon, href and tooltip
                                      dataset. The writers take the element, they never create
@@ -161,7 +163,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
   `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
   `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass anywhere; `ui/app/spec_entry.ts` loads
-  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/sim/player_specs`, and a
+  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/sim/player/specs`, and a
   `$sim-themes` map entry in `ui/scss/sims/sim.scss` (PR 8a: 68 per-spec scss files collapsed
   into one shared `sim.scss` + `mage_fire.scss` for fire mage's extra rules); the `spec-pages` vite
   plugin globs `ui/specs/*/*/spec.ts(x)` so the page at `/mop/<class>/<spec>/` follows automatically
@@ -433,14 +435,14 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `ui/sim/**` also bans `@core/components/**`, keeping the guarantee the old `ui/core/*` scope
   had. Generator output paths, `AUTO_GEN_FILES_TS`, `.gitignore`, `.oxfmtrc.json` follow the moves.
   **Module-evaluation-order trap** (cost an afternoon): `getSpecSitePath` moved from
-  `proto_utils/utils.ts` to `constants/other.ts`. `player_specs/<class>.ts` calls it at module scope,
-  and `proto_utils/utils.ts` imports `player_specs/index` back — a cycle. Re-sorting imports flipped
+  `proto_utils/utils.ts` to `constants/other.ts`. `player/specs/<class>.ts` calls it at module scope,
+  and `proto_utils/utils.ts` imports `player/specs/index` back — a cycle. Re-sorting imports flipped
   rolldown's evaluation order so `index.ts`'s `specToPlayerSpec` literal was built before
   `BloodDeathKnight` existed, and every `PlayerSpecs.fromProto` returned `undefined` (the golden
-  harness died in `new Player`). Rule: `player_specs/*` and `player_classes/*` must import only leaf
+  harness died in `new Player`). Rule: `player/specs/*` and `player/classes/*` must import only leaf
   modules — never a *value* from `proto_utils/utils`. Check with
   `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
-  `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
+  `player/specs/<class>.ts` must be emitted before `player/specs/index.ts`.
 
 - 2026-09-02 UI restructure PR 5a "gear/settings move (view only)": whole-file moves via
   `tools/restructure/move.mjs` (17 files, 97 specifiers in 27 files) — `gear_picker/` (8 files,

@@ -1,6 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '@sim/constants/other';
-import { isDevMode } from '@sim/env';
+import { isDevMode } from '@sim/utils/env';
 import { Sim } from '@sim/sim';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';

@@ -1,5 +1,5 @@
-import { stringComparator } from '@sim/collections';
-import type { Player } from '@sim/player';
+import { stringComparator } from '@sim/utils/collections';
+import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import type { Database } from '@sim/proto_utils/database';
 import { subscribePlayerField } from '@sim/state/subscriptions';

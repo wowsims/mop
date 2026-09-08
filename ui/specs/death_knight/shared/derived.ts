@@ -1,4 +1,4 @@
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { DerivedSetting } from '@sim/spec_config';
 import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import type { Spec } from '@generated/proto/common';

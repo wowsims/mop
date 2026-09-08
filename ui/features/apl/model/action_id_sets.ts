@@ -1,5 +1,5 @@
-import { bucket } from '@sim/collections';
-import { UnitMetadata } from '@sim/player';
+import { bucket } from '@sim/utils/collections';
+import { UnitMetadata } from '@sim/player/player';
 import { ActionId } from '@sim/proto_utils/action_id';
 import { OtherAction } from '@generated/proto/common';
 import i18n from '@i18n/config';

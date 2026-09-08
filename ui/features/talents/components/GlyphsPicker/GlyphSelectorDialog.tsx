@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
-import { itemQualityClassName } from '@ui-kit/css_utils';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import { Dialog } from '@ui-kit/Dialog';
 import { SearchBar } from '@ui-kit/SearchBar';
 import clsx from 'clsx';

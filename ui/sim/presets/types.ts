@@ -16,7 +16,7 @@ import {
 } from '@generated/proto/common';
 import { SavedRotation, SavedTalents } from '@generated/proto/ui';
 
-import type { Player } from '../player';
+import type { Player } from '../player/player';
 import type { SpecOptions } from '../proto_utils/spec_types';
 import type { Stats } from '../proto_utils/stats';
 

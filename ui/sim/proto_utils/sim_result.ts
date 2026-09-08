@@ -18,11 +18,11 @@ import { Class, Encounter as EncounterProto, SpellSchool, Target as TargetProto 
 import { ResourceType } from '@generated/proto/spell';
 import { SimRun } from '@generated/proto/ui';
 
-import { CacheHandler } from '../cache_handler';
-import { bucket } from '../collections';
-import { sum } from '../math';
-import { PlayerSpec } from '../player_spec';
-import { PlayerSpecs } from '../player_specs';
+import { CacheHandler } from '../cache/cache_handler';
+import { bucket } from '../utils/collections';
+import { sum } from '../utils/math';
+import { PlayerSpec } from '../player/player_spec';
+import { PlayerSpecs } from '../player/specs';
 import { ActionId, defaultTargetIcon } from './action_id';
 import {
 	AuraUptimeLog,

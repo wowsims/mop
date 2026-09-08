@@ -1,4 +1,4 @@
-import { arrayEquals } from '@sim/collections';
+import { arrayEquals } from '@sim/utils/collections';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@sim/constants/sim_settings';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';

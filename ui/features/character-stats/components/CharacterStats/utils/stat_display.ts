@@ -1,5 +1,5 @@
 import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { Stats, UnitStat } from '@sim/proto_utils/stats';
 import { ItemSlot, Race, Spec, Stat, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';

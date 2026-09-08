@@ -1,5 +1,5 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '@generated/proto/monk';

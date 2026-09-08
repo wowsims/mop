@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player';
+import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto_utils/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import type { GearData } from '@features/gear/types';

@@ -1,5 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
-import { Player } from '@sim/player';
+import { Player } from '@sim/player/player';
 import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@sim/proto_utils/action_id/dom';
 import { EquippedItem } from '@sim/proto_utils/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@sim/proto_utils/gems';

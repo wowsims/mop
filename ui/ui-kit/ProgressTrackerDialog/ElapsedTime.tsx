@@ -1,4 +1,4 @@
-import { formatDurationSeconds } from '@sim/format';
+import { formatDurationSeconds } from '@sim/utils/format';
 import { useEffect, useRef } from 'react';
 
 export interface ElapsedTimeProps {
