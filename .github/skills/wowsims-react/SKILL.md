@@ -29,8 +29,8 @@ against master.
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; `Toast` and the three dropdown pickers wait for their first consumer |
-| 3 — features port inward, easiest first | **unit 1 (sidebar / character-stats) done**, **shell sequence C0–C6 done** (skeleton, sticky header, toolbar, socials), **encounter done**, **item-swap done**, **header dropdowns and the sim title on Base UI `Menu`**, **settings done**, **import-export done**, **stat-weights done** (all four units); bulk, apl, gear and results remain |
-| 4 — island wrappers (combat replay, Chart.js, VirtualList) | not started |
+| 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, and all six saved-data slots. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, apl, results, and gear's two big files |
+| 4 — island wrappers (combat replay, Chart.js, VirtualList) | `VirtualList` **built** on `@tanstack/react-virtual`, waiting on `item_list.tsx` or `log_view.tsx` to have a consumer; combat replay and Chart.js not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
 Full plan, including the duplication inventory that drives Phase 2:
