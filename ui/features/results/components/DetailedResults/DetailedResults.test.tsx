@@ -40,22 +40,23 @@ const island = (name: string, rootCssClass: string) => async () => {
 	};
 };
 
-vi.mock('../../view/results_filter', async () => {
-	const { Component } = await import('@ui-kit/component');
-	const { Emitter: LocalEmitter } = await import('@sim/state/events');
-	return {
-		ResultsFilter: class extends Component {
-			readonly changeEmitter = new LocalEmitter<void>();
-			constructor(config: { parent: HTMLElement }) {
-				super(config.parent, 'results-filter-root');
-				islands.track('filter').parents.push(config.parent);
-			}
-			getFilter() {
-				return { target: null };
-			}
-		},
-	};
-});
+// The picker is `UnitPicker`'s test to cover; what this pane owns is the selection, so the filter is
+// reduced to a button that reports one. Everything else in the module — `ALL_UNITS`, `hasTarget`,
+// `simResultFilter` — is the real thing.
+vi.mock('../ResultsFilter', async importOriginal => ({
+	...(await importOriginal<typeof import('../ResultsFilter')>()),
+	ResultsFilter: ({ target, onTargetChange }: { target: number; onTargetChange: (target: number) => void }) => (
+		<button type="button" className="results-filter-root" data-target={target} onClick={() => onTargetChange(1)} />
+	),
+}));
+// `updateResults` builds one of these per run; the only thing read off it here is the target list
+// the filter is validated against.
+const run = vi.hoisted(() => ({ targets: 3 }));
+vi.mock('@sim/proto/sim_result', async importOriginal => ({
+	...(await importOriginal<typeof import('@sim/proto/sim_result')>()),
+	SimResult: { fromProto: () => Promise.resolve({ getTargets: () => Array.from({ length: run.targets }, (_, index) => ({ index })) }) },
+}));
+
 vi.mock('../../view/timeline', async () => ({ Timeline: await island('timeline', 'timeline-root')() }));
 vi.mock('../../view/combat_replay', async () => ({ CombatReplay: await island('replay', 'combat-replay-root')() }));
 vi.mock('../../view/log/log_view', async () => ({ LogView: await island('log', 'log-runner-root')() }));
@@ -97,12 +98,16 @@ const makeHost = () => {
 	} as never;
 };
 
+let runData: unknown = null;
+
 const renderPane = () =>
 	render(
 		<SimHostProvider host={makeHost()}>
-			<DetailedResults resultsManager={{ currentChangeEmitter, getRunData: () => null } as never} makeLogExporter={() => ({ open: () => {} })} />
+			<DetailedResults resultsManager={{ currentChangeEmitter, getRunData: () => runData } as never} makeLogExporter={() => ({ open: () => {} })} />
 		</SimHostProvider>,
 	);
+
+const filterButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.results-filter-root')!;
 
 const tabButton = (container: HTMLElement, tabId: string) => container.querySelector<HTMLButtonElement>(`.dr-toolbar .nav-link[aria-controls=${tabId}]`)!;
 
@@ -110,6 +115,8 @@ beforeEach(() => {
 	islands.records.clear();
 	resultChannel = new ResultChannel();
 	currentChangeEmitter = new Emitter<void>();
+	runData = null;
+	run.targets = 3;
 	metrics.damage = true;
 	metrics.threat = false;
 	metrics.healing = false;
@@ -163,7 +170,7 @@ describe('DetailedResults', () => {
 
 	it('builds each vanilla island into the div that used to be its parent, with no wrapper', () => {
 		const { container } = renderPane();
-		expect(islands.track('filter').parents[0].className).toBe('results-filter');
+		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
 		expect(islands.track('timeline').parents[0].className).toBe('timeline');
 		expect(islands.track('replay').parents[0].className).toBe('combat-replay');
 		expect(islands.track('log').parents[0].className).toBe('log');
@@ -233,6 +240,75 @@ describe('DetailedResults', () => {
 		await waitFor(() => expect(container.querySelector('#healingTab')!.classList.contains('active')).toBe(true));
 		expect(container.querySelector('#damageTab')!.classList.contains('active')).toBe(false);
 		expect(tabButton(container, 'healingTab').getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('re-emits the last run under a newly picked target', async () => {
+		const emitted: Array<SimResultData | null> = [];
+		resultChannel.on(value => emitted.push(value));
+		runData = { run: { request: { requestId: 'run-1' } } };
+		const { container } = renderPane();
+
+		await act(async () => currentChangeEmitter.emit());
+		expect(emitted).toHaveLength(1);
+		expect(emitted[0]!.filter).toEqual({ target: null });
+
+		await act(async () => {
+			fireEvent.click(filterButton(container));
+		});
+		expect(emitted).toHaveLength(2);
+		expect(emitted[1]!.filter).toEqual({ target: 1 });
+		expect(filterButton(container).dataset.target).toBe('1');
+	});
+
+	it('emits nothing on its own before a target is picked', async () => {
+		const emitted: Array<SimResultData | null> = [];
+		resultChannel.on(value => emitted.push(value));
+		runData = { run: { request: { requestId: 'run-1' } } };
+		renderPane();
+
+		await act(async () => currentChangeEmitter.emit());
+		await act(async () => currentChangeEmitter.emit());
+		expect(emitted).toHaveLength(2);
+	});
+
+	it('drops a selected target the next run no longer has, before that run is emitted', async () => {
+		const emitted: Array<SimResultData | null> = [];
+		resultChannel.on(value => emitted.push(value));
+		runData = { run: { request: { requestId: 'run-1' } } };
+		const { container } = renderPane();
+
+		await act(async () => currentChangeEmitter.emit());
+		await act(async () => {
+			fireEvent.click(filterButton(container));
+		});
+		expect(emitted.at(-1)!.filter).toEqual({ target: 1 });
+
+		run.targets = 1;
+		runData = { run: { request: { requestId: 'run-2' } } };
+		await act(async () => currentChangeEmitter.emit());
+
+		expect(emitted.at(-1)!.filter).toEqual({ target: null });
+		expect(filterButton(container).dataset.target).toBe('-1');
+		// The reset rides on the run's own emit rather than queueing a second one.
+		expect(emitted).toHaveLength(3);
+	});
+
+	it('keeps a selected target the next run still has', async () => {
+		const emitted: Array<SimResultData | null> = [];
+		resultChannel.on(value => emitted.push(value));
+		runData = { run: { request: { requestId: 'run-1' } } };
+		const { container } = renderPane();
+
+		await act(async () => currentChangeEmitter.emit());
+		await act(async () => {
+			fireEvent.click(filterButton(container));
+		});
+
+		runData = { run: { request: { requestId: 'run-2' } } };
+		await act(async () => currentChangeEmitter.emit());
+
+		expect(emitted.at(-1)!.filter).toEqual({ target: 1 });
+		expect(filterButton(container).dataset.target).toBe('1');
 	});
 
 	it('keeps the death button disabled until a run reports death seeds', async () => {

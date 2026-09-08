@@ -443,6 +443,24 @@ const PORTED_MENUS = [
 		wrappers: [/^div\.icon-enum-picker-slot$/, /^div\.icon-enum-picker-portal$/, /^div\.icon-enum-picker-positioner$/],
 		popup: ['ul.icon-enum-picker-menu', 'ul.dropdown-menu'],
 	},
+	{
+		// The results filter, and it is scoped to that picker rather than to `.dropdown-picker-root`
+		// on purpose: `DropdownPicker` is dual-stack and the log runner's search bar builds two
+		// vanilla ones **in the same pane**, so the root class cannot tell the stacks apart. Widen
+		// this when the next consumer ports.
+		what: 'results-filter',
+		root: /\.target-filter-root(\.|$)/,
+		count: /^div\.dropdown-picker-slot$/,
+		wrappers: [
+			/^div\.dropdown-picker-slot$/,
+			/^div\.dropdown-picker-portal$/,
+			/^div\.dropdown-picker-positioner$/,
+			// The popup is the box; the radio group inside it is the list vanilla's `<ul>` was, so
+			// the popup itself has no counterpart to keep.
+			/^div\.dropdown-picker-menu$/,
+		],
+		popup: ['ul.dropdown-picker-list', 'ul.dropdown-menu.dropdown-picker-list'],
+	},
 ];
 
 /**

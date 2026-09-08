@@ -28,7 +28,7 @@ against master.
 |---|---|
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
-| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; `Toast` and the three dropdown pickers wait for their first consumer |
+| 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; the three dropdown pickers landed once `results_filter` gave them a consumer, and `Toast` is the only primitive still waiting for one |
 | 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, and all six saved-data slots. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, apl, results, and gear's two big files |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | `VirtualList` **built** on `@tanstack/react-virtual`, waiting on `item_list.tsx` or `log_view.tsx` to have a consumer; combat replay and Chart.js not started |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
@@ -131,6 +131,12 @@ Facts verified in `node_modules/@base-ui/react` 1.7.0 — check them again if th
   with `!important`.
 - **`@extend` of a missing target is a hard Sass error**, not a silent no-op — proved with the
   repo's own compiler. A dropped class name fails the build rather than quietly changing layout.
+  **But "missing" means missing from the whole compilation unit**, which is a weaker condition than it
+  sounds: `_list_picker.scss:92`'s `@extend .tippy-content` was recorded as at risk from deleting the
+  dropdown-picker tippy theme, and measurement says otherwise — `.tippy-content` is also defined at
+  `shared/_tippy_style_overrides.scss:25` and both reach the same unit, so deleting the theme block
+  compiles fine and only drops one selector that could never match. Check every definition before
+  believing an `@extend` is load-bearing.
 
 **Two nested Bootstrap tab strips stay** — `bulk_tab.tsx:219` constructs `new Tab(...)` and
 `selector_modal.tsx:632` carries `data-bs-toggle="tab"`. The third, detailed results, is React as of
@@ -349,6 +355,9 @@ of the duplication sweep was to build each shape once.
 | `ToplineResults` | `ui/features/results/components/ToplineResults/` | `features/results/view/topline_results.ts`, **deleted** (28 lines) | nothing — and that is the finding: all three panes render it with no distinguishing prop, because they never had one. Same constructor, same emitter, same filter; column visibility is the manager root's `hide-*-metrics`, not per-pane | the `showOutOfMana` rule moved to `model/topline_metrics.ts` as `showsOutOfMana`, so the whole derivation is unit-testable without a DOM. Renders an empty root before the first run and clears on `emit(null)`, where the island kept stale content behind a hidden row |
 | `DpsHistogram` | `ui/features/results/components/DpsHistogram/` | `features/results/view/dps_histogram.ts`, **deleted** (75 lines) | nothing — reads `useSimResult()` | the wrapper is React and the canvas stays imperative, built into the ref'd root inside the effect exactly as vanilla did. One `chart.destroy()` per result instead of a dispose callback accumulated per run |
 | `FiltersMenu` | `ui/features/gear/components/FiltersMenu/` | `features/gear/view/filters_menu.tsx` (still live, dual-stack — `view/item_list.tsx:209` builds it for bulk and item swap) | `slot`, `open`, `onOpenChange`; player, sim and container come from the host | the section set a slot earns — armor types only when the class has more than one, weapon types and speeds with the off-hand pair only on `canDualWield`, ranged sections only for a class with ranged weapons, which vanilla expressed as a bare `return` mid-constructor. **It nests under the selector modal through the React tree, not the DOM**: the popup portals to `host.rootElem` as a *sibling* of the parent's portal, Base UI stamps `data-nested` from the React position, `elevated` gives it 1060/1065 over the parent's 1050/1055, and a press inside it is still not an outside press for the parent — which is why it renders inside `ItemList`'s JSX rather than behind an opener at `GearTabBody`. `keepMounted` is deliberately omitted: the pane remounts per request, nothing reads a closed menu, and no `ItemList` exists at load for `parity.mjs` to see. `Sim.ALL_SOURCES.sort()` no longer sorts the shared static array in place |
+| `DropdownPicker` | `ui/ui-kit/DropdownPicker/` | `ui-kit/pickers/dropdown_picker.tsx` (still live, dual-stack — four apl files, `app/tabs/rotation_inputs.tsx`, and the log search bar) | `options` (each `value`/`label`/`icon`/`className`), `equals`, `defaultLabel`, `id`, `className` | the trigger and menu markup, that picking closes the menu, and `aria-checked` on the selection — a `Menu.RadioGroup` keyed on the option **index**, because a value here is a proto message and Base UI matches by identity. **Not** an `InputConfig` picker: `value`/`onChange` are the whole binding, so a UI-local selection needs no store, and a bound caller wraps it in `useInput` + `PickerShell` — the same split as `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData`. Submenus, `headerText`, per-option tooltips and `hideLabelWhenDefaultSelected` are deliberately absent, all four being apl-only. `Menu` over Base UI's `Select` because `Select`'s `alignItemWithTrigger` overlays the popup on the trigger where Bootstrap dropped below, and over `EnumPicker` because that is a native `<select>` in a `Field` and an `<option>` cannot hold an `<img>` or a `text-<class>` colour |
+| `UnitPicker` | `ui/ui-kit/UnitPicker/` | `ui-kit/pickers/unit_picker.tsx` (still live, dual-stack — `apl_helpers.tsx`) | `options` (a `UnitValue[]`), `value`, `onChange`, `id`, `className` | the mapping and nothing else — the three icon shapes a `UnitValue` allows, `text-<color>` on the option **and** the trigger, and reference equality that ignores the display fields around it. Vanilla was a subclass writing into the option `<button>` through `setOptionContent(button, config, isSelectButton)`; composition restates nothing about the menu. Adds the `alt=""` the vanilla `<img>` lacked |
+| `ResultsFilter` | `ui/features/results/components/ResultsFilter/` | `features/results/view/results_filter.ts`, **deleted** (116 lines) | `target` and `onTargetChange` — the selection belongs to `DetailedResults`, because the pane is what re-emits the result every table reads | the option list (all targets, plus one per target of the run), that the picker is `d-none` until a run produces one, and that a selection the next run cannot hold is dropped **before** that run is emitted rather than re-entrantly during it, which is what let the tables briefly filter on a target that no longer existed |
 | `useDisplayMetrics` · `useShowExperimental` | `ui/sim/hooks/` | the same four-line `useStoreSubscribe(subscribeUiField(...))` block in `SimShell`, `DetailedResults`, both metrics tables and `EpWeightsDialog` | `sim` — they take it rather than reading the host, because `SimShell` renders before `IndividualSimUI` adopts its DOM and has no provider above it | one subscription over the three ui fields, and **a bitmask snapshot rather than the object**: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, so returning a fresh object there re-renders, and a caller holding an unstable `sim` loops. The mask makes the object rebuild only when a flag changes, which also makes it a stable memo dependency. `epRatios` is not among them — `showsEpRatios` owns that rule in `shell_classes.ts` and derives from the returned object |
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `className`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state, and what a worker message moves goes through `ProgressTrackerHandle.setProgress` — the clock stays a DOM write, the bar is now local state in `ProgressTrackerBar` (Base UI `Progress`), so a tick commits that leaf and never the dialog |
 | `EpWeightsDialog` | `ui/features/stat-weights/components/EpWeightsDialog/` | `EpWeightsMenu` in `features/stat-weights/view/stat_weights_panel.tsx` (**deleted** — a feature view, not a dual-stack primitive) | `opener` and `settings`; everything else comes from the host | the 13-column table, the EP-ratio row, the reference selects, and that the saved-EP-weights manager is a vanilla island because the reforge panel is its second consumer |
@@ -537,7 +546,12 @@ It is not being ported in Phase 2, and the reasons are structural rather than "i
 It ports when APL ports, with React children — which is also where hand-written list reconciliation
 is actually worth deleting.
 
-### The three dropdown pickers wait for the Base UI `Menu` adapter
+### The three dropdown pickers waited for the Base UI `Menu` adapter — RESOLVED 2026-09-08
+
+All three are ported: `IconEnumPicker` and `MultiIconPicker` landed on `Menu` earlier, and
+`DropdownPicker`/`UnitPicker` followed once `results_filter` gave them a React consumer. The reasoning
+below is kept because it is why they moved as a batch, and because the Bootstrap-mutates-React-markup
+failure it describes is general. `Toast` is now the only primitive still waiting for a first consumer.
 
 `IconEnumPicker` and `MultiIconPicker` are dropdown widgets, not icon widgets: both put
 `data-bs-toggle="dropdown"` on their button and let Bootstrap's JS open, close and position the
@@ -1373,6 +1387,36 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-08 **`DropdownPicker` and `UnitPicker` land on Base UI `Menu`, and `results_filter.ts` is
+  deleted.** The "three dropdown pickers wait for the `Menu` adapter" objection is retired — all three
+  are ported, and `Toast` is the only primitive still waiting for a first consumer.
+  `Menu` was chosen over two alternatives with reasons: Base UI's `Select` positions with
+  `alignItemWithTrigger`, overlaying the popup on the trigger where Bootstrap dropped below, and
+  `EnumPicker` is a native `<select>` inside a `Field`, where an `<option>` cannot hold the `<img>` or
+  the `text-<class>` colour a unit option renders. `Menu` also already carried two value pickers here,
+  so the portal/slot pattern and the `parity.mjs` fold were solved. It brought something vanilla never
+  had: `Menu.RadioGroup` gives `role="menuitemradio"` and `aria-checked`, where the vanilla menu was
+  plain buttons in a `<ul>` and announced no selection at all.
+  **A recorded SCSS hazard turned out not to be one, and the correction generalises.** The plan warned
+  that `_list_picker.scss:92`'s `@extend .tippy-content` would silently extend nothing once the
+  dropdown-picker tippy theme went away. Measured by deleting the block and building: no error, because
+  `.tippy-content` is *also* defined in `shared/_tippy_style_overrides.scss` and both reach the same
+  compilation unit. What disappears is one selector that could never match. "`@extend` of a missing
+  target is a hard error" is still true — but *missing* means missing from the whole unit.
+  One behaviour fix rather than a faithful port: vanilla dropped a no-longer-valid target selection
+  inside `getUnitOptions`, i.e. re-entrantly during the first emit, so the tables briefly saw a filter
+  pointing at a target that did not exist. The reset now happens before the emit.
+  Two `INTENDED` entries, both capped at one occurrence: `input-root` (the vanilla `Input` shell's
+  class — the React filter is deliberately not an `InputConfig` picker, and the probe reads the
+  trigger's box back identical on both ports) and `open-on-click` (read only by
+  `bootstrap_overrides.ts:24`, which hover-opens every *other* Bootstrap toggle, and a Base UI menu is
+  not one). The `PORTED_MENUS` normaliser is scoped to `.target-filter-root` rather than
+  `.dropdown-picker-root`, because the log search bar builds two **vanilla** dropdown pickers in the
+  same pane and the root class cannot tell the stacks apart.
+  **Operational note: never `rm -rf dist`.** `vite build` does not regenerate `dist/mop/assets/`,
+  `lib.wasm.gz`, `highs.wasm` or the workers — `make dist/mop/.dirstamp` does — and the first parity
+  run after wiping it reads like a repo-wide regression.
 
 - 2026-09-08 **The Phase-0 open question is settled by measurement: React does not need
   `subscribeGated`, and that was never why `useStoreSubscribe` exists.** The evidence lives in

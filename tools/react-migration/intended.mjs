@@ -47,6 +47,18 @@ export const INTENDED = [
 		why: '`.tablesorter` is the hook of the jQuery plugin the hand-rolled TableSorter replaced, and TableSorter is now gone too — no stylesheet, no script and no vendor bundle in ui/ or assets/ reads it. 21 is the results pane\'s whole table count, the six metric tables plus the fifteen resource ones, and no other pane has any',
 	},
 	{
+		base: 'div.d-none.dropdown.dropdown-picker-root.input-root.target-filter-root.unit-picker-root',
+		react: 'div.d-none.dropdown.dropdown-picker-root.target-filter-root.unit-picker-root',
+		max: 1,
+		why: "`input-root` is the vanilla `Input` shell's class, and the React results filter is deliberately not an `InputConfig` picker: its selection is the pane's own state, written through `value`/`onChange` with no store behind it. What that class contributed here is `.input-root`'s flex column, and nothing depends on it: the picker root is a flex item of `.results-filter-root` either way, the menu's positioner is `position: absolute` and out of flow, and `results-filter.mjs` reads the trigger's box back as identical on both ports. One results filter per sim",
+	},
+	{
+		base: 'button.btn.dropdown-picker-button.dropdown-toggle.open-on-click',
+		react: 'button.btn.dropdown-picker-button.dropdown-toggle',
+		max: 1,
+		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. One results filter per sim",
+	},
+	{
 		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
 		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
 		describe: 'react drops hide-healing-metrics on a tank spec',

@@ -16,7 +16,6 @@ import { CombatReplay } from '../../view/combat_replay';
 import { type LogExporterFactory, LogView } from '../../view/log/log_view';
 import type { ResultComponent } from '../../view/result_component';
 import type { SimResultsManager } from '../../view/results_action';
-import { ResultsFilter } from '../../view/results_filter';
 import { Timeline } from '../../view/timeline';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
@@ -25,6 +24,7 @@ import { DpsHistogram } from '../DpsHistogram';
 import { DtpsMetricsTable } from '../DtpsMetricsTable';
 import { HealingMetricsTable } from '../HealingMetricsTable';
 import { ResourceMetricsTable } from '../ResourceMetricsTable';
+import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../ResultsFilter';
 import { ToplineResults } from '../ToplineResults';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
@@ -49,10 +49,14 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const [shownId, setShownId] = useState<string>(DEFAULT_DETAILED_RESULTS_TAB);
 	const [stuck, setStuck] = useState(false);
 	const [deathDisabled, setDeathDisabled] = useState(true);
+	const [target, setTarget] = useState(ALL_UNITS);
 	const hasResults = useSimResult() !== null;
 
 	const toolbarRef = useRef<HTMLDivElement>(null);
-	const resultsFilter = useRef<ResultsFilter | null>(null);
+	// `updateResults` is bound to the emitter, not to the filter, so the selection it reads is a ref.
+	const targetRef = useRef(target);
+	// What the last emit already carried, so the reset below does not queue a second one.
+	const emittedTarget = useRef(target);
 	const timeline = useRef<Timeline | null>(null);
 	const combatReplay = useRef<CombatReplay | null>(null);
 	const logView = useRef<LogView | null>(null);
@@ -62,13 +66,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const latestDeathSeeds = useRef<Array<bigint>>([]);
 	const recentlyEditedSeed = useRef(false);
 
-	const mountResultsFilter = useLegacyMount(
-		parent => {
-			resultsFilter.current = new ResultsFilter({ parent, resultsEmitter });
-			return resultsFilter.current;
-		},
-		[resultsEmitter],
-	);
 	const mountTimeline = useLegacyMount(
 		parent => {
 			timeline.current = new Timeline({ parent, resultsEmitter, secondaryResource, deferUntilShown: true });
@@ -121,7 +118,16 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 			if (currentSimResult.current == null) {
 				resultsEmitter.emit(null);
 			} else {
-				resultsEmitter.emit({ result: currentSimResult.current, filter: resultsFilter.current!.getFilter() });
+				// A run with fewer targets than the last one drops the selection, and it happens here
+				// rather than in the filter: the emit below is what every metrics table reads, and a
+				// component-level effect would let one render through pointing at a target this
+				// result does not have.
+				if (!hasTarget(currentSimResult.current, targetRef.current)) {
+					targetRef.current = ALL_UNITS;
+					emittedTarget.current = ALL_UNITS;
+					setTarget(ALL_UNITS);
+				}
+				resultsEmitter.emit({ result: currentSimResult.current, filter: simResultFilter(targetRef.current) });
 			}
 		},
 		[resultsEmitter],
@@ -149,7 +155,14 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		[resultsManager, releaseEditedSeed, updateResults],
 	);
 
-	useEffect(() => resultsFilter.current?.changeEmitter.on(() => void updateResults(latestRun.current)), [updateResults]);
+	// The filter's `changeEmitter`, whose only subscriber this was: picking a target re-emits the
+	// last run under the new filter. Guarded on the value rather than on a mount flag, so a change
+	// of `updateResults` cannot fire it on its own.
+	useEffect(() => {
+		if (emittedTarget.current === target) return;
+		emittedTarget.current = target;
+		void updateResults(latestRun.current);
+	}, [target, updateResults]);
 
 	useEffect(() => {
 		if (!showDamage && activeId === 'damageTab') setActiveId('healingTab');
@@ -240,7 +253,15 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 			</div>
 			<div className={clsx('dr-root', !hasResults && 'dr-no-results')}>
 				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')}>
-					<div className="results-filter" ref={mountResultsFilter} />
+					<div className="results-filter">
+						<ResultsFilter
+							target={target}
+							onTargetChange={next => {
+								targetRef.current = next;
+								setTarget(next);
+							}}
+						/>
+					</div>
 					<div className="tabs-filler" />
 					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} activeId={activeId} onSelect={setActiveId} />
 				</div>
