@@ -361,6 +361,9 @@
 	}
 
 	.cr-enemy-more {
+		position: absolute;
+		right: 10px;
+		bottom: 8px;
 		font-size: 1.2rem;
 		font-weight: 700;
 		color: color-mix(in srgb, var(--bs-white) 50%, transparent);
@@ -548,6 +551,13 @@
 
 	.cr-segment--empty {
 		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+	}
+
+	// The resource's own colour arrives on .cr-seg-bar, so lighting a pip is one class toggle rather
+	// than a style write on every pip in the row, every frame.
+	.cr-segment--filled {
+		background: linear-gradient(180deg, var(--cr-segment-from), var(--cr-segment-to));
+		box-shadow: 0 0 8px var(--cr-segment-glow);
 	}
 
 	// Action icon grid

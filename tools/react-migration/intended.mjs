@@ -23,6 +23,12 @@ export const INTENDED = [
 		why: 'a <label> with no control is not a label. Item swap and the four visible consume rows each name an icon group, so the label is a <span> and the group it names carries role=group + aria-labelledby',
 	},
 	{
+		base: 'label.form-label.list-picker-title',
+		react: 'span.form-label.list-picker-title',
+		max: 4,
+		why: "same rule again, for a ListPicker's own caption: it names the list, not a control, so it is a <span>. Four is the rotation pane's ceiling — the pre-pull, priority, action-group and variable lists — and a group's own action list adds one more only once a group exists, which no spec's default rotation has",
+	},
+	{
 		base: 'label.form-label.multi-icon-picker-label',
 		react: 'span.form-label.multi-icon-picker-label',
 		max: 8,
@@ -31,8 +37,8 @@ export const INTENDED = [
 	{
 		base: 'i.fa-question-circle.far',
 		react: 'i.fa-circle-question.far',
-		max: 5,
-		why: "a React ContentBlock's header tooltip is the React TooltipButton, which draws its glyph through Icon — and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Five is the settings pane's ceiling: buffs, debuffs, the two external-cooldown blocks and the preset picker, all five together only on warrior/protection. It rose from four when the preset picker stopped being a vanilla ContentBlock, and it rises again with every tab that follows",
+		max: 6,
+		why: "a React ContentBlock's header tooltip — and now a React ListPicker's title tooltip — is the React TooltipButton, which draws its glyph through Icon, and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Six is the rotation pane's ceiling on warrior/protection: the four APL list titles plus the two ContentBlocks the simple pane builds. The settings pane's five (buffs, debuffs, the two external-cooldown blocks and the preset picker) is the next largest. It rises with every tab that follows",
 	},
 	{
 		base: 'i.fa-3x.fa-exclamation-triangle.fas',
@@ -55,8 +61,8 @@ export const INTENDED = [
 	{
 		base: 'button.btn.dropdown-picker-button.dropdown-toggle.open-on-click',
 		react: 'button.btn.dropdown-picker-button.dropdown-toggle',
-		max: 2,
-		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. Two React pickers stand in the results pane at rest: the target filter and the log runner's add-filter one. The log's per-group value pickers are built by a group, and no gate adds one",
+		max: 450,
+		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. The cap is the rotation pane's, not the results pane's: every APL kind picker, enum field, action-id field and unit field is one of these, and warrior/protection's default rotation renders 421 of them. 450 is that with headroom, and the number moves with the preset rotation rather than with this port. The results pane contributes two at rest, the target filter and the log runner's add-filter picker",
 	},
 	{
 		base: 'div.dropdown.dropdown-picker-root.dropup.input-root',

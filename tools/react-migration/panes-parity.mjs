@@ -22,6 +22,7 @@ import {
 	PORTS,
 	SERIALIZE,
 	specsFromArgv,
+	dropReplayState,
 	dropSubtrees,
 	unexpectedLines,
 } from './browser.mjs';
@@ -51,6 +52,7 @@ for (const spec of specsFromArgv()) {
 			const dom = {};
 			const levels = {};
 			const swap = {};
+			const replayScenes = {};
 			for (const side of Object.keys(PORTS)) {
 				await sides[side].page.locator('.sim-tabs [role=tab]').nth(index).click();
 				await sides[side].page.waitForTimeout(SETTLE);
@@ -63,7 +65,10 @@ for (const spec of specsFromArgv()) {
 				// Both sides: see `normaliseSwapIcons`. The baseline's counts are asserted to be zero below.
 				const swapped = normaliseSwapIcons(lifted.dom);
 				swap[side] = swapped;
-				dom[side] = swapped.dom;
+				// Both sides: see `dropReplayState`. The counts are asserted per side below.
+				const replay = dropReplayState(swapped.dom, 'cr-scene');
+				replayScenes[side] = replay.dropped;
+				dom[side] = replay.dom;
 				if (side === 'react') {
 					const normalised = normaliseBaseUiMenus(dom[side]);
 					dom[side] = normalised.dom;
@@ -82,6 +87,11 @@ for (const spec of specsFromArgv()) {
 			// See `normaliseSwapIcons`. The fold is only sound while the baseline paints nothing at rest.
 			if (swap.base.active || swap.base.sockets) {
 				problems.push(`${id}: base paints ${swap.base.active} active swap icon(s) and ${swap.base.sockets} socket line(s) at rest, so the fold hides a real difference`);
+			}
+			// See `dropReplayState`: the baseline builds one scene in the results pane and none anywhere else.
+			const scenes = id.includes('detailed-results') ? 1 : 0;
+			if (replayScenes.base !== scenes || replayScenes.react !== 0) {
+				problems.push(`${id}: base built ${replayScenes.base} combat replay scenes (expected ${scenes}), react ${replayScenes.react} (expected 0)`);
 			}
 			if (levels.base.total !== levels.react.total)
 				problems.push(`${id}: ${levels.base.total} level containers on the baseline, ${levels.react.total} on react`);

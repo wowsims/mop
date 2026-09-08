@@ -548,6 +548,23 @@ export const normaliseBaseUiMenus = dom => {
  * port. `dropped` is asserted against the number of search bars actually found, so a wrapper that
  * moves, or one that goes missing, fails rather than folding quietly.
  */
+/**
+ * The combat replay's unshown half, which only the baseline builds.
+ *
+ * The vanilla constructor put both the "run a simulation" placeholder and the whole scene — arena,
+ * HUD and transport — into the page up front and toggled `display` between them; React renders
+ * whichever one applies and never both, because a scene with no run behind it has no playhead, no
+ * fight length and no cards. So the baseline's hidden half comes off and the two shown halves are
+ * compared. `hidden` is `cr-scene` before a run and `cr-empty` after one — the caller knows which
+ * state its gate reads the pane in, and asserts the count, so a half that stops being built or one
+ * the port starts building early fails here rather than folding quietly.
+ *
+ * What is *inside* the scene is `combat-replay.mjs`'s to gate, with a run in it.
+ */
+const REPLAY_ROOT = /\.combat-replay-root(\.|$)/;
+
+export const dropReplayState = (dom, hidden) => dropSubtrees(dom, REPLAY_ROOT, new RegExp(`^div\\.${hidden}$`));
+
 const LOG_SEARCH = /^div\.log-search$/;
 const SEARCH_BAR_WRAPPERS = [/^div\..*search-bar-root(\.|$)/, /^div\.search-bar-input-group$/];
 

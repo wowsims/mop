@@ -7,17 +7,16 @@ import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
 import type { LogExporterFactory } from '../../model/log_exporter';
-import { CombatReplay } from '../../view/combat_replay';
 import type { SimResultsManager } from '../../view/results_action';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
+import { CombatReplay } from '../CombatReplay';
 import { DamageMetricsTable } from '../DamageMetricsTable';
 import { DpsHistogram } from '../DpsHistogram';
 import { DtpsMetricsTable } from '../DtpsMetricsTable';
@@ -57,20 +56,11 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.
 	const emittedTarget = useRef(target);
-	const combatReplay = useRef<CombatReplay | null>(null);
 
 	const latestRun = useRef<SimRunData | null>(null);
 	const currentSimResult = useRef<SimResult | null>(null);
 	const latestDeathSeeds = useRef<Array<bigint>>([]);
 	const recentlyEditedSeed = useRef(false);
-
-	const mountCombatReplay = useLegacyMount(
-		parent => {
-			combatReplay.current = new CombatReplay({ parent, resultsEmitter, deferUntilShown: true });
-			return combatReplay.current;
-		},
-		[resultsEmitter],
-	);
 
 	const updateResults = useCallback(
 		async (simRunData: SimRunData | null) => {
@@ -151,20 +141,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	useEffect(() => {
 		if (!showDamage && activeId === 'damageTab') setActiveId('healingTab');
 	}, [showDamage, activeId]);
-
-	// `deferUntilShown` used to ride on Bootstrap's `shown.bs.tab` / `hide.bs.tab`; the switch itself is the event now.
-	const previousId = useRef(DEFAULT_DETAILED_RESULTS_TAB);
-	useEffect(() => {
-		const previous = previousId.current;
-		if (previous === activeId) return;
-		previousId.current = activeId;
-
-		if (previous === 'replayTab') {
-			combatReplay.current?.onTabHidden();
-			combatReplay.current?.stopPlayback();
-		}
-		if (activeId === 'replayTab') combatReplay.current?.onTabShown();
-	}, [activeId]);
 
 	// Bootstrap set `active` first and `show` a frame later when switching, so its .15s fade ran; on the first render it set both at once.
 	const lastShown = useRef<string | null>(null);
@@ -321,7 +297,9 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 					</DetailedResultsPane>
 					<DetailedResultsPane id="replayTab" className="replay-content" {...paneState('replayTab')}>
 						<div className="dr-row">
-							<div className="combat-replay" ref={mountCombatReplay} />
+							<div className="combat-replay">
+								<CombatReplay active={activeId === 'replayTab'} />
+							</div>
 						</div>
 					</DetailedResultsPane>
 					<DetailedResultsPane id="logTab" className="log-content" {...paneState('logTab')}>

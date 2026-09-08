@@ -25,7 +25,7 @@
 // active at `window load` or has since been clicked, so arrow keys on the baseline work from the
 // damage tab and from nowhere else. The React strip owns one keydown handler on the `<ul>`, so it
 // answers from every tab. The recorded lines make that delta visible instead of silent.
-import { launch, openSpec, overusedIntended, PORTS, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+import { dropReplayState, launch, openSpec, overusedIntended, PORTS, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
 import { INTENDED } from './intended.mjs';
 
 const SETTLE = 300;
@@ -145,8 +145,16 @@ try {
 			for (let index = 0; index < Math.max(base.length, react.length); index++) {
 				if (base[index] !== react[index]) problems.push(`${tabId} state line ${index}\n      base : ${base[index]}\n      react: ${react[index]}`);
 			}
-			const basePane = scaffolding(sides.base.perTab[tabId].pane).split('\n');
-			const reactPane = scaffolding(sides.react.perTab[tabId].pane).split('\n');
+			// See `dropReplayState`. A run has finished by the time the panes are read, so the half the
+			// baseline is hiding here is the placeholder, and the port has none to drop.
+			const baseReplay = dropReplayState(scaffolding(sides.base.perTab[tabId].pane), 'cr-empty');
+			const reactReplay = dropReplayState(scaffolding(sides.react.perTab[tabId].pane), 'cr-empty');
+			const expected = tabId === 'replayTab' ? 1 : 0;
+			if (baseReplay.dropped !== expected || reactReplay.dropped !== 0) {
+				problems.push(`${tabId}: base hid ${baseReplay.dropped} replay placeholders (expected ${expected}), react ${reactReplay.dropped} (expected 0)`);
+			}
+			const basePane = baseReplay.dom.split('\n');
+			const reactPane = reactReplay.dom.split('\n');
 			const tally = new Map();
 			const unexpected = unexpectedLines(basePane, reactPane, INTENDED, tally);
 			problems.push(...overusedIntended(INTENDED, tally).map(problem => `${tabId}: ${problem}`));

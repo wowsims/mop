@@ -8918,10 +8918,13 @@
 				},
 				"seek_fwd": {
 					"type": "string"
+				},
+				"play_pause": {
+					"type": "string"
 				}
 			},
 			"additionalProperties": false,
-			"required": ["empty_title", "empty_desc", "default_player", "training_dummy", "seek_back", "seek_fwd"]
+			"required": ["empty_title", "empty_desc", "default_player", "training_dummy", "seek_back", "seek_fwd", "play_pause"]
 		},
 		"fire_mage": {
 			"type": "object",

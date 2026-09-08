@@ -11,6 +11,7 @@
 import {
 	collapseWrappers,
 	collectSubtrees,
+	dropReplayState,
 	dropSubtrees,
 	normaliseBaseUiMenus,
 	normaliseLogSearch,
@@ -221,6 +222,7 @@ const grab = async (browser, port, spec) => {
 	const panes = {};
 	const levels = {};
 	const swap = { active: 0, sockets: 0 };
+	let replayScenes = 0;
 	const paneProblems = [];
 	for (const id of ids) {
 		if (!id) continue;
@@ -232,13 +234,16 @@ const grab = async (browser, port, spec) => {
 		const swapped = normaliseSwapIcons(lifted.dom);
 		swap.active += swapped.active;
 		swap.sockets += swapped.sockets;
+		// Both sides: see `dropReplayState`. The counts are asserted per side below.
+		const replay = dropReplayState(swapped.dom, 'cr-scene');
+		replayScenes += replay.dropped;
 		// The React side only: see `normaliseBaseUiMenus` and `normaliseSortButtons`. On the baseline
 		// the first is a no-op and the second would report every header cell as missing a button.
 		if (!isReact) {
-			panes[id] = swapped.dom;
+			panes[id] = replay.dom;
 			continue;
 		}
-		const normalised = normaliseBaseUiMenus(swapped.dom);
+		const normalised = normaliseBaseUiMenus(replay.dom);
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 		const buttons = normaliseSortButtons(normalised.dom);
 		paneProblems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
@@ -256,6 +261,7 @@ const grab = async (browser, port, spec) => {
 		swapIcons,
 		reforgeGroups,
 		swap,
+		replayScenes,
 		notices: collectSubtrees(tree, NATIVE_SIM_NOTICE),
 		noticesDropped: notice.dropped,
 		paneProblems,
@@ -307,6 +313,10 @@ for (const spec of specsFromArgv()) {
 		}
 	}
 	if (a.notices.join('\n') !== b.notices.join('\n')) problems.push('the native-sim notice differs in content between the two builds');
+
+	// See `dropReplayState`: the baseline builds exactly one scene at rest and the port builds none.
+	if (a.replayScenes !== 1) problems.push(`base built ${a.replayScenes} combat replay scenes at rest, expected 1`);
+	if (b.replayScenes !== 0) problems.push(`react built ${b.replayScenes} combat replay scenes with no run behind them, expected 0`);
 
 	// A tab whose identifier does not resolve would silently drop its pane from the comparison below.
 	if (a.ids.join() !== b.ids.join()) problems.push(`tab ids differ: base [${a.ids}] react [${b.ids}]`);

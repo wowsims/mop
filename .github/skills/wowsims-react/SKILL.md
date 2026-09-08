@@ -1484,6 +1484,44 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-09 **The combat replay is React, and `DetailedResults` has no islands left.** 1,076 lines
+  deleted; `features/results/view/result_component.ts` went with it, the replay having been its last
+  subclass. Phase 4's results pane is closed.
+  **Nothing per-frame goes through state, and the split is worth copying.** `useReplayClock` owns the
+  rAF loop, keeps the playhead in a **ref**, and holds only the transport (`playing`, `rate`) in React.
+  `useReplayFrame(paint)` lets each leaf join a painter set and write its *own* ref'd nodes — about
+  twenty subscribers, two or three properties each. `useFrameList` recomputes structure the playhead
+  decides (the cast strip, the aura rows) every frame but **commits only when its key changes**, a few
+  times a second rather than sixty. `arena/hitLayer.ts` stays wholly imperative: the impact animation
+  is a particle system whose nodes are pooled by hit.
+  Two bugs the tests caught and a browser would have hidden: `useLayoutEffect(() => paint(...))`
+  returned the painter's value, and `classList.toggle` returns a **boolean**, which React read back as
+  the effect's cleanup and threw `destroy is not a function`; and the repaint-on-every-render is
+  load-bearing, because while paused there is no next tick, so a leaf that mounts or whose props change
+  on a seek would hold the previous frame's value forever.
+  **Frame cost, read honestly.** No regression and no dropped frames on either build — both hold 60 fps.
+  In-callback scripting is ~40% lower and its worst case ~2× lower, but that figure flatters the port,
+  because a `useFrameList` commit is scheduled by React and runs in a *later* task the rAF wrapper never
+  sees. The CDP whole-page numbers are the fair ones: `Script` is lower on all three runs, while `Task`,
+  `RecalcStyle` and `Layout` sit inside the baseline's own run-to-run spread.
+  **A real latent bug fixed on the way through:** `mergeAdjacentAuras` ran over one flat array of *every*
+  target's auras keyed on the spell alone, so a dot fading on one enemy absorbed the same dot landing on
+  the next, and the merged span kept the first enemy's index. Merged per target now. It did not surface
+  in a three-target browser run — Arms' debuffs happen not to line up that way — so it is latent, not
+  visible, which is exactly the kind a port either fixes or inherits silently.
+  `dropReplayState` in `browser.mjs` is an **assertion, not an allowance**: the vanilla constructor built
+  both the placeholder and the whole scene up front and toggled `display`, where React renders whichever
+  applies. It takes the baseline's hidden half off and each gate asserts the count per side, so a half
+  that stops being built, or one the port starts building early, fails there.
+  `combat-replay.mjs` is the new gate — one seeded fight on both ports, three fixed scrubber stops,
+  play/pause, tab close and reopen, a second run resetting the playhead, and frame cost measured two
+  ways.
+  **Follow-up now due:** `ReplayIcon`, `Timeline/rotation/RotationRowIcon` and `ui-kit/IconPicker/ImprovedAnchor`
+  are three near-identical actionId anchors. That is the trigger for a ui-kit extraction, and it touches
+  three features, so it belongs in its own change.
+  Flagged, not fixed: the scrubber `<input type="range">` has no accessible name **on either build**, and
+  giving it one needs a new i18n string.
+
 - 2026-09-09 **Bulk finally has a browser gate, and it passes on both builds — which is the point.**
   `tools/react-migration/bulk-tab.mjs` runs a real batch: the inner Setup/Results strip by
   `aria-selected` and computed display, every slot group's counts, every settings control keyed on its

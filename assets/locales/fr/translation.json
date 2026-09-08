@@ -2537,7 +2537,8 @@
 		"default_player": "Joueur",
 		"training_dummy": "Mannequin d'entraînement",
 		"seek_back": "Reculer {{time}}s",
-		"seek_fwd": "Avancer {{time}}s"
+		"seek_fwd": "Avancer {{time}}s",
+		"play_pause": "Lecture / Pause"
 	},
 	"fire_mage": {
 		"combustion_thresholds": {

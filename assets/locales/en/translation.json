@@ -2536,7 +2536,8 @@
 		"default_player": "Player",
 		"training_dummy": "Training Dummy",
 		"seek_back": "Rewind {{time}}s",
-		"seek_fwd": "Forward {{time}}s"
+		"seek_fwd": "Forward {{time}}s",
+		"play_pause": "Play / Pause"
 	},
 	"fire_mage": {
 		"combustion_thresholds": {

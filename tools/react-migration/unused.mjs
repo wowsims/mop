@@ -19,9 +19,8 @@ import { join } from 'node:path';
 const UI_KIT = 'ui/ui-kit';
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
-const ALLOWED = {
-	AdaptiveStringPicker: 'ported and parity-tested against a vanilla twin with 4 live callers; those callers are apl and gear',
-};
+// AdaptiveStringPicker's landed with the APL string fields.
+const ALLOWED = {};
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
 const ALLOWED_HOOKS = {};

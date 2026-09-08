@@ -8,38 +8,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ResultChannel } from '../../model/result_channel';
 import type { SimResultData } from '../../model/result_data';
 
-const islands = vi.hoisted(() => {
-	const records = new Map<string, { shown: number; hidden: number; stopped: number; parents: Array<HTMLElement> }>();
-	const track = (name: string) => {
-		let record = records.get(name);
-		if (!record) {
-			record = { shown: 0, hidden: 0, stopped: 0, parents: [] };
-			records.set(name, record);
-		}
-		return record;
-	};
-	return { records, track };
-});
-
-const island = (name: string, rootCssClass: string) => async () => {
-	const { Component } = await import('@ui-kit/component');
-	return class extends Component {
-		constructor(config: { parent: HTMLElement }) {
-			super(config.parent, rootCssClass);
-			islands.track(name).parents.push(config.parent);
-		}
-		onTabShown() {
-			islands.track(name).shown++;
-		}
-		onTabHidden() {
-			islands.track(name).hidden++;
-		}
-		stopPlayback() {
-			islands.track(name).stopped++;
-		}
-	};
-};
-
 // The picker is `UnitPicker`'s test to cover; what this pane owns is the selection, so the filter is
 // reduced to a button that reports one. Everything else in the module — `ALL_UNITS`, `hasTarget`,
 // `simResultFilter` — is the real thing.
@@ -57,10 +25,15 @@ vi.mock('@sim/proto/sim_result', async importOriginal => ({
 	SimResult: { fromProto: () => Promise.resolve({ getTargets: () => Array.from({ length: run.targets }, (_, index) => ({ index })) }) },
 }));
 
-vi.mock('../../view/combat_replay', async () => ({ CombatReplay: await island('replay', 'combat-replay-root')() }));
-// The log and timeline panes are React now, so they are prop readers rather than islands: what this
-// pane owes each is `active`, which is what their own deferral is built on.
-const panes = vi.hoisted(() => ({ log: [] as Array<boolean>, timeline: [] as Array<boolean> }));
+// Every pane below is React now, so they are prop readers rather than islands: what this pane owes
+// each is `active`, which is what their own deferral is built on.
+const panes = vi.hoisted(() => ({ log: [] as Array<boolean>, timeline: [] as Array<boolean>, replay: [] as Array<boolean> }));
+vi.mock('../CombatReplay', () => ({
+	CombatReplay: ({ active }: { active: boolean }) => {
+		panes.replay.push(active);
+		return <div className="combat-replay-root" />;
+	},
+}));
 vi.mock('../LogRunner', () => ({
 	LogRunner: ({ active }: { active: boolean }) => {
 		panes.log.push(active);
@@ -125,9 +98,9 @@ const filterButton = (container: HTMLElement) => container.querySelector<HTMLBut
 const tabButton = (container: HTMLElement, tabId: string) => container.querySelector<HTMLButtonElement>(`.dr-toolbar .nav-link[aria-controls=${tabId}]`)!;
 
 beforeEach(() => {
-	islands.records.clear();
 	panes.log.length = 0;
 	panes.timeline.length = 0;
+	panes.replay.length = 0;
 	resultChannel = new ResultChannel();
 	currentChangeEmitter = new Emitter<void>();
 	runData = null;
@@ -183,13 +156,12 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('#damageTab .dr-row.dps-histogram > .dps-histogram-root')).toHaveLength(1);
 	});
 
-	it('builds each vanilla island into the div that used to be its parent, with no wrapper', () => {
+	it('keeps each pane in the container its island was built into', () => {
 		const { container } = renderPane();
 		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
-		expect(islands.track('replay').parents[0].className).toBe('combat-replay');
-		// The log and timeline panes keep the same container their islands were built into, one level shallower.
 		expect(container.querySelectorAll('#logTab .dr-row > .log > .log-runner-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#replayTab .dr-row > .combat-replay > .combat-replay-root')).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
@@ -208,19 +180,11 @@ describe('DetailedResults', () => {
 		await waitFor(() => expect(container.querySelector('#timelineTab')!.classList.contains('show')).toBe(true));
 	});
 
-	it('tells only the newly opened deferred island that its tab is showing', () => {
-		const { container } = renderPane();
-		expect(islands.track('replay').shown).toBe(0);
-		fireEvent.click(tabButton(container, 'replayTab'));
-		expect(islands.track('replay').shown).toBe(1);
-		fireEvent.click(tabButton(container, 'timelineTab'));
-		expect(islands.track('replay').hidden).toBe(1);
-	});
-
-	// What `onTabShown` was to an island, `active` is to the React log and timeline panes.
+	// What `onTabShown` was to an island, `active` is to every pane that defers its work.
 	it.each([
 		['log', 'logTab'],
 		['timeline', 'timelineTab'],
+		['replay', 'replayTab'],
 	] as const)('tells the %s pane whether its tab is the open one', (pane, tabId) => {
 		const { container } = renderPane();
 		expect(panes[pane].at(-1)).toBe(false);
@@ -228,15 +192,6 @@ describe('DetailedResults', () => {
 		expect(panes[pane].at(-1)).toBe(true);
 		fireEvent.click(tabButton(container, 'damageTab'));
 		expect(panes[pane].at(-1)).toBe(false);
-	});
-
-	it('stops the replay when its tab closes', () => {
-		const { container } = renderPane();
-		fireEvent.click(tabButton(container, 'replayTab'));
-		expect(islands.track('replay').stopped).toBe(0);
-		fireEvent.click(tabButton(container, 'logTab'));
-		expect(islands.track('replay').hidden).toBe(1);
-		expect(islands.track('replay').stopped).toBe(1);
 	});
 
 	it('walks the strip with the arrow keys, wrapping at both ends', () => {
