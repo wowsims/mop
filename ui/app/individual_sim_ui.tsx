@@ -323,6 +323,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	gearTab!: GearTab;
 	talentsTab!: TalentsTab<SpecType>;
 	settingsTab!: SettingsTab;
+	rotationTab!: RotationTab;
 	detailedResults!: DetailedResults;
 
 	get gearSelectorModal(): SelectorModalOpener | null {
@@ -359,7 +360,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addRotationTab() {
-		new RotationTab(this);
+		this.rotationTab = new RotationTab(this);
 	}
 
 	private addDetailedResultsTab() {

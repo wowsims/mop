@@ -37,6 +37,7 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly gearTab = { contentContainer: document.createElement('div') };
 			readonly talentsTab = { contentContainer: document.createElement('div') };
 			readonly settingsTab = { contentContainer: document.createElement('div') };
+			readonly rotationTab = { contentContainer: document.createElement('div') };
 			// The metrics tables portal into divs the vanilla results pane builds, so React reaches them
 			// through the constructed `DetailedResults` rather than owning the pane.
 			readonly detailedResults = {
@@ -67,6 +68,7 @@ vi.mock('@features/results/components/SimResultsPanel', () => ({ SimResultsPanel
 vi.mock('./tabs/GearTabBody', () => ({ GearTabBody: () => <div className="gear-tab-left" /> }));
 vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="talents-tab-left" /> }));
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
+vi.mock('./tabs/RotationTabBody', () => ({ RotationTabBody: () => <div className="rotation-tab rotation-tab-auto" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
 vi.mock('@features/results/components/CastMetricsTable', () => ({ CastMetricsTable: () => <div className="cast-metrics-root" /> }));
 vi.mock('@features/results/components/DamageMetricsTable', () => ({ DamageMetricsTable: () => <div className="damage-metrics-root" /> }));

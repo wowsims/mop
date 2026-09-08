@@ -23,6 +23,7 @@ import type { ShellDom } from './shell_dom';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
 import { GearTabBody } from './tabs/GearTabBody';
+import { RotationTabBody } from './tabs/RotationTabBody';
 import { SettingsTabBody } from './tabs/SettingsTabBody';
 import { TalentsTabBody } from './tabs/TalentsTabBody';
 
@@ -94,6 +95,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<GearTabBody />, simUI.gearTab.contentContainer)}
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
+					{createPortal(<RotationTabBody />, simUI.rotationTab.contentContainer)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
 				</SimHostProvider>
 			)}

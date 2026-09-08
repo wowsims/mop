@@ -27,10 +27,7 @@ const ALLOWED = {
 };
 
 // Kept deliberately, with the reason. Delete an entry when its consumer lands.
-const ALLOWED_HOOKS = {
-	useSavedRotation:
-		"the sixth saved-data slot; its panel waits for rotation_tab.tsx to port, and unlike the other five it will need SavedDataManager's optional `equals` back, because rotations cannot be compared by their JSON",
-};
+const ALLOWED_HOOKS = {};
 
 // A component directory: PascalCase, with an index.ts. `hooks/`, `pickers/` and `testing/` are not.
 const components = readdirSync(UI_KIT).filter(name => /^[A-Z]/.test(name) && statSync(join(UI_KIT, name)).isDirectory());

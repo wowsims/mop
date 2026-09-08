@@ -22,6 +22,10 @@ export interface SavedDataPanelProps<T> {
 	userData: Array<SavedDataPanelEntry<T>>;
 	// Serialised form of the subject's live value, compared against each entry's `json`.
 	currentJson: string;
+	// Overrides that comparison where a JSON string cannot decide it. Rotations are the case this
+	// exists for: an Auto and an APL rotation can serialise differently and still be the same
+	// rotation, which is why `SavedDataManager` carried an optional `equals` of its own.
+	isActive?: (entry: SavedDataPanelEntry<T>) => boolean;
 	loadOnly?: boolean;
 	onLoad: (entry: SavedDataPanelEntry<T>) => void;
 	onSave: (name: string) => void;
@@ -41,6 +45,7 @@ export const SavedDataPanel = <T,>({
 	presets,
 	userData,
 	currentJson,
+	isActive,
 	loadOnly,
 	onLoad,
 	onSave,
@@ -57,11 +62,13 @@ export const SavedDataPanel = <T,>({
 	// The last match wins, so a preset and a user entry holding the same value both light up the one
 	// the user actually loaded; without the loaded name a save under a new label would jump the
 	// highlight to whichever entry happened to be last.
+	const matchesCurrent = useCallback((entry: SavedDataPanelEntry<T>) => (isActive ? isActive(entry) : entry.json === currentJson), [isActive, currentJson]);
+
 	const activeName = useMemo(() => {
-		const matches = [...userData, ...presets].filter(entry => entry.json === currentJson);
+		const matches = [...userData, ...presets].filter(matchesCurrent);
 		if (loadedName && matches.some(entry => entry.name === loadedName)) return loadedName;
 		return matches.at(-1)?.name;
-	}, [userData, presets, currentJson, loadedName]);
+	}, [userData, presets, matchesCurrent, loadedName]);
 
 	useEffect(() => {
 		if (activeName) setName(activeName);
@@ -101,7 +108,7 @@ export const SavedDataPanel = <T,>({
 		<SavedDataChip
 			key={entry.name}
 			entry={entry}
-			active={entry.json === currentJson}
+			active={matchesCurrent(entry)}
 			disabled={!!entry.disabled}
 			deleteLabel={deleteText}
 			deleteTooltipId={tooltipId}
