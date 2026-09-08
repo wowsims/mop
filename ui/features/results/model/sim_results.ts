@@ -55,6 +55,10 @@ export const resultMetricClasses: { [ResultMetrics: string]: string } = {
 	oom: 'results-sim-oom',
 };
 
+/** The class a metric column is keyed by. Four stylesheets and both `hide-*` toggles select on these, so they are built here rather than interpolated at each site. */
+export const metricsClassName = (category: keyof ResultMetricCategories): string => metricsClasses[category];
+export const hideMetricsClassName = (category: keyof ResultMetricCategories): string => `hide-${metricsClasses[category]}`;
+
 export const metricsClasses: { [ResultMetricCategories: string]: string } = {
 	damage: 'damage-metrics',
 	demo: 'demo-metrics',

@@ -55,8 +55,26 @@ export const INTENDED = [
 	{
 		base: 'button.btn.dropdown-picker-button.dropdown-toggle.open-on-click',
 		react: 'button.btn.dropdown-picker-button.dropdown-toggle',
+		max: 2,
+		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. Two React pickers stand in the results pane at rest: the target filter and the log runner's add-filter one. The log's per-group value pickers are built by a group, and no gate adds one",
+	},
+	{
+		base: 'div.dropdown.dropdown-picker-root.dropup.input-root',
+		react: 'div.dropdown.dropdown-picker-root.log-search-add-picker',
 		max: 1,
-		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. One results filter per sim",
+		why: "the log runner's add-filter picker. `input-root` is the vanilla `Input` shell's class and the React picker is deliberately not an `InputConfig` picker — the group list is the pane's own state. `dropup` is Bootstrap's, and a Base UI menu is not a Bootstrap dropdown: opening upwards is `side=\"top\"` on the positioner now, which is what the picker's own test asserts. `.log-search-add-picker` is what scopes `normaliseBaseUiMenus`'s fold to it. One add-filter picker per log pane",
+	},
+	{
+		base: 'input.form-control.log-search-input',
+		react: 'input.form-control.log-search-input.search-bar-input',
+		max: 1,
+		why: "the log runner's free-text box is the `SearchBar` primitive now, and `search-bar-input` is the primitive's own hook. `log-search-input` still lands on the real control, which is the whole reason `SearchBar` puts `className` on the `<input>` rather than on its root. The two wrappers the primitive adds around it are folded by `normaliseLogSearch`; this entry is the line that is left. One search box per log pane",
+	},
+	{
+		base: 'div.log-runner-logs',
+		react: 'div.log-runner-logs.virtual-list',
+		max: 1,
+		why: "the React `VirtualList` **is** the log's content element rather than a child of it, so the consumer's class and the primitive's land on one div where vanilla had `.log-runner-logs` holding a list that added no element of its own. Nothing styles `.log-runner-logs`; it is structural on both sides. One list per log pane",
 	},
 	{
 		// The root's class list carries the spec's own class, so this cannot be a fixed pair.

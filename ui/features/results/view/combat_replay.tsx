@@ -1,5 +1,6 @@
 /** @jsxImportSource @jsx-vanilla */
 import { formatDurationSeconds } from '@sim/utils/format';
+import { isAvoidedOutcome, isCriticalOutcome } from '@sim/proto/combat_log/types';
 import { ActionId } from '@sim/proto/action_id';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@sim/proto/action_id/dom';
 import { AuraStacksLog, CastBeganLog, DamageLog, Entity, isCastBegan, isDamage, isResource, ResourceLog } from '@sim/proto/combat_log';
@@ -399,9 +400,9 @@ export class CombatReplay extends ResultComponent {
 			for (const d of playerDmg) {
 				if (d.timestamp < cast.timestamp) continue;
 				if (d.timestamp > cast.timestamp + 3) break;
-				if (d.actionId?.name === castName && d.outcome !== 'miss' && d.outcome !== 'dodge' && d.outcome !== 'parry') {
+				if (d.actionId?.name === castName && !isAvoidedOutcome(d.outcome)) {
 					dmg = d.amount;
-					isCrit = d.outcome === 'crit' || d.outcome === 'critical-block';
+					isCrit = isCriticalOutcome(d.outcome);
 					target = d.target;
 					break;
 				}
@@ -445,7 +446,7 @@ export class CombatReplay extends ResultComponent {
 		}
 
 		for (const d of playerDmg) {
-			if (d.outcome === 'miss' || d.outcome === 'dodge' || d.outcome === 'parry') continue;
+			if (isAvoidedOutcome(d.outcome)) continue;
 			if (d.actionId && d.actionId.otherId !== OtherAction.OtherActionNone) continue;
 			const cardIdx = this.enemyNames.findIndex(n => n === d.target?.name);
 			if (cardIdx === -1 && this.enemyNames.length > 0) continue;
@@ -456,7 +457,7 @@ export class CombatReplay extends ResultComponent {
 				x: 20 + ((seed * 23) % 60),
 				y: 10 + ((seed * 37) % 60),
 				dmg: d.amount > 0 ? d.amount : null,
-				isCrit: d.outcome === 'crit' || d.outcome === 'critical-block',
+				isCrit: isCriticalOutcome(d.outcome),
 			});
 		}
 

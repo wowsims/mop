@@ -444,12 +444,14 @@ const PORTED_MENUS = [
 		popup: ['ul.icon-enum-picker-menu', 'ul.dropdown-menu'],
 	},
 	{
-		// The results filter, and it is scoped to that picker rather than to `.dropdown-picker-root`
-		// on purpose: `DropdownPicker` is dual-stack and the log runner's search bar builds two
-		// vanilla ones **in the same pane**, so the root class cannot tell the stacks apart. Widen
-		// this when the next consumer ports.
-		what: 'results-filter',
-		root: /\.target-filter-root(\.|$)/,
+		// Every React `DropdownPicker`: the results filter, and the log runner's add-filter and
+		// add-value pickers. It was scoped to `.target-filter-root` while the log search bar still
+		// built vanilla ones **in the same pane**; now that it has ported, no pane holds one of each —
+		// React's are all in the results pane and the remaining vanilla ones all in the rotation pane,
+		// where the `!expected` guard below skips this entry entirely. Narrow it again if that stops
+		// being true.
+		what: 'dropdown-pickers',
+		root: /\.dropdown-picker-root(\.|$)/,
 		count: /^div\.dropdown-picker-slot$/,
 		wrappers: [
 			/^div\.dropdown-picker-slot$/,
@@ -489,6 +491,34 @@ export const normaliseBaseUiMenus = dom => {
 		const renamed = renameWithin(current, menu.root, ...menu.popup);
 		if (renamed.renamed !== expected) problems.push(`${menu.what}: renamed ${renamed.renamed} of ${expected} menus`);
 		current = renamed.dom;
+	}
+	return { dom: current, problems };
+};
+
+/**
+ * Folds the `SearchBar` primitive back out of the log runner's sticky header, on the **React side
+ * only**. Vanilla appended a bare `<input>` into `.log-search`; the primitive wraps it in Base UI's
+ * `Field.Root` and its own input group so a clear button has somewhere to live. That is an
+ * *insertion*, which `INTENDED` cannot express — it substitutes one line for another at a fixed
+ * index — and `dropSubtrees` would take the input with it.
+ *
+ * Scoped to `.log-search`, the consumer, rather than to `.search-bar-root`: the primitive is
+ * dual-stack and the gear and bulk searches are still hand-rolled `<input>`s. Widen it when they
+ * port. `dropped` is asserted against the number of search bars actually found, so a wrapper that
+ * moves, or one that goes missing, fails rather than folding quietly.
+ */
+const LOG_SEARCH = /^div\.log-search$/;
+const SEARCH_BAR_WRAPPERS = [/^div\..*search-bar-root(\.|$)/, /^div\.search-bar-input-group$/];
+
+export const normaliseLogSearch = dom => {
+	const expected = dom.split('\n').filter(line => LOG_SEARCH.test(line.trim())).length;
+	if (!expected) return { dom, problems: [] };
+	const problems = [];
+	let current = dom;
+	for (const wrapper of SEARCH_BAR_WRAPPERS) {
+		const collapsed = collapseWrappers(current, LOG_SEARCH, wrapper);
+		if (collapsed.dropped !== expected) problems.push(`log search: collapsed ${collapsed.dropped} of ${expected} ${wrapper.source}`);
+		current = collapsed.dom;
 	}
 	return { dom: current, problems };
 };

@@ -59,7 +59,15 @@ vi.mock('@sim/proto/sim_result', async importOriginal => ({
 
 vi.mock('../../view/timeline', async () => ({ Timeline: await island('timeline', 'timeline-root')() }));
 vi.mock('../../view/combat_replay', async () => ({ CombatReplay: await island('replay', 'combat-replay-root')() }));
-vi.mock('../../view/log/log_view', async () => ({ LogView: await island('log', 'log-runner-root')() }));
+// The log pane is React now, so it is a prop reader rather than an island: what this pane owes it is
+// `active`, which is what its own deferral is built on.
+const logRunner = vi.hoisted(() => ({ active: [] as Array<boolean> }));
+vi.mock('../LogRunner', () => ({
+	LogRunner: ({ active }: { active: boolean }) => {
+		logRunner.active.push(active);
+		return <div className="log-runner-root" />;
+	},
+}));
 
 vi.mock('../ToplineResults', () => ({ ToplineResults: () => <div className="topline-results-root" /> }));
 vi.mock('../DpsHistogram', () => ({ DpsHistogram: () => <div className="dps-histogram-root" /> }));
@@ -113,6 +121,7 @@ const tabButton = (container: HTMLElement, tabId: string) => container.querySele
 
 beforeEach(() => {
 	islands.records.clear();
+	logRunner.active.length = 0;
 	resultChannel = new ResultChannel();
 	currentChangeEmitter = new Emitter<void>();
 	runData = null;
@@ -173,8 +182,9 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
 		expect(islands.track('timeline').parents[0].className).toBe('timeline');
 		expect(islands.track('replay').parents[0].className).toBe('combat-replay');
-		expect(islands.track('log').parents[0].className).toBe('log');
 		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
+		// The log pane keeps the same container the island used to be built into, one level shallower.
+		expect(container.querySelectorAll('#logTab .dr-row > .log > .log-runner-root')).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
@@ -198,10 +208,19 @@ describe('DetailedResults', () => {
 		expect(islands.track('timeline').shown).toBe(0);
 		fireEvent.click(tabButton(container, 'timelineTab'));
 		expect(islands.track('timeline').shown).toBe(1);
-		expect(islands.track('log').shown).toBe(0);
-		fireEvent.click(tabButton(container, 'logTab'));
+		fireEvent.click(tabButton(container, 'replayTab'));
 		expect(islands.track('timeline').hidden).toBe(1);
-		expect(islands.track('log').shown).toBe(1);
+		expect(islands.track('replay').shown).toBe(1);
+	});
+
+	// What `onTabShown` was to an island, `active` is to the React log pane.
+	it('tells the log pane whether its tab is the open one', () => {
+		const { container } = renderPane();
+		expect(logRunner.active.at(-1)).toBe(false);
+		fireEvent.click(tabButton(container, 'logTab'));
+		expect(logRunner.active.at(-1)).toBe(true);
+		fireEvent.click(tabButton(container, 'damageTab'));
+		expect(logRunner.active.at(-1)).toBe(false);
 	});
 
 	it('stops the replay when its tab closes', () => {

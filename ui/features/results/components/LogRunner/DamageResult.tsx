@@ -1,24 +1,17 @@
-/** @jsxImportSource @jsx-vanilla */
-import type { DamageLog, Outcome } from '@sim/proto/combat_log';
+import type { DamageLog } from '@sim/proto/combat_log';
 import { isAvoidedOutcome } from '@sim/proto/combat_log/types';
 import { spellSchoolNames } from '@sim/proto/names';
 import clsx from 'clsx';
 
-import { EntityLabel } from './entity_label';
+import { EntityLabel } from './EntityLabel';
+import { OUTCOME_LABEL } from './utils';
 
-export const OUTCOME_LABEL: Record<Outcome, string> = {
-	miss: 'Miss',
-	dodge: 'Dodge',
-	parry: 'Parry',
-	'critical-block': 'Critical Block',
-	'blocked-glance': 'Blocked Glance',
-	block: 'Block',
-	glance: 'Glance',
-	crit: 'Crit',
-	hit: 'Hit',
-};
+export interface DamageResultProps {
+	log: DamageLog;
+}
 
-export function Results(log: DamageLog): JSX.Element {
+/** The outcome-and-amount tail of a damage, healing or shielding line. */
+export const DamageResult = ({ log }: DamageResultProps) => {
 	const spellSchoolString = typeof log.spellSchool === 'number' ? spellSchoolNames.get(log.spellSchool) : undefined;
 	const isHealing = log.effect === 'healing';
 	const isShielding = log.effect === 'shielding';
@@ -31,7 +24,7 @@ export function Results(log: DamageLog): JSX.Element {
 			{isShielding ? 'Shielded ' : ''}
 			{!(isHealing || isShielding) && <>{outcomeLabel}</>}
 			{` `}
-			{log.target ? EntityLabel(log.target) : ''}
+			{log.target ? <EntityLabel entity={log.target} /> : ''}
 			{!isMissLike ? (
 				<>
 					{' '}
@@ -51,4 +44,4 @@ export function Results(log: DamageLog): JSX.Element {
 			)}
 		</>
 	);
-}
+};

@@ -21,6 +21,7 @@ import { SimRun } from '@generated/proto/ui';
 import { CacheHandler } from '../cache/cache_handler';
 import { bucket } from '../utils/collections';
 import { sum } from '../utils/math';
+import { PlayerClasses } from '../player/classes';
 import { PlayerSpec } from '../player/player_spec';
 import { PlayerSpecs } from '../player/specs';
 import { ActionId, defaultTargetIcon } from './action_id';
@@ -434,11 +435,7 @@ export class UnitMetrics {
 		this.spec = this.player ? getPlayerSpecFromPlayer(this.player) : null;
 		this.petActionId = petActionId;
 		this.iconUrl = this.isPlayer ? (this.spec?.getIcon('medium') ?? '') : this.isTarget ? defaultTargetIcon : '';
-		this.classColor = this.isTarget
-			? ''
-			: (PlayerSpecs.getPlayerClass(this.spec as PlayerSpec<any>)
-					.friendlyName.toLowerCase()
-					.replace(/\s/g, '-') ?? '');
+		this.classColor = this.isTarget ? '' : (PlayerClasses.getCssClass(PlayerSpecs.getPlayerClass(this.spec as PlayerSpec<any>)) ?? '');
 		this.dps = this.metrics.dps!;
 		this.hps = this.metrics.hps!;
 		this.tps = this.metrics.threat!;

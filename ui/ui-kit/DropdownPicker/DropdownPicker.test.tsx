@@ -105,4 +105,37 @@ describe('DropdownPicker', () => {
 		expect(items()[1].className).toContain('text-warrior');
 		expect(items()[0].className).toBe('dropdown-picker-item');
 	});
+
+	// Vanilla's `popperConfig: { strategy: 'fixed' }` plus `extraCssClasses: ['dropup']`, which is what
+	// a picker sitting in an overflow-clipped drawer at the bottom of the page needs.
+	describe('side and positionMethod', () => {
+		const positioner = () => root().querySelector('.dropdown-picker-positioner') as HTMLElement;
+
+		it('opens below the trigger, positioned in flow, by default', async () => {
+			mount({ id: 0, name: 'All' });
+			await open();
+
+			expect(positioner().getAttribute('data-side')).toBe('bottom');
+			expect(positioner().style.position).toBe('absolute');
+		});
+
+		it('opens above the trigger and out of flow when asked', async () => {
+			render(
+				<DropdownPicker
+					id="log-search-add-filter"
+					options={units}
+					value={undefined}
+					onChange={vi.fn()}
+					equals={sameId}
+					defaultLabel="Add filter"
+					side="top"
+					positionMethod="fixed"
+				/>,
+			);
+			await open();
+
+			expect(positioner().getAttribute('data-side')).toBe('top');
+			expect(positioner().style.position).toBe('fixed');
+		});
+	});
 });

@@ -26,8 +26,10 @@ export const formatAverage = ({ average, unit }: ResultMetric, layout: ResultMet
 export const formatStdev = ({ stdev, unit }: ResultMetric, layout: ResultMetricLayout): string =>
 	layout === 'list' ? (stdev ?? 0).toFixed(errorDecimals(unit)) : formatToNumber(stdev ?? 0, { maximumFractionDigits: errorDecimals(unit) });
 
-/** Percentage metrics carry their sign on the label: `12.34% TMI`. */
-export const metricLabelPrefix = (metric: keyof ResultMetrics): string => (metric === 'tmi' || metric === 'cod' ? '% ' : ' ');
+/** TMI and CoD are percentages: they carry their sign on the label (`12.34% TMI`) and their tooltip is the long form's title. */
+const isPercentageMetric = (metric: keyof ResultMetrics): boolean => metric === 'tmi' || metric === 'cod';
+
+export const metricLabelPrefix = (metric: keyof ResultMetrics): string => (isPercentageMetric(metric) ? '% ' : ' ');
 
 /** The reference delta the sidebar's `updateReference` fills in; inert everywhere else. */
 export const resultReferenceDiff = (): ReactNode => (
@@ -40,7 +42,7 @@ export const resultReferenceDiff = (): ReactNode => (
 export const resultMetricTooltip = (metric: keyof ResultMetrics | null, layout: ResultMetricLayout): ReactNode => {
 	if (!metric) return null;
 
-	if (layout === 'row') return i18n.t(`sidebar.results.metrics.${metric}.${metric === 'tmi' || metric === 'cod' ? 'tooltip.title' : 'tooltip'}`);
+	if (layout === 'row') return i18n.t(`sidebar.results.metrics.${metric}.${isPercentageMetric(metric) ? 'tooltip.title' : 'tooltip'}`);
 
 	switch (metric) {
 		case 'oom':

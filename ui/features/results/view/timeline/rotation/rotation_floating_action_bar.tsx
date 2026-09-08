@@ -115,7 +115,11 @@ export class RotationFloatingActionBar extends Component {
 		// is built inside the hidden Results tab, so its ratio goes 0 -> pinned without ever passing
 		// through 1, and a [1]-only observer is never called again after that first hidden callback.
 		const observer = new IntersectionObserver(
-			([entry]) => this.rootElem.classList.toggle('stuck', entry.target.clientHeight > 0 && entry.intersectionRatio < 1),
+			// One delivery can carry several records, oldest first, so the last is the current state — reading `[entry]` leaves the bar stuck on a stale ratio.
+			entries => {
+				const entry = entries[entries.length - 1];
+				this.rootElem.classList.toggle('stuck', entry.target.clientHeight > 0 && entry.intersectionRatio < 1);
+			},
 			{
 				rootMargin: '0px 0px -1px 0px',
 				threshold: [0, 1],

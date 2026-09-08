@@ -1,4 +1,5 @@
 import { SimRun, SimRunData } from '@generated/proto/ui';
+import { hideMetricsClassName } from '@features/results/model/sim_results';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import i18n from '@i18n/config';
@@ -12,8 +13,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
+import type { LogExporterFactory } from '../../model/log_exporter';
 import { CombatReplay } from '../../view/combat_replay';
-import { type LogExporterFactory, LogView } from '../../view/log/log_view';
 import type { ResultComponent } from '../../view/result_component';
 import type { SimResultsManager } from '../../view/results_action';
 import { Timeline } from '../../view/timeline';
@@ -23,6 +24,7 @@ import { DamageMetricsTable } from '../DamageMetricsTable';
 import { DpsHistogram } from '../DpsHistogram';
 import { DtpsMetricsTable } from '../DtpsMetricsTable';
 import { HealingMetricsTable } from '../HealingMetricsTable';
+import { LogRunner } from '../LogRunner';
 import { ResourceMetricsTable } from '../ResourceMetricsTable';
 import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../ResultsFilter';
 import { ToplineResults } from '../ToplineResults';
@@ -59,7 +61,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const emittedTarget = useRef(target);
 	const timeline = useRef<Timeline | null>(null);
 	const combatReplay = useRef<CombatReplay | null>(null);
-	const logView = useRef<LogView | null>(null);
 
 	const latestRun = useRef<SimRunData | null>(null);
 	const currentSimResult = useRef<SimResult | null>(null);
@@ -79,13 +80,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 			return combatReplay.current;
 		},
 		[resultsEmitter],
-	);
-	const mountLogView = useLegacyMount(
-		parent => {
-			logView.current = new LogView({ parent, resultsEmitter, deferUntilShown: true }, makeLogExporter);
-			return logView.current;
-		},
-		[resultsEmitter, makeLogExporter],
 	);
 
 	const updateResults = useCallback(
@@ -178,7 +172,6 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		const islands: Record<string, ResultComponent | null> = {
 			timelineTab: timeline.current,
 			replayTab: combatReplay.current,
-			logTab: logView.current,
 		};
 		islands[previous]?.onTabHidden();
 		if (previous === 'replayTab') combatReplay.current?.stopPlayback();
@@ -201,7 +194,8 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	useEffect(() => {
 		const element = toolbarRef.current;
 		if (!element) return;
-		const observer = new IntersectionObserver(([entry]) => setStuck(element.clientHeight > 0 && entry.intersectionRatio < 1), {
+		// One delivery can carry several records, oldest first, so the last is the current state — reading `[entry]` leaves the bar stuck on a stale ratio.
+		const observer = new IntersectionObserver(entries => setStuck(element.clientHeight > 0 && entries[entries.length - 1].intersectionRatio < 1), {
 			rootMargin: `-${host.simHeader.rootElem.offsetHeight + 1}px 0px 0px 0px`,
 			threshold: [1],
 		});
@@ -231,9 +225,9 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		<div
 			className={clsx(
 				'detailed-results-manager-root',
-				!showDamage && 'hide-damage-metrics',
-				!showThreat && 'hide-threat-metrics',
-				!showHealing && 'hide-healing-metrics',
+				!showDamage && hideMetricsClassName('damage'),
+				!showThreat && hideMetricsClassName('threat'),
+				!showHealing && hideMetricsClassName('healing'),
 				!showExperimental && 'hide-experimental',
 			)}>
 			<div className="detailed-results-controls-div">
@@ -342,7 +336,9 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 					</DetailedResultsPane>
 					<DetailedResultsPane id="logTab" className="log-content" {...paneState('logTab')}>
 						<div className="dr-row">
-							<div className="log" ref={mountLogView} />
+							<div className="log">
+								<LogRunner active={activeId === 'logTab'} makeLogExporter={makeLogExporter} />
+							</div>
 						</div>
 					</DetailedResultsPane>
 				</div>

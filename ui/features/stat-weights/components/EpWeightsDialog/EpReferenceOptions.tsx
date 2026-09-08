@@ -1,4 +1,7 @@
 import { useSimHost } from '@sim/context/SimHostContext';
+import type { ResultMetricCategories } from '@features/results/model/sim_results';
+import { metricsClassName } from '@features/results/model/sim_results';
+import clsx from 'clsx';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Stat } from '@generated/proto/common';
@@ -15,7 +18,7 @@ export interface EpReferenceOptionsProps {
 
 type Reference = {
 	id: string;
-	metric: string;
+	metric: keyof ResultMetricCategories;
 	label: string;
 	getValue: (host: IndividualSimHost<any>) => Stat;
 	setValue: (host: IndividualSimHost<any>, value: Stat) => void;
@@ -56,13 +59,13 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 	return (
 		<div className="ep-reference-options row">
 			{references.map(reference => (
-				<div key={reference.id} className={`col col-sm-4 ${reference.metric}-metrics`}>
+				<div key={reference.id} className={clsx('col col-sm-4', metricsClassName(reference.metric))}>
 					<EnumPicker
 						modObject={host}
 						config={{
 							id: reference.id,
 							label: reference.label,
-							extraCssClasses: ['ref-stat-select', `${reference.metric}-metrics`],
+							extraCssClasses: ['ref-stat-select', metricsClassName(reference.metric)],
 							values,
 							storeSubscribe: subject => subscribePlayerField(subject.player, 'epRefStat'),
 							getValue: reference.getValue,

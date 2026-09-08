@@ -29,6 +29,7 @@ export type IconName =
 	| 'eye'
 	| 'eye-slash'
 	| 'file-arrow-up'
+	| 'filter'
 	| 'gauge-high'
 	| 'github'
 	| 'globe'

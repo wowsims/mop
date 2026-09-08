@@ -13,6 +13,7 @@ import {
 	dropRootClasses,
 	launch,
 	normaliseBaseUiMenus,
+	normaliseLogSearch,
 	normaliseLiftedSubtrees,
 	normaliseSortButtons,
 	normaliseSwapIcons,
@@ -70,6 +71,9 @@ for (const spec of specsFromArgv()) {
 					const buttons = normaliseSortButtons(dom[side]);
 					dom[side] = buttons.dom;
 					problems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
+					const search = normaliseLogSearch(dom[side]);
+					dom[side] = search.dom;
+					problems.push(...search.problems.map(problem => `${id}: ${problem}`));
 				}
 			}
 			// What makes the lift an assertion rather than a fold: React must have nothing left to lift,

@@ -1,5 +1,7 @@
 import { Class } from '@generated/proto/common';
 
+import { kebabCase } from '../../utils/format';
+
 import { PlayerClass } from '../player_class';
 import { DeathKnight } from './death_knight';
 import { Druid } from './druid';
@@ -47,7 +49,7 @@ export const PlayerClasses = {
 	Warlock,
 	Warrior,
 	getCssClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
-		return playerClass.friendlyName.toLowerCase().replace(/\s/g, '-');
+		return kebabCase(playerClass.friendlyName);
 	},
 	fromProto: <ClassType extends Class>(protoId: ClassType): PlayerClass<ClassType> => {
 		if (protoId == Class.ClassUnknown) {

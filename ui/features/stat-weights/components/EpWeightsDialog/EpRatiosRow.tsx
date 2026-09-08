@@ -1,4 +1,5 @@
 import type { Player } from '@sim/player/player';
+import { metricsClassName } from '@features/results/model/sim_results';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
@@ -23,7 +24,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp }: EpRatiosRowProps) 
 		{columns
 			.filter(column => column.type !== 'action')
 			.map(column => (
-				<td key={column.id} className={clsx('type-ratio', `${column.metric}-metrics`, `type-${column.type}`)}>
+				<td key={column.id} className={clsx('type-ratio', column.metric && metricsClassName(column.metric), `type-${column.type}`)}>
 					<NumberPicker
 						modObject={player}
 						config={{

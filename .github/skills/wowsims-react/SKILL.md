@@ -1388,6 +1388,52 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-08 **The log runner is React — `VirtualList`'s second consumer, and the one that answers the
+  striping question in general.** ~915 lines across seven files became `components/LogRunner/`;
+  `search/indexes.ts` and `query.ts` stayed as pure model.
+  **The transform hazard did not bite, and the rule is now on the component.** `VirtualList` moves rows
+  with `transform`, which makes each row a containing block for `position: fixed` **descendants** — but
+  a log row contains only labels, anchors and text, and `ActionLink` hands its tooltip to Wowhead's
+  script, which appends to `<body>`. A popup a row renders *itself* would land against the row; one
+  portalled out is fine. The FAB menus live in the drawer, outside the list.
+  **No striping normaliser, and the general reason:** the log has no striping at all, and no tree gate
+  ever sees rows — vanilla's `VirtualList` empties its container at `count === 0`, `parity.mjs` and
+  `panes-parity.mjs` never run a sim, and `results-tabs.mjs` cuts at `PANE_DEPTH = 4`, three levels
+  above a row. That is why the selector modal did not need one either.
+  **`([entry]) => …` is a real bug, in three places.** One `IntersectionObserver` delivery can carry
+  several records, oldest first, and a list growing under an already-pinned bar produces exactly that
+  pair; reading the first leaves the bar unpinned permanently and made `results-tabs.mjs` fail 4 of 6
+  specs *at random*. Fixed in `LogFloatingActionBar`, and then in the two the port did not own —
+  `DetailedResults`'s toolbar observer and `SimShell`'s header observer, plus the vanilla
+  `rotation_floating_action_bar.tsx`. **Read `entries[entries.length - 1]`.**
+  **The scroller is `.sim-ui`, not the window** — its `overflow-y: auto` does not grep as one would
+  expect, and `findScrollParent` finds it, so the list runs in element mode. `VirtualList` gained a
+  window mode for vanilla's `?? window` fallback, and `DropdownPicker` gained `side` and
+  `positionMethod` — together they are vanilla's `extraCssClasses: ['dropup']` plus
+  `popperConfig: { strategy: 'fixed' }`, load-bearing because the drawer clips its overflow.
+  `TextDropdownPicker` needed no React equivalent: it adds only a text `setOptionContent`, and
+  `label: ReactNode` already covers that.
+  Two files could not be deleted: `results.tsx` and `entity_label.tsx` are imported by the still-vanilla
+  timeline, so `OUTCOME_LABEL` is duplicated in `LogRunner/utils.ts` rather than importing a
+  `@jsx-vanilla` module into React for one constant. They collapse when the timeline ports.
+- 2026-09-08 **Class names and domain predicates got their helpers, and two of them already existed.**
+  `metricsClasses` (`damage-metrics`, `healing-metrics`, …) was being re-interpolated as
+  `` `${column.metric}-metrics` `` at four sites in the EP dialog and a fifth in `shell_classes.ts`;
+  routing them through `metricsClassName`/`hideMetricsClassName` surfaced two loose types
+  (`column.metric` was optional and silently produced `undefined-metrics`). `kebabCase` already lived in
+  `@sim/utils/format` with eight users while three files hand-rolled
+  `.toLowerCase().replace(/\s/g, '-')`, and one of those, `sim_result.ts:441`, was
+  `PlayerClasses.getCssClass` re-implemented inline — it calls it now.
+  New: `resourceClassName` (the `$resource-colors` Sass map generates one rule per key, so a name that
+  does not kebab to one renders **uncoloured rather than failing**), `textClassName` (the primitive the
+  two `textClassNameFor*` helpers now build on), and `isAvoidedOutcome`/`isCriticalOutcome` beside
+  `OUTCOMES` — the avoided triple appeared four times, once negated, and `crit` alone silently misses
+  `critical-block`.
+  What was left inline on purpose: single `===` against a union member (`effect === 'healing'`) is
+  clearer than a predicate, and the four keyboard-key pairs differ per component. The TMI/CoD
+  percentage rule is deduped within `ResultMetricList/utils.tsx` but **cannot** be shared with
+  `i18n/localization.tsx`, which the layer rule forbids from importing `@features`.
+
 - 2026-09-08 **`DropdownPicker` and `UnitPicker` land on Base UI `Menu`, and `results_filter.ts` is
   deleted.** The "three dropdown pickers wait for the `Menu` adapter" objection is retired — all three
   are ported, and `Toast` is the only primitive still waiting for a first consumer.

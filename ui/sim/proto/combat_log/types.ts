@@ -64,6 +64,14 @@ export const OUTCOMES = ['hit', 'crit', 'miss', 'dodge', 'parry', 'glance', 'blo
 
 export type Outcome = (typeof OUTCOMES)[number];
 
+/** Avoidance: the attack never landed, so there is no amount to render and nothing to add to a total. */
+const AVOIDED_OUTCOMES: ReadonlyArray<Outcome> = ['miss', 'dodge', 'parry'];
+export const isAvoidedOutcome = (outcome: Outcome): boolean => AVOIDED_OUTCOMES.includes(outcome);
+
+/** A critical strike, including the blocked variant — `crit` alone misses `critical-block`. */
+const CRITICAL_OUTCOMES: ReadonlyArray<Outcome> = ['crit', 'critical-block'];
+export const isCriticalOutcome = (outcome: Outcome): boolean => CRITICAL_OUTCOMES.includes(outcome);
+
 export type DamageEffect = 'damage' | 'healing' | 'shielding';
 
 export type ParsedKind =

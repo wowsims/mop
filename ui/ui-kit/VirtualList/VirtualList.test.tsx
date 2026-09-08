@@ -98,4 +98,57 @@ describe('VirtualList', () => {
 		expect(container.querySelector<HTMLElement>('.virtual-list')!.style.height).toBe('0px');
 		expect(rows(container)).toHaveLength(0);
 	});
+
+	// A list whose nearest scrolling ancestor is the page reports `window`, and the virtualiser then
+	// has to read `window.scrollY` and `window.innerHeight` instead of an element's scrollTop and box.
+	// Without the window observers a scroll of the page is never heard.
+	describe('window mode', () => {
+		const renderWindowList = (scrollMargin = 0) =>
+			render(
+				<VirtualList
+					count={1000}
+					rowHeight={ROW_HEIGHT}
+					overscan={2}
+					scrollMargin={scrollMargin}
+					getScrollElement={() => window}
+					renderRow={index => <span>row {index}</span>}
+				/>,
+			);
+
+		const scrollWindowTo = async (top: number) => {
+			Object.defineProperty(window, 'scrollY', { value: top, configurable: true });
+			await act(async () => {
+				window.dispatchEvent(new Event('scroll'));
+			});
+		};
+
+		it('measures the viewport off window.innerHeight without an initialRect', () => {
+			const { container } = renderWindowList();
+
+			// An element scroller reports 0x0 in happy-dom, which is why every other case here passes
+			// `initialRect`; `window.innerHeight` is real, so window mode needs none.
+			expect(rows(container).length).toBe(Math.ceil(window.innerHeight / ROW_HEIGHT) + 2);
+			expect(Number(rows(container)[0].dataset.index)).toBe(0);
+		});
+
+		it('follows window.scrollY', async () => {
+			const { container } = renderWindowList();
+			await scrollWindowTo(40 * ROW_HEIGHT);
+
+			expect(Number(rows(container)[0].dataset.index)).toBe(40 - 2);
+		});
+
+		// The list starts partway down the document, so its own offset comes off the window position
+		// it reacts to, and off the transform it writes.
+		it('takes the list offset out of the window position with scrollMargin', async () => {
+			const margin = 30 * ROW_HEIGHT;
+			const { container } = renderWindowList(margin);
+			await scrollWindowTo(50 * ROW_HEIGHT);
+
+			expect(Number(rows(container)[0].dataset.index)).toBe(50 - 30 - 2);
+			for (const row of rows(container)) {
+				expect(row.style.transform).toBe(`translateY(${Number(row.dataset.index) * ROW_HEIGHT}px)`);
+			}
+		});
+	});
 });

@@ -13,6 +13,7 @@ import {
 	collectSubtrees,
 	dropSubtrees,
 	normaliseBaseUiMenus,
+	normaliseLogSearch,
 	normaliseLiftedSubtrees,
 	normaliseSortButtons,
 	normaliseSwapIcons,
@@ -241,7 +242,9 @@ const grab = async (browser, port, spec) => {
 		paneProblems.push(...normalised.problems.map(problem => `${id}: ${problem}`));
 		const buttons = normaliseSortButtons(normalised.dom);
 		paneProblems.push(...buttons.problems.map(problem => `${id}: ${problem}`));
-		panes[id] = buttons.dom;
+		const search = normaliseLogSearch(buttons.dom);
+		paneProblems.push(...search.problems.map(problem => `${id}: ${problem}`));
+		panes[id] = search.dom;
 	}
 	await page.close();
 	return {

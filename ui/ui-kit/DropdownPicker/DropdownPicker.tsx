@@ -27,6 +27,15 @@ export interface DropdownPickerProps<V> {
 	equals: (a: V | undefined, b: V | undefined) => boolean;
 	/** The trigger's content while no option matches `value`. */
 	defaultLabel: ReactNode;
+	/** Which side of the trigger the menu opens on — `'top'` is what vanilla spelled as Bootstrap's `.dropup`. */
+	side?: Menu.Positioner.Props['side'];
+	/**
+	 * `'fixed'` is vanilla's `popperConfig: { strategy: 'fixed' }`: it takes the menu out of flow so an
+	 * overflow-clipped ancestor cannot cut it off. It only holds while nothing between the menu and
+	 * the viewport carries a `transform`, `filter` or `contain` — any of those becomes the containing
+	 * block and the clip comes back.
+	 */
+	positionMethod?: Menu.Positioner.Props['positionMethod'];
 	/** On the root. */
 	className?: ClassValue;
 }
@@ -40,7 +49,7 @@ export interface DropdownPickerProps<V> {
  * UI-local state needs no store to write it through. A bound caller wraps it in `useInput` and
  * `PickerShell`, the same split `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData` make.
  */
-export const DropdownPicker = <V,>({ id, options, value, onChange, equals, defaultLabel, className }: DropdownPickerProps<V>) => {
+export const DropdownPicker = <V,>({ id, options, value, onChange, equals, defaultLabel, side, positionMethod, className }: DropdownPickerProps<V>) => {
 	// null is Base UI's "not resolved yet"; anything else falls back to <body>, which is outside `.sim-ui` and its theme.
 	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
 	const [open, setOpen] = useState(false);
@@ -65,7 +74,12 @@ export const DropdownPicker = <V,>({ id, options, value, onChange, equals, defau
 				{/* The slot holds the place vanilla's `<ul>` had after the button, which a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
 				<div className="dropdown-picker-slot" ref={setSlot} />
 				<Menu.Portal container={slot} keepMounted className="dropdown-picker-portal">
-					<Menu.Positioner align="start" sideOffset={BOOTSTRAP_DROPDOWN_OFFSET} className="dropdown-picker-positioner">
+					<Menu.Positioner
+						align="start"
+						side={side}
+						positionMethod={positionMethod}
+						sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
+						className="dropdown-picker-positioner">
 						<Menu.Popup className="dropdown-picker-menu">
 							<Menu.RadioGroup
 								render={<ul />}

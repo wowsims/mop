@@ -40,7 +40,8 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 	useEffect(() => {
 		const element = header.current;
 		if (!element) return;
-		const observer = new IntersectionObserver(([entry]) => setStuck(entry.intersectionRatio < 1), { threshold: [1] });
+		// One delivery can carry several records, oldest first, so the last is the current state — reading `[entry]` leaves the bar stuck on a stale ratio.
+		const observer = new IntersectionObserver(entries => setStuck(entries[entries.length - 1].intersectionRatio < 1), { threshold: [1] });
 		observer.observe(element);
 		return () => observer.disconnect();
 	}, []);

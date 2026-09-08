@@ -3,6 +3,8 @@ import { ArmorType, Class, Profession, Race, Spec, Stat } from '@generated/proto
 import { ResourceType, SecondaryResourceType } from '@generated/proto/spell';
 import { DungeonDifficulty, RepFaction, RepLevel } from '@generated/proto/ui';
 
+import { kebabCase } from '../utils/format';
+
 export const armorTypeNames: Map<ArmorType, string> = new Map([
 	[ArmorType.ArmorTypeUnknown, 'Unknown'],
 	[ArmorType.ArmorTypeCloth, 'Cloth'],
@@ -132,6 +134,12 @@ export const spellSchoolNames: Map<number, string> = new Map([
 	[SpellSchool.Fire + SpellSchool.Frost + SpellSchool.Nature, 'Elemental'],
 	[SpellSchool.Arcane + SpellSchool.Fire + SpellSchool.Frost + SpellSchool.Holy + SpellSchool.Nature + SpellSchool.Shadow, 'Chaos'],
 ]);
+
+/**
+ * The colour class for a resource. `_global.scss` generates one rule per key of the `$resource-colors`
+ * Sass map, so a name that does not kebab to one of those keys renders uncoloured rather than failing.
+ */
+export const resourceClassName = (resourceName: string): string => `resource-${kebabCase(resourceName)}`;
 
 export const resourceNames: Map<ResourceType, string> = new Map([
 	[ResourceType.ResourceTypeNone, 'None'],

@@ -1,4 +1,5 @@
 import type { PlayerSpec } from '@sim/player/player_spec';
+import { hideMetricsClassName } from '@features/results/model/sim_results';
 import clsx from 'clsx';
 
 export interface MetricVisibility {
@@ -24,9 +25,9 @@ export const showsEpRatios = (metrics: { damage: boolean; threat: boolean; heali
 
 export const metricVisibilityClasses = (metrics: MetricVisibility): string =>
 	clsx(
-		!metrics.damage && 'hide-damage-metrics',
-		!metrics.threat && 'hide-threat-metrics',
-		!metrics.healing && 'hide-healing-metrics',
+		!metrics.damage && hideMetricsClassName('damage'),
+		!metrics.threat && hideMetricsClassName('threat'),
+		!metrics.healing && hideMetricsClassName('healing'),
 		!metrics.epRatios && 'hide-ep-ratios',
 		!metrics.experimental && 'hide-experimental',
 	);

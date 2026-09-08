@@ -1,4 +1,4 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { observeWindowOffset, observeWindowRect, useVirtualizer, windowScroll } from '@tanstack/react-virtual';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
@@ -9,9 +9,13 @@ export interface VirtualListProps {
 	// row that reports a different height, which is an easy infinite loop.
 	rowHeight?: number;
 	overscan?: number;
-	// The element that scrolls. May be an ancestor the list shares with other content.
-	getScrollElement: () => HTMLElement | null;
-	// Pixels of a shared scroller above the first row: sticky chrome, a header, a filter bar.
+	// The element that scrolls. May be an ancestor the list shares with other content, or `window`
+	// when the list scrolls with the page. Returning `window` switches the list into window mode, so
+	// a caller resolving its scroller with `findScrollParent` may report either without knowing which
+	// it will be until the list is in the document.
+	getScrollElement: () => HTMLElement | Window | null;
+	// Pixels of a shared scroller above the first row: sticky chrome, a header, a filter bar. In
+	// window mode this is the list's own offset down the document.
 	scrollMargin?: number;
 	// The scroller's size before it has been measured. Without it the first render produces no rows,
 	// which is also what happens in a DOM that reports every element as 0x0.
@@ -24,6 +28,22 @@ export interface VirtualListProps {
 const DEFAULT_ROW_HEIGHT = 28;
 const DEFAULT_OVERSCAN = 10;
 
+type ElementVirtualizerOptions = Parameters<typeof useVirtualizer<HTMLElement, HTMLElement>>[0];
+
+/**
+ * `useWindowVirtualizer` is `useVirtualizer` with exactly these four options, so borrowing them keeps
+ * one hook call covering both modes — which is what lets the mode be decided by whatever
+ * `getScrollElement` returns rather than by which hook the caller picked. The cast is the entire
+ * cost: `useVirtualizer` is generic over `Element`, and these three observers are written against
+ * `Virtualizer<Window>`.
+ */
+const WINDOW_SCROLLER = {
+	observeElementRect: observeWindowRect,
+	observeElementOffset: observeWindowOffset,
+	scrollToFn: windowScroll,
+	initialOffset: () => (typeof document === 'undefined' ? 0 : window.scrollY),
+} as unknown as Partial<ElementVirtualizerOptions>;
+
 /**
  * Rows are absolutely positioned and moved with `transform`, which is how `@tanstack/react-virtual`
  * is built to work. That is a different DOM from the vanilla `VirtualList`, which keeps rows as real
@@ -33,6 +53,11 @@ const DEFAULT_OVERSCAN = 10;
  * siblings is the position within the rendered window, not within the list, so it changes as you
  * scroll. Every row carries `data-index` and `data-stripe`, and stripes are styled off
  * `[data-stripe='odd']` instead.
+ *
+ * The transform is also a containing block for `position: fixed` descendants, so a tooltip, popover
+ * or menu that a row renders **into itself** lands against the row rather than the viewport. Rows
+ * that only ever anchor a popup rendered elsewhere — a Wowhead tooltip on `<body>`, a `Tooltip`
+ * portalled out — are unaffected.
  */
 export const VirtualList = ({
 	count,
@@ -45,13 +70,20 @@ export const VirtualList = ({
 	rowClassName,
 	renderRow,
 }: VirtualListProps) => {
-	const virtualizer = useVirtualizer({
+	// Read every render, because a caller that walks up for its scrolling ancestor has nothing to
+	// report until the list is in the document. `null` takes the element branch: neither mode can
+	// measure without a scroller, and the element one is what a ref-held scroller resolves to.
+	const scroller = getScrollElement();
+	const scrollsWithWindow = scroller !== null && !(scroller instanceof HTMLElement);
+
+	const virtualizer = useVirtualizer<HTMLElement, HTMLElement>({
 		count,
-		getScrollElement,
+		getScrollElement: getScrollElement as () => HTMLElement | null,
 		estimateSize: () => rowHeight,
 		overscan,
 		scrollMargin,
 		initialRect,
+		...(scrollsWithWindow ? WINDOW_SCROLLER : {}),
 	});
 
 	return (

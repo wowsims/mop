@@ -22,7 +22,7 @@ import {
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import { ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
-import type { LogExporterFactory } from '@features/results/view/log/log_view';
+import type { LogExporterFactory } from '@features/results/model/log_exporter';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';

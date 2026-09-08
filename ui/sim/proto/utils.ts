@@ -18,8 +18,12 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
+/** The class-colour class. `$class-colors` in `_variables.scss` is what makes it resolve, so the argument has to be a `getCssClass` slug and not a display name. */
+export function textClassName(classCssClass: string): string {
+	return `text-${classCssClass}`;
+}
 export function textClassNameForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
-	return `text-${PlayerClasses.getCssClass(playerClass)}`;
+	return textClassName(PlayerClasses.getCssClass(playerClass));
 }
 export function textClassNameForSpec<SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): string {
 	return textClassNameForClass(PlayerSpecs.getPlayerClass(playerSpec));

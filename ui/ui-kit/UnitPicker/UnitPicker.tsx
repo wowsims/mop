@@ -1,4 +1,5 @@
 import { UnitReference } from '@generated/proto/common';
+import { textClassName } from '@sim/proto/utils';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
 import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 import type { ClassValue } from 'clsx';
@@ -34,7 +35,7 @@ export const UnitPicker = ({ id, options, value, onChange, className }: UnitPick
 			value: unit,
 			label: unit.text,
 			icon: unit.iconUrl ? <UnitIcon iconUrl={unit.iconUrl} /> : undefined,
-			className: unit.color && `text-${unit.color}`,
+			className: unit.color && textClassName(unit.color),
 		}))}
 		value={{ value }}
 		onChange={unit => onChange(unit.value)}
