@@ -53,6 +53,18 @@ const REGIONS = [
 	// would be a markup change the parity gates pin. It falls when the selector modal ports and these
 	// anchors stop needing to look like links.
 	{ selector: '#gear-tab', ceiling: { unnamed: 57, shown: 1, untyped: 1 } },
+	// Fully React. `shown` and `untyped` are equalities the port established: the baseline leaves all 5
+	// of the pane's icons readable and 4 of its 7 buttons untyped.
+	//
+	// `unsafe` is 1 of 2 and is not React's: the setup pane's intro paragraph is a translated HTML
+	// string rendered through `dangerouslySetInnerHTML`, and the `<a href="https://raidbots.com"
+	// target="_blank">` inside it carries no `rel` in any locale file. The same string also writes
+	// `className=` where raw HTML needs `class=`, so its two `bold` spans are unstyled on both ports.
+	// Both are `assets/locales/*/translation.json` defects; fixing them is a content change, not a port.
+	//
+	// `unnamed` is 53 of 98 for the reason `#gear-tab`'s 57 is: every item cell's icon, socket and
+	// label anchors are text-free, and naming them is a markup change the parity gates pin.
+	{ selector: '#bulk-tab', ceiling: { unnamed: 53, unsafe: 1 } },
 ];
 const SELECTORS = REGIONS.map(region => region.selector);
 

@@ -1,9 +1,6 @@
-// Dual-shape, the way `_selector_modal.scss` is: `view/filters_menu.tsx` is still a Bootstrap
-// `BaseModal` for bulk and item swap, `components/FiltersMenu/` is a Base UI dialog. The tokens
-// below are the `:root` `--modal-*` family rather than `--bs-modal-*`, which Bootstrap emits inside
-// `.modal` only — same values, and the portaled popup is not inside a `.modal`.
+// The tokens below are the `:root` `--modal-*` family rather than `--bs-modal-*`, which Bootstrap
+// emits inside `.modal` only — same values, and the portaled popup is not inside a `.modal`.
 .filters-menu {
-	.modal-body,
 	.sim-dialog-body {
 		gap: var(--block-spacer);
 	}

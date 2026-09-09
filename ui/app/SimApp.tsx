@@ -18,6 +18,7 @@ import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
+import { BulkTabBody } from './tabs/BulkTabBody';
 import { GearTabBody } from './tabs/GearTabBody';
 import { RotationTabBody } from './tabs/RotationTabBody';
 import { SettingsTabBody } from './tabs/SettingsTabBody';
@@ -90,6 +91,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<TalentsTabBody />, simUI.talentsTab.contentContainer)}
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 					{createPortal(<RotationTabBody />, simUI.rotationTab.contentContainer)}
+					{simUI.bt && createPortal(<BulkTabBody />, simUI.bt.contentContainer)}
 					{simUI.reforger &&
 						simUI.reforgeActionsContainer &&
 						createPortal(

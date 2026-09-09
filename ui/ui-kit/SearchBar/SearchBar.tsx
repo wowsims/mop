@@ -2,7 +2,7 @@ import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import './SearchBar.scss';
@@ -16,9 +16,13 @@ export interface SearchBarProps {
 	debounceMs?: number;
 	clearable?: boolean;
 	clearLabel?: string;
+	/** Lands on the clear button, for a caller whose stylesheet already names it. */
+	clearClassName?: string;
 	autoFocus?: boolean;
 	autoComplete?: 'on' | 'off';
 	className?: string;
+	/** Rendered after the input group, inside the field — for a results list positioned against the same box. */
+	children?: ReactNode;
 }
 
 export const SearchBar = ({
@@ -30,9 +34,11 @@ export const SearchBar = ({
 	debounceMs = 0,
 	clearable = false,
 	clearLabel,
+	clearClassName,
 	autoFocus,
 	autoComplete,
 	className,
+	children,
 }: SearchBarProps) => {
 	const [draft, setDraft] = useState(value);
 	useEffect(() => setDraft(value), [value]);
@@ -73,12 +79,17 @@ export const SearchBar = ({
 					value={draft}
 					onChange={event => handleInput(event.target.value)}
 				/>
-				{clearable && draft.length > 0 && (
-					<button type="button" className="search-bar-clear-btn btn btn-link" aria-label={clearLabel} onClick={handleClear}>
+				{clearable && (
+					<button
+						type="button"
+						className={clsx('search-bar-clear-btn btn btn-link', clearClassName, !draft.length && 'hide')}
+						aria-label={clearLabel}
+						onClick={handleClear}>
 						<Icon name="times" />
 					</button>
 				)}
 			</div>
+			{children}
 		</Field.Root>
 	);
 };

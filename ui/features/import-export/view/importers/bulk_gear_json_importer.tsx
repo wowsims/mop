@@ -4,7 +4,7 @@ import { Database } from '@sim/proto/database';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { t } from 'i18next';
 
-import { BulkTab } from '../../../bulk/view/bulk_tab';
+import { BulkTab } from '../../../bulk/bulk_tab';
 import { Importer } from '../importer';
 
 export class BulkGearJsonImporter extends Importer {

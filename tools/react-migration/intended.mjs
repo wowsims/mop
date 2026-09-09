@@ -89,6 +89,36 @@ export const INTENDED = [
 		why: "the React `VirtualList` **is** the log's content element rather than a child of it, so the consumer's class and the primitive's land on one div where vanilla had `.log-runner-logs` holding a list that added no element of its own. Nothing styles `.log-runner-logs`; it is structural on both sides. One list per log pane",
 	},
 	{
+		base: 'div.d-flex.flex-column',
+		react: 'div.input-root.search-bar-root',
+		max: 1,
+		why: "the batch's item search is the `SearchBar` primitive now, and this is the field root the primitive brings — Base UI's `Field.Root` wearing `input-root`, where the vanilla box hand-rolled a flex column. The three lines below are the rest of the same swap. One search box in the bulk pane, and it is the only pane with one at rest; the log runner's box is in the results pane and is folded by `normaliseLogSearch` instead, because *there* vanilla had no wrappers at all",
+	},
+	{
+		base: 'div.input-group',
+		react: 'div.search-bar-input-group',
+		max: 1,
+		why: "`SearchBar`'s own group class in place of Bootstrap's `.input-group`. The group is still the element that holds the control and the clear button, and `_bulk_item_search.scss` keys on neither",
+	},
+	{
+		base: 'input.form-control',
+		react: 'input.form-control.search-bar-input',
+		max: 1,
+		why: "`search-bar-input` is the primitive's hook on the real control, the same addition the log runner's box records one pane over. `form-control` stays, so every Bootstrap rule still applies",
+	},
+	{
+		base: 'button.btn.btn-link.cancel-bulk-gear-search-btn.hide',
+		react: 'button.btn.btn-link.cancel-bulk-gear-search-btn.hide.search-bar-clear-btn',
+		max: 1,
+		why: "the clear button, likewise. `cancel-bulk-gear-search-btn` is passed through `clearClassName` precisely because `_bulk_item_search.scss` styles it and `bulk-tab.mjs` clicks it — the same reason `className` lands on the input rather than on the root. It is rendered present-but-hidden rather than mounted on demand, which is the idiom every `showWhen` in this tree uses and what keeps this a changed line instead of an inserted one",
+	},
+	{
+		base: 'div.fade.show.tab-pane',
+		react: 'div.fade.tab-pane',
+		max: 1,
+		why: "the batch's results pane. Vanilla shipped it `class=\"tab-pane fade show\"` — `show` with no `active` — which is inert either way: `.tab-pane` is `display: none` until `.active`, so the pane was hidden and its opacity never mattered. The React strip drives both classes from one selection through `useTabFade`, so a pane that is not open carries neither. One results pane, and no other pane in the tree ships `show` without `active`",
+	},
+	{
 		// The root's class list carries the spec's own class, so this cannot be a fixed pair.
 		match: (base, react) => base.includes('.hide-healing-metrics') && base.replace('.hide-healing-metrics', '') === react,
 		describe: 'react drops hide-healing-metrics on a tank spec',

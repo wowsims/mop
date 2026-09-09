@@ -22,17 +22,21 @@ import { SlotRail } from './SlotRail';
 import { TabGemIcon } from './TabGemIcon';
 import { buildSelectorTabs, eligibilityFor } from './utils';
 
-const MODAL_ID = 'gear-picker-selector-modal';
-const paneId = (label: SelectorModalTabs) => sanitizeId(`${MODAL_ID}-${label}`);
-const tabId = (label: SelectorModalTabs) => `${paneId(label)}-tab`;
+const DEFAULT_MODAL_ID = 'gear-picker-selector-modal';
 
 export interface SelectorModalProps {
 	opener: GearSelectorModalOpener;
+	/** Prefixes the pane and tab ids, so two instances on one page can be told apart. */
+	id?: string;
+	/** The rail opens each slot with the *equipped* item, so an instance editing anything else omits it. */
+	rail?: boolean;
 }
 
-export const SelectorModal = ({ opener }: SelectorModalProps) => {
+export const SelectorModal = ({ opener, id = DEFAULT_MODAL_ID, rail = true }: SelectorModalProps) => {
 	const host = useSimHost();
 	const player = host.player;
+	const paneId = (label: SelectorModalTabs) => sanitizeId(`${id}-${label}`);
+	const tabId = (label: SelectorModalTabs) => `${paneId(label)}-tab`;
 
 	const open = useSyncExternalStore(opener.subscribe, opener.isOpen, opener.isOpen);
 	const request = useSyncExternalStore(opener.subscribe, opener.getRequest, opener.getRequest);
@@ -57,8 +61,17 @@ export const SelectorModal = ({ opener }: SelectorModalProps) => {
 	// Keyed on the slot's stored item, not on the whole gear: `Gear` copies the untouched slots' refs
 	// forward, so a change anywhere else leaves this one alone and the tab data is not rebuilt.
 	const storedItem = slot !== null ? gear.getEquippedItem(slot) : null;
+	// A gear source that is not the player's own — the batch's item pickers — has nothing in `gear`
+	// to key on, so its own notification is what says the item moved. An effect rather than
+	// `useStoreSubscribe`, which marks its snapshot stale as it subscribes and would rebuild every
+	// tab's data a second time on each open; and only while open, because the dialog is kept mounted.
+	const [externalRevision, setExternalRevision] = useState(0);
+	useEffect(() => {
+		if (!open || !gearData) return;
+		return gearData.subscribe(() => setExternalRevision(revision => revision + 1));
+	}, [open, gearData]);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const equippedItem = useMemo(() => gearData?.getEquippedItem() ?? null, [gearData, storedItem, challengeMode]);
+	const equippedItem = useMemo(() => gearData?.getEquippedItem() ?? null, [gearData, storedItem, challengeMode, externalRevision]);
 
 	const tabs = useMemo(
 		() => (gearData && slot !== null ? buildSelectorTabs({ player, slot, gearData, equippedItem, isBlacksmithing }) : []),
@@ -93,7 +106,7 @@ export const SelectorModal = ({ opener }: SelectorModalProps) => {
 	// phase and never come back. Measured — a listener on `document` never ran, one on the popup did.
 	useEffect(() => {
 		const popup = bodyRef.current?.closest('.sim-dialog-popup');
-		if (!open || slot === null || !popup) return;
+		if (!rail || !open || slot === null || !popup) return;
 		const onKeyDown = (event: Event) => {
 			const key = (event as KeyboardEvent).key;
 			if (key !== 'ArrowUp' && key !== 'ArrowDown') return;
@@ -104,7 +117,7 @@ export const SelectorModal = ({ opener }: SelectorModalProps) => {
 		};
 		popup.addEventListener('keydown', onKeyDown);
 		return () => popup.removeEventListener('keydown', onKeyDown);
-	}, [open, slot, openSlot]);
+	}, [rail, open, slot, openSlot]);
 
 	return (
 		<Dialog
@@ -116,7 +129,7 @@ export const SelectorModal = ({ opener }: SelectorModalProps) => {
 			keepMounted
 			headerChildren={
 				<>
-					<SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />
+					{rail && <SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />}
 					<div>
 						<h6 className="selector-modal-title">{slot !== null ? (translateSlotName(slot) ?? '') : ''}</h6>
 						<ul className="nav nav-tabs selector-modal-tabs" role="tablist">

@@ -16,15 +16,17 @@
 // differently shows up as a diff rather than as noise.
 //
 // Set `PORT` to pick a build. The output should be identical on both apart from the port number and
-// two lines, which is what makes it a gate rather than a description: bulk is unported, so anything
-// else that differs is this script's fault and not the port's. Once the tab does port, the same
-// equality is the regression check. The two:
+// three lines, which is what makes it a gate rather than a description: anything else that differs
+// is either this script's fault or a regression. The three:
 //
 //   - the tab the shell lands on after Equip. `BulkSimResultRenderer` asks for `gear-tab`; the
 //     baseline's `SimHeader.activateTab` clicks the `<li class="gear-tab nav-item">` rather than the
 //     `<button>` inside it, and Bootstrap's tab data-API is bound to the button, so on master the
 //     request is silently dropped. The React shell routes the same call through the tab registry,
 //     which honours it. Read rather than asserted: either answer would fail on one build.
+//   - `#bulkResultsTab`'s class list. Vanilla shipped it `tab-pane fade show` — `show` with no
+//     `active`, which is inert, since `.tab-pane` is `display: none` until `.active`. The React
+//     strip drives both classes from one selection, so a pane that is not open carries neither.
 //   - the search's "of N total results" note. The two builds disagree on how many items a warrior
 //     can equip at all (10245 vs 10047 for warrior/arms), and the 198 are bows, crossbows and guns:
 //     `sim/core/character_constants.go` still listed a pre-MoP ranged set for warriors, and
@@ -173,12 +175,25 @@ const INSTALL = () => {
 				bulk: !!modal.querySelector('[id^="bulk-selector-modal-"]'),
 				title: text(modal.querySelector('.selector-modal-title')),
 				tabs: [...modal.querySelectorAll('.selector-modal-tabs .nav-link')].map(tab => text(tab)),
-				rows: modal.querySelectorAll('.selector-modal-tab-pane.active .selector-modal-list-item').length,
+				// Geometry, not DOM order, the way `selector-modal.mjs` reads its list: how many rows
+				// a windowing strategy keeps in the DOM is its own business, and the two stacks
+				// disagree about it. What both must show is a list filling the scroller.
+				rows: (() => {
+					const pane = modal.querySelector('.selector-modal-tab-pane.active');
+					const list = pane?.querySelector('.selector-modal-list');
+					if (!list) return 0;
+					const box = list.getBoundingClientRect();
+					return [...pane.querySelectorAll('.selector-modal-list-item')]
+						.map(row => row.getBoundingClientRect())
+						.filter(rect => rect.height > 0 && rect.bottom > box.top + 1 && rect.top < box.bottom - 1).length;
+				})(),
 			};
 		},
 		progress: () => {
 			const dialog = window.simModalProbe.find('bulk-sim-progress-tracker');
-			return { open: window.simModalProbe.isOpen(dialog), bar: !!dialog?.querySelector('.progress-bar') };
+			// Bootstrap's bar on the baseline, Base UI's `Progress` on the port: different markup for
+			// the same thing, so the question is whether a bar is drawn at all.
+			return { open: window.simModalProbe.isOpen(dialog), bar: !!dialog?.querySelector('.progress-bar, .progress-tracker-bar-track') };
 		},
 		// One line per result row plus the tie groups that wrap them. `bulk-result-item` is one cell
 		// per equipment slot, most of them empty — an unchanged slot renders nothing — so the filled

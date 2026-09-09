@@ -29,8 +29,8 @@ class VanillaAdapter implements VanillaPicker {
 			span.textContent = 'Hello';
 			this.inner.bodyElement.appendChild(span);
 		}
-		// settings_tab.tsx:204 and the three gear summaries append into headerElement after
-		// construction; `headerChildren` is where those nodes land in React.
+		// The three gear summaries append into headerElement after construction; `headerChildren`
+		// is where those nodes land in React.
 		if (modObject.withHeaderChild) {
 			const paragraph = document.createElement('p');
 			paragraph.className = 'fs-body';

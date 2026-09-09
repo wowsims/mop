@@ -1,9 +1,8 @@
 /** @jsxImportSource @jsx-vanilla */
-import { BulkTab } from '@features/bulk/view/bulk_tab';
+import { BulkTab } from '@features/bulk/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
-import type { SelectorModalOpener } from '@features/gear/types';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
 	AddonImporterDialog,
@@ -342,7 +341,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	// The log exporter lives in another feature, and results/ must not import one — so the shell builds it and the pane is handed the factory.
 	readonly makeLogExporter: LogExporterFactory = getLogData => new LogExporter(this.rootElem, this, getLogData);
 
-	get itemSwapSelectorModal(): SelectorModalOpener | null {
+	get itemSwapSelectorModal(): GearSelectorModalOpener | null {
 		return this.settingsTab?.itemSwapSelectorModal ?? null;
 	}
 

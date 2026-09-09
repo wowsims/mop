@@ -43,10 +43,37 @@ export function formatDurationSeconds(seconds: number, options: FormatDurationSe
 	}
 	return `${remainingSeconds}${secondsSuffix}s`;
 }
+export interface DeltaText {
+	text: string;
+	tone: 'positive' | 'negative' | null;
+}
+
+export function formatDeltaText(
+	before: number,
+	after: number,
+	precision: number,
+	lowerIsBetter?: boolean,
+	noColor?: boolean,
+	showPercentage?: boolean,
+): DeltaText {
+	const delta = after - before;
+	const denom = Math.min(before, after);
+	const deltaPct = Math.abs((delta / (denom === 0 ? 1 : denom)) * 100).toFixed(precision);
+	let text = delta.toFixed(precision);
+	if (delta >= 0) {
+		text = `+${text}`;
+	}
+	if (showPercentage) {
+		text = `${text} (${deltaPct}%)`;
+	}
+
+	if (noColor || delta == 0) return { text, tone: null };
+	return { text, tone: delta > 0 != Boolean(lowerIsBetter) ? 'positive' : 'negative' };
+}
+
 // MIGRATION: this writes textContent and the positive/negative classes onto an element it is
-// handed, which makes it a view concern living in the model layer. It becomes a `<DeltaText>`
-// component once its three vanilla callers port — results_action.tsx, item_list.tsx and
-// bulk_sim_results_renderer.tsx.
+// handed, which makes it a view concern living in the model layer. Its two remaining vanilla
+// callers are results_action.tsx and item_list.tsx.
 export function formatDeltaTextElem(
 	elem: HTMLElement,
 	before: number,
@@ -56,29 +83,11 @@ export function formatDeltaTextElem(
 	noColor?: boolean,
 	showPercentage?: boolean,
 ) {
-	const delta = after - before;
-	const denom = Math.min(before, after);
-	const deltaPct = Math.abs((delta / (denom === 0 ? 1 : denom)) * 100).toFixed(precision);
-	let deltaStr = delta.toFixed(precision);
-	if (delta >= 0) {
-		deltaStr = `+${deltaStr}`;
-	}
-	if (showPercentage) {
-		deltaStr = `${deltaStr} (${deltaPct}%)`;
-	}
+	const { text, tone } = formatDeltaText(before, after, precision, lowerIsBetter, noColor, showPercentage);
 
-	elem.textContent = deltaStr;
-
-	if (noColor || delta == 0) {
-		elem.classList.remove('positive');
-		elem.classList.remove('negative');
-	} else if (delta > 0 != Boolean(lowerIsBetter)) {
-		elem.classList.remove('negative');
-		elem.classList.add('positive');
-	} else {
-		elem.classList.remove('positive');
-		elem.classList.add('negative');
-	}
+	elem.textContent = text;
+	elem.classList.toggle('positive', tone === 'positive');
+	elem.classList.toggle('negative', tone === 'negative');
 }
 // JavaScript's built in modulo (%) has several issues. This is a fix that works similar to the intuitive way modulo works in most languages
 export const formatToCompactNumber: typeof formatToNumber = (number, options) => formatToNumber(number, { notation: 'compact', ...options });

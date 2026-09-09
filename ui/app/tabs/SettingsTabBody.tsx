@@ -2,6 +2,7 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { EncounterPicker, SavedEncounter } from '@features/encounter';
+import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, SavedSettings, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
@@ -125,6 +126,7 @@ export const SettingsTabBody = () => {
 				<SavedEncounter />
 				<SavedSettings />
 			</div>
+			{host.itemSwapSelectorModal && <SelectorModal opener={host.itemSwapSelectorModal} id="item-swap-selector-modal" rail={false} />}
 		</>
 	);
 };

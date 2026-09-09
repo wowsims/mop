@@ -68,22 +68,23 @@ const PORTED_DIALOGS = [
 	['importer', 3],
 	['ep-weights-menu', 1],
 	['glyph-modal', 1],
-	// Two on the baseline: the gear one, which has ported, and the bulk tab's railless copy, which has
-	// not. They serialise the same apart from the rail, and `takeModals` matches on the first two
-	// lines — where both read `.modal` then `.modal-dialog.modal-xl.selector-modal` — so neither can be
-	// singled out. Both leave the baseline, the one React still builds leaves the React side below,
-	// and that pair is asserted against each other instead of by the set comparison. The item-swap
+	// Two on the baseline: the gear picker's and the bulk tab's railless copy. Both have ported, so
+	// both leave the baseline and neither has a Bootstrap twin left on the React side. The item-swap
 	// surplus is already off by then; `dropSwapModals` runs first.
 	['selector-modal', 2],
+	// The batch's progress tracker, built in the vanilla `BulkTab` constructor and so present on the
+	// baseline from load. React mounts its dialog only while a batch is running.
+	['bulk-sim-progress-tracker', 1],
 ];
 
 // One Base UI portal per ported dialog: the encounter modal, five exporters, three importers, the
-// EP weights dialog, the glyph selector and the gear item selector. Neither *progress* dialog is
-// among them — both are rendered only while a run is in flight, the way the vanilla stat-weights
-// overlay was inserted on Calculate and removed after, so at load there is nothing here for the
-// baseline to be missing a twin for. The reforge one is the exception the baseline has and React does not: `ReforgeOptimizer`
-// built its `ProgressTrackerModal` in its constructor, so master carries an empty one from load.
-const PORTED_DIALOG_REACT = ['sim-dialog-portal', 12];
+// EP weights dialog, the glyph selector and the three item selectors — gear's, the batch's and item
+// swap's. No *progress* dialog is among them: all three are rendered only while a run is in flight,
+// the way the vanilla stat-weights overlay was inserted on Calculate and removed after, so at load
+// there is nothing here for the baseline to be missing a twin for. The reforge and batch trackers
+// are the exceptions the baseline has and React does not — both were built in a constructor, so
+// master carries an empty one of each from load.
+const PORTED_DIALOG_REACT = ['sim-dialog-portal', 14];
 
 // The reforge progress tracker, whose count is per spec rather than fixed: only a spec that
 // configures `reforge` builds one, and the sidebar group React renders is the same condition. Taken
@@ -94,10 +95,7 @@ const REFORGE_GROUP = '.suggest-reforges-settings-group';
 
 // Bootstrap on both sides still, and taken out of the React set only so the counts line up. Each one
 // is asserted byte-identical to one of the baseline dialogs its marker pulled out.
-const VANILLA_ON_BOTH = [
-	['exporter', 1],
-	['selector-modal', 1],
-];
+const VANILLA_ON_BOTH = [['exporter', 1]];
 
 // Matched on the subtree's first two lines — the `.modal` wrapper and the box inside it, or the
 // portal and its backdrop. A class deeper in the contents must not pick a modal out by accident:

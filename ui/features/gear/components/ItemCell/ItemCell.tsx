@@ -1,3 +1,4 @@
+import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
@@ -8,7 +9,7 @@ export interface ItemCellProps {
 	name: ReactNode;
 	labels?: ReactNode;
 	action?: ReactNode;
-	className?: string;
+	className?: ClassValue;
 }
 
 export const ItemCell = ({ icon, ilvl, sockets, name, labels, action, className }: ItemCellProps) => (

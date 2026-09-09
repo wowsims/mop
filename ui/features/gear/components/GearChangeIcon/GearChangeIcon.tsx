@@ -1,3 +1,5 @@
+import './GearChangeIcon.scss';
+
 import { type ItemSlot, Profession } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';

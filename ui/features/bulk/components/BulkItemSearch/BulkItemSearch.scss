@@ -1,3 +1,5 @@
+@import 'shared/tokens';
+
 .bulk-item-search-root {
 	margin-bottom: 0 !important;
 
@@ -24,7 +26,14 @@
 		}
 	}
 
+	// `SearchBar` overlays its clear button on the right of the field; this one is Bootstrap's
+	// appended input-group button, so the three properties `.input-group > .btn` used to supply are
+	// restated here rather than inherited from a wrapper the primitive does not render.
 	.cancel-bulk-gear-search-btn {
+		position: relative;
+		right: auto;
+		z-index: 2;
+		margin-left: -1px;
 		padding: $input-padding-y $input-padding-x;
 		display: flex;
 		align-items: center;
