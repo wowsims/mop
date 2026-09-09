@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import type { AuraItem as AuraItemModel } from '../../../view/timeline/rotation/model';
+import type { AuraItem as AuraItemModel } from '../../../model/timeline/rotation';
 import { AuraStack } from './AuraStack';
 import { spanStyle } from './utils';
 

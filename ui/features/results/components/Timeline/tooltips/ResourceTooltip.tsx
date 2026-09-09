@@ -3,7 +3,7 @@ import type { ResourceGroupLog, ResourceLog } from '@sim/proto/combat_log';
 import { resourceNames } from '@sim/proto/names';
 import { kebabCase } from '@sim/utils/format';
 
-import { percentageResources } from '../../../view/timeline/constants';
+import { percentageResources } from '../../../model/timeline/constants';
 import { TooltipAuras } from './TooltipAuras';
 import { TooltipLogItem } from './TooltipLogItem';
 

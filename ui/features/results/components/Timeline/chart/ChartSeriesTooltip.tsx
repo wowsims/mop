@@ -1,6 +1,6 @@
 import type { CombatLog, DpsLog, ResourceGroupLog, ThreatLogGroup } from '@sim/proto/combat_log';
 
-import type { TooltipSpec } from '../../../view/timeline/chart/types';
+import type { TooltipSpec } from '../../../model/timeline/chart/types';
 import { ResourceTooltip } from '../tooltips/ResourceTooltip';
 import { DpsTooltip } from './DpsTooltip';
 import { ThreatTooltip } from './ThreatTooltip';

@@ -15,7 +15,7 @@ const state = vi.hoisted(() => ({
 
 vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => ({ player: { secondaryResource: null } }) }));
 vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => state.result }));
-vi.mock('../../view/timeline/rotation/model', () => ({
+vi.mock('../../model/timeline/rotation', () => ({
 	buildRotationModel: ({ player }: { player: { id: string } }) => {
 		state.built++;
 		return { id: player.id, duration: 10, rows: [], sections: [], byKey: new Map() };

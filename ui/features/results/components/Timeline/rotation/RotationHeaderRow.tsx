@@ -1,4 +1,4 @@
-import type { HeaderRow } from '../../../view/timeline/rotation/model';
+import type { HeaderRow } from '../../../model/timeline/rotation';
 import { RotationRowIcon } from './RotationRowIcon';
 import { RotationRowLabel } from './RotationRowLabel';
 import { rowStyle } from './utils';

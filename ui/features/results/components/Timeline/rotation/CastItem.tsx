@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import type { CastItem as CastItemModel } from '../../../view/timeline/rotation/model';
+import type { CastItem as CastItemModel } from '../../../model/timeline/rotation';
 import { spanStyle } from './utils';
 
 export interface CastItemProps {

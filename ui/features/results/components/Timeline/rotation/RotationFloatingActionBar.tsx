@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import type { KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { ContentRow, RotationModel, Section } from '../../../view/timeline/rotation/model';
-import { rowAt } from '../../../view/timeline/rotation/model';
+import type { ContentRow, RotationModel, Section } from '../../../model/timeline/rotation';
+import { rowAt } from '../../../model/timeline/rotation';
 import { RotationFabGroup } from './RotationFabGroup';
 
 export interface RotationFloatingActionBarProps {

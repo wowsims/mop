@@ -2,7 +2,7 @@ import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
 import { memo } from 'react';
 
-import type { ContentRow } from '../../../view/timeline/rotation/model';
+import type { ContentRow } from '../../../model/timeline/rotation';
 import { RotationRowIcon } from './RotationRowIcon';
 import { RotationRowLabel } from './RotationRowLabel';
 import { RowItemView } from './RowItemView';

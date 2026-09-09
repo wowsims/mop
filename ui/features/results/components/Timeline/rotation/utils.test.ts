@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ContentRow, Row, RowItem } from '../../../view/timeline/rotation/model';
-import type { RowWindow } from '../../../view/timeline/rotation/timeline_window';
-import { EMPTY_ROW_WINDOW } from '../../../view/timeline/rotation/timeline_window';
+import type { ContentRow, Row, RowItem } from '../../../model/timeline/rotation';
+import type { RowWindow } from '../../../model/timeline/rotation/timeline_window';
+import { EMPTY_ROW_WINDOW } from '../../../model/timeline/rotation/timeline_window';
 import { EMPTY_FRAME, nextFrame } from './utils';
 
 const item = (start: number, end: number) => ({ kind: 'aura', start, end }) as RowItem;

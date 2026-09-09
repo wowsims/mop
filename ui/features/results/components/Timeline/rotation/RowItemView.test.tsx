@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import type { AuraItem, CastItem, ResourceItem, RowItem, TickItem } from '../../../view/timeline/rotation/model';
+import type { AuraItem, CastItem, ResourceItem, RowItem, TickItem } from '../../../model/timeline/rotation';
 import { RowItemView } from './RowItemView';
 
 const mount = (item: RowItem, index = 3, iconUrl = 'bolt.png', cssName = 'mana') =>

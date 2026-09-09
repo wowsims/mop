@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ContentRow, HeaderRow, ResourceRow, SeparatorRow } from '../../../view/timeline/rotation/model';
+import type { ContentRow, HeaderRow, ResourceRow, SeparatorRow } from '../../../model/timeline/rotation';
 import { RotationHeaderRow } from './RotationHeaderRow';
 import { RotationRow } from './RotationRow';
 import { RotationSeparatorRow } from './RotationSeparatorRow';

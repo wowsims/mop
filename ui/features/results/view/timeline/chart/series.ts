@@ -6,9 +6,9 @@ import { UnitMetrics } from '@sim/proto/sim_result';
 import { orderedResourceTypes } from '@sim/proto/utils';
 import { ScaleOptions } from 'chart.js';
 
-import { THREAT_SERIES_NAME } from '../constants';
+import { TimelineDataset } from '../../../model/timeline/chart/types';
+import { THREAT_SERIES_NAME } from '../../../model/timeline/constants';
 import { AXIS_GRID_COLOR, cssVarColor } from './colors';
-import { TimelineDataset } from './types';
 
 const LINE_DATASET = { borderWidth: 2, pointRadius: 0, pointHoverRadius: 3 } as const;
 // Thin and dashed so resource traces read as context behind the DPS line rather than peers of it.

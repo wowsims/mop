@@ -1,10 +1,10 @@
 import { cssVars } from '@ui-kit/utils/css';
 import type { CSSProperties } from 'react';
 
-import type { Row } from '../../../view/timeline/rotation/model';
-import { sameItems, visibleItems } from '../../../view/timeline/rotation/row_track';
-import type { RowWindow } from '../../../view/timeline/rotation/timeline_window';
-import { EMPTY_ROW_WINDOW, sameRowWindow } from '../../../view/timeline/rotation/timeline_window';
+import type { Row } from '../../../model/timeline/rotation';
+import { sameItems, visibleItems } from '../../../model/timeline/rotation/row_track';
+import type { RowWindow } from '../../../model/timeline/rotation/timeline_window';
+import { EMPTY_ROW_WINDOW, sameRowWindow } from '../../../model/timeline/rotation/timeline_window';
 
 /** One rotation frame: which rows are mounted, and which of each row's items are inside the track window. */
 export interface RotationFrame {

@@ -1,7 +1,7 @@
 import { cssVars } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 
-import type { ResourceItem as ResourceItemModel } from '../../../view/timeline/rotation/model';
+import type { ResourceItem as ResourceItemModel } from '../../../model/timeline/rotation';
 import { spanStyle } from './utils';
 
 export interface ResourceItemProps {

@@ -1,4 +1,4 @@
-import type { SeparatorRow } from '../../../view/timeline/rotation/model';
+import type { SeparatorRow } from '../../../model/timeline/rotation';
 import { rowStyle } from './utils';
 
 export interface RotationSeparatorRowProps {

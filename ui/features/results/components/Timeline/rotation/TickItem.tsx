@@ -1,6 +1,6 @@
 import { cssVars } from '@ui-kit/utils/css';
 
-import type { TickItem as TickItemModel } from '../../../view/timeline/rotation/model';
+import type { TickItem as TickItemModel } from '../../../model/timeline/rotation';
 
 export interface TickItemProps {
 	item: TickItemModel;

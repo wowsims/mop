@@ -22,7 +22,7 @@ import {
 	Y_RESOURCE_PCT,
 	Y_THREAT,
 } from './series';
-import { TimelineChartSpec, TimelineDataset } from './types';
+import { TimelineChartSpec, TimelineDataset } from '../../../model/timeline/chart/types';
 
 const timeAxis = (duration: number) => ({ x: timeScale(duration, i18n.t('results_tab.details.timeline.chart_options.time_axis')) });
 

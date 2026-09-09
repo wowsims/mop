@@ -1,4 +1,4 @@
-import type { RowItem } from '../../../view/timeline/rotation/model';
+import type { RowItem } from '../../../model/timeline/rotation';
 import { ResourceTooltip } from '../tooltips/ResourceTooltip';
 import { AuraTooltip } from './AuraTooltip';
 import { CastTooltip } from './CastTooltip';

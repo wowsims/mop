@@ -2,7 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { TimelineChartSpec, TimelineDataset } from '../../../view/timeline/chart/types';
+import type { TimelineChartSpec, TimelineDataset } from '../../../model/timeline/chart/types';
 import { TimelineChart } from './TimelineChart';
 
 interface FakeChart {

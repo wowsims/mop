@@ -4,12 +4,12 @@ import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
-import type { ContentRow, RotationModel, Row } from '../../../view/timeline/rotation/model';
-import { computeOrder, rowAt } from '../../../view/timeline/rotation/model';
-import { NO_ITEMS } from '../../../view/timeline/rotation/row_track';
+import type { ContentRow, RotationModel, Row } from '../../../model/timeline/rotation';
+import { computeOrder, rowAt } from '../../../model/timeline/rotation';
+import { NO_ITEMS } from '../../../model/timeline/rotation/row_track';
+import type { RowWindowFrame } from '../../../model/timeline/rotation/timeline_window';
+import { EMPTY_ROW_WINDOW, rowOffsets, rowWindow } from '../../../model/timeline/rotation/timeline_window';
 import { Ruler } from '../../../view/timeline/rotation/ruler';
-import type { RowWindowFrame } from '../../../view/timeline/rotation/timeline_window';
-import { EMPTY_ROW_WINDOW, rowOffsets, rowWindow } from '../../../view/timeline/rotation/timeline_window';
 import { DEFAULT_PPS, ZoomController } from '../../../view/timeline/rotation/zoom';
 import { RotationFloatingActionBar } from './RotationFloatingActionBar';
 import { RotationHeaderRow } from './RotationHeaderRow';

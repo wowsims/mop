@@ -3,7 +3,7 @@ import { UnitMetrics } from '@sim/proto/sim_result';
 import { actionColors } from '@features/results/model/color_settings';
 import { Chart, Plugin } from 'chart.js';
 
-import { AnnotationSpec } from './types';
+import { AnnotationSpec } from '../../../model/timeline/chart/types';
 
 const MAX_ALLOWED_DIST = 10;
 const ICON_SIZE = 20;

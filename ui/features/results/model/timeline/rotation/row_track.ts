@@ -1,4 +1,4 @@
-import type { ContentRow } from './model';
+import type { ContentRow } from './types';
 
 export const NO_ITEMS: ReadonlyArray<number> = [];
 

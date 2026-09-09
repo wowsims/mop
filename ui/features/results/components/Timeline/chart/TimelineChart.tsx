@@ -5,9 +5,9 @@ import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
+import type { AnnotationSpec, TimelineChartSpec, TimelineDataset, TimelinePoint, TooltipSpec } from '../../../model/timeline/chart/types';
 import { annotationsPlugin } from '../../../view/timeline/chart/annotations';
 import { THREAT_SERIES_ID } from '../../../view/timeline/chart/series';
-import type { AnnotationSpec, TimelineChartSpec, TimelineDataset, TimelinePoint, TooltipSpec } from '../../../view/timeline/chart/types';
 import { ChartZoom, type XRange } from '../../../view/timeline/chart/zoom';
 import { ChartSeriesTooltip } from './ChartSeriesTooltip';
 import { ChartToolbar } from './ChartToolbar';

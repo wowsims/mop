@@ -1,4 +1,4 @@
-import type { AuraStackSegment } from '../../../view/timeline/rotation/model';
+import type { AuraStackSegment } from '../../../model/timeline/rotation';
 import { spanStyle } from './utils';
 
 export interface AuraStackProps {

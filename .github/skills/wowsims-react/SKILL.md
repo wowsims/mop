@@ -917,7 +917,7 @@ The loop is what separates "it compiles" from "it is delivered".
   splits into `chart/` and `rotation/`, mirroring the vanilla tree's own structure. The top-level
   `index.ts` exports only what leaves the folder: `DetailedResults` reaches for `Timeline`, never for a
   rotation row. Each subfolder carries its own `utils.ts` and its own tests. Pure geometry and
-  measurement modules are **model, not components** — `zoom`, `ruler`, `timeline_window`, `series` stay
+  measurement modules are **not components** — `zoom`, `ruler`, `timeline_window`, `series` stay
   out of component folders even when the feature is their only caller. Candidate for the same treatment
   once the timeline lands: `components/LogRunner/`, whose seven components split cleanly into `search/`
   (`LogSearchBar`, `LogSearchGroup`) and `line/` (`LogLine`, `LogRow`, `ActionLink`, `EntityLabel`,
@@ -1542,6 +1542,40 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-09 **The timeline's model left `view/`, and the earlier "already model" audit was wrong
+  about `chart/`.** `results/view/timeline/` held 17 non-test files; 10 of them (999 lines, plus their
+  two tests) were DOM-free logic, including a folder literally named `model/` nested inside `view/`,
+  and the 7 that stayed are 842 lines. They are now
+  `results/model/timeline/{constants.ts, chart/types.ts, rotation/*}`, the nested `model/` flattened
+  into `rotation/` so the shape matches `model/replay/` — flat `build`/`types`/`index` beside a
+  subject folder — and mirrors the surviving `view/timeline/{chart,rotation}` split the README
+  sanctions for a capability with both halves. `tools/restructure/move.mjs` did the 12 moves and 40
+  specifier rewrites; the hand count of importers matched it exactly, which is the check that catches
+  a stale `DIR_TO_ALIAS`.
+
+  **The `2026-09-08` entry below claims `chart/series.ts`, `chart/build.ts` and `rotation/model/*`
+  "have zero DOM references". For the first two that is false**, and only because the audit was
+  per-file. `chartSpec()` (`build.ts:33,45`) calls `dpsColor()`/`threatColor()` (`series.ts:32,34`),
+  which call `cssVarColor` → `getComputedStyle(document.documentElement)` (`colors.ts:8`)
+  unconditionally, so `chartSpec()` throws in Node. `chart/annotations.ts` is half DOM too:
+  `majorCooldownAnnotations` is pure, but `annotationsPlugin` builds `new Image()`, hangs a `load`
+  listener on it and re-renders through `requestAnimationFrame`. All three stayed in `view/`; only
+  `chart/types.ts` moved. **The `features/*/model/**` lint rule cannot be the arbiter here** —
+  `no-restricted-globals` lists `window`/`document`/`localStorage`/`location`/`navigator` and is
+  per-file, so `Image`, `requestAnimationFrame` and a transitive `getComputedStyle` all pass it. The
+  question to ask a candidate is whether it runs without a DOM, not whether oxlint objects.
+
+  A follow-up could take the remaining ~357 lines: hoist the resolved colours into `chartSpec`'s
+  arguments and split `majorCooldownAnnotations` out of `annotations.ts`. That is a refactor, not a
+  move, and was left for the port that takes `ruler.ts` and the two `zoom.ts`.
+
+  **`move.mjs` emits `'./'` when a file's own former barrel becomes its new directory.**
+  `row_track.ts` and its test imported `'./model'`; flattening made the target their own folder, and
+  the tool wrote `from './'`. Both were pointed at `'./types'` by hand, where `ContentRow` is actually
+  declared, rather than left importing the barrel that re-exports them. The other invisible-to-tsc
+  reference was `Timeline.test.tsx:18`'s `vi.mock('../../view/timeline/rotation/model')`, found by the
+  plain-string sweep; the tool rewrites specifiers, not string arguments.
 
 - 2026-09-09 **Switching saved rotations: two measured cuts in `DropdownMenu`, and the ceiling for
   the rest.** Numbers are `tools/browser-perf/apl-rotation-switch-counts.mjs` on warlock/demonology,
@@ -2691,7 +2725,7 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   third variant, and `GlyphsPicker.test.tsx`'s `'major' | 'minor'` is a local CSS-selector helper.
   `DialogSize`, `IconSize`, `IconStyle`, `TooltipPlace` and `ButtonVariant` stay literal unions on
   purpose — they mirror CSS and vendor vocabularies where the literal *is* the value — and the five
-  in `results/view/timeline/rotation/` wait for that subtree's port rather than being touched twice.
+  in `results/{model,view}/timeline/rotation/` wait for that subtree's port rather than being touched twice.
 
   The recorded "header tooltip anchor is not focusable" item was **re-audited and is not a defect**:
   every anchor there is a real `<a href>` or `<button>` through `Button`, and the one non-native

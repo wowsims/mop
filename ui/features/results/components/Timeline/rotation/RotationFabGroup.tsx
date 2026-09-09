@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from 'react';
 import { useState } from 'react';
 
-import type { ContentRow } from '../../../view/timeline/rotation/model';
+import type { ContentRow } from '../../../model/timeline/rotation';
 import { RotationFabChip } from './RotationFabChip';
 
 export interface RotationFabGroupProps {

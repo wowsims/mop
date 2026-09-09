@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ContentRow, RowItem } from './model';
 import { sameItems, visibleItems } from './row_track';
+import type { ContentRow, RowItem } from './types';
 
 const span = (start: number, end: number) => ({ kind: 'aura', start, end }) as RowItem;
 

@@ -2,7 +2,7 @@ import { ResourceType } from '@generated/proto/spell';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import type { AuraItem, CastItem, ResourceItem, RowItem, TickItem } from '../../../view/timeline/rotation/model';
+import type { AuraItem, CastItem, ResourceItem, RowItem, TickItem } from '../../../model/timeline/rotation';
 import { RowItemTooltip } from './RowItemTooltip';
 
 const text = (item: RowItem) => render(<RowItemTooltip item={item} />).container.textContent!;

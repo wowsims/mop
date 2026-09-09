@@ -25,7 +25,10 @@ ui/
                      A view/ folder means code that has not ported yet, and only five survive:
                      encounter/ (encounter_picker), import-export/ (exporter +
                      exporters/), results/ (results_action — plain TS, the Simulate button's
-                     wiring — plus log/ and timeline/), settings/
+                     wiring — plus log/, and timeline/'s DOM half: the two zoom controllers,
+                     the ruler's tick pool, the canvas colour resolver, the spec and series
+                     builders that call it, and the annotation plugin; the rest is
+                     model/timeline/), settings/
                      (other_inputs, spec_change_warning_toast), talents/ (hunter_pet).
                      They are the remaining migration surface — see
                      .github/skills/wowsims-react/SKILL.md. alias @features

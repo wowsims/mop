@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import type { RowItem } from '../../../view/timeline/rotation/model';
+import type { RowItem } from '../../../model/timeline/rotation';
 import { AuraItem } from './AuraItem';
 import { CastItem } from './CastItem';
 import { ResourceItem } from './ResourceItem';
