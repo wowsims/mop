@@ -1,4 +1,4 @@
-import { InputType, Target as TargetProto, TargetInput } from '@generated/proto/common';
+import { InputType, PresetTarget, Target as TargetProto, TargetInput } from '@generated/proto/common';
 import type { Encounter } from '@sim/raid/encounter';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -33,8 +33,11 @@ const defaultTarget = () => TargetProto.create({ level: 93, swingSpeed: 2 });
 
 /** Stands in for the `Encounter` facade: the seven members the target pickers reach for. */
 class FakeEncounter {
-	constructor(public targets: Array<TargetProto> = [defaultTarget()]) {}
-	readonly sim = { db: { getAllPresetTargets: () => [] } };
+	constructor(
+		public targets: Array<TargetProto> = [defaultTarget()],
+		public presetTargets: Array<PresetTarget> = [],
+	) {}
+	readonly sim = { db: { getAllPresetTargets: () => this.presetTargets } };
 	getTargets() {
 		return this.targets;
 	}
@@ -149,6 +152,30 @@ describe('TargetsPicker', () => {
 
 		act(() => encounter.modifyTarget(0, target => (target.dualWield = true)));
 		expect(penalty().classList.contains('disabled')).toBe(false);
+	});
+
+	// Encounters register a preset per raid size and difficulty, all sharing one npc id — which is
+	// this picker's value, and all the sim resolves an AI from.
+	describe('AI options', () => {
+		const preset = (path: string, id: number) => PresetTarget.create({ path, target: TargetProto.create({ id }) });
+		const aiOptions = () => [...document.querySelectorAll<HTMLOptionElement>('.ai-picker option')].map(option => option.value);
+
+		it('offers one option per npc id, however many presets share it', () => {
+			mount(
+				new FakeEncounter(
+					[defaultTarget()],
+					[preset('Throne of Thunder/Horridon 25 H', 68476), preset('Throne of Thunder/Horridon 10 H', 68476), preset('x/Jalak', 69374)],
+				),
+			);
+
+			expect(aiOptions()).toEqual(['0', '68476', '69374']);
+		});
+
+		it('keeps the preset the sim resolves the id to, which is the first one registered', () => {
+			mount(new FakeEncounter([defaultTarget()], [preset('first', 71466), preset('second', 71466)]));
+
+			expect([...document.querySelectorAll<HTMLOptionElement>('.ai-picker option')].map(option => option.textContent)).toEqual(['common.none', 'first']);
+		});
 	});
 
 	describe('target inputs', () => {
