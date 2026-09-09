@@ -12,6 +12,8 @@ export interface ToastOptions {
 	delay?: number;
 	canClose?: boolean;
 	className?: string;
+	/** Fires on dismissal, whether by the close button or the auto-dismiss timer. */
+	onClose?: () => void;
 }
 
 /** Base UI's add options have no field for either, so they ride along as the toast's custom data. */

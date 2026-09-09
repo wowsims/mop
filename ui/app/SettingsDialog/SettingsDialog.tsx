@@ -11,7 +11,7 @@ import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import type { EnumPickerConfig, EnumValueConfig } from '@ui-kit/pickers/enum_picker';
 import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useEffect, useId, useMemo, useState } from 'react';
 
@@ -174,7 +174,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			label: 'restore',
 		});
 		host.applyDefaults();
-		new Toast({
+		toastManager.add({
 			variant: 'success',
 			body: i18n.t('info.options.restore_defaults.success_message'),
 		});

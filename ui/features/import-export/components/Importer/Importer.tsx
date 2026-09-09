@@ -6,7 +6,7 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { Icon } from '@ui-kit/Icon';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
@@ -34,7 +34,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			await onImport(host, textRef.current?.value || '');
 			onOpenChange(false);
 		} catch (error: any) {
-			new Toast({ variant: 'error', body: `Import error: ${error?.message || error}` });
+			toastManager.add({ variant: 'error', body: `Import error: ${error?.message || error}` });
 		}
 	};
 

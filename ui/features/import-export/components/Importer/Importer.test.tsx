@@ -15,11 +15,14 @@ vi.mock('../../../../tracking/analytics', () => ({ trackPageView }));
 // Bootstrap's `Toast` needs a real layout to show; what matters here is only that a rejected import
 // reports one, and with the message the thrown error carried.
 const toasts = vi.hoisted(() => [] as Array<{ variant: string; body: unknown }>);
-vi.mock('@ui-kit/toast', () => ({
-	default: class {
-		constructor(options: { variant: string; body: unknown }) {
+vi.mock('@ui-kit/Toast', async importOriginal => ({
+	...(await importOriginal<typeof import('@ui-kit/Toast')>()),
+	toastManager: {
+		add: (options: { variant: string; body: unknown }) => {
 			toasts.push(options);
-		}
+			return '';
+		},
+		close: () => {},
 	},
 }));
 

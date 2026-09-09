@@ -1,26 +1,23 @@
 import { nameToClass, nameToRace } from '@sim/proto/names';
 import { talentSpellIdsToTalentString } from '@sim/talents/factory';
 import { Class, EquipmentSpec, ItemSpec, Race } from '@generated/proto/common';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 
 import { finishIndividualImport } from './finish_individual_import';
 import type { ImporterDefinition } from './types';
 
-const removedSuffixesBody = (itemNames: string[]): HTMLElement => {
-	const body = document.createElement('div');
-	const lead = document.createElement('p');
-	lead.textContent = 'Sixty Upgrades currently exports the wrong Random Suffixes. We have removed the random suffix on the following item(s):';
-	const list = document.createElement('ul');
-	for (const itemName of itemNames) {
-		const item = document.createElement('li');
-		const name = document.createElement('strong');
-		name.textContent = itemName;
-		item.appendChild(name);
-		list.appendChild(item);
-	}
-	body.append(lead, list);
-	return body;
-};
+const removedSuffixesBody = (itemNames: string[]) => (
+	<div>
+		<p>Sixty Upgrades currently exports the wrong Random Suffixes. We have removed the random suffix on the following item(s):</p>
+		<ul>
+			{itemNames.map((itemName, index) => (
+				<li key={index}>
+					<strong>{itemName}</strong>
+				</li>
+			))}
+		</ul>
+	</div>
+);
 
 export const SIXTY_UPGRADES_IMPORTER: ImporterDefinition = {
 	title: 'Sixty Upgrades Cataclysm Import',
@@ -86,7 +83,7 @@ export const SIXTY_UPGRADES_IMPORTER: ImporterDefinition = {
 		});
 
 		if (hasRemovedRandomSuffix && modifiedItemNames.length) {
-			new Toast({ variant: 'warning', body: removedSuffixesBody(modifiedItemNames), delay: 8000 });
+			toastManager.add({ variant: 'warning', body: removedSuffixesBody(modifiedItemNames), delay: 8000 });
 		}
 	},
 };

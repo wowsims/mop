@@ -1,6 +1,6 @@
 import i18n from '@i18n/config';
-import Toast from '@ui-kit/toast';
-import { useCallback } from 'react';
+import { createToastManager, ToastArea } from '@ui-kit/Toast';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface ImportWarningProps {
 	titleKey: string;
@@ -8,27 +8,18 @@ export interface ImportWarningProps {
 }
 
 export const ImportWarning = ({ titleKey, messageKey }: ImportWarningProps) => {
-	const mount = useCallback(
-		(container: HTMLElement | null) => {
-			if (!container) return;
-			const body = document.createElement('div');
-			body.textContent = i18n.t(messageKey);
-			const toast = new Toast({
-				title: i18n.t(titleKey),
-				body,
-				additionalClasses: ['toast-import-warning'],
-				container,
-				variant: 'warning',
-				canClose: false,
-				autoShow: true,
-				autohide: false,
-				// animation: false, or Bootstrap's deferred show() callback reads _element after dispose() nulled it (StrictMode remount).
-				animation: false,
-			});
-			return () => toast.destroy();
-		},
-		[titleKey, messageKey],
-	);
+	const manager = useMemo(() => createToastManager(), []);
+	const [host, setHost] = useState<HTMLDivElement | null>(null);
 
-	return <div ref={mount} />;
+	useEffect(() => {
+		if (!host) return;
+		manager.add({ variant: 'warning', title: i18n.t(titleKey), body: i18n.t(messageKey), canClose: false, autohide: false });
+		return () => manager.close();
+	}, [host, manager, titleKey, messageKey]);
+
+	return (
+		<div ref={setHost}>
+			<ToastArea manager={manager} container={host} inline />
+		</div>
+	);
 };

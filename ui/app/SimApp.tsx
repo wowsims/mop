@@ -15,6 +15,7 @@ import { ImportExportKind } from './header/import_export_registry';
 import { ImportExportMenu } from './header/ImportExportMenu';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
+import { NoticeNativeSim } from './NoticeNativeSim';
 import { SettingsDialog } from './SettingsDialog';
 import type { ShellDom } from './shell_dom';
 import { SidebarActions } from './SidebarActions';
@@ -68,6 +69,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 				<SimHostProvider host={simUI}>
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
 					<SidebarActions registry={simUI.sidebar} container={simUI.simActionsContainer} disabled={simUI.disabled} />
+					<NoticeNativeSim container={simUI.simActionsContainer} />
 					{createPortal(
 						<>
 							<ImportExportMenu

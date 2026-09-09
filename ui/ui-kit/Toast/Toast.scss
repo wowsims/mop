@@ -7,9 +7,9 @@
 }
 
 // The viewport is portaled, so no ancestor selector reaches it and it may not be inside `.sim-ui`.
-// Bootstrap declares every `--bs-toast-*` custom property on `.toast` itself, and none of this
-// markup carries that class, so the values come straight from the SCSS variables instead — the same
-// ones `shared/variables` overrides for `.toast`, which keeps the two implementations from drifting.
+// Bootstrap declares every `--bs-toast-*` custom property on `.toast` itself, a class none of this
+// markup carries — and with the vanilla toast gone, `bootstrap/scss/toasts` is not imported at all
+// any more. The values come from `shared/variables`' `$toast-*` overrides directly instead.
 .sim-toast-viewport {
 	display: flex;
 	position: fixed;

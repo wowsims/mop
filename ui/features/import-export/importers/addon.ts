@@ -5,7 +5,7 @@ import { classGlyphsConfig } from '@sim/talents/factory';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { JsonObject } from '@protobuf-ts/runtime';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 
 import { finishIndividualImport } from './finish_individual_import';
 import type { ImporterDefinition } from './types';
@@ -59,7 +59,10 @@ export const ADDON_IMPORTER: ImporterDefinition = {
 
 		const addonVersion = await WSE_VERSION;
 		if (addonVersion && ((importJson['version'] as string) || '') != addonVersion) {
-			new Toast({ variant: 'warning', body: `Addon is not up to date. Addon version : '${importJson['version']}', Latest version : '${addonVersion}'` });
+			toastManager.add({
+				variant: 'warning',
+				body: `Addon is not up to date. Addon version : '${importJson['version']}', Latest version : '${addonVersion}'`,
+			});
 		}
 
 		const charClass = nameToClass((importJson['class'] as string) || '');

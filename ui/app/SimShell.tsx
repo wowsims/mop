@@ -11,6 +11,7 @@ import { SimToolbar } from './header/SimToolbar';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
 import { SocialLink } from '@ui-kit/SocialLink';
+import { ToastArea, toastManager } from '@ui-kit/Toast';
 
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
@@ -32,6 +33,7 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 	const header = useRef<HTMLElement>(null);
 	const tabsMount = useRef<HTMLDivElement>(null);
 	const importExport = useRef<HTMLDivElement>(null);
+	const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null);
 
 	const display = useDisplayMetrics(sim);
 	const metrics = { ...display, epRatios: showsEpRatios(display), experimental: useShowExperimental(sim) };
@@ -59,6 +61,7 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 			tabsMount: tabsMount.current!,
 			importExport: importExport.current!,
 		};
+		setRootEl(root.current);
 	}, [domRef]);
 
 	return (
@@ -96,7 +99,7 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 					</div>
 				</div>
 			</div>
-			<div className="sim-toast-container p-3 bottom-0 right-0" id="toastContainer" />
+			<ToastArea manager={toastManager} container={rootEl} />
 		</div>
 	);
 };

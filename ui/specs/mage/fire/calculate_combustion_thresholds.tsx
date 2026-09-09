@@ -12,7 +12,7 @@ import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { ProgressTrackerDialog, type ProgressTrackerHandle, type ProgressTrackerState } from '@ui-kit/ProgressTrackerDialog';
 import { SidebarActionButton } from '@ui-kit/SidebarActionButton';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import { useRef, useState } from 'react';
 
 interface CombustionThresholdStats {
@@ -335,7 +335,7 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 		if (!results) return;
 		host.player.setSimpleRotation(results.newValues);
 		setResultsOpen(false);
-		new Toast({ variant: 'success', body: i18n.t('fire_mage.combustion_thresholds.updated_toast') });
+		toastManager.add({ variant: 'success', body: i18n.t('fire_mage.combustion_thresholds.updated_toast') });
 	};
 
 	return (

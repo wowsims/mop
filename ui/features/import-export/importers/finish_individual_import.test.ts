@@ -15,11 +15,14 @@ vi.mock('@sim/proto/database', () => ({ Database: { loadLeftoversIfNecessary: lo
 vi.mock('@sim/state/batch', () => ({ batch: (body: () => void) => body() }));
 
 const toasts = vi.hoisted(() => [] as Array<{ variant: string; body: unknown }>);
-vi.mock('@ui-kit/toast', () => ({
-	default: class {
-		constructor(options: { variant: string; body: unknown }) {
+vi.mock('@ui-kit/Toast', async importOriginal => ({
+	...(await importOriginal<typeof import('@ui-kit/Toast')>()),
+	toastManager: {
+		add: (options: { variant: string; body: unknown }) => {
 			toasts.push(options);
-		}
+			return '';
+		},
+		close: () => {},
 	},
 }));
 

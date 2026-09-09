@@ -8,7 +8,7 @@ import { stDevToConf95, zTest } from '@sim/utils/math';
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import clsx from 'clsx';
 import { useId } from 'react';
 
@@ -111,7 +111,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					onClick={() => {
 						host.player.setGear(result.gear);
 						host.simHeader.activateTab('gear-tab');
-						new Toast({ variant: 'success', body: i18n.t('bulk_tab.results.gear_equipped') });
+						toastManager.add({ variant: 'success', body: i18n.t('bulk_tab.results.gear_equipped') });
 					}}>
 					{i18n.t('bulk_tab.results.equip_button')}
 				</button>

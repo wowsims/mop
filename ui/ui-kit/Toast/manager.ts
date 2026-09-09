@@ -23,12 +23,13 @@ export const createToastManager = (): ToastManager => {
 	const base = createBaseToastManager();
 	return {
 		base,
-		add: ({ variant, body, title = 'WowSims', autohide = true, delay = DEFAULT_TOAST_DELAY, canClose = true, className }: ToastOptions) =>
+		add: ({ variant, body, title = 'WowSims', autohide = true, delay = DEFAULT_TOAST_DELAY, canClose = true, className, onClose }: ToastOptions) =>
 			base.add({
 				title,
 				description: body,
 				type: variant,
 				timeout: autohide ? delay : 0,
+				onClose,
 				data: { canClose, className },
 			}),
 		close: (id?: string) => base.close(id),

@@ -4,12 +4,9 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const toast = vi.fn();
-vi.mock('@ui-kit/toast', () => ({
-	default: class {
-		constructor(...args: unknown[]) {
-			toast(...args);
-		}
-	},
+vi.mock('@ui-kit/Toast', async importOriginal => ({
+	...(await importOriginal<typeof import('@ui-kit/Toast')>()),
+	toastManager: { add: toast, close: () => {} },
 }));
 
 const { CombustionThresholds, registerCombustionThresholds } = await import('./calculate_combustion_thresholds');

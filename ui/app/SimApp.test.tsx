@@ -26,6 +26,8 @@ vi.mock('./individual_sim_ui', async () => {
 				// registry holds its arrays and only replaces them in `add`.
 				importExport: { subscribe: () => () => {}, getEntries: () => NO_ENTRIES },
 			};
+			// `NoticeNativeSim` asks the host's sim whether this is a local build; a native one raises no notice.
+			readonly sim = { waitForInit: () => Promise.resolve(), isNative: true };
 			readonly tabs = new SimTabRegistry(this.simTabContentsContainer);
 			readonly sidebar = new SidebarRegistry();
 			readonly disabled = false;

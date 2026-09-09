@@ -233,38 +233,3 @@ $gray-800: #323232;
 		background: mix($black, $value, 75%);
 	}
 }
-
-.toast {
-	--icon-color: var(--bs-warning);
-	--bs-toast-max-width: 100%;
-
-	@include media-breakpoint-up(md) {
-		--bs-toast-max-width: 350px;
-	}
-	pointer-events: auto;
-	max-width: 100%;
-
-	.toast-header {
-		border-bottom: 0;
-		padding-bottom: 0;
-
-		i {
-			line-height: 1;
-			color: var(--icon-color);
-		}
-	}
-
-	.btn-close {
-		i {
-			color: var(--bs-toast-color);
-		}
-	}
-}
-
-.toast--success {
-	--icon-color: var(--bs-success);
-}
-
-.toast--error {
-	--icon-color: var(--bs-danger);
-}

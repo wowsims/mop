@@ -13,7 +13,7 @@ import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Popover } from '@ui-kit/Popover';
 import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
-import Toast from '@ui-kit/toast';
+import { toastManager, type ToastOptions } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps, type TooltipRefProps } from '@ui-kit/Tooltip';
 import { type ReactNode, useCallback, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -47,9 +47,9 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 
 	const [open, setOpen] = useState(false);
 	const [progressOpen, setProgressOpen] = useState(false);
-	// A React toast body: the div is handed to the imperative Toast and the content is portalled into it.
+	// The toast body is a bare div and the content is portalled into it, so it keeps this tree's context and re-renders with it.
 	const [toastSlot, setToastSlot] = useState<ToastSlot | null>(null);
-	const toastRef = useRef<Toast | null>(null);
+	const toastId = useRef<string | null>(null);
 
 	const wasCM = useRef(false);
 	const isCancelling = useRef(false);
@@ -60,20 +60,25 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 	const settingsTooltipRef = useRef<TooltipRefProps>(null);
 
 	const hideToast = useCallback(() => {
-		toastRef.current?.hide();
-		toastRef.current = null;
+		// Without the id this would close every toast in the standard area, not just this one.
+		if (toastId.current) toastManager.close(toastId.current);
+		toastId.current = null;
 		setToastSlot(null);
 	}, []);
 
-	const showToast = useCallback((node: ReactNode, toastOptions: Omit<ConstructorParameters<typeof Toast>[0], 'body'>) => {
-		const toastHost = document.createElement('div');
-		const toast = new Toast({ ...toastOptions, body: toastHost });
-		// Bootstrap's own listener destroys the toast first, so this only clears the slot React is still rendering into.
-		toast.element.addEventListener('hidden.bs.toast', () => {
-			setToastSlot(current => (current?.host === toastHost ? null : current));
+	const showToast = useCallback((node: ReactNode, toastOptions: Omit<ToastOptions, 'body'>) => {
+		toastId.current = toastManager.add({
+			...toastOptions,
+			body: (
+				<div
+					ref={element => {
+						if (!element) return;
+						setToastSlot({ host: element, node });
+						return () => setToastSlot(current => (current?.host === element ? null : current));
+					}}
+				/>
+			),
 		});
-		toastRef.current = toast;
-		setToastSlot({ host: toastHost, node });
 	}, []);
 
 	const onReforgeDone = useCallback(() => {
@@ -89,8 +94,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		trackEvent({ action: 'settings', category: 'reforging', label: 'suggest_success' });
 
 		if (!changedSlots.size) {
-			toastRef.current = new Toast({
-				additionalClasses: ['suggest-reforges-toast'],
+			toastId.current = toastManager.add({
+				className: 'suggest-reforges-toast',
 				variant: 'success',
 				body: i18n.t('gear_tab.reforge_success.no_changes'),
 				autohide: true,
@@ -108,7 +113,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				settingsExport={settingsExport}
 				onCopied={hideToast}
 			/>,
-			{ additionalClasses: ['suggest-reforges-toast'], variant: 'success', autohide: false, delay: 3000 },
+			{ className: 'suggest-reforges-toast', variant: 'success', autohide: false, delay: 3000 },
 		);
 	}, [host, model, player, showToast, hideToast]);
 
@@ -176,7 +181,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		setProgressOpen(false);
 		trackEvent({ action: 'settings', category: 'reforging', label: 'suggest_cancel' });
 
-		new Toast({ variant: 'warning', body: i18n.t('sidebar.buttons.suggest_reforges.reforge_optimization_cancelled'), delay: 3000 });
+		toastManager.add({ variant: 'warning', body: i18n.t('sidebar.buttons.suggest_reforges.reforge_optimization_cancelled'), delay: 3000 });
 	};
 
 	return (

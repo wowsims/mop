@@ -23,7 +23,7 @@ import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetric
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { SimTab } from '@ui-kit/sim_tab';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 
 import { GearSelectorModalOpener } from '../gear/model/selector_modal_opener';
 import { trackEvent } from '../../tracking/analytics';
@@ -315,10 +315,10 @@ export class BulkTab extends SimTab {
 		const group = this.pickerGroups.get(bulkSlot)!;
 		const result = group.add(idx, item);
 		if (result === 'duplicate') {
-			if (!silent) new Toast({ delay: 1000, variant: 'error', body: i18n.t('bulk_tab.search.item_unique', { itemName: item._item.name }) });
+			if (!silent) toastManager.add({ delay: 1000, variant: 'error', body: i18n.t('bulk_tab.search.item_unique', { itemName: item._item.name }) });
 			return false;
 		}
-		if (!silent) new Toast({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_added', { itemName: item._item.name }) });
+		if (!silent) toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_added', { itemName: item._item.name }) });
 		return true;
 	}
 
@@ -372,7 +372,7 @@ export class BulkTab extends SimTab {
 
 				const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
 				if (!this.pickerGroups.get(bulkSlot)!.update(idx, equippedItem)) {
-					new Toast({ variant: 'error', body: i18n.t('bulk_tab.picker.failed_update') });
+					toastManager.add({ variant: 'error', body: i18n.t('bulk_tab.picker.failed_update') });
 				}
 			});
 		}
@@ -391,7 +391,7 @@ export class BulkTab extends SimTab {
 	removeItemByIndex(idx: number, silent = false) {
 		if (idx < 0 || this.items.length < idx || !this.items[idx]) {
 			if (!silent) {
-				new Toast({
+				toastManager.add({
 					variant: 'error',
 					body: i18n.t('bulk_tab.notifications.failed_to_remove_item'),
 				});
@@ -412,7 +412,7 @@ export class BulkTab extends SimTab {
 
 				const removed = group.remove(idx);
 				if (removed && !silent) {
-					new Toast({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_removed', { itemName: removed.item._item.name }) });
+					toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_removed', { itemName: removed.item._item.name }) });
 				}
 			});
 			this.bump('items');
@@ -796,7 +796,7 @@ export class BulkTab extends SimTab {
 					label: 'batch_error',
 					value: errorMessage,
 				});
-				new Toast({
+				toastManager.add({
 					variant: 'error',
 					body: errorMessage,
 				});
@@ -825,7 +825,7 @@ export class BulkTab extends SimTab {
 			}
 			await this.simUI.player.setGearAsync(this.originalGear!);
 			if (wasCancelling) {
-				new Toast({
+				toastManager.add({
 					variant: 'error',
 					body: i18n.t('bulk_tab.notifications.bulk_sim_cancelled'),
 				});

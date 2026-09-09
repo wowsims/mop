@@ -21,12 +21,11 @@ import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import type { ReactNode } from 'react';
 
 import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
-import { NoticeNativeSim } from './notice_native_sim';
 import type { ShellDom } from './shell_dom';
 import { SimRunKind } from '@sim/state/sim_store';
 const URLMAXLEN = 2048;
@@ -82,10 +81,6 @@ export abstract class SimUI extends Component implements SimHost {
 
 		this.simActionsContainer = dom.sidebarActions;
 
-		this.sim.waitForInit().then(() => {
-			this.addNoticeForNativeSim();
-		});
-
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
@@ -112,10 +107,6 @@ export abstract class SimUI extends Component implements SimHost {
 
 	get sidebarResultsContainer(): HTMLElement {
 		return this.dom.sidebarResults;
-	}
-
-	addNoticeForNativeSim() {
-		new NoticeNativeSim(this.simActionsContainer, this.sim);
 	}
 
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
@@ -149,7 +140,7 @@ export abstract class SimUI extends Component implements SimHost {
 
 	private notifyIfCancelled(result: SimResult | ErrorOutcome) {
 		if (result instanceof SimResult || result.type != ErrorOutcomeType.ErrorOutcomeAborted) return;
-		new Toast({
+		toastManager.add({
 			variant: 'info',
 			body: i18n.t('sim.notifications.sim_cancelled'),
 		});
@@ -194,7 +185,7 @@ export abstract class SimUI extends Component implements SimHost {
 	async handleCrash(error: any): Promise<void> {
 		if (!(error instanceof SimError)) {
 			if (error.message) {
-				new Toast({
+				toastManager.add({
 					variant: 'error',
 					body: error.message,
 				});
@@ -204,7 +195,7 @@ export abstract class SimUI extends Component implements SimHost {
 			return;
 		}
 
-		new Toast({
+		toastManager.add({
 			variant: 'error',
 			body: i18n.t('sim.notifications.simulation_failed'),
 		});

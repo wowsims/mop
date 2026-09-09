@@ -14,7 +14,7 @@ import { Dialog } from '@ui-kit/Dialog';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { ProgressTrackerDialog, type ProgressTrackerHandle, type ProgressTrackerState } from '@ui-kit/ProgressTrackerDialog';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
@@ -142,12 +142,15 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 				epReferenceStat,
 			});
 			if (result.error) {
-				if (result.error.type === ErrorOutcomeType.ErrorOutcomeAborted) new Toast({ variant: 'info', body: 'Statweight sim cancelled.' });
+				if (result.error.type === ErrorOutcomeType.ErrorOutcomeAborted) toastManager.add({ variant: 'info', body: 'Statweight sim cancelled.' });
 				result = null;
 			}
 		} catch (error: any) {
 			console.error(error);
-			new Toast({ variant: 'error', body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.' });
+			toastManager.add({
+				variant: 'error',
+				body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.',
+			});
 			result = null;
 		}
 

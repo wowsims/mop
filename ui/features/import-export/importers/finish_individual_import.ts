@@ -3,7 +3,7 @@ import { classNames } from '@sim/proto/names';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { batch } from '@sim/state/batch';
 import type { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
-import Toast from '@ui-kit/toast';
+import { toastManager } from '@ui-kit/Toast';
 
 export interface IndividualImport {
 	charClass: Class;
@@ -43,9 +43,9 @@ export const finishIndividualImport = async (
 	});
 
 	if (missingItems.length == 0 && missingEnchants.length == 0) {
-		new Toast({ variant: 'success', body: `Import successful!` });
+		toastManager.add({ variant: 'success', body: `Import successful!` });
 	} else {
-		new Toast({
+		toastManager.add({
 			variant: 'info',
 			body:
 				'Import successful, but the following IDs were not found in the sim database:' +
