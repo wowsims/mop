@@ -442,6 +442,10 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					<RotationRowLabel text={longestLabel} icon={<a className="rotation-row-icon" />} onHide={() => undefined} />
 				</div>
 			)}
+			{/* Rendered inline, not portaled: `.hide-threat-metrics` (scss/core/sim_ui/_shared.scss:131) is an
+			 * ancestor rule on `.sim-ui`, so a tooltip moved to `document.body` stops obeying the setting —
+			 * which is what master's tippy version does. `timeline.mjs` reads `textContent` and so cannot
+			 * see the difference. */}
 			{hoveredItem && (
 				<div ref={tooltipRef} className="timeline-hover-tooltip">
 					<RowItemTooltip item={hoveredItem} />
