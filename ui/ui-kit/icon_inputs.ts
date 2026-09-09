@@ -6,9 +6,6 @@ import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidF
 import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
 import * as InputHelpers from './input_helpers';
-import { IconEnumPicker } from './pickers/icon_enum_picker';
-import { IconPicker } from './pickers/icon_picker';
-// Component Functions
 
 export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<ModObject, T> | InputHelpers.TypedIconEnumPickerConfig<ModObject, T>;
 
@@ -20,21 +17,6 @@ export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<M
 export const iconGridColumns = (count: number): string | undefined => {
 	if (count === 0 || count >= 8) return undefined;
 	return `repeat(${count <= 4 ? count : Math.ceil(count / 2)}, 1fr)`;
-};
-
-export const buildIconInput = <SpecType extends Spec>(parent: HTMLElement, player: Player<SpecType>, inputConfig: IconInputConfig<Player<SpecType>, any>) => {
-	if (inputConfig.type == 'icon') {
-		return new IconPicker<Player<SpecType>, any>(parent, player, inputConfig);
-	} else if (inputConfig.type == 'iconEnum') {
-		return new IconEnumPicker<Player<SpecType>, any>(parent, player, inputConfig);
-	} else {
-		throw new Error('Unsupported input type');
-	}
-};
-
-export const withLabel = <ModObject, T>(config: IconInputConfig<ModObject, T>, label: string): IconInputConfig<ModObject, T> => {
-	config.label = label;
-	return config;
 };
 
 interface BooleanInputConfig<T> {
