@@ -95,6 +95,15 @@ const PORTED_DIALOG_REACT = ['sim-dialog-portal', 14];
 const REFORGE_PROGRESS = 'reforge-optimizer-progress-tracker';
 const REFORGE_GROUP = '.suggest-reforges-settings-group';
 
+// mage/fire's combustion feature is the one spec behaviour that owns dialogs. The vanilla class
+// built its results modal and its progress tracker in the constructor, so the baseline carries both
+// from load; the React feature mounts each only while it is open. Per spec rather than fixed, and
+// counted off by the sidebar button both sides render — the same shape as the reforge tracker above,
+// so deleting the feature leaves the counts a button apart and fails here.
+const COMBUSTION_DIALOGS = 'combustion-thresholds';
+const COMBUSTION_DIALOG_COUNT = 2;
+const COMBUSTION_BUTTON = '.mage-calculate-combustion-threshold-group';
+
 // Bootstrap on both sides still, and taken out of the React set only so the counts line up. Each one
 // is asserted byte-identical to one of the baseline dialogs its marker pulled out.
 const VANILLA_ON_BOTH = [['exporter', 1]];
@@ -152,11 +161,11 @@ const dropSwapModals = (grabbed, count, problems) => {
 // before the stat-weights action, so on the baseline its modal is `simUI.rootElem`'s last child once
 // the item-swap surplus above has been taken off. Same trade as that one: the line is asserted to be
 // a pruned modal, and reverting the port grows it back on both sides so the shells stop matching.
-const dropReforgeProgressLine = (grabbed, count, problems) => {
+const dropTrailingPrunedLines = (grabbed, count, problems, what) => {
 	if (!count) return;
 	const lines = grabbed.shell.split('\n');
 	if (lines.slice(-count).some(line => line.trim() !== PRUNED_LINE)) {
-		problems.push(`base: the last ${count} shell line(s) are not pruned modals, so the reforge progress tracker cannot be counted off`);
+		problems.push(`base: the last ${count} shell line(s) are not pruned modals, so ${what} cannot be counted off`);
 		return;
 	}
 	grabbed.shell = lines.slice(0, -count).join('\n');
@@ -219,6 +228,7 @@ const grab = async (browser, port, spec) => {
 	const modals = collectSubtrees(tree, MODAL).sort();
 	const swapIcons = await page.evaluate(selector => document.querySelectorAll(selector).length, SWAP_ICONS);
 	const reforgeGroups = await page.evaluate(selector => document.querySelectorAll(selector).length, REFORGE_GROUP);
+	const combustionButtons = await page.evaluate(selector => document.querySelectorAll(selector).length, COMBUSTION_BUTTON);
 	const panes = {};
 	const levels = {};
 	const swap = { active: 0, sockets: 0 };
@@ -260,6 +270,7 @@ const grab = async (browser, port, spec) => {
 		modals,
 		swapIcons,
 		reforgeGroups,
+		combustionButtons,
 		swap,
 		replayScenes,
 		notices: collectSubtrees(tree, NATIVE_SIM_NOTICE),
@@ -300,7 +311,15 @@ for (const spec of specsFromArgv()) {
 	// See `REFORGE_PROGRESS`. Both sides must render the same reforge sidebar group; only the
 	// baseline's progress modal comes off, because React builds one only while a solve is running.
 	if (a.reforgeGroups !== b.reforgeGroups) problems.push(`base renders ${a.reforgeGroups} reforge action group(s), react ${b.reforgeGroups}`);
-	dropReforgeProgressLine(a, b.reforgeGroups, problems);
+	dropTrailingPrunedLines(a, b.reforgeGroups, problems, 'the reforge progress tracker');
+	// See `COMBUSTION_DIALOGS`. Both sides must render the same combustion button; only the
+	// baseline's two dialogs come off.
+	if (a.combustionButtons !== b.combustionButtons) {
+		problems.push(`base renders ${a.combustionButtons} combustion threshold button(s), react ${b.combustionButtons}`);
+	}
+	// After the reforge drop, not before: `features` slots run ahead of `config.reforge`, so the
+	// combustion dialogs sit *earlier* in the baseline's modal tail than the reforge tracker.
+	if (b.combustionButtons) dropTrailingPrunedLines(a, COMBUSTION_DIALOG_COUNT, problems, 'the combustion threshold dialogs');
 
 	// What keeps the drop above an assertion: the notice has to have been in the sidebar actions on
 	// both sides, and the two copies have to be the same markup.
@@ -357,6 +376,7 @@ for (const spec of specsFromArgv()) {
 	const basePorted = [];
 	for (const ported of PORTED_DIALOGS) basePorted.push(...takeModals(a, ported, 'base', problems));
 	basePorted.push(...takeModals(a, [REFORGE_PROGRESS, b.reforgeGroups], 'base', problems));
+	basePorted.push(...takeModals(a, [COMBUSTION_DIALOGS, b.combustionButtons * COMBUSTION_DIALOG_COUNT], 'base', problems));
 	takeModals(b, PORTED_DIALOG_REACT, 'react', problems);
 	// The dialogs React still builds as Bootstrap modals. The set comparison cannot see them — the
 	// baseline's copies left with the ones that ported — so they are compared here.

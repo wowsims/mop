@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 describe('ReforgePanel', () => {
-	// The class lists `SimUI.addActionGroup` gave the two buttons; the group element itself is still the shell's.
+	// The class lists the sidebar's action group gave the two buttons; the group element itself is `ReforgeSidebarGroup`'s.
 	it('renders the run button and the settings trigger with the sidebar action classes', () => {
 		const { container } = renderPanel();
 		const [run, settings] = [...container.querySelectorAll('button')];

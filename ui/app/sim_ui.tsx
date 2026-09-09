@@ -6,7 +6,7 @@ import { ActionId } from '@sim/proto/action_id';
 import { Gear } from '@sim/proto/gear';
 import { SimResult } from '@sim/proto/sim_result';
 import { RunSimOptions, Sim, SimError } from '@sim/sim';
-import type { ActionGroupItem, SimHost, SimWarning } from '@sim/sim_host';
+import type { SimHost, SimWarning } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@sim/state/persistence';
 import { subscribeSimField } from '@sim/state/subscriptions';
@@ -19,11 +19,10 @@ import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
+import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import Toast from '@ui-kit/toast';
-import clsx from 'clsx';
 import type { ReactNode } from 'react';
-import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
@@ -44,7 +43,7 @@ export interface SimUIConfig {
 	noticeText?: string;
 }
 
-export type { ActionGroupItem, SimWarning } from '@sim/sim_host';
+export type { SimWarning } from '@sim/sim_host';
 
 // Shared UI for all individual sims.
 export abstract class SimUI extends Component implements SimHost {
@@ -62,6 +61,7 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
 	readonly tabs: SimTabRegistry;
+	readonly sidebar = new SidebarRegistry();
 	protected readonly dom: ShellDom;
 
 	constructor(dom: ShellDom, sim: Sim, config: SimUIConfig) {
@@ -116,40 +116,6 @@ export abstract class SimUI extends Component implements SimHost {
 
 	addNoticeForNativeSim() {
 		new NoticeNativeSim(this.simActionsContainer, this.sim);
-	}
-
-	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement {
-		const button = this.simActionsContainer.appendChild(
-			<button className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass)} onclick={onClick} disabled={this.disabled}>
-				{label}
-				<span className="sim-sidebar-action-button-loading-icon">
-					<i className="fas fa-spinner fa-spin" attributes={{ 'aria-hidden': 'true' }}></i>
-				</span>
-			</button>,
-		) as HTMLButtonElement;
-
-		return button;
-	}
-
-	addActionGroup(groups: ActionGroupItem[], groupOptions: { cssClass?: string } = {}) {
-		const refs: HTMLButtonElement[] = [];
-		const groupRef = ref<HTMLDivElement>();
-		const { cssClass } = groupOptions;
-		this.simActionsContainer.appendChild(
-			<div ref={groupRef} className={clsx('d-flex btn-group w-100', cssClass)} attributes={{ role: 'group' }}>
-				{groups.map(({ label, cssClass, children, onClick }) => (
-					<button ref={ref => refs.push(ref)} onclick={onClick} className={clsx('sim-sidebar-action-button btn btn-primary', cssClass)}>
-						{label}
-						{children}
-						<span className="sim-sidebar-action-button-loading-icon">
-							<i className="fas fa-spinner fa-spin"></i>
-						</span>
-					</button>
-				))}
-			</div>,
-		);
-
-		return { group: groupRef.value!, children: refs };
 	}
 
 	addTab(title: string, cssClass: string, content: HTMLElement | Element) {

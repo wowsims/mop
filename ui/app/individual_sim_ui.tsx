@@ -19,6 +19,7 @@ import {
 	WowheadImporterDialog,
 } from '@features/import-export';
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
+import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
 import type { LogExporterFactory } from '@features/results/model/log_exporter';
@@ -52,6 +53,7 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { isDevMode } from '@sim/utils/env';
+import { createElement } from 'react';
 
 import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
@@ -123,8 +125,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	reforger: ReforgeOptimizerModel | null = null;
 	// The view's own inputs, resolved here because `config.reforge` may be a function and must run once.
 	reforgeOptions: ReforgeOptimizerOptions | null = null;
-	/** The empty action group `ReforgePanel` is portalled into. Built here so the group keeps its place in the sidebar's construction order. */
-	reforgeActionsContainer: HTMLElement | null = null;
 
 	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
 		super(dom, player.sim, {
@@ -273,7 +273,10 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 				defaults: this.individualConfig.defaults,
 				epStats: this.individualConfig.epStats,
 			});
-			this.reforgeActionsContainer = this.addActionGroup([], { cssClass: 'suggest-reforges-settings-group' }).group;
+			this.sidebar.add({
+				id: 'suggest-reforges',
+				render: () => createElement(ReforgeSidebarGroup, { model: this.reforger!, options: this.reforgeOptions ?? undefined }),
+			});
 		}
 		for (const derived of config.derivedSettings || []) {
 			derived.apply(this.player, this.sim);
@@ -308,25 +311,22 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addStatWeightsAction() {
-		const button = this.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
-			trackPageView('Stat Weights', '/stat-weights');
-			this.epWeightsModal.open();
-		});
-		button.classList.add('loading');
-		button.disabled = true;
-		button.setAttribute('aria-busy', 'true');
-
-		const settle = () => {
-			button.classList.remove('loading');
-			button.removeAttribute('aria-busy');
-		};
-		this.sim.waitForInit().then(
-			() => {
-				settle();
-				button.disabled = this.disabled;
+		const action = this.sidebar.add({
+			id: 'ep-weights-action',
+			label: i18n.t('sidebar.buttons.stat_weights.title'),
+			cssClass: 'ep-weights-action',
+			onClick: () => {
+				trackPageView('Stat Weights', '/stat-weights');
+				this.epWeightsModal.open();
 			},
+			disabled: true,
+			loading: true,
+		});
+
+		this.sim.waitForInit().then(
+			() => action.update({ loading: false, disabled: false }),
 			error => {
-				settle();
+				action.update({ loading: false });
 				console.error(error);
 			},
 		);

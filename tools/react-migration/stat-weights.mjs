@@ -84,9 +84,9 @@ const STICKY = () => {
 	};
 };
 
-// Scoped to `.progress-tracker-dialog`: the reforge optimiser builds a *vanilla* `ProgressTrackerModal`
-// at load, it shares every `.progress-tracker-modal-*` class name, and it is earlier in the document,
-// so an unscoped `querySelector` answers for it and reports an empty bar forever.
+// Scoped to `.progress-tracker-dialog`: on the baseline the reforge optimiser builds a vanilla
+// progress modal at load, it shares every `.progress-tracker-modal-*` class name, and it is earlier
+// in the document, so an unscoped `querySelector` answers for it and reports an empty bar forever.
 const PROGRESS = () => {
 	const progress = document.querySelector('.progress-tracker-dialog, .results-pending-overlay');
 	const dialog = document.querySelector('.ep-weights-menu');

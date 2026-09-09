@@ -14,41 +14,45 @@ export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 	// other leaves the button disabled and the Stop zone up after the next run completes.
 	let waitAbort = false;
 
-	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
-		trackEvent({
-			action: 'sim',
-			category: 'simulate',
-			label: 'simulate',
-			value: simUI.sim.getIterations(),
-		});
-		const button = ev.target as HTMLButtonElement;
-		button.disabled = true;
-		if (!runs.isRunning(SimRunKind.IndividualSim)) {
-			resultsViewer.addAbortButton(async () => {
-				if (waitAbort) return;
-				try {
-					waitAbort = true;
-					await runs.abort(SimRunKind.IndividualSim);
-				} catch (error) {
-					console.error('Error on sim abort!');
-					console.error(error);
-				} finally {
-					waitAbort = false;
-					if (!runs.isRunning(SimRunKind.IndividualSim)) button.disabled = false;
-				}
+	const action = simUI.sidebar.add({
+		id: 'dps-action',
+		label: i18n.t('sidebar.buttons.simulate'),
+		cssClass: 'dps-action',
+		onClick: async () => {
+			trackEvent({
+				action: 'sim',
+				category: 'simulate',
+				label: 'simulate',
+				value: simUI.sim.getIterations(),
 			});
+			action.update({ disabled: true });
+			if (!runs.isRunning(SimRunKind.IndividualSim)) {
+				resultsViewer.addAbortButton(async () => {
+					if (waitAbort) return;
+					try {
+						waitAbort = true;
+						await runs.abort(SimRunKind.IndividualSim);
+					} catch (error) {
+						console.error('Error on sim abort!');
+						console.error(error);
+					} finally {
+						waitAbort = false;
+						if (!runs.isRunning(SimRunKind.IndividualSim)) action.update({ disabled: false });
+					}
+				});
 
-			await simUI.runIndividualSim((progress: ProgressMetrics) => {
-				if (progress.finalRaidResult?.error) {
-					resultsViewer.hideAll();
-					return;
-				}
-				resultsViewer.setProgress(progress);
-			});
+				await simUI.runIndividualSim((progress: ProgressMetrics) => {
+					if (progress.finalRaidResult?.error) {
+						resultsViewer.hideAll();
+						return;
+					}
+					resultsViewer.setProgress(progress);
+				});
 
-			resultsViewer.removeAbortButton();
-			if (!waitAbort) button.disabled = false;
-		}
+				resultsViewer.removeAbortButton();
+				if (!waitAbort) action.update({ disabled: false });
+			}
+		},
 	});
 
 	const resultsManager = new SimResultsManager(simUI.sim);

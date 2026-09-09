@@ -6,6 +6,7 @@ import type { ResultsPanelHandle } from '@features/results/model/results_panel_h
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
+import type { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import type { SimTabRegistry } from '@ui-kit/tab_registry';
 
 import type { SimSettingCategories } from './constants/sim_settings';
@@ -36,8 +37,6 @@ export interface SimWarning {
 	getContent: () => string | Array<string>;
 }
 
-export type ActionGroupItem = { label?: string; children?: Element; cssClass?: string; onClick?: (event: MouseEvent) => void };
-
 // The slice of the sim shells (app/sim_ui.tsx, app/individual_sim_ui.tsx) that
 // features reach for. Features must not name the shells themselves (see
 // ui/README.md dependency direction); SimUI/IndividualSimUI implement these.
@@ -47,8 +46,7 @@ export interface SimHost extends SimUIHost {
 	readonly config: { cssClass: string; cssScheme: string };
 	readonly resultsViewer: ResultsPanelHandle;
 	readonly simTabContentsContainer: HTMLElement;
-	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement;
-	addActionGroup(groups: ActionGroupItem[], groupOptions?: { cssClass?: string }): { group: HTMLDivElement; children: HTMLButtonElement[] };
+	readonly sidebar: SidebarRegistry;
 	runIndividualSim(onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
 	runGearSim(gear: Gear, onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome | undefined>;
 	runSingleIteration(options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;

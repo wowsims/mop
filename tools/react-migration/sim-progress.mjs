@@ -92,7 +92,7 @@ const ZONES = () => {
 	};
 };
 
-// The click happens *inside* the evaluate so the read is in the same task. `addAction`'s handler runs
+// The click happens *inside* the evaluate so the read is in the same task. The Simulate entry's handler runs
 // synchronously through `addAbortButton()` and `runSim()`'s `setPending()` before its first `await`,
 // so the pending state is deterministic here — and a click/evaluate round trip would eventually lose
 // the race against the first progress tick.
