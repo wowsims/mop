@@ -29,7 +29,7 @@ ui/
                      the ruler's tick pool, the canvas colour resolver, the spec and series
                      builders that call it, and the annotation plugin; the rest is
                      model/timeline/), settings/
-                     (other_inputs, spec_change_warning_toast), talents/ (hunter_pet).
+                     (spec_change_warning_toast), talents/ (hunter_pet).
                      They are the remaining migration surface — see
                      .github/skills/wowsims-react/SKILL.md. alias @features
   app/               shells + chrome that compose features, and the only place allowed to
@@ -73,9 +73,8 @@ for the component registry and the migration's current position.
 - `domain/`: if it needs `window`/`document`, it doesn't belong here — inject an `Env` adapter instead.
 - `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
 - `features/<x>/model/`: DOM-free logic of one capability; `features/<x>/view/`: its tsx-vanilla rendering. Features never import another feature's `view/`. The two halves may share a
-  filename when a capability has both: `settings/model/other_inputs.ts` holds the picker config
-  constants (`InputDelay`, `TankAssignment`, the healing-model inputs — data a spec declares),
-  `settings/view/other_inputs.ts` the `make*Selector(parent, sim)` DOM constructors.
+  name when a capability has both: `results/model/timeline/` holds the timeline's DOM-free half,
+  `results/view/timeline/` the part that still builds nodes.
 - `app/`: composes features; the only place that knows the tab layout.
 - `specs/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 

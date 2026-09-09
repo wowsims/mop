@@ -27,27 +27,6 @@ vi.mock('@sim/state/subscriptions', () => ({
 	subscribeAll: () => store.subscribe,
 }));
 
-// The five filter-row islands are vanilla `Input`s mounted through `useLegacyMount`; what this file
-// is about is which of them the tab asks for, not what they render.
-const legacy = vi.hoisted(() => {
-	const mounted = [] as string[];
-	const maker = (name: string) => (parent: HTMLElement) => {
-		mounted.push(name);
-		const rootElem = document.createElement('span');
-		rootElem.dataset.legacy = name;
-		parent.appendChild(rootElem);
-		return { rootElem, dispose: () => undefined };
-	};
-	return { mounted, maker };
-});
-vi.mock('../../../settings/view/other_inputs', () => ({
-	makePhaseSelector: legacy.maker('phase'),
-	makeShow1hWeaponsSelector: legacy.maker('show1h'),
-	makeShow2hWeaponsSelector: legacy.maker('show2h'),
-	makeShowMatchingGemsSelector: legacy.maker('matchingGems'),
-	makeShowEPValuesSelector: legacy.maker('showEP'),
-}));
-
 // Every row, so the assertions are about what the list selected rather than what it windowed.
 vi.mock('@ui-kit/VirtualList', () => ({
 	VirtualList: ({ count, rowClassName, renderRow }: any) => (
@@ -140,7 +119,6 @@ describe('ItemList', () => {
 		Array.from(container.querySelectorAll('.selector-modal-list-labels h6')).map(node => Array.from(node.classList)[0]);
 
 	beforeEach(() => {
-		legacy.mounted.length = 0;
 		filtersMenu.opens.length = 0;
 		filters = DatabaseFilters.create({});
 		showEPValues = true;
@@ -191,13 +169,12 @@ describe('ItemList', () => {
 	it('withholds the EP option and the EP column from a trinket slot, which it computes no EP for', () => {
 		const { container, unmount } = setup({ slot: ItemSlot.ItemSlotTrinket1 });
 		expect(container.querySelector('.selector-modal-show-ep-values')).toBeNull();
-		expect(legacy.mounted).not.toContain('showEP');
+		expect(container.querySelector('#show-ep-values-selector')).toBeNull();
 		unmount();
 
-		legacy.mounted.length = 0;
 		const head = setup();
 		expect(head.container.querySelector('.selector-modal-show-ep-values')).not.toBeNull();
-		expect(legacy.mounted).toContain('showEP');
+		expect(head.container.querySelector('#show-ep-values-selector')).not.toBeNull();
 	});
 
 	it('shows the matching-gems option on a gem tab and hides it everywhere else', () => {
@@ -213,6 +190,7 @@ describe('ItemList', () => {
 		const shown = (slot: ItemSlot, label = SelectorModalTabs.Items) => {
 			const { container, unmount } = setup({ slot, label });
 			const hidden = container.querySelector('.selector-modal-show-1h-weapons')!.classList.contains('hide');
+			expect(!!container.querySelector('#show-1h-weapons-selector')).toBe(!hidden);
 			unmount();
 			return !hidden;
 		};

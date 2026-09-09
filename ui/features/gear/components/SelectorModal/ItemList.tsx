@@ -5,8 +5,9 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { SortDirection } from '@sim/constants/other';
 import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
+import { BooleanPicker } from '@ui-kit/BooleanPicker';
+import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { Tooltip } from '@ui-kit/Tooltip';
@@ -14,13 +15,6 @@ import { VirtualList } from '@ui-kit/VirtualList';
 import clsx from 'clsx';
 import { useCallback, useId, useMemo, useRef, useState } from 'react';
 
-import {
-	makePhaseSelector,
-	makeShow1hWeaponsSelector,
-	makeShow2hWeaponsSelector,
-	makeShowEPValuesSelector,
-	makeShowMatchingGemsSelector,
-} from '../../../settings/view/other_inputs';
 import { applyFavourite, isItemFavourited } from '../../model/favourites';
 import { getItemIdByItemType } from '../../model/item_ids';
 import { matchesSearch } from '../../model/item_search';
@@ -107,12 +101,6 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 		player.getPlayerClass().weaponTypes.length > 0 &&
 		(slot === ItemSlot.ItemSlotMainHand || (slot === ItemSlot.ItemSlotOffHand && player.getClass() === Class.ClassWarrior));
 
-	const mountPhase = useLegacyMount(parent => makePhaseSelector(parent, sim), [sim]);
-	const mountShow1h = useLegacyMount(parent => makeShow1hWeaponsSelector(parent, sim), [sim]);
-	const mountShow2h = useLegacyMount(parent => makeShow2hWeaponsSelector(parent, sim), [sim]);
-	const mountMatchingGems = useLegacyMount(parent => makeShowMatchingGemsSelector(parent, sim), [sim]);
-	const mountShowEP = useLegacyMount(parent => makeShowEPValuesSelector(parent, sim), [sim]);
-
 	return (
 		<div id={id} role="tabpanel" aria-labelledby={tabId} className={clsx('selector-modal-tab-pane tab-pane fade', active && 'active show')}>
 			<div className="selector-modal-filters">
@@ -126,20 +114,100 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 						<FiltersMenu slot={slot} open={filtersOpen} onOpenChange={setFiltersOpen} />
 					</>
 				)}
-				<div ref={mountPhase} className="selector-modal-phase-selector" />
-				<div
-					ref={showWeaponOptions ? mountShow1h : undefined}
-					className={clsx('sim-input selector-modal-boolean-option selector-modal-show-1h-weapons', !showWeaponOptions && 'hide')}
-				/>
-				<div
-					ref={showWeaponOptions ? mountShow2h : undefined}
-					className={clsx('sim-input selector-modal-boolean-option selector-modal-show-2h-weapons', !showWeaponOptions && 'hide')}
-				/>
-				<div
-					ref={mountMatchingGems}
-					className={clsx('sim-input selector-modal-boolean-option selector-modal-show-matching-gems', !label.startsWith('Gem') && 'hide')}
-				/>
-				{showEPOptions && <div ref={mountShowEP} className="sim-input selector-modal-boolean-option selector-modal-show-ep-values" />}
+				<div className="selector-modal-phase-selector">
+					<EnumPicker
+						modObject={sim}
+						config={{
+							id: 'phase-selector',
+							extraCssClasses: ['phase-selector'],
+							values: [
+								{ name: i18n.t('common.phases.1'), value: 1 },
+								{ name: i18n.t('common.phases.2'), value: 2 },
+								{ name: i18n.t('common.phases.3'), value: 3 },
+								{ name: i18n.t('common.phases.4'), value: 4 },
+								{ name: i18n.t('common.phases.5'), value: 5 },
+							],
+							storeSubscribe: subject => subscribeSimField(subject, 'phase'),
+							getValue: subject => subject.getPhase(),
+							setValue: (subject, newValue) => subject.setPhase(newValue),
+						}}
+					/>
+				</div>
+				{/* Both weapon boxes are on every slot and hide themselves, as the vanilla row's were; only the picker inside is conditional. */}
+				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-1h-weapons', !showWeaponOptions && 'hide')}>
+					{showWeaponOptions && (
+						<BooleanPicker
+							modObject={sim}
+							config={{
+								id: 'show-1h-weapons-selector',
+								extraCssClasses: ['show-1h-weapons-selector', 'mb-0'],
+								label: i18n.t('settings_tab.other.show_1h_weapons.label'),
+								inline: true,
+								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+								getValue: subject => subject.getFilters().oneHandedWeapons,
+								setValue: (subject, newValue) => {
+									const next = subject.getFilters();
+									next.oneHandedWeapons = newValue;
+									subject.setFilters(next);
+								},
+							}}
+						/>
+					)}
+				</div>
+				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-2h-weapons', !showWeaponOptions && 'hide')}>
+					{showWeaponOptions && (
+						<BooleanPicker
+							modObject={sim}
+							config={{
+								id: 'show-2h-weapons-selector',
+								extraCssClasses: ['show-2h-weapons-selector', 'mb-0'],
+								label: i18n.t('settings_tab.other.show_2h_weapons.label'),
+								inline: true,
+								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+								getValue: subject => subject.getFilters().twoHandedWeapons,
+								setValue: (subject, newValue) => {
+									const next = subject.getFilters();
+									next.twoHandedWeapons = newValue;
+									subject.setFilters(next);
+								},
+							}}
+						/>
+					)}
+				</div>
+				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-matching-gems', !label.startsWith('Gem') && 'hide')}>
+					<BooleanPicker
+						modObject={sim}
+						config={{
+							id: 'show-matching-gems-selector',
+							extraCssClasses: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
+							label: i18n.t('settings_tab.other.show_matching_gems.label'),
+							inline: true,
+							storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+							getValue: subject => subject.getFilters().matchingGemsOnly,
+							setValue: (subject, newValue) => {
+								const next = subject.getFilters();
+								next.matchingGemsOnly = newValue;
+								subject.setFilters(next);
+							},
+						}}
+					/>
+				</div>
+				{showEPOptions && (
+					<div className="sim-input selector-modal-boolean-option selector-modal-show-ep-values">
+						<BooleanPicker
+							modObject={sim}
+							config={{
+								id: 'show-ep-values-selector',
+								extraCssClasses: ['show-ep-values-selector', 'input-inline', 'mb-0'],
+								label: i18n.t('settings_tab.other.show_ep_values.label'),
+								inline: true,
+								storeSubscribe: subject => subscribeUiField(subject, 'showEPValues'),
+								getValue: subject => subject.getShowEPValues(),
+								setValue: (subject, newValue) => subject.setShowEPValues(newValue),
+							}}
+						/>
+					</div>
+				)}
 				<button type="button" className="selector-modal-remove-button btn btn-danger" onClick={onRemove}>
 					{removeButtonLabel(label, key => i18n.t(key))}
 				</button>

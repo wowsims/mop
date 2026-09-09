@@ -76,10 +76,9 @@ describe('PickerShell', () => {
 		expect(root().querySelector('label')!.getAttribute('data-tooltip-id')).toBeNull();
 	});
 
-	// `TalentsPicker` mounts the still-vanilla GlyphsPicker on this root through `useLegacyMount`,
-	// which is a ref callback returning a cleanup. Base UI merges the forwarded ref with its own, so
-	// this pins that the merge honours the returned cleanup instead of discarding it — without which
-	// the component would be built again on every re-render and never disposed.
+	// Base UI merges a forwarded ref with its own, so this pins that the merge honours a cleanup the
+	// ref callback returns instead of discarding it — without which anything a caller attaches to the
+	// root would be attached again on every re-render and never released.
 	it('forwards a ref to the root, once, and runs the cleanup it returns on unmount', () => {
 		const attached: Array<Element> = [];
 		const detach = vi.fn();
@@ -103,9 +102,9 @@ describe('PickerShell', () => {
 		expect(detach).toHaveBeenCalledOnce();
 	});
 
-	// `classList.add` drops a repeat and clsx does not. `other_inputs.ts` ships `input-inline` in
-	// `extraCssClasses` while also setting `inline`, and `rotation_tab.tsx` pushes it into the config
-	// in place on every rebuild — so a duplicate would reach the DOM and the parity harness.
+	// `classList.add` drops a repeat and clsx does not. The gear selector modal's matching-gems and
+	// show-EP configs (`SelectorModal/ItemList.tsx`) ship `input-inline` in `extraCssClasses` while
+	// also setting `inline` — so a duplicate would reach the DOM and the parity harness.
 	it('emits a class once when a config supplies it twice', () => {
 		const { container } = render(
 			<PickerShell
