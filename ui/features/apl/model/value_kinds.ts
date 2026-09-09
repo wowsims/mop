@@ -1,6 +1,3 @@
-import { Player } from '@sim/player/player';
-import SecondaryResource from '@sim/proto/secondary_resource';
-import { itemSwapEnabledSpecs } from '@sim/spec_config';
 import {
 	APLValue,
 	APLValueActionGroupUsed,
@@ -123,6 +120,9 @@ import {
 } from '@generated/proto/apl';
 import { Class, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { Player } from '@sim/player/player';
+import SecondaryResource from '@sim/proto/secondary_resource';
+import { itemSwapEnabledSpecs } from '@sim/spec_config';
 
 import {
 	actionIdFieldConfig,
@@ -165,8 +165,8 @@ export type APLValueImplMap = {
 
 export type APLValueImplType = APLValueImplMap[ValidAPLValueKind] | undefined;
 
-// The DOM-free half of an APL value kind. `view/apl_values.ts` merges this with
-// a `factory` built from `fields` to produce `valueKindFactories`.
+// The DOM-free half of an APL value kind. `components/ValuePicker` renders `fields`
+// through `FieldGroup`.
 export type ValueKindModel<T> = {
 	label: string;
 	submenu?: Array<string>;

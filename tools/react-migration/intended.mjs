@@ -37,14 +37,20 @@ export const INTENDED = [
 	{
 		base: 'i.fa-question-circle.far',
 		react: 'i.fa-circle-question.far',
-		max: 6,
-		why: "a React ContentBlock's header tooltip — and now a React ListPicker's title tooltip — is the React TooltipButton, which draws its glyph through Icon, and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Six is the rotation pane's ceiling on warrior/protection: the four APL list titles plus the two ContentBlocks the simple pane builds. The settings pane's five (buffs, debuffs, the two external-cooldown blocks and the preset picker) is the next largest. It rises with every tab that follows",
+		max: 8,
+		why: "a React ContentBlock's header tooltip — and now a React ListPicker's title tooltip — is the React TooltipButton, which draws its glyph through Icon, and Icon spells FA6's canonical name where the vanilla button hardcodes FA5's alias. Same glyph in the pinned 6.0.0 CSS. Eight is the rotation pane's ceiling, and mage/fire is where it is reached: the four APL list titles, the three Preset Configuration blocks (RotationSidebar is repeated in the auto, simple and APL panes) and the Cooldowns block. It is the only spec here with a simple rotation, so it is the only one with a third sidebar or a cooldowns block at all; warrior/protection and priest/shadow hold the same pane to six. warrior/protection's settings pane — buffs, debuffs, the two external-cooldown blocks and the preset picker — is the next largest at five. It rises with every tab that follows",
 	},
 	{
 		base: 'i.fa-3x.fa-exclamation-triangle.fas',
 		react: 'i.fa-3x.fa-triangle-exclamation.fas',
 		max: 1,
 		why: "the sidebar's warning trigger draws its glyph through Icon, which spells FA6's canonical name where the vanilla button hardcoded FA5's alias. Same glyph in the pinned 6.0.0 CSS. One warning trigger per sidebar, and the sidebar is in parity.mjs's shell region, so the cap is exact",
+	},
+	{
+		base: 'div.cooldown-action-picker.dropdown.icon-enum-picker-root.icon-picker.input-root',
+		react: 'div.cooldown-action-picker.dropdown.hide.icon-enum-picker-root.icon-picker.input-root',
+		max: 1,
+		why: "an IconEnumPicker hides itself when no option carries an actionId, and the baseline only ever applies that rule on the *second* evaluation. `Input.update()` (ui/ui-kit/input.tsx:126) writes `hide` from `inputConfig.showWhen` alone — `actionPickerConfig` sets none — and the class's own `showWhen()` (icon_enum_picker.tsx:265), the one that also demands an actionId, is reached only from the constructor's store-change callback on line 66. So a freshly built vanilla picker is never hidden, whatever its values are. React reads the same rule on every render, first one included, which is what IconEnumPicker.test.tsx asserts. The two only part company where the values are the grey zero value alone, i.e. where `availableCooldowns` is empty: mage/fire's `hiddenMCDs` hides every one of its major cooldowns because its simple rotation casts them itself, and it is the only spec here in that state — druid/feral also has a simple rotation and four available cooldowns, and its picker is shown on both sides. Nothing is on screen either way: both ports write `hide` onto `.cooldown-settings` from that same empty list, and `.hide` is `display: none !important`. One add row per empty cooldown list, and a spec with none available has none saved either, so the cap is exact. Note it is observed on mage/fire alone — running parity.mjs on a spec list without it reports this entry unobserved",
 	},
 	{
 		base: 'table.metrics-table.tablesorter',

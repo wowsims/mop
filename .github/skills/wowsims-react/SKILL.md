@@ -16,9 +16,15 @@ restate them; it assumes them.
 **React owns the shell.** `SimShell.tsx` renders everything parent to the tabs — the sidebar, the
 header, the content column — and the vanilla `SimUI`/`SimHeader` adopt those elements instead of
 building them. React also owns the top-level tab behaviour, the header toolbar, both sets of social
-links, the sidebar's character-stats table and the talents and settings tab bodies. The header is
-finished: the import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. The
-remaining four tab bodies are vanilla `Component`s.
+links, the sidebar's character-stats table and five of the six tab bodies. The header is
+finished: the import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. Bulk
+is the last tab body that is still a vanilla `Component`.
+
+`/usr/bin/grep -rl "jsxImportSource @jsx-vanilla" ui/` is the running count: **46**, down from 52
+before the APL port. One of the 46 is `ui/README.md`, which documents the pragma and matches its own
+prose, so 45 are source files — 15 in `ui-kit/`, 8 in gear, 6 in `app/`, 5 in bulk, 3 each in
+import-export and `ui/specs/**`, 2 in the shim itself, and one apiece in results, settings and i18n.
+`ui/features/apl/` has none.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, targeting `master`. It carries
 `feature/ui-restructure` inside it: that branch is never merged on its own, so every gate compares
@@ -29,8 +35,8 @@ against master.
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; the three dropdown pickers landed once `results_filter` gave them a consumer, and `Toast` is the only primitive still waiting for one |
-| 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, and all six saved-data slots. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, apl, results, and gear's two big files |
-| 4 — island wrappers (combat replay, Chart.js, VirtualList) | `VirtualList` **built** on `@tanstack/react-virtual`, waiting on `item_list.tsx` or `log_view.tsx` to have a consumer; combat replay and Chart.js not started |
+| 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, all six saved-data slots, and apl — the whole rotation tab except the navbar. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, and gear's two big files |
+| 4 — island wrappers (combat replay, Chart.js, VirtualList) | `VirtualList` is built on `@tanstack/react-virtual` and has both its consumers (`SelectorModal/ItemList`, `results/LogRunner`); the combat replay is React, and `DpsHistogram` keeps its Chart.js canvas imperative inside the effect rather than islanding it |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
 Full plan, including the duplication inventory that drives Phase 2:
@@ -77,7 +83,7 @@ import-export 168 · item-swap 105.
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
 | **Talents** — **done** | 19 | `TalentsPicker` + `PetSpecPicker` are React; `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and two `SavedDataManager`s stay vanilla behind `useLegacyMount` | `GlyphSelectorModal` needs `Dialog`; the shared four need their other consumers |
 | **Settings** | 492 | most of it — see the queue | every content block is React now; the preset picker and the saved-data managers are deferred to their other tabs |
-| **Rotation** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | `Menu`; the APL pickers are `ListPicker`-based, so islands |
+| **Rotation** — **done** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | the navbar only, and deliberately: `StickyToolbar` and the rotation-type picker *append themselves*, so a React-rendered `<ul>` would land ahead of them instead of after. It is the tab's last `useLegacyMount`, of the seven it started with |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
 | **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
 
@@ -322,7 +328,7 @@ of the duplication sweep was to build each shape once.
 | Component | Path | Replaces | Parameterises | Fixes |
 |---|---|---|---|---|
 | `IconPicker` | `ui/ui-kit/IconPicker/` | `ui-kit/pickers/icon_picker.tsx` (still live, dual-stack) | the `IconPickerConfig` it is given | the three-anchor markup with the level container un-nested out of the picker's anchor, the click/mousedown event map, and the store-on-hide write |
-| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — the nine settings blocks are React now, the other nine sites are gear, apl and bulk | `className` (a clsx `ClassValue`, so array notation works), its own `ContentBlockConfigProps` — `header` (`title`, `className`, `titleTag`, `tooltip`) and `bodyClassName` — `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
+| `ContentBlock` | `ui/ui-kit/ContentBlock/` | `ui-kit/content_block.tsx` (still live, dual-stack) — three importers left, and none of them is a tab body: `bulk/view/bulk_item_picker_group.tsx`, `bulk/view/bulk_item_search.tsx` and `ui-kit/saved_data_manager.tsx` | `className` (a clsx `ClassValue`, so array notation works), its own `ContentBlockConfigProps` — `header` (`title`, `className`, `titleTag`, `tooltip`) and `bodyClassName` — `children`, `headerChildren`, `bodyRef`/`headerRef` | the header/body markup and the header-only-when-non-empty rule |
 | `TooltipButton` | `ui/ui-kit/TooltipButton/` | `ui-kit/tooltip_button.tsx` (still live, dual-stack) | `icon`, `iconStyle`, `place`, `className` | the `btn btn-link tooltip-button` shape and one tooltip per button |
 | `mountBoth` | `ui/ui-kit/testing/PickerOracle.tsx` | — (test oracle) | a vanilla picker class + its React port + one config | the per-element attribute diff, and the two fixture traps below |
 | `useActionId` | `ui/ui-kit/hooks/useActionId.ts` | `fillAndSetActionId` and the `fill().then(set…)` hand-roll, ~9 sites / 6 files | an `ActionId` | the three fields every site reads — `iconUrl`, `name`, wowhead `href` — and nothing about the markup |
@@ -355,8 +361,8 @@ of the duplication sweep was to build each shape once.
 | `ToplineResults` | `ui/features/results/components/ToplineResults/` | `features/results/view/topline_results.ts`, **deleted** (28 lines) | nothing — and that is the finding: all three panes render it with no distinguishing prop, because they never had one. Same constructor, same emitter, same filter; column visibility is the manager root's `hide-*-metrics`, not per-pane | the `showOutOfMana` rule moved to `model/topline_metrics.ts` as `showsOutOfMana`, so the whole derivation is unit-testable without a DOM. Renders an empty root before the first run and clears on `emit(null)`, where the island kept stale content behind a hidden row |
 | `DpsHistogram` | `ui/features/results/components/DpsHistogram/` | `features/results/view/dps_histogram.ts`, **deleted** (75 lines) | nothing — reads `useSimResult()` | the wrapper is React and the canvas stays imperative, built into the ref'd root inside the effect exactly as vanilla did. One `chart.destroy()` per result instead of a dispose callback accumulated per run |
 | `FiltersMenu` | `ui/features/gear/components/FiltersMenu/` | `features/gear/view/filters_menu.tsx` (still live, dual-stack — `view/item_list.tsx:209` builds it for bulk and item swap) | `slot`, `open`, `onOpenChange`; player, sim and container come from the host | the section set a slot earns — armor types only when the class has more than one, weapon types and speeds with the off-hand pair only on `canDualWield`, ranged sections only for a class with ranged weapons, which vanilla expressed as a bare `return` mid-constructor. **It nests under the selector modal through the React tree, not the DOM**: the popup portals to `host.rootElem` as a *sibling* of the parent's portal, Base UI stamps `data-nested` from the React position, `elevated` gives it 1060/1065 over the parent's 1050/1055, and a press inside it is still not an outside press for the parent — which is why it renders inside `ItemList`'s JSX rather than behind an opener at `GearTabBody`. `keepMounted` is deliberately omitted: the pane remounts per request, nothing reads a closed menu, and no `ItemList` exists at load for `parity.mjs` to see. `Sim.ALL_SOURCES.sort()` no longer sorts the shared static array in place |
-| `DropdownPicker` | `ui/ui-kit/DropdownPicker/` | `ui-kit/pickers/dropdown_picker.tsx` (still live, dual-stack — four apl files, `app/tabs/rotation_inputs.tsx`, and the log search bar) | `options` (each `value`/`label`/`icon`/`className`), `equals`, `defaultLabel`, `id`, `className` | the trigger and menu markup, that picking closes the menu, and `aria-checked` on the selection — a `Menu.RadioGroup` keyed on the option **index**, because a value here is a proto message and Base UI matches by identity. **Not** an `InputConfig` picker: `value`/`onChange` are the whole binding, so a UI-local selection needs no store, and a bound caller wraps it in `useInput` + `PickerShell` — the same split as `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData`. Submenus, `headerText`, per-option tooltips and `hideLabelWhenDefaultSelected` are deliberately absent, all four being apl-only. `Menu` over Base UI's `Select` because `Select`'s `alignItemWithTrigger` overlays the popup on the trigger where Bootstrap dropped below, and over `EnumPicker` because that is a native `<select>` in a `Field` and an `<option>` cannot hold an `<img>` or a `text-<class>` colour |
-| `UnitPicker` | `ui/ui-kit/UnitPicker/` | `ui-kit/pickers/unit_picker.tsx` (still live, dual-stack — `apl_helpers.tsx`) | `options` (a `UnitValue[]`), `value`, `onChange`, `id`, `className` | the mapping and nothing else — the three icon shapes a `UnitValue` allows, `text-<color>` on the option **and** the trigger, and reference equality that ignores the display fields around it. Vanilla was a subclass writing into the option `<button>` through `setOptionContent(button, config, isSelectButton)`; composition restates nothing about the menu. Adds the `alt=""` the vanilla `<img>` lacked |
+| `DropdownPicker` | `ui/ui-kit/DropdownPicker/` | `ui-kit/pickers/dropdown_picker.tsx` (still live, but down to **one** construction — `TextDropdownPicker` inside the imperative APL navbar, `app/tabs/rotation_inputs.tsx:17`; `apl/model/action_id_sets.ts` imports the `DropdownValueConfig` *type* and nothing else) | `options` (each `value`/`label`/`icon`/`className`/`itemClassName`), `equals`, `defaultLabel`, `id`, `className`. `DropdownField` carries vanilla's third type parameter, `<ModObject, T, V = T>`, for a config whose stored type is not its option type — the APL action-id field stores an `ActionID` and offers `ActionId` objects, its unit field stores a `UnitReference` and offers a `UnitValue` | the trigger and menu markup, that picking closes the menu, and `aria-checked` on the selection — a `Menu.RadioGroup` keyed on the option **index**, because a value here is a proto message and Base UI matches by identity. **Not** an `InputConfig` picker: `value`/`onChange` are the whole binding, so a UI-local selection needs no store, and a bound caller wraps it in `useInput` + `PickerShell` — the same split as `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData`. Submenus, `headerText`, per-option tooltips and `hideLabelWhenDefaultSelected` are deliberately absent, all four being apl-only. `Menu` over Base UI's `Select` because `Select`'s `alignItemWithTrigger` overlays the popup on the trigger where Bootstrap dropped below, and over `EnumPicker` because that is a native `<select>` in a `Field` and an `<option>` cannot hold an `<img>` or a `text-<class>` colour. **`className` and `itemClassName` are not interchangeable** and the APL is why: `className` lands on the trigger as well as the row, and `_apl_rotation_picker.scss:80` makes `.apl-list-item-picker .apl-prepull-actions-only` `display: none`, so a pre-pull-only spell carrying that class on the trigger would hide the whole picker the moment it was selected. `itemClassName` is vanilla's `DropdownValueConfig.extraCssClasses`, which it wrote onto the `<li>` |
+| `UnitPicker` | `ui/ui-kit/UnitPicker/` | `ui-kit/pickers/unit_picker.tsx` — its last consumer was `apl_helpers.tsx`, so **nothing constructs it any more**; the file survives for its `UnitValue` type alone, imported by three files outside this folder (`apl/model/unit_values.ts`, `apl/.../UnitField.tsx`, `results/.../ResultsFilter/utils.ts`) and by the folder's own three. `APLUnitPicker` is gone with it | `options` (a `UnitValue[]`), `value`, `onChange`, `id`, `className` | the mapping and nothing else — the three icon shapes a `UnitValue` allows, `text-<color>` on the option **and** the trigger, and reference equality that ignores the display fields around it. Vanilla was a subclass writing into the option `<button>` through `setOptionContent(button, config, isSelectButton)`; composition restates nothing about the menu. Adds the `alt=""` the vanilla `<img>` lacked. **The mapping itself lives in `utils.tsx`, not in the component**: `unitOption(unit, submenu?)` and `sameUnit` are exported because APL's `UnitField` binds the same options through `DropdownField` instead — a bound picker's root has to *be* the `PickerShell`, and `UnitPicker` renders a plain `div`, so wrapping it would add an element the baseline does not have. `submenu` is the caller's; only the APL sets it, filing a pet under its owner |
 | `ResultsFilter` | `ui/features/results/components/ResultsFilter/` | `features/results/view/results_filter.ts`, **deleted** (116 lines) | `target` and `onTargetChange` — the selection belongs to `DetailedResults`, because the pane is what re-emits the result every table reads | the option list (all targets, plus one per target of the run), that the picker is `d-none` until a run produces one, and that a selection the next run cannot hold is dropped **before** that run is emitted rather than re-entrantly during it, which is what let the tables briefly filter on a target that no longer existed |
 | `useDisplayMetrics` · `useShowExperimental` | `ui/sim/hooks/` | the same four-line `useStoreSubscribe(subscribeUiField(...))` block in `SimShell`, `DetailedResults`, both metrics tables and `EpWeightsDialog` | `sim` — they take it rather than reading the host, because `SimShell` renders before `IndividualSimUI` adopts its DOM and has no provider above it | one subscription over the three ui fields, and **a bitmask snapshot rather than the object**: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, so returning a fresh object there re-renders, and a caller holding an unstable `sim` loops. The mask makes the object rebuild only when a flag changes, which also makes it a stable memo dependency. `epRatios` is not among them — `showsEpRatios` owns that rule in `shell_classes.ts` and derives from the returned object |
 | `ProgressTrackerDialog` | `ui/ui-kit/ProgressTrackerDialog/` | `ui-kit/progress_tracker_modal.tsx` (still live, dual-stack — three vanilla consumers, one of them in frozen `ui/specs/**`) | `title`, `className`, `warning`, `hasProgressBar`, `onCancel`, `container`, and the discrete `state` (`stage`, `message`) | that it cannot be closed, the elapsed-time readout, and the split the twin exists for: `stage` is React state, and what a worker message moves goes through `ProgressTrackerHandle.setProgress` — the clock stays a DOM write, the bar is now local state in `ProgressTrackerBar` (Base UI `Progress`), so a tick commits that leaf and never the dialog |
@@ -379,7 +385,7 @@ of the duplication sweep was to build each shape once.
 | `Importer` | `ui/features/import-export/components/Importer/` | `IndividualImporter`'s four concrete subclasses (**deleted**); `view/importer.tsx` and `IndividualImporter` stay for `BulkGearJsonImporter`, whose opener is in the un-ported bulk tab | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The four `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write |
 | `ImportWarning` | `ui/features/import-export/components/Importer/ImportWarning.tsx` | `showImportWarning` in `view/importer.tsx` (**deleted**) | `titleKey`, `messageKey` | the pinned, undismissable warning toast, that its body is a real `<div>`, and its teardown — `Toast` is not a `Component`, so this is `useLegacyMount`'s shape written by hand |
 | `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
-| `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` (still live, dual-stack — the cooldowns picker, in the rotation tab, is the last vanilla consumer) | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote. `iconEnumPickerShown(config, modObject)` is its `showWhen()` override, exported because a caller can need the answer without the picker |
+| `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` — the cooldowns picker was its last consumer and `features/settings/view/cooldowns_picker.ts` is **deleted**, so the only `new IconEnumPicker(...)` left is the `iconEnum` branch of `ui-kit/icon_inputs.ts:29`'s `buildIconInput`, which now has no callers at all. `stat_options.ts` still names the class in a `typeof` type position, which is why a naive grep reads as live | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote. `iconEnumPickerShown(config, modObject)` is its `showWhen()` override, exported because a caller can need the answer without the picker |
 | `PlayerSettings` | `ui/features/settings/components/PlayerSettings/` | `buildPlayerSettings` in `app/tabs/settings_tab.tsx`, and with it `configureIconSection`, `configureInputSection` and `buildInputPickers` (**deleted** — no caller left) | the spec's `playerIconInputs` and `playerInputs.inputs` | the block's order, the hand-rolled race and profession configs, and the icon group's inline `gridTemplateColumns` |
 | `RaidBuffs` | `ui/features/settings/components/RaidBuffs/` | the buffs block's `relevantStatOptions` walk plus its misc bundle | the option list | that the misc bundle is a `MultiIconPickerConfig` assembled from `IconPickerConfig`s, as the vanilla builder did |
 | `InputPicker` | `ui/features/settings/components/InputPicker/` | `buildInputPickers` in `app/tabs/settings_tab.tsx` (**deleted** — the player block was its last caller) | one `InputConfig`, dispatched on its own `type` | that the modObject is the player, and `reverse` on the boolean branch — both fixed in the vanilla helper too |
@@ -404,10 +410,27 @@ of the duplication sweep was to build each shape once.
 | `GearPicker` | `ui/features/gear/components/GearPicker/` | `features/gear/view/gear_picker.tsx` (**deleted** — with `quick_swap.tsx`, `quick_enchant_popover.ts` and `quick_gem_popover.ts`) | `ready`, and only that: the shell's init order is the one thing a cell cannot read for itself, and `useSimReady` lives in `app/`, which features may not import | the two columns and their slot lists, and what each cell does — open the selector modal at the right tab, and the two favourites popovers. Beside it: `ItemPickerCell` (one slot), `EnchantLabel`, `ItemNoticeIcon`, and `QuickSwapList` / `QuickEnchantList` / `QuickGemList`. **The popovers read the store themselves**, inside `Tooltip`'s children, which react-tooltip does not build until the tooltip first opens: that is what keeps 16–64 `filters` subscribers off the pane, and it is also how the recorded stale-closure bug stays fixed — no `EquippedItem` is captured at all, `active` is derived at render and the click reads the slot again. Owns `GearPicker.scss`: the cells' `:focus-visible` rings, and `_quick_swap.scss` re-keyed from `.tippy-box[data-theme='tooltip-quick-swap']` to `.sim-tooltip.tooltip-quick-swap` — which needs `max-width: none`, because `Tooltip.scss` caps every tooltip at 192px and tippy capped nothing. The popovers render **inside** the cell, not beside it: react-tooltip's box lives in the React tree, and a sibling would take a child index in the column and move the `:nth-child(6)` weapon separator |
 | `ItemSwapIcon` | `ui/features/item-swap/components/ItemSwapIcon/` | `features/gear/view/icon_item_swap_picker.tsx` (**deleted** — one consumer, and the last one) | `slot`, and only that: everything else is read from the host, and the picker renders only under `SettingsTabBody`'s `ready` gate, which is what replaces the vanilla `waitForInit` the click was wired inside | that a swap slot is a picker root with an icon button and a sockets container — **not** an `ItemCell`; that vocabulary is the gear cell's and the swap icon wears none of it beyond `item-picker-sockets-container`. Reuses `useActionId` (the `(setHref, setBackground) = (true, true)` pair the vanilla `fillAndSetActionId` passed, as `href` and `iconUrl`), `useWowheadDataset`, `GemSocket` and `getEmptySlotIconUrl`. Fixes four defects: the modal is the shell's one `itemSwapSelectorModal`, not one `new SelectorModal(simUI.rootElem, …)` per icon appended to an element React does not own; the `itemSwap` subscription's unsubscribe is no longer discarded; the last profession subscription is no longer stranded; and the icons paint their loaded state, which vanilla never did because `update()` only ever ran from an `itemSwap` change. And it un-nests, the way `IconPicker` did — vanilla built the sockets **inside** the icon anchor, so a gemmed swap set was anchors inside an anchor, which `a11y.mjs` allows none of on `.settings-tab`; `browser.mjs` carries the matching `LIFTED_SUBTREES` entry. Owns `ItemSwapPicker.scss`: the two `:focus-visible` rings and `position: relative` on the picker root, which is where the lifted sockets container now takes its containing block from. `_item_swap_picker.scss` **stays global** — `.item-swap-picker-root .icon-picker-button` and `.icon-picker .icon-picker-button` are both (0,2,0) and only source order separates them |
 | `SummaryTable` | `ui/features/gear/components/SummaryTable/` | `features/gear/view/{gem,reforge,upgrade_costs}_summary.tsx` (**all three deleted** — one consumer each) | `title`, `className` (the block's modifier class), `headerClassName` (whether the header carries it too), `empty`, and what resetting means | the hidden-when-empty root, the `ContentBlock`, and the reset button's place in its header — the three-class vocabulary all three blocks agreed on. `SummaryTableRow` beside it fixes the row's own three classes. `GemSummary`, `ReforgeSummary` and `UpgradeCostsSummary` sit in the same folder and read `model/summary_totals.ts`. Owns `SummaryTable.scss`, co-located from `scss/core/components/individual_sim_ui/_summary_table.scss` — every class in it was gear's alone. **They render from state on the first paint**, where the vanilla blocks filled themselves only from a `gear` notification and so painted empty until one arrived |
+| `ListPicker` | `ui/ui-kit/ListPicker/` | `ui-kit/pickers/list_picker.tsx` (**deleted**, 703 lines — all ten of its importers were APL view files, so the moment APL ported it had no consumer left to be dual-stack for). `ListPicker.parity.test.tsx` went with it, the vanilla half of the oracle being gone; its two React-only assertions moved into `ListPicker.test.tsx` | the `ListPickerConfig`: `itemLabel`, `allowedActions`, `actions.create.useIcon`, `inlineMenuBar` / `horizontalLayout`, `dragGroup` + `sameGroupOnly`, `extraActions`, and a `copyItem`-or-`onCopyItem` pair that now also has a **neither** arm, for a list whose `allowedActions` omits `copy` — plus the `renderItem(index, itemConfig)` and `renderItemHeader(index)` render props | the list, item and action markup and the drag protocol, and nothing about what a row contains. `renderItemHeader` replaces `getItemHeaderElem`'s sibling-walk DOM contract; `makeActionElem` is the exported `ListItemAction` component, so the class list, the glyph and `type="button"` live in one place and the tooltip rides on the anchor instead of a `tippy()` per button — the vanilla `ListItemAction` *type* is `ListItemActionName` now, because the name belongs to the component. **Two cross-list drag rules, easy to confuse, both live:** a drag whose `itemLabel` differs is still refused, which is why a sequence's action list keeps vanilla's lowercase literal `'action'` and so never mixes with the priority list's translated label; and `sameGroupOnly` + `dragGroup` is the second, replacing vanilla's `itemLabel !== 'Action'` — a comparison against an English literal that vanished under any locale that translated it. It still **splices the array `getValue` returned, in place** (`ListPicker.tsx:57` and `:111`), deliberately: the APL tree is built on reading the live proto. No co-located stylesheet — `_list_picker.scss` is still global |
+| `ValuePicker` | `ui/features/apl/components/ValuePicker/` | `APLValuePicker` in `features/apl/view/apl_values.ts` (**deleted** with the whole of `features/apl/view/` — 11 files, 2,932 lines) | nothing beyond its `InputConfig<Player, APLValue \| undefined>`; the kind list is `model/value_kinds.ts` and the pre-pull/group filter arrives through `useAplScope` rather than as a prop | the kind dropdown and the fields that kind has — **and holding no copy of the value.** Vanilla rebuilt the whole message from its child pickers in `getInputValue()` and pushed it back down through `setInputValue()`; each field here writes its own property of the live message and `touchRotation()` is what re-renders. Two carried-over behaviours: a value arriving from a preset or an import with no uuid is minted one in an effect, silently and with no notification, because the sim keys its per-value validations on one; and the kind list leads with an explicit `undefined`-valued "none" entry, so an empty value *matches an option* and the trigger shows that option's label rather than `defaultLabel` |
+| `ActionPicker` | `ui/features/apl/components/ActionPicker/` | `APLActionPicker` in `features/apl/view/apl_actions.ts` (**deleted**) | nothing beyond its `InputConfig<Player, APLAction>` | the condition — a whole `ValuePicker` — then the kind dropdown and that kind's fields. Vanilla's kind picker had a "no kind" branch in `setValue` **the menu could not reach**, its options coming from the kind table alone with no empty entry unlike the value picker's; it is dropped rather than ported, and the non-nullable `ValidAPLActionKind` is what says so |
+| `FieldGroup` · `AplField` | `ui/features/apl/components/FieldGroup/` (with `fields/` and `utils.ts`) | `APLPickerBuilder` and the field-config factories in `features/apl/view/apl_helpers.tsx` (**deleted**, 1,256 lines; the data went to `model/{field_specs,kind_options,placeholders,unit_values}.ts`) | the kind's field list, straight from `model/value_kinds.ts` or `model/action_kinds.ts`. `resolveField` collapses **29 descriptor types to 13 picker kinds** — the twelve fixed-enum types are one `enum`, the four alias descriptors (`minIcd`, `reactionTime`, `useDotBaseValue`, `useRuneRegenBaseValue`) are a `number` and three `boolean`s, and `variableName`/`groupName` are one `rotationName` over two sources | **this is where the value and action trees close their loop.** `ValuePicker` → `FieldGroup` → `AplField` → `ValuePicker` is a genuine ES module cycle, and it holds only because `AplField` dispatches with a `switch` **inside the component body**: the imported binding is resolved when the field renders, long after every module in the cycle has finished evaluating. A module-level lookup table — the mapped type this codebase otherwise prefers for a discriminated union — reads the imported component while the cycle is still initialising, and the first module in throws `Cannot access 'ValuePicker' before initialization`. That is the shape vanilla had, in `valueKindFactories` / `actionKindFactories`, and why its authors concluded the cluster could not be ported in halves; three `vi.resetModules()` cold-import tests hold the rule. Also `fieldInputConfig`, which fills an unset field with the spec's default **on the read path** — a mutation inside `getValue`, kept, because the whole tree reads the live proto — and the two class rules vanilla applied by hand: `input-inline` on the three leaf kinds, `apl-picker-builder-multi` on `vals` and `actions` |
+| `AplListItem` | `ui/features/apl/components/AplListItem/` | three `Input` subclasses — `APLListItemPicker`, `APLGroupActionPicker` and `APLPrepullActionPicker` (**all deleted**) | `config`, and an optional `leading` node — the pre-pull list's "Do At" `ValuePicker` is the only caller that passes one | one row that can be hidden and holds one action. The three differed in exactly two things: whether a "Do At" picker came first, and where their validations were looked up. The second moved into `ListItemHeader`, so nothing is left to vary. A hidden row renders `disabled`, which is what `enableWhen: () => !item.hide` produced |
+| `ListItemHeader` | `ui/features/apl/components/ListItemHeader/` | `ListPicker.makeListItemValidations`, a static on the deleted vanilla list, and `APLHidePicker` in `features/apl/view/hide_picker.ts` (**deleted**) | `getItem` and `getValidations`, both reading fresh off the player — a row's identity is its index, and an index goes stale | what an APL row adds to its header: its validations, then its eye, in that order, which is the order vanilla appended them and the only thing the three lists that build one agreed on. Beside it: `AplValidations`, whose button is present-but-hidden while a row has nothing to say (vanilla's `display: none`, which keeps the header's element count stable) and which formats asynchronously because a validation names spells by id and `ActionId.replaceAllInString` resolves them; `HidePicker`, which still has **no tooltip** — vanilla carried a commented-out `tippy(…, 'Enable/Disable')` and two TODOs, and the string was never translated, so adding it would put one English label into an otherwise localised header; and `uuidValidations`, which matches the sim's per-message validations **by the uuid on the message** where vanilla read it back off `rootElem.id`, so no APL picker needs a DOM id for the lookup to work. The level class is an explicit four-entry map, where vanilla walked `Object.entries(LogLevel)` and only half its entries — the name→number ones — could ever match |
+| `AplNameDialog` | `ui/features/apl/components/AplNameDialog/` | `features/apl/view/apl_name_modal.tsx` (**deleted**) | `title`, `inputLabel`, `confirmLabel`, `placeholder`, `defaultValue`, `existingNames`, `onSubmit`, `onCancel`, `onClose` | the one "name this thing" dialog behind creating and renaming groups, variables and variable placeholders, and behind extracting a value to a variable — nine importers, the most-shared piece of the cluster. The name is component state rather than an uncontrolled input read on submit, because the confirm button's `disabled`, the `is-invalid` ring and the conflict message all derive from it and vanilla recomputed all three from an `input` listener anyway. `onCancel` is the separate seam a freshly created placeholder needs: dismissing the dialog deletes it again, which is the only way out of a nameless one |
+| `FloatingActionBar` | `ui/features/apl/components/FloatingActionBar/` | `features/apl/view/apl_floating_action_bar.tsx` (**deleted**) | `itemName`, `onCreate`, and an optional `nameDialog` (`inputLabel` + `existingNames`) — with it the new button asks for a name first, which is what groups and variables need and the priority list does not. The dialog's title is the button's own label, because both callers built that string twice | the sticky new/reset bar, and reset going through `host.applyEmptyAplRotation()`. **`stuck` is still toggled on each observer delivery rather than set from `isIntersecting`** — vanilla's shape, kept because with the `-100%` top margin the element crosses the boundary once per direction so the parity tracks it. It is therefore the one `IntersectionObserver` in the tree that reads no entry at all, which the 2026-09-08 "every observer reads `entries[entries.length - 1]`" sweep does not cover, and it is worth replacing the day that class gains a second reader |
+| `NameDisplay` | `ui/features/apl/components/NameDisplay/` | the same name-plus-pencil markup written out three times — `apl_group_editor.tsx`, `apl_variables_list_picker.tsx` and `APLPlaceholderNamePicker` in `apl_helpers.tsx` (**all deleted**) | `name` and `onRename`, and nothing else — the dialog is the caller's, because all three rename different things and re-point different references | the `apl-name-display` / `apl-name-value` / `apl-name-rename` vocabulary |
+| `PriorityList` · `PrePullList` · `GroupList` · `VariablesList` | `ui/features/apl/components/{PriorityList,PrePullList,GroupList,VariablesList}/` | `features/apl/view/{priority_list_picker.ts,pre_pull_list_picker.ts,apl_group_list_picker.ts,apl_variables_list_picker.tsx}` and `apl_group_editor.tsx` (**all deleted** — one consumer each, `RotationTabBody`) | nothing: each *is* the whole list, and their axes are enumerable — which array of the rotation it reads, `copyItem` (clone in place) versus `onCopyItem` (ask for a name first, because a group and a variable are referenced **by name** and two entries sharing one are indistinguishable to the rotation), whether the floating bar carries a `nameDialog`, which `AplScopeProvider` wraps it, and whether `sameGroupOnly` is set | which `ListPicker` config each list is, and what its rows render. `GroupEditor` is a separate component beside `GroupList` because a group's row holds a nested list: it carries the group's own action `ListPicker` (`dragGroup: 'action-group-actions'`), its `useVariableExtraction` and its rename dialog. The pre-pull and priority lists share one sub-tab, as they did in vanilla |
+| `useAplInput` | `ui/features/apl/hooks/useAplInput.ts`, with `rotationSource` in `features/apl/utils.ts` | the `storeSubscribe`-less configs `APLPickerBuilder.makeFieldPicker` handed out | nothing — it takes the caller's config and fills in the two things every APL picker needs and none of them is given | **the change source, which is not optional.** `useStoreSubscribe` only re-reads `getValue` when its source notifies, so a bound leaf handed a config with no `storeSubscribe` renders once and then freezes at that value — silently, no error, no visual cue. Vanilla got away with it because the list cascaded `setInputValue` down the tree by hand. This is the carry-forward the 2026-09-08 `ListPicker` entry left, closed. It also fills in an id, because `PickerShell` puts one on the label's `htmlFor` and a nested picker is handed a config that has none |
+| `useRenamedCopy` · `useVariableExtraction` | `ui/features/apl/hooks/` | the `copying` index and the extract-to-variable menu entry that the group, variable and priority lists each wrote out by hand around the same shape | `useRenamedCopy` takes `read` / `write` / `nameOf` / `copy` — the four things a by-name list differs on; `useVariableExtraction` takes the two accessors for the value at an index, because the priority list, a group's actions and a nested value list each reach theirs differently | copy-with-a-new-name — it returns the list's `onCopyItem` **and** the dialog props together, so a caller cannot wire one without the other — and the extract action's `shouldShow`: a value that is already a `variableRef`, or has no kind at all, has nothing to extract and the entry stays hidden |
+| `AplScopeProvider` / `useAplScope` | `ui/features/apl/context/AplScopeContext.tsx` | `rootElem.closest('.apl-prepull-action-picker')` and `closest('.apl-groups-picker')`, evaluated once inside a vanilla picker's constructor | `isPrepull` and `isGroup`, both defaulting to false | which list the pickers below are rendered inside — a property of the **list**, not of the picker, and the thing that decides which action and value kinds the dropdowns offer. The DOM read only ever worked because a vanilla picker was built into a parent that already existed; a React component renders before it is in the document, so the answer has to travel down rather than be read up. Like `SimHostProvider`, it carries identity of place and never state |
+| `CooldownsPicker` | `ui/features/settings/components/CooldownsPicker/` | `features/settings/view/cooldowns_picker.ts` (**deleted** — one consumer, `RotationTabBody`, and the last *reachable* `new IconEnumPicker(...)` went with it) | nothing — the player comes from the host and `availableCooldowns(player)` derives the option list | the N-plus-one rows (every set cooldown, then a blank add row), one shared delete tooltip instead of one per row, and the `hide` it writes onto its own `.cooldown-settings` ancestor when the spec offers no major cooldowns — kept where vanilla had it, because moving that gate to the parent would duplicate the rotation-plus-metadata subscription there. Owns `CooldownsPicker.scss` |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
 `ActionIcon`
-(the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`.
+(the `ActionId` dom writers), `FieldRow`, `PickerGroup`, `IconButton`. `ActionIcon`'s case is four
+near-identical anchors now, not the three the combat-replay entry flagged:
+`apl/components/FieldGroup/fields/ActionIdIcon.tsx` joins `CombatReplay/ReplayIcon`,
+`Timeline/rotation/RotationRowIcon` and `ui-kit/IconPicker/ImprovedAnchor`.
 
 ### Adding a component to the registry
 
@@ -553,30 +576,33 @@ same rule that governs every other primitive here. If it is ever adopted, the lo
 **a `queryFn` calls the existing domain function, never the fetch itself**, or the cache forks and
 the vanilla side stops seeing the data.
 
-### `ListPicker` is React as of 2026-09-08 — the decision below expired by its own terms
+### `ListPicker` is React as of 2026-09-08, and the vanilla one is gone as of 2026-09-09
 
 The reasoning is kept because it explains *why* it waited, and because the drag hazard it names is
-real and is now solved rather than avoided. Two corrections to it, both measured:
+real and is now solved rather than avoided. Three corrections to it, all measured:
 
 **The caller count was wrong.** It said "six of its seven callers are APL, the seventh is the encounter
-target list". `/usr/bin/grep -rln "pickers/list_picker"` gives **ten importers, every one of them an APL
-view file** — and encounter has now ported, so the vanilla `list_picker.tsx` has **no non-APL consumer
-at all**. It is a Phase 5 deletion the moment APL lands, not a dual-stack survivor. `unused.mjs` cannot
-see it, because the path is lowercase.
+target list". `/usr/bin/grep -rln "pickers/list_picker"` gave **ten importers, every one of them an APL
+view file** — and encounter had already ported, so the vanilla `list_picker.tsx` never had a non-APL
+consumer to be dual-stack for. It was a Phase 5 deletion the moment APL landed, and APL landed:
+`ui/ui-kit/pickers/list_picker.tsx` is **deleted**. `unused.mjs` never could have caught it, because
+the path is lowercase.
 
-**The shared drag state is solved by construction, not by a guard.** `ui/ui-kit/ListPicker/drag_state.ts`
-is a React-owned module store holding data plus a `take()` closure — never a component, so a stale entry
-cannot retain a tree. Two stacks cannot collide because a user cannot begin two drags at once: a drag
-begun in vanilla writes `curDragData` and leaves the React slot `null`, every React drop test then
-fails, no handler calls `preventDefault`, and the browser paints no-drop. The reverse holds
-symmetrically. `subscribeDragEnd` also replaces vanilla's document-wide `querySelectorAll('.dragfrom,.dragto')`
+**The shared drag state is solved by construction, not by a guard** — and the construction is what let
+the vanilla module global die quietly. `ui/ui-kit/ListPicker/drag_state.ts` is a React-owned module
+store holding data plus a `take()` closure — never a component, so a stale entry cannot retain a tree.
+While both stacks were live they could not collide, because a user cannot begin two drags at once: a
+drag begun in vanilla wrote `curDragData` and left the React slot `null`, every React drop test then
+failed, no handler called `preventDefault`, and the browser painted no-drop. Only the React slot is
+left. `subscribeDragEnd` also replaces vanilla's document-wide `querySelectorAll('.dragfrom,.dragto')`
 sweep: only the one or two items actually painting a cue hold a subscription.
 
-`sameGroupOnly` is on the config with **no consumer today**, deliberately. It replaces vanilla's
-`itemLabel !== 'Action'` cross-list rule, which is **locale-dependent** — the label resolves to
-`"Action"` only in English, and nested sequence lists use lowercase `'action'`. It is kept rather than
-deleted because its consumer (the APL group editor and priority list, stages 3d–3e) is imminent and the
-alternative is the next author re-deriving the broken comparison. That is a decision, not dead code.
+**`sameGroupOnly` has its consumers.** It was put on the config with none, deliberately, replacing
+vanilla's `itemLabel !== 'Action'` cross-list rule, which is **locale-dependent** — the label resolves
+to `"Action"` only in English, and nested sequence lists use lowercase `'action'`. `PriorityList` and
+`GroupEditor`'s action list set it now, the second with `dragGroup: 'action-group-actions'` so two
+groups' lists exchange rows and the priority list stays out of both. Keeping it rather than deleting it
+was the right call: the alternative was the next author re-deriving the broken comparison.
 
 ### The original reasoning — `ListPicker` stayed vanilla until APL
 
@@ -1093,6 +1119,22 @@ letter-spacing (from the global `*` rule, which an `h3` inherits too). What the 
 up from `label { font-weight: bold }` and the inherited body size is now explicit, because a heading
 brings its own size and margins.
 
+**An entry can also record that the port is the correct one — 2026-09-09.** The APL port added
+`div.cooldown-action-picker…` ↔ `…hide…`, observed on `mage/fire` alone. Vanilla never hides that
+picker on its first evaluation and React does, and React is right: `Input.update()`
+(`ui-kit/input.tsx:126`) writes `hide` from `inputConfig.showWhen` **only**, while the rule that also
+requires some value to carry an `actionId` lives in the picker class's own `showWhen()`
+(`pickers/icon_enum_picker.tsx:265`), whose sole caller is the constructor's store subscription. So
+in vanilla that rule lands on the *second* evaluation and never the first. React evaluates it every
+render, first included. `druid/feral` is the counter-example that proves it is not a metadata race:
+both builds start with an empty cooldown list and end with four, block and picker shown, identical.
+The divergence is invisible because `.cooldown-settings` carries `hide` in the same state on both
+sides. Two lessons: **measure a ceiling, never guess it** — the FA5/FA6 entry's `max` was raised
+6 → 8 by setting `max: 0` and reading the printed tally, and its old prose reasoned from
+`warrior/protection`, which has no simple pane at all; and a spec-specific entry will report "never
+observed" when the gate is scoped to a spec that cannot show it, which is the design working, not a
+regression.
+
 ### `Dialog` does not unblock stat-weights — checked 2026-09-06
 
 The queue said stat-weights was waiting on the `Dialog` adapter. It is not. `Dialog` is necessary
@@ -1333,12 +1375,15 @@ If one is ever clipped, the fix is `positionStrategy="fixed"` on the `Tooltip` p
 - **Goldens do not cover the shell.** `tools/state-snapshots/snapshot.ts` imports
   `IndividualSimUIConfig` as a *type* and hand-mirrors `applyDefaults`. They prove no state write
   leaked into a component. They say nothing about whether anything rendered.
-- **`ListPicker` splices the array you give it.** `getValue` returns a `.slice()`. It also mutates
-  what `getValue` returned, in place: `newList.splice(index, 1)` on delete and `newList[index] = …`
-  in the per-item `setValue` (`list_picker.tsx` ~295-300 and ~511). A React picker rendered *inside*
-  a vanilla list item reads from `useStoreSubscribe`'s cached snapshot, so if a sibling vanilla
-  handler mutates that same array in place, the React picker shows stale data until the next
-  notification. Bites in Phase 3, when APL ports.
+- **`ListPicker` splices the array you give it**, and the React one still does — deliberately.
+  `next.splice(index, 1)` on delete, `next[index] = …` in the per-item `setValue`, and the same
+  inside `take()` on a cross-list drag (`ListPicker.tsx:57`, `:82`, `:111`). It mutates whatever
+  `config.getValue` returned, which for every APL list is the live proto's own array. That is
+  consistent by construction rather than by luck: every APL picker reads through `config.getValue`
+  on each render instead of holding a snapshot, and `useAplInput` gives all of them the rotation as
+  their change source, so the mutation and the notification always arrive together. Break either
+  half — cache the array, or drop the `storeSubscribe` — and the picker shows stale data with no
+  error. The vanilla twin this bullet used to cite is deleted.
 - **A bound picker renders twice at mount, and runs its effects twice, in every build.** Measured:
   `useInput` gives 2 renders and 2 effect runs at mount with no StrictMode anywhere. The cause is
   `useStoreSubscribe` marking the snapshot stale when it subscribes, so React's post-subscribe read
@@ -1468,7 +1513,10 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    all in `scss/shared/`), drop `CritCapRow`'s `--bs-border-opacity` spacer, and correct the two
    mis-spelled names in `Dialog.tsx`'s comment.
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
-   bulk, ~~import-export~~, apl, gear, results. **~~stat-weights~~ is done** — all four units, the
+   bulk, ~~import-export~~, ~~apl~~, gear, results. **~~apl~~ is done** — the whole cluster on
+   2026-09-09, `features/apl/view/` deleted, and with it the vanilla `ListPicker` and
+   `cooldowns_picker.ts`; what is left of the rotation tab is the imperative navbar.
+   **~~stat-weights~~ is done** — all four units, the
    model and opener seams on 2026-09-06 and the React dialog plus its SCSS the same day, with all
    sixteen recorded defects fixed. The investigation is
    `.github/skills/wowsims-react/plans/stat-weights.md`, in this repo, units struck.
@@ -1483,6 +1531,101 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-09 **The APL cluster is React, and it takes the vanilla `ListPicker` with it.**
+  `features/apl/view/` is gone — 11 files, 2,932 lines, `apl_helpers.tsx` alone 1,256 — and so are
+  `ui-kit/pickers/list_picker.tsx` (703 lines, ten importers, every one of them an APL view file) and
+  `features/settings/view/cooldowns_picker.ts` (149). 65 new files land under `features/apl/` —
+  `components/`, `context/`, `hooks/`, `model/` — plus `ui-kit/UnitPicker/utils.tsx`.
+  `@jsx-vanilla` files go 52 → 46, of which 45 are source and `features/apl/` has none. Four more of
+  the rotation tab's `useLegacyMount` sites go, leaving **one**: the navbar, which stays imperative
+  because `StickyToolbar` and the rotation-type picker append themselves and a React-rendered `<ul>`
+  would land ahead of them instead of after.
+  **The mutual recursion is real, it is kept, and one line of shape is what makes it safe.**
+  `ValuePicker` → `FieldGroup` → `AplField` → `ValuePicker` is a genuine ES module cycle. It holds
+  only because `AplField` dispatches with a `switch` **inside the component body**, so the imported
+  binding is resolved when a field renders, long after every module in the cycle has finished
+  evaluating. The module-level lookup table this codebase otherwise prefers for a discriminated union
+  is exactly what does not work: it reads the imported component while the cycle is still
+  initialising, and the first module in throws `Cannot access 'ValuePicker' before initialization`.
+  That is the shape vanilla had, in `valueKindFactories` / `actionKindFactories`, and it is why the
+  2026-09-08 entry recorded the cluster as un-portable in halves. Three `vi.resetModules()`
+  cold-import tests hold the rule — two in `ValuePicker.test.tsx` (`ValuePicker` imported first, then
+  `AplField` imported first) and one in `ActionPicker.test.tsx` for the sequence/action edge. **The
+  rule is about the cycle, not about tables:** `RotationTabBody`'s `PANE_BODIES` is a module-level
+  component table and is perfectly fine, because it sits outside the cycle.
+  **`useAplInput` closes the carry-forward the `ListPicker` entry left.** Every APL config gets
+  `storeSubscribe: subscribePlayerField(player, 'rotation')` and a generated id, because a bound leaf
+  handed no source freezes at its first render with no error and no visual cue, and `PickerShell`
+  needs an id for the label's `htmlFor`. Nothing in the tree holds a copy of its message: vanilla
+  reassembled each message from its child pickers in `getInputValue()` and pushed it back down
+  through `setInputValue()`, where every field now writes its own property of the live proto and
+  `touchRotation()` is the re-render. That is also why the React `ListPicker` still splices the array
+  `getValue` returned, in place, deliberately.
+  **What was data pretending to be view.** `model/{field_specs,kind_options,placeholders,unit_values}.ts`
+  is where `apl_helpers.tsx` went: 29 field-descriptor types resolve to **13** picker kinds (the
+  twelve fixed-enum types are one `enum` rendered by one `EnumField`, where vanilla had twelve
+  near-identical `TextDropdownPicker` factories; four alias descriptors are a `number` and three
+  `boolean`s; `variableName`/`groupName` are one `rotationName` over two sources). `placeholders.ts`
+  replaces **five** hand-rolled depth-first walks over a proto's object graph, two of which silently
+  lacked the others' short-circuit.
+  **Two DOM reads that only worked because vanilla built into a parent that already existed.**
+  `isPrepull` and `isGroup` came from `rootElem.closest('.apl-prepull-action-picker')` /
+  `closest('.apl-groups-picker')` inside a constructor; they are a property of the *list*, not of the
+  picker, so they travel down through `AplScopeContext` instead — a React component renders before it
+  is in the document, so the answer has to arrive rather than be looked up. And a row's validations
+  came from `rootElem.id`, which every APL picker wrote its uuid into; the uuid is on the message, so
+  `uuidValidations` matches on data and no APL picker needs a DOM id at all.
+  **`ui-kit` changes the port forced, all small and all shared.** `DropdownOption.itemClassName`
+  lands on the menu row only, never on the trigger, and the two channels are **not**
+  interchangeable: `_apl_rotation_picker.scss:80` makes `.apl-list-item-picker .apl-prepull-actions-only`
+  `display: none`, so a pre-pull-only spell carrying that class on the trigger would hide the whole
+  picker the moment it was selected. `DropdownField` grew vanilla's third type parameter,
+  `<ModObject, T, V = T>`, for a config whose stored type is not its option type (an `ActionID`
+  offering `ActionId` objects, a `UnitReference` offering `UnitValue`s). The `UnitValue` → option
+  mapping moved out of `UnitPicker` into `UnitPicker/utils.tsx`, because a *bound* unit field's root
+  has to be the `PickerShell` and wrapping the unbound picker would add an element the baseline does
+  not have. `ListItemAction` (vanilla's static `makeActionElem`) is exported; the type that used to
+  own that name is `ListItemActionName`.
+  **The locale bug is finally dead.** `sameGroupOnly` was added in the `ListPicker` port with no
+  consumer and now has both: `PriorityList` sets it bare, `GroupEditor`'s action list sets it with
+  `dragGroup: 'action-group-actions'`, so two groups' lists exchange rows and the priority list stays
+  out of both. Vanilla expressed that as `itemLabel !== 'Action'` — a comparison against an English
+  literal, against a label that is `i18n.t(…)`, so the rule simply vanished under any locale that
+  translated it. The *other* cross-list rule, the `itemLabel` match, is unchanged and still what keeps
+  a sequence's list (vanilla's lowercase literal `'action'`) out of a priority list.
+  **Defects fixed on the way through.** `GroupVariablesField` derives its rows from the referenced
+  group's placeholder names instead of storing them: vanilla's `reconcile()` rewrote
+  `parentValue.variables` from *inside* `getValue()`, needed a three-part memo key to stop
+  re-triggering itself, and smuggled a `__uiVarName` field onto each proto entry to carry its label —
+  all three gone. `ActionIdIcon` drops the `CacheHandler` of cloned option nodes, which existed only
+  because vanilla rebuilt the whole option list on every metadata change. `ActionPicker` drops
+  vanilla's "no kind" branch, which the menu could never reach (its options come from the kind table
+  alone, with no empty entry, unlike the value picker's) — the non-nullable `ValidAPLActionKind` is
+  what records that. `GroupVariableRow`'s name is a real `<label for>` where vanilla appended a bare
+  `<label>` naming no control at all. The list's root reports `data-disabled` rather than the
+  `disabled` attribute vanilla wrote onto a `<div>`, and its create button is typed — the two
+  assertions that survived `ListPicker.parity.test.tsx`, deleted here because the vanilla half of its
+  oracle is gone.
+  **`tools/react-migration/apl-tab.mjs` is the new gate**, shaped like `talents.mjs` because the pane
+  is almost entirely editing and its DOM at load says nothing about whether an edit works. Its oracle
+  is the autosaved rotation blob, not the rendered pickers, with per-row digests so a reorder is
+  visible; structure counts come second and only for elements both stacks name identically. It takes
+  **one** spec and reads `PORT`, so it runs once per build. Three things it had to learn, all still
+  true: `page.hover()` times out on `.list-picker-item-actions` and the mouse has to be moved to its
+  box instead; Playwright's `dragTo` reports success without reordering anything, so synthetic
+  `DragEvent`s with a real `DataTransfer` are what both stacks actually listen for; and a synthetic
+  reorder leaves the *vanilla* list inert to the next popover, so the script deletes first and drags
+  last.
+  Flagged, not fixed: `HidePicker` still has **no tooltip** — vanilla carried a commented-out
+  `tippy(…, 'Enable/Disable')` and two "update the tooltip when available" TODOs, and the string was
+  never translated, so adding it would put one English label into an otherwise localised header.
+  `FloatingActionBar`'s `stuck` class is still *toggled* per observer delivery rather than set from
+  `isIntersecting` — vanilla's shape, correct only because the `-100%` top margin makes the element
+  cross the boundary once per direction, and the one `IntersectionObserver` in the tree that the
+  2026-09-08 "read `entries[entries.length - 1]`" sweep does not cover. And `AplValidations` spells
+  its four level classes as a map, where vanilla walked `Object.entries(LogLevel)` and only half its
+  entries — the name→number ones — could ever match the level it was comparing against.
 
 - 2026-09-09 **The combat replay is React, and `DetailedResults` has no islands left.** 1,076 lines
   deleted; `features/results/view/result_component.ts` went with it, the replay having been its last

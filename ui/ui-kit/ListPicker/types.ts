@@ -1,14 +1,34 @@
 import type { InputConfig } from '@ui-kit/input';
-// Type-only, so nothing of the vanilla list's runtime (tippy, i18n, the module drag global) is
-// pulled in: these three shapes are its API and restating them is how the two would drift.
-import type { ListItemAction, ListPickerActionsConfig, ListPickerExtraAction } from '@ui-kit/pickers/list_picker';
 import type { ReactNode } from 'react';
 
-export type { ListItemAction, ListPickerActionsConfig, ListPickerExtraAction };
+/** Which of the four per-item actions a list offers. `ListItemAction` is the button component, so this type carries the longer name. */
+export type ListItemActionName = 'create' | 'delete' | 'move' | 'copy';
 
-type CopyItemConfig<ItemType> = { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never } | { copyItem?: never; onCopyItem: (index: number) => void };
+export interface ListPickerActionsConfig {
+	create?: {
+		/** A round icon button instead of a full-width one. Defaults to false. */
+		useIcon?: boolean;
+	};
+}
 
-/** The per-item binding the list hands its `renderItem`: vanilla's `ListItemPickerConfig`. */
+export interface ListPickerExtraAction {
+	cssClass: string;
+	icon: string;
+	tooltip: string;
+	onClick: (index: number) => void;
+	shouldShow?: (index: number) => boolean;
+}
+
+/**
+ * How a list duplicates a row: by cloning it, by asking first — or not at all, which is what a list
+ * whose `allowedActions` leaves out `copy` means. Never both.
+ */
+type CopyItemConfig<ItemType> =
+	| { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never }
+	| { copyItem?: never; onCopyItem: (index: number) => void }
+	| { copyItem?: never; onCopyItem?: never };
+
+/** The per-item binding the list hands its `renderItem`. */
 export interface ListItemPickerConfig<ModObject, ItemType> extends InputConfig<ModObject, ItemType> {}
 
 export type ListPickerConfig<ModObject, ItemType> = Omit<InputConfig<ModObject, Array<ItemType>>, 'id'> &
@@ -27,16 +47,9 @@ export type ListPickerConfig<ModObject, ItemType> = Omit<InputConfig<ModObject, 
 		/** Disables the delete button while the list is at the minimum. */
 		minimumItems?: number;
 		/** When set, only these actions are allowed; otherwise all of them are. */
-		allowedActions?: Array<ListItemAction>;
+		allowedActions?: Array<ListItemActionName>;
 		dragGroup?: string;
-		/**
-		 * Only accept a drag from another list when both name the same `dragGroup`.
-		 *
-		 * Vanilla spelled this `this.config.itemLabel !== 'Action'` — a comparison against an English
-		 * literal, while the two lists it governs label themselves with `i18n.t(…)`. Under any other
-		 * locale the test never matched and the restriction silently disappeared, so it is a named
-		 * flag here and the rule now holds in every locale.
-		 */
+		/** Only accept a drag from another list when both name the same `dragGroup`. */
 		sameGroupOnly?: boolean;
 		/** Extra buttons in the per-item popover menu. */
 		extraActions?: Array<ListPickerExtraAction>;
@@ -47,10 +60,6 @@ export interface ListPickerProps<ModObject, ItemType> {
 	config: ListPickerConfig<ModObject, ItemType>;
 	/** The item's body. A render prop: the node is placed by the list, not rendered by the caller. */
 	renderItem: (index: number, itemConfig: ListItemPickerConfig<ModObject, ItemType>) => ReactNode;
-	/**
-	 * Extra content for the item's header row, beside the actions button. This is what replaces
-	 * `ListPicker.getItemHeaderElem` — vanilla's consumers reached the header by walking to the
-	 * item's sibling element and asserting on its class.
-	 */
+	/** Extra content for the item's header row, beside the actions button. */
 	renderItemHeader?: (index: number) => ReactNode;
 }

@@ -7,8 +7,16 @@ export interface DropdownOption<V> {
 	/** Rendered after `icon`, in the option and on the trigger while that option is selected. */
 	label?: ReactNode;
 	icon?: ReactNode;
-	/** Lands on the option **and** on the trigger while it is selected — the axis vanilla's `setOptionContent(button, config, isSelectButton)` varied by writing the same content into two elements. */
+	/** Lands on the option **and** on the trigger while it is selected. */
 	className?: ClassValue;
+	/**
+	 * Lands on the menu row only, never on the trigger.
+	 *
+	 * The two channels are not interchangeable: `.apl-list-item-picker .apl-prepull-actions-only`
+	 * is `display: none`, so a pre-pull-only spell's class on the trigger would hide the whole
+	 * picker the moment that spell was selected.
+	 */
+	itemClassName?: ClassValue;
 	/**
 	 * The category path this option is filed under. A string names a submenu; a value makes the
 	 * option carrying it the submenu's trigger, which is how a pet is filed under its owner.
@@ -19,7 +27,7 @@ export interface DropdownOption<V> {
 }
 
 export interface DropdownPickerProps<V> {
-	/** On the trigger, as vanilla's `config.id` was. */
+	/** On the trigger. */
 	id?: string;
 	options: Array<DropdownOption<V>>;
 	value: V | undefined;
@@ -30,16 +38,15 @@ export interface DropdownPickerProps<V> {
 	defaultLabel: ReactNode;
 	/**
 	 * Show the selected option's icon but not its label on the trigger, while the selection is the
-	 * default (falsy) one. Vanilla's `UnitPicker`-only `hideLabelWhenDefaultSelected`.
+	 * default (falsy) one.
 	 */
 	hideLabelWhenDefault?: (value: V) => boolean;
-	/** Which side of the trigger the menu opens on — `'top'` is what vanilla spelled as Bootstrap's `.dropup`. */
+	/** Which side of the trigger the menu opens on. */
 	side?: Menu.Positioner.Props['side'];
 	/**
-	 * `'fixed'` is vanilla's `popperConfig: { strategy: 'fixed' }`: it takes the menu out of flow so an
-	 * overflow-clipped ancestor cannot cut it off. It only holds while nothing between the menu and
-	 * the viewport carries a `transform`, `filter` or `contain` — any of those becomes the containing
-	 * block and the clip comes back.
+	 * `'fixed'` takes the menu out of flow so an overflow-clipped ancestor cannot cut it off. It only
+	 * holds while nothing between the menu and the viewport carries a `transform`, `filter` or
+	 * `contain` — any of those becomes the containing block and the clip comes back.
 	 */
 	positionMethod?: Menu.Positioner.Props['positionMethod'];
 	/** On the root. */

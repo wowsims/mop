@@ -1,10 +1,9 @@
 import { UnitReference } from '@generated/proto/common';
-import { textClassName } from '@sim/proto/utils';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
 import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 import type { ClassValue } from 'clsx';
 
-import { UnitIcon } from './UnitIcon';
+import { sameUnit, unitOption } from './utils';
 
 export interface UnitPickerProps {
 	/** On the trigger. */
@@ -13,35 +12,25 @@ export interface UnitPickerProps {
 	value: UnitReference | undefined;
 	onChange: (value: UnitReference | undefined) => void;
 	/**
-	 * Show the selected unit's icon but not its text while the default unit is selected — vanilla's
-	 * `hideLabelWhenDefaultSelected`, which the APL unit pickers all set.
+	 * Show the selected unit's icon but not its text while the default unit is selected. The APL unit
+	 * pickers all set it.
 	 */
 	hideLabelWhenDefault?: boolean;
 	/** On the root, beside `unit-picker-root`. */
 	className?: ClassValue;
 }
 
-/** Two `UnitValue`s are the same unit; the display fields around the reference are deliberately not compared. */
-const sameUnit = (a: UnitValue | undefined, b: UnitValue | undefined) =>
-	UnitReference.equals(a?.value || UnitReference.create(), b?.value || UnitReference.create());
-
 /**
  * A `DropdownPicker` over units. All it adds is the mapping — a `UnitValue`'s icon (an `ActionId`,
  * a Font Awesome glyph or an image url), its class colour and its text — onto the option props the
- * shared picker already takes, plus reference equality. Vanilla expressed that as a subclass
- * writing into the option `<button>`; there is no subclass here, and nothing about the menu is
- * re-stated.
+ * shared picker already takes, plus reference equality. The mapping itself is in `utils.tsx`,
+ * because the APL's bound unit field needs the same options through `DropdownField`.
  */
 export const UnitPicker = ({ id, options, value, onChange, hideLabelWhenDefault, className }: UnitPickerProps) => (
 	<DropdownPicker<UnitValue>
 		id={id}
 		className={['unit-picker-root', className]}
-		options={options.map(unit => ({
-			value: unit,
-			label: unit.text,
-			icon: unit.iconUrl ? <UnitIcon iconUrl={unit.iconUrl} /> : undefined,
-			className: unit.color && textClassName(unit.color),
-		}))}
+		options={options.map(unit => unitOption(unit))}
 		value={{ value }}
 		onChange={unit => onChange(unit.value)}
 		equals={sameUnit}

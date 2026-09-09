@@ -34,6 +34,7 @@ node_modules/.bin/vite build && npx http-server dist -p 3402 --silent &
 
 node tools/react-migration/parity.mjs
 node tools/react-migration/panes-parity.mjs
+node tools/react-migration/a11y.mjs           # the attributes parity.mjs does not compare; React build by default, PORT=3401 prints the findings it fixes
 node tools/react-migration/tabs-a11y.mjs
 node tools/react-migration/tabs-behaviour.mjs
 node tools/react-migration/landing.mjs
@@ -42,8 +43,13 @@ node tools/react-migration/reforge-popover.mjs
 node tools/react-migration/sidebar-loading.mjs # throttles the database; ~30s
 node tools/react-migration/css-vars.mjs        # both builds, all specs; ~4min
 node tools/react-migration/talents.mjs
+PORT=3401 node tools/react-migration/apl-tab.mjs warrior/protection # one spec, not a list; run it once per build and diff the two outputs
+PORT=3402 node tools/react-migration/apl-tab.mjs warrior/protection
 node tools/react-migration/header-toolbar.mjs
+node tools/react-migration/sim-title.mjs
 node tools/react-migration/settings-tab.mjs
+node tools/react-migration/encounter.mjs
+node tools/react-migration/item-swap.mjs
 node tools/react-migration/gear-tab.mjs
 node tools/react-migration/selector-modal.mjs
 node tools/react-migration/bulk-tab.mjs      # runs a batch on one build; ~45s
@@ -53,6 +59,8 @@ node tools/react-migration/results-tabs.mjs   # runs the sim on both builds; ~90
 node tools/react-migration/log-runner.mjs     # seeded sim on both builds; ~2 min per spec
 node tools/react-migration/topline-metrics.mjs # seeded sim on both builds; ~2 min per spec
 node tools/react-migration/results-filter.mjs # seeded sim on both builds; ~2 min per spec
+node tools/react-migration/timeline.mjs        # seeded sim on both builds
+node tools/react-migration/rotation-row-toggle.mjs # runs the sim, opens the timeline; PORT picks the build and the default 3401 is expected to FAIL — the jump is a master defect
 node tools/react-migration/combat-replay.mjs   # seeded sim on both builds, presses play; ~3 min per spec
 node tools/react-migration/sim-progress.mjs  # runs the sim twice; ~90s
 node tools/react-migration/unused.mjs   # static, no browser needed
@@ -64,6 +72,15 @@ REACT_PORT=3403 node tools/react-migration/mount-once.mjs
 
 Each takes an optional comma-separated spec list (`node …/parity.mjs warrior/arms,mage/fire`) and
 defaults to five specs from different classes. Ports come from `BASE_PORT` / `REACT_PORT`.
+
+That sentence holds for the two-build gates only, and the split is exact: a gate that opens both
+ports takes a list, and a gate that reads `PORT` takes **one** spec — `process.argv[2]` goes into
+the `/mop/<spec>/` url unsplit, so a comma-separated argument is read as one spec name. Run those
+twice, one spec each, once per port, and diff the two outputs. Five of them default to 3402 rather
+than 3401: `a11y`, `sidebar-loading` and `stat-weights` because failing on the baseline is their
+expected answer, `results-tables` and `sim-progress` because both sides should exit 0 and the port
+is the one being judged. `rotation-row-toggle.mjs` hardcodes its 3401 default and ignores
+`BASE_PORT`.
 
 | Check                 | What it would catch                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

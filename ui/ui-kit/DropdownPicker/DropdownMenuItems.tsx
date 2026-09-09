@@ -15,11 +15,10 @@ export interface DropdownMenuItemsProps<V> {
 /**
  * The menu's rows, one level at a time.
  *
- * A submenu is a real nested popup rather than the Bootstrap `.dropend` wrapper vanilla assembled
- * by hand, and `.dropdown-submenu` rides along so `_dropdown_picker.scss` still reaches it. A
- * submenu carrying a `trigger` keeps that option selectable, because vanilla put `data-bs-toggle`
- * and the selection handler on the same button — the owner of a pet both opens and can be chosen.
- * That trigger is not a radio item, so it reports no `aria-checked`; neither did vanilla's.
+ * A submenu is a real nested popup, and `.dropdown-submenu` rides along so `_dropdown_picker.scss`
+ * still reaches it. A submenu carrying a `trigger` keeps that option selectable — the owner of a
+ * pet both opens the submenu and can be chosen. That trigger is not a radio item, so it reports no
+ * `aria-checked`.
  */
 export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: DropdownMenuItemsProps<V>) => (
 	<>
@@ -30,7 +29,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					render={<li />}
 					value={entry.index}
 					closeOnClick
-					className={clsx('dropdown-picker-item', entry.option.className)}
+					className={clsx('dropdown-picker-item', entry.option.className, entry.option.itemClassName)}
 					{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
 					{entry.option.icon}
 					{entry.option.label}

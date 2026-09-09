@@ -38,11 +38,12 @@ function makeRotationTypePicker(parent: HTMLElement, simUI: IndividualSimHost<an
 	});
 }
 
-const APL_PANES = [
+/** The three APL sub-tabs. The strip is built here and the panes in `RotationTabBody`, so the ids and labels live in one place rather than in both. */
+export const APL_PANES = [
 	{ id: 'apl-priority-list', label: 'rotation_tab.apl.tabs.priorityList' },
 	{ id: 'apl-action-groups', label: 'rotation_tab.apl.tabs.actionGroups' },
 	{ id: 'apl-variables', label: 'rotation_tab.apl.tabs.variables' },
-];
+] as const;
 
 /**
  * The whole navbar stays imperative. React could render the tab strip, but `StickyToolbar` and the

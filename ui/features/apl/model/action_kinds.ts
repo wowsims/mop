@@ -1,5 +1,3 @@
-import { Player } from '@sim/player/player';
-import { itemSwapEnabledSpecs } from '@sim/spec_config';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,
@@ -38,6 +36,8 @@ import {
 import { Spec } from '@generated/proto/common';
 import { FeralDruid_Rotation_AplType } from '@generated/proto/druid';
 import i18n from '@i18n/config';
+import { Player } from '@sim/player/player';
+import { itemSwapEnabledSpecs } from '@sim/spec_config';
 
 import {
 	actionFieldConfig,
@@ -65,8 +65,8 @@ export type APLActionImplTypesUnion = {
 };
 export type APLActionImplType = APLActionImplTypesUnion[NonNullable<APLActionKind>] | undefined;
 
-// The DOM-free half of an APL action kind. `view/apl_actions.ts` merges this with
-// a `factory` built from `fields` to produce `actionKindFactories`.
+// The DOM-free half of an APL action kind. `components/ActionPicker` renders `fields`
+// through `FieldGroup`.
 export type ActionKindModel<T> = {
 	label: string;
 	submenu?: Array<string>;

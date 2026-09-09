@@ -19,11 +19,13 @@ vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => source.
 vi.mock('@i18n/config', () => ({
 	default: {
 		t: (key: string) =>
-			(({
-				'rotation_tab.common.rotation_type.auto': 'Auto',
-				'rotation_tab.common.rotation_type.simple': 'Simple',
-				'rotation_tab.common.rotation_type.apl': 'APL',
-			}) as Record<string, string>)[key] ?? key,
+			(
+				({
+					'rotation_tab.common.rotation_type.auto': 'Auto',
+					'rotation_tab.common.rotation_type.simple': 'Simple',
+					'rotation_tab.common.rotation_type.apl': 'APL',
+				}) as Record<string, string>
+			)[key] ?? key,
 	},
 }));
 

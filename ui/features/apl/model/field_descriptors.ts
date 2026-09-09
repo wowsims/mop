@@ -10,10 +10,10 @@ export interface FieldOptions {
 
 // The DOM-free half of an APL picker field: which proto field it edits, how to
 // label it, and a `type` tag naming the picker the view should build for it.
-// The view (`apl_helpers.tsx` / `apl_values.ts` / `apl_actions.ts`) owns the
-// tag -> picker-factory mapping; nothing here touches the DOM.
+// `field_specs.ts` resolves the tag to a spec and `components/FieldGroup/AplField`
+// renders that spec; nothing here touches the DOM.
 type FieldDescriptorPayloads = {
-	// Handled by view/apl_helpers.tsx.
+	// Rendered by AplField and its `fields/`.
 	actionId: { field: string; actionIdSet: ACTION_ID_SET; unitRefField?: string; defaultUnitRef?: DEFAULT_UNIT_REF; options?: FieldOptions };
 	unit: { field: string; unitSet: UNIT_SET; options?: FieldOptions };
 	boolean: { field: string; label?: string; options?: FieldOptions };
@@ -35,14 +35,14 @@ type FieldDescriptorPayloads = {
 	reactionTime: object;
 	useDotBaseValue: object;
 	useRuneRegenBaseValue: object;
-	// Handled by view/apl_values.ts (they build APL value pickers).
+	// Rendered by ValuePicker (they nest an APL value).
 	comparisonOperator: { field: string };
 	mathOperator: { field: string };
 	executePhaseThreshold: { field: string };
 	totemType: { field: string };
 	value: { field: string; options?: FieldOptions };
 	valueList: { field: string };
-	// Handled by view/apl_actions.ts (they build APL action pickers).
+	// Rendered by ActionPicker (they nest an APL action).
 	action: { field: string };
 	actionList: { field: string };
 };
@@ -54,7 +54,7 @@ export type APLFieldDescriptor = { [K in keyof FieldDescriptorPayloads]: Descrip
 /** Everything an APL *value* kind may use — i.e. no action pickers. */
 export type ValueFieldDescriptor = Exclude<APLFieldDescriptor, Descriptor<'action' | 'actionList'>>;
 
-/** The subset `apl_helpers.tsx` can build without knowing about value/action pickers. */
+/** The subset AplField renders without recursing into a value or action picker. */
 export type CommonFieldDescriptor = Exclude<
 	ValueFieldDescriptor,
 	Descriptor<'comparisonOperator' | 'mathOperator' | 'executePhaseThreshold' | 'totemType' | 'value' | 'valueList'>

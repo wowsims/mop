@@ -1,21 +1,14 @@
 /**
- * The React list's own drag state, deliberately **not** shared with the vanilla
- * `pickers/list_picker.tsx` module global (`curDragData`).
- *
- * Two stacks can hold a drag at once only if a user could start two drags at once, which they
- * cannot. So each stack reads only its own slot, and a drag begun in the other stack reads as
- * `null` here: every drop test then fails, no handler calls `preventDefault`, and the browser
- * shows the no-drop cursor. That is the same answer the vanilla list gives for a foreign drag,
- * and it holds by construction rather than by the two agreeing on a shared shape.
+ * The list's drag state: which item is being dragged, and how to take it out of its own list.
  *
  * What crosses a list boundary is **data, not a component**: `take()` is a closure the source
  * list supplies, so a cross-list drop removes from the source through the source's own writer
- * instead of reaching into its config the way vanilla's `curDragData.listPicker.config` did.
+ * rather than reaching into another list's config.
  */
 export interface ListDrag {
 	/** Identity of the list the drag started in. */
 	listId: string;
-	/** Only a list with the same label accepts the drop — vanilla's first `invalidDropTarget` rule. */
+	/** Only a list with the same label accepts the drop. */
 	itemLabel: string;
 	dragGroup?: string;
 	/** The dragged item's index in its source list. */
@@ -36,10 +29,9 @@ export const beginDrag = (drag: ListDrag) => {
 };
 
 /**
- * Ends the drag and tells whoever is still painting drag feedback to stop. Vanilla did this by
- * stripping `.dragfrom,.dragto` off the whole document; here only the one or two items that
- * actually hold that state are listening, so nothing walks the DOM and nothing can strip a class
- * out from under React's own diff.
+ * Ends the drag and tells whoever is still painting drag feedback to stop. Only the one or two
+ * items that actually hold that state are listening, so nothing walks the DOM stripping classes out
+ * from under React's own diff.
  */
 export const endDrag = () => {
 	current = null;

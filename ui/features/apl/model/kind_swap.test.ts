@@ -93,8 +93,7 @@ describe('swapValueKind', () => {
 	});
 });
 
-const action = (kind: string, impl: unknown = {}): APLAction =>
-	APLAction.create({ action: { oneofKind: kind, [kind]: impl } as APLAction['action'] });
+const action = (kind: string, impl: unknown = {}): APLAction => APLAction.create({ action: { oneofKind: kind, [kind]: impl } as APLAction['action'] });
 
 const actionKind = (result: APLAction) => result.action.oneofKind;
 const actionImpl = (result: APLAction) => (result.action as Record<string, any>)[result.action.oneofKind as string];

@@ -125,7 +125,7 @@ describe('ListPicker', () => {
 			expect(classes).toContain('d-none');
 			expect(classes).toContain('horizontal');
 			expect(classes).toContain('targets-picker');
-			// horizontalLayout forces the inline menu bar, as vanilla did.
+			// horizontalLayout forces the inline menu bar.
 			expect(containers()[0].classList.contains('inline')).toBe(true);
 		});
 
@@ -436,5 +436,20 @@ describe('ListPicker', () => {
 
 			expect(root().classList.contains('disabled')).toBe(true);
 		});
+
+		// `disabled` is only valid on a form control, and nothing in the tree selects `[disabled]`.
+		it('reports a disabled list without putting a form-control attribute on a div', () => {
+			mount(rowsOf('a'), { enableWhen: () => false });
+
+			expect(root().getAttribute('disabled')).toBeNull();
+			expect(root().getAttribute('data-disabled')).toBe('');
+		});
+	});
+
+	// A `<button>` with no `type` submits any form it is dropped into.
+	it('types the create button', () => {
+		mount(rowsOf('a'));
+
+		expect(document.querySelector('.list-picker-new-button')!.getAttribute('type')).toBe('button');
 	});
 });
