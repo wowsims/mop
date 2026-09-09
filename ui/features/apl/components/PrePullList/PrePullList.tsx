@@ -1,7 +1,7 @@
 import { AplListItem } from '@features/apl/components/AplListItem';
 import { ListItemHeader } from '@features/apl/components/ListItemHeader';
 import { ValuePicker } from '@features/apl/components/ValuePicker';
-import { AplScopeProvider } from '@features/apl/context/AplScopeContext';
+import { AplProvider } from '@features/apl/context/AplContext';
 import { rotationSource } from '@features/apl/utils';
 import { APLPrepullAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
@@ -34,7 +34,7 @@ export const PrePullList = () => {
 	};
 
 	return (
-		<AplScopeProvider isPrepull>
+		<AplProvider isPrepull>
 			<div className="apl-pre-pull-list-picker-root">
 				<ListPicker<Player<any>, APLPrepullAction>
 					modObject={player}
@@ -72,6 +72,6 @@ export const PrePullList = () => {
 					)}
 				/>
 			</div>
-		</AplScopeProvider>
+		</AplProvider>
 	);
 };

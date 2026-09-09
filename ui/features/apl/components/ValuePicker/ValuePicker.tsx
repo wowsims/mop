@@ -1,4 +1,4 @@
-import { useAplScope } from '@features/apl/context/AplScopeContext';
+import { useApl } from '@features/apl/context/AplContext';
 import { useAplInput } from '@features/apl/hooks/useAplInput';
 import { valueKindOptions } from '@features/apl/model/kind_options';
 import { swapValueKind } from '@features/apl/model/kind_swap';
@@ -33,7 +33,7 @@ export interface ValuePickerProps {
  */
 export const ValuePicker = ({ player, config }: ValuePickerProps) => {
 	const kindId = useId();
-	const { isPrepull, isGroup } = useAplScope();
+	const { isPrepull, isGroup } = useApl();
 
 	const { value, hidden, disabled, shellConfig } = useAplInput(player, config);
 	const kind = value?.value.oneofKind;

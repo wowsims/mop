@@ -9,9 +9,9 @@ export interface AplScope {
 
 const DEFAULT: AplScope = { isPrepull: false, isGroup: false };
 
-const AplScopeContext = createContext<AplScope>(DEFAULT);
+const AplContext = createContext<AplScope>(DEFAULT);
 
-export interface AplScopeProviderProps extends Partial<AplScope> {
+export interface AplProviderProps extends Partial<AplScope> {
 	children?: ReactNode;
 }
 
@@ -21,9 +21,9 @@ export interface AplScopeProviderProps extends Partial<AplScope> {
  * It travels down rather than being read up off the DOM — `closest('.apl-prepull-action-picker')`
  * and its kin cannot answer, because a React component renders before it is in the document.
  */
-export const AplScopeProvider = ({ isPrepull = false, isGroup = false, children }: AplScopeProviderProps) => {
+export const AplProvider = ({ isPrepull = false, isGroup = false, children }: AplProviderProps) => {
 	const scope = useMemo(() => ({ isPrepull, isGroup }), [isPrepull, isGroup]);
-	return <AplScopeContext value={scope}>{children}</AplScopeContext>;
+	return <AplContext value={scope}>{children}</AplContext>;
 };
 
-export const useAplScope = (): AplScope => useContext(AplScopeContext);
+export const useApl = (): AplScope => useContext(AplContext);

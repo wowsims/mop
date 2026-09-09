@@ -1,6 +1,6 @@
 import { AplNameDialog } from '@features/apl/components/AplNameDialog';
 import { FloatingActionBar } from '@features/apl/components/FloatingActionBar';
-import { AplScopeProvider } from '@features/apl/context/AplScopeContext';
+import { AplProvider } from '@features/apl/context/AplContext';
 import { useRenamedCopy } from '@features/apl/hooks/useRenamedCopy';
 import { rotationSource } from '@features/apl/utils';
 import { APLGroup } from '@generated/proto/apl';
@@ -61,7 +61,7 @@ export const GroupList = () => {
 		});
 
 	return (
-		<AplScopeProvider isGroup>
+		<AplProvider isGroup>
 			<div className="apl-group-list-picker-root">
 				<ListPicker<Player<any>, APLGroup>
 					modObject={player}
@@ -78,6 +78,6 @@ export const GroupList = () => {
 				/>
 				<AplNameDialog {...copying.dialog} />
 			</div>
-		</AplScopeProvider>
+		</AplProvider>
 	);
 };

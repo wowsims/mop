@@ -1,4 +1,4 @@
-import { useAplScope } from '@features/apl/context/AplScopeContext';
+import { useApl } from '@features/apl/context/AplContext';
 import { useAplInput } from '@features/apl/hooks/useAplInput';
 import { actionKinds, type APLActionKind } from '@features/apl/model/action_kinds';
 import { actionKindOptions } from '@features/apl/model/kind_options';
@@ -33,7 +33,7 @@ type ValidAPLActionKind = NonNullable<APLActionKind>;
  */
 export const ActionPicker = ({ player, config }: ActionPickerProps) => {
 	const kindId = useId();
-	const { isPrepull } = useAplScope();
+	const { isPrepull } = useApl();
 
 	const { value, hidden, disabled, shellConfig } = useAplInput(player, config);
 	const kind = value?.action.oneofKind;
