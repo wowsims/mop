@@ -1543,6 +1543,23 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-09 **The group-variable rows drop `copy`, a deliberate divergence from vanilla — owner
+  decision.** Those rows are *derived*: `reconcile()` rewrites the stored `variables` to exactly the
+  placeholder names the referenced group declares, keeping each name's binding. So neither row action
+  could ever do what its icon says, and it was measured on Unholy DK's `Bend and Snappy` reference
+  (`PLy` / `PSy` / `OBy`): **delete** leaves three rows and resets one binding to `Select Variable`,
+  and **copy** changes nothing whatsoever, because the duplicate carries an existing name and the next
+  reconcile drops it. Delete stays — clearing a selection is the useful reading and the only one it can
+  have — and `copy` and `copyItem` go, which is the first real user of the `ListPicker` row's recorded
+  "neither" arm.
+
+  **Removing it needed no parity work, and the reason is worth knowing**: the row actions live in a
+  popover that mounts only once the `⋯` menu is opened, so they are absent from the load-time tree both
+  parity gates compare. An action button is free to add or remove; only what renders at rest is pinned.
+  Its test asserts the *delete* button is present in the same breath, so a popover that failed to open
+  fails the test rather than passing it vacuously — the first version of that assertion queried
+  `.apl-group-variable-picker-root`, which is the row **body** and never contains the actions at all.
+
 - 2026-09-09 **The batch's gear importer ports, and with it the vanilla `Importer`, the last of gear's
   `view/`, and the spec-change toast.** Deleted: `import-export/view/importer.tsx` (83) and
   `view/importers/` (`bulk_gear_json_importer.tsx`, 43, plus its barrel); `features/gear/view/`

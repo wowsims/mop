@@ -131,14 +131,18 @@ describe('GroupVariablesField', () => {
 		expect(parentValue.variables[0].value.value.variableRef.name).toBe('');
 	});
 
-	it('reconciles a copied row away, so the rows and the stored entries stay in step', () => {
+	it('offers no copy action, because a duplicate entry is dropped by the next reconcile', () => {
 		setup({ groupName: 'g1', placeholders: ['a', 'b'] });
 		mount();
 
-		clickItemAction(0, '.list-picker-item-copy');
+		const item = document.querySelectorAll('.list-picker-item-container')[0];
+		act(() => {
+			fireEvent.mouseOver(item.querySelector('.list-picker-item-actions')!);
+		});
 
-		expect(labels()).toEqual(['a:', 'b:']);
-		expect(parentValue.variables.map(entry => entry.name)).toEqual(['a', 'b']);
+		// Delete is asserted present so a popover that never opened fails here rather than passing.
+		expect(item.querySelector('.list-picker-item-delete')).not.toBeNull();
+		expect(item.querySelector('.list-picker-item-copy')).toBeNull();
 	});
 
 	it('writes a variableRef and touches the rotation when a row picks a variable', () => {

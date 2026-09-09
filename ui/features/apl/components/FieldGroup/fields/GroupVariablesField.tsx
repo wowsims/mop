@@ -34,8 +34,9 @@ const newVariable = (name: string) => ({
  * is about to replace. Calling it twice is safe because it is idempotent — the second call finds
  * every entry and writes nothing.
  *
- * Delete and copy therefore act on a list that is rebuilt underneath them: deleting a row resets
- * that variable's assignment, and copying one is undone by the next reconcile.
+ * Delete therefore acts on a list rebuilt underneath it: the row returns with its assignment
+ * cleared, which is the useful reading of the button and the only one it can have. Copy is not
+ * offered — a duplicate entry carries an existing name, so the next reconcile drops it.
  *
  * With no group selected, or one with no placeholders, there is nothing to pass and the container
  * is `d-none` — not the shell's `hide`, which is a different class.
@@ -72,8 +73,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 		newItem: () => {
 			throw new Error('newItem should not be called for auto-populated group variables');
 		},
-		copyItem: (oldItem: any) => ({ name: oldItem.name, value: oldItem.value }),
-		allowedActions: ['delete', 'copy'],
+		allowedActions: ['delete'],
 	};
 
 	return (
