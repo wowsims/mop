@@ -53,7 +53,8 @@
 	// Bootstrap's `.tab-content > .tab-pane { display: none }` for an inactive tab, and
 	// `.dr-no-results .dr-row` for a sim that has not been run. Without the guards the panes lay
 	// out behind whichever tab is open, and an empty timeline renders under "Run a simulation".
-	// The log is not here: the page scrolls it, so its height is its rows.
+	// The log is not here: the page scrolls it, and its bar hangs below the pane on a negative
+	// margin, so it reserves its own height on its own root instead (LogRunner.scss).
 	&:not(.dr-no-results) > .tab-content > .tab-pane.dr-tab-content {
 		&.timeline-content.active,
 		&.replay-content.active {

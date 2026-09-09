@@ -2026,6 +2026,7 @@
 				"search_placeholder": "Rechercher dans le journal…",
 				"search_add_filter": "Ajouter un filtre",
 				"search_add_value": "Ajouter une valeur",
+				"no_matches": "Aucune ligne du journal ne correspond à la recherche ou aux filtres actuels.",
 				"floatingActionBar": {
 					"toggle": "Afficher ou masquer les filtres",
 					"none": "Aucun filtre",

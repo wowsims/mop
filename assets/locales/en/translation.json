@@ -2025,6 +2025,7 @@
 				"search_placeholder": "Search logs…",
 				"search_add_filter": "Add filter",
 				"search_add_value": "Add value",
+				"no_matches": "No log lines match the current search or filters.",
 				"floatingActionBar": {
 					"toggle": "Toggle filters",
 					"none": "No filters",

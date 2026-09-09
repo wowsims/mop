@@ -240,6 +240,7 @@ export const LogRunner = ({ active, makeLogExporter }: LogRunnerProps) => {
 						</div>
 					)}
 				</div>
+				{logs.length > 0 && visibleIndexes.length === 0 && <div className="log-runner-empty">{i18n.t('results_tab.details.logs.no_matches')}</div>}
 			</div>
 			<LogFloatingActionBar
 				groups={groups}

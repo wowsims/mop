@@ -1,8 +1,17 @@
 @import 'shared/tokens';
 
+// A filter that matches few lines or none leaves the virtual list with almost no height, and the
+// floating action bar below it — which holds the chips and the Clear button — is in normal flow, so
+// it strands partway up the page with the rest of the viewport empty beneath it. Nothing above this
+// element is height-constrained, so the fill has to start here or `flex` below has no free space to
+// hand out: `--log-sticky-top` is the viewport the sticky chrome above already occupies, and the bar
+// hangs `--container-padding` below this box on the negative margin it uses to sit flush. The page
+// scrolls by whatever chrome scrolls away, and the bar is pinned at the bottom throughout. Master
+// collapses instead; this is a deliberate divergence, invisible to the tree gates.
 .log-runner-root {
 	display: flex;
 	flex-direction: column;
+	min-height: calc(100dvh - var(--log-sticky-top, 0px) - var(--container-padding));
 }
 
 .show-debug-picker {
@@ -18,14 +27,17 @@
 // sideways overflow of long lines, so the header above it can stick to the viewport.
 .log-runner-scroll {
 	position: relative;
+	// Takes the height the root reserved, so the bar lands at the bottom of it. Never shrinks:
+	// hiding the vertical overflow resolves this item's `min-height: auto` to 0, and a log longer
+	// than the reservation would be clipped instead of scrolled by the page.
+	flex: 1 0 auto;
 	overflow-x: auto;
 	overflow-y: hidden;
-	// A filter that matches nothing leaves the virtual list with no rows and therefore no height, and
-	// the floating action bar below it — which holds the chips and the Clear button — is in normal
-	// flow, so it leaps up the page and takes the only way of removing that filter with it. Reserving
-	// the height keeps the drawer where the pointer left it. Master collapses the same way; this is a
-	// deliberate divergence, and it is invisible to the tree gates, which compare tags and classes.
-	min-height: var(--log-runner-min-height, 12rem);
+}
+
+.log-runner-empty {
+	padding: var(--spacer-4) var(--spacer-2);
+	color: var(--bs-secondary-color);
 }
 
 .log-runner-list {

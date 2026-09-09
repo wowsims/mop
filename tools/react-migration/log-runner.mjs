@@ -26,6 +26,8 @@ const SETTINGS_SUFFIX = '__currentSettings__';
 // Deep enough that the first window is long gone: ~120 rows at any row height either build measures.
 const SCROLL_BY = 4000;
 const COMPARE_ROWS = 12;
+// No log line contains it, on any build or any spec.
+const NO_MATCH = 'zzzz-no-such-line';
 
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
@@ -214,6 +216,36 @@ const collect = async (browser, port, spec, seeded) => {
 			`${document.querySelector('.log-fab-summary')?.textContent} / ${document.querySelector('.log-fab-preview')?.textContent} / clearHidden=${document.querySelector('.log-fab-clear')?.hidden}`,
 	);
 
+	// The filter that matches nothing, on top of the outcome group so the chips — and with them the
+	// Clear button — are still on the bar. With no rows the list has no height, and everything below
+	// it used to ride up the page: the bar ended up stranded partway down with the rest of the
+	// viewport empty beneath it. Read on the React build alone, because the baseline still does that;
+	// the baseline's number is printed beside it rather than compared.
+	//
+	// Reached by a search on top of the group rather than by chips alone: emptying the list from the
+	// menus needs two mutually exclusive values, and the fixed lists do not guarantee a pair no run
+	// produces. The two routes meet at `visibleIndexes`, which is the only thing the empty pane and
+	// the bar's position depend on.
+	await search(page, NO_MATCH);
+	await page.evaluate(() => document.querySelector('.sim-ui').scrollTo({ top: 0 }));
+	await page.waitForTimeout(600);
+	out.noMatch = await page.evaluate(() => {
+		const fab = document.querySelector('.log-floating-action-bar-root');
+		const clear = document.querySelector('.log-fab-clear');
+		const box = clear?.getBoundingClientRect();
+		// Hit-tested rather than measured: a control can be on screen and still be under something.
+		const hit = box?.width ? document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) : null;
+		return {
+			rows: document.querySelectorAll('.log-runner-logs .log-runner-row').length,
+			// The bar's bottom edge to the bottom of the viewport. Zero is where the reader expects the
+			// bar; the collapse reads here as several hundred pixels of dead space under it.
+			barGap: fab ? Math.round(window.innerHeight - fab.getBoundingClientRect().bottom) : null,
+			clearReachable: !!hit && clear.contains(hit),
+			empty: document.querySelector('.log-runner-empty')?.textContent.trim() || 'MISSING',
+		};
+	});
+	await search(page, '');
+
 	await page.click('.log-fab-clear');
 	await page.waitForTimeout(700);
 	out.clearedState = await page.evaluate(STATE);
@@ -295,6 +327,12 @@ try {
 			[`stripes alternate at both ends of the window`, /mismatched=0/.test(react.out.deepStripes) && /mismatched=0/.test(react.out.restStripes)],
 			[`the drawer menu opens upwards and escapes its clip`, /opensUpwards=true/.test(react.out.addFieldMenu) && /escapesTheClip=true/.test(react.out.addFieldMenu)],
 			[`the drawer menu lands inside the viewport`, /inViewport=true/.test(react.out.addFieldMenu)],
+			[`a filter that matches nothing leaves no rows`, react.out.noMatch.rows === 0],
+			// One-directional: sticky can only hold the bar at or above the bottom of the scrollport, so
+			// the defect is dead space under it and nothing else. Mutating the fill away measures 345.
+			[`...and the bar stays at the bottom of the viewport`, react.out.noMatch.barGap >= 0 && react.out.noMatch.barGap <= 4],
+			[`...with its Clear button hit-testable`, react.out.noMatch.clearReachable],
+			[`...and the pane says why it is empty`, react.out.noMatch.empty !== 'MISSING'],
 		];
 		for (const [what, ok] of invariants) if (!ok) problems.push(`invariant: ${what}`);
 
@@ -307,6 +345,7 @@ try {
 		console.log(`  drawer menu     ${react.out.addFieldMenu}`);
 		console.log(`  base menu       ${base.out.addFieldMenu}`);
 		console.log(`  search ${react.out.searchState.lines} / outcome ${react.out.filteredState.lines} / cleared ${react.out.clearedState.lines}`);
+		console.log(`  no match        base barGap=${base.out.noMatch.barGap} react ${JSON.stringify(react.out.noMatch)}`);
 		problems.forEach(problem => console.log('    ! ' + problem));
 		react.errors.slice(0, 3).forEach(error => console.log('    react error: ' + error.slice(0, 160)));
 	}

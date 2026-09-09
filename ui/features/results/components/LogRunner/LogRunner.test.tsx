@@ -138,6 +138,23 @@ describe('LogRunner', () => {
 		expect(rows(container)).toEqual(['[2.00] Warrior casts Cleave']);
 	});
 
+	// A tall blank pane reads as broken rather than as filtered. Scoped to a run that produced lines:
+	// before the first one the pane is empty because there is nothing to show yet, not because the
+	// search excluded everything.
+	it('says why the list is empty when a search matches nothing, and only once a run has landed', async () => {
+		vi.useFakeTimers({ shouldAdvanceTime: true });
+		const { container, rerender } = render(<LogRunner active makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		expect(container.querySelector('.log-runner-empty')).toBeNull();
+
+		result = resultWith(LOGS);
+		rerender(<LogRunner active makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		fireEvent.change(searchInput(container), { target: { value: 'no such line' } });
+		await act(async () => void vi.advanceTimersByTime(200));
+
+		expect(rows(container)).toEqual([]);
+		expect(container.querySelector('.log-runner-scroll > .log-runner-empty')!.textContent).toBe('results_tab.details.logs.no_matches');
+	});
+
 	it('keeps a quoted phrase whole when it filters', async () => {
 		vi.useFakeTimers({ shouldAdvanceTime: true });
 		result = resultWith(LOGS);
