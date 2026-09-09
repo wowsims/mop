@@ -15,7 +15,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
 import type { LogExporterFactory } from '../../model/log_exporter';
-import type { SimResultsManager } from '../../view/results_action';
+import type { SimResultsManager } from '../../model/results_manager';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
 import { CombatReplay } from '../CombatReplay';

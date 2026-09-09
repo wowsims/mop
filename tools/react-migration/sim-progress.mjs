@@ -30,10 +30,10 @@
 //   - A hidden zone is judged by computed `display`, never by the mechanism. Vanilla writes
 //     `style.display = 'none'`; the port uses the `hidden` attribute. Both compute to `none`.
 //   - The running block is found as `.results-viewer .results-sim`, never
-//     `.results-content .results-sim`. The port moves it into `.results-pending` so that
-//     `.results-content` stays vanilla-owned (its finished-result builder has three consumers, one of
-//     them the bulk renderer, and must not port with the sidebar). The *parent* is printed, not
-//     asserted; the block's visibility is asserted.
+//     `.results-content .results-sim`. The port renders it inside `.results-pending`, where vanilla
+//     wrote it into `.results-content` — and since the finished summary ported too, both zones now
+//     hold a `.results-sim` once a run has completed. The *parent* is printed, not asserted; the
+//     block's visibility is asserted.
 //   - The warnings tooltip is counted as `.warning-zone li`. tippy mounts with `appendTo: 'parent'`
 //     and react-tooltip renders in place, so both land inside the zone and one selector reads either.
 //

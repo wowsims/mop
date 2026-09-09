@@ -48,6 +48,10 @@ export interface DeltaText {
 	tone: 'positive' | 'negative' | null;
 }
 
+/** The sentence both delta tooltips carry, built once so the sidebar's and the bulk row's wording cannot drift. Takes a `zTest` result. */
+export const formatSignificance = ({ z, isDiff }: { z: number; isDiff: boolean }): string =>
+	`Difference is ${isDiff ? '' : 'not '}significantly different (Z = ${z.toFixed(3)}).`;
+
 export function formatDeltaText(
 	before: number,
 	after: number,
@@ -71,24 +75,6 @@ export function formatDeltaText(
 	return { text, tone: delta > 0 != Boolean(lowerIsBetter) ? 'positive' : 'negative' };
 }
 
-// MIGRATION: this writes textContent and the positive/negative classes onto an element it is
-// handed, which makes it a view concern living in the model layer. Its two remaining vanilla
-// callers are results_action.tsx and item_list.tsx.
-export function formatDeltaTextElem(
-	elem: HTMLElement,
-	before: number,
-	after: number,
-	precision: number,
-	lowerIsBetter?: boolean,
-	noColor?: boolean,
-	showPercentage?: boolean,
-) {
-	const { text, tone } = formatDeltaText(before, after, precision, lowerIsBetter, noColor, showPercentage);
-
-	elem.textContent = text;
-	elem.classList.toggle('positive', tone === 'positive');
-	elem.classList.toggle('negative', tone === 'negative');
-}
 // JavaScript's built in modulo (%) has several issues. This is a fix that works similar to the intuitive way modulo works in most languages
 export const formatToCompactNumber: typeof formatToNumber = (number, options) => formatToNumber(number, { notation: 'compact', ...options });
 

@@ -22,7 +22,8 @@ import { LogExporter } from '@features/import-export/view/exporters/detailed_log
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultChannel } from '@features/results/model/result_channel';
 import type { LogExporterFactory } from '@features/results/model/log_exporter';
-import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
+import { SimResultsManager } from '@features/results/model/results_manager';
+import { addSimResultsAction } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';

@@ -76,7 +76,8 @@ describe('ResultMetricList list layout', () => {
 			'results-metric results-sim-tto',
 			'results-metric results-sim-oom danger',
 		]);
-		expect(cells(container, '.topline-result-avg')).toEqual(['1234.50 DPS', '2.50% TMI', '30.00 TTO', '5.00 OOM']);
+		// One space before every label, TMI and CoD included.
+		expect(cells(container, '.topline-result-avg')).toEqual(['1234.50 DPS', '2.50 TMI', '30.00 TTO', '5.00 OOM']);
 	});
 
 	it('rounds the error bar to whole numbers unless the metric is a percentage', () => {

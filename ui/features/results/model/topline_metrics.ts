@@ -1,7 +1,6 @@
 // The topline metric list, as data. One model, two renderers: the sidebar panel draws it as a
 // column of `.results-metric` divs, the three detailed-results panes draw it as a one-row table.
-// Neither layout lives here — see `components/ResultMetricList`, and `view/results_action.tsx`
-// for the vanilla sidebar half that still builds its own DOM from this list.
+// Neither layout lives here — both are `components/ResultMetricList`, picked by its `layout` prop.
 import { DeathKnight } from '@sim/player/classes/death_knight';
 import { Hunter } from '@sim/player/classes/hunter';
 import { Rogue } from '@sim/player/classes/rogue';

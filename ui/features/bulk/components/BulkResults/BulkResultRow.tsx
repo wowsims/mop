@@ -3,7 +3,7 @@ import { ItemDetailCell } from '@features/gear/components/ItemCell';
 import type { TopGearResult } from '@sim/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { formatDeltaText, formatToNumber } from '@sim/utils/format';
+import { formatDeltaText, formatSignificance, formatToNumber } from '@sim/utils/format';
 import { stDevToConf95, zTest } from '@sim/utils/math';
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -36,8 +36,8 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 	const plusMinusDps = stDevToConf95(result.dpsMetrics.stdev, iterations);
 	const isBaseResult = result.gear.equals(baseResult.gear);
 
-	const { z, isDiff } = zTest(iterations, result.dpsMetrics.avg, result.dpsMetrics.stdev, iterations, baseResult.dpsMetrics.avg, baseResult.dpsMetrics.stdev);
-	const delta = formatDeltaText(baseResult.dpsMetrics.avg, result.dpsMetrics.avg, 2, undefined, !isDiff, true);
+	const test = zTest(iterations, result.dpsMetrics.avg, result.dpsMetrics.stdev, iterations, baseResult.dpsMetrics.avg, baseResult.dpsMetrics.stdev);
+	const delta = formatDeltaText(baseResult.dpsMetrics.avg, result.dpsMetrics.avg, 2, undefined, !test.isDiff, true);
 
 	const canDualWield = getBulkPlayerCanDualWield(host.player);
 	const resultAsSpec = result.gear.asSpec();
@@ -64,7 +64,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 								<span className={clsx('results-reference-diff', delta.tone)} {...tooltipAnchorProps(deltaTooltipId)}>
 									{delta.text}
 								</span>
-								<Tooltip id={deltaTooltipId} content={`Difference is ${isDiff ? '' : 'not '}significantly different (Z = ${z.toFixed(3)}).`} />
+								<Tooltip id={deltaTooltipId} content={formatSignificance(test)} />
 							</>
 						)}
 					</div>

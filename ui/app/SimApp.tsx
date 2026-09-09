@@ -80,7 +80,10 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 						</>,
 						simUI.simHeader.importExportContainer,
 					)}
-					{createPortal(<SimResultsPanel panel={simUI.resultsPanel} warnings={simUI.warnings} />, simUI.sidebarResultsContainer)}
+					{createPortal(
+						<SimResultsPanel panel={simUI.resultsPanel} warnings={simUI.warnings} results={simUI.raidSimResultsManager} />,
+						simUI.sidebarResultsContainer,
+					)}
 					{createPortal(<CharacterStats />, simUI.sidebarStatsContainer)}
 					{simUI.raidSimResultsManager &&
 						createPortal(

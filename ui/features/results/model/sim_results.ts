@@ -1,6 +1,6 @@
 // DOM-free half of the sidebar results panel: the shapes a stored run/reference
 // consists of, and the CSS class names the rendered topline results are keyed by.
-// The rendering half lives in ../view/results_action.tsx.
+// The rendering half is components/SimResultsPanel/SimResultSummary.tsx.
 //
 // The class names below are load-bearing outside the app too — the browser sweeps
 // and timing protocols in tools/browser-perf select on `.results-sim-*`.

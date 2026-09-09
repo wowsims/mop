@@ -143,19 +143,6 @@ export const resourceTypeI18nKeys: Record<ResourceType, string> = {
 	[ResourceType.ResourceTypeGenericResource]: 'generic_resource',
 };
 
-// standardize keys regardless they are from backend or frontend
-export const backendMetricI18nKeys: Record<string, string> = {
-	'Chance of Death': 'cod',
-	DTPS: 'dtps',
-	TMI: 'tmi',
-	DPS: 'dps',
-	HPS: 'hps',
-	TPS: 'tps',
-	DUR: 'dur',
-	TTO: 'tto',
-	OOM: 'oom',
-};
-
 export const specI18nKeys: Record<Spec, string> = {
 	[Spec.SpecUnknown]: 'unknown',
 	// Death Knight

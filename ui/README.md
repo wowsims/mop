@@ -22,9 +22,10 @@ ui/
                      components/ (React, one folder per component) + hooks/. The twelve are
                      apl, bulk, character-stats, encounter, gear, import-export, item-swap,
                      reforge, results, settings, stat-weights, talents.
-                     A view/ folder means vanilla code that has not ported yet, and only five
-                     survive: encounter/ (encounter_picker), import-export/ (exporter +
-                     exporters/), results/ (results_action, log/, timeline/), settings/
+                     A view/ folder means code that has not ported yet, and only five survive:
+                     encounter/ (encounter_picker), import-export/ (exporter +
+                     exporters/), results/ (results_action — plain TS, the Simulate button's
+                     wiring — plus log/ and timeline/), settings/
                      (other_inputs, spec_change_warning_toast), talents/ (hunter_pet).
                      They are the remaining migration surface — see
                      .github/skills/wowsims-react/SKILL.md. alias @features

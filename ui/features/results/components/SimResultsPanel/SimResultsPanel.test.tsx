@@ -10,9 +10,14 @@ import { act, render } from '@testing-library/react';
 import { Profiler } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { SimResultsManager } from '../../model/results_manager';
 import { WarningsRegistry } from '../../model/warnings';
 import { ResultsPanelStore } from './results_panel_store';
 import { SimResultsPanel } from './SimResultsPanel';
+
+// The summary needs a whole SimResult; SimResultSummary.test.tsx is where it is asserted. What is
+// under test here is that the content zone renders it and nothing else.
+vi.mock('./SimResultSummary', () => ({ SimResultSummary: () => <div className="sim-result-summary-root" /> }));
 
 const host = (disabled = false, isHealingSpec = false) =>
 	({
@@ -23,12 +28,12 @@ const host = (disabled = false, isHealingSpec = false) =>
 const progress = (dps: number, hps: number, completed: number, total: number, presimRunning = false) =>
 	ProgressMetrics.create({ dps, hps, completedIterations: completed, totalIterations: total, presimRunning });
 
-const mount = (panel: ResultsPanelStore, warnings: WarningsRegistry, disabled = false, isHealingSpec = false) => {
+const mount = (panel: ResultsPanelStore, warnings: WarningsRegistry, disabled = false, isHealingSpec = false, results: SimResultsManager | null = null) => {
 	const commits = vi.fn();
 	const view = render(
 		<SimHostProvider host={host(disabled, isHealingSpec)}>
 			<Profiler id="panel" onRender={commits}>
-				<SimResultsPanel panel={panel} warnings={warnings} />
+				<SimResultsPanel panel={panel} warnings={warnings} results={results} />
 			</Profiler>
 		</SimHostProvider>,
 	);
@@ -87,7 +92,7 @@ describe('SimResultsPanel', () => {
 		expect(view.container.querySelector('.results-pending .results-sim')).not.toBeNull();
 		expect(view.container.querySelector('.results-pending .loader')).toBeNull();
 
-		act(() => panel.setContent(document.createElement('div')));
+		act(() => panel.showResult());
 		expect(zones(view)).toEqual({ pending: false, content: true, buttons: true });
 
 		// `hideAll` takes the Stop button's zone down with the other two, before it is ever removed.
@@ -99,19 +104,11 @@ describe('SimResultsPanel', () => {
 		expect(view.container.querySelector('.button-zone button')).toBeNull();
 	});
 
-	it('leaves .results-content without a React child, so vanilla can own its contents', () => {
-		const { view } = mount(panel, warnings);
-		const content = zone(view, '.results-content');
-		expect(content.childNodes.length).toBe(0);
+	it('renders the finished run into the content zone, and leaves it empty without a manager', () => {
+		expect(zone(mount(panel, warnings).view, '.results-content').childNodes.length).toBe(0);
 
-		const topline = document.createElement('div');
-		topline.className = 'results-sim';
-		act(() => panel.setContent(topline));
-		expect(content.firstElementChild).toBe(topline);
-
-		// A React re-render of the panel must leave the foreign child alone.
-		act(() => panel.addAbortButton(() => {}));
-		expect(content.firstElementChild).toBe(topline);
+		const { view } = mount(panel, warnings, false, false, {} as SimResultsManager);
+		expect(zone(view, '.results-content > .sim-result-summary-root')).not.toBeNull();
 	});
 
 	it('puts the first tick on screen in the same commit that mounts the block', () => {
@@ -141,7 +138,7 @@ describe('SimResultsPanel', () => {
 		expect(commits.mock.calls.length).toBe(afterMount);
 
 		// And a stage change is still exactly one commit.
-		act(() => panel.setContent(document.createElement('div')));
+		act(() => panel.showResult());
 		expect(commits.mock.calls.length).toBe(afterMount + 1);
 	});
 

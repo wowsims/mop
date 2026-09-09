@@ -11,7 +11,6 @@ export enum ResultsPanelStage {
 
 /** Stage and the Stop button are React state; the progress numbers are DOM writes through `onProgress`, and `latestProgress` sits outside the snapshot so the block tick one mounts can read the values that mounted it. `notify` is `flushSync` because the run action reads the panel back in the click's own task. */
 export class ResultsPanelStore implements ResultsPanelHandle {
-	contentElem: HTMLElement | null = null;
 	latestProgress: ProgressMetrics | null = null;
 
 	private stage: ResultsPanelStage = ResultsPanelStage.Idle;
@@ -52,8 +51,7 @@ export class ResultsPanelStore implements ResultsPanelHandle {
 		else this.setStage(ResultsPanelStage.Running);
 	}
 
-	setContent(html: Element) {
-		this.contentElem?.replaceChildren(html);
+	showResult() {
 		this.setStage(ResultsPanelStage.Result);
 	}
 

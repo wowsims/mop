@@ -26,17 +26,8 @@ export const formatAverage = ({ average, unit }: ResultMetric, layout: ResultMet
 export const formatStdev = ({ stdev, unit }: ResultMetric, layout: ResultMetricLayout): string =>
 	layout === 'list' ? (stdev ?? 0).toFixed(errorDecimals(unit)) : formatToNumber(stdev ?? 0, { maximumFractionDigits: errorDecimals(unit) });
 
-/** TMI and CoD are percentages: they carry their sign on the label (`12.34% TMI`) and their tooltip is the long form's title. */
-const isPercentageMetric = (metric: keyof ResultMetrics): boolean => metric === 'tmi' || metric === 'cod';
-
-export const metricLabelPrefix = (metric: keyof ResultMetrics): string => (isPercentageMetric(metric) ? '% ' : ' ');
-
-/** The reference delta the sidebar's `updateReference` fills in; inert everywhere else. */
-export const ResultReferenceDiff = () => (
-	<div className="results-reference hide">
-		<span className="results-reference-diff"></span> {i18n.t('sidebar.results.reference.vs_ref')}
-	</div>
-);
+/** TMI and CoD are the two whose one-line tooltip is the long form's title rather than a `tooltip` key of their own. */
+const hasLongFormTooltip = (metric: keyof ResultMetrics): boolean => metric === 'tmi' || metric === 'cod';
 
 /** Whether a metric draws a tooltip at all — asked before rendering one, so it must not build the content to answer. */
 export const hasMetricTooltip = (metric: keyof ResultMetrics | null, layout: ResultMetricLayout): boolean => !!metric && (layout === 'row' || metric !== 'oom');
@@ -45,7 +36,7 @@ export const hasMetricTooltip = (metric: keyof ResultMetrics | null, layout: Res
 export const resultMetricTooltip = (metric: keyof ResultMetrics | null, layout: ResultMetricLayout): ReactNode => {
 	if (!metric) return null;
 
-	if (layout === 'row') return i18n.t(`sidebar.results.metrics.${metric}.${isPercentageMetric(metric) ? 'tooltip.title' : 'tooltip'}`);
+	if (layout === 'row') return i18n.t(`sidebar.results.metrics.${metric}.${hasLongFormTooltip(metric) ? 'tooltip.title' : 'tooltip'}`);
 
 	switch (metric) {
 		case 'oom':

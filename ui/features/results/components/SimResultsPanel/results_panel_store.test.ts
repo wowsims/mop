@@ -64,19 +64,6 @@ describe('ResultsPanelStore', () => {
 		expect(store.latestProgress?.completedIterations).toBe(3);
 	});
 
-	// This module is lint-enforced DOM-free, so the element React hands it is stubbed rather than built.
-	it('writes the finished content into the element React hands it, and survives not having one', () => {
-		const topline = {} as Element;
-		expect(() => store.setContent(topline)).not.toThrow();
-
-		const replaceChildren = vi.fn();
-		store.contentElem = { replaceChildren } as unknown as HTMLElement;
-		store.setContent(topline);
-
-		expect(replaceChildren).toHaveBeenCalledWith(topline);
-		expect(store.getStage()).toBe(ResultsPanelStage.Result);
-	});
-
 	it('hides the button zone without removing the button, the way an aborted run does', () => {
 		store.addAbortButton(() => {});
 		store.hideAll();

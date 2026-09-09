@@ -12,7 +12,6 @@ import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';
 import i18n from './config';
 import {
 	aplItemLabelI18nKeys,
-	backendMetricI18nKeys as resultMetricI18nKeys,
 	classNameToClassKey,
 	getArmorTypeI18nKey,
 	getBulkSlotI18nKey,
@@ -310,27 +309,6 @@ export const translateItemLabel = (itemLabel: string): string => {
 	} catch {
 		return itemLabel;
 	}
-};
-
-export const translateResultMetricLabel = (metricName: string): string => {
-	const cleanName = metricName.replace(/[O0]$/, '');
-	const key = resultMetricI18nKeys[cleanName] || resultMetricI18nKeys[metricName];
-	if (!key) return metricName;
-
-	return i18n.t(`sidebar.results.metrics.${key}.label`, {
-		defaultValue: metricName,
-	});
-};
-
-export const translateResultMetricTooltip = (metricName: string): string => {
-	const cleanName = metricName.replace(/[O0]$/, '');
-	const key = resultMetricI18nKeys[cleanName] || resultMetricI18nKeys[metricName];
-	if (!key) return metricName;
-
-	const tooltipKey = key === 'tmi' || key === 'cod' ? `${key}.tooltip.title` : `${key}.tooltip`;
-	return i18n.t(`sidebar.results.metrics.${tooltipKey}`, {
-		defaultValue: metricName,
-	});
 };
 
 export const translateSlotName = (slot: ItemSlot): string => {

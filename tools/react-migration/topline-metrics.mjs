@@ -2,9 +2,13 @@
 // `results-tabs.mjs` cuts its serialisation at `PANE_DEPTH` — one level above the cells.
 //
 // One model feeds two renderers (`features/results/model/topline_metrics.ts`): the three
-// detailed-results panes draw it as a one-row table, the sidebar draws it as a stacked list. The
-// React port replaced the table renderer and left the list renderer vanilla, so this compares
-// *both* across the two ports — the table because it changed, the list because it must not have.
+// detailed-results panes draw it as a one-row table, the sidebar draws it as a stacked list. Both
+// are `ResultMetricList` now, so this compares both against the baseline's two separate builders —
+// digit for digit, class for class, and tooltip for tooltip.
+//
+// It reads the sidebar with no reference saved, which is the only state it can reach without
+// clicking: the reference bar, its three buttons and the deltas they fill in are
+// `sidebar-reference.mjs`.
 //
 // Values are compared digit for digit, which is normally unsound across ports because each build
 // runs its own unseeded iteration. So the run is seeded: the base build's own autosaved settings
