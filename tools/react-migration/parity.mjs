@@ -59,9 +59,11 @@ const MODAL = /\.(modal|sim-dialog-portal)(\.|$)/;
 // six leave the baseline, the one React still builds leaves the React side, and that pair is
 // asserted against each other below instead of by the set comparison.
 //
-// `importer` is the same arrangement one step earlier: three baseline importers are built into the
-// header at load, and they port one at a time. All three leave the baseline; whichever React still
-// builds as Bootstrap modals leave the React side and are asserted against their twins.
+// `importer` is three baseline modals, the ones the header builds at load. All four importers have
+// ported, so React builds none of them as a Bootstrap modal and there is nothing left on that side
+// to assert against a twin. The fourth is the batch's gear importer, and it is why this reads three
+// and not four: neither build carries it at load — master constructs it on click, and React mounts
+// its dialog only while it is open, the way the batch's progress tracker is mounted only mid-run.
 const PORTED_DIALOGS = [
 	['advanced-encounter-picker-modal', 1],
 	['exporter', 6],

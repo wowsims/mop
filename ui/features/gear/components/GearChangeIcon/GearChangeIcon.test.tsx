@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: 'icon.png', name: 'Item', href: 'https://wowhead/item', ready: true }) }));
 vi.mock('@ui-kit/hooks/useWowheadDataset', () => ({ useWowheadDataset: () => {} }));
 vi.mock('@sim/proto/action_id/dom', () => ({ equippedItemWowheadTooltipData: () => Promise.resolve('') }));
-vi.mock('../../view/gear_elements', () => ({ getEmptySlotIconUrl: () => 'empty-slot.png' }));
+vi.mock('../../model/empty_slot_icons', () => ({ getEmptySlotIconUrl: () => 'empty-slot.png' }));
 vi.mock('@sim/proto/gems', () => ({ getEmptyGemSocketIconUrl: (color: number) => `socket-${color}.png` }));
 
 const { GearChangeIcon } = await import('./GearChangeIcon');
@@ -72,8 +72,20 @@ describe('GearChangeIcon', () => {
 	it('marks only the sockets whose gem moved', () => {
 		const { container } = renderIcon({
 			slot: ItemSlot.ItemSlotHead,
-			item: item({ gems: [{ id: 1, name: 'Bold' }, { id: 9, name: 'Delicate' }], sockets: [1, 2] }),
-			previousItem: item({ gems: [{ id: 1, name: 'Bold' }, { id: 2, name: 'Precise' }], sockets: [1, 2] }),
+			item: item({
+				gems: [
+					{ id: 1, name: 'Bold' },
+					{ id: 9, name: 'Delicate' },
+				],
+				sockets: [1, 2],
+			}),
+			previousItem: item({
+				gems: [
+					{ id: 1, name: 'Bold' },
+					{ id: 2, name: 'Precise' },
+				],
+				sockets: [1, 2],
+			}),
 		});
 
 		const sockets = [...container.querySelectorAll('.gem-socket-container')];
@@ -89,7 +101,13 @@ describe('GearChangeIcon', () => {
 describe('gearChangeSockets', () => {
 	it('walks the previous item, so a slot that gained a socket does not report it changed', () => {
 		const result = gearChangeSockets(
-			item({ gems: [{ id: 1, name: 'Bold' }, { id: 5, name: 'New' }], sockets: [1, 2] }),
+			item({
+				gems: [
+					{ id: 1, name: 'Bold' },
+					{ id: 5, name: 'New' },
+				],
+				sockets: [1, 2],
+			}),
 			item({ gems: [{ id: 1, name: 'Bold' }], sockets: [1] }),
 		);
 

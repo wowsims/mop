@@ -3,7 +3,6 @@ import type { Database } from '@sim/proto/database';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { noticeElement } from './view/item_notices';
 import { ITEM_NOTICES, MISSING_RANDOM_SUFFIX_WARNING, registerSetBonusNotices, SET_BONUS_NOTICES } from './item_notices';
 
 const markup = (itemId: number, spec: Spec = Spec.SpecUnknown) => renderToStaticMarkup(ITEM_NOTICES.get(itemId)?.[spec]);
@@ -45,7 +44,7 @@ describe('registerSetBonusNotices', () => {
 	});
 
 	// The set-bonus notices are written into the same map the pickers read at runtime, which is why
-	// there is one table and the vanilla side derives DOM from it rather than holding a second copy.
+	// there is one table rather than a second copy.
 	it('writes a notice into the shared table for every item in the set', () => {
 		SET_BONUS_NOTICES.set(SET_ID, null);
 		registerSetBonusNotices({ getItemIdsForSet: (setId: number) => (setId === SET_ID ? ITEM_IDS : []) } as unknown as Database);
@@ -56,21 +55,5 @@ describe('registerSetBonusNotices', () => {
 					'<ul class="mb-0"><li>2-piece: Not yet implemented</li><li>4-piece: Not yet implemented</li></ul>',
 			);
 		}
-	});
-});
-
-describe('noticeElement', () => {
-	it('gives the vanilla side the same markup, with no wrapper element', () => {
-		const fragment = noticeElement(ITEM_NOTICES.get(95346)?.[Spec.SpecUnknown]);
-
-		expect(fragment).toBeInstanceOf(DocumentFragment);
-		expect([...fragment.children].map(child => child.tagName)).toEqual(['P', 'P']);
-		expect([...fragment.children].map(child => child.outerHTML).join('')).toBe(markup(95346));
-	});
-
-	it('concatenates several notices in order', () => {
-		const fragment = noticeElement(ITEM_NOTICES.get(95346)?.[Spec.SpecUnknown], MISSING_RANDOM_SUFFIX_WARNING);
-
-		expect([...fragment.children].map(child => child.outerHTML).join('')).toBe(markup(95346) + renderToStaticMarkup(MISSING_RANDOM_SUFFIX_WARNING));
 	});
 });

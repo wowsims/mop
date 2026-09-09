@@ -1,5 +1,4 @@
 import type { Exporter } from '@features/import-export/view/exporter';
-import type { Importer } from '@features/import-export/view/importer';
 import type { ComponentType } from 'react';
 
 export enum ImportExportKind {
@@ -32,8 +31,8 @@ export class ImportExportRegistry {
 
 	readonly getEntries = (kind: ImportExportKind): ReadonlyArray<ImportExportEntry> => this.entries[kind];
 
-	add(kind: ImportExportKind, label: string, importerExporter: Importer | Exporter, isUnsupported: boolean) {
-		this.push(kind, { label, isUnsupported, open: () => importerExporter.open() });
+	add(kind: ImportExportKind, label: string, exporter: Exporter, isUnsupported: boolean) {
+		this.push(kind, { label, isUnsupported, open: () => exporter.open() });
 	}
 
 	addDialog(kind: ImportExportKind, label: string, Dialog: ComponentType<ImportExportDialogProps>, isUnsupported = false) {

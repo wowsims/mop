@@ -383,7 +383,7 @@ of the duplication sweep was to build each shape once.
 | `GlyphsPicker` | `ui/features/talents/components/GlyphsPicker/` | `features/talents/view/glyphs_picker.tsx` (**deleted** — one consumer) | nothing — the class comes from the host | the two blocks of three slots, the one dialog all six share, and that it **still wears** gear's `item-picker-*` and `selector-modal-*` class names to inherit those stylesheets, which stay global. Only the `.glyph*` rules co-located, checked by a before/after build rule-stream diff rather than by reading specificity |
 | `AdvancedEncounterModal` | `ui/features/encounter/components/AdvancedEncounterModal/` | the `AdvancedEncounterModal` class in `features/encounter/view/encounter_picker.ts` (**deleted**) | nothing — `open`/`onOpenChange` only | the header's preset picker, and that its two halves are vanilla islands |
 | `Exporter` | `ui/features/import-export/components/Exporter/` | `IndividualExporter` and its six subclasses (**deleted**); `view/exporter.tsx` stays for `LogExporter`, whose opener is in the un-ported log runner | `title`, `allowDownload`, `selectCategories`, `getData` — an `ExporterDefinition` from `features/import-export/exporters/` | the textarea, the copy button, the download button and the category row. `exporterDialog(def)` binds one for the registry, because `individual_sim_ui` cannot write JSX |
-| `Importer` | `ui/features/import-export/components/Importer/` | `IndividualImporter`'s four concrete subclasses (**deleted**); `view/importer.tsx` and `IndividualImporter` stay for `BulkGearJsonImporter`, whose opener is in the un-ported bulk tab | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The four `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write |
+| `Importer` | `ui/features/import-export/components/Importer/` | the four header importers and `BulkGearJsonImporter` (**all deleted**, with `view/importer.tsx` and `view/importers/`) | `title`, `allowFileUpload`, `onImport` — an `ImporterDefinition` from `features/import-export/importers/` — plus the description, which is `children` | the description block, the textarea, the upload label and its hidden input, the import button, that a rejected `onImport` is an error toast with the dialog left open, and that a resolved one closes it. The five `*ImporterDialog.tsx` beside it bind one definition each and are not shared components: the description is JSX, so there is no `importerDialog(def)` binder to write. Owns `Importer.scss`, co-located from `scss/core/components/_importers.scss` once no `.importer` was a Bootstrap `.modal` any more — its `.modal-footer` half went with them. **`BulkGearImporterDialog` is the one mounted on demand**, `{open && …}` rather than `keepMounted`: master builds that modal on click, so a portal held at load would be a shell line `parity.mjs` has no baseline twin for |
 | `ImportWarning` | `ui/features/import-export/components/Importer/ImportWarning.tsx` | `showImportWarning` in `view/importer.tsx` (**deleted**) | `titleKey`, `messageKey` | the pinned, undismissable warning toast, that its body is a real `<div>`, and its teardown — `Toast` is not a `Component`, so this is `useLegacyMount`'s shape written by hand |
 | `MultiIconPicker` | `ui/ui-kit/MultiIconPicker/` | `ui-kit/pickers/multi_icon_picker.tsx` (still live, dual-stack) | the `MultiIconPickerConfig` it is given, plus `subscribe` and `onClear` as props — ui-kit can reach neither `useSimHost` nor `features/` | the option-list markup, hover-open at delay 0, and that clicking inside keeps the menu open |
 | `IconEnumPicker` | `ui/ui-kit/IconEnumPicker/` | `ui-kit/pickers/icon_enum_picker.tsx` — the cooldowns picker was its last consumer and `features/settings/view/cooldowns_picker.ts` is **deleted**, so the only `new IconEnumPicker(...)` left is the `iconEnum` branch of `ui-kit/icon_inputs.ts:29`'s `buildIconInput`, which now has no callers at all. `stat_options.ts` still names the class in a `typeof` type position, which is why a naive grep reads as live | the `IconEnumPickerConfig` it is given | the button-and-menu markup, that choosing an option closes the menu, and the button's `href`, which vanilla only ever overwrote. `iconEnumPickerShown(config, modObject)` is its `showWhen()` override, exported because a caller can need the answer without the picker |
@@ -1532,18 +1532,69 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
    sixteen recorded defects fixed. The investigation is
    `.github/skills/wowsims-react/plans/stat-weights.md`, in this repo, units struck.
    **import-export is done** — the five header exporters
-   landed first, the four individual importers followed. What is left of the feature is two dialogs
-   whose openers live inside un-ported tabs and which therefore port with those tabs, not with this
-   one: `LogExporter` (results, hands-off) and `BulkGearJsonImporter`. `view/exporter.tsx`,
-   `view/importer.tsx` and `IndividualImporter` stay alive for exactly those two — and since bulk has
-   ported, `BulkGearJsonImporter` is a unit of its own now rather than a thing blocked on it. It is
-   opened from React the way seven other React files open a vanilla `Toast`.
+   landed first, the four individual importers followed, and the batch's gear importer on 2026-09-09.
+   One dialog is left: `LogExporter`, whose opener is inside the un-ported log runner and which
+   therefore ports with it, not from here. `view/exporter.tsx` stays alive for exactly that one, and
+   it is why `VANILLA_ON_BOTH` in `parity.mjs` still reads `[['exporter', 1]]`.
 
 **Not queued, deliberately.** The three dropdown pickers could go on Base UI `Menu` now that the
 adapter exists, but every one of their callers is still vanilla — a React picker with no consumer is
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-09 **The batch's gear importer ports, and with it the vanilla `Importer`, the last of gear's
+  `view/`, and the spec-change toast.** Deleted: `import-export/view/importer.tsx` (83) and
+  `view/importers/` (`bulk_gear_json_importer.tsx`, 43, plus its barrel); `features/gear/view/`
+  entirely — `item_notice.tsx` (88), `item_notices.tsx` (40), `gear_elements.tsx` (28) — and
+  `NameDescriptionLabel.parity.test.tsx`, whose vanilla subject it was — its one React-only case, the
+  `className` axis the vanilla helper had no parameter for, is `NameDescriptionLabel.test.tsx` now.
+  `settings/view/spec_change_warning_toast.tsx` became a `.ts`. `@jsx-vanilla` files go 36 → 30, of which 29 are source. `import-export/view/` now holds only the exporter and
+  `LogExporter`; `features/gear/` has no `view/` at all.
+  **The vanilla importer leaked a modal per click, and that is the port's evidence.** `BulkTabBody`
+  ran `new BulkGearJsonImporter(host.rootElem, host, bt).open()` on every press, and `Importer`'s
+  `BaseModal` is `disposeOnClose: false` — so nothing was ever removed. A probe against :3401 counts
+  `.importer` at 3 on load and **8** after five opens; the React build is 3 and 4, back to 3 on close.
+  Everything else the probe compared is identical on both builds: title, the two description `<p>`s as
+  direct children of `.import-description`, `spellcheck=false`, the upload label's `for` against the
+  input's id, both footer buttons at 168px, the textarea at 288px, and 15 → 17 batch pickers from the
+  same payload.
+  **Two more vanilla defects die with the class.** `onImport` wrapped everything in a `try` that ended
+  in `console.warn` + `alert(e.toString())` — the only importer of the five that reported a bad payload
+  through an OS dialog instead of the error toast; the React definition throws and `Importer` toasts it
+  with the dialog left open, which is what the other four already did. And `Importer.open()`'s
+  `trackPageView(this.header!.title, …)` read the `.modal-header` *element*, so every batch import was
+  logged with an empty title under the slug `/import/`; the React component tracks the `title` prop.
+  That was the last holder of the bug the exporter port found.
+  **It is mounted on demand, not `keepMounted`, and the gate is what decides that.** The other four
+  importer dialogs are portals held from load, matching three baseline modals the header builds. Master
+  builds *this* one on click, so an always-mounted portal is one `[pruned]` shell line with no baseline
+  twin — `parity.mjs` failed all six specs with exactly that, and no `INTENDED` entry can express an
+  insertion. `{importOpen && <BulkGearImporterDialog open … />}` is the `BulkProgressDialog` shape one
+  row below it, and it needs **no `PORTED_DIALOGS` entry and no `PORTED_DIALOG_REACT` bump** — only the
+  `importer` comment, which no longer has a React Bootstrap twin to describe. `VANILLA_ON_BOTH` still
+  reads `[['exporter', 1]]`: that is `LogExporter`, which has not ported.
+  **`ImporterDefinition` already hands `onImport` an `IndividualSimHost<any>`**, so `host.bt` is
+  `BulkTab | null` with no `isIndividualSimHost` narrowing to do; the definition throws on a null the
+  way `useBulkTab` does, which reaches the user as the same error toast rather than a silent no-op.
+  **`SimHeader.addImportLink` had to go with the type it named**, and the chain it fed is now dead with
+  no live producer: `addExportLink` → `ImportExportRegistry.add()` → `ImportExportEntry.open?` →
+  `ImportExportMenu`'s `entry.open?.()` branch. Only `addDialog` is reached. Left in place — it is
+  pre-existing dead code, not this port's, and `sim_header.tsx` is still vanilla.
+  **`ItemNotice`'s only production caller was its own static.** `individual_sim_ui.tsx` called
+  `ItemNotice.registerSetBonusNotices(db)`, a one-line forwarder to `features/gear/item_notices`; the
+  class itself had no consumer left, because `ItemNoticeIcon` replaced every one when the gear pickers
+  ported. Deleting it removes `view/item_notices.tsx` with it — the throwaway `createRoot` shim that
+  handed tippy DOM — and **`react-dom/client` is now imported in exactly one file, `app/spec_entry.tsx`**,
+  which is what the eslint suppression on that shim was waiting for. `createNameDescriptionLabel`'s only
+  remaining consumer was the parity test asserting React matched it, so the two go together, and
+  `getEmptySlotIconUrl` — the file's other half, and not JSX — moves to `gear/model/empty_slot_icons.ts`.
+  **The toast's `body` is `string | Node` now, not `string | Element`.** The type was already lying: a
+  tsx-vanilla `<>…</>` is a `DocumentFragment` at runtime, and `spec_change_warning_toast` passed one.
+  Building the same fragment by hand keeps `.toast-body`'s children exactly as they were, where the
+  `document.createElement('div')` the other two non-JSX toast bodies use would have added a wrapper.
+  The file is a `.ts` **in place** — three `ui/specs/**` presets import it, and an extensionless
+  specifier means that frozen surface is untouched.
 
 - 2026-09-09 **The bulk tab is React, and it takes the vanilla gear selector with it.**
   `features/bulk/view/` is gone — 5 files, 2,187 lines — and so are `features/gear/view/`'s

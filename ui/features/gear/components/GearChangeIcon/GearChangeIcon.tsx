@@ -13,7 +13,7 @@ import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useRef } from 'react';
 
-import { getEmptySlotIconUrl } from '../../view/gear_elements';
+import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 import { gearChangeSockets } from './utils';
 
 export interface GearChangeIconProps {

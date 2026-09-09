@@ -1,4 +1,3 @@
-/** @jsxImportSource @jsx-vanilla */
 import { ItemSlot } from '@generated/proto/common';
 
 const emptySlotIcons: Record<ItemSlot, string> = {
@@ -19,10 +18,5 @@ const emptySlotIcons: Record<ItemSlot, string> = {
 	[ItemSlot.ItemSlotMainHand]: '/mop/assets/item_slots/mainhand.jpg',
 	[ItemSlot.ItemSlotOffHand]: '/mop/assets/item_slots/offhand.jpg',
 };
-export function getEmptySlotIconUrl(slot: ItemSlot): string {
-	return emptySlotIcons[slot];
-}
 
-export const createNameDescriptionLabel = (nameDesc: string) => {
-	return <small className="heroic-label">({nameDesc})</small>;
-};
+export const getEmptySlotIconUrl = (slot: ItemSlot): string => emptySlotIcons[slot];

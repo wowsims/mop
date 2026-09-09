@@ -1,6 +1,5 @@
 /** @jsxImportSource @jsx-vanilla */
 import { Exporter } from '@features/import-export/view/exporter';
-import { Importer } from '@features/import-export/view/importer';
 import { Component } from '@ui-kit/component';
 
 import { trackPageView } from '../../tracking/analytics';
@@ -34,9 +33,6 @@ export class SimHeader extends Component {
 		this.settingsMenu.open();
 	}
 
-	addImportLink(label: string, importer: Importer, isUnsupported = false) {
-		this.importExport.add(ImportExportKind.Import, label, importer, isUnsupported);
-	}
 	addExportLink(label: string, exporter: Exporter, isUnsupported = false) {
 		this.importExport.add(ImportExportKind.Export, label, exporter, isUnsupported);
 	}

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 export type ToastOptions = {
 	title?: string;
 	variant: 'info' | 'success' | 'error' | 'warning';
-	body: string | Element;
+	body: string | Node;
 	autoShow?: boolean;
 	canClose?: boolean;
 	container?: Element;

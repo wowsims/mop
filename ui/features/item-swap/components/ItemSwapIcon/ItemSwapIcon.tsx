@@ -3,7 +3,7 @@ import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { GemSocket, ItemCellAnchor } from '@features/gear/components/ItemCell';
 import { SelectorModalTabs } from '@features/gear/types';
-import { getEmptySlotIconUrl } from '@features/gear/view/gear_elements';
+import { getEmptySlotIconUrl } from '@features/gear/model/empty_slot_icons';
 import type { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import { useActionId } from '@ui-kit/hooks/useActionId';

@@ -15,7 +15,7 @@ import { type ReactNode, useMemo, useRef } from 'react';
 
 import { MISSING_RANDOM_SUFFIX_WARNING } from '../../item_notices';
 import { SelectorModalTabs } from '../../types';
-import { getEmptySlotIconUrl } from '../../view/gear_elements';
+import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 import { EnchantLabel } from '../GearPicker/EnchantLabel';
 import { ItemNoticeIcon } from '../GearPicker/ItemNoticeIcon';
 import { GemSocket } from './GemSocket';

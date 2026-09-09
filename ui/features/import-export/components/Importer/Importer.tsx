@@ -1,3 +1,5 @@
+import './Importer.scss';
+
 import { useSimHost } from '@sim/context/SimHostContext';
 import { kebabCase } from '@sim/utils/format';
 import i18n from '@i18n/config';

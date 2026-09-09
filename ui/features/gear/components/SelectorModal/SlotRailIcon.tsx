@@ -8,7 +8,7 @@ import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';
 import { useMemo, useRef } from 'react';
 
-import { getEmptySlotIconUrl } from '../../view/gear_elements';
+import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 import { ItemCellAnchor } from '../ItemCell';
 
 export interface SlotRailIconProps {

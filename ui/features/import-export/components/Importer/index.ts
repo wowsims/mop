@@ -1,4 +1,5 @@
 export { AddonImporterDialog } from './AddonImporterDialog';
+export { BulkGearImporterDialog } from './BulkGearImporterDialog';
 export { Importer } from './Importer';
 export type { ImporterProps } from './Importer';
 export { ImportWarning } from './ImportWarning';

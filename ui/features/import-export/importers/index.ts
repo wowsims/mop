@@ -1,4 +1,5 @@
 export { ADDON_IMPORTER, glyphToID } from './addon';
+export { BULK_GEAR_IMPORTER } from './bulk_gear';
 export { finishIndividualImport } from './finish_individual_import';
 export type { IndividualImport } from './finish_individual_import';
 export { JSON_IMPORTER } from './json';

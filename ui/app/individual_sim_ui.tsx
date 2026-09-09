@@ -3,7 +3,7 @@ import { BulkTab } from '@features/bulk/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
-import { ItemNotice } from '@features/gear/view/item_notice';
+import { registerSetBonusNotices } from '@features/gear/item_notices';
 import {
 	AddonImporterDialog,
 	CLI_EXPORTER,
@@ -231,7 +231,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		// This needs to go before all the UI components so that gear loading is the
 		// first callback invoked from waitForInit().
 		this.sim.waitForInit().then(() => {
-			ItemNotice.registerSetBonusNotices(this.sim.db);
+			registerSetBonusNotices(this.sim.db);
 			this.loadSettings();
 
 			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {

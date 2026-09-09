@@ -6,7 +6,7 @@ import { BulkSettings } from '@features/bulk/components/BulkSettings';
 import { useBulkRevision } from '@features/bulk/hooks/useBulkRevision';
 import { useBulkTab } from '@features/bulk/hooks/useBulkTab';
 import { SelectorModal } from '@features/gear/components/SelectorModal';
-import { BulkGearJsonImporter } from '@features/import-export/view/importers';
+import { BulkGearImporterDialog } from '@features/import-export';
 import { REPO_RELEASES_URL } from '@sim/constants/other';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { ItemSpec } from '@generated/proto/common';
@@ -31,6 +31,7 @@ export const BulkTabBody = () => {
 	useBulkRevision();
 
 	const [activeId, setActiveId] = useState<BulkPaneId>('bulkSetupTab');
+	const [importOpen, setImportOpen] = useState(false);
 	const shownId = useTabFade(activeId);
 	const results = bt.getResults();
 	// Starting a run clears the results and drops back to setup; finishing one opens the results.
@@ -73,7 +74,7 @@ export const BulkTabBody = () => {
 								)}
 							</div>
 							<div className="bulk-gear-actions">
-								<button type="button" className="btn btn-secondary" onClick={() => new BulkGearJsonImporter(host.rootElem, host, bt).open()}>
+								<button type="button" className="btn btn-secondary" onClick={() => setImportOpen(true)}>
 									<Icon name="download" style="base" className="me-1" /> {i18n.t('bulk_tab.actions.import_bags')}
 								</button>
 								<button
@@ -100,6 +101,7 @@ export const BulkTabBody = () => {
 				</div>
 			</div>
 			<BulkSettings />
+			{importOpen && <BulkGearImporterDialog open onOpenChange={setImportOpen} />}
 			<SelectorModal opener={bt.selectorModal} id="bulk-selector-modal" rail={false} />
 			{bt.isBulkRunning() && <BulkProgressDialog />}
 		</>

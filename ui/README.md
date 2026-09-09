@@ -18,36 +18,31 @@ ui/
                      base_modal, content_block, toast, copy_button, tooltip_button, tab_keys,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
-  features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     apl/ (model/ action_id_sets + unit_sets + field_descriptors +
-                     the value_kinds/action_kinds registries, view/ the pickers),
-                     gear/ (gear_picker/* flattened in, plus
-                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice; plus
-                     quick_swap/gear_change_icon), reforge/, results/ (plus
-                     view/results_viewer), stat-weights/ (plus view/saved_ep_weights),
-                     talents/, item-swap/ (view/, item_swap_picker),
-                     character-stats/ (view/, character_stats), encounter/ (view/,
-                     encounter_picker), settings/ (model/ buffs_debuffs/consumables/
-                     stat_options/other_inputs, view/ cooldowns_picker + consumes_picker +
-                     other_inputs + spec_change_warning_toast), bulk/ (model/ core_sim, view/
-                     bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
-                     bulk_sim_results_renderer flattened), import-export/ (view/
-                     importer/exporter + importers/ + exporters/); plus two top-level
-                     type files: sim_host.ts (SimHost/IndividualSimHost) and spec_config.ts
-                     (IndividualSimUIConfig + registerSpecConfig). alias @features
-  app/               shells + chrome that compose features. browser_env.ts,
-                     header/ (sim_header, sim_title_dropdown, social_links), settings_menu.tsx,
-                     tabs/ (gear_tab, talents_tab, rotation_tab, settings_tab),
-                     notice_native_sim.tsx, preset_configuration_picker.tsx,
-                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.ts. alias @app
+  features/<name>/   one folder per capability: model/ (DOM-free, lint-enforced) +
+                     components/ (React, one folder per component) + hooks/. The twelve are
+                     apl, bulk, character-stats, encounter, gear, import-export, item-swap,
+                     reforge, results, settings, stat-weights, talents.
+                     A view/ folder means vanilla code that has not ported yet, and only five
+                     survive: encounter/ (encounter_picker), import-export/ (exporter +
+                     exporters/), results/ (results_action, log/, timeline/), settings/
+                     (other_inputs, spec_change_warning_toast), talents/ (hunter_pet).
+                     They are the remaining migration surface — see
+                     .github/skills/wowsims-react/SKILL.md. alias @features
+  app/               shells + chrome that compose features, and the only place allowed to
+                     import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
+                     tabs/ (a React <X>TabBody per tab, beside a small SimTab registration
+                     shim), header/, PresetConfigurationPicker/, shell_classes + shell_dom,
+                     browser_env, known_issues, preset_utils, and the three vanilla files
+                     still to dissolve: sim_ui.tsx, individual_sim_ui.tsx,
+                     settings_menu.tsx. alias @app
   i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
                      the top level rather than under app/. alias @i18n
-  sims/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
+  specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
                      ui/index_template.html is served (dev) and emitted (build) at every
                      /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
-                     replace the 34 per-spec sims/<class>/<spec>/{index,_sim}.scss (PR 8a)
+                     replace the 34 per-spec specs/<class>/<spec>/{index,_sim}.scss (PR 8a)
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
 ```
 
@@ -78,7 +73,7 @@ for the component registry and the migration's current position.
   constants (`InputDelay`, `TankAssignment`, the healing-model inputs — data a spec declares),
   `settings/view/other_inputs.ts` the `make*Selector(parent, sim)` DOM constructors.
 - `app/`: composes features; the only place that knows the tab layout.
-- `sims/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
+- `specs/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 
 ## Dependency direction
 
@@ -205,10 +200,10 @@ The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` wh
 
 ### The entry flow
 
-`ui/app/spec_entry.ts` is the single page entry for every spec, referenced from
+`ui/app/spec_entry.tsx` is the single page entry for every spec, referenced from
 `ui/index_template.html`. It derives the module key from `location.pathname`
-(`/mop/<class>/<spec>/` → `../sims/<class>/<spec>/spec`), loads it from a lazy
-`import.meta.glob('../sims/*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
+(`/mop/<class>/<spec>/` → `../specs/<class>/<spec>/spec`), loads it from a lazy
+`import.meta.glob('../specs/*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
 tooltips need real JSX — so each spec ships its own chunk and only the visited one is fetched
 — then:
 

@@ -6,7 +6,7 @@ import type { IndividualSimHost } from '@sim/sim_host';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { getEmptySlotIconUrl } from '../../view/gear_elements';
+import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 
 const useActionId = vi.hoisted(() => vi.fn(() => ({ iconUrl: 'item-icon.jpg', name: '', href: 'https://wowhead.com/item=1', ready: true })));
 const useWowheadDataset = vi.hoisted(() => vi.fn());
