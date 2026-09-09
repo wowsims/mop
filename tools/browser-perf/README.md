@@ -16,6 +16,17 @@ Prerequisites: a Go host serving a built `dist/` (see `.github/skills/wowsims-ui
   (`PORT=3402 node tools/browser-perf/rotation-swap-timing.mjs warrior/arms`), so a branch and its
   baseline can be timed in one session against the two static servers `tools/react-migration` uses.
   Reports the same per-swap figures plus the mounted row and item counts.
+- `rotation-scroll-counts.mjs` — precise-coverage call counts for scrolling the rotation timeline,
+  parameterised by port (`PORT=3402 node tools/browser-perf/rotation-scroll-counts.mjs warrior/arms`).
+  Seeds the sim the way `tools/react-migration/timeline.mjs` does — two builds must run the same fight
+  or every count is noise — then drives three sequences of a fixed number of animation frames:
+  `scroll-h` (a 37px/frame horizontal pan, where the ruler moves), `scroll-v` (a 3px/frame page scroll,
+  where it must not) and `zoom` (eight ladder steps, where every tick is re-placed). `SEQ=` picks the
+  sequences; `ALL=1` dumps every function's delta as `name@offset`, and since two builds of the same
+  tree share most bundle offsets, those dumps diff line for line. Per sequence it reports total calls,
+  the top functions with their minified source, ruler-track and `.rotation-content` mutation counts,
+  the page's own `requestAnimationFrame` count and a native-event histogram — identical frames,
+  commits and events across two builds are what make a call-count delta attributable to the change.
 - `spec-sweep.js` — smoke every DPS/tank spec: load, picker count, Simulate, real result, console +
   page errors. Known noise: `Empty action id!` x2 on the hunter specs and elemental shaman (present on
   master too; comes from result data with no spell/item id).
@@ -88,3 +99,48 @@ React), master re-recorded in the same session: every count above is reproduced 
 modal mutations on the open, 382 on the favourite toggle, 93 per keystroke, 178 on the tab switch,
 443 on the scroll, pool 1658 / 29 mounted / 56 px rows — and every timing falls inside the recorded
 range. Those units do not touch the item list, which is what the counts confirm.
+
+## Rotation ruler — the port that was measured and thrown away, 2026-09-09
+
+Recorded with `rotation-scroll-counts.mjs` while deciding whether
+`features/results/view/timeline/rotation/ruler.ts` should become a React component. Both sides are
+static builds of `feature/ui-react` @ `470dc186c`, frozen and served on their own ports, warrior/arms,
+seed 1337, 100 iterations, headless Chromium. **Counts, not timings** — wall clock on this host spans
+several times the effect being measured. The table is one paired run of the finished script; the
+spreads below it are the earlier interleaved runs, which carried less instrumentation and so sit a
+little lower in absolute terms while giving the same ratio.
+
+| sequence | imperative `Ruler` | React `RotationRuler` |
+|---|---|---|
+| `scroll-h`, 60 frames — total JS calls | 266,771 | 299,258 (**+12.2%**) |
+| `scroll-h` — ruler-track mutations / node insertions | 315 / 105 | 242 / 91 (**−23%**) |
+| `scroll-v`, 60 frames — total JS calls | 156,524 | 147,581 (−5.7%) |
+| `scroll-v` — ruler-track mutations | 0 | 0 |
+| `zoom`, 8 steps — total JS calls | 74,838 | 70,123 (−6.3%) |
+| frames driven / `.rotation-content` mutations — `scroll-h` | 211 / 263 | 211 / 263 |
+| frames driven / `.rotation-content` mutations — `scroll-v` | 187 / 18 | 187 / 18 |
+| frames driven / `.rotation-content` mutations — `zoom` | 28 / 320 | 28 / 320 |
+| native events — `scroll-v` | scroll 60, scrollend 60, transitionend 4 | identical |
+| ticks / labels in the DOM | 21 / 7 | 21 / 7 |
+
+Across five interleaved runs of the earlier instrumentation, `scroll-h` was 267,589–268,788 against
+298,406–303,220 — the same +12.2%, and each build stable to under 0.5%. `SEQ=scroll-v` in isolation
+(no preceding pan) was 138,165–138,305 against 127,148–128,245, so the vertical figure is not an
+artefact of what the horizontal sequence left behind.
+
+**Load-bearing for the decision**: `scroll-h`'s total, because the frame count, the committed row
+mutations, the native events and the layout are identical between the two builds, so the 32.5k is the
+ruler alone — ~540 calls per frame for 28 elements. The mechanism is density: minor ticks are 50px
+apart at the default zoom and the pan moves 37px per frame, so the tick window changes ~1.1×/frame and
+`memo` never bails. The verdict was to keep the imperative pool; see the 2026-09-09 entry in
+`.github/skills/wowsims-react/SKILL.md`.
+
+**Unexplained**: `scroll-v` and `zoom` moved the other way, reproducibly and order-independently, on
+sequences where neither build's ruler does anything. The drop is spread flat across React's reconciler
+with identical frames, commits, events and layout; `getEventTarget` fell 348 → 96 without the native
+event count moving. Re-derive it before quoting either row for anything but this decision.
+
+**Noise**: totals are stable to ~0.5% per build across runs; every DOM, frame and event count above is
+stable to the unit. Adding an observer changes the totals it measures, so compare only runs of the
+same script revision. `ALL=1` output diffs cleanly only between two builds of the same tree — offsets
+above the vendor region shift with any change to `ui/`.

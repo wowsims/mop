@@ -1543,6 +1543,71 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-09 **`ruler.ts` stays imperative — the first port on this branch that measurement rejected,
+  and the branch-wide "fewer DOM writes, more React calls" pattern reproduced inside one 123-line
+  component.** The port was built, gated and thrown away: pure geometry in
+  `model/timeline/rotation/ruler_window.ts` (step selection, the tick window, `formatRulerTick`,
+  `sameRulerFrame`/`sameRulerWindow`, 11 unit tests), a `memo`'d `RotationRuler` rendering three keyed
+  ranges into the existing `.rotation-ruler-track`, `--pan` still an imperative one-line write, and the
+  load-bearing early return kept as a `sameRulerFrame` ref guard. It was correct — type-check, both
+  linters, 23 unit tests including a per-field mutation sweep of `sameRulerWindow`, and then
+  `timeline.mjs`, `panes-parity.mjs` and `rotation-row-toggle.mjs` run against the frozen port build
+  with `REACT_PORT=`, which is how a discarded build is still gated — and it was slower.
+
+  **The number**, from `tools/browser-perf/rotation-scroll-counts.mjs` (new, and untracked like the
+  other `.mjs` scripts there — that directory's `.git/info/exclude` line does not cover its five
+  tracked files, `README.md` among them), warrior/arms, seed 1337, 100 iterations, two frozen static
+  builds served side by side, five interleaved runs. A 60-frame horizontal pan at 37px/frame costs
+  **266.8k calls imperative → 299.3k React, +12.2%**, spread under 0.5% per build. Attribution is not
+  inference: over that sequence both builds drive the *same* 211 animation frames, commit the *same*
+  263 mutations under `.rotation-content`, dispatch the same native events and lay out to the same
+  `paneTop`, so the 32.5k is the ruler and nothing else — **~540 extra JS calls per frame** for a
+  28-element ruler.
+
+  **Why the shape loses, which is the transferable part.** The tick window changes on essentially
+  every frame of a pan: at the default 100px/s the minor ticks are 0.5s = **50px** apart and a pan
+  moves 37px per frame, so a boundary is crossed ~1.1×/frame and `memo` never gets to bail. React then
+  reconciles all 28 tick elements where `TickPool` patched the one or two that entered and left. This
+  is exactly the axis `HORIZONTAL_PADDING_PX` buys the rows: the row track's items are ~200px apart, so
+  `sameItems` holds for many frames in a row. **Density decides it.** A windowed list whose window
+  churns per frame is where an imperative pool still wins, and the brief's premise that "hand-written
+  recycling is precisely what keyed reconciliation does for free" is false as stated — reconciliation
+  replaces the *bookkeeping*, not the incrementality.
+
+  **The counter-trend, worth quoting.** The React ruler cut its own DOM work: ruler-track mutations
+  **315 → 242 (−23%)** and node insertions 105 → 91, because the pool removes and re-appends a recycled
+  element where React inserts one new node. Fewer DOM writes, more JS — the same trade the rotation
+  switch showed at branch scale, in a component small enough to price exactly.
+
+  **`VirtualList` (`@tanstack/react-virtual`) does not fit** and was not tried: the ruler has no
+  measured items and its viewport does not scroll — the track is translated by `--pan` — so there is
+  nothing for it to virtualise.
+
+  **One anomaly, reported unexplained.** The two other sequences went the *other* way: a 60-step
+  vertical page scroll, where neither build's ruler does any work at all (0 track mutations on both),
+  measured 156.5k → 147.6k (−5.7%), and eight zoom steps 74.8k → 70.1k (−6.3%), both reproducible to
+  ~0.1% and order-independent. The reduction is a flat ~10% across React's reconciler internals
+  (`ka`/`ul`/`ii`/`Kd` all down, `Mc`/`el`/`pl`/`Zs` unchanged) with **identical** frame counts (187),
+  identical committed row mutations (18), identical native-event histograms (`scroll` 60, `scrollend`
+  60, `transitionend` 4) and identical layout. `Zt` (`getEventTarget`) fell 348 → 96 without the native
+  event count moving, which is the one thread left dangling. It does not change the verdict either way:
+  a systematic advantage to the port would make the pan's 32.5k an *under*-estimate.
+
+  **`rotation/zoom.ts` was assessed and left.** It is hook-shaped — `useZoom` returning
+  `{ pps, stepIn, stepOut, fitToWidth, reset }` plus one wheel/keydown effect — with no per-frame path,
+  so the cost measured here cannot recur in it. It is a separate unit because its keyboard surface
+  (`+`/`-`/`0`/Home/End/arrows, ctrl+wheel anchoring) needs its own verification pass. `chart/zoom.ts`,
+  `chart/build.ts`, `chart/series.ts`, `chart/annotations.ts` and `chart/colors.ts` are untouched.
+
+  **What stands unchanged**: the Conventions entry above ("pure geometry and measurement modules are
+  not components — `zoom`, `ruler`, `timeline_window`, `series` stay out of component folders") and
+  `ui/README.md`'s results `view/` line, which still names the ruler's tick pool. Both were checked
+  against the port and both survive it. If the ruler is ever revisited, the two levers the measurement
+  points at are quantising the tick window to a coarse grid so it changes every N crossings instead of
+  every one — which trades ~16 extra permanent DOM nodes for ~8× fewer renders and needs an
+  `intended.mjs` entry, because `timeline.mjs` compares the tick and label counts — or splitting the
+  major and minor scales into separately memoised children, which halves the churn at best.
+
 - 2026-09-09 **The timeline's model left `view/`, and the earlier "already model" audit was wrong
   about `chart/`.** `results/view/timeline/` held 17 non-test files; 10 of them (999 lines, plus their
   two tests) were DOM-free logic, including a folder literally named `model/` nested inside `view/`,
