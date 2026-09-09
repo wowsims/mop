@@ -42,7 +42,8 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 	const hideLabel = !!selected && !!hideLabelWhenDefault?.(selected.value);
 
 	const entries = useMemo(() => buildMenuTree(options, equals), [options, equals]);
-	const hasTooltips = options.some(option => option.tooltip !== undefined);
+	// The shared tooltip below anchors on the options, which exist only while the menu is open, so it mounts and unmounts with them.
+	const hasTooltips = open && options.some(option => option.tooltip !== undefined);
 
 	return (
 		<>
@@ -59,7 +60,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 				</Menu.Trigger>
 				{/* The slot holds the place vanilla's `<ul>` had after the button, which a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
 				<div className="dropdown-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} keepMounted className="dropdown-picker-portal">
+				<Menu.Portal container={slot} className="dropdown-picker-portal">
 					<Menu.Positioner
 						align="start"
 						side={side}

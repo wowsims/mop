@@ -444,24 +444,20 @@ const PORTED_MENUS = [
 		popup: ['ul.icon-enum-picker-menu', 'ul.dropdown-menu'],
 	},
 	{
-		// Every React `DropdownPicker`: the results filter, and the log runner's add-filter and
-		// add-value pickers. It was scoped to `.target-filter-root` while the log search bar still
-		// built vanilla ones **in the same pane**; now that it has ported, no pane holds one of each —
-		// React's are all in the results pane and the remaining vanilla ones all in the rotation pane,
-		// where the `!expected` guard below skips this entry entirely. Narrow it again if that stops
-		// being true.
+		// Every React `DropdownPicker`: the rotation pane's, the results filter, and the log runner's
+		// add-filter and add-value pickers. It was scoped to `.target-filter-root` while the log
+		// search bar still built vanilla ones **in the same pane**; no pane holds one of each any
+		// more. Narrow it again if that stops being true.
+		//
+		// The menu is portaled and not kept mounted, so at rest the slot is the only element the
+		// picker has after its button — which is exactly where vanilla puts its `<ul>`. So the two
+		// are matched by name rather than folded off both sides: a fold would also stop this gate
+		// noticing if the baseline lost its menu, where the rename fails on a line-count mismatch.
 		what: 'dropdown-pickers',
 		root: /\.dropdown-picker-root(\.|$)/,
 		count: /^div\.dropdown-picker-slot$/,
-		wrappers: [
-			/^div\.dropdown-picker-slot$/,
-			/^div\.dropdown-picker-portal$/,
-			/^div\.dropdown-picker-positioner$/,
-			// The popup is the box; the radio group inside it is the list vanilla's `<ul>` was, so
-			// the popup itself has no counterpart to keep.
-			/^div\.dropdown-picker-menu$/,
-		],
-		popup: ['ul.dropdown-picker-list', 'ul.dropdown-menu.dropdown-picker-list'],
+		wrappers: [],
+		popup: ['div.dropdown-picker-slot', 'ul.dropdown-menu.dropdown-picker-list'],
 	},
 ];
 
