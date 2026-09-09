@@ -7102,6 +7102,9 @@
 								"search_add_value": {
 									"type": "string"
 								},
+								"no_matches": {
+									"type": "string"
+								},
 								"floatingActionBar": {
 										"type": "object",
 										"properties": {
@@ -7123,7 +7126,7 @@
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_add_value",
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug", "search_placeholder", "search_add_filter", "search_add_value", "no_matches",
  "floatingActionBar"]
 						},
 						"tabs": {
