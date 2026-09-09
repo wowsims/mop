@@ -10,10 +10,12 @@ import type { SpecDefinition } from '@sim/spec_config';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
 import { ImportExportMenu } from './header/ImportExportMenu';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
+import { SettingsDialog } from './SettingsDialog';
 import type { ShellDom } from './shell_dom';
 import { SidebarActions } from './SidebarActions';
 import { SimShell } from './SimShell';
@@ -31,9 +33,9 @@ export interface SimAppProps<SpecType extends Spec> {
 
 export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
 	const domRef = useRef<ShellDom | null>(null);
-	const simUIRef = useRef<IndividualSimUI<SpecType> | null>(null);
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
+	const [settingsOpen, setSettingsOpen] = useState(false);
 
 	const shell = useMemo(
 		() => (
@@ -43,7 +45,10 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 				className={def.cssClass}
 				spec={player.getPlayerSpec()}
 				knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
-				onOpenSettings={() => simUIRef.current?.simHeader.openSettings()}
+				onOpenSettings={() => {
+					trackPageView('Options', '/settings-menu');
+					setSettingsOpen(true);
+				}}
 			/>
 		),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,8 +58,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	useLayoutEffect(() => {
 		if (constructed.current || !domRef.current) return;
 		constructed.current = true;
-		simUIRef.current = new IndividualSimUI(domRef.current, player, def);
-		setSimUI(simUIRef.current);
+		setSimUI(new IndividualSimUI(domRef.current, player, def));
 	}, [player, def]);
 
 	return (
@@ -97,6 +101,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<RotationTabBody />, simUI.rotationTab.contentContainer)}
 					{simUI.bt && createPortal(<BulkTabBody />, simUI.bt.contentContainer)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
+					<SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} host={simUI} />
 				</SimHostProvider>
 			)}
 		</>

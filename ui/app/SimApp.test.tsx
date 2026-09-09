@@ -69,6 +69,8 @@ vi.mock('./tabs/TalentsTabBody', () => ({ TalentsTabBody: () => <div className="
 vi.mock('./tabs/SettingsTabBody', () => ({ SettingsTabBody: () => <div className="settings-tab-left" /> }));
 vi.mock('./tabs/RotationTabBody', () => ({ RotationTabBody: () => <div className="rotation-tab rotation-tab-auto" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
+// Six pickers over a real Sim and a Base UI portal into `host.rootElem`; SettingsDialog.test.tsx is where those are asserted.
+vi.mock('./SettingsDialog', () => ({ SettingsDialog: () => <div className="settings-menu-root" /> }));
 // The pane builds six vanilla islands and seven tables of its own; DetailedResults.test.tsx is where those are asserted.
 vi.mock('@features/results/components/DetailedResults', () => ({ DetailedResults: () => <div className="detailed-results-manager-root" /> }));
 // Needs the real spec registry to list every class; what is under test here is the shell's gate.

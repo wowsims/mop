@@ -36,9 +36,9 @@ ui/
                      import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
                      tabs/ (a React <X>TabBody per tab, beside a small SimTab registration
                      shim), header/, PresetConfigurationPicker/, shell_classes + shell_dom,
-                     browser_env, known_issues, preset_utils, and the three vanilla files
-                     still to dissolve: sim_ui.tsx, individual_sim_ui.tsx,
-                     settings_menu.tsx. alias @app
+                     browser_env, known_issues, preset_utils, SettingsDialog/, and the two
+                     vanilla files still to dissolve: sim_ui.tsx,
+                     individual_sim_ui.tsx. alias @app
   i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
                      the top level rather than under app/. alias @i18n
