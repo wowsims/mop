@@ -283,7 +283,7 @@ Both JSX dialects compile in this tree. Which one a file gets is decided per fil
 
 - **React is the default.** `tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both
   vite configs use the automatic runtime. A new `.tsx` file with no pragma is a React file.
-- **A file opts out** with `/** @jsxImportSource @jsx-vanilla */` on line 1. All 94 pre-existing
+- **A file opts out** with `/** @jsxImportSource @jsx-vanilla */` on line 1. All 94 originally
   `.tsx` files carry it. Their JSX still returns real DOM nodes.
 
 The shim is `ui/shared/jsx-vanilla/jsx-runtime.ts` and it is a direct call through to

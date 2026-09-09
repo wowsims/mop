@@ -73,6 +73,7 @@
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.7",
 		"@types/uuid": "^10.0.0",
+		"@vitejs/plugin-react": "6.1.1",
 		"cross-env": "^7.0.3",
 		"eslint-plugin-simple-import-sort": "^14.0.0",
 		"glob": "^13.0.6",
