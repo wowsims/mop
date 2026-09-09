@@ -23,12 +23,16 @@ describe('SidebarActions', () => {
 		registry.add({ id: 'custom', render: () => <div className="custom-entry" /> });
 		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', cssClass: 'ep-weights-action', onClick: () => {} });
 
-		expect([...container.children].map(child => child.className)).toEqual([]);
+		// Class *sets*, sorted: `Button` composes `btn btn-primary` ahead of the caller's classes, and
+		// the parity gates sort class lists for the same reason — order carries no meaning.
+		const classSets = () => [...container.children].map(child => [...child.classList].sort().join(' '));
+
+		expect(classSets()).toEqual([]);
 		renderActions(registry);
-		expect([...container.children].map(child => child.className)).toEqual([
-			'sim-sidebar-action-button btn btn-primary w-100 dps-action',
+		expect(classSets()).toEqual([
+			'btn btn-primary dps-action sim-sidebar-action-button w-100',
 			'custom-entry',
-			'sim-sidebar-action-button btn btn-primary w-100 ep-weights-action',
+			'btn btn-primary ep-weights-action sim-sidebar-action-button w-100',
 		]);
 	});
 

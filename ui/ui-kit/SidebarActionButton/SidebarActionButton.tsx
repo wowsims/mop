@@ -1,3 +1,4 @@
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import { type MouseEvent, type ReactNode, useContext } from 'react';
@@ -16,8 +17,8 @@ export const SidebarActionButton = ({ children, className, onClick, disabled, lo
 	const sidebarDisabled = useContext(SidebarDisabledContext);
 
 	return (
-		<button
-			className={clsx('sim-sidebar-action-button btn btn-primary w-100', className, loading && 'loading')}
+		<Button
+			className={clsx('sim-sidebar-action-button w-100', className, loading && 'loading')}
 			onClick={onClick}
 			disabled={disabled || sidebarDisabled}
 			aria-busy={loading || undefined}>
@@ -25,6 +26,6 @@ export const SidebarActionButton = ({ children, className, onClick, disabled, lo
 			<span className="sim-sidebar-action-button-loading-icon">
 				<Icon name="spinner" spin />
 			</span>
-		</button>
+		</Button>
 	);
 };
