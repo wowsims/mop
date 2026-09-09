@@ -3,6 +3,7 @@ import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';
 import type { Encounter } from '@sim/raid/encounter';
 import { subscribeEncounterField } from '@sim/state/subscriptions';
+import { distinct } from '@sim/utils/collections';
 import { randomUUID } from '@sim/utils/misc';
 import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
@@ -84,12 +85,16 @@ export const npcConfig = ({ encounter, targetIndex, getTarget }: TargetFieldCont
 
 export const aiConfig = ({ encounter, targetIndex, getTarget }: TargetFieldContext): EnumPickerConfig<null> => {
 	const presetTargets = encounter.sim.db.getAllPresetTargets();
+	// The value here is the npc id, and the sim builds a target's AI from the first preset carrying
+	// that id (core.GetPresetTargetWithID), so the raid-size and difficulty variants registered under
+	// one id are one selectable AI — the later ones name a preset the sim would never build.
+	const byNpcId = distinct(presetTargets, (a, b) => a.target?.id === b.target?.id);
 	return {
 		id: targetId(targetIndex, 'ai'),
 		extraCssClasses: ['ai-picker'],
 		label: i18n.t('settings_tab.encounter.ai.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.ai.tooltip'),
-		values: [{ name: i18n.t('common.none'), value: 0 }].concat(presetTargets.map(preset => ({ name: preset.path, value: preset.target!.id }))),
+		values: [{ name: i18n.t('common.none'), value: 0 }].concat(byNpcId.map(preset => ({ name: preset.path, value: preset.target!.id }))),
 		storeSubscribe: onTargets(encounter),
 		getValue: () => getTarget().id,
 		setValue: (_: null, newValue: number) => {
