@@ -1,3 +1,6 @@
+import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual';
+import type { RectObserver } from '@ui-kit/VirtualList';
+import { WINDOW_SCROLLER } from '@ui-kit/VirtualList';
 import { cssVars } from '@ui-kit/utils/css';
 import { findScrollParent } from '@ui-kit/utils/dom';
 import type { MouseEvent as ReactMouseEvent } from 'react';
@@ -7,8 +10,8 @@ import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { ContentRow, RotationModel, Row } from '../../../model/timeline/rotation';
 import { computeOrder, rowAt } from '../../../model/timeline/rotation';
 import { NO_ITEMS } from '../../../model/timeline/rotation/row_track';
-import type { RowWindowFrame } from '../../../model/timeline/rotation/timeline_window';
-import { EMPTY_ROW_WINDOW, rowOffsets, rowWindow } from '../../../model/timeline/rotation/timeline_window';
+import type { RowWindow, TrackBand } from '../../../model/timeline/rotation/timeline_window';
+import { trackBand, VERTICAL_PADDING_PX } from '../../../model/timeline/rotation/timeline_window';
 import { Ruler } from '../../../view/timeline/rotation/ruler';
 import { DEFAULT_PPS, ZoomController } from '../../../view/timeline/rotation/zoom';
 import { RotationFloatingActionBar } from './RotationFloatingActionBar';
@@ -27,6 +30,30 @@ export interface RotationViewProps {
 
 const NO_HIDDEN: ReadonlySet<string> = new Set();
 const NO_ORDER: ReadonlyArray<string> = [];
+const NO_BAND: TrackBand = { left: 0, right: 0 };
+
+/**
+ * The virtualizer is shown a scrollport `VERTICAL_PADDING_PX` taller on each edge than the real one,
+ * which is how a pixel padding is expressed to something whose own `overscan` counts rows. The top
+ * edge rides on `scrollMargin` — starting the measurements that much further down is the same as
+ * reading the scroll offset that much earlier — and this carries the bottom.
+ *
+ * The height is re-read rather than taken from the rect handed in, because `observeElementRect`
+ * rounds the border box to whole pixels while row offsets are exact sums of `ROW_HEIGHTS`, so half a
+ * pixel at the bottom edge is a whole row in or out. `observeWindowRect` reports `innerHeight`,
+ * which is already what the measurement wants.
+ */
+const padScrollport =
+	(observe: RectObserver): RectObserver =>
+	(instance, cb) =>
+		observe(instance, rect => {
+			const element: HTMLElement | Window | null = instance.scrollElement;
+			const height = element instanceof HTMLElement ? element.getBoundingClientRect().height : rect.height;
+			cb({ width: rect.width, height: height + 2 * VERTICAL_PADDING_PX });
+		});
+
+const PADDED_ELEMENT_RECT = padScrollport(observeElementRect);
+const PADDED_WINDOW_RECT = padScrollport(WINDOW_SCROLLER.observeElementRect!);
 
 export const RotationView = ({ model }: RotationViewProps) => {
 	const rootRef = useRef<HTMLDivElement>(null);
@@ -41,29 +68,67 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const [labelWidthCss, setLabelWidthCss] = useState('clamp(8rem, 14rem, 20rem)');
 	const [stickyTop, setStickyTop] = useState(0);
 	const [paneWidth, setPaneWidth] = useState(0);
-	const [storedFrame, setStoredFrame] = useState<RotationFrame>(EMPTY_FRAME);
+	const [scrollport, setScrollport] = useState<HTMLElement | Window | null>(null);
+	const [scrollMargin, setScrollMargin] = useState(0);
+	const [band, setBand] = useState(NO_BAND);
+	const [pps, setPps] = useState(DEFAULT_PPS);
+	const [measurable, setMeasurable] = useState(false);
 	const { ref: tooltipRef, content: hover, show: showTip, moveTo: moveTip, hide: hideTip } = useHoverTooltip<{ rowKey: string; index: number }>();
 
 	const rowFor = useCallback((key: string): Row => rowAt(model!, key), [model]);
 	const order = useMemo(() => (model ? computeOrder(model, hidden) : NO_ORDER), [model, hidden]);
-	const offsets = useMemo(() => rowOffsets(order, key => rowFor(key).height), [order, rowFor]);
 
 	const zoomRef = useRef<ZoomController | null>(null);
-	// What the last frame measured. Nothing scrolls between a click on a row's eye and the render it
-	// causes, so this is what lets a reorder re-window without touching the DOM again.
-	const geometry = useRef<RowWindowFrame | null>(null);
 
-	// A frame measured against another order is stale, and hiding or showing a row produces exactly
-	// that. Vanilla unmounted every row here and re-windowed a frame later, which is a real defect:
-	// the content collapses to nothing, the browser clamps scrollTop to a document that is
-	// momentarily a whole rotation shorter, and the height comes back with the scroll where the
-	// clamp left it — an 1105px jump from the bottom of the view, against a real change of one row's
-	// 32px. Re-deriving here instead keeps the spacers carrying the full height across the toggle,
-	// so the only thing that moves is the row that went away.
-	const measured = geometry.current;
-	const restored = measured && rowWindow({ ...measured, offsets });
-	const frame =
-		storedFrame.order === order ? storedFrame : nextFrame(storedFrame, restored ?? EMPTY_ROW_WINDOW, zoomRef.current?.pps ?? DEFAULT_PPS, order, rowFor);
+	// Keyed on the row rather than the index, so a toggle invalidates the measurements instead of
+	// leaving the ones taken against the order it changed.
+	const getItemKey = useCallback((index: number) => order[index], [order]);
+	// Exact, not estimated: every row carries the `ROW_HEIGHTS` value its kind was built with, so the
+	// offsets need no measuring pass and no per-row observer.
+	const estimateSize = useCallback((index: number) => rowFor(order[index]).height, [order, rowFor]);
+	const scrollsWithWindow = scrollport !== null && !(scrollport instanceof HTMLElement);
+
+	// Hiding a row must not empty the content, even for one commit. Vanilla's did, and that is a real
+	// defect: the browser clamps scrollTop against a document momentarily a whole rotation shorter,
+	// and the height comes back with the scroll where the clamp left it — an 1105px jump against a
+	// real change of one row's 32px. The virtualizer re-measures inside the render the toggle causes,
+	// off a scroll offset and a scrollport rect that nothing has invalidated, so the spacers carry
+	// the full height across it.
+	const virtualizer = useVirtualizer<HTMLElement, HTMLElement>({
+		count: order.length,
+		getScrollElement: () => scrollport as HTMLElement | null,
+		getItemKey,
+		estimateSize,
+		// The padding is geometric, and `overscan` is a row count.
+		overscan: 0,
+		scrollMargin,
+		...(scrollsWithWindow ? WINDOW_SCROLLER : {}),
+		observeElementRect: scrollsWithWindow ? PADDED_WINDOW_RECT : PADDED_ELEMENT_RECT,
+	});
+
+	const rows = virtualizer.getVirtualItems();
+	const head = rows[0];
+	const tail = rows[rows.length - 1];
+	const rowWindow: RowWindow = {
+		first: head ? head.index : 0,
+		last: tail ? tail.index : -1,
+		topSpacer: head ? head.start - scrollMargin : 0,
+		bottomSpacer: tail ? virtualizer.getTotalSize() - (tail.end - scrollMargin) : 0,
+		...band,
+	};
+
+	// Written during the render that reads it, because `nextFrame` is idempotent: handed back the
+	// frame it just produced, `sameFrame` returns it unchanged, so a repeated render cannot churn the
+	// item arrays the rows are memoized on.
+	const frameRef = useRef<RotationFrame>(EMPTY_FRAME);
+	// The rotation's own scroller measures zero while the chart view holds the pane hidden, and that
+	// is the one state its geometry cannot be re-read in. A frame already windowed against this order
+	// stays — emptying it would hand the shared scroller a shorter document to clamp against on the
+	// way back — but a rebuild landing while hidden brings an order nothing has been measured for,
+	// and that one waits for the pane to come back.
+	const held = frameRef.current.order === order ? frameRef.current : EMPTY_FRAME;
+	const frame = measurable ? nextFrame(frameRef.current, rowWindow, pps, order, rowFor) : held;
+	frameRef.current = frame;
 
 	const rulerRef = useRef<Ruler | null>(null);
 	const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -73,7 +138,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const labelWidth = useRef(0);
 	const rulerWidth = useRef(0);
 	const outer = useRef<HTMLElement | null>(null);
-	const outerTarget = useRef<EventTarget | null>(null);
+	const attached = useRef(false);
 	const drToolbar = useRef<HTMLElement | null>(null);
 
 	const schedule = useCallback(() => {
@@ -105,13 +170,16 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	}, []);
 
 	// Resolved on the first frame rather than at mount: a walk up from a node the browser has not
-	// laid out yet would cache the wrong scrollport.
+	// laid out yet would cache the wrong scrollport. A non-`visible` overflow on either axis makes an
+	// element a scrollport for both, so the first ancestor that clips vertically is the one the rows
+	// are windowed against; the timeline's own scroller carries only the horizontal axis. Nothing
+	// listens to it for scroll here — that axis is the virtualizer's, and it subscribes itself.
 	const attachOuter = useCallback(() => {
 		const root = rootRef.current;
-		if (outerTarget.current || !root?.isConnected) return;
+		if (attached.current || !root?.isConnected) return;
+		attached.current = true;
 		outer.current = findScrollParent(root);
-		outerTarget.current = outer.current ?? window;
-		outerTarget.current.addEventListener('scroll', schedule, { passive: true });
+		setScrollport(outer.current ?? window);
 		if (outer.current) resizeObserverRef.current?.observe(outer.current);
 		else window.addEventListener('resize', schedule, { passive: true });
 		drToolbar.current = root.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar') ?? null;
@@ -130,24 +198,26 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		// The first frame can precede the resize observer's opening callback.
 		if (!rulerWidth.current) measureWidths();
 
-		const pps = zoom.pps;
-		const view = outer.current ? outer.current.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-		// Read before the window writes: a read afterwards forces a second layout flush per frame.
+		// Read before the ruler writes: a read afterwards forces a second layout flush per frame.
 		const scrollLeft = scroller.scrollLeft;
-
-		const measured: RowWindowFrame = {
-			offsets,
-			contentTop: content.getBoundingClientRect().top,
-			viewTop: view.top,
-			viewBottom: view.bottom,
-			clientWidth: scroller.clientWidth,
-			labelWidth: labelWidth.current,
-			scrollLeft,
-		};
-		geometry.current = measured;
-		const next = rowWindow(measured);
-		if (next) setStoredFrame(prev => nextFrame(prev, next, pps, order, rowFor));
-		ruler.draw({ scrollLeft, pps, duration: model?.duration ?? 0, width: rulerWidth.current });
+		const clientWidth = scroller.clientWidth;
+		setPps(zoom.pps);
+		setMeasurable(clientWidth > 0);
+		// A zero-width scroller is a frame that cannot be measured — a collapsed pane, a hidden tab —
+		// so leave both measurements where the last real frame left them rather than empty the list.
+		if (clientWidth) {
+			const next = trackBand(scrollLeft, clientWidth, labelWidth.current);
+			setBand(prev => (prev.left === next.left && prev.right === next.right ? prev : next));
+			const outerElement = outer.current;
+			// Where the rows begin inside the scrollport that moves them, in that scrollport's own
+			// content coordinates. Scrolling leaves it invariant, so it only moves when the layout
+			// above the rows does, which is what makes it safe to read on the horizontal axis' frame
+			// rather than on the vertical one the virtualizer owns.
+			const contentStart =
+				content.getBoundingClientRect().top + (outerElement ? outerElement.scrollTop - outerElement.getBoundingClientRect().top : window.scrollY);
+			setScrollMargin(contentStart + VERTICAL_PADDING_PX);
+		}
+		ruler.draw({ scrollLeft, pps: zoom.pps, duration: model?.duration ?? 0, width: rulerWidth.current });
 	};
 
 	onResizeRef.current = () => {
@@ -186,7 +256,6 @@ export const RotationView = ({ model }: RotationViewProps) => {
 			if (frameHandle.current != null) cancelAnimationFrame(frameHandle.current);
 			frameHandle.current = null;
 			scroller.removeEventListener('scroll', schedule);
-			outerTarget.current?.removeEventListener('scroll', schedule);
 			window.removeEventListener('resize', schedule);
 			observer.disconnect();
 			resizeObserverRef.current = null;
@@ -194,7 +263,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 			zoomRef.current = null;
 			rulerRef.current = null;
 			outer.current = null;
-			outerTarget.current = null;
+			attached.current = false;
 			drToolbar.current = null;
 		};
 	}, [schedule, scrollVerticalBy]);

@@ -375,7 +375,7 @@ of the duplication sweep was to build each shape once.
 | `useTypedLocalStorage` | `ui/ui-kit/hooks/useTypedLocalStorage.ts` | the raw `react-use` `useLocalStorage<T>()` call in `SavedEpWeights` | a storage `key` and a **required** `parse: (value: unknown) => T \| undefined` | the deserializer only — `react-use` still owns read/write/remove. `parse` is required because react-use's generic types the deserialized value as `T` with no proof, so a stale key from an old schema comes back typed as the new shape. Anything `parse` rejects folds into the same `undefined` react-use already returns for an absent key, so callers keep one falsy state instead of two. Its one consumer is now `useSavedData`, which is what components reach for |
 | `useSavedData` + six named proxies | `ui/ui-kit/hooks/useSavedData.ts`; `use{SavedEpWeights,SavedGear,SavedTalents,SavedRotation,SavedSettings,SavedEncounter}` under each feature's `hooks/` | the storage half of `ui-kit/saved_data_manager.tsx` (still live, dual-stack — five of the six slots are its vanilla islands) | **the key and the codec, and nothing else.** Every generated `MessageType` satisfies `SavedDataCodec` structurally, so a named proxy is one line: `useSavedData(host.getSavedGearStorageKey(), SavedGearSet)` | the record shape (`Record<name, toJson(data)>`, what `SavedDataManager` has always written), per-entry parse with warn-and-skip, the `json` string entries are compared by, and `save`/`remove`. **Not** presets, which come from config, and **not** identity — `SavedDataManager`'s optional `equals` exists because rotations cannot be compared by their JSON, so a rotation consumer will need that axis back |
 | `SimRuns` / `useSimRun` / `useStatWeights` | `ui/sim/sim_runs.ts`, `ui/sim/hooks/` | the abort-then-run preamble copied at each entry point, and `EpWeightsDialog`'s `running` state plus its two guard refs | `useSimRun(kind)` takes only the kind and returns `isRunning`/`isAborting`/`abort` — **no `start`**, so a run can only be begun through a named hook that knows its arguments; `useStatWeights({ onProgress })` binds `computeStatWeights`'s three arguments and its progress shape | that a run is one user-visible operation rather than one worker request, that its two flags live in the store beside every other piece of sim state (so vanilla reads them through `subscribeRunState` and React through `useSyncExternalStore`), and that progress never touches the store — it stays a callback, with `lastProgress` for a consumer that mounts mid-run |
-| `VirtualList` | `ui/ui-kit/VirtualList/` | `ui-kit/virtual_list.ts` (still live, dual-stack — `log_view.tsx` is its one remaining caller; `item_list.tsx` is deleted) | `count`, `rowHeight`, `overscan`, `getScrollElement`, `scrollMargin`, `rowClassName` and a `renderRow` render prop | that rows are a **fixed height and never measured** — `measureElement` re-renders on every row reporting a different height, which is an easy infinite loop and something the vanilla list never did either. **The DOM is deliberately different from the vanilla list**: `@tanstack/react-virtual` positions rows absolutely and moves them with `transform`, so there are no spacer rows and a row's sibling position is its position in the *window*, not the list. `:nth-child` striping therefore does not work — every row carries `data-index` and `data-stripe`, and stripes are styled off `[data-stripe='odd']`. **The predicted normaliser turned out to be unnecessary**, and the reason generalises: the modal is a *taken* dialog, compared by count rather than by line, and its rows exist only after a click no tree gate makes. The `:nth-child(2n)` rules in `_item_list.scss` are **gone** with the vanilla list they were for — bulk and item swap render the React one now — and the `[data-stripe]` rules live in the consumer's own stylesheet |
+| `VirtualList` | `ui/ui-kit/VirtualList/` | `ui-kit/virtual_list.ts` (still live, dual-stack — `log_view.tsx` is its one remaining caller; `item_list.tsx` is deleted) | `count`, `rowHeight`, `overscan`, `getScrollElement`, `scrollMargin`, `rowClassName` and a `renderRow` render prop | that rows are a **fixed height and never measured** — `measureElement` re-renders on every row reporting a different height, which is an easy infinite loop and something the vanilla list never did either. **The DOM is deliberately different from the vanilla list**: `@tanstack/react-virtual` positions rows absolutely and moves them with `transform`, so there are no spacer rows and a row's sibling position is its position in the *window*, not the list. `:nth-child` striping therefore does not work — every row carries `data-index` and `data-stripe`, and stripes are styled off `[data-stripe='odd']`. **The predicted normaliser turned out to be unnecessary**, and the reason generalises: the modal is a *taken* dialog, compared by count rather than by line, and its rows exist only after a click no tree gate makes. The `:nth-child(2n)` rules in `_item_list.scss` are **gone** with the vanilla list they were for — bulk and item swap render the React one now — and the `[data-stripe]` rules live in the consumer's own stylesheet. **`WINDOW_SCROLLER` moved out to `VirtualList/window_scroller.ts`** and is exported from the directory alongside a `RectObserver` type: `RotationView` runs its own `useVirtualizer` and needs the same element-or-`window` mode switch, and that object — four options plus the cast that makes one hook call cover both modes — is the only part of this wrapper a spacer-DOM list can reuse. The component itself is unchanged and both its consumers are untouched |
 | `PresetConfigurationPicker` | `ui/app/PresetConfigurationPicker/` | the vanilla `app/preset_configuration_picker.tsx` (still live, dual-stack — `rotation_tab.tsx` is its fourth consumer and has not ported) | `categories`, and only that; the builds, the active check and the tooltip all come from the host | the chip markup, which is **not** `SavedDataPanel`'s: a `<button class="saved-data-set-chip">` wrapping a `<span class="saved-data-set-name" role="button">`, versus the panel's div-and-`Button`. Same class vocabulary, different elements, so it is a separate component rather than a `loadOnly` panel. Both share `preset_build_state.ts`, which is where `isBuildActive` and `buildCategories` live so the two stacks cannot drift. One `Tooltip` serves every chip through `render` + `activeAnchor`, replacing a `tippy()` per chip. Uses `useReadyStoreSubscribe`, because vanilla built its chips inside `waitForInit` and the active check has never run against an uninitialised sim |
 | `SavedRotation` | `ui/features/apl/components/SavedRotation/` | the `SavedDataManager` in `rotation_tab.tsx`'s `buildSavedDataPickers` | nothing — key, codec, presets and subject all come from the host and `useSavedRotation` | the sixth and last saved-data slot, and the one that needed `SavedDataPanel`'s `isActive` override: an Auto and an APL rotation can serialise differently and still be the same rotation, which is why `SavedDataManager` carried an optional `equals`. It passes `isEqualAPLRotation` instead of relying on the JSON comparison |
 | `SavedDataPanel` | `ui/ui-kit/SavedDataPanel/` | the rendering half of `ui-kit/saved_data_manager.tsx` (still live, dual-stack), extracted out of `SavedEpWeights` rather than written fresh | the strings (`title`, `label`, `nameLabel`, `saveButtonText`, and the four alert/confirm messages), the two entry lists, the subject's `currentJson`, and `loadOnly` | the chip rows, the presets/custom split and their `hide` toggles, the create row, the active-entry rule (last match wins, unless the user loaded one by name), and the confirm-before-delete. Deliberately sim-agnostic: a preset's `enableWhen`/`onLoad` arrive already resolved as `disabled` and `afterLoad`, so ui-kit never sees a `Player`. `SavedEpWeights` is now a ~70-line wrapper over it, and its parity test against the vanilla `SavedDataManager` still passes unchanged — which is what proves the extraction kept the markup |
@@ -1542,6 +1542,81 @@ adapter exists, but every one of their callers is still vanilla — a React pick
 the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
+
+- 2026-09-09 **The rotation's vertical row window is `@tanstack/react-virtual`, for consistency with
+  the log and the metrics tables — and it costs 2–3%, which is the second measured trade on this
+  branch and the first one taken anyway.** `model/timeline/rotation/timeline_window.ts` loses
+  `rowOffsets`, `indexAt`, `rowWindow` and `RowWindowFrame` — 47 lines of prefix sums and binary
+  search that `useVirtualizer` does natively — and keeps `RowWindow`, `EMPTY_ROW_WINDOW`,
+  `sameRowWindow` and a new `trackBand`, which is the horizontal half of the old `rowWindow` given its
+  own name. `row_track.ts` is untouched and stays untouched: `visibleItems` is **interval overlap**,
+  not windowing — a row's items are time ranges that overlap each other and `maxRightUpTo` is the
+  running-maximum bound that stops a long aura forcing a full scan — and TanStack assumes contiguous
+  non-overlapping items, so it cannot express it.
+
+  **`useVirtualizer` directly in `RotationView`, not the `VirtualList` wrapper.** The wrapper positions
+  rows absolutely and moves them with `transform`; the rotation keeps real sequential rows between two
+  `--vspacer-h` spacers, with a `position: sticky` label in each and `timeline.mjs` comparing both
+  spacers and every row line for line. The only reusable part is the element-or-`window` mode switch,
+  so `WINDOW_SCROLLER` moved to `VirtualList/window_scroller.ts` and is imported from both. The
+  component and its two consumers — `LogRunner` and `SelectorModal/ItemList` — are byte-identical, and
+  `log-runner.mjs` was run anyway.
+
+  **Three integration details that are not optional.** (1) The padding is **geometric**, 200px on each
+  edge, and TanStack's `overscan` counts rows — 6.25 of them at `ROW_HEIGHTS.cast`, and a separator is
+  17 — so the padding is expressed as geometry instead: `scrollMargin` carries the top (measurements
+  starting 200px further down is the same as reading the scroll offset 200px earlier) and a wrapped
+  `observeElementRect` carries the bottom by reporting a scrollport 400px taller. Both spacers still
+  come out exact, because `getTotalSize()` subtracts `scrollMargin` back off. (2) That wrapper also
+  **re-reads the height with `getBoundingClientRect`**, because virtual-core's own observer
+  `Math.round`s the border box while row offsets are exact integer sums — half a pixel at the bottom
+  edge is a whole row, and `timeline.mjs` compares the row list. (3) `overscan: 0`, since the default
+  is 1 and would widen the set by two.
+
+  **The shared rAF loop now owns one axis instead of two.** The vertical scrollport's `scroll`
+  listener is gone — that axis is the virtualizer's own subscription — and the loop keeps
+  `scroller.scrollLeft`, feeding the ruler and `trackBand`. They cannot desync: `scrollMargin` is
+  expressed in the scrollport's content coordinates (`contentTop − outerTop + scrollTop`), which
+  scrolling leaves invariant, so a value read on a horizontal frame stays correct against TanStack's
+  fresher `scrollOffset`. `zoomRef.current.pps` became `pps` state for the same reason — the band does
+  not move when only the zoom does, so nothing else would re-render the items at the new scale.
+
+  **The toggle defect did not come back, and the mechanism is now the library's.** `geometry.current`
+  and the `restored` re-derivation are gone: `useVirtualizer` recomputes measurements inside the render
+  the toggle causes, from a scroll offset and a rect nothing has invalidated, so the spacers carry the
+  full height across it. `rotation-row-toggle.mjs` on `:3402`: 0px from both anchors.
+
+  **One behaviour had to be rebuilt by hand, and `timeline.mjs` is what found it.** The chart view
+  hides the rotation with `display: none`, so its scroller measures zero and its geometry cannot be
+  re-read — and a *rebuild* landing in that state brings an order nothing has been measured against.
+  The old code fell into that case by accident (`geometry.current` was overwritten with the
+  zero-width frame, so the order-change path re-derived `null` and rendered `EMPTY_ROW_WINDOW`); the
+  virtualizer instead keeps producing a perfectly good window from its last rect. Vanilla renders
+  nothing there, so the port has to as well — but only for a *new* order: emptying the frame on a plain
+  tab switch would hand the shared `.sim-ui` scroller a shorter document to clamp against on the way
+  back, which is the toggle defect wearing a different hat. Hence `measurable` state and a two-line
+  `held` fallback. Caught as `rebuilt line 4: base rows=0, react rows=20`.
+
+  **The cost**, `tools/browser-perf/rotation-scroll-counts.mjs`, two frozen builds of this branch, two
+  paired runs in opposite orders: `scroll-v` **157,252 → 161,392 (+2.6%)**, `scroll-h` 266,834 →
+  274,805 (+3.0%), `zoom` 74,862 → 78,602 (+5.0%), `SEQ=scroll-v` in isolation 138,378 → 139,777
+  (+1.0%). Per-build spread reaches 1.2%, so only `zoom` is clear of the noise. **The prediction held**:
+  the ruler lost 12.2%, the rows lose 2.6%, and the mechanism is row pitch — 32px rows against a
+  3px/frame scroll cross a boundary about once every 11 frames, where the ruler's 50px ticks against a
+  37px/frame pan crossed ~1.1× per frame. `VERTICAL_PADDING_PX` is **not** what buys that; padding
+  moves where a boundary sits, not how often one is crossed. Every React reconciler count is
+  byte-identical on `scroll-v`, so the delta is virtual-core's memo bookkeeping (+1,574/+315/+115
+  across three closures, `getScrollOffset`/`getSize`/`calculateRange` each exactly +60, one per scroll
+  event) against the deleted `rowWindow` giving back 1,219. Bought against it: **`requestAnimationFrame`
+  on `scroll-v` fell 187 → 128**, i.e. the page's own frames went 66 → 7, taking two
+  `getBoundingClientRect` calls per scrolled frame with them. More calls, fewer forced layouts — the
+  same shape of trade as the ruler, decided the other way because the size is a tenth of it and the
+  consistency is the point. Table in `tools/browser-perf/README.md`.
+
+  **Gates**: type-check, both linters, 1,691 vitest (down from 1,697 — `timeline_window.test.ts` loses
+  the seven `rowOffsets`/`rowWindow` cases and gains one for `trackBand`), `test:snapshots`,
+  `parity.mjs` 6/6, `panes-parity.mjs`, `timeline.mjs`, `rotation-row-toggle.mjs`, `log-runner.mjs`,
+  `unused.mjs`. No `intended.mjs` entry: the rendered DOM is unchanged.
 
 - 2026-09-09 **`ruler.ts` stays imperative — the first port on this branch that measurement rejected,
   and the branch-wide "fewer DOM writes, more React calls" pattern reproduced inside one 123-line

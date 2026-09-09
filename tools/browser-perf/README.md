@@ -144,3 +144,48 @@ event count moving. Re-derive it before quoting either row for anything but this
 stable to the unit. Adding an observer changes the totals it measures, so compare only runs of the
 same script revision. `ALL=1` output diffs cleanly only between two builds of the same tree — offsets
 above the vendor region shift with any change to `ui/`.
+
+## Rotation row window — hand-rolled against `@tanstack/react-virtual`, 2026-09-09
+
+Same script, same conditions as the ruler table above — warrior/arms, seed 1337, 100 iterations, two
+frozen static builds of `feature/ui-react` served side by side, `6e3b1e882` against the same tree with
+the row axis moved onto `useVirtualizer`. Two paired runs in opposite orders; both columns of each row
+below are one run, and the spread across the pair is in the last section.
+
+| sequence | hand-rolled `rowWindow` | `useVirtualizer` |
+|---|---|---|
+| `scroll-h`, 60 frames — total JS calls | 266,834 | 274,805 (**+3.0%**) |
+| `scroll-v`, 60 frames — total JS calls | 157,252 | 161,392 (**+2.6%**) |
+| `zoom`, 8 steps — total JS calls | 74,862 | 78,602 (**+5.0%**) |
+| `SEQ=scroll-v` in isolation — total JS calls | 138,378 | 139,777 (**+1.0%**) |
+| **`requestAnimationFrame` — `scroll-v`** | **187** | **128 (−32%)** |
+| `requestAnimationFrame` — `scroll-h` / `zoom` | 211 / 29 | 211 / 29 |
+| ruler-track mutations / node insertions — `scroll-h` | 315 / 105 | 315 / 105 |
+| `.rotation-content` mutations — `scroll-h` / `scroll-v` / `zoom` | 263 / 18 / 320 | 263 / 18 / 320 |
+| native events — `scroll-v` | scroll 60, scrollend 60, transitionend 4 | identical |
+| rows / items / scrollWidth / paneTop | 20 / 167 / 32842 / 252 | identical |
+
+**Load-bearing**: the `scroll-v` rAF count. 121 of those frames are the driver's own, so the page ran
+66 frames of its own before and 7 after — the rotation's shared frame callback no longer wakes on the
+vertical axis at all, and with it go two `getBoundingClientRect` calls per scrolled frame. The JS-call
+total still rises, so this is a trade, not a win: the virtualizer's per-scroll-event bookkeeping costs
+more calls than the frame callback it replaced, while costing fewer forced layouts.
+
+**Where the `scroll-v` delta is** (`SEQ=scroll-v ALL=1`, +1,399 net): the deleted `rowWindow`/`indexAt`
+gives back **1,219 → 0**, and virtual-core's memo machinery takes **+1,574 / +315 / +115** across its
+three hot closures, with `getScrollOffset` +117, `getSize` +57 and `calculateRange` +60 — each one
+exactly 60 more calls, one per scroll event. **Every React reconciler count is byte-identical** (`Mc`
+5063, `Kd` 4034, `ka` 3797, `Zs`/`el`/`ul`/`pl` 3631/3601/3601/3601 on both), so the number of renders
+and commits did not move: this is bookkeeping, not reconciliation.
+
+**Density held, and it is the row pitch that decides it — not the padding.** The ruler lost 12.2% on
+`scroll-h` because its minor ticks are 50px apart against a 37px/frame pan, so its window changed
+~1.1×/frame and `memo` never bailed. Rows are 32px (17px for a separator) against a 3px/frame scroll,
+so a boundary is crossed about once every 11 frames — 18 committed `.rotation-content` mutations over
+60 frames on both builds. `VERTICAL_PADDING_PX` does not enter this: padding moves where a boundary
+sits, not how often one is crossed.
+
+**Noise across the pair**: `scroll-h` 266,834–270,057 against 274,805–275,918; `scroll-v`
+157,252–157,376 against 160,227–161,392; `zoom` 74,862–75,546 against 78,602–78,690. Per-build spread
+is up to 1.2%, so the `scroll-h` and `scroll-v` figures are 2–3% ± 1 and only `zoom` is clear of it.
+Every DOM, frame, event and layout count above was identical to the unit across all four runs.

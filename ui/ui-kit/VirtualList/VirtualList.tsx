@@ -1,6 +1,8 @@
-import { observeWindowOffset, observeWindowRect, useVirtualizer, windowScroll } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
+
+import { WINDOW_SCROLLER } from './window_scroller';
 
 export interface VirtualListProps {
 	count: number;
@@ -27,22 +29,6 @@ export interface VirtualListProps {
 
 const DEFAULT_ROW_HEIGHT = 28;
 const DEFAULT_OVERSCAN = 10;
-
-type ElementVirtualizerOptions = Parameters<typeof useVirtualizer<HTMLElement, HTMLElement>>[0];
-
-/**
- * `useWindowVirtualizer` is `useVirtualizer` with exactly these four options, so borrowing them keeps
- * one hook call covering both modes — which is what lets the mode be decided by whatever
- * `getScrollElement` returns rather than by which hook the caller picked. The cast is the entire
- * cost: `useVirtualizer` is generic over `Element`, and these three observers are written against
- * `Virtualizer<Window>`.
- */
-const WINDOW_SCROLLER = {
-	observeElementRect: observeWindowRect,
-	observeElementOffset: observeWindowOffset,
-	scrollToFn: windowScroll,
-	initialOffset: () => (typeof document === 'undefined' ? 0 : window.scrollY),
-} as unknown as Partial<ElementVirtualizerOptions>;
 
 /**
  * Rows are absolutely positioned and moved with `transform`, which is how `@tanstack/react-virtual`
