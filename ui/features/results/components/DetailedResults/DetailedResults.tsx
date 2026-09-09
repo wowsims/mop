@@ -7,6 +7,8 @@ import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
+import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { useTabFade } from '@ui-kit/hooks/useTabFade';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -45,13 +47,12 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 	const showExperimental = useShowExperimental(sim);
 
 	const [activeId, setActiveId] = useState<string>(DEFAULT_DETAILED_RESULTS_TAB);
-	const [shownId, setShownId] = useState<string>(DEFAULT_DETAILED_RESULTS_TAB);
-	const [stuck, setStuck] = useState(false);
+	const shownId = useTabFade(activeId);
 	const [deathDisabled, setDeathDisabled] = useState(true);
 	const [target, setTarget] = useState(ALL_UNITS);
 	const hasResults = useSimResult() !== null;
 
-	const toolbarRef = useRef<HTMLDivElement>(null);
+	const { ref: toolbarRef, stuck } = useStickyToolbar<HTMLDivElement>(host.simHeader.rootElem);
 	// `updateResults` is bound to the emitter, not to the filter, so the selection it reads is a ref.
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.
@@ -142,32 +143,7 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 		if (!showDamage && activeId === 'damageTab') setActiveId('healingTab');
 	}, [showDamage, activeId]);
 
-	// Bootstrap set `active` first and `show` a frame later when switching, so its .15s fade ran; on the first render it set both at once.
-	const lastShown = useRef<string | null>(null);
-	useEffect(() => {
-		const isSwitch = lastShown.current !== null && lastShown.current !== activeId;
-		lastShown.current = activeId;
-		if (!isSwitch) {
-			setShownId(activeId);
-			return;
-		}
-		const frame = requestAnimationFrame(() => setShownId(activeId));
-		return () => cancelAnimationFrame(frame);
-	}, [activeId]);
-
-	useEffect(() => {
-		const element = toolbarRef.current;
-		if (!element) return;
-		// One delivery can carry several records, oldest first, so the last is the current state — reading `[entry]` leaves the bar stuck on a stale ratio.
-		const observer = new IntersectionObserver(entries => setStuck(element.clientHeight > 0 && entries[entries.length - 1].intersectionRatio < 1), {
-			rootMargin: `-${host.simHeader.rootElem.offsetHeight + 1}px 0px 0px 0px`,
-			threshold: [1],
-		});
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, [host]);
-
-	const paneState = (id: string) => ({ active: activeId === id, shown: activeId === id && shownId === id });
+	const paneState = (id: string) => ({ active: activeId === id, shown: shownId === id });
 
 	const onSimulateDeath = () => {
 		trackEvent({ action: 'sim', category: 'simulate', label: 'death' });

@@ -20,11 +20,11 @@ links, the sidebar's character-stats table and five of the six tab bodies. The h
 finished: the import/export dropdowns are Base UI `Menu`s, and no Bootstrap JS is left in it. Bulk
 is the last tab body that is still a vanilla `Component`.
 
-`/usr/bin/grep -rl "jsxImportSource @jsx-vanilla" ui/` is the running count: **46**, down from 52
-before the APL port. One of the 46 is `ui/README.md`, which documents the pragma and matches its own
-prose, so 45 are source files — 15 in `ui-kit/`, 8 in gear, 6 in `app/`, 5 in bulk, 3 each in
+`/usr/bin/grep -rl "jsxImportSource @jsx-vanilla" ui/` is the running count: **45**, down from 52
+before the APL port. One of the 45 is `ui/README.md`, which documents the pragma and matches its own
+prose, so 44 are source files — 15 in `ui-kit/`, 8 in gear, 5 each in `app/` and bulk, 3 each in
 import-export and `ui/specs/**`, 2 in the shim itself, and one apiece in results, settings and i18n.
-`ui/features/apl/` has none.
+`ui/features/apl/` has none, and the rotation tab has none anywhere in it.
 
 Branch `feature/ui-react`, worktree `~/personal/wowsims-mop-react`, targeting `master`. It carries
 `feature/ui-restructure` inside it: that branch is never merged on its own, so every gate compares
@@ -35,7 +35,7 @@ against master.
 | 0 — JSX coexistence, React 19, store hooks, LegacyHost, vitest, hook lint rules | **done** |
 | 1 — React root, React-owned top-level tabs (same DOM) | **done** |
 | 2 — ui-kit primitives land *beside* the vanilla ones | done for everything Phase 3 needs so far; `Menu` landed with the header dropdowns, `Dialog` with the exporters and `ProgressTrackerDialog` with stat-weights; the three dropdown pickers landed once `results_filter` gave them a consumer, and `Toast` is the only primitive still waiting for one |
-| 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, all six saved-data slots, and apl — the whole rotation tab except the navbar. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, and gear's two big files |
+| 3 — features port inward, easiest first | **done:** sidebar/character-stats, shell sequence C0–C6, encounter, item-swap, header dropdowns and sim title on Base UI `Menu`, settings, import-export, stat-weights, all six saved-data slots, and apl — the whole rotation tab, navbar included. **Partly done:** gear (tab body, the three summaries, `ItemCell`, `GearPicker` — `item_list.tsx` and `selector_modal.tsx` are the remainder) and talents (tab body, `GlyphsPicker`). **Remaining:** bulk, and gear's two big files |
 | 4 — island wrappers (combat replay, Chart.js, VirtualList) | `VirtualList` is built on `@tanstack/react-virtual` and has both its consumers (`SelectorModal/ItemList`, `results/LogRunner`); the combat replay is React, and `DpsHistogram` keeps its Chart.js canvas imperative inside the effect rather than islanding it |
 | 5 — delete tsx-vanilla, the shim, the vanilla Component/Input stack, Bootstrap JS, tippy | not started |
 
@@ -83,7 +83,7 @@ import-export 168 · item-swap 105.
 | **Sidebar** | in `individual_sim_ui` | `CharacterStats` 476 | nothing — `NumberPicker` and `Tooltip openOnClick` are built |
 | **Talents** — **done** | 19 | `TalentsPicker` + `PetSpecPicker` are React; `GlyphsPicker`, `CopyButton`, `PresetConfigurationPicker` and two `SavedDataManager`s stay vanilla behind `useLegacyMount` | `GlyphSelectorModal` needs `Dialog`; the shared four need their other consumers |
 | **Settings** | 492 | most of it — see the queue | every content block is React now; the preset picker and the saved-data managers are deferred to their other tabs |
-| **Rotation** — **done** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | the navbar only, and deliberately: `StickyToolbar` and the rotation-type picker *append themselves*, so a React-rendered `<ul>` would land ahead of them instead of after. It is the tab's last `useLegacyMount`, of the seven it started with |
+| **Rotation** — **done** | 299 | apl 2,925, `CooldownsPicker`, `TextDropdownPicker` | nothing. The navbar was the last `useLegacyMount` of the seven the tab started with and it ported 2026-09-09, which took `ui-kit/sticky_toolbar.ts` and the tree's last `new TextDropdownPicker(...)` with it |
 | **Gear** | 107 | gear 3,477 — `GearPicker`, three summaries | `Dialog` for `SelectorModal`; `item_list` is a Phase 4 island |
 | **Results** | via `addTab` | results 4,477 | the Phase 4 island cluster |
 
@@ -145,8 +145,9 @@ Facts verified in `node_modules/@base-ui/react` 1.7.0 — check them again if th
   believing an `@extend` is load-bearing.
 
 **Two nested Bootstrap tab strips stay** — `bulk_tab.tsx:219` constructs `new Tab(...)` and
-`selector_modal.tsx:632` carries `data-bs-toggle="tab"`. The third, detailed results, is React as of
-2026-09-08 and drives the same classes from state. They still need
+`selector_modal.tsx:632` carries `data-bs-toggle="tab"`. Two others have ported and both drive the
+same classes from React state rather than adopting Base UI: detailed results on 2026-09-08, and the
+APL sub-tabs on 2026-09-09. They still need
 `.nav-link`, `.tab-pane`, `.fade`, `.show` and `_bootstrap_style_overrides.scss:198-226`, so none of
 that may be deleted. Removing Bootstrap's tab plugin entirely is a separate, larger port.
 
@@ -361,7 +362,7 @@ of the duplication sweep was to build each shape once.
 | `ToplineResults` | `ui/features/results/components/ToplineResults/` | `features/results/view/topline_results.ts`, **deleted** (28 lines) | nothing — and that is the finding: all three panes render it with no distinguishing prop, because they never had one. Same constructor, same emitter, same filter; column visibility is the manager root's `hide-*-metrics`, not per-pane | the `showOutOfMana` rule moved to `model/topline_metrics.ts` as `showsOutOfMana`, so the whole derivation is unit-testable without a DOM. Renders an empty root before the first run and clears on `emit(null)`, where the island kept stale content behind a hidden row |
 | `DpsHistogram` | `ui/features/results/components/DpsHistogram/` | `features/results/view/dps_histogram.ts`, **deleted** (75 lines) | nothing — reads `useSimResult()` | the wrapper is React and the canvas stays imperative, built into the ref'd root inside the effect exactly as vanilla did. One `chart.destroy()` per result instead of a dispose callback accumulated per run |
 | `FiltersMenu` | `ui/features/gear/components/FiltersMenu/` | `features/gear/view/filters_menu.tsx` (still live, dual-stack — `view/item_list.tsx:209` builds it for bulk and item swap) | `slot`, `open`, `onOpenChange`; player, sim and container come from the host | the section set a slot earns — armor types only when the class has more than one, weapon types and speeds with the off-hand pair only on `canDualWield`, ranged sections only for a class with ranged weapons, which vanilla expressed as a bare `return` mid-constructor. **It nests under the selector modal through the React tree, not the DOM**: the popup portals to `host.rootElem` as a *sibling* of the parent's portal, Base UI stamps `data-nested` from the React position, `elevated` gives it 1060/1065 over the parent's 1050/1055, and a press inside it is still not an outside press for the parent — which is why it renders inside `ItemList`'s JSX rather than behind an opener at `GearTabBody`. `keepMounted` is deliberately omitted: the pane remounts per request, nothing reads a closed menu, and no `ItemList` exists at load for `parity.mjs` to see. `Sim.ALL_SOURCES.sort()` no longer sorts the shared static array in place |
-| `DropdownPicker` | `ui/ui-kit/DropdownPicker/` | `ui-kit/pickers/dropdown_picker.tsx` (still live, but down to **one** construction — `TextDropdownPicker` inside the imperative APL navbar, `app/tabs/rotation_inputs.tsx:17`; `apl/model/action_id_sets.ts` imports the `DropdownValueConfig` *type* and nothing else) | `options` (each `value`/`label`/`icon`/`className`/`itemClassName`), `equals`, `defaultLabel`, `id`, `className`. `DropdownField` carries vanilla's third type parameter, `<ModObject, T, V = T>`, for a config whose stored type is not its option type — the APL action-id field stores an `ActionID` and offers `ActionId` objects, its unit field stores a `UnitReference` and offers a `UnitValue` | the trigger and menu markup, that picking closes the menu, and `aria-checked` on the selection — a `Menu.RadioGroup` keyed on the option **index**, because a value here is a proto message and Base UI matches by identity. **Not** an `InputConfig` picker: `value`/`onChange` are the whole binding, so a UI-local selection needs no store, and a bound caller wraps it in `useInput` + `PickerShell` — the same split as `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData`. Submenus, `headerText`, per-option tooltips and `hideLabelWhenDefaultSelected` are deliberately absent, all four being apl-only. `Menu` over Base UI's `Select` because `Select`'s `alignItemWithTrigger` overlays the popup on the trigger where Bootstrap dropped below, and over `EnumPicker` because that is a native `<select>` in a `Field` and an `<option>` cannot hold an `<img>` or a `text-<class>` colour. **`className` and `itemClassName` are not interchangeable** and the APL is why: `className` lands on the trigger as well as the row, and `_apl_rotation_picker.scss:80` makes `.apl-list-item-picker .apl-prepull-actions-only` `display: none`, so a pre-pull-only spell carrying that class on the trigger would hide the whole picker the moment it was selected. `itemClassName` is vanilla's `DropdownValueConfig.extraCssClasses`, which it wrote onto the `<li>` |
+| `DropdownPicker` | `ui/ui-kit/DropdownPicker/` | `ui-kit/pickers/dropdown_picker.tsx` (still live, but **nothing constructs it any more** — the last `new TextDropdownPicker(...)` went with the APL navbar on 2026-09-09. It is not deletable and is not a Phase 5 sweep either: `ui-kit/pickers/unit_picker.tsx:23` still `extends DropdownPicker`, and `apl/model/action_id_sets.ts:6` imports the `DropdownValueConfig` *type*. Those two are what keep the file, so it goes when `unit_picker.tsx` does) | `options` (each `value`/`label`/`icon`/`className`/`itemClassName`), `equals`, `defaultLabel`, `id`, `className`. `DropdownField` carries vanilla's third type parameter, `<ModObject, T, V = T>`, for a config whose stored type is not its option type — the APL action-id field stores an `ActionID` and offers `ActionId` objects, its unit field stores a `UnitReference` and offers a `UnitValue` | the trigger and menu markup, that picking closes the menu, and `aria-checked` on the selection — a `Menu.RadioGroup` keyed on the option **index**, because a value here is a proto message and Base UI matches by identity. **Not** an `InputConfig` picker: `value`/`onChange` are the whole binding, so a UI-local selection needs no store, and a bound caller wraps it in `useInput` + `PickerShell` — the same split as `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData`. Submenus, `headerText`, per-option tooltips and `hideLabelWhenDefaultSelected` are deliberately absent, all four being apl-only. `Menu` over Base UI's `Select` because `Select`'s `alignItemWithTrigger` overlays the popup on the trigger where Bootstrap dropped below, and over `EnumPicker` because that is a native `<select>` in a `Field` and an `<option>` cannot hold an `<img>` or a `text-<class>` colour. **`className` and `itemClassName` are not interchangeable** and the APL is why: `className` lands on the trigger as well as the row, and `_apl_rotation_picker.scss:80` makes `.apl-list-item-picker .apl-prepull-actions-only` `display: none`, so a pre-pull-only spell carrying that class on the trigger would hide the whole picker the moment it was selected. `itemClassName` is vanilla's `DropdownValueConfig.extraCssClasses`, which it wrote onto the `<li>` |
 | `UnitPicker` | `ui/ui-kit/UnitPicker/` | `ui-kit/pickers/unit_picker.tsx` — its last consumer was `apl_helpers.tsx`, so **nothing constructs it any more**; the file survives for its `UnitValue` type alone, imported by three files outside this folder (`apl/model/unit_values.ts`, `apl/.../UnitField.tsx`, `results/.../ResultsFilter/utils.ts`) and by the folder's own three. `APLUnitPicker` is gone with it | `options` (a `UnitValue[]`), `value`, `onChange`, `id`, `className` | the mapping and nothing else — the three icon shapes a `UnitValue` allows, `text-<color>` on the option **and** the trigger, and reference equality that ignores the display fields around it. Vanilla was a subclass writing into the option `<button>` through `setOptionContent(button, config, isSelectButton)`; composition restates nothing about the menu. Adds the `alt=""` the vanilla `<img>` lacked. **The mapping itself lives in `utils.tsx`, not in the component**: `unitOption(unit, submenu?)` and `sameUnit` are exported because APL's `UnitField` binds the same options through `DropdownField` instead — a bound picker's root has to *be* the `PickerShell`, and `UnitPicker` renders a plain `div`, so wrapping it would add an element the baseline does not have. `submenu` is the caller's; only the APL sets it, filing a pet under its owner |
 | `ResultsFilter` | `ui/features/results/components/ResultsFilter/` | `features/results/view/results_filter.ts`, **deleted** (116 lines) | `target` and `onTargetChange` — the selection belongs to `DetailedResults`, because the pane is what re-emits the result every table reads | the option list (all targets, plus one per target of the run), that the picker is `d-none` until a run produces one, and that a selection the next run cannot hold is dropped **before** that run is emitted rather than re-entrantly during it, which is what let the tables briefly filter on a target that no longer existed |
 | `useDisplayMetrics` · `useShowExperimental` | `ui/sim/hooks/` | the same four-line `useStoreSubscribe(subscribeUiField(...))` block in `SimShell`, `DetailedResults`, both metrics tables and `EpWeightsDialog` | `sim` — they take it rather than reading the host, because `SimShell` renders before `IndividualSimUI` adopts its DOM and has no provider above it | one subscription over the three ui fields, and **a bitmask snapshot rather than the object**: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, so returning a fresh object there re-renders, and a caller holding an unstable `sim` loops. The mask makes the object rebuild only when a flag changes, which also makes it a stable memo dependency. `epRatios` is not among them — `showsEpRatios` owns that rule in `shell_classes.ts` and derives from the returned object |
@@ -423,6 +424,10 @@ of the duplication sweep was to build each shape once.
 | `useAplInput` | `ui/features/apl/hooks/useAplInput.ts`, with `rotationSource` in `features/apl/utils.ts` | the `storeSubscribe`-less configs `APLPickerBuilder.makeFieldPicker` handed out | nothing — it takes the caller's config and fills in the two things every APL picker needs and none of them is given | **the change source, which is not optional.** `useStoreSubscribe` only re-reads `getValue` when its source notifies, so a bound leaf handed a config with no `storeSubscribe` renders once and then freezes at that value — silently, no error, no visual cue. Vanilla got away with it because the list cascaded `setInputValue` down the tree by hand. This is the carry-forward the 2026-09-08 `ListPicker` entry left, closed. It also fills in an id, because `PickerShell` puts one on the label's `htmlFor` and a nested picker is handed a config that has none |
 | `useRenamedCopy` · `useVariableExtraction` | `ui/features/apl/hooks/` | the `copying` index and the extract-to-variable menu entry that the group, variable and priority lists each wrote out by hand around the same shape | `useRenamedCopy` takes `read` / `write` / `nameOf` / `copy` — the four things a by-name list differs on; `useVariableExtraction` takes the two accessors for the value at an index, because the priority list, a group's actions and a nested value list each reach theirs differently | copy-with-a-new-name — it returns the list's `onCopyItem` **and** the dialog props together, so a caller cannot wire one without the other — and the extract action's `shouldShow`: a value that is already a `variableRef`, or has no kind at all, has nothing to extract and the entry stays hidden |
 | `AplScopeProvider` / `useAplScope` | `ui/features/apl/context/AplScopeContext.tsx` | `rootElem.closest('.apl-prepull-action-picker')` and `closest('.apl-groups-picker')`, evaluated once inside a vanilla picker's constructor | `isPrepull` and `isGroup`, both defaulting to false | which list the pickers below are rendered inside — a property of the **list**, not of the picker, and the thing that decides which action and value kinds the dropdowns offer. The DOM read only ever worked because a vanilla picker was built into a parent that already existed; a React component renders before it is in the document, so the answer has to travel down rather than be read up. Like `SimHostProvider`, it carries identity of place and never state |
+| `AplNavbar` | `ui/features/apl/components/AplNavbar/` | `makeAplNavbar` in `app/tabs/rotation_inputs.tsx` (**deleted**, 80 lines) and with it `ui-kit/sticky_toolbar.ts` (**deleted** — this was its only consumer) | `activeId` and `onSelect`, and nothing else: the strip is the *view* of a selection the pane bodies also read, so it cannot own it | the APL pane's header — the rotation-type picker, then the sub-tab strip, in that order in one sticky row, which is the whole reason the navbar stayed imperative for as long as it did. The pane list is `apl/model/apl_panes.ts`, shared with `RotationTabBody`. It reuses `RotationTypePicker` rather than carrying a fourth copy of that config, and `useStickyToolbar` + `nextTabByKey` rather than a third copy of each. **Hand-rolled `.nav-link` markup, not Base UI `Tabs`** — two hard reasons, both above: `Tabs.Panel` ignores a passed `id`, and these panes' ids are what `aria-controls` names and what `_rotation_tab.scss` selects; and `Tabs.Root` has to be a common ancestor of the list and the panels, which here sit in two different subtrees of `.rotation-tab-apl` with a third between them, so it would add a wrapper the baseline has not got. Bootstrap's tab plugin loses a consumer here but is **not** gone — `bulk_tab.tsx:219` and `selector_modal.tsx:632` still construct it. No co-located stylesheet: `.sticky-toolbar-root` is worn by `DetailedResults` too, and the `.apl-rotation-navbar` rules are scoped under `#rotation-tab`, an ancestor this component does not own |
+| `useStickyToolbar` | `ui/ui-kit/hooks/useStickyToolbar.ts` | the `IntersectionObserver` effect written out in `DetailedResults` and, as a vanilla `Component`, in `ui-kit/sticky_toolbar.ts` (**deleted**) | the header it sticks below and the element type; both consumers pass `host.simHeader.rootElem`, so the header is an argument rather than a `useSimHost` read — `ui-kit` may not reach the host | that the toolbar has stuck exactly when it stops fitting whole under the header (`rootMargin` = the header's height, `threshold: [1]`), that a delivery carrying several records is read at its **last**, and that a toolbar with no layout is never stuck. Not the bottom-sticky shape: `Timeline/rotation/RotationFloatingActionBar` needs `threshold: [0, 1]` because it is built inside a hidden tab and its ratio goes 0 → pinned without passing through 1, and `apl/components/FloatingActionBar` derives `stuck` by parity of deliveries |
+| `useTabFade` | `ui/ui-kit/hooks/useTabFade.ts` | the `lastShown` ref and its rAF, written out in `DetailedResults` | nothing — it takes the active id and returns the one that may also carry `show` | Bootstrap's two-phase switch: `active` on the click and `show` a frame later so the `.15s` `.fade` runs, and **both at once on the first render**. The one-frame gap resolves to `null` rather than to the outgoing pane, so a caller writes `shownId === id` and cannot leave the pane it is leaving wearing `show` without `active` — the guard is in the hook, not in the two call sites |
+| `nextTabByKey` | `ui/ui-kit/tab_keys.ts` | the copy in `features/results/.../DetailedResults/utils.ts` | the tab array's element type, so a caller with literal ids gets a literal id back and needs no cast | Bootstrap's `Tab._keydown`: arrows wrap in both axes, Home/End jump to the ends, and the landing tab is focused *and* activated. The `current` it is given is the **focused** tab, not the selected one — under a roving tabindex they coincide, and only a probe caught that they need not |
 | `CooldownsPicker` | `ui/features/settings/components/CooldownsPicker/` | `features/settings/view/cooldowns_picker.ts` (**deleted** — one consumer, `RotationTabBody`, and the last *reachable* `new IconEnumPicker(...)` went with it) | nothing — the player comes from the host and `availableCooldowns(player)` derives the option list | the N-plus-one rows (every set cooldown, then a blank add row), one shared delete tooltip instead of one per row, and the `hide` it writes onto its own `.cooldown-settings` ancestor when the spec offers no major cooldowns — kept where vanilla had it, because moving that gate to the parent would duplicate the rotation-plus-metadata subscription there. Owns `CooldownsPicker.scss` |
 
 Not yet built, in rough priority — see the plan for evidence and counts:
@@ -1005,9 +1010,10 @@ Three separate things depend on that, which is why it is not an optimisation:
 - Bootstrap rewrites `aria-expanded` on the dropdown toggles and `.show` on their menus. React diffs
   against its own last props rather than the DOM, so a same-props re-render is already safe — not
   re-rendering at all makes that independent of React's bail-out rules.
-- `sticky_toolbar.ts` measures `.sim-header`'s `offsetHeight` *while the tabs are being
-  constructed*, so the header must be laid out in the first render. A header that arrives one render
-  later measures zero and the sticky offset is silently wrong.
+- `useStickyToolbar` measures `.sim-header`'s `offsetHeight` in the mount effect of whatever sticks
+  below it, so the header must be laid out in the first render. A header that arrives one render
+  later measures zero and the sticky offset is silently wrong. (This was `sticky_toolbar.ts`
+  measuring the same thing *while the tabs were being constructed*, which was earlier still.)
 
 `SimShell` fills a `RefObject<ShellDom>` in a layout effect, and `SimApp` constructs against it in
 its own — a child's layout effect runs before its parent's, so both happen in one commit.
@@ -1515,7 +1521,8 @@ uses native `confirm()`/`alert()` rather than `BaseModal`. `Dialog` unblocks sta
 8. Then the harder features, per the plan's Phase 3 ordering: stat-weights (needs `Dialog`), then
    bulk, ~~import-export~~, ~~apl~~, gear, results. **~~apl~~ is done** — the whole cluster on
    2026-09-09, `features/apl/view/` deleted, and with it the vanilla `ListPicker` and
-   `cooldowns_picker.ts`; what is left of the rotation tab is the imperative navbar.
+   `cooldowns_picker.ts`; the navbar followed the same day, so nothing vanilla is left in the
+   rotation tab at all.
    **~~stat-weights~~ is done** — all four units, the
    model and opener seams on 2026-09-06 and the React dialog plus its SCSS the same day, with all
    sixteen recorded defects fixed. The investigation is
@@ -1532,6 +1539,65 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-09 **The APL navbar is React, and the rotation tab has no vanilla left in it.**
+  `app/tabs/rotation_inputs.tsx` (80 lines) and `ui-kit/sticky_toolbar.ts` are **deleted**;
+  `features/apl/components/AplNavbar/` and `features/apl/model/apl_panes.ts` replace them. The tab's
+  last `useLegacyMount` is gone, `@jsx-vanilla` files go 46 → 45 (44 source), and the tree's last
+  `new TextDropdownPicker(...)` goes with it.
+  **The blocker the old file described was half wrong, and the half that was right is what dissolved.**
+  Its comment said `StickyToolbar` and the rotation-type picker both "append themselves". Only the
+  picker's container did: `StickyToolbar` passed the navbar div as `Component`'s third constructor
+  argument, which **adopts** an element rather than appending to it, so it was adding
+  `sticky-toolbar-root` to a div React already owned. What was genuinely load-bearing is the *order* —
+  picker first, strip second, because `.apl-rotation-navbar .nav-tabs` is `margin-left: auto` — and
+  rendering the whole row in one component settles it by construction. Two things fall out of the
+  same reading, both latent rather than live: `useLegacyMount`'s cleanup called `rootElem.remove()` on
+  React's own div, and `StickyToolbar` never held its `IntersectionObserver` at all, so `dispose()`
+  could not disconnect it. Neither ever fired, because the mount's `[host]` dep never changed and the
+  rotation-type switch toggles `display` on `#rotation-tab` rather than rebuilding the pane.
+  **The sub-tab state lives in `RotationTabBody`, as `useState`, not in a context.** The strip and the
+  three panes are rendered ~40 lines apart in one component's JSX, so a context would be one provider
+  and two consumers inside a single render — the abstraction the "why abstractions get bypassed"
+  section exists to prevent. `APL_PANES` moved out of the view file into `apl/model/apl_panes.ts`,
+  which is where a list of ids and i18n keys belongs, and `AplPaneId` is what types both
+  `PANE_BODIES` and the strip.
+  **Hand-rolled `.nav-link`, not Base UI `Tabs`, and the two reasons are hard ones.** `Tabs.Panel`
+  ignores a passed `id` (`tabs/panel/TabsPanel.d.ts`, recorded above), and these panes' ids are what
+  `aria-controls` names and what `#rotation-tab .tab-pane` styling reaches; and `Tabs.Root` must be a
+  common ancestor of the list and the panels, which here live in two different subtrees of
+  `.rotation-tab-apl` with `.tab-panel-right` between them — so it would add a wrapper the baseline
+  does not have, in the pane `panes-parity.mjs` compares element for element. This is the
+  `DetailedResults` shape, not the `SimTabs` one: Base UI took the **top-level** strip, where the
+  markup was deliberately re-expressed. Bootstrap's tab plugin loses a consumer and is not gone —
+  `bulk_tab.tsx:219` and `selector_modal.tsx:632` still construct it.
+  **What Bootstrap was stamping, measured rather than assumed.** A probe of the baseline at three
+  seconds shows the plugin *had* run on these sub-tabs: `tabindex="-1"` on the two inactive buttons
+  and `role="tabpanel"` on all three panes, neither of which the vanilla JSX wrote. Both are rendered
+  now. `aria-labelledby` is the one thing Bootstrap did **not** add — `_setInitialAttributesOnTargetPanel`
+  needs `child.id` and the vanilla buttons had none — and it is not added here either, because that
+  would be a markup addition on top of a port; `DetailedResults` did add it, and this is the
+  divergence between the two strips.
+  **Three duplicates collapsed rather than copied a third time.** `useStickyToolbar`,
+  `useTabFade` and `nextTabByKey` are extractions of code `DetailedResults` already had; the navbar
+  would otherwise have carried ~38 lines of it verbatim. Both consumers of each are live. What is
+  deliberately **not** extracted is the strip's markup: `DetailedResultsTabs` puts a per-tab class on
+  its `<li>` that four stylesheet rules and `browser.mjs`'s `probe.ids()` read, and ids on its buttons
+  that its panes point back at, while this strip has neither — parameterising markup that differs in
+  three ways for two callers is how a shared component gets bypassed. A `ui-kit/NavTabs` becomes worth
+  it when bulk and the selector modal port and it has four.
+  **`ui-kit/pickers/dropdown_picker.tsx` is not deletable, and the brief that said it might be was
+  wrong.** Nothing constructs it any more, but `/usr/bin/grep -rn` from the worktree root finds two
+  importers that a "no constructions" check misses: `ui-kit/pickers/unit_picker.tsx:23` `extends
+  DropdownPicker`, and `apl/model/action_id_sets.ts:6` imports the `DropdownValueConfig` type. Under
+  the dual-stack rule it is not trimmed either. It goes when `unit_picker.tsx` does.
+  **`apl-tab.mjs` grew the step that makes it prove this port.** It drove the rotation-type picker
+  already but never clicked a sub-tab, so the state this change lifted was unwitnessed by any browser
+  gate. `walk the sub-tabs` clicks all three and reports active/show/aria-selected per stop; the two
+  builds' whole outputs stay byte-identical apart from the port number, and forcing the first pane
+  permanently active makes the new line diverge, which is the check that it is not vacuous.
+  `INTENDED`'s `open-on-click` tally moves 421 → 422 under its 450 cap — the navbar's own picker —
+  measured with `max: 0`, not guessed.
+
 - 2026-09-09 **The APL cluster is React, and it takes the vanilla `ListPicker` with it.**
   `features/apl/view/` is gone — 11 files, 2,932 lines, `apl_helpers.tsx` alone 1,256 — and so are
   `ui-kit/pickers/list_picker.tsx` (703 lines, ten importers, every one of them an APL view file) and
@@ -1540,7 +1606,8 @@ the thing Phase 2's rule exists to prevent. They port when a caller does.
   `@jsx-vanilla` files go 52 → 46, of which 45 are source and `features/apl/` has none. Four more of
   the rotation tab's `useLegacyMount` sites go, leaving **one**: the navbar, which stays imperative
   because `StickyToolbar` and the rotation-type picker append themselves and a React-rendered `<ul>`
-  would land ahead of them instead of after.
+  would land ahead of them instead of after. (Half wrong, and corrected by the navbar entry above:
+  `StickyToolbar` *adopted* the div rather than appending to it. The ordering half was right.)
   **The mutual recursion is real, it is kept, and one line of shape is what makes it safe.**
   `ValuePicker` → `FieldGroup` → `AplField` → `ValuePicker` is a genuine ES module cycle. It holds
   only because `AplField` dispatches with a `switch` **inside the component body**, so the imported

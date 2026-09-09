@@ -21,16 +21,3 @@ export const DEFAULT_DETAILED_RESULTS_TAB = 'damageTab';
 
 /** Ties a pane to the tab button that controls it; the vanilla buttons carried no id, so no pane could point back at one. */
 export const tabButtonId = (tabId: string): string => `${tabId}-nav`;
-
-const NAV_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-
-/** Bootstrap's `Tab._keydown`: arrows wrap in both axes, Home/End jump to the ends, and the landing tab is focused *and* activated. */
-export const nextTabByKey = (tabs: ReadonlyArray<DetailedResultsTabConfig>, current: string, key: string): string | null => {
-	if (!NAV_KEYS.includes(key)) return null;
-	if (key === 'Home') return tabs[0]?.id ?? null;
-	if (key === 'End') return tabs[tabs.length - 1]?.id ?? null;
-	const index = tabs.findIndex(tab => tab.id === current);
-	if (index < 0) return null;
-	const step = key === 'ArrowRight' || key === 'ArrowDown' ? 1 : -1;
-	return tabs[(index + step + tabs.length) % tabs.length].id;
-};

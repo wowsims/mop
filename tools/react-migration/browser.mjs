@@ -470,11 +470,13 @@ const PORTED_MENUS = [
  * between them — the pair `normaliseBaseUiMenus` compares to say "one menu per picker root".
  *
  * It counts *scopes containing the marker* rather than every `within` line, because a pane can
- * hold pickers from both stacks: the rotation tab has a React `DropdownField` in each of its
- * type containers and a vanilla `TextDropdownPicker` in the APL navbar, and the two wear the same
- * root classes. Counting bare roots there reported "1 menu under 2 picker roots" for markup that
- * is exactly right. A React menu outside any root still fails, because it raises the marker count
- * without raising the scope count.
+ * hold pickers from both stacks and the two wear the same root classes. The rotation tab was the
+ * case that forced it — a React `DropdownField` in each type container beside a vanilla
+ * `TextDropdownPicker` in the APL navbar — and counting bare roots there reported "1 menu under 2
+ * picker roots" for markup that is exactly right. The navbar has ported since, so that pane is one
+ * stack again; the rule stays, because the panes with an un-ported island still need it. A React
+ * menu outside any root still fails, because it raises the marker count without raising the scope
+ * count.
  */
 export const countScopesContaining = (dom, within, re) => {
 	let scopes = 0;

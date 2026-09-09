@@ -1,3 +1,4 @@
+import { AplNavbar } from '@features/apl/components/AplNavbar';
 import { GroupList } from '@features/apl/components/GroupList';
 import { PrePullList } from '@features/apl/components/PrePullList';
 import { PriorityList } from '@features/apl/components/PriorityList';
@@ -5,17 +6,19 @@ import { RotationTypePicker } from '@features/apl/components/RotationTypePicker'
 import { SavedRotation } from '@features/apl/components/SavedRotation';
 import { SimpleRotationInputs } from '@features/apl/components/SimpleRotationInputs';
 import { VariablesList } from '@features/apl/components/VariablesList';
+import type { AplPaneId } from '@features/apl/model/apl_panes';
+import { APL_PANES } from '@features/apl/model/apl_panes';
 import { CooldownsPicker } from '@features/settings';
 import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useLegacyMount } from '@ui-kit/hooks/useLegacyMount';
+import { useTabFade } from '@ui-kit/hooks/useTabFade';
 import clsx from 'clsx';
 import type { ComponentType } from 'react';
+import { useState } from 'react';
 
 import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
-import { APL_PANES, makeAplNavbar } from './rotation_inputs';
 
 const ROTATION_PRESETS = [PresetConfigurationCategory.Rotation];
 
@@ -27,7 +30,7 @@ const PriorityPane = () => (
 	</>
 );
 
-const PANE_BODIES: Record<(typeof APL_PANES)[number]['id'], ComponentType> = {
+const PANE_BODIES: Record<AplPaneId, ComponentType> = {
 	'apl-priority-list': PriorityPane,
 	'apl-action-groups': GroupList,
 	'apl-variables': VariablesList,
@@ -47,7 +50,8 @@ export const RotationTabBody = () => {
 	const config = host.individualConfig;
 	const hasSimple = player.hasSimpleRotationGenerator() && !!config.rotationInputs;
 
-	const mountAplNavbar = useLegacyMount(parent => makeAplNavbar(parent, host), [host]);
+	const [activeId, setActiveId] = useState<AplPaneId>(APL_PANES[0].id);
+	const shownId = useTabFade(activeId);
 
 	return (
 		<>
@@ -89,12 +93,16 @@ export const RotationTabBody = () => {
 			</div>
 
 			<div className="rotation-tab rotation-tab-apl">
-				<div className="apl-rotation-navbar" ref={mountAplNavbar} />
+				<AplNavbar activeId={activeId} onSelect={setActiveId} />
 				<div className="rotation-tab-col tab-panel-left tab-content">
-					{APL_PANES.map((pane, index) => {
+					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
-							<div key={pane.id} id={pane.id} className={clsx('tab-pane fade', index === 0 && 'active show')}>
+							<div
+								key={pane.id}
+								id={pane.id}
+								role="tabpanel"
+								className={clsx('tab-pane fade', pane.id === activeId && 'active', pane.id === shownId && 'show')}>
 								<Body />
 							</div>
 						);

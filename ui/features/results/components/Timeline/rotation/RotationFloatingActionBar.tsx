@@ -61,7 +61,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 		return row.kind === 'separator' ? '' : row.label;
 	});
 
-	// Bottom-sticky mirror of StickyToolbar: the bar only stops fitting whole against the viewport's
+	// Bottom-sticky mirror of `useStickyToolbar`: the bar only stops fitting whole against the viewport's
 	// last pixel once it is actually pinned. The 0 threshold is load-bearing — the bar is built
 	// inside the hidden Results tab, so its ratio goes 0 -> pinned without ever passing through 1,
 	// and a [1]-only observer is never called again after that first hidden callback.

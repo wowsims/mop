@@ -68,7 +68,7 @@ export const INTENDED = [
 		base: 'button.btn.dropdown-picker-button.dropdown-toggle.open-on-click',
 		react: 'button.btn.dropdown-picker-button.dropdown-toggle',
 		max: 450,
-		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. The cap is the rotation pane's, not the results pane's: every APL kind picker, enum field, action-id field and unit field is one of these, and warrior/protection's default rotation renders 421 of them. 450 is that with headroom, and the number moves with the preset rotation rather than with this port. The results pane contributes two at rest, the target filter and the log runner's add-filter picker",
+		why: "`open-on-click` is read by exactly one thing — `shared/bootstrap_overrides.ts:24`, which opens every *other* dropdown toggle on hover — and a Base UI menu is not a Bootstrap dropdown, so the opt-out has nothing to opt out of. No stylesheet selects it. The cap is the rotation pane's, not the results pane's: every APL kind picker, enum field, action-id field and unit field is one of these, plus the navbar's own rotation-type picker now that the navbar has ported, and warrior/protection's default rotation renders 422 of them — measured with `max: 0`, and 421 before the navbar. 450 is that with headroom, and the number moves with the preset rotation rather than with this port. The results pane contributes two at rest, the target filter and the log runner's add-filter picker",
 	},
 	{
 		base: 'div.dropdown.dropdown-picker-root.dropup.input-root',

@@ -1,8 +1,9 @@
 import i18n from '@i18n/config';
+import { nextTabByKey } from '@ui-kit/tab_keys';
 import clsx from 'clsx';
 import type { KeyboardEvent } from 'react';
 
-import { type DetailedResultsTabConfig, nextTabByKey, tabButtonId } from './utils';
+import { type DetailedResultsTabConfig, tabButtonId } from './utils';
 
 export interface DetailedResultsTabsProps {
 	tabs: ReadonlyArray<DetailedResultsTabConfig>;

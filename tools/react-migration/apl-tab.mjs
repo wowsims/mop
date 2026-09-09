@@ -207,7 +207,28 @@ try {
 		return `${options > 0 ? 'menu opened' : 'MENU EMPTY'}`;
 	});
 
-	// 6. rotation type — away from APL and back, which rebuilds the whole pane on both stacks.
+	// 6. the sub-tab strip. Bootstrap's tab plugin drives it on the baseline and React state on the
+	// branch, and the three things they have to agree on are which pane is open, which tab says so,
+	// and that `show` has caught up with `active` once the .15s fade has run.
+	await step('walk the sub-tabs', async () => {
+		const seen = [];
+		for (const id of ['apl-action-groups', 'apl-variables', 'apl-priority-list']) {
+			await page.click(`.apl-rotation-navbar [aria-controls="${id}"]`, { timeout: 10000 });
+			await page.waitForTimeout(400);
+			seen.push(
+				await page.evaluate(() => {
+					const ids = selector => [...document.querySelectorAll(`.rotation-tab-apl ${selector}`)].map(pane => pane.id.replace('apl-', '')).join('+');
+					const selected = [...document.querySelectorAll('.apl-rotation-navbar [role=tab][aria-selected="true"]')]
+						.map(tab => tab.getAttribute('aria-controls').replace('apl-', ''))
+						.join('+');
+					return `${ids('.tab-pane.active')}/${ids('.tab-pane.show')}/${selected}`;
+				}),
+			);
+		}
+		return seen.join(' ');
+	});
+
+	// 7. rotation type — away from APL and back, which rebuilds the whole pane on both stacks.
 	await step('type -> Auto', () =>
 		page.evaluate(() => {
 			const picker = document.querySelector('.apl-rotation-navbar .rotation-type-container .dropdown-picker-button');

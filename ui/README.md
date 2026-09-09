@@ -15,7 +15,7 @@ ui/
                      workers/, cache/, state/, proto/, talents data + trees, bulk/,
                      wasm/, constants/, presets/, hooks/, context/. alias @sim
   ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
-                     base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
+                     base_modal, content_block, toast, copy_button, tooltip_button, tab_keys,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
