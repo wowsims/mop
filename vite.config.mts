@@ -5,7 +5,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import react from '@vitejs/plugin-react';
-import { ConfigEnv, defineConfig, PluginOption, UserConfigExport } from 'vite';
+import { ConfigEnv, type CSSOptions, defineConfig, PluginOption, UserConfigExport } from 'vite';
 import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
@@ -22,6 +22,11 @@ export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
 // The ui/ path aliases. Mirrored by `compilerOptions.paths` in tsconfig.json and by the
 // layering rules in .oxlintrc.json; shared with vite.harness.mts from here so the two vite
 // configs cannot drift.
+export const SCSS_OPTIONS: NonNullable<NonNullable<CSSOptions['preprocessorOptions']>['scss']> = {
+	loadPaths: [path.resolve(BASE_PATH, 'scss')],
+	silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
+};
+
 export const UI_ALIASES: Record<string, string> = {
 	'@sim': path.resolve(BASE_PATH, 'sim'),
 	'@generated': path.resolve(BASE_PATH, 'generated'),
@@ -161,12 +166,7 @@ export default defineConfig(({ command, mode }) => {
 	return {
 		...baseConfig,
 		css: {
-			preprocessorOptions: {
-				scss: {
-					loadPaths: [path.resolve(__dirname, 'ui', 'scss')],
-					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
-				},
-			},
+			preprocessorOptions: { scss: SCSS_OPTIONS },
 		},
 		plugins: [
 			// Fast Refresh only: on vite 8 this plugin carries no transform of its own, it turns on

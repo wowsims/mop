@@ -11,7 +11,7 @@ import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Sta
 
 import * as MageInputs from '../shared/inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../shared/presets';
-import { CalculateCombustionThresholds } from './calculate_combustion_thresholds';
+import { registerCombustionThresholds } from './calculate_combustion_thresholds';
 import * as FireInputs from './inputs';
 import * as Presets from './presets';
 
@@ -276,7 +276,7 @@ export default defineSpec<Spec.SpecFireMage>({
 		33697,
 	],
 
-	features: [host => new CalculateCombustionThresholds(host.rootElem, host)],
+	features: [registerCombustionThresholds],
 
 	reforge: {
 		statSelectionPresets: statSelectionPresets,

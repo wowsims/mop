@@ -1,5 +1,4 @@
 import { CharacterStats } from '@features/character-stats';
-import { ReforgePanel } from '@features/reforge/components/ReforgePanel';
 import { DetailedResults } from '@features/results/components/DetailedResults';
 import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { EpWeightsDialog } from '@features/stat-weights/components/EpWeightsDialog';
@@ -16,6 +15,7 @@ import { ImportExportMenu } from './header/ImportExportMenu';
 import { IndividualSimUI } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import type { ShellDom } from './shell_dom';
+import { SidebarActions } from './SidebarActions';
 import { SimShell } from './SimShell';
 import { SimTabs } from './SimTabs';
 import { BulkTabBody } from './tabs/BulkTabBody';
@@ -63,6 +63,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 			{simUI && (
 				<SimHostProvider host={simUI}>
 					<SimTabs registry={simUI.tabs} strip={simUI.simHeader.simTabsContainer} panes={simUI.simTabContentsContainer} />
+					<SidebarActions registry={simUI.sidebar} container={simUI.simActionsContainer} disabled={simUI.disabled} />
 					{createPortal(
 						<>
 							<ImportExportMenu
@@ -95,12 +96,6 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					{createPortal(<SettingsTabBody />, simUI.settingsTab.contentContainer)}
 					{createPortal(<RotationTabBody />, simUI.rotationTab.contentContainer)}
 					{simUI.bt && createPortal(<BulkTabBody />, simUI.bt.contentContainer)}
-					{simUI.reforger &&
-						simUI.reforgeActionsContainer &&
-						createPortal(
-							<ReforgePanel model={simUI.reforger} options={simUI.reforgeOptions ?? undefined} container={simUI.reforgeActionsContainer} />,
-							simUI.reforgeActionsContainer,
-						)}
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
 				</SimHostProvider>
 			)}

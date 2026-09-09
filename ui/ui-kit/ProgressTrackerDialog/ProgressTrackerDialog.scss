@@ -1,6 +1,6 @@
 @import 'shared/tokens';
 
-// The `.progress-tracker-modal-*` rules are shared with the vanilla ProgressTrackerModal and stay in scss/core/components/_progress_tracker_modal.scss until its three consumers port.
+// The `.progress-tracker-modal-*` rules this file's markup uses still live in scss/core/components/_progress_tracker_modal.scss.
 .sim-dialog-popup.progress-tracker-dialog {
 	top: 50%;
 	transform: translateY(-50%);
@@ -11,7 +11,7 @@
 	}
 }
 
-// Base UI's Progress parts, replacing Bootstrap's `.progress` / `.progress-bar` the vanilla twin still uses.
+// Base UI's Progress parts replace Bootstrap's .progress / .progress-bar.
 .progress-tracker-bar-track {
 	display: flex;
 	width: 100%;

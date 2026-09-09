@@ -6,12 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
-const constructions: Array<{ root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }> = [];
+const constructions: Array<{ root: HTMLElement; sidebarActions: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }> = [];
 // Recorded rather than read off the document: the div the results pane portals into is only ever a
 // child of a shell this test does not build.
 const resultsContainers: Array<HTMLElement> = [];
 const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
+	const { SidebarRegistry } = await import('@ui-kit/sidebar_registry');
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
 	return {
 		IndividualSimUI: class {
@@ -26,7 +27,10 @@ vi.mock('./individual_sim_ui', async () => {
 				importExport: { subscribe: () => () => {}, getEntries: () => NO_ENTRIES },
 			};
 			readonly tabs = new SimTabRegistry(this.simTabContentsContainer);
+			readonly sidebar = new SidebarRegistry();
+			readonly disabled = false;
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
+			readonly simActionsContainer: HTMLElement;
 			readonly sidebarStatsContainer: HTMLElement;
 			readonly sidebarResultsContainer: HTMLElement;
 			// The sidebar panel is React now; the shell only owns the store it drives and the registry
@@ -45,10 +49,11 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly makeLogExporter = (() => ({ open: () => {} })) as never;
 			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
 			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
-			constructor(dom: { root: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }) {
+			constructor(dom: { root: HTMLElement; sidebarActions: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }) {
 				constructions.push(dom);
 				resultsContainers.push(this.detailedResultsContainer);
 				dom.root.classList.add('sim-ui');
+				this.simActionsContainer = dom.sidebarActions;
 				this.sidebarStatsContainer = dom.sidebarStats;
 				this.sidebarResultsContainer = dom.sidebarResults;
 			}

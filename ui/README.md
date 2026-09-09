@@ -16,7 +16,7 @@ ui/
                      wasm/, constants/, presets/, hooks/, context/. alias @sim
   ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
                      base_modal, content_block, toast, copy_button, tooltip_button, tab_keys,
-                     saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
+                     saved_data_manager, input_helpers, icon_inputs,
                      utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability: model/ (DOM-free, lint-enforced) +
                      components/ (React, one folder per component) + hooks/. The twelve are
@@ -100,7 +100,7 @@ path segment at a time, so `@features/*` would not catch `@features/gear/view/it
 Features, ui-kit and domain must not name the app shells (`SimUI`, `IndividualSimUI`) even as a
 type: `import type` is erased at runtime but the lint bans the specifier either way. They use
 narrow host interfaces instead — all of them in `@sim/sim_host`: `SimUIHost` and `SimHeaderHost`
-(the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`, `ActionGroupItem`,
+(the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`,
 plus the `isIndividualSimHost()` predicate that replaces `instanceof IndividualSimUI`). The
 shells declare `implements SimHost` / `implements IndividualSimHost` so the interfaces stay
 honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
@@ -162,7 +162,7 @@ export default defineSpec<Spec.SpecArmsWarrior>({
     reforge: { getEPDefaults, updateSoftCaps },      // optional — wires ReforgeOptimizer
     enableHealing: false,                            // optional — overrides the tank/healer default
     derivedSettings: [{ subscribe, apply }],         // optional — settings derived from others
-    features: [host => new Thing(host)],             // optional — spec-local escape hatch
+    features: [registerThing],                       // optional — spec-local escape hatch
 });
 ```
 
@@ -221,7 +221,7 @@ the spec's config out of the registry in its own constructor. This is the only p
 ordering matters, and `spec_entry.ts` is the only place it is expressed.
 
 `IndividualSimUI` is concrete — a spec does not subclass it. Its constructor takes a
-`SpecDefinition<S>`, and runs the behaviour slots (reforge → derivedSettings → features) as its
+`SpecDefinition<S>`, and runs the behaviour slots (features → reforge → derivedSettings) as its
 last statements, exactly where a subclass constructor body used to run. `derivedSettings` runs
 `apply` once there (before defaults load, mirroring the old constructor timing) and then again
 whenever `subscribe`'s source fires — including when the defaults land.

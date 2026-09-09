@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
-import { UI_ALIASES } from './vite.config.mjs';
+import { SCSS_OPTIONS, UI_ALIASES } from './vite.config.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -18,6 +18,9 @@ export default defineConfig({
 	},
 	oxc: {
 		jsx: { runtime: 'automatic', importSource: 'react' },
+	},
+	css: {
+		preprocessorOptions: { scss: SCSS_OPTIONS },
 	},
 	ssr: { noExternal: true },
 	build: {
