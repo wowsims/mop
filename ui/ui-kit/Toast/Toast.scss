@@ -1,0 +1,137 @@
+@import 'shared/tokens';
+
+// Base UI's portal renders a wrapper element around the viewport, which would otherwise be the flex
+// item an inline area's parent lays out instead of the viewport.
+.sim-toast-portal {
+	display: contents;
+}
+
+// The viewport is portaled, so no ancestor selector reaches it and it may not be inside `.sim-ui`.
+// Bootstrap declares every `--bs-toast-*` custom property on `.toast` itself, and none of this
+// markup carries that class, so the values come straight from the SCSS variables instead — the same
+// ones `shared/variables` overrides for `.toast`, which keeps the two implementations from drifting.
+.sim-toast-viewport {
+	display: flex;
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	z-index: var(--toast-z-index);
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--spacer-2);
+	width: 100%;
+	max-width: 100%;
+	padding: var(--spacer-3);
+	pointer-events: none;
+
+	&--inline {
+		position: static;
+		z-index: auto;
+		align-items: stretch;
+		padding: 0;
+
+		.sim-toast {
+			width: 100%;
+		}
+	}
+}
+
+.sim-toast {
+	// Deliberate parity with the vanilla template, which sets no `.toast--info` or `.toast--warning`
+	// rule: an info toast has always drawn a warning-yellow icon.
+	--icon-color: var(--bs-warning);
+	width: 100%;
+	max-width: 100%;
+	border: $toast-border-width solid $toast-border-color;
+	border-radius: $toast-border-radius;
+	background-color: $toast-background-color;
+	background-clip: padding-box;
+	box-shadow: $toast-box-shadow;
+	color: $toast-color;
+	font-size: $toast-font-size;
+	pointer-events: auto;
+	transition: var(--transition-fade);
+
+	@include media-breakpoint-up(md) {
+		width: $toast-max-width;
+	}
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+
+	// Base UI keeps the toasts past `limit` mounted so they can animate out; this stack has no
+	// stacking transform to hide them behind, so they would otherwise pile up in the column.
+	&[data-limited] {
+		display: none;
+	}
+
+	&--success {
+		--icon-color: var(--bs-success);
+	}
+
+	&--error {
+		--icon-color: var(--bs-danger);
+	}
+}
+
+.sim-toast-header {
+	display: flex;
+	align-items: center;
+	padding: $toast-padding-y $toast-padding-x 0;
+	background-color: $toast-header-background-color;
+	background-clip: padding-box;
+	color: $toast-header-color;
+}
+
+.sim-toast-icon {
+	display: block;
+	margin-right: var(--spacer-2);
+	color: var(--icon-color);
+	line-height: 1;
+}
+
+// Base UI's `Toast.Title` is an `<h2>`; vanilla's was a `<strong>`, so the heading defaults are undone here.
+.sim-toast-title {
+	margin: 0 auto 0 0;
+	font-size: inherit;
+	font-weight: $font-weight-bold;
+	line-height: inherit;
+}
+
+.sim-toast-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: calc(-0.5 * #{$toast-padding-x});
+	margin-left: $toast-padding-x;
+	padding: 0.25em;
+	border: 0;
+	background: none;
+	opacity: 0.5;
+	color: $toast-color;
+	cursor: pointer;
+	transition: var(--transition-fade);
+
+	&:hover {
+		opacity: 1;
+	}
+
+	&:focus-visible {
+		outline: 0;
+		opacity: 1;
+		box-shadow: var(--focus-ring);
+	}
+}
+
+.sim-toast-body {
+	padding: $toast-padding-x;
+	word-wrap: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sim-toast {
+		transition: none;
+	}
+}
