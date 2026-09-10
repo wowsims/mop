@@ -45,9 +45,7 @@ export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', tit
 									disabled={entry.isUnsupported}
 									{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}
 									onClick={() => {
-										if (entry.isUnsupported) return;
-										if (entry.Dialog) setOpenDialog(entry.label);
-										else entry.open?.();
+										if (!entry.isUnsupported) setOpenDialog(entry.label);
 									}}>
 									{entry.label}
 								</Menu.Item>
@@ -57,11 +55,9 @@ export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', tit
 				</Menu.Portal>
 			</Menu.Root>
 			{/* Outside `Menu.Root`, not inside its popup: clicking an item closes the menu, which unmounts the popup, and a dialog rendered in there would go with it. */}
-			{entries.map(entry =>
-				entry.Dialog ? (
-					<entry.Dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
-				) : null,
-			)}
+			{entries.map(entry => (
+				<entry.Dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
+			))}
 			<Tooltip id={unsupportedId} content="Currently unsupported" />
 		</div>
 	);

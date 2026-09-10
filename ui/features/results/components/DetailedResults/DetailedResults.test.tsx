@@ -89,7 +89,7 @@ let runData: unknown = null;
 const renderPane = () =>
 	render(
 		<SimHostProvider host={makeHost()}>
-			<DetailedResults resultsManager={{ currentChangeEmitter, getRunData: () => runData } as never} makeLogExporter={() => ({ open: () => {} })} />
+			<DetailedResults resultsManager={{ currentChangeEmitter, getRunData: () => runData } as never} />
 		</SimHostProvider>,
 	);
 

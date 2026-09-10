@@ -14,6 +14,7 @@ const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
 	const { createElement } = await import('react');
 	const { SidebarRegistry } = await import('@ui-kit/sidebar_registry');
+	const { CrashReportOpener } = await import('./crash_report_opener');
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
 	return {
 		SimHostObject: class {
@@ -36,6 +37,7 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly resultsPanel = {} as never;
 			readonly warnings = {} as never;
 			readonly raidSimResultsManager = {} as never;
+			readonly crashReport = new CrashReportOpener();
 			constructor(dom: { root: HTMLElement; sidebarActions: HTMLElement }) {
 				constructions.push(dom);
 				paneContainers.push(this.simTabContentsContainer);

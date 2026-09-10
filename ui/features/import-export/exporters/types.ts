@@ -6,6 +6,8 @@ export type ExportCategories = Record<SimSettingCategories, boolean>;
 export interface ExporterDefinition {
 	title: string;
 	allowDownload?: boolean;
+	downloadFileName?: string;
+	downloadMimeType?: string;
 	selectCategories?: boolean;
 	getData: (host: IndividualSimHost<any>, categories: ExportCategories) => string;
 }

@@ -14,7 +14,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
-import type { LogExporterFactory } from '../../model/log_exporter';
 import type { SimResultsManager } from '../../model/results_manager';
 import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
@@ -34,10 +33,9 @@ import { DEFAULT_DETAILED_RESULTS_TAB, DETAILED_RESULTS_TABS } from './utils';
 
 export interface DetailedResultsProps {
 	resultsManager: SimResultsManager;
-	makeLogExporter: LogExporterFactory;
 }
 
-export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedResultsProps) => {
+export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const host = useSimHost();
 	const sim = host.sim;
 	const resultsEmitter = host.resultChannel;
@@ -281,7 +279,7 @@ export const DetailedResults = ({ resultsManager, makeLogExporter }: DetailedRes
 					<DetailedResultsPane id="logTab" className="log-content" {...paneState('logTab')}>
 						<div className="dr-row">
 							<div className="log">
-								<LogRunner active={activeId === 'logTab'} makeLogExporter={makeLogExporter} />
+								<LogRunner active={activeId === 'logTab'} />
 							</div>
 						</div>
 					</DetailedResultsPane>

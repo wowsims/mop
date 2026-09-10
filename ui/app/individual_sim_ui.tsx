@@ -1,4 +1,3 @@
-/** @jsxImportSource @jsx-vanilla */
 import { BulkTab } from '@features/bulk/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
@@ -18,13 +17,11 @@ import {
 	WOWHEAD_GEAR_PLANNER_EXPORTER,
 	WowheadImporterDialog,
 } from '@features/import-export';
-import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { DetailedResults } from '@features/results/components/DetailedResults';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import { ResultChannel } from '@features/results/model/result_channel';
-import type { LogExporterFactory } from '@features/results/model/log_exporter';
 import { SimResultsManager } from '@features/results/model/results_manager';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
@@ -66,13 +63,13 @@ import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSi
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
-import { BaseModal } from '@ui-kit/base_modal';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import { toastManager } from '@ui-kit/Toast';
 import { createElement, type ReactNode } from 'react';
 
 import { trackPageView } from '../tracking/analytics';
+import { CrashReportOpener } from './crash_report_opener';
 import { ImportExportKind } from './header/import_export_registry';
 import { SimHeader } from './header/sim_header';
 import type { ShellDom } from './shell_dom';
@@ -123,6 +120,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 	raidSimResultsManager: SimResultsManager | null;
 	readonly epWeightsModal = new EpWeightsOpener();
+	readonly crashReport = new CrashReportOpener();
 	readonly gearSelectorModal = new GearSelectorModalOpener();
 	readonly resultChannel = new ResultChannel();
 
@@ -453,7 +451,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 							if (truncated) {
 								issueBody += '...';
 								// Prompt the user to add more information to the issue.
-								new CrashModal(this.rootElem, link).open();
+								this.crashReport.open(link);
 							}
 							url.searchParams.append('body', issueBody);
 
@@ -528,9 +526,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	settingsTab!: SettingsTab;
 	rotationTab!: RotationTab;
 
-	// The log exporter lives in another feature, and results/ must not import one — so the shell builds it and the pane is handed the factory.
-	readonly makeLogExporter: LogExporterFactory = getLogData => new LogExporter(this.rootElem, this, getLogData);
-
 	get itemSwapSelectorModal(): GearSelectorModalOpener | null {
 		return this.settingsTab?.itemSwapSelectorModal ?? null;
 	}
@@ -564,11 +559,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		this.addTab(
 			i18n.t('results_tab.title'),
 			'detailed-results-tab',
-			createElement(
-				'div',
-				{ className: 'detailed-results' },
-				createElement(DetailedResults, { resultsManager: this.raidSimResultsManager!, makeLogExporter: this.makeLogExporter }),
-			),
+			createElement('div', { className: 'detailed-results' }, createElement(DetailedResults, { resultsManager: this.raidSimResultsManager! })),
 		);
 	}
 
@@ -756,17 +747,5 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	// site prefixes its keys.
 	getStorageKey(keyPart: string): string {
 		return PlayerSpecs.getLocalStorageKey(this.player.getPlayerSpec()) + keyPart;
-	}
-}
-
-class CrashModal extends BaseModal {
-	constructor(parent: HTMLElement, link: string) {
-		super(parent, 'crash', { title: i18n.t('sim.crash_modal.title') });
-		this.body.appendChild(
-			<div className="sim-crash-report">
-				<h3 className="sim-crash-report-header">{i18n.t('sim.crash_modal.header')}</h3>
-				<textarea className="sim-crash-report-text form-control">{link}</textarea>
-			</div>,
-		);
 	}
 }

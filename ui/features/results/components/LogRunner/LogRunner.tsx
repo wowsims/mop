@@ -1,5 +1,6 @@
 import './LogRunner.scss';
 
+import { Exporter } from '@features/import-export';
 import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { isCastCompleted } from '@sim/proto/combat_log';
@@ -11,7 +12,6 @@ import { VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
-import type { LogExporterFactory } from '../../model/log_exporter';
 import type { SimResultData } from '../../model/result_data';
 import { EMPTY_SUGGESTIONS, LogIndex } from '../../view/log/search/indexes';
 import { LogFloatingActionBar } from './LogFloatingActionBar';
@@ -33,10 +33,9 @@ const longestOf = (logs: ReadonlyArray<CombatLog>): CombatLog => logs.reduce((lo
 export interface LogRunnerProps {
 	/** The pane is open. A run that lands while it is closed is indexed the first time it opens, which is what vanilla's `deferUntilShown` bought. */
 	active: boolean;
-	makeLogExporter: LogExporterFactory;
 }
 
-export const LogRunner = ({ active, makeLogExporter }: LogRunnerProps) => {
+export const LogRunner = ({ active }: LogRunnerProps) => {
 	const resultData = useSimResult();
 
 	const [seen, setSeen] = useState<SimResultData | null>(null);
@@ -78,12 +77,8 @@ export const LogRunner = ({ active, makeLogExporter }: LogRunnerProps) => {
 	// The exporter dumps everything, filtered or not, so it reads the logs through a ref.
 	const logsRef = useRef(logs);
 	logsRef.current = logs;
-	const exporterRef = useRef<{ open: () => void } | null>(null);
-	useEffect(() => {
-		// Vanilla built this in the LogView constructor and never disposed it; the dialog is part of
-		// the shell both tree gates count, so it has to exist before anything opens it.
-		exporterRef.current ??= makeLogExporter(() => combinedLogText(logsRef.current));
-	}, [makeLogExporter]);
+	const [exportOpen, setExportOpen] = useState(false);
+	const exportData = useCallback(() => combinedLogText(logsRef.current), []);
 
 	// Where the scroller's content starts, in viewport coordinates. Subtracting it from an element's
 	// box gives that element's offset *down the scroll content*, which does not move as it scrolls.
@@ -249,13 +244,7 @@ export const LogRunner = ({ active, makeLogExporter }: LogRunnerProps) => {
 					setGroups(next);
 					scrollListToTop();
 				}}>
-				<button
-					type="button"
-					className="btn btn-primary"
-					onClick={() => {
-						exporterRef.current ??= makeLogExporter(() => combinedLogText(logsRef.current));
-						exporterRef.current.open();
-					}}>
+				<button type="button" className="btn btn-primary" onClick={() => setExportOpen(true)}>
 					{i18n.t('results_tab.details.logs.export_button')}
 				</button>
 				<button type="button" className="btn btn-primary" onClick={scrollListToTop}>
@@ -263,6 +252,15 @@ export const LogRunner = ({ active, makeLogExporter }: LogRunnerProps) => {
 				</button>
 				<BooleanPicker modObject={showDebugHolder} config={showDebugConfig} />
 			</LogFloatingActionBar>
+			<Exporter
+				open={exportOpen}
+				onOpenChange={setExportOpen}
+				title={i18n.t('results_tab.details.logs.export_button')}
+				allowDownload
+				downloadFileName="wowsims-log.csv"
+				downloadMimeType="text/csv"
+				getData={exportData}
+			/>
 		</div>
 	);
 };

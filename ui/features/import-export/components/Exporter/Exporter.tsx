@@ -18,7 +18,16 @@ export interface ExporterProps extends ExporterDefinition {
 	onOpenChange: (open: boolean) => void;
 }
 
-export const Exporter = ({ open, onOpenChange, title, allowDownload = false, selectCategories = false, getData }: ExporterProps) => {
+export const Exporter = ({
+	open,
+	onOpenChange,
+	title,
+	allowDownload = false,
+	downloadFileName = 'wowsims.json',
+	downloadMimeType,
+	selectCategories = false,
+	getData,
+}: ExporterProps) => {
 	const host = useSimHost();
 	const textRef = useRef<HTMLTextAreaElement>(null);
 	const categories = useRef(defaultExportCategories());
@@ -61,7 +70,9 @@ export const Exporter = ({ open, onOpenChange, title, allowDownload = false, sel
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('export.json.copy_button')}
 					</Button>
 					{allowDownload && (
-						<Button className="exporter-button download-button ms-2" onClick={() => downloadString(dataRef.current, 'wowsims.json')}>
+						<Button
+							className="exporter-button download-button ms-2"
+							onClick={() => downloadString(dataRef.current, downloadFileName, downloadMimeType)}>
 							<Icon name="download" style="base" className="me-1" />
 							{i18n.t('export.json.download_button')}
 						</Button>

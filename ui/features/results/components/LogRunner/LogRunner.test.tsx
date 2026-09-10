@@ -1,8 +1,9 @@
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { act, fireEvent, render } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { LogExporterFactory } from '../../model/log_exporter';
 import type { SimResultData } from '../../model/result_data';
 import { LogRunner } from './LogRunner';
 
@@ -76,10 +77,11 @@ const LOGS = [
 // every box as 0x0 it never gets its answer and so never unmounts.
 const rows = (container: HTMLElement) => [...container.querySelectorAll('.virtual-list-row .log-event')].map(row => row.textContent);
 
-const mount = (active = true, makeLogExporter: LogExporterFactory = vi.fn(() => ({ open: vi.fn() }))) => ({
-	makeLogExporter,
-	...render(<LogRunner active={active} makeLogExporter={makeLogExporter} />),
-});
+// The export dialog reads the host for its portal container.
+const host = { rootElem: document.body } as never;
+const Wrapper = ({ children }: { children: ReactNode }) => <SimHostProvider host={host}>{children}</SimHostProvider>;
+
+const mount = (active = true) => render(<LogRunner active={active} />, { wrapper: Wrapper });
 
 const searchInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('.log-search-input')!;
 
@@ -112,10 +114,10 @@ describe('LogRunner', () => {
 	// What `deferUntilShown` bought: a run that arrives while the tab is closed costs nothing.
 	it('indexes nothing while the tab is closed, and catches up when it opens', () => {
 		result = resultWith(LOGS);
-		const { container, rerender } = render(<LogRunner active={false} makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		const { container, rerender } = mount(false);
 		expect(rows(container)).toEqual([]);
 
-		rerender(<LogRunner active={true} makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		rerender(<LogRunner active={true} />);
 
 		expect(rows(container)).toHaveLength(2);
 	});
@@ -143,11 +145,11 @@ describe('LogRunner', () => {
 	// search excluded everything.
 	it('says why the list is empty when a search matches nothing, and only once a run has landed', async () => {
 		vi.useFakeTimers({ shouldAdvanceTime: true });
-		const { container, rerender } = render(<LogRunner active makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		const { container, rerender } = mount();
 		expect(container.querySelector('.log-runner-empty')).toBeNull();
 
 		result = resultWith(LOGS);
-		rerender(<LogRunner active makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />);
+		rerender(<LogRunner active />);
 		fireEvent.change(searchInput(container), { target: { value: 'no such line' } });
 		await act(async () => void vi.advanceTimersByTime(200));
 
@@ -176,22 +178,15 @@ describe('LogRunner', () => {
 		expect(rows(container)).toContain('[3.00] [DEBUG] internal chatter');
 	});
 
-	it('opens the exporter the host handed it, over the whole log rather than the filtered view', () => {
-		const open = vi.fn();
-		const getLogData: Array<() => string> = [];
-		const makeLogExporter = vi.fn((read: () => string) => {
-			getLogData.push(read);
-			return { open };
-		});
+	it('opens the exporter over the whole log rather than the filtered view', () => {
 		result = resultWith(LOGS);
-		const { container } = mount(true, makeLogExporter);
+		const { container } = mount();
 
 		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls .btn-primary')][0]);
 
-		expect(open).toHaveBeenCalledTimes(1);
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
 		// The cast-completed line is gone from both, as it was in vanilla — that filter is on `logs`.
-		expect(getLogData[0]().split('\n')).toHaveLength(3);
+		expect(document.querySelector<HTMLTextAreaElement>('.exporter .exporter-textarea')!.value.split('\n')).toHaveLength(3);
 	});
 
 	// The list shares a scroller with the rest of the pane, and `.log-runner-scroll` is not it: that
@@ -203,7 +198,7 @@ describe('LogRunner', () => {
 		outer.style.overflowY = 'auto';
 		document.body.appendChild(outer);
 		result = resultWith(LOGS);
-		const { container } = render(<LogRunner active makeLogExporter={vi.fn(() => ({ open: vi.fn() }))} />, { container: outer });
+		const { container } = render(<LogRunner active />, { container: outer, wrapper: Wrapper });
 
 		expect(container.querySelector('.virtual-list')!.getAttribute('data-scroller')).toBe('sim-ui');
 	});

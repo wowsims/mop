@@ -9,6 +9,7 @@ import type { SpecDefinition } from '@sim/spec_config';
 import { useLayoutEffect, useRef, useState } from 'react';
 
 import { trackPageView } from '../tracking/analytics';
+import { CrashReportDialog } from './CrashReportDialog';
 import { ImportExportKind } from './header/import_export_registry';
 import { ImportExportMenu } from './header/ImportExportMenu';
 import { SimHostObject } from './individual_sim_ui';
@@ -81,6 +82,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 			</div>
 			{simUI && (
 				<>
+					<CrashReportDialog opener={simUI.crashReport} />
 					<EpWeightsDialog opener={simUI.epWeightsModal} settings={simUI.statWeightActionSettings} />
 					<SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} host={simUI} />
 				</>
