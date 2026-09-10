@@ -6,6 +6,4 @@ export interface ShellDom {
 	content: HTMLElement;
 	main: HTMLElement;
 	header: HTMLElement;
-	tabsMount: HTMLElement;
-	importExport: HTMLElement;
 }

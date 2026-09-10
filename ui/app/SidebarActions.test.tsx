@@ -7,7 +7,7 @@ import { SidebarActions } from './SidebarActions';
 
 let container: HTMLElement;
 
-const renderActions = (registry: SidebarRegistry, disabled = false) => render(<SidebarActions registry={registry} container={container} disabled={disabled} />);
+const renderActions = (registry: SidebarRegistry, disabled = false) => render(<SidebarActions registry={registry} disabled={disabled} />, { container });
 
 const buttons = () => [...container.querySelectorAll('button')];
 
@@ -57,7 +57,7 @@ describe('SidebarActions', () => {
 		expect(buttons().map(button => button.disabled)).toEqual([false, false]);
 
 		action.update({ disabled: true });
-		rerender(<SidebarActions registry={registry} container={container} disabled={false} />);
+		rerender(<SidebarActions registry={registry} disabled={false} />);
 		expect(buttons().map(button => button.disabled)).toEqual([true, false]);
 	});
 
@@ -70,7 +70,7 @@ describe('SidebarActions', () => {
 		expect(buttons()[0].getAttribute('aria-busy')).toBe('true');
 
 		action.update({ loading: false });
-		rerender(<SidebarActions registry={registry} container={container} disabled={false} />);
+		rerender(<SidebarActions registry={registry} disabled={false} />);
 		expect(buttons()[0].classList.contains('loading')).toBe(false);
 		expect(buttons()[0].getAttribute('aria-busy')).toBeNull();
 	});

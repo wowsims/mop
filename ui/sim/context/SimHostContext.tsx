@@ -6,13 +6,14 @@ import type { IndividualSimHost } from '../sim_host';
 
 const SimHostContext = createContext<IndividualSimHost<any> | null>(null);
 
-export function SimHostProvider({ host, children }: { host: IndividualSimHost<any>; children: ReactNode }) {
+// Nullable because the provider wraps the shell that builds the host: it carries null for the one render that creates the containers the host is constructed against.
+export function SimHostProvider({ host, children }: { host: IndividualSimHost<any> | null; children: ReactNode }) {
 	return <SimHostContext.Provider value={host}>{children}</SimHostContext.Provider>;
 }
 
 export function useSimHost<SpecType extends Spec = any>(): IndividualSimHost<SpecType> {
 	const host = useContext(SimHostContext);
-	// Non-null rather than `Host | null`: the provider renders only once the shell is constructed, so a null here is a component mounted outside it, which is a bug and not a state to handle.
+	// Non-null rather than `Host | null`: every consumer is gated on the host existing, so a null here is a component that escaped the gate, which is a bug and not a state to handle.
 	if (!host) throw new Error('useSimHost must be used inside <SimHostProvider>');
 	return host;
 }

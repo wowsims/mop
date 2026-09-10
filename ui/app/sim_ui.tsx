@@ -22,7 +22,7 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import { toastManager } from '@ui-kit/Toast';
-import type { ReactNode } from 'react';
+import { createElement, type ReactNode } from 'react';
 
 import { trackEvent } from '../tracking/analytics';
 import { SimHeader } from './header/sim_header';
@@ -55,7 +55,6 @@ export abstract class SimUI extends Component implements SimHost {
 	readonly simHeader: SimHeader;
 
 	readonly simContentContainer: HTMLElement;
-	readonly simMain: HTMLElement;
 	readonly simActionsContainer: HTMLElement;
 	readonly iterationsPicker: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
@@ -72,8 +71,7 @@ export abstract class SimUI extends Component implements SimHost {
 
 		this.simContentContainer = dom.content;
 		this.simHeader = new SimHeader(dom, this);
-		this.simMain = dom.main;
-		this.tabs = new SimTabRegistry(this.simMain);
+		this.tabs = new SimTabRegistry();
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
@@ -109,16 +107,15 @@ export abstract class SimUI extends Component implements SimHost {
 		return this.dom.sidebarResults;
 	}
 
-	addTab(title: string, cssClass: string, content: HTMLElement | Element) {
+	addTab(title: string, cssClass: string, content: ReactNode) {
 		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
 
-		const pane = (
-			<div id={contentId} className="sim-tab">
-				{content}
-			</div>
-		) as HTMLElement;
-
-		this.tabs.attach({ id: contentId, title, pane, ariaControlsOnItem: true });
+		this.tabs.attach({
+			id: contentId,
+			title,
+			pane: createElement('div', { id: contentId, className: 'sim-tab' }, content),
+			ariaControlsOnItem: true,
+		});
 	}
 
 	addWarning(warning: SimWarning) {

@@ -5,18 +5,13 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { SimTabs } from './SimTabs';
 
 // The pane is all SimTab and SimUI.addTab hand to the registry; the tab and the panel are React's.
-const makeTab = (id: string) => {
-	const pane = document.createElement('div');
-	pane.id = id;
-	pane.className = 'sim-tab';
-	return { id, title: id, pane };
-};
+const makeTab = (id: string) => ({ id, title: id, pane: <div id={id} className="sim-tab" /> });
 
 let strip: HTMLElement;
 let panes: HTMLElement;
 let registry: SimTabRegistry;
 
-const renderTabs = () => render(<SimTabs registry={registry} strip={strip} panes={panes} />);
+const renderTabs = () => render(<SimTabs registry={registry} panes={panes} />, { container: strip });
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -24,7 +19,7 @@ beforeEach(() => {
 	panes = document.createElement('main');
 	// Attached, so focus() actually moves document.activeElement.
 	document.body.append(strip, panes);
-	registry = new SimTabRegistry(panes);
+	registry = new SimTabRegistry();
 });
 
 const press = (key: string) =>
@@ -47,7 +42,7 @@ describe('SimTabs', () => {
 		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
 		renderTabs();
 		expect(tabs().map(el => el.textContent)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
-		// Each panel adopts its pane, so the id the stylesheets select on moves one level down.
+		// Each panel wraps its pane, so the id the stylesheets select on sits one level down.
 		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
 	});
 

@@ -9,14 +9,9 @@ export class SimHeader extends Component {
 	private simUI: SimUI;
 	readonly importExport = new ImportExportRegistry();
 
-	readonly simTabsContainer: HTMLElement;
-	readonly importExportContainer: HTMLElement;
-
 	constructor(dom: ShellDom, simUI: SimUI) {
 		super(null, undefined, dom.header);
 		this.simUI = simUI;
-		this.simTabsContainer = dom.tabsMount;
-		this.importExportContainer = dom.importExport;
 	}
 
 	activateTab(className: string) {

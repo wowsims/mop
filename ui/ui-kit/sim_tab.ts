@@ -1,33 +1,26 @@
-import { Component } from './component';
 import type { SimUIHost } from '@sim/sim_host';
+import type { ReactNode } from 'react';
+
+import { Component } from './component';
 
 export interface SimTabConfig {
 	identifier: string;
 	title: string;
 	badge?: string;
+	pane: ReactNode;
 }
 
 export abstract class SimTab extends Component {
 	protected simUI: SimUIHost;
 	protected config: SimTabConfig;
 
-	readonly contentContainer: HTMLElement;
-
 	constructor(simUI: SimUIHost, config: SimTabConfig) {
-		super(null, 'sim-tab');
-
-		this.rootElem.classList.add(config.identifier);
+		super(null);
 
 		this.simUI = simUI;
 		this.config = config;
 
-		this.rootElem.id = this.config.identifier;
-
-		this.contentContainer = document.createElement('div');
-		this.contentContainer.classList.add('tab-pane-content-container');
-		this.rootElem.appendChild(this.contentContainer);
-
-		this.simUI.tabs.attach({ id: config.identifier, title: config.title, badge: config.badge, pane: this.rootElem });
+		this.simUI.tabs.attach({ id: config.identifier, title: config.title, badge: config.badge, pane: config.pane });
 	}
 
 	protected abstract buildTabContent(): void;

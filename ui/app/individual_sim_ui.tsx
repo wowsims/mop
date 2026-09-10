@@ -21,6 +21,7 @@ import {
 import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
+import { DetailedResults } from '@features/results/components/DetailedResults';
 import { ResultChannel } from '@features/results/model/result_channel';
 import type { LogExporterFactory } from '@features/results/model/log_exporter';
 import { SimResultsManager } from '@features/results/model/results_manager';
@@ -59,6 +60,7 @@ import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
 import type { ShellDom } from './shell_dom';
 import { SimUI } from './sim_ui';
+import { BulkTabBody } from './tabs/BulkTabBody';
 import { GearTab } from './tabs/gear_tab';
 import { RotationTab } from './tabs/rotation_tab';
 import { SettingsTab } from './tabs/settings_tab';
@@ -336,8 +338,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	talentsTab!: TalentsTab<SpecType>;
 	settingsTab!: SettingsTab;
 	rotationTab!: RotationTab;
-	/** The results pane is React; the shell only owns the div it renders into. */
-	detailedResultsContainer!: HTMLElement;
 
 	// The log exporter lives in another feature, and results/ must not import one — so the shell builds it and the pane is handed the factory.
 	readonly makeLogExporter: LogExporterFactory = getLogData => new LogExporter(this.rootElem, this, getLogData);
@@ -355,7 +355,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addBulkTab(): BulkTab {
-		const bulkTab = new BulkTab(this);
+		const bulkTab = new BulkTab(this, createElement(BulkTabBody));
 		//bulkTab.navLink.hidden = !this.sim.getShowExperimental();
 		//this.sim.showExperimentalChangeEmitter.on(() => {
 		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
@@ -376,8 +376,15 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addDetailedResultsTab() {
-		this.detailedResultsContainer = (<div className="detailed-results"></div>) as HTMLElement;
-		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', this.detailedResultsContainer);
+		this.addTab(
+			i18n.t('results_tab.title'),
+			'detailed-results-tab',
+			createElement(
+				'div',
+				{ className: 'detailed-results' },
+				createElement(DetailedResults, { resultsManager: this.raidSimResultsManager!, makeLogExporter: this.makeLogExporter }),
+			),
+		);
 	}
 
 	private addTopbarComponents() {

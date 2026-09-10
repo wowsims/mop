@@ -13,6 +13,15 @@ import type { ShellDom } from './shell_dom';
 import { SocialLink } from '@ui-kit/SocialLink';
 import { ToastArea, toastManager } from '@ui-kit/Toast';
 
+/** Filled once the shell is constructed, so each is null on the render that builds the containers they go in. */
+export interface SimShellSlots {
+	tabs: ReactNode;
+	importExport: ReactNode;
+	sidebarActions: ReactNode;
+	sidebarResults: ReactNode;
+	sidebarStats: ReactNode;
+}
+
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
 	sim: Sim;
@@ -21,9 +30,10 @@ export interface SimShellProps {
 	noticeText?: string;
 	knownIssues: ReadonlyArray<ReactNode>;
 	onOpenSettings: () => void;
+	slots: SimShellSlots;
 }
 
-export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
+export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues, onOpenSettings, slots }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
 	const sidebarResults = useRef<HTMLDivElement>(null);
@@ -31,8 +41,6 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 	const content = useRef<HTMLDivElement>(null);
 	const main = useRef<HTMLElement>(null);
 	const header = useRef<HTMLElement>(null);
-	const tabsMount = useRef<HTMLDivElement>(null);
-	const importExport = useRef<HTMLDivElement>(null);
 	const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null);
 
 	const display = useDisplayMetrics(sim);
@@ -58,8 +66,6 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 			content: content.current!,
 			main: main.current!,
 			header: header.current!,
-			tabsMount: tabsMount.current!,
-			importExport: importExport.current!,
 		};
 		setRootEl(root.current);
 	}, [domRef]);
@@ -75,9 +81,16 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 							<SimTitleDropdown currentSpec={spec} />
 						</div>
 						<div className="sim-sidebar-content">
-							<div ref={sidebarActions} className="sim-sidebar-actions" />
-							<div ref={sidebarResults} className="sim-sidebar-results" />
-							<div ref={sidebarStats} className="sim-sidebar-stats" />
+							{/* The iterations picker is appended here by the constructor, before these children mount, and that is what keeps it first. */}
+							<div ref={sidebarActions} className="sim-sidebar-actions">
+								{slots.sidebarActions}
+							</div>
+							<div ref={sidebarResults} className="sim-sidebar-results">
+								{slots.sidebarResults}
+							</div>
+							<div ref={sidebarStats} className="sim-sidebar-stats">
+								{slots.sidebarStats}
+							</div>
 							<div className="sim-sidebar-socials">
 								{SOCIALS.map(social => (
 									<SocialLink key={social.key} social={social} />
@@ -88,8 +101,8 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 					<div ref={content} className="sim-content container-fluid">
 						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
-								<div ref={tabsMount} className="sim-tabs-mount" />
-								<div ref={importExport} className="import-export nav" />
+								<div className="sim-tabs-mount">{slots.tabs}</div>
+								<div className="import-export nav">{slots.importExport}</div>
 								<div className="sim-toolbar nav">
 									<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
 								</div>
