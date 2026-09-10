@@ -79,10 +79,13 @@ func (priest *Priest) AddPartyBuffs(_ *proto.PartyBuffs) {
 }
 
 func (priest *Priest) Initialize() {
-	// Inner Fire (588): +10% spell power and +60% armor.
+	// Inner Fire (588): +10% spell power and +60% armor. Glyph of Inner Fire
+	// (55686) increases the armor gained by 50%, so +90%: three logged priests
+	// with the glyph sit at exactly 1.9x their unbuffed armor.
 	if priest.SelfBuffs.UseInnerFire {
+		armorMultiplier := core.TernaryFloat64(priest.HasMajorGlyph(proto.PriestMajorGlyph_GlyphOfInnerFire), 1.9, 1.6)
 		priest.MultiplyStat(stats.SpellPower, 1.1)
-		priest.ApplyEquipScaling(stats.Armor, 1.6)
+		priest.ApplyEquipScaling(stats.Armor, armorMultiplier)
 		core.MakePermanent(priest.RegisterAura(core.Aura{
 			Label:    "Inner Fire",
 			ActionID: core.ActionID{SpellID: 588},
