@@ -1,13 +1,11 @@
-import type { StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import { breakpointValueToDisplayPercentage } from '@features/reforge/model/utils';
 import { StatCapType } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import { statCapTypeNames } from '@sim/proto/names';
 import type { StatCap } from '@sim/proto/stats';
+import type { StatTooltipContent } from '@sim/spec_config';
 import { Fragment } from 'react';
-
-import { statTooltipNode } from './utils';
 
 export interface ReforgeSoftCapsTooltipProps {
 	player: Player<any>;
@@ -22,7 +20,7 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 		<table className="w-100">
 			<tbody>
 				{softCaps.map(({ unitStat, breakpoints, capType, postCapEPs }, index) => {
-					const extra = statTooltipNode(additionalInformation[unitStat.getRootStat()]);
+					const extra = additionalInformation[unitStat.getRootStat()]?.();
 					return (
 						<Fragment key={unitStat.getKey()}>
 							<tr>

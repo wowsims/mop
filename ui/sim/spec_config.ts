@@ -31,6 +31,9 @@ import type { Sim } from './sim';
 import type { IndividualSimHost, SimWarning } from './sim_host';
 import type { StoreSubscribe } from './state/subscriptions';
 
+/** Per-stat tooltip content a spec contributes to the reforge panel. */
+export type StatTooltipContent = { [key in Stat]?: () => ReactNode };
+
 export type InputConfig<ModObject> =
 	| InputHelpers.TypedBooleanPickerConfig<ModObject>
 	| InputHelpers.TypedNumberPickerConfig<ModObject>

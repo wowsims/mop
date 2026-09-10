@@ -1,27 +1,23 @@
 // DOM-free half of the reforge optimizer: settings access, EP / soft-cap math and
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
 // ../components/ReforgePanel and owns every button, tooltip, toast and modal.
-import { isDevMode } from '@sim/utils/env';
+import { ReforgeOptimizeRequest, ReforgeSettings } from '@generated/proto/api';
+import { Spec, Stat } from '@generated/proto/common';
+import { ReforgeGearCache } from '@sim/cache/reforge_cache';
 import { Player } from '@sim/player/player';
 import { Gear } from '@sim/proto/gear';
 import { getReforgeCacheGearKey } from '@sim/proto/items';
 import { StatCap, Stats, UnitStatPresets } from '@sim/proto/stats';
-import { ReforgeGearCache } from '@sim/cache/reforge_cache';
 import { ReforgeSettings as ReforgeSettingsState } from '@sim/settings/reforge_settings';
 import type { ReforgeOptimizeConfig, Sim } from '@sim/sim';
 import { RequestTypes } from '@sim/sim_signal_manager';
-import type { IndividualSimUIConfig } from '@sim/spec_config';
+import type { IndividualSimUIConfig, StatTooltipContent } from '@sim/spec_config';
 import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@sim/state/reforge_request';
-import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@sim/state/subscriptions';
-import { ReforgeOptimizeRequest, ReforgeSettings } from '@generated/proto/api';
-import { Spec, Stat } from '@generated/proto/common';
 import { SimRunKind } from '@sim/state/sim_store';
+import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@sim/state/subscriptions';
+import { isDevMode } from '@sim/utils/env';
 
 import { applyBreakpointLimits, clearSoftCappedStats } from './utils';
-
-// Opaque here on purpose: these are rendered by ReforgePanel and this layer is framework-free
-// (see ui/README.md dependency direction), so it cannot name `ReactNode`.
-export type StatTooltipContent = { [key in Stat]?: () => unknown };
 
 // Handed to the option callbacks below so a spec config can reach the reforger and
 // its own defaults without closing over the sim UI instance.

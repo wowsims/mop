@@ -1,5 +1,5 @@
-import type { StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import { Stat } from '@generated/proto/common';
+import type { StatTooltipContent } from '@sim/spec_config';
 import type { ReactNode } from 'react';
 
 /** The stats the optimizer offers a cap for. */
@@ -26,14 +26,11 @@ const DEFAULT_STAT_TOOLTIPS: Partial<Record<Stat, ReactNode>> = {
 	),
 };
 
-/** The one place a spec's opaque tooltip entry becomes a node — see `StatTooltipContent`. */
-export const statTooltipNode = (make: (() => unknown) | undefined): ReactNode => make?.() as ReactNode;
-
 /** The panel's own entries, overridden per stat by the spec's. Evaluated once per popover open, which is the lifetime tippy's lazy `content` function had. */
 export const buildStatTooltips = (override: StatTooltipContent | undefined): Partial<Record<Stat, ReactNode>> => {
 	const tooltips: Partial<Record<Stat, ReactNode>> = { ...DEFAULT_STAT_TOOLTIPS };
 	for (const [stat, make] of Object.entries(override ?? {})) {
-		const content = statTooltipNode(make);
+		const content = make?.();
 		if (content !== undefined) tooltips[Number(stat) as Stat] = content;
 	}
 	return tooltips;
