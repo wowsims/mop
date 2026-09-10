@@ -2,9 +2,9 @@ import i18n from '@i18n/config';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
 import { useRef } from 'react';
 
-import type { SuggestionSource } from '../../view/log/search/indexes';
-import type { ClauseField } from '../../view/log/search/query';
-import { FIELD_NAMES } from '../../view/log/search/query';
+import type { SuggestionSource } from '../../model/log/search/indexes';
+import type { ClauseField } from '../../model/log/search/query';
+import { FIELD_NAMES } from '../../model/log/search/query';
 import { LogSearchGroup } from './LogSearchGroup';
 import type { IdentifiedSearchGroup } from './utils';
 import { sentenceCase } from './utils';

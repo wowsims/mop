@@ -1,7 +1,7 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { EMPTY_SUGGESTIONS } from '../../view/log/search/indexes';
+import { EMPTY_SUGGESTIONS } from '../../model/log/search/indexes';
 import { LogFloatingActionBar } from './LogFloatingActionBar';
 import type { IdentifiedSearchGroup } from './utils';
 

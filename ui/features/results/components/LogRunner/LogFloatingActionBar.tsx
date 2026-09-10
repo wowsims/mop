@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import type { SuggestionSource } from '../../view/log/search/indexes';
+import type { SuggestionSource } from '../../model/log/search/indexes';
 import { LogSearchBar } from './LogSearchBar';
 import type { IdentifiedSearchGroup } from './utils';
 import { labelOf, sentenceCase } from './utils';

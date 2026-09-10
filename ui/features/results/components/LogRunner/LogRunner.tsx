@@ -12,8 +12,8 @@ import { VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
+import { EMPTY_SUGGESTIONS, LogIndex } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
-import { EMPTY_SUGGESTIONS, LogIndex } from '../../view/log/search/indexes';
 import { LogFloatingActionBar } from './LogFloatingActionBar';
 import { LogRow } from './LogRow';
 import type { IdentifiedSearchGroup } from './utils';

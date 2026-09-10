@@ -5,8 +5,8 @@ import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 
-import type { SuggestionSource } from '../../view/log/search/indexes';
-import { isNumericFilter } from '../../view/log/search/indexes';
+import type { SuggestionSource } from '../../model/log/search/indexes';
+import { isNumericFilter } from '../../model/log/search/indexes';
 import type { IdentifiedSearchGroup } from './utils';
 import { labelOf, sentenceCase, TYPED_FIELDS, valueCandidates } from './utils';
 

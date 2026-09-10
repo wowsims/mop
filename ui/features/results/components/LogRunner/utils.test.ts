@@ -1,8 +1,8 @@
 import type { CombatLog } from '@sim/proto/combat_log';
 import { describe, expect, it } from 'vitest';
 
+import { EMPTY_SUGGESTIONS } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
-import { EMPTY_SUGGESTIONS } from '../../view/log/search/indexes';
 import { combinedLogText, keywordsOf, labelOf, selectedTargetNumber, sentenceCase, valueCandidates } from './utils';
 
 const resultWith = (targets: number, selected: number) =>

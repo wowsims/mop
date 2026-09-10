@@ -2,10 +2,10 @@ import type { CombatLog, Outcome } from '@sim/proto/combat_log';
 import { formattedTimestamp, rawWithoutTimestamp } from '@sim/proto/combat_log';
 import { OUTCOMES } from '@sim/proto/combat_log/types';
 
+import type { SuggestionSource } from '../../model/log/search/indexes';
+import { TYPE_SUGGESTIONS } from '../../model/log/search/indexes';
+import type { ClauseField, SearchGroup } from '../../model/log/search/query';
 import type { SimResultData } from '../../model/result_data';
-import type { SuggestionSource } from '../../view/log/search/indexes';
-import { TYPE_SUGGESTIONS } from '../../view/log/search/indexes';
-import type { ClauseField, SearchGroup } from '../../view/log/search/query';
 import { OUTCOME_LABEL } from '../DamageResult';
 
 /**
