@@ -1,16 +1,11 @@
 import { formatDurationSeconds } from '@sim/utils/format';
 import i18n from '@i18n/config';
-import { useEffect, useState } from 'react';
 
-import { useBulkTab } from '../../hooks/useBulkTab';
-import type { BulkProgress } from '../../model/progress';
+import { useBulkProgress } from '../../hooks/useBulkProgress';
 
 /** Subscribes to the run's own ticks, so a progress message commits this leaf and never the dialog. */
 export const BulkProgressMessage = () => {
-	const bt = useBulkTab();
-	const [progress, setProgress] = useState<BulkProgress | null>(bt.getProgress);
-
-	useEffect(() => bt.onProgress(setProgress), [bt]);
+	const progress = useBulkProgress();
 
 	if (!progress) return null;
 	const remaining = progress.secondsRemaining !== undefined && (

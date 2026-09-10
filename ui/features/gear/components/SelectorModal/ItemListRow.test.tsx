@@ -60,10 +60,10 @@ const makeItemData = (overrides: Partial<ItemData<ItemListType, ReactNode>> = {}
 
 const renderRow = (
 	overrides: Partial<ItemListRowProps> = {},
-	btOverrides: Partial<{ hasItem: ReturnType<typeof vi.fn>; addItem: ReturnType<typeof vi.fn>; removeItem: ReturnType<typeof vi.fn> }> = {},
+	batchOverrides: Partial<{ hasItem: ReturnType<typeof vi.fn>; addItem: ReturnType<typeof vi.fn>; removeItem: ReturnType<typeof vi.fn> }> = {},
 	onWrapperClick?: () => void,
 ) => {
-	Object.assign(batch, { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn() }, btOverrides);
+	Object.assign(batch, { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn() }, batchOverrides);
 	const host = { player: {}, sim: {} } as unknown as IndividualSimHost<any>;
 
 	const props: ItemListRowProps = {
@@ -88,7 +88,7 @@ const renderRow = (
 		</SimHostProvider>,
 	);
 
-	return { container, wrapper: container.firstElementChild as HTMLElement, bt: batch, props };
+	return { container, wrapper: container.firstElementChild as HTMLElement, batch, props };
 };
 
 describe('ItemListRow', () => {
@@ -230,13 +230,13 @@ describe('ItemListRow', () => {
 	it('adds the item to the batch when absent, and removes it when present', () => {
 		const notInBatch = renderRow({ itemData: makeItemData({ id: 7 }) }, { hasItem: vi.fn(() => false) });
 		fireEvent.click(notInBatch.container.querySelector('.selector-modal-list-item-compare')!);
-		expect(notInBatch.bt.addItem).toHaveBeenCalledTimes(1);
-		expect(notInBatch.bt.removeItem).not.toHaveBeenCalled();
+		expect(notInBatch.batch.addItem).toHaveBeenCalledTimes(1);
+		expect(notInBatch.batch.removeItem).not.toHaveBeenCalled();
 
 		const inBatch = renderRow({ itemData: makeItemData({ id: 7 }) }, { hasItem: vi.fn(() => true) });
 		fireEvent.click(inBatch.container.querySelector('.selector-modal-list-item-compare')!);
-		expect(inBatch.bt.removeItem).toHaveBeenCalledTimes(1);
-		expect(inBatch.bt.addItem).not.toHaveBeenCalled();
+		expect(inBatch.batch.removeItem).toHaveBeenCalledTimes(1);
+		expect(inBatch.batch.addItem).not.toHaveBeenCalled();
 	});
 
 	it('hides the compare container off the items tab', () => {

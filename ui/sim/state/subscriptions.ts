@@ -186,8 +186,8 @@ export function subscribeUnitMetadata(sim: Sim): StoreSubscribe {
 	return fromSelector(sim.store, s => s.sim.metadataVersion);
 }
 
-// Bulk tab state (per player). `owner` is the BulkTab (or anything exposing
-// the player's sim + storeKey).
+// Bulk tab state (per player). `owner` is the player, or anything else
+// exposing its sim + storeKey.
 export interface BulkOwner {
 	readonly sim: Sim;
 	readonly storeKey: number;

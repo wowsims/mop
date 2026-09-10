@@ -1,4 +1,3 @@
-import type { BulkTab } from '@features/bulk/bulk_tab';
 import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
 import type { ResultChannel } from '@features/results/model/result_channel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
@@ -42,7 +41,6 @@ export interface SimHost {
 export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
-	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizerModel | null;
 	readonly resultChannel: ResultChannel;
 	applyEmptyAplRotation(): void;

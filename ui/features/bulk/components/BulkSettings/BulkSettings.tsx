@@ -1,5 +1,5 @@
 import { BulkSimItemSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
-import { usePlayer } from '@sim/context/SimHostContext';
+import { usePlayer, useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { subscribeBulkChange, subscribeBulkField, subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
@@ -10,9 +10,9 @@ import { useEffect, useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useBulkState } from '../../hooks/useBulkState';
-import { useBulkTab } from '../../hooks/useBulkTab';
 import { bulkCombinationsLimit } from '../../model/limits';
 import { frozenItemSlot } from '../../model/picker_groups';
+import { runBulkBatch } from '../../model/run';
 import { canRunBatch } from '../../model/selectors';
 import { setBulkFrozenItem, setBulkFrozenWeaponSlot, setBulkInheritUpgrades, setBulkUseLegacyBulkSim } from '../../model/settings';
 import { CombinationsCount } from './CombinationsCount';
@@ -48,7 +48,7 @@ const FROZEN_PAIRS: readonly FrozenPair[] = [
 ];
 
 export const BulkSettings = () => {
-	const bt = useBulkTab();
+	const host = useSimHost();
 	const player = usePlayer();
 	const frozenItems = useBulkState(slice => slice.frozenItems);
 	const frozenWeaponSlot = useBulkState(slice => slice.frozenWeaponSlot);
@@ -91,7 +91,7 @@ export const BulkSettings = () => {
 			<div className="bulk-settings-outer-container">
 				<div className="bulk-settings-container">
 					<CombinationsCount />
-					<button type="button" className="btn btn-primary bulk-settings-btn" disabled={!canRun} onClick={() => void bt.runBatchSim()}>
+					<button type="button" className="btn btn-primary bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
 						{i18n.t('bulk_tab.actions.simulate_batch')}
 					</button>
 					<div className="use-legacy-bulk-sim-container">

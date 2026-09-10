@@ -1,4 +1,4 @@
-import { type BulkTab, createBulkTab } from '@features/bulk/bulk_tab';
+import { initBulk } from '@features/bulk/model/init';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { registerSetBonusNotices } from '@features/gear/item_notices';
@@ -99,7 +99,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		};
 	}
 
-	readonly bt: BulkTab;
 	reforger: ReforgeOptimizerModel | null = null;
 	// The view's own inputs, resolved here because `config.reforge` may be a function and must run once.
 	reforgeOptions: ReforgeOptimizerOptions | null = null;
@@ -149,7 +148,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			watchTargetDummies(this.player, this.sim);
 		});
 
-		this.bt = createBulkTab(this);
+		initBulk(this);
 
 		// Declarative behaviour slots. These run last, exactly where a spec
 		// subclass' constructor body used to run: after every model the React tree
