@@ -8,7 +8,6 @@ import { PlayerSpec } from '@sim/player/player_spec';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import { Class } from '@generated/proto/common';
 import * as Popper from '@popperjs/core';
-import { Dropdown, Modal, Tab } from 'bootstrap';
 import { Chart, registerables } from 'chart.js';
 import tippy from 'tippy.js';
 
@@ -93,7 +92,6 @@ renderLandingSimLinks();
 declare global {
 	interface Window {
 		Popper: any;
-		bootstrap: any;
 	}
 }
 
@@ -102,7 +100,6 @@ Chart.defaults.color = 'white';
 
 tippy.setDefaultProps({ arrow: false, allowHTML: true });
 window.Popper = Popper;
-window.bootstrap = { Dropdown, Modal, Tab };
 
 // Force scroll to top when refreshing
 if (history.scrollRestoration) {

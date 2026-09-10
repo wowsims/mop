@@ -36,29 +36,7 @@ export const UI_ALIASES: Record<string, string> = {
 	'@app': path.resolve(BASE_PATH, 'app'),
 	'@specs': path.resolve(BASE_PATH, 'specs'),
 	'@i18n': path.resolve(BASE_PATH, 'i18n'),
-	'@jsx-vanilla': path.resolve(BASE_PATH, 'shared/jsx-vanilla'),
 };
-
-// A React module is a Fast Refresh boundary, and it self-accepts: an update coming from below it
-// stops there. The `/** @jsxImportSource @jsx-vanilla */` modules sit below `app/SimApp.tsx`, so
-// without this an edit to one of them reaches the module graph and never reaches the page — the
-// browser keeps the DOM the old module built. Those modules build their DOM once, so a reload is
-// the only correct answer, and it is what the dev server did before Fast Refresh. Reads the pragma
-// rather than a path list, so it retires itself when the last one goes.
-function reloadOnVanillaJsx(): PluginOption {
-	return {
-		name: 'reload-on-vanilla-jsx',
-		apply: 'serve',
-		async hotUpdate({ type, file, read }) {
-			if (type !== 'update' || this.environment.name !== 'client' || !/\.tsx?$/.test(file)) return;
-			if (!(await read()).startsWith('/** @jsxImportSource @jsx-vanilla */')) return;
-
-			this.environment.logger.info(`page reload ${path.relative(BASE_PATH, file)}`, { timestamp: true });
-			this.environment.hot.send({ type: 'full-reload' });
-			return [];
-		},
-	};
-}
 
 function serveExternalAssets() {
 	const simWorker = process.env.WASM_WORKER ? '/mop/sim_worker.js' : '/mop/local_worker.js';
@@ -173,7 +151,6 @@ export default defineConfig(({ command, mode }) => {
 			// `oxc.jsx.refresh` for `serve` and lets rolldown's native refresh wrapper instrument the
 			// modules. The `oxc` block below still states the transform for both commands.
 			react(),
-			reloadOnVanillaJsx(),
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			watchAndRun([
 				{
@@ -201,8 +178,6 @@ export default defineConfig(({ command, mode }) => {
 			}),
 		],
 		oxc: {
-			// React owns the default. Files still building real DOM nodes opt out per-file with
-			// `/** @jsxImportSource @jsx-vanilla */`; see ui/shared/jsx-vanilla/jsx-runtime.ts.
 			jsx: {
 				runtime: 'automatic',
 				importSource: 'react',

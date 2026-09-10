@@ -19,7 +19,9 @@ import { SimRunKind } from '@sim/state/sim_store';
 
 import { applyBreakpointLimits, clearSoftCappedStats } from './utils';
 
-export type StatTooltipContent = { [key in Stat]?: () => Element | string };
+// Opaque here on purpose: these are rendered by ReforgePanel and this layer is framework-free
+// (see ui/README.md dependency direction), so it cannot name `ReactNode`.
+export type StatTooltipContent = { [key in Stat]?: () => unknown };
 
 // Handed to the option callbacks below so a spec config can reach the reforger and
 // its own defaults without closing over the sim UI instance.

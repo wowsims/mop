@@ -15,7 +15,7 @@ export default defineConfig({
 			...UI_ALIASES,
 		},
 	},
-	// Same JSX contract as the app: React by default, tsx-vanilla for files carrying the pragma.
+	// Same JSX contract as the app.
 	oxc: {
 		jsx: { runtime: 'automatic', importSource: 'react' },
 	},

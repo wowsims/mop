@@ -40,7 +40,7 @@ ui/
                      vanilla files still to dissolve: sim_ui.tsx,
                      individual_sim_ui.tsx. alias @app
   i18n/              LEAF: framework-agnostic i18next config + localization tables
-                     (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
+                     (config.ts, entity_mapping.ts, locale_service.ts, localization.ts), at
                      the top level rather than under app/. alias @i18n
   specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
                      ui/index_template.html is served (dev) and emitted (build) at every
@@ -50,31 +50,25 @@ ui/
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
 ```
 
-## JSX: two dialects, chosen per file
+## JSX
 
-React is the default (`tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both vite
-configs use the automatic runtime), so a new `.tsx` file is a React file. Files that still build
-real DOM nodes opt out on line 1 with `/** @jsxImportSource @jsx-vanilla */`, which routes them to
-`ui/shared/jsx-vanilla/` — a direct call through to tsx-vanilla's `element`. Porting a file to React
-means deleting that pragma.
+Every `.tsx` file is React (`tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both
+vite configs use the automatic runtime). There is no second dialect and no per-file pragma.
 
 Shared React components get a folder of their own,
-`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}` — including `LegacyHost`, which mounts
-a not-yet-ported `Component` inside the React tree. Hooks live one per file named after the hook:
-the store's React binding and everything built on it in `sim/hooks/` (`useStoreSubscribe.ts`,
-`useSimRun.ts`), the sim-agnostic ones in `ui-kit/hooks/` (`useInput.ts`, `useActionId.ts`), and
-test-only helpers in
-`ui-kit/testing/`. There is no `ui-kit/react/`: every component here is React now, so the
-qualifier distinguished nothing. See `.github/skills/wowsims-react/`
-for the component registry and the migration's current position.
+`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}`. Hooks live one per file named after
+the hook: the store's React binding and everything built on it in `sim/hooks/`
+(`useStoreSubscribe.ts`, `useSimRun.ts`), the sim-agnostic ones in `ui-kit/hooks/` (`useInput.ts`,
+`useActionId.ts`). There is no `ui-kit/react/`: every component here is React, so the qualifier
+distinguished nothing. See `.github/skills/wowsims-react/` for the component registry.
 
 ## Placement rules
 
 - `domain/`: if it needs `window`/`document`, it doesn't belong here — inject an `Env` adapter instead.
 - `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
-- `features/<x>/model/`: DOM-free logic of one capability; `features/<x>/view/`: its tsx-vanilla rendering. Features never import another feature's `view/`. The two halves may share a
-  name when a capability has both: `results/model/timeline/` holds the timeline's DOM-free half,
-  `results/view/timeline/` the part that still builds nodes.
+- `features/<x>/model/`: DOM-free logic of one capability, and framework-free — no React, not even as a type. `features/<x>/components/`: its React components. `features/<x>/view/`: the presentation logic that is neither, such as the timeline's chart builders. The three may share a
+  name when a capability has all of them: `results/model/timeline/`, `results/view/timeline/` and
+  `results/components/Timeline/`.
 - `app/`: composes features; the only place that knows the tab layout.
 - `specs/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 
@@ -248,11 +242,11 @@ the spec module up from the URL. A new spec's page therefore appears with no bui
 
 Copying one page 34× is only sound because the page is constant: `ui/index_template.html` carries
 no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
-`/index.ts`, `/app/spec_entry.ts`, `/i18n/localization.tsx`), so vite rewrites them all to
+`/index.ts`, `/app/spec_entry.ts`, `/i18n/localization.ts`), so vite rewrites them all to
 `/mop/...` and nothing in the built page depends on where it is served from. It is also the reason
 the 34 pages share one entry chunk (`bundle/spec_entry-<hash>.entry.js`, from the `spec_entry` key
 in `rollupOptions.input`) instead of the 34 near-identical ones the old per-page inputs produced.
-`ui/i18n/localization.tsx`'s `extractClassAndSpecFromDataAttributes`
+`ui/i18n/localization.ts`'s `extractClassAndSpecFromDataAttributes`
 derives class/spec from `location.pathname` the same way `specModuleKey` does above, falling back
 to `data-class`/`data-spec` attributes only if present (the landing page has neither and keeps its
 `data-i18n` behaviour).

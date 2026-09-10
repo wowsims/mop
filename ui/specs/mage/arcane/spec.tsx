@@ -1,4 +1,3 @@
-/** @jsxImportSource @jsx-vanilla */
 import * as Mechanics from '@sim/constants/mechanics';
 import { formatToNumber } from '@sim/utils/format';
 import { Player } from '@sim/player/player';

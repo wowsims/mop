@@ -22,8 +22,7 @@
 			"@features/*": ["./ui/features/*"],
 			"@app/*": ["./ui/app/*"],
 			"@specs/*": ["./ui/specs/*"],
-			"@i18n/*": ["./ui/i18n/*"],
-			"@jsx-vanilla/*": ["./ui/shared/jsx-vanilla/*"]
+			"@i18n/*": ["./ui/i18n/*"]
 		}
 	},
 	"include": ["."],

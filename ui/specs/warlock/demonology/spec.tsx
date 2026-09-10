@@ -1,4 +1,3 @@
-/** @jsxImportSource @jsx-vanilla */
 import * as Mechanics from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { PlayerClasses } from '@sim/player/classes';

@@ -7,7 +7,7 @@ import { statCapTypeNames } from '@sim/proto/names';
 import type { StatCap } from '@sim/proto/stats';
 import { Fragment } from 'react';
 
-import { StatTooltip } from './utils';
+import { statTooltipNode } from './utils';
 
 export interface ReforgeSoftCapsTooltipProps {
 	player: Player<any>;
@@ -22,7 +22,7 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 		<table className="w-100">
 			<tbody>
 				{softCaps.map(({ unitStat, breakpoints, capType, postCapEPs }, index) => {
-					const extra = additionalInformation[unitStat.getRootStat()]?.();
+					const extra = statTooltipNode(additionalInformation[unitStat.getRootStat()]);
 					return (
 						<Fragment key={unitStat.getKey()}>
 							<tr>
@@ -34,9 +34,7 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 							{extra !== undefined && (
 								<>
 									<tr>
-										<td colSpan={3}>
-											<StatTooltip content={extra} />
-										</td>
+										<td colSpan={3}>{extra}</td>
 									</tr>
 									<tr>
 										<td colSpan={3} className="pb-2" />

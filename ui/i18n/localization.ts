@@ -1,4 +1,3 @@
-/** @jsxImportSource @jsx-vanilla */
 import { BulkSimItemSlot } from '@sim/bulk/utils';
 import { LaunchStatus } from '@sim/constants/other';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
@@ -229,14 +228,14 @@ export const updateLanguageDropdown = (): void => {
 			window.location.reload();
 		};
 
-		const languageItem = (
-			<li>
-				<a className={`dropdown-item ${code === currentLang ? 'active' : ''}`} href="#" data-lang={code} onclick={handleClick}>
-					{name}
-				</a>
-			</li>
-		);
+		const link = document.createElement('a');
+		link.className = `dropdown-item ${code === currentLang ? 'active' : ''}`;
+		link.href = '#';
+		link.textContent = name;
+		link.addEventListener('click', handleClick);
 
+		const languageItem = document.createElement('li');
+		languageItem.appendChild(link);
 		dropdownMenu.appendChild(languageItem);
 	});
 };
