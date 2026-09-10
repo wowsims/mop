@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
 import { buildRotationModel } from '../../model/timeline/rotation';
-import { chartSpec } from '../../view/timeline/chart/build';
+import { chartSpec } from './chart/build';
 import { TimelineChart } from './chart/TimelineChart';
 import { ChartViewPicker } from './ChartViewPicker';
 import { RotationView } from './rotation/RotationView';

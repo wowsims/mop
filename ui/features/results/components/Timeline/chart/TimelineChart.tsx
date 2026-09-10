@@ -6,11 +6,11 @@ import { useEffect, useRef } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { AnnotationSpec, TimelineChartSpec, TimelineDataset, TimelinePoint, TooltipSpec } from '../../../model/timeline/chart/types';
-import { annotationsPlugin } from '../../../view/timeline/chart/annotations';
-import { THREAT_SERIES_ID } from '../../../view/timeline/chart/series';
-import { ChartZoom, type XRange } from '../../../view/timeline/chart/zoom';
+import { annotationsPlugin } from './annotations';
 import { ChartSeriesTooltip } from './ChartSeriesTooltip';
 import { ChartToolbar } from './ChartToolbar';
+import { THREAT_SERIES_ID } from './series';
+import { ChartZoom, type XRange } from './zoom';
 
 const PAN_STEP_PX = 60;
 const ZOOM_STEP = 1.2;

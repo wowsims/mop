@@ -21,7 +21,7 @@ vi.mock('../../model/timeline/rotation', () => ({
 		return { id: player.id, duration: 10, rows: [], sections: [], byKey: new Map() };
 	},
 }));
-vi.mock('../../view/timeline/chart/build', () => ({
+vi.mock('./chart/build', () => ({
 	chartSpec: (player: { id: string }) => {
 		state.charted++;
 		return { id: player.id, datasets: [], scales: {}, annotations: null, duration: 10 };

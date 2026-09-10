@@ -1,6 +1,6 @@
 import { distinct, stringComparator } from '@sim/utils/collections';
 import { UnitMetrics } from '@sim/proto/sim_result';
-import { actionColors } from '@features/results/model/color_settings';
+import { actionColors } from '../../../model/color_settings';
 import { Chart, Plugin } from 'chart.js';
 
 import { AnnotationSpec } from '../../../model/timeline/chart/types';
