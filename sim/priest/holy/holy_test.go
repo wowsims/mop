@@ -41,12 +41,40 @@ func TestHolyPriest(t *testing.T) {
 			},
 		})
 	}
+	// Glyph of Inner Fire: the armor gained from Inner Fire is 90% instead of 60%.
+	glyphed := core.WithSpec(
+		&proto.Player{
+			Class:         proto.Class_ClassPriest,
+			Race:          proto.Race_RaceUndead,
+			Equipment:     core.GetGearSet("../../../ui/priest/holy/gear_sets", "p5").GearSet,
+			Consumables:   FullConsumes,
+			Buffs:         core.FullIndividualBuffs,
+			TalentsString: StandardTalents,
+			Glyphs:        InnerFireGlyphs,
+			Profession1:   proto.Profession_Engineering,
+			Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
+			Profession2:   proto.Profession_Enchanting,
+		},
+		PlayerOptions,
+	)
+	generators = append(generators, &core.SingleCharacterStatsTestGenerator{
+		Name: "p5-glyph-of-inner-fire",
+		Request: &proto.ComputeStatsRequest{
+			Raid: core.SinglePlayerRaidProto(glyphed, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
+		},
+	})
 	core.RunTestSuite(t, t.Name(), generators)
 }
 
 var StandardTalents = "122112"
 var StandardGlyphs = &proto.Glyphs{
 	Major1: int32(proto.PriestMajorGlyph_GlyphOfRenew),
+	Major2: int32(proto.PriestMajorGlyph_GlyphOfPrayerOfMending),
+	Major3: int32(proto.PriestMajorGlyph_GlyphOfCircleOfHealing),
+}
+
+var InnerFireGlyphs = &proto.Glyphs{
+	Major1: int32(proto.PriestMajorGlyph_GlyphOfInnerFire),
 	Major2: int32(proto.PriestMajorGlyph_GlyphOfPrayerOfMending),
 	Major3: int32(proto.PriestMajorGlyph_GlyphOfCircleOfHealing),
 }
