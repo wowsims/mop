@@ -37,6 +37,7 @@
 }
 
 .sim-toast {
+	// Info toasts share this colour on purpose, so there is no `--info` override.
 	--icon-color: var(--bs-warning);
 	width: 100%;
 	max-width: 100%;
@@ -63,10 +64,6 @@
 	// stacking transform to hide them behind, so they would otherwise pile up in the column.
 	&[data-limited] {
 		display: none;
-	}
-
-	&--info {
-		--icon-color: var(--bs-info);
 	}
 
 	&--success {

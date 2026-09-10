@@ -43,8 +43,8 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 								event.preventDefault();
 								onSelect(entry.id);
 							}}>
-							<img className="selector-modal-list-item-icon" src={entry.iconUrl} />
-							<label className={clsx('selector-modal-list-item-name', itemQualityClassName(entry.quality))}>{entry.name}</label>
+							<img className="selector-modal-list-item-icon" src={entry.iconUrl} alt="" />
+							<span className={clsx('selector-modal-list-item-name', itemQualityClassName(entry.quality))}>{entry.name}</span>
 							<span className="selector-modal-list-item-description">{entry.description}</span>
 						</a>
 					</li>

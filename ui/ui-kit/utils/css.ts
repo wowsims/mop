@@ -13,13 +13,5 @@ const itemQualityClassNames: Record<ItemQuality, string> = {
 };
 export const itemQualityClassName = (quality: ItemQuality | null | undefined): string | undefined => (quality ? itemQualityClassNames[quality] : undefined);
 
-export const setItemQualityClassName = (elem: HTMLElement, quality: ItemQuality | null) => {
-	Object.values(itemQualityClassNames).forEach(cssClass => elem.classList.remove(cssClass));
-
-	if (quality) {
-		elem.classList.add(itemQualityClassNames[quality]);
-	}
-};
-
 /** A `style` object of CSS custom properties. React's `CSSProperties` carries no index signature, so a cast is the only way to hand it one. */
 export const cssVars = (vars: Record<string, string>): CSSProperties => vars as CSSProperties;
