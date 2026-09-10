@@ -1,5 +1,6 @@
 import { LogLevel } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
+import { ActionId } from '@sim/proto/action_id';
 import { act, fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -22,7 +23,7 @@ vi.mock('@sim/state/subscriptions', () => ({
 	subscribePlayerField: () => source.subscribe,
 }));
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
-vi.mock('@sim/proto/action_id', () => ({ ActionId: { replaceAllInString: async (str: string) => str } }));
+vi.mock('@sim/proto/action_id', () => ({ ActionId: { replaceAllInString: vi.fn(async (str: string) => str) } }));
 
 interface Row {
 	hide: boolean;
@@ -135,6 +136,29 @@ describe('ListItemHeader', () => {
 			const button = container.querySelector('.apl-validations') as HTMLElement;
 			expect(button.classList.contains('apl-validation-warning')).toBe(true);
 			expect(button.querySelector('i')?.classList.contains('fa-exclamation-triangle')).toBe(true);
+		});
+
+		it('keeps its formatted list when a notification leaves the validations unchanged', async () => {
+			source.listeners.clear();
+			let current = [validation(LogLevel.Warning, 'careful')];
+			const { container } = mount({ hide: false }, () => current.map(entry => ({ ...entry })));
+			await act(async () => {
+				source.notify();
+			});
+			const format = vi.mocked(ActionId.replaceAllInString);
+			const formatted = format.mock.calls.length;
+
+			await act(async () => {
+				source.notify();
+			});
+			expect(format.mock.calls.length).toBe(formatted);
+
+			current = [validation(LogLevel.Error, 'broken')];
+			await act(async () => {
+				source.notify();
+			});
+			expect(format.mock.calls.length).toBe(formatted + 1);
+			expect((container.querySelector('.apl-validations') as HTMLElement).classList.contains('apl-validation-error')).toBe(true);
 		});
 
 		// The sim formats rotation-supplied names into its messages ("Group reference '%s' not found"),

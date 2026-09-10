@@ -29,6 +29,9 @@ const LEVEL_CLASS = new Map<LogLevel, string>([
 	[LogLevel.Error, 'apl-validation-error'],
 ]);
 
+const sameValidations = (a: Array<APLValidation>, b: Array<APLValidation>) =>
+	a.length === b.length && a.every((entry, index) => entry.logLevel === b[index].logLevel && entry.validation === b[index].validation);
+
 interface Formatted {
 	maxLogLevel: LogLevel;
 	groups: Array<{ header?: string; messages: Array<string> }>;
@@ -67,7 +70,12 @@ export const AplValidations = ({ getValidations }: AplValidationsProps) => {
 	read.current = getValidations;
 
 	const subscribe = useMemo(() => subscribePlayerField(player, 'currentStats'), [player]);
-	const validations = useStoreSubscribe(subscribe, () => read.current(player));
+	const last = useRef<Array<APLValidation>>([]);
+	const validations = useStoreSubscribe(subscribe, () => {
+		const next = read.current(player);
+		if (!sameValidations(last.current, next)) last.current = next;
+		return last.current;
+	});
 
 	const [formatted, setFormatted] = useState<Formatted | null>(null);
 	useEffect(() => {
