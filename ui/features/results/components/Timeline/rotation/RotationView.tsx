@@ -3,7 +3,8 @@ import type { RectObserver } from '@ui-kit/VirtualList';
 import { WINDOW_SCROLLER } from '@ui-kit/VirtualList';
 import { cssVars } from '@ui-kit/utils/css';
 import { findScrollParent } from '@ui-kit/utils/dom';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import clsx from 'clsx';
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
@@ -270,74 +271,56 @@ export const RotationView = ({ model }: RotationViewProps) => {
 
 	// Grab-to-pan. The horizontal scrollbar sits at the far end of the rotation now that the page owns
 	// vertical scrolling, so dragging and shift+wheel are the reachable ways to pan.
-	useEffect(() => {
-		const scroller = scrollerRef.current;
-		if (!scroller) return;
+	const pan = useRef<{ pointerId: number; x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
+	const panned = useRef(false);
+	const [panning, setPanning] = useState(false);
+	const pageScrollTop = () => (outer.current ? outer.current.scrollTop : window.scrollY);
 
-		let pointerId: number | null = null;
-		let startX = 0;
-		let startY = 0;
-		let startScrollLeft = 0;
-		let startScrollTop = 0;
-		let panned = false;
-		const scrollTop = () => (outer.current ? outer.current.scrollTop : window.scrollY);
-
-		const onPointerDown = (event: PointerEvent) => {
-			// Touch already pans both axes natively; taking the pointer would fight it.
-			if (pointerId !== null || event.button !== 0 || event.pointerType === 'touch') return;
-			// Leave the eye toggles, the wowhead links and anything else interactive alone.
-			if ((event.target as Element).closest('button, a, input, select, textarea')) return;
-			pointerId = event.pointerId;
-			startX = event.clientX;
-			startY = event.clientY;
-			startScrollLeft = scroller.scrollLeft;
-			startScrollTop = scrollTop();
-			panned = false;
-			scroller.setPointerCapture(event.pointerId);
+	const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+		// Touch already pans both axes natively; taking the pointer would fight it.
+		if (pan.current || event.button !== 0 || event.pointerType === 'touch') return;
+		// Leave the eye toggles, the wowhead links and anything else interactive alone.
+		if ((event.target as Element).closest('button, a, input, select, textarea')) return;
+		pan.current = {
+			pointerId: event.pointerId,
+			x: event.clientX,
+			y: event.clientY,
+			scrollLeft: event.currentTarget.scrollLeft,
+			scrollTop: pageScrollTop(),
 		};
+		panned.current = false;
+		event.currentTarget.setPointerCapture(event.pointerId);
+	};
 
-		const onPointerMove = (event: PointerEvent) => {
-			if (event.pointerId !== pointerId) return;
-			const dx = event.clientX - startX;
-			const dy = event.clientY - startY;
-			if (!panned) {
-				if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
-				panned = true;
-				scroller.classList.add('is-panning');
-			}
-			scroller.scrollLeft = startScrollLeft - dx;
-			scrollVerticalBy(startScrollTop - dy - scrollTop());
-		};
+	const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+		const start = pan.current;
+		if (event.pointerId !== start?.pointerId) return;
+		const dx = event.clientX - start.x;
+		const dy = event.clientY - start.y;
+		if (!panned.current) {
+			if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+			panned.current = true;
+			setPanning(true);
+		}
+		event.currentTarget.scrollLeft = start.scrollLeft - dx;
+		scrollVerticalBy(start.scrollTop - dy - pageScrollTop());
+	};
 
-		const endPan = (event: PointerEvent) => {
-			if (event.pointerId !== pointerId) return;
-			if (scroller.hasPointerCapture(event.pointerId)) scroller.releasePointerCapture(event.pointerId);
-			pointerId = null;
-			if (event.type === 'pointercancel') panned = false;
-			scroller.classList.remove('is-panning');
-		};
+	const endPan = (event: ReactPointerEvent<HTMLDivElement>) => {
+		if (event.pointerId !== pan.current?.pointerId) return;
+		if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+		pan.current = null;
+		if (event.type === 'pointercancel') panned.current = false;
+		setPanning(false);
+	};
 
-		// Suppresses the click a pan would otherwise deliver to whatever it ended on.
-		const onClick = (event: MouseEvent) => {
-			if (!panned) return;
-			panned = false;
-			event.preventDefault();
-			event.stopPropagation();
-		};
-
-		scroller.addEventListener('pointerdown', onPointerDown);
-		scroller.addEventListener('pointermove', onPointerMove);
-		scroller.addEventListener('pointerup', endPan);
-		scroller.addEventListener('pointercancel', endPan);
-		scroller.addEventListener('click', onClick, { capture: true });
-		return () => {
-			scroller.removeEventListener('pointerdown', onPointerDown);
-			scroller.removeEventListener('pointermove', onPointerMove);
-			scroller.removeEventListener('pointerup', endPan);
-			scroller.removeEventListener('pointercancel', endPan);
-			scroller.removeEventListener('click', onClick, { capture: true });
-		};
-	}, [scrollVerticalBy]);
+	// Suppresses the click a pan would otherwise deliver to whatever it ended on.
+	const onClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+		if (!panned.current) return;
+		panned.current = false;
+		event.preventDefault();
+		event.stopPropagation();
+	};
 
 	useEffect(() => {
 		zoomRef.current?.setDuration(model?.duration ?? 0);
@@ -425,7 +408,19 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					<div ref={rulerTrackRef} className="rotation-ruler-track" />
 				</div>
 			</div>
-			<div ref={scrollerRef} className="rotation-scroller" tabIndex={0} onMouseOver={onItemOver} onMouseMove={onItemMove} onMouseLeave={hideTip}>
+			<div
+				ref={scrollerRef}
+				className={clsx('rotation-scroller', panning && 'is-panning')}
+				tabIndex={0}
+				onKeyDown={event => zoomRef.current?.onKeyDown(event)}
+				onPointerDown={onPointerDown}
+				onPointerMove={onPointerMove}
+				onPointerUp={endPan}
+				onPointerCancel={endPan}
+				onClickCapture={onClickCapture}
+				onMouseOver={onItemOver}
+				onMouseMove={onItemMove}
+				onMouseLeave={hideTip}>
 				<div ref={contentRef} className="rotation-content">
 					<div className="rotation-vspacer" style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })} />
 					{order.slice(frame.window.first, frame.window.last + 1).map(key => {

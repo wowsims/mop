@@ -83,9 +83,50 @@ export class ZoomController {
 		this.config.onChange();
 	}
 
+	onKeyDown(event: Pick<KeyboardEvent, 'key' | 'altKey' | 'ctrlKey' | 'metaKey' | 'preventDefault'>) {
+		if (event.altKey || event.ctrlKey || event.metaKey) return;
+		const scroller = this.config.scroller;
+		const page = Math.max(64, scroller.clientWidth - this.config.labelWidth());
+		switch (event.key) {
+			case '+':
+			case '=':
+				this.stepIn();
+				break;
+			case '-':
+			case '_':
+				this.stepOut();
+				break;
+			case '0':
+				this.reset();
+				break;
+			case 'Home':
+				scroller.scrollLeft = 0;
+				break;
+			case 'End':
+				scroller.scrollLeft = scroller.scrollWidth;
+				break;
+			case 'ArrowLeft':
+				scroller.scrollLeft -= page * 0.25;
+				break;
+			case 'ArrowRight':
+				scroller.scrollLeft += page * 0.25;
+				break;
+			case 'ArrowUp':
+				this.config.scrollVerticalBy(-64);
+				break;
+			case 'ArrowDown':
+				this.config.scrollVerticalBy(64);
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+	}
+
 	attach() {
 		const scroller = this.config.scroller;
 
+		// Native rather than an onWheel prop: React registers wheel listeners as passive, so its preventDefault is ignored.
 		const onWheel = (event: WheelEvent) => {
 			if (!event.ctrlKey && !event.metaKey) return;
 			// Without preventDefault the browser takes ctrl+wheel as a page zoom.
@@ -95,47 +136,6 @@ export class ZoomController {
 		};
 		scroller.addEventListener('wheel', onWheel, { passive: false });
 		this.cleanups.push(() => scroller.removeEventListener('wheel', onWheel));
-
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.altKey || event.ctrlKey || event.metaKey) return;
-			const page = Math.max(64, scroller.clientWidth - this.config.labelWidth());
-			switch (event.key) {
-				case '+':
-				case '=':
-					this.stepIn();
-					break;
-				case '-':
-				case '_':
-					this.stepOut();
-					break;
-				case '0':
-					this.reset();
-					break;
-				case 'Home':
-					scroller.scrollLeft = 0;
-					break;
-				case 'End':
-					scroller.scrollLeft = scroller.scrollWidth;
-					break;
-				case 'ArrowLeft':
-					scroller.scrollLeft -= page * 0.25;
-					break;
-				case 'ArrowRight':
-					scroller.scrollLeft += page * 0.25;
-					break;
-				case 'ArrowUp':
-					this.config.scrollVerticalBy(-64);
-					break;
-				case 'ArrowDown':
-					this.config.scrollVerticalBy(64);
-					break;
-				default:
-					return;
-			}
-			event.preventDefault();
-		};
-		scroller.addEventListener('keydown', onKeyDown);
-		this.cleanups.push(() => scroller.removeEventListener('keydown', onKeyDown));
 	}
 
 	dispose() {
