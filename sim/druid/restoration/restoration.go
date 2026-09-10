@@ -74,6 +74,15 @@ func (resto *RestorationDruid) registerPassives() {
 		ActionID:   core.ActionID{SpellID: 85101},
 		BuildPhase: core.CharacterBuildPhaseTalents,
 	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
+
+	// Restoration Hotfix Passive (137012): mana regeneration from Spirit in
+	// combat increased by 5%, so Meditation keeps 55% instead of 50%.
+	// https://www.wowhead.com/mop-classic/spell=137012/hotfix-passive
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Hotfix Passive" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 137012},
+		BuildPhase: core.CharacterBuildPhaseTalents,
+	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.05)
 }
 
 func (resto *RestorationDruid) Reset(sim *core.Simulation) {
