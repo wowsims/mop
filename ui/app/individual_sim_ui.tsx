@@ -11,27 +11,23 @@ import { ResultChannel } from '@features/results/model/result_channel';
 import { SimResultsManager } from '@features/results/model/results_manager';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
-import { applyBuild } from '@features/settings/model/apply_build';
+import { applyEmptyAplRotation, applyIndividualDefaults } from '@features/settings/model/apply_defaults';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
-import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
-import { Cooldowns, Glyphs, ItemSwap, Profession, PseudoStat, Spec } from '@generated/proto/common';
+import { Spec } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { LaunchStatus } from '@sim/constants/other';
 import { SimSettingCategories } from '@sim/constants/sim_settings';
 import { Player } from '@sim/player/player';
-import { PlayerSpecs } from '@sim/player/specs';
 import { Gear } from '@sim/proto/gear';
 import { SimResult } from '@sim/proto/sim_result';
-import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto/stats';
 import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { RunSimOptions, Sim, SimError } from '@sim/sim';
 import type { IndividualSimHost, SimWarning } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
 import type { SpecDefinition } from '@sim/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
-import { batch } from '@sim/state/batch';
 import { loadIndividualSettings, SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@sim/state/persistence';
 import {
 	applyIndividualSimSettings,
@@ -40,6 +36,15 @@ import {
 	updateIndividualSimProtoVersion,
 } from '@sim/state/serialization';
 import { SimRunKind } from '@sim/state/sim_store';
+import {
+	SAVED_EP_WEIGHTS_STORAGE_KEY,
+	SAVED_GEAR_STORAGE_KEY,
+	SAVED_ROTATION_STORAGE_KEY,
+	SAVED_SETTINGS_STORAGE_KEY,
+	SAVED_TALENTS_STORAGE_KEY,
+	specStorageKey,
+	STAT_WEIGHT_SETTINGS_STORAGE_KEY,
+} from '@sim/state/storage_keys';
 import { subscribeAll, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
@@ -63,12 +68,6 @@ export type {
 	SpecDefinition,
 } from '@sim/spec_config';
 export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@sim/spec_config';
-const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
-const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
-const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
-const SAVED_SETTINGS_STORAGE_KEY = '__savedSettings__';
-const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
-
 // The individual sim's host: the registries, openers and cross-cutting actions the React tree
 // reaches through `useSimHost()`. `SimShell` owns every element handed to the constructor.
 export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<SpecType> {
@@ -120,7 +119,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
 		this.raidSimResultsManager = new SimResultsManager(this.sim);
-		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey('__statweight_settings__'));
+		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey(STAT_WEIGHT_SETTINGS_STORAGE_KEY));
 
 		if ((config.itemSwapSlots || []).length > 0 && !itemSwapEnabledSpecs.includes(player.getSpec())) {
 			itemSwapEnabledSpecs.push(player.getSpec());
@@ -275,37 +274,8 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		});
 	}
 
-	applyDefaultRotation() {
-		batch(() => {
-			const defaultRotationType = this.individualConfig.defaults.rotationType || APLRotationType.TypeAuto;
-			this.player.setAplRotation(
-				APLRotation.create({
-					type: defaultRotationType,
-				}),
-			);
-
-			if (!this.individualConfig.defaults.simpleRotation) {
-				return;
-			}
-
-			const defaultSimpleRotation = this.individualConfig.defaults.simpleRotation || this.player.specTypeFunctions.rotationCreate();
-			this.player.setSimpleRotation(defaultSimpleRotation);
-			this.player.setSimpleCooldowns(
-				Cooldowns.create({
-					hpPercentForDefensives: this.player.playerSpec.isTankSpec ? 0.4 : 0,
-				}),
-			);
-		});
-	}
-
 	applyEmptyAplRotation() {
-		batch(() => {
-			this.player.setAplRotation(
-				APLRotation.create({
-					type: APLRotationType.TypeAPL,
-				}),
-			);
-		});
+		applyEmptyAplRotation(this.player);
 	}
 
 	static updateProtoVersion(settingsProto: IndividualSimSettings) {
@@ -313,71 +283,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	}
 
 	applyDefaults() {
-		batch(() => {
-			const tankSpec = this.player.getPlayerSpec().isTankSpec;
-			const healingSpec = this.player.getPlayerSpec().isHealingSpec;
-
-			this.player.applySharedDefaults();
-			this.player.setRace(this.individualConfig.defaults.other?.race || this.player.getPlayerClass().races[0]);
-			this.player.setGear(this.sim.db.lookupEquipmentSpec(this.individualConfig.defaults.gear));
-			this.player.setConsumes(this.individualConfig.defaults.consumables);
-			this.applyDefaultRotation();
-			this.player.setTalentsString(this.individualConfig.defaults.talents.talentsString);
-			this.player.setGlyphs(this.individualConfig.defaults.talents.glyphs || Glyphs.create());
-			this.player.setSpecOptions(this.individualConfig.defaults.specOptions);
-			this.player.setBuffs(this.individualConfig.defaults.individualBuffs);
-			this.player.getParty()!.setBuffs(this.individualConfig.defaults.partyBuffs);
-			this.player.getRaid()!.setBuffs(this.individualConfig.defaults.raidBuffs);
-			this.player.setEpWeights(this.individualConfig.defaults.epWeights);
-			if (this.individualConfig.defaults.itemSwap) {
-				this.player.itemSwapSettings.setItemSwapSettings(
-					true,
-					this.sim.db.lookupItemSwap(this.individualConfig.defaults.itemSwap || ItemSwap.create()),
-				);
-			}
-
-			const defaultRatios = this.player.getDefaultEpRatios(tankSpec, healingSpec);
-			this.player.setEpRatios(defaultRatios);
-			this.player.setProfession1(this.individualConfig.defaults.other?.profession1 || Profession.Engineering);
-
-			if (this.individualConfig.defaults.other?.profession2 === undefined) {
-				this.player.setProfession2(Profession.Jewelcrafting);
-			} else {
-				this.player.setProfession2(this.individualConfig.defaults.other.profession2);
-			}
-
-			this.player.setDistanceFromTarget(this.individualConfig.defaults.other?.distanceFromTarget || 0);
-			this.player.setChannelClipDelay(this.individualConfig.defaults.other?.channelClipDelay || 0);
-			this.player.setReactionTime(this.individualConfig.defaults.other?.reactionTime || 100);
-
-			this.reforger?.applyDefaults();
-
-			this.sim.raid.setTargetDummies(healingSpec ? 9 : 0);
-			if (this.individualConfig.defaults.encounter?.encounter) {
-				this.sim.encounter.fromProto(this.individualConfig.defaults.encounter.encounter);
-			} else {
-				this.sim.encounter.applyDefaults();
-			}
-			this.sim.encounter.setExecuteProportion90(this.individualConfig.defaults.other?.highHpThreshold || 0.9);
-			this.sim.raid.setDebuffs(this.individualConfig.defaults.debuffs);
-			this.sim.applyDefaults(tankSpec, healingSpec);
-
-			if (this.individualConfig.defaults.other?.iterationCount) {
-				this.sim.setIterations(this.individualConfig.defaults.other!.iterationCount!);
-			}
-
-			if (tankSpec) {
-				this.sim.raid.setTanks([this.player.makeUnitReference()]);
-			} else {
-				this.sim.raid.setTanks([]);
-			}
-
-			this.statWeightActionSettings.applyDefaults();
-
-			if (this.individualConfig.defaultBuild) {
-				applyBuild(this.individualConfig.defaultBuild, this);
-			}
-		});
+		applyIndividualDefaults(this);
 	}
 
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings {
@@ -390,32 +296,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {
 		applyIndividualSimSettings(this.serializationContext(), settings, includeCategories);
-	}
-
-	// Determines whether this sim has either a hard cap or soft cap configured for a particular
-	// PseudoStat. Used by the stat weights code to ensure that school-specific EPs are calculated for
-	// Rating stats whenever school-specific caps are present.
-	hasCapForPseudoStat(pseudoStat: PseudoStat): boolean {
-		// Check both default and currently stored hard caps.
-		const defaultHardCaps = this.individualConfig.defaults.statCaps || new Stats();
-		const currentHardCaps = this.reforger?.statCaps || new Stats();
-
-		// Also check all configured soft caps
-		const defaultSoftCaps: StatCap[] = this.individualConfig.defaults.softCapBreakpoints || [];
-
-		return pseudoStatHasCap(pseudoStat, currentHardCaps.add(defaultHardCaps), defaultSoftCaps);
-	}
-
-	// Determines whether a particular PseudoStat has been configured as a
-	// display stat for this sim UI.
-	hasDisplayPseudoStat(pseudoStat: PseudoStat): boolean {
-		for (const unitStat of this.individualConfig.displayStats) {
-			if (unitStat.equalsPseudoStat(pseudoStat)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	getSavedGearStorageKey(): string {
@@ -438,10 +318,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		return this.getStorageKey(SAVED_TALENTS_STORAGE_KEY);
 	}
 
-	// Returns the actual key to use for local storage, based on the given key part and the site context.
-	// Local storage is shared by all sites under the same domain, so each spec
-	// site prefixes its keys.
 	getStorageKey(keyPart: string): string {
-		return PlayerSpecs.getLocalStorageKey(this.player.getPlayerSpec()) + keyPart;
+		return specStorageKey(this.player.getPlayerSpec(), keyPart);
 	}
 }
