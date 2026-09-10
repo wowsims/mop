@@ -10,7 +10,8 @@ export interface SimSidebarActionsProps {
 	host: SimHostObject<any>;
 }
 
-// The sim's own two actions bracket the spec's, which is the order they were appended in.
+// This order is observable, not incidental: `SidebarRegistry` sorts stably, so the spec's entries land
+// between these exactly where the vanilla shell appended them.
 export const SimSidebarActions = ({ host }: SimSidebarActionsProps) => (
 	<SidebarDisabledContext value={host.disabled}>
 		<SimulateAction />

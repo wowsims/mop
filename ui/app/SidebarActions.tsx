@@ -6,8 +6,6 @@ export interface SidebarActionsProps {
 	registry: SidebarRegistry;
 }
 
-// The spec-provided actions only. The sim's own two bracket these in `SimApp`, which is the order
-// they were registered in.
 export const SidebarActions = ({ registry }: SidebarActionsProps) => {
 	const entries = useSyncExternalStore(registry.subscribe, registry.getEntries);
 
