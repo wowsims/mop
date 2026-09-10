@@ -9,7 +9,7 @@ import { SocialLink } from '@ui-kit/SocialLink';
 import { ToolbarItem } from './ToolbarItem';
 
 export interface SimToolbarProps {
-	// The toolbar renders inside the shell, which is built before `IndividualSimUI` adopts it, so
+	// The toolbar renders inside the shell, which is built before `SimHostObject` adopts it, so
 	// there is no `SimHostProvider` above it to read the sim from.
 	sim: Sim;
 	knownIssues: ReadonlyArray<ReactNode>;

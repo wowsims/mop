@@ -1,24 +1,18 @@
-import { Exporter } from '@features/import-export/view/exporter';
 import { Component } from '@ui-kit/component';
+import type { SimTabRegistry } from '@ui-kit/tab_registry';
 
-import type { ShellDom } from '../shell_dom';
-import { SimUI } from '../sim_ui';
-import { ImportExportKind, ImportExportRegistry } from './import_export_registry';
+import { ImportExportRegistry } from './import_export_registry';
 
 export class SimHeader extends Component {
-	private simUI: SimUI;
+	private tabs: SimTabRegistry;
 	readonly importExport = new ImportExportRegistry();
 
-	constructor(dom: ShellDom, simUI: SimUI) {
-		super(null, undefined, dom.header);
-		this.simUI = simUI;
+	constructor(headerElem: HTMLElement, tabs: SimTabRegistry) {
+		super(null, undefined, headerElem);
+		this.tabs = tabs;
 	}
 
 	activateTab(className: string) {
-		this.simUI.tabs.activate(className);
-	}
-
-	addExportLink(label: string, exporter: Exporter, isUnsupported = false) {
-		this.importExport.add(ImportExportKind.Export, label, exporter, isUnsupported);
+		this.tabs.activate(className);
 	}
 }

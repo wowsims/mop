@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // The shell is stubbed on purpose. What is under test is the construct-once gate, not the shell —
 // and constructing the real one would need a Database and a worker.
-const constructions: Array<{ root: HTMLElement; sidebarActions: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }> = [];
+const constructions: Array<{ root: HTMLElement; sidebarActions: HTMLElement }> = [];
 // Recorded rather than read off the document: the container the panes render into is only ever a
 // child of a shell this test does not build.
 const paneContainers: Array<HTMLElement> = [];
@@ -16,7 +16,7 @@ vi.mock('./individual_sim_ui', async () => {
 	const { SidebarRegistry } = await import('@ui-kit/sidebar_registry');
 	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
 	return {
-		IndividualSimUI: class {
+		SimHostObject: class {
 			readonly simTabContentsContainer = document.createElement('main');
 			readonly simHeader = {
 				// One frozen array, not a fresh one per call: `useSyncExternalStore` compares snapshots by
@@ -31,22 +31,15 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly disabled = false;
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			readonly simActionsContainer: HTMLElement;
-			readonly sidebarStatsContainer: HTMLElement;
-			readonly sidebarResultsContainer: HTMLElement;
 			// The sidebar panel is React now; the shell only owns the store it drives and the registry
 			// the warnings zone reads.
 			readonly resultsPanel = {} as never;
 			readonly warnings = {} as never;
 			readonly raidSimResultsManager = {} as never;
-			// The shell no longer builds its own markup — it adopts the bundle `buildShellDom` made,
-			// and `Component`'s `rootCssClass` is what puts `sim-ui` on the root.
-			constructor(dom: { root: HTMLElement; sidebarActions: HTMLElement; sidebarStats: HTMLElement; sidebarResults: HTMLElement }) {
+			constructor(dom: { root: HTMLElement; sidebarActions: HTMLElement }) {
 				constructions.push(dom);
 				paneContainers.push(this.simTabContentsContainer);
-				dom.root.classList.add('sim-ui');
 				this.simActionsContainer = dom.sidebarActions;
-				this.sidebarStatsContainer = dom.sidebarStats;
-				this.sidebarResultsContainer = dom.sidebarResults;
 				// Every pane is a React node the registry carries; the real shell registers six of them.
 				this.tabs.attach({ id: 'gear-tab', title: 'Gear', pane: createElement('div', { className: 'gear-tab-left' }) });
 			}
@@ -119,13 +112,13 @@ describe('SimApp', () => {
 	});
 
 	it('renders the sidebar stats into the container the shell built', () => {
-		render(<SimApp player={player} def={def} />);
-		expect(constructions[0].sidebarStats.querySelectorAll('.character-stats-root')).toHaveLength(1);
+		const { container } = render(<SimApp player={player} def={def} />);
+		expect(container.querySelectorAll('.sim-sidebar-stats .character-stats-root')).toHaveLength(1);
 	});
 
 	it('renders the results panel into the container the shell built', () => {
-		render(<SimApp player={player} def={def} />);
-		expect(constructions[0].sidebarResults.querySelectorAll('.results-viewer')).toHaveLength(1);
+		const { container } = render(<SimApp player={player} def={def} />);
+		expect(container.querySelectorAll('.sim-sidebar-results .results-viewer')).toHaveLength(1);
 	});
 
 	it('renders each registered pane into the pane container the shell built', () => {
@@ -150,12 +143,12 @@ describe('SimApp', () => {
 		const dom = constructions[0];
 		const marker = document.createElement('span');
 		marker.className = 'built-imperatively';
-		dom.sidebarStats.appendChild(marker);
+		dom.sidebarActions.appendChild(marker);
 
 		// `setSimUI` has already re-rendered by now; the nodes must have survived it.
 		expect(container.querySelector('.sim-ui')).toBe(dom.root);
-		expect(dom.sidebarStats.isConnected).toBe(true);
-		expect(dom.sidebarStats.querySelector('.built-imperatively')).toBe(marker);
+		expect(dom.sidebarActions.isConnected).toBe(true);
+		expect(dom.sidebarActions.querySelector('.built-imperatively')).toBe(marker);
 	});
 
 	it('mounts the shell into its own container', () => {

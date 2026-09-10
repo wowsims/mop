@@ -96,13 +96,12 @@ path segment at a time, so `@features/*` would not catch `@features/gear/view/it
 `ui/features/**` may not import the store writers (`patchSlice` / `patchKeyed` / `seedKeyed` /
 `deleteKeyed`) — go through a facade.
 
-Features, ui-kit and domain must not name the app shells (`SimUI`, `IndividualSimUI`) even as a
+Features, ui-kit and domain must not name the app host (`SimHostObject`) even as a
 type: `import type` is erased at runtime but the lint bans the specifier either way. They use
 narrow host interfaces instead — all of them in `@sim/sim_host`: `SimUIHost` and `SimHeaderHost`
 (the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`,
-plus the `isIndividualSimHost()` predicate that replaces `instanceof IndividualSimUI`). The
-shells declare `implements SimHost` / `implements IndividualSimHost` so the interfaces stay
-honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
+plus the `isIndividualSimHost()` predicate that replaces `instanceof SimHostObject`). The
+host declares `implements IndividualSimHost` so the interfaces stay honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
 `InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
@@ -212,21 +211,21 @@ tooltips need real JSX — so each spec ships its own chunk and only the visited
 
 ```
 registerSpecConfig(def.spec, def)  →  new Sim  →  new Player  →  (enableHealing)  →
-sim.raid.setPlayer  →  new IndividualSimUI(document.body, player, def)
+sim.raid.setPlayer  →  new SimHostObject(shellDom, player, def)
 ```
 
 **Ordering constraint:** `registerSpecConfig` must run _before_ `new Player()`, which resolves
 the spec's config out of the registry in its own constructor. This is the only place that
 ordering matters, and `spec_entry.ts` is the only place it is expressed.
 
-`IndividualSimUI` is concrete — a spec does not subclass it. Its constructor takes a
+`SimHostObject` is concrete — a spec does not subclass it. Its constructor takes a
 `SpecDefinition<S>`, and runs the behaviour slots (features → reforge → derivedSettings) as its
 last statements, exactly where a subclass constructor body used to run. `derivedSettings` runs
 `apply` once there (before defaults load, mirroring the old constructor timing) and then again
 whenever `subscribe`'s source fires — including when the defaults land.
 
-All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no `IndividualSimUI`
-subclass anywhere. Adding a spec is:
+All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
+`SimHostObject` subclass anywhere. Adding a spec is:
 
 1. `ui/specs/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.

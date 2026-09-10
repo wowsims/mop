@@ -23,7 +23,7 @@ const THREAT = 4;
  * actually changes: `useStoreSubscribe` re-reads whenever the *subscription* identity changes, and a
  * fresh object there is a re-render, which for a caller holding an unstable `sim` is a loop.
  *
- * Takes the sim rather than reading the host: `SimShell` renders before `IndividualSimUI` adopts its
+ * Takes the sim rather than reading the host: `SimShell` renders before `SimHostObject` adopts its
  * DOM, so there is no `SimHostProvider` above it. Inside one, call `useDisplayMetrics(useSim())`.
  */
 export const useDisplayMetrics = (sim: Sim): DisplayMetrics => {

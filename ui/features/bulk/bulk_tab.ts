@@ -229,8 +229,6 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	protected buildTabContent() {}
-
 	readonly subscribe = (listener: () => void): (() => void) => {
 		this.listeners.add(listener);
 		return () => {

@@ -42,7 +42,7 @@ whether `HTMLElement` appears in a signature.
 **`import type` helps in `ui/sim/**` and nowhere else.** That block, and only that block, sets
 `allowTypeImports: true`, so `ui/sim` may name an `@app`/`@features`/`@ui-kit` type as long as the
 import is erased. No other block sets it, and `no-restricted-imports` bans the _specifier_ rather
-than the binding, so `import type { IndividualSimUI } from '@app/individual_sim_ui'` inside
+than the binding, so `import type { SimHostObject } from '@app/individual_sim_ui'` inside
 `ui/ui-kit` is still a violation even though nothing survives to runtime. Confirm which blocks have
 it before you rely on it:
 
@@ -85,10 +85,10 @@ Node's `package.json` `imports` field was tried first and rejected: `tsc` under
 
 A lower layer that needs to talk to a shell uses a **narrow host interface**, never the class. They
 all live in `@sim/sim_host`: `SimHeaderHost`, `SimUIHost`, `SimHost`, `IndividualSimHost<Spec>`,
-`SimWarning`, and the `isIndividualSimHost()` predicate that replaces `instanceof IndividualSimUI`
-(a runtime check an interface cannot express). `SimUI implements SimHost` and
-`IndividualSimUI implements IndividualSimHost` — the `implements` clause is what keeps the
-interfaces honest, so add to the interface and let the compiler find the shell.
+`SimWarning`, and the `isIndividualSimHost()` predicate that replaces
+`instanceof SimHostObject` (a runtime check an interface cannot express).
+`SimHostObject implements IndividualSimHost` — the `implements` clause is what keeps the
+interfaces honest, so add to the interface and let the compiler find the host.
 
 The per-spec config schema is `@sim/spec_config` (`ui/sim/spec_config.ts`): `IndividualSimUIConfig`,
 `InputConfig`, `InputSection`, `CustomSection`, `OtherDefaults`, `Settings`, `SpecDefinition`,

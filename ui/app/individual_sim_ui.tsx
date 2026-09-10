@@ -22,44 +22,61 @@ import { LogExporter } from '@features/import-export/view/exporters/detailed_log
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { DetailedResults } from '@features/results/components/DetailedResults';
+import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import { ResultChannel } from '@features/results/model/result_channel';
 import type { LogExporterFactory } from '@features/results/model/log_exporter';
 import { SimResultsManager } from '@features/results/model/results_manager';
+import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
+import { WarningsRegistry } from '@features/results/model/warnings';
 import { addSimResultsAction } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
+import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@sim/constants/other';
 import { SimSettingCategories } from '@sim/constants/sim_settings';
 import { Player } from '@sim/player/player';
 import { PlayerSpecs } from '@sim/player/specs';
+import { ActionId } from '@sim/proto/action_id';
+import { Gear } from '@sim/proto/gear';
 import { armorTypeNames, professionNames } from '@sim/proto/names';
+import { SimResult } from '@sim/proto/sim_result';
 import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto/stats';
 import { getTalentPoints } from '@sim/proto/utils';
 import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { RunSimOptions, Sim, SimError } from '@sim/sim';
+import type { IndividualSimHost, SimWarning } from '@sim/sim_host';
+import { RequestTypes } from '@sim/sim_signal_manager';
 import type { SpecDefinition } from '@sim/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@sim/spec_config';
 import { batch } from '@sim/state/batch';
-import { loadIndividualSettings } from '@sim/state/persistence';
+import { loadIndividualSettings, SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@sim/state/persistence';
 import {
 	applyIndividualSimSettings,
 	IndividualSimSerializationContext,
 	individualSimSettingsToProto,
 	updateIndividualSimProtoVersion,
 } from '@sim/state/serialization';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
+import { SimRunKind } from '@sim/state/sim_store';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange, subscribeSimField } from '@sim/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { isDevMode } from '@sim/utils/env';
-import { createElement } from 'react';
+import { WorkerProgressCallback } from '@sim/workers/worker_pool';
+import { BaseModal } from '@ui-kit/base_modal';
+import { NumberPicker } from '@ui-kit/pickers/number_picker';
+import { SidebarRegistry } from '@ui-kit/sidebar_registry';
+import { SimTabRegistry } from '@ui-kit/tab_registry';
+import { toastManager } from '@ui-kit/Toast';
+import { createElement, type ReactNode } from 'react';
 
-import { trackPageView } from '../tracking/analytics';
+import { trackEvent, trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
+import { SimHeader } from './header/sim_header';
 import type { ShellDom } from './shell_dom';
-import { SimUI } from './sim_ui';
 import { BulkTabBody } from './tabs/BulkTabBody';
 import { GearTab } from './tabs/gear_tab';
 import { RotationTab } from './tabs/rotation_tab';
@@ -78,14 +95,29 @@ export type {
 	SpecDefinition,
 } from '@sim/spec_config';
 export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@sim/spec_config';
+const URLMAXLEN = 2048;
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
 const SAVED_SETTINGS_STORAGE_KEY = '__savedSettings__';
 const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
 
-// Extended shared UI for all individual player sims.
-export class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
+// The individual sim's host: the registries, openers and cross-cutting actions the React tree
+// reaches through `useSimHost()`. `SimShell` owns every element handed to the constructor.
+export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<SpecType> {
+	readonly sim: Sim;
+	readonly disabled: boolean;
+	readonly rootElem: HTMLElement;
+
+	readonly resultsPanel = new ResultsPanelStore();
+	readonly warnings = new WarningsRegistry();
+	readonly simHeader: SimHeader;
+
+	readonly simActionsContainer: HTMLElement;
+	readonly simTabContentsContainer: HTMLElement;
+	readonly tabs: SimTabRegistry;
+	readonly sidebar = new SidebarRegistry();
+
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	readonly statWeightActionSettings: StatWeightActionSettings;
@@ -129,13 +161,36 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	reforgeOptions: ReforgeOptimizerOptions | null = null;
 
 	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
-		super(dom, player.sim, {
-			cssClass: config.cssClass,
-			cssScheme: config.cssScheme,
-			spec: player.getPlayerSpec(),
-			knownIssues: config.knownIssues,
-			simStatus: player.getPlayerSpec().launch,
+		this.rootElem = dom.root;
+		this.sim = player.sim;
+		this.disabled = !isDevMode() && player.getPlayerSpec().launch.status === LaunchStatus.Unlaunched;
+
+		this.tabs = new SimTabRegistry();
+		this.simHeader = new SimHeader(dom.header, this.tabs);
+
+		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
+
+		this.simActionsContainer = dom.sidebarActions;
+
+		new NumberPicker(this.simActionsContainer, this.sim, {
+			id: 'simui-iterations',
+			label: i18n.t('sidebar.iterations'),
+			extraCssClasses: ['iterations-picker'],
+			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
+			getValue: (sim: Sim) => sim.getIterations(),
+			setValue: (sim: Sim, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'iterations',
+					label: 'update',
+					value: newValue,
+				});
+				sim.setIterations(newValue);
+			},
 		});
+
+		this.simTabContentsContainer = dom.main;
+
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
 		this.raidSimResultsManager = null;
@@ -288,6 +343,159 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		this.addStatWeightsAction();
 	}
 
+	get resultsViewer(): ResultsPanelHandle {
+		return this.resultsPanel;
+	}
+
+	// `config` and `individualConfig` are the same object; `SimHost` only narrows what features see of it.
+	get config(): IndividualSimUIConfig<SpecType> {
+		return this.individualConfig;
+	}
+
+	addTab(title: string, cssClass: string, content: ReactNode) {
+		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
+
+		this.tabs.attach({
+			id: contentId,
+			title,
+			pane: createElement('div', { id: contentId, className: 'sim-tab' }, content),
+		});
+	}
+
+	addWarning(warning: SimWarning) {
+		this.warnings.add(warning);
+	}
+
+	getSettingsStorageKey(): string {
+		return this.getStorageKey(SETTINGS_STORAGE_SUFFIX);
+	}
+
+	getSavedEncounterStorageKey(): string {
+		// By skipping the call to this.getStorageKey(), saved encounters will be
+		// shared across all sims.
+		return SHARED_SAVED_ENCOUNTER_STORAGE_KEY;
+	}
+
+	private notifyIfCancelled(result: SimResult | ErrorOutcome) {
+		if (result instanceof SimResult || result.type != ErrorOutcomeType.ErrorOutcomeAborted) return;
+		toastManager.add({
+			variant: 'info',
+			body: i18n.t('sim.notifications.sim_cancelled'),
+		});
+		this.resultsViewer.hideAll();
+	}
+
+	async runIndividualSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
+		this.resultsViewer.setPending();
+		try {
+			const result = await this.sim.runs.start(SimRunKind.IndividualSim, () => this.sim.runSim({ ...options, onProgress, raw: false }));
+			this.notifyIfCancelled(result);
+			return result;
+		} catch (e) {
+			this.resultsViewer.hideAll();
+			this.handleCrash(e);
+		}
+	}
+
+	async runGearSim(gear: Gear, onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
+		try {
+			await this.sim.signalManager.abortType(RequestTypes.IndividualSim);
+			return this.sim.runSim({ ...options, gear, onProgress, raw: true });
+		} catch (e) {
+			this.handleCrash(e);
+		}
+	}
+
+	async runSingleIteration(options: RunSimOptions = {}) {
+		this.resultsViewer.setPending();
+		try {
+			const result = await this.sim.runs.start(SimRunKind.IndividualSim, () =>
+				this.sim.runSim({ debug: true, singleIteration: true, ...options, raw: false }),
+			);
+			this.notifyIfCancelled(result);
+			return result;
+		} catch (e) {
+			this.resultsViewer.hideAll();
+			this.handleCrash(e);
+		}
+	}
+
+	async handleCrash(error: any): Promise<void> {
+		if (!(error instanceof SimError)) {
+			if (error.message) {
+				toastManager.add({
+					variant: 'error',
+					body: error.message,
+				});
+			} else {
+				alert(error);
+			}
+			return;
+		}
+
+		toastManager.add({
+			variant: 'error',
+			body: i18n.t('sim.notifications.simulation_failed'),
+		});
+
+		const errorStr = (error as SimError).errorStr;
+		if (errorStr.startsWith('[USER_ERROR] ')) {
+			let alertStr = errorStr.substring('[USER_ERROR] '.length);
+			alertStr = await ActionId.replaceAllInString(alertStr);
+			alert(alertStr);
+			return;
+		}
+
+		if (window.confirm(i18n.t('sim.crash_report.confirm_title') + '\n' + errorStr + '\n' + i18n.t('sim.crash_report.confirm_message'))) {
+			// Splice out just the line numbers
+			const hash = this.hashCode(errorStr);
+			const link = this.toLink();
+			const rngSeed = this.sim.getLastUsedRngSeed();
+			fetch('https://api.github.com/search/issues?q=is:issue+is:open+repo:wowsims/mop+' + hash)
+				.then(resp => {
+					resp.json().then(issues => {
+						if (issues.total_count > 0) {
+							window.open(issues.items[0].html_url, '_blank');
+						} else {
+							const url = new URL(REPO_NEW_ISSUE_URL);
+							url.searchParams.append('title', `${i18n.t('sim.crash_report.report_title')} ${hash}`);
+							url.searchParams.append('assignees', '');
+							url.searchParams.append('labels', '');
+
+							const maxBodyLength = URLMAXLEN - url.toString().length;
+							let issueBody = `Link:\n${link}\n\nRNG Seed: ${rngSeed}\n\n${errorStr}`;
+							let truncated = false;
+							while (issueBody.length > maxBodyLength - (truncated ? 3 : 0)) {
+								issueBody = issueBody.slice(0, issueBody.lastIndexOf('%')); // Avoid truncating in the middle of a URLencoded segment.
+								truncated = true;
+							}
+							if (truncated) {
+								issueBody += '...';
+								// Prompt the user to add more information to the issue.
+								new CrashModal(this.rootElem, link).open();
+							}
+							url.searchParams.append('body', issueBody);
+
+							window.open(url.toString(), '_blank');
+						}
+					});
+				})
+				.catch(fetchErr => {
+					alert(i18n.t('sim.notifications.failed_to_file_report') + fetchErr);
+				});
+		}
+	}
+
+	hashCode(str: string): number {
+		let hash = 0;
+		for (let i = 0, len = str.length; i < len; i++) {
+			const chr = str.charCodeAt(i);
+			hash = (hash << 5) - hash + chr;
+			hash |= 0; // Convert to 32bit integer
+		}
+		return hash;
+	}
+
 	applyDefaultConfigOptions(config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {
 		config.otherInputs.inputs = [OtherInputs.ChallengeMode, ...config.otherInputs.inputs];
 
@@ -335,7 +543,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	gearTab!: GearTab;
-	talentsTab!: TalentsTab<SpecType>;
+	talentsTab!: TalentsTab;
 	settingsTab!: SettingsTab;
 	rotationTab!: RotationTab;
 
@@ -344,10 +552,6 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 
 	get itemSwapSelectorModal(): GearSelectorModalOpener | null {
 		return this.settingsTab?.itemSwapSelectorModal ?? null;
-	}
-
-	get sidebarStatsContainer(): HTMLElement {
-		return this.dom.sidebarStats;
 	}
 
 	private addGearTab() {
@@ -571,5 +775,17 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	// site prefixes its keys.
 	getStorageKey(keyPart: string): string {
 		return PlayerSpecs.getLocalStorageKey(this.player.getPlayerSpec()) + keyPart;
+	}
+}
+
+class CrashModal extends BaseModal {
+	constructor(parent: HTMLElement, link: string) {
+		super(parent, 'crash', { title: i18n.t('sim.crash_modal.title') });
+		this.body.appendChild(
+			<div className="sim-crash-report">
+				<h3 className="sim-crash-report-header">{i18n.t('sim.crash_modal.header')}</h3>
+				<textarea className="sim-crash-report-text form-control">{link}</textarea>
+			</div>,
+		);
 	}
 }

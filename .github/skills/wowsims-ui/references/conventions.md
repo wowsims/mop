@@ -50,7 +50,7 @@ the traps.
 
 A spec is **data**. `ui/specs/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` and is
 the only code file the spec owns besides `presets.ts` / `inputs.ts`. There is no `sim.ts`, no
-per-spec `index.ts`, and no `IndividualSimUI` subclass anywhere — `IndividualSimUI` is concrete and
+per-spec `index.ts`, and no `SimHostObject` subclass anywhere — `SimHostObject` is concrete and
 takes a `SpecDefinition<S>`, running the behaviour slots (`features` → `reforge` →
 `derivedSettings`) as its last constructor statements, exactly where a subclass body used to run.
 

@@ -21,7 +21,7 @@ export class BulkSettingsStore {
 	readonly storeKey: number;
 
 	// `storagePrefix` is the per-spec localStorage prefix
-	// (IndividualSimUI.getStorageKey('')).
+	// (SimHostObject.getStorageKey('')).
 	constructor(player: Player<any>, storagePrefix: string) {
 		this.env = player.sim.env;
 		this.storageKey = storagePrefix + BULK_SETTINGS_STORAGE_KEY;

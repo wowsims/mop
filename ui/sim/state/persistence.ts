@@ -1,7 +1,7 @@
 // Settings persistence for individual sims: the initial load sequence and the
-// autosave subscription — extracted from IndividualSimUI/SimUI so the
+// autosave subscription — extracted from the sim host so the
 // load-order contract lives in the state layer. The localStorage key is built
-// by the caller (IndividualSimUI.getStorageKey) and the browser surface comes
+// by the caller (SimHostObject.getStorageKey) and the browser surface comes
 // in through the sim's `Env` adapter (state/env.ts).
 //
 // Load order is a contract; do not reorder:

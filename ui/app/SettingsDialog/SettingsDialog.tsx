@@ -16,12 +16,12 @@ import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useEffect, useId, useMemo, useState } from 'react';
 
 import { trackEvent } from '../../tracking/analytics';
-import type { SimUI } from '../sim_ui';
+import type { SimHostObject } from '../individual_sim_ui';
 
 export interface SettingsDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	host: SimUI;
+	host: SimHostObject<any>;
 }
 
 const FIREFOX_WORKER_NOTE = `Too many workers can cause significant memory usage! If sim doesn't finish due to RAM running out use a lower number.`;

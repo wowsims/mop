@@ -4,7 +4,7 @@ import type { Sim } from '@sim/sim';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import clsx from 'clsx';
-import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
@@ -36,9 +36,6 @@ export interface SimShellProps {
 export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues, onOpenSettings, slots }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
-	const sidebarResults = useRef<HTMLDivElement>(null);
-	const sidebarStats = useRef<HTMLDivElement>(null);
-	const content = useRef<HTMLDivElement>(null);
 	const main = useRef<HTMLElement>(null);
 	const header = useRef<HTMLElement>(null);
 	const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null);
@@ -61,9 +58,6 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 		domRef.current = {
 			root: root.current!,
 			sidebarActions: sidebarActions.current!,
-			sidebarResults: sidebarResults.current!,
-			sidebarStats: sidebarStats.current!,
-			content: content.current!,
 			main: main.current!,
 			header: header.current!,
 		};
@@ -85,12 +79,8 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 							<div ref={sidebarActions} className="sim-sidebar-actions">
 								{slots.sidebarActions}
 							</div>
-							<div ref={sidebarResults} className="sim-sidebar-results">
-								{slots.sidebarResults}
-							</div>
-							<div ref={sidebarStats} className="sim-sidebar-stats">
-								{slots.sidebarStats}
-							</div>
+							<div className="sim-sidebar-results">{slots.sidebarResults}</div>
+							<div className="sim-sidebar-stats">{slots.sidebarStats}</div>
 							<div className="sim-sidebar-socials">
 								{SOCIALS.map(social => (
 									<SocialLink key={social.key} social={social} />
@@ -98,7 +88,7 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 							</div>
 						</div>
 					</aside>
-					<div ref={content} className="sim-content container-fluid">
+					<div className="sim-content container-fluid">
 						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
 								<div className="sim-tabs-mount">{slots.tabs}</div>

@@ -18,8 +18,8 @@ import type { IndividualSimUIConfig } from './spec_config';
 import type { StoreSubscribe } from './state/subscriptions';
 import type { WorkerProgressCallback } from './workers/worker_pool';
 
-// The slice of the sim shell (app/sim_ui.tsx) that ui-kit widgets reach for.
-// ui-kit must not name the shell itself (see ui/README.md dependency direction).
+// The slice of the sim host (app/individual_sim_ui.tsx) that ui-kit widgets reach
+// for. ui-kit must not name the host itself (see ui/README.md dependency direction).
 export interface SimHeaderHost {
 	readonly rootElem: HTMLElement;
 	activateTab(className: string): void;
@@ -37,9 +37,9 @@ export interface SimWarning {
 	getContent: () => string | Array<string>;
 }
 
-// The slice of the sim shells (app/sim_ui.tsx, app/individual_sim_ui.tsx) that
-// features reach for. Features must not name the shells themselves (see
-// ui/README.md dependency direction); SimUI/IndividualSimUI implement these.
+// The slice of the sim host (app/individual_sim_ui.tsx) that features reach for.
+// Features must not name the host itself (see ui/README.md dependency
+// direction); `SimHostObject` implements these.
 export interface SimHost extends SimUIHost {
 	readonly rootElem: HTMLElement;
 	readonly disabled: boolean;
@@ -77,9 +77,9 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	getSavedSettingsStorageKey(): string;
 }
 
-// `instanceof IndividualSimUI` is not available to features (the shell lives in
-// app/); narrow structurally instead. With the raid sim gone every host is an
-// individual one, but features still must not name the shell.
+// `instanceof SimHostObject` is not available to features (the host lives
+// in app/); narrow structurally instead. With the raid sim gone every host is an
+// individual one, but features still must not name it.
 export function isIndividualSimHost(simUI: SimHost): simUI is IndividualSimHost<any> {
 	return 'player' in simUI;
 }

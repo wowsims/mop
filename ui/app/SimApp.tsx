@@ -11,7 +11,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
 import { ImportExportMenu } from './header/ImportExportMenu';
-import { IndividualSimUI } from './individual_sim_ui';
+import { SimHostObject } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import { NoticeNativeSim } from './NoticeNativeSim';
 import { SettingsDialog } from './SettingsDialog';
@@ -28,13 +28,13 @@ export interface SimAppProps<SpecType extends Spec> {
 export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecType>) => {
 	const domRef = useRef<ShellDom | null>(null);
 	const constructed = useRef(false);
-	const [simUI, setSimUI] = useState<IndividualSimUI<SpecType> | null>(null);
+	const [simUI, setSimUI] = useState<SimHostObject<SpecType> | null>(null);
 	const [settingsOpen, setSettingsOpen] = useState(false);
 
 	useLayoutEffect(() => {
 		if (constructed.current || !domRef.current) return;
 		constructed.current = true;
-		setSimUI(new IndividualSimUI(domRef.current, player, def));
+		setSimUI(new SimHostObject(domRef.current, player, def));
 	}, [player, def]);
 
 	return (

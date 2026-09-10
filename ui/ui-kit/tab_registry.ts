@@ -5,7 +5,6 @@ export interface SimTabEntry {
 	title: string;
 	badge?: string;
 	pane: ReactNode;
-	ariaControlsOnItem?: boolean;
 }
 
 export class SimTabRegistry {
