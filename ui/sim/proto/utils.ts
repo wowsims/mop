@@ -19,8 +19,8 @@ export function getTalentPoints(talentsString: string): number {
 }
 
 /** The class-colour class. `$class-colors` in `_variables.scss` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
-export function textClassName(classCssClass: string): string {
-	return `text-${classCssClass}`;
+export function textClassName(className: string): string {
+	return `text-${className}`;
 }
 export function textClassNameForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return textClassName(PlayerClasses.getCssScheme(playerClass));
