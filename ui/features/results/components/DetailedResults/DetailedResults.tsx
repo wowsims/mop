@@ -19,14 +19,12 @@ import { AuraMetricsTable } from '../AuraMetricsTable';
 import { CastMetricsTable } from '../CastMetricsTable';
 import { CombatReplay } from '../CombatReplay';
 import { DamageMetricsTable } from '../DamageMetricsTable';
-import { DpsHistogram } from '../DpsHistogram';
 import { DtpsMetricsTable } from '../DtpsMetricsTable';
 import { HealingMetricsTable } from '../HealingMetricsTable';
 import { LogRunner } from '../LogRunner';
 import { ResourceMetricsTable } from '../ResourceMetricsTable';
 import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../ResultsFilter';
 import { Timeline } from '../Timeline';
-import { ToplineResults } from '../ToplineResults';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
 import { DEFAULT_DETAILED_RESULTS_TAB, DETAILED_RESULTS_TABS } from './utils';
@@ -201,87 +199,51 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					<div id="noResultsTab" className="tab-pane dr-tab-content fade active show">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
-					<DetailedResultsPane id="damageTab" className="damage-content" {...paneState('damageTab')}>
-						<div className="dr-row topline-results">
-							<ToplineResults />
-						</div>
-						<div className="dr-row">
-							<div className="damage-metrics">
-								<DamageMetricsTable />
-							</div>
-						</div>
-						<div className="dr-row dps-histogram">
-							<DpsHistogram />
-						</div>
+					<DetailedResultsPane
+						id="damageTab"
+						className="damage-content"
+						contentClassName="damage-metrics"
+						topline
+						histogram
+						{...paneState('damageTab')}>
+						<DamageMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="healingTab" className="healing-content" {...paneState('healingTab')}>
-						<div className="dr-row topline-results">
-							<ToplineResults />
-						</div>
-						<div className="dr-row">
-							<div className="healing-spell-metrics">
-								<HealingMetricsTable />
-							</div>
-						</div>
+					<DetailedResultsPane
+						id="healingTab"
+						className="healing-content"
+						contentClassName="healing-spell-metrics"
+						topline
+						{...paneState('healingTab')}>
+						<HealingMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" {...paneState('damageTakenTab')}>
-						<div className="dr-row topline-results">
-							<ToplineResults />
-						</div>
-						<div className="dr-row">
-							<div className="dtps-metrics">
-								<DtpsMetricsTable />
-							</div>
-						</div>
+					<DetailedResultsPane
+						id="damageTakenTab"
+						className="damage-taken-content"
+						contentClassName="dtps-metrics"
+						topline
+						{...paneState('damageTakenTab')}>
+						<DtpsMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="buffsTab" className="buffs-content" {...paneState('buffsTab')}>
-						<div className="dr-row">
-							<div className="buff-aura-metrics">
-								<AuraMetricsTable useDebuffs={false} />
-							</div>
-						</div>
+					<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics" {...paneState('buffsTab')}>
+						<AuraMetricsTable useDebuffs={false} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="debuffsTab" className="debuffs-content" {...paneState('debuffsTab')}>
-						<div className="dr-row">
-							<div className="debuff-aura-metrics">
-								<AuraMetricsTable useDebuffs={true} />
-							</div>
-						</div>
+					<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics" {...paneState('debuffsTab')}>
+						<AuraMetricsTable useDebuffs={true} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="castsTab" className="casts-content" {...paneState('castsTab')}>
-						<div className="dr-row">
-							<div className="cast-metrics">
-								<CastMetricsTable />
-							</div>
-						</div>
+					<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics" {...paneState('castsTab')}>
+						<CastMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="resourcesTab" className="resources-content" {...paneState('resourcesTab')}>
-						<div className="dr-row">
-							<div className="resource-metrics">
-								<ResourceMetricsTable />
-							</div>
-						</div>
+					<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics" {...paneState('resourcesTab')}>
+						<ResourceMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="timelineTab" className="timeline-content" {...paneState('timelineTab')}>
-						<div className="dr-row">
-							<div className="timeline">
-								<Timeline active={activeId === 'timelineTab'} />
-							</div>
-						</div>
+					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" {...paneState('timelineTab')}>
+						<Timeline active={activeId === 'timelineTab'} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="replayTab" className="replay-content" {...paneState('replayTab')}>
-						<div className="dr-row">
-							<div className="combat-replay">
-								<CombatReplay active={activeId === 'replayTab'} />
-							</div>
-						</div>
+					<DetailedResultsPane id="replayTab" className="replay-content" contentClassName="combat-replay" {...paneState('replayTab')}>
+						<CombatReplay active={activeId === 'replayTab'} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="logTab" className="log-content" {...paneState('logTab')}>
-						<div className="dr-row">
-							<div className="log">
-								<LogRunner active={activeId === 'logTab'} />
-							</div>
-						</div>
+					<DetailedResultsPane id="logTab" className="log-content" contentClassName="log" {...paneState('logTab')}>
+						<LogRunner active={activeId === 'logTab'} />
 					</DetailedResultsPane>
 				</div>
 			</div>
