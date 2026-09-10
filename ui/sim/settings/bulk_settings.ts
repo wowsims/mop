@@ -12,6 +12,8 @@ const BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v2';
 const LEGACY_BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v1';
 
 const initialBulkSlice = (): BulkSlice => ({
+	items: [],
+	pickerGroups: new Map(),
 	inheritUpgrades: true,
 	useLegacyBulkSim: false,
 	requiredSetBonuses: new Map(),

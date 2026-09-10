@@ -1,5 +1,6 @@
 import { DistributionMetrics } from '@generated/proto/api';
 
+import type { EquippedItem } from '../proto/equipped_item';
 import { Gear } from '../proto/gear';
 
 export const WEB_ITERATIONS_LIMIT = 1_000_000;
@@ -16,6 +17,12 @@ export interface TopGearResult {
 	backendRank?: number;
 	pairedErrorToNextResult?: number;
 	pairedErrorToBaseline?: number;
+}
+
+export interface BulkPickerEntry {
+	/** Index into the batch's item array, or -1/-2 for the two equipped slots this group covers. */
+	index: number;
+	item: EquippedItem;
 }
 
 export interface BulkResults {

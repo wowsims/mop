@@ -15,10 +15,10 @@ import { useId, useMemo } from 'react';
 
 import { useBulkTab } from '../../hooks/useBulkTab';
 import { createBulkGearData } from '../../model/gear_data';
-import { type BulkPickerGroup, frozenItemSlot } from '../../model/picker_groups';
+import { frozenItemSlot } from '../../model/picker_groups';
 
 export interface BulkItemPickerProps {
-	group: BulkPickerGroup;
+	bulkSlot: BulkSimItemSlot;
 	/** Below zero for the two equipped slots the group covers; those report what is worn rather than offering a choice. */
 	index: number;
 	item: EquippedItem;
@@ -32,12 +32,11 @@ const equippedSlotOf = (bulkSlot: BulkSimItemSlot, index: number): ItemSlot | nu
 	return index === -1 ? slots[0] : slots[1];
 };
 
-export const BulkItemPicker = ({ group, index, item }: BulkItemPickerProps) => {
+export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) => {
 	const bt = useBulkTab();
 	const openSelectorModal = useOpenSelectorModal();
 	const player = usePlayer();
 	const tooltipId = useId();
-	const bulkSlot = group.bulkSlot;
 
 	// One subscription over everything the cell's own state depends on: the frozen choices are the
 	// tab's, and which entry counts as equipped is the player's gear.
@@ -72,7 +71,7 @@ export const BulkItemPicker = ({ group, index, item }: BulkItemPickerProps) => {
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
 				if (!state.isEditable) return;
-				openSelectorModal(slot, tab, createBulkGearData(bt, group, index));
+				openSelectorModal(slot, tab, createBulkGearData(bt, bulkSlot, index));
 			}}
 			action={
 				<div className="item-picker-actions-container">

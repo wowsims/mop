@@ -6,13 +6,12 @@ import { BulkItemPickerGroup } from './BulkItemPickerGroup';
 
 export const BulkPickerGroups = () => {
 	const bt = useBulkTab();
-	// The groups are plain arrays the tab mutates, so the slice's items counter is what says they moved.
 	useBulkVersion('items');
 
 	return (
 		<div className="bulk-gear-combo">
-			{Array.from(bt.pickerGroups.values()).map(group => (
-				<BulkItemPickerGroup key={group.bulkSlot} group={group} />
+			{Array.from(bt.pickerGroups).map(([bulkSlot, entries]) => (
+				<BulkItemPickerGroup key={bulkSlot} bulkSlot={bulkSlot} entries={entries} />
 			))}
 		</div>
 	);

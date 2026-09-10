@@ -1,75 +1,93 @@
 import { BulkSimItemSlot } from '@sim/bulk/constants_auto_gen';
+import type { BulkPickerEntry } from '@sim/bulk/types';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { ItemSlot } from '@generated/proto/common';
 import { describe, expect, it } from 'vitest';
 
-import { BulkPickerGroup, frozenItemSlot } from './picker_groups';
+import { addPickerEntry, frozenItemSlot, pickerEntryAt, removePickerEntry, updatePickerEntry } from './picker_groups';
 
 const item = (id: number, unique = false) => ({ id, _item: { id, unique } }) as unknown as EquippedItem;
-const order = (group: BulkPickerGroup) => group.entries.map(entry => entry.index);
+const order = (entries: readonly BulkPickerEntry[]) => entries.map(entry => entry.index);
+const addAll = (bulkSlot: BulkSimItemSlot, adds: Array<[number, EquippedItem]>): readonly BulkPickerEntry[] =>
+	adds.reduce<readonly BulkPickerEntry[]>((entries, [index, added]) => {
+		const next = addPickerEntry(bulkSlot, entries, index, added);
+		if (next === 'duplicate') throw new Error(`rejected index ${index}`);
+		return next;
+	}, []);
 
-describe('BulkPickerGroup', () => {
+describe('addPickerEntry', () => {
 	it('puts equipped entries in front of the batch and keeps the batch in index order', () => {
-		const group = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		group.add(0, item(1));
-		group.add(1, item(2));
 		// Finger 1 then Finger 2, which the vanilla group prepended one after the other.
-		group.add(-1, item(3));
-		group.add(-2, item(4));
+		const entries = addAll(BulkSimItemSlot.ItemSlotHead, [
+			[0, item(1)],
+			[1, item(2)],
+			[-1, item(3)],
+			[-2, item(4)],
+		]);
 
-		expect(order(group)).toEqual([-2, -1, 0, 1]);
+		expect(order(entries)).toEqual([-2, -1, 0, 1]);
 	});
 
 	it('rejects a second copy in a single-slot group and allows two in a paired one', () => {
-		const head = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		expect(head.add(0, item(7))).toBe('added');
-		expect(head.add(1, item(7))).toBe('duplicate');
+		const head = addAll(BulkSimItemSlot.ItemSlotHead, [[0, item(7)]]);
+		expect(addPickerEntry(BulkSimItemSlot.ItemSlotHead, head, 1, item(7))).toBe('duplicate');
 
-		const finger = new BulkPickerGroup(BulkSimItemSlot.ItemSlotFinger);
-		expect(finger.add(0, item(7))).toBe('added');
-		expect(finger.add(1, item(7))).toBe('added');
-		expect(finger.add(2, item(7))).toBe('duplicate');
+		const finger = addAll(BulkSimItemSlot.ItemSlotFinger, [
+			[0, item(7)],
+			[1, item(7)],
+		]);
+		expect(addPickerEntry(BulkSimItemSlot.ItemSlotFinger, finger, 2, item(7))).toBe('duplicate');
 	});
 
 	it('allows only one copy of a unique item even in a paired slot', () => {
-		const trinket = new BulkPickerGroup(BulkSimItemSlot.ItemSlotTrinket);
-		expect(trinket.add(0, item(9, true))).toBe('added');
-		expect(trinket.add(1, item(9, true))).toBe('duplicate');
+		const trinket = addAll(BulkSimItemSlot.ItemSlotTrinket, [[0, item(9, true)]]);
+		expect(addPickerEntry(BulkSimItemSlot.ItemSlotTrinket, trinket, 1, item(9, true))).toBe('duplicate');
 	});
 
 	it('never rejects an equipped entry, whatever is already in the group', () => {
-		const head = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		head.add(0, item(7));
-		expect(head.add(-1, item(7))).toBe('added');
+		const head = addAll(BulkSimItemSlot.ItemSlotHead, [
+			[0, item(7)],
+			[-1, item(7)],
+		]);
 		expect(order(head)).toEqual([-1, 0]);
 	});
 
 	it('re-adding an index moves it rather than duplicating it', () => {
-		const group = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		group.add(0, item(1));
-		group.add(1, item(2));
-		group.add(0, item(3));
+		const entries = addAll(BulkSimItemSlot.ItemSlotHead, [
+			[0, item(1)],
+			[1, item(2)],
+			[0, item(3)],
+		]);
 
-		expect(order(group)).toEqual([1, 0]);
-		expect(group.items.map(entry => entry.id)).toEqual([2, 3]);
+		expect(order(entries)).toEqual([1, 0]);
+		expect(entries.map(entry => entry.item.id)).toEqual([2, 3]);
 	});
 
-	it('updates in place, and reports a miss so the caller can raise its own notice', () => {
-		const group = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		group.add(0, item(1));
+	it('leaves the entries it was given untouched', () => {
+		const before = addAll(BulkSimItemSlot.ItemSlotHead, [[0, item(1)]]);
+		addPickerEntry(BulkSimItemSlot.ItemSlotHead, before, 1, item(2));
 
-		expect(group.update(0, item(5))).toBe(true);
-		expect(group.items.map(entry => entry.id)).toEqual([5]);
-		expect(group.update(3, item(6))).toBe(false);
+		expect(order(before)).toEqual([0]);
 	});
+});
 
-	it('hands the removed entry back, and null when there is nothing at that index', () => {
-		const group = new BulkPickerGroup(BulkSimItemSlot.ItemSlotHead);
-		group.add(0, item(1));
+describe('updatePickerEntry', () => {
+	it('replaces the entry, and reports a miss so the caller can raise its own notice', () => {
+		const entries = addAll(BulkSimItemSlot.ItemSlotHead, [[0, item(1)]]);
 
-		expect(group.remove(0)?.item.id).toBe(1);
-		expect(group.has(0)).toBe(false);
-		expect(group.remove(0)).toBeNull();
+		expect(updatePickerEntry(entries, 0, item(5))?.map(entry => entry.item.id)).toEqual([5]);
+		expect(updatePickerEntry(entries, 3, item(6))).toBeNull();
+	});
+});
+
+describe('removePickerEntry', () => {
+	it('drops the entry at that index, and is a no-op when there is nothing there', () => {
+		const entries = addAll(BulkSimItemSlot.ItemSlotHead, [[0, item(1)]]);
+		expect(pickerEntryAt(entries, 0)?.item.id).toBe(1);
+
+		const removed = removePickerEntry(entries, 0);
+		expect(pickerEntryAt(removed, 0)).toBeNull();
+		expect(removePickerEntry(removed, 0)).toEqual([]);
 	});
 });
 

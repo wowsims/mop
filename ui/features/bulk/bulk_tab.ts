@@ -1,7 +1,7 @@
 import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
+import { BulkPickerEntry, BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BulkSimItemSlot,
@@ -28,7 +28,7 @@ import { toastManager } from '@ui-kit/Toast';
 import { trackEvent } from '../../tracking/analytics';
 import { runCoreBulkSim as runCoreBulkSimImpl } from './model/core_sim';
 import { bulkCombinationsLimit, bulkIterationsLimit } from './model/limits';
-import { BulkPickerGroup, frozenItemSlot } from './model/picker_groups';
+import { addPickerEntry, frozenItemSlot, pickerEntryAt, removePickerEntry, updatePickerEntry } from './model/picker_groups';
 import { BulkProgress, candidateGearProgress, simProgress } from './model/progress';
 import {
 	BulkSetBonusOption,
@@ -62,9 +62,12 @@ export class BulkTab extends Disposable {
 		return this.simUI.player.storeKey;
 	}
 
-	// The main array we will use to store items with indexes. Null values are the result of removed items to avoid having to shift pickers over and over.
-	protected items: Array<ItemSpec | null> = new Array<ItemSpec | null>();
-	readonly pickerGroups: Map<BulkSimItemSlot, BulkPickerGroup> = new Map();
+	private get items(): ReadonlyArray<ItemSpec | null> {
+		return this.settingsStore.state.items;
+	}
+	get pickerGroups(): ReadonlyMap<BulkSimItemSlot, readonly BulkPickerEntry[]> {
+		return this.settingsStore.state.pickerGroups;
+	}
 
 	protected simStart: number = 0;
 	protected bulkSimStartedAt: number = 0;
@@ -132,11 +135,12 @@ export class BulkTab extends Disposable {
 			}),
 		);
 
-		getEnumValues<BulkSimItemSlot>(BulkSimItemSlot).forEach(bulkSlot => {
-			if (this.playerCanDualWield && [BulkSimItemSlot.ItemSlotMainHand, BulkSimItemSlot.ItemSlotOffHand].includes(bulkSlot)) return;
-			if (!this.playerCanDualWield && bulkSlot === BulkSimItemSlot.ItemSlotHandWeapon) return;
-			this.pickerGroups.set(bulkSlot, new BulkPickerGroup(bulkSlot));
-		});
+		const bulkSlots = getEnumValues<BulkSimItemSlot>(BulkSimItemSlot).filter(
+			bulkSlot =>
+				!(this.playerCanDualWield && [BulkSimItemSlot.ItemSlotMainHand, BulkSimItemSlot.ItemSlotOffHand].includes(bulkSlot)) &&
+				!(!this.playerCanDualWield && bulkSlot === BulkSimItemSlot.ItemSlotHandWeapon),
+		);
+		this.settingsStore.patch({ pickerGroups: new Map<BulkSimItemSlot, readonly BulkPickerEntry[]>(bulkSlots.map(bulkSlot => [bulkSlot, []])) });
 
 		this.simUI.sim.waitForInit().then(() => {
 			this.loadSettings();
@@ -145,10 +149,10 @@ export class BulkTab extends Disposable {
 					return;
 				}
 
+				const groups = new Map(this.pickerGroups);
 				// Clear all previously equipped items from the pickers
-				for (const group of this.pickerGroups.values()) {
-					group.remove(-1);
-					group.remove(-2);
+				for (const [bulkSlot, entries] of groups) {
+					groups.set(bulkSlot, removePickerEntry(removePickerEntry(entries, -1), -2));
 				}
 
 				const equippedIds = new Set(
@@ -175,28 +179,30 @@ export class BulkTab extends Disposable {
 						if (this.isSecondaryItemSlot(slot) || !canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
 
 						const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-						const group = this.pickerGroups.get(bulkSlot);
-						if (!group) return;
+						const entries = groups.get(bulkSlot);
+						if (!entries) return;
 
 						if (equippedIds.has(itemSpec.id)) {
-							group.remove(idx);
-						} else {
-							if (!group.has(idx)) group.add(idx, equippedItem);
+							groups.set(bulkSlot, removePickerEntry(entries, idx));
+						} else if (!pickerEntryAt(entries, idx)) {
+							const next = addPickerEntry(bulkSlot, entries, idx, equippedItem);
+							if (next !== 'duplicate') groups.set(bulkSlot, next);
 						}
 					});
 				}
 
 				this.simUI.player.getEquippedItems().forEach((equippedItem, slot) => {
 					const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-					const group = this.pickerGroups.get(bulkSlot);
-					if (!group) return;
+					const entries = groups.get(bulkSlot);
+					if (!entries) return;
 					const idx = this.isSecondaryItemSlot(slot) ? -2 : -1;
 					if (equippedItem) {
-						group.add(idx, equippedItem);
+						const next = addPickerEntry(bulkSlot, entries, idx, equippedItem);
+						if (next !== 'duplicate') groups.set(bulkSlot, next);
 					}
 				});
 
-				this.bump('items');
+				this.settingsStore.patch({ pickerGroups: groups }, ['items']);
 			};
 			const updateCombinationsCount = () => {
 				void this.refreshCombinationsCount();
@@ -292,13 +298,19 @@ export class BulkTab extends Disposable {
 		return this.simUI.sim.db.lookupItemSpec(item)?.withChallengeMode(this.simUI.player.getChallengeModeEnabled()).withDynamicStats() ?? null;
 	}
 
-	private addToGroup(bulkSlot: BulkSimItemSlot, idx: number, item: EquippedItem, silent: boolean): boolean {
-		const group = this.pickerGroups.get(bulkSlot)!;
-		const result = group.add(idx, item);
-		if (result === 'duplicate') {
+	private addToGroup(
+		groups: Map<BulkSimItemSlot, readonly BulkPickerEntry[]>,
+		bulkSlot: BulkSimItemSlot,
+		idx: number,
+		item: EquippedItem,
+		silent: boolean,
+	): boolean {
+		const next = addPickerEntry(bulkSlot, groups.get(bulkSlot)!, idx, item);
+		if (next === 'duplicate') {
 			if (!silent) toastManager.add({ delay: 1000, variant: 'error', body: i18n.t('bulk_tab.search.item_unique', { itemName: item._item.name }) });
 			return false;
 		}
+		groups.set(bulkSlot, next);
 		if (!silent) toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_added', { itemName: item._item.name }) });
 		return true;
 	}
@@ -309,6 +321,8 @@ export class BulkTab extends Disposable {
 	}
 	// Add items to their eligible bulk sim item slot(s). Mainly used for importing and search
 	addItems(items: ItemSpec[], silent = false) {
+		const batch = this.items.slice();
+		const groups = new Map(this.pickerGroups);
 		items.forEach(item => {
 			const equippedItem = this.lookupItem(item);
 			if (equippedItem) {
@@ -316,16 +330,15 @@ export class BulkTab extends Disposable {
 					// Avoid duplicating rings/trinkets/weapons
 					if (this.isSecondaryItemSlot(slot) || !canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
 
-					const idx = this.items.push(item) - 1;
 					const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-					if (!this.addToGroup(bulkSlot, idx, equippedItem, silent)) {
-						this.items.pop();
+					if (this.addToGroup(groups, bulkSlot, batch.length, equippedItem, silent)) {
+						batch.push(item);
 					}
 				});
 			}
 		});
 
-		this.bump('items');
+		this.settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
 	}
 	// Add an item to a particular bulk sim item slot
 	addItemToSlot(item: ItemSpec, bulkSlot: BulkSimItemSlot) {
@@ -334,31 +347,36 @@ export class BulkTab extends Disposable {
 			const eligibleItemSlots = getEligibleItemSlots(equippedItem.item, this.playerCanDualWield2H);
 			if (!canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), eligibleItemSlots[0])) return;
 
-			const idx = this.items.push(item) - 1;
-			if (!this.addToGroup(bulkSlot, idx, equippedItem, false)) {
-				this.items.pop();
-			}
-			this.bump('items');
+			const groups = new Map(this.pickerGroups);
+			const added = this.addToGroup(groups, bulkSlot, this.items.length, equippedItem, false);
+			this.settingsStore.patch(added ? { items: [...this.items, item], pickerGroups: groups } : {}, ['items']);
 		}
 	}
 
 	updateItem(idx: number, newItem: ItemSpec) {
 		const equippedItem = this.lookupItem(newItem);
-		if (equippedItem) {
-			this.items[idx] = newItem;
-
-			getEligibleItemSlots(equippedItem.item, this.playerCanDualWield2H).forEach(slot => {
-				// Avoid duplicating rings/trinkets/weapons
-				if (this.isSecondaryItemSlot(slot) || !canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
-
-				const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-				if (!this.pickerGroups.get(bulkSlot)!.update(idx, equippedItem)) {
-					toastManager.add({ variant: 'error', body: i18n.t('bulk_tab.picker.failed_update') });
-				}
-			});
+		if (!equippedItem) {
+			this.bump('items');
+			return;
 		}
 
-		this.bump('items');
+		const batch = this.items.slice();
+		batch[idx] = newItem;
+		const groups = new Map(this.pickerGroups);
+		getEligibleItemSlots(equippedItem.item, this.playerCanDualWield2H).forEach(slot => {
+			// Avoid duplicating rings/trinkets/weapons
+			if (this.isSecondaryItemSlot(slot) || !canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
+
+			const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
+			const next = updatePickerEntry(groups.get(bulkSlot)!, idx, equippedItem);
+			if (next) {
+				groups.set(bulkSlot, next);
+			} else {
+				toastManager.add({ variant: 'error', body: i18n.t('bulk_tab.picker.failed_update') });
+			}
+		});
+
+		this.settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
 	}
 
 	removeItem(item: ItemSpec) {
@@ -383,20 +401,23 @@ export class BulkTab extends Disposable {
 		const item = this.items[idx]!;
 		const equippedItem = this.simUI.sim.db.lookupItemSpec(item);
 		if (equippedItem) {
-			this.items[idx] = null;
+			const batch = this.items.slice();
+			batch[idx] = null;
+			const groups = new Map(this.pickerGroups);
 
 			// Try to find the matching item within its eligible groups
 			getEligibleItemSlots(equippedItem.item, this.playerCanDualWield2H).forEach(slot => {
 				if (!canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
 				const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-				const group = this.pickerGroups.get(bulkSlot)!;
+				const entries = groups.get(bulkSlot)!;
 
-				const removed = group.remove(idx);
+				const removed = pickerEntryAt(entries, idx);
+				groups.set(bulkSlot, removePickerEntry(entries, idx));
 				if (removed && !silent) {
 					toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_removed', { itemName: removed.item._item.name }) });
 				}
 			});
-			this.bump('items');
+			this.settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
 		}
 	}
 
@@ -404,8 +425,7 @@ export class BulkTab extends Disposable {
 		for (let idx = 0; idx < this.items.length; idx++) {
 			this.removeItemByIndex(idx, true);
 		}
-		this.items = new Array<ItemSpec>();
-		this.bump('items');
+		this.settingsStore.patch({ items: [] }, ['items']);
 	}
 
 	hasItem(item: ItemSpec) {
@@ -425,7 +445,7 @@ export class BulkTab extends Disposable {
 	// The batch's per-slot choices, equipped pieces included: the pickers are where they live, and
 	// the set-bonus model takes them as data rather than reaching into the DOM for them.
 	private getSlotOptions(): BulkSlotOptions {
-		return new Map(Array.from(this.pickerGroups.entries()).map(([bulkSlot, group]) => [bulkSlot, group.items]));
+		return new Map(Array.from(this.pickerGroups).map(([bulkSlot, entries]) => [bulkSlot, entries.map(entry => entry.item)]));
 	}
 
 	getAvailableBulkSetBonuses(): BulkSetBonusOption[] {
