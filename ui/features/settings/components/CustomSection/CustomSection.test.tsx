@@ -66,7 +66,7 @@ describe('CustomSection', () => {
 		const block = mount({
 			iconInputs: [{ type: 'icon' }] as never,
 			inputs: [{ id: 'disable-immolate', type: 'boolean' }] as never,
-			iconGroupCssClass: 'totem-dropdowns-container',
+			iconGroupClassName: 'totem-dropdowns-container',
 		});
 		const body = block.querySelector('.content-block-body')!;
 		expect(body.querySelector('.picker-group.totem-dropdowns-container.icon-group')).not.toBeNull();

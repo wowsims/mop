@@ -169,7 +169,7 @@ sections: [{
     title: 'Totems',
     tooltip: '…',                                    // optional — header tooltip button
     className: 'totems-settings',                    // what the stylesheet hooks on
-    iconGroupCssClass: 'totem-dropdowns-container',  // layout hook for the icon row
+    iconGroupClassName: 'totem-dropdowns-container', // layout hook for the icon row
     iconInputs: [ … ],                               // same configs as `playerIconInputs`
     inputs: [ … ],                                   // same configs as `otherInputs.inputs`
     when: player => …,                               // optional — hides the section, like `showWhen`

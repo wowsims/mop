@@ -28,7 +28,7 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 			className={[section.className || section.id, 'custom-section', !visible && 'hide']}
 			config={{ header: { title: section.title, tooltip: section.tooltip } }}>
 			{!!section.iconInputs?.length && (
-				<div className={clsx('picker-group', section.iconGroupCssClass, 'icon-group')}>
+				<div className={clsx('picker-group', section.iconGroupClassName, 'icon-group')}>
 					{section.iconInputs.map((config, index) => {
 						if (config.type !== 'icon')
 							throw new Error(`custom section ${section.id}: ${config.type} inputs need a React picker that does not exist yet`);

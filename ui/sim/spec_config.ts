@@ -64,7 +64,7 @@ export interface CustomSection<SpecType extends Spec> {
 	// Icon pickers, rendered into a group container above `inputs`.
 	iconInputs?: Array<IconInputs.IconInputConfig<Player<SpecType>, any>>;
 	// Extra css class for that group container; the layout hook for the icon row.
-	iconGroupCssClass?: string;
+	iconGroupClassName?: string;
 	// Non-icon pickers, same shape as `otherInputs.inputs`.
 	inputs?: Array<InputConfig<Player<any>>>;
 }
