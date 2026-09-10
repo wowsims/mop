@@ -47,9 +47,6 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizerModel | null;
 	readonly resultChannel: ResultChannel;
-	dpsRefStat: Stat | undefined;
-	healRefStat: Stat | undefined;
-	tankRefStat: Stat | undefined;
 	applyEmptyAplRotation(): void;
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings;
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;

@@ -87,6 +87,7 @@ const AGILITY = UnitStat.fromStat(Stat.StatAgility);
 class FakePlayer {
 	epWeights = new Stats();
 	epRatios = [1, 0, 0, 0, 0, 0];
+	readonly refStats: { dpsRefStat?: Stat; healRefStat?: Stat; tankRefStat?: Stat } = {};
 	readonly playerClass = { classID: Class.ClassWarrior };
 	computeStatWeights = vi.fn<(...args: any[]) => Promise<StatWeightsResult>>();
 
@@ -106,6 +107,13 @@ class FakePlayer {
 	setEpRatios(ratios: number[]) {
 		this.epRatios = ratios;
 		source.notify('player:epRatios');
+	}
+	getRefStat(kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat') {
+		return this.refStats[kind];
+	}
+	setRefStat(kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat', stat: Stat | undefined) {
+		this.refStats[kind] = stat;
+		source.notify('player:epRefStat');
 	}
 }
 
@@ -161,7 +169,6 @@ const setup = () => {
 	const store = createSimStore();
 	runsStore.store = store;
 	const runs = new SimRuns(store, { abortType: abortType as unknown as (mask: number) => Promise<void> });
-	const refStats: { dps?: Stat; heal?: Stat; tank?: Stat } = {};
 	host = {
 		rootElem,
 		player,
@@ -183,27 +190,6 @@ const setup = () => {
 			epPseudoStats: [PseudoStat.PseudoStatSpellHitPercent],
 			epReferenceStat: Stat.StatStrength,
 			defaults: { epWeights: new Stats().withStat(Stat.StatAgility, 7) },
-		},
-		get dpsRefStat() {
-			return refStats.dps;
-		},
-		set dpsRefStat(value: Stat | undefined) {
-			refStats.dps = value;
-			source.notify('player:epRefStat');
-		},
-		get healRefStat() {
-			return refStats.heal;
-		},
-		set healRefStat(value: Stat | undefined) {
-			refStats.heal = value;
-			source.notify('player:epRefStat');
-		},
-		get tankRefStat() {
-			return refStats.tank;
-		},
-		set tankRefStat(value: Stat | undefined) {
-			refStats.tank = value;
-			source.notify('player:epRefStat');
 		},
 	};
 };
@@ -367,7 +353,7 @@ describe('EpWeightsDialog', () => {
 			select.value = String(Stat.StatAgility);
 			fireEvent.change(select);
 		});
-		expect(host.dpsRefStat).toBe(Stat.StatAgility);
+		expect(player.getRefStat('dpsRefStat')).toBe(Stat.StatAgility);
 	});
 
 	// DEFECT FIXED. tippy resolves a function-valued `content` once at creation, so the "normalized

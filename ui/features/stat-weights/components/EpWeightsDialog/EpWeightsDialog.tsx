@@ -67,7 +67,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
 	const refStats = useStoreSubscribe(
 		useMemo(() => subscribePlayerField(player, 'epRefStat'), [player]),
-		() => ({ dps: host.dpsRefStat, heal: host.healRefStat, tank: host.tankRefStat }),
+		() => ({ dps: player.getRefStat('dpsRefStat'), heal: player.getRefStat('healRefStat'), tank: player.getRefStat('tankRefStat') }),
 	);
 	const epRatios = useStoreSubscribe(
 		useMemo(() => subscribePlayerField(player, 'epRatios'), [player]),

@@ -6,6 +6,7 @@ import { createLink } from '@features/import-export';
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
+import { defaultSimWarnings } from '@features/results/model/default_warnings';
 import { ResultChannel } from '@features/results/model/result_channel';
 import { SimResultsManager } from '@features/results/model/results_manager';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
@@ -14,19 +15,16 @@ import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
-import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import { Cooldowns, Glyphs, ItemSwap, Profession, PseudoStat, Spec } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@sim/constants/other';
+import { LaunchStatus } from '@sim/constants/other';
 import { SimSettingCategories } from '@sim/constants/sim_settings';
 import { Player } from '@sim/player/player';
 import { PlayerSpecs } from '@sim/player/specs';
-import { ActionId } from '@sim/proto/action_id';
 import { Gear } from '@sim/proto/gear';
-import { armorTypeNames, professionNames } from '@sim/proto/names';
 import { SimResult } from '@sim/proto/sim_result';
 import { pseudoStatHasCap, StatCap, Stats } from '@sim/proto/stats';
-import { getTalentPoints } from '@sim/proto/utils';
 import { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import { RunSimOptions, Sim, SimError } from '@sim/sim';
 import type { IndividualSimHost, SimWarning } from '@sim/sim_host';
@@ -42,14 +40,14 @@ import {
 	updateIndividualSimProtoVersion,
 } from '@sim/state/serialization';
 import { SimRunKind } from '@sim/state/sim_store';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
+import { subscribeAll, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { toastManager } from '@ui-kit/Toast';
 import { createElement } from 'react';
 
+import { reportSimCrash } from './crash_report';
 import { CrashReportOpener } from './crash_report_opener';
 import type { ShellDom } from './types/shell_dom';
 
@@ -65,7 +63,6 @@ export type {
 	SpecDefinition,
 } from '@sim/spec_config';
 export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@sim/spec_config';
-const URLMAXLEN = 2048;
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
@@ -94,25 +91,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	readonly raidSimResultsManager: SimResultsManager;
 	readonly crashReport = new CrashReportOpener();
 	readonly resultChannel = new ResultChannel();
-
-	get dpsRefStat(): Stat | undefined {
-		return this.player.getRefStat('dpsRefStat');
-	}
-	set dpsRefStat(v: Stat | undefined) {
-		this.player.setRefStat('dpsRefStat', v);
-	}
-	get healRefStat(): Stat | undefined {
-		return this.player.getRefStat('healRefStat');
-	}
-	set healRefStat(v: Stat | undefined) {
-		this.player.setRefStat('healRefStat', v);
-	}
-	get tankRefStat(): Stat | undefined {
-		return this.player.getRefStat('tankRefStat');
-	}
-	set tankRefStat(v: Stat | undefined) {
-		this.player.setRefStat('tankRefStat', v);
-	}
 
 	private serializationContext(): IndividualSimSerializationContext {
 		return {
@@ -148,90 +126,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			itemSwapEnabledSpecs.push(player.getSpec());
 		}
 
-		this.addWarning({
-			updateOn: subscribeAll([
-				subscribePlayerField(this.player, 'gear'),
-				subscribePlayerField(this.player, 'profession1'),
-				subscribePlayerField(this.player, 'profession2'),
-			]),
-			getContent: () => {
-				const failedProfReqs = this.player.getGear().getFailedProfessionRequirements(this.player.getProfessions());
-				if (failedProfReqs.length == 0) {
-					return '';
-				}
-
-				return failedProfReqs.map(fpr =>
-					i18n.t('sidebar.warnings.profession_requirement', {
-						itemName: fpr.name,
-						professionName: professionNames.get(fpr.requiredProfession)!,
-					}),
-				);
-			},
-		});
-		this.addWarning({
-			updateOn: subscribePlayerField(this.player, 'gear'),
-			getContent: () => {
-				const jcGems = this.player.getGear().getJCGems(this.player.isBlacksmithing());
-				if (jcGems.length <= 2) {
-					return '';
-				}
-
-				return i18n.t('sidebar.warnings.too_many_jc_gems', {
-					count: jcGems.length,
-				});
-			},
-		});
-		this.addWarning({
-			updateOn: subscribePlayerField(this.player, 'talentsString'),
-			getContent: () => {
-				const talentPoints = getTalentPoints(this.player.getTalentsString());
-				const requiredRows = getRequiredTalentRows(this.individualConfig);
-
-				// Only skip warning during initial load if there are no required talents
-				if (talentPoints == 0 && requiredRows.length == 0) {
-					return '';
-				} else if (!hasRequiredTalents(this.individualConfig, this.player.getTalentsString())) {
-					const missingRows = getMissingTalentRows(this.individualConfig, this.player.getTalentsString());
-					const missingRowNumbers = missingRows.map(row => row + 1).join(', ');
-					return i18n.t('sidebar.warnings.unspent_talent_points', {
-						rowNumbers: missingRowNumbers,
-					});
-				} else {
-					return '';
-				}
-			},
-		});
-		this.addWarning({
-			updateOn: subscribePlayerField(this.player, 'gear'),
-			getContent: () => {
-				if (!this.player.armorSpecializationArmorType) {
-					return '';
-				}
-
-				if (this.player.hasArmorSpecializationBonus()) {
-					return i18n.t('sidebar.warnings.armor_specialization', {
-						armorType: armorTypeNames.get(this.player.armorSpecializationArmorType),
-					});
-				} else {
-					return '';
-				}
-			},
-		});
-		this.addWarning({
-			updateOn: subscribeAll([subscribePlayerField(this.player, 'gear'), subscribePlayerField(this.player, 'talentsString')]),
-			getContent: () => {
-				if (
-					!this.player.canDualWield2H() &&
-					((this.player.getEquippedItem(ItemSlot.ItemSlotMainHand)?.item.handType == HandType.HandTypeTwoHand &&
-						this.player.getEquippedItem(ItemSlot.ItemSlotOffHand) != null) ||
-						this.player.getEquippedItem(ItemSlot.ItemSlotOffHand)?.item.handType == HandType.HandTypeTwoHand)
-				) {
-					return i18n.t('sidebar.warnings.dual_wield_2h_without_titans_grip');
-				} else {
-					return '';
-				}
-			},
-		});
+		defaultSimWarnings(this.player, this.individualConfig).forEach(warning => this.addWarning(warning));
 		(config.warnings || []).forEach(warning => this.addWarning(warning(this)));
 
 		// This needs to go before all the UI components so that gear loading is the
@@ -353,79 +248,11 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	}
 
 	async handleCrash(error: any): Promise<void> {
-		if (!(error instanceof SimError)) {
-			if (error.message) {
-				toastManager.add({
-					variant: 'error',
-					body: error.message,
-				});
-			} else {
-				alert(error);
-			}
-			return;
-		}
-
-		toastManager.add({
-			variant: 'error',
-			body: i18n.t('sim.notifications.simulation_failed'),
+		return reportSimCrash(error, {
+			crashReport: this.crashReport,
+			toLink: () => this.toLink(),
+			getLastUsedRngSeed: () => this.sim.getLastUsedRngSeed(),
 		});
-
-		const errorStr = (error as SimError).errorStr;
-		if (errorStr.startsWith('[USER_ERROR] ')) {
-			let alertStr = errorStr.substring('[USER_ERROR] '.length);
-			alertStr = await ActionId.replaceAllInString(alertStr);
-			alert(alertStr);
-			return;
-		}
-
-		if (window.confirm(i18n.t('sim.crash_report.confirm_title') + '\n' + errorStr + '\n' + i18n.t('sim.crash_report.confirm_message'))) {
-			// Splice out just the line numbers
-			const hash = this.hashCode(errorStr);
-			const link = this.toLink();
-			const rngSeed = this.sim.getLastUsedRngSeed();
-			fetch('https://api.github.com/search/issues?q=is:issue+is:open+repo:wowsims/mop+' + hash)
-				.then(resp => {
-					resp.json().then(issues => {
-						if (issues.total_count > 0) {
-							window.open(issues.items[0].html_url, '_blank');
-						} else {
-							const url = new URL(REPO_NEW_ISSUE_URL);
-							url.searchParams.append('title', `${i18n.t('sim.crash_report.report_title')} ${hash}`);
-							url.searchParams.append('assignees', '');
-							url.searchParams.append('labels', '');
-
-							const maxBodyLength = URLMAXLEN - url.toString().length;
-							let issueBody = `Link:\n${link}\n\nRNG Seed: ${rngSeed}\n\n${errorStr}`;
-							let truncated = false;
-							while (issueBody.length > maxBodyLength - (truncated ? 3 : 0)) {
-								issueBody = issueBody.slice(0, issueBody.lastIndexOf('%')); // Avoid truncating in the middle of a URLencoded segment.
-								truncated = true;
-							}
-							if (truncated) {
-								issueBody += '...';
-								// Prompt the user to add more information to the issue.
-								this.crashReport.open(link);
-							}
-							url.searchParams.append('body', issueBody);
-
-							window.open(url.toString(), '_blank');
-						}
-					});
-				})
-				.catch(fetchErr => {
-					alert(i18n.t('sim.notifications.failed_to_file_report') + fetchErr);
-				});
-		}
-	}
-
-	hashCode(str: string): number {
-		let hash = 0;
-		for (let i = 0, len = str.length; i < len; i++) {
-			const chr = str.charCodeAt(i);
-			hash = (hash << 5) - hash + chr;
-			hash |= 0; // Convert to 32bit integer
-		}
-		return hash;
 	}
 
 	applyDefaultConfigOptions(config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {
