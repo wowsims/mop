@@ -30,12 +30,11 @@ import { runCoreBulkSim as runCoreBulkSimImpl } from './model/core_sim';
 import { bulkCombinationsLimit, bulkIterationsLimit } from './model/limits';
 import { addPickerEntry, frozenItemSlot, pickerEntryAt, removePickerEntry, updatePickerEntry } from './model/picker_groups';
 import { BulkProgress, candidateGearProgress, simProgress } from './model/progress';
+import { availableSetBonuses, slotOptionsOf } from './model/selectors';
 import {
 	BulkSetBonusOption,
-	BulkSlotOptions,
 	canEnableRequiredFourPiece,
 	canEnableRequiredTwoPiece,
-	getAvailableBulkSetBonuses,
 	hasMatchingRequiredSetBonusCombination,
 	nextRequiredSetBonuses,
 	pruneRequiredSetBonuses,
@@ -115,10 +114,9 @@ export class BulkTab extends Disposable {
 		return this.settingsStore.state.weaponTypeFilters;
 	}
 
-	// Memos for the set-bonus feasibility checks. Every BooleanPicker's enableWhen runs the
-	// full picker scan + per-slot DP on each settings/items change; these cache the answers
-	// until the next change event (see the invalidation hook in the constructor).
-	private availableSetBonusesMemo: BulkSetBonusOption[] | null = null;
+	// Memo for the set-bonus feasibility check. Every BooleanPicker's enableWhen runs the
+	// per-slot DP on each settings/items change; this caches the answers until the next
+	// change event (see the invalidation hook in the constructor).
 	private canSatisfySetBonusMemo = new Map<string, boolean>();
 
 	constructor(simUI: IndividualSimHost<any>) {
@@ -128,12 +126,7 @@ export class BulkTab extends Disposable {
 		this.playerCanDualWield = getBulkPlayerCanDualWield(this.simUI.player);
 		this.playerCanDualWield2H = isSpecDualWield2HCapable(this.simUI.player.getSpec());
 		this.settingsStore = new BulkSettingsStore(this.simUI.player, this.simUI.getStorageKey(''));
-		this.addOnDisposeCallback(
-			subscribeBulkChange(this)(() => {
-				this.availableSetBonusesMemo = null;
-				this.canSatisfySetBonusMemo.clear();
-			}),
-		);
+		this.addOnDisposeCallback(subscribeBulkChange(this)(() => this.canSatisfySetBonusMemo.clear()));
 
 		const bulkSlots = getEnumValues<BulkSimItemSlot>(BulkSimItemSlot).filter(
 			bulkSlot =>
@@ -279,7 +272,7 @@ export class BulkTab extends Disposable {
 			freezeWeaponSlot: this.frozenWeaponSlot,
 			freezeMainhandWeaponSlots: this.weaponTypeFilters.get(ItemSlot.ItemSlotMainHand)?.slice(),
 			freezeOffhandWeaponSlots: this.weaponTypeFilters.get(ItemSlot.ItemSlotOffHand)?.slice(),
-			requiredSetBonuses: pruneRequiredSetBonuses(this.requiredSetBonuses, this.getAvailableBulkSetBonuses()),
+			requiredSetBonuses: pruneRequiredSetBonuses(this.requiredSetBonuses, availableSetBonuses(this.settingsStore.state)),
 		});
 	}
 
@@ -435,17 +428,6 @@ export class BulkTab extends Disposable {
 		return result;
 	}
 
-	// The batch's per-slot choices, equipped pieces included: the pickers are where they live, and
-	// the set-bonus model takes them as data rather than reaching into the DOM for them.
-	private getSlotOptions(): BulkSlotOptions {
-		return new Map(Array.from(this.pickerGroups).map(([bulkSlot, entries]) => [bulkSlot, entries.map(entry => entry.item)]));
-	}
-
-	getAvailableBulkSetBonuses(): BulkSetBonusOption[] {
-		this.availableSetBonusesMemo ??= getAvailableBulkSetBonuses(this.getSlotOptions());
-		return this.availableSetBonusesMemo;
-	}
-
 	canEnableRequiredTwoPiece(setId: number): boolean {
 		return canEnableRequiredTwoPiece(this.requiredSetBonuses, setId, (id, pieces) => this.canSatisfyRequiredSetBonus(id, pieces));
 	}
@@ -485,7 +467,11 @@ export class BulkTab extends Disposable {
 
 		const requiredSetBonuses = Array.from(this.requiredSetBonuses.values()).filter(requiredSetBonus => requiredSetBonus.setId !== setId);
 		requiredSetBonuses.push(BulkRequiredSetBonus.create({ setId, pieces }));
-		const result = hasMatchingRequiredSetBonusCombination(requiredSetBonuses, this.originalGear ?? this.simUI.player.getGear(), this.getSlotOptions());
+		const result = hasMatchingRequiredSetBonusCombination(
+			requiredSetBonuses,
+			this.originalGear ?? this.simUI.player.getGear(),
+			slotOptionsOf(this.pickerGroups),
+		);
 		this.canSatisfySetBonusMemo.set(memoKey, result);
 		return result;
 	}

@@ -4,17 +4,16 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import type { BulkTab } from '../../bulk_tab';
+import { useBulkState } from '../../hooks/useBulkState';
 import { useBulkTab } from '../../hooks/useBulkTab';
-import { useBulkVersion } from '../../hooks/useBulkVersion';
+import { availableSetBonuses } from '../../model/selectors';
 import type { BulkSetBonusOption } from '../../model/set_bonuses';
 
 const setBonusDomId = (setBonus: BulkSetBonusOption) => `required-set-bonus-${setBonus.setId}-${setBonus.setName.replace(/\W+/g, '-')}`;
 
 export const RequiredSetBonuses = () => {
 	const bt = useBulkTab();
-	// The list of offered set bonuses is derived from what the batch holds.
-	useBulkVersion('items');
-	const setBonuses = bt.getAvailableBulkSetBonuses();
+	const setBonuses = useBulkState(availableSetBonuses);
 
 	return (
 		<div className="required-set-bonuses-container d-flex flex-column gap-2">
