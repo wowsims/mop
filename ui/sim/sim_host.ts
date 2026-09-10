@@ -1,5 +1,4 @@
 import type { BulkTab } from '@features/bulk/bulk_tab';
-import type { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
 import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
 import type { ResultChannel } from '@features/results/model/result_channel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
@@ -7,7 +6,6 @@ import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/pro
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SidebarRegistry } from '@ui-kit/sidebar_registry';
-import type { SimTabActivation } from '@ui-kit/tab_activation';
 
 import type { SimSettingCategories } from './constants/sim_settings';
 import type { Player } from './player/player';
@@ -17,13 +15,6 @@ import type { RunSimOptions, Sim } from './sim';
 import type { IndividualSimUIConfig } from './spec_config';
 import type { StoreSubscribe } from './state/subscriptions';
 import type { WorkerProgressCallback } from './workers/worker_pool';
-
-// The slice of the sim host (app/individual_sim_ui.tsx) that ui-kit widgets reach
-// for. ui-kit must not name the host itself (see ui/README.md dependency direction).
-export interface SimHeaderHost {
-	readonly rootElem: HTMLElement;
-	activateTab(className: string): void;
-}
 
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {
@@ -36,9 +27,9 @@ export interface SimWarning {
 // direction); `SimHostObject` implements these.
 export interface SimHost {
 	readonly sim: Sim;
-	readonly simHeader: SimHeaderHost;
-	readonly tabs: SimTabActivation;
 	readonly rootElem: HTMLElement;
+	/** The sticky toolbars measure against it. */
+	readonly headerElem: HTMLElement;
 	readonly disabled: boolean;
 	readonly config: { cssClass: string; cssScheme: string };
 	readonly resultsViewer: ResultsPanelHandle;
@@ -55,9 +46,6 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	readonly bt: BulkTab | null;
 	reforger: ReforgeOptimizerModel | null;
-	epWeightsModal: { open(): void } | null;
-	readonly gearSelectorModal: GearSelectorModalOpener | null;
-	readonly itemSwapSelectorModal: GearSelectorModalOpener | null;
 	readonly resultChannel: ResultChannel;
 	dpsRefStat: Stat | undefined;
 	healRefStat: Stat | undefined;

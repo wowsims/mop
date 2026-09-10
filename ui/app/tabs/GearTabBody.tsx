@@ -1,21 +1,21 @@
-import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
 import { GearPicker } from '@features/gear/components/GearPicker';
-import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { SavedGear } from '@features/gear/components/SavedGear';
+import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { GemSummary, ReforgeSummary, UpgradeCostsSummary } from '@features/gear/components/SummaryTable';
+import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimReady } from '@sim/hooks/useSimReady';
 
 import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
 
 const GEAR_PRESETS = [PresetConfigurationCategory.Gear];
 
 export const GearTabBody = () => {
-	const host = useSimHost();
 	const ready = useSimReady();
+	const selector = useSelectorModalState();
 
 	return (
-		<>
+		<OpenSelectorModalContext value={selector.openTab}>
 			<div className="gear-tab-left tab-panel-left">
 				<GearPicker ready={ready} />
 				<div className="summary-tables-container">
@@ -28,7 +28,7 @@ export const GearTabBody = () => {
 				<PresetConfigurationPicker categories={GEAR_PRESETS} />
 				<SavedGear />
 			</div>
-			{host.gearSelectorModal && <SelectorModal opener={host.gearSelectorModal} />}
-		</>
+			<SelectorModal state={selector} />
+		</OpenSelectorModalContext>
 	);
 };

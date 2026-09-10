@@ -39,6 +39,8 @@ vi.mock('@features/settings/model/stat_options', () => ({
 // React-rendered panel, so what matters is that it lands there and that nothing wraps it.
 // The preset picker is a React component now, so it renders for real. It needs only the builds list
 // off the host, and this host declares none — which is the common case: five specs ship no builds.
+// Needs a real player and store; SelectorModal.test.tsx is where it is asserted.
+vi.mock('@features/gear/components/SelectorModal', () => ({ SelectorModal: () => null }));
 vi.mock('../PresetConfigurationPicker', () => ({
 	PresetConfigurationPicker: () => <div className="preset-configuration-picker-root saved-data-manager-root" />,
 }));

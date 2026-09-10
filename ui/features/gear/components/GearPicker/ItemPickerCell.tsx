@@ -5,6 +5,7 @@ import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useCallback, useId, useMemo } from 'react';
 
+import { useOpenSelectorModal } from '../../hooks/useSelectorModal';
 import { createGearData } from '../../model/gear_data';
 import { SelectorModalTabs } from '../../types';
 import { ItemDetailCell } from '../ItemCell';
@@ -18,6 +19,7 @@ export interface ItemPickerCellProps {
 
 export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const host = useSimHost();
+	const openSelectorModal = useOpenSelectorModal();
 	const player = host.player;
 	const tooltipId = useId();
 
@@ -31,9 +33,9 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const open = useCallback(
 		(tab: SelectorModalTabs) => {
 			if (!ready) return;
-			host.gearSelectorModal?.openTab(slot, tab, createGearData(player, slot));
+			openSelectorModal(slot, tab, createGearData(player, slot));
 		},
-		[host, player, slot, ready],
+		[openSelectorModal, player, slot, ready],
 	);
 
 	// The lists read the store inside `Tooltip`'s children, which react-tooltip does not build until

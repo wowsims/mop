@@ -13,13 +13,11 @@ const paneContainers: Array<HTMLElement> = [];
 vi.mock('./individual_sim_ui', async () => {
 	const { SidebarRegistry } = await import('@ui-kit/sidebar_registry');
 	const { CrashReportOpener } = await import('./crash_report_opener');
-	const { SimTabActivation } = await import('@ui-kit/tab_activation');
 	return {
 		SimHostObject: class {
 			readonly simTabContentsContainer = document.createElement('main');
 			// `NoticeNativeSim` asks the host's sim whether this is a local build; a native one raises no notice.
 			readonly sim = { waitForInit: () => Promise.resolve(), isNative: true };
-			readonly tabs = new SimTabActivation();
 			readonly sidebar = new SidebarRegistry();
 			readonly disabled = false;
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };

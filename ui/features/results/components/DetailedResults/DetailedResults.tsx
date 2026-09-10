@@ -50,7 +50,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const [target, setTarget] = useState(ALL_UNITS);
 	const hasResults = useSimResult() !== null;
 
-	const { ref: toolbarRef, stuck } = useStickyToolbar<HTMLDivElement>(host.simHeader.rootElem);
+	const { ref: toolbarRef, stuck } = useStickyToolbar<HTMLDivElement>(host.headerElem);
 	// `updateResults` is bound to the emitter, not to the filter, so the selection it reads is a ref.
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.

@@ -1,30 +1,52 @@
 import { act, render } from '@testing-library/react';
-import { SimTabActivation } from '@ui-kit/tab_activation';
+import { useActivateTab } from '@ui-kit/tab_activation';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { SimTabDef } from './SimTabDef';
 import { SimTabs } from './SimTabs';
 
+// How the bulk results renderer returns to the gear tab: a button inside one pane opening another.
+const Activators = ({ ids }: { ids: string[] }) => {
+	const activate = useActivateTab();
+	return (
+		<>
+			{ids.map(id => (
+				<button key={id} className={`go-${id}`} onClick={() => activate(id)} />
+			))}
+		</>
+	);
+};
+
 // The pane is whatever the declaration wraps; the tab and the panel are React's.
-const makeTab = (id: string) => (
+const makeTab = (id: string, index: number, ids: string[]) => (
 	<SimTabDef key={id} id={id} title={id}>
-		<div id={id} className="sim-tab" />
+		<div id={id} className="sim-tab">
+			{index === 0 && <Activators ids={ids} />}
+		</div>
 	</SimTabDef>
 );
 
 let strip: HTMLElement;
 let panes: HTMLElement;
-let activation: SimTabActivation;
+
+// The first pane gets a button per tab, plus one for an id no tab carries.
+const declare = (ids: string[]) => ids.map((id, index) => makeTab(id, index, [...ids, 'nope']));
 
 const renderTabs = (ids: string[], extra?: ReactNode) =>
 	render(
-		<SimTabs activation={activation} panes={panes}>
-			{ids.map(makeTab)}
+		<SimTabs panes={panes}>
+			{declare(ids)}
 			{extra}
 		</SimTabs>,
 		{ container: strip },
 	);
+
+// Awaited: Base UI settles a panel's `hidden` on the microtask after the value changes.
+const activate = (id: string) =>
+	act(async () => {
+		panes.querySelector<HTMLElement>(`.go-${id}`)?.click();
+	});
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -32,7 +54,6 @@ beforeEach(() => {
 	panes = document.createElement('main');
 	// Attached, so focus() actually moves document.activeElement.
 	document.body.append(strip, panes);
-	activation = new SimTabActivation();
 });
 
 const press = (key: string) =>
@@ -99,9 +120,7 @@ describe('SimTabs', () => {
 				.map(el => el.className.split(' ').pop());
 		expect(stops()).toEqual(['gear-tab']);
 
-		await act(async () => {
-			activation.activate('talents-tab');
-		});
+		await activate('talents-tab');
 		expect(stops()).toEqual(['talents-tab']);
 	});
 
@@ -119,38 +138,28 @@ describe('SimTabs', () => {
 
 	it('activates by identifier, which is how the bulk results renderer returns to the gear tab', async () => {
 		renderTabs(['gear-tab', 'settings-tab']);
-		await act(async () => {
-			activation.activate('settings-tab');
-		});
+		await activate('settings-tab');
 		expect(openId()).toBe('settings-tab');
 
-		await act(async () => {
-			activation.activate('gear-tab');
-		});
+		await activate('gear-tab');
 		expect(openId()).toBe('gear-tab');
 	});
 
 	it('places a tab declared after mount without disturbing the active one', () => {
 		const { rerender } = renderTabs(['gear-tab', 'settings-tab']);
-		rerender(
-			<SimTabs activation={activation} panes={panes}>
-				{['gear-tab', 'settings-tab', 'bulk-tab'].map(makeTab)}
-			</SimTabs>,
-		);
+		rerender(<SimTabs panes={panes}>{declare(['gear-tab', 'settings-tab', 'bulk-tab'])}</SimTabs>);
 		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'bulk-tab']);
 		expect(openId()).toBe('gear-tab');
 	});
 
-	it('ignores activation of an unknown tab', async () => {
-		renderTabs(['gear-tab']);
-		await act(async () => {
-			activation.activate('nope');
-		});
+	it('ignores activation of an unknown tab, rather than hiding every panel', async () => {
+		renderTabs(['gear-tab', 'settings-tab']);
+		await activate('nope');
 		expect(openId()).toBe('gear-tab');
 	});
 
 	it('reads declarations out of a conditional group, so an entry list can be gated', () => {
-		renderTabs(['gear-tab'], <>{makeTab('bulk-tab')}</>);
+		renderTabs(['gear-tab'], <>{makeTab('bulk-tab', 1, [])}</>);
 		expect(tabs().map(el => el.textContent)).toEqual(['gear-tab', 'bulk-tab']);
 	});
 });

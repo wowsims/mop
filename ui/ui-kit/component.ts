@@ -44,24 +44,3 @@ export abstract class Disposable {
 		this.disposeCallbacks = [];
 	}
 }
-
-export abstract class Component extends Disposable {
-	protected customRootElement?(): HTMLElement;
-
-	readonly rootElem: HTMLElement;
-
-	constructor(parentElem: HTMLElement | DocumentFragment | null, rootCssClass?: string, rootElem?: HTMLElement) {
-		super();
-		this.rootElem = rootElem || this.customRootElement?.() || document.createElement('div');
-		if (rootCssClass) this.rootElem.classList.add(rootCssClass);
-		if (parentElem) {
-			parentElem.appendChild(this.rootElem);
-		}
-	}
-
-	// Disposes a registered child and removes its root element from the DOM.
-	removeChild(child: Component) {
-		this.disposeChild(child);
-		child.rootElem.remove();
-	}
-}

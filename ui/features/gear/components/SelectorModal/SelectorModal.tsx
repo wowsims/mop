@@ -4,17 +4,17 @@ import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
-import { mod } from '@sim/utils/math';
-import { sanitizeId } from '@sim/utils/format';
-import { Dialog } from '@ui-kit/Dialog';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { sanitizeId } from '@sim/utils/format';
+import { mod } from '@sim/utils/math';
+import { Dialog } from '@ui-kit/Dialog';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
+import type { SelectorModalState } from '../../hooks/useSelectorModal';
 import { ALL_ITEM_SLOTS, createGearData } from '../../model/gear_data';
-import type { GearSelectorModalOpener } from '../../model/selector_modal_opener';
 import { resolveSelectedTab } from '../../model/tab_eligibility';
 import { getTranslatedTabLabel, SelectorModalTabs } from '../../types';
 import { ItemList } from './ItemList';
@@ -25,21 +25,20 @@ import { buildSelectorTabs, eligibilityFor } from './utils';
 const DEFAULT_MODAL_ID = 'gear-picker-selector-modal';
 
 export interface SelectorModalProps {
-	opener: GearSelectorModalOpener;
+	state: SelectorModalState;
 	/** Prefixes the pane and tab ids, so two instances on one page can be told apart. */
 	id?: string;
 	/** The rail opens each slot with the *equipped* item, so an instance editing anything else omits it. */
 	rail?: boolean;
 }
 
-export const SelectorModal = ({ opener, id = DEFAULT_MODAL_ID, rail = true }: SelectorModalProps) => {
+export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: SelectorModalProps) => {
 	const host = useSimHost();
 	const player = host.player;
 	const paneId = (label: SelectorModalTabs) => sanitizeId(`${id}-${label}`);
 	const tabId = (label: SelectorModalTabs) => `${paneId(label)}-tab`;
 
-	const open = useSyncExternalStore(opener.subscribe, opener.isOpen, opener.isOpen);
-	const request = useSyncExternalStore(opener.subscribe, opener.getRequest, opener.getRequest);
+	const { open, request } = state;
 	const [selected, setSelected] = useState<{ sequence: number; tab: SelectorModalTabs } | null>(null);
 	const bodyRef = useRef<HTMLDivElement>(null);
 
@@ -93,9 +92,9 @@ export const SelectorModal = ({ opener, id = DEFAULT_MODAL_ID, rail = true }: Se
 	const openSlot = useCallback(
 		(next: ItemSlot) => {
 			if (next === slot) return;
-			opener.openTab(next, activeTab?.label ?? currentTab, createGearData(player, next));
+			state.openTab(next, activeTab?.label ?? currentTab, createGearData(player, next));
 		},
-		[opener, player, slot, activeTab, currentTab],
+		[state, player, slot, activeTab, currentTab],
 	);
 
 	// Up and down step the rail's own indices rather than the ItemSlot enum, so a rail with gaps in
@@ -122,7 +121,7 @@ export const SelectorModal = ({ opener, id = DEFAULT_MODAL_ID, rail = true }: Se
 	return (
 		<Dialog
 			open={open}
-			onOpenChange={opener.setOpen}
+			onOpenChange={state.setOpen}
 			className="selector-modal"
 			container={host.rootElem}
 			size="xl"

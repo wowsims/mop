@@ -19,7 +19,7 @@ export interface SimTabsSectionProps {
 // `memo`, because the panes are elements again on every render of this component and three of them
 // are heavy: without it, opening the settings dialog re-renders all six.
 export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
-	<SimTabs activation={host.tabs} panes={host.simTabContentsContainer}>
+	<SimTabs panes={host.simTabContentsContainer}>
 		<SimTabDef id="gear-tab" title={i18n.t('gear_tab.title')}>
 			<SimTabPane id="gear-tab">
 				<GearTabBody />

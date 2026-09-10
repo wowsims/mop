@@ -1,18 +1,17 @@
 // The vanilla panel's sixteen recorded defects are the reason most of these assertions exist; each
 // one that fixes a defect says so. The store, the worker and the saved-data manager are stubbed —
 // what is under test is the view, and every source it reads is driven directly.
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import { Stats, UnitStat } from '@sim/proto/stats';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Class, PseudoStat, Stat } from '@generated/proto/common';
-import { act, fireEvent, render } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { Stats, UnitStat } from '@sim/proto/stats';
 import { SimRuns } from '@sim/sim_runs';
 import { createSimStore } from '@sim/state/sim_store';
+import { act, fireEvent, render } from '@testing-library/react';
+import { useState } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { emptyStatWeightsResult } from '../../model/ep_math';
-import { EpWeightsOpener } from '../../model/ep_weights_opener';
 import { EpWeightsDialog } from './EpWeightsDialog';
 
 const source = vi.hoisted(() => {
@@ -138,7 +137,6 @@ rootElem.className = 'sim-ui';
 
 let player: FakePlayer;
 let settings: FakeSettings;
-let opener: EpWeightsOpener;
 let host: any;
 let abortType: ReturnType<typeof vi.fn>;
 
@@ -159,7 +157,6 @@ const setup = () => {
 	toasts.length = 0;
 	player = new FakePlayer();
 	settings = new FakeSettings();
-	opener = new EpWeightsOpener();
 	abortType = vi.fn().mockResolvedValue(undefined);
 	const store = createSimStore();
 	runsStore.store = store;
@@ -211,15 +208,30 @@ const setup = () => {
 	};
 };
 
+// `SimApp` owns the open state; the harness stands in for it, and records what the dialog asks for.
+const openChanges: boolean[] = [];
+const DialogHarness = () => {
+	const [open, setOpen] = useState(true);
+	return (
+		<EpWeightsDialog
+			open={open}
+			onOpenChange={next => {
+				openChanges.push(next);
+				setOpen(next);
+			}}
+			settings={settings as never}
+		/>
+	);
+};
+
 const renderDialog = () => {
 	document.body.appendChild(rootElem);
-	const result = render(
+	openChanges.length = 0;
+	return render(
 		<SimHostProvider host={host}>
-			<EpWeightsDialog opener={opener} settings={settings as never} />
+			<DialogHarness />
 		</SimHostProvider>,
 	);
-	act(() => opener.open());
-	return result;
 };
 
 const popup = () => rootElem.querySelector('.ep-weights-menu')!;
@@ -546,7 +558,7 @@ describe('EpWeightsDialog', () => {
 			});
 
 			expect(abortType).toHaveBeenCalledTimes(1);
-			expect(opener.isOpen()).toBe(true);
+			expect(openChanges).toEqual([]);
 			expect(popup().hasAttribute('hidden')).toBe(false);
 		});
 
@@ -617,7 +629,7 @@ describe('EpWeightsDialog', () => {
 		});
 	});
 
-	it('opens from the opener, and closing with nothing running aborts nothing', async () => {
+	it('closing with nothing running aborts nothing', async () => {
 		renderDialog();
 		expect(popup().hasAttribute('hidden')).toBe(false);
 		abortType.mockClear();
@@ -625,7 +637,7 @@ describe('EpWeightsDialog', () => {
 		await act(async () => {
 			fireEvent.click(popup().querySelector('button.sim-dialog-close')!);
 		});
-		expect(opener.isOpen()).toBe(false);
+		expect(openChanges).toEqual([false]);
 		expect(abortType).not.toHaveBeenCalled();
 	});
 

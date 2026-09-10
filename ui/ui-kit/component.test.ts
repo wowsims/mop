@@ -1,18 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { Component } from './component';
+import { Disposable } from './component';
 
-class Probe extends Component {
-	constructor() {
-		super(null);
-	}
-
+class Probe extends Disposable {
 	get disposedNow() {
 		return this.isDisposed;
 	}
 }
 
-describe('Component disposal', () => {
+describe('Disposable', () => {
 	it('runs a registered callback once, on dispose', () => {
 		const component = new Probe();
 		const callback = vi.fn();

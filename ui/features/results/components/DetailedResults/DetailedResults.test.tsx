@@ -78,7 +78,7 @@ const makeHost = () => {
 		sim,
 		resultChannel,
 		player: { secondaryResource: null },
-		simHeader: { rootElem: document.createElement('div') },
+		headerElem: document.createElement('div'),
 		disabled: false,
 		runSingleIteration: () => Promise.resolve(undefined),
 	} as never;

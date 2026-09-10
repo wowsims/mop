@@ -3,10 +3,11 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { act, fireEvent, render } from '@testing-library/react';
+import { useMemo } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type OpenSelectorModal, type SelectorModalState, useSelectorModalState } from '../../hooks/useSelectorModal';
 import { ALL_ITEM_SLOTS } from '../../model/gear_data';
-import { GearSelectorModalOpener } from '../../model/selector_modal_opener';
 import { type GearData, SelectorModalTabs } from '../../types';
 
 const store = vi.hoisted(() => {
@@ -58,21 +59,48 @@ const item = (id: number): EquippedItem => {
 	return stub as unknown as EquippedItem;
 };
 
+// `GearTabBody` holds the state and the pickers open it; the harness stands in for that pair, and
+// records what the modal's own rail asks for the way the opener object used to be spied on.
+const openSpy = vi.fn<OpenSelectorModal>();
+let openModal: OpenSelectorModal;
+let setModalOpen: (open: boolean) => void;
+const Harness = () => {
+	const state = useSelectorModalState();
+	const wrapped = useMemo<SelectorModalState>(
+		() => ({
+			...state,
+			openTab: (slot, tab, gearData) => {
+				openSpy(slot, tab, gearData);
+				state.openTab(slot, tab, gearData);
+			},
+		}),
+		[state],
+	);
+	openModal = wrapped.openTab;
+	setModalOpen = wrapped.setOpen;
+	return <SelectorModal state={wrapped} />;
+};
+
+/** Cleared first, so only what the rail opens after this point is counted. */
+const railOpens = () => {
+	openSpy.mockClear();
+	return openSpy;
+};
+
 describe('SelectorModal', () => {
 	let equippedItems: Map<ItemSlot, EquippedItem | null>;
 	let getEquippedItem: ReturnType<typeof vi.fn<() => EquippedItem | null>>;
 	let host: IndividualSimHost<any>;
-	let opener: GearSelectorModalOpener;
 	let gearData: GearData;
 
 	const setup = ({ tabSet = [tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Enchants)], requestTab = SelectorModalTabs.Items } = {}) => {
 		tabs.build.mockReturnValue(tabSet);
 		const result = render(
 			<SimHostProvider host={host}>
-				<SelectorModal opener={opener} />
+				<Harness />
 			</SimHostProvider>,
 		);
-		act(() => opener.openTab(OPEN_SLOT, requestTab, gearData));
+		act(() => openModal(OPEN_SLOT, requestTab, gearData));
 		return result;
 	};
 
@@ -80,11 +108,11 @@ describe('SelectorModal', () => {
 	const popup = () => document.querySelector('.sim-dialog-popup.selector-modal')!;
 
 	beforeEach(() => {
+		openSpy.mockClear();
 		panes.rendered.length = 0;
 		equippedItems = new Map(ALL_ITEM_SLOTS.map(slot => [slot, item(slot)]));
 		getEquippedItem = vi.fn(() => equippedItems.get(OPEN_SLOT) ?? null);
 		gearData = { equipItem: () => undefined, getEquippedItem, subscribe: () => () => undefined };
-		opener = new GearSelectorModalOpener();
 		tabs.eligibility.mockReturnValue({ hasEnchants: true, hasReforges: true, hasUpgrades: true, socketCount: 2 });
 
 		const rootElem = document.createElement('div');
@@ -139,7 +167,7 @@ describe('SelectorModal', () => {
 		act(() => tabButtons()[1].click());
 		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Enchants);
 
-		act(() => opener.openTab(OPEN_SLOT, SelectorModalTabs.Items, gearData));
+		act(() => openModal(OPEN_SLOT, SelectorModalTabs.Items, gearData));
 		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
 	});
 
@@ -165,7 +193,7 @@ describe('SelectorModal', () => {
 	// silently did nothing when it was ported verbatim.
 	it('navigates the rail from the popup and not from the document', () => {
 		setup();
-		const openTab = vi.spyOn(opener, 'openTab');
+		const openTab = railOpens();
 
 		fireEvent.keyDown(document, { key: 'ArrowDown' });
 		fireEvent.keyDown(document.body, { key: 'ArrowDown' });
@@ -178,23 +206,23 @@ describe('SelectorModal', () => {
 
 	it('steps the rail by its own indices and wraps at both ends', () => {
 		setup();
-		const openTab = vi.spyOn(opener, 'openTab');
+		const openTab = railOpens();
 
 		fireEvent.keyDown(popup(), { key: 'ArrowUp' });
 		expect(openTab.mock.calls[0][0]).toBe(ALL_ITEM_SLOTS[2]);
 
-		act(() => opener.openTab(ALL_ITEM_SLOTS[0], SelectorModalTabs.Items, gearData));
+		act(() => openModal(ALL_ITEM_SLOTS[0], SelectorModalTabs.Items, gearData));
 		fireEvent.keyDown(popup(), { key: 'ArrowUp' });
 		expect(openTab.mock.calls.at(-1)![0]).toBe(ALL_ITEM_SLOTS.at(-1));
 
-		act(() => opener.openTab(ALL_ITEM_SLOTS.at(-1)!, SelectorModalTabs.Items, gearData));
+		act(() => openModal(ALL_ITEM_SLOTS.at(-1)!, SelectorModalTabs.Items, gearData));
 		fireEvent.keyDown(popup(), { key: 'ArrowDown' });
 		expect(openTab.mock.calls.at(-1)![0]).toBe(ALL_ITEM_SLOTS[0]);
 	});
 
 	it('carries the tab you are on into the slot the rail moves to', () => {
 		setup();
-		const openTab = vi.spyOn(opener, 'openTab');
+		const openTab = railOpens();
 
 		act(() => tabButtons()[1].click());
 		fireEvent.keyDown(popup(), { key: 'ArrowDown' });
@@ -203,10 +231,10 @@ describe('SelectorModal', () => {
 
 	it('leaves the rail keys alone once the modal is closed', () => {
 		setup();
-		const openTab = vi.spyOn(opener, 'openTab');
+		const openTab = railOpens();
 		const element = popup();
 
-		act(() => opener.setOpen(false));
+		act(() => setModalOpen(false));
 		fireEvent.keyDown(element, { key: 'ArrowDown' });
 		expect(openTab).not.toHaveBeenCalled();
 	});

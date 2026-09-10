@@ -1,3 +1,6 @@
+import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
+import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
@@ -19,13 +22,9 @@ import { RequestTypes } from '@sim/sim_signal_manager';
 import { subscribeAll, subscribeBulkChange, subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import { getEnumValues } from '@sim/utils/collections';
 import { isDevMode } from '@sim/utils/env';
-import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
-import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import { Disposable } from '@ui-kit/component';
-import i18n from '@i18n/config';
 import { toastManager } from '@ui-kit/Toast';
 
-import { GearSelectorModalOpener } from '../gear/model/selector_modal_opener';
 import { trackEvent } from '../../tracking/analytics';
 import { runCoreBulkSim as runCoreBulkSimImpl } from './model/core_sim';
 import { bulkCombinationsLimit, bulkIterationsLimit } from './model/limits';
@@ -68,9 +67,6 @@ export class BulkTab extends Disposable {
 	get storeKey(): number {
 		return this.simUI.player.storeKey;
 	}
-
-	/** The gear selector the item pickers open. `BulkTabBody` renders the railless dialog behind it. */
-	readonly selectorModal = new GearSelectorModalOpener();
 
 	// The main array we will use to store items with indexes. Null values are the result of removed items to avoid having to shift pickers over and over.
 	protected items: Array<ItemSpec | null> = new Array<ItemSpec | null>();

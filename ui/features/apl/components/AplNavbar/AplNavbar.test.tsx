@@ -23,7 +23,7 @@ class FakeIntersectionObserver {
 }
 
 const header = document.createElement('div');
-const host = { simHeader: { rootElem: header } } as never;
+const host = { headerElem: header } as never;
 vi.mock('@sim/context/SimHostContext', async () => ({ useSimHost: () => host }));
 
 const { AplNavbar } = await import('./AplNavbar');

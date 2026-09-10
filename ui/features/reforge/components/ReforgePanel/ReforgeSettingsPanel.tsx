@@ -1,5 +1,6 @@
 import type { ReforgeOptimizerModel, ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { SavedEpWeights } from '@features/stat-weights/components/SavedEpWeights';
+import { useOpenEpWeights } from '@features/stat-weights/hooks/useEpWeightsDialog';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { UnitStat } from '@sim/proto/stats';
@@ -30,6 +31,7 @@ export interface ReforgeSettingsPanelProps {
 export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSettingsPanelProps) => {
 	const host = useSimHost();
 	const player = host.player;
+	const openEpWeights = useOpenEpWeights();
 	const settings = model.settings;
 
 	const useCustomEPValues = useReforgeField(settings, 'useCustomEPValues', () => settings.useCustomEPValues);
@@ -208,17 +210,15 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			/>
 			<ReforgeFrozenSlots settings={settings} player={player} freezeItemSlots={freezeItemSlots} />
 			<SavedEpWeights className="mt-3" loadOnly presetsOnly={!useCustomEPValues} />
-			{host.epWeightsModal && (
-				<Button
-					variant="outline-primary"
-					className="mt-2"
-					onClick={() => {
-						host.epWeightsModal?.open();
-						onClose();
-					}}>
-					{i18n.t('sidebar.buttons.suggest_reforges.edit_weights')}
-				</Button>
-			)}
+			<Button
+				variant="outline-primary"
+				className="mt-2"
+				onClick={() => {
+					openEpWeights();
+					onClose();
+				}}>
+				{i18n.t('sidebar.buttons.suggest_reforges.edit_weights')}
+			</Button>
 		</>
 	);
 };

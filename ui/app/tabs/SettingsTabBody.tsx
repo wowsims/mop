@@ -1,13 +1,14 @@
-import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
 import { EncounterPicker, SavedEncounter } from '@features/encounter';
 import { SelectorModal } from '@features/gear/components/SelectorModal';
+import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
 import { ConsumesPicker, CustomSection, OtherSettings, PlayerSettings, RaidBuffs, SavedSettings, StatOptionIcons } from '@features/settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import i18n from '@i18n/config';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useMemo } from 'react';
 
@@ -35,9 +36,10 @@ export const SettingsTabBody = () => {
 
 	const itemSwapSlots = config.itemSwapSlots || [];
 	const hasOtherSettings = config.otherInputs.inputs.length > 0 || itemSwapSlots.length > 0;
+	const selector = useSelectorModalState();
 
 	return (
-		<>
+		<OpenSelectorModalContext value={selector.openTab}>
 			<div className="settings-tab-left tab-panel-left">
 				<div className="tab-panel-col settings-left-col-1">
 					{ready && (
@@ -126,7 +128,7 @@ export const SettingsTabBody = () => {
 				<SavedEncounter />
 				<SavedSettings />
 			</div>
-			{host.itemSwapSelectorModal && <SelectorModal opener={host.itemSwapSelectorModal} id="item-swap-selector-modal" rail={false} />}
-		</>
+			<SelectorModal state={selector} id="item-swap-selector-modal" rail={false} />
+		</OpenSelectorModalContext>
 	);
 };

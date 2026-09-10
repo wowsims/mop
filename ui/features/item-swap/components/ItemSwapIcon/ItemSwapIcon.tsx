@@ -1,13 +1,14 @@
-import { useSimHost } from '@sim/context/SimHostContext';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { GemSocket, ItemCellAnchor } from '@features/gear/components/ItemCell';
-import { SelectorModalTabs } from '@features/gear/types';
+import { useOpenSelectorModal } from '@features/gear/hooks/useSelectorModal';
 import { getEmptySlotIconUrl } from '@features/gear/model/empty_slot_icons';
+import { SelectorModalTabs } from '@features/gear/types';
 import type { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
-import { useActionId } from '@ui-kit/hooks/useActionId';
+import { useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';
 import { useMemo, useRef } from 'react';
@@ -20,6 +21,7 @@ export interface ItemSwapIconProps {
 
 export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const host = useSimHost();
+	const openSelectorModal = useOpenSelectorModal();
 	const player = host.player;
 
 	const swapSubscribe = useMemo(() => subscribePlayerField(player, 'itemSwap'), [player]);
@@ -47,7 +49,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 				aria-label={name || translateSlotName(slot) || undefined}
 				href={href || undefined}
 				data-whtticon={item ? 'false' : undefined}
-				onActivate={() => host.itemSwapSelectorModal?.openTab(slot, SelectorModalTabs.Items, createItemSwapGearData(player, slot))}
+				onActivate={() => openSelectorModal(slot, SelectorModalTabs.Items, createItemSwapGearData(player, slot))}
 				style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
 			/>
 			<div className="item-picker-sockets-container">

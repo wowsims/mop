@@ -1,27 +1,26 @@
 import './EpWeightsDialog.scss';
-import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 
-import { useSimHost } from '@sim/context/SimHostContext';
-import { Stats } from '@sim/proto/stats';
-import { useStatWeights } from '@sim/hooks/useStatWeights';
-import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { useStatWeights } from '@sim/hooks/useStatWeights';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { Stats } from '@sim/proto/stats';
+import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
+import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { ProgressTrackerDialog, type ProgressTrackerHandle, type ProgressTrackerState } from '@ui-kit/ProgressTrackerDialog';
 import { toastManager } from '@ui-kit/Toast';
 import { Tooltip } from '@ui-kit/Tooltip';
-import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { calculateEp, combineScaledEpValues, combineScaledWeights, emptyStatWeightsResult, epWeightsWithoutExcluded } from '../../model/ep_math';
 import { visibleEpUnitStats } from '../../model/ep_unit_stats';
-import type { EpWeightsOpener } from '../../model/ep_weights_opener';
 import { statsTableColumns } from '../../model/stats_table';
 import { SavedEpWeights } from '../SavedEpWeights';
 import { EpReferenceOptions } from './EpReferenceOptions';
@@ -31,15 +30,14 @@ import { StatsType } from './types';
 import { buildEpColumns, EP_TOOLTIP_ID } from './utils';
 
 export interface EpWeightsDialogProps {
-	opener: EpWeightsOpener;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 	settings: StatWeightActionSettings;
 }
 
-export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
+export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialogProps) => {
 	const host = useSimHost();
 	const { player, sim, individualConfig } = host;
-
-	const open = useSyncExternalStore(opener.subscribe, opener.isOpen, opener.isOpen);
 
 	const epStats = individualConfig.epStats;
 	const epReferenceStat = individualConfig.epReferenceStat;
@@ -110,12 +108,12 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 		applyWeights(combine(prevSimResult, player.getEpRatios()));
 	}, [statsType, prevSimResult, player, applyWeights]);
 
-	const onOpenChange = useCallback(
+	const handleOpenChange = useCallback(
 		(next: boolean) => {
-			opener.setOpen(next);
+			onOpenChange(next);
 			if (!next) abort().catch(console.error);
 		},
-		[opener, abort],
+		[onOpenChange, abort],
 	);
 
 	const onCancel = useCallback(() => {
@@ -162,7 +160,7 @@ export const EpWeightsDialog = ({ opener, settings }: EpWeightsDialogProps) => {
 	return (
 		<Dialog
 			open={open}
-			onOpenChange={onOpenChange}
+			onOpenChange={handleOpenChange}
 			className="ep-weights-menu"
 			container={host.rootElem}
 			size={showThreatMetrics ? 'xl' : 'lg'}

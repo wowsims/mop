@@ -1,21 +1,8 @@
-// Which sim tab is open. The tabs themselves are a render tree (`app/SimTabsSection`); this is only
-// the seam an imperative caller reaches through, so an unknown id is resolved by the view.
-export class SimTabActivation {
-	private activeId: string | null = null;
-	private readonly listeners = new Set<() => void>();
+import { createContext, useContext } from 'react';
 
-	readonly subscribe = (listener: () => void): (() => void) => {
-		this.listeners.add(listener);
-		return () => {
-			this.listeners.delete(listener);
-		};
-	};
+// Which tab is open is `SimTabs`' own state; this is how a pane's contents open a sibling tab.
+export const TabActivationContext = createContext<(id: string) => void>(() => {
+	throw new Error('useActivateTab must be used inside <SimTabs>');
+});
 
-	readonly getActiveId = (): string | null => this.activeId;
-
-	activate(id: string) {
-		if (id === this.activeId) return;
-		this.activeId = id;
-		this.listeners.forEach(listener => listener());
-	}
-}
+export const useActivateTab = (): ((id: string) => void) => useContext(TabActivationContext);

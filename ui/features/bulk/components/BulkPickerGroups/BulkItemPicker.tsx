@@ -1,13 +1,14 @@
 import { ItemDetailCell } from '@features/gear/components/ItemCell';
+import { useOpenSelectorModal } from '@features/gear/hooks/useSelectorModal';
 import type { SelectorModalTabs } from '@features/gear/types';
+import { ItemSlot } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@sim/bulk/utils';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEligibleItemSlots } from '@sim/proto/items';
 import { subscribeAll, subscribeBulkChange, subscribePlayerField } from '@sim/state/subscriptions';
-import { ItemSlot } from '@generated/proto/common';
-import i18n from '@i18n/config';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
@@ -33,6 +34,7 @@ const equippedSlotOf = (bulkSlot: BulkSimItemSlot, index: number): ItemSlot | nu
 
 export const BulkItemPicker = ({ group, index, item }: BulkItemPickerProps) => {
 	const bt = useBulkTab();
+	const openSelectorModal = useOpenSelectorModal();
 	const player = usePlayer();
 	const tooltipId = useId();
 	const bulkSlot = group.bulkSlot;
@@ -70,7 +72,7 @@ export const BulkItemPicker = ({ group, index, item }: BulkItemPickerProps) => {
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
 				if (!state.isEditable) return;
-				bt.selectorModal.openTab(slot, tab, createBulkGearData(bt, group, index));
+				openSelectorModal(slot, tab, createBulkGearData(bt, group, index));
 			}}
 			action={
 				<div className="item-picker-actions-container">

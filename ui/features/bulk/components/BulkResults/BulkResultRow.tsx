@@ -1,14 +1,15 @@
 import { GearChangeIcon } from '@features/gear/components/GearChangeIcon';
 import { ItemDetailCell } from '@features/gear/components/ItemCell';
+import { ItemSlot, ItemSpec } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import type { TopGearResult } from '@sim/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { formatDeltaText, formatSignificance, formatToNumber } from '@sim/utils/format';
 import { stDevToConf95, zTest } from '@sim/utils/math';
-import { ItemSlot, ItemSpec } from '@generated/proto/common';
-import i18n from '@i18n/config';
-import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { useActivateTab } from '@ui-kit/tab_activation';
 import { toastManager } from '@ui-kit/Toast';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
 
@@ -27,6 +28,7 @@ const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: Ite
 
 export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowProps) => {
 	const host = useSimHost();
+	const activateTab = useActivateTab();
 	const marginTooltipId = useId();
 	const deltaTooltipId = useId();
 
@@ -110,7 +112,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					className={clsx('btn btn-primary bulk-equip-btn', isBaseResult && 'd-none')}
 					onClick={() => {
 						host.player.setGear(result.gear);
-						host.simHeader.activateTab('gear-tab');
+						activateTab('gear-tab');
 						toastManager.add({ variant: 'success', body: i18n.t('bulk_tab.results.gear_equipped') });
 					}}>
 					{i18n.t('bulk_tab.results.equip_button')}

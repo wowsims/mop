@@ -6,11 +6,12 @@ import { BulkSettings } from '@features/bulk/components/BulkSettings';
 import { useBulkRevision } from '@features/bulk/hooks/useBulkRevision';
 import { useBulkTab } from '@features/bulk/hooks/useBulkTab';
 import { SelectorModal } from '@features/gear/components/SelectorModal';
+import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
 import { BulkGearImporterDialog } from '@features/import-export';
-import { REPO_RELEASES_URL } from '@sim/constants/other';
-import { useSimHost } from '@sim/context/SimHostContext';
 import { ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { REPO_RELEASES_URL } from '@sim/constants/other';
+import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { useTabFade } from '@ui-kit/hooks/useTabFade';
 import { Icon } from '@ui-kit/Icon';
@@ -33,12 +34,13 @@ export const BulkTabBody = () => {
 	const [activeId, setActiveId] = useState<BulkPaneId>('bulkSetupTab');
 	const [importOpen, setImportOpen] = useState(false);
 	const shownId = useTabFade(activeId);
+	const selector = useSelectorModalState();
 	const results = bt.getResults();
 	// Starting a run clears the results and drops back to setup; finishing one opens the results.
 	useEffect(() => setActiveId(results ? 'bulkResultsTab' : 'bulkSetupTab'), [results]);
 
 	return (
-		<>
+		<OpenSelectorModalContext value={selector.openTab}>
 			<div className="bulk-tab-left tab-panel-left">
 				<div className="bulk-tab-tabs">
 					<ul className="nav nav-tabs" role="tablist">
@@ -102,8 +104,8 @@ export const BulkTabBody = () => {
 			</div>
 			<BulkSettings />
 			{importOpen && <BulkGearImporterDialog open onOpenChange={setImportOpen} />}
-			<SelectorModal opener={bt.selectorModal} id="bulk-selector-modal" rail={false} />
+			<SelectorModal state={selector} id="bulk-selector-modal" rail={false} />
 			{bt.isBulkRunning() && <BulkProgressDialog />}
-		</>
+		</OpenSelectorModalContext>
 	);
 };

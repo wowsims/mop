@@ -1,7 +1,6 @@
 import { BulkTab } from '@features/bulk/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
-import { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
 import { registerSetBonusNotices } from '@features/gear/item_notices';
 import { createLink } from '@features/import-export';
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
@@ -13,7 +12,6 @@ import type { ResultsPanelHandle } from '@features/results/model/results_panel_h
 import { WarningsRegistry } from '@features/results/model/warnings';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
-import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
 import { type ErrorOutcome, ErrorOutcomeType } from '@generated/proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
@@ -49,12 +47,10 @@ import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from 
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
-import { SimTabActivation } from '@ui-kit/tab_activation';
 import { toastManager } from '@ui-kit/Toast';
 import { createElement } from 'react';
 
 import { CrashReportOpener } from './crash_report_opener';
-import { SimHeader } from './header/sim_header';
 import type { ShellDom } from './shell_dom';
 
 export type {
@@ -85,11 +81,10 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 	readonly resultsPanel = new ResultsPanelStore();
 	readonly warnings = new WarningsRegistry();
-	readonly simHeader: SimHeader;
 
+	readonly headerElem: HTMLElement;
 	readonly simActionsContainer: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
-	readonly tabs = new SimTabActivation();
 	readonly sidebar = new SidebarRegistry();
 
 	readonly player: Player<SpecType>;
@@ -97,11 +92,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	readonly statWeightActionSettings: StatWeightActionSettings;
 
 	readonly raidSimResultsManager: SimResultsManager;
-	readonly epWeightsModal = new EpWeightsOpener();
 	readonly crashReport = new CrashReportOpener();
-	readonly gearSelectorModal = new GearSelectorModalOpener();
-	/** The swap slots' gear selector. `SettingsTabBody` renders the railless dialog behind it. */
-	readonly itemSwapSelectorModal = new GearSelectorModalOpener();
 	readonly resultChannel = new ResultChannel();
 
 	get dpsRefStat(): Stat | undefined {
@@ -142,10 +133,9 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		this.sim = player.sim;
 		this.disabled = !isDevMode() && player.getPlayerSpec().launch.status === LaunchStatus.Unlaunched;
 
-		this.simHeader = new SimHeader(dom.header, this.tabs);
-
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
+		this.headerElem = dom.header;
 		this.simActionsContainer = dom.sidebarActions;
 		this.simTabContentsContainer = dom.main;
 

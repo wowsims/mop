@@ -1,9 +1,10 @@
+import { OpenSelectorModalContext } from '@features/gear/hooks/useSelectorModal';
+import type { GearData } from '@features/gear/types';
+import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
-import type { GearData } from '@features/gear/types';
-import { GemColor, ItemSlot } from '@generated/proto/common';
 import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -66,12 +67,14 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 		isBlacksmithing: () => false,
 		getChallengeModeEnabled: () => false,
 	} as unknown as Player<any>;
-	const host = { player, itemSwapSelectorModal: { openTab } } as unknown as IndividualSimHost<any>;
+	const host = { player } as unknown as IndividualSimHost<any>;
 	const view = render(
 		<SimHostProvider host={host}>
-			{slots.map(slot => (
-				<ItemSwapIcon key={slot} slot={slot} />
-			))}
+			<OpenSelectorModalContext value={openTab}>
+				{slots.map(slot => (
+					<ItemSwapIcon key={slot} slot={slot} />
+				))}
+			</OpenSelectorModalContext>
 		</SimHostProvider>,
 	);
 	return { view, equipItem, openTab };

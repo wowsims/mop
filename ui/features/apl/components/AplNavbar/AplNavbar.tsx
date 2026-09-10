@@ -16,7 +16,7 @@ export interface AplNavbarProps {
 /** The APL pane's header: the rotation-type picker, then the sub-tab strip, in one sticky row. */
 export const AplNavbar = ({ activeId, onSelect }: AplNavbarProps) => {
 	const host = useSimHost();
-	const { ref, stuck } = useStickyToolbar<HTMLDivElement>(host.simHeader.rootElem);
+	const { ref, stuck } = useStickyToolbar<HTMLDivElement>(host.headerElem);
 
 	const onKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
 		// The *focused* tab, not the selected one: the roving tabindex makes them the same in ordinary use, but focus can be moved without selecting.
