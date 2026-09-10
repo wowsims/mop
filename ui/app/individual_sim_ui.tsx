@@ -1,4 +1,4 @@
-import { BulkTab } from '@features/bulk/bulk_tab';
+import { type BulkTab, createBulkTab } from '@features/bulk/bulk_tab';
 import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { registerSetBonusNotices } from '@features/gear/item_notices';
@@ -149,7 +149,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			watchTargetDummies(this.player, this.sim);
 		});
 
-		this.bt = new BulkTab(this);
+		this.bt = createBulkTab(this);
 
 		// Declarative behaviour slots. These run last, exactly where a spec
 		// subclass' constructor body used to run: after every model the React tree

@@ -27,7 +27,7 @@ with no store changes. There is no separate event system any more.
 | `players[storeKey]`     | `Player` / `ItemSwapSettings`                   | 23 settings fields + per-field version counters (`v`)                                                       |
 | `reforge[storeKey]`     | `ReforgeSettings`                               | 12 reforge-optimizer settings + counters                                                                    |
 | `statWeights[storeKey]` | `StatWeightActionSettings`                      | excluded stats + counter                                                                                    |
-| `bulk[storeKey]`        | `BulkSettingsStore` (`ui/sim/bulk_settings.ts`) | version counters only (the `BulkTab` keeps the values)                                                      |
+| `bulk[storeKey]`        | `BulkSettingsStore` (`ui/sim/bulk_settings.ts`) | batch items + picker groups, batch settings, run flag, results, combination count + counters                |
 
 Class-side by design: the Party↔Player object graph (composition in the store is
 the notification source; the objects stay on the classes), `aplRotation`
