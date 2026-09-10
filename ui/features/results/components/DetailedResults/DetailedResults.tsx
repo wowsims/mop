@@ -1,3 +1,4 @@
+import { Tabs } from '@base-ui/react/tabs';
 import { hideMetricsClassName } from '@features/results/model/sim_results';
 import { SimRun, SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';
@@ -8,7 +9,6 @@ import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
-import { useTabFade } from '@ui-kit/hooks/useTabFade';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -43,7 +43,6 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const showExperimental = useShowExperimental(sim);
 
 	const [activeId, setActiveId] = useState<string>(DEFAULT_DETAILED_RESULTS_TAB);
-	const shownId = useTabFade(activeId);
 	const [deathDisabled, setDeathDisabled] = useState(true);
 	const [target, setTarget] = useState(ALL_UNITS);
 	const hasResults = useSimResult() !== null;
@@ -139,8 +138,6 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 		if (!showDamage && activeId === 'damageTab') setActiveId('healingTab');
 	}, [showDamage, activeId]);
 
-	const paneState = (id: string) => ({ active: activeId === id, shown: shownId === id });
-
 	const onSimulateDeath = () => {
 		trackEvent({ action: 'sim', category: 'simulate', label: 'death' });
 
@@ -181,7 +178,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					{i18n.t('results_tab.details.sim_1_death')}
 				</button>
 			</div>
-			<div className={clsx('dr-root', !hasResults && 'dr-no-results')}>
+			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
 				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')}>
 					<div className="results-filter">
 						<ResultsFilter
@@ -193,60 +190,44 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						/>
 					</div>
 					<div className="tabs-filler" />
-					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} activeId={activeId} onSelect={setActiveId} />
+					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} />
 				</div>
 				<div className="tab-content">
 					<div id="noResultsTab" className="tab-pane dr-tab-content fade active show">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
-					<DetailedResultsPane
-						id="damageTab"
-						className="damage-content"
-						contentClassName="damage-metrics"
-						topline
-						histogram
-						{...paneState('damageTab')}>
+					<DetailedResultsPane id="damageTab" className="damage-content" contentClassName="damage-metrics" topline histogram>
 						<DamageMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane
-						id="healingTab"
-						className="healing-content"
-						contentClassName="healing-spell-metrics"
-						topline
-						{...paneState('healingTab')}>
+					<DetailedResultsPane id="healingTab" className="healing-content" contentClassName="healing-spell-metrics" topline>
 						<HealingMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane
-						id="damageTakenTab"
-						className="damage-taken-content"
-						contentClassName="dtps-metrics"
-						topline
-						{...paneState('damageTakenTab')}>
+					<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
 						<DtpsMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics" {...paneState('buffsTab')}>
+					<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics">
 						<AuraMetricsTable useDebuffs={false} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics" {...paneState('debuffsTab')}>
+					<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics">
 						<AuraMetricsTable useDebuffs={true} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics" {...paneState('castsTab')}>
+					<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics">
 						<CastMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics" {...paneState('resourcesTab')}>
+					<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics">
 						<ResourceMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" {...paneState('timelineTab')}>
+					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline">
 						<Timeline active={activeId === 'timelineTab'} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="replayTab" className="replay-content" contentClassName="combat-replay" {...paneState('replayTab')}>
+					<DetailedResultsPane id="replayTab" className="replay-content" contentClassName="combat-replay">
 						<CombatReplay active={activeId === 'replayTab'} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="logTab" className="log-content" contentClassName="log" {...paneState('logTab')}>
+					<DetailedResultsPane id="logTab" className="log-content" contentClassName="log">
 						<LogRunner active={activeId === 'logTab'} />
 					</DetailedResultsPane>
 				</div>
-			</div>
+			</Tabs.Root>
 		</div>
 	);
 };
