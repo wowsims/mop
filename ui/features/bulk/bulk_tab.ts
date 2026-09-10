@@ -222,11 +222,6 @@ export class BulkTab extends Disposable {
 		});
 	}
 
-	readonly getResults = (): BulkResults | null => this.settingsStore.state.results;
-
-	/** Starting a run empties the results pane, so the invitation to run one does not come back. */
-	readonly hasStarted = (): boolean => this.settingsStore.state.started;
-
 	/** The batch's own progress ticks, kept out of `notify` so a tick renders one leaf. */
 	readonly onProgress = (listener: (progress: BulkProgress) => void): (() => void) => {
 		this.progressListeners.add(listener);

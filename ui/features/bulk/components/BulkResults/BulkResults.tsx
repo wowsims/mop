@@ -3,21 +3,17 @@ import './BulkResults.scss';
 import { useSim } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 
-import { useBulkRevision } from '../../hooks/useBulkRevision';
-import { useBulkTab } from '../../hooks/useBulkTab';
+import { useBulkState } from '../../hooks/useBulkState';
 import { BulkResultRow } from './BulkResultRow';
 
 export const BulkResults = () => {
-	const bt = useBulkTab();
 	const sim = useSim();
-	useBulkRevision();
+	const results = useBulkState(slice => slice.results);
+	const started = useBulkState(slice => slice.started);
 
-	const results = bt.getResults();
 	if (!results) {
 		// Starting a run empties the pane, so the invitation to run one does not come back.
-		return bt.hasStarted() ? null : (
-			<div className="d-flex align-items-center justify-content-center p-gap">{i18n.t('bulk_tab.results.run_simulation')}</div>
-		);
+		return started ? null : <div className="d-flex align-items-center justify-content-center p-gap">{i18n.t('bulk_tab.results.run_simulation')}</div>;
 	}
 
 	const iterations = Math.max(1, sim.getIterations());
