@@ -22,7 +22,6 @@ export abstract class Disposable {
 		return child;
 	}
 
-	// Disposes a registered child ahead of this one's own disposal.
 	disposeChild(child: Disposable) {
 		const idx = this.children.indexOf(child);
 		if (idx >= 0) this.children.splice(idx, 1);
