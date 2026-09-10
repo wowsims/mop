@@ -163,6 +163,38 @@ describe('NumberListPicker', () => {
 		expect(input().value).toBe('1,2,');
 	});
 
+	it.each([
+		['1,', [1], '1'],
+		['1, 2,', [1, 2], '1,2'],
+	])('normalises %j to the committed value on commit, with one write', (typed, parsed, shown) => {
+		const settings = new Settings([5]);
+		render(<NumberListPicker modObject={settings} config={configFor()} />);
+
+		fireEvent.input(input(), { target: { value: typed } });
+		expect(input().value).toBe(typed);
+
+		fireEvent.change(input());
+		expect(settings.value).toEqual(parsed);
+		expect(settings.writes).toBe(1);
+		expect(input().value).toBe(shown);
+	});
+
+	it('normalises on commit even when the store ignores a write that leaves the value unchanged', () => {
+		const settings = new Settings([1]);
+		const config = configFor({
+			setValue: (target, value) => {
+				target.writes++;
+				if (value.join() !== target.value.join()) target.set(value);
+			},
+		});
+		render(<NumberListPicker modObject={settings} config={config} />);
+
+		fireEvent.input(input(), { target: { value: '1,' } });
+		fireEvent.change(input());
+		expect(settings.writes).toBe(1);
+		expect(input().value).toBe('1');
+	});
+
 	it('re-syncs the field on any notification, even one that does not change the value', () => {
 		const settings = new Settings([7]);
 		render(<NumberListPicker modObject={settings} config={configFor()} />);

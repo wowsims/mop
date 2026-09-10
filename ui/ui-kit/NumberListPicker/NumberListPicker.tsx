@@ -20,6 +20,8 @@ const parseInputValue = (text: string): Array<number> => {
 		.filter(val => !isNaN(val));
 };
 
+const formatValue = (value: Array<number>): string => value.map(v => String(v)).join(',');
+
 export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -28,10 +30,14 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 		const input = inputRef.current;
 		if (!input) return;
 		if (arrayEquals(parseInputValue(input.value), value)) return;
-		input.value = value.map(v => String(v)).join(',');
+		input.value = formatValue(value);
 	}, [value, revision]);
 
-	useCommitChange(inputRef, input => setValue(parseInputValue(input.value)));
+	useCommitChange(inputRef, input => {
+		const next = parseInputValue(input.value);
+		input.value = formatValue(next);
+		setValue(next);
+	});
 
 	return (
 		<PickerShell config={config} className="number-list-picker-root" hidden={hidden} disabled={disabled}>
