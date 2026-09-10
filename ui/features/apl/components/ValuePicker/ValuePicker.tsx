@@ -11,7 +11,7 @@ import { randomUUID } from '@sim/utils/misc';
 import { DropdownField, type DropdownOption } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useEffect, useId, useMemo } from 'react';
+import { memo, useEffect, useId, useMemo } from 'react';
 
 import { FieldGroup } from '../FieldGroup';
 
@@ -30,7 +30,7 @@ export interface ValuePickerProps {
  * Nothing here holds a copy of the value: each picker writes its own property of the live message,
  * and the rotation notification is what re-renders.
  */
-export const ValuePicker = ({ player, config }: ValuePickerProps) => {
+export const ValuePicker = memo(({ player, config }: ValuePickerProps) => {
 	const kindId = useId();
 	const { isPrepull, isGroup, changeSource } = useApl();
 
@@ -90,4 +90,4 @@ export const ValuePicker = ({ player, config }: ValuePickerProps) => {
 			{kind && <FieldGroup player={player} config={implConfig(kind)} fields={valueKinds[kind].fields} />}
 		</PickerShell>
 	);
-};
+});
