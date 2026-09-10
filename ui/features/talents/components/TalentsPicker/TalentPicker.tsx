@@ -59,8 +59,9 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 		};
 
 		elem.addEventListener('touchmove', cancel);
-		elem.addEventListener('touchstart', onTouchStart);
-		elem.addEventListener('touchend', onTouchEnd);
+		// React registers touchstart as a passive listener, where preventDefault is ignored.
+		elem.addEventListener('touchstart', onTouchStart, { passive: false });
+		elem.addEventListener('touchend', onTouchEnd, { passive: false });
 		return () => {
 			cancel();
 			elem.removeEventListener('touchmove', cancel);
