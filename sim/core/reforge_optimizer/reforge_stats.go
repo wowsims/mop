@@ -121,7 +121,7 @@ func resolveStatDelta(sdm *stats.StatDependencyManager, baseStats core.UnitStats
 	if isEmptyUnitStats(delta) {
 		return delta
 	}
-	delta.Stats = sdm.ApplyStatDependencies(delta.Stats)
+	delta.Stats = sdm.ApplyStatDependenciesToDelta(delta.Stats)
 
 	// Mirror dual-stored stats from Stats back to PseudoStats so cap constraints that evaluate
 	// via PseudoStat indices see the resolved values.

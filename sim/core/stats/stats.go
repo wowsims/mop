@@ -21,9 +21,12 @@ var flooredGameStats = []Stat{
 
 // Combat ratings are stored by the game as rounded-to-NEAREST integers. Only
 // distinguishable from flooring when a rating picks up a fractional
-// multiplier — in MoP that is exclusively the Amplification trinkets — since
-// every additive rating source is already an integer. Verified against 67
-// character-sheet readings across ilvls 463-580.
+// multiplier — the Amplification trinkets and the class "50% more haste"
+// passives — since every additive rating source is already an integer.
+// Verified against 67 character-sheet readings across ilvls 463-580. Each
+// multiplier is rounded on its own as it is applied (see
+// StatDependencyManager), so by the time this runs a rating is already an
+// integer unless a sim-internal fractional source fed it.
 var roundedGameStats = []Stat{
 	HitRating, CritRating, HasteRating, ExpertiseRating,
 	DodgeRating, ParryRating, MasteryRating,

@@ -96,8 +96,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BattleplateoftheLastMogu"
  value: {
-  dps: 248600.0543
-  tps: 158038.51764
+  dps: 248016.45977
+  tps: 157829.17449
  }
 }
 dps_results: {
@@ -110,8 +110,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 281937.95858
-  tps: 179052.24248
+  dps: 281701.75366
+  tps: 179047.1828
  }
 }
 dps_results: {
@@ -131,8 +131,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BraidofTenSongs-84072"
  value: {
-  dps: 282794.01293
-  tps: 178989.65459
+  dps: 282854.43433
+  tps: 179065.0336
  }
 }
 dps_results: {
@@ -194,8 +194,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 282233.72167
-  tps: 178186.23747
+  dps: 281905.96438
+  tps: 178167.08336
  }
 }
 dps_results: {
@@ -565,8 +565,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EmblemofKypariZar-84077"
  value: {
-  dps: 279447.44201
-  tps: 177079.95161
+  dps: 279359.30348
+  tps: 176739.63247
  }
 }
 dps_results: {
@@ -670,15 +670,15 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-FearwurmBadge-84074"
  value: {
-  dps: 281189.43557
-  tps: 176960.74719
+  dps: 281842.15354
+  tps: 177234.39718
  }
 }
 dps_results: {
  key: "TestFury-AllItems-FearwurmRelic-84070"
  value: {
-  dps: 281018.31941
-  tps: 175766.46148
+  dps: 281691.96455
+  tps: 176082.88175
  }
 }
 dps_results: {
@@ -698,8 +698,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 293988.89067
-  tps: 187968.44041
+  dps: 294656.35263
+  tps: 188717.42503
  }
 }
 dps_results: {
@@ -768,8 +768,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 303128.99945
-  tps: 195485.97931
+  dps: 303383.61405
+  tps: 195924.68445
  }
 }
 dps_results: {
@@ -1287,22 +1287,22 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-PlateofResoundingRings"
  value: {
-  dps: 212844.04226
-  tps: 136474.4069
+  dps: 212527.50778
+  tps: 136315.42171
  }
 }
 dps_results: {
  key: "TestFury-AllItems-PlateoftheLastMogu"
  value: {
-  dps: 222201.4716
-  tps: 142567.99054
+  dps: 221552.56813
+  tps: 142669.68616
  }
 }
 dps_results: {
  key: "TestFury-AllItems-PlateofthePrehistoricMarauder"
  value: {
-  dps: 232364.46659
-  tps: 148043.70334
+  dps: 232340.9981
+  tps: 147900.29995
  }
 }
 dps_results: {
@@ -1854,8 +1854,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Time-LostArtifact-103678"
  value: {
-  dps: 285141.61391
-  tps: 181069.77397
+  dps: 284798.85738
+  tps: 181142.10317
  }
 }
 dps_results: {
@@ -2022,8 +2022,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 281772.79127
-  tps: 175530.03729
+  dps: 281497.70038
+  tps: 175960.63672
  }
 }
 dps_results: {

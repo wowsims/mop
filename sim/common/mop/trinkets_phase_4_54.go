@@ -431,8 +431,8 @@ func init() {
 					ActionID:   core.ActionID{SpellID: 146051},
 					BuildPhase: core.CharacterBuildPhaseGear,
 				})).
-					AttachStatDependency(character.NewDynamicMultiplyStat(stats.HasteRating, hasteValue)).
-					AttachStatDependency(character.NewDynamicMultiplyStat(stats.MasteryRating, masteryValue)).
+					AttachStatDependency(character.NewDynamicMultiplyStatFromEquipment(stats.HasteRating, hasteValue)).
+					AttachStatDependency(character.NewDynamicMultiplyStatFromEquipment(stats.MasteryRating, masteryValue)).
 					AttachStatDependency(character.NewDynamicMultiplyStat(stats.Spirit, spiritValue)).
 					AttachMultiplicativePseudoStatBuff(&character.PseudoStats.CritDamageMultiplier, critDamageValue)
 
