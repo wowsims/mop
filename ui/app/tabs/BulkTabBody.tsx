@@ -1,3 +1,4 @@
+import { Tabs } from '@base-ui/react/tabs';
 import { BulkItemSearch } from '@features/bulk/components/BulkItemSearch';
 import { BulkPickerGroups } from '@features/bulk/components/BulkPickerGroups';
 import { BulkProgressDialog } from '@features/bulk/components/BulkProgress';
@@ -13,8 +14,8 @@ import i18n from '@i18n/config';
 import { REPO_RELEASES_URL } from '@sim/constants/other';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
-import { useTabFade } from '@ui-kit/hooks/useTabFade';
 import { Icon } from '@ui-kit/Icon';
+import { tabPaneClass } from '@ui-kit/tab_pane_class';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
@@ -33,7 +34,6 @@ export const BulkTabBody = () => {
 
 	const [activeId, setActiveId] = useState<BulkPaneId>('bulkSetupTab');
 	const [importOpen, setImportOpen] = useState(false);
-	const shownId = useTabFade(activeId);
 	const selector = useSelectorModalState();
 	const results = bt.getResults();
 	// Starting a run clears the results and drops back to setup; finishing one opens the results.
@@ -42,28 +42,19 @@ export const BulkTabBody = () => {
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
 			<div className="bulk-tab-left tab-panel-left">
-				<div className="bulk-tab-tabs">
-					<ul className="nav nav-tabs" role="tablist">
+				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
+					<Tabs.List className="nav nav-tabs" activateOnFocus render={<ul />}>
 						{PANES.map(pane => (
 							<li key={pane.id} className="nav-item" role="presentation">
-								<button
-									type="button"
-									className={clsx('nav-link', pane.id === activeId && 'active')}
-									role="tab"
-									aria-controls={pane.id}
-									aria-selected={pane.id === activeId}
-									tabIndex={pane.id === activeId ? undefined : -1}
-									onClick={() => setActiveId(pane.id)}>
+								{/* Base UI's own `aria-controls` would point at nothing: `Tabs.Panel` registers a generated id rather than the one it renders. */}
+								<Tabs.Tab value={pane.id} aria-controls={pane.id} className={state => clsx('nav-link', state.active && 'active')}>
 									{i18n.t(pane.labelKey)}
-								</button>
+								</Tabs.Tab>
 							</li>
 						))}
-					</ul>
+					</Tabs.List>
 					<div className="tab-content">
-						<div
-							id="bulkSetupTab"
-							role="tabpanel"
-							className={clsx('tab-pane fade', activeId === 'bulkSetupTab' && 'active', shownId === 'bulkSetupTab' && 'show')}>
+						<Tabs.Panel value="bulkSetupTab" id="bulkSetupTab" keepMounted className={tabPaneClass}>
 							<p className="mb-0" dangerouslySetInnerHTML={{ __html: i18n.t('bulk_tab.description') }} />
 							<div>
 								{ready && host.sim.isNative === false && (
@@ -92,15 +83,12 @@ export const BulkTabBody = () => {
 							</div>
 							<BulkItemSearch ready={ready} />
 							<BulkPickerGroups />
-						</div>
-						<div
-							id="bulkResultsTab"
-							role="tabpanel"
-							className={clsx('tab-pane fade', activeId === 'bulkResultsTab' && 'active', shownId === 'bulkResultsTab' && 'show')}>
+						</Tabs.Panel>
+						<Tabs.Panel value="bulkResultsTab" id="bulkResultsTab" keepMounted className={tabPaneClass}>
 							<BulkResults />
-						</div>
+						</Tabs.Panel>
 					</div>
-				</div>
+				</Tabs.Root>
 			</div>
 			<BulkSettings />
 			{importOpen && <BulkGearImporterDialog open onOpenChange={setImportOpen} />}
