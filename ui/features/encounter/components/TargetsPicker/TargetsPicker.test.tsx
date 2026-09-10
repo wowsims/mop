@@ -98,7 +98,10 @@ describe('TargetsPicker', () => {
 		const encounter = new FakeEncounter([defaultTarget(), defaultTarget()]);
 		mount(encounter);
 
+		fireEvent.click(actionsButton(0));
+		expect(containers()[0].querySelector('.list-picker-item-popover')).not.toBeNull();
 		expect(containers()[0].querySelector('.list-picker-item-delete')).toBeNull();
+		fireEvent.click(actionsButton(1));
 		expect(containers()[1].querySelector('.list-picker-item-delete')).not.toBeNull();
 	});
 
@@ -106,7 +109,7 @@ describe('TargetsPicker', () => {
 		const encounter = new FakeEncounter([defaultTarget(), defaultTarget()]);
 		mount(encounter);
 
-		fireEvent.mouseOver(actionsButton(1));
+		fireEvent.click(actionsButton(1));
 		act(() => void fireEvent.click(containers()[1].querySelector('.list-picker-item-delete')!));
 
 		expect(encounter.targets).toHaveLength(1);

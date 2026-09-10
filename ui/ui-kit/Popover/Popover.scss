@@ -1,5 +1,9 @@
 @import 'shared/tokens';
 
+.sim-popover-portal {
+	display: contents;
+}
+
 .sim-popover-positioner {
 	z-index: var(--dropdown-zindex);
 }

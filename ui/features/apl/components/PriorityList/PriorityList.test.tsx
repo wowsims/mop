@@ -128,9 +128,11 @@ describe('PriorityList', () => {
 		setup([APLListItem.create({ action: {} }), keep]);
 		mount();
 
-		const deleteButton = rowContainers()[0].querySelector('.list-picker-item-delete') as HTMLButtonElement;
 		act(() => {
-			fireEvent.click(deleteButton);
+			fireEvent.click(rowContainers()[0].querySelector(':scope > .list-picker-item-header > .list-picker-item-actions')!);
+		});
+		act(() => {
+			fireEvent.click(rowContainers()[0].querySelector('.list-picker-item-delete')!);
 		});
 
 		expect(player.aplRotation.priorityList).toHaveLength(1);

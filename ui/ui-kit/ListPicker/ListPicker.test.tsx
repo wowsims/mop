@@ -54,8 +54,13 @@ const containers = () => [...root().querySelectorAll<HTMLElement>('.list-picker-
 const bodies = () => [...root().querySelectorAll<HTMLElement>('.list-picker-item .leaf')].map(node => node.textContent);
 const newButton = () => root().querySelector('.list-picker-new-button') as HTMLButtonElement;
 const actionsButton = (index: number) => containers()[index].querySelector('.list-picker-item-actions') as HTMLButtonElement;
-const popoverButtons = (index: number) =>
-	[...containers()[index].querySelectorAll<HTMLElement>('.list-picker-item-popover .list-picker-item-action')].map(button => button.className.split(' ')[1]);
+const openMenu = (index: number) => fireEvent.click(actionsButton(index));
+const popoverButtons = (index: number) => {
+	openMenu(index);
+	return [...containers()[index].querySelectorAll<HTMLElement>('.list-picker-item-popover .list-picker-item-action')].map(
+		button => button.className.split(' ')[1],
+	);
+};
 
 // happy-dom has no drag data transfer; the handlers only ever read these three members.
 const dataTransfer = () => ({ setDragImage: vi.fn(), dropEffect: '', effectAllowed: '' });
@@ -150,7 +155,6 @@ describe('ListPicker', () => {
 
 			const header = root().querySelector('.list-picker-item-header')!;
 			expect([...header.children].map(child => child.className)).toEqual([
-				'list-picker-item-popover',
 				'list-picker-item-title',
 				'hide-picker',
 				'list-picker-item-action list-picker-item-actions',
@@ -178,7 +182,7 @@ describe('ListPicker', () => {
 			const rows = rowsOf('a', 'b', 'c');
 			mount(rows);
 
-			fireEvent.mouseOver(actionsButton(1));
+			openMenu(1);
 			fireEvent.click(containers()[1].querySelector('.list-picker-item-delete')!);
 			expect(rows.value.map(row => row.name)).toEqual(['a', 'c']);
 		});
@@ -187,7 +191,7 @@ describe('ListPicker', () => {
 			const rows = rowsOf('a', 'b');
 			mount(rows);
 
-			fireEvent.mouseOver(actionsButton(1));
+			openMenu(1);
 			fireEvent.click(containers()[1].querySelector('.list-picker-item-copy')!);
 			expect(rows.value.map(row => row.name)).toEqual(['a', 'b', 'b']);
 		});
@@ -197,7 +201,7 @@ describe('ListPicker', () => {
 			const rows = rowsOf('a');
 			mount(rows, { copyItem: undefined, onCopyItem } as Partial<ListPickerConfig<Rows, Row>>);
 
-			fireEvent.mouseOver(actionsButton(0));
+			openMenu(0);
 			fireEvent.click(containers()[0].querySelector('.list-picker-item-copy')!);
 			expect(onCopyItem).toHaveBeenCalledWith(0);
 			expect(rows.writes).toBe(0);
@@ -225,32 +229,39 @@ describe('ListPicker', () => {
 			});
 
 			expect(popoverButtons(0)).toEqual(['list-picker-item-delete', 'list-picker-item-extract-variable', 'list-picker-item-copy']);
-			fireEvent.mouseOver(actionsButton(0));
 			fireEvent.click(containers()[0].querySelector('.list-picker-item-extract-variable')!);
 			expect(onClick).toHaveBeenCalledWith(0);
 		});
 
-		it('applies shouldShow only once the menu has been opened', () => {
-			mount(rowsOf('a'), {
-				extraActions: [{ className: 'list-picker-item-extract-variable', icon: 'fa-x', tooltip: 'Extract', onClick: vi.fn(), shouldShow: () => false }],
+		it('leaves out an extra action whose shouldShow refuses the item', () => {
+			mount(rowsOf('a', 'b'), {
+				extraActions: [
+					{ className: 'list-picker-item-extract-variable', icon: 'fa-x', tooltip: 'Extract', onClick: vi.fn(), shouldShow: index => index === 1 },
+				],
 			});
-			const extra = () => containers()[0].querySelector<HTMLElement>('.list-picker-item-extract-variable')!;
-			expect(extra().getAttribute('style')).toBeNull();
 
-			fireEvent.mouseOver(actionsButton(0));
-			expect(extra().style.display).toBe('none');
+			expect(popoverButtons(0)).toEqual(['list-picker-item-delete', 'list-picker-item-copy']);
+			expect(popoverButtons(1)).toEqual(['list-picker-item-delete', 'list-picker-item-extract-variable', 'list-picker-item-copy']);
 		});
 
-		it('opens the menu on hover over the actions button and closes it when the popover is left', () => {
+		it('opens the menu on hover over the actions button, and closes it once an action is taken', () => {
 			mount(rowsOf('a'));
-			const popover = () => containers()[0].querySelector('.list-picker-item-popover')!;
-			expect(popover().className).toBe('list-picker-item-popover');
+			const popover = () => containers()[0].querySelector('.list-picker-item-popover');
+			expect(popover()).toBeNull();
 
-			fireEvent.mouseOver(actionsButton(0));
-			expect(popover().className).toBe('list-picker-item-popover hover');
+			fireEvent.mouseEnter(actionsButton(0));
+			expect(popover()?.hasAttribute('data-open')).toBe(true);
 
-			fireEvent.mouseLeave(popover());
-			expect(popover().className).toBe('list-picker-item-popover');
+			fireEvent.click(containers()[0].querySelector('.list-picker-item-copy')!);
+			expect(popover()?.hasAttribute('data-open') ?? false).toBe(false);
+		});
+
+		it('renders the menu inside the item header, so it keeps the list theme and spacing', () => {
+			mount(rowsOf('a'));
+			openMenu(0);
+
+			const header = containers()[0].querySelector('.list-picker-item-header')!;
+			expect(header.contains(containers()[0].querySelector('.list-picker-item-popover'))).toBe(true);
 		});
 	});
 

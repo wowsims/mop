@@ -101,6 +101,15 @@ describe('Popover', () => {
 		expect(trigger.classList.contains('suggest-reforges-button-settings')).toBe(true);
 	});
 
+	it('opens on hover when openOnHover is set', () => {
+		const onOpenChange = vi.fn();
+		renderPopover({ openOnHover: true, delay: 0, onOpenChange });
+
+		fireEvent.mouseEnter(screen.getByRole('button', { name: 'Settings' }));
+		expect(onOpenChange).toHaveBeenCalledWith(true);
+		expect(screen.getByRole('dialog')).toBeTruthy();
+	});
+
 	it('forwards trigger props, so an icon-only trigger can be named and anchor a tooltip', () => {
 		renderPopover({ triggerProps: { 'aria-label': 'Reforge settings', 'data-tooltip-id': 'reforge-settings-tip' } });
 

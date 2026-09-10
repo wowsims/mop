@@ -64,7 +64,7 @@ const labels = () => rows().map(row => row.querySelector('label')!.textContent);
 const clickItemAction = (index: number, action: string) => {
 	const item = document.querySelectorAll('.list-picker-item-container')[index];
 	act(() => {
-		fireEvent.mouseOver(item.querySelector('.list-picker-item-actions')!);
+		fireEvent.click(item.querySelector('.list-picker-item-actions')!);
 	});
 	act(() => {
 		fireEvent.click(item.querySelector(action)!);
@@ -137,7 +137,7 @@ describe('GroupVariablesField', () => {
 
 		const item = document.querySelectorAll('.list-picker-item-container')[0];
 		act(() => {
-			fireEvent.mouseOver(item.querySelector('.list-picker-item-actions')!);
+			fireEvent.click(item.querySelector('.list-picker-item-actions')!);
 		});
 
 		// Delete is asserted present so a popover that never opened fails here rather than passing.

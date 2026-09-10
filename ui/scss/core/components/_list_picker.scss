@@ -88,11 +88,8 @@
 					margin-bottom: 0;
 				}
 
-				.list-picker-item-popover:popover-open {
-					@extend .tippy-content;
-
-					inset: unset;
-					position: relative;
+				.list-picker-item-popover {
+					font-size: inherit;
 					display: flex;
 					gap: var(--list-picker-item-spacing);
 				}

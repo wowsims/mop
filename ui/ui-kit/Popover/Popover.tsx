@@ -23,7 +23,9 @@ export interface PopoverProps {
 	container?: HTMLElement | null;
 	side?: PopoverSide;
 	align?: PopoverAlign;
-	sideOffset?: number;
+	sideOffset?: BasePopover.Positioner.Props['sideOffset'];
+	openOnHover?: boolean;
+	delay?: number;
 	/** Base UI moves focus to the first tabbable element in the popup; `false` leaves it on the trigger, which is what tippy's `interactive: true` did. */
 	initialFocus?: boolean;
 	children?: ReactNode;
@@ -43,11 +45,13 @@ export const Popover = ({
 	side = 'bottom',
 	align = 'center',
 	sideOffset = TIPPY_DISTANCE,
+	openOnHover,
+	delay,
 	initialFocus = false,
 	children,
 }: PopoverProps) => (
 	<BasePopover.Root open={open} modal={false} onOpenChange={nextOpen => onOpenChange?.(nextOpen)}>
-		<BasePopover.Trigger className={clsx(triggerClassName)} {...triggerProps}>
+		<BasePopover.Trigger className={clsx(triggerClassName)} openOnHover={openOnHover} delay={delay} {...triggerProps}>
 			{trigger}
 		</BasePopover.Trigger>
 		{/* Named, because with a `container` the portal renders a wrapper element of its own. */}

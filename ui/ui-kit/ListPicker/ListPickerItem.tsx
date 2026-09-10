@@ -57,16 +57,13 @@ export const ListPickerItem = ({
 	children,
 }: ListPickerItemProps) => {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const popoverRef = useRef<HTMLDivElement>(null);
-	const actionsRef = useRef<HTMLElement>(null);
 	const enterCount = useRef(0);
 
 	const [armed, setArmed] = useState(false);
 	const [dragging, setDragging] = useState(false);
 	const [dragOver, setDragOver] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [menuHasOpened, setMenuHasOpened] = useState(false);
-	const [hoveredAction, setHoveredAction] = useState<string | null>(null);
+	const [headerElem, setHeaderElem] = useState<HTMLDivElement | null>(null);
 
 	const hasActions = canDelete || canCopy || !!extraActions?.length;
 
@@ -200,54 +197,42 @@ export const ListPickerItem = ({
 	};
 
 	const closeMenu = () => setMenuOpen(false);
-	// The anchor is taken from the event rather than a ref: vanilla measured the button's rect
-	// inside its own `mouseover`, and that is the element the event already hands over.
-	const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-		actionsRef.current = event.currentTarget;
-		setMenuOpen(true);
-		setMenuHasOpened(true);
-	};
 
-	const popover = (
-		<ListItemPopover popoverRef={popoverRef} anchorRef={actionsRef} open={menuOpen} onClose={closeMenu}>
+	const menu = hasActions && (
+		<ListItemPopover open={menuOpen} onOpenChange={setMenuOpen} container={headerElem}>
 			{canDelete && (
 				<ListItemAction
 					icon="fa-times"
 					className={['list-picker-item-delete', 'link-danger']}
 					tooltip={deleteTooltip}
 					tooltipId={tooltipId}
-					hovered={hoveredAction === 'delete'}
-					onHoverChange={hovered => setHoveredAction(hovered ? 'delete' : null)}
 					onClick={() => {
 						closeMenu();
 						onDelete(index);
 					}}
 				/>
 			)}
-			{extraActions?.map(extraAction => (
-				<ListItemAction
-					key={extraAction.className}
-					icon={extraAction.icon}
-					className={extraAction.className}
-					tooltip={extraAction.tooltip}
-					tooltipId={tooltipId}
-					hidden={menuHasOpened && extraAction.shouldShow ? !extraAction.shouldShow(index) : undefined}
-					hovered={hoveredAction === extraAction.className}
-					onHoverChange={hovered => setHoveredAction(hovered ? extraAction.className : null)}
-					onClick={() => {
-						extraAction.onClick(index);
-						closeMenu();
-					}}
-				/>
-			))}
+			{extraActions
+				?.filter(extraAction => extraAction.shouldShow?.(index) ?? true)
+				.map(extraAction => (
+					<ListItemAction
+						key={extraAction.className}
+						icon={extraAction.icon}
+						className={extraAction.className}
+						tooltip={extraAction.tooltip}
+						tooltipId={tooltipId}
+						onClick={() => {
+							extraAction.onClick(index);
+							closeMenu();
+						}}
+					/>
+				))}
 			{canCopy && (
 				<ListItemAction
 					icon="fa-copy"
 					className="list-picker-item-copy"
 					tooltip={copyTooltip}
 					tooltipId={tooltipId}
-					hovered={hoveredAction === 'copy'}
-					onHoverChange={hovered => setHoveredAction(hovered ? 'copy' : null)}
 					onClick={() => {
 						closeMenu();
 						onCopy(index);
@@ -258,14 +243,12 @@ export const ListPickerItem = ({
 	);
 
 	const heading = title !== undefined && <h6 className="list-picker-item-title">{title}</h6>;
-	const actionsButton = hasActions && <ListItemAction icon="fa-ellipsis" className="list-picker-item-actions" onMouseOver={openMenu} />;
 
 	const itemHeader = (
-		<div className="list-picker-item-header">
-			{popover}
+		<div ref={setHeaderElem} className="list-picker-item-header">
 			{heading}
 			{header}
-			{actionsButton}
+			{menu}
 		</div>
 	);
 	const itemBody = <div className="list-picker-item">{children}</div>;
