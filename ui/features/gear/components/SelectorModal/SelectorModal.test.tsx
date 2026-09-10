@@ -30,11 +30,11 @@ vi.mock('@sim/state/subscriptions', () => ({
 const tabs = vi.hoisted(() => ({ build: vi.fn(), eligibility: vi.fn() }));
 vi.mock('./utils', () => ({ buildSelectorTabs: tabs.build, eligibilityFor: tabs.eligibility }));
 
-const panes = vi.hoisted(() => ({ rendered: [] as Array<{ id: string; tabId: string; label: string; slot: number; active: boolean }> }));
+const panes = vi.hoisted(() => ({ rendered: [] as Array<{ label: string; slot: number }> }));
 vi.mock('./ItemList', () => ({
-	ItemList: ({ id, tabId, tab, slot, active }: any) => {
-		panes.rendered.push({ id, tabId, label: tab.label, slot, active });
-		return <div data-pane={tab.label} data-active={String(active)} id={id} aria-labelledby={tabId} />;
+	ItemList: ({ tab, slot }: any) => {
+		panes.rendered.push({ label: tab.label, slot });
+		return <div data-pane={tab.label} />;
 	},
 }));
 
@@ -105,6 +105,7 @@ describe('SelectorModal', () => {
 	};
 
 	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.selector-modal-tabs .nav-link'));
+	const openPanes = () => Array.from(document.querySelectorAll<HTMLElement>('.selector-modal-tab-pane.active [data-pane]')).map(pane => pane.dataset.pane);
 	const popup = () => document.querySelector('.sim-dialog-popup.selector-modal')!;
 
 	beforeEach(() => {
@@ -186,7 +187,7 @@ describe('SelectorModal', () => {
 		});
 
 		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
-		expect(panes.rendered.filter(pane => pane.active).map(pane => pane.label)).toEqual([SelectorModalTabs.Items]);
+		expect(openPanes()).toEqual([SelectorModalTabs.Items]);
 	});
 
 	// Base UI stops keydown propagation at the popup, so the vanilla document-level rail navigation

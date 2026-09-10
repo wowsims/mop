@@ -110,7 +110,7 @@ describe('ItemList', () => {
 	} = {}) =>
 		render(
 			<SimHostProvider host={host}>
-				<ItemList id="pane" tabId="pane-tab" tab={tab(label, over)} slot={slot} equippedItem={equipped} active />
+				<ItemList tab={tab(label, over)} slot={slot} equippedItem={equipped} />
 			</SimHostProvider>,
 		);
 

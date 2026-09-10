@@ -1,5 +1,11 @@
 @import 'shared/tokens';
 
+// The dialog portals everything it renders, so what is left here is an empty element sitting in a
+// tab pane's flex line, where it would otherwise take a `gap` of its own.
+.selector-modal-tabs-root {
+	display: contents;
+}
+
 // Bootstrap laid the rail out beside `.modal-content` through `.modal-dialog`'s own `display: flex`.
 // A Base UI popup is the box itself, so the rail is taken out of flow and hung off its left edge; it
 // is a child of the header only because that is unpositioned and the body is not.

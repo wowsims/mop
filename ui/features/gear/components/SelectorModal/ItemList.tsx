@@ -28,15 +28,12 @@ import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils'
 const ROW_HEIGHT = 56;
 
 export interface ItemListProps {
-	id: string;
-	tabId: string;
 	tab: SelectorTab;
 	slot: ItemSlot;
 	equippedItem: EquippedItem | null;
-	active: boolean;
 }
 
-export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemListProps) => {
+export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 	const host = useSimHost();
 	const player = host.player;
 	const sim = player.sim;
@@ -102,7 +99,7 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 		(slot === ItemSlot.ItemSlotMainHand || (slot === ItemSlot.ItemSlotOffHand && player.getClass() === Class.ClassWarrior));
 
 	return (
-		<div id={id} role="tabpanel" aria-labelledby={tabId} className={clsx('selector-modal-tab-pane tab-pane fade', active && 'active show')}>
+		<>
 			<div className="selector-modal-filters">
 				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search" />
 				{label === SelectorModalTabs.Items && (
@@ -266,6 +263,6 @@ export const ItemList = ({ id, tabId, tab, slot, equippedItem, active }: ItemLis
 				id={`${tooltipId}-compare`}
 				render={({ activeAnchor }) => ((activeAnchor as HTMLElement | null)?.dataset.inBatch === 'true' ? 'Remove from Batch Sim' : 'Add to Batch Sim')}
 			/>
-		</div>
+		</>
 	);
 };
