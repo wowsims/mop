@@ -7,8 +7,8 @@ import clsx from 'clsx';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import type { BulkTab } from '../../bulk_tab';
+import { useBulkState } from '../../hooks/useBulkState';
 import { useBulkTab } from '../../hooks/useBulkTab';
-import { useBulkVersion } from '../../hooks/useBulkVersion';
 
 export interface FreezeWeaponTypesProps {
 	slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand;
@@ -16,13 +16,13 @@ export interface FreezeWeaponTypesProps {
 
 export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 	const bt = useBulkTab();
-	useBulkVersion('settings');
+	const frozenWeaponSlot = useBulkState(slice => slice.frozenWeaponSlot);
 	const weaponTypes = bt.getFreezeWeaponTypes(slot);
 
 	return (
 		<div>
 			{!!weaponTypes.length && (
-				<div className={clsx('bulk-gear-freeze-weapontypes', bt.frozenWeaponSlot === slot && 'hide')}>
+				<div className={clsx('bulk-gear-freeze-weapontypes', frozenWeaponSlot === slot && 'hide')}>
 					<h6 className="mb-2">
 						{slot === ItemSlot.ItemSlotMainHand
 							? i18n.t('bulk_tab.settings.freeze_weapon_types.mainhand_label')
