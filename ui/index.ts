@@ -62,7 +62,7 @@ function buildLandingSpecLink(spec: PlayerSpec<any>): string {
 function buildLandingClassBlock(klass: PlayerClass<Class>): string {
 	const classSlugValue = specSlug(Object.values(klass.specs)[0]).classSlug;
 	const textKlass = textClassNameForClass(klass);
-	const borderKlass = `border-${PlayerClasses.getCssClass(klass)}`;
+	const borderKlass = `border-${PlayerClasses.getCssScheme(klass)}`;
 	const specLinks = Object.values(klass.specs).map(buildLandingSpecLink).join('');
 	return `
 		<div class="dropend sim-link-dropdown">

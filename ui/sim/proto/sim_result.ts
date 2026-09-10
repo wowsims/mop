@@ -435,7 +435,7 @@ export class UnitMetrics {
 		this.spec = this.player ? getPlayerSpecFromPlayer(this.player) : null;
 		this.petActionId = petActionId;
 		this.iconUrl = this.isPlayer ? (this.spec?.getIcon('medium') ?? '') : this.isTarget ? defaultTargetIcon : '';
-		this.classColor = this.isTarget ? '' : (PlayerClasses.getCssClass(PlayerSpecs.getPlayerClass(this.spec as PlayerSpec<any>)) ?? '');
+		this.classColor = this.isTarget ? '' : (PlayerClasses.getCssScheme(PlayerSpecs.getPlayerClass(this.spec as PlayerSpec<any>)) ?? '');
 		this.dps = this.metrics.dps!;
 		this.hps = this.metrics.hps!;
 		this.tps = this.metrics.threat!;

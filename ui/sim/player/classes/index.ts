@@ -48,7 +48,7 @@ export const PlayerClasses = {
 	Shaman,
 	Warlock,
 	Warrior,
-	getCssClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
+	getCssScheme<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 		return kebabCase(playerClass.friendlyName);
 	},
 	fromProto: <ClassType extends Class>(protoId: ClassType): PlayerClass<ClassType> => {

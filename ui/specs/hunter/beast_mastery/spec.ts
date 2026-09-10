@@ -16,7 +16,7 @@ export default defineSpec<Spec.SpecBeastMasteryHunter>({
 	spec: Spec.SpecBeastMasteryHunter,
 
 	className: 'beast-mastery-hunter-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Hunter),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Hunter),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 	warnings: [],

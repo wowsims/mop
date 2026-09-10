@@ -18,7 +18,7 @@ export default defineSpec<Spec.SpecRestorationDruid>({
 	enableHealing: false,
 
 	className: 'restoration-druid-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Druid),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

@@ -20,7 +20,7 @@ export default defineSpec<Spec.SpecBloodDeathKnight>({
 	spec: Spec.SpecBloodDeathKnight,
 
 	className: 'blood-death-knight-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.DeathKnight),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

@@ -59,7 +59,7 @@ export default defineSpec<Spec.SpecFrostMage>({
 	spec: Spec.SpecFrostMage,
 
 	className: 'frost-mage-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Mage),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Mage),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

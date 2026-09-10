@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecShadowPriest>({
 	spec: Spec.SpecShadowPriest,
 
 	className: 'shadow-priest-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Priest),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Priest),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [
 		'Some items may display and use stats a litle higher than their original value.',

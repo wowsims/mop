@@ -19,7 +19,7 @@ export default defineSpec<Spec.SpecCombatRogue>({
 	spec: Spec.SpecCombatRogue,
 
 	className: 'combat-rogue-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Rogue),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

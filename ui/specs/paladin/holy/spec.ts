@@ -13,7 +13,7 @@ export default defineSpec<Spec.SpecHolyPaladin>({
 	spec: Spec.SpecHolyPaladin,
 
 	className: 'holy-paladin-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Paladin),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

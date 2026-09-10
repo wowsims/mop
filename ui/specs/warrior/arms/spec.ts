@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecArmsWarrior>({
 	spec: Spec.SpecArmsWarrior,
 
 	className: 'arms-warrior-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warrior),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Warrior),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

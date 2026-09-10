@@ -30,7 +30,7 @@ export default defineSpec<Spec.SpecArcaneMage>({
 	spec: Spec.SpecArcaneMage,
 
 	className: 'arcane-mage-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(Mage),
+	cssScheme: PlayerClasses.getCssScheme(Mage),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

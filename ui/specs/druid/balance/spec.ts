@@ -138,7 +138,7 @@ export default defineSpec<Spec.SpecBalanceDruid>({
 	spec: Spec.SpecBalanceDruid,
 
 	className: 'balance-druid-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Druid),
 	// List any known bugs / issues here, and they'll be shown on the site.
 	knownIssues: [],
 

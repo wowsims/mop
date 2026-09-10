@@ -15,7 +15,7 @@ export default defineSpec<Spec.SpecProtectionWarrior>({
 	spec: Spec.SpecProtectionWarrior,
 
 	className: 'protection-warrior-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warrior),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Warrior),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [
 		'When reforging stats make sure to balance parry/dodge afterwards to avoid diminishing returns. We currently do not support dynamic EP weights.',

@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecRetributionPaladin>({
 	spec: Spec.SpecRetributionPaladin,
 
 	className: 'retribution-paladin-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Paladin),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [
 		'If reforging times out, click the gear icon next to the reforge button, check "Use custom EP weights" and then check Max for the hit cap to undershoot',

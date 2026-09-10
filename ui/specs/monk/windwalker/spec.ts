@@ -22,7 +22,7 @@ export default defineSpec<Spec.SpecWindwalkerMonk>({
 	spec: Spec.SpecWindwalkerMonk,
 
 	className: 'windwalker-monk-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

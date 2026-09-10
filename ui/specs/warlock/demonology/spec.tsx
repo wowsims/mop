@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecDemonologyWarlock>({
 	spec: Spec.SpecDemonologyWarlock,
 
 	className: 'demonology-warlock-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warlock),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Warlock),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

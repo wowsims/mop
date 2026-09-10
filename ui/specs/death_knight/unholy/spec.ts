@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecUnholyDeathKnight>({
 	spec: Spec.SpecUnholyDeathKnight,
 
 	className: 'unholy-death-knight-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.DeathKnight),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 

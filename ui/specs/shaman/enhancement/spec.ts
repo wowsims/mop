@@ -18,7 +18,7 @@ export default defineSpec<Spec.SpecEnhancementShaman>({
 	spec: Spec.SpecEnhancementShaman,
 
 	className: 'enhancement-shaman-sim-ui',
-	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Shaman),
+	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Shaman),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
 	warnings: [
