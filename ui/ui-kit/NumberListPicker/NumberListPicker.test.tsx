@@ -195,6 +195,22 @@ describe('NumberListPicker', () => {
 		expect(input().value).toBe('1');
 	});
 
+	it('shows what the store kept when it rewrites the committed value', () => {
+		const settings = new Settings([]);
+		const config = configFor({
+			setValue: (target, value) => {
+				target.writes++;
+				target.set([...value].sort((a, b) => a - b));
+			},
+		});
+		render(<NumberListPicker modObject={settings} config={config} />);
+
+		fireEvent.input(input(), { target: { value: '3, 1,' } });
+		fireEvent.change(input());
+		expect(settings.writes).toBe(1);
+		expect(input().value).toBe('1,3');
+	});
+
 	it('re-syncs the field on any notification, even one that does not change the value', () => {
 		const settings = new Settings([7]);
 		render(<NumberListPicker modObject={settings} config={configFor()} />);
