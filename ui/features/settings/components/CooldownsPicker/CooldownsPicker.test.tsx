@@ -1,9 +1,10 @@
 import { Cooldown, Cooldowns } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { ActionId } from '@sim/proto/action_id';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useAvailableCooldowns } from '../../hooks/useAvailableCooldowns';
 import { CooldownsPicker } from './CooldownsPicker';
 
 const source = vi.hoisted(() => {
@@ -52,7 +53,6 @@ const setup = (initial: Array<Cooldown>, available = [1, 2, 3]) => {
 };
 
 const mount = (block = document.createElement('div')) => {
-	block.classList.add('cooldown-settings');
 	document.body.appendChild(block);
 	render(
 		<SimHostProvider host={{ player } as never}>
@@ -131,16 +131,18 @@ describe('CooldownsPicker', () => {
 		expect([timingsInput(0).value, timingsInput(1).value]).toEqual(['10,20', '30']);
 	});
 
-	it('hides the containing block while the spec offers no major cooldowns', () => {
+	it('re-reads the available cooldowns when the spec metadata changes', () => {
 		setup([], []);
-		const block = mount();
-		expect(block.classList.contains('hide')).toBe(true);
+		const { result } = renderHook(() => useAvailableCooldowns(), {
+			wrapper: ({ children }) => <SimHostProvider host={{ player } as never}>{children}</SimHostProvider>,
+		});
+		expect(result.current).toHaveLength(0);
 
 		act(() => {
 			spells = [majorCooldown(1)];
 			source.notify();
 		});
-		expect(block.classList.contains('hide')).toBe(false);
+		expect(result.current).toHaveLength(1);
 	});
 
 	// The vanilla button carries no `btn`, so the shared Button has to stay unstyled.

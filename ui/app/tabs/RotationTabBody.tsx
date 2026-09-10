@@ -9,12 +9,13 @@ import { SimpleRotationInputs } from '@features/apl/components/SimpleRotationInp
 import { VariablesList } from '@features/apl/components/VariablesList';
 import type { AplPaneId } from '@features/apl/model/apl_panes';
 import { APL_PANES } from '@features/apl/model/apl_panes';
-import { CooldownsPicker } from '@features/settings';
+import { CooldownsPicker, useAvailableCooldowns } from '@features/settings';
 import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { tabPaneClass } from '@ui-kit/tab_pane_class';
+import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -49,6 +50,7 @@ export const RotationTabBody = () => {
 	const player = host.player;
 	const config = host.individualConfig;
 	const hasSimple = player.hasSimpleRotationGenerator() && !!config.rotationInputs;
+	const hasCooldowns = useAvailableCooldowns().length > 0;
 
 	const [activeId, setActiveId] = useState<AplPaneId>(APL_PANES[0].id);
 
@@ -78,7 +80,7 @@ export const RotationTabBody = () => {
 									<SimpleRotationInputs />
 								</ContentBlock>
 								<ContentBlock
-									className="cooldown-settings"
+									className={clsx('cooldown-settings', !hasCooldowns && 'hide')}
 									config={{ header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') } }}>
 									<CooldownsPicker />
 								</ContentBlock>

@@ -12,7 +12,10 @@ vi.mock('@features/apl/components/RotationTypePicker', () => ({ RotationTypePick
 vi.mock('@features/apl/components/SavedRotation', () => ({ SavedRotation: () => <div className="saved-rotation-stub" /> }));
 vi.mock('@features/apl/components/SimpleRotationInputs', () => ({ SimpleRotationInputs: () => <div className="simple-rotation-inputs-stub" /> }));
 vi.mock('@features/apl/components/VariablesList', () => ({ VariablesList: () => <div className="variables-list-stub" /> }));
-vi.mock('@features/settings', () => ({ CooldownsPicker: () => <div className="cooldowns-picker-stub" /> }));
+vi.mock('@features/settings', () => ({
+	CooldownsPicker: () => <div className="cooldowns-picker-stub" />,
+	useAvailableCooldowns: () => available,
+}));
 vi.mock('../PresetConfigurationPicker', () => ({ PresetConfigurationPicker: () => <div className="preset-configuration-picker-stub" /> }));
 
 class FakeIntersectionObserver {
@@ -22,9 +25,11 @@ class FakeIntersectionObserver {
 	unobserve = vi.fn();
 }
 
+let simple = false;
+let available: Array<unknown> = [];
 const host = {
-	player: { hasSimpleRotationGenerator: () => false },
-	individualConfig: {},
+	player: { hasSimpleRotationGenerator: () => simple },
+	individualConfig: { rotationInputs: {} },
 } as never;
 vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host }));
 
@@ -33,7 +38,11 @@ const { RotationTabBody } = await import('./RotationTabBody');
 const paneClasses = (container: HTMLElement) => [...container.querySelectorAll('.rotation-tab-apl .tab-pane')].map(pane => [pane.id, pane.className] as const);
 
 beforeEach(() => vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver));
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+	vi.unstubAllGlobals();
+	simple = false;
+	available = [];
+});
 
 describe('RotationTabBody', () => {
 	it('opens the priority pane and leaves the other two faded out', () => {
@@ -60,6 +69,16 @@ describe('RotationTabBody', () => {
 		const selected = [...container.querySelectorAll('[role=tab]')].filter(tab => tab.getAttribute('aria-selected') === 'true');
 		expect(selected.map(tab => tab.getAttribute('aria-controls'))).toEqual(['apl-action-groups']);
 		expect(container.querySelector('#apl-action-groups')!.classList.contains('active')).toBe(true);
+	});
+
+	it('hides the cooldown settings while the spec offers no major cooldowns', () => {
+		simple = true;
+		const { container, rerender } = render(<RotationTabBody />);
+		expect(container.querySelector('.cooldown-settings')!.classList.contains('hide')).toBe(true);
+
+		available = [{}];
+		rerender(<RotationTabBody />);
+		expect(container.querySelector('.cooldown-settings')!.classList.contains('hide')).toBe(false);
 	});
 
 	it('renders the navbar ahead of both columns, which is what the layout depends on', () => {
