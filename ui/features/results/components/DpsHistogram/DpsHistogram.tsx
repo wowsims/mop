@@ -12,14 +12,14 @@ const OUT_OF_STDEV = '#FF6961';
 export const DpsHistogram = () => {
 	const resultData = useSimResult();
 	const rootRef = useRef<HTMLDivElement>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	// Chart.js owns the canvas, so the canvas is built here rather than rendered; the root div is React's.
 	useEffect(() => {
 		const root = rootRef.current;
-		if (!resultData || !root) return;
+		const chartCanvas = canvasRef.current;
+		if (!resultData || !root || !chartCanvas) return;
 
 		const chartBounds = root.getBoundingClientRect();
-		const chartCanvas = document.createElement('canvas');
 		chartCanvas.height = chartBounds.height;
 		chartCanvas.width = chartBounds.width;
 
@@ -37,10 +37,7 @@ export const DpsHistogram = () => {
 			colors.push(val > min && val < max ? IN_STDEV : OUT_OF_STDEV);
 		});
 
-		const ctx = chartCanvas.getContext('2d')!;
-		root.replaceChildren(chartCanvas);
-
-		const chart = new Chart(ctx, {
+		const chart = new Chart(chartCanvas.getContext('2d')!, {
 			type: 'bar',
 			data: {
 				labels: labels,
@@ -73,11 +70,12 @@ export const DpsHistogram = () => {
 			},
 		});
 
-		return () => {
-			chart.destroy();
-			root.replaceChildren();
-		};
+		return () => chart.destroy();
 	}, [resultData]);
 
-	return <div className="dps-histogram-root" ref={rootRef} />;
+	return (
+		<div className="dps-histogram-root" ref={rootRef}>
+			{resultData && <canvas ref={canvasRef} />}
+		</div>
+	);
 };

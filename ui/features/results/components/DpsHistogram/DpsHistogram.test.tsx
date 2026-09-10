@@ -59,13 +59,20 @@ describe('DpsHistogram', () => {
 		expect(charts[0].config.data.datasets[0].backgroundColor).toEqual(['#FF6961', '#1E87F0', '#FF6961']);
 	});
 
-	it('destroys the chart and clears the root when it goes away', () => {
+	it('destroys the chart and drops the canvas when the result goes away', () => {
 		result = resultWith({ 100: 1 }, 100, 10);
-		const { container, unmount } = render(<DpsHistogram />);
-		const root = container.querySelector('.dps-histogram-root')!;
-		unmount();
+		const { container, rerender } = render(<DpsHistogram />);
+		result = null;
+		rerender(<DpsHistogram />);
 
 		expect(charts[0].destroyed).toBe(true);
-		expect(root.children).toHaveLength(0);
+		expect(container.querySelector('.dps-histogram-root')!.children).toHaveLength(0);
+	});
+
+	it('destroys the chart when it unmounts', () => {
+		result = resultWith({ 100: 1 }, 100, 10);
+		render(<DpsHistogram />).unmount();
+
+		expect(charts[0].destroyed).toBe(true);
 	});
 });
