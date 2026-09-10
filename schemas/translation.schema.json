@@ -80,6 +80,37 @@
 				"elapsed_time": {
 					"type": "string"
 				},
+				"ok": {
+					"type": "string"
+				},
+				"cancel": {
+					"type": "string"
+				},
+				"confirm": {
+					"type": "string"
+				},
+				"delete": {
+					"type": "string"
+				},
+				"saved_data": {
+					"type": "object",
+					"properties": {
+						"delete_title": {
+							"type": "string"
+						},
+						"delete_confirm": {
+							"type": "string"
+						},
+						"choose_name": {
+							"type": "string"
+						},
+						"name_exists": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["delete_title", "delete_confirm", "choose_name", "name_exists"]
+				},
 				"phases": {
 					"type": "object",
 					"properties": {
@@ -877,7 +908,12 @@
 				"currency",
 				"copy_button",
 				"list_picker",
-				"preset"
+				"preset",
+				"ok",
+				"cancel",
+				"confirm",
+				"delete",
+				"saved_data"
 			]
 		},
 		"sim": {

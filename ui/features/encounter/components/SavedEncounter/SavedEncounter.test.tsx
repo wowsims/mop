@@ -89,6 +89,8 @@ const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-
 const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
 const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
+const popover = () => document.querySelector('.sim-confirm-popover');
+const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
 
 beforeEach(setup);
 
@@ -155,19 +157,16 @@ describe('SavedEncounter', () => {
 
 	describe('deleting', () => {
 		it('removes the set and rewrites storage once confirmed', async () => {
-			vi.stubGlobal(
-				'confirm',
-				vi.fn(() => true),
-			);
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Council: storedJson(400), Other: storedJson(200) }));
 			await renderPanel();
 
 			fireEvent.click(chipNamed('Council').querySelector('.saved-data-set-delete')!);
+			const [, confirm] = popoverButtons();
+			fireEvent.click(confirm);
 
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Other']);
 			expect(stored()).toEqual({ Other: storedJson(200) });
 			expect(trackEvent).toHaveBeenCalledWith({ action: 'settings', category: 'delete', label: 'Encounter' });
-			vi.unstubAllGlobals();
 		});
 	});
 });

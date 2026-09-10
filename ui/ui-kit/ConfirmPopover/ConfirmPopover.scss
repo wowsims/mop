@@ -1,0 +1,15 @@
+.sim-confirm-popover {
+	&.sim-popover-popup {
+		max-width: 220px;
+	}
+
+	.sim-confirm-popover-message {
+		margin-bottom: var(--block-spacer);
+	}
+
+	.sim-confirm-popover-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--spacer-2);
+	}
+}

@@ -80,6 +80,7 @@ export const SavedGear = () => {
 
 	return (
 		<SavedDataPanel
+			container={host.rootElem}
 			title={i18n.t('gear_tab.gear_sets.title')}
 			label={label}
 			nameLabel={i18n.t('gear_tab.gear_sets.gear_set_name')}

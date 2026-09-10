@@ -1,10 +1,11 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
+import { ConfirmPopover } from '@ui-kit/ConfirmPopover';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
-import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { SavedDataChip } from './SavedDataChip';
 import type { SavedDataPanelEntry } from './types';
@@ -19,6 +20,8 @@ export interface SavedDataPanelProps<T> {
 	chooseNameAlert?: string;
 	nameExistsAlert?: string;
 	className?: ClassValue;
+	/** Where the confirmation popovers mount; the default is outside `.sim-ui`, where the spec theme lives. */
+	container?: HTMLElement | null;
 	presets: Array<SavedDataPanelEntry<T>>;
 	userData: Array<SavedDataPanelEntry<T>>;
 	// Serialised form of the subject's live value, compared against each entry's `json`.
@@ -43,6 +46,7 @@ export const SavedDataPanel = <T,>({
 	chooseNameAlert,
 	nameExistsAlert,
 	className,
+	container,
 	presets,
 	userData,
 	currentJson,
@@ -57,8 +61,10 @@ export const SavedDataPanel = <T,>({
 	const nameInputId = useId();
 	const [name, setName] = useState('');
 	const [loadedName, setLoadedName] = useState<string | null>(null);
+	const [problem, setProblem] = useState<string | null>(null);
+	const createRef = useRef<HTMLDivElement>(null);
 
-	const deleteText = deleteLabel ?? `Delete saved ${label}`;
+	const deleteText = deleteLabel ?? i18n.t('common.saved_data.delete_title', { label });
 
 	const matchesCurrent = useCallback((entry: SavedDataPanelEntry<T>) => (isActive ? isActive(entry) : entry.json === currentJson), [isActive, currentJson]);
 
@@ -90,23 +96,18 @@ export const SavedDataPanel = <T,>({
 
 	const handleSave = useCallback(() => {
 		if (!name) {
-			alert(chooseNameAlert ?? `Choose a label for your saved ${label}!`);
+			setProblem(chooseNameAlert ?? i18n.t('common.saved_data.choose_name', { label }));
 			return;
 		}
 		if (presets.some(preset => preset.name === name)) {
-			alert(nameExistsAlert ? nameExistsAlert.replace('{{name}}', name) : `${label} with name ${name} already exists.`);
+			setProblem(nameExistsAlert ? nameExistsAlert.replace('{{name}}', name) : i18n.t('common.saved_data.name_exists', { label, name }));
 			return;
 		}
 		onSave(name);
 	}, [name, label, chooseNameAlert, nameExistsAlert, presets, onSave]);
 
-	const handleDelete = useCallback(
-		(entry: SavedDataPanelEntry<T>) => {
-			if (!confirm(deleteConfirmMessage ? deleteConfirmMessage.replace('{{name}}', entry.name) : `Delete saved ${label} '${entry.name}'?`)) return;
-			onDelete(entry);
-		},
-		[label, deleteConfirmMessage, onDelete],
-	);
+	const deleteMessage = (entry: SavedDataPanelEntry<T>) =>
+		deleteConfirmMessage ? deleteConfirmMessage.replace('{{name}}', entry.name) : i18n.t('common.saved_data.delete_confirm', { label, name: entry.name });
 
 	const renderChip = (entry: SavedDataPanelEntry<T>) => (
 		<SavedDataChip
@@ -117,8 +118,11 @@ export const SavedDataPanel = <T,>({
 			deleteLabel={deleteText}
 			deleteTooltipId={tooltipId}
 			chipTooltipId={chipTooltipId}
+			deleteMessage={deleteMessage(entry)}
+			deleteConfirmLabel={i18n.t('common.delete')}
+			container={container}
 			onLoad={handleLoad}
-			onDelete={entry.isPreset || loadOnly ? undefined : handleDelete}
+			onDelete={entry.isPreset || loadOnly ? undefined : onDelete}
 		/>
 	);
 
@@ -130,7 +134,7 @@ export const SavedDataPanel = <T,>({
 					<div className={clsx('saved-data-custom', !userData.length && 'hide')}>{userData.map(renderChip)}</div>
 				</div>
 				{!loadOnly && (
-					<div className="saved-data-create-container">
+					<div ref={createRef} className="saved-data-create-container">
 						<label className="form-label" htmlFor={nameInputId}>
 							{nameLabel ?? label}
 						</label>
@@ -154,6 +158,9 @@ export const SavedDataPanel = <T,>({
 				place="bottom"
 				render={({ content }) => (typeof content === 'string' && content ? <LocaleHtml html={content} /> : null)}
 			/>
+			<ConfirmPopover open={!!problem} onOpenChange={open => !open && setProblem(null)} anchor={createRef} container={container}>
+				{problem}
+			</ConfirmPopover>
 		</div>
 	);
 };

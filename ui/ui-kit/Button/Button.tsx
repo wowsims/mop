@@ -3,7 +3,7 @@ import { externalRel } from '@sim/utils/links';
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel' | 'unstyled';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'cancel' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel' | 'unstyled';
 
 interface ButtonBaseProps {
 	/** `null` emits a bare `btn` — the talents tree's reset is `btn link-danger`. */

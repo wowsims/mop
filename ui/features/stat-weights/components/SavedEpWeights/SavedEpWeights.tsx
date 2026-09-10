@@ -81,6 +81,7 @@ export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeig
 
 	return (
 		<SavedDataPanel
+			container={host.rootElem}
 			className={className}
 			title={i18n.t('sidebar.buttons.stat_weights.saved_ep_weights.title')}
 			label={label}

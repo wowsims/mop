@@ -83,6 +83,7 @@ export const SavedRotation = () => {
 
 	return (
 		<SavedDataPanel
+			container={host.rootElem}
 			title={i18n.t('rotation_tab.saved_rotations.title')}
 			label={label}
 			nameLabel={i18n.t('rotation_tab.saved_rotations.name_label')}

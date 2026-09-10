@@ -95,6 +95,9 @@ const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-
 const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
 const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
+const popover = () => document.querySelector('.sim-confirm-popover');
+const popoverText = () => popover()?.querySelector('.sim-confirm-popover-message')?.textContent ?? '';
+const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
 
 beforeEach(setup);
 
@@ -123,16 +126,14 @@ describe('SavedEpWeights', () => {
 		});
 
 		it('refuses an empty name with an alert and writes nothing', async () => {
-			const alert = vi.fn();
-			vi.stubGlobal('alert', alert);
 			await renderManager();
 
 			fireEvent.click(saveButton());
 
-			expect(alert).toHaveBeenCalledWith('Choose a label for your saved EP!');
+			expect(popover()).not.toBeNull();
+			expect(popoverButtons()).toHaveLength(1);
 			expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull();
 			expect(trackEvent).not.toHaveBeenCalled();
-			vi.unstubAllGlobals();
 		});
 
 		it('replaces a set of the same name instead of adding a second chip', async () => {
@@ -239,34 +240,30 @@ describe('SavedEpWeights', () => {
 
 	describe('deleting', () => {
 		it('removes the set and rewrites storage once confirmed', async () => {
-			vi.stubGlobal(
-				'confirm',
-				vi.fn(() => true),
-			);
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4), Other: storedJson(2) }));
 			await renderManager();
 
 			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			const [, confirm] = popoverButtons();
+			fireEvent.click(confirm);
 
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Other']);
 			expect(stored()).toEqual({ Other: storedJson(2) });
 			expect(trackEvent).toHaveBeenCalledWith({ action: 'settings', category: 'delete', label: 'EP' });
-			vi.unstubAllGlobals();
 		});
 
 		it('keeps the set when the confirm is declined', async () => {
-			const confirmed = vi.fn(() => false);
-			vi.stubGlobal('confirm', confirmed);
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			await renderManager();
 
 			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			expect(popoverText()).not.toBe('');
+			const [cancel] = popoverButtons();
+			fireEvent.click(cancel);
 
-			expect(confirmed).toHaveBeenCalledWith("Delete saved EP 'Raiding'?");
 			expect(chips('custom')).toHaveLength(1);
 			expect(stored()).toEqual({ Raiding: storedJson(4) });
 			expect(trackEvent).not.toHaveBeenCalled();
-			vi.unstubAllGlobals();
 		});
 
 		it('gives a preset no delete button', async () => {

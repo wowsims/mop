@@ -24,6 +24,16 @@
 		"search": "Rechercher",
 		"filter": "Filtrer",
 		"elapsed_time": "Temps écoulé",
+		"ok": "OK",
+		"cancel": "Annuler",
+		"confirm": "Confirmer",
+		"delete": "Supprimer",
+		"saved_data": {
+			"delete_title": "Supprimer le {{label}} enregistré",
+			"delete_confirm": "Supprimer le {{label}} enregistré « {{name}} » ?",
+			"choose_name": "Choisissez un nom pour votre {{label}} !",
+			"name_exists": "Un {{label}} nommé {{name}} existe déjà."
+		},
         "phases": {
             "1": "Phase 1 (5.0 - T14)",
             "2": "Phase 2 (5.1)",

@@ -71,6 +71,7 @@ export const SavedTalents = () => {
 
 	return (
 		<SavedDataPanel
+			container={host.rootElem}
 			title={i18n.t('talents_tab.saved_talents.title')}
 			label={label}
 			nameLabel={i18n.t('talents_tab.saved_talents.name_label')}

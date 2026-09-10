@@ -70,6 +70,7 @@ export const SavedEncounter = () => {
 
 	return (
 		<SavedDataPanel
+			container={host.rootElem}
 			title={i18n.t('settings_tab.saved_encounters.title')}
 			label={label}
 			nameLabel={i18n.t('settings_tab.saved_encounters.encounter_name')}
