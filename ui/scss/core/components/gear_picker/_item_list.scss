@@ -76,6 +76,7 @@
 
 // TODO: Move all of these to a shared file, as they're used in other places too
 .selector-modal-list-item {
+	position: relative;
 	padding: 0.5rem;
 	display: flex;
 	align-items: center;
@@ -129,6 +130,22 @@
 		display: flex;
 		align-items: center;
 		min-width: 10vw;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+
+	// The link's `::after` covers the whole row so that all of it equips; the row's own controls and
+	// links have to be lifted above it to stay clickable.
+	.item-notice,
+	.selector-modal-list-item-source-container a,
+	.selector-modal-list-item-favorite,
+	.selector-modal-list-item-compare {
+		position: relative;
+		z-index: 1;
 	}
 
 	.selector-modal-list-label-cell {
