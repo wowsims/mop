@@ -1,3 +1,4 @@
+import { Tabs } from '@base-ui/react/tabs';
 import { AplNavbar } from '@features/apl/components/AplNavbar';
 import { GroupList } from '@features/apl/components/GroupList';
 import { PrePullList } from '@features/apl/components/PrePullList';
@@ -13,8 +14,7 @@ import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useTabFade } from '@ui-kit/hooks/useTabFade';
-import clsx from 'clsx';
+import { tabPaneClass } from '@ui-kit/tab_pane_class';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -51,7 +51,6 @@ export const RotationTabBody = () => {
 	const hasSimple = player.hasSimpleRotationGenerator() && !!config.rotationInputs;
 
 	const [activeId, setActiveId] = useState<AplPaneId>(APL_PANES[0].id);
-	const shownId = useTabFade(activeId);
 
 	return (
 		<>
@@ -92,26 +91,22 @@ export const RotationTabBody = () => {
 				)}
 			</div>
 
-			<div className="rotation-tab rotation-tab-apl">
-				<AplNavbar activeId={activeId} onSelect={setActiveId} />
+			<Tabs.Root className="rotation-tab rotation-tab-apl" value={activeId} onValueChange={next => setActiveId(next as AplPaneId)}>
+				<AplNavbar />
 				<div className="rotation-tab-col tab-panel-left tab-content">
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
-							<div
-								key={pane.id}
-								id={pane.id}
-								role="tabpanel"
-								className={clsx('tab-pane fade', pane.id === activeId && 'active', pane.id === shownId && 'show')}>
+							<Tabs.Panel key={pane.id} value={pane.id} id={pane.id} keepMounted className={tabPaneClass}>
 								<Body />
-							</div>
+							</Tabs.Panel>
 						);
 					})}
 				</div>
 				<div className="rotation-tab-col tab-panel-right">
 					<RotationSidebar />
 				</div>
-			</div>
+			</Tabs.Root>
 		</>
 	);
 };

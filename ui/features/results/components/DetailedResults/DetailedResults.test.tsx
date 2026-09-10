@@ -136,8 +136,8 @@ describe('DetailedResults', () => {
 
 	it('opens the damage pane and leaves the other nine faded out', () => {
 		const { container } = renderPane();
-		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane dr-tab-content fade damage-content active show');
-		expect(container.querySelector('#logTab')!.className).toBe('tab-pane dr-tab-content fade log-content');
+		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane fade dr-tab-content damage-content active show');
+		expect(container.querySelector('#logTab')!.className).toBe('tab-pane fade dr-tab-content log-content');
 		expect(container.querySelectorAll('.tab-content > .tab-pane.active')).toHaveLength(2);
 		expect(container.querySelector('#noResultsTab')!.className).toBe('tab-pane dr-tab-content fade active show');
 	});
@@ -175,7 +175,7 @@ describe('DetailedResults', () => {
 		fireEvent.click(tabButton(container, 'timelineTab'));
 		expect(container.querySelector('#timelineTab')!.classList.contains('active')).toBe(true);
 		expect(container.querySelector('#timelineTab')!.classList.contains('show')).toBe(false);
-		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane dr-tab-content fade damage-content');
+		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane fade dr-tab-content damage-content');
 		await waitFor(() => expect(container.querySelector('#timelineTab')!.classList.contains('show')).toBe(true));
 	});
 
