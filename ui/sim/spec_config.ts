@@ -1,4 +1,3 @@
-import type { EncounterPickerConfig } from '@features/encounter/view/encounter_picker';
 import type { ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
@@ -33,6 +32,10 @@ import type { StoreSubscribe } from './state/subscriptions';
 
 /** Per-stat tooltip content a spec contributes to the reforge panel. */
 export type StatTooltipContent = { [key in Stat]?: () => ReactNode };
+
+export interface EncounterPickerConfig {
+	showExecuteProportion: boolean;
+}
 
 export type InputConfig<ModObject> =
 	| InputHelpers.TypedBooleanPickerConfig<ModObject>
