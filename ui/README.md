@@ -19,14 +19,10 @@ ui/
                      saved_data_manager, input_helpers, icon_inputs,
                      utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability: model/ (DOM-free, lint-enforced) +
-                     components/ (React, one folder per component) + hooks/. The twelve are
+                     components/ (React, one folder per component) + hooks/ + utils/ (feature
+                     helpers that are neither a component nor DOM-free). The twelve are
                      apl, bulk, character-stats, encounter, gear, import-export, item-swap,
-                     reforge, results, settings, stat-weights, talents.
-                     A view/ folder means code that has not ported yet, and only two survive,
-                     each imported solely from the frozen specs/: settings/
-                     (spec_change_warning_toast) and talents/ (hunter_pet).
-                     They are the remaining migration surface — see
-                     .github/skills/wowsims-react/SKILL.md. alias @features
+                     reforge, results, settings, stat-weights, talents. alias @features
   app/               shells + chrome that compose features, and the only place allowed to
                      import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
                      tabs/ (a React <X>TabBody per tab), header/, SettingsDialog/,

@@ -1,5 +1,5 @@
 import type { HunterSpecs } from '@sim/proto/spec_types';
-import { makePetTypeInputConfig } from '@features/talents/view/hunter_pet';
+import { makePetTypeInputConfig } from '@features/settings/model/hunter_pet';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

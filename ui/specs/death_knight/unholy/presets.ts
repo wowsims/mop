@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@sim/player/player';
-import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
+import { makeSpecChangeWarningToast } from '@features/settings/utils/spec_change_warning_toast';
 import { APLRotation_Type } from '@generated/proto/apl';
 import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '@generated/proto/death_knight';
