@@ -571,10 +571,6 @@ export class BulkTab extends Disposable {
 		this.settingsStore.patch({ requiredSetBonuses: sanitiseRequiredSetBonuses(requiredSetBonuses) }, ['settings']);
 	}
 
-	showIterationsWarning(): boolean {
-		return this.iterations > this.getIterationsLimit();
-	}
-
 	getIterationsLimit(): number {
 		return bulkIterationsLimit(this.simUI.sim.isNative);
 	}

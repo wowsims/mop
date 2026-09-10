@@ -5,15 +5,17 @@ import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
 
-import { useBulkRevision } from '../../hooks/useBulkRevision';
+import { useBulkState } from '../../hooks/useBulkState';
 import { useBulkTab } from '../../hooks/useBulkTab';
 
 export const CombinationsCount = () => {
 	const bt = useBulkTab();
 	const tooltipId = useId();
-	useBulkRevision();
+	const pending = useBulkState(slice => slice.combinationsPending);
+	const combinations = useBulkState(slice => slice.combinations);
+	const iterations = useBulkState(slice => slice.iterations);
 
-	if (bt.combinationsPending) {
+	if (pending) {
 		return (
 			<div className="bulk-combinations-count h4">
 				<div className="loader" />
@@ -21,16 +23,16 @@ export const CombinationsCount = () => {
 		);
 	}
 
-	const showWarning = bt.showIterationsWarning();
+	const showWarning = iterations > bt.getIterationsLimit();
 	return (
 		<div className="bulk-combinations-count h4">
 			<span className={clsx(showWarning && 'text-danger')}>
-				{bt.combinations === 1
+				{combinations === 1
 					? i18n.t('bulk_tab.settings.combination_singular')
-					: i18n.t('bulk_tab.settings.combinations_count', { amount: formatToNumber(bt.combinations) })}
+					: i18n.t('bulk_tab.settings.combinations_count', { amount: formatToNumber(combinations) })}
 				<br />
 				<small>
-					{formatToNumber(bt.iterations)} {i18n.t('bulk_tab.settings.iterations')}
+					{formatToNumber(iterations)} {i18n.t('bulk_tab.settings.iterations')}
 				</small>
 			</span>
 			{showWarning && (
