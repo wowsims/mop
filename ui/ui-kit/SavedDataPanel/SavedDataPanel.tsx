@@ -1,7 +1,7 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -146,7 +146,11 @@ export const SavedDataPanel = <T,>({
 				)}
 			</ContentBlock>
 			<Tooltip id={tooltipId} content={deleteText} />
-			<Tooltip id={chipTooltipId} place="bottom" />
+			<Tooltip
+				id={chipTooltipId}
+				place="bottom"
+				render={({ content }) => (typeof content === 'string' && content ? <LocaleHtml html={content} /> : null)}
+			/>
 		</div>
 	);
 };

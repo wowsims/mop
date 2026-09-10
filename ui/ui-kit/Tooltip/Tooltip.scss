@@ -1,6 +1,9 @@
 @import 'shared/tokens';
 
 .sim-tooltip {
+	// react-tooltip's core stylesheet ships `z-index: 1`, which ties with the gear picker's icons
+	// and loses outright to the sticky toolbars.
+	z-index: var(--tooltip-z-index);
 	max-width: var(--bs-tooltip-max-width);
 	padding: 0;
 	border: var(--bs-tooltip-border) 1px solid;

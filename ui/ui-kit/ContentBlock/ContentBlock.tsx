@@ -1,3 +1,4 @@
+import { LocaleHtml } from '@ui-kit/Tooltip';
 import { TooltipButton } from '@ui-kit/TooltipButton';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
@@ -35,7 +36,7 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 				<div ref={headerRef} className={clsx('content-block-header', header.className)}>
 					<TitleTag className="content-block-title">
 						{header.title}
-						{header.tooltip && <TooltipButton tooltip={<span dangerouslySetInnerHTML={{ __html: header.tooltip }} />} className="ms-2" />}
+						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ms-2" />}
 					</TitleTag>
 					{headerChildren}
 				</div>

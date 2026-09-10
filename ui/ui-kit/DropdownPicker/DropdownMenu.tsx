@@ -1,5 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
-import { Tooltip } from '@ui-kit/Tooltip';
+import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useState } from 'react';
 
@@ -92,7 +92,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 					className="dropdown-tooltip"
 					render={({ activeAnchor }) => {
 						const content = activeAnchor?.getAttribute('data-tooltip-content');
-						return content ? <span dangerouslySetInnerHTML={{ __html: content }} /> : null;
+						return content ? <LocaleHtml html={content} /> : null;
 					}}
 				/>
 			)}

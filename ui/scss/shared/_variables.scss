@@ -264,6 +264,8 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 :root {
 	--header-z-index: 100;
 	--sidebar-z-index: 200;
+	// Above the sticky toolbars and the Bootstrap dropdowns a tooltip can be anchored inside, below toasts.
+	--tooltip-z-index: 1080;
 	--toast-z-index: 9999;
 }
 
