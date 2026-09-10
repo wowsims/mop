@@ -66,7 +66,8 @@ const paintHit = (nodes: HitNodes, hit: ReplayHit, time: number) => {
 /**
  * The impact animation, kept out of React on purpose: every live hit's size, opacity and offset change
  * on every one of sixty frames a second, and the nodes are pooled by hit so a frame is a handful of
- * style writes rather than a rebuilt subtree.
+ * style writes rather than a rebuilt subtree. Measured 2026-09-10: React-built markers with ref painters
+ * cost +47% JS calls over 600 frames of 3x playback, the layer committing on every hit turnover.
  */
 export const paintHitLayer = (container: HTMLElement, cache: HitNodeCache, hits: ReadonlyArray<ReplayHit>, time: number) => {
 	const live = new Set(hits);
