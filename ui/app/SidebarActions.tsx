@@ -1,17 +1,18 @@
 import { isCustomEntry, type SidebarRegistry } from '@ui-kit/sidebar_registry';
-import { SidebarActionButton, SidebarDisabledContext } from '@ui-kit/SidebarActionButton';
+import { SidebarActionButton } from '@ui-kit/SidebarActionButton';
 import { Fragment, useSyncExternalStore } from 'react';
 
 export interface SidebarActionsProps {
 	registry: SidebarRegistry;
-	disabled: boolean;
 }
 
-export const SidebarActions = ({ registry, disabled }: SidebarActionsProps) => {
+// The spec-provided actions only. The sim's own two bracket these in `SimApp`, which is the order
+// they were registered in.
+export const SidebarActions = ({ registry }: SidebarActionsProps) => {
 	const entries = useSyncExternalStore(registry.subscribe, registry.getEntries);
 
 	return (
-		<SidebarDisabledContext value={disabled}>
+		<>
 			{entries.map(entry =>
 				isCustomEntry(entry) ? (
 					<Fragment key={entry.id}>{entry.render()}</Fragment>
@@ -21,6 +22,6 @@ export const SidebarActions = ({ registry, disabled }: SidebarActionsProps) => {
 					</SidebarActionButton>
 				),
 			)}
-		</SidebarDisabledContext>
+		</>
 	);
 };

@@ -1,17 +1,30 @@
 import { act, render } from '@testing-library/react';
-import { SimTabRegistry } from '@ui-kit/tab_registry';
+import { SimTabActivation } from '@ui-kit/tab_activation';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { SimTabDef } from './SimTabDef';
 import { SimTabs } from './SimTabs';
 
-// The pane is all SimTab and SimUI.addTab hand to the registry; the tab and the panel are React's.
-const makeTab = (id: string) => ({ id, title: id, pane: <div id={id} className="sim-tab" /> });
+// The pane is whatever the declaration wraps; the tab and the panel are React's.
+const makeTab = (id: string) => (
+	<SimTabDef key={id} id={id} title={id}>
+		<div id={id} className="sim-tab" />
+	</SimTabDef>
+);
 
 let strip: HTMLElement;
 let panes: HTMLElement;
-let registry: SimTabRegistry;
+let activation: SimTabActivation;
 
-const renderTabs = () => render(<SimTabs registry={registry} panes={panes} />, { container: strip });
+const renderTabs = (ids: string[], extra?: ReactNode) =>
+	render(
+		<SimTabs activation={activation} panes={panes}>
+			{ids.map(makeTab)}
+			{extra}
+		</SimTabs>,
+		{ container: strip },
+	);
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -19,7 +32,7 @@ beforeEach(() => {
 	panes = document.createElement('main');
 	// Attached, so focus() actually moves document.activeElement.
 	document.body.append(strip, panes);
-	registry = new SimTabRegistry();
+	activation = new SimTabActivation();
 });
 
 const press = (key: string) =>
@@ -38,40 +51,35 @@ const selectedIds = () =>
 		.map(el => el.className.split(' ').pop()!);
 
 describe('SimTabs', () => {
-	it('renders one tab and one panel per registered tab, in registration order', () => {
-		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+	it('renders one tab and one panel per declared tab, in declaration order', () => {
+		renderTabs(['gear-tab', 'settings-tab', 'talents-tab']);
 		expect(tabs().map(el => el.textContent)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
 		// Each panel wraps its pane, so the id the stylesheets select on sits one level down.
 		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'talents-tab']);
 	});
 
 	it('keeps every panel mounted, because a pane is built once and may read the document', () => {
-		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab', 'talents-tab']);
 		expect(panels()).toHaveLength(3);
 		expect(panes.querySelectorAll('.sim-tab')).toHaveLength(3);
 		// Hidden rather than removed — `[hidden]` is what stops them showing.
 		expect(panels().filter(panel => panel.hasAttribute('hidden'))).toHaveLength(2);
 	});
 
-	it('opens the first registered tab, which is what decides the tab open on load', () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+	it('opens the first declared tab, which is what decides the tab open on load', () => {
+		renderTabs(['gear-tab', 'settings-tab']);
 		expect(openId()).toBe('gear-tab');
 		expect(selectedIds()).toEqual(['gear-tab']);
 	});
 
 	it('does not fade the tab open on load, which would blank the page for the first frame', () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab']);
 		const open = panels().find(panel => !panel.hasAttribute('hidden'))!;
 		expect(open.hasAttribute('data-starting-style')).toBe(false);
 	});
 
 	it('activates exactly one tab per click, and marks it selected', async () => {
-		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab', 'talents-tab']);
 
 		await act(async () => {
 			tab('settings-tab').click();
@@ -84,8 +92,7 @@ describe('SimTabs', () => {
 	});
 
 	it('keeps a roving tabindex, so Tab reaches the strip once and lands on the open tab', async () => {
-		['gear-tab', 'settings-tab', 'talents-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab', 'talents-tab']);
 		const stops = () =>
 			tabs()
 				.filter(el => el.tabIndex !== -1)
@@ -93,7 +100,7 @@ describe('SimTabs', () => {
 		expect(stops()).toEqual(['gear-tab']);
 
 		await act(async () => {
-			registry.activate('talents-tab');
+			activation.activate('talents-tab');
 		});
 		expect(stops()).toEqual(['talents-tab']);
 	});
@@ -104,43 +111,46 @@ describe('SimTabs', () => {
 	// this file could make anyway.
 
 	it('leaves other keys alone, so typing still reaches the page', () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab']);
 		tab('gear-tab').focus();
 		press('a');
 		expect(openId()).toBe('gear-tab');
 	});
 
 	it('activates by identifier, which is how the bulk results renderer returns to the gear tab', async () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
+		renderTabs(['gear-tab', 'settings-tab']);
 		await act(async () => {
-			registry.activate('settings-tab');
+			activation.activate('settings-tab');
 		});
 		expect(openId()).toBe('settings-tab');
 
 		await act(async () => {
-			registry.activate('gear-tab');
+			activation.activate('gear-tab');
 		});
 		expect(openId()).toBe('gear-tab');
 	});
 
-	it('places a tab registered after mount without disturbing the active one', async () => {
-		['gear-tab', 'settings-tab'].forEach(id => registry.attach(makeTab(id)));
-		renderTabs();
-		await act(async () => {
-			registry.attach(makeTab('bulk-tab'));
-		});
+	it('places a tab declared after mount without disturbing the active one', () => {
+		const { rerender } = renderTabs(['gear-tab', 'settings-tab']);
+		rerender(
+			<SimTabs activation={activation} panes={panes}>
+				{['gear-tab', 'settings-tab', 'bulk-tab'].map(makeTab)}
+			</SimTabs>,
+		);
 		expect(panels().map(panel => panel.firstElementChild!.id)).toEqual(['gear-tab', 'settings-tab', 'bulk-tab']);
 		expect(openId()).toBe('gear-tab');
 	});
 
 	it('ignores activation of an unknown tab', async () => {
-		registry.attach(makeTab('gear-tab'));
-		renderTabs();
+		renderTabs(['gear-tab']);
 		await act(async () => {
-			registry.activate('nope');
+			activation.activate('nope');
 		});
 		expect(openId()).toBe('gear-tab');
+	});
+
+	it('reads declarations out of a conditional group, so an entry list can be gated', () => {
+		renderTabs(['gear-tab'], <>{makeTab('bulk-tab')}</>);
+		expect(tabs().map(el => el.textContent)).toEqual(['gear-tab', 'bulk-tab']);
 	});
 });

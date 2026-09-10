@@ -1,28 +1,26 @@
 import './ImportExportMenu.scss';
 
 import { Menu } from '@base-ui/react/menu';
+import { childProps } from '@ui-kit/child_props';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName, IconStyle } from '@ui-kit/Icon/types';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { useId, useState, useSyncExternalStore } from 'react';
+import { type ReactNode, useId, useState } from 'react';
 
-import type { ImportExportKind, ImportExportRegistry } from '../import_export_registry';
+import type { ImportExportKind } from '../import_export';
+import type { ImportExportItemProps } from './ImportExportItem';
 
 export interface ImportExportMenuProps {
 	kind: ImportExportKind;
-	registry: ImportExportRegistry;
 	icon: IconName;
 	iconStyle?: IconStyle;
 	title: string;
+	children: ReactNode;
 }
 
-export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', title }: ImportExportMenuProps) => {
-	const entries = useSyncExternalStore(
-		registry.subscribe,
-		() => registry.getEntries(kind),
-		() => registry.getEntries(kind),
-	);
+export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, children }: ImportExportMenuProps) => {
+	const entries = childProps<ImportExportItemProps>(children);
 	const unsupportedId = useId();
 	const [open, setOpen] = useState(false);
 	const [openDialog, setOpenDialog] = useState<string | null>(null);
@@ -56,7 +54,7 @@ export const ImportExportMenu = ({ kind, registry, icon, iconStyle = 'base', tit
 			</Menu.Root>
 			{/* Outside `Menu.Root`, not inside its popup: clicking an item closes the menu, which unmounts the popup, and a dialog rendered in there would go with it. */}
 			{entries.map(entry => (
-				<entry.Dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
+				<entry.dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
 			))}
 			<Tooltip id={unsupportedId} content="Currently unsupported" />
 		</div>

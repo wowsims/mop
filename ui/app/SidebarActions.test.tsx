@@ -1,13 +1,20 @@
 import { render } from '@testing-library/react';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
-import { SidebarActionButton } from '@ui-kit/SidebarActionButton';
+import { SidebarActionButton, SidebarDisabledContext } from '@ui-kit/SidebarActionButton';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SidebarActions } from './SidebarActions';
 
 let container: HTMLElement;
 
-const renderActions = (registry: SidebarRegistry, disabled = false) => render(<SidebarActions registry={registry} disabled={disabled} />, { container });
+// `SimApp` provides the gate around this and the sim's own two actions alike, so the test does too.
+const actions = (registry: SidebarRegistry, disabled = false) => (
+	<SidebarDisabledContext value={disabled}>
+		<SidebarActions registry={registry} />
+	</SidebarDisabledContext>
+);
+
+const renderActions = (registry: SidebarRegistry, disabled = false) => render(actions(registry, disabled), { container });
 
 const buttons = () => [...container.querySelectorAll('button')];
 
@@ -57,7 +64,7 @@ describe('SidebarActions', () => {
 		expect(buttons().map(button => button.disabled)).toEqual([false, false]);
 
 		action.update({ disabled: true });
-		rerender(<SidebarActions registry={registry} disabled={false} />);
+		rerender(actions(registry));
 		expect(buttons().map(button => button.disabled)).toEqual([true, false]);
 	});
 
@@ -70,7 +77,7 @@ describe('SidebarActions', () => {
 		expect(buttons()[0].getAttribute('aria-busy')).toBe('true');
 
 		action.update({ loading: false });
-		rerender(<SidebarActions registry={registry} disabled={false} />);
+		rerender(actions(registry));
 		expect(buttons()[0].classList.contains('loading')).toBe(false);
 		expect(buttons()[0].getAttribute('aria-busy')).toBeNull();
 	});

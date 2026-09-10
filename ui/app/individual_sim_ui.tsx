@@ -3,29 +3,14 @@ import { watchTargetDummies } from '@features/encounter/model/target_dummies';
 import { repairTargetInputs } from '@features/encounter/model/target_inputs';
 import { GearSelectorModalOpener } from '@features/gear/model/selector_modal_opener';
 import { registerSetBonusNotices } from '@features/gear/item_notices';
-import {
-	AddonImporterDialog,
-	CLI_EXPORTER,
-	createLink,
-	exporterDialog,
-	JSON_EXPORTER,
-	JsonImporterDialog,
-	LINK_EXPORTER,
-	PAWN_EP_EXPORTER,
-	// SIXTY_UPGRADES_EP_EXPORTER,
-	// SixtyUpgradesImporterDialog,
-	WOWHEAD_GEAR_PLANNER_EXPORTER,
-	WowheadImporterDialog,
-} from '@features/import-export';
+import { createLink } from '@features/import-export';
 import { ReforgeSidebarGroup } from '@features/reforge/components/ReforgePanel';
 import { createReforgeOptimizer, type ReforgeOptimizerModel, type ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
-import { DetailedResults } from '@features/results/components/DetailedResults';
 import { ResultsPanelStore } from '@features/results/components/SimResultsPanel';
 import { ResultChannel } from '@features/results/model/result_channel';
 import { SimResultsManager } from '@features/results/model/results_manager';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import { WarningsRegistry } from '@features/results/model/warnings';
-import { addSimResultsAction } from '@features/results/view/results_action';
 import { applyBuild } from '@features/settings/model/apply_build';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { EpWeightsOpener } from '@features/stat-weights/model/ep_weights_opener';
@@ -64,20 +49,13 @@ import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from 
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
-import { SimTabRegistry } from '@ui-kit/tab_registry';
+import { SimTabActivation } from '@ui-kit/tab_activation';
 import { toastManager } from '@ui-kit/Toast';
-import { createElement, type ReactNode } from 'react';
+import { createElement } from 'react';
 
-import { trackPageView } from '../tracking/analytics';
 import { CrashReportOpener } from './crash_report_opener';
-import { ImportExportKind } from './header/import_export_registry';
 import { SimHeader } from './header/sim_header';
 import type { ShellDom } from './shell_dom';
-import { BulkTabBody } from './tabs/BulkTabBody';
-import { GearTab } from './tabs/gear_tab';
-import { RotationTab } from './tabs/rotation_tab';
-import { SettingsTab } from './tabs/settings_tab';
-import { TalentsTab } from './tabs/talents_tab';
 
 export type {
 	CustomSection,
@@ -111,17 +89,19 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 	readonly simActionsContainer: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
-	readonly tabs: SimTabRegistry;
+	readonly tabs = new SimTabActivation();
 	readonly sidebar = new SidebarRegistry();
 
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	readonly statWeightActionSettings: StatWeightActionSettings;
 
-	raidSimResultsManager: SimResultsManager | null;
+	readonly raidSimResultsManager: SimResultsManager;
 	readonly epWeightsModal = new EpWeightsOpener();
 	readonly crashReport = new CrashReportOpener();
 	readonly gearSelectorModal = new GearSelectorModalOpener();
+	/** The swap slots' gear selector. `SettingsTabBody` renders the railless dialog behind it. */
+	readonly itemSwapSelectorModal = new GearSelectorModalOpener();
 	readonly resultChannel = new ResultChannel();
 
 	get dpsRefStat(): Stat | undefined {
@@ -152,7 +132,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		};
 	}
 
-	readonly bt: BulkTab | null = null;
+	readonly bt: BulkTab;
 	reforger: ReforgeOptimizerModel | null = null;
 	// The view's own inputs, resolved here because `config.reforge` may be a function and must run once.
 	reforgeOptions: ReforgeOptimizerOptions | null = null;
@@ -162,7 +142,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		this.sim = player.sim;
 		this.disabled = !isDevMode() && player.getPlayerSpec().launch.status === LaunchStatus.Unlaunched;
 
-		this.tabs = new SimTabRegistry();
 		this.simHeader = new SimHeader(dom.header, this.tabs);
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
@@ -172,7 +151,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 		this.player = player;
 		this.individualConfig = this.applyDefaultConfigOptions(config);
-		this.raidSimResultsManager = null;
+		this.raidSimResultsManager = new SimResultsManager(this.sim);
 		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey('__statweight_settings__'));
 
 		if ((config.itemSwapSlots || []).length > 0 && !itemSwapEnabledSpecs.includes(player.getSpec())) {
@@ -276,27 +255,23 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			}
 		});
 
-		this.addSidebarComponents();
-		this.addGearTab();
-		this.addSettingsTab();
+		this.sim.simResultEmitter.on(simResult => {
+			// The result before the stage: `showResult` notifies through `flushSync`, so flipping the stage
+			// first would commit the result zone while it was still empty.
+			this.raidSimResultsManager.setSimResult(simResult);
+			this.resultsViewer.showResult();
+		});
+
 		this.sim.waitForInit().then(() => {
 			repairTargetInputs(this.sim.encounter);
 			watchTargetDummies(this.player, this.sim);
 		});
-		this.addTalentsTab();
-		this.addRotationTab();
 
-		this.addDetailedResultsTab();
-
-		this.bt = this.addBulkTab();
-
-		this.sim.waitForInit().then(() => {
-			this.addTopbarComponents();
-		});
+		this.bt = new BulkTab(this);
 
 		// Declarative behaviour slots. These run last, exactly where a spec
-		// subclass' constructor body used to run: after every tab and sidebar
-		// component exists, but still synchronously, so `loadSettings()` (queued
+		// subclass' constructor body used to run: after every model the React tree
+		// reads exists, but still synchronously, so `loadSettings()` (queued
 		// on waitForInit above) already sees `this.reforger`. Order is observable:
 		// a `features` slot's sidebar button lands above the reforge button.
 		for (const feature of config.features || []) {
@@ -318,8 +293,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			derived.apply(this.player, this.sim);
 			derived.subscribe(this.player, this.sim)(() => derived.apply(this.player, this.sim));
 		}
-
-		this.addStatWeightsAction();
 	}
 
 	get resultsViewer(): ResultsPanelHandle {
@@ -329,16 +302,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	// `config` and `individualConfig` are the same object; `SimHost` only narrows what features see of it.
 	get config(): IndividualSimUIConfig<SpecType> {
 		return this.individualConfig;
-	}
-
-	addTab(title: string, cssClass: string, content: ReactNode) {
-		const contentId = cssClass.replace(/\s+/g, '-') + '-tab';
-
-		this.tabs.attach({
-			id: contentId,
-			title,
-			pane: createElement('div', { id: contentId, className: 'sim-tab' }, content),
-		});
 	}
 
 	addWarning(warning: SimWarning) {
@@ -493,90 +456,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			autosaveSubscribe,
 			statWeightSettings: this.statWeightActionSettings,
 		});
-	}
-
-	private addSidebarComponents() {
-		this.raidSimResultsManager = addSimResultsAction(this);
-	}
-
-	private addStatWeightsAction() {
-		const action = this.sidebar.add({
-			id: 'ep-weights-action',
-			label: i18n.t('sidebar.buttons.stat_weights.title'),
-			cssClass: 'ep-weights-action',
-			onClick: () => {
-				trackPageView('Stat Weights', '/stat-weights');
-				this.epWeightsModal.open();
-			},
-			disabled: true,
-			loading: true,
-		});
-
-		this.sim.waitForInit().then(
-			() => action.update({ loading: false, disabled: false }),
-			error => {
-				action.update({ loading: false });
-				console.error(error);
-			},
-		);
-	}
-
-	gearTab!: GearTab;
-	talentsTab!: TalentsTab;
-	settingsTab!: SettingsTab;
-	rotationTab!: RotationTab;
-
-	get itemSwapSelectorModal(): GearSelectorModalOpener | null {
-		return this.settingsTab?.itemSwapSelectorModal ?? null;
-	}
-
-	private addGearTab() {
-		this.gearTab = new GearTab(this);
-	}
-
-	private addBulkTab(): BulkTab {
-		const bulkTab = new BulkTab(this, createElement(BulkTabBody));
-		//bulkTab.navLink.hidden = !this.sim.getShowExperimental();
-		//this.sim.showExperimentalChangeEmitter.on(() => {
-		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
-		//});
-		return bulkTab;
-	}
-
-	private addSettingsTab() {
-		this.settingsTab = new SettingsTab(this);
-	}
-
-	private addTalentsTab() {
-		this.talentsTab = new TalentsTab(this);
-	}
-
-	private addRotationTab() {
-		this.rotationTab = new RotationTab(this);
-	}
-
-	private addDetailedResultsTab() {
-		this.addTab(
-			i18n.t('results_tab.title'),
-			'detailed-results-tab',
-			createElement('div', { className: 'detailed-results' }, createElement(DetailedResults, { resultsManager: this.raidSimResultsManager! })),
-		);
-	}
-
-	private addTopbarComponents() {
-		const importRegistry = this.simHeader.importExport;
-		importRegistry.addDialog(ImportExportKind.Import, 'JSON', JsonImporterDialog);
-		// importRegistry.addDialog(ImportExportKind.Import, '60U Cata', SixtyUpgradesImporterDialog);
-		importRegistry.addDialog(ImportExportKind.Import, 'WoWHead', WowheadImporterDialog);
-		importRegistry.addDialog(ImportExportKind.Import, 'Addon', AddonImporterDialog);
-
-		const exportRegistry = this.simHeader.importExport;
-		exportRegistry.addDialog(ImportExportKind.Export, 'Link', exporterDialog(LINK_EXPORTER));
-		exportRegistry.addDialog(ImportExportKind.Export, 'JSON', exporterDialog(JSON_EXPORTER));
-		exportRegistry.addDialog(ImportExportKind.Export, 'WoWHead', exporterDialog(WOWHEAD_GEAR_PLANNER_EXPORTER));
-		// exportRegistry.addDialog(ImportExportKind.Export, '60U Cata EP', exporterDialog(SIXTY_UPGRADES_EP_EXPORTER));
-		exportRegistry.addDialog(ImportExportKind.Export, 'Pawn EP', exporterDialog(PAWN_EP_EXPORTER));
-		exportRegistry.addDialog(ImportExportKind.Export, 'CLI', exporterDialog(CLI_EXPORTER));
 	}
 
 	applyDefaultRotation() {

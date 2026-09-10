@@ -21,11 +21,9 @@ import { getEnumValues } from '@sim/utils/collections';
 import { isDevMode } from '@sim/utils/env';
 import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
+import { Disposable } from '@ui-kit/component';
 import i18n from '@i18n/config';
-import { SimTab } from '@ui-kit/sim_tab';
-import { SimTabPane } from '@ui-kit/SimTabPane';
 import { toastManager } from '@ui-kit/Toast';
-import { createElement, type ReactNode } from 'react';
 
 import { GearSelectorModalOpener } from '../gear/model/selector_modal_opener';
 import { trackEvent } from '../../tracking/analytics';
@@ -51,15 +49,13 @@ export interface BulkResults {
 	originalGearResults: TopGearResult;
 }
 
-const IDENTIFIER = 'bulk-tab';
-
 /**
- * The bulk feature's model, and the `SimTab` that registers its pane.
+ * The bulk feature's model.
  *
- * It renders nothing: `BulkTabBody` is the pane's React body and reads everything here through
+ * It renders nothing: `BulkTabBody` is the tab's React body and reads everything here through
  * `subscribe`/`getRevision` and the bulk store slice.
  */
-export class BulkTab extends SimTab {
+export class BulkTab extends Disposable {
 	readonly simUI: IndividualSimHost<any>;
 	private readonly settingsStore: BulkSettingsStore;
 	playerCanDualWield: boolean;
@@ -125,14 +121,8 @@ export class BulkTab extends SimTab {
 	private availableSetBonusesMemo: BulkSetBonusOption[] | null = null;
 	private canSatisfySetBonusMemo = new Map<string, boolean>();
 
-	// The body is handed in rather than imported: it lives in app/, which a feature must not name.
-	constructor(simUI: IndividualSimHost<any>, body: ReactNode) {
-		super(simUI, {
-			identifier: IDENTIFIER,
-			title: i18n.t('bulk_tab.title'),
-			badge: i18n.t('bulk_tab.title_badge'),
-			pane: createElement(SimTabPane, { id: IDENTIFIER, children: body }),
-		});
+	constructor(simUI: IndividualSimHost<any>) {
+		super();
 
 		this.simUI = simUI;
 		this.playerCanDualWield = getBulkPlayerCanDualWield(this.simUI.player);

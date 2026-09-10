@@ -1,13 +1,10 @@
 import { Component } from '@ui-kit/component';
-import type { SimTabRegistry } from '@ui-kit/tab_registry';
-
-import { ImportExportRegistry } from './import_export_registry';
+import type { SimTabActivation } from '@ui-kit/tab_activation';
 
 export class SimHeader extends Component {
-	private tabs: SimTabRegistry;
-	readonly importExport = new ImportExportRegistry();
+	private tabs: SimTabActivation;
 
-	constructor(headerElem: HTMLElement, tabs: SimTabRegistry) {
+	constructor(headerElem: HTMLElement, tabs: SimTabActivation) {
 		super(null, undefined, headerElem);
 		this.tabs = tabs;
 	}

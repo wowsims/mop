@@ -7,7 +7,7 @@ import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/pro
 import type { Spec, Stat } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SidebarRegistry } from '@ui-kit/sidebar_registry';
-import type { SimTabRegistry } from '@ui-kit/tab_registry';
+import type { SimTabActivation } from '@ui-kit/tab_activation';
 
 import type { SimSettingCategories } from './constants/sim_settings';
 import type { Player } from './player/player';
@@ -25,12 +25,6 @@ export interface SimHeaderHost {
 	activateTab(className: string): void;
 }
 
-export interface SimUIHost {
-	readonly sim: Sim;
-	readonly simHeader: SimHeaderHost;
-	readonly tabs: SimTabRegistry;
-}
-
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {
 	updateOn: StoreSubscribe;
@@ -40,7 +34,10 @@ export interface SimWarning {
 // The slice of the sim host (app/individual_sim_ui.tsx) that features reach for.
 // Features must not name the host itself (see ui/README.md dependency
 // direction); `SimHostObject` implements these.
-export interface SimHost extends SimUIHost {
+export interface SimHost {
+	readonly sim: Sim;
+	readonly simHeader: SimHeaderHost;
+	readonly tabs: SimTabActivation;
 	readonly rootElem: HTMLElement;
 	readonly disabled: boolean;
 	readonly config: { cssClass: string; cssScheme: string };

@@ -10,24 +10,16 @@ const constructions: Array<{ root: HTMLElement; sidebarActions: HTMLElement }> =
 // Recorded rather than read off the document: the container the panes render into is only ever a
 // child of a shell this test does not build.
 const paneContainers: Array<HTMLElement> = [];
-const NO_ENTRIES: ReadonlyArray<never> = [];
 vi.mock('./individual_sim_ui', async () => {
-	const { createElement } = await import('react');
 	const { SidebarRegistry } = await import('@ui-kit/sidebar_registry');
 	const { CrashReportOpener } = await import('./crash_report_opener');
-	const { SimTabRegistry } = await import('@ui-kit/tab_registry');
+	const { SimTabActivation } = await import('@ui-kit/tab_activation');
 	return {
 		SimHostObject: class {
 			readonly simTabContentsContainer = document.createElement('main');
-			readonly simHeader = {
-				// One frozen array, not a fresh one per call: `useSyncExternalStore` compares snapshots by
-				// identity, so returning a new `[]` each time is an infinite render loop. The real
-				// registry holds its arrays and only replaces them in `add`.
-				importExport: { subscribe: () => () => {}, getEntries: () => NO_ENTRIES },
-			};
 			// `NoticeNativeSim` asks the host's sim whether this is a local build; a native one raises no notice.
 			readonly sim = { waitForInit: () => Promise.resolve(), isNative: true };
-			readonly tabs = new SimTabRegistry();
+			readonly tabs = new SimTabActivation();
 			readonly sidebar = new SidebarRegistry();
 			readonly disabled = false;
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
@@ -42,12 +34,26 @@ vi.mock('./individual_sim_ui', async () => {
 				constructions.push(dom);
 				paneContainers.push(this.simTabContentsContainer);
 				this.simActionsContainer = dom.sidebarActions;
-				// Every pane is a React node the registry carries; the real shell registers six of them.
-				this.tabs.attach({ id: 'gear-tab', title: 'Gear', pane: createElement('div', { className: 'gear-tab-left' }) });
 			}
 		},
 	};
 });
+
+// The six real panes need a Database and a worker; what is under test is that the tab tree is handed
+// the container the shell built, so the stub portals one marker into it.
+vi.mock('./SimTabsSection', async () => {
+	const { createElement } = await import('react');
+	const { createPortal } = await import('react-dom');
+	return {
+		SimTabsSection: ({ host }: { host: { simTabContentsContainer: HTMLElement } }) =>
+			createPortal(createElement('div', { className: 'gear-tab-left' }), host.simTabContentsContainer),
+	};
+});
+// Every import and export dialog reads the item database.
+vi.mock('./SimImportExport', () => ({ SimImportExport: () => <div className="import-export-menus" /> }));
+// Both reach through the host for the run facade; SidebarActions.test.tsx asserts the sidebar's gate.
+vi.mock('@features/results/components/SimulateAction', () => ({ SimulateAction: () => <button className="dps-action" /> }));
+vi.mock('@features/stat-weights/components/StatWeightsAction', () => ({ StatWeightsAction: () => <button className="ep-weights-action" /> }));
 
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
