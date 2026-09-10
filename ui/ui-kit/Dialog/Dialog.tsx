@@ -3,7 +3,7 @@ import './Dialog.scss';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
+import type { KeyboardEventHandler, ReactNode } from 'react';
 
 export type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -29,6 +29,8 @@ export interface DialogProps {
 	keepMounted?: boolean;
 	/** For a dialog opened from another dialog. Without it both share one z-index tier, so this one's backdrop renders under the dialog that opened it instead of over it. */
 	elevated?: boolean;
+	/** On the popup, which is where Base UI stops keydown propagation — a listener above it never sees a key. */
+	onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
 	children?: ReactNode;
 }
 
@@ -46,6 +48,7 @@ export const Dialog = ({
 	preventClose = false,
 	keepMounted = false,
 	elevated = false,
+	onKeyDown,
 	children,
 }: DialogProps) => (
 	<BaseDialog.Root
@@ -62,7 +65,9 @@ export const Dialog = ({
 			{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
 			<BaseDialog.Backdrop className={clsx('sim-dialog-backdrop', elevated && 'sim-dialog-backdrop--elevated')} forceRender={elevated} />
 			<BaseDialog.Viewport className={clsx('sim-dialog-viewport', elevated && 'sim-dialog-viewport--elevated')}>
-				<BaseDialog.Popup className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', className)}>
+				<BaseDialog.Popup
+					className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', className)}
+					onKeyDown={onKeyDown}>
 					{(title != null || headerChildren != null || !preventClose) && (
 						<div className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}>
 							{title != null && <BaseDialog.Title className="sim-dialog-title">{title}</BaseDialog.Title>}

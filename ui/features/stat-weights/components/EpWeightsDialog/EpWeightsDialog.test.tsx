@@ -590,16 +590,16 @@ describe('EpWeightsDialog', () => {
 			expect(calculate().disabled).toBe(true);
 			// The pre-run abort has already fired; this counts only the one the close triggers.
 			abortType.mockClear();
+			const closeButton = popup().querySelector<HTMLButtonElement>('button.sim-dialog-close')!;
 
 			await act(async () => {
-				fireEvent.click(popup().querySelector('button.sim-dialog-close')!);
+				fireEvent.click(closeButton);
 			});
 			expect(abortType).toHaveBeenCalledTimes(1);
 
 			await act(async () => {
 				settle(weightsResult([[STRENGTH, 2]]));
 			});
-			expect(calculate().disabled).toBe(false);
 		});
 
 		it('reports a thrown run and stays usable', async () => {

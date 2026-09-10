@@ -48,7 +48,6 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			onOpenChange={onOpenChange}
 			className="advanced-encounter-picker-modal"
 			container={host.rootElem}
-			keepMounted
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
 			<div className="encounter-header">
 				<div className="picker-group">

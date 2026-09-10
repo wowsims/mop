@@ -12,7 +12,7 @@ import { mod } from '@sim/utils/math';
 import { Dialog } from '@ui-kit/Dialog';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { type KeyboardEvent, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 import type { SelectorModalState } from '../../hooks/useSelectorModal';
 import { ALL_ITEM_SLOTS, createGearData } from '../../model/gear_data';
@@ -41,7 +41,6 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 
 	const { open, request } = state;
 	const [selected, setSelected] = useState<{ sequence: number; tab: SelectorModalTabs } | null>(null);
-	const bodyRef = useRef<HTMLDivElement>(null);
 
 	const gear = useStoreSubscribe(
 		useMemo(() => subscribePlayerField(player, 'gear'), [player]),
@@ -99,25 +98,17 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 	);
 
 	// Up and down step the rail's own indices rather than the ItemSlot enum, so a rail with gaps in
-	// it would still move. Registered while open only, which is what `onShow`/`addOnHideCallback` did.
-	//
-	// On the popup, not on `document` where the vanilla modal put it: Base UI stops keydown
-	// propagation at the popup, so a document listener sees the arrow keys reach it in the capture
-	// phase and never come back. Measured — a listener on `document` never ran, one on the popup did.
-	useEffect(() => {
-		const popup = bodyRef.current?.closest('.sim-dialog-popup');
-		if (!rail || !open || slot === null || !popup) return;
-		const onKeyDown = (event: Event) => {
-			const key = (event as KeyboardEvent).key;
-			if (key !== 'ArrowUp' && key !== 'ArrowDown') return;
-			const index = ALL_ITEM_SLOTS.indexOf(slot);
-			if (index < 0) return;
-			event.preventDefault();
-			openSlot(ALL_ITEM_SLOTS[mod(index + (key === 'ArrowUp' ? -1 : 1), ALL_ITEM_SLOTS.length)]);
-		};
-		popup.addEventListener('keydown', onKeyDown);
-		return () => popup.removeEventListener('keydown', onKeyDown);
-	}, [rail, open, slot, openSlot]);
+	// it would still move. On the popup, through `Dialog`'s own prop: Base UI stops keydown
+	// propagation there, so a listener anywhere above it never sees the arrow keys.
+	const onRailKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+		// `open` too: Base UI keeps the popup mounted through its closing transition.
+		if (!rail || !open || slot === null) return;
+		if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+		const index = ALL_ITEM_SLOTS.indexOf(slot);
+		if (index < 0) return;
+		event.preventDefault();
+		openSlot(ALL_ITEM_SLOTS[mod(index + (event.key === 'ArrowUp' ? -1 : 1), ALL_ITEM_SLOTS.length)]);
+	};
 
 	return (
 		// `Tabs.Root` has to be a React ancestor of both the strip and the panes, and the dialog takes
@@ -132,7 +123,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 				className="selector-modal"
 				container={host.rootElem}
 				size="xl"
-				keepMounted
+				onKeyDown={onRailKeyDown}
 				headerChildren={
 					<>
 						{rail && <SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />}
@@ -166,7 +157,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 						</div>
 					</>
 				}>
-				<div ref={bodyRef} className="tab-content selector-modal-tab-content">
+				<div className="tab-content selector-modal-tab-content">
 					{request &&
 						slot !== null &&
 						tabs.map(tab => (

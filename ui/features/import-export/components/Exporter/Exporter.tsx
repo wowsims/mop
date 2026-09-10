@@ -61,7 +61,6 @@ export const Exporter = ({
 			onOpenChange={onOpenChange}
 			className="exporter"
 			container={host.rootElem}
-			keepMounted
 			title={title}
 			footer={
 				<>
@@ -81,7 +80,8 @@ export const Exporter = ({
 				</>
 			}>
 			{selectCategories && <ExporterCategoryPickers categories={categories.current} onChange={onCategoryChange} />}
-			<textarea spellCheck={false} className="exporter-textarea form-control" ref={textRef} />
+			{/* `defaultValue` for the mount, the effect above for a change while open: the popup mounts a commit after the effect first runs, so a ref write alone leaves the box empty. */}
+			<textarea spellCheck={false} className="exporter-textarea form-control" ref={textRef} defaultValue={data} />
 		</Dialog>
 	);
 };

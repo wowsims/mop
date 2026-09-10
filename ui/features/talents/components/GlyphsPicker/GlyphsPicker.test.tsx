@@ -48,7 +48,10 @@ const slots = (kind: 'major' | 'minor') => Array.from(document.querySelectorAll<
 const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('.glyph-link')!;
 const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('.selector-modal-list .selector-modal-list-item'));
 const searchBox = () => document.querySelector<HTMLInputElement>('.selector-modal-search')!;
-const dialogOpen = () => !document.querySelector('.glyph-modal')!.hasAttribute('hidden');
+const dialogOpen = () => {
+	const modal = document.querySelector('.glyph-modal');
+	return modal !== null && !modal.hasAttribute('hidden');
+};
 
 const openSlot = async (kind: 'major' | 'minor', index: number) => {
 	await waitFor(() => expect(slots(kind)).toHaveLength(3));

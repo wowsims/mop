@@ -186,7 +186,6 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			onOpenChange={onOpenChange}
 			className="settings-menu"
 			container={host.rootElem}
-			keepMounted
 			title={i18n.t('info.options.title')}
 			footer={
 				<>

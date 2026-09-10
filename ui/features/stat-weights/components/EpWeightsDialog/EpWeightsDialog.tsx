@@ -165,7 +165,6 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			container={host.rootElem}
 			size={showThreatMetrics ? 'xl' : 'lg'}
 			scrollContents
-			keepMounted
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
 				<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
