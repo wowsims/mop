@@ -232,6 +232,7 @@ export const updateLanguageDropdown = (): void => {
 		link.className = `dropdown-item ${code === currentLang ? 'active' : ''}`;
 		link.href = '#';
 		link.textContent = name;
+		link.dataset.lang = code;
 		link.addEventListener('click', handleClick);
 
 		const languageItem = document.createElement('li');

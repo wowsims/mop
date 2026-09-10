@@ -37,8 +37,6 @@
 }
 
 .sim-toast {
-	// Deliberate parity with the vanilla template, which sets no `.toast--info` or `.toast--warning`
-	// rule: an info toast has always drawn a warning-yellow icon.
 	--icon-color: var(--bs-warning);
 	width: 100%;
 	max-width: 100%;
@@ -65,6 +63,10 @@
 	// stacking transform to hide them behind, so they would otherwise pile up in the column.
 	&[data-limited] {
 		display: none;
+	}
+
+	&--info {
+		--icon-color: var(--bs-info);
 	}
 
 	&--success {
