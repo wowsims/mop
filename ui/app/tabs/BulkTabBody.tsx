@@ -4,7 +4,7 @@ import { BulkPickerGroups } from '@features/bulk/components/BulkPickerGroups';
 import { BulkProgressDialog } from '@features/bulk/components/BulkProgress';
 import { BulkResults } from '@features/bulk/components/BulkResults';
 import { BulkSettings } from '@features/bulk/components/BulkSettings';
-import { useBulkRevision } from '@features/bulk/hooks/useBulkRevision';
+import { useBulkState } from '@features/bulk/hooks/useBulkState';
 import { useBulkTab } from '@features/bulk/hooks/useBulkTab';
 import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
@@ -30,12 +30,12 @@ export const BulkTabBody = () => {
 	const host = useSimHost();
 	const bt = useBulkTab();
 	const ready = useSimReady();
-	useBulkRevision();
+	const results = useBulkState(slice => slice.results);
+	const isRunning = useBulkState(slice => slice.isRunning);
 
 	const [activeId, setActiveId] = useState<BulkPaneId>('bulkSetupTab');
 	const [importOpen, setImportOpen] = useState(false);
 	const selector = useSelectorModalState();
-	const results = bt.getResults();
 	// Starting a run clears the results and drops back to setup; finishing one opens the results.
 	useEffect(() => setActiveId(results ? 'bulkResultsTab' : 'bulkSetupTab'), [results]);
 
@@ -93,7 +93,7 @@ export const BulkTabBody = () => {
 			<BulkSettings />
 			{importOpen && <BulkGearImporterDialog open onOpenChange={setImportOpen} />}
 			<SelectorModal state={selector} id="bulk-selector-modal" rail={false} />
-			{bt.isBulkRunning() && <BulkProgressDialog />}
+			{isRunning && <BulkProgressDialog />}
 		</OpenSelectorModalContext>
 	);
 };

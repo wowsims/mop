@@ -222,8 +222,6 @@ export class BulkTab extends Disposable {
 		});
 	}
 
-	readonly isBulkRunning = (): boolean => this.isRunning;
-
 	readonly getResults = (): BulkResults | null => this.settingsStore.state.results;
 
 	/** Starting a run empties the results pane, so the invitation to run one does not come back. */
