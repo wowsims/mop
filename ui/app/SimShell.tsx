@@ -8,6 +8,7 @@ import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useRef, use
 
 import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
+import { IterationsPicker } from './IterationsPicker';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
 import { SocialLink } from '@ui-kit/SocialLink';
@@ -75,8 +76,9 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 							<SimTitleDropdown currentSpec={spec} />
 						</div>
 						<div className="sim-sidebar-content">
-							{/* The iterations picker is appended here by the constructor, before these children mount, and that is what keeps it first. */}
+							{/* Rendered here, not through the slot: the slot is null until the host is constructed, and the picker has to stay ahead of every action the registry adds. */}
 							<div ref={sidebarActions} className="sim-sidebar-actions">
+								<IterationsPicker sim={sim} />
 								{slots.sidebarActions}
 							</div>
 							<div className="sim-sidebar-results">{slots.sidebarResults}</div>

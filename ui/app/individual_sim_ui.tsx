@@ -62,18 +62,17 @@ import {
 	updateIndividualSimProtoVersion,
 } from '@sim/state/serialization';
 import { SimRunKind } from '@sim/state/sim_store';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange, subscribeSimField } from '@sim/state/subscriptions';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@sim/talents/requirements';
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { BaseModal } from '@ui-kit/base_modal';
-import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SimTabRegistry } from '@ui-kit/tab_registry';
 import { toastManager } from '@ui-kit/Toast';
 import { createElement, type ReactNode } from 'react';
 
-import { trackEvent, trackPageView } from '../tracking/analytics';
+import { trackPageView } from '../tracking/analytics';
 import { ImportExportKind } from './header/import_export_registry';
 import { SimHeader } from './header/sim_header';
 import type { ShellDom } from './shell_dom';
@@ -171,24 +170,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
 		this.simActionsContainer = dom.sidebarActions;
-
-		new NumberPicker(this.simActionsContainer, this.sim, {
-			id: 'simui-iterations',
-			label: i18n.t('sidebar.iterations'),
-			extraCssClasses: ['iterations-picker'],
-			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
-			getValue: (sim: Sim) => sim.getIterations(),
-			setValue: (sim: Sim, newValue: number) => {
-				trackEvent({
-					action: 'settings',
-					category: 'iterations',
-					label: 'update',
-					value: newValue,
-				});
-				sim.setIterations(newValue);
-			},
-		});
-
 		this.simTabContentsContainer = dom.main;
 
 		this.player = player;

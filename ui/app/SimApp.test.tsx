@@ -73,6 +73,8 @@ const sim = {
 	getShowThreatMetrics: () => false,
 	getShowHealingMetrics: () => false,
 	getShowExperimental: () => false,
+	// The shell renders the iterations picker itself, so this stub is its source too, not just the host's.
+	getIterations: () => 3000,
 };
 // `launch` is real because the shell derives the known-issues list from it — a launched spec earns
 // no status notice, so the toolbar's link ships hidden.
