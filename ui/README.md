@@ -22,14 +22,9 @@ ui/
                      components/ (React, one folder per component) + hooks/. The twelve are
                      apl, bulk, character-stats, encounter, gear, import-export, item-swap,
                      reforge, results, settings, stat-weights, talents.
-                     A view/ folder means code that has not ported yet, and only five survive:
-                     encounter/ (encounter_picker), import-export/ (exporter +
-                     exporters/), results/ (results_action — plain TS, the Simulate button's
-                     wiring — plus log/, and timeline/'s DOM half: the two zoom controllers,
-                     the ruler's tick pool, the canvas colour resolver, the spec and series
-                     builders that call it, and the annotation plugin; the rest is
-                     model/timeline/), settings/
-                     (spec_change_warning_toast), talents/ (hunter_pet).
+                     A view/ folder means code that has not ported yet, and only two survive,
+                     each imported solely from the frozen specs/: settings/
+                     (spec_change_warning_toast) and talents/ (hunter_pet).
                      They are the remaining migration surface — see
                      .github/skills/wowsims-react/SKILL.md. alias @features
   app/               shells + chrome that compose features, and the only place allowed to
@@ -66,9 +61,10 @@ distinguished nothing. See `.github/skills/wowsims-react/` for the component reg
 
 - `domain/`: if it needs `window`/`document`, it doesn't belong here — inject an `Env` adapter instead.
 - `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
-- `features/<x>/model/`: DOM-free logic of one capability, and framework-free — no React, not even as a type. `features/<x>/components/`: its React components. `features/<x>/view/`: the presentation logic that is neither, such as the timeline's chart builders. The three may share a
-  name when a capability has all of them: `results/model/timeline/`, `results/view/timeline/` and
-  `results/components/Timeline/`.
+- `features/<x>/model/`: DOM-free logic of one capability, and framework-free — no React, not even as a type. `features/<x>/components/`: its React components, and beside them the imperative helpers that
+  touch the DOM without being components — the timeline's chart builders, zoom controllers and
+  ruler sit in `results/components/Timeline/{chart,rotation}/`. The two may share a name:
+  `results/model/timeline/` and `results/components/Timeline/`.
 - `app/`: composes features; the only place that knows the tab layout.
 - `specs/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 
@@ -86,7 +82,7 @@ into i18n for label lookups). Each layer may only import from layers to its left
 location/navigator) on `ui/sim/**` and `ui/features/*/model/**`.
 
 The `no-restricted-imports` groups use `**` (not `*`): oxlint matches these patterns one
-path segment at a time, so `@features/*` would not catch `@features/gear/view/item_list`.
+path segment at a time, so `@features/*` would not catch `@features/reforge/model/reforge_optimizer`.
 `ui/features/**` may not import the store writers (`patchSlice` / `patchKeyed` / `seedKeyed` /
 `deleteKeyed`) — go through a facade.
 
