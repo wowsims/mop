@@ -1,7 +1,8 @@
 import { Input } from '@base-ui/react/input';
+import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import type { StringPickerConfig } from './types';
 
@@ -27,15 +28,7 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 		updateSize(input);
 	}, [value, revision]);
 
-	useEffect(() => {
-		const input = inputRef.current;
-		if (!input) return;
-		const onChange = () => {
-			setValue(input.value);
-		};
-		input.addEventListener('change', onChange);
-		return () => input.removeEventListener('change', onChange);
-	}, [setValue]);
+	useCommitChange(inputRef, input => setValue(input.value));
 
 	return (
 		<PickerShell config={config} className="adaptive-string-picker-root" hidden={hidden} disabled={disabled}>

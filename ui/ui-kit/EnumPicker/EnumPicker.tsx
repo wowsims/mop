@@ -1,7 +1,7 @@
 import { Field } from '@base-ui/react/field';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import type { EnumPickerConfig } from './types';
 
@@ -23,14 +23,6 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPic
 		select.value = String(value);
 	}, [value, revision]);
 
-	useEffect(() => {
-		const select = selectRef.current;
-		if (!select) return;
-		const onChange = () => setValue(Number(select.value));
-		select.addEventListener('change', onChange);
-		return () => select.removeEventListener('change', onChange);
-	}, [setValue]);
-
 	return (
 		<PickerShell config={config} className="enum-picker-root" hidden={hidden} disabled={disabled}>
 			<Field.Control
@@ -39,7 +31,8 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPic
 				id={config.id}
 				className="enum-picker-selector form-select"
 				aria-label={ariaLabel}
-				disabled={disabled}>
+				disabled={disabled}
+				onChange={event => setValue(Number(event.currentTarget.value))}>
 				{config.values.map(entry => (
 					<option key={entry.value} value={String(entry.value)} title={entry.tooltip}>
 						{entry.name}

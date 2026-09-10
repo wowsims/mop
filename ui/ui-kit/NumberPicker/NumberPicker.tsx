@@ -1,8 +1,9 @@
 import { Input } from '@base-ui/react/input';
 import { formatToNumber } from '@sim/utils/format';
+import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import type { NumberPickerConfig } from './types';
 
@@ -53,16 +54,10 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 		updateSize(inputRef.current);
 	}, []);
 
-	useEffect(() => {
-		const input = inputRef.current;
-		if (!input) return;
-		const onChange = () => {
-			if (positive) input.value = applyPositive(input.value, float, maxDecimalDigits);
-			setValue(parseValue(input.value, float));
-		};
-		input.addEventListener('change', onChange);
-		return () => input.removeEventListener('change', onChange);
-	}, [positive, float, maxDecimalDigits, setValue]);
+	useCommitChange(inputRef, input => {
+		if (positive) input.value = applyPositive(input.value, float, maxDecimalDigits);
+		setValue(parseValue(input.value, float));
+	});
 
 	return (
 		<PickerShell config={config} className="number-picker-root" hidden={hidden} disabled={disabled}>

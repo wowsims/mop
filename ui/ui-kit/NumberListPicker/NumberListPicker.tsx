@@ -1,8 +1,9 @@
 import { Input } from '@base-ui/react/input';
 import { arrayEquals } from '@sim/utils/collections';
+import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import type { NumberListPickerConfig } from './types';
 
@@ -30,15 +31,7 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 		input.value = value.map(v => String(v)).join(',');
 	}, [value, revision]);
 
-	useEffect(() => {
-		const input = inputRef.current;
-		if (!input) return;
-		const onChange = () => {
-			setValue(parseInputValue(input.value));
-		};
-		input.addEventListener('change', onChange);
-		return () => input.removeEventListener('change', onChange);
-	}, [setValue]);
+	useCommitChange(inputRef, input => setValue(parseInputValue(input.value)));
 
 	return (
 		<PickerShell config={config} className="number-list-picker-root" hidden={hidden} disabled={disabled}>
