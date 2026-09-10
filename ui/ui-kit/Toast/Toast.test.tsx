@@ -1,6 +1,7 @@
 // What this pins is the part of the vanilla `Toast` contract that is behaviour rather than styling,
 // plus the places Base UI does not land in the same shape Bootstrap did.
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { createContext, useContext } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createToastManager, DEFAULT_TOAST_DELAY, toastManager } from './manager';
@@ -57,6 +58,22 @@ describe('Toast', () => {
 		const body = standardViewport().querySelector('.sim-toast-body')!;
 		expect(body.tagName).toBe('DIV');
 		expect(body.querySelector('p')?.textContent).toBe('Run it natively');
+	});
+
+	it('renders the body inside the tree the area is mounted in, so the body can read context', () => {
+		const Marker = createContext('not reached');
+		const Body = () => <span data-testid="body-context">{useContext(Marker)}</span>;
+
+		render(
+			<Marker value="reached">
+				<ToastArea manager={toastManager} />
+			</Marker>,
+		);
+		act(() => {
+			toastManager.add({ variant: 'success', body: <Body /> });
+		});
+
+		expect(screen.getByTestId('body-context').textContent).toBe('reached');
 	});
 
 	it('gives a second area its own manager and keeps the two apart', () => {

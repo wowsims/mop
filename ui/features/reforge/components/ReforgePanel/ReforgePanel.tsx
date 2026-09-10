@@ -16,7 +16,6 @@ import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
 import { toastManager, type ToastOptions } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps, type TooltipRefProps } from '@ui-kit/Tooltip';
 import { type ReactNode, useCallback, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { trackEvent, trackPageView } from '../../../../tracking/analytics';
 import { ReforgeDoneToast } from './ReforgeDoneToast';
@@ -28,11 +27,6 @@ export interface ReforgePanelProps {
 	options?: ReforgeOptimizerOptions;
 	/** Where the popover mounts. tippy's default `appendTo` is the reference's parent, so on master the panel hangs inside this same action group — its containing block is the sticky `aside`, and `--settings-button-width` resolves there. */
 	container?: HTMLElement | null;
-}
-
-interface ToastSlot {
-	host: HTMLElement;
-	node: ReactNode;
 }
 
 /**
@@ -47,8 +41,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 
 	const [open, setOpen] = useState(false);
 	const [progressOpen, setProgressOpen] = useState(false);
-	// The toast body is a bare div and the content is portalled into it, so it keeps this tree's context and re-renders with it.
-	const [toastSlot, setToastSlot] = useState<ToastSlot | null>(null);
 	const toastId = useRef<string | null>(null);
 
 	const wasCM = useRef(false);
@@ -63,22 +55,10 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		// Without the id this would close every toast in the standard area, not just this one.
 		if (toastId.current) toastManager.close(toastId.current);
 		toastId.current = null;
-		setToastSlot(null);
 	}, []);
 
 	const showToast = useCallback((node: ReactNode, toastOptions: Omit<ToastOptions, 'body'>) => {
-		toastId.current = toastManager.add({
-			...toastOptions,
-			body: (
-				<div
-					ref={element => {
-						if (!element) return;
-						setToastSlot({ host: element, node });
-						return () => setToastSlot(current => (current?.host === element ? null : current));
-					}}
-				/>
-			),
-		});
+		toastId.current = toastManager.add({ ...toastOptions, body: node });
 	}, []);
 
 	const onReforgeDone = useCallback(() => {
@@ -259,7 +239,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					onCancel={onCancel}
 				/>
 			)}
-			{toastSlot && createPortal(toastSlot.node, toastSlot.host)}
 		</>
 	);
 };
