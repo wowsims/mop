@@ -19,7 +19,7 @@ import {
 import { SavedTalents } from '@generated/proto/ui';
 import type * as IconInputs from '@ui-kit/icon_inputs';
 import type * as InputHelpers from '@ui-kit/input_helpers';
-import type { SavedDataConfig } from '@ui-kit/saved_data_manager';
+import type { SavedDataConfig } from '@ui-kit/SavedDataPanel/types';
 import type { ReactNode } from 'react';
 
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player/player';

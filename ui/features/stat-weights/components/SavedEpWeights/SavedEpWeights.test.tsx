@@ -3,7 +3,6 @@ import { Stats } from '@sim/proto/stats';
 import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
 import { act, fireEvent, render } from '@testing-library/react';
-import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SavedEpWeights } from './SavedEpWeights';
@@ -44,17 +43,7 @@ const STORAGE_KEY = 'mop-warrior-savedEPWeights';
 const weights = (agility: number) => new Stats().withStat(Stat.StatAgility, agility);
 const storedJson = (agility: number) => SavedEPWeights.toJson(SavedEPWeights.create({ epWeights: weights(agility).toProto() }));
 const MIXED = new Stats().withStat(Stat.StatAgility, 4).withStat(Stat.StatCritRating, 1.75).withStat(Stat.StatStrength, 2);
-
-const vanillaManager = () =>
-	new SavedDataManager<any, SavedEPWeights>(document.createElement('div'), player, {
-		label: 'EP',
-		storageKey: STORAGE_KEY,
-		subscribe: () => () => undefined,
-		getData: () => SavedEPWeights.create({ epWeights: MIXED.toProto() }),
-		setData: () => undefined,
-		toJson: a => SavedEPWeights.toJson(a),
-		fromJson: obj => SavedEPWeights.fromJson(obj),
-	});
+const MIXED_JSON = SavedEPWeights.toJson(SavedEPWeights.create({ epWeights: MIXED.toProto() }));
 
 class FakePlayer {
 	epWeights = new Stats();
@@ -226,15 +215,11 @@ describe('SavedEpWeights', () => {
 			expect(chips('custom')).toHaveLength(0);
 		});
 
-		// The only part of this port that can lose data, and no gate covers it: the key is shared with
-		// the reforge panel's still-vanilla `loadOnly` manager, so a drift in either direction empties
-		// the other stack. Both directions go through the real `SavedDataManager`, not a hand-built
-		// JSON string.
-		it('reads what the vanilla manager wrote', async () => {
-			const vanilla = vanillaManager();
-			vanilla.rootElem.querySelector<HTMLInputElement>('.saved-data-save-input')!.value = 'Raiding';
-			fireEvent.click(vanilla.rootElem.querySelector('.saved-data-save-button')!);
-
+		// The only part of this port that can lose data, and no gate covers it: the storage key is the
+		// one the vanilla manager wrote, so an entry saved before the port has to keep loading. Every
+		// stat, not just the one the rest of these tests carry.
+		it('reads a set stored under the key the vanilla manager wrote', async () => {
+			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: MIXED_JSON }));
 			await renderManager();
 
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Raiding']);
@@ -242,16 +227,13 @@ describe('SavedEpWeights', () => {
 			expect(player.getEpWeights().equals(MIXED)).toBe(true);
 		});
 
-		it('writes what the vanilla manager can read', async () => {
+		it('writes a set back in that same shape', async () => {
 			player.epWeights = MIXED;
 			await renderManager();
 			fireEvent.change(nameInput(), { target: { value: 'Raiding' } });
 			fireEvent.click(saveButton());
 
-			const vanilla = vanillaManager();
-			vanilla.loadUserData();
-
-			expect([...vanilla.rootElem.querySelectorAll('.saved-data-set-chip')].map(chip => chip.textContent)).toEqual(['Raiding']);
+			expect(stored()).toEqual({ Raiding: MIXED_JSON });
 		});
 	});
 

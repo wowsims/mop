@@ -1,9 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import type { ContentBlockHeaderConfig } from '@ui-kit/content_block';
 import { createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { ContentBlock } from './ContentBlock';
+import { ContentBlock, type ContentBlockHeaderProps } from './ContentBlock';
 
 describe('ContentBlock', () => {
 	it('renders no header when config.header is absent', () => {
@@ -12,7 +11,7 @@ describe('ContentBlock', () => {
 	});
 
 	it('renders no header when config.header is an empty object', () => {
-		const { container } = render(<ContentBlock className="my-block" config={{ header: {} as ContentBlockHeaderConfig }} />);
+		const { container } = render(<ContentBlock className="my-block" config={{ header: {} as ContentBlockHeaderProps }} />);
 		expect(container.querySelector('.content-block-header')).toBeNull();
 	});
 
