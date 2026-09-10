@@ -222,6 +222,9 @@ export interface BulkSlice {
 	isRunning: boolean;
 	started: boolean;
 	results: BulkResults | null;
+	// The gear the last batch started from. The set-bonus feasibility check judges against it, not
+	// against the candidate gear a run swaps in and out of the player.
+	runGear: Gear | null;
 	v: { settings: number; items: number };
 }
 

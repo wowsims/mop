@@ -1,3 +1,4 @@
+import { useSim } from '@sim/context/SimHostContext';
 import { formatToNumber } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import { Icon } from '@ui-kit/Icon';
@@ -6,10 +7,10 @@ import clsx from 'clsx';
 import { useId } from 'react';
 
 import { useBulkState } from '../../hooks/useBulkState';
-import { useBulkTab } from '../../hooks/useBulkTab';
+import { bulkIterationsLimit } from '../../model/limits';
 
 export const CombinationsCount = () => {
-	const bt = useBulkTab();
+	const sim = useSim();
 	const tooltipId = useId();
 	const pending = useBulkState(slice => slice.combinationsPending);
 	const combinations = useBulkState(slice => slice.combinations);
@@ -23,7 +24,8 @@ export const CombinationsCount = () => {
 		);
 	}
 
-	const showWarning = iterations > bt.getIterationsLimit();
+	const iterationsLimit = bulkIterationsLimit(sim.isNative);
+	const showWarning = iterations > iterationsLimit;
 	return (
 		<div className="bulk-combinations-count h4">
 			<span className={clsx(showWarning && 'text-danger')}>
@@ -40,11 +42,7 @@ export const CombinationsCount = () => {
 					<button type="button" className="warning link-warning" {...tooltipAnchorProps(tooltipId)}>
 						<Icon name="exclamation-triangle" size="2x" />
 					</button>
-					<Tooltip
-						id={tooltipId}
-						place="left"
-						content={i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(bt.getIterationsLimit()) })}
-					/>
+					<Tooltip id={tooltipId} place="left" content={i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(iterationsLimit) })} />
 				</>
 			)}
 		</div>

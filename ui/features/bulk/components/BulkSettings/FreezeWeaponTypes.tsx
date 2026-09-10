@@ -1,3 +1,5 @@
+import { getBulkFreezeWeaponTypes } from '@sim/bulk/utils';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { subscribeBulkField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -6,18 +8,18 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import clsx from 'clsx';
 
 import { trackEvent } from '../../../../tracking/analytics';
-import type { BulkTab } from '../../bulk_tab';
 import { useBulkState } from '../../hooks/useBulkState';
-import { useBulkTab } from '../../hooks/useBulkTab';
+import { setBulkWeaponTypeFilter } from '../../model/settings';
 
 export interface FreezeWeaponTypesProps {
 	slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand;
 }
 
 export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
-	const bt = useBulkTab();
+	const player = usePlayer();
 	const frozenWeaponSlot = useBulkState(slice => slice.frozenWeaponSlot);
-	const weaponTypes = bt.getFreezeWeaponTypes(slot);
+	const weaponTypeFilters = useBulkState(slice => slice.weaponTypeFilters);
+	const weaponTypes = getBulkFreezeWeaponTypes(player, slot);
 
 	return (
 		<div>
@@ -31,18 +33,18 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 					<div className="fs-content mb-2">{i18n.t('bulk_tab.settings.freeze_weapon_types.tooltip')}</div>
 					<div className="bulk-gear-freeze-weapontypes__list gap-1">
 						{weaponTypes.map(weaponType => (
-							<BooleanPicker<BulkTab>
+							<BooleanPicker
 								key={weaponType}
-								modObject={bt}
+								modObject={player}
 								config={{
 									id: `bulk-${slot}-weapon-type-${weaponType}`,
 									label: translateWeaponType(weaponType),
 									inline: true,
-									storeSubscribe: () => subscribeBulkField(bt, 'settings'),
-									getValue: () => bt.weaponTypeFilters.get(slot)!.includes(weaponType),
+									storeSubscribe: () => subscribeBulkField(player, 'settings'),
+									getValue: () => weaponTypeFilters.get(slot)!.includes(weaponType),
 									setValue: (_modObj, newValue: boolean) => {
-										const filter = bt.weaponTypeFilters.get(slot)!;
-										bt.setWeaponTypeFilter(slot, newValue ? [...filter, weaponType] : filter.filter(type => type !== weaponType));
+										const filter = weaponTypeFilters.get(slot)!;
+										setBulkWeaponTypeFilter(player, slot, newValue ? [...filter, weaponType] : filter.filter(type => type !== weaponType));
 										trackEvent({ action: 'settings', category: 'batch_sim', label: `freeze_${slot}_weapon_type`, value: newValue });
 									},
 								}}

@@ -8,6 +8,7 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEligibleItemSlots } from '@sim/proto/items';
+import { bulkState } from '@sim/settings/bulk_settings';
 import { subscribeAll, subscribeBulkChange, subscribePlayerField } from '@sim/state/subscriptions';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
@@ -41,17 +42,17 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 	// One subscription over everything the cell's own state depends on: the frozen choices are the
 	// tab's, and which entry counts as equipped is the player's gear.
 	const state = useStoreSubscribe(
-		useMemo(() => subscribeAll([subscribeBulkChange(bt), subscribePlayerField(player, 'gear')]), [bt, player]),
+		useMemo(() => subscribeAll([subscribeBulkChange(player), subscribePlayerField(player, 'gear')]), [player]),
 		() => {
 			const gear = player.getGear();
 			const ownSlot = equippedSlotOf(bulkSlot, index);
-			const frozenBulkSlot = frozenItemSlot(gear, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot), bt.frozenItems.get(bulkSlot));
+			const frozenBulkSlot = frozenItemSlot(gear, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot), bulkState(player).frozenItems.get(bulkSlot));
 			const isCurrentlyEquipped = bulkSlot !== BulkSimItemSlot.ItemSlotHandWeapon && player.getEquippedItems().some(equipped => equipped?.id === item.id);
 			return {
 				isEditable: index >= 0 && !isCurrentlyEquipped,
 				isFrozen: !ownSlot
 					? false
-					: ownSlot === bt.frozenWeaponSlot
+					: ownSlot === bulkState(player).frozenWeaponSlot
 						? (gear.getEquippedItem(ownSlot)?.equals(item) ?? false)
 						: ownSlot === frozenBulkSlot,
 			};

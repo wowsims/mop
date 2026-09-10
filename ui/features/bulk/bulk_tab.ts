@@ -1,20 +1,13 @@
-import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
-import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
+import { BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
+import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BulkPickerEntry, BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
-import {
-	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
-	BulkSimItemSlot,
-	dedupeGearSets,
-	getBulkFreezeWeaponTypes,
-	getBulkItemSlotFromSlot,
-	getBulkPlayerCanDualWield,
-} from '@sim/bulk/utils';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot, dedupeGearSets, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { isSpecDualWield2HCapable } from '@sim/player/classes/capabilities';
 import { EquippedItem } from '@sim/proto/equipped_item';
 import { Gear } from '@sim/proto/gear';
 import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@sim/proto/items';
-import { BulkSettingsStore } from '@sim/settings/bulk_settings';
+import { bulkState, loadStoredBulkSettings, patchBulkState, seedBulkSettings, storeBulkSettings } from '@sim/settings/bulk_settings';
 import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import type { ReforgeOptimizeConfig } from '@sim/sim';
 import type { IndividualSimHost } from '@sim/sim_host';
@@ -27,22 +20,20 @@ import { toastManager } from '@ui-kit/Toast';
 
 import { trackEvent } from '../../tracking/analytics';
 import { runCoreBulkSim as runCoreBulkSimImpl } from './model/core_sim';
-import { bulkCombinationsLimit, bulkIterationsLimit } from './model/limits';
-import { addPickerEntry, frozenItemSlot, pickerEntryAt, removePickerEntry, updatePickerEntry } from './model/picker_groups';
+import { addPickerEntry, pickerEntryAt, removePickerEntry, updatePickerEntry } from './model/picker_groups';
 import { BulkProgress, candidateGearProgress, simProgress } from './model/progress';
-import { availableSetBonuses, slotOptionsOf } from './model/selectors';
+import { sanitiseRequiredSetBonuses } from './model/set_bonuses';
 import {
-	BulkSetBonusOption,
-	canEnableRequiredFourPiece,
-	canEnableRequiredTwoPiece,
-	hasMatchingRequiredSetBonusCombination,
-	nextRequiredSetBonuses,
-	pruneRequiredSetBonuses,
-	sanitiseRequiredSetBonuses,
-} from './model/set_bonuses';
+	createBulkSettingsProto,
+	sanitizeBulkWeaponTypeFilter,
+	setBulkFrozenItem,
+	setBulkFrozenWeaponSlot,
+	setBulkInheritUpgrades,
+	setBulkUseLegacyBulkSim,
+	setBulkWeaponTypeFilter,
+} from './model/settings';
 import { buildTieChains } from './model/tie_chains';
 
-type WeaponSlot = ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand;
 type FrozenBulkSlot = BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket;
 
 /**
@@ -51,14 +42,7 @@ type FrozenBulkSlot = BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotT
  * It renders nothing: `BulkTabBody` is the tab's React body and reads the bulk store slice.
  */
 export interface BulkTab extends BulkOwner {
-	readonly playerCanDualWield: boolean;
 	readonly pickerGroups: BulkSlice['pickerGroups'];
-	readonly inheritUpgrades: boolean;
-	readonly useLegacyBulkSim: boolean;
-	readonly requiredSetBonuses: BulkSlice['requiredSetBonuses'];
-	readonly frozenItems: BulkSlice['frozenItems'];
-	readonly frozenWeaponSlot: BulkSlice['frozenWeaponSlot'];
-	readonly weaponTypeFilters: BulkSlice['weaponTypeFilters'];
 	addItem(item: ItemSpec): void;
 	addItems(items: ItemSpec[], silent?: boolean): void;
 	addItemToSlot(item: ItemSpec, bulkSlot: BulkSimItemSlot): void;
@@ -67,17 +51,6 @@ export interface BulkTab extends BulkOwner {
 	removeItemByIndex(idx: number, silent?: boolean): void;
 	clearItems(): void;
 	hasItem(item: ItemSpec): boolean;
-	setInheritUpgrades(newValue: boolean): void;
-	setUseLegacyBulkSim(newValue: boolean): void;
-	setFrozenItem(bulkSlot: FrozenBulkSlot, item: EquippedItem | null): void;
-	setFrozenWeaponSlot(itemSlot: number | null): boolean;
-	setWeaponTypeFilter(slot: WeaponSlot, newFilter: WeaponType[], shouldEmit?: boolean): boolean;
-	setRequiredSetBonus(setBonus: BulkSetBonusOption, pieces: number): void;
-	canEnableRequiredTwoPiece(setId: number): boolean;
-	canEnableRequiredFourPiece(setBonus: BulkSetBonusOption): boolean;
-	getFreezeWeaponTypes(slot: WeaponSlot): WeaponType[];
-	getIterationsLimit(): number;
-	getCombinationsLimit(): number;
 	runBatchSim(): Promise<void>;
 	cancelBatchSim(): Promise<void>;
 	/** The batch's own progress ticks, kept out of the store so a tick renders one leaf. */
@@ -90,8 +63,8 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	const owner: BulkOwner = { sim, storeKey: player.storeKey };
 	const playerCanDualWield = getBulkPlayerCanDualWield(player);
 	const playerCanDualWield2H = isSpecDualWield2HCapable(player.getSpec());
-	const settingsStore = new BulkSettingsStore(player, simUI.getStorageKey(''));
-	const state = () => settingsStore.state;
+	const state = () => bulkState(player);
+	seedBulkSettings(player);
 
 	let simStart = 0;
 	let bulkSimStartedAt = 0;
@@ -100,15 +73,8 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	let bulkSimAbortPromise: Promise<void> | null = null;
 	let usesLegacyBulkSim = false;
 	let combinationsCalcRequestVersion = 0;
-	let originalGear: Gear | null = null;
 	let progress: BulkProgress | null = null;
 	const progressListeners = new Set<(progress: BulkProgress) => void>();
-
-	// Memo for the set-bonus feasibility check. Every BooleanPicker's enableWhen runs the
-	// per-slot DP on each settings/items change; this caches the answers until the next
-	// change event.
-	const canSatisfySetBonusMemo = new Map<string, boolean>();
-	subscribeBulkChange(owner)(() => canSatisfySetBonusMemo.clear());
 
 	// Return whether or not the slot is considered secondary and the item should be grouped
 	// This includes items in the Finger2 or Trinket2 slots, or OffHand for dual-wield specs
@@ -117,8 +83,6 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	const lookupItem = (item: ItemSpec): EquippedItem | null =>
 		sim.db.lookupItemSpec(item)?.withChallengeMode(player.getChallengeModeEnabled()).withDynamicStats() ?? null;
 
-	const getItems = (): ItemSpec[] => state().items.flatMap(spec => (spec ? [ItemSpec.clone(spec)] : []));
-
 	const getEquippedItemForFrozenSlot = (bulkSlot: FrozenBulkSlot, itemSlot: number): EquippedItem | null => {
 		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot);
 		if (!slots?.includes(itemSlot)) {
@@ -126,32 +90,6 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		}
 
 		return player.getGear().getEquippedItem(itemSlot) ?? null;
-	};
-
-	const getFrozenItemSlot = (bulkSlot: FrozenBulkSlot): ItemSlot | undefined => {
-		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot);
-		return frozenItemSlot(player.getGear(), slots, state().frozenItems.get(bulkSlot)) ?? undefined;
-	};
-
-	const sanitizeWeaponTypeFilter = (slot: WeaponSlot, weaponTypes: WeaponType[]): WeaponType[] => {
-		const selectableWeaponTypes = getBulkFreezeWeaponTypes(player, slot);
-		return weaponTypes.filter(weaponType => selectableWeaponTypes.includes(weaponType));
-	};
-
-	const createBulkSettings = (): BulkSettings => {
-		const current = state();
-		return BulkSettings.create({
-			items: getItems(),
-			inheritUpgrades: current.inheritUpgrades,
-			useLegacyBulkSim: current.useLegacyBulkSim,
-			iterationsPerCombo: sim.getIterations(),
-			freezeRingSlot: getFrozenItemSlot(BulkSimItemSlot.ItemSlotFinger),
-			freezeTrinketSlot: getFrozenItemSlot(BulkSimItemSlot.ItemSlotTrinket),
-			freezeWeaponSlot: current.frozenWeaponSlot,
-			freezeMainhandWeaponSlots: current.weaponTypeFilters.get(ItemSlot.ItemSlotMainHand)?.slice(),
-			freezeOffhandWeaponSlots: current.weaponTypeFilters.get(ItemSlot.ItemSlotOffHand)?.slice(),
-			requiredSetBonuses: pruneRequiredSetBonuses(current.requiredSetBonuses, availableSetBonuses(current)),
-		});
 	};
 
 	const addToGroup = (
@@ -190,7 +128,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			}
 		});
 
-		settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
+		patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
 	};
 
 	// Add an item to a particular bulk sim item slot
@@ -202,14 +140,14 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 
 			const groups = new Map(state().pickerGroups);
 			const added = addToGroup(groups, bulkSlot, state().items.length, equippedItem, false);
-			settingsStore.patch(added ? { items: [...state().items, item], pickerGroups: groups } : {}, ['items']);
+			patchBulkState(player, added ? { items: [...state().items, item], pickerGroups: groups } : {}, ['items']);
 		}
 	};
 
 	const updateItem = (idx: number, newItem: ItemSpec) => {
 		const equippedItem = lookupItem(newItem);
 		if (!equippedItem) {
-			settingsStore.patch({}, ['items']);
+			patchBulkState(player, {}, ['items']);
 			return;
 		}
 
@@ -229,7 +167,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			}
 		});
 
-		settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
+		patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
 	};
 
 	const removeItemByIndex = (idx: number, silent = false) => {
@@ -262,7 +200,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 					toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_removed', { itemName: removed.item._item.name }) });
 				}
 			});
-			settingsStore.patch({ items: batch, pickerGroups: groups }, ['items']);
+			patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
 		}
 	};
 
@@ -275,78 +213,33 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		for (let idx = 0; idx < state().items.length; idx++) {
 			removeItemByIndex(idx, true);
 		}
-		settingsStore.patch({ items: [] }, ['items']);
-	};
-
-	const canSatisfyRequiredSetBonus = (setId: number, pieces: number): boolean => {
-		const memoKey = `${setId}:${pieces}`;
-		const memoized = canSatisfySetBonusMemo.get(memoKey);
-		if (memoized !== undefined) return memoized;
-
-		const requiredSetBonuses = Array.from(state().requiredSetBonuses.values()).filter(requiredSetBonus => requiredSetBonus.setId !== setId);
-		requiredSetBonuses.push(BulkRequiredSetBonus.create({ setId, pieces }));
-		const result = hasMatchingRequiredSetBonusCombination(requiredSetBonuses, originalGear ?? player.getGear(), slotOptionsOf(state().pickerGroups));
-		canSatisfySetBonusMemo.set(memoKey, result);
-		return result;
-	};
-
-	const setInheritUpgrades = (newValue: boolean) => settingsStore.patch({ inheritUpgrades: newValue }, ['settings']);
-
-	const setUseLegacyBulkSim = (newValue: boolean) => settingsStore.patch({ useLegacyBulkSim: newValue }, ['settings']);
-
-	const setFrozenItem = (bulkSlot: FrozenBulkSlot, item: EquippedItem | null) => {
-		const frozenItems = state().frozenItems;
-		if (item === frozenItems.get(bulkSlot)) {
-			return;
-		}
-
-		settingsStore.patch({ frozenItems: new Map(frozenItems).set(bulkSlot, item) }, ['settings']);
-	};
-
-	const setWeaponTypeFilter = (slot: WeaponSlot, newFilter: WeaponType[], shouldEmit = true): boolean => {
-		const weaponTypeFilters = state().weaponTypeFilters;
-		const currentFilter = weaponTypeFilters.get(slot)!;
-		const hasChanged = currentFilter.length !== newFilter.length || currentFilter.some((weaponType, idx) => weaponType !== newFilter[idx]);
-
-		if (!hasChanged) {
-			return false;
-		}
-
-		settingsStore.patch({ weaponTypeFilters: new Map(weaponTypeFilters).set(slot, newFilter) }, shouldEmit ? ['settings'] : []);
-		return true;
-	};
-
-	const setFrozenWeaponSlot = (itemSlot: number | null): boolean => {
-		const newSlot = [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(itemSlot ?? -1) ? (itemSlot as WeaponSlot) : undefined;
-		const filtersChanged = newSlot !== undefined && setWeaponTypeFilter(newSlot, [], false);
-
-		if (newSlot === state().frozenWeaponSlot && !filtersChanged) {
-			return false;
-		}
-
-		settingsStore.patch({ frozenWeaponSlot: newSlot }, ['settings']);
-		return true;
-	};
-
-	const setRequiredSetBonus = (setBonus: BulkSetBonusOption, pieces: number) => {
-		const next = nextRequiredSetBonuses(state().requiredSetBonuses, setBonus, pieces, canSatisfyRequiredSetBonus);
-		if (!next) return;
-
-		settingsStore.patch({ requiredSetBonuses: next }, ['settings']);
+		patchBulkState(player, { items: [] }, ['items']);
 	};
 
 	const loadSettings = () => {
-		const settings = settingsStore.load();
+		const settings = loadStoredBulkSettings(player);
 		if (settings != null) {
 			addItems(settings.items, true);
-			setInheritUpgrades(settings.inheritUpgrades);
-			setUseLegacyBulkSim(settings.useLegacyBulkSim);
-			setFrozenItem(BulkSimItemSlot.ItemSlotFinger, getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
-			setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotTrinket, settings.freezeTrinketSlot));
-			setFrozenWeaponSlot(settings.freezeWeaponSlot);
-			setWeaponTypeFilter(ItemSlot.ItemSlotMainHand, sanitizeWeaponTypeFilter(ItemSlot.ItemSlotMainHand, settings.freezeMainhandWeaponSlots));
-			setWeaponTypeFilter(ItemSlot.ItemSlotOffHand, sanitizeWeaponTypeFilter(ItemSlot.ItemSlotOffHand, settings.freezeOffhandWeaponSlots));
-			settingsStore.patch({ requiredSetBonuses: sanitiseRequiredSetBonuses(settings.requiredSetBonuses) }, ['settings']);
+			setBulkInheritUpgrades(player, settings.inheritUpgrades);
+			setBulkUseLegacyBulkSim(player, settings.useLegacyBulkSim);
+			setBulkFrozenItem(player, BulkSimItemSlot.ItemSlotFinger, getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
+			setBulkFrozenItem(
+				player,
+				BulkSimItemSlot.ItemSlotTrinket,
+				getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotTrinket, settings.freezeTrinketSlot),
+			);
+			setBulkFrozenWeaponSlot(player, settings.freezeWeaponSlot);
+			setBulkWeaponTypeFilter(
+				player,
+				ItemSlot.ItemSlotMainHand,
+				sanitizeBulkWeaponTypeFilter(player, ItemSlot.ItemSlotMainHand, settings.freezeMainhandWeaponSlots),
+			);
+			setBulkWeaponTypeFilter(
+				player,
+				ItemSlot.ItemSlotOffHand,
+				sanitizeBulkWeaponTypeFilter(player, ItemSlot.ItemSlotOffHand, settings.freezeOffhandWeaponSlots),
+			);
+			patchBulkState(player, { requiredSetBonuses: sanitiseRequiredSetBonuses(settings.requiredSetBonuses) }, ['settings']);
 		}
 	};
 
@@ -404,17 +297,17 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			}
 		});
 
-		settingsStore.patch({ pickerGroups: groups }, ['items']);
+		patchBulkState(player, { pickerGroups: groups }, ['items']);
 	};
 
 	const calculateBulkCombinations = async () => {
 		try {
-			const bulkSettings = createBulkSettings();
+			const bulkSettings = createBulkSettingsProto(player);
 			const combinationCountResult = await sim.getBulkCombinationCount(bulkSettings);
 			if (combinationCountResult.error) {
 				throw new Error(combinationCountResult.error.message || 'Failed to calculate bulk combinations');
 			}
-			settingsStore.patch({ combinations: combinationCountResult.combinations, iterations: combinationCountResult.iterations });
+			patchBulkState(player, { combinations: combinationCountResult.combinations, iterations: combinationCountResult.iterations });
 			usesLegacyBulkSim = combinationCountResult.useLegacyBulkSim;
 		} catch (e) {
 			simUI.handleCrash(e);
@@ -423,12 +316,12 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 
 	const refreshCombinationsCount = async () => {
 		const requestVersion = ++combinationsCalcRequestVersion;
-		settingsStore.patch({ combinationsPending: true });
+		patchBulkState(player, { combinationsPending: true });
 		await calculateBulkCombinations();
 		if (requestVersion !== combinationsCalcRequestVersion) {
 			return;
 		}
-		settingsStore.patch({ combinationsPending: false });
+		patchBulkState(player, { combinationsPending: false });
 	};
 
 	const emitProgress = (next: BulkProgress | null) => {
@@ -525,14 +418,14 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	};
 
 	const getBulkReforgeConfig = (playerPhase: boolean): ReforgeOptimizeConfig | undefined => {
-		if (!simUI.reforger || !originalGear) {
+		if (!simUI.reforger || !state().runGear) {
 			return undefined;
 		}
 
 		simUI.reforger.setIncludeGems(true);
 		simUI.reforger.setIncludeEOTBPGemSocket(playerPhase);
 		updateRelativeStatCapReforges();
-		return simUI.reforger.getReforgeOptimizeConfig(originalGear);
+		return simUI.reforger.getReforgeOptimizeConfig(state().runGear!);
 	};
 
 	const abortBulkSimWork = async () => {
@@ -596,7 +489,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		isCancelling = false;
 		bulkSimStartedAt = new Date().getTime();
 		progress = null;
-		settingsStore.patch({ isRunning: true, started: true });
+		patchBulkState(player, { isRunning: true, started: true });
 		const usesWasmConcurrency = await sim.shouldUseWasmConcurrency();
 		await sim.waitForInit();
 		const useNativeBulkSim = sim.isNative ?? false;
@@ -606,7 +499,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		const abortSignal = bulkSimAbortController.signal;
 
 		const playerPhase = sim.getPhase() >= 2;
-		const backendBulkSettings = useNativeBulkSim ? createBulkSettings() : undefined;
+		const backendBulkSettings = useNativeBulkSim ? createBulkSettingsProto(player) : undefined;
 		let candidateGearSets: Gear[] = [];
 		let results: BulkResults | null = null;
 		let runError: unknown = null;
@@ -621,10 +514,10 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			await sim.signalManager.abortType(RequestTypes.IndividualSim | RequestTypes.BulkSim);
 			simStart = new Date().getTime();
 			const baseGear = player.getGear();
-			originalGear = baseGear;
+			patchBulkState(player, { runGear: baseGear });
 
 			setCandidateGearProgress();
-			settingsStore.patch({ results: null });
+			patchBulkState(player, { results: null });
 			// Yield a frame so the progress modal paints before the combination calculation.
 			await new Promise(requestAnimationFrame);
 			await calculateBulkCombinations();
@@ -633,14 +526,14 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 
 			if (!useNativeBulkSim) {
 				const candidateGearBuildStartedAt = new Date().getTime();
-				const bulkCandidatesResult = await sim.getBulkCandidates(createBulkSettings());
+				const bulkCandidatesResult = await sim.getBulkCandidates(createBulkSettingsProto(player));
 				if (bulkCandidatesResult.error) {
 					throw new Error(bulkCandidatesResult.error.message || 'Failed to build bulk candidates');
 				}
 				candidateGearSets = bulkCandidatesResult.candidates
 					.filter(candidate => !!candidate.gear)
 					.map(candidate => sim.db.lookupEquipmentSpec(candidate.gear!));
-				settingsStore.patch({ combinations: bulkCandidatesResult.combinations });
+				patchBulkState(player, { combinations: bulkCandidatesResult.combinations });
 				batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
 				batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 			}
@@ -706,7 +599,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 					cancelled: wasCancelling,
 				});
 			}
-			await player.setGearAsync(originalGear!);
+			await player.setGearAsync(state().runGear!);
 			if (wasCancelling) {
 				toastManager.add({
 					variant: 'error',
@@ -714,7 +607,7 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 				});
 			}
 			isCancelling = false;
-			settingsStore.patch(results ? { isRunning: false, results } : { isRunning: false });
+			patchBulkState(player, results ? { isRunning: false, results } : { isRunning: false });
 		}
 	};
 
@@ -727,13 +620,13 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			!(playerCanDualWield && [BulkSimItemSlot.ItemSlotMainHand, BulkSimItemSlot.ItemSlotOffHand].includes(bulkSlot)) &&
 			!(!playerCanDualWield && bulkSlot === BulkSimItemSlot.ItemSlotHandWeapon),
 	);
-	settingsStore.patch({ pickerGroups: new Map<BulkSimItemSlot, readonly BulkPickerEntry[]>(bulkSlots.map(bulkSlot => [bulkSlot, []])) });
+	patchBulkState(player, { pickerGroups: new Map<BulkSimItemSlot, readonly BulkPickerEntry[]>(bulkSlots.map(bulkSlot => [bulkSlot, []])) });
 
 	sim.waitForInit().then(() => {
 		loadSettings();
 
 		subscribeAll([subscribePlayerField(player, 'challengeModeEnabled'), subscribePlayerField(player, 'gear')])(() => loadEquippedItems());
-		subscribeBulkChange(owner)(() => settingsStore.save(createBulkSettings()));
+		subscribeBulkChange(owner)(() => storeBulkSettings(player, createBulkSettingsProto(player)));
 		subscribeBulkChange(owner)(() => updateCombinationsCount());
 		subscribeSimField(sim, 'iterations')(() => updateCombinationsCount());
 
@@ -743,27 +636,8 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 
 	return {
 		...owner,
-		playerCanDualWield,
 		get pickerGroups() {
 			return state().pickerGroups;
-		},
-		get inheritUpgrades() {
-			return state().inheritUpgrades;
-		},
-		get useLegacyBulkSim() {
-			return state().useLegacyBulkSim;
-		},
-		get requiredSetBonuses() {
-			return state().requiredSetBonuses;
-		},
-		get frozenItems() {
-			return state().frozenItems;
-		},
-		get frozenWeaponSlot() {
-			return state().frozenWeaponSlot;
-		},
-		get weaponTypeFilters() {
-			return state().weaponTypeFilters;
 		},
 		addItem: item => addItems([item]),
 		addItems,
@@ -773,17 +647,6 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		removeItemByIndex,
 		clearItems,
 		hasItem: item => state().items.some(spec => !!spec && ItemSpec.equals(spec, item)),
-		setInheritUpgrades,
-		setUseLegacyBulkSim,
-		setFrozenItem,
-		setFrozenWeaponSlot,
-		setWeaponTypeFilter,
-		setRequiredSetBonus,
-		canEnableRequiredTwoPiece: setId => canEnableRequiredTwoPiece(state().requiredSetBonuses, setId, canSatisfyRequiredSetBonus),
-		canEnableRequiredFourPiece: setBonus => canEnableRequiredFourPiece(state().requiredSetBonuses, setBonus, canSatisfyRequiredSetBonus),
-		getFreezeWeaponTypes: slot => getBulkFreezeWeaponTypes(player, slot),
-		getIterationsLimit: () => bulkIterationsLimit(sim.isNative),
-		getCombinationsLimit: () => bulkCombinationsLimit(sim.isNative),
 		runBatchSim,
 		cancelBatchSim,
 		onProgress: listener => {
