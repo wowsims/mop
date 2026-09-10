@@ -1,4 +1,7 @@
 import { Chart, Plugin } from 'chart.js';
+import type { PointerEvent as ReactPointerEvent } from 'react';
+
+type CanvasPointerEvent = ReactPointerEvent<HTMLCanvasElement>;
 
 export interface XRange {
 	min?: number;
@@ -63,72 +66,59 @@ export class ChartZoom {
 		this.setRange(this.min + seconds, this.max + seconds);
 	}
 
-	attach(canvas: HTMLCanvasElement): () => void {
-		const onDown = (event: PointerEvent) => {
-			const chart = this.getChart();
-			if (!chart || event.button !== 0) return;
-			const x = this.hitX(chart, event);
-			if (x == null) return;
+	down(event: CanvasPointerEvent) {
+		const chart = this.getChart();
+		if (!chart || event.button !== 0) return;
+		const x = this.hitX(chart, event);
+		if (x == null) return;
 
-			event.preventDefault();
-			canvas.setPointerCapture(event.pointerId);
-			this.pointerId = event.pointerId;
-			if (event.shiftKey) {
-				this.panning = true;
-				this.lastPanPx = x;
-			} else {
-				this.drag = { fromPx: x, toPx: x };
-				this.onDragStateChange(true);
-			}
-		};
+		event.preventDefault();
+		event.currentTarget.setPointerCapture(event.pointerId);
+		this.pointerId = event.pointerId;
+		if (event.shiftKey) {
+			this.panning = true;
+			this.lastPanPx = x;
+		} else {
+			this.drag = { fromPx: x, toPx: x };
+			this.onDragStateChange(true);
+		}
+	}
 
-		const onMove = (event: PointerEvent) => {
-			if (this.pointerId !== event.pointerId) return;
-			const chart = this.getChart();
-			if (!chart) return;
-			const x = this.clampToArea(chart, event.clientX - chart.canvas.getBoundingClientRect().left);
-			if (this.panning) {
-				this.panBy(this.lastPanPx - x);
-				this.lastPanPx = x;
-			} else if (this.drag) {
-				this.drag.toPx = x;
-				chart.render();
-			}
-		};
+	move(event: CanvasPointerEvent) {
+		if (this.pointerId !== event.pointerId) return;
+		const chart = this.getChart();
+		if (!chart) return;
+		const x = this.clampToArea(chart, event.clientX - chart.canvas.getBoundingClientRect().left);
+		if (this.panning) {
+			this.panBy(this.lastPanPx - x);
+			this.lastPanPx = x;
+		} else if (this.drag) {
+			this.drag.toPx = x;
+			chart.render();
+		}
+	}
 
-		const onUp = (event: PointerEvent) => {
-			if (this.pointerId !== event.pointerId) return;
-			const drag = this.drag;
-			const chart = this.getChart();
-			this.finish(canvas, event.pointerId);
-			if (!drag || !chart) return;
+	up(event: CanvasPointerEvent) {
+		if (this.pointerId !== event.pointerId) return;
+		const drag = this.drag;
+		const chart = this.getChart();
+		this.finish(event.currentTarget, event.pointerId);
+		if (!drag || !chart) return;
 
-			if (Math.abs(drag.toPx - drag.fromPx) < DRAG_THRESHOLD_PX) {
-				chart.render();
-				return;
-			}
-			const scale = chart.scales.x;
-			const from = scale.getValueForPixel(Math.min(drag.fromPx, drag.toPx)) ?? this.min;
-			const to = scale.getValueForPixel(Math.max(drag.fromPx, drag.toPx)) ?? this.max;
-			this.setRange(from, to);
-		};
+		if (Math.abs(drag.toPx - drag.fromPx) < DRAG_THRESHOLD_PX) {
+			chart.render();
+			return;
+		}
+		const scale = chart.scales.x;
+		const from = scale.getValueForPixel(Math.min(drag.fromPx, drag.toPx)) ?? this.min;
+		const to = scale.getValueForPixel(Math.max(drag.fromPx, drag.toPx)) ?? this.max;
+		this.setRange(from, to);
+	}
 
-		const onCancel = (event: PointerEvent) => {
-			if (this.pointerId !== event.pointerId) return;
-			this.finish(canvas, event.pointerId);
-			this.getChart()?.render();
-		};
-
-		canvas.addEventListener('pointerdown', onDown);
-		canvas.addEventListener('pointermove', onMove);
-		canvas.addEventListener('pointerup', onUp);
-		canvas.addEventListener('pointercancel', onCancel);
-		return () => {
-			canvas.removeEventListener('pointerdown', onDown);
-			canvas.removeEventListener('pointermove', onMove);
-			canvas.removeEventListener('pointerup', onUp);
-			canvas.removeEventListener('pointercancel', onCancel);
-		};
+	cancel(event: CanvasPointerEvent) {
+		if (this.pointerId !== event.pointerId) return;
+		this.finish(event.currentTarget, event.pointerId);
+		this.getChart()?.render();
 	}
 
 	plugin(): Plugin<'line'> {
@@ -173,7 +163,7 @@ export class ChartZoom {
 		return from == null || to == null ? 0 : to - from;
 	}
 
-	private hitX(chart: Chart, event: PointerEvent): number | null {
+	private hitX(chart: Chart, event: CanvasPointerEvent): number | null {
 		const rect = chart.canvas.getBoundingClientRect();
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;

@@ -129,10 +129,8 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 			plugins: [annotationsPlugin(() => annotations.current), zoom.current.plugin()],
 		});
 		chartRef.current = chart;
-		const detach = zoom.current.attach(canvas);
 
 		return () => {
-			detach();
 			chartRef.current = null;
 			tipKey.current = '';
 			hideTip();
@@ -151,7 +149,15 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				onPanRight={() => zoom.current.panBy(PAN_STEP_PX)}
 			/>
 			<div className={clsx('timeline-chart-canvas', noData && 'hide')}>
-				<canvas ref={canvasRef} role="img" aria-label={i18n.t('results_tab.details.timeline.chart_options.chart_label')} />
+				<canvas
+					ref={canvasRef}
+					role="img"
+					aria-label={i18n.t('results_tab.details.timeline.chart_options.chart_label')}
+					onPointerDown={event => zoom.current.down(event)}
+					onPointerMove={event => zoom.current.move(event)}
+					onPointerUp={event => zoom.current.up(event)}
+					onPointerCancel={event => zoom.current.cancel(event)}
+				/>
 			</div>
 			<div className={clsx('timeline-chart-empty', !noData && 'hide')}>{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>
 			{tip && (
