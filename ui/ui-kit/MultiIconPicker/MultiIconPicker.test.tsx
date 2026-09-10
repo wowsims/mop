@@ -1,11 +1,11 @@
 import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
-import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
-import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
+import type { IconPickerConfig } from '@ui-kit/IconPicker/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MultiIconPicker } from './MultiIconPicker';
+import type { MultiIconPickerConfig } from './types';
 
 // A filled ActionId as fill() returns one, so useActionId renders synchronously and no test touches
 // the network — the same pattern IconPicker.test.tsx uses.

@@ -1,9 +1,9 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import type { StringPickerConfig } from '@ui-kit/pickers/string_picker';
 import { describe, expect, it } from 'vitest';
 
 import { AdaptiveStringPicker } from './AdaptiveStringPicker';
+import type { StringPickerConfig } from './types';
 
 // Stands in for a domain facade: a value plus the (onChange) => unsubscribe contract every
 // storeSubscribe helper in state/subscriptions.ts returns.

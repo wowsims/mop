@@ -1,9 +1,9 @@
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import { ActionId } from '@sim/proto/action_id';
 import { act, fireEvent, render } from '@testing-library/react';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { UnitValue } from './types';
 import { UnitPicker } from './UnitPicker';
 
 // A filled ActionId as fill() returns one, so useActionId renders synchronously and no test touches

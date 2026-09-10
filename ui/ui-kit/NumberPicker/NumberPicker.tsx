@@ -1,9 +1,10 @@
 import { Input } from '@base-ui/react/input';
 import { formatToNumber } from '@sim/utils/format';
 import { useInput } from '@ui-kit/hooks/useInput';
-import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+
+import type { NumberPickerConfig } from './types';
 
 export interface NumberPickerProps<ModObject> {
 	modObject: ModObject;

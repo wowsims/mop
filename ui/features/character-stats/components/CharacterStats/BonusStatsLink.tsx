@@ -1,13 +1,13 @@
+import type { Stat } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { getStatName } from '@sim/proto/names';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import type { Stat } from '@generated/proto/common';
-import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { NumberPicker } from '@ui-kit/NumberPicker';
-import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 import { Tooltip, tooltipAnchorProps, type TooltipRefProps } from '@ui-kit/Tooltip';
 import { useId, useMemo, useRef, useState } from 'react';
 

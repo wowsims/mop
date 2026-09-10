@@ -1,12 +1,12 @@
+import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
+import { Consumable } from '@generated/proto/db';
+import i18n from '@i18n/config';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { batch } from '@sim/state/batch';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
-import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
-import { Consumable } from '@generated/proto/db';
-import i18n from '@i18n/config';
+import { IconEnumValueConfig } from '@ui-kit/IconEnumPicker/types';
 import * as InputHelpers from '@ui-kit/input_helpers';
-import { IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 
 import { ActionInputConfig, ItemStatOption } from './stat_options';
 export interface ConsumableInputConfig<T> extends ActionInputConfig<T> {

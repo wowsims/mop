@@ -1,8 +1,8 @@
 import { UnitReference } from '@generated/proto/common';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 import type { ClassValue } from 'clsx';
 
+import type { UnitValue } from './types';
 import { sameUnit, unitOption } from './utils';
 
 export interface UnitPickerProps {

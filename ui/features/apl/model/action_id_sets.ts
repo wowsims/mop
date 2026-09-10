@@ -3,7 +3,7 @@ import i18n from '@i18n/config';
 import { UnitMetadata } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { bucket } from '@sim/utils/collections';
-import type { DropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';
+import type { DropdownValueConfig } from '@ui-kit/DropdownPicker/types';
 
 export type ACTION_ID_SET =
 	| 'auras'

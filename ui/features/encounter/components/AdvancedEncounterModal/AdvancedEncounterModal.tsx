@@ -4,8 +4,8 @@ import type { Encounter } from '@sim/raid/encounter';
 import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
+import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
 import { NumberPicker } from '@ui-kit/NumberPicker';
-import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';

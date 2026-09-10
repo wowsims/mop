@@ -1,8 +1,9 @@
 import { Field } from '@base-ui/react/field';
 import { useInput } from '@ui-kit/hooks/useInput';
-import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+
+import type { EnumPickerConfig } from './types';
 
 export interface EnumPickerProps<ModObject> {
 	modObject: ModObject;

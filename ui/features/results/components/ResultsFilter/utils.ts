@@ -1,7 +1,7 @@
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { SimResult, SimResultFilter } from '@sim/proto/sim_result';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
+import type { UnitValue } from '@ui-kit/UnitPicker/types';
 
 /** No target picked: every target's damage is counted. */
 export const ALL_UNITS = -1;

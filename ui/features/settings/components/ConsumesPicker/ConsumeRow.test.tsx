@@ -1,6 +1,6 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, render } from '@testing-library/react';
-import type { IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
+import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ConsumeRow } from './ConsumeRow';

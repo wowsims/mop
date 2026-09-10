@@ -1,5 +1,5 @@
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
-import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
+import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { useMemo } from 'react';
 
 import { EXPORT_CATEGORY_OPTIONS, type ExportCategories } from '../../exporters';

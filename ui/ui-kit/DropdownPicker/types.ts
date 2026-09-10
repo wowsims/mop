@@ -52,3 +52,12 @@ export interface DropdownPickerProps<V> {
 	/** On the root. */
 	className?: ClassValue;
 }
+
+/** The option shape the APL model still speaks; `DropdownOption` is what the component takes. */
+export interface DropdownValueConfig<V> {
+	value: V;
+	submenu?: (string | V)[];
+	headerText?: string;
+	tooltip?: string;
+	extraCssClasses?: string[];
+}

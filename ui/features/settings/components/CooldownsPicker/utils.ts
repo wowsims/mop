@@ -3,8 +3,8 @@ import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import type { IconEnumPickerConfig, IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
-import type { NumberListPickerConfig } from '@ui-kit/pickers/number_list_picker';
+import type { IconEnumPickerConfig, IconEnumValueConfig } from '@ui-kit/IconEnumPicker/types';
+import type { NumberListPickerConfig } from '@ui-kit/NumberListPicker/types';
 
 export const availableCooldowns = (player: Player<any>): Array<ActionId> =>
 	player

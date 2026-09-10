@@ -1,18 +1,18 @@
-import { formatToNumber } from '@sim/utils/format';
+import { Spec } from '@generated/proto/common';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { ClassOptions, SpecOptions, SpecRotation } from '@sim/proto/spec_types';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { subscribePlayerField } from '@sim/state/subscriptions';
+import { formatToNumber } from '@sim/utils/format';
 import { randomUUID } from '@sim/utils/misc';
-import { Spec } from '@generated/proto/common';
 
-import { BooleanPickerConfig } from './pickers/boolean_picker';
-import { EnumPickerConfig, EnumValueConfig } from './pickers/enum_picker';
-import { IconEnumPickerConfig, IconEnumValueConfig } from './pickers/icon_enum_picker';
-import { IconPickerConfig } from './pickers/icon_picker';
-import { MultiIconPickerConfig } from './pickers/multi_icon_picker';
-import { NumberPickerConfig } from './pickers/number_picker';
+import { BooleanPickerConfig } from './BooleanPicker/types';
+import { EnumPickerConfig, EnumValueConfig } from './EnumPicker/types';
+import { IconEnumPickerConfig, IconEnumValueConfig } from './IconEnumPicker/types';
+import { IconPickerConfig } from './IconPicker/types';
+import { MultiIconPickerConfig } from './MultiIconPicker/types';
+import { NumberPickerConfig } from './NumberPicker/types';
 export const makeMultiIconInput = <ModObject>(
 	inputs: Array<IconPickerConfig<ModObject, any>>,
 	label: string,

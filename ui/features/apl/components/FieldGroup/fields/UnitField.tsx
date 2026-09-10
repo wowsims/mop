@@ -7,8 +7,8 @@ import type { Player } from '@sim/player/player';
 import { subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { DropdownField } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 import { sameUnit, unitOption } from '@ui-kit/UnitPicker';
+import type { UnitValue } from '@ui-kit/UnitPicker/types';
 import { useMemo } from 'react';
 
 export interface UnitFieldProps {

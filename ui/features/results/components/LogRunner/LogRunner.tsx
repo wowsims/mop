@@ -5,7 +5,7 @@ import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { isCastCompleted } from '@sim/proto/combat_log';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
-import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
+import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { findScrollParent } from '@ui-kit/utils/dom';
 import { VirtualList } from '@ui-kit/VirtualList';

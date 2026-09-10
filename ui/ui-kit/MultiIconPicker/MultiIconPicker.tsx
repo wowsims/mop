@@ -1,17 +1,18 @@
 import './MultiIconPicker.scss';
 
 import { Menu } from '@base-ui/react/menu';
-import { isRightClick } from '@ui-kit/utils/dom';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
 import type { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
-import type { MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
-import { wowheadAnchorProps } from '../utils/wowhead';
+import { isRightClick } from '@ui-kit/utils/dom';
 import clsx from 'clsx';
 import { useId, useState } from 'react';
+
+import { wowheadAnchorProps } from '../utils/wowhead';
+import type { MultiIconPickerConfig } from './types';
 
 export interface MultiIconPickerProps<ModObject> {
 	modObject: ModObject;

@@ -1,11 +1,11 @@
-import type { Encounter } from '@sim/raid/encounter';
-import type { Player } from '@sim/player/player';
-import type { Raid } from '@sim/raid/raid';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
-import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import type { Player } from '@sim/player/player';
+import type { Encounter } from '@sim/raid/encounter';
+import type { Raid } from '@sim/raid/raid';
+import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
+import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
+import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 
 import { trackEvent } from '../../../../../tracking/analytics';
 

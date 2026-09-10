@@ -1,5 +1,6 @@
-import type { IconEnumPickerConfig, IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import type { CSSProperties } from 'react';
+
+import type { IconEnumPickerConfig, IconEnumValueConfig } from './types';
 
 export const iconEnumPickerShown = <ModObject, T>(config: IconEnumPickerConfig<ModObject, T>, modObject: ModObject): boolean =>
 	(!config.showWhen || config.showWhen(modObject)) &&

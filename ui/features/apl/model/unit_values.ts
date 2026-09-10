@@ -2,7 +2,7 @@ import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import { type ActionId, defaultTargetIcon, getPetIconFromName } from '@sim/proto/action_id';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
+import type { UnitValue } from '@ui-kit/UnitPicker/types';
 
 import { type UNIT_SET, unitSets } from './unit_sets';
 

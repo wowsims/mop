@@ -4,7 +4,7 @@ import { translateProfession, translateRace } from '@i18n/localization';
 import type { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { getEnumValues } from '@sim/utils/collections';
-import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
+import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
 
 // Shared with the rotation tab's icon row, so the rule has one home.
 export { iconGridColumns } from '@ui-kit/icon_inputs';

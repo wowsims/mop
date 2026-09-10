@@ -5,9 +5,9 @@ import type { Encounter } from '@sim/raid/encounter';
 import { subscribeEncounterField } from '@sim/state/subscriptions';
 import { distinct } from '@sim/utils/collections';
 import { randomUUID } from '@sim/utils/misc';
-import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
-import type { EnumPickerConfig } from '@ui-kit/pickers/enum_picker';
-import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
+import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
+import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 
 import { trackEvent, type TrackEventProps } from '../../../../../tracking/analytics';
 

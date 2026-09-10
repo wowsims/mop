@@ -1,8 +1,8 @@
 import { UnitReference } from '@generated/proto/common';
 import { textClassName } from '@sim/proto/utils';
 import type { DropdownOption } from '@ui-kit/DropdownPicker';
-import type { UnitValue } from '@ui-kit/pickers/unit_picker';
 
+import type { UnitValue } from './types';
 import { UnitIcon } from './UnitIcon';
 
 /** Two `UnitValue`s are the same unit; the display fields around the reference are deliberately not compared. */

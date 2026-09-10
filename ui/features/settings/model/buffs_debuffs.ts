@@ -1,6 +1,6 @@
-import { ActionId } from '@sim/proto/action_id';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { ActionId } from '@sim/proto/action_id';
 import {
 	makeBooleanDebuffInput,
 	makeBooleanIndividualBuffInput,
@@ -9,8 +9,6 @@ import {
 	makeMultistateRaidBuffInput,
 } from '@ui-kit/icon_inputs';
 import * as InputHelpers from '@ui-kit/input_helpers';
-import { IconPicker } from '@ui-kit/pickers/icon_picker';
-import { MultiIconPicker } from '@ui-kit/pickers/multi_icon_picker';
 
 import { IconPickerStatOption, RenderableStatOptions } from './stat_options';
 
@@ -217,42 +215,34 @@ export const RAID_BUFFS_CONFIG = [
 	// Standard buffs
 	{
 		config: StatsBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatStrength, Stat.StatAgility, Stat.StatIntellect],
 	},
 	{
 		config: AttackPowerBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 	{
 		config: AttackSpeedBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 	{
 		config: SpellPowerBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatSpellPower],
 	},
 	{
 		config: SpellHasteBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatSpellPower],
 	},
 	{
 		config: CritBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatCritRating],
 	},
 	{
 		config: MasteryBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatMasteryRating],
 	},
 	{
 		config: StaminaBuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatStamina],
 	},
 ] as RenderableStatOptions[];
@@ -260,7 +250,6 @@ export const RAID_BUFFS_CONFIG = [
 export const RAID_BUFFS_MISC_CONFIG = [
 	{
 		config: ManaTideTotem,
-		picker: IconPicker,
 		stats: [Stat.StatSpirit],
 	},
 ] as IconPickerStatOption[];
@@ -268,32 +257,26 @@ export const RAID_BUFFS_MISC_CONFIG = [
 export const RAID_BUFFS_EXTERNAL_DAMAGE_COOLDOWN = [
 	{
 		config: MajorHasteBuff,
-		picker: IconPicker,
 		stats: [Stat.StatHasteRating],
 	},
 	{
 		config: Skullbanner,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower, Stat.StatSpellPower],
 	},
 	{
 		config: StormLashTotem,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower, Stat.StatSpellPower],
 	},
 	{
 		config: TricksOfTheTrade,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower, Stat.StatSpellPower],
 	},
 	{
 		config: UnholyFrenzy,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 	{
 		config: ShatteringThrow,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 ] as IconPickerStatOption[];
@@ -301,22 +284,18 @@ export const RAID_BUFFS_EXTERNAL_DAMAGE_COOLDOWN = [
 export const RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN = [
 	{
 		config: VigilanceCount,
-		picker: IconPicker,
 		stats: [Stat.StatStamina],
 	},
 	{
 		config: DevotionAuraCount,
-		picker: IconPicker,
 		stats: [Stat.StatStamina],
 	},
 	{
 		config: PainSuppressionCount,
-		picker: IconPicker,
 		stats: [Stat.StatStamina],
 	},
 	{
 		config: RallyingCryCount,
-		picker: IconPicker,
 		stats: [Stat.StatStamina],
 	},
 ] as IconPickerStatOption[];
@@ -324,28 +303,23 @@ export const RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN = [
 export const DEBUFFS_CONFIG = [
 	{
 		config: MajorArmorDebuff,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 	{
 		config: PhysicalDamageDebuff,
-		picker: IconPicker,
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower],
 	},
 	{
 		config: SpellDamageDebuff,
-		picker: MultiIconPicker,
 		// Enabled for all specs because it affects Stormlash Totem
 		stats: [Stat.StatAttackPower, Stat.StatRangedAttackPower, Stat.StatSpellPower],
 	},
 	{
 		config: DamageReduction,
-		picker: IconPicker,
 		stats: [Stat.StatStamina],
 	},
 	{
 		config: CastSpeedDebuff,
-		picker: MultiIconPicker,
 		stats: [Stat.StatStamina],
 	},
 ] as RenderableStatOptions[];

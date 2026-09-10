@@ -1,14 +1,14 @@
-import { isRightClick } from '@ui-kit/utils/dom';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
-import type { IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { wowheadAnchorProps } from '../utils/wowhead';
+import { isRightClick } from '@ui-kit/utils/dom';
 import clsx from 'clsx';
 import { type MouseEvent, useEffect, useRef } from 'react';
 
+import { wowheadAnchorProps } from '../utils/wowhead';
 import { ImprovedAnchor } from './ImprovedAnchor';
+import type { IconPickerConfig } from './types';
 
 export interface IconPickerProps<ModObject, ValueType> {
 	modObject: ModObject;

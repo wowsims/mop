@@ -1,10 +1,10 @@
+import { Faction, Stat } from '@generated/proto/common';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { Faction, Stat } from '@generated/proto/common';
-import { IconEnumPicker, IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
-import { IconPicker, IconPickerConfig } from '@ui-kit/pickers/icon_picker';
-import { MultiIconPicker, MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
+import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
+import type { IconPickerConfig } from '@ui-kit/IconPicker/types';
+import type { MultiIconPickerConfig } from '@ui-kit/MultiIconPicker/types';
 
 export interface ActionInputConfig<T> {
 	actionId: ActionId;
@@ -21,16 +21,15 @@ export interface ItemStatOption<T> extends StatOption {
 	config: ActionInputConfig<T>;
 }
 
-export interface PickerStatOption<PickerType, ConfigType> extends StatOption {
+export interface PickerStatOption<ConfigType> extends StatOption {
 	config: ConfigType;
-	picker: PickerType;
 }
 
-export interface IconPickerStatOption extends PickerStatOption<typeof IconPicker<Player<any>, any>, IconPickerConfig<Player<any>, any>> {}
+export interface IconPickerStatOption extends PickerStatOption<IconPickerConfig<Player<any>, any>> {}
 
-export interface MultiIconPickerStatOption extends PickerStatOption<typeof MultiIconPicker<Player<any>>, MultiIconPickerConfig<Player<any>>> {}
+export interface MultiIconPickerStatOption extends PickerStatOption<MultiIconPickerConfig<Player<any>>> {}
 
-export interface IconEnumPickerStatOption extends PickerStatOption<typeof IconEnumPicker<Player<any>, any>, IconEnumPickerConfig<Player<any>, any>> {}
+export interface IconEnumPickerStatOption extends PickerStatOption<IconEnumPickerConfig<Player<any>, any>> {}
 
 export type ItemStatOptions<T> = ItemStatOption<T>;
 export type PickerStatOptions = IconPickerStatOption | MultiIconPickerStatOption | IconEnumPickerStatOption;

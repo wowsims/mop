@@ -1,7 +1,8 @@
 import { Input } from '@base-ui/react/input';
 import { useInput } from '@ui-kit/hooks/useInput';
-import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
+
+import type { BooleanPickerConfig } from './types';
 
 export interface BooleanPickerProps<ModObject> {
 	modObject: ModObject;

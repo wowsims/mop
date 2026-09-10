@@ -1,15 +1,15 @@
 import './ItemSwapPicker.scss';
 
-import { useSimHost } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player/player';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { BooleanPicker } from '@ui-kit/BooleanPicker';
-import { Button } from '@ui-kit/Button';
+import { useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import type { Player } from '@sim/player/player';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import { BooleanPicker } from '@ui-kit/BooleanPicker';
+import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
-import type { BooleanPickerConfig } from '@ui-kit/pickers/boolean_picker';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';

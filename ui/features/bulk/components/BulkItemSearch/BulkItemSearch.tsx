@@ -1,12 +1,12 @@
 import './BulkItemSearch.scss';
 
-import { usePlayer } from '@sim/context/SimHostContext';
-import { canEquipItem } from '@sim/proto/items';
 import { ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { canEquipItem } from '@sim/proto/items';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { NumberPicker } from '@ui-kit/NumberPicker';
-import type { NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 import { SearchBar } from '@ui-kit/SearchBar';
 import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';

@@ -3,13 +3,13 @@ import './IconEnumPicker.scss';
 import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
-import { type IconEnumPickerConfig, IconEnumPickerDirection, type IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { IconEnumOption } from './IconEnumOption';
+import { type IconEnumPickerConfig, IconEnumPickerDirection, type IconEnumValueConfig } from './types';
 import { actionIconStyle, iconEnumPickerShown, iconStyleOf } from './utils';
 
 export interface IconEnumPickerProps<ModObject, T> {

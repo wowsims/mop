@@ -1,8 +1,9 @@
 import { Input } from '@base-ui/react/input';
 import { useInput } from '@ui-kit/hooks/useInput';
-import type { StringPickerConfig } from '@ui-kit/pickers/string_picker';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+
+import type { StringPickerConfig } from './types';
 
 export interface AdaptiveStringPickerProps<ModObject> {
 	modObject: ModObject;

@@ -1,10 +1,10 @@
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
-import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
-import type { IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
+import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
 import clsx from 'clsx';
 import { type ReactNode, useId, useMemo } from 'react';
 
