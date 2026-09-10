@@ -360,10 +360,10 @@ function buildCastLog(
 	const threat = castCompletedLog?.threat || castCancelledLog?.threat || castBeganLog.threat;
 
 	let castTime = castBeganLog.castTime;
-	let effectiveTime = castBeganLog.effectiveTime;
+	// effectiveTime stays the began line's: it is the GCD time the tooltip and DPET report, not
+	// the cast's measured length.
 	if (castCompletedLog) {
 		castTime = castCompletedLog.timestamp - castBeganLog.timestamp;
-		effectiveTime = castCompletedLog.timestamp - castBeganLog.timestamp;
 	}
 	const cancelTime = castCancelledLog?.cancelTime ?? 0;
 
