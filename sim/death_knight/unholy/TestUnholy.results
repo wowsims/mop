@@ -1593,16 +1593,16 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 386970.88193
-  tps: 284382.33335
+  dps: 387172.55274
+  tps: 284543.92854
   hps: 4135.00868
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 386933.05201
-  tps: 284382.09213
+  dps: 387134.45543
+  tps: 284543.41994
   hps: 4135.00868
  }
 }
@@ -2137,8 +2137,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 435714.61282
-  tps: 314953.48544
+  dps: 435712.97961
+  tps: 314903.34626
   hps: 4128.8459
  }
 }

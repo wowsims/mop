@@ -200,11 +200,12 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	// constants. resolveStatMultiplier returns the self-multiplier the dependency graph applies to
 	// one unit of a stat (e.g. Bear Form's CritRating×1.5, Mark-of-the-Wild×Heart-of-the-Wild
 	// Agility×1.113). baseSDM (from ComputeStatsAndDeps above) already has the build-phase auras
-	// re-activated, so these multiplicative deps are live in the manager.
+	// re-activated, so these multiplicative deps are live in the manager. The delta path keeps
+	// the probe linear; the total path would round a rating's x1.5 on one unit up to 2.
 	resolveStatMultiplier := func(s stats.Stat) float64 {
 		in := stats.Stats{}
 		in[s] = 1
-		return baseSDM.ApplyStatDependencies(in)[s]
+		return baseSDM.ApplyStatDependenciesToDelta(in)[s]
 	}
 	ampModifier := amplificationStatModifier(baseStrippedGear)
 	// The Spirit self-multiplier (the Human racial is the only source in practice), isolated from the
