@@ -3,7 +3,7 @@ import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_opti
 import type { ResultChannel } from '@features/results/model/result_channel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
-import type { Spec, Stat } from '@generated/proto/common';
+import type { Spec } from '@generated/proto/common';
 import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SidebarRegistry } from '@ui-kit/sidebar_registry';
 
@@ -28,8 +28,6 @@ export interface SimWarning {
 export interface SimHost {
 	readonly sim: Sim;
 	readonly rootElem: HTMLElement;
-	/** The sticky toolbars measure against it. */
-	readonly headerElem: HTMLElement;
 	readonly disabled: boolean;
 	readonly config: { cssClass: string; cssScheme: string };
 	readonly resultsViewer: ResultsPanelHandle;

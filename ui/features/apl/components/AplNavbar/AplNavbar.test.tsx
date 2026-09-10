@@ -23,14 +23,17 @@ class FakeIntersectionObserver {
 }
 
 const header = document.createElement('div');
-const host = { headerElem: header } as never;
-vi.mock('@sim/context/SimHostContext', async () => ({ useSimHost: () => host }));
 
+const { StickyHeaderContext } = await import('@ui-kit/hooks/useStickyToolbar');
 const { AplNavbar } = await import('./AplNavbar');
 
 const mount = (activeId: AplPaneId = 'apl-priority-list', onSelect = vi.fn()) => ({
 	onSelect,
-	...render(<AplNavbar activeId={activeId} onSelect={onSelect} />),
+	...render(
+		<StickyHeaderContext value={header}>
+			<AplNavbar activeId={activeId} onSelect={onSelect} />
+		</StickyHeaderContext>,
+	),
 });
 
 const tabs = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[role=tab]')];

@@ -23,7 +23,6 @@ class FakeIntersectionObserver {
 }
 
 const host = {
-	headerElem: document.createElement('div'),
 	player: { hasSimpleRotationGenerator: () => false },
 	individualConfig: {},
 } as never;

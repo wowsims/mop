@@ -78,7 +78,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	readonly resultsPanel = new ResultsPanelStore();
 	readonly warnings = new WarningsRegistry();
 
-	readonly headerElem: HTMLElement;
 	readonly simActionsContainer: HTMLElement;
 	readonly simTabContentsContainer: HTMLElement;
 	readonly sidebar = new SidebarRegistry();
@@ -112,7 +111,6 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
-		this.headerElem = dom.header;
 		this.simActionsContainer = dom.sidebarActions;
 		this.simTabContentsContainer = dom.main;
 
