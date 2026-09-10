@@ -60,16 +60,19 @@ export const SavedDataPanel = <T,>({
 
 	const deleteText = deleteLabel ?? `Delete saved ${label}`;
 
+	const matchesCurrent = useCallback((entry: SavedDataPanelEntry<T>) => (isActive ? isActive(entry) : entry.json === currentJson), [isActive, currentJson]);
+
+	// `isActive` can be a whole-tree proto comparison (rotations), so the match set is resolved once
+	// per change of the entries or of the subject, not once per entry per render.
+	const matches = useMemo(() => [...userData, ...presets].filter(matchesCurrent), [userData, presets, matchesCurrent]);
+
 	// The last match wins, so a preset and a user entry holding the same value both light up the one
 	// the user actually loaded; without the loaded name a save under a new label would jump the
 	// highlight to whichever entry happened to be last.
-	const matchesCurrent = useCallback((entry: SavedDataPanelEntry<T>) => (isActive ? isActive(entry) : entry.json === currentJson), [isActive, currentJson]);
-
 	const activeName = useMemo(() => {
-		const matches = [...userData, ...presets].filter(matchesCurrent);
 		if (loadedName && matches.some(entry => entry.name === loadedName)) return loadedName;
 		return matches.at(-1)?.name;
-	}, [userData, presets, matchesCurrent, loadedName]);
+	}, [matches, loadedName]);
 
 	useEffect(() => {
 		if (activeName) setName(activeName);
@@ -109,7 +112,7 @@ export const SavedDataPanel = <T,>({
 		<SavedDataChip
 			key={entry.name}
 			entry={entry}
-			active={matchesCurrent(entry)}
+			active={matches.includes(entry)}
 			disabled={!!entry.disabled}
 			deleteLabel={deleteText}
 			deleteTooltipId={tooltipId}

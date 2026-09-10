@@ -69,24 +69,26 @@ export function renameAPLReference(obj: unknown, target: APLRenameTarget): void 
 	}
 }
 
+// Ensure that the auto rotation type can be matched. Only `type` moves, and the comparisons below
+// only read, so this is a shallow copy — cloning the message would walk the whole rotation tree.
+const matchableRotation = (rotation?: APLRotation): APLRotation | undefined =>
+	rotation?.type === APLRotation_Type.TypeAuto ? { ...rotation, type: APLRotation_Type.TypeAPL } : rotation;
+
 export const isEqualAPLRotation = (player: Player<Spec>, rotation?: APLRotation, otherRotation?: APLRotation): boolean => {
 	if (!!rotation != !!otherRotation) return false;
 
-	const clonedRotation = rotation ? APLRotation.clone(rotation) : undefined;
-	const clonedOtherRotation = otherRotation ? APLRotation.clone(otherRotation) : undefined;
-	// Ensure that the auto rotation type can be matched
-	if (clonedRotation?.type === APLRotation_Type.TypeAuto) clonedRotation.type = APLRotation_Type.TypeAPL;
-	if (clonedOtherRotation?.type === APLRotation_Type.TypeAuto) clonedOtherRotation.type = APLRotation_Type.TypeAPL;
-	if (clonedOtherRotation?.type === APLRotation_Type.TypeSimple && clonedOtherRotation?.simple?.specRotationJson) {
+	const matchable = matchableRotation(rotation);
+	const otherMatchable = matchableRotation(otherRotation);
+	if (otherMatchable?.type === APLRotation_Type.TypeSimple && otherMatchable?.simple?.specRotationJson) {
 		return (
-			!!clonedRotation?.simple &&
+			!!matchable?.simple &&
 			player.specTypeFunctions.rotationEquals(
-				player.specTypeFunctions.rotationFromJson(JSON.parse(clonedOtherRotation.simple.specRotationJson)),
-				player.specTypeFunctions.rotationFromJson(JSON.parse(clonedRotation.simple.specRotationJson)),
+				player.specTypeFunctions.rotationFromJson(JSON.parse(otherMatchable.simple.specRotationJson)),
+				player.specTypeFunctions.rotationFromJson(JSON.parse(matchable.simple.specRotationJson)),
 			)
 		);
 	} else {
-		return APLRotation.equals(clonedOtherRotation, clonedRotation);
+		return APLRotation.equals(otherMatchable, matchable);
 	}
 };
 

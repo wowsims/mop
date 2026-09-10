@@ -55,6 +55,8 @@ export const SavedRotation = () => {
 		[player, current],
 	);
 
+	const currentJson = useMemo(() => serializeRotation(current), [current]);
+
 	const onLoad = useCallback(
 		(entry: SavedDataPanelEntry<SavedRotationProto>) => {
 			batch(() => player.setAplRotation(entry.data.rotation || APLRotation.create()));
@@ -91,7 +93,7 @@ export const SavedRotation = () => {
 			nameExistsAlert={i18n.t('rotation_tab.saved_rotations.alerts.name_exists')}
 			presets={presets}
 			userData={userData}
-			currentJson={serializeRotation(current)}
+			currentJson={currentJson}
 			isActive={isActive}
 			onLoad={onLoad}
 			onSave={onSave}
