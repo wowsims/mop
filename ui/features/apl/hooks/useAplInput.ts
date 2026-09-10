@@ -1,4 +1,4 @@
-import { rotationSource } from '@features/apl/utils';
+import { useApl } from '@features/apl/context/AplContext';
 import type { Player } from '@sim/player/player';
 import { type InputState, useInput } from '@ui-kit/hooks/useInput';
 import type { InputConfig } from '@ui-kit/input';
@@ -14,7 +14,7 @@ export interface AplInput<T> extends InputState<T> {
  *
  * It fills in the two things every one of them needs and none of them is given:
  *
- * - **the rotation as the change source.** A config arrives from a field group, from a list's item
+ * - **the rotation as the change source**, or inside a list row that row's `rowSource`. A config arrives from a field group, from a list's item
  *   binding or from a list item, and none of those carries one. Without it `useStoreSubscribe`
  *   never re-reads and the picker freezes at its first render, silently.
  * - **an id.** `PickerShell` puts it on the label's `htmlFor`, and a nested picker is handed a
@@ -22,6 +22,7 @@ export interface AplInput<T> extends InputState<T> {
  */
 export const useAplInput = <T>(player: Player<any>, config: InputConfig<Player<any>, T>): AplInput<T> => {
 	const generatedId = useId();
-	const shellConfig = { ...config, storeSubscribe: rotationSource, id: config.id || generatedId };
+	const { changeSource } = useApl();
+	const shellConfig = { ...config, storeSubscribe: changeSource, id: config.id || generatedId };
 	return { ...useInput(player, shellConfig), shellConfig };
 };

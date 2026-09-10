@@ -136,4 +136,30 @@ describe('PriorityList', () => {
 		expect(player.aplRotation.priorityList).toHaveLength(1);
 		expect(player.aplRotation.priorityList[0]).toEqual(keep);
 	});
+
+	it('renders what a loaded rotation changed and keeps the rows it skipped editable', () => {
+		const reset = (sequenceName: string) => APLListItem.create({ action: { action: { oneofKind: 'resetSequence', resetSequence: { sequenceName } } } });
+		setup([reset('a'), reset('b')]);
+		mount();
+		const inputs = () => Array.from(document.querySelectorAll<HTMLInputElement>('.apl-action-resetSequence input'));
+		const names = () => inputs().map(input => input.value);
+		expect(names()).toEqual(['a', 'b']);
+
+		act(() => {
+			player.aplRotation = APLRotation.create({ priorityList: [reset('a'), reset('changed')] });
+			source.notify();
+		});
+		expect(names()).toEqual(['a', 'changed']);
+
+		act(() => {
+			fireEvent.change(inputs()[0], { target: { value: 'typed' } });
+		});
+		expect(player.aplRotation.priorityList[0].action?.action).toEqual({ oneofKind: 'resetSequence', resetSequence: { sequenceName: 'typed' } });
+
+		act(() => {
+			player.aplRotation.priorityList[0].action!.action = { oneofKind: 'resetSequence', resetSequence: { sequenceName: 'edited' } };
+			player.touchRotation();
+		});
+		expect(names()).toEqual(['edited', 'changed']);
+	});
 });

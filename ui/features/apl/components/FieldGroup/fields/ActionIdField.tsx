@@ -1,6 +1,6 @@
+import { useApl } from '@features/apl/context/AplContext';
 import { type ACTION_ID_SET, actionIdSets } from '@features/apl/model/action_id_sets';
 import type { DEFAULT_UNIT_REF } from '@features/apl/model/field_descriptors';
-import { rotationSource } from '@features/apl/utils';
 import { ActionID, UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
@@ -52,7 +52,8 @@ export const ActionIdField = ({ player, config, actionIdSet, unitRefField, defau
 
 	// One subscription for both reads: the referenced unit can change with the rotation, and its
 	// metadata can change on its own.
-	const subscribe = useMemo(() => subscribeAll([rotationSource(player), subscribeUnitMetadata(player.sim)]), [player]);
+	const { changeSource } = useApl();
+	const subscribe = useMemo(() => subscribeAll([changeSource(player), subscribeUnitMetadata(player.sim)]), [player, changeSource]);
 	const view = useStoreSubscribe(subscribe, () => ({
 		metadata: player.sim.getUnitMetadata(unitRefField ? parentRef.current()[unitRefField] : UnitReference.create(), player, defaultRef),
 		source: config.getValue(player),

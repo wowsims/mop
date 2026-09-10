@@ -3,7 +3,6 @@ import { useAplInput } from '@features/apl/hooks/useAplInput';
 import { valueKindOptions } from '@features/apl/model/kind_options';
 import { swapValueKind } from '@features/apl/model/kind_swap';
 import { type APLValueKind, type ValidAPLValueKind, valueKinds } from '@features/apl/model/value_kinds';
-import { rotationSource } from '@features/apl/utils';
 import type { APLValue } from '@generated/proto/apl';
 import { UUID } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -33,7 +32,7 @@ export interface ValuePickerProps {
  */
 export const ValuePicker = ({ player, config }: ValuePickerProps) => {
 	const kindId = useId();
-	const { isPrepull, isGroup } = useApl();
+	const { isPrepull, isGroup, changeSource } = useApl();
 
 	const { value, hidden, disabled, shellConfig } = useAplInput(player, config);
 	const kind = value?.value.oneofKind;
@@ -52,7 +51,7 @@ export const ValuePicker = ({ player, config }: ValuePickerProps) => {
 
 	const kindConfig: InputConfig<Player<any>, APLValueKind> & { id: string } = {
 		id: kindId,
-		storeSubscribe: rotationSource,
+		storeSubscribe: changeSource,
 		getValue: () => config.getValue(player)?.value.oneofKind,
 		setValue: (subject: Player<any>, newKind: APLValueKind) => {
 			const source = config.getValue(subject);

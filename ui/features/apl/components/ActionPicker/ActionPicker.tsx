@@ -3,14 +3,13 @@ import { useAplInput } from '@features/apl/hooks/useAplInput';
 import { actionKinds, type APLActionKind } from '@features/apl/model/action_kinds';
 import { actionKindOptions } from '@features/apl/model/kind_options';
 import { swapActionKind } from '@features/apl/model/kind_swap';
-import { rotationSource } from '@features/apl/utils';
 import { APLAction, type APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import { DropdownField } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useId, useMemo } from 'react';
+import { memo, useId, useMemo } from 'react';
 
 import { FieldGroup } from '../FieldGroup';
 import { ValuePicker } from '../ValuePicker';
@@ -30,10 +29,13 @@ type ValidAPLActionKind = NonNullable<APLActionKind>;
  *
  * The kind type is the non-nullable one: the option list is built from the kind table alone, with
  * no empty entry — unlike the value picker's — so "no kind" is not a selection the menu can make.
+ *
+ * Memoised because a list row hands it a config that lives as long as the row, so a rotation change
+ * that leaves the row's content alone stops here instead of re-rendering the row's whole tree.
  */
-export const ActionPicker = ({ player, config }: ActionPickerProps) => {
+export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 	const kindId = useId();
-	const { isPrepull } = useApl();
+	const { isPrepull, changeSource } = useApl();
 
 	const { value, hidden, disabled, shellConfig } = useAplInput(player, config);
 	const kind = value?.action.oneofKind;
@@ -57,7 +59,7 @@ export const ActionPicker = ({ player, config }: ActionPickerProps) => {
 
 	const kindConfig: InputConfig<Player<any>, ValidAPLActionKind> & { id: string } = {
 		id: kindId,
-		storeSubscribe: rotationSource,
+		storeSubscribe: changeSource,
 		getValue: () => config.getValue(player)?.action.oneofKind as ValidAPLActionKind,
 		setValue: (subject: Player<any>, newKind: ValidAPLActionKind) => {
 			const source = config.getValue(subject);
@@ -93,4 +95,4 @@ export const ActionPicker = ({ player, config }: ActionPickerProps) => {
 			</div>
 		</PickerShell>
 	);
-};
+});

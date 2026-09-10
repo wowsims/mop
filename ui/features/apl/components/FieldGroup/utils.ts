@@ -1,6 +1,6 @@
 import type { AplFieldSpec } from '@features/apl/model/field_specs';
-import { rotationSource } from '@features/apl/utils';
 import type { Player } from '@sim/player/player';
+import type { StoreSubscribe } from '@sim/state/subscriptions';
 import type { InputConfig } from '@ui-kit/input';
 
 const INLINE_KINDS: ReadonlySet<AplFieldSpec['kind']> = new Set(['boolean', 'number', 'string']);
@@ -21,12 +21,17 @@ const fieldClasses = (spec: AplFieldSpec): Array<string> | undefined => {
  * path and it stays one, because the whole tree is built on reading the live proto rather than a
  * copy of it — the same reason the notification is a single `touchRotation` from `setValue`.
  */
-export const fieldInputConfig = (spec: AplFieldSpec, id: string, getParentValue: () => any): InputConfig<Player<any>, any> & { id: string } => ({
+export const fieldInputConfig = (
+	spec: AplFieldSpec,
+	id: string,
+	getParentValue: () => any,
+	changeSource: (player: Player<any>) => StoreSubscribe,
+): InputConfig<Player<any>, any> & { id: string } => ({
 	id,
 	label: spec.label,
 	labelTooltip: spec.labelTooltip,
 	extraCssClasses: fieldClasses(spec),
-	storeSubscribe: rotationSource,
+	storeSubscribe: changeSource,
 	getValue: () => {
 		const source = getParentValue();
 		if (!source[spec.field]) source[spec.field] = spec.newValue();

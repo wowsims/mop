@@ -1,5 +1,6 @@
 import { ActionPicker } from '@features/apl/components/ActionPicker';
 import { ValuePicker } from '@features/apl/components/ValuePicker';
+import { useApl } from '@features/apl/context/AplContext';
 import type { AplFieldSpec } from '@features/apl/model/field_specs';
 import type { Player } from '@sim/player/player';
 import { AdaptiveStringPicker } from '@ui-kit/AdaptiveStringPicker';
@@ -41,7 +42,8 @@ export interface AplFieldProps {
  */
 export const AplField = ({ player, spec, getParentValue }: AplFieldProps) => {
 	const id = useId();
-	const config = fieldInputConfig(spec, id, getParentValue);
+	const { changeSource } = useApl();
+	const config = fieldInputConfig(spec, id, getParentValue, changeSource);
 
 	switch (spec.kind) {
 		case 'boolean':
