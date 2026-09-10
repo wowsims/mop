@@ -3,7 +3,7 @@ import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { SimHostObject } from './individual_sim_ui';
-import type { ShellDom } from './shell_dom';
+import type { ShellDom } from './types/shell_dom';
 import { SimShell } from './SimShell';
 
 // Everything the sidebar's ordering does not depend on. The picker is stubbed too: what is under

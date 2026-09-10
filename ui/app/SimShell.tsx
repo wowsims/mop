@@ -15,7 +15,7 @@ import { SimToolbar } from './header/SimToolbar';
 import type { SimHostObject } from './individual_sim_ui';
 import { IterationsPicker } from './IterationsPicker';
 import { showsEpRatios, simUiClasses } from './shell_classes';
-import type { ShellDom } from './shell_dom';
+import type { ShellDom } from './types/shell_dom';
 import { SimImportExport } from './SimImportExport';
 import { SimSidebarActions } from './SimSidebarActions';
 import { SimTabsSection } from './SimTabsSection';

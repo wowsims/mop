@@ -51,7 +51,7 @@ import { toastManager } from '@ui-kit/Toast';
 import { createElement } from 'react';
 
 import { CrashReportOpener } from './crash_report_opener';
-import type { ShellDom } from './shell_dom';
+import type { ShellDom } from './types/shell_dom';
 
 export type {
 	CustomSection,

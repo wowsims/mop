@@ -34,11 +34,11 @@ ui/
                      .github/skills/wowsims-react/SKILL.md. alias @features
   app/               shells + chrome that compose features, and the only place allowed to
                      import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
-                     tabs/ (a React <X>TabBody per tab, beside a small SimTab registration
-                     shim), header/, PresetConfigurationPicker/, shell_classes + shell_dom,
-                     browser_env, known_issues, preset_utils, SettingsDialog/, and the two
-                     vanilla files still to dissolve: sim_ui.tsx,
-                     individual_sim_ui.tsx. alias @app
+                     tabs/ (a React <X>TabBody per tab), header/, SettingsDialog/,
+                     PresetConfigurationPicker/, the sidebar and import/export pieces,
+                     shell_classes, browser_env, known_issues, preset_utils, and
+                     individual_sim_ui.tsx — the host object the React tree reaches through
+                     useSimHost(). types/ holds app-level type modules. alias @app
   i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.ts), at
                      the top level rather than under app/. alias @i18n
