@@ -180,7 +180,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const showDebugConfig = useMemo<BooleanPickerConfig<{ current: boolean }>>(
 		() => ({
 			id: 'log-runner-show-debug',
-			extraCssClasses: ['show-debug-picker'],
+			extraClassNames: ['show-debug-picker'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
 			inline: true,
 			reverse: true,

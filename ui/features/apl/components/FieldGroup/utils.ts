@@ -30,7 +30,7 @@ export const fieldInputConfig = (
 	id,
 	label: spec.label,
 	labelTooltip: spec.labelTooltip,
-	extraCssClasses: fieldClasses(spec),
+	extraClassNames: fieldClasses(spec),
 	storeSubscribe: changeSource,
 	getValue: () => {
 		const source = getParentValue();

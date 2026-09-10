@@ -44,7 +44,7 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 
 	const conditionConfig: InputConfig<Player<any>, APLValue | undefined> = {
 		label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-		extraCssClasses: ['apl-action-condition', 'apl-priority-list-only'],
+		extraClassNames: ['apl-action-condition', 'apl-priority-list-only'],
 		getValue: () => config.getValue(player)?.condition,
 		setValue: (subject: Player<any>, newValue: APLValue | undefined) => {
 			const source = config.getValue(subject);
@@ -72,7 +72,7 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 	};
 
 	const implConfig = (implKind: ValidAPLActionKind): InputConfig<Player<any>, any> => ({
-		extraCssClasses: [`apl-action-${implKind}`],
+		extraClassNames: [`apl-action-${implKind}`],
 		getValue: () => (config.getValue(player)?.action as any)?.[implKind] || actionKinds[implKind].newValue(),
 		setValue: (subject: Player<any>, newValue: any) => {
 			const source = config.getValue(subject);

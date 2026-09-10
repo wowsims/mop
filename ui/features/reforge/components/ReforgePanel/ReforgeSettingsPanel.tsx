@@ -70,7 +70,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<BooleanPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-enable-custom-ep-weights',
 					label: i18n.t('sidebar.buttons.suggest_reforges.use_custom'),
 					inline: true,
@@ -98,7 +98,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 				<BooleanPicker
 					modObject={player}
 					config={{
-						extraCssClasses: ['mb-2'],
+						extraClassNames: ['mb-2'],
 						id: 'reforge-optimizer-enable-soft-cap-breakpoints',
 						label: i18n.t('sidebar.buttons.suggest_reforges.use_soft_cap_breakpoints'),
 						inline: true,
@@ -114,7 +114,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<EnumPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-force-stat-proc',
 					label: i18n.t('sidebar.buttons.suggest_reforges.force_stat_proc'),
 					defaultValue: settings.relativeStatCapStat,
@@ -140,7 +140,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<EnumPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-relcap-precision',
 					label: i18n.t('sidebar.buttons.suggest_reforges.relative_stat_cap_precision'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.relative_stat_cap_precision_tooltip'),
@@ -162,7 +162,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<BooleanPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-include-gems',
 					label: i18n.t('sidebar.buttons.suggest_reforges.include_gems'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.optimize_gems_tooltip'),
@@ -181,7 +181,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<BooleanPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-include-eotbp-socket',
 					label: i18n.t('sidebar.buttons.suggest_reforges.include_eotbp_socket'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.include_eotbp_socket_tooltip'),
@@ -195,7 +195,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<BooleanPicker
 				modObject={player}
 				config={{
-					extraCssClasses: ['mb-2'],
+					extraClassNames: ['mb-2'],
 					id: 'reforge-optimizer-freeze-item-slots',
 					label: i18n.t('sidebar.buttons.suggest_reforges.freeze_item_slots'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.freeze_item_slots_tooltip'),

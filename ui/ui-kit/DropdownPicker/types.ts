@@ -59,5 +59,5 @@ export interface DropdownValueConfig<V> {
 	submenu?: (string | V)[];
 	headerText?: string;
 	tooltip?: string;
-	extraCssClasses?: string[];
+	extraClassNames?: string[];
 }

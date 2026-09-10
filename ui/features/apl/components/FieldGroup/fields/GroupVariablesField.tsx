@@ -83,7 +83,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 				...config,
 				label: undefined,
 				labelTooltip: undefined,
-				extraCssClasses: [...(config.extraCssClasses || []), ...(variables.length ? [] : ['d-none'])],
+				extraClassNames: [...(config.extraClassNames || []), ...(variables.length ? [] : ['d-none'])],
 			}}
 			className="group-reference-variables-container"
 			hidden={false}

@@ -117,18 +117,18 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	const copyTooltip = i18n.t('common.list_picker.copy_to_new', { itemLabel: translateItemLabel(config.itemLabel) });
 	const newLabel = i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: config.itemLabel });
 
-	// The two layout flags and the compact modifier were pushed into `extraCssClasses` (compact) or
+	// The two layout flags and the compact modifier were pushed into `extraClassNames` (compact) or
 	// added to the root afterwards (the other two); the shell owns the root's whole class list, so
 	// they arrive here instead. SERIALIZE sorts class lists, so only the set has to match.
-	const extraCssClasses = [
-		...(config.extraCssClasses || []),
+	const extraClassNames = [
+		...(config.extraClassNames || []),
 		...(config.isCompact ? ['list-picker-compact'] : []),
 		...(config.hideUi ? ['d-none'] : []),
 		...(horizontal ? ['horizontal'] : []),
 	];
 
 	return (
-		<PickerShell config={{ ...config, extraCssClasses, id: config.id ?? listId }} className="list-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={{ ...config, extraClassNames, id: config.id ?? listId }} className="list-picker-root" hidden={hidden} disabled={disabled}>
 			{config.title !== undefined && (
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
 				<span className="list-picker-title form-label">

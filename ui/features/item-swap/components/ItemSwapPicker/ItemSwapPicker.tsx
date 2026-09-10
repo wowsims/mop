@@ -38,7 +38,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 			reverse: true,
 			label: i18n.t('settings_tab.other.enable_item_swap.label'),
 			labelTooltip: i18n.t('settings_tab.other.enable_item_swap.tooltip'),
-			extraCssClasses: ['input-inline'],
+			extraClassNames: ['input-inline'],
 			storeSubscribe: (subject: Player<SpecType>) => subscribePlayerField(subject, 'itemSwap'),
 			getValue: (subject: Player<SpecType>) => subject.itemSwapSettings.getEnableItemSwap(),
 			setValue: (subject: Player<SpecType>, newValue: boolean) => subject.itemSwapSettings.setEnableItemSwap(newValue),

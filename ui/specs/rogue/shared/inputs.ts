@@ -31,7 +31,7 @@ export const LethalPoison = <SpecType extends RogueSpecs>() =>
 // 		fieldName: 'vanishBreakTime',
 // 		label: 'Vanish Break Time',
 // 		labelTooltip: 'Time it takes to start attacking after casting Vanish.',
-// 		extraCssClasses: ['experimental'],
+// 		extraClassNames: ['experimental'],
 // 		showWhen: (player: Player<SpecType>) => player.getTalents().overkill || player.getTalents().masterOfSubtlety > 0,
 // 	});
 

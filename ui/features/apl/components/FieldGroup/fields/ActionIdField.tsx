@@ -80,7 +80,7 @@ export const ActionIdField = ({ player, config, actionIdSet, unitRefField, defau
 						value: value.value,
 						label: value.value.name,
 						icon: <ActionIdIcon actionId={value.value} useBuffAura={useBuffAura} />,
-						itemClassName: value.extraCssClasses,
+						itemClassName: value.extraClassNames,
 						submenu: value.submenu,
 						tooltip: value.tooltip,
 					})),

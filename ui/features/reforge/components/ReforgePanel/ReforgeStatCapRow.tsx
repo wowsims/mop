@@ -71,7 +71,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip 
 							maxDecimalDigits: 5,
 							showZeroes: false,
 							positive: true,
-							extraCssClasses: ['mb-0'],
+							extraClassNames: ['mb-0'],
 							enableWhen,
 							storeSubscribe,
 							getValue,
@@ -103,7 +103,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip 
 							modObject={player}
 							config={{
 								id: `reforge-optimizer-${statName}-presets`,
-								extraCssClasses: ['mb-0'],
+								extraClassNames: ['mb-0'],
 								label: '',
 								values: presetValues,
 								enableWhen,

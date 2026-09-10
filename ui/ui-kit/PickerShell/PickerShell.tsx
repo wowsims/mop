@@ -33,7 +33,7 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			ref={ref}
 			disabled={disabled}
 			className={dedupe(
-				clsx('input-root', className, config.inline && 'input-inline', config.extraCssClasses, disabled && 'disabled', hidden && 'hide'),
+				clsx('input-root', className, config.inline && 'input-inline', config.extraClassNames, disabled && 'disabled', hidden && 'hide'),
 			)}>
 			{leading}
 			{config.label && (

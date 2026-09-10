@@ -115,7 +115,7 @@ export const actionIdSets: Record<
 					return {
 						value: actionId.id,
 						submenu: ['spell'],
-						extraCssClasses: actionId.data.prepullOnly
+						extraClassNames: actionId.data.prepullOnly
 							? ['apl-prepull-actions-only']
 							: actionId.data.encounterOnly
 								? ['apl-priority-list-only']
@@ -133,7 +133,7 @@ export const actionIdSets: Record<
 					return {
 						value: actionId.id,
 						submenu: ['cooldowns'],
-						extraCssClasses: actionId.data.prepullOnly
+						extraClassNames: actionId.data.prepullOnly
 							? ['apl-prepull-actions-only']
 							: actionId.data.encounterOnly
 								? ['apl-priority-list-only']
@@ -151,7 +151,7 @@ export const actionIdSets: Record<
 					return {
 						value: actionId.id,
 						submenu: ['non_combat_potions'],
-						extraCssClasses: actionId.data.prepullOnly
+						extraClassNames: actionId.data.prepullOnly
 							? ['apl-prepull-actions-only']
 							: actionId.data.encounterOnly
 								? ['apl-priority-list-only']

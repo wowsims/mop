@@ -20,7 +20,7 @@ export const TargetInputsPicker = ({ encounter, targetIndex }: TargetInputsPicke
 		(): ListPickerConfig<Encounter, TargetInput> => ({
 			allowedActions: [],
 			itemLabel: i18n.t('settings_tab.encounter.target_inputs.label'),
-			extraCssClasses: ['mt-2'],
+			extraClassNames: ['mt-2'],
 			isCompact: true,
 			storeSubscribe: (subject: Encounter) => subscribeEncounterField(subject, 'targets'),
 			getValue: (subject: Encounter) => subject.getTargets()[targetIndex].targetInputs.slice(),

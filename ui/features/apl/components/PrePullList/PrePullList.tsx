@@ -19,7 +19,7 @@ export const PrePullList = () => {
 	const config: ListPickerConfig<Player<any>, APLPrepullAction> = {
 		title: i18n.t('rotation_tab.apl.prePullActions.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.prePullActions.tooltips.overview'),
-		extraCssClasses: ['apl-list-item-picker', 'apl-prepull-action-picker'],
+		extraClassNames: ['apl-list-item-picker', 'apl-prepull-action-picker'],
 		itemLabel: i18n.t('rotation_tab.apl.prePullActions.name'),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.prepullActions,
@@ -49,7 +49,7 @@ export const PrePullList = () => {
 									config={{
 										label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 										labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
-										extraCssClasses: ['apl-prepull-actions-doat'],
+										extraClassNames: ['apl-prepull-actions-doat'],
 										inline: true,
 										getValue: () => itemConfig.getValue(player)?.doAtValue,
 										setValue: (subject: Player<any>, newValue: APLValue | undefined) => {

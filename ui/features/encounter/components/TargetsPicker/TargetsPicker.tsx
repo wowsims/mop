@@ -17,7 +17,7 @@ export interface TargetsPickerProps {
 export const TargetsPicker = ({ encounter }: TargetsPickerProps) => {
 	const config = useMemo(
 		(): ListPickerConfig<Encounter, TargetProto> => ({
-			extraCssClasses: ['targets-picker', 'mb-0'],
+			extraClassNames: ['targets-picker', 'mb-0'],
 			itemLabel: i18n.t('settings_tab.encounter.target'),
 			storeSubscribe: (subject: Encounter) => subscribeEncounterField(subject, 'targets'),
 			getValue: (subject: Encounter) => subject.getTargets().slice(),

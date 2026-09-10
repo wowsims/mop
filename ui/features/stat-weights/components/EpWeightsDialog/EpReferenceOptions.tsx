@@ -65,7 +65,7 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 						config={{
 							id: reference.id,
 							label: reference.label,
-							extraCssClasses: ['ref-stat-select', metricsClassName(reference.metric)],
+							extraClassNames: ['ref-stat-select', metricsClassName(reference.metric)],
 							values,
 							storeSubscribe: subject => subscribePlayerField(subject, 'epRefStat'),
 							getValue: reference.getValue,

@@ -58,7 +58,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 										modObject={player}
 										config={{
 											id: `reforge-optimizer-${statName}-presets`,
-											extraCssClasses: ['mb-0'],
+											extraClassNames: ['mb-0'],
 											label: '',
 											values: [
 												{ name: i18n.t('sidebar.buttons.suggest_reforges.no_limit_set'), value: 0 },

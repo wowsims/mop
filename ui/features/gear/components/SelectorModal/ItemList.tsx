@@ -116,7 +116,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						modObject={sim}
 						config={{
 							id: 'phase-selector',
-							extraCssClasses: ['phase-selector'],
+							extraClassNames: ['phase-selector'],
 							values: [
 								{ name: i18n.t('common.phases.1'), value: 1 },
 								{ name: i18n.t('common.phases.2'), value: 2 },
@@ -137,7 +137,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-1h-weapons-selector',
-								extraCssClasses: ['show-1h-weapons-selector', 'mb-0'],
+								extraClassNames: ['show-1h-weapons-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_1h_weapons.label'),
 								inline: true,
 								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
@@ -157,7 +157,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-2h-weapons-selector',
-								extraCssClasses: ['show-2h-weapons-selector', 'mb-0'],
+								extraClassNames: ['show-2h-weapons-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_2h_weapons.label'),
 								inline: true,
 								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
@@ -176,7 +176,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						modObject={sim}
 						config={{
 							id: 'show-matching-gems-selector',
-							extraCssClasses: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
+							extraClassNames: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
 							label: i18n.t('settings_tab.other.show_matching_gems.label'),
 							inline: true,
 							storeSubscribe: subject => subscribeSimField(subject, 'filters'),
@@ -195,7 +195,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-ep-values-selector',
-								extraCssClasses: ['show-ep-values-selector', 'input-inline', 'mb-0'],
+								extraClassNames: ['show-ep-values-selector', 'input-inline', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_ep_values.label'),
 								inline: true,
 								storeSubscribe: subject => subscribeUiField(subject, 'showEPValues'),

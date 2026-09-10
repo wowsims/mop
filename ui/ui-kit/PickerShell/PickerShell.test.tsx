@@ -24,10 +24,10 @@ const shell = (config: InputConfig<Mod, string> & { id: string }, props: { hidde
 const root = () => document.querySelector('.input-root')!;
 
 describe('PickerShell', () => {
-	// The vanilla Input adds input-inline and extraCssClasses at construction and toggles
+	// The vanilla Input adds input-inline and extraClassNames at construction and toggles
 	// disabled/hide afterwards, so those two come last in the class list.
 	it('builds the root class list in the order the vanilla Input produces', () => {
-		shell(configFor({ inline: true, extraCssClasses: ['apl-picker'] }), { hidden: true, disabled: true });
+		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
 		expect(root().getAttribute('class')).toBe('input-root number-picker-root input-inline apl-picker disabled hide');
 	});
 
@@ -103,12 +103,12 @@ describe('PickerShell', () => {
 	});
 
 	// `classList.add` drops a repeat and clsx does not. The gear selector modal's matching-gems and
-	// show-EP configs (`SelectorModal/ItemList.tsx`) ship `input-inline` in `extraCssClasses` while
+	// show-EP configs (`SelectorModal/ItemList.tsx`) ship `input-inline` in `extraClassNames` while
 	// also setting `inline` — so a duplicate would reach the DOM and the parity harness.
 	it('emits a class once when a config supplies it twice', () => {
 		const { container } = render(
 			<PickerShell
-				config={{ id: 'x', inline: true, extraCssClasses: ['input-inline', 'mb-0'], getValue: () => 0, setValue: () => {} }}
+				config={{ id: 'x', inline: true, extraClassNames: ['input-inline', 'mb-0'], getValue: () => 0, setValue: () => {} }}
 				className="number-picker-root"
 				hidden={false}
 				disabled={false}

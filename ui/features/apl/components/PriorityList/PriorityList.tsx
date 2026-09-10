@@ -31,7 +31,7 @@ export const PriorityList = () => {
 	const config: ListPickerConfig<Player<any>, APLListItem> = {
 		title: i18n.t('rotation_tab.apl.priorityList.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.priorityList.tooltips.overview'),
-		extraCssClasses: ['apl-list-item-picker'],
+		extraClassNames: ['apl-list-item-picker'],
 		itemLabel: itemLabel(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.priorityList,

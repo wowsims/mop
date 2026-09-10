@@ -15,7 +15,7 @@ export const IterationsPicker = ({ sim }: IterationsPickerProps) => (
 		config={{
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
-			extraCssClasses: ['iterations-picker'],
+			extraClassNames: ['iterations-picker'],
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (sim: Sim, newValue: number) => {

@@ -10,7 +10,7 @@ export interface InputConfig<ModObject, T, V = T> {
 	description?: string | Element;
 	inline?: boolean;
 	id?: string;
-	extraCssClasses?: Array<string>;
+	extraClassNames?: Array<string>;
 
 	defaultValue?: T;
 

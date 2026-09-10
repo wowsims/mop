@@ -27,7 +27,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 		(): NumberPickerConfig<Player<any>> => ({
 			id: `character-bonus-stat-${rootStat}`,
 			label,
-			extraCssClasses: ['mb-0'],
+			extraClassNames: ['mb-0'],
 			storeSubscribe: subject => subscribePlayerField(subject, 'bonusStats'),
 			getValue: subject => subject.getBonusStats().getStat(rootStat),
 			setValue: (subject, newValue) => {

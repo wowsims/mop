@@ -47,7 +47,7 @@ export const RequiredSetBonuses = () => {
 								id: `${setBonusDomId(setBonus)}-4p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
 								inline: true,
-								extraCssClasses: ['bulk-required-set-bonus'],
+								extraClassNames: ['bulk-required-set-bonus'],
 								storeSubscribe: () => subscribeBulkChange(bt),
 								enableWhen: () => bt.canEnableRequiredFourPiece(setBonus),
 								getValue: () => bt.requiredSetBonuses.get(setBonus.setId)?.pieces === 4,

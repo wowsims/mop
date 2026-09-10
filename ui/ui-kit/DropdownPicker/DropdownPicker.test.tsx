@@ -107,7 +107,7 @@ describe('DropdownPicker', () => {
 		expect(items()[0].className).toBe('dropdown-picker-item');
 	});
 
-	// Vanilla's `popperConfig: { strategy: 'fixed' }` plus `extraCssClasses: ['dropup']`, which is what
+	// Vanilla's `popperConfig: { strategy: 'fixed' }` plus `extraClassNames: ['dropup']`, which is what
 	// a picker sitting in an overflow-clipped drawer at the bottom of the page needs.
 	describe('side and positionMethod', () => {
 		const positioner = () => root().querySelector('.dropdown-picker-positioner') as HTMLElement;

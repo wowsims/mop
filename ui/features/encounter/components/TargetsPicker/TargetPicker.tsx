@@ -47,7 +47,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const level = useMemo(() => levelConfig(context), [context]);
 	const mobType = useMemo(() => mobTypeConfig(context), [context]);
 	const tankIndex = useMemo(() => tankIndexConfig(context), [context]);
-	const stats = useMemo(() => ALL_TARGET_STATS.map(entry => statConfig(context, entry.stat, entry.tooltip, entry.extraCssClasses)), [context]);
+	const stats = useMemo(() => ALL_TARGET_STATS.map(entry => statConfig(context, entry.stat, entry.tooltip, entry.extraClassNames)), [context]);
 	const numbers = useMemo(() => numberConfigs(context), [context]);
 	const booleans = useMemo(() => booleanConfigs(context), [context]);
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);

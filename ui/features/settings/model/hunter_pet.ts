@@ -4,7 +4,7 @@ import { HunterOptions_PetType as PetType } from '@generated/proto/hunter';
 import * as InputHelpers from '@ui-kit/input_helpers';
 export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHelpers.TypedIconEnumPickerConfig<any, PetType> {
 	return InputHelpers.makeClassOptionsEnumIconInput<SpecType, PetType>({
-		extraCssClasses: ['pet-type-picker'],
+		extraClassNames: ['pet-type-picker'],
 		fieldName: 'petType',
 		numColumns: 5,
 		values: [

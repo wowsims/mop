@@ -26,7 +26,7 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 		return {
 			id: 'aem-encounter-picker',
 			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-			extraCssClasses: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
+			extraClassNames: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
 			values: [{ name: 'Custom', value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
 			storeSubscribe: subscribeEncounterChange,
 			getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),

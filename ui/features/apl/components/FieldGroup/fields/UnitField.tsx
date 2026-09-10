@@ -35,7 +35,7 @@ export const UnitField = ({ player, config, unitSet }: UnitFieldProps) => {
 
 	const boundConfig = {
 		...config,
-		extraCssClasses: ['unit-picker-root', 'apl-unit-picker', ...(config.extraCssClasses || [])],
+		extraClassNames: ['unit-picker-root', 'apl-unit-picker', ...(config.extraClassNames || [])],
 		sourceToValue: (source: UnitReference | undefined) => refToValue(source, player, targetUI),
 		valueToSource: (unit: UnitValue) => unit.value,
 	};

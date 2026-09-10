@@ -54,7 +54,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			id: 'simui-fixed-rng-seed',
 			label: i18n.t('info.options.fixed_rng_seed.label'),
 			labelTooltip: i18n.t('info.options.fixed_rng_seed.tooltip'),
-			extraCssClasses: ['mb-0'],
+			extraClassNames: ['mb-0'],
 			storeSubscribe: (subject: Sim) => subscribeSimField(subject, 'fixedRngSeed'),
 			getValue: (subject: Sim) => subject.getFixedRngSeed(),
 			setValue: (subject: Sim, newValue: number) => {

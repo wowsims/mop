@@ -118,7 +118,7 @@ describe('ListPicker', () => {
 		});
 
 		it('folds the layout flags onto the root', () => {
-			mount(rowsOf('a'), { isCompact: true, hideUi: true, horizontalLayout: true, extraCssClasses: ['targets-picker'] });
+			mount(rowsOf('a'), { isCompact: true, hideUi: true, horizontalLayout: true, extraClassNames: ['targets-picker'] });
 
 			const classes = root().className.split(' ');
 			expect(classes).toContain('list-picker-compact');
