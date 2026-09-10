@@ -1,7 +1,7 @@
 import { BulkRequiredSetBonus, BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
+import { BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BulkSimItemSlot,
@@ -43,16 +43,10 @@ import {
 } from './model/set_bonuses';
 import { buildTieChains } from './model/tie_chains';
 
-export interface BulkResults {
-	chains: TopGearResult[][];
-	originalGearResults: TopGearResult;
-}
-
 /**
  * The bulk feature's model.
  *
- * It renders nothing: `BulkTabBody` is the tab's React body and reads everything here through
- * `subscribe`/`getRevision` and the bulk store slice.
+ * It renders nothing: `BulkTabBody` is the tab's React body and reads the bulk store slice.
  */
 export class BulkTab extends Disposable {
 	readonly simUI: IndividualSimHost<any>;
@@ -74,42 +68,49 @@ export class BulkTab extends Disposable {
 
 	protected simStart: number = 0;
 	protected bulkSimStartedAt: number = 0;
-	combinations = 0;
-	iterations = 0;
-	combinationsPending = false;
-	protected isRunning: boolean = false;
 	protected isCancelling = false;
 	protected bulkSimAbortController: AbortController | null = null;
 	protected bulkSimAbortPromise: Promise<void> | null = null;
 	protected usesLegacyBulkSim = false;
 	private combinationsCalcRequestVersion = 0;
 
-	inheritUpgrades: boolean = true;
-	useLegacyBulkSim: boolean = false;
-	requiredSetBonuses: Map<number, BulkRequiredSetBonus> = new Map();
-	frozenItems: Map<BulkSimItemSlot, EquippedItem | null> = new Map([
-		[BulkSimItemSlot.ItemSlotFinger, null],
-		[BulkSimItemSlot.ItemSlotTrinket, null],
-	]);
-	frozenWeaponSlot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand | undefined = undefined;
-	weaponTypeFilters: Map<ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand, WeaponType[]> = new Map([
-		[ItemSlot.ItemSlotMainHand, []],
-		[ItemSlot.ItemSlotOffHand, []],
-	]);
-
 	protected topGearResults: TopGearResult[] | null = null;
 	protected originalGear: Gear | null = null;
 	protected originalGearResults: TopGearResult | null = null;
-	private results: BulkResults | null = null;
-	private started = false;
 	private progress: BulkProgress | null = null;
 
-	// Everything the React body reads that is not in the store slice: the run flag, the results and
-	// the combination count. One revision counter, because a `useSyncExternalStore` snapshot has to
-	// be a stable value and these three always change together with a render.
-	private revision = 0;
-	private readonly listeners = new Set<() => void>();
 	private readonly progressListeners = new Set<(progress: BulkProgress) => void>();
+
+	get combinations(): number {
+		return this.settingsStore.state.combinations;
+	}
+	get iterations(): number {
+		return this.settingsStore.state.iterations;
+	}
+	get combinationsPending(): boolean {
+		return this.settingsStore.state.combinationsPending;
+	}
+	protected get isRunning(): boolean {
+		return this.settingsStore.state.isRunning;
+	}
+	get inheritUpgrades(): boolean {
+		return this.settingsStore.state.inheritUpgrades;
+	}
+	get useLegacyBulkSim(): boolean {
+		return this.settingsStore.state.useLegacyBulkSim;
+	}
+	get requiredSetBonuses(): ReadonlyMap<number, BulkRequiredSetBonus> {
+		return this.settingsStore.state.requiredSetBonuses;
+	}
+	get frozenItems(): ReadonlyMap<BulkSimItemSlot, EquippedItem | null> {
+		return this.settingsStore.state.frozenItems;
+	}
+	get frozenWeaponSlot(): ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand | undefined {
+		return this.settingsStore.state.frozenWeaponSlot;
+	}
+	get weaponTypeFilters(): ReadonlyMap<ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand, WeaponType[]> {
+		return this.settingsStore.state.weaponTypeFilters;
+	}
 
 	// Memos for the set-bonus feasibility checks. Every BooleanPicker's enableWhen runs the
 	// full picker scan + per-slot DP on each settings/items change; these cache the answers
@@ -215,26 +216,12 @@ export class BulkTab extends Disposable {
 		});
 	}
 
-	readonly subscribe = (listener: () => void): (() => void) => {
-		this.listeners.add(listener);
-		return () => {
-			this.listeners.delete(listener);
-		};
-	};
-
-	readonly getRevision = (): number => this.revision;
-
-	private notify() {
-		this.revision += 1;
-		for (const listener of this.listeners) listener();
-	}
-
 	readonly isBulkRunning = (): boolean => this.isRunning;
 
-	readonly getResults = (): BulkResults | null => this.results;
+	readonly getResults = (): BulkResults | null => this.settingsStore.state.results;
 
 	/** Starting a run empties the results pane, so the invitation to run one does not come back. */
-	readonly hasStarted = (): boolean => this.started;
+	readonly hasStarted = (): boolean => this.settingsStore.state.started;
 
 	/** The batch's own progress ticks, kept out of `notify` so a tick renders one leaf. */
 	readonly onProgress = (listener: (progress: BulkProgress) => void): (() => void) => {
@@ -255,7 +242,7 @@ export class BulkTab extends Disposable {
 	// Bumps a version counter — the one write path where the tab used to emit.
 	// The values themselves stay on the tab (nothing reads them from the store).
 	private bump(field: 'settings' | 'items') {
-		this.settingsStore.touch(field);
+		this.settingsStore.patch({}, [field]);
 	}
 
 	private loadSettings() {
@@ -461,8 +448,7 @@ export class BulkTab extends Disposable {
 			if (combinationCountResult.error) {
 				throw new Error(combinationCountResult.error.message || 'Failed to calculate bulk combinations');
 			}
-			this.combinations = combinationCountResult.combinations;
-			this.iterations = combinationCountResult.iterations;
+			this.settingsStore.patch({ combinations: combinationCountResult.combinations, iterations: combinationCountResult.iterations });
 			this.usesLegacyBulkSim = combinationCountResult.useLegacyBulkSim;
 		} catch (e) {
 			this.simUI.handleCrash(e);
@@ -471,14 +457,12 @@ export class BulkTab extends Disposable {
 
 	private async refreshCombinationsCount() {
 		const requestVersion = ++this.combinationsCalcRequestVersion;
-		this.combinationsPending = true;
-		this.notify();
+		this.settingsStore.patch({ combinationsPending: true });
 		await this.calculateBulkCombinations();
 		if (requestVersion !== this.combinationsCalcRequestVersion) {
 			return;
 		}
-		this.combinationsPending = false;
-		this.notify();
+		this.settingsStore.patch({ combinationsPending: false });
 	}
 
 	private canSatisfyRequiredSetBonus(setId: number, pieces: number): boolean {
@@ -500,8 +484,7 @@ export class BulkTab extends Disposable {
 	}
 
 	setInheritUpgrades(newValue: boolean) {
-		this.inheritUpgrades = newValue;
-		this.bump('settings');
+		this.settingsStore.patch({ inheritUpgrades: newValue }, ['settings']);
 	}
 
 	getFreezeWeaponTypes(slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand): WeaponType[] {
@@ -513,8 +496,7 @@ export class BulkTab extends Disposable {
 			return;
 		}
 
-		this.frozenItems.set(bulkSlot, item);
-		this.bump('settings');
+		this.settingsStore.patch({ frozenItems: new Map(this.frozenItems).set(bulkSlot, item) }, ['settings']);
 	}
 
 	private getEquippedItemForFrozenSlot(bulkSlot: BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket, itemSlot: number): EquippedItem | null {
@@ -539,10 +521,7 @@ export class BulkTab extends Disposable {
 			return false;
 		}
 
-		this.weaponTypeFilters.set(slot, newFilter);
-		if (shouldEmit) {
-			this.bump('settings');
-		}
+		this.settingsStore.patch({ weaponTypeFilters: new Map(this.weaponTypeFilters).set(slot, newFilter) }, shouldEmit ? ['settings'] : []);
 		return true;
 	}
 
@@ -560,27 +539,23 @@ export class BulkTab extends Disposable {
 			return false;
 		}
 
-		this.frozenWeaponSlot = newSlot;
-		this.bump('settings');
+		this.settingsStore.patch({ frozenWeaponSlot: newSlot }, ['settings']);
 		return true;
 	}
 
 	setUseLegacyBulkSim(newValue: boolean) {
-		this.useLegacyBulkSim = newValue;
-		this.bump('settings');
+		this.settingsStore.patch({ useLegacyBulkSim: newValue }, ['settings']);
 	}
 
 	setRequiredSetBonus(setBonus: BulkSetBonusOption, pieces: number) {
 		const next = nextRequiredSetBonuses(this.requiredSetBonuses, setBonus, pieces, (id, count) => this.canSatisfyRequiredSetBonus(id, count));
 		if (!next) return;
 
-		this.requiredSetBonuses = next;
-		this.bump('settings');
+		this.settingsStore.patch({ requiredSetBonuses: next }, ['settings']);
 	}
 
 	private setRequiredSetBonuses(requiredSetBonuses: BulkRequiredSetBonus[]) {
-		this.requiredSetBonuses = sanitiseRequiredSetBonuses(requiredSetBonuses);
-		this.bump('settings');
+		this.settingsStore.patch({ requiredSetBonuses: sanitiseRequiredSetBonuses(requiredSetBonuses) }, ['settings']);
 	}
 
 	showIterationsWarning(): boolean {
@@ -701,12 +676,10 @@ export class BulkTab extends Disposable {
 			value: this.combinations,
 		});
 
-		this.isRunning = true;
 		this.isCancelling = false;
-		this.started = true;
 		this.bulkSimStartedAt = new Date().getTime();
 		this.progress = null;
-		this.notify();
+		this.settingsStore.patch({ isRunning: true, started: true });
 		const usesWasmConcurrency = await this.simUI.sim.shouldUseWasmConcurrency();
 		await this.simUI.sim.waitForInit();
 		const useNativeBulkSim = this.simUI.sim.isNative ?? false;
@@ -720,6 +693,7 @@ export class BulkTab extends Disposable {
 		const playerPhase = this.simUI.sim.getPhase() >= 2;
 		const backendBulkSettings = useNativeBulkSim ? this.createBulkSettings() : undefined;
 		let candidateGearSets: Gear[] = [];
+		let results: BulkResults | null = null;
 		let runError: unknown = null;
 		const batchCompleteMetrics: Record<string, string | number> = {
 			is_native: useNativeBulkSim ? 1 : 0,
@@ -733,9 +707,8 @@ export class BulkTab extends Disposable {
 			this.simStart = new Date().getTime();
 			this.originalGear = this.simUI.player.getGear();
 
-			this.results = null;
 			this.setCandidateGearProgress();
-			this.notify();
+			this.settingsStore.patch({ results: null });
 			// Yield a frame so the progress modal paints before the combination calculation.
 			await new Promise(requestAnimationFrame);
 			await this.calculateBulkCombinations();
@@ -751,7 +724,7 @@ export class BulkTab extends Disposable {
 				candidateGearSets = bulkCandidatesResult.candidates
 					.filter(candidate => !!candidate.gear)
 					.map(candidate => this.simUI.sim.db.lookupEquipmentSpec(candidate.gear!));
-				this.combinations = bulkCandidatesResult.combinations;
+				this.settingsStore.patch({ combinations: bulkCandidatesResult.combinations });
 				batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
 				batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 			}
@@ -775,7 +748,7 @@ export class BulkTab extends Disposable {
 			this.topGearResults.push(this.originalGearResults);
 			this.topGearResults.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 
-			this.results = {
+			results = {
 				chains: buildTieChains(this.topGearResults, this.originalGearResults, Math.max(1, this.simUI.sim.getIterations())),
 				originalGearResults: this.originalGearResults,
 			};
@@ -824,9 +797,8 @@ export class BulkTab extends Disposable {
 					body: i18n.t('bulk_tab.notifications.bulk_sim_cancelled'),
 				});
 			}
-			this.isRunning = false;
 			this.isCancelling = false;
-			this.notify();
+			this.settingsStore.patch(results ? { isRunning: false, results } : { isRunning: false });
 		}
 	}
 

@@ -18,6 +18,11 @@ export interface TopGearResult {
 	pairedErrorToBaseline?: number;
 }
 
+export interface BulkResults {
+	chains: TopGearResult[][];
+	originalGearResults: TopGearResult;
+}
+
 export interface BulkSimRoundConfig {
 	currentRound: number;
 	totalRounds: number;

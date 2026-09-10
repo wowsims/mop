@@ -1,17 +1,37 @@
-// Facade over the bulk tab's store slice and its persisted settings blob —
-// extracted from components/individual_sim_ui/bulk_tab.tsx so the UI neither
-// writes the store directly nor owns a localStorage key.
-//
-// The slice holds version counters only: the values themselves stay on the tab
-// (nothing reads them from the store), so `touch` is the tab's one write path.
+// Facade over the bulk tab's store slice and its persisted settings blob, so the
+// UI neither writes the store directly nor owns a localStorage key.
 import { BulkSettings as BulkSettingsProto } from '@generated/proto/api';
+import { ItemSlot } from '@generated/proto/common';
 
+import { BulkSimItemSlot } from '../bulk/constants_auto_gen';
 import type { Player } from '../player/player';
 import type { Env } from '../state/env';
-import { patchKeyed, seedKeyed, SimStore } from '../state/sim_store';
+import { BulkSlice, patchKeyed, seedKeyed, SimStore } from '../state/sim_store';
 
 const BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v2';
 const LEGACY_BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v1';
+
+const initialBulkSlice = (): BulkSlice => ({
+	inheritUpgrades: true,
+	useLegacyBulkSim: false,
+	requiredSetBonuses: new Map(),
+	frozenItems: new Map([
+		[BulkSimItemSlot.ItemSlotFinger, null],
+		[BulkSimItemSlot.ItemSlotTrinket, null],
+	]),
+	frozenWeaponSlot: undefined,
+	weaponTypeFilters: new Map([
+		[ItemSlot.ItemSlotMainHand, []],
+		[ItemSlot.ItemSlotOffHand, []],
+	]),
+	combinations: 0,
+	iterations: 0,
+	combinationsPending: false,
+	isRunning: false,
+	started: false,
+	results: null,
+	v: { settings: 0, items: 0 },
+});
 
 export class BulkSettingsStore {
 	private readonly env: Env;
@@ -30,12 +50,15 @@ export class BulkSettingsStore {
 		this.storeKey = player.storeKey;
 
 		// Seed the slice before any subscriber exists (emit-less).
-		seedKeyed(this.store, 'bulk', this.storeKey, { v: { settings: 0, items: 0 } });
+		seedKeyed(this.store, 'bulk', this.storeKey, initialBulkSlice());
 	}
 
-	// Bumps a version counter — where the tab used to emit.
-	touch(field: 'settings' | 'items') {
-		patchKeyed(this.store, 'bulk', this.storeKey, {}, [field]);
+	get state(): BulkSlice {
+		return this.store.getState().bulk[this.storeKey];
+	}
+
+	patch(patch: Partial<Omit<BulkSlice, 'v'>>, bumps: ReadonlyArray<keyof BulkSlice['v']> = []) {
+		patchKeyed(this.store, 'bulk', this.storeKey, patch, bumps);
 	}
 
 	// Reads the persisted blob, dropping the v1 key on the way. Returns null

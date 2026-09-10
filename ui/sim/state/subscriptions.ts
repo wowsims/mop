@@ -196,5 +196,5 @@ export function subscribeBulkField(owner: BulkOwner, field: 'settings' | 'items'
 	return fromSelector(owner.sim.store, s => s.bulk[owner.storeKey]?.v[field]);
 }
 export function subscribeBulkChange(owner: BulkOwner): StoreSubscribe {
-	return fromSelector(owner.sim.store, s => s.bulk[owner.storeKey]);
+	return subscribeAll([subscribeBulkField(owner, 'settings'), subscribeBulkField(owner, 'items')]);
 }

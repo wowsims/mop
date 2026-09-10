@@ -5,7 +5,7 @@
 //
 // Slices are added here as each facade is converted; a slice absent from this
 // file still lives in its class.
-import type { PlayerStats } from '@generated/proto/api';
+import type { BulkRequiredSetBonus, PlayerStats } from '@generated/proto/api';
 import {
 	ConsumesSpec,
 	Debuffs,
@@ -13,17 +13,22 @@ import {
 	Glyphs,
 	HealingModel,
 	IndividualBuffs,
+	type ItemSlot,
 	PartyBuffs,
 	RaidBuffs,
 	Target as TargetProto,
 	UnitReference,
+	type WeaponType,
 } from '@generated/proto/common';
 import { DatabaseFilters } from '@generated/proto/ui';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
+import type { BulkSimItemSlot } from '../bulk/constants_auto_gen';
+import type { BulkResults } from '../bulk/types';
 import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
 import { CURRENT_PHASE } from '../constants/other';
+import type { EquippedItem } from '../proto/equipped_item';
 import type { Gear, ItemSwapGear } from '../proto/gear';
 import type { StatCap, Stats } from '../proto/stats';
 
@@ -197,9 +202,22 @@ export interface StatWeightsSlice {
 	v: { settings: number };
 }
 
-// Bulk (batch) sim tab: version counters the tab bumps where it used to emit
-// (see BulkTab.bump). The values themselves stay on the tab.
+// Bulk (batch) sim tab, one slice per player. The autosave and the combination
+// count react to the `v` counters, never to the entry: the run fields are
+// written without a bump because the combination count writes them itself.
 export interface BulkSlice {
+	inheritUpgrades: boolean;
+	useLegacyBulkSim: boolean;
+	requiredSetBonuses: ReadonlyMap<number, BulkRequiredSetBonus>;
+	frozenItems: ReadonlyMap<BulkSimItemSlot, EquippedItem | null>;
+	frozenWeaponSlot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand | undefined;
+	weaponTypeFilters: ReadonlyMap<ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand, WeaponType[]>;
+	combinations: number;
+	iterations: number;
+	combinationsPending: boolean;
+	isRunning: boolean;
+	started: boolean;
+	results: BulkResults | null;
 	v: { settings: number; items: number };
 }
 
