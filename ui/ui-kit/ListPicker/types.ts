@@ -12,7 +12,7 @@ export interface ListPickerActionsConfig {
 }
 
 export interface ListPickerExtraAction {
-	cssClass: string;
+	className: string;
 	icon: string;
 	tooltip: string;
 	onClick: (index: number) => void;

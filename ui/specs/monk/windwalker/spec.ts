@@ -21,7 +21,7 @@ import * as MonkPresets from '../shared/presets';
 export default defineSpec<Spec.SpecWindwalkerMonk>({
 	spec: Spec.SpecWindwalkerMonk,
 
-	cssClass: 'windwalker-monk-sim-ui',
+	className: 'windwalker-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

@@ -22,7 +22,7 @@ export default defineSpec<Spec.SpecMistweaverMonk>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'mistweaver-monk-sim-ui',
+	className: 'mistweaver-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

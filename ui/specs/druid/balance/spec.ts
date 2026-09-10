@@ -137,7 +137,7 @@ const statSelectionHastePreset = (() => {
 export default defineSpec<Spec.SpecBalanceDruid>({
 	spec: Spec.SpecBalanceDruid,
 
-	cssClass: 'balance-druid-sim-ui',
+	className: 'balance-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
 	// List any known bugs / issues here, and they'll be shown on the site.
 	knownIssues: [],

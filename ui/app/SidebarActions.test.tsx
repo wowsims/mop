@@ -26,9 +26,9 @@ beforeEach(() => {
 describe('SidebarActions', () => {
 	it('renders entries in the registry order, buttons and custom entries alike', () => {
 		const registry = new SidebarRegistry();
-		registry.add({ id: 'dps-action', label: 'Simulate', cssClass: 'dps-action', onClick: () => {} });
+		registry.add({ id: 'dps-action', label: 'Simulate', className: 'dps-action', onClick: () => {} });
 		registry.add({ id: 'custom', render: () => <div className="custom-entry" /> });
-		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', cssClass: 'ep-weights-action', onClick: () => {} });
+		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', className: 'ep-weights-action', onClick: () => {} });
 
 		// Class *sets*, sorted: `Button` composes `btn btn-primary` ahead of the caller's classes, and
 		// the parity gates sort class lists for the same reason — order carries no meaning.

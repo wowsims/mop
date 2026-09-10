@@ -19,7 +19,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecSubtletyRogue>({
 	spec: Spec.SpecSubtletyRogue,
 
-	cssClass: 'subtlety-rogue-sim-ui',
+	className: 'subtlety-rogue-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

@@ -19,7 +19,7 @@ export default defineSpec<Spec.SpecBrewmasterMonk>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'brewmaster-monk-sim-ui',
+	className: 'brewmaster-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

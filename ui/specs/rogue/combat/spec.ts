@@ -18,7 +18,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecCombatRogue>({
 	spec: Spec.SpecCombatRogue,
 
-	cssClass: 'combat-rogue-sim-ui',
+	className: 'combat-rogue-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

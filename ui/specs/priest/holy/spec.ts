@@ -16,7 +16,7 @@ export default defineSpec<Spec.SpecHolyPriest>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'holy-priest-sim-ui',
+	className: 'holy-priest-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Priest),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecRestorationShaman>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'restoration-shaman-sim-ui',
+	className: 'restoration-shaman-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Shaman),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

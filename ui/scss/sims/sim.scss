@@ -5,7 +5,7 @@
 @import '../core/components/totem_inputs';
 
 // Set color variables which control the site theme.
-// One table drives every spec's `.<cssClass>-sim-ui { @include theme-color(...) }` rule
+// One table drives every spec's `.<className>-sim-ui { @include theme-color(...) }` rule
 // (previously 34 near-identical per-spec `_sim.scss` files).
 $sim-themes: (
 	'blood-death-knight-sim-ui': (

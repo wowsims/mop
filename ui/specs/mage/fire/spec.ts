@@ -88,7 +88,7 @@ const statSelectionPresets = [
 export default defineSpec<Spec.SpecFireMage>({
 	spec: Spec.SpecFireMage,
 
-	cssClass: 'fire-mage-sim-ui',
+	className: 'fire-mage-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Mage),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

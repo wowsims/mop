@@ -92,7 +92,7 @@ const spec = {
 	launch: { phase: Phase.Phase1, status: LaunchStatus.Launched },
 };
 const player = { sim, getPlayerSpec: () => spec } as never;
-const def = { cssClass: 'arms-warrior-sim-ui', encounterPicker: { showExecuteProportion: true } } as never;
+const def = { className: 'arms-warrior-sim-ui', encounterPicker: { showExecuteProportion: true } } as never;
 
 describe('SimApp', () => {
 	beforeEach(() => {

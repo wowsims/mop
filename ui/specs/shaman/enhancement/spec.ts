@@ -17,7 +17,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecEnhancementShaman>({
 	spec: Spec.SpecEnhancementShaman,
 
-	cssClass: 'enhancement-shaman-sim-ui',
+	className: 'enhancement-shaman-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Shaman),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

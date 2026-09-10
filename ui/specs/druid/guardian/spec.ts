@@ -16,7 +16,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecGuardianDruid>({
 	spec: Spec.SpecGuardianDruid,
 
-	cssClass: 'guardian-druid-sim-ui',
+	className: 'guardian-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
 	// Override required talent rows - Guardian only requires rows 1, 3, and 5 instead of all rows
 	requiredTalentRows: [1, 3, 5],

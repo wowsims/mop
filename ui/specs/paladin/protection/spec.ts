@@ -27,7 +27,7 @@ import * as PaladinPresets from '../shared/presets';
 export default defineSpec<Spec.SpecProtectionPaladin>({
 	spec: Spec.SpecProtectionPaladin,
 
-	cssClass: 'protection-paladin-sim-ui',
+	className: 'protection-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

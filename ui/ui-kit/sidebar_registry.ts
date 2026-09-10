@@ -9,7 +9,7 @@ interface SidebarEntryBase {
 
 export interface SidebarButtonEntry extends SidebarEntryBase {
 	label: ReactNode;
-	cssClass?: string;
+	className?: string;
 	onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 	disabled?: boolean;
 	loading?: boolean;

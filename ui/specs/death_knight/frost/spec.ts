@@ -17,7 +17,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecFrostDeathKnight>({
 	spec: Spec.SpecFrostDeathKnight,
 
-	cssClass: 'frost-death-knight-sim-ui',
+	className: 'frost-death-knight-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

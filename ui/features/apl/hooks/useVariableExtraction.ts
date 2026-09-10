@@ -44,7 +44,7 @@ export const useVariableExtraction = (
 
 	return {
 		extraAction: {
-			cssClass: 'list-picker-item-extract-variable',
+			className: 'list-picker-item-extract-variable',
 			icon: 'fa-arrow-right-from-bracket',
 			tooltip: i18n.t('rotation_tab.apl.variables.extractToVariable'),
 			shouldShow: isExtractable,

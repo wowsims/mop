@@ -78,7 +78,7 @@ To put something in the sim sidebar, use `host.sidebar`. There are two shapes:
 const action = host.sidebar.add({
     id: 'my-spec-thing',
     label: i18n.t('my_spec.thing.button'),
-    cssClass: 'my-spec-thing-action',
+    className: 'my-spec-thing-action',
     onClick: () => { ... },
 });
 action.update({ loading: true });

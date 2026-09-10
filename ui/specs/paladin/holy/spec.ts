@@ -12,7 +12,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecHolyPaladin>({
 	spec: Spec.SpecHolyPaladin,
 
-	cssClass: 'holy-paladin-sim-ui',
+	className: 'holy-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

@@ -221,7 +221,7 @@ describe('ListPicker', () => {
 		it('renders extra actions in the menu, between delete and copy', () => {
 			const onClick = vi.fn();
 			mount(rowsOf('a'), {
-				extraActions: [{ cssClass: 'list-picker-item-extract-variable', icon: 'fa-arrow-right-from-bracket', tooltip: 'Extract', onClick }],
+				extraActions: [{ className: 'list-picker-item-extract-variable', icon: 'fa-arrow-right-from-bracket', tooltip: 'Extract', onClick }],
 			});
 
 			expect(popoverButtons(0)).toEqual(['list-picker-item-delete', 'list-picker-item-extract-variable', 'list-picker-item-copy']);
@@ -232,7 +232,7 @@ describe('ListPicker', () => {
 
 		it('applies shouldShow only once the menu has been opened', () => {
 			mount(rowsOf('a'), {
-				extraActions: [{ cssClass: 'list-picker-item-extract-variable', icon: 'fa-x', tooltip: 'Extract', onClick: vi.fn(), shouldShow: () => false }],
+				extraActions: [{ className: 'list-picker-item-extract-variable', icon: 'fa-x', tooltip: 'Extract', onClick: vi.fn(), shouldShow: () => false }],
 			});
 			const extra = () => containers()[0].querySelector<HTMLElement>('.list-picker-item-extract-variable')!;
 			expect(extra().getAttribute('style')).toBeNull();

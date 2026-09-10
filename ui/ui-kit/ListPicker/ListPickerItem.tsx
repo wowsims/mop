@@ -226,14 +226,14 @@ export const ListPickerItem = ({
 			)}
 			{extraActions?.map(extraAction => (
 				<ListItemAction
-					key={extraAction.cssClass}
+					key={extraAction.className}
 					icon={extraAction.icon}
-					className={extraAction.cssClass}
+					className={extraAction.className}
 					tooltip={extraAction.tooltip}
 					tooltipId={tooltipId}
 					hidden={menuHasOpened && extraAction.shouldShow ? !extraAction.shouldShow(index) : undefined}
-					hovered={hoveredAction === extraAction.cssClass}
-					onHoverChange={hovered => setHoveredAction(hovered ? extraAction.cssClass : null)}
+					hovered={hoveredAction === extraAction.className}
+					onHoverChange={hovered => setHoveredAction(hovered ? extraAction.className : null)}
 					onClick={() => {
 						extraAction.onClick(index);
 						closeMenu();

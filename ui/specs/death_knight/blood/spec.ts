@@ -19,7 +19,7 @@ const OffensiveExpertiseBreakpoints = [0.68, 0];
 export default defineSpec<Spec.SpecBloodDeathKnight>({
 	spec: Spec.SpecBloodDeathKnight,
 
-	cssClass: 'blood-death-knight-sim-ui',
+	className: 'blood-death-knight-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

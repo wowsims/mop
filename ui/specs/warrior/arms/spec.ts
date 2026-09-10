@@ -16,7 +16,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecArmsWarrior>({
 	spec: Spec.SpecArmsWarrior,
 
-	cssClass: 'arms-warrior-sim-ui',
+	className: 'arms-warrior-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warrior),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

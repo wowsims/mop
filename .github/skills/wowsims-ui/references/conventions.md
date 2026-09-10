@@ -62,7 +62,7 @@ Adding one is three edits and no page:
    exported through `ui/sim/player/specs/index.ts`. That field is the single source of truth for
    launch status — the sim dropdown and the landing page both read it, and `ui/index.ts` renders the
    landing page's sim links from `PlayerSpecs` rather than a hand-written list.
-3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class colour, background
+3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class colour, background
    image), which every spec page links unconditionally.
 
 `tools/vite/spec_pages.mts` globs `ui/specs/*/*/spec.ts(x)`, so the page at `/mop/<class>/<spec>/`

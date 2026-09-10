@@ -22,7 +22,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecFeralDruid>({
 	spec: Spec.SpecFeralDruid,
 
-	cssClass: 'feral-druid-sim-ui',
+	className: 'feral-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
 	// Override required talent rows - Feral only requires rows 3 and 5 instead of all rows
 	requiredTalentRows: [0, 3, 5],

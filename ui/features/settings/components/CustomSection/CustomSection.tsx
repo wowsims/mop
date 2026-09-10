@@ -25,7 +25,7 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 
 	return (
 		<ContentBlock
-			className={[section.cssClass || section.id, 'custom-section', !visible && 'hide']}
+			className={[section.className || section.id, 'custom-section', !visible && 'hide']}
 			config={{ header: { title: section.title, tooltip: section.tooltip } }}>
 			{!!section.iconInputs?.length && (
 				<div className={clsx('picker-group', section.iconGroupCssClass, 'icon-group')}>

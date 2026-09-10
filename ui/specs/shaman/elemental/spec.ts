@@ -17,7 +17,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecElementalShaman>({
 	spec: Spec.SpecElementalShaman,
 
-	cssClass: 'elemental-shaman-sim-ui',
+	className: 'elemental-shaman-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Shaman),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

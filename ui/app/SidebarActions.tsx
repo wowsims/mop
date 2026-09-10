@@ -15,7 +15,7 @@ export const SidebarActions = ({ registry }: SidebarActionsProps) => {
 				isCustomEntry(entry) ? (
 					<Fragment key={entry.id}>{entry.render()}</Fragment>
 				) : (
-					<SidebarActionButton key={entry.id} className={entry.cssClass} onClick={entry.onClick} disabled={entry.disabled} loading={entry.loading}>
+					<SidebarActionButton key={entry.id} className={entry.className} onClick={entry.onClick} disabled={entry.disabled} loading={entry.loading}>
 						{entry.label}
 					</SidebarActionButton>
 				),

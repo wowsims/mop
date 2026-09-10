@@ -40,7 +40,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 					domRef={domRef}
 					host={simUI}
 					sim={player.sim}
-					className={def.cssClass}
+					className={def.className}
 					spec={player.getPlayerSpec()}
 					knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
 					onOpenSettings={() => {

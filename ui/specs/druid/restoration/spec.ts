@@ -17,7 +17,7 @@ export default defineSpec<Spec.SpecRestorationDruid>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'restoration-druid-sim-ui',
+	className: 'restoration-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

@@ -29,7 +29,7 @@ export interface SimHost {
 	readonly sim: Sim;
 	readonly rootElem: HTMLElement;
 	readonly disabled: boolean;
-	readonly config: { cssClass: string; cssScheme: string };
+	readonly config: { className: string; cssScheme: string };
 	readonly resultsViewer: ResultsPanelHandle;
 	readonly simTabContentsContainer: HTMLElement;
 	readonly sidebar: SidebarRegistry;

@@ -58,7 +58,7 @@ const P5HastePostGCDCapEP = 0.52 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 export default defineSpec<Spec.SpecFrostMage>({
 	spec: Spec.SpecFrostMage,
 
-	cssClass: 'frost-mage-sim-ui',
+	className: 'frost-mage-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Mage),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

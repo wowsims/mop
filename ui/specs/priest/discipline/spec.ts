@@ -16,7 +16,7 @@ export default defineSpec<Spec.SpecDisciplinePriest>({
 	// on and change the simulated incoming-healing model.
 	enableHealing: false,
 
-	cssClass: 'discipline-priest-sim-ui',
+	className: 'discipline-priest-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Priest),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

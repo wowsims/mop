@@ -16,7 +16,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecRetributionPaladin>({
 	spec: Spec.SpecRetributionPaladin,
 
-	cssClass: 'retribution-paladin-sim-ui',
+	className: 'retribution-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [

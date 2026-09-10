@@ -32,7 +32,7 @@ const modifyDisplayStats = (player: Player<Spec.SpecDestructionWarlock>) => {
 export default defineSpec<Spec.SpecDestructionWarlock>({
 	spec: Spec.SpecDestructionWarlock,
 
-	cssClass: 'destruction-warlock-sim-ui',
+	className: 'destruction-warlock-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warlock),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

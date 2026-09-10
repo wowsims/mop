@@ -50,11 +50,11 @@ describe('CustomSection', () => {
 		source.subscribed = 0;
 	});
 
-	it('is a content block named by cssClass, and carries custom-section', () => {
-		expect([...mount({ cssClass: 'totems-settings' }).classList].sort()).toEqual(['content-block', 'custom-section', 'totems-settings']);
+	it('is a content block named by className, and carries custom-section', () => {
+		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(['content-block', 'custom-section', 'totems-settings']);
 	});
 
-	it('falls back to the section id when it declares no cssClass', () => {
+	it('falls back to the section id when it declares no className', () => {
 		expect(mount({}).classList.contains('totems')).toBe(true);
 	});
 

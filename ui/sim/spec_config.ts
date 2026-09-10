@@ -51,13 +51,13 @@ export interface InputSection {
 // `SettingsTab.buildCustomSettingsSections`) with the same ContentBlock and
 // picker construction path the standard sections use — a spec never builds DOM.
 export interface CustomSection<SpecType extends Spec> {
-	// Stable identifier. Doubles as the ContentBlock css class when `cssClass`
+	// Stable identifier. Doubles as the ContentBlock css class when `className`
 	// is not given.
 	id: string;
 	title: string;
 	tooltip?: string;
 	// Css class for the section's ContentBlock; this is what stylesheets hook on.
-	cssClass?: string;
+	className?: string;
 	// Hides the whole section when this evaluates to false, mirroring `showWhen`
 	// on an individual input.
 	when?: (player: Player<SpecType>) => boolean;
@@ -84,7 +84,7 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 	// Override for required talent rows. If not specified, defaults to requiring all rows [0, 1, 2, 3, 4, 5]
 	requiredTalentRows?: number[];
 	// Additional css class to add to the root element.
-	cssClass: string;
+	className: string;
 	// Used to generate schemed components. E.g. 'shaman', 'druid', 'raid'
 	cssScheme: string;
 

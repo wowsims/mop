@@ -16,7 +16,7 @@ import * as Presets from './presets';
 export default defineSpec<Spec.SpecSurvivalHunter>({
 	spec: Spec.SpecSurvivalHunter,
 
-	cssClass: 'survival-hunter-sim-ui',
+	className: 'survival-hunter-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Hunter),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: ['Glaive Toss hits AoE targets only once.'],

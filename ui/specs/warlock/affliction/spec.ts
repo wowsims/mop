@@ -59,7 +59,7 @@ const relevantDotBreakpoints = [
 export default defineSpec<Spec.SpecAfflictionWarlock>({
 	spec: Spec.SpecAfflictionWarlock,
 
-	cssClass: 'affliction-warlock-sim-ui',
+	className: 'affliction-warlock-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warlock),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],

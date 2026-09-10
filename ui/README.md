@@ -140,7 +140,7 @@ import { defineSpec } from '@features/spec_config';
 
 export default defineSpec<Spec.SpecArmsWarrior>({
     spec: Spec.SpecArmsWarrior,          // identity
-    cssClass, cssScheme, epStats, displayStats, …,   // everything IndividualSimUIConfig declares
+    className, cssScheme, epStats, displayStats, …,  // everything IndividualSimUIConfig declares
     defaults: { … },
     presets: { … },
     reforge: { getEPDefaults, updateSoftCaps },      // optional — wires ReforgeOptimizer
@@ -165,10 +165,10 @@ sections use:
 
 ```ts
 sections: [{
-    id: 'totems',                                    // ContentBlock css class when cssClass is unset
+    id: 'totems',                                    // ContentBlock css class when className is unset
     title: 'Totems',
     tooltip: '…',                                    // optional — header tooltip button
-    cssClass: 'totems-settings',                     // what the stylesheet hooks on
+    className: 'totems-settings',                    // what the stylesheet hooks on
     iconGroupCssClass: 'totem-dropdowns-container',  // layout hook for the icon row
     iconInputs: [ … ],                               // same configs as `playerIconInputs`
     inputs: [ … ],                                   // same configs as `otherInputs.inputs`
@@ -219,7 +219,7 @@ All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
    `ui/sim/player/specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
-3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
+3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class color, background
    image), which the spec page links unconditionally.
 
 The page itself is not one of the steps: there is no per-spec `index.html`, in the source tree or

@@ -29,7 +29,7 @@ const statSelectionPresets = [
 export default defineSpec<Spec.SpecArcaneMage>({
 	spec: Spec.SpecArcaneMage,
 
-	cssClass: 'arcane-mage-sim-ui',
+	className: 'arcane-mage-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(Mage),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
