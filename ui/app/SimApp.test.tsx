@@ -161,12 +161,11 @@ describe('SimApp', () => {
 		expect(dom.sidebarActions.querySelector('.built-imperatively')).toBe(marker);
 	});
 
-	it('mounts the shell into its own container', () => {
+	it('mounts the shell at the mount point, with no wrapper of its own', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
-		const mount = container.querySelector('.sim-app')!;
 		// The shell is handed a DOM bundle rather than a parent, so what ties it to the mount is the
 		// bundle's root being a child of it.
-		expect(constructions[0].root.parentElement).toBe(mount);
-		expect(mount.querySelector('.sim-ui')).not.toBeNull();
+		expect(constructions[0].root).toBe(container.querySelector('.sim-ui'));
+		expect(constructions[0].root.parentElement).toBe(container);
 	});
 });

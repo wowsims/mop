@@ -3,6 +3,7 @@ import './SimTabs.scss';
 import { Tabs } from '@base-ui/react/tabs';
 import { childProps } from '@ui-kit/child_props';
 import type { SimTabActivation } from '@ui-kit/tab_activation';
+import { TabBadge } from '@ui-kit/TabBadge';
 import clsx from 'clsx';
 import { type ReactNode, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
@@ -36,13 +37,7 @@ export const SimTabs = ({ activation, panes, children }: SimTabsProps) => {
 				{tabs.map(tab => (
 					<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id)}>
 						{tab.title}
-						{tab.badge && (
-							<>
-								{' ('}
-								<span className="text-success">{tab.badge}</span>
-								{')'}
-							</>
-						)}
+						<TabBadge label={tab.badge} />
 					</Tabs.Tab>
 				))}
 			</Tabs.List>

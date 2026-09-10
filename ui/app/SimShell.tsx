@@ -1,40 +1,38 @@
+import { CharacterStats } from '@features/character-stats';
+import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { SOCIALS } from '@sim/constants/other';
-import type { PlayerSpec } from '@sim/player/player_spec';
-import type { Sim } from '@sim/sim';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useShowExperimental } from '@sim/hooks/useShowExperimental';
+import type { PlayerSpec } from '@sim/player/player_spec';
+import type { Sim } from '@sim/sim';
+import { SocialLink } from '@ui-kit/SocialLink';
+import { ToastArea, toastManager } from '@ui-kit/Toast';
 import clsx from 'clsx';
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
+import type { SimHostObject } from './individual_sim_ui';
 import { IterationsPicker } from './IterationsPicker';
 import { showsEpRatios, simUiClasses } from './shell_classes';
 import type { ShellDom } from './shell_dom';
-import { SocialLink } from '@ui-kit/SocialLink';
-import { ToastArea, toastManager } from '@ui-kit/Toast';
-
-/** Filled once the shell is constructed, so each is null on the render that builds the containers they go in. */
-export interface SimShellSlots {
-	tabs: ReactNode;
-	importExport: ReactNode;
-	sidebarActions: ReactNode;
-	sidebarResults: ReactNode;
-	sidebarStats: ReactNode;
-}
+import { SimImportExport } from './SimImportExport';
+import { SimSidebarActions } from './SimSidebarActions';
+import { SimTabsSection } from './SimTabsSection';
 
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
+	/** Null on the render that builds the containers it is constructed from, so everything reaching through it waits a render. */
+	host: SimHostObject<any> | null;
 	sim: Sim;
 	className: string;
 	spec: PlayerSpec<any>;
 	noticeText?: string;
 	knownIssues: ReadonlyArray<ReactNode>;
 	onOpenSettings: () => void;
-	slots: SimShellSlots;
 }
 
-export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues, onOpenSettings, slots }: SimShellProps) => {
+export const SimShell = ({ domRef, host, sim, className, spec, noticeText, knownIssues, onOpenSettings }: SimShellProps) => {
 	const root = useRef<HTMLDivElement>(null);
 	const sidebarActions = useRef<HTMLDivElement>(null);
 	const main = useRef<HTMLElement>(null);
@@ -76,13 +74,15 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 							<SimTitleDropdown currentSpec={spec} />
 						</div>
 						<div className="sim-sidebar-content">
-							{/* Rendered here, not through the slot: the slot is null until the host is constructed, and the picker has to stay ahead of every action the registry adds. */}
+							{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 							<div ref={sidebarActions} className="sim-sidebar-actions">
 								<IterationsPicker sim={sim} />
-								{slots.sidebarActions}
+								{host && <SimSidebarActions host={host} />}
 							</div>
-							<div className="sim-sidebar-results">{slots.sidebarResults}</div>
-							<div className="sim-sidebar-stats">{slots.sidebarStats}</div>
+							<div className="sim-sidebar-results">
+								{host && <SimResultsPanel panel={host.resultsPanel} warnings={host.warnings} results={host.raidSimResultsManager} />}
+							</div>
+							<div className="sim-sidebar-stats">{host && <CharacterStats />}</div>
 							<div className="sim-sidebar-socials">
 								{SOCIALS.map(social => (
 									<SocialLink key={social.key} social={social} />
@@ -93,8 +93,8 @@ export const SimShell = ({ domRef, sim, className, spec, noticeText, knownIssues
 					<div className="sim-content container-fluid">
 						<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
 							<div className="sim-header-container">
-								<div className="sim-tabs-mount">{slots.tabs}</div>
-								<div className="import-export nav">{slots.importExport}</div>
+								<div className="sim-tabs-mount">{host && <SimTabsSection host={host} />}</div>
+								<div className="import-export nav">{host && <SimImportExport />}</div>
 								<div className="sim-toolbar nav">
 									<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
 								</div>
