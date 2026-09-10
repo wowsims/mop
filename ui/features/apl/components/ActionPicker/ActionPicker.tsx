@@ -91,7 +91,7 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 					options={options}
 					defaultLabel={i18n.t('rotation_tab.apl.priority_list.item_label')}
 				/>
-				{kind && <FieldGroup player={player} config={implConfig(kind)} fields={actionKinds[kind].fields} />}
+				{kind && <FieldGroup key={kind} player={player} config={implConfig(kind)} fields={actionKinds[kind].fields} />}
 			</div>
 		</PickerShell>
 	);

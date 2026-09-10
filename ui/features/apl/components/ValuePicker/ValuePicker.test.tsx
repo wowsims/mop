@@ -1,5 +1,6 @@
 import { makePlayer } from '@features/apl/testing';
 import { APLRotation, APLValue } from '@generated/proto/apl';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -117,6 +118,25 @@ describe('ValuePicker', () => {
 			source.notify();
 		});
 		expect(document.querySelector('.adaptive-string-picker-root input')).toHaveProperty('value', '9');
+	});
+
+	it('shows the new kind’s operands when a value is replaced by another kind with the same fields', () => {
+		const list = (kind: 'and' | 'or', vals: Array<string>) =>
+			APLValue.create({ value: { oneofKind: kind, [kind]: { vals: vals.map(constValue) } } as APLValue['value'], uuid: { value: `u-${kind}` } });
+		const operands = () => Array.from(document.querySelectorAll<HTMLInputElement>('.adaptive-string-picker-root input')).map(input => input.value);
+		setup(list('and', ['1', '2']));
+		render(
+			<SimHostProvider host={{ player, rootElem: document.body } as never}>
+				<ValuePicker player={player as never} config={configForRoot() as never} />
+			</SimHostProvider>,
+		);
+		expect(operands()).toEqual(['1', '2']);
+
+		act(() => {
+			player.aplRotation.valueVariables[0].value = list('or', ['3']);
+			source.notify();
+		});
+		expect(operands()).toEqual(['3']);
 	});
 
 	// The kind list leads with an explicit "none" entry whose value is `undefined`, so an empty
