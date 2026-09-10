@@ -565,10 +565,6 @@ export class BulkTab extends Disposable {
 		return bulkCombinationsLimit(this.simUI.sim.isNative);
 	}
 
-	canRunBatch(): boolean {
-		return !this.combinationsPending && !this.isRunning && this.combinations > 1 && this.combinations <= this.getCombinationsLimit();
-	}
-
 	private setCandidateGearProgress(input: { completed?: number; total?: number; title?: string; stage?: string; startedAt?: number } = {}) {
 		this.emitProgress(candidateGearProgress({ ...input, now: new Date().getTime() }));
 	}

@@ -10,6 +10,9 @@ export const slotOptionsOf = (pickerGroups: BulkSlice['pickerGroups']): BulkSlot
 // A selector has to hand back the same array for the same state, and the groups map is replaced on every write.
 const setBonusesByGroups = new WeakMap<BulkSlice['pickerGroups'], BulkSetBonusOption[]>();
 
+export const canRunBatch = (slice: BulkSlice, combinationsLimit: number): boolean =>
+	!slice.combinationsPending && !slice.isRunning && slice.combinations > 1 && slice.combinations <= combinationsLimit;
+
 export const availableSetBonuses = ({ pickerGroups }: BulkSlice): BulkSetBonusOption[] => {
 	let setBonuses = setBonusesByGroups.get(pickerGroups);
 	if (!setBonuses) {

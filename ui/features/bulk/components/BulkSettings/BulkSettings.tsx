@@ -1,18 +1,19 @@
 import { BulkSimItemSlot } from '@sim/bulk/utils';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribeBulkChange, subscribeBulkField } from '@sim/state/subscriptions';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { subscribeBulkChange, subscribeBulkField, subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import type { BulkTab } from '../../bulk_tab';
-import { useBulkRevision } from '../../hooks/useBulkRevision';
+import { useBulkState } from '../../hooks/useBulkState';
 import { useBulkTab } from '../../hooks/useBulkTab';
-import { useBulkVersion } from '../../hooks/useBulkVersion';
 import { frozenItemSlot } from '../../model/picker_groups';
+import { canRunBatch } from '../../model/selectors';
 import { CombinationsCount } from './CombinationsCount';
 import { FreezeWeaponTypes } from './FreezeWeaponTypes';
 import { RequiredSetBonuses } from './RequiredSetBonuses';
@@ -48,9 +49,12 @@ const FROZEN_PAIRS: readonly FrozenPair[] = [
 export const BulkSettings = () => {
 	const bt = useBulkTab();
 	const player = usePlayer();
-	useBulkRevision();
-	useBulkVersion('settings');
-	useBulkVersion('items');
+	const frozenItems = useBulkState(slice => slice.frozenItems);
+	const canRun = useBulkState(slice => canRunBatch(slice, bt.getCombinationsLimit()));
+	const gear = useStoreSubscribe(
+		useMemo(() => subscribePlayerField(player, 'gear'), [player]),
+		() => player.getGear(),
+	);
 
 	const frozenSlotValue = ({ bulkSlot, slots }: FrozenPair): number => frozenItemSlot(player.getGear(), slots, bt.frozenItems.get(bulkSlot)) ?? -1;
 
@@ -58,9 +62,10 @@ export const BulkSettings = () => {
 	// A store write during render is not safe in React, so the same reset runs after it instead.
 	useEffect(() => {
 		for (const pair of FROZEN_PAIRS) {
-			if (bt.frozenItems.get(pair.bulkSlot) && frozenSlotValue(pair) === -1) bt.setFrozenItem(pair.bulkSlot, null);
+			const frozenItem = frozenItems.get(pair.bulkSlot);
+			if (frozenItem && frozenItemSlot(gear, pair.slots, frozenItem) === null) bt.setFrozenItem(pair.bulkSlot, null);
 		}
-	});
+	}, [bt, gear, frozenItems]);
 
 	const freezeItemConfig = (pair: FrozenPair) => ({
 		id: pair.id,
@@ -84,7 +89,7 @@ export const BulkSettings = () => {
 			<div className="bulk-settings-outer-container">
 				<div className="bulk-settings-container">
 					<CombinationsCount />
-					<button type="button" className="btn btn-primary bulk-settings-btn" disabled={!bt.canRunBatch()} onClick={() => void bt.runBatchSim()}>
+					<button type="button" className="btn btn-primary bulk-settings-btn" disabled={!canRun} onClick={() => void bt.runBatchSim()}>
 						{i18n.t('bulk_tab.actions.simulate_batch')}
 					</button>
 					<div className="use-legacy-bulk-sim-container">
