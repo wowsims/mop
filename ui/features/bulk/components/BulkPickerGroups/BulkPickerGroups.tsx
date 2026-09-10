@@ -1,16 +1,14 @@
 import './BulkPickerGroups.scss';
 
-import { useBulkTab } from '../../hooks/useBulkTab';
-import { useBulkVersion } from '../../hooks/useBulkVersion';
+import { useBulkState } from '../../hooks/useBulkState';
 import { BulkItemPickerGroup } from './BulkItemPickerGroup';
 
 export const BulkPickerGroups = () => {
-	const bt = useBulkTab();
-	useBulkVersion('items');
+	const pickerGroups = useBulkState(slice => slice.pickerGroups);
 
 	return (
 		<div className="bulk-gear-combo">
-			{Array.from(bt.pickerGroups).map(([bulkSlot, entries]) => (
+			{Array.from(pickerGroups).map(([bulkSlot, entries]) => (
 				<BulkItemPickerGroup key={bulkSlot} bulkSlot={bulkSlot} entries={entries} />
 			))}
 		</div>
