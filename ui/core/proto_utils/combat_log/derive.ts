@@ -362,6 +362,7 @@ function buildCastLog(
 	let castTime = castBeganLog.castTime;
 	// effectiveTime stays the began line's: it is the GCD time the tooltip and DPET report, not
 	// the cast's measured length.
+	const effectiveTime = castBeganLog.effectiveTime;
 	if (castCompletedLog) {
 		castTime = castCompletedLog.timestamp - castBeganLog.timestamp;
 	}
