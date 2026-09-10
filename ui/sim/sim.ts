@@ -40,7 +40,7 @@ import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, Sou
 import { getLang } from '@i18n/locale_service';
 import { SimRequest } from '@worker/types';
 
-import { hasTouch } from '../shared/bootstrap_overrides';
+import { hasTouch } from '../shared/pointer';
 import { makeBulkGearDatabase, makeBulkItemDatabaseFromSpecs } from './bulk/gear_database';
 import {
 	BULK_CACHE_PROGRESS_CHECK_MODULO,

@@ -1,4 +1,6 @@
 // Generic page entry for every spec site. A spec page is `/mop/<class>/<spec>/`, which mirrors the folder tree (vite's root is `ui/`), so the module to load is derivable from the URL — no per-spec `index.ts`.
+import '../shared/page_boot';
+
 import { browserEnv } from '@app/browser_env';
 import { Player } from '@sim/player/player';
 import { PlayerSpecs } from '@sim/player/specs';

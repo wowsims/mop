@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import './shared/bootstrap_overrides';
+import './shared/page_boot';
 
 import { LaunchStatus } from '@sim/constants/other';
 import { PlayerClass } from '@sim/player/player_class';
@@ -8,7 +9,6 @@ import { PlayerSpec } from '@sim/player/player_spec';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import { Class } from '@generated/proto/common';
 import * as Popper from '@popperjs/core';
-import { Chart, registerables } from 'chart.js';
 import tippy from 'tippy.js';
 
 // Class order for the landing page sim-links list. This is presentation order
@@ -95,31 +95,5 @@ declare global {
 	}
 }
 
-Chart.register(...registerables);
-Chart.defaults.color = 'white';
-
 tippy.setDefaultProps({ arrow: false, allowHTML: true });
 window.Popper = Popper;
-
-// Force scroll to top when refreshing
-if (history.scrollRestoration) {
-	history.scrollRestoration = 'manual';
-} else {
-	window.onbeforeunload = function () {
-		window.scrollTo(0, 0);
-	};
-}
-
-function docReady(fn: any) {
-	// see if DOM is already available
-	if (document.readyState === 'complete' || document.readyState === 'interactive') {
-		// call on next available tick
-		setTimeout(fn, 1);
-	} else {
-		document.addEventListener('DOMContentLoaded', fn);
-	}
-}
-
-docReady(function () {
-	document.body.classList.add('ready');
-});
