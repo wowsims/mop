@@ -14,8 +14,8 @@ import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
-import { useBulkTab } from '../../hooks/useBulkTab';
 import { createBulkGearData } from '../../model/gear_data';
+import { removeBulkItemByIndex } from '../../model/items';
 import { frozenItemSlot } from '../../model/picker_groups';
 
 export interface BulkItemPickerProps {
@@ -34,7 +34,6 @@ const equippedSlotOf = (bulkSlot: BulkSimItemSlot, index: number): ItemSlot | nu
 };
 
 export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) => {
-	const bt = useBulkTab();
 	const openSelectorModal = useOpenSelectorModal();
 	const player = usePlayer();
 	const tooltipId = useId();
@@ -72,7 +71,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
 				if (!state.isEditable) return;
-				openSelectorModal(slot, tab, createBulkGearData(bt, bulkSlot, index));
+				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
 				<div className="item-picker-actions-container">
@@ -81,7 +80,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 							<button
 								type="button"
 								className={clsx('btn btn-link link-danger item-picker-actions-btn', !state.isEditable && 'hide')}
-								onClick={() => bt.removeItemByIndex(index)}
+								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />
 							</button>

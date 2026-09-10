@@ -1,4 +1,4 @@
-import { ItemQuality, ItemSlot } from '@generated/proto/common';
+import { ItemQuality, ItemSlot, type ItemSpec } from '@generated/proto/common';
 import type { UIItem as Item } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { IndividualSimHost } from '@sim/sim_host';
@@ -9,6 +9,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { ItemData, ItemListType } from '../../types';
 import { SelectorModalTabs } from '../../types';
+
+// The batch seam is mocked rather than driven: the row only asks whether the item is in the batch
+// and calls one of two writes, and both are plain functions over the player now.
+const batch = vi.hoisted(() => ({
+	hasItem: vi.fn((_spec?: unknown) => false),
+	addItem: vi.fn((_spec?: unknown) => undefined),
+	removeItem: vi.fn((_spec?: unknown) => undefined),
+}));
 
 const store = vi.hoisted(() => {
 	const listeners = new Set<() => void>();
@@ -24,6 +32,11 @@ vi.mock('@ui-kit/hooks/useActionId', () => ({
 	useActionId: () => ({ iconUrl: 'icon-url.png', name: 'item-name', href: 'https://example.com/item', ready: true }),
 }));
 vi.mock('@sim/state/subscriptions', () => ({ subscribeBulkField: () => store.subscribe }));
+vi.mock('@features/bulk/model/items', () => ({
+	hasBulkItem: (_player: unknown, spec: ItemSpec) => batch.hasItem(spec),
+	addBulkItem: (_player: unknown, spec: ItemSpec) => batch.addItem(spec),
+	removeBulkItem: (_player: unknown, spec: ItemSpec) => batch.removeItem(spec),
+}));
 vi.mock('../../../../tracking/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('./ItemSource', () => ({ ItemSource: () => <div data-testid="item-source-marker" /> }));
 vi.mock('../GearPicker/ItemNoticeIcon', () => ({ ItemNoticeIcon: () => <div data-testid="item-notice-marker" /> }));
@@ -50,8 +63,8 @@ const renderRow = (
 	btOverrides: Partial<{ hasItem: ReturnType<typeof vi.fn>; addItem: ReturnType<typeof vi.fn>; removeItem: ReturnType<typeof vi.fn> }> = {},
 	onWrapperClick?: () => void,
 ) => {
-	const bt = { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn(), ...btOverrides };
-	const host = { player: {}, sim: {}, bt } as unknown as IndividualSimHost<any>;
+	Object.assign(batch, { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn() }, btOverrides);
+	const host = { player: {}, sim: {} } as unknown as IndividualSimHost<any>;
 
 	const props: ItemListRowProps = {
 		itemData: makeItemData(),
@@ -75,7 +88,7 @@ const renderRow = (
 		</SimHostProvider>,
 	);
 
-	return { container, wrapper: container.firstElementChild as HTMLElement, bt, props };
+	return { container, wrapper: container.firstElementChild as HTMLElement, bt: batch, props };
 };
 
 describe('ItemListRow', () => {

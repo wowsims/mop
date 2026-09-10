@@ -1,26 +1,23 @@
 import { BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
-import { ItemSlot, ItemSpec } from '@generated/proto/common';
+import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { BulkPickerEntry, BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot, dedupeGearSets, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
-import { isSpecDualWield2HCapable } from '@sim/player/classes/capabilities';
+import { BulkResults, BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot, dedupeGearSets } from '@sim/bulk/utils';
 import { EquippedItem } from '@sim/proto/equipped_item';
 import { Gear } from '@sim/proto/gear';
-import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@sim/proto/items';
+import { getGearIdentityKey } from '@sim/proto/items';
 import { bulkState, loadStoredBulkSettings, patchBulkState, seedBulkSettings, storeBulkSettings } from '@sim/settings/bulk_settings';
 import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import type { ReforgeOptimizeConfig } from '@sim/sim';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { RequestTypes } from '@sim/sim_signal_manager';
-import type { BulkSlice } from '@sim/state/sim_store';
 import { type BulkOwner, subscribeAll, subscribeBulkChange, subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
-import { getEnumValues } from '@sim/utils/collections';
 import { isDevMode } from '@sim/utils/env';
 import { toastManager } from '@ui-kit/Toast';
 
 import { trackEvent } from '../../tracking/analytics';
 import { runCoreBulkSim as runCoreBulkSimImpl } from './model/core_sim';
-import { addPickerEntry, pickerEntryAt, removePickerEntry, updatePickerEntry } from './model/picker_groups';
+import { addBulkItems, loadEquippedBulkItems, seedBulkPickerGroups } from './model/items';
 import { BulkProgress, candidateGearProgress, simProgress } from './model/progress';
 import { sanitiseRequiredSetBonuses } from './model/set_bonuses';
 import {
@@ -42,15 +39,6 @@ type FrozenBulkSlot = BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotT
  * It renders nothing: `BulkTabBody` is the tab's React body and reads the bulk store slice.
  */
 export interface BulkTab extends BulkOwner {
-	readonly pickerGroups: BulkSlice['pickerGroups'];
-	addItem(item: ItemSpec): void;
-	addItems(items: ItemSpec[], silent?: boolean): void;
-	addItemToSlot(item: ItemSpec, bulkSlot: BulkSimItemSlot): void;
-	updateItem(idx: number, newItem: ItemSpec): void;
-	removeItem(item: ItemSpec): void;
-	removeItemByIndex(idx: number, silent?: boolean): void;
-	clearItems(): void;
-	hasItem(item: ItemSpec): boolean;
 	runBatchSim(): Promise<void>;
 	cancelBatchSim(): Promise<void>;
 	/** The batch's own progress ticks, kept out of the store so a tick renders one leaf. */
@@ -61,8 +49,6 @@ export interface BulkTab extends BulkOwner {
 export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	const { sim, player } = simUI;
 	const owner: BulkOwner = { sim, storeKey: player.storeKey };
-	const playerCanDualWield = getBulkPlayerCanDualWield(player);
-	const playerCanDualWield2H = isSpecDualWield2HCapable(player.getSpec());
 	const state = () => bulkState(player);
 	seedBulkSettings(player);
 
@@ -76,13 +62,6 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 	let progress: BulkProgress | null = null;
 	const progressListeners = new Set<(progress: BulkProgress) => void>();
 
-	// Return whether or not the slot is considered secondary and the item should be grouped
-	// This includes items in the Finger2 or Trinket2 slots, or OffHand for dual-wield specs
-	const isSecondaryBulkSlot = (slot: ItemSlot) => isSecondaryItemSlot(slot) || (playerCanDualWield && slot === ItemSlot.ItemSlotOffHand);
-
-	const lookupItem = (item: ItemSpec): EquippedItem | null =>
-		sim.db.lookupItemSpec(item)?.withChallengeMode(player.getChallengeModeEnabled()).withDynamicStats() ?? null;
-
 	const getEquippedItemForFrozenSlot = (bulkSlot: FrozenBulkSlot, itemSlot: number): EquippedItem | null => {
 		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot);
 		if (!slots?.includes(itemSlot)) {
@@ -92,134 +71,10 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		return player.getGear().getEquippedItem(itemSlot) ?? null;
 	};
 
-	const addToGroup = (
-		groups: Map<BulkSimItemSlot, readonly BulkPickerEntry[]>,
-		bulkSlot: BulkSimItemSlot,
-		idx: number,
-		item: EquippedItem,
-		silent: boolean,
-	): boolean => {
-		const next = addPickerEntry(bulkSlot, groups.get(bulkSlot)!, idx, item);
-		if (next === 'duplicate') {
-			if (!silent) toastManager.add({ delay: 1000, variant: 'error', body: i18n.t('bulk_tab.search.item_unique', { itemName: item._item.name }) });
-			return false;
-		}
-		groups.set(bulkSlot, next);
-		if (!silent) toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_added', { itemName: item._item.name }) });
-		return true;
-	};
-
-	// Add items to their eligible bulk sim item slot(s). Mainly used for importing and search
-	const addItems = (items: ItemSpec[], silent = false) => {
-		const batch = state().items.slice();
-		const groups = new Map(state().pickerGroups);
-		items.forEach(item => {
-			const equippedItem = lookupItem(item);
-			if (equippedItem) {
-				getEligibleItemSlots(equippedItem.item, playerCanDualWield2H).forEach(slot => {
-					// Avoid duplicating rings/trinkets/weapons
-					if (isSecondaryBulkSlot(slot) || !canEquipItem(equippedItem.item, player.getPlayerSpec(), slot)) return;
-
-					const bulkSlot = getBulkItemSlotFromSlot(slot, playerCanDualWield);
-					if (addToGroup(groups, bulkSlot, batch.length, equippedItem, silent)) {
-						batch.push(item);
-					}
-				});
-			}
-		});
-
-		patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
-	};
-
-	// Add an item to a particular bulk sim item slot
-	const addItemToSlot = (item: ItemSpec, bulkSlot: BulkSimItemSlot) => {
-		const equippedItem = lookupItem(item);
-		if (equippedItem) {
-			const eligibleItemSlots = getEligibleItemSlots(equippedItem.item, playerCanDualWield2H);
-			if (!canEquipItem(equippedItem.item, player.getPlayerSpec(), eligibleItemSlots[0])) return;
-
-			const groups = new Map(state().pickerGroups);
-			const added = addToGroup(groups, bulkSlot, state().items.length, equippedItem, false);
-			patchBulkState(player, added ? { items: [...state().items, item], pickerGroups: groups } : {}, ['items']);
-		}
-	};
-
-	const updateItem = (idx: number, newItem: ItemSpec) => {
-		const equippedItem = lookupItem(newItem);
-		if (!equippedItem) {
-			patchBulkState(player, {}, ['items']);
-			return;
-		}
-
-		const batch = state().items.slice();
-		batch[idx] = newItem;
-		const groups = new Map(state().pickerGroups);
-		getEligibleItemSlots(equippedItem.item, playerCanDualWield2H).forEach(slot => {
-			// Avoid duplicating rings/trinkets/weapons
-			if (isSecondaryBulkSlot(slot) || !canEquipItem(equippedItem.item, player.getPlayerSpec(), slot)) return;
-
-			const bulkSlot = getBulkItemSlotFromSlot(slot, playerCanDualWield);
-			const next = updatePickerEntry(groups.get(bulkSlot)!, idx, equippedItem);
-			if (next) {
-				groups.set(bulkSlot, next);
-			} else {
-				toastManager.add({ variant: 'error', body: i18n.t('bulk_tab.picker.failed_update') });
-			}
-		});
-
-		patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
-	};
-
-	const removeItemByIndex = (idx: number, silent = false) => {
-		const items = state().items;
-		if (idx < 0 || items.length < idx || !items[idx]) {
-			if (!silent) {
-				toastManager.add({
-					variant: 'error',
-					body: i18n.t('bulk_tab.notifications.failed_to_remove_item'),
-				});
-			}
-			return;
-		}
-
-		const equippedItem = sim.db.lookupItemSpec(items[idx]!);
-		if (equippedItem) {
-			const batch = items.slice();
-			batch[idx] = null;
-			const groups = new Map(state().pickerGroups);
-
-			// Try to find the matching item within its eligible groups
-			getEligibleItemSlots(equippedItem.item, playerCanDualWield2H).forEach(slot => {
-				if (!canEquipItem(equippedItem.item, player.getPlayerSpec(), slot)) return;
-				const bulkSlot = getBulkItemSlotFromSlot(slot, playerCanDualWield);
-				const entries = groups.get(bulkSlot)!;
-
-				const removed = pickerEntryAt(entries, idx);
-				groups.set(bulkSlot, removePickerEntry(entries, idx));
-				if (removed && !silent) {
-					toastManager.add({ delay: 1000, variant: 'success', body: i18n.t('bulk_tab.search.item_removed', { itemName: removed.item._item.name }) });
-				}
-			});
-			patchBulkState(player, { items: batch, pickerGroups: groups }, ['items']);
-		}
-	};
-
-	const removeItem = (item: ItemSpec) => {
-		const idx = state().items.findIndex(spec => !!spec && ItemSpec.equals(spec, item));
-		if (idx >= 0) removeItemByIndex(idx);
-	};
-
-	const clearItems = () => {
-		for (let idx = 0; idx < state().items.length; idx++) {
-			removeItemByIndex(idx, true);
-		}
-		patchBulkState(player, { items: [] }, ['items']);
-	};
-
 	const loadSettings = () => {
 		const settings = loadStoredBulkSettings(player);
 		if (settings != null) {
-			addItems(settings.items, true);
+			addBulkItems(player, settings.items, true);
 			setBulkInheritUpgrades(player, settings.inheritUpgrades);
 			setBulkUseLegacyBulkSim(player, settings.useLegacyBulkSim);
 			setBulkFrozenItem(player, BulkSimItemSlot.ItemSlotFinger, getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
@@ -241,63 +96,6 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 			);
 			patchBulkState(player, { requiredSetBonuses: sanitiseRequiredSetBonuses(settings.requiredSetBonuses) }, ['settings']);
 		}
-	};
-
-	const loadEquippedItems = () => {
-		if (state().isRunning) {
-			return;
-		}
-
-		const groups = new Map(state().pickerGroups);
-		// Clear all previously equipped items from the pickers
-		for (const [bulkSlot, entries] of groups) {
-			groups.set(bulkSlot, removePickerEntry(removePickerEntry(entries, -1), -2));
-		}
-
-		const equippedIds = new Set(
-			player
-				.getEquippedItems()
-				.filter(Boolean)
-				.map(item => item!.id),
-		);
-
-		// Sync user-added pickers with currently equipped state:
-		// - Hide pickers for items that are now equipped (the dedicated equipped slot covers them).
-		// - Restore pickers for items that are no longer equipped but still in the user's list.
-		state().items.forEach((itemSpec, idx) => {
-			if (!itemSpec) return;
-
-			const equippedItem = lookupItem(itemSpec);
-			if (!equippedItem) return;
-
-			getEligibleItemSlots(equippedItem.item, playerCanDualWield2H).forEach(slot => {
-				if (isSecondaryBulkSlot(slot) || !canEquipItem(equippedItem.item, player.getPlayerSpec(), slot)) return;
-
-				const bulkSlot = getBulkItemSlotFromSlot(slot, playerCanDualWield);
-				const entries = groups.get(bulkSlot);
-				if (!entries) return;
-
-				if (equippedIds.has(itemSpec.id)) {
-					groups.set(bulkSlot, removePickerEntry(entries, idx));
-				} else if (!pickerEntryAt(entries, idx)) {
-					const next = addPickerEntry(bulkSlot, entries, idx, equippedItem);
-					if (next !== 'duplicate') groups.set(bulkSlot, next);
-				}
-			});
-		});
-
-		player.getEquippedItems().forEach((equippedItem, slot) => {
-			const bulkSlot = getBulkItemSlotFromSlot(slot, playerCanDualWield);
-			const entries = groups.get(bulkSlot);
-			if (!entries) return;
-			const idx = isSecondaryBulkSlot(slot) ? -2 : -1;
-			if (equippedItem) {
-				const next = addPickerEntry(bulkSlot, entries, idx, equippedItem);
-				if (next !== 'duplicate') groups.set(bulkSlot, next);
-			}
-		});
-
-		patchBulkState(player, { pickerGroups: groups }, ['items']);
 	};
 
 	const calculateBulkCombinations = async () => {
@@ -615,38 +413,22 @@ export const createBulkTab = (simUI: IndividualSimHost<any>): BulkTab => {
 		void refreshCombinationsCount();
 	};
 
-	const bulkSlots = getEnumValues<BulkSimItemSlot>(BulkSimItemSlot).filter(
-		bulkSlot =>
-			!(playerCanDualWield && [BulkSimItemSlot.ItemSlotMainHand, BulkSimItemSlot.ItemSlotOffHand].includes(bulkSlot)) &&
-			!(!playerCanDualWield && bulkSlot === BulkSimItemSlot.ItemSlotHandWeapon),
-	);
-	patchBulkState(player, { pickerGroups: new Map<BulkSimItemSlot, readonly BulkPickerEntry[]>(bulkSlots.map(bulkSlot => [bulkSlot, []])) });
+	seedBulkPickerGroups(player);
 
 	sim.waitForInit().then(() => {
 		loadSettings();
 
-		subscribeAll([subscribePlayerField(player, 'challengeModeEnabled'), subscribePlayerField(player, 'gear')])(() => loadEquippedItems());
+		subscribeAll([subscribePlayerField(player, 'challengeModeEnabled'), subscribePlayerField(player, 'gear')])(() => loadEquippedBulkItems(player));
 		subscribeBulkChange(owner)(() => storeBulkSettings(player, createBulkSettingsProto(player)));
 		subscribeBulkChange(owner)(() => updateCombinationsCount());
 		subscribeSimField(sim, 'iterations')(() => updateCombinationsCount());
 
-		loadEquippedItems();
+		loadEquippedBulkItems(player);
 		updateCombinationsCount();
 	});
 
 	return {
 		...owner,
-		get pickerGroups() {
-			return state().pickerGroups;
-		},
-		addItem: item => addItems([item]),
-		addItems,
-		addItemToSlot,
-		updateItem,
-		removeItem,
-		removeItemByIndex,
-		clearItems,
-		hasItem: item => state().items.some(spec => !!spec && ItemSpec.equals(spec, item)),
 		runBatchSim,
 		cancelBatchSim,
 		onProgress: listener => {

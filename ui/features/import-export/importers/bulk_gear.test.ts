@@ -5,15 +5,16 @@ import { EquipmentSpec, ItemSpec } from '@generated/proto/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const loadLeftovers = vi.hoisted(() => vi.fn());
+const addItems = vi.hoisted(() => vi.fn());
 vi.mock('@sim/proto/database', () => ({ Database: { loadLeftoversIfNecessary: loadLeftovers } }));
+vi.mock('@features/bulk/model/items', () => ({ addBulkItems: addItems }));
 
 import { BULK_GEAR_IMPORTER } from './bulk_gear';
 
 const KNOWN_ITEM = 1;
 // Survives the `id > 0` test and then fails the lookup, which is the second half of the filter.
 const UNKNOWN_ITEM = 3;
-const addItems = vi.fn();
-const host = { bt: { addItems } } as unknown as IndividualSimHost<any>;
+const host = { player: {} } as unknown as IndividualSimHost<any>;
 
 const json = (...ids: number[]) => EquipmentSpec.toJsonString(EquipmentSpec.create({ items: ids.map(id => ItemSpec.create({ id })) }));
 
@@ -27,7 +28,7 @@ describe('BULK_GEAR_IMPORTER', () => {
 		await BULK_GEAR_IMPORTER.onImport(host, json(KNOWN_ITEM, 0, UNKNOWN_ITEM));
 
 		expect(addItems).toHaveBeenCalledTimes(1);
-		expect(addItems.mock.calls[0][0].map((spec: ItemSpec) => spec.id)).toEqual([KNOWN_ITEM]);
+		expect(addItems.mock.calls[0][1].map((spec: ItemSpec) => spec.id)).toEqual([KNOWN_ITEM]);
 	});
 
 	it('adds nothing when the database knows none of them', async () => {
@@ -47,11 +48,5 @@ describe('BULK_GEAR_IMPORTER', () => {
 	it('throws on a payload that is not an equipment export', async () => {
 		await expect(BULK_GEAR_IMPORTER.onImport(host, 'not json')).rejects.toThrow();
 		expect(addItems).not.toHaveBeenCalled();
-	});
-
-	it('throws when the batch tab is not open', async () => {
-		await expect(BULK_GEAR_IMPORTER.onImport({ bt: null } as unknown as IndividualSimHost<any>, json(KNOWN_ITEM))).rejects.toThrow(
-			'The batch tab is not open',
-		);
 	});
 });

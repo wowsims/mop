@@ -1,3 +1,4 @@
+import { addBulkItem, hasBulkItem, removeBulkItem } from '@features/bulk/model/items';
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 import { useSimHost } from '@sim/context/SimHostContext';
@@ -54,9 +55,9 @@ export const ItemListRow = ({
 	const showEp = ![ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2].includes(slot);
 	const isItemsTab = label === SelectorModalTabs.Items;
 
-	const bulk = isIndividualSimHost(host) ? host.bt : null;
-	const bulkSubscribe = useMemo(() => (bulk ? subscribeBulkField(bulk, 'items') : () => () => undefined), [bulk]);
-	const inBatch = useStoreSubscribe(bulkSubscribe, () => !!bulk?.hasItem(ItemSpec.create({ id: itemData.id })));
+	const batchPlayer = isIndividualSimHost(host) ? host.player : null;
+	const bulkSubscribe = useMemo(() => (batchPlayer ? subscribeBulkField(batchPlayer, 'items') : () => () => undefined), [batchPlayer]);
+	const inBatch = useStoreSubscribe(bulkSubscribe, () => !!batchPlayer && hasBulkItem(batchPlayer, ItemSpec.create({ id: itemData.id })));
 
 	const delta = equippedEP !== null && equippedEP !== itemEP ? formatDelta(equippedEP, itemEP) : null;
 
@@ -104,7 +105,7 @@ export const ItemListRow = ({
 					data-tooltip-id={compareTooltipId}
 					data-in-batch={String(inBatch)}
 					onClick={() => {
-						bulk?.[inBatch ? 'removeItem' : 'addItem'](ItemSpec.create({ id: itemData.id }));
+						if (batchPlayer) (inBatch ? removeBulkItem : addBulkItem)(batchPlayer, ItemSpec.create({ id: itemData.id }));
 						trackEvent({ action: 'click', category: 'batch', label: inBatch ? 'remove-item' : 'add-item' });
 					}}>
 					<Icon name="arrow-right-arrow-left" size="xl" />

@@ -5,7 +5,7 @@ import { BulkProgressDialog } from '@features/bulk/components/BulkProgress';
 import { BulkResults } from '@features/bulk/components/BulkResults';
 import { BulkSettings } from '@features/bulk/components/BulkSettings';
 import { useBulkState } from '@features/bulk/hooks/useBulkState';
-import { useBulkTab } from '@features/bulk/hooks/useBulkTab';
+import { addBulkItems, clearBulkItems } from '@features/bulk/model/items';
 import { SelectorModal } from '@features/gear/components/SelectorModal';
 import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
 import { BulkGearImporterDialog } from '@features/import-export';
@@ -28,7 +28,6 @@ type BulkPaneId = (typeof PANES)[number]['id'];
 
 export const BulkTabBody = () => {
 	const host = useSimHost();
-	const bt = useBulkTab();
 	const ready = useSimReady();
 	const results = useBulkState(slice => slice.results);
 	const isRunning = useBulkState(slice => slice.isRunning);
@@ -73,10 +72,15 @@ export const BulkTabBody = () => {
 								<button
 									type="button"
 									className="btn btn-secondary"
-									onClick={() => bt.addItems(host.sim.getFilters().favoriteItems.map(itemID => ItemSpec.create({ id: itemID })))}>
+									onClick={() =>
+										addBulkItems(
+											host.player,
+											host.sim.getFilters().favoriteItems.map(itemID => ItemSpec.create({ id: itemID })),
+										)
+									}>
 									<Icon name="download" style="base" className="me-1" /> {i18n.t('bulk_tab.actions.import_favorites')}
 								</button>
-								<button type="button" className="btn btn-danger ms-auto" onClick={() => bt.clearItems()}>
+								<button type="button" className="btn btn-danger ms-auto" onClick={() => clearBulkItems(host.player)}>
 									<Icon name="times" className="me-1" />
 									{i18n.t('bulk_tab.actions.clear_items')}
 								</button>

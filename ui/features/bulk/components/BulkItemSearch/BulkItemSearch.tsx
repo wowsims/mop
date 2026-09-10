@@ -3,6 +3,7 @@ import './BulkItemSearch.scss';
 import { ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player/player';
 import { canEquipItem } from '@sim/proto/items';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { NumberPicker } from '@ui-kit/NumberPicker';
@@ -11,8 +12,7 @@ import { SearchBar } from '@ui-kit/SearchBar';
 import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { BulkTab } from '../../bulk_tab';
-import { useBulkTab } from '../../hooks/useBulkTab';
+import { addBulkItem } from '../../model/items';
 import { type BulkSearchResult, byIlvlDescending, MAX_SEARCH_RESULTS, searchBulkItems } from '../../model/search';
 import { BulkItemSearchRow } from './BulkItemSearchRow';
 
@@ -21,7 +21,6 @@ export interface BulkItemSearchProps {
 }
 
 export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
-	const bt = useBulkTab();
 	const player = usePlayer();
 
 	const [query, setQuery] = useState('');
@@ -51,7 +50,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 	}, [matches]);
 
 	const ilvlConfigs = useMemo(() => {
-		const make = (id: string, label: string, key: 'minIlvl' | 'maxIlvl', commit: (value: number) => void): NumberPickerConfig<BulkTab> => ({
+		const make = (id: string, label: string, key: 'minIlvl' | 'maxIlvl', commit: (value: number) => void): NumberPickerConfig<Player<any>> => ({
 			id,
 			label,
 			showZeroes: false,
@@ -81,7 +80,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					clearClassName="cancel-bulk-gear-search-btn">
 					<ul className={clsx('bulk-gear-search-results dropdown-menu no-hover', open && 'show')}>
 						{shown?.items.map(item => (
-							<BulkItemSearchRow key={item.id} item={item} onAdd={() => bt.addItem(ItemSpec.create({ id: item.id }))} />
+							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
 						))}
 						{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
 							<li className="bulk-item-search-item bulk-item-search-results-note">
@@ -94,9 +93,9 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					</ul>
 				</SearchBar>
 				<div className="bulk-gear-search-ilvl-filters">
-					<NumberPicker modObject={bt} config={ilvlConfigs.min} />
+					<NumberPicker modObject={player} config={ilvlConfigs.min} />
 					<span className="ilvl-filters-separator">-</span>
-					<NumberPicker modObject={bt} config={ilvlConfigs.max} />
+					<NumberPicker modObject={player} config={ilvlConfigs.max} />
 				</div>
 			</div>
 		</ContentBlock>
