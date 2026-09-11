@@ -2,7 +2,7 @@ import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
 import { StrictMode } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { IconEnumPicker } from './IconEnumPicker';
 import { type IconEnumPickerConfig, IconEnumPickerDirection } from './types';
@@ -460,5 +460,15 @@ describe('iconEnumPickerShown', () => {
 	it('honours the config’s own showWhen as well', () => {
 		expect(iconEnumPickerShown(configFor({ showWhen: () => false }), options)).toBe(false);
 		expect(iconEnumPickerShown(configFor({ showWhen: () => true }), options)).toBe(true);
+	});
+});
+
+describe('IconEnumPickerConfig', () => {
+	type WithoutBinding = Omit<IconEnumPickerConfig<Options, number>, 'storeSubscribe' | 'storeField'>;
+	type FieldOnly = WithoutBinding & { storeField: 'bonusStats' };
+
+	it('will not accept a config that names neither a store subscription nor a store field', () => {
+		expectTypeOf<WithoutBinding>().not.toExtend<IconEnumPickerConfig<Options, number>>();
+		expectTypeOf<FieldOnly>().toExtend<IconEnumPickerConfig<Options, number>>();
 	});
 });
