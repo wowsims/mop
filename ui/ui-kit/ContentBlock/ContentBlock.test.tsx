@@ -29,8 +29,7 @@ describe('ContentBlock', () => {
 		expect(container.querySelector('.content-block-title')!.tagName).toBe('H3');
 	});
 
-	// The vanilla TooltipButton passes tippy `allowHTML: true`, and five of the eight shipped header
-	// tooltips are translation strings carrying <strong> or <br>.
+	// Five of the eight shipped header tooltips are translation strings carrying <strong> or <br>.
 	it('renders a header tooltip as HTML, not as escaped text', () => {
 		render(<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs', tooltip: 'Buffs by <strong>other</strong> members' } }} />);
 		fireEvent.mouseEnter(screen.getByRole('button'));

@@ -25,8 +25,7 @@ class Options {
 	engineer = true;
 	visible = true;
 	set(next: number) {
-		// The real facades drop equal writes (`Player.setConsumes` returns early), and vanilla's
-		// restoreValue notifies before it clears its stored value — without the guard it re-enters.
+		// The real facades drop equal writes (`Player.setConsumes` returns early), so the guard mirrors that here.
 		if (this.armor === next) return;
 		this.armor = next;
 		this.notify();
@@ -84,8 +83,8 @@ describe('IconEnumPicker', () => {
 	it('builds the root, the button, the menu and the caption in vanilla’s order', () => {
 		mount(new Options());
 
-		// `input-root` and `icon-picker` come from the shell and from the picker; `dropdown` is what
-		// vanilla adds for the default (vertical) direction.
+		// `input-root` and `icon-picker` come from the shell and from the picker; `dropdown` is added
+		// for the default (vertical) direction.
 		expect(root().className.split(' ').sort().join(' ')).toBe('dropdown icon-enum-picker-root icon-picker input-root');
 
 		// The order is the whole reason the slot exists: Base UI appends its portal element to the
@@ -113,8 +112,8 @@ describe('IconEnumPicker', () => {
 
 	it('keeps the options mounted while the menu is closed', () => {
 		mount(new Options());
-		// `keepMounted`: vanilla's <ul> and its options exist from construction, and the settings gate
-		// reads their `hide` classes without ever opening a menu.
+		// `keepMounted`: the <ul> and its options exist from mount, so the settings gate can read
+		// their `hide` classes without ever opening a menu.
 		expect(menu().hasAttribute('hidden')).toBe(false);
 		expect(menu().closest('[hidden]')).toBe(root().querySelector('.icon-enum-picker-positioner'));
 		expect(items()).toHaveLength(3);
@@ -125,8 +124,8 @@ describe('IconEnumPicker', () => {
 		mount(options);
 
 		// The zero value carries neither an actionId nor an iconUrl nor a colour, so there is no image
-		// and no link. Vanilla spells "no link" `javascript:void(0)`; React refuses to render a
-		// `javascript:` URL, and everything that reads this attribute treats both the same.
+		// and no link. React refuses to render a `javascript:` URL, so the button simply carries no
+		// `href` at all.
 		expect(iconOf(button())).toBe('');
 		expect(button().hasAttribute('href')).toBe(false);
 		expect(button().classList.contains('active')).toBe(false);
@@ -155,8 +154,7 @@ describe('IconEnumPicker', () => {
 
 	it('keeps the button focusable without an href', () => {
 		mount(new Options());
-		// An <a> with no href is not tabbable on its own; `nativeButton={false}` is what puts it back,
-		// and vanilla only had it because of the `javascript:void(0)` this port drops.
+		// An <a> with no href is not tabbable on its own; `nativeButton={false}` is what puts it back.
 		expect(button().getAttribute('tabindex')).toBe('0');
 		expect(button().getAttribute('role')).toBe('button');
 	});
@@ -197,8 +195,6 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		mount(options);
 
-		// Hover is what opens it, as `bootstrap_overrides.ts` did for every dropdown without a
-		// `data-bs-trigger`.
 		act(() => {
 			fireEvent.mouseEnter(button());
 			fireEvent.mouseMove(button());
@@ -313,10 +309,10 @@ describe('IconEnumPicker', () => {
 
 		act(() => options.setVisible(false));
 		expect(options.armor).toBe(0);
-		// Choosing while hidden is what the vanilla click handler clears `storedValue` for. The write
-		// notifies, the picker is still hidden, so it puts the *new* value aside and zeroes again —
-		// which is the observable difference: without the clear, 1 would stay in the source and 2
-		// would still be waiting to come back.
+		// Choosing while hidden still clears `storedValue`. The write notifies, the picker is still
+		// hidden, so it puts the *new* value aside and zeroes again — which is the observable
+		// difference: without the clear, 1 would stay in the source and 2 would still be waiting to
+		// come back.
 		act(() => {
 			fireEvent.click(items()[1]);
 		});
@@ -331,8 +327,8 @@ describe('IconEnumPicker', () => {
 
 		expect(root().classList.contains('disabled')).toBe(true);
 		expect(button().hasAttribute('disabled')).toBe(true);
-		// Bootstrap read the *button's* class list, and the vanilla picker puts `disabled` on the
-		// root — so a disabled icon-enum picker still opened its menu, and this one still can.
+		// `disabled` lands on the root, not the button — so a disabled icon-enum picker still opened
+		// its menu, and this one still can.
 		expect(button().getAttribute('aria-disabled')).toBe(null);
 	});
 
@@ -377,10 +373,10 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		options.armor = 2;
 		options.visible = false;
-		// Vanilla's store/restore is driven by the source subscription, so it never runs during
-		// construction — and a bound picker renders twice at mount in every build, StrictMode or not.
-		// The revision guard is what keeps the second of those renders from reading as a
-		// shown-to-hidden transition and zeroing a source nobody touched.
+		// Store/restore is driven by the source subscription, so it never runs during construction —
+		// and a bound picker renders twice at mount in every build, StrictMode or not. The revision
+		// guard is what keeps the second of those renders from reading as a shown-to-hidden
+		// transition and zeroing a source nobody touched.
 		render(
 			<StrictMode>
 				<IconEnumPicker modObject={options} config={configFor({ showWhen: (obj: Options) => obj.visible })} />

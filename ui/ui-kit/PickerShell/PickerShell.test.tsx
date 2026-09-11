@@ -24,8 +24,6 @@ const shell = (config: InputConfig<Mod, string> & { id: string }, props: { hidde
 const root = () => document.querySelector('.input-root')!;
 
 describe('PickerShell', () => {
-	// The vanilla Input adds input-inline and extraClassNames at construction and toggles
-	// disabled/hide afterwards, so those two come last in the class list.
 	it('builds the root class list in the order the vanilla Input produces', () => {
 		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
 		expect(root().getAttribute('class')).toBe('input-root number-picker-root input-inline apl-picker disabled hide');

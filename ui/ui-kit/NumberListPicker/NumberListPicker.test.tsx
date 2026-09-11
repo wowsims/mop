@@ -98,8 +98,7 @@ describe('NumberListPicker', () => {
 	it('assigns an empty placeholder attribute when config.placeholder is absent', () => {
 		const settings = new Settings();
 		render(<NumberListPicker modObject={settings} config={configFor()} />);
-		// The vanilla picker always sets the attribute (config.placeholder || ''), so it must be
-		// present (not simply undefined) even with no configured placeholder.
+		// The attribute must be present (not simply undefined) even with no configured placeholder.
 		expect(input().getAttribute('placeholder')).toBe('');
 	});
 
@@ -130,8 +129,8 @@ describe('NumberListPicker', () => {
 		expect(settings.value).toEqual([1.5, 2.25]);
 	});
 
-	// The vanilla picker commits on the native `change` event — blur *after an edit*, and Enter — so a
-	// plain focus/blur writes nothing, and typing alone (the `input` event) does not commit either.
+	// Commits on the native `change` event — blur *after an edit*, and Enter — so a plain focus/blur
+	// writes nothing, and typing alone (the `input` event) does not commit either.
 	it('writes nothing when the field is blurred without an edit', () => {
 		const settings = new Settings([1, 2]);
 		render(<NumberListPicker modObject={settings} config={configFor()} />);

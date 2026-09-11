@@ -50,8 +50,8 @@ describe('AdaptiveStringPicker', () => {
 		expect(input().value).toBe('xyz');
 	});
 
-	// The vanilla picker commits on the native `change` event — blur *after an edit*, and Enter — so
-	// a plain focus/blur writes nothing. Committing on blur instead would write on any touch.
+	// Commits on the native `change` event — blur *after an edit*, and Enter — so a plain focus/blur
+	// writes nothing. Committing on blur instead would write on any touch.
 	it('writes nothing when the field is blurred without an edit', () => {
 		const settings = new Settings('abc');
 		render(<AdaptiveStringPicker modObject={settings} config={configFor()} />);
@@ -71,10 +71,10 @@ describe('AdaptiveStringPicker', () => {
 		expect(input().value).toBe('abc');
 	});
 
-	// React's onChange is the input event, not the native change event the vanilla picker commits
-	// on; a port that wires `onChange={e => setValue(e.currentTarget.value)}` writes per keystroke
-	// and passes a `fireEvent.change`-only test, since that helper dispatches change (which React's
-	// onChange also listens for). This pins the native-change contract directly against `input`.
+	// React's onChange is the input event, not the native change event. A handler wired as
+	// `onChange={e => setValue(e.currentTarget.value)}` writes per keystroke and would still pass a
+	// `fireEvent.change`-only test, since that helper dispatches change (which React's onChange also
+	// listens for). This pins the native-change contract directly against `input`.
 	it('commits on the native change event, not on every input event', () => {
 		const settings = new Settings('');
 		render(<AdaptiveStringPicker modObject={settings} config={configFor()} />);
@@ -140,8 +140,7 @@ describe('AdaptiveStringPicker', () => {
 		expect(input().type).toBe('text');
 	});
 
-	// Vanilla's setInputValue calls updateSize, so unlike NumberPicker, a source-driven change moves
-	// size too, not only typing.
+	// A source-driven change moves size too here, not only typing.
 	it('sizes to the value length with a minimum of 3, and updates size on a source-driven change too', () => {
 		const settings = new Settings('');
 		render(<AdaptiveStringPicker modObject={settings} config={configFor()} />);

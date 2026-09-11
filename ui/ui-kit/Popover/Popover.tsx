@@ -28,12 +28,12 @@ export interface PopoverProps {
 	sideOffset?: BasePopover.Positioner.Props['sideOffset'];
 	openOnHover?: boolean;
 	delay?: number;
-	/** Base UI moves focus to the first tabbable element in the popup; `false` leaves it on the trigger, which is what tippy's `interactive: true` did. */
+	/** Base UI moves focus to the first tabbable element in the popup; `false` leaves it on the trigger. */
 	initialFocus?: boolean;
 	children?: ReactNode;
 }
 
-// tippy's default `offset` is `[0, 10]` and `ui/index.ts` overrides only `arrow` and `allowHTML`, so every anchored popup in the tree sits 10px off its anchor.
+// Every anchored popup in the tree sits 10px off its anchor.
 const TIPPY_DISTANCE = 10;
 
 export const Popover = ({

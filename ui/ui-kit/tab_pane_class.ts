@@ -3,11 +3,10 @@ import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 
 /**
- * Bootstrap's two-phase fade, driven by the panel's own transition status.
+ * Produces Bootstrap's `tab-pane fade active show` classes, driven by the panel's own transition status.
  *
- * Base UI keeps the outgoing panel mounted for its fade-out, where Bootstrap dropped `active` at once
- * and let `display: none` cut the transition. Reading `ending` as already-inactive keeps that, so two
- * panes are never laid out at the same time.
+ * Base UI keeps the outgoing panel mounted for its fade-out. Reading `ending` as already-inactive
+ * keeps two panes from ever being laid out at the same time.
  */
 export const tabPaneClass = (state: TabsPanelState, ...extra: Array<ClassValue>) => {
 	const active = !state.hidden && state.transitionStatus !== 'ending';

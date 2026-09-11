@@ -62,9 +62,7 @@ describe('Popover', () => {
 		expect(trigger.contains(popup)).toBe(false);
 	});
 
-	// The vanilla popover built its content in tippy's `onShow` and threw it away in `onHidden`
-	// because tippy had no other way to get fresh content. Mounting on open is that mechanism, and
-	// it is the whole of it — nothing here rebuilds or clears content.
+	// Content mounts on open, and it is the whole of it — nothing here rebuilds or clears content.
 	it('renders nothing while closed', () => {
 		renderPopover();
 		expect(screen.queryByRole('dialog')).toBeNull();
@@ -119,9 +117,9 @@ describe('Popover', () => {
 		expect(trigger.getAttribute('type')).toBe('button');
 	});
 
-	// DIVERGENCE. tippy's `interactive: true` never moved focus, and the pickers this popover is for
-	// commit on their own events — so the default leaves focus on the trigger. Escape still closes,
-	// because the dismiss listener is on the document rather than on the popup.
+	// The pickers this popover is for commit on their own events, so the default leaves focus on the
+	// trigger. Escape still closes, because the dismiss listener is on the document rather than on
+	// the popup.
 	it('leaves focus on the trigger by default, and still closes on Escape', () => {
 		const onOpenChange = vi.fn();
 		const { trigger } = openPopover({ onOpenChange });

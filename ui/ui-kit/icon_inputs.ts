@@ -10,9 +10,9 @@ import * as InputHelpers from './input_helpers';
 export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<ModObject, T> | InputHelpers.TypedIconEnumPickerConfig<ModObject, T>;
 
 /**
- * How many equal columns an icon group of `count` icons gets — vanilla's `configureIconSection`
- * with `adjustColumns`, which both the player settings block and the rotation tab's icon row use.
- * Zero icons and eight or more are left to the stylesheet, as they were.
+ * How many equal columns an icon group of `count` icons gets, used by both the player settings
+ * block and the rotation tab's icon row.
+ * Zero icons and eight or more are left to the stylesheet.
  */
 export const iconGridColumns = (count: number): string | undefined => {
 	if (count === 0 || count >= 8) return undefined;

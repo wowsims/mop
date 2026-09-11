@@ -6,9 +6,8 @@ import { WINDOW_SCROLLER } from './window_scroller';
 
 export interface VirtualListProps {
 	count: number;
-	// Every row is exactly this tall. Rows are never measured, matching the vanilla list this
-	// replaces: it declared itself fixed-row-height, and dynamic measurement would re-render on every
-	// row that reports a different height, which is an easy infinite loop.
+	// Every row is exactly this tall. Rows are never measured — dynamic measurement would re-render
+	// on every row that reports a different height, which is an easy infinite loop.
 	rowHeight?: number;
 	overscan?: number;
 	// The element that scrolls. May be an ancestor the list shares with other content, or `window`
@@ -32,8 +31,7 @@ const DEFAULT_OVERSCAN = 10;
 
 /**
  * Rows are absolutely positioned and moved with `transform`, which is how `@tanstack/react-virtual`
- * is built to work. That is a different DOM from the vanilla `VirtualList`, which keeps rows as real
- * sequential children between two spacer elements.
+ * is built to work.
  *
  * The consequence to know: **`:nth-child` striping does not work here.** A row's position among its
  * siblings is the position within the rendered window, not within the list, so it changes as you

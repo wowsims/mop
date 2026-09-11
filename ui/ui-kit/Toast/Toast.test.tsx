@@ -1,5 +1,3 @@
-// What this pins is the part of the vanilla `Toast` contract that is behaviour rather than styling,
-// plus the places Base UI does not land in the same shape Bootstrap did.
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createContext, useContext } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -122,9 +120,6 @@ describe('Toast', () => {
 		expect(screen.getByText('sealed')).toBeTruthy();
 	});
 
-	// DIVERGENCE. Vanilla's close button was `<i class="fas fa-times fa-1xl {variant icon}">`: two
-	// glyph classes at once, so which one drew was decided by stylesheet order, and `fa-1xl` is not a
-	// FontAwesome size. The close button is a single `fa-times` at a real size.
 	it('gives the close button one glyph and a real size', () => {
 		render(<ToastArea manager={toastManager} />);
 		act(() => {

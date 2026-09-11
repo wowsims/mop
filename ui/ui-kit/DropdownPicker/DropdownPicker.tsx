@@ -15,8 +15,8 @@ import type { DropdownPickerProps } from './types';
  * UI-local state needs no store to write it through. A bound caller reaches for `DropdownField`,
  * the same split `CopyButton`/`useCopyToClipboard` and `SavedDataPanel`/`useSavedData` make.
  *
- * Vanilla's `setOptions` is `options` changing: the APL action-id pickers replace their list on
- * every unit-metadata change, which is a prop update here rather than a rebuild-and-compare.
+ * The APL action-id pickers replace their list on every unit-metadata change, which is a prop
+ * update here rather than a rebuild-and-compare.
  */
 export const DropdownPicker = <V,>({ className, ...menu }: DropdownPickerProps<V>) => (
 	<div className={clsx('dropdown-picker-root', 'dropdown', className)}>

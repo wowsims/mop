@@ -1,4 +1,4 @@
-// The popup carries its own class rather than `.dropdown-menu` for two reasons: `.dropdown-menu` is `display: none` until Bootstrap's plugin adds `.show`, and `bootstrap_overrides.ts` binds a capturing `mouseleave` on every `.dropdown-menu:not(.no-hover)` that reads `previousElementSibling` as the toggle — which, inside Base UI's positioner, is null.
+// The popup carries its own class rather than `.dropdown-menu`: that class is `display: none` until `.show` is added.
 .multi-icon-picker-positioner {
 	z-index: var(--dropdown-zindex);
 }

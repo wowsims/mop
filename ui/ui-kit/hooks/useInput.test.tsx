@@ -105,7 +105,7 @@ describe('useInput revision', () => {
 		expect(renders).toBe(atMount);
 		expect(container.textContent).toBe('0');
 
-		// Its own source, with the value unchanged — vanilla refresh() still runs, so this must render.
+		// Its own source, with the value unchanged, must still render.
 		act(() => own.forEach(listener => listener()));
 		expect(container.textContent).toBe('1');
 	});

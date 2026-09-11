@@ -9,8 +9,7 @@ describe('TooltipButton', () => {
 		const button = screen.getByRole('button');
 		expect(Array.from(button.classList).sort()).toEqual(['btn', 'btn-link', 'ms-2', 'tooltip-button']);
 		expect(button.getAttribute('type')).toBe('button');
-		// `Icon` normalises the FA5 spelling the vanilla component uses: fa-question-circle is
-		// rendered as its FA6 name.
+		// `Icon` normalises the FA5 spelling `question-circle` into its FA6 name.
 		expect(button.querySelector('i')!.className).toContain('far fa-circle-question');
 	});
 

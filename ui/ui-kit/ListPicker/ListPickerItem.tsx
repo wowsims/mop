@@ -67,9 +67,8 @@ export const ListPickerItem = ({
 
 	const hasActions = canDelete || canCopy || !!extraActions?.length;
 
-	// Vanilla stripped `.dragfrom,.dragto` off the whole document at the end of a drag, because the
-	// item that painted it is not always the one whose handler runs last. Only the one or two items
-	// actually painting subscribe, so nothing walks the DOM and React's diff stays authoritative.
+	// Only the one or two items actually painting subscribe, so nothing walks the DOM and React's
+	// diff stays authoritative.
 	useEffect(() => {
 		if (!dragging && !dragOver && !armed) return;
 		return subscribeDragEnd(() => {
@@ -79,8 +78,8 @@ export const ListPickerItem = ({
 		});
 	}, [dragging, dragOver, armed]);
 
-	// Vanilla bound this on `document` once per item, permanently — 317 listeners on the largest
-	// preset. It is only ever consulted between a mousedown and the drag it may not start.
+	// The listener is consulted between a mousedown and the drag that may not start, so it is
+	// bound only while armed.
 	useEffect(() => {
 		if (!armed) return;
 		const onMouseUp = () => {
@@ -169,8 +168,6 @@ export const ListPickerItem = ({
 	};
 
 	const onDragEnd = (event: DragEvent<HTMLDivElement>) => {
-		// Unconditional, where vanilla reached the same state either through this handler's cleanup
-		// or through the document-wide strip its `drop` had already run.
 		setArmed(false);
 		setDragging(false);
 		if (invalidDropTarget(false)) return;

@@ -17,7 +17,6 @@ describe('Tooltip', () => {
 		expect(await screen.findByText('Reforge to hit cap')).toBeTruthy();
 	});
 
-	// 61 tippy() calls in the tree have 27 destroy()s. Unmount cleanup is the reason to move.
 	it('leaves nothing behind when unmounted while open', async () => {
 		const { unmount } = render(<Anchored />);
 		fireEvent.mouseEnter(screen.getByRole('button'));
@@ -28,9 +27,8 @@ describe('Tooltip', () => {
 		expect(document.body.textContent).not.toContain('Reforge to hit cap');
 	});
 
-	// tippy's 10 `onShow` call sites build their content lazily. react-tooltip does it for free:
-	// children are not rendered until the tooltip first opens, so a picker inside one costs nothing
-	// until it is shown.
+	// react-tooltip builds content lazily for free: children are not rendered until the tooltip first
+	// opens, so a picker inside one costs nothing until it is shown.
 	it('does not render its content until it is first opened', () => {
 		let renders = 0;
 		const Content = () => {

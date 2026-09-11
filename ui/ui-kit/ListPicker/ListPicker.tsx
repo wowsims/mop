@@ -19,10 +19,8 @@ import { actionEnabled, canDeleteAt, moveItem } from './utils';
  * lists of the same kind.
  *
  * It parameterises the item body (`renderItem`) and the item's header extras (`renderItemHeader`);
- * it fixes the container/header/body markup, the action buttons and the drag rules. Vanilla built
- * each item by calling back into a factory that returned a whole `Input` instance, which is why
- * this could not port before its callers did — the list drove those instances' `refresh()`,
- * `signal` and dispose callbacks. With React children the list reconciles nothing itself.
+ * it fixes the container/header/body markup, the action buttons and the drag rules. With React
+ * children the list reconciles nothing itself.
  *
  * The drag state is module-scoped in `drag_state.ts` and is **this stack's alone**; see the note
  * there for why two lists on two stacks cannot collide.
@@ -37,7 +35,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	const { value, hidden, disabled } = useInput(modObject, config);
 
 	// Read through the config, not through the snapshot: every write below is a splice against the
-	// live array, exactly as the vanilla list did, and the store notification is what re-renders.
+	// live array, and the store notification is what re-renders.
 	const source = useCallback(() => configRef.current.getValue(modObject), [modObject]);
 	const commit = useCallback((next: Array<ItemType>) => configRef.current.setValue(modObject, next), [modObject]);
 
@@ -89,8 +87,8 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 
 	const onDrop = useCallback(
 		(drag: ListDrag, dstIndex: number) => {
-			// Read before the source removal, which is the order vanilla wrote it in and which
-			// matters: `take()` calls the other list's setValue and that may notify.
+			// Read before the source removal — this matters: `take()` calls the other list's setValue
+			// and that may notify.
 			const next = source();
 			if (drag.listId !== listId) {
 				const item = drag.take() as ItemType;

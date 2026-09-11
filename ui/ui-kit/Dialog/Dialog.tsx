@@ -16,7 +16,7 @@ export interface DialogProps {
 	container?: HTMLElement | null;
 	size?: DialogSize;
 	title?: ReactNode;
-	/** Whether the header is a header bar. `false` keeps the close button but drops the padding and the bottom border, which is what vanilla's `p-0 border-0` did. */
+	/** Whether the header is a header bar. `false` keeps the close button but drops the padding and the bottom border. */
 	header?: boolean;
 	/** Content beside the title, inside the header bar. */
 	headerChildren?: ReactNode;
@@ -25,7 +25,7 @@ export interface DialogProps {
 	scrollContents?: boolean;
 	/** Removes the close button, the backdrop press and the Escape key. */
 	preventClose?: boolean;
-	/** Keep the dialog in the DOM while closed, which is what `disposeOnClose: false` meant — and what eight of the ten vanilla callers got. */
+	/** Keep the dialog in the DOM while closed. */
 	keepMounted?: boolean;
 	/** For a dialog opened from another dialog. Without it both share one z-index tier, so this one's backdrop renders under the dialog that opened it instead of over it. */
 	elevated?: boolean;

@@ -8,7 +8,7 @@
 	z-index: var(--dropdown-zindex);
 }
 
-// The box tippy drew for an interactive popover was `.tippy-content`, so the tokens are the tooltip's and not the dropdown's.
+// Styled with the tooltip's tokens, not the dropdown's.
 .sim-popover-popup {
 	// Base UI sets both on the positioner; they are the space left between the anchor and the collision boundary, so a panel taller than its side scrolls instead of overflowing the viewport.
 	max-width: var(--available-width);

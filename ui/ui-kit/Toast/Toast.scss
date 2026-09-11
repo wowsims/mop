@@ -7,9 +7,7 @@
 }
 
 // The viewport is portaled, so no ancestor selector reaches it and it may not be inside `.sim-ui`.
-// Bootstrap declares every `--bs-toast-*` custom property on `.toast` itself, a class none of this
-// markup carries — and with the vanilla toast gone, `bootstrap/scss/toasts` is not imported at all
-// any more. The values come from `shared/variables`' `$toast-*` overrides directly instead.
+// The values come from `shared/variables`'s `$toast-*` overrides directly.
 .sim-toast-viewport {
 	display: flex;
 	position: fixed;
@@ -91,7 +89,7 @@
 	line-height: 1;
 }
 
-// Base UI's `Toast.Title` is an `<h2>`; vanilla's was a `<strong>`, so the heading defaults are undone here.
+// Base UI's `Toast.Title` is an `<h2>`, so the heading defaults are undone here.
 .sim-toast-title {
 	margin: 0 auto 0 0;
 	font-size: inherit;

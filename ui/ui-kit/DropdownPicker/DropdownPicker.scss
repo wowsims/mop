@@ -1,9 +1,6 @@
-// Bootstrap's `.dropdown-menu` re-expressed, the same trade `IconEnumPicker.scss` and
-// `ImportExportMenu.scss` record: the class is `display: none` until Bootstrap's plugin adds
-// `.show`, and `bootstrap_overrides.ts` binds a capturing `mouseleave` on every
-// `.dropdown-menu:not(.no-hover)` that reads `previousElementSibling` as its toggle — which, inside
-// Base UI's positioner, is null. `_dropdown_picker.scss` keeps the rules for the root and the
-// button, which this markup still wears.
+// `.dropdown-menu` re-expressed, the same trade `IconEnumPicker.scss` and `ImportExportMenu.scss`
+// record: that class is `display: none` until `.show` is added. `_dropdown_picker.scss` keeps the
+// rules for the root and the button, which this markup still wears.
 
 // Base UI's portal and the slot it renders into are plumbing, not boxes.
 .dropdown-picker-slot,
@@ -46,8 +43,8 @@
 	cursor: pointer;
 	transition: var(--dropdown-item-transition);
 
-	// Bootstrap's `:hover, :focus`. Base UI drives the pointer and the keyboard through one state,
-	// so this is also the arrow-key highlight the Bootstrap menu never showed.
+	// Base UI drives the pointer and the keyboard through one state, so `[data-highlighted]` is also
+	// the arrow-key highlight.
 	&[data-highlighted] {
 		background-color: var(--dropdown-link-hover-bg);
 		color: var(--dropdown-link-hover-color);
@@ -58,10 +55,8 @@
 	}
 }
 
-// `_dropdown_picker.scss` styles this as `.tippy-box[data-theme='dropdown-tooltip']`, which a
-// react-tooltip box does not match. Re-keyed here, with the `max-width: none` the quick-swap
-// tooltip needed for the same reason: `Tooltip.scss` caps every tooltip at 192px and tippy capped
-// nothing, so an option's description would wrap to a column without it.
+// `Tooltip.scss` caps every tooltip at 192px; without `max-width: none` an option's description
+// would wrap to a column.
 .sim-tooltip.dropdown-tooltip {
 	max-width: 35vw;
 	text-align: left;

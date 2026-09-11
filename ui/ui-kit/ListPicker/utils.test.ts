@@ -4,8 +4,8 @@ import { actionEnabled, canDeleteAt, dropIndex, isInteractiveTarget, listItemCla
 
 describe('listItemClassName', () => {
 	it('kebab-cases the label, agreeing with the vanilla list on every label a caller passes', () => {
-		// Vanilla wrote `.toLowerCase().replace(' ', '-')` — first space only. These are the labels
-		// the eleven call sites actually pass, and none has a second space for the two to differ on.
+		// `.toLowerCase().replace(' ', '-')` replaces only the first space. These are the labels the
+		// eleven call sites actually pass, and none has a second space for the two to differ on.
 		const labels = ['Action', 'action', 'Pre-Pull Action', 'Action Group', 'Variable', 'Value', 'Target', 'Target Input'];
 		for (const label of labels) {
 			expect(listItemClassName(label)).toBe(label.toLowerCase().replace(' ', '-'));
@@ -71,8 +71,8 @@ describe('moveItem', () => {
 	it('removes before inserting, so a forward move lands one place later than the drop cue', () => {
 		// The destination is computed against the *pre-removal* positions and then applied after the
 		// removal has shifted everything down. Dropping 'a' on the top half of 'c' (index 2) puts it
-		// after 'c' rather than before it. Vanilla did exactly this and the port keeps it: the rule
-		// is drag behaviour, not markup, so changing it here would be a silent behaviour change.
+		// after 'c' rather than before it. The rule is drag behaviour, not markup, so changing it
+		// here would be a silent behaviour change.
 		expect(moveItem(list, 0, 2)).toEqual(['b', 'c', 'a', 'd']);
 		// A backwards move has no shift to absorb and lands where the cue says.
 		expect(moveItem(list, 2, 0)).toEqual(['c', 'a', 'b', 'd']);

@@ -14,10 +14,8 @@ export interface ListItemActionProps {
 }
 
 /**
- * One round action button — vanilla's `ListPicker.makeActionElem`, which was a static returning a
- * detached `<button>` that six call sites appended by hand. It is a component here, so the class
- * list, the icon and the `type="button"` live in one place and the tooltip rides on the anchor
- * instead of a `tippy()` instance per button.
+ * One round action button: the class list, the icon and the `type="button"` live in one place and
+ * the tooltip rides on the anchor.
  */
 export const ListItemAction = ({ icon, className, tooltip, tooltipId, hidden, onClick }: ListItemActionProps) => (
 	<Button

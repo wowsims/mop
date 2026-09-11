@@ -60,8 +60,7 @@ describe('BooleanPicker', () => {
 		expect(settings.listenerCount).toBe(0);
 	});
 
-	// showWhen hides rather than unmounts, which is what the vanilla Input.update() does. Phase 3
-	// compares DOM against the vanilla build, so the node has to stay.
+	// showWhen hides rather than unmounts, so the node has to stay.
 	it('hides with the `hide` class when showWhen is false, keeping the node', () => {
 		const settings = new Settings();
 		render(<BooleanPicker modObject={settings} config={configFor({ showWhen: () => false })} />);

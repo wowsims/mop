@@ -1,4 +1,4 @@
-// Bootstrap's dropdown, re-expressed — the same trade `MultiIconPicker.scss` records, and for the same two reasons: `.dropdown-menu` is `display: none` until Bootstrap's plugin adds `.show`, and `bootstrap_overrides.ts` binds a capturing `mouseleave` on every `.dropdown-menu:not(.no-hover)` that reads `previousElementSibling` as the toggle — which, inside Base UI's positioner, is null.
+// `.dropdown-menu` re-expressed — the same trade `MultiIconPicker.scss` records: that class is `display: none` until `.show` is added.
 
 // Base UI's portal and the slot it renders into are plumbing, not boxes.
 .icon-enum-picker-slot,

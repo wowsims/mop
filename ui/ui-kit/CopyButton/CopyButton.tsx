@@ -12,21 +12,21 @@ export interface CopyButtonProps {
 	className?: ClassValue;
 	text?: string;
 	tooltip?: string;
-	/** Vanilla's `postClickEvent`, fired after the copy is started — the no-clipboard branch included. */
+	/** Fired after the copy is started — the no-clipboard branch included. */
 	onCopied?: () => void;
 }
 
 /**
- * Parameterises the label, the class list and the tooltip; fixes `copy-button` — the class the
- * vanilla `Component` root carried and every React caller of `useCopyToClipboard` writes by hand — and
- * the copy itself: the check icon and the "copied" label for 1500ms, further clicks ignored inside it.
+ * Parameterises the label, the class list and the tooltip; fixes `copy-button` — the class every
+ * React caller of `useCopyToClipboard` writes by hand — and the copy itself: the check icon and
+ * the "copied" label for 1500ms, further clicks ignored inside it.
  */
 export const CopyButton = ({ getContent, className, text, tooltip, onCopied }: CopyButtonProps) => {
 	const { copy, copied } = useCopyToClipboard(getContent);
 	const tooltipId = useId();
 
 	const onClick = () => {
-		// `navigator.clipboard` is absent on an insecure origin. Vanilla shows the payload instead and never enters the copied window, so a second click alerts again.
+		// `navigator.clipboard` is absent on an insecure origin: this shows the payload instead and never enters the copied window, so a second click alerts again.
 		if (navigator.clipboard == undefined) {
 			alert(getContent());
 		} else {

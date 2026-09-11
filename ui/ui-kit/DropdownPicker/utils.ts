@@ -18,8 +18,7 @@ export interface MenuSubmenuEntry<V> {
 	entries: MenuEntries<V>;
 	/**
 	 * The option this submenu hangs off, when the path segment was a value rather than a category
-	 * name. It stays selectable: vanilla put both a `data-bs-toggle` and a selection click handler
-	 * on the same button, so the owner of a pet could be chosen *and* opened.
+	 * name. It stays selectable, so the owner of a pet can be chosen *and* opened.
 	 */
 	trigger?: MenuOptionEntry<V>;
 	/** The raw segment, so a later option can find this submenu by value. */
@@ -29,14 +28,9 @@ export interface MenuSubmenuEntry<V> {
 export type MenuEntries<V> = Array<MenuOptionEntry<V> | MenuSubmenuEntry<V>>;
 
 /**
- * Vanilla translated a lowercase_underscore segment through the APL submenu namespace and appended
- * a `»`. A segment that is not such a string — a value segment, or a category already in the user's
+ * Translates a lowercase_underscore segment through the APL submenu namespace and appends a `»`. A
+ * segment that is not such a string — a value segment, or a category already in the user's
  * language — is used as it stands.
- *
- * The one change: `i18n.t` returns the *key* for a name the namespace does not carry, and vanilla
- * rendered that key. Falling back to the segment is what `translateItemLabel` already does for the
- * same situation, so a missing translation now degrades to the category name rather than to
- * `rotation_tab.apl.submenus.foo`.
  */
 export const submenuLabel = (segment: unknown): string => {
 	if (typeof segment !== 'string') return '';
@@ -60,10 +54,6 @@ const findSubmenu = <V>(entries: MenuEntries<V>, segment: string | V, equals: (a
  * - a **string** names a category submenu (`['resources', 'chi']`, two deep at most today);
  * - a **value** makes the option carrying that value the submenu's trigger, which is how a pet is
  *   filed under its owner.
- *
- * `headerText` from the vanilla config is deliberately absent. It was already unreachable there:
- * the constructor and `setOptions` both drop every entry carrying one before anything renders, so
- * the four header entries in `model/action_id_sets.ts` have never produced an element.
  */
 export const buildMenuTree = <V>(options: Array<DropdownOption<V>>, equals: (a: V | undefined, b: V | undefined) => boolean): MenuEntries<V> => {
 	const root: MenuEntries<V> = [];

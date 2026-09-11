@@ -11,7 +11,7 @@ export interface TooltipProps {
 	/** Anchors opt in with `data-tooltip-id={id}`; one Tooltip can serve many of them. */
 	id: string;
 	content?: ReactNode;
-	/** Per-anchor content, for one Tooltip serving a whole column: read the row off `activeAnchor`. Returning nothing renders no tooltip at all, which is how tippy's `onShow` returning false is expressed. */
+	/** Per-anchor content, for one Tooltip serving a whole column: read the row off `activeAnchor`. Returning nothing renders no tooltip at all. */
 	render?: ITooltip['render'];
 	place?: TooltipPlace;
 	/** Lets the pointer enter the tooltip, for content with links or buttons in it. */
@@ -25,12 +25,12 @@ export interface TooltipProps {
 	className?: string;
 }
 
-// Both of these are tippy's defaults, which every call site in the tree inherits, and both apply to hover tooltips as much as to popovers: - `hideOnClick: true` hides on a click anywhere, the reference included. react-tooltip splits that in two and defaults the anchor half off (`closeEvents.click`), so without `HOVER_CLOSE` the bonus-stat icon's tooltip stayed open behind the popover its own button had just opened.
+// react-tooltip splits click-close into an anchor half and a global half, and defaults the anchor half off (`closeEvents.click`), so without `HOVER_CLOSE` the bonus-stat icon's tooltip stayed open behind the popover its own button had just opened.
 const GLOBAL_CLOSE = { clickOutsideAnchor: true, escape: true };
 // `openEvents` is deliberately never passed.
 const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
 
-/** Content is `children`, which react-tooltip does not render until the tooltip first opens — so a picker built inside one costs nothing until it is shown, the way tippy's `onShow` hand-rolls it. */
+/** Content is `children`, which react-tooltip does not render until the tooltip first opens — so a picker built inside one costs nothing until it is shown. */
 export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 	({ id, content, render, place = 'top', clickable, openOnClick, hidden, onOpenChange, className }, ref) => {
 		return (

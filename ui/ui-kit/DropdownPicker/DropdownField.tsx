@@ -32,8 +32,7 @@ const identical = <V,>(a: V | undefined, b: V | undefined) => a === b;
  *
  * The root **is** the shell: the label, the button and the menu are all children of one
  * `div.input-root.dropdown-picker-root.dropdown`. Wrapping `DropdownPicker` would nest a second
- * root inside the shell, and a wrapper element the baseline does not have is what the rotation
- * tab's parity line exists to catch.
+ * root inside the shell.
  */
 export const DropdownField = <ModObject, T, V = T>({
 	modObject,

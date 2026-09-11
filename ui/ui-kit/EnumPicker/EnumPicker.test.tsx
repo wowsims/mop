@@ -77,8 +77,8 @@ describe('EnumPicker', () => {
 		expect(select().value).toBe('2');
 	});
 
-	// Assigning select.value with no matching option deselects everything, which is what the vanilla
-	// picker does with the same assignment. A React-controlled select would keep the first option.
+	// Assigning select.value with no matching option deselects everything. A React-controlled select
+	// would keep the first option.
 	it('selects nothing when the model value is not in the list, as the vanilla picker does', () => {
 		const settings = new Settings(99);
 		render(<EnumPicker modObject={settings} config={configFor()} />);

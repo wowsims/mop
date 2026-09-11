@@ -10,9 +10,7 @@ describe('wowheadAnchorProps', () => {
 		});
 	});
 
-	// MultiIconPicker's trigger carries no href, so wowhead has no icon to swap in and the vanilla
-	// build emits only the touch-tooltip attribute. Emitting both would be an attribute the parity
-	// baseline does not have.
+	// MultiIconPicker's trigger carries no href, so wowhead has no icon to swap in.
 	it('omits the icon attribute for an element with no wowhead link', () => {
 		const props = wowheadAnchorProps({ icon: false });
 		expect(props).toEqual({ 'data-disable-wowhead-touch-tooltip': 'true' });

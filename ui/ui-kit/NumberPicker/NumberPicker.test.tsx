@@ -184,8 +184,7 @@ describe('NumberPicker', () => {
 
 	// The positive-float rewrite formats with grouping (formatToNumber's default), unlike the
 	// normal display format above. Reading the rewritten field back with Number(value) then chokes
-	// on the thousands separator and silently falls back to 0 — an odd vanilla quirk, reproduced
-	// rather than fixed.
+	// on the thousands separator and silently falls back to 0.
 	it('loses a positive-float value at 1000+ to the thousands separator, matching the vanilla bug', () => {
 		const settings = new Settings(0);
 		render(<NumberPicker modObject={settings} config={configFor({ positive: true, float: true })} />);
@@ -210,8 +209,7 @@ describe('NumberPicker', () => {
 		expect(settings.value).toBe(12);
 	});
 
-	// Vanilla updates size in the constructor and on the `input` event only, so a source-driven change
-	// leaves it where typing put it.
+	// Size updates on the `input` event only, so a source-driven change leaves it where typing put it.
 	it('tracks the size attribute while typing, with a minimum of 3, and leaves it alone on a source change', () => {
 		const settings = new Settings(0);
 		render(<NumberPicker modObject={settings} config={configFor()} />);
@@ -224,9 +222,9 @@ describe('NumberPicker', () => {
 		expect(input().size).toBe(6);
 	});
 
-	// The vanilla picker commits on the native `change` event — blur *after an edit*, and Enter — so a
-	// plain focus/blur writes nothing. Committing on blur instead would write defaultValue, or
-	// rewrite a `positive` field to "NaN", without the user touching anything.
+	// Commits on the native `change` event — blur *after an edit*, and Enter — so a plain focus/blur
+	// writes nothing. Committing on blur instead would write defaultValue, or rewrite a `positive`
+	// field to "NaN", without the user touching anything.
 	it('writes nothing when the field is blurred without an edit', () => {
 		const settings = new Settings(1);
 		render(<NumberPicker modObject={settings} config={configFor({ defaultValue: 42 })} />);

@@ -7,7 +7,7 @@ import { DropdownMenuItems } from './DropdownMenuItems';
 import type { DropdownOption } from './types';
 import { buildMenuTree } from './utils';
 
-// Bootstrap's dropdown plugin offsets its menu by [0, 2] from the toggle.
+// Offsets the menu 2px from the toggle.
 const BOOTSTRAP_DROPDOWN_OFFSET = 2;
 
 export interface DropdownMenuProps<V> {
@@ -28,7 +28,7 @@ export interface DropdownMenuProps<V> {
  * It is its own component because the root element differs by caller and nothing else does —
  * `DropdownPicker` owns a plain `div`, while a bound picker's root is `PickerShell`'s `Field.Root`
  * so that binding a dropdown adds no element. Forking the menu instead would have put a wrapper
- * div inside every bound picker, which is what the rotation tab's parity line catches.
+ * div inside every bound picker.
  */
 export const DropdownMenu = <V,>({ id, options, value, onChange, equals, defaultLabel, hideLabelWhenDefault, side, positionMethod }: DropdownMenuProps<V>) => {
 	// null is Base UI's "not resolved yet"; anything else falls back to <body>, which is outside `.sim-ui` and its theme.
@@ -58,7 +58,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 						defaultLabel
 					)}
 				</Menu.Trigger>
-				{/* The slot holds the place vanilla's `<ul>` had after the button, which a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
+				{/* This slot holds the place after the button that a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
 				<div className="dropdown-picker-slot" ref={setSlot} />
 				<Menu.Portal container={slot} className="dropdown-picker-portal">
 					<Menu.Positioner
@@ -73,7 +73,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 								className="dropdown-picker-list"
 								value={selectedIndex}
 								onValueChange={(index: number) => onChange(options[index].value)}>
-								{/* Built on open and dropped on close, as vanilla's `show.bs.dropdown` / `hidden.bs.dropdown` pair did. */}
+								{/* Built on open and dropped on close. */}
 								{open && <DropdownMenuItems entries={entries} tooltipId={tooltipId} onSelect={index => onChange(options[index].value)} />}
 							</Menu.RadioGroup>
 						</Menu.Popup>

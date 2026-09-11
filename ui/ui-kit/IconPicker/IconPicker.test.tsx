@@ -62,7 +62,7 @@ beforeEach(() => {
 });
 
 describe('IconPicker', () => {
-	// Vanilla appends both improved anchors once, at every `states`, and gates only the fill. An
+	// Both improved anchors render once, at every `states`, and only the fill is gated. An
 	// unfilled one has no href, which is what `.icon-input-improved:not([href])` hides.
 	it('renders all three anchors at every states, filled or not', () => {
 		const settings = new Settings(0);
@@ -187,8 +187,8 @@ describe('IconPicker', () => {
 		expect(settings.level).toBe(2);
 	});
 
-	// Vanilla stores from its source subscription, so it acts on any notification while hidden —
-	// not on a transition — and never during construction.
+	// It stores from its source subscription, so it acts on any notification while hidden — not on
+	// a transition — and never during construction.
 	it('zeroes a picker that mounts hidden at the first notification, not at mount', () => {
 		const settings = new Settings(2);
 		settings.visible = false;
@@ -311,9 +311,9 @@ describe('IconPicker', () => {
 		expect(container.querySelector('.icon-picker-label')).toBeTruthy();
 	});
 
-	// The container overlays the anchor rather than living inside it, so what used to reach the picker
-	// by bubbling has to be carried on both: otherwise a click on an improved icon leaves the value
-	// alone and follows the wowhead link instead.
+	// The container overlays the anchor rather than living inside it, so the handler has to be carried
+	// on both: otherwise a click on an improved icon leaves the value alone and follows the wowhead
+	// link instead.
 	it('left-clicks, right-clicks and suppresses the context menu from the container as well', () => {
 		const settings = new Settings(1);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
