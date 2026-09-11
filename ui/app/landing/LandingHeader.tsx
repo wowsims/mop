@@ -54,7 +54,7 @@ export const LandingHeader = () => {
 							</a>
 							<a href="https://patreon.com/wowsims" target="_blank" rel="noreferrer" className="nav-link link-alt">
 								<Icon name="patreon" style="brands" size="2x" className="patreon-link mr-2" />
-								<span className="text-xl md:hidden lg:block">{i18n.t('landing.header.supportDevs')}</span>
+								<span className="text-fluid-xl md:hidden lg:block">{i18n.t('landing.header.supportDevs')}</span>
 							</a>
 							<LandingLanguageMenu />
 						</div>

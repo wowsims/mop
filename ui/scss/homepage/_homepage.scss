@@ -99,7 +99,14 @@
 
 			.wowsims-info {
 				// Was `@extend .fs-4` (Bootstrap utilities API, $font-sizes key 4 = $h4-font-size).
-				font-size: 1.5rem;
+				// Restated with Bootstrap's RFS scaling, which the @extend carried and a flat
+				// 1.5rem does not: 19.95px at a 700px viewport, 21px from 1200px up.
+				font-size: calc(1.275rem + 0.3vw);
+
+				@include media-breakpoint-up(xl) {
+					font-size: 1.5rem;
+				}
+
 				width: 75%;
 				margin: 0;
 

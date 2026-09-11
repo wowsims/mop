@@ -38,33 +38,47 @@
  * BREAKPOINT (576/768/.../3841), Bootstrap's sets it to 540/720/960/1140/1320, and `important` made
  * Tailwind's win — which made the landing page full-bleed. Overriding the utility with an empty
  * body would stop Tailwind emitting a competing rule, but an empty `@utility` is a build error, so
- * this restates Bootstrap's definition instead: both stylesheets now say the same thing and it no
- * longer matters which wins. Remove it when `.container` is migrated off Bootstrap.
+ * this restates the container instead. Note it encodes Bootstrap's rules AND
+ * `shared/_bootstrap_style_overrides.scss`'s `media-breakpoint-down(lg)` override together, because
+ * that override is not `!important` and so cannot win against a Tailwind utility the way it won
+ * against Bootstrap's plain `.container`. Below 992px the container is full-bleed and unmargined;
+ * above it, Bootstrap's 960/1140/1320 ladder applies. Remove when `.container` leaves Bootstrap.
  */
 @utility container {
 	--bs-gutter-x: 1.5rem;
 	--bs-gutter-y: 0;
 	width: 100%;
+	max-width: 100%;
 	padding-right: calc(var(--bs-gutter-x) * 0.5);
 	padding-left: calc(var(--bs-gutter-x) * 0.5);
-	margin-left: auto;
-	margin-right: auto;
-	max-width: none;
+	margin-left: 0;
+	margin-right: 0;
 
-	@media (width >= 576px) {
-		max-width: 540px;
-	}
-	@media (width >= 768px) {
-		max-width: 720px;
-	}
 	@media (width >= 992px) {
 		max-width: 960px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 	@media (width >= 1200px) {
 		max-width: 1140px;
 	}
 	@media (width >= 1400px) {
 		max-width: 1320px;
+	}
+}
+
+/*
+ * Fluid counterpart to `text-xl`, reproducing Bootstrap's RFS. Bootstrap runs every `$font-size`
+ * above 1.25rem through RFS, so `.fs-4` was never a flat 1.5rem — it is
+ * `calc(1.275rem + 0.3vw)` until 1200px and 1.5rem beyond. A flat value looked right at 1600px and
+ * was 1px too large at 700px. Sizes below RFS's 1.25rem floor (`fs-body`) never scaled, so the
+ * plain `--text-*` tokens are exact for those.
+ */
+@utility text-fluid-xl {
+	font-size: calc(1.275rem + 0.3vw);
+
+	@media (width >= 1200px) {
+		font-size: 1.5rem;
 	}
 }
 
