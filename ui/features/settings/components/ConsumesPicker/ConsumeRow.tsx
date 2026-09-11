@@ -1,12 +1,11 @@
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { Player } from '@sim/player/player';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
 import clsx from 'clsx';
-import { type ReactNode, useId } from 'react';
+import { type ReactNode, useId, useMemo } from 'react';
 
 export interface ConsumeRowProps {
 	name: 'potions' | 'elixirs' | 'food' | 'engineering' | 'pet';
@@ -16,9 +15,10 @@ export interface ConsumeRowProps {
 
 export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	const player = usePlayer();
-	const subscribe = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]);
+	const profession1 = usePlayerStore('profession1');
+	const profession2 = usePlayerStore('profession2');
 	const labelId = useId();
-	const shown = useStoreSubscribe(subscribe, () => !configs || configs.some(config => iconEnumPickerShown(config, player)));
+	const shown = useMemo(() => !configs || configs.some(config => iconEnumPickerShown(config, player)), [configs, player, profession1, profession2]);
 
 	return (
 		<div className={clsx('consumes-row', 'input-root', 'input-inline', !shown && 'hide')} role="group" aria-labelledby={labelId}>

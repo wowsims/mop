@@ -1,6 +1,7 @@
 import { Cooldown, Cooldowns } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { ActionId } from '@sim/proto/action_id';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -36,17 +37,23 @@ let stored: Cooldowns;
 let spells: Array<ReturnType<typeof majorCooldown>>;
 let player: any;
 
+const KEY = 5;
+
 const setup = (initial: Array<Cooldown>, available = [1, 2, 3]) => {
 	source.listeners.clear();
 	stored = Cooldowns.create({ cooldowns: initial });
 	spells = available.map(majorCooldown);
+	const store = createSimStore();
+	seedKeyed(store, 'players', KEY, { v: zeroVersions(PLAYER_FIELDS) } as unknown as PlayerSlice);
 	player = {
 		hiddenMCDs: [],
-		sim: {},
+		sim: { store },
+		storeKey: KEY,
 		getMetadata: () => ({ getSpells: () => spells }),
 		getSimpleCooldowns: () => Cooldowns.clone(stored),
 		setSimpleCooldowns: (next: Cooldowns) => {
 			stored = next;
+			patchKeyed(store, 'players', KEY, {}, ['rotation']);
 			source.notify();
 		},
 	};

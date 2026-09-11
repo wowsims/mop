@@ -1,39 +1,32 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { act, render } from '@testing-library/react';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ConsumeRow } from './ConsumeRow';
 
-// The real sources read a zustand store off `player.sim`, which a unit test has no way to build.
-// What this file is about is *which* fields the row watches and that it re-reads the row's
-// visibility when one of them fires, so the source is stubbed and driven directly.
-const source = vi.hoisted(() => {
-	const listeners = new Set<() => void>();
-	return {
-		listeners,
-		fields: [] as Array<string>,
-		notify: () => listeners.forEach(listener => listener()),
-	};
-});
+const KEY = 2;
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: (_player: unknown, field: string) => {
-		source.fields.push(field);
-		return (onChange: () => void) => {
-			source.listeners.add(onChange);
-			return () => source.listeners.delete(onChange);
-		};
-	},
-	subscribeAll: (subs: Array<(onChange: () => void) => () => void>) => (onChange: () => void) => {
-		const unsubs = subs.map(sub => sub(onChange));
-		return () => unsubs.forEach(unsub => unsub());
-	},
-}));
-
-/** Stands in for the player: the one flag the configs below ask about. */
+/** Stands in for the player: the one flag the configs below ask about, over a store the row can select from. */
 class Options {
 	engineer = true;
+	readonly storeKey = KEY;
+	readonly sim: { store: SimStore };
+
+	constructor() {
+		const store = createSimStore();
+		seedKeyed(store, 'players', KEY, { profession1: 0, profession2: 0, v: zeroVersions(PLAYER_FIELDS) } as unknown as PlayerSlice);
+		this.sim = { store };
+	}
+
+	changeProfession(next: number) {
+		patchKeyed(this.sim.store, 'players', KEY, { profession1: next }, ['profession1']);
+	}
+
+	changeSomethingElse() {
+		patchKeyed(this.sim.store, 'players', KEY, { name: 'Other' }, ['name']);
+	}
 }
 
 // `iconEnumPickerShown` is satisfied only by a value that carries an actionId *and* is shown, so
@@ -58,11 +51,6 @@ const row = (options: Options, configs?: Array<IconEnumPickerConfig<Options, num
 	);
 	return document.querySelector('.consumes-row') as HTMLElement;
 };
-
-beforeEach(() => {
-	source.listeners.clear();
-	source.fields.length = 0;
-});
 
 describe('ConsumeRow', () => {
 	it('builds vanilla’s row: the caption first, then whatever it was given', () => {
@@ -91,13 +79,13 @@ describe('ConsumeRow', () => {
 		expect(element.classList.contains('hide')).toBe(false);
 
 		options.engineer = false;
-		act(() => source.notify());
+		act(() => options.changeProfession(1));
 		expect(element.classList.contains('hide')).toBe(true);
 		// `updateRow` toggles a class; the row and its pickers stay in the document either way.
 		expect(document.querySelector('.consumes-engi')).toBeTruthy();
 
 		options.engineer = true;
-		act(() => source.notify());
+		act(() => options.changeProfession(2));
 		expect(element.classList.contains('hide')).toBe(false);
 	});
 
@@ -106,20 +94,28 @@ describe('ConsumeRow', () => {
 		const element = row(options, [configFor(opts => opts.engineer), configFor(() => true)]);
 
 		options.engineer = false;
-		act(() => source.notify());
+		act(() => options.changeProfession(1));
 		expect(element.classList.contains('hide')).toBe(false);
 	});
 
 	it('never hides a row that names no pickers', () => {
-		const element = row(new Options());
+		const options = new Options();
+		const element = row(options);
 		expect(element.classList.contains('hide')).toBe(false);
 
-		act(() => source.notify());
+		act(() => options.changeProfession(1));
 		expect(element.classList.contains('hide')).toBe(false);
 	});
 
 	it('watches the two professions and nothing else', () => {
-		row(new Options(), [configFor(() => true)]);
-		expect(source.fields).toEqual(['profession1', 'profession2']);
+		const options = new Options();
+		const element = row(options, [configFor(opts => opts.engineer)]);
+
+		options.engineer = false;
+		act(() => options.changeSomethingElse());
+		expect(element.classList.contains('hide')).toBe(false);
+
+		act(() => options.changeProfession(1));
+		expect(element.classList.contains('hide')).toBe(true);
 	});
 });

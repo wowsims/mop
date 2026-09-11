@@ -1,34 +1,14 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import { subscribeGated } from '@sim/state/batch';
 import { Glyphs } from '@generated/proto/common';
 import { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SavedTalents } from './SavedTalents';
 
-const source = vi.hoisted(() => {
-	let version = 0;
-	const entries = new Set<{ listener: (next: any, prev: any) => void }>();
-	return {
-		entries,
-		subscribe: <U,>(_selector: (v: number) => U, listener: (next: U, prev: U) => void) => {
-			const entry = { listener };
-			entries.add(entry);
-			return () => entries.delete(entry);
-		},
-		bump: () => {
-			version++;
-			entries.forEach(entry => entry.listener(version, version - 1));
-		},
-	};
-});
-
-vi.mock('@sim/state/subscriptions', () => {
-	const never = () => () => undefined;
-	const all = (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange);
-	return { subscribePlayerField: () => never, subscribeAll: () => all };
-});
+const KEY = 6;
 
 const STRINGS = vi.hoisted(
 	() =>
@@ -55,21 +35,36 @@ const talentsWith = (talentsString: string) => SavedTalentsProto.create({ talent
 const storedJson = (talentsString: string) => SavedTalentsProto.toJson(talentsWith(talentsString));
 
 class FakePlayer {
-	talentsString = '';
-	glyphs = Glyphs.create();
+	readonly storeKey = KEY;
+	readonly sim: { store: SimStore };
+
+	constructor() {
+		const store = createSimStore();
+		seedKeyed(store, 'players', KEY, { talentsString: '', glyphs: Glyphs.create(), v: zeroVersions(PLAYER_FIELDS) } as unknown as PlayerSlice);
+		this.sim = { store };
+	}
+
+	private slice() {
+		return this.sim.store.getState().players[KEY];
+	}
+
+	get talentsString() {
+		return this.slice().talentsString;
+	}
+	set talentsString(next: string) {
+		patchKeyed(this.sim.store, 'players', KEY, { talentsString: next }, ['talentsString']);
+	}
 	getTalentsString() {
 		return this.talentsString;
 	}
 	getGlyphs() {
-		return this.glyphs;
+		return this.slice().glyphs;
 	}
 	setTalentsString = vi.fn((next: string) => {
 		this.talentsString = next;
-		source.bump();
 	});
 	setGlyphs = vi.fn((next: Glyphs) => {
-		this.glyphs = next;
-		source.bump();
+		patchKeyed(this.sim.store, 'players', KEY, { glyphs: next }, ['glyphs']);
 	});
 }
 
@@ -79,7 +74,6 @@ let presets: Array<any>;
 let waitForInit: () => Promise<void>;
 
 const setup = () => {
-	source.entries.clear();
 	trackEvent.mockClear();
 	window.localStorage.clear();
 	player = new FakePlayer();
@@ -161,9 +155,7 @@ describe('SavedTalents', () => {
 			await renderPanel();
 
 			let notified = 0;
-			const unsub = subscribeGated(
-				source.subscribe,
-				v => v,
+			const unsub = subscribeAll([subscribePlayerField(player as never, 'talentsString'), subscribePlayerField(player as never, 'glyphs')])(
 				() => notified++,
 			);
 

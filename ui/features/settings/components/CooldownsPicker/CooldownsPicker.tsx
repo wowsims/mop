@@ -2,8 +2,7 @@ import './CooldownsPicker.scss';
 
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
+import { useAplRotation } from '@sim/hooks/useAplRotation';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useId } from 'react';
 
@@ -14,8 +13,7 @@ export const CooldownsPicker = () => {
 	const player = usePlayer();
 	const deleteTooltipId = useId();
 
-	const subscribe = subscribeAll([subscribePlayerField(player, 'rotation'), subscribeUnitMetadata(player.sim)]);
-	const cooldowns = useStoreSubscribe(subscribe, () => player.getSimpleCooldowns().cooldowns);
+	const cooldowns = useAplRotation(() => player.getSimpleCooldowns().cooldowns);
 	const available = useAvailableCooldowns();
 
 	return (

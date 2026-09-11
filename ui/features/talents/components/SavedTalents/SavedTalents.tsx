@@ -1,11 +1,10 @@
 import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { batch } from '@sim/state/batch';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Glyphs } from '@generated/proto/common';
 import type { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';
@@ -37,9 +36,9 @@ export const SavedTalents = () => {
 		[ready, individualConfig, player],
 	);
 
-	const talents = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'talentsString'), subscribePlayerField(player, 'glyphs')]), () =>
-		talentsData(player),
-	);
+	const talentsString = usePlayerStore('talentsString');
+	const glyphs = usePlayerStore('glyphs');
+	const talents = useMemo(() => talentsData(player), [player, talentsString, glyphs]);
 	const currentJson = useMemo(() => serializeTalents(talents), [talents]);
 
 	const onLoad = useCallback(
