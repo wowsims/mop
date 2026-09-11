@@ -2,7 +2,7 @@ import type { ReforgeOptimizerModel, ReforgeOptimizerOptions } from '@features/r
 import { SavedEpWeights } from '@features/stat-weights/components/SavedEpWeights';
 import { useOpenEpWeights } from '@features/stat-weights/hooks/useEpWeightsDialog';
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { UnitStat } from '@sim/proto/stats';
 import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import { batch } from '@sim/state/batch';
@@ -31,6 +31,7 @@ export interface ReforgeSettingsPanelProps {
 export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSettingsPanelProps) => {
 	const host = useSimHost();
 	const player = host.player;
+	const individualConfig = useSpecConfig();
 	const openEpWeights = useOpenEpWeights();
 	const settings = model.settings;
 
@@ -79,7 +80,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<ReforgeStatCaps
 				model={model}
 				player={player}
-				displayStats={host.individualConfig.displayStats}
+				displayStats={individualConfig.displayStats}
 				statTooltips={statTooltips}
 				useCustomEPValues={useCustomEPValues}
 			/>

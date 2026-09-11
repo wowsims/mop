@@ -1,4 +1,4 @@
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import { SavedEncounter as SavedEncounterProto } from '@generated/proto/ui';
@@ -15,7 +15,7 @@ import { encounterData, serializeEncounter } from './utils';
 export const SavedEncounter = () => {
 	const host = useSimHost();
 	const { encounter } = host.sim;
-	const config = host.individualConfig;
+	const config = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('settings_tab.saved_encounters.encounter');
@@ -24,7 +24,7 @@ export const SavedEncounter = () => {
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedEncounterProto>>>(
 		() =>
 			ready
-				? (config.presets.encounters ?? []).map(preset => {
+				? (config.encounters ?? []).map(preset => {
 						const data = SavedEncounterProto.create({ encounter: preset.encounter });
 						return {
 							name: preset.name,

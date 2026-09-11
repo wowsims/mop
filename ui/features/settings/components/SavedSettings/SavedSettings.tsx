@@ -1,4 +1,4 @@
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
@@ -15,15 +15,15 @@ import { serializeSettings } from './utils';
 
 export const SavedSettings = () => {
 	const host = useSimHost();
-	const config = host.individualConfig;
+	const presets = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('settings_tab.saved_settings.settings');
 	const { entries: userData, save, remove } = useSavedSettings();
 
-	const presets = useMemo<Array<SavedDataPanelEntry<SavedSettingsProto>>>(() => {
+	const savedDataPresets = useMemo<Array<SavedDataPanelEntry<SavedSettingsProto>>>(() => {
 		if (!ready) return [];
-		const settingsPresets = (config.presets.settings ?? []).map(settings => {
+		const settingsPresets = (presets.settings ?? []).map(settings => {
 			const data = SavedSettingsProto.create({
 				race: settings.race,
 				raidBuffs: settings.raidBuffs,
@@ -42,12 +42,12 @@ export const SavedSettings = () => {
 			});
 			return { name: settings.name, data, json: serializeSettings(data), tooltip: settings.tooltip, isPreset: true };
 		});
-		const itemSwapPresets = (config.presets.itemSwaps ?? []).map(presetItemSwap => {
+		const itemSwapPresets = (presets.itemSwaps ?? []).map(presetItemSwap => {
 			const data = SavedSettingsProto.create({ ...readSavedSettings(host), enableItemSwap: true, itemSwap: presetItemSwap.itemSwap });
 			return { name: presetItemSwap.name, data, json: serializeSettings(data), tooltip: presetItemSwap.tooltip, isPreset: true };
 		});
 		return [...settingsPresets, ...itemSwapPresets];
-	}, [ready, host, config]);
+	}, [ready, host, presets]);
 
 	const settings = useReadyStoreSubscribe(
 		subscribeAll([
@@ -103,7 +103,7 @@ export const SavedSettings = () => {
 			label={label}
 			nameLabel={i18n.t('settings_tab.saved_settings.settings_name')}
 			saveButtonText={i18n.t('settings_tab.saved_settings.save_settings')}
-			presets={presets}
+			presets={savedDataPresets}
 			userData={userData}
 			currentJson={currentJson}
 			onLoad={onLoad}

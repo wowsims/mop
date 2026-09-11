@@ -1,5 +1,5 @@
 import type { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { subscribeSimChange } from '@sim/state/subscriptions';
 import { applyBuild } from '@features/settings/model/apply_build';
@@ -20,18 +20,11 @@ export interface PresetConfigurationPickerProps {
 
 export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPickerProps) => {
 	const host = useSimHost();
+	const presets = useSpecPresets();
 	const ready = useSimReady();
 	const tooltipId = useId();
 
-	const builds = useMemo(
-		() =>
-			(host.individualConfig.presets.builds ?? []).filter(build =>
-				Object.keys(build).some(
-					category => categories.includes(category as PresetConfigurationCategory) && !!build[category as PresetConfigurationCategory],
-				),
-			),
-		[host, categories],
-	);
+	const builds = useMemo(() => (presets.builds ?? []).filter(build => categories.some(category => !!build[category])), [presets, categories]);
 
 	// The active check must never run against an uninitialised sim; `useReadyStoreSubscribe` keeps
 	// that true here.

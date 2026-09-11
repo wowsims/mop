@@ -1,7 +1,6 @@
 import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField } from '@sim/state/subscriptions';
+import { useAplRotation } from '@sim/hooks/useAplRotation';
 import { SimTabPane } from '@ui-kit/SimTabPane';
 
 import { RotationTabBody } from './RotationTabBody';
@@ -15,8 +14,7 @@ const ROTATION_TYPE_CLASSES: Record<number, string> = {
 
 export const RotationTabPane = () => {
 	const player = usePlayer();
-	const subscribe = subscribePlayerField(player, 'rotation');
-	const rotationType = useStoreSubscribe(subscribe, () => player.getRotationType());
+	const rotationType = useAplRotation(() => player.getRotationType());
 
 	return (
 		<SimTabPane id="rotation-tab" className={ROTATION_TYPE_CLASSES[rotationType]}>

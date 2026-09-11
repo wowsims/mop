@@ -1,6 +1,6 @@
 import './CharacterStats.scss';
 
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
@@ -15,7 +15,7 @@ import { meleeCritCapDisplayString, readRacialBonuses, shouldShowMeleeCritCap, s
 export const CharacterStats = () => {
 	const host = useSimHost();
 	const player = host.player;
-	const { displayStats, epReferenceStat, modifyDisplayStats, overwriteDisplayStats } = host.individualConfig;
+	const { displayStats, epReferenceStat, modifyDisplayStats, overwriteDisplayStats } = useSpecConfig();
 	const rows = useMemo(() => buildRows(player, displayStats, epReferenceStat), [player, displayStats, epReferenceStat]);
 
 	const subscribe = subscribeAll([

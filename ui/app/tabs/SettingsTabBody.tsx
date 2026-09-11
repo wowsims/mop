@@ -7,7 +7,7 @@ import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useMemo } from 'react';
@@ -18,7 +18,7 @@ const SETTINGS_PRESETS = [PresetConfigurationCategory.Encounter, PresetConfigura
 
 export const SettingsTabBody = () => {
 	const host = useSimHost();
-	const config = host.individualConfig;
+	const config = useSpecConfig();
 	const ready = useSimReady();
 
 	const options = useMemo(

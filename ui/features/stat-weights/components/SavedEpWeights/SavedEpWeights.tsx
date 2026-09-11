@@ -1,4 +1,4 @@
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Stats } from '@sim/proto/stats';
 import { subscribePlayerField } from '@sim/state/subscriptions';
@@ -25,7 +25,8 @@ export interface SavedEpWeightsProps {
 
 export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeightsProps) => {
 	const host = useSimHost();
-	const { player, sim, individualConfig } = host;
+	const { player } = host;
+	const individualConfig = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('sidebar.buttons.stat_weights.modal.ep');
@@ -34,7 +35,7 @@ export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeig
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedEPWeights>>>(
 		() =>
 			ready
-				? individualConfig.presets.epWeights.map(preset => {
+				? individualConfig.epWeights.map(preset => {
 						const data = epWeightsData(preset.epWeights);
 						return {
 							name: preset.name,

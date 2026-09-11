@@ -27,11 +27,8 @@ class FakeIntersectionObserver {
 
 let simple = false;
 let available: Array<unknown> = [];
-const host = {
-	player: { hasSimpleRotationGenerator: () => simple },
-	individualConfig: { rotationInputs: {} },
-} as never;
-vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host }));
+const host = { player: { hasSimpleRotationGenerator: () => simple } } as never;
+vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host, useSpecConfig: () => ({ rotationInputs: {} }) }));
 
 const { RotationTabBody } = await import('./RotationTabBody');
 

@@ -3,7 +3,7 @@ import './EpWeightsDialog.scss';
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useStatWeights } from '@sim/hooks/useStatWeights';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
@@ -37,7 +37,8 @@ export interface EpWeightsDialogProps {
 
 export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialogProps) => {
 	const host = useSimHost();
-	const { player, sim, individualConfig } = host;
+	const { player, sim } = host;
+	const individualConfig = useSpecConfig();
 
 	const epStats = individualConfig.epStats;
 	const epReferenceStat = individualConfig.epReferenceStat;
