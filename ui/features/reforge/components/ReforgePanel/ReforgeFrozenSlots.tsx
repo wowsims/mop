@@ -2,7 +2,6 @@ import { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import type { Player } from '@sim/player/player';
 import type { ReforgeSettings } from '@sim/settings/reforge_settings';
-import { subscribeReforgeField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import clsx from 'clsx';
 import { useMemo } from 'react';
@@ -35,7 +34,7 @@ export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: Reforg
 										id: 'reforge-optimizer-freeze-' + ItemSlot[slot],
 										label: translateSlotName(slot),
 										inline: true,
-										storeSubscribe: () => subscribeReforgeField(settings, 'freezeItemSlots'),
+										storeField: 'reforge:freezeItemSlots',
 										getValue: () => settings.getFrozenItemSlot(slot) || false,
 										setValue: (_player, newValue) => settings.setFrozenItemSlot(slot, newValue),
 									}}

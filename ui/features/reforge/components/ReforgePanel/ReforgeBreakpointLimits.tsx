@@ -4,7 +4,6 @@ import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import type { StatCap } from '@sim/proto/stats';
 import type { ReforgeSettings } from '@sim/settings/reforge_settings';
-import { subscribeReforgeField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
@@ -67,7 +66,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 													value: breakpoint,
 												})),
 											].sort((a, b) => a.value - b.value),
-											storeSubscribe: () => subscribeReforgeField(settings, 'useSoftCapBreakpoints'),
+											storeField: 'reforge:useSoftCapBreakpoints',
 											getValue: () => {
 												const limit = settings.breakpointLimits.getUnitStat(unitStat);
 												return breakpoints.some(breakpoint => breakpoint == limit) ? limit : 0;

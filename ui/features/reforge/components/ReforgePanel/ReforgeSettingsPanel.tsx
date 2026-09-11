@@ -6,7 +6,6 @@ import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { UnitStat } from '@sim/proto/stats';
 import { RelativeStatCap } from '@sim/settings/reforge_settings';
 import { batch } from '@sim/state/batch';
-import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -43,18 +42,6 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 	const softCapsConfig = model.softCapsConfig;
 	const hasSoftCaps = !!softCapsConfig?.length;
 
-	const forcedProcSubscribe = subscribeAll([subscribeReforgeField(settings, 'relativeStatCapStat'), subscribePlayerField(player, 'gear')]);
-	const precisionSubscribe = subscribeAll([
-		subscribeReforgeField(settings, 'relativeStatCapPrecision'),
-		subscribeReforgeField(settings, 'relativeStatCapStat'),
-		subscribePlayerField(player, 'gear'),
-	]);
-	const eotbpSubscribe = subscribeAll([
-		subscribeReforgeField(settings, 'includeGems'),
-		subscribeReforgeField(settings, 'includeEOTBPGemSocket'),
-		subscribePlayerField(player, 'gear'),
-	]);
-
 	return (
 		<>
 			<BooleanPicker
@@ -64,7 +51,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					id: 'reforge-optimizer-enable-custom-ep-weights',
 					label: i18n.t('sidebar.buttons.suggest_reforges.use_custom'),
 					inline: true,
-					storeSubscribe: () => subscribeReforgeField(settings, 'useCustomEPValues'),
+					storeField: 'reforge:useCustomEPValues',
 					getValue: () => settings.useCustomEPValues,
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'use_custom_ep', value: newValue });
@@ -92,7 +79,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 						id: 'reforge-optimizer-enable-soft-cap-breakpoints',
 						label: i18n.t('sidebar.buttons.suggest_reforges.use_soft_cap_breakpoints'),
 						inline: true,
-						storeSubscribe: () => subscribeReforgeField(settings, 'useSoftCapBreakpoints'),
+						storeField: 'reforge:useSoftCapBreakpoints',
 						getValue: () => settings.useSoftCapBreakpoints,
 						setValue: (_player, newValue) => {
 							trackEvent({ action: 'settings', category: 'reforging', label: 'softcap_breakpoints', value: newValue });
@@ -112,7 +99,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 						{ name: i18n.t('sidebar.buttons.suggest_reforges.any'), value: -1 },
 						...[...RelativeStatCap.relevantStats].map(stat => ({ name: UnitStat.fromStat(stat).getShortName(player.getClass()), value: stat })),
 					],
-					storeSubscribe: () => forcedProcSubscribe,
+					storeField: ['reforge:relativeStatCapStat', 'gear'],
 					getValue: () => settings.relativeStatCapStat,
 					setValue: (_player, newValue) => settings.setRelativeStatCap(newValue),
 					showWhen: () => {
@@ -140,7 +127,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 						{ name: i18n.t('sidebar.buttons.suggest_reforges.precision_balanced'), value: 0.0005 },
 						{ name: i18n.t('sidebar.buttons.suggest_reforges.precision_fast'), value: 0.005 },
 					],
-					storeSubscribe: () => precisionSubscribe,
+					storeField: ['reforge:relativeStatCapPrecision', 'reforge:relativeStatCapStat', 'gear'],
 					getValue: () => settings.relativeStatCapPrecision,
 					setValue: (_player, newValue) => settings.setRelativeStatCapPrecision(newValue),
 					showWhen: () => RelativeStatCap.hasRoRo(player) && settings.relativeStatCapStat !== -1,
@@ -157,7 +144,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					label: i18n.t('sidebar.buttons.suggest_reforges.include_gems'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.optimize_gems_tooltip'),
 					inline: true,
-					storeSubscribe: () => subscribeReforgeField(settings, 'includeGems'),
+					storeField: 'reforge:includeGems',
 					getValue: () => settings.includeGems,
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'include_gems', value: newValue });
@@ -176,7 +163,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					label: i18n.t('sidebar.buttons.suggest_reforges.include_eotbp_socket'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.include_eotbp_socket_tooltip'),
 					inline: true,
-					storeSubscribe: () => eotbpSubscribe,
+					storeField: ['reforge:includeGems', 'reforge:includeEOTBPGemSocket', 'gear'],
 					getValue: () => settings.includeEOTBPGemSocket,
 					showWhen: () => settings.includeGems && player.hasEotBPItemEquipped(),
 					setValue: (_player, newValue) => settings.setIncludeEOTBPGemSocket(newValue),
@@ -190,7 +177,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					label: i18n.t('sidebar.buttons.suggest_reforges.freeze_item_slots'),
 					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.freeze_item_slots_tooltip'),
 					inline: true,
-					storeSubscribe: () => subscribeReforgeField(settings, 'freezeItemSlots'),
+					storeField: 'reforge:freezeItemSlots',
 					getValue: () => settings.freezeItemSlots,
 					setValue: (_player, newValue) => {
 						trackEvent({ action: 'settings', category: 'reforging', label: 'freeze_item_slots', value: newValue });

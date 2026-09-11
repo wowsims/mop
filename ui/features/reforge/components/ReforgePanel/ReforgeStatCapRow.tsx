@@ -3,7 +3,6 @@ import { toDefaultUnitStatValue, toVisualUnitStatPercentage } from '@features/re
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import type { UnitStat } from '@sim/proto/stats';
-import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { subscribeReforgeChange } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
@@ -17,18 +16,17 @@ export interface ReforgeStatCapRowProps {
 	model: ReforgeOptimizerModel;
 	player: Player<any>;
 	unitStat: UnitStat;
-	/** The two fields a cap reads, composed once by the table so the store sees one selector per field. */
-	subscribe: StoreSubscribe;
 	tooltip: ReactNode;
 }
 
+const CAP_FIELDS = ['reforge:useSoftCapBreakpoints', 'reforge:statCaps'] as const;
+
 /** One stat's cap: the percentage, the undershoot flag, and — where the spec supplies them — a preset select on its own row. */
-export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip }: ReforgeStatCapRowProps) => {
+export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeStatCapRowProps) => {
 	const settings = model.settings;
 	const statName = unitStat.getShortName(player.getClass());
 	const tooltipId = useId();
 
-	const storeSubscribe = () => subscribe;
 	const getValue = () => toVisualUnitStatPercentage(player, settings.statCaps.getUnitStat(unitStat), unitStat);
 	const setValue = (_player: Player<any>, newValue: number) =>
 		settings.setStatCaps(settings.statCaps.withUnitStat(unitStat, toDefaultUnitStatValue(player, newValue, unitStat)));
@@ -73,7 +71,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip 
 							positive: true,
 							extraClassNames: ['mb-0'],
 							enableWhen,
-							storeSubscribe,
+							storeField: CAP_FIELDS,
 							getValue,
 							setValue,
 						}}
@@ -107,7 +105,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, subscribe, tooltip 
 								label: '',
 								values: presetValues,
 								enableWhen,
-								storeSubscribe,
+								storeField: CAP_FIELDS,
 								getValue,
 								setValue,
 							}}

@@ -3,7 +3,6 @@ import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import type { UnitStat } from '@sim/proto/stats';
 import { Stats } from '@sim/proto/stats';
-import { subscribeAll, subscribeReforgeField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -26,8 +25,6 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 	const settings = model.settings;
 	const capsTooltipId = useId();
 	const resetTooltipId = useId();
-
-	const subscribe = subscribeAll([subscribeReforgeField(settings, 'useSoftCapBreakpoints'), subscribeReforgeField(settings, 'statCaps')]);
 
 	return (
 		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useCustomEPValues && 'hide')}>
@@ -70,7 +67,6 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 							model={model}
 							player={player}
 							unitStat={unitStat}
-							subscribe={subscribe}
 							tooltip={statTooltips[unitStat.getRootStat()]}
 						/>
 					);
