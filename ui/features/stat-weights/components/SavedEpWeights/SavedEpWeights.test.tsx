@@ -36,7 +36,6 @@ vi.mock('@i18n/config', () => ({ default: { t: (key: string) => STRINGS[key] ?? 
 
 const trackEvent = vi.hoisted(() => vi.fn());
 vi.mock('../../../../tracking/analytics', () => ({ trackEvent }));
-vi.mock('tippy.js', () => ({ default: () => ({ destroy: () => undefined }) }));
 
 const STORAGE_KEY = 'mop-warrior-savedEPWeights';
 
