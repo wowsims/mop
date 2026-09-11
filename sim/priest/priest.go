@@ -92,8 +92,11 @@ func (priest *Priest) Initialize() {
 		}))
 	}
 
-	// Mysticism (89745): +5% Intellect while wearing only cloth.
-	priest.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeCloth, 89745)
+	// Mysticism (89745): +5% Intellect while wearing only cloth. Priests can
+	// only wear cloth, so a static multiplier is exact, and unlike the armor
+	// specialization tracker's Talents-phase aura it stays visible to the
+	// reforge optimizer (ComputeStatsAndDeps re-applies Base, Gear and Buffs only).
+	priest.MultiplyStat(stats.Intellect, 1.05)
 	priest.registerShadowWordPainSpell()
 	priest.registerShadowfiendSpell()
 	priest.registerVampiricTouchSpell()
