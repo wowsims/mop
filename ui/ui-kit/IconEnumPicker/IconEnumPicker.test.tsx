@@ -369,6 +369,12 @@ describe('IconEnumPicker', () => {
 		expect((horizontal.querySelector('ul.icon-enum-picker-menu') as HTMLElement).style.gridAutoFlow).toBe('column');
 	});
 
+	it('positions the menu against the viewport, not against the picker root it portals into', async () => {
+		mount(new Options());
+		await open();
+		expect((root().querySelector('.icon-enum-picker-positioner') as HTMLElement).style.position).toBe('fixed');
+	});
+
 	it('carries every tooltip on its anchor, and renders none until one is asked for', () => {
 		mount(new Options(), configFor({ tooltip: 'Lethal Poison' }));
 

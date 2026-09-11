@@ -66,7 +66,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						}}
 					/>
 					<Menu.Portal container={dropend} className="multi-icon-picker-portal">
-						<Menu.Positioner side="right" align="start" sideOffset={-1} className="multi-icon-picker-positioner">
+						<Menu.Positioner side="right" align="start" sideOffset={-1} positionMethod="fixed" className="multi-icon-picker-positioner">
 							{/* `role="group"`, not the `menu` Base UI would give it. A menu's children must be menuitems, and these are icon toggles — `Menu.Item` would close the popup on every click, and toggling several buffs in one visit is the whole point of this control. */}
 							<Menu.Popup render={<ul />} role="group" className="multi-icon-picker-menu">
 								<li>

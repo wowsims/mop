@@ -100,6 +100,12 @@ describe('MultiIconPicker', () => {
 		expect(options.slice(1).every(option => option.querySelector('.icon-picker-root'))).toBe(true);
 	});
 
+	it('positions the menu against the viewport, not against the dropend it portals into', async () => {
+		mount(new Buffs());
+		await open();
+		expect((root().querySelector('.multi-icon-picker-positioner') as HTMLElement).style.position).toBe('fixed');
+	});
+
 	it('renders the label only when the config names one, and names the group with it', () => {
 		const withLabel = mount(new Buffs());
 		// A <span>, not a <label>: it names the icon group, which is not a form control.

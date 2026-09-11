@@ -87,7 +87,13 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 				/>
 				<div className="icon-enum-picker-slot" ref={setSlot} />
 				<Menu.Portal container={slot} className="icon-enum-picker-portal">
-					<Menu.Positioner side={horizontal ? 'right' : 'bottom'} align="start" sideOffset={-1} className="icon-enum-picker-positioner">
+					{/* `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against the `position: relative` picker root this portal sits inside. The popup lands a screenful away for one frame, and the focus Base UI moves into it scrolls the pane after it. */}
+					<Menu.Positioner
+						side={horizontal ? 'right' : 'bottom'}
+						align="start"
+						sideOffset={-1}
+						positionMethod="fixed"
+						className="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}
 							className="icon-enum-picker-menu"
