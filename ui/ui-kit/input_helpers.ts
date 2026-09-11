@@ -44,6 +44,7 @@ interface BasePlayerConfig<SpecType extends Spec, T> {
 	getValue?: (player: Player<SpecType>) => T;
 	setValue?: (player: Player<SpecType>, newVal: T) => void;
 	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
+	storeField?: StoreField | ReadonlyArray<StoreField>;
 	extraClassNames?: Array<string>;
 	showWhen?: (player: Player<SpecType>) => boolean;
 }
@@ -102,7 +103,7 @@ export const makeClassOptionsBooleanInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setClassOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -125,7 +126,7 @@ export const makeSpecOptionsBooleanInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setSpecOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -148,7 +149,7 @@ export const makeRotationBooleanInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setSimpleRotation(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'rotation'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'rotation'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -231,7 +232,7 @@ export const makeClassOptionsNumberInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setClassOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -268,7 +269,7 @@ export const makeSpecOptionsNumberInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSpecOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -305,7 +306,7 @@ export const makeRotationNumberInput = <SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSimpleRotation(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'rotation'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'rotation'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
@@ -360,6 +361,7 @@ export interface PlayerEnumInputConfig<SpecType extends Spec, Message> {
 	enableWhen?: (player: Player<SpecType>) => boolean;
 	showWhen?: (player: Player<SpecType>) => boolean;
 	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
+	storeField?: StoreField | ReadonlyArray<StoreField>;
 }
 // T is unused, but kept to have the same interface as the icon enum inputs.
 export const makeClassOptionsEnumInput = <SpecType extends Spec, _T>(
@@ -380,7 +382,7 @@ export const makeClassOptionsEnumInput = <SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setClassOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -404,7 +406,7 @@ export const makeSpecOptionsEnumInput = <SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSpecOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -428,7 +430,7 @@ export const makeRotationEnumInput = <SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSimpleRotation(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'rotation'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'rotation'),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -520,7 +522,7 @@ export const makeClassOptionsBooleanIconInput = <SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getClassOptions(),
 			setValue: (player: Player<SpecType>, newVal: ClassOptions<SpecType>) => player.setClassOptions(newVal),
-			...storeBinding(config.storeSubscribe, 'specOptions'),
+			...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 			extraClassNames: config.extraClassNames,
 			getFieldValue: config.getValue,
 			setFieldValue: config.setValue,
@@ -539,7 +541,7 @@ export const makeSpecOptionsBooleanIconInput = <SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getSpecOptions(),
 			setValue: (player: Player<SpecType>, newVal: SpecOptions<SpecType>) => player.setSpecOptions(newVal),
-			...storeBinding(config.storeSubscribe, 'specOptions'),
+			...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 			extraClassNames: config.extraClassNames,
 			getFieldValue: config.getValue,
 			setFieldValue: config.setValue,
@@ -669,7 +671,7 @@ export const makeClassOptionsEnumIconInput = <SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setClassOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		extraClassNames: config.extraClassNames,
 	});
 };
@@ -691,7 +693,7 @@ export const makeSpecOptionsEnumIconInput = <SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setSpecOptions(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'specOptions'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'specOptions'),
 		extraClassNames: config.extraClassNames,
 	});
 };
@@ -713,7 +715,7 @@ export const makeRotationEnumIconInput = <SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setSimpleRotation(newMessage);
 			}),
-		...storeBinding(config.storeSubscribe, 'rotation'),
+		...storeBinding(config.storeSubscribe, config.storeField ?? 'rotation'),
 		extraClassNames: config.extraClassNames,
 	});
 };

@@ -1,4 +1,3 @@
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
@@ -14,7 +13,7 @@ export const MageRotationConfig = {
 			fieldName: 'combustAlwaysSend',
 			label: 'Combust Threshold - Always send',
 			labelTooltip: 'The value at which Combustion should be sent regardless of other conditions. (Very RNG dependent)',
-			storeSubscribe: player => subscribePlayerField(player, 'rotation'),
+			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustAlwaysSend,
 			positive: true,
 		}),
@@ -22,7 +21,7 @@ export const MageRotationConfig = {
 			fieldName: 'combustBloodlust',
 			label: 'Combust Threshold - Bloodlust',
 			labelTooltip: 'The value at which Combustion should be cast when Bloodlust is running.',
-			storeSubscribe: player => subscribePlayerField(player, 'rotation'),
+			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustBloodlust,
 			positive: true,
 		}),
@@ -30,7 +29,7 @@ export const MageRotationConfig = {
 			fieldName: 'combustPostAlter',
 			label: 'Combust Threshold - Alter Time',
 			labelTooltip: 'The value at which Combustion should be cast after Alter Time was used.',
-			storeSubscribe: player => subscribePlayerField(player, 'rotation'),
+			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustPostAlter,
 			positive: true,
 		}),
@@ -38,7 +37,7 @@ export const MageRotationConfig = {
 			fieldName: 'combustNoAlter',
 			label: 'Combust Threshold - No CDs',
 			labelTooltip: 'The value at which Combustion should be cast when you have no Alter Time window up.',
-			storeSubscribe: player => subscribePlayerField(player, 'rotation'),
+			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustNoAlter,
 			positive: true,
 		}),
@@ -46,7 +45,7 @@ export const MageRotationConfig = {
 			fieldName: 'combustEndOfCombat',
 			label: 'Combust Threshold - End of combat',
 			labelTooltip: 'The value at which Combustion should be cast when combat is about to end.',
-			storeSubscribe: player => subscribePlayerField(player, 'rotation'),
+			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustEndOfCombat,
 			positive: true,
 		}),
