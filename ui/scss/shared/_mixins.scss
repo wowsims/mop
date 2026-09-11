@@ -19,6 +19,13 @@
 	--bs-primary: #{$base-color};
 	--bs-primary-rgb: #{to-rgb($base-color)};
 
+	// The same override for the Tailwind theme tokens. Tailwind v4 emits its theme as plain custom
+	// properties and its utilities read them through `var()`, so re-declaring the token inside the
+	// spec's root class re-themes every `bg-primary` / `text-primary` / `border-primary` below it.
+	// This is why no Tailwind variant is needed for the 34 spec themes.
+	--color-primary: #{$base-color};
+	--color-primary-foreground: #{$text-color};
+
 	// Custom variants we use for styling some components
 	--primary-dampened: #{color.mix($black, $base-color, 75%)};
 	--hover-color: #{$hover-color};

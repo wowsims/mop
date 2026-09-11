@@ -1,4 +1,5 @@
-@theme {
+/* `static`: emit every token at :root even when no utility uses it, so hand-written CSS can read them. */
+@theme static {
 	--color-*: initial;
 	--breakpoint-*: initial;
 	--radius-*: initial;
@@ -18,15 +19,15 @@
 	--font-sans: SimDefaultFont, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-	--text-content: 0.75rem;
-	--text-body: 0.875rem;
-	--text-h6: 1rem;
-	--text-h5: 1.25rem;
-	--text-h4: 1.5rem;
-	--text-h3: 1.75rem;
-	--text-h2: 2rem;
-	--text-h1: 2.5rem;
-	--text-display: 5rem;
+	--text-xs: 0.75rem;
+	--text-sm: 0.875rem;
+	--text-base: 1rem;
+	--text-lg: 1.25rem;
+	--text-xl: 1.5rem;
+	--text-2xl: 1.75rem;
+	--text-3xl: 2rem;
+	--text-4xl: 2.5rem;
+	--text-5xl: 5rem;
 
 	--radius-full: 9999px;
 
@@ -53,7 +54,9 @@
 	--color-table-odd: #222328;
 
 	--color-primary: #0d6efd;
+	--color-primary-foreground: #fff;
 	--color-secondary: #6c757d;
+	--color-orange: #fd7e14;
 	--color-success: #1eff00;
 	--color-danger: #dc3545;
 	--color-warning: #ffc107;
