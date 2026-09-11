@@ -4,14 +4,14 @@ import { batch } from '@sim/state/batch';
 import { Glyphs } from '@generated/proto/common';
 import type { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useCallback, useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSavedTalents } from '../../hooks/useSavedTalents';
-import { serializeTalents, talentsData } from './utils';
+import { useTalents } from '../../hooks/useTalents';
+import { serializeTalents } from './utils';
 
 export const SavedTalents = () => {
 	const host = useSimHost();
@@ -36,10 +36,7 @@ export const SavedTalents = () => {
 		[ready, individualConfig, player],
 	);
 
-	const talentsString = usePlayerStore('talentsString');
-	const glyphs = usePlayerStore('glyphs');
-	// eslint-disable-next-line react-hooks/exhaustive-deps -- `talentsData` reads both through the player facade rather than by name; they are the invalidation keys.
-	const talents = useMemo(() => talentsData(player), [player, talentsString, glyphs]);
+	const talents = useTalents();
 	const currentJson = useMemo(() => serializeTalents(talents), [talents]);
 
 	const onLoad = useCallback(
@@ -55,10 +52,10 @@ export const SavedTalents = () => {
 
 	const onSave = useCallback(
 		(name: string) => {
-			save(name, talentsData(player));
+			save(name, talents);
 			trackEvent({ action: 'settings', category: 'save', label });
 		},
-		[player, label, save],
+		[talents, label, save],
 	);
 
 	const onDelete = useCallback(
