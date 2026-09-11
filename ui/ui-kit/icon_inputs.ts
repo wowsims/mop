@@ -1,9 +1,7 @@
-import { Party } from '@sim/raid/party';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { Raid } from '@sim/raid/raid';
-import { subscribePartyBuffs } from '@sim/state/subscriptions';
-import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';
+import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
 import * as InputHelpers from './input_helpers';
 
@@ -45,22 +43,6 @@ export const makeBooleanRaidBuffInput = <SpecType extends Spec>(
 		config.label,
 	);
 };
-export const makeBooleanPartyBuffInput = <SpecType extends Spec>(
-	config: BooleanInputConfig<PartyBuffs>,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
-	return InputHelpers.makeBooleanIconInput<any, PartyBuffs, Party>(
-		{
-			getModObject: (player: Player<SpecType>) => player.getParty()!,
-			getValue: (party: Party) => party.getBuffs(),
-			setValue: (party: Party, newVal: PartyBuffs) => party.setBuffs(newVal),
-			storeSubscribe: (party: Party) => subscribePartyBuffs(party),
-		},
-		config.actionId,
-		config.fieldName,
-		config.value,
-	);
-};
-
 export const makeBooleanIndividualBuffInput = <SpecType extends Spec>(
 	config: BooleanInputConfig<IndividualBuffs>,
 ): InputHelpers.TypedIconPickerConfig<Player<SpecType>, boolean> => {
@@ -223,26 +205,6 @@ export const makeMultistateRaidBuffInput = <SpecType extends Spec>(
 		config.fieldName,
 		config.multiplier,
 		config.label,
-	);
-};
-export const makeMultistatePartyBuffInput = <SpecType extends Spec>(
-	actionId: ActionId,
-	numStates: number,
-	fieldName: keyof PartyBuffs,
-	label?: string,
-): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> => {
-	return InputHelpers.makeMultistateIconInput<any, PartyBuffs, Party>(
-		{
-			getModObject: (player: Player<SpecType>) => player.getParty()!,
-			getValue: (party: Party) => party.getBuffs(),
-			setValue: (party: Party, newVal: PartyBuffs) => party.setBuffs(newVal),
-			storeSubscribe: (party: Party) => subscribePartyBuffs(party),
-		},
-		actionId,
-		numStates,
-		fieldName,
-		undefined,
-		label,
 	);
 };
 export const makeMultistateIndividualBuffInput = <SpecType extends Spec>(
