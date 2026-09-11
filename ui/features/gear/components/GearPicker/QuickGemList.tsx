@@ -1,5 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
+import { subscribeAll, subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
@@ -15,20 +15,21 @@ export interface QuickGemListProps {
 
 export const QuickGemList = ({ slot, socketIdx, onOpenDetail }: QuickGemListProps) => {
 	const player = usePlayer();
-	const gearSubscribe = subscribePlayerField(player, 'gear');
-	const filtersSubscribe = subscribeSimField(player.sim, 'filters');
-	const currentItem = useStoreSubscribe(gearSubscribe, () => player.getEquippedItem(slot));
-	const favoriteGems = useStoreSubscribe(filtersSubscribe, () => player.sim.getFilters().favoriteGems);
+	const currentItem = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getEquippedItem(slot));
+	const favoriteGems = useStoreSubscribe(subscribeSimField(player.sim, 'filters'), () => player.sim.getFilters().favoriteGems);
+	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
+		player.isBlacksmithing(),
+	);
 
 	const entries = useMemo(() => {
 		if (!currentItem) return [];
-		const socketColor = currentItem.curSocketColors(player.isBlacksmithing())[socketIdx];
+		const socketColor = currentItem.curSocketColors(isBlacksmithing)[socketIdx];
 		return player
 			.getGems(socketColor)
 			.filter(gem => favoriteGems.includes(gem.id))
 			.sort((a, b) => (a.color > b.color ? 1 : -1))
 			.map(gem => ({ item: gem, active: currentItem.gems[socketIdx]?.id === gem.id }));
-	}, [player, socketIdx, currentItem, favoriteGems]);
+	}, [player, socketIdx, currentItem, favoriteGems, isBlacksmithing]);
 
 	return (
 		<QuickSwapList
