@@ -39,7 +39,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 			valueCandidates(group.field, suggestions).map(value => ({
 				value,
 				label: labelOf(group.field, value),
-				icon: suggestions.spellIcons.get(value) ? <img className="icon-sm me-1" src={suggestions.spellIcons.get(value)} alt="" /> : undefined,
+				icon: suggestions.spellIcons.get(value) ? <img className="icon-sm mr-1" src={suggestions.spellIcons.get(value)} alt="" /> : undefined,
 			})),
 		[group.field, suggestions],
 	);
@@ -79,9 +79,9 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 				</div>
 				<DeleteButton onClick={onRemove} />
 			</div>
-			<div className="log-search-group-items d-flex flex-wrap align-items-center gap-1">
+			<div className="log-search-group-items flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (
-					<div key={value} className="log-search-chip saved-data-set-chip badge rounded-pill">
+					<div key={value} className="log-search-chip saved-data-set-chip badge rounded-full">
 						<span className="saved-data-set-name">{labelOf(group.field, value)}</span>
 						<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />
 					</div>

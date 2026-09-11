@@ -56,7 +56,9 @@
 
 				.wowsims-title {
 					@extend .display-1;
-					@extend .fw-bold;
+					// Was `@extend .fw-bold`, which came from Bootstrap's utilities API. Stated directly
+					// now that the API is gone — an @extend of a missing class fails silently.
+					font-weight: 700;
 					color: var(--bs-brand);
 					margin: 0;
 					line-height: 1;
@@ -96,7 +98,8 @@
 			}
 
 			.wowsims-info {
-				@extend .fs-4;
+				// Was `@extend .fs-4` (Bootstrap utilities API, $font-sizes key 4 = $h4-font-size).
+				font-size: 1.5rem;
 				width: 75%;
 				margin: 0;
 

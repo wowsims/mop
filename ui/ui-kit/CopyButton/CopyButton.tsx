@@ -39,7 +39,7 @@ export const CopyButton = ({ getContent, className, text, tooltip, onCopied }: C
 	return (
 		<>
 			<Button variant={null} className={clsx('copy-button', className)} onClick={onClick} {...(tooltip ? tooltipAnchorProps(tooltipId) : {})}>
-				<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+				<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 				{copied ? i18n.t('common.copy_button.copied') : (text ?? i18n.t('common.copy_button.default_text'))}
 			</Button>
 			{tooltip && <Tooltip id={tooltipId} content={tooltip} />}

@@ -85,18 +85,18 @@ describe('GroupVariablesField', () => {
 		expect(rows()[1].querySelector('label')!.textContent).toBe('b:');
 	});
 
-	it('is d-none with no group selected', () => {
+	it('is hidden with no group selected', () => {
 		setup({ placeholders: ['a'] });
 		mount();
 
-		expect(container().className.split(' ')).toContain('d-none');
+		expect(container().className.split(' ')).toContain('hidden');
 	});
 
-	it('is d-none when the selected group defines no placeholders', () => {
+	it('is hidden when the selected group defines no placeholders', () => {
 		setup({ groupName: 'g1', placeholders: [] });
 		mount();
 
-		expect(container().className.split(' ')).toContain('d-none');
+		expect(container().className.split(' ')).toContain('hidden');
 		expect(rows()).toHaveLength(0);
 	});
 

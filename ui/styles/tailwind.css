@@ -2,7 +2,13 @@
 @layer theme, base, components, utilities;
 
 @import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+/* Unlayered AND important, which is exactly where Bootstrap's utility API sat. `important` because
+   every component rule here was written against important-by-default utilities. Unlayered because
+   the cascade REVERSES layer order for important declarations: a layered `!important` utility beats
+   an unlayered `!important` project rule regardless of specificity, which silently overrode
+   `.suggest-reforges-settings-group`'s `display: grid !important`. Unlayered puts specificity back
+   in charge, as it was. */
+@import 'tailwindcss/utilities.css' important;
 
 /* Preflight is omitted while Bootstrap's reboot is still loaded; stacking two resets changes rendering. */
 
@@ -17,3 +23,78 @@
 @source '../generated';
 @source '../index.html';
 @source '../index_template.html';
+
+/*
+ * Class-colour utilities are built by interpolation, which Tailwind's scanner cannot see:
+ * `textClassName()` in `sim/proto/utils.ts` returns `text-${slug}`, `LandingClassMenu` builds
+ * `border-${slug}` and `MetricsTotalBar` builds `bg-${slug}`. Bootstrap emitted all of these
+ * unconditionally from `$theme-colors`; Tailwind emits only what it finds, so without this the
+ * landing page's class links and the sim-title dropdown lose their colour entirely.
+ */
+@source inline("{text,bg,border}-{death-knight,druid,hunter,mage,monk,paladin,priest,rogue,shaman,warlock,warrior}");
+
+/*
+ * `.container` stays Bootstrap's. Tailwind's own container utility sets `max-width` to each
+ * BREAKPOINT (576/768/.../3841), Bootstrap's sets it to 540/720/960/1140/1320, and `important` made
+ * Tailwind's win — which made the landing page full-bleed. Overriding the utility with an empty
+ * body would stop Tailwind emitting a competing rule, but an empty `@utility` is a build error, so
+ * this restates Bootstrap's definition instead: both stylesheets now say the same thing and it no
+ * longer matters which wins. Remove it when `.container` is migrated off Bootstrap.
+ */
+@utility container {
+	--bs-gutter-x: 1.5rem;
+	--bs-gutter-y: 0;
+	width: 100%;
+	padding-right: calc(var(--bs-gutter-x) * 0.5);
+	padding-left: calc(var(--bs-gutter-x) * 0.5);
+	margin-left: auto;
+	margin-right: auto;
+	max-width: none;
+
+	@media (width >= 576px) {
+		max-width: 540px;
+	}
+	@media (width >= 768px) {
+		max-width: 720px;
+	}
+	@media (width >= 992px) {
+		max-width: 960px;
+	}
+	@media (width >= 1200px) {
+		max-width: 1140px;
+	}
+	@media (width >= 1400px) {
+		max-width: 1320px;
+	}
+}
+
+/*
+ * Bootstrap utility shim, for `ui/specs/**` only.
+ *
+ * That tree is frozen, so its one remaining consumer of Bootstrap utilities —
+ * `specs/mage/fire/calculate_combustion_thresholds.tsx`, the Combustion Thresholds modal — cannot be
+ * rewritten here. These six names are the exact set it still uses, at Bootstrap's exact values.
+ * `.gap-3` has to restate 1rem because Tailwind's own `gap-3` is 0.75rem, and it wins only by
+ * following the utilities import in source order.
+ *
+ * Delete this block together with those class names when the freeze lifts. Nothing outside
+ * `ui/specs/` may use them.
+ */
+.d-flex {
+	display: flex !important;
+}
+.flex-column {
+	flex-direction: column !important;
+}
+.align-items-end {
+	align-items: flex-end !important;
+}
+.justify-content-end {
+	justify-content: flex-end !important;
+}
+.w-100 {
+	width: 100% !important;
+}
+.gap-3 {
+	gap: 1rem !important;
+}

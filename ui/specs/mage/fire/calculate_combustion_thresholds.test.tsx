@@ -50,7 +50,13 @@ describe('CombustionThresholds', () => {
 		const { container } = renderFeature();
 		const button = actionButton(container);
 
-		expect([...button.classList].sort()).toEqual(['btn', 'btn-primary', 'mage-calculate-combustion-threshold-group', 'sim-sidebar-action-button', 'w-100']);
+		expect([...button.classList].sort()).toEqual([
+			'btn',
+			'btn-primary',
+			'mage-calculate-combustion-threshold-group',
+			'sim-sidebar-action-button',
+			'w-full',
+		]);
 		expect(button.disabled).toBe(false);
 		expect(container.querySelector('.sim-sidebar-action-button-loading-icon')).not.toBeNull();
 	});

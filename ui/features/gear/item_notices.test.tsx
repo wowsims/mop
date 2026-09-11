@@ -10,21 +10,21 @@ const markup = (itemId: number, spec: Spec = Spec.SpecUnknown) => renderToStatic
 describe('the item notice table', () => {
 	it('renders the tentative-implementation notice', () => {
 		expect(markup(95346)).toBe(
-			'<p>This item <span class="fw-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.</p>' +
+			'<p>This item <span class="font-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.</p>' +
 				'<p class="mb-0">Want to help out by providing additional information? Contact us on our Discord!</p>',
 		);
 	});
 
 	it('lists the tooltips a missing item effect carries', () => {
 		expect(markup(84373)).toBe(
-			'<p class="fw-bold">The following item effect (on-use or proc) is not implemented!</p>' +
+			'<p class="font-bold">The following item effect (on-use or proc) is not implemented!</p>' +
 				'<ul><li>Your Chains of Ice ability now generates an additional 10 Runic Power.</li></ul>',
 		);
 	});
 
 	it('renders the hand-written trinket notice', () => {
 		expect(markup(94523)).toBe(
-			'<p>The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span class="fw-bold">not</span> implemented. ' +
+			'<p>The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span class="font-bold">not</span> implemented. ' +
 				'The DPS gain of these is around ~40 DPS.</p>',
 		);
 	});

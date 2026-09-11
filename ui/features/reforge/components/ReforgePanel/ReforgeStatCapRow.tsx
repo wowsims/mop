@@ -52,7 +52,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						{statName}{' '}
 						{!!tooltip && (
 							<>
-								<Button variant="unstyled" className="d-inline" {...tooltipAnchorProps(tooltipId)}>
+								<Button variant="unstyled" className="inline" {...tooltipAnchorProps(tooltipId)}>
 									<Icon name="circle-question" style="regular" />
 								</Button>
 								<Tooltip id={tooltipId} content={tooltip} />
@@ -77,7 +77,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						}}
 					/>
 				</td>
-				<td colSpan={1} className="text-end">
+				<td colSpan={1} className="text-right">
 					<BooleanPicker
 						modObject={player}
 						config={{

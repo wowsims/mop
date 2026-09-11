@@ -13,7 +13,7 @@ export interface SimLinkContentProps {
 export const SimLinkContent = ({ iconPath, iconClassName, label, labelClassName, title, status }: SimLinkContentProps) => (
 	<div className="sim-link-content">
 		<img src={iconPath} className={clsx('sim-link-icon', iconClassName)} alt="" />
-		<div className="d-flex flex-column">
+		<div className="flex flex-col">
 			{label !== undefined && <span className={clsx('sim-link-label', labelClassName)}>{label}</span>}
 			<span className="sim-link-title">{title}</span>
 			{status && <span className="launch-status-label text-brand">{status}</span>}

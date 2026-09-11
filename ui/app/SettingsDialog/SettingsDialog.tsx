@@ -207,16 +207,16 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 						<EnumPicker modObject={sim} config={languageConfig} />
 					</div>
 				</div>
-				<div className="show-threat-metrics-picker w-50 pe-2">
+				<div className="show-threat-metrics-picker w-1/2 pr-2">
 					<BooleanPicker modObject={sim} config={showThreatMetricsConfig} />
 				</div>
-				<div className="show-experimental-picker w-50 pe-2">
+				<div className="show-experimental-picker w-1/2 pr-2">
 					<BooleanPicker modObject={sim} config={showExperimentalConfig} />
 				</div>
-				<div className="show-quick-swap-picker w-50 pe-2">
+				<div className="show-quick-swap-picker w-1/2 pr-2">
 					<BooleanPicker modObject={sim} config={showQuickSwapConfig} />
 				</div>
-				<div className="use-concurrency-container w-50 pe-2" hidden={!isWasm}>
+				<div className="use-concurrency-container w-1/2 pr-2" hidden={!isWasm}>
 					<div className="use-concurrent-workers-picker">
 						<EnumPicker modObject={sim} config={concurrencyConfig} />
 					</div>

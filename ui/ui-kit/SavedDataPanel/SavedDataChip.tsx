@@ -37,7 +37,7 @@ export const SavedDataChip = <T,>({
 	const [confirming, setConfirming] = useState(false);
 
 	return (
-		<div className={clsx('saved-data-set-chip badge rounded-pill', active && 'active', disabled && 'disabled')}>
+		<div className={clsx('saved-data-set-chip badge rounded-full', active && 'active', disabled && 'disabled')}>
 			<Button
 				variant="unstyled"
 				className="saved-data-set-name"

@@ -164,12 +164,12 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
 				<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
-					<Icon name="calculator" className="me-1" />
+					<Icon name="calculator" className="mr-1" />
 					{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
 				</Button>
 			}>
-			<div className="d-flex flex-column flex-lg-row align-items-lg-start gap-3">
-				<div className="ep-weights-content order-1 order-lg-0">
+			<div className="flex flex-col lg:flex-row lg:items-start gap-4">
+				<div className="ep-weights-content order-1 lg:order-0">
 					<EpWeightsOptions onStatsTypeChange={setStatsType} onShowAllStatsChange={setShowAllStats} />
 					<EpReferenceOptions epStats={epStats} epReferenceStat={epReferenceStat} />
 					<p>
@@ -192,7 +192,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						onComputeEp={onComputeEp}
 					/>
 				</div>
-				<div className="ep-weights-sidebar sticky-lg-top order-0 order-lg-1">
+				<div className="ep-weights-sidebar lg:sticky lg:top-0 lg:z-[1020] order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>

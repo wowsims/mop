@@ -123,10 +123,10 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 				</button>
 				<button
 					type="button"
-					className="btn btn-sm btn-link btn-reset ms-auto rotation-fab-show-all"
+					className="btn btn-sm btn-link btn-reset ml-auto rotation-fab-show-all"
 					hidden={hiddenKeys.length === 0}
 					onClick={onShowAll}>
-					<i className="fas fa-times me-1" />
+					<i className="fas fa-times mr-1" />
 					{i18n.t('results_tab.details.timeline.floatingActionBar.showAll')}
 				</button>
 			</div>

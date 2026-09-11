@@ -70,7 +70,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 			<div ref={root} className={simUiClasses({ className, spec, metrics })}>
 				<div className="sim-root">
 					<div className="sim-bg" />
-					{noticeText ? <div className="notices-banner alert border-bottom mb-0 text-center">{noticeText}</div> : null}
+					{noticeText ? <div className="notices-banner alert border-b border-border mb-0 text-center">{noticeText}</div> : null}
 					<div className="sim-container">
 						<aside className="sim-sidebar">
 							<div className="sim-title">

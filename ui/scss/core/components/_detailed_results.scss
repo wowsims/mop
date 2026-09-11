@@ -165,6 +165,14 @@
 	text-align: center;
 }
 
+// Header cells carry their column's `columnClass` as well, so the rate columns arrive here with
+// `text-success` on them. Bootstrap's utilities API used to cancel that with a per-column
+// `text-body`; this states the rule once instead. Two class levels so it outranks the utility's
+// `!important` on specificity rather than on source order.
+.metrics-table-header-row .metrics-table-header-cell {
+	color: var(--bs-body-color) !important;
+}
+
 .metrics-table-body tr {
 	border-bottom: 1px solid var(--detailed-results-border);
 

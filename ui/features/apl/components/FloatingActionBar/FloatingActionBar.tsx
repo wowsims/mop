@@ -47,11 +47,11 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 	return (
 		<div ref={rootRef} className={stuck ? 'apl-floating-action-bar-root stuck' : 'apl-floating-action-bar-root'}>
 			<Button variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>
-				<Icon name="plus" className="me-2" />
+				<Icon name="plus" className="mr-2" />
 				{newLabel}
 			</Button>
-			<Button variant="link" size="sm" className="btn-reset ms-auto" onClick={() => host.applyEmptyAplRotation()}>
-				<Icon name="times" className="me-1" />
+			<Button variant="link" size="sm" className="btn-reset ml-auto" onClick={() => host.applyEmptyAplRotation()}>
+				<Icon name="times" className="mr-1" />
 				{i18n.t('rotation_tab.apl.floatingActionBar.reset')}
 			</Button>
 			{nameDialog && (

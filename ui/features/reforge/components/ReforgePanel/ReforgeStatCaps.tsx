@@ -30,15 +30,15 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useCustomEPValues && 'hide')}>
 			<thead>
 				<tr>
-					<th colSpan={4} className="pb-3">
-						<div className="d-flex">
-							<h6 className="content-block-title mb-0 me-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
-							<Button variant="unstyled" className="d-inline" {...tooltipAnchorProps(capsTooltipId)}>
+					<th colSpan={4} className="pb-4">
+						<div className="flex">
+							<h6 className="content-block-title mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
+							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(capsTooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>
 							<Button
 								variant="unstyled"
-								className="d-inline ms-auto"
+								className="inline ml-auto"
 								{...tooltipAnchorProps(resetTooltipId)}
 								onClick={() => settings.setStatCaps(model.defaults.statCaps || new Stats())}>
 								<Icon name="arrow-rotate-left" />
@@ -50,10 +50,10 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 				</tr>
 				<tr>
 					<th>{i18n.t('sidebar.buttons.suggest_reforges.stat')}</th>
-					<th colSpan={3} className="text-end">
+					<th colSpan={3} className="text-right">
 						%
 					</th>
-					<th colSpan={1} className="text-start">
+					<th colSpan={1} className="text-left">
 						Max?
 					</th>
 				</tr>

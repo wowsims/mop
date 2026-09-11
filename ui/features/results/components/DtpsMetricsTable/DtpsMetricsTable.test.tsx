@@ -102,7 +102,7 @@ describe('DtpsMetricsTable', () => {
 			'metrics-table-header-cell',
 			'metrics-table-header-cell',
 			'metrics-table-header-cell',
-			'metrics-table-header-cell text-success text-body',
+			'metrics-table-header-cell text-success',
 		]);
 		expect(rows(container)).toHaveLength(0);
 	});

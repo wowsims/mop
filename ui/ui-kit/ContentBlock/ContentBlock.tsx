@@ -36,7 +36,7 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 				<div ref={headerRef} className={clsx('content-block-header', header.className)}>
 					<TitleTag className="content-block-title">
 						{header.title}
-						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ms-2" />}
+						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ml-2" />}
 					</TitleTag>
 					{headerChildren}
 				</div>

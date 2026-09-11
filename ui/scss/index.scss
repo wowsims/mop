@@ -30,10 +30,9 @@
 @import 'bootstrap/scss/modal';
 @import 'bootstrap/scss/carousel';
 
-@import 'bootstrap/scss/helpers';
-
-// Bootstrap Utilities API
-@import './bootstrap/scss/utilities/api';
+// Bootstrap's helpers and its utilities API are gone; Tailwind renders those utilities now.
+// `bootstrap/scss/utilities` above is kept: it only builds the $utilities map, which
+// `maps` and `mixins` read. This drops the API that renders the map into CSS.
 
 // Custom shared styles
 @import 'shared/mixins';

@@ -12,7 +12,7 @@ export interface RotationFabChipProps {
 export const RotationFabChip = ({ label, shown, focused, onToggle, onFocus }: RotationFabChipProps) => (
 	<button
 		type="button"
-		className={clsx('rotation-fab-chip saved-data-set-chip badge rounded-pill', shown && 'active')}
+		className={clsx('rotation-fab-chip saved-data-set-chip badge rounded-full', shown && 'active')}
 		role="switch"
 		aria-checked={shown}
 		tabIndex={focused ? 0 : -1}

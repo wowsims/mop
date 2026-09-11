@@ -28,7 +28,7 @@ describe('ItemCell', () => {
 			'    div.item-picker-sockets-container',
 			'      a.gem-socket-container',
 			'  div.item-picker-labels-container',
-			'    div.d-flex.gap-1.item-picker-name-row',
+			'    div.flex.gap-1.item-picker-name-row',
 			'      a.item-picker-name-container',
 			'    a.item-picker-enchant',
 		]);

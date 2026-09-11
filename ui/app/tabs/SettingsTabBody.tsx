@@ -84,7 +84,7 @@ export const SettingsTabBody = () => {
 									header: { title: i18n.t('settings_tab.raid_buffs.title'), tooltip: i18n.t('settings_tab.raid_buffs.tooltip') },
 									bodyClassName: options.buffs.length === 0 && 'hide',
 								}}
-								headerChildren={<p className="fs-body">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
+								headerChildren={<p className="text-sm">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
 							</ContentBlock>
 							{options.externalDamageCooldowns.length > 0 && (

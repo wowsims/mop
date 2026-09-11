@@ -56,7 +56,7 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 						<Fragment key={groupName ?? groupIndex}>
 							{groupName && displayGroups.length > 1 && (
 								<tr className={clsx('metrics-table-group-header', className)}>
-									<th className="text-start fw-normal" colSpan={columnCount}>
+									<th className="text-left font-normal" colSpan={columnCount}>
 										{groupName}
 									</th>
 								</tr>

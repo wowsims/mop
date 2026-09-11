@@ -21,7 +21,7 @@ export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: Reforg
 	}, [player]);
 
 	return (
-		<table className={clsx('mb-2', !freezeItemSlots && 'd-none')}>
+		<table className={clsx('mb-2', !freezeItemSlots && 'hidden')}>
 			{/* React reports rows placed directly under <table> as a nesting error, so the parser's implied <tbody> is written out here instead. */}
 			<tbody>
 				{slotsByRow.map((slots, rowIdx) => (

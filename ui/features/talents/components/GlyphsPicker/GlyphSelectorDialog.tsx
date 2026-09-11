@@ -29,7 +29,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 				{entries.map(entry => (
 					<li
 						key={entry.id}
-						className={clsx('selector-modal-list-item', entry.id === activeId && 'active', !matchesGlyphSearch(entry.name, search) && 'd-none')}>
+						className={clsx('selector-modal-list-item', entry.id === activeId && 'active', !matchesGlyphSearch(entry.name, search) && 'hidden')}>
 						<a
 							className="selector-modal-list-item-link"
 							href={glyphUrl(entry)}

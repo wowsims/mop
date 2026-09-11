@@ -93,9 +93,9 @@ describe('Popover', () => {
 	});
 
 	it('puts the caller class on the popup and the trigger class on the trigger', () => {
-		const { trigger } = openPopover({ className: ['reforge-settings', 'w-100'], triggerClassName: 'suggest-reforges-button-settings' });
+		const { trigger } = openPopover({ className: ['reforge-settings', 'w-full'], triggerClassName: 'suggest-reforges-button-settings' });
 
-		expect(Array.from(screen.getByRole('dialog').classList).sort()).toEqual(['reforge-settings', 'sim-popover-popup', 'w-100']);
+		expect(Array.from(screen.getByRole('dialog').classList).sort()).toEqual(['reforge-settings', 'sim-popover-popup', 'w-full']);
 		expect(trigger.classList.contains('suggest-reforges-button-settings')).toBe(true);
 	});
 

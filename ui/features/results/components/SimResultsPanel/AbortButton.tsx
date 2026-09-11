@@ -20,7 +20,7 @@ export const AbortButton = ({ onAbort }: AbortButtonProps) => {
 				flushSync(() => setStopping(true));
 				onAbort(event.nativeEvent);
 			}}>
-			<Icon name="times" style="base" size="lg" className="me-1" />
+			<Icon name="times" style="base" size="lg" className="mr-1" />
 			{stopping ? i18n.t('sidebar.results.stopping') : i18n.t('sidebar.results.stop')}
 		</Button>
 	);

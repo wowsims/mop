@@ -46,17 +46,17 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			container={host.rootElem}
 			title={title}
 			footer={
-				<div className="d-flex gap-2">
+				<div className="flex gap-2">
 					{allowFileUpload && (
 						<label htmlFor={uploadInputId} className="importer-button btn btn-primary upload-button">
-							<Icon name="file-arrow-up" className="me-1" />
+							<Icon name="file-arrow-up" className="mr-1" />
 							{i18n.t('import.json.upload_button')}
 						</label>
 					)}
 					<input
 						type="file"
 						id={uploadInputId}
-						className="importer-upload-input d-none"
+						className="importer-upload-input hidden"
 						hidden
 						onChange={async event => {
 							const file = event.target.files?.[0];
@@ -65,7 +65,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 						}}
 					/>
 					<Button className="importer-button import-button" onClick={runImport}>
-						<Icon name="download" style="base" className="me-1" />
+						<Icon name="download" style="base" className="mr-1" />
 						{i18n.t('import.json.import_button')}
 					</Button>
 				</div>

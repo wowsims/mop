@@ -39,7 +39,7 @@ const newVariable = (name: string) => ({
  * offered — a duplicate entry carries an existing name, so the next reconcile drops it.
  *
  * With no group selected, or one with no placeholders, there is nothing to pass and the container
- * is `d-none` — not the shell's `hide`, which is a different class.
+ * is `hidden` — not the shell's `hide`, which is a different class.
  */
 export const GroupVariablesField = ({ player, config, groupNameField, getParentValue }: GroupVariablesFieldProps) => {
 	const parentRef = useRef(getParentValue);
@@ -83,7 +83,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 				...config,
 				label: undefined,
 				labelTooltip: undefined,
-				extraClassNames: [...(config.extraClassNames || []), ...(variables.length ? [] : ['d-none'])],
+				extraClassNames: [...(config.extraClassNames || []), ...(variables.length ? [] : ['hidden'])],
 			}}
 			className="group-reference-variables-container"
 			hidden={false}

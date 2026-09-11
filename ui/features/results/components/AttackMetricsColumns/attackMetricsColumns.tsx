@@ -56,7 +56,7 @@ export interface RateColumnConfig {
  * Parameterises the **column set, its order and each column's bindings** — the caller writes its own
  * array and hands every builder the metric fields, the header key and the tooltip ids it wants. Fixes
  * only **how one named shape renders**: the Name cell's markup, the primary cell's bar and its two
- * class tokens, the `value (tick)` pair, and the rate column's `text-success` / `text-body`.
+ * class tokens, the `value (tick)` pair, and the rate column's `text-success` data cells.
  *
  * The three consumers already disagree on order (damage puts Crit % before Miss %, dtps after it) and
  * healing shares four of its twelve columns, so a builder keyed on a table *kind* would have been
@@ -130,7 +130,7 @@ export const attackMetricsColumns = {
 		helper.accessor(row => value(row.metric), {
 			id,
 			header,
-			meta: { columnClass: 'text-success', headerCellClass: 'text-body', tooltipId },
+			meta: { columnClass: 'text-success', tooltipId },
 			cell: info => formatToNumber(info.getValue(), { minimumFractionDigits: 2, fallbackString: '-' }),
 		}),
 };

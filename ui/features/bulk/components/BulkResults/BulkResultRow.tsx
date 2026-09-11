@@ -60,7 +60,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					)}
 					<div className="results-reference">
 						{isBaseResult ? (
-							<span className="fw-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
+							<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
 						) : (
 							<>
 								<span className={clsx('results-reference-diff', delta.tone)} {...tooltipAnchorProps(deltaTooltipId)}>
@@ -109,7 +109,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 			<div className="bulk-results-actions">
 				<button
 					type="button"
-					className={clsx('btn btn-primary bulk-equip-btn', isBaseResult && 'd-none')}
+					className={clsx('btn btn-primary bulk-equip-btn', isBaseResult && 'hidden')}
 					onClick={() => {
 						host.player.setGear(result.gear);
 						activateTab('gear-tab');

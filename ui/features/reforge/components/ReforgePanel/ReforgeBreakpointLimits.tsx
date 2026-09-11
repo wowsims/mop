@@ -28,10 +28,10 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useSoftCapBreakpoints && 'hide')}>
 			<thead>
 				<tr>
-					<th colSpan={3} className="pb-3">
-						<div className="d-flex">
-							<h6 className="content-block-title mb-0 me-1">{i18n.t('sidebar.buttons.suggest_reforges.breakpoint_limit')}</h6>
-							<Button variant="unstyled" className="d-inline" {...tooltipAnchorProps(tooltipId)}>
+					<th colSpan={3} className="pb-4">
+						<div className="flex">
+							<h6 className="content-block-title mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.breakpoint_limit')}</h6>
+							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(tooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>
 							<Tooltip id={tooltipId} content={i18n.t('sidebar.buttons.suggest_reforges.breakpoint_limit_tooltip')} />

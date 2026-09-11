@@ -27,13 +27,13 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 		<li className="tooltip-quick-swap__list-item">
 			<a
 				href={href || undefined}
-				className={clsx('tooltip-quick-swap__anchor d-flex align-items-center', entry.active && 'active')}
+				className={clsx('tooltip-quick-swap__anchor flex items-center', entry.active && 'active')}
 				onClick={event => {
 					event.preventDefault();
 					onItemClick(entry.item);
 				}}>
-				<img alt={entry.item.name} className="tooltip-quick-swap__icon gem-icon flex-shrink-0" src={iconUrl || undefined} />
-				<span className={clsx('tooltip-quick-swap__label text-start', itemQualityClassName(entry.item.quality))}>{entry.item.name}</span>
+				<img alt={entry.item.name} className="tooltip-quick-swap__icon gem-icon shrink-0" src={iconUrl || undefined} />
+				<span className={clsx('tooltip-quick-swap__label text-left', itemQualityClassName(entry.item.quality))}>{entry.item.name}</span>
 			</a>
 		</li>
 	);
@@ -53,7 +53,7 @@ export const QuickSwapList = <T extends QuickSwapItem>({ title, emptyMessage, en
 		) : (
 			<p className="tooltip-quick-swap__empty">{emptyMessage}</p>
 		)}
-		<div className="tooltip-quick-swap__footer d-flex justify-content-center">
+		<div className="tooltip-quick-swap__footer flex justify-center">
 			<Button size="sm" onClick={footerButton.onClick}>
 				{footerButton.label}
 			</Button>

@@ -23,9 +23,9 @@ const fill = (value: number, max: number | null): CSSProperties => cssVars({ '--
 export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, spellSchool, classColor }: MetricsTotalBarProps) => {
 	const spellSchoolString = typeof spellSchool === 'number' ? spellSchoolNames.get(spellSchool) : undefined;
 	return (
-		<div className="metrics-total position-relative d-flex justify-content-between w-100">
+		<div className="metrics-total relative flex justify-between w-full">
 			<div className="metrics-total-percentage">{formatToPercent(percentage || 0)}</div>
-			<div className="metrics-total-bar ms-1 me-1">
+			<div className="metrics-total-bar ml-1 mr-1">
 				<div
 					className={clsx(
 						'metrics-total-bar-fill',
@@ -34,7 +34,7 @@ export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, s
 					)}
 					style={fill(value, max)}
 				/>
-				{!!overlayValue && <div className="metrics-total-bar-fill bg-black bg-opacity-25" style={fill(overlayValue, max)} />}
+				{!!overlayValue && <div className="metrics-total-bar-fill bg-black/25" style={fill(overlayValue, max)} />}
 			</div>
 			<div className="metrics-total-amount">{formatToCompactNumber(total)}</div>
 		</div>

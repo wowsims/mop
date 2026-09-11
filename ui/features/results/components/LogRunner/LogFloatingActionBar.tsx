@@ -94,7 +94,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 					</span>
 				</button>
 				<button type="button" className="btn btn-sm btn-link btn-reset log-fab-clear" hidden={labels.length === 0} onClick={() => onChange([])}>
-					<Icon name="times" className="me-1" />
+					<Icon name="times" className="mr-1" />
 					{i18n.t('results_tab.details.logs.floatingActionBar.clear')}
 				</button>
 				<div className="log-fab-controls">{children}</div>

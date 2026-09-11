@@ -165,10 +165,10 @@ describe('GlyphsPicker', () => {
 
 		fireEvent.change(searchBox(), { target: { value: target } });
 
-		await waitFor(() => expect(listItems().filter(item => !item.classList.contains('d-none'))).toHaveLength(1));
-		expect(listItems()[1].classList.contains('d-none')).toBe(false);
+		await waitFor(() => expect(listItems().filter(item => !item.classList.contains('hidden'))).toHaveLength(1));
+		expect(listItems()[1].classList.contains('hidden')).toBe(false);
 
 		fireEvent.change(searchBox(), { target: { value: '' } });
-		await waitFor(() => expect(listItems().filter(item => item.classList.contains('d-none'))).toHaveLength(0));
+		await waitFor(() => expect(listItems().filter(item => item.classList.contains('hidden'))).toHaveLength(0));
 	});
 });

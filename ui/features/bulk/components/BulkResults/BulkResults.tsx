@@ -13,7 +13,7 @@ export const BulkResults = () => {
 
 	if (!results) {
 		// Starting a run empties the pane, so the invitation to run one does not come back.
-		return started ? null : <div className="d-flex align-items-center justify-content-center p-gap">{i18n.t('bulk_tab.results.run_simulation')}</div>;
+		return started ? null : <div className="flex items-center justify-center p-gap">{i18n.t('bulk_tab.results.run_simulation')}</div>;
 	}
 
 	const iterations = Math.max(1, sim.getIterations());
@@ -22,7 +22,7 @@ export const BulkResults = () => {
 			{results.chains.map((chain, chainIdx) =>
 				chain.length > 1 ? (
 					<div key={chainIdx} className="bulk-results-tie-group">
-						<span className="mb-4">{i18n.t('bulk_tab.results.tied_group')}</span>
+						<span className="mb-6">{i18n.t('bulk_tab.results.tied_group')}</span>
 						{chain.map((result, idx) => (
 							<BulkResultRow key={idx} result={result} baseResult={results.originalGearResults} iterations={iterations} />
 						))}

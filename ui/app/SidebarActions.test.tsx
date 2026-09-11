@@ -37,9 +37,9 @@ describe('SidebarActions', () => {
 		expect(classSets()).toEqual([]);
 		renderActions(registry);
 		expect(classSets()).toEqual([
-			'btn btn-primary dps-action sim-sidebar-action-button w-100',
+			'btn btn-primary dps-action sim-sidebar-action-button w-full',
 			'custom-entry',
-			'btn btn-primary ep-weights-action sim-sidebar-action-button w-100',
+			'btn btn-primary ep-weights-action sim-sidebar-action-button w-full',
 		]);
 	});
 

@@ -30,7 +30,7 @@ export const SimWarnings = ({ warnings, ready }: SimWarningsProps) => {
 					id={id}
 					place="bottom"
 					content={
-						<ul className="text-start ps-3 mb-0">
+						<ul className="text-left pl-4 mb-0">
 							{contents.map((warning, index) => (
 								<li key={`${index}:${warning}`}>{warning}</li>
 							))}

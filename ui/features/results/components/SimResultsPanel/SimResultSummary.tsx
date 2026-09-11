@@ -35,16 +35,16 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 					className="results-sim-set-reference"
 					onClick={() => results.setReference()}
 					{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.use_as_reference'))}>
-					<i className={`fa fa-map-pin fa-lg text-${cssScheme} me-2`} />
+					<i className={`fa fa-map-pin fa-lg text-${cssScheme} mr-2`} />
 					{i18n.t('sidebar.results.reference.save_as_reference')}
 				</button>
 				<div className="results-sim-reference-bar">
 					<button
 						type="button"
-						className="results-sim-reference-swap me-3"
+						className="results-sim-reference-swap mr-4"
 						onClick={() => results.swapReference()}
 						{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.swap_reference_with_current'))}>
-						<i className="fas fa-arrows-rotate me-1" />
+						<i className="fas fa-arrows-rotate mr-1" />
 						{i18n.t('sidebar.results.reference.swap')}
 					</button>
 					<button
@@ -52,7 +52,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 						className="results-sim-reference-delete"
 						onClick={() => results.clearReference()}
 						{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.remove_reference'))}>
-						<i className="fa fa-times fa-lg me-1" />
+						<i className="fa fa-times fa-lg mr-1" />
 						{i18n.t('sidebar.results.reference.cancel')}
 					</button>
 				</div>

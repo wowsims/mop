@@ -42,7 +42,7 @@ describe('ReforgePanel', () => {
 		const { container } = renderPanel();
 		const [run, settings] = [...container.querySelectorAll('button')];
 
-		expect([...run.classList].sort()).toEqual(['btn', 'btn-primary', 'flex-grow-1', 'sim-sidebar-action-button', 'suggest-reforges-action-button']);
+		expect([...run.classList].sort()).toEqual(['btn', 'btn-primary', 'grow', 'sim-sidebar-action-button', 'suggest-reforges-action-button']);
 		expect([...settings.classList].sort()).toEqual(['btn', 'btn-primary', 'sim-sidebar-action-button', 'suggest-reforges-button-settings']);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
 		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);

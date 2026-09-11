@@ -17,17 +17,17 @@ export interface ReforgeSoftCapsTooltipProps {
 export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation }: ReforgeSoftCapsTooltipProps) => (
 	<>
 		<p>{i18n.t('sidebar.buttons.suggest_reforges.breakpoints_implemented')}</p>
-		<table className="w-100">
+		<table className="w-full">
 			<tbody>
 				{softCaps.map(({ unitStat, breakpoints, capType, postCapEPs }, index) => {
 					const extra = additionalInformation[unitStat.getRootStat()]?.();
 					return (
 						<Fragment key={unitStat.getKey()}>
 							<tr>
-								<th className="text-nowrap" colSpan={2}>
+								<th className="whitespace-nowrap" colSpan={2}>
 									{unitStat.getShortName(player.getClass())}
 								</th>
-								<td className="text-end">{statCapTypeNames.get(capType)}</td>
+								<td className="text-right">{statCapTypeNames.get(capType)}</td>
 							</tr>
 							{extra !== undefined && (
 								<>
@@ -40,17 +40,17 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 								</>
 							)}
 							<tr>
-								<th className="text-end">
+								<th className="text-right">
 									<em>%</em>
 								</th>
-								<th colSpan={2} className="text-nowrap text-end">
+								<th colSpan={2} className="whitespace-nowrap text-right">
 									<em>{i18n.t('sidebar.buttons.suggest_reforges.post_cap_ep')}</em>
 								</th>
 							</tr>
 							{breakpoints.map((breakpoint, breakpointIndex) => (
 								<tr key={breakpoint}>
-									<td className="text-end">{breakpointValueToDisplayPercentage(player, breakpoint, unitStat)}</td>
-									<td colSpan={2} className="text-end">
+									<td className="text-right">{breakpointValueToDisplayPercentage(player, breakpoint, unitStat)}</td>
+									<td colSpan={2} className="text-right">
 										{unitStat
 											.convertEpToRatingScale(capType === StatCapType.TypeThreshold ? postCapEPs[0] : postCapEPs[breakpointIndex])
 											.toFixed(2)}
@@ -60,7 +60,7 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 							{index !== softCaps.length - 1 && (
 								<>
 									<tr>
-										<td colSpan={3} className="border-bottom pb-2" />
+										<td colSpan={3} className="border-b border-border pb-2" />
 									</tr>
 									<tr>
 										<td colSpan={3} className="pb-2" />

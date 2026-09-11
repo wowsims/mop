@@ -121,7 +121,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	const extraClassNames = [
 		...(config.extraClassNames || []),
 		...(config.isCompact ? ['list-picker-compact'] : []),
-		...(config.hideUi ? ['d-none'] : []),
+		...(config.hideUi ? ['hidden'] : []),
 		...(horizontal ? ['horizontal'] : []),
 	];
 
@@ -131,7 +131,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
 				<span className="list-picker-title form-label">
 					{config.title}
-					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ms-2" />}
+					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ml-2" />}
 				</span>
 			)}
 			<div className={clsx('list-picker-items', value.length === 0 && 'hide')}>
@@ -172,7 +172,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 					/>
 				) : (
 					<Button variant="primary" className="list-picker-new-button" onClick={onCreate}>
-						<i className="fa fa-plus me-2" />
+						<i className="fa fa-plus mr-2" />
 						{newLabel}
 					</Button>
 				))}

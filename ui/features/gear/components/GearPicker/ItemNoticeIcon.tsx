@@ -21,8 +21,8 @@ export const ItemNoticeIcon = ({ itemId, additionalNotice }: ItemNoticeIconProps
 	if (!ownNotice && !additionalNotice) return null;
 
 	return (
-		<div className="item-notice d-inline">
-			<button type="button" className="warning fa fa-exclamation-triangle fa-xl me-2" {...tooltipAnchorProps(tooltipId)} />
+		<div className="item-notice inline">
+			<button type="button" className="warning fa fa-exclamation-triangle fa-xl mr-2" {...tooltipAnchorProps(tooltipId)} />
 			<Tooltip
 				id={tooltipId}
 				content={

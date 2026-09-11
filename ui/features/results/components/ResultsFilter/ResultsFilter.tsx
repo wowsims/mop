@@ -23,7 +23,7 @@ export const ResultsFilter = ({ target, onTargetChange }: ResultsFilterProps) =>
 		<div className="results-filter-root">
 			<UnitPicker
 				id="results-filter-target-filter"
-				className={['target-filter-root', !resultData && 'd-none']}
+				className={['target-filter-root', !resultData && 'hidden']}
 				options={options}
 				value={numToRef(target)}
 				onChange={ref => onTargetChange(refToNum(ref))}

@@ -21,10 +21,10 @@ export const RequiredSetBonuses = () => {
 	const canSatisfy = useMemo(() => setBonusFeasibility(player, pickerGroups, requiredSetBonuses), [player, pickerGroups, requiredSetBonuses]);
 
 	return (
-		<div className="required-set-bonuses-container d-flex flex-column gap-2">
+		<div className="required-set-bonuses-container flex flex-col gap-2">
 			{!!setBonuses.length && <h6>{i18n.t('bulk_tab.settings.required_set_bonuses.label')}</h6>}
 			{setBonuses.map(setBonus => (
-				<div key={setBonus.setId} className="bulk-required-set-bonus d-flex flex-column gap-1">
+				<div key={setBonus.setId} className="bulk-required-set-bonus flex flex-col gap-1">
 					<div className="form-label">
 						{setBonus.setName} {i18n.t('bulk_tab.settings.required_set_bonuses.available_pieces', { count: setBonus.totalPieces })}
 					</div>

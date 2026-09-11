@@ -59,7 +59,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					aria-label={swapTooltip}
 					{...tooltipAnchorProps(swapId)}
 					onClick={() => swapWithGear(player, itemSlots)}>
-					<Icon name="arrows-rotate" className="me-1" />
+					<Icon name="arrows-rotate" className="mr-1" />
 				</Button>
 				<Tooltip id={swapId} content={swapTooltip} />
 				<div className="picker-group icon-group" role="group" aria-labelledby={labelId}>

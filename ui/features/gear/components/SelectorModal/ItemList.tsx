@@ -211,7 +211,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 				<h6 className="ep-label interactive" style={{ display: showEPValues ? undefined : 'none' }} onClick={() => sort(ItemListSortBy.EP)}>
 					<span>EP</span>
 					<Icon name="plus-minus" size="2xs" />
-					<button type="button" className="btn btn-link p-0 ms-1" data-tooltip-id={`${tooltipId}-ep`}>
+					<button type="button" className="btn btn-link p-0 ml-1" data-tooltip-id={`${tooltipId}-ep`}>
 						<Icon name="question-circle" style="regular" size="lg" />
 					</button>
 				</h6>

@@ -43,7 +43,7 @@ export const UpgradeCostsSummary = () => {
 				points > 0 ? (
 					<div key={key}>
 						<SummaryTableRow>
-							<div className="d-flex align-items-center">
+							<div className="flex items-center">
 								<img className="gem-icon" src={currencyIconUrl(key, faction)} alt="" />
 								<div>{i18n.t(`common.currency.${key}`)}</div>
 							</div>
@@ -53,7 +53,7 @@ export const UpgradeCostsSummary = () => {
 				) : null,
 			)}
 			<div className="upgrade-costs-summary-footer mt-2">
-				<div className="d-flex w-100 justify-content-end">
+				<div className="flex w-full justify-end">
 					<Button
 						variant="outline-primary"
 						onClick={() => {
@@ -65,7 +65,7 @@ export const UpgradeCostsSummary = () => {
 							}
 							player.setGear(curGear);
 						}}>
-						<Icon name="arrow-up" className="me-1" />
+						<Icon name="arrow-up" className="mr-1" />
 						{i18n.t('gear_tab.upgrade_summary.upgrade_all_items')}
 					</Button>
 				</div>

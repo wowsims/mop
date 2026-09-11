@@ -33,7 +33,7 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 				rel={externalRel(href, undefined)}
 				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
 			/>
-			<span className="metrics-action-name text-truncate">{name}</span>
+			<span className="metrics-action-name truncate">{name}</span>
 			{expandable && (
 				<Button
 					variant="unstyled"

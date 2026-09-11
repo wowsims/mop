@@ -186,7 +186,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 				}}
 			/>
 			<ReforgeFrozenSlots settings={settings} player={player} freezeItemSlots={freezeItemSlots} />
-			<SavedEpWeights className="mt-3" loadOnly presetsOnly={!useCustomEPValues} />
+			<SavedEpWeights className="mt-4" loadOnly presetsOnly={!useCustomEPValues} />
 			<Button
 				variant="outline-primary"
 				className="mt-2"

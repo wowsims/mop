@@ -26,18 +26,18 @@ export const LandingHeader = () => {
 	return (
 		<header className="homepage-header">
 			<div className="container homepage-header-container">
-				<nav className="navbar navbar-dark navbar-expand-md flex-wrap align-items-end w-100">
+				<nav className="navbar navbar-dark navbar-expand-md flex-wrap items-end w-full">
 					<div className="navbar-brand-container order-0">
-						<a href="#" className="navbar-brand d-flex align-items-center p-0 m-0">
+						<a href="#" className="navbar-brand flex items-center p-0 m-0">
 							<img className="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png" alt="" />
-							<div className="d-flex flex-column">
+							<div className="flex flex-col">
 								<h2 className="wowsims-title">{i18n.t('landing.header.wowsims')}</h2>
-								<h3 className="expansion-title w-100">{i18n.t('landing.header.expansion')}</h3>
+								<h3 className="expansion-title w-full">{i18n.t('landing.header.expansion')}</h3>
 							</div>
 						</a>
 						{toggler('bars')}
 					</div>
-					<div id={COLLAPSE_ID} className={clsx('navbar-collapse homepage-header-collapse order-2 order-md-1', !open && 'hide')}>
+					<div id={COLLAPSE_ID} className={clsx('navbar-collapse homepage-header-collapse order-2 md:order-1', !open && 'hide')}>
 						<div className="navbar-nav">
 							{toggler('times')}
 							<a href="https://discord.gg/p3DgvmnDCS" target="_blank" rel="noreferrer" className="nav-link link-alt">
@@ -53,8 +53,8 @@ export const LandingHeader = () => {
 								</p>
 							</a>
 							<a href="https://patreon.com/wowsims" target="_blank" rel="noreferrer" className="nav-link link-alt">
-								<Icon name="patreon" style="brands" size="2x" className="patreon-link me-2" />
-								<span className="fs-4 d-md-none d-lg-block">{i18n.t('landing.header.supportDevs')}</span>
+								<Icon name="patreon" style="brands" size="2x" className="patreon-link mr-2" />
+								<span className="text-xl md:hidden lg:block">{i18n.t('landing.header.supportDevs')}</span>
 							</a>
 							<LandingLanguageMenu />
 						</div>

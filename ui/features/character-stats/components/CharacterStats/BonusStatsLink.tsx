@@ -22,7 +22,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 
 	return (
 		<>
-			<Button variant="unstyled" className="add-bonus-stats text-white ms-2" aria-label={action} {...tooltipAnchorProps(`${id}-popover`)}>
+			<Button variant="unstyled" className="add-bonus-stats text-white ml-2" aria-label={action} {...tooltipAnchorProps(`${id}-popover`)}>
 				<Icon name="plus-minus" {...tooltipAnchorProps(`${id}-icon`)} />
 			</Button>
 			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />

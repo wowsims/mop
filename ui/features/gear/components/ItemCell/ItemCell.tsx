@@ -20,7 +20,7 @@ export const ItemCell = ({ icon, ilvl, sockets, name, labels, action, className 
 			{sockets !== undefined && <div className="item-picker-sockets-container">{sockets}</div>}
 		</div>
 		<div className="item-picker-labels-container">
-			<div className="item-picker-name-row d-flex gap-1">{name}</div>
+			<div className="item-picker-name-row flex gap-1">{name}</div>
 			{labels}
 		</div>
 		{action}

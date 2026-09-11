@@ -20,7 +20,7 @@ export const MISSING_RANDOM_SUFFIX_WARNING = <p className="mb-0">Please select a
 
 const MISSING_IMPLEMENTATION_WARNING = (
 	<>
-		<p className="fw-bold">This item effect (on-use or proc) is not implemented!</p>
+		<p className="font-bold">This item effect (on-use or proc) is not implemented!</p>
 		<p>We are working hard on gathering all the old resources to allow for an initial implementation.</p>
 		<WantToHelpMessage />
 	</>
@@ -29,7 +29,7 @@ const MISSING_IMPLEMENTATION_WARNING = (
 const TENTATIVE_IMPLEMENTATION_WARNING = (
 	<>
 		<p>
-			This item <span className="fw-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.
+			This item <span className="font-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.
 		</p>
 		<WantToHelpMessage />
 	</>
@@ -61,7 +61,7 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 				MISSING_IMPLEMENTATION_WARNING
 			) : (
 				<>
-					<p className="fw-bold">The following item effect (on-use or proc) is not implemented!</p>
+					<p className="font-bold">The following item effect (on-use or proc) is not implemented!</p>
 					<ul>
 						{tooltips
 							.filter(tooltip => !!tooltip)
@@ -80,7 +80,7 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 			[Spec.SpecUnknown]: (
 				<>
 					<p>
-						The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span className="fw-bold">not</span> implemented. The
+						The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span className="font-bold">not</span> implemented. The
 						DPS gain of these is around ~40 DPS.
 					</p>
 				</>

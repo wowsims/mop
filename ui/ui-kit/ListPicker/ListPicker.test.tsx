@@ -127,7 +127,7 @@ describe('ListPicker', () => {
 
 			const classes = root().className.split(' ');
 			expect(classes).toContain('list-picker-compact');
-			expect(classes).toContain('d-none');
+			expect(classes).toContain('hidden');
 			expect(classes).toContain('horizontal');
 			expect(classes).toContain('targets-picker');
 			// horizontalLayout forces the inline menu bar.
@@ -140,7 +140,7 @@ describe('ListPicker', () => {
 			const title = root().querySelector('.list-picker-title')!;
 			expect(title.tagName).toBe('SPAN');
 			expect(title.textContent).toBe('Targets');
-			expect(title.querySelector('button.tooltip-button.ms-2')).not.toBeNull();
+			expect(title.querySelector('button.tooltip-button.ml-2')).not.toBeNull();
 		});
 
 		it('renders header extras between the title and the actions button', () => {

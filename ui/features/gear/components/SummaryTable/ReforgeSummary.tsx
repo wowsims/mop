@@ -57,9 +57,9 @@ export const ReforgeSummary = () => {
 				);
 			})}
 			<div className="reforge-summary-footer mt-2">
-				<div className="d-flex w-100 justify-content-end">
+				<div className="flex w-full justify-end">
 					<Button variant="outline-primary" className="copy-button" onClick={copy}>
-						<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+						<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('gear_tab.reforge_summary.copy_to_reforge_lite')}
 					</Button>
 				</div>

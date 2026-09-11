@@ -23,7 +23,7 @@ export const SummaryTable = ({ title, className, headerClassName, empty, reset, 
 			headerChildren={
 				!empty && (
 					<Button variant="link" size="sm" className="btn-reset summary-table-reset-button" onClick={reset.onReset}>
-						<Icon name="times" className="me-1" />
+						<Icon name="times" className="mr-1" />
 						{reset.label}
 					</Button>
 				)

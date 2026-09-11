@@ -65,14 +65,14 @@ export const Exporter = ({
 			footer={
 				<>
 					<Button className="copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
-						<Icon name={copied ? 'check' : 'copy'} className="me-1" />
+						<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('export.json.copy_button')}
 					</Button>
 					{allowDownload && (
 						<Button
-							className="exporter-button download-button ms-2"
+							className="exporter-button download-button ml-2"
 							onClick={() => downloadString(dataRef.current, downloadFileName, downloadMimeType)}>
-							<Icon name="download" style="base" className="me-1" />
+							<Icon name="download" style="base" className="mr-1" />
 							{i18n.t('export.json.download_button')}
 						</Button>
 					)}

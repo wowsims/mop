@@ -38,10 +38,10 @@ describe('ContentBlock', () => {
 
 	it('renders headerChildren after the title, inside the header', () => {
 		const { container } = render(
-			<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="fs-body">Describes it</p>} />,
+			<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="text-sm">Describes it</p>} />,
 		);
 		const header = container.querySelector('.content-block-header')!;
-		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title', 'fs-body']);
+		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title', 'text-sm']);
 	});
 
 	it('puts the tooltip button inside the title element, not the header', () => {
@@ -49,7 +49,7 @@ describe('ContentBlock', () => {
 		const title = container.querySelector('.content-block-title')!;
 		const button = title.querySelector('button.tooltip-button');
 		expect(button).not.toBeNull();
-		expect(button!.classList.contains('ms-2')).toBe(true);
+		expect(button!.classList.contains('ml-2')).toBe(true);
 		// Not a direct child of the header (only of the title).
 		const header = container.querySelector('.content-block-header')!;
 		expect(Array.from(header.children)).toEqual([title]);

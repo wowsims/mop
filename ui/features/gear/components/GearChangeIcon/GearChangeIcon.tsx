@@ -52,7 +52,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 				<div className="item-picker-icon-wrapper" style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }} />
 				<a ref={linkRef} className="gear-change-icon-link" href={item ? href || undefined : undefined} data-whtticon={item ? 'false' : undefined} />
 				<div
-					className={clsx('gear-change-icon-reforge interactive', !showReforge && 'd-none')}
+					className={clsx('gear-change-icon-reforge interactive', !showReforge && 'hidden')}
 					{...(showReforge ? tooltipAnchorProps(`${tooltipId}-reforge`) : {})}
 				/>
 				<div className="item-picker-sockets-container">
@@ -62,7 +62,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 							className={clsx('gem-socket-container', changed && 'interactive')}
 							style={{ backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})` }}
 							{...(changed && gemName ? tooltipAnchorProps(`${tooltipId}-socket-${gemIdx}`) : {})}>
-							{changed && <i className="d-block fas fa-exclamation-circle" />}
+							{changed && <i className="block fas fa-exclamation-circle" />}
 						</div>
 					))}
 				</div>

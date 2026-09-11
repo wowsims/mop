@@ -13,8 +13,8 @@ export interface ItemSourceProps {
 
 const FactionIcon = ({ restriction }: { restriction: UIItem_FactionRestriction }) => {
 	if (restriction === UIItem_FactionRestriction.ALLIANCE_ONLY)
-		return <img src="/mop/assets/img/alliance.png" className="ms-1" width="15" height="15" alt="" />;
-	if (restriction === UIItem_FactionRestriction.HORDE_ONLY) return <img src="/mop/assets/img/horde.png" className="ms-1" width="15" height="15" alt="" />;
+		return <img src="/mop/assets/img/alliance.png" className="ml-1" width="15" height="15" alt="" />;
+	if (restriction === UIItem_FactionRestriction.HORDE_ONLY) return <img src="/mop/assets/img/horde.png" className="ml-1" width="15" height="15" alt="" />;
 	return null;
 };
 

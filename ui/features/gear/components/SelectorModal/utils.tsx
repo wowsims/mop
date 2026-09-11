@@ -46,7 +46,7 @@ const describe = <T extends ItemListType>(spec: TabSpec<T>): SelectorTab | null 
 	spec.itemData.length ? ({ socketColor: GemColor.GemColorUnknown, ...spec } as unknown as SelectorTab) : null;
 
 const randomSuffixName = ({ label, statString }: { label: string; statString: string }): ReactNode => (
-	<div className="d-flex flex-column">
+	<div className="flex flex-col">
 		{label}
 		<span className="fs-content positive mt-1">{statString}</span>
 	</div>
@@ -108,7 +108,7 @@ export const buildSelectorTabs = ({ player, slot, gearData, equippedItem, isBlac
 					itemData: upgradesTabData(gearData, equippedItem, ({ index, ilvlDelta, upgradeStep, numberOfUpgrades }) => (
 						<>
 							{index > 0 ? <>+ {ilvlDelta}</> : <>Base</>}{' '}
-							<span className="selector-modal-list-item-upgrade-step-container ms-2">{`(${upgradeStep}/${numberOfUpgrades})`}</span>
+							<span className="selector-modal-list-item-upgrade-step-container ml-2">{`(${upgradeStep}/${numberOfUpgrades})`}</span>
 						</>
 					)),
 					computeEP: (upgradeStep: ItemLevelState) => player.computeUpgradeEP(equippedItem, upgradeStep, slot),

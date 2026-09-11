@@ -34,8 +34,8 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					<span className="item-picker-ilvl">{baseIlvl(item)}</span>
 					<div className="bulk-item-search-item-icon" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} />
 				</div>
-				<div className="d-flex flex-column gap-1 ps-2">
-					<div className="d-flex flex-wrap flex-column flex-xxl-row column-gap-1">
+				<div className="flex flex-col gap-1 pl-2">
+					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">
 						<span className={itemQualityClassName(item.quality)}>{item.name}</span>
 						{!!item.nameDescription && <NameDescriptionLabel nameDescription={item.nameDescription} />}
 						{item.factionRestriction === UIItem_FactionRestriction.HORDE_ONLY && <span className="faction-horde">(H)</span>}

@@ -28,7 +28,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 
 	return (
 		<div className="log-search-bar">
-			<div className="log-search-groups d-flex flex-wrap align-items-start row-gap-1 column-gap-2">
+			<div className="log-search-groups flex flex-wrap items-start gap-y-1 gap-x-2">
 				{groups.map((group, index) => (
 					<LogSearchGroup
 						key={group.id}

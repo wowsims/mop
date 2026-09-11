@@ -32,14 +32,14 @@ describe('ResultsFilter', () => {
 	it('stays hidden until a run has produced targets', () => {
 		mount(ALL_UNITS);
 
-		expect(picker().className).toContain('d-none');
+		expect(picker().className).toContain('hidden');
 		expect(trigger().textContent).toBe('Unit');
 	});
 
 	it('shows all targets plus one option per target of the run, in encounter order', async () => {
 		resultData = resultWith({ index: 0 }, { index: 1 }, { index: 2 });
 		mount(ALL_UNITS);
-		expect(picker().className).not.toContain('d-none');
+		expect(picker().className).not.toContain('hidden');
 
 		await open();
 		expect(items().map(item => item.textContent)).toEqual([

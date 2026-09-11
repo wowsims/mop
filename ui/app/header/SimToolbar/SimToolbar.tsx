@@ -25,7 +25,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 				className="known-issues link-danger"
 				hidden={knownIssues.length === 0}
 				tooltip={
-					<ul className="text-start ps-3 mb-0">
+					<ul className="text-left pl-4 mb-0">
 						{knownIssues.map((issue, index) => (
 							<li key={index}>{issue}</li>
 						))}

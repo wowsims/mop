@@ -62,7 +62,7 @@ export const BulkTabBody = () => {
 								{ready && host.sim.isNative === false && (
 									<p className="mb-0">
 										<a href={REPO_RELEASES_URL} target="_blank" rel="noopener noreferrer">
-											<Icon name="gauge-high" className="me-1" />
+											<Icon name="gauge-high" className="mr-1" />
 											{i18n.t('bulk_tab.download_native')}
 										</a>
 									</p>
@@ -70,7 +70,7 @@ export const BulkTabBody = () => {
 							</div>
 							<div className="bulk-gear-actions">
 								<button type="button" className="btn btn-secondary" onClick={() => setImportOpen(true)}>
-									<Icon name="download" style="base" className="me-1" /> {i18n.t('bulk_tab.actions.import_bags')}
+									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_bags')}
 								</button>
 								<button
 									type="button"
@@ -81,10 +81,10 @@ export const BulkTabBody = () => {
 											host.sim.getFilters().favoriteItems.map(itemID => ItemSpec.create({ id: itemID })),
 										)
 									}>
-									<Icon name="download" style="base" className="me-1" /> {i18n.t('bulk_tab.actions.import_favorites')}
+									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_favorites')}
 								</button>
-								<button type="button" className="btn btn-danger ms-auto" onClick={() => clearBulkItems(host.player)}>
-									<Icon name="times" className="me-1" />
+								<button type="button" className="btn btn-danger ml-auto" onClick={() => clearBulkItems(host.player)}>
+									<Icon name="times" className="mr-1" />
 									{i18n.t('bulk_tab.actions.clear_items')}
 								</button>
 							</div>
