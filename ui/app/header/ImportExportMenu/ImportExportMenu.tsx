@@ -33,7 +33,6 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 					<Icon name={icon} style={iconStyle} /> {title}
 				</Menu.Trigger>
 				<Menu.Portal>
-					{/* Bootstrap landed the menu 1px over the header: its plugin default offset was [0, -1] and the stylesheet then pulled it up another 2px. */}
 					<Menu.Positioner align="start" sideOffset={-1} className="sim-dropdown-positioner">
 						<Menu.Popup className="sim-dropdown-popup">
 							{entries.map(entry => (

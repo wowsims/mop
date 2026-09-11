@@ -106,8 +106,7 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('.settings-tab-left.tab-panel-left')).not.toBeNull();
 		expect(container.querySelector('.settings-tab-right.tab-panel-right')).not.toBeNull();
 		expect(container.querySelectorAll('.tab-panel-col')).toHaveLength(3);
-		// The vanilla tab built the columns in its constructor and everything in them inside one
-		// `waitForInit` callback. A block that rendered early would read the database before it loads.
+		// A block that rendered early would read the database before it loads.
 		expect(container.querySelectorAll('.content-block')).toHaveLength(0);
 	});
 
@@ -122,8 +121,8 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('.settings-left-col-2')!.firstElementChild!.className).toBe('custom-section-stub');
 	});
 
-	// No wrapper element around any of the three: `panes-parity.mjs` compares this pane against master
-	// element for element, and the preset picker has to keep leading the two saved-data panels.
+	// No wrapper element around any of the three: the preset picker has to keep leading the two
+	// saved-data panels.
 	it('renders the preset picker ahead of the two saved-data panels, with nothing wrapping them', () => {
 		const container = mount();
 		const right = container.querySelector('.settings-tab-right')!;
@@ -135,9 +134,7 @@ describe('SettingsTabBody', () => {
 		]);
 	});
 
-	// It used to be legacy-mounted, where a second construction would have appended a second root.
-	// React re-renders instead, so this now guards against a duplicated element rather than a
-	// duplicated constructor call.
+	// React re-renders instead of remounting, so this guards against a duplicated element.
 	it('keeps one preset picker when the sim becomes ready', async () => {
 		const container = mount();
 		await becomeReady();

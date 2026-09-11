@@ -150,8 +150,7 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 
 		initBulk(this);
 
-		// Declarative behaviour slots. These run last, exactly where a spec
-		// subclass' constructor body used to run: after every model the React tree
+		// Declarative behaviour slots. These run last, after every model the React tree
 		// reads exists, but still synchronously, so `loadSettings()` (queued
 		// on waitForInit above) already sees `this.reforger`. Order is observable:
 		// a `features` slot's sidebar button lands above the reforge button.

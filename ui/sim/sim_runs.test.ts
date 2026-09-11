@@ -139,8 +139,8 @@ describe('SimRuns', () => {
 		await started;
 	});
 
-	// The flag has to be readable before `start` returns: a vanilla click handler reads the DOM back
-	// in its own task, so an injected `flushSync` cannot help a write that happens a microtask later.
+	// The flag has to be readable before `start` returns, because an injected `flushSync` cannot
+	// help a write that happens a microtask later.
 	it('flags the kind synchronously, through the injected flush', async () => {
 		const flushed: Array<string> = [];
 		runs.setFlush(write => {

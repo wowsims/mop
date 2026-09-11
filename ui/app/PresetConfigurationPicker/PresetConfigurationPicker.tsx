@@ -33,8 +33,8 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 		[host, categories],
 	);
 
-	// The vanilla picker builds its chips inside `waitForInit().then(...)`, so the active check has
-	// never run against an uninitialised sim. `useReadyStoreSubscribe` keeps that true here.
+	// The active check must never run against an uninitialised sim; `useReadyStoreSubscribe` keeps
+	// that true here.
 	const active = useReadyStoreSubscribe(
 		useMemo(() => subscribeSimChange(host.sim), [host]),
 		() => builds.map(build => isBuildActive(build, host)),

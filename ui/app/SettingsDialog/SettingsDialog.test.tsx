@@ -98,8 +98,6 @@ describe('SettingsDialog', () => {
 		}
 	});
 
-	// The vanilla menu toggled `hidden` on a row it always built. Unmounting it instead would take the
-	// node out of the tree the migration's parity gates walk.
 	it('keeps the concurrency row mounted and hides it with the attribute when the sim is not wasm', async () => {
 		const sim = new FakeSim();
 		sim.wasm = Promise.resolve(false);

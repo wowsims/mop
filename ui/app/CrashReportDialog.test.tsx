@@ -32,7 +32,7 @@ describe('CrashReportDialog', () => {
 		expect(report()!.value).toBe('https://wowsims.github.io/mop/warrior/arms/#eJxT');
 	});
 
-	// The field is uncontrolled, as vanilla's was, so a second crash only replaces its text because
+	// The field is uncontrolled, so a second crash only replaces its text because
 	// the textarea is keyed on the link.
 	it('replaces the link when a second crash is reported', () => {
 		const opener = mount();

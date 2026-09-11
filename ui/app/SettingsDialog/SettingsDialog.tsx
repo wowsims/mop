@@ -32,7 +32,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 	const firefox = navigator.userAgent.toLowerCase().includes('firefox');
 
 	// Local sim has native threading, so the row is only meaningful on wasm. It starts shown because
-	// the answer is a promise, which is what vanilla's `.then(… hidden = true)` did.
+	// the answer is a promise.
 	const [isWasm, setIsWasm] = useState(true);
 	useEffect(() => {
 		let live = true;

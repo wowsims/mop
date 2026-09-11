@@ -39,12 +39,9 @@ void (async () => {
 	const def = (await loadSpec()).default;
 
 	// `new Player()` resolves the spec's config out of the registry in its constructor, so the definition has to be registered before the player is built.
-
 	registerSpecConfig(def.spec, def);
 
 	const sim = new Sim({ env: browserEnv });
-	// A run flag written from a vanilla click handler has to reach React in that same task:
-	// `sidebar-loading.mjs` reads the spinner back before the handler returns.
 	sim.runs.setFlush(flushSync);
 	const playerSpec = PlayerSpecs.fromProto(def.spec);
 	const player = new Player(playerSpec, sim);

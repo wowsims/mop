@@ -60,8 +60,7 @@
 		}
 	}
 
-	// The React picker makes the container the anchor's sibling; the vanilla one still nests it and
-	// keeps the rule above. `2px` is the anchor's two 1px `--border-default` borders, so the box lands
+	// `2px` is the anchor's two 1px `--border-default` borders, so the box lands
 	// where `width: 100%` plus `margin: 1px` put it inside the anchor, and the negative inline margin
 	// leaves the container zero outer width so the label after it does not move.
 	.icon-picker-button + .icon-input-level-container {

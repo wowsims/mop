@@ -11,7 +11,7 @@ export interface SimSidebarActionsProps {
 }
 
 // This order is observable, not incidental: `SidebarRegistry` sorts stably, so the spec's entries land
-// between these exactly where the vanilla shell appended them.
+// between these two actions.
 export const SimSidebarActions = ({ host }: SimSidebarActionsProps) => (
 	<SidebarDisabledContext value={host.disabled}>
 		<SimulateAction />

@@ -1,7 +1,7 @@
 // Shape of a class's talent tree and glyph catalogue, plus the builder that
-// validates a generated tree JSON. Pure data: it used to live in the talents
-// and glyphs pickers, which put a view module on ui/sim's import path.
-// The pickers re-import these from here.
+// validates a generated tree JSON. Pure data, kept out of the talents and
+// glyphs pickers so ui/sim's import path stays free of a view module; the
+// pickers re-import these from here.
 
 export type TalentsConfig<TalentsProto> = TalentTreeConfig<TalentsProto>;
 

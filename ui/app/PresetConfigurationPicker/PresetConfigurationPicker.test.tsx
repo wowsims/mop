@@ -82,8 +82,7 @@ describe('PresetConfigurationPicker', () => {
 		expect((applyBuild.mock.calls[0][0] as { name: string }).name).toBe('P2');
 	});
 
-	// Vanilla hides the root rather than rendering an empty block, and five specs have no builds at
-	// all, so the hidden root is what those panes contain.
+	// Five specs have no builds at all, so the hidden root is what those panes contain.
 	it('renders a hidden root and no content block when there are no builds', () => {
 		const { container } = setup([]);
 
@@ -91,7 +90,7 @@ describe('PresetConfigurationPicker', () => {
 		expect(container.querySelector('.content-block')).toBeNull();
 	});
 
-	// The chips are built inside `waitForInit` in vanilla; before that the block exists but is empty.
+	// Before the sim is ready, the block exists but is empty.
 	it('renders the block but no chips before the sim is ready', () => {
 		ready = false;
 		const { container } = setup([{ name: 'P1', gear: {} }]);

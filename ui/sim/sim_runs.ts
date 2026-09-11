@@ -47,8 +47,7 @@ export class SimRuns {
 		return this.store.getState().runs[kind].isAborting;
 	}
 
-	// Deliberately not `async`: the running flag has to land in the caller's own task, because
-	// `sidebar-loading.mjs` asserts the spinner is up before the click handler returns and an
+	// Deliberately not `async`: the running flag has to land in the caller's own task, because an
 	// injected `flushSync` cannot reach a write that happens a microtask later.
 	start<T, TProgress = never>(kind: SimRunKind, run: (ctx: RunContext<TProgress>) => Promise<T>): Promise<T> {
 		const token = Symbol(kind);

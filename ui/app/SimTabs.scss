@@ -17,7 +17,6 @@
 .sim-tab-link {
 	display: flex;
 	align-items: center;
-	// No `height: 100%`: Bootstrap's `.nav-link` resolved that against the `<li>` wrapping it, whose own height was the link's, so it was a no-op.
 	margin: 0;
 	border: 0;
 	padding: var(--tab-padding-y) var(--tab-padding-x);
@@ -50,14 +49,13 @@
 		}
 	}
 
-	// Bootstrap's `.nav-link:focus-visible` ring, carried over rather than invented: measured on the parent branch as `0 0 0 3.5px rgba(13, 110, 253, .25)`.
 	&:focus-visible {
 		outline: 0;
 		box-shadow: var(--focus-ring);
 	}
 }
 
-// The pane fade, which is enter-only: Bootstrap hid the outgoing pane instantly (`.tab-content > .tab-pane { display: none }`), and `keepMounted` reproduces that with a real `hidden` attribute, which the reboot already styles `display: none !important`.
+// The pane fade is enter-only: `keepMounted` uses a real `hidden` attribute for the outgoing pane, which the reboot already styles `display: none !important`.
 .sim-tab-panel {
 	max-width: 100%;
 	flex-grow: 1;

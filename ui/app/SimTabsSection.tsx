@@ -38,7 +38,7 @@ export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
 		<SimTabDef id="rotation-tab" title={i18n.t('rotation_tab.title')}>
 			<RotationTabPane />
 		</SimTabDef>
-		{/* Not a `SimTabPane`: the doubled id and the missing content container are what the vanilla `addTab` built here, and the stylesheets and gates select on both. */}
+		{/* Not a `SimTabPane`: the doubled id and the missing content container are what the stylesheets select on. */}
 		<SimTabDef id="detailed-results-tab-tab" title={i18n.t('results_tab.title')}>
 			<div id="detailed-results-tab-tab" className="sim-tab">
 				<div className="detailed-results">

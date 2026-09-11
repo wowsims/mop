@@ -183,9 +183,8 @@ export interface DerivedSetting<SpecType extends Spec> {
 	apply: (player: Player<SpecType>, sim: Sim) => void;
 }
 
-// The behaviour slots a spec declares on top of its config data — the four
-// things a spec constructor used to do by hand. All optional: a spec that needs
-// none of them declares none.
+// The behaviour slots a spec declares on top of its config data. All optional:
+// a spec that needs none of them declares none.
 export interface SpecBehaviors<SpecType extends Spec> {
 	// Wires the Reforge Optimizer. A function form receives the sim host, for
 	// options that need to call back into it.
