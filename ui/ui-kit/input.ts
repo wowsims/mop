@@ -1,12 +1,11 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
-import type { Content as TippyContent } from 'tippy.js';
 
 /**
  * Data for creating a new input UI element.
  */
 export interface InputConfig<ModObject, T, V = T> {
 	label?: string;
-	labelTooltip?: TippyContent;
+	labelTooltip?: string | Element;
 	description?: string | Element;
 	inline?: boolean;
 	id?: string;

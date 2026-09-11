@@ -9,7 +9,7 @@
 		"pretty": false,
 		"allowJs": true,
 		"resolveJsonModule": true,
-		"types": ["node", "gtag.js", "golang-wasm-exec"],
+		"types": ["node", "gtag.js", "golang-wasm-exec", "vite/client"],
 		"esModuleInterop": true,
 		"jsx": "react-jsx",
 		"jsxImportSource": "react",

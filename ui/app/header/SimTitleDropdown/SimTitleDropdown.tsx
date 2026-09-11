@@ -8,14 +8,16 @@ import { PlayerSpecs } from '@sim/player/specs/index';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';
+import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18n/localization';
+import { SimLinkContent } from '@ui-kit/SimLinkContent';
 import clsx from 'clsx';
-
-import { SimLinkContent } from './SimLinkContent';
 
 export interface SimTitleDropdownProps {
 	currentSpec: PlayerSpec<any>;
 }
+
+const launchLabel = (launch: { phase: number; status: number }) =>
+	i18n.t('sidebar.header.phase', { phase: i18n.t(`common.phases.${launch.phase}`), status: translateStatus(launch.status) });
 
 const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 	<Menu.SubmenuRoot>
@@ -35,7 +37,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 								iconPath={spec.getIcon('large')}
 								label={translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}
 								title={translatePlayerSpec(spec)}
-								launch={spec.launch}
+								status={launchLabel(spec.launch)}
 							/>
 						</Menu.LinkItem>
 					))}
@@ -53,9 +55,9 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
 					<SimLinkContent
 						iconPath={currentSpec.getIcon('large')}
 						label={i18n.t('sidebar.header.title')}
-						labelIsWhite
+						labelClassName="text-white"
 						title={PlayerSpecs.getFullSpecName(currentSpec)}
-						launch={currentSpec.launch}
+						status={launchLabel(currentSpec.launch)}
 					/>
 				</Menu.Trigger>
 				<Menu.Portal>

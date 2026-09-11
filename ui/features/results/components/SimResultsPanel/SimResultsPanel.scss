@@ -2,7 +2,7 @@
 	margin: auto;
 }
 
-// Not `[data-tippy-root]`: react-tooltip renders in place, so `.sim-tooltip` is the box itself.
+// react-tooltip renders in place, so `.sim-tooltip` is the tooltip box itself, not a wrapper around it.
 .warning-zone .sim-tooltip {
 	width: 100%;
 }

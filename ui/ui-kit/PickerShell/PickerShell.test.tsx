@@ -67,9 +67,11 @@ describe('PickerShell', () => {
 		expect(await screen.findByText('Seconds of human reaction time')).toBeTruthy();
 	});
 
+	// `labelTooltip` is typed `string | Element`, so the guard is only reachable from an untyped
+	// caller — which is what the cast stands in for.
 	it('warns instead of silently dropping a tooltip it cannot render', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-		shell(configFor({ labelTooltip: () => 'from a function' }));
+		shell(configFor({ labelTooltip: (() => 'from a function') as unknown as string }));
 		expect(warn).toHaveBeenCalledOnce();
 		expect(root().querySelector('label')!.getAttribute('data-tooltip-id')).toBeNull();
 	});
