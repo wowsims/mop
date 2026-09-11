@@ -2,7 +2,6 @@ import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { DropdownOption } from '@ui-kit/DropdownPicker';
 import { DropdownField } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
@@ -27,7 +26,7 @@ export const RotationTypePicker = () => {
 	const config = useMemo(
 		(): InputConfig<Player<any>, APLRotationType> & { id: string } => ({
 			id: 'rotation-tab-rotation-type',
-			storeSubscribe: (subject: Player<any>) => subscribePlayerField(subject, 'rotation'),
+			storeField: 'rotation',
 			getValue: (subject: Player<any>) => subject.getRotationType(),
 			setValue: (subject: Player<any>, newValue: APLRotationType) => {
 				subject.modifyAplRotation(rotation => {

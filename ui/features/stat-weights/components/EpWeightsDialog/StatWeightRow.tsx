@@ -2,7 +2,7 @@ import { sanitizeId } from '@sim/utils/format';
 import type { Player } from '@sim/player/player';
 import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import { subscribePlayerField, subscribeStatWeightsChange } from '@sim/state/subscriptions';
+import { subscribeStatWeightsChange } from '@sim/state/subscriptions';
 import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
@@ -69,7 +69,7 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 					config={{
 						id: `ep-weight-stat-${sanitizeId(stat.getShortName(player.playerClass.classID))}`,
 						float: true,
-						storeSubscribe: subject => subscribePlayerField(subject, 'epWeights'),
+						storeField: 'epWeights',
 						getValue: subject => subject.getEpWeights().getUnitStat(stat),
 						setValue: (subject, newValue) => subject.setEpWeights(subject.getEpWeights().withUnitStat(stat, newValue)),
 					}}

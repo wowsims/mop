@@ -1,7 +1,6 @@
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classTalentsConfig } from '@sim/talents/factory';
 import { SavedTalents } from '@features/talents/components/SavedTalents';
 import { TalentsPicker } from '@features/talents/components/TalentsPicker';
@@ -21,7 +20,7 @@ export const TalentsTabBody = () => {
 	const talentsConfig = useMemo(
 		() => ({
 			tree: classTalentsConfig[player.getClass()]!,
-			storeSubscribe: (subject: Player<any>) => subscribePlayerField(subject, 'talentsString'),
+			storeField: 'talentsString' as const,
 			getValue: (subject: Player<any>) => subject.getTalentsString(),
 			setValue: (subject: Player<any>, newValue: string) => {
 				trackEvent({ action: 'settings', category: 'talents', label: 'update' });

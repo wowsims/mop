@@ -1,21 +1,20 @@
 import { Player } from '@sim/player/player';
 import { emptyUnitReference } from '@sim/proto/utils';
-import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
+const INPUT_DELAY_FIELDS = ['reactionTime', 'channelClipDelay'] as const;
 // The healing-model inputs below are enabled only while the player is one of the
 // raid's tanks, so they have to re-evaluate on a tank-assignment change as well as
 // on their own value (the old `raid.changeEmitter` source covered both).
-const subscribeHealingModelAndTanks = (player: Player<any>) =>
-	subscribeAll([subscribePlayerField(player, 'healingModel'), subscribeRaidField(player.getRaid()!, 'tanks')]);
+const HEALING_MODEL_FIELDS = ['healingModel', 'raid:tanks'] as const;
 
 export const InputDelay = {
 	id: 'input-delay',
 	type: 'number' as const,
 	label: i18n.t('settings_tab.other.input_delay.label'),
 	labelTooltip: i18n.t('settings_tab.other.input_delay.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'reactionTime'), subscribePlayerField(player, 'channelClipDelay')]),
+	storeField: INPUT_DELAY_FIELDS,
 	getValue: (player: Player<any>) => player.getReactionTime(),
 	setValue: (player: Player<any>, newValue: number) => {
 		player.setReactionTime(newValue);
@@ -27,7 +26,7 @@ export const ChallengeMode = {
 	type: 'boolean' as const,
 	label: i18n.t('settings_tab.other.challenge_mode.label'),
 	labelTooltip: i18n.t('settings_tab.other.challenge_mode.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'challengeModeEnabled'),
+	storeField: 'challengeModeEnabled' as const,
 	getValue: (player: Player<any>) => player.getChallengeModeEnabled(),
 	setValue: (player: Player<any>, value: boolean) => {
 		player.setChallengeModeEnabled(value);
@@ -39,7 +38,7 @@ export const ChannelClipDelay = {
 	type: 'number' as const,
 	label: i18n.t('settings_tab.other.channel_clip_delay.label'),
 	labelTooltip: i18n.t('settings_tab.other.channel_clip_delay.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'reactionTime'), subscribePlayerField(player, 'channelClipDelay')]),
+	storeField: INPUT_DELAY_FIELDS,
 	getValue: (player: Player<any>) => player.getChannelClipDelay(),
 	setValue: (player: Player<any>, newValue: number) => {
 		player.setChannelClipDelay(newValue);
@@ -51,7 +50,7 @@ export const InFrontOfTarget = {
 	type: 'boolean' as const,
 	label: i18n.t('settings_tab.other.in_front_of_target.label'),
 	labelTooltip: i18n.t('settings_tab.other.in_front_of_target.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'inFrontOfTarget'),
+	storeField: 'inFrontOfTarget' as const,
 	getValue: (player: Player<any>) => player.getInFrontOfTarget(),
 	setValue: (player: Player<any>, newValue: boolean) => {
 		player.setInFrontOfTarget(newValue);
@@ -63,7 +62,7 @@ export const DistanceFromTarget = {
 	type: 'number' as const,
 	label: i18n.t('settings_tab.other.distance_from_target.label'),
 	labelTooltip: i18n.t('settings_tab.other.distance_from_target.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'distanceFromTarget'),
+	storeField: 'distanceFromTarget' as const,
 	getValue: (player: Player<any>) => player.getDistanceFromTarget(),
 	setValue: (player: Player<any>, newValue: number) => {
 		player.setDistanceFromTarget(newValue);
@@ -83,7 +82,7 @@ export const TankAssignment = {
 		{ name: i18n.t('common.tanks.tank_3'), value: 2 },
 		{ name: i18n.t('common.tanks.tank_4'), value: 3 },
 	],
-	storeSubscribe: (player: Player<any>) => subscribeRaidField(player.getRaid()!, 'tanks'),
+	storeField: 'raid:tanks' as const,
 	getValue: (player: Player<any>) => (player.getRaid()?.getTanks() || []).findIndex(tank => UnitReference.equals(tank, player.makeUnitReference())),
 	setValue: (player: Player<any>, newValue: number) => {
 		const newTanks = [];
@@ -102,7 +101,7 @@ export const IncomingHps = {
 	type: 'number' as const,
 	label: i18n.t('settings_tab.other.incoming_hps.label'),
 	labelTooltip: i18n.t('settings_tab.other.incoming_hps.tooltip'),
-	storeSubscribe: subscribeHealingModelAndTanks,
+	storeField: HEALING_MODEL_FIELDS,
 	getValue: (player: Player<any>) => player.getHealingModel().hps,
 	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -118,7 +117,7 @@ export const HealingCadence = {
 	float: true,
 	label: i18n.t('settings_tab.other.healing_cadence.label'),
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence.tooltip'),
-	storeSubscribe: subscribeHealingModelAndTanks,
+	storeField: HEALING_MODEL_FIELDS,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceSeconds,
 	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -134,7 +133,7 @@ export const HealingCadenceVariation = {
 	float: true,
 	label: i18n.t('settings_tab.other.healing_cadence_variation.label'),
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence_variation.tooltip'),
-	storeSubscribe: subscribeHealingModelAndTanks,
+	storeField: HEALING_MODEL_FIELDS,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceVariation,
 	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -150,7 +149,7 @@ export const AbsorbFrac = {
 	float: true,
 	label: i18n.t('settings_tab.other.absorb_frac.label'),
 	labelTooltip: i18n.t('settings_tab.other.absorb_frac.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
+	storeField: 'healingModel' as const,
 	getValue: (player: Player<any>) => player.getHealingModel().absorbFrac * 100,
 	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -165,7 +164,7 @@ export const BurstWindow = {
 	float: false,
 	label: i18n.t('settings_tab.other.burst_window.label'),
 	labelTooltip: i18n.t('settings_tab.other.burst_window.tooltip'),
-	storeSubscribe: subscribeHealingModelAndTanks,
+	storeField: HEALING_MODEL_FIELDS,
 	getValue: (player: Player<any>) => player.getHealingModel().burstWindow,
 	setValue: (player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -181,7 +180,7 @@ export const HpPercentForDefensives = {
 	float: true,
 	label: i18n.t('settings_tab.other.hp_percent_for_defensives.label'),
 	labelTooltip: i18n.t('settings_tab.other.hp_percent_for_defensives.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
+	storeField: 'rotation' as const,
 	getValue: (player: Player<any>) => player.getSimpleCooldowns().hpPercentForDefensives * 100,
 	setValue: (player: Player<any>, newValue: number) => {
 		const cooldowns = player.getSimpleCooldowns();

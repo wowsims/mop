@@ -115,7 +115,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								{ name: i18n.t('common.phases.4'), value: 4 },
 								{ name: i18n.t('common.phases.5'), value: 5 },
 							],
-							storeSubscribe: subject => subscribeSimField(subject, 'phase'),
+							storeField: 'sim:phase',
 							getValue: subject => subject.getPhase(),
 							setValue: (subject, newValue) => subject.setPhase(newValue),
 						}}
@@ -131,7 +131,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								extraClassNames: ['show-1h-weapons-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_1h_weapons.label'),
 								inline: true,
-								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+								storeField: 'sim:filters',
 								getValue: subject => subject.getFilters().oneHandedWeapons,
 								setValue: (subject, newValue) => {
 									const next = subject.getFilters();
@@ -151,7 +151,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								extraClassNames: ['show-2h-weapons-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_2h_weapons.label'),
 								inline: true,
-								storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+								storeField: 'sim:filters',
 								getValue: subject => subject.getFilters().twoHandedWeapons,
 								setValue: (subject, newValue) => {
 									const next = subject.getFilters();
@@ -170,7 +170,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							extraClassNames: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
 							label: i18n.t('settings_tab.other.show_matching_gems.label'),
 							inline: true,
-							storeSubscribe: subject => subscribeSimField(subject, 'filters'),
+							storeField: 'sim:filters',
 							getValue: subject => subject.getFilters().matchingGemsOnly,
 							setValue: (subject, newValue) => {
 								const next = subject.getFilters();
@@ -189,7 +189,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								extraClassNames: ['show-ep-values-selector', 'input-inline', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_ep_values.label'),
 								inline: true,
-								storeSubscribe: subject => subscribeUiField(subject, 'showEPValues'),
+								storeField: 'ui:showEPValues',
 								getValue: subject => subject.getShowEPValues(),
 								setValue: (subject, newValue) => subject.setShowEPValues(newValue),
 							}}

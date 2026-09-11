@@ -1,6 +1,5 @@
 import type { Player } from '@sim/player/player';
 import { metricsClassName } from '@features/results/model/sim_results';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
@@ -30,7 +29,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp }: EpRatiosRowProps) 
 						config={{
 							id: `ep-ratio-${column.type}-${column.ratioIndex}`,
 							float: true,
-							storeSubscribe: subject => subscribePlayerField(subject, 'epRatios'),
+							storeField: 'epRatios',
 							getValue: subject => subject.getEpRatios()[column.ratioIndex!],
 							setValue: (subject, newValue) => {
 								const epRatios = subject.getEpRatios();

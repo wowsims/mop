@@ -42,7 +42,7 @@ export const timingsPickerConfig = (index: number): NumberListPickerConfig<Playe
 	id: `cooldown-timings-${index}`,
 	extraClassNames: ['cooldown-timings-picker'],
 	placeholder: i18n.t('rotation_tab.cooldowns.timings_placeholder'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
+	storeField: 'rotation' as const,
 	getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[index]?.timings || [],
 	setValue: (player: Player<any>, newValue: Array<number>) => {
 		const newCooldowns = player.getSimpleCooldowns();

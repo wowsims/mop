@@ -2,7 +2,6 @@ import { Profession } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProfession, translateRace } from '@i18n/localization';
 import type { Player } from '@sim/player/player';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { getEnumValues } from '@sim/utils/collections';
 import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
 
@@ -13,7 +12,7 @@ export const raceInput = (player: Player<any>): EnumPickerConfig<Player<any>> =>
 	id: 'simui-race',
 	label: i18n.t('settings_tab.player.race'),
 	values: player.getPlayerClass().races.map(race => ({ name: translateRace(race), value: race })),
-	storeSubscribe: modObject => subscribePlayerField(modObject, 'race'),
+	storeField: 'race' as const,
 	getValue: modObject => modObject.getRace(),
 	setValue: (modObject, newValue) => modObject.setRace(newValue),
 });
@@ -24,7 +23,7 @@ export const professionInput = (which: 1 | 2): EnumPickerConfig<Player<any>> => 
 	values: (getEnumValues(Profession) as Array<Profession>)
 		.filter(profession => profession != Profession.Archeology)
 		.map(profession => ({ name: translateProfession(profession), value: profession })),
-	storeSubscribe: modObject => subscribeAll([subscribePlayerField(modObject, 'profession1'), subscribePlayerField(modObject, 'profession2')]),
+	storeField: ['profession1', 'profession2'] as const,
 	getValue: modObject => (which === 1 ? modObject.getProfession1() : modObject.getProfession2()),
 	setValue: (modObject, newValue) => (which === 1 ? modObject.setProfession1(newValue) : modObject.setProfession2(newValue)),
 });

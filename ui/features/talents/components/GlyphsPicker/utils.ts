@@ -2,7 +2,6 @@ import { stringComparator } from '@sim/utils/collections';
 import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { Database } from '@sim/proto/database';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { GlyphsConfig } from '@sim/talents/config';
 import { type Class, type Glyphs, ItemQuality } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -85,7 +84,7 @@ export const glyphInputConfig = (field: GlyphField): InputConfig<Player<any>, nu
 	id: `glyph-picker-glyph-${field}`,
 	inline: true,
 	extraClassNames: ['item-picker-root'],
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'glyphs'),
+	storeField: 'glyphs' as const,
 	getValue: (player: Player<any>) => readGlyph(player, field),
 	setValue: (player: Player<any>, newValue: number) => setGlyph(player, field, newValue),
 });

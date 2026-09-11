@@ -3,7 +3,6 @@ import type { ResultMetricCategories } from '@features/results/model/sim_results
 import { metricsClassName } from '@features/results/model/sim_results';
 import clsx from 'clsx';
 import type { Player } from '@sim/player/player';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -67,7 +66,7 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 							label: reference.label,
 							extraClassNames: ['ref-stat-select', metricsClassName(reference.metric)],
 							values,
-							storeSubscribe: subject => subscribePlayerField(subject, 'epRefStat'),
+							storeField: 'epRefStat',
 							getValue: reference.getValue,
 							setValue: reference.setValue,
 						}}
