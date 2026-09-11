@@ -14,8 +14,9 @@ import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { Stats } from '@sim/proto/stats';
 import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import { act, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { useInput } from '@ui-kit/hooks/useInput';
+import { NumberPicker } from '@ui-kit/NumberPicker';
 import { type ReactNode, useMemo, useState } from 'react';
 import { describe, expect, it } from 'vitest';
 
@@ -151,5 +152,61 @@ describe('the BonusStatsLink binding, old shape vs new', () => {
 	// life of the picker, so the consistency re-read never happens and the second render is gone.
 	it('costs nothing once the field is named instead', () => {
 		expect(measure(FieldChild)).toMatchObject({ external: { renders: 1, reads: 1 }, own: { renders: 1, reads: 1 }, text: '9' });
+	});
+});
+
+// The three uncontrolled pickers take `revision` as a useLayoutEffect dep to re-sync a field the user
+// has typed into, and it has to tick on notifications that leave the value UNCHANGED. On the old path
+// that came from the version counter `subscribePlayerField` watches; the field path has to keep it,
+// so this pins the property through the real NumberPicker rather than through the hook's return.
+describe('an uncontrolled picker on the field path', () => {
+	const mountPicker = () => {
+		const store = createSimStore();
+		const player = makePlayer(store);
+		const view = render(
+			<SimHostProvider host={{ player } as never}>
+				<NumberPicker
+					modObject={player}
+					config={{
+						id: 'bonus-agi',
+						storeField: 'bonusStats',
+						getValue: subject => subject.getBonusStats().getStat(AGI),
+						setValue: (subject, next) => subject.setBonusStats(subject.getBonusStats().withStat(AGI, next)),
+					}}
+				/>
+			</SimHostProvider>,
+		);
+		return { store, player, view, input: view.container.querySelector('input')! };
+	};
+
+	it('re-syncs a typed-into field on a notification that leaves the value unchanged', () => {
+		const { store, view, input } = mountPicker();
+		expect(input.value).toBe('0');
+
+		input.value = '999';
+		act(() => patchKeyed(store, 'players', KEY, {}, ['bonusStats']));
+
+		expect(input.value).toBe('0');
+		view.unmount();
+	});
+
+	it('still commits on the native change event, which is what Enter and blur-after-edit both fire', () => {
+		const { player, view, input } = mountPicker();
+
+		fireEvent.change(input, { target: { value: '21' } });
+
+		expect(player.getBonusStats().getStat(AGI)).toBe(21);
+		expect(input.value).toBe('21');
+		view.unmount();
+	});
+
+	it('writes nothing when the field is blurred without an edit', () => {
+		const { player, view, input } = mountPicker();
+
+		fireEvent.focus(input);
+		fireEvent.blur(input);
+
+		expect(player.getBonusStats().getStat(AGI)).toBe(0);
+		view.unmount();
 	});
 });
