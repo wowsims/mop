@@ -1,6 +1,5 @@
 import { Player } from '@sim/player/player';
 import { Sim } from '@sim/sim';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
@@ -41,14 +40,13 @@ type AMSIntakeSpecs = Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight;
 // at the raid, so hide them there rather than leaving inputs that do nothing. Visibility is
 // re-evaluated on encounter changes as well as the usual spec options one.
 const showWhenAMSIntakeUsed = (player: Player<AMSIntakeSpecs>) => !encounterModelsMagicDamage(player.sim);
-const amsIntakeSubscribe = (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribeEncounterChange(player.sim.encounter)]);
 
 export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<AMSIntakeSpecs>({
 	fieldName: 'avgAmsHit',
 	label: 'Avg AMS Hit',
 	labelTooltip: 'How much on average (+-10%) the character is hit for when AMS is successful. Set to 0 to disable AMS damage intake.',
 	showWhen: showWhenAMSIntakeUsed,
-	storeSubscribe: amsIntakeSubscribe,
+	storeField: ['specOptions', 'encounter:*'],
 });
 
 export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<AMSIntakeSpecs>({
@@ -57,7 +55,7 @@ export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<AM
 	labelTooltip: 'Chance for damage to be taken during the 5 second window of AMS.',
 	percent: true,
 	showWhen: showWhenAMSIntakeUsed,
-	storeSubscribe: amsIntakeSubscribe,
+	storeField: ['specOptions', 'encounter:*'],
 });
 
 export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<AMSIntakeSpecs, number>({
@@ -75,5 +73,5 @@ export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<AMSIntakeS
 	// Old saved settings predate this field and deserialize to 0; show them as 1 tick.
 	getValue: player => player.getSpecOptions().amsNumTicks || 1,
 	showWhen: showWhenAMSIntakeUsed,
-	storeSubscribe: amsIntakeSubscribe,
+	storeField: ['specOptions', 'encounter:*'],
 });
