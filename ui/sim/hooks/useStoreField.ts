@@ -7,7 +7,9 @@ import type { StoreSubscribe } from '../state/subscriptions';
 import {
 	subscribeAll,
 	subscribeBulkField,
+	subscribeEncounterChange,
 	subscribeEncounterField,
+	subscribePlayerChange,
 	subscribePlayerField,
 	subscribePlayerReforgeField,
 	subscribeRaidField,
@@ -25,9 +27,13 @@ export type StoreField =
 	| `encounter:${keyof EncounterSlice}`
 	| `raid:${keyof RaidSlice}`
 	| `reforge:${ReforgeField}`
-	| `bulk:${BulkField}`;
+	| `bulk:${BulkField}`
+	| 'player:*'
+	| 'encounter:*';
 
 const resolve = (host: IndividualSimHost<any>, field: StoreField): StoreSubscribe => {
+	if (field === 'player:*') return subscribePlayerChange(host.player);
+	if (field === 'encounter:*') return subscribeEncounterChange(host.sim.encounter);
 	const at = field.indexOf(':');
 	if (at < 0) return subscribePlayerField(host.player, field as PlayerField);
 	const scope = field.slice(0, at);
