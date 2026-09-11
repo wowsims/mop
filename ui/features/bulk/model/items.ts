@@ -71,19 +71,6 @@ export const addBulkItems = (player: Player<any>, items: ItemSpec[], silent = fa
 
 export const addBulkItem = (player: Player<any>, item: ItemSpec) => addBulkItems(player, [item]);
 
-// Add an item to a particular bulk sim item slot
-export const addBulkItemToSlot = (player: Player<any>, item: ItemSpec, bulkSlot: BulkSimItemSlot) => {
-	const equippedItem = lookupItem(player, item);
-	if (equippedItem) {
-		const eligibleItemSlots = getEligibleItemSlots(equippedItem.item, isSpecDualWield2HCapable(player.getSpec()));
-		if (!canEquipItem(equippedItem.item, player.getPlayerSpec(), eligibleItemSlots[0])) return;
-
-		const groups = new Map(bulkState(player).pickerGroups);
-		const added = addToGroup(groups, bulkSlot, bulkState(player).items.length, equippedItem, false);
-		patchBulkState(player, added ? { items: [...bulkState(player).items, item], pickerGroups: groups } : {}, ['items']);
-	}
-};
-
 export const updateBulkItem = (player: Player<any>, idx: number, newItem: ItemSpec) => {
 	const equippedItem = lookupItem(player, newItem);
 	if (!equippedItem) {
