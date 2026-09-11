@@ -4,7 +4,6 @@ import i18n from '@i18n/config';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { batch } from '@sim/state/batch';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { IconEnumValueConfig } from '@ui-kit/IconEnumPicker/types';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
@@ -44,13 +43,7 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 			values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') } as unknown as IconEnumValueConfig<Player<SpecType>, T>].concat(valueOptions),
 			equals: (a: T, b: T) => a == b,
 			zeroValue: 0 as T,
-			storeSubscribe: (player: Player<any>) =>
-				subscribeAll([
-					subscribePlayerField(player, 'consumables'),
-					subscribePlayerField(player, 'gear'),
-					subscribePlayerField(player, 'profession1'),
-					subscribePlayerField(player, 'profession2'),
-				]),
+			storeField: ['consumables', 'gear', 'profession1', 'profession2'],
 			showWhen: (player: Player<any>) => (!args.showWhen || args.showWhen(player)) && valueOptions.some(option => option.showWhen?.(player)),
 			getValue: (player: Player<any>) => player.getConsumes()[args.consumesFieldName] as T,
 			setValue: (player: Player<any>, newValue: number) => {
@@ -138,7 +131,7 @@ export function makeConsumableInput(
 		values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') }].concat(valueOptions),
 		equals: (a: number, b: number) => a === b,
 		zeroValue: 0,
-		storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'consumables'),
+		storeField: 'consumables',
 		getValue: (player: Player<any>) => player.getConsumes()[options.consumesFieldName] as number,
 		showWhen: (_: Player<any>) => !!valueOptions.length,
 		setValue: (player: Player<any>, newValue: number) => {

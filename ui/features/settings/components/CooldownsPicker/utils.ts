@@ -2,7 +2,6 @@ import { ActionID as ActionIdProto, Cooldown } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { IconEnumPickerConfig, IconEnumValueConfig } from '@ui-kit/IconEnumPicker/types';
 import type { NumberListPickerConfig } from '@ui-kit/NumberListPicker/types';
 
@@ -23,7 +22,7 @@ export const actionPickerConfig = (available: ReadonlyArray<ActionId>, index: nu
 	equals: (a: ActionIdProto, b: ActionIdProto) => ActionIdProto.equals(a, b),
 	zeroValue: ActionIdProto.create(),
 	backupIconUrl: (value: ActionIdProto) => ActionId.fromProto(value),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
+	storeField: 'rotation',
 	getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[index]?.id || ActionIdProto.create(),
 	setValue: (player: Player<any>, newValue: ActionIdProto) => {
 		if (!newValue.rawId.oneofKind) return;
