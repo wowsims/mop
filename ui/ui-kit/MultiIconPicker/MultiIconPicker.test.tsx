@@ -61,6 +61,12 @@ const root = () => document.querySelector('.multi-icon-picker-root') as HTMLElem
 const trigger = () => root().querySelector(':scope > .dropend > .icon-picker-button') as HTMLAnchorElement;
 const menu = () => root().querySelector('ul') as HTMLUListElement;
 const blankOption = () => root().querySelector('a.icon-dropdown-option') as HTMLAnchorElement;
+// The menu mounts when it opens, so every test that reads an option has to open it first.
+const open = () =>
+	act(() => {
+		fireEvent.mouseEnter(trigger());
+		fireEvent.mouseMove(trigger());
+	});
 // happy-dom re-quotes the CSSOM value, so the icon is compared by name rather than by literal.
 const backgroundIcon = () => trigger().style.backgroundImage.replace(/^url\(['"]?|['"]?\)$/g, '');
 
@@ -78,8 +84,11 @@ describe('MultiIconPicker', () => {
 		expect(root().className).toBe('multi-icon-picker-root icon-picker');
 		expect(root().children[0].className).toBe('dropend');
 		expect(trigger()).toBeTruthy();
+		// No `keepMounted`: the trigger is all the dropend holds until somebody opens the menu.
+		expect(root().children[0].children).toHaveLength(1);
 
 		// The blank "clear" option first, then one option per input, each wrapping an IconPicker.
+		open();
 		const options = Array.from(menu().children);
 		expect(options).toHaveLength(4);
 		expect(options[0].querySelector('a')?.className).toBe('icon-dropdown-option dropdown-option');
@@ -176,6 +185,7 @@ describe('MultiIconPicker', () => {
 		fireEvent.mouseDown(trigger(), { button: 2 });
 		expect(onClear).toHaveBeenCalledTimes(1);
 
+		open();
 		fireEvent.click(blankOption());
 		expect(onClear).toHaveBeenCalledTimes(2);
 	});

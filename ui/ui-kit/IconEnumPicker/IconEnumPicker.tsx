@@ -86,7 +86,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
 				/>
 				<div className="icon-enum-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} keepMounted className="icon-enum-picker-portal">
+				<Menu.Portal container={slot} className="icon-enum-picker-portal">
 					<Menu.Positioner side={horizontal ? 'right' : 'bottom'} align="start" sideOffset={-1} className="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}

@@ -68,6 +68,12 @@ const button = () => root().querySelector(':scope > a.icon-picker-button') as HT
 const menu = () => root().querySelector('ul.icon-enum-picker-menu') as HTMLUListElement;
 const items = () => Array.from(menu().children) as HTMLLIElement[];
 const optionAnchor = (index: number) => items()[index].querySelector('a') as HTMLAnchorElement;
+// The menu mounts when it opens, so every test that reads an option has to open it first.
+const open = (trigger: HTMLElement = button()) =>
+	act(() => {
+		fireEvent.mouseEnter(trigger);
+		fireEvent.mouseMove(trigger);
+	});
 const caption = () => root().querySelector(':scope > label.form-label') as HTMLLabelElement;
 // happy-dom re-quotes the CSSOM value, so icons are compared by name rather than by literal.
 const iconOf = (element: HTMLElement) => element.style.backgroundImage.replace(/^url\(['"]?|['"]?\)$/g, '');
@@ -96,11 +102,15 @@ describe('IconEnumPicker', () => {
 			'label.form-label',
 		]);
 
-		// The two wrappers `normaliseBaseUiMenus` folds away, in the slot, with the `<ul>` inside.
-		const slot = root().children[1];
+		// The two wrappers `normaliseBaseUiMenus` has no baseline counterpart for, in the slot, with
+		// the `<ul>` inside.
+		open();
+		// By class and from the menu upwards, not by index: an open menu hangs Base UI's focus guards
+		// off the root and around the `<ul>` as well.
+		const slot = root().querySelector('.icon-enum-picker-slot') as HTMLElement;
 		expect(slot.children[0].className).toBe('icon-enum-picker-portal');
 		expect(slot.children[0].children[0].className).toBe('icon-enum-picker-positioner');
-		expect(slot.children[0].children[0].children[0]).toBe(menu());
+		expect(menu().parentElement).toBe(slot.children[0].children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
 			'li.icon-dropdown-option dropdown-option',
@@ -110,12 +120,17 @@ describe('IconEnumPicker', () => {
 		expect(items().every(item => item.querySelector(':scope > a.icon-picker-button'))).toBe(true);
 	});
 
-	it('keeps the options mounted while the menu is closed', () => {
+	it('mounts the options when the menu opens and leaves the slot empty until then', () => {
 		mount(new Options());
-		// `keepMounted`: the <ul> and its options exist from mount, so the settings gate can read
-		// their `hide` classes without ever opening a menu.
+		// No `keepMounted`: the portal, the `<ul>` and every option are built on open, so a page that
+		// nobody has opened a picker on holds none of them.
+		const slot = root().children[1];
+		expect(slot.className).toBe('icon-enum-picker-slot');
+		expect(slot.children).toHaveLength(0);
+		expect(menu()).toBeNull();
+
+		open();
 		expect(menu().hasAttribute('hidden')).toBe(false);
-		expect(menu().closest('[hidden]')).toBe(root().querySelector('.icon-enum-picker-positioner'));
 		expect(items()).toHaveLength(3);
 	});
 
@@ -195,10 +210,7 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		mount(options);
 
-		act(() => {
-			fireEvent.mouseEnter(button());
-			fireEvent.mouseMove(button());
-		});
+		open();
 		expect(button().getAttribute('aria-expanded')).toBe('true');
 
 		act(() => {
@@ -210,6 +222,7 @@ describe('IconEnumPicker', () => {
 
 	it('cancels the anchor’s navigation when an option is chosen', () => {
 		mount(new Options());
+		open();
 		const event = new MouseEvent('click', { bubbles: true, cancelable: true });
 		optionAnchor(1).dispatchEvent(event);
 		expect(event.defaultPrevented).toBe(true);
@@ -219,6 +232,7 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		options.armor = 1;
 		mount(options);
+		open();
 
 		expect(items().map((_item, index) => iconOf(optionAnchor(index)))).toEqual(['', 'frost.jpg', 'molten.jpg']);
 		expect(items().map((_item, index) => optionAnchor(index).getAttribute('href'))).toEqual([
@@ -235,6 +249,7 @@ describe('IconEnumPicker', () => {
 			values: [{ value: 0 }, { actionId: frostId, value: 1 }, { actionId: moltenId, value: 2, showWhen: (obj: Options) => obj.engineer }],
 		});
 		mount(options, config);
+		open();
 		expect(items()[2].classList.contains('hide')).toBe(false);
 
 		act(() => options.setEngineer(false));
@@ -309,6 +324,7 @@ describe('IconEnumPicker', () => {
 
 		act(() => options.setVisible(false));
 		expect(options.armor).toBe(0);
+		open();
 		// Choosing while hidden still clears `storedValue`. The write notifies, the picker is still
 		// hidden, so it puts the *new* value aside and zeroes again — which is the observable
 		// difference: without the clear, 1 would stay in the source and 2 would still be waiting to
@@ -341,6 +357,7 @@ describe('IconEnumPicker', () => {
 
 	it('lays the menu out from numColumns, and turns it sideways for a horizontal picker', () => {
 		mount(new Options(), configFor({ numColumns: 5 }));
+		open();
 		expect(menu().style.gridTemplateColumns).toBe('repeat(5, 1fr)');
 		expect(menu().style.gridAutoFlow).toBe('');
 		expect(root().classList.contains('dropdown')).toBe(true);
@@ -348,6 +365,7 @@ describe('IconEnumPicker', () => {
 		render(<IconEnumPicker modObject={new Options()} config={configFor({ direction: IconEnumPickerDirection.Horizontal })} />);
 		const horizontal = document.querySelectorAll('.icon-enum-picker-root')[1];
 		expect(horizontal.classList.contains('dropend')).toBe(true);
+		open(horizontal.querySelector(':scope > a.icon-picker-button') as HTMLElement);
 		expect((horizontal.querySelector('ul.icon-enum-picker-menu') as HTMLElement).style.gridAutoFlow).toBe('column');
 	});
 
@@ -357,11 +375,15 @@ describe('IconEnumPicker', () => {
 		const tooltipId = button().getAttribute('data-tooltip-id');
 		expect(tooltipId).toBeTruthy();
 		expect(button().getAttribute('data-tooltip-content')).toBe('Lethal Poison');
+		// Before the menu is opened, because opening it is a hover on the button and a hover is what
+		// asks for a tooltip.
+		expect(document.querySelector('.sim-tooltip')).toBeNull();
+
+		open();
 		expect(optionAnchor(0).getAttribute('data-tooltip-content')).toBe('No Armor');
 		expect(optionAnchor(0).getAttribute('data-tooltip-id')).toBe(tooltipId);
 		// The value with no tooltip of its own opts out rather than anchoring an empty one.
 		expect(optionAnchor(1).hasAttribute('data-tooltip-id')).toBe(false);
-		expect(document.querySelector('.sim-tooltip')).toBeNull();
 	});
 
 	it('renders no tooltip anchor at all when nothing configures one', () => {
