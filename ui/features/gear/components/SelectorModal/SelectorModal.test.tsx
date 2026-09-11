@@ -2,6 +2,7 @@ import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { act, fireEvent, render } from '@testing-library/react';
 import { useMemo } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -122,9 +123,8 @@ describe('SelectorModal', () => {
 		host = {
 			rootElem,
 			player: {
-				sim: {},
+				sim: { store: createSimStore() },
 				getGear: () => ({ getEquippedItem: (slot: ItemSlot) => equippedItems.get(slot) ?? null }),
-				isBlacksmithing: () => false,
 				getChallengeModeEnabled: () => false,
 				equipItem: () => undefined,
 				getEquippedItem: (slot: ItemSlot) => equippedItems.get(slot) ?? null,

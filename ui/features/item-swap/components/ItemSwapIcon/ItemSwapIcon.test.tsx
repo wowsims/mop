@@ -5,6 +5,7 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,13 +19,7 @@ const recordingSubscribe = () => (_onChange: () => void) => {
 	return release;
 };
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => recordingSubscribe(),
-	subscribeAll: (subscribes: Array<(onChange: () => void) => () => void>) => (onChange: () => void) => {
-		const releases = subscribes.map(subscribe => subscribe(onChange));
-		return () => releases.forEach(release => release());
-	},
-}));
+vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => recordingSubscribe() }));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({
 	useActionId: (actionId?: { itemId: number }) =>
@@ -63,8 +58,8 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 	const equipItem = vi.fn();
 	const openTab = vi.fn();
 	const player = {
+		sim: { store: createSimStore() },
 		itemSwapSettings: { getItem: (slot: ItemSlot) => swap.get(slot) ?? null, equipItem },
-		isBlacksmithing: () => false,
 		getChallengeModeEnabled: () => false,
 	} as unknown as Player<any>;
 	const host = { player } as unknown as IndividualSimHost<any>;
@@ -160,7 +155,7 @@ describe('ItemSwapIcon', () => {
 	it('releases every store subscription when the icons unmount', () => {
 		const { view } = setup();
 
-		expect(released.length).toBe(SLOTS.length * 3);
+		expect(released.length).toBe(SLOTS.length);
 		expect(released.filter(release => release.mock.calls.length)).toHaveLength(0);
 
 		view.unmount();

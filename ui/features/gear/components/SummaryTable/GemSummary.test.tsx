@@ -1,6 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -15,8 +16,8 @@ const gem = (id: number, name: string) => ({ id, name, quality: 4 });
 const hostWith = (gems: Array<ReturnType<typeof gem>>, setGear = vi.fn()) => {
 	const gear = { getAllGems: () => gems, withoutGems: () => 'stripped' };
 	const player = {
+		sim: { store: createSimStore() },
 		getGear: () => gear,
-		isBlacksmithing: () => false,
 		canDualWield2H: () => false,
 		setGear,
 	} as unknown as Player<any>;

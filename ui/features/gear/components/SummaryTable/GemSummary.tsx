@@ -1,11 +1,12 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import { externalRel } from '@sim/utils/links';
 import { ActionId } from '@sim/proto/action_id';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import { useActionId } from '@ui-kit/hooks/useActionId';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import clsx from 'clsx';
 import { useMemo } from 'react';
@@ -38,9 +39,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 export const GemSummary = () => {
 	const player = usePlayer();
 	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
-	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
-		player.isBlacksmithing(),
-	);
+	const isBlacksmithing = useIsBlacksmithing();
 	const rows = useMemo(() => gemSummaryRows(gear.getAllGems(isBlacksmithing)), [gear, isBlacksmithing]);
 
 	return (

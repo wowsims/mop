@@ -3,6 +3,7 @@ import { ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -18,8 +19,8 @@ const SLOTS = [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.Ite
 
 const setup = (enabled: boolean) => {
 	const player = {
+		sim: { store: createSimStore() },
 		itemSwapSettings: { getEnableItemSwap: () => enabled, getItem: () => null },
-		isBlacksmithing: () => false,
 	} as unknown as Player<any>;
 	const host = { player } as unknown as IndividualSimHost<any>;
 	return render(

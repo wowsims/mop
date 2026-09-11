@@ -1,6 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { ItemSlot } from '@generated/proto/common';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -14,7 +15,7 @@ vi.mock('@sim/proto/gems', () => ({ getEmptyGemSocketIconUrl: (color: number) =>
 const { GearChangeIcon } = await import('./GearChangeIcon');
 const { gearChangeSockets } = await import('./utils');
 
-const host = { player: { hasProfession: () => false } as unknown as Player<any> } as unknown as IndividualSimHost<any>;
+const host = { player: { sim: { store: createSimStore() } } as unknown as Player<any> } as unknown as IndividualSimHost<any>;
 
 const item = ({ gems = [], sockets = [], reforge = undefined }: { gems?: Array<{ id: number; name: string } | null>; sockets?: number[]; reforge?: any }) =>
 	({

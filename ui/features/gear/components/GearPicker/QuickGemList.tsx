@@ -1,7 +1,8 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribeAll, subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
+import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useMemo } from 'react';
 
@@ -17,9 +18,7 @@ export const QuickGemList = ({ slot, socketIdx, onOpenDetail }: QuickGemListProp
 	const player = usePlayer();
 	const currentItem = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getEquippedItem(slot));
 	const favoriteGems = useStoreSubscribe(subscribeSimField(player.sim, 'filters'), () => player.sim.getFilters().favoriteGems);
-	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
-		player.isBlacksmithing(),
-	);
+	const isBlacksmithing = useIsBlacksmithing();
 
 	const entries = useMemo(() => {
 		if (!currentItem) return [];

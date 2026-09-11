@@ -1,8 +1,7 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemLevelState, type ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
@@ -49,9 +48,7 @@ export interface ItemDetailCellProps {
 export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantTooltipId, socketTooltipId, extraLabels }: ItemDetailCellProps) => {
 	const player = usePlayer();
 
-	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
-		player.isBlacksmithing(),
-	);
+	const isBlacksmithing = useIsBlacksmithing();
 
 	const iconRef = useRef<HTMLAnchorElement>(null);
 	const nameRef = useRef<HTMLAnchorElement>(null);

@@ -1,9 +1,10 @@
 import './GearChangeIcon.scss';
 
-import { type ItemSlot, Profession } from '@generated/proto/common';
+import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
@@ -32,15 +33,13 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 	const player = host.player;
 	const slotName = translateSlotName(slot);
 	const tooltipId = useId();
+	const isBlacksmithing = useIsBlacksmithing();
 
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
 
 	const linkRef = useRef<HTMLAnchorElement>(null);
-	const resolveTooltip = useMemo(
-		() => (item ? () => equippedItemWowheadTooltipData(player, item, player.hasProfession(Profession.Blacksmithing)) : null),
-		[player, item],
-	);
+	const resolveTooltip = useMemo(() => (item ? () => equippedItemWowheadTooltipData(player, item, isBlacksmithing) : null), [player, item, isBlacksmithing]);
 	useWowheadDataset(linkRef, resolveTooltip);
 
 	const reforge = item?.reforge;

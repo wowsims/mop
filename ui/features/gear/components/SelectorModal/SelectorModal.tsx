@@ -5,8 +5,9 @@ import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { sanitizeId } from '@sim/utils/format';
 import { mod } from '@sim/utils/math';
 import { Dialog } from '@ui-kit/Dialog';
@@ -43,9 +44,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 	const [selected, setSelected] = useState<{ sequence: number; tab: SelectorModalTabs } | null>(null);
 
 	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
-	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
-		player.isBlacksmithing(),
-	);
+	const isBlacksmithing = useIsBlacksmithing();
 	const challengeMode = useStoreSubscribe(subscribePlayerField(player, 'challengeModeEnabled'), () => player.getChallengeModeEnabled());
 
 	const slot = request?.slot ?? null;

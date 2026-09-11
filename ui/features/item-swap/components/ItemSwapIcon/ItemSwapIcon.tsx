@@ -5,9 +5,10 @@ import { SelectorModalTabs } from '@features/gear/types';
 import type { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import clsx from 'clsx';
@@ -27,8 +28,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const swapSubscribe = subscribePlayerField(player, 'itemSwap');
 	const item = useStoreSubscribe(swapSubscribe, () => player.itemSwapSettings.getItem(slot));
 
-	const professionSubscribe = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]);
-	const isBlacksmithing = useStoreSubscribe(professionSubscribe, () => player.isBlacksmithing());
+	const isBlacksmithing = useIsBlacksmithing();
 
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, name, href } = useActionId(actionId);

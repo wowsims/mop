@@ -1,6 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore } from '@sim/state/sim_store';
 import { ItemLevelState, ItemQuality, ItemSlot, Spec } from '@generated/proto/common';
 import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -52,9 +53,8 @@ describe('ItemPickerCell', () => {
 	const setup = () => {
 		let gear = { getEquippedItem: () => equippedItem(1), asArray: () => [equippedItem(1)] };
 		const player = {
-			sim: { getShowQuickSwap: () => false },
+			sim: { getShowQuickSwap: () => false, store: createSimStore() },
 			getGear: () => gear,
-			isBlacksmithing: () => false,
 			getSpec: () => Spec.SpecUnknown,
 		} as unknown as Player<any>;
 		const host = { player } as unknown as IndividualSimHost<any>;
