@@ -16,6 +16,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Icon } from '@ui-kit/Icon';
 import { tabPaneClass } from '@ui-kit/tab_pane_class';
+import { LocaleHtml } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
@@ -54,7 +55,9 @@ export const BulkTabBody = () => {
 					</Tabs.List>
 					<div className="tab-content">
 						<Tabs.Panel value="bulkSetupTab" id="bulkSetupTab" keepMounted className={tabPaneClass}>
-							<p className="mb-0" dangerouslySetInnerHTML={{ __html: i18n.t('bulk_tab.description') }} />
+							<p className="mb-0">
+								<LocaleHtml html={i18n.t('bulk_tab.description')} />
+							</p>
 							<div>
 								{ready && host.sim.isNative === false && (
 									<p className="mb-0">

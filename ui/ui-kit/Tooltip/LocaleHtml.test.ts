@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 const LOCALES = join(process.cwd(), 'assets/locales');
 const HTML_TAG = /<[a-zA-Z/][^>]*>/;
 
-// Keys that carry markup *and* interpolate. Every value spliced into these is a number the sim
-// produced, so it cannot introduce markup. Anything else appearing here is a possible injection:
-// i18next runs with `escapeValue: false`, so LocaleHtml would render the value as HTML.
+// Keys that carry markup *and* interpolate. LocaleHtml resolves the string before Trans parses it, so a
+// value that looks like a tag is re-parsed — it renders as text rather than markup, but it still renders
+// wrong. Every value spliced into these is a number the sim produced, so none of them can.
 const INTERPOLATING_HTML_KEYS = ['bulk_tab.progress.iterations_complete'];
 
 const flatten = (value: unknown, path = ''): Array<[string, string]> =>

@@ -1,10 +1,11 @@
 import i18n, { Resource } from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import resources from 'virtual:i18next-loader';
 
 import { getLang } from './locale_service';
 
 // eslint-disable-next-line import/no-named-as-default-member
-i18n.init({
+i18n.use(initReactI18next).init({
 	lng: getLang(),
 	fallbackLng: 'en',
 	debug: process.env.NODE_ENV === 'development',
