@@ -34,7 +34,7 @@ export interface PopoverProps {
 }
 
 // Every anchored popup in the tree sits 10px off its anchor.
-const TIPPY_DISTANCE = 10;
+const ANCHOR_DISTANCE = 10;
 
 export const Popover = ({
 	trigger,
@@ -47,7 +47,7 @@ export const Popover = ({
 	container,
 	side = 'bottom',
 	align = 'center',
-	sideOffset = TIPPY_DISTANCE,
+	sideOffset = ANCHOR_DISTANCE,
 	openOnHover,
 	delay,
 	initialFocus = false,
