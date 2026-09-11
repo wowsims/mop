@@ -11,7 +11,10 @@ vi.mock('../preset_build_state', () => ({
 	buildCategories: () => ['Gear'],
 	isBuildActive: (build: { name: string }) => activeNames.has(build.name),
 }));
-vi.mock('@sim/state/subscriptions', () => ({ subscribeSimChange: () => () => () => {} }));
+vi.mock('@sim/state/subscriptions', () => {
+	const never = () => () => {};
+	return { subscribeSimChange: () => never };
+});
 vi.mock('@sim/hooks/useSimReady', () => ({ useSimReady: () => ready }));
 
 let ready = true;

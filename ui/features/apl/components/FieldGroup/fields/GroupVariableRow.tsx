@@ -28,7 +28,7 @@ export const GroupVariableRow = ({ player, config, name, groupSelected }: GroupV
 	const rootId = useId();
 	const valueId = useId();
 
-	const subscribe = useMemo(() => rotationSource(player), [player]);
+	const subscribe = rotationSource(player);
 	const available = useStoreSubscribe(subscribe, () => (groupSelected ? (player.aplRotation?.valueVariables || []).map(variable => variable.name) : []));
 	const options = useMemo(() => available.map(variableName => ({ value: variableName, label: variableName })), [available]);
 

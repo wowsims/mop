@@ -27,7 +27,7 @@ const LABELS = {
  * is empty.
  */
 export const RotationNameField = ({ player, config, source }: RotationNameFieldProps) => {
-	const subscribe = useMemo(() => rotationSource(player), [player]);
+	const subscribe = rotationSource(player);
 	const names = useStoreSubscribe(subscribe, () =>
 		(source == 'variables' ? player.aplRotation?.valueVariables || [] : player.aplRotation?.groups || []).map(entry => entry.name),
 	);

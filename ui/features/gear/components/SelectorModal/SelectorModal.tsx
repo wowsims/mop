@@ -42,18 +42,11 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 	const { open, request } = state;
 	const [selected, setSelected] = useState<{ sequence: number; tab: SelectorModalTabs } | null>(null);
 
-	const gear = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'gear'), [player]),
-		() => player.getGear(),
+	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
+	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
+		player.isBlacksmithing(),
 	);
-	const isBlacksmithing = useStoreSubscribe(
-		useMemo(() => subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), [player]),
-		() => player.isBlacksmithing(),
-	);
-	const challengeMode = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'challengeModeEnabled'), [player]),
-		() => player.getChallengeModeEnabled(),
-	);
+	const challengeMode = useStoreSubscribe(subscribePlayerField(player, 'challengeModeEnabled'), () => player.getChallengeModeEnabled());
 
 	const slot = request?.slot ?? null;
 	const gearData = request?.gearData ?? null;

@@ -15,13 +15,26 @@ import { EpWeightsDialog } from './EpWeightsDialog';
 
 const source = vi.hoisted(() => {
 	const listeners = new Map<string, Set<() => void>>();
+	// One identity per key, like the real module: `useStoreSubscribe` resubscribes on every
+	// source identity change, so a fake handing out a fresh function per call renders forever.
+	const sources = new Map<string, ((onChange: () => void) => () => void) & { key: string }>();
 	return {
 		listeners,
-		subscribe: (key: string) => (onChange: () => void) => {
-			const set = listeners.get(key) ?? new Set<() => void>();
-			listeners.set(key, set);
-			set.add(onChange);
-			return () => set.delete(onChange);
+		subscribe: (key: string) => {
+			let existing = sources.get(key);
+			if (!existing) {
+				existing = Object.assign(
+					(onChange: () => void) => {
+						const set = listeners.get(key) ?? new Set<() => void>();
+						listeners.set(key, set);
+						set.add(onChange);
+						return () => set.delete(onChange);
+					},
+					{ key },
+				);
+				sources.set(key, existing);
+			}
+			return existing;
 		},
 		notify: (key: string) => listeners.get(key)?.forEach(listener => listener()),
 		count: () => [...listeners.values()].reduce((total, set) => total + set.size, 0),
@@ -32,18 +45,30 @@ const source = vi.hoisted(() => {
 // `useSimRun` reads them back through `useSyncExternalStore` and needs a notification that fires.
 const runsStore = vi.hoisted(() => ({ store: null as { subscribe: (onChange: () => void) => () => void } | null }));
 
-vi.mock('@sim/state/subscriptions', () => ({
-	// `useDisplayMetrics` folds its three ui fields into one source; the real `subscribeAll` collapses
-	// same-store selectors into one, which a mock cannot, so it fans out and unsubscribes each.
-	subscribeAll: (subs: Array<(onChange: () => void) => () => void>) => (onChange: () => void) => {
-		const unsubs = subs.map(sub => sub(onChange));
-		return () => unsubs.forEach(unsub => unsub());
-	},
-	subscribePlayerField: (_player: unknown, field: string) => source.subscribe(`player:${field}`),
-	subscribeUiField: (_sim: unknown, field: string) => source.subscribe(`ui:${field}`),
-	subscribeStatWeightsChange: () => source.subscribe('statWeights'),
-	subscribeRunState: () => (onChange: () => void) => runsStore.store!.subscribe(onChange),
-}));
+vi.mock('@sim/state/subscriptions', () => {
+	const combined = new Map<string, (onChange: () => void) => () => void>();
+	const runs = (onChange: () => void) => runsStore.store!.subscribe(onChange);
+	return {
+		// `useDisplayMetrics` folds its three ui fields into one source; the real `subscribeAll` collapses
+		// same-store selectors into one, which a mock cannot, so it fans out and unsubscribes each.
+		subscribeAll: (subs: Array<((onChange: () => void) => () => void) & { key?: string }>) => {
+			const key = subs.map(sub => sub.key ?? '?').join('|');
+			let existing = combined.get(key);
+			if (!existing) {
+				existing = (onChange: () => void) => {
+					const unsubs = subs.map(sub => sub(onChange));
+					return () => unsubs.forEach(unsub => unsub());
+				};
+				combined.set(key, existing);
+			}
+			return existing;
+		},
+		subscribePlayerField: (_player: unknown, field: string) => source.subscribe(`player:${field}`),
+		subscribeUiField: (_sim: unknown, field: string) => source.subscribe(`ui:${field}`),
+		subscribeStatWeightsChange: () => source.subscribe('statWeights'),
+		subscribeRunState: () => runs,
+	};
+});
 
 // Real stat names, because the vitest i18n stub answers with the enum key and the id-sanitising
 // defect is about the spaces a real name has.

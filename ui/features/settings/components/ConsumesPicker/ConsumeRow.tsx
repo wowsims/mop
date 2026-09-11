@@ -6,7 +6,7 @@ import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
 import clsx from 'clsx';
-import { type ReactNode, useId, useMemo } from 'react';
+import { type ReactNode, useId } from 'react';
 
 export interface ConsumeRowProps {
 	name: 'potions' | 'elixirs' | 'food' | 'engineering' | 'pet';
@@ -16,7 +16,7 @@ export interface ConsumeRowProps {
 
 export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	const player = usePlayer();
-	const subscribe = useMemo(() => subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), [player]);
+	const subscribe = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]);
 	const labelId = useId();
 	const shown = useStoreSubscribe(subscribe, () => !configs || configs.some(config => iconEnumPickerShown(config, player)));
 

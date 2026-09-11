@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { useSim } from '../context/SimHostContext';
 import type { SimRunKind } from '../state/sim_store';
@@ -14,7 +14,7 @@ export interface SimRunState {
 // be begun through the named hook that knows its arguments.
 export const useSimRun = (kind: SimRunKind): SimRunState => {
 	const sim = useSim();
-	const subscribe = useMemo(() => subscribeRunState(sim, kind), [sim, kind]);
+	const subscribe = subscribeRunState(sim, kind);
 	const isRunning = useSyncExternalStore(subscribe, () => sim.runs.isRunning(kind));
 	const isAborting = useSyncExternalStore(subscribe, () => sim.runs.isAborting(kind));
 	const abort = useCallback(() => sim.runs.abort(kind), [sim, kind]);

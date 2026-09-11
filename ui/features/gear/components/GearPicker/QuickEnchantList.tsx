@@ -17,8 +17,8 @@ const isTinker = (enchant: Enchant) => enchant.requiredProfession === Profession
 
 export const QuickEnchantList = ({ slot, onOpenDetail }: QuickEnchantListProps) => {
 	const player = usePlayer();
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
-	const filtersSubscribe = useMemo(() => subscribeSimField(player.sim, 'filters'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
+	const filtersSubscribe = subscribeSimField(player.sim, 'filters');
 	const currentItem = useStoreSubscribe(gearSubscribe, () => player.getEquippedItem(slot));
 	const favoriteEnchants = useStoreSubscribe(filtersSubscribe, () => player.sim.getFilters().favoriteEnchants);
 

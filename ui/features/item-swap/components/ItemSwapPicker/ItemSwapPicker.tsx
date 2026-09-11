@@ -29,7 +29,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	const labelId = useId();
 	const swapTooltip = i18n.t('settings_tab.other.item_swap.tooltip');
 
-	const subscribe = useMemo(() => subscribePlayerField(player, 'itemSwap'), [player]);
+	const subscribe = subscribePlayerField(player, 'itemSwap');
 	const enabled = useStoreSubscribe(subscribe, () => player.itemSwapSettings.getEnableItemSwap());
 
 	const enableConfig = useMemo(

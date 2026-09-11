@@ -3,7 +3,6 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { SimTabPane } from '@ui-kit/SimTabPane';
-import { useMemo } from 'react';
 
 import { RotationTabBody } from './RotationTabBody';
 
@@ -16,7 +15,7 @@ const ROTATION_TYPE_CLASSES: Record<number, string> = {
 
 export const RotationTabPane = () => {
 	const player = usePlayer();
-	const subscribe = useMemo(() => subscribePlayerField(player, 'rotation'), [player]);
+	const subscribe = subscribePlayerField(player, 'rotation');
 	const rotationType = useStoreSubscribe(subscribe, () => player.getRotationType());
 
 	return (

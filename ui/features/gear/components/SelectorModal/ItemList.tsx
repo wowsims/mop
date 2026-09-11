@@ -46,18 +46,9 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 	const [filtersOpen, setFiltersOpen] = useState(false);
 	const tooltipId = useId();
 
-	const filters = useStoreSubscribe(
-		useMemo(() => subscribeSimField(sim, 'filters'), [sim]),
-		() => sim.getFilters(),
-	);
-	const phase = useStoreSubscribe(
-		useMemo(() => subscribeSimField(sim, 'phase'), [sim]),
-		() => sim.getPhase(),
-	);
-	const showEPValues = useStoreSubscribe(
-		useMemo(() => subscribeUiField(sim, 'showEPValues'), [sim]),
-		() => sim.getShowEPValues(),
-	);
+	const filters = useStoreSubscribe(subscribeSimField(sim, 'filters'), () => sim.getFilters());
+	const phase = useStoreSubscribe(subscribeSimField(sim, 'phase'), () => sim.getPhase());
+	const showEPValues = useStoreSubscribe(subscribeUiField(sim, 'showEPValues'), () => sim.getShowEPValues());
 
 	const isFavourited = useCallback((row: ItemDataFields<ItemListType>) => isItemFavourited(filters, label, row), [filters, label]);
 

@@ -44,10 +44,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 		};
 	}, [sim]);
 
-	const lastUsedRngSeed = useStoreSubscribe(
-		useMemo(() => subscribeSimField(sim, 'lastUsedRngSeedVersion'), [sim]),
-		() => sim.getLastUsedRngSeed(),
-	);
+	const lastUsedRngSeed = useStoreSubscribe(subscribeSimField(sim, 'lastUsedRngSeedVersion'), () => sim.getLastUsedRngSeed());
 
 	const fixedRngSeedConfig = useMemo(
 		(): NumberPickerConfig<Sim> => ({

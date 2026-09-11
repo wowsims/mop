@@ -27,11 +27,11 @@ const THREAT = 4;
  * DOM, so there is no `SimHostProvider` above it. Inside one, call `useDisplayMetrics(useSim())`.
  */
 export const useDisplayMetrics = (sim: Sim): DisplayMetrics => {
-	const subscribe = useMemo(
-		() =>
-			subscribeAll([subscribeUiField(sim, 'showDamageMetrics'), subscribeUiField(sim, 'showHealingMetrics'), subscribeUiField(sim, 'showThreatMetrics')]),
-		[sim],
-	);
+	const subscribe = subscribeAll([
+		subscribeUiField(sim, 'showDamageMetrics'),
+		subscribeUiField(sim, 'showHealingMetrics'),
+		subscribeUiField(sim, 'showThreatMetrics'),
+	]);
 
 	const flags = useStoreSubscribe(
 		subscribe,

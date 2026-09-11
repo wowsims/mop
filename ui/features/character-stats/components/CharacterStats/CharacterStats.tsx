@@ -18,10 +18,11 @@ export const CharacterStats = () => {
 	const { displayStats, epReferenceStat, modifyDisplayStats, overwriteDisplayStats } = host.individualConfig;
 	const rows = useMemo(() => buildRows(player, displayStats, epReferenceStat), [player, displayStats, epReferenceStat]);
 
-	const subscribe = useMemo(
-		() => subscribeAll([subscribePlayerField(player, 'currentStats'), subscribeSimChange(player.sim), subscribePlayerField(player, 'talentsString')]),
-		[player],
-	);
+	const subscribe = subscribeAll([
+		subscribePlayerField(player, 'currentStats'),
+		subscribeSimChange(player.sim),
+		subscribePlayerField(player, 'talentsString'),
+	]);
 
 	const snapshot = useStoreSubscribe(subscribe, () => {
 		const racial = readRacialBonuses(player);

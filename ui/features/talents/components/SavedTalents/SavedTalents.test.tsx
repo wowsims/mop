@@ -24,10 +24,11 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => () => () => undefined,
-	subscribeAll: () => (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange),
-}));
+vi.mock('@sim/state/subscriptions', () => {
+	const never = () => () => undefined;
+	const all = (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange);
+	return { subscribePlayerField: () => never, subscribeAll: () => all };
+});
 
 const STRINGS = vi.hoisted(
 	() =>

@@ -42,28 +42,17 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 	const softCapsConfig = model.softCapsConfig;
 	const hasSoftCaps = !!softCapsConfig?.length;
 
-	const forcedProcSubscribe = useMemo(
-		() => subscribeAll([subscribeReforgeField(settings, 'relativeStatCapStat'), subscribePlayerField(player, 'gear')]),
-		[settings, player],
-	);
-	const precisionSubscribe = useMemo(
-		() =>
-			subscribeAll([
-				subscribeReforgeField(settings, 'relativeStatCapPrecision'),
-				subscribeReforgeField(settings, 'relativeStatCapStat'),
-				subscribePlayerField(player, 'gear'),
-			]),
-		[settings, player],
-	);
-	const eotbpSubscribe = useMemo(
-		() =>
-			subscribeAll([
-				subscribeReforgeField(settings, 'includeGems'),
-				subscribeReforgeField(settings, 'includeEOTBPGemSocket'),
-				subscribePlayerField(player, 'gear'),
-			]),
-		[settings, player],
-	);
+	const forcedProcSubscribe = subscribeAll([subscribeReforgeField(settings, 'relativeStatCapStat'), subscribePlayerField(player, 'gear')]);
+	const precisionSubscribe = subscribeAll([
+		subscribeReforgeField(settings, 'relativeStatCapPrecision'),
+		subscribeReforgeField(settings, 'relativeStatCapStat'),
+		subscribePlayerField(player, 'gear'),
+	]);
+	const eotbpSubscribe = subscribeAll([
+		subscribeReforgeField(settings, 'includeGems'),
+		subscribeReforgeField(settings, 'includeEOTBPGemSocket'),
+		subscribePlayerField(player, 'gear'),
+	]);
 
 	return (
 		<>

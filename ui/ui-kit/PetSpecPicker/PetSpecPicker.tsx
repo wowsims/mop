@@ -5,7 +5,7 @@ import { PetSpec } from '@generated/proto/hunter';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
 
 export interface PetSpecPickerProps<SpecType extends HunterSpecs> {
 	player: Player<SpecType>;
@@ -20,7 +20,7 @@ const SPECS: ReadonlyArray<{ spec: PetSpec; label: string; iconKey: string }> = 
 /** It wears the talent tree's class names deliberately — `talent-tree-*` and `talent-picker-*` — because it piggybacks on that stylesheet rather than carrying one of its own. */
 export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecPickerProps<SpecType>) => {
 	const id = useId();
-	const subscribe = useMemo(() => subscribePlayerField(player, 'specOptions'), [player]);
+	const subscribe = subscribePlayerField(player, 'specOptions');
 	const active = useStoreSubscribe(subscribe, () => player.getClassOptions().petSpec);
 
 	// The options object is read, mutated and written back, which is what the facade expects.
