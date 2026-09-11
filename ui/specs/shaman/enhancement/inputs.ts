@@ -1,6 +1,5 @@
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { ShamanImbue, ShamanSyncType } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
@@ -28,8 +27,7 @@ export const ShamanImbueOHSwap = InputHelpers.makeSpecOptionsEnumIconInput<Spec.
 		{ actionId: ActionId.fromSpellId(8033), value: ShamanImbue.FrostbrandWeapon },
 	],
 	showWhen: (player: Player<Spec.SpecEnhancementShaman>) => player.itemSwapSettings.getEnableItemSwap(),
-	storeSubscribe: (player: Player<Spec.SpecEnhancementShaman>) =>
-		subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')]),
+	storeField: ['specOptions', 'itemSwap'],
 });
 
 export const SyncTypeInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecEnhancementShaman, ShamanSyncType>({

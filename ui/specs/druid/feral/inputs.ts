@@ -1,5 +1,4 @@
 import { Player } from '@sim/player/player';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '@generated/proto/druid';
 import i18n from '@i18n/config';
@@ -51,8 +50,7 @@ export const FeralDruidRotationConfig = {
 			label: i18n.t('rotation_tab.options.druid.feral.use_ns.label'),
 			labelTooltip: i18n.t('rotation_tab.options.druid.feral.use_ns.tooltip'),
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().dreamOfCenarius,
-			storeSubscribe: (player: Player<Spec.SpecFeralDruid>) =>
-				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]),
+			storeField: ['rotation', 'talentsString'],
 		}),
 		InputHelpers.makeRotationEnumInput<Spec.SpecFeralDruid, HotwType>({
 			fieldName: 'hotwStrategy',
@@ -64,8 +62,7 @@ export const FeralDruidRotationConfig = {
 				{ name: i18n.t('rotation_tab.options.druid.feral.hotw_strategy.values.wrath_weaving'), value: HotwType.Wrath },
 			],
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().heartOfTheWild,
-			storeSubscribe: (player: Player<Spec.SpecFeralDruid>) =>
-				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]),
+			storeField: ['rotation', 'talentsString'],
 		}),
 		InputHelpers.makeRotationBooleanInput<Spec.SpecFeralDruid>({
 			fieldName: 'allowAoeBerserk',

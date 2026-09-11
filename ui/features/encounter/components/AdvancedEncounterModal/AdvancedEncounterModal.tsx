@@ -1,7 +1,6 @@
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Encounter } from '@sim/raid/encounter';
-import { subscribeEncounterChange } from '@sim/state/subscriptions';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
@@ -28,7 +27,7 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
 			extraClassNames: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
 			values: [{ name: 'Custom', value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
-			storeSubscribe: subscribeEncounterChange,
+			storeField: 'encounter:*',
 			getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),
 			setValue: (subject: Encounter, newValue: number) => {
 				if (newValue === -1) return;

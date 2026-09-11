@@ -66,6 +66,7 @@ vi.mock('@sim/state/subscriptions', () => {
 		subscribePlayerField: (_player: unknown, field: string) => source.subscribe(`player:${field}`),
 		subscribeUiField: (_sim: unknown, field: string) => source.subscribe(`ui:${field}`),
 		subscribeStatWeightsChange: () => source.subscribe('statWeights'),
+		subscribePlayerStatWeightsField: () => source.subscribe('statWeights'),
 		subscribeRunState: () => runs,
 	};
 });

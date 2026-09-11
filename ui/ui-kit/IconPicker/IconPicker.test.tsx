@@ -2,7 +2,7 @@ import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { StrictMode } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { IconPicker } from './IconPicker';
 import type { IconPickerConfig } from './types';
@@ -330,5 +330,15 @@ describe('IconPicker', () => {
 		expect(fireEvent.contextMenu(container)).toBe(false);
 		expect(fireEvent.click(container)).toBe(false);
 		expect(settings.level).toBe(2);
+	});
+});
+
+describe('IconPickerConfig', () => {
+	type WithoutBinding = Omit<IconPickerConfig<Settings, number>, 'storeSubscribe' | 'storeField'>;
+	type FieldOnly = WithoutBinding & { storeField: 'bonusStats' };
+
+	it('will not accept a config that names neither a store subscription nor a store field', () => {
+		expectTypeOf<WithoutBinding>().not.toExtend<IconPickerConfig<Settings, number>>();
+		expectTypeOf<FieldOnly>().toExtend<IconPickerConfig<Settings, number>>();
 	});
 });

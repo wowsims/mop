@@ -1,7 +1,5 @@
-import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { PaladinSpecs } from '@sim/proto/spec_types';
-import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { PaladinSeal } from '@generated/proto/paladin';
 import * as InputHelpers from '@ui-kit/input_helpers';
@@ -22,5 +20,5 @@ export const StartingSealSelection = <SpecType extends PaladinSpecs>() =>
 				showWhen: player => player.isSpec(Spec.SpecRetributionPaladin),
 			},
 		],
-		storeSubscribe: (player: Player<SpecType>) => subscribePlayerChange(player),
+		storeField: 'player:*',
 	});
