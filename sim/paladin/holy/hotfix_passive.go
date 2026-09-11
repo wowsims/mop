@@ -17,7 +17,7 @@ func (holy *HolyPaladin) registerHotfixPassive() {
 	core.MakePermanent(holy.RegisterAura(core.Aura{
 		Label:      "Hotfix Passive" + holy.Label,
 		ActionID:   core.ActionID{SpellID: 137029},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase, // see registerHolyInsight
 	})).AttachStatDependency(
 		holy.NewDynamicRatingFromStatDependency(stats.Spirit, stats.HitRating, 0.5, baseSpirit),
 	).AttachStatDependency(
