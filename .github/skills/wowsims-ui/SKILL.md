@@ -1,6 +1,6 @@
 ---
 name: wowsims-ui
-description: "Work on the wowsims MoP frontend, ui/ (TypeScript). Use when touching ui/sim (the Sim/Player/Raid/Encounter facades, the Zustand store in ui/sim/state, batching, persistence, the IndividualSimSettings envelope), ui/ui-kit, ui/features, ui/app, ui/i18n, ui/specs or ui/generated/proto; when an import trips the oxlint layer rules; or when a UI change needs verifying (type-check, lint, vitest, the golden snapshot harness, a dev-server or real-sim smoke). Start here, then open the one file under references/ that owns the subject — the routing table is in this file."
+description: "Work on the wowsims MoP frontend, ui/ (React 19 + TypeScript). Use when touching ui/sim (the Sim/Player/Raid/Encounter facades, the Zustand store in ui/sim/state, the store hooks in ui/sim/hooks, batching, persistence, the IndividualSimSettings envelope), ui/ui-kit, ui/features, ui/app, ui/i18n, ui/specs or ui/generated/proto; when an import trips the oxlint layer rules; or when a UI change needs verifying (type-check, lint, vitest, the golden snapshot harness, a dev-server or real-sim smoke). Start here, then open the one file under references/ that owns the subject — the routing table is in this file."
 ---
 
 # wowsims-ui
@@ -9,13 +9,26 @@ description: "Work on the wowsims MoP frontend, ui/ (TypeScript). Use when touch
 Go compiled to WASM behind `ui/worker/*`; the UI only ever speaks protobuf to it, so nothing in
 `ui/` models combat.
 
-The view layer is mid-migration from `tsx-vanilla` (JSX that returns live DOM nodes) to React 19.
-React is the default dialect — a new `.tsx` file is a React file — and the files that have not been
-ported opt back out on line 1 with `/** @jsxImportSource @jsx-vanilla */`. Count them with
-`/usr/bin/grep -rl "jsxImportSource @jsx-vanilla" ui/ | wc -l`; that number only goes down.
-**This skill documents everything below the view layer.** Components, JSX, SCSS-next-to-component
-and the migration's position live in the `wowsims-react` skill — which is untracked and only present
-in the migration worktree, so on a fresh clone it will not be there and nothing here depends on it.
+The view layer is **React 19**, and it is now the only dialect. The `tsx-vanilla` runtime that half
+of `ui/` used to be written in has been retired: the package is uninstalled, no file carries a
+`@jsxImportSource` pragma, and the shim they pointed at is deleted — along with the vanilla
+`Component`/`Input` stack and every picker built on it, tippy, Bootstrap's JavaScript, and the
+`ui/index.ts` entry that booted the old landing page. Bootstrap's **stylesheet** is the part that
+stayed: `ui/scss/index.scss` imports its partials, so `form-control`, `d-none` and `btn` inside a
+React component are load-bearing, not residue.
+
+What the view is built from — reach for the existing thing before writing a new one:
+**Base UI** (`@base-ui/react`) for Dialog, Menu, Popover, Tabs and Toast, and also for the Field,
+Input, Button and Progress primitives the pickers are built on; **`react-tooltip`** behind
+`ui/ui-kit/Tooltip/`; **`@tanstack/react-table`** and **`@tanstack/react-virtual`** for the results
+tables, the log runner and `ui/ui-kit/VirtualList/`; **`react-i18next`** — `<Trans>` only where a
+locale string carries markup, `i18n.t` everywhere else; and **Zustand**, which is the whole subject
+of `references/state.md`.
+
+**This skill documents everything below the view layer.** Components, the shared-component registry
+and SCSS-next-to-component live in the `wowsims-react` skill — local working notes, git-excluded on
+purpose (`.git/info/exclude`, see `verification.md` on what that means), so it is present only where
+its owner made it and nothing here depends on it.
 
 ## Layer map
 
@@ -30,20 +43,18 @@ generated → worker → {sim, i18n} → ui-kit → features → app → specs �
 | -------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `ui/generated/`            | `@generated` | protobuf-ts output (`proto/**`) and `*_auto_gen.ts`. Tool output — never hand-edit, never lint (`ignorePatterns`)                         |
 | `ui/worker/`               | `@worker`    | the three worker entries (`local_worker`, `net_worker`, `sim_worker`) plus the Go package that `go:embed`s `highs.wasm`                   |
-| `ui/sim/`                  | `@sim`       | DOM-free, node-runnable model: the facades, `state/` (Zustand), `player/`, `raid/`, `settings/`, `talents/`, `presets/`, `hooks/`         |
-| `ui/i18n/`                 | `@i18n`      | LEAF: i18next config, entity/label tables, `localization.tsx`                                                                             |
-| `ui/ui-kit/`               | `@ui-kit`    | sim-agnostic widgets, base classes, `pickers/`, `hooks/`, `utils/` — no `Player`/`Sim` types except through generic params                |
-| `ui/features/<x>/`         | `@features`  | twelve capabilities; `model/` is DOM-free _and_ React-free, `components/` + `hooks/` are React, and a `view/` is what has not been ported |
-| `ui/app/`                  | `@app`       | composition root: `SimApp`/`SimShell`/`SimTabs`, `header/`, `tabs/`, `spec_entry.tsx`, `browser_env.ts`                                   |
+| `ui/sim/`                  | `@sim`       | node-runnable model: the facades, `state/` (Zustand), `player/`, `raid/`, `settings/`, `talents/`, `presets/`, plus the React bindings in `context/` and `hooks/`. DOM-free and browser-global-free, **not** React-free |
+| `ui/i18n/`                 | `@i18n`      | LEAF: i18next config, entity/label tables, `localization.ts`                                                                              |
+| `ui/ui-kit/`               | `@ui-kit`    | sim-agnostic React widgets, one folder per component (`NumberPicker/`, `Dialog/`, `Tooltip/`, …), plus `hooks/` and `utils/` — no `Player`/`Sim` types except through generic params |
+| `ui/features/<x>/`         | `@features`  | twelve capabilities; `model/` is DOM-free _and_ React-free, `components/` + `hooks/` are React                                            |
+| `ui/app/`                  | `@app`       | composition root: `SimHostObject` (`individual_sim_ui.tsx`), `SimApp`/`SimShell`/`SimTabs`, `header/`, `tabs/`, `landing/`, `spec_entry.tsx`, `browser_env.ts` |
 | `ui/specs/<class>/<spec>/` | `@specs`     | spec data — one `spec.ts` per spec, may import everything                                                                                 |
 
-Not layers, and not in the arrow: `ui/scss/` (stylesheets; `ui/scss/sims/sim.scss` drives all 34 spec
-themes off one `$sim-themes` map), `ui/shared/` (the `@jsx-vanilla` shim and bootstrap overrides),
-`ui/types/` (ambient `.d.ts`), `ui/tracking/` (the analytics shim), and `ui/index.html` /
-`ui/index_template.html` / `ui/index.ts` at the root.
-
-The remaining `view/` folders are the migration's surface; list them with
-`ls -d ui/features/*/view/` rather than trusting a count written here.
+Not layers, and not in the arrow: `ui/scss/` (the stylesheets not owned by one component;
+`ui/scss/sims/sim.scss` drives all 34 spec themes off one `$sim-themes` map), `ui/shared/` (three
+browser helpers — `dom.ts`, `pointer.ts`, `page_boot.ts`), `ui/types/` (ambient `.d.ts`),
+`ui/tracking/` (the analytics shim), and `ui/index.html` / `ui/index_template.html` at the root.
+The React entry points are `ui/app/spec_entry.tsx` and `ui/app/landing_entry.tsx`.
 
 The direction is **enforced, not conventional** — `.oxlintrc.json` fails the build on a violation.
 Read the exact bans, and the three ways they surprise people, in `references/layers.md` before
@@ -54,7 +65,7 @@ arguing with one.
 | You are…                                                                                           | Open                            |
 | -------------------------------------------------------------------------------------------------- | ------------------------------- |
 | moving a file, adding an import that lints, or deciding which directory something belongs in       | `references/layers.md`          |
-| adding a settings field, wiring a picker, or chasing a notification that fires twice or not at all | `references/state.md`           |
+| adding a settings field, wiring a picker, or chasing a component that renders stale data or re-renders twice | `references/state.md`  |
 | touching saved settings, the URL hash, autosave, or `IndividualSimSettings`                        | `references/persistence.md`     |
 | about to call a change done, or wondering what CI actually runs                                    | `references/verification.md`    |
 | running the sim in a browser, in a fresh worktree, or measuring a perf regression                  | `references/running-locally.md` |
@@ -90,6 +101,7 @@ change, the way you would a stale comment.
 | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | `.oxlintrc.json`, `tsconfig.json` `paths`, or a top-level `ui/` directory                             | `references/layers.md` and the layer map above |
 | `ui/sim/state/sim_store.ts`, `subscriptions.ts`, `batch.ts`, `events.ts`                              | `references/state.md`                          |
+| `ui/sim/hooks/*`, `ui/sim/context/SimHostContext.tsx`, `ui/ui-kit/hooks/useInput.ts`, `ui/ui-kit/input.ts` | `references/state.md`                     |
 | `ui/sim/state/persistence.ts`, `serialization.ts`, `sim_links.ts`                                     | `references/persistence.md`                    |
 | a `package.json` script, `.github/workflows/run_tests.yml`, or the snapshot harness                   | `references/verification.md`                   |
 | `vite.config.mts`, `vite.build-workers.mts`, `tools/vite/spec_pages.mts`, the makefile's dist targets | `references/running-locally.md`                |

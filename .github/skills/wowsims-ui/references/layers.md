@@ -51,7 +51,8 @@ node -e "console.log(require('./.oxlintrc.json').overrides.filter(o => o.rules?.
 ```
 
 **Patterns must use `**`, not `*`.** oxlint matches one path segment per `*`, so `@features/*`
-silently misses `@features/gear/view/item_list` and the ban looks like it is working when it is not.
+silently misses `@features/gear/components/SelectorModal/ItemList` and the ban looks like it is
+working when it is not.
 
 **Scoping is an explicit file list.** Negated globs in `overrides.files` break scoping in oxlint, so
 a new top-level `ui/` directory needs its own override block — you cannot exclude it with `!`. And
@@ -71,7 +72,6 @@ line silently disables it.
 | `@app/*`         | `ui/app/*`                |
 | `@specs/*`       | `ui/specs/*`              |
 | `@i18n/*`        | `ui/i18n/*`               |
-| `@jsx-vanilla/*` | `ui/shared/jsx-vanilla/*` |
 
 Check with `node -e "console.log(require('./tsconfig.json').compilerOptions.paths)"`. The same table
 is `resolve.alias` in `vite.config.mts` (`getBaseConfig`, inherited by the worker builds) and in
@@ -84,11 +84,14 @@ Node's `package.json` `imports` field was tried first and rejected: `tsc` under
 ## Crossing layers without importing downward
 
 A lower layer that needs to talk to a shell uses a **narrow host interface**, never the class. They
-all live in `@sim/sim_host`: `SimHeaderHost`, `SimUIHost`, `SimHost`, `IndividualSimHost<Spec>`,
-`SimWarning`, and the `isIndividualSimHost()` predicate that replaces
+all live in `@sim/sim_host` (`ui/sim/sim_host.ts`) — today `SimWarning`, `SimHost`,
+`IndividualSimHost<Spec>`, and the `isIndividualSimHost()` predicate that replaces
 `instanceof SimHostObject` (a runtime check an interface cannot express).
-`SimHostObject implements IndividualSimHost` — the `implements` clause is what keeps the
-interfaces honest, so add to the interface and let the compiler find the host.
+`SimHostObject implements IndividualSimHost` (`ui/app/individual_sim_ui.tsx:73`) — the `implements`
+clause is what keeps the interfaces honest, so add to the interface and let the compiler find the
+host. From React the host arrives through context rather than a prop: `useSimHost()`, `usePlayer()`,
+`useSim()` in `ui/sim/context/SimHostContext.tsx`, which is why `ui/sim` owns React context despite
+being the bottom layer.
 
 The per-spec config schema is `@sim/spec_config` (`ui/sim/spec_config.ts`): `IndividualSimUIConfig`,
 `InputConfig`, `InputSection`, `CustomSection`, `OtherDefaults`, `Settings`, `SpecDefinition`,

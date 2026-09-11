@@ -108,9 +108,33 @@ module-evaluation-order cycle (see `layers.md`) — that failure looks like a cr
 
 ## What no gate covers
 
-Rendering, layout and interaction. There is no DOM-parity harness on this branch; the closest thing
-is running the page yourself — see `running-locally.md`. Do that for anything that changes what a
-user sees, and say in the PR what you clicked.
+Rendering, layout and interaction. None of the five commands above constructs the shell —
+`tools/state-snapshots/snapshot.ts` imports `IndividualSimUIConfig` as a _type_ and mirrors
+`applyDefaults` by hand, so the goldens prove no state write leaked into a component and say nothing
+about whether anything rendered.
+
+**There is a DOM-parity harness, and it is not in a fresh clone.** `tools/react-migration/` holds
+~35 `.mjs` files: Playwright probes (`parity.mjs`, `panes-parity.mjs`, `a11y.mjs`,
+`tabs-behaviour.mjs`, and one per tab and per widget) over a shared `browser.mjs`, plus an
+`intended.mjs` registry of divergences that are deliberate. Each probe compares a built React branch
+against a built baseline, both served first. Read `tools/react-migration/README.md` before running
+one — in particular its `PORT` section: twelve of the gates silently measure the **baseline** unless
+you set `PORT`, so a bare invocation can report a clean run of the wrong build.
+
+The directory is **git-excluded**, not deleted: `tools/react-migration/` is a line in
+`.git/info/exclude`, which lives in the shared common git dir and therefore applies to every worktree
+of this clone but travels with none of them. So `git status` is clean, `git log` knows nothing about
+it, and whether the files are actually present depends on whether that checkout's owner made them.
+Check before concluding anything:
+
+```
+/usr/bin/ls tools/react-migration/ 2>/dev/null | wc -l
+git check-ignore -v tools/react-migration
+```
+
+`tools/browser-perf/` (perf timings, not parity) is excluded the same way and behaves the same way.
+If neither is present where you are working, running the page yourself is the fallback — see
+`running-locally.md`. Either way, say in the PR what you ran or what you clicked.
 
 ## A fresh checkout needs generated files first
 
