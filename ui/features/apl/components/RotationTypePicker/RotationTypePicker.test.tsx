@@ -50,7 +50,7 @@ class FakePlayer {
 }
 
 const host = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host.current }));
+vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host.current, useOptionalSimHost: () => host.current }));
 
 const mount = (player: FakePlayer) => {
 	host.current = { player };

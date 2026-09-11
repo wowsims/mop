@@ -19,6 +19,9 @@ export function useSimHost<SpecType extends Spec = any>(): IndividualSimHost<Spe
 	return host;
 }
 
+/** Nullable read: a hook must run unconditionally, so one that needs the host on only some of its paths cannot use the throwing reader. */
+export const useOptionalSimHost = (): IndividualSimHost<any> | null => useContext(SimHostContext);
+
 export const usePlayer = <SpecType extends Spec = any>() => useSimHost<SpecType>().player;
 export const useSim = (): Sim => useSimHost().sim;
 

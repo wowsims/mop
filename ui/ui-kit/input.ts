@@ -1,3 +1,4 @@
+import type { StoreField } from '@sim/hooks/useStoreField';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 
 /**
@@ -17,6 +18,11 @@ export interface InputConfig<ModObject, T, V = T> {
 	// function (see state/subscriptions.ts). Omit for inputs that are re-synced
 	// by their parent (nested APL pickers, UI-local toggles).
 	storeSubscribe?: (obj: ModObject) => StoreSubscribe;
+
+	// The same change source named as data: the store field(s) this input reads,
+	// resolved against the sim host (see hooks/useStoreField.ts). `storeSubscribe`
+	// wins where a config carries both.
+	storeField?: StoreField | ReadonlyArray<StoreField>;
 
 	// Get and set the mapped value.
 	getValue: (obj: ModObject) => T;

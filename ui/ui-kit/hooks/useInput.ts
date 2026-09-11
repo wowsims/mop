@@ -1,3 +1,4 @@
+import { useStoreField } from '@sim/hooks/useStoreField';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { InputConfig } from '@ui-kit/input';
 import { useCallback, useRef, useState } from 'react';
@@ -21,6 +22,7 @@ export const useInput = <ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	const revision = useRef(0);
 
 	const notify = useRef<() => void>(() => {});
+	const fieldSource = useStoreField(config.storeField);
 
 	const subscribe = useCallback(
 		(onChange: () => void) => {
@@ -30,10 +32,10 @@ export const useInput = <ModObject, T, V = T>(modObject: ModObject, config: Inpu
 				onChange();
 			};
 			notify.current = ring;
-			const source = configRef.current.storeSubscribe?.(modObject);
+			const source = configRef.current.storeSubscribe?.(modObject) ?? fieldSource;
 			return source ? source(ring) : () => {};
 		},
-		[modObject],
+		[modObject, fieldSource],
 	);
 
 	const snapshot = useStoreSubscribe(subscribe, () => ({ value: configRef.current.getValue(modObject), revision: revision.current }));
@@ -43,10 +45,10 @@ export const useInput = <ModObject, T, V = T>(modObject: ModObject, config: Inpu
 	const setValue = useCallback(
 		(next: V) => {
 			setSeed(undefined);
-			const { setValue: write, valueToSource, storeSubscribe } = configRef.current;
+			const { setValue: write, valueToSource, storeSubscribe, storeField } = configRef.current;
 			write(modObject, valueToSource ? valueToSource(next) : (next as unknown as T));
 			// A sourced write notifies on its own; ringing here too would re-read before the store has committed.
-			if (!storeSubscribe) notify.current();
+			if (!storeSubscribe && !storeField) notify.current();
 		},
 		[modObject],
 	);

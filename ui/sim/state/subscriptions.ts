@@ -203,6 +203,13 @@ export function subscribeReforgeField(settings: ReforgeSettings, field: ReforgeF
 	return cached(settings, `field:${field}`, () => fromSelector(settings.store, s => s.reforge[settings.storeKey]?.v[field]));
 }
 
+// Same slice, reached from the player rather than the per-model ReforgeSettings
+// facade: the slice is keyed by `player.storeKey`, so a picker can name a reforge
+// field without holding the facade.
+export function subscribePlayerReforgeField(player: Player<any>, field: ReforgeField): StoreSubscribe {
+	return cached(player, `reforge:${field}`, () => fromSelector(player.sim.store, s => s.reforge[player.storeKey]?.v[field]));
+}
+
 export function subscribeReforgeChange(settings: ReforgeSettings): StoreSubscribe {
 	return cached(settings, 'change', () => fromSelector(settings.store, s => s.reforge[settings.storeKey]));
 }
