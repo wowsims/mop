@@ -2,10 +2,12 @@
 // ui/sim/hooks/useStoreSubscribe.gate.test.tsx cannot host this one: ui/sim must not import
 // @ui-kit, and the comparison needs the real useInput.
 //
-//   old — InputConfig carries storeSubscribe (the bonusStats version counter) + getValue (the facade
-//         read), and the picker's modObject is the Player.
-//   new — the component selects the value with usePlayerStore and the picker's modObject IS the
-//         value; the config keeps only getValue/setValue over it and names no store at all.
+//   old   — InputConfig carries storeSubscribe (the bonusStats version counter) + getValue (the facade
+//           read), and the picker's modObject is the Player.
+//   owned — the component selects the value with usePlayerStore and the picker's modObject IS the
+//           value; the config keeps only getValue/setValue over it and names no store at all.
+//   field — InputConfig names the store field instead of building the source, and the picker's
+//           modObject stays the Player. This is the shape `owned` was reaching for, without its cost.
 import { Stat } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { usePlayerStore } from '@sim/hooks/usePlayerStore';
@@ -38,6 +40,20 @@ let commit = (_next: number) => {};
 const OldChild = ({ player }: { player: FakePlayer }) => {
 	const { value, setValue } = useInput(player, {
 		storeSubscribe: subject => subscribePlayerField(subject as never, 'bonusStats'),
+		getValue: subject => {
+			counts.reads++;
+			return subject.getBonusStats().getStat(AGI);
+		},
+		setValue: (subject, next) => subject.setBonusStats(subject.getBonusStats().withStat(AGI, next)),
+	});
+	counts.renders++;
+	commit = setValue;
+	return <span>{value}</span>;
+};
+
+const FieldChild = ({ player }: { player: FakePlayer }) => {
+	const { value, setValue } = useInput(player, {
+		storeField: 'bonusStats',
 		getValue: subject => {
 			counts.reads++;
 			return subject.getBonusStats().getStat(AGI);
@@ -112,7 +128,7 @@ describe('the BonusStatsLink binding, old shape vs new', () => {
 	// Five parent re-renders that touch nothing, and a write to a field this binding does not select,
 	// cost nothing under any of the three — the properties the hand-rolled snapshot cache was keeping.
 	it('is idle under unrelated renders and unrelated writes, old and new alike', () => {
-		for (const Child of [OldChild, NewChild, HookOnlyChild]) {
+		for (const Child of [OldChild, NewChild, FieldChild, HookOnlyChild]) {
 			const { idle, unrelated } = measure(Child);
 			expect({ idle, unrelated }).toEqual({ idle: { renders: 5, reads: 0 }, unrelated: { renders: 0, reads: 0 } });
 		}
@@ -128,5 +144,12 @@ describe('the BonusStatsLink binding, old shape vs new', () => {
 		expect(measure(OldChild)).toMatchObject({ external: { renders: 1, reads: 1 }, own: { renders: 1, reads: 1 }, text: '9' });
 		expect(measure(NewChild)).toMatchObject({ external: { renders: 2, reads: 1 }, own: { renders: 2, reads: 2 }, text: '9' });
 		expect(measure(HookOnlyChild)).toMatchObject({ external: { renders: 1, reads: 1 }, own: { renders: 1, reads: 1 }, text: '9' });
+	});
+
+	// Naming the field gives the caller what owning the value was for — no source to build, no facade
+	// subscription to keep in step — at the source identity a fixed modObject had: one subscribe for the
+	// life of the picker, so the consistency re-read never happens and the second render is gone.
+	it('costs nothing once the field is named instead', () => {
+		expect(measure(FieldChild)).toMatchObject({ external: { renders: 1, reads: 1 }, own: { renders: 1, reads: 1 }, text: '9' });
 	});
 });
