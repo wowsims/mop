@@ -38,6 +38,7 @@ export const SavedTalents = () => {
 
 	const talentsString = usePlayerStore('talentsString');
 	const glyphs = usePlayerStore('glyphs');
+	// eslint-disable-next-line react-hooks/exhaustive-deps -- `talentsData` reads both through the player facade rather than by name; they are the invalidation keys.
 	const talents = useMemo(() => talentsData(player), [player, talentsString, glyphs]);
 	const currentJson = useMemo(() => serializeTalents(talents), [talents]);
 

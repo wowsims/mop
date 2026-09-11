@@ -38,7 +38,7 @@ export const CharacterStats = () => {
 			attribution,
 			critCap: shouldShowMeleeCritCap(player) ? { info: player.getMeleeCritCapInfo(), text: meleeCritCapDisplayString(player) } : null,
 		};
-		// `gear`, `race` and `inFrontOfTarget` reach the body through the player facade, not by name: they are invalidation keys, and dropping them from the list would stale the snapshot.
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- `gear`, `race` and `inFrontOfTarget` reach the body through the player facade rather than by name; they are the invalidation keys, and dropping them stales the snapshot.
 	}, [player, currentStats, bonusStats, gear, race, inFrontOfTarget, modifyDisplayStats, overwriteDisplayStats]);
 
 	const { pending, racial, attribution, critCap } = snapshot;

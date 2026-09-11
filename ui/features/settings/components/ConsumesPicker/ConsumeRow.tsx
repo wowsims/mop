@@ -18,7 +18,11 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	const profession1 = usePlayerStore('profession1');
 	const profession2 = usePlayerStore('profession2');
 	const labelId = useId();
-	const shown = useMemo(() => !configs || configs.some(config => iconEnumPickerShown(config, player)), [configs, player, profession1, profession2]);
+	const shown = useMemo(
+		() => !configs || configs.some(config => iconEnumPickerShown(config, player)),
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- the professions reach `showWhen` through the player facade rather than by name; they are the invalidation keys.
+		[configs, player, profession1, profession2],
+	);
 
 	return (
 		<div className={clsx('consumes-row', 'input-root', 'input-inline', !shown && 'hide')} role="group" aria-labelledby={labelId}>
