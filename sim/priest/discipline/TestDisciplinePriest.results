@@ -31,6 +31,38 @@ character_stats_results: {
  }
 }
 character_stats_results: {
+ key: "TestDisciplinePriest-p5-shadow-tier"
+ value: {
+  final_stats: 133
+  final_stats: 142
+  final_stats: 43080
+  final_stats: 30776
+  final_stats: 3524
+  final_stats: 60
+  final_stats: 8707
+  final_stats: 17221
+  final_stats: 1760
+  final_stats: 0
+  final_stats: 0
+  final_stats: 15206
+  final_stats: 0
+  final_stats: 0
+  final_stats: 55765.27
+  final_stats: 0
+  final_stats: 0
+  final_stats: 28961.6
+  final_stats: 0
+  final_stats: 749523
+  final_stats: 300000
+  final_stats: 15000
+  final_stats: 0.17647
+  final_stats: 5.35294
+  final_stats: 22.69167
+  final_stats: 32.89865
+  final_stats: 0
+ }
+}
+character_stats_results: {
  key: "TestDisciplinePriest-preraid"
  value: {
   final_stats: 133
