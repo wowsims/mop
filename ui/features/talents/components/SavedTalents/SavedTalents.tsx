@@ -1,4 +1,4 @@
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { batch } from '@sim/state/batch';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
@@ -16,7 +16,8 @@ import { serializeTalents, talentsData } from './utils';
 
 export const SavedTalents = () => {
 	const host = useSimHost();
-	const { player, individualConfig } = host;
+	const { player } = host;
+	const individualConfig = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('talents_tab.saved_talents.label');
@@ -25,7 +26,7 @@ export const SavedTalents = () => {
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedTalentsProto>>>(
 		() =>
 			ready
-				? individualConfig.presets.talents.map(preset => ({
+				? individualConfig.talents.map(preset => ({
 						name: preset.name,
 						data: preset.data,
 						json: serializeTalents(preset.data),

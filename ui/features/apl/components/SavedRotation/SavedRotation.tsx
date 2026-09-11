@@ -1,7 +1,7 @@
 import { APLRotation } from '@generated/proto/apl';
 import { SavedRotation as SavedRotationProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { isEqualAPLRotation } from '@sim/proto/apl_utils';
@@ -18,6 +18,7 @@ import { serializeRotation } from './utils';
 export const SavedRotation = () => {
 	const host = useSimHost();
 	const player = host.player;
+	const specPresets = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('rotation_tab.saved_rotations.label');
@@ -26,7 +27,7 @@ export const SavedRotation = () => {
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedRotationProto>>>(
 		() =>
 			ready
-				? (host.individualConfig.presets.rotations ?? []).map(preset => {
+				? (specPresets.rotations ?? []).map(preset => {
 						// Defaulted so the equality check below always has something to compare.
 						const data = SavedRotationProto.create({ ...preset.rotation, rotation: preset.rotation.rotation ?? APLRotation.create() });
 						return {
@@ -40,7 +41,7 @@ export const SavedRotation = () => {
 						};
 					})
 				: [],
-		[ready, host, player],
+		[ready, specPresets, player],
 	);
 
 	const current = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]), () =>

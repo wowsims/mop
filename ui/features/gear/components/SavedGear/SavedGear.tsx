@@ -1,4 +1,4 @@
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Stats } from '@sim/proto/stats';
 import { batch } from '@sim/state/batch';
@@ -17,7 +17,8 @@ import { gearSetData, serializeGearSet } from './utils';
 
 export const SavedGear = () => {
 	const host = useSimHost();
-	const { player, sim, individualConfig } = host;
+	const { player, sim } = host;
+	const individualConfig = useSpecPresets();
 	const ready = useSimReady();
 
 	const label = i18n.t('gear_tab.gear_sets.gear_set');
@@ -26,7 +27,7 @@ export const SavedGear = () => {
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedGearSet>>>(
 		() =>
 			ready
-				? individualConfig.presets.gear.map(presetGear => {
+				? individualConfig.gear.map(presetGear => {
 						const data = SavedGearSet.create({
 							gear: sim.db.lookupEquipmentSpec(presetGear.gear).asSpec(),
 							bonusStatsStats: new Stats().toProto(),

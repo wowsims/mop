@@ -1,5 +1,5 @@
 import { InputPicker } from '@features/settings/components/InputPicker';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSpecConfig } from '@sim/context/SimHostContext';
 
 import { RotationIconGroup } from './RotationIconGroup';
 
@@ -10,8 +10,7 @@ import { RotationIconGroup } from './RotationIconGroup';
  * object, so a second construction doesn't append it again.
  */
 export const SimpleRotationInputs = () => {
-	const host = useSimHost();
-	const config = host.individualConfig;
+	const config = useSpecConfig();
 
 	return (
 		<>

@@ -12,7 +12,7 @@ import { APL_PANES } from '@features/apl/model/apl_panes';
 import { CooldownsPicker, useAvailableCooldowns } from '@features/settings';
 import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { tabPaneClass } from '@ui-kit/tab_pane_class';
 import clsx from 'clsx';
@@ -48,7 +48,7 @@ const RotationSidebar = () => (
 export const RotationTabBody = () => {
 	const host = useSimHost();
 	const player = host.player;
-	const config = host.individualConfig;
+	const config = useSpecConfig();
 	const hasSimple = player.hasSimpleRotationGenerator() && !!config.rotationInputs;
 	const hasCooldowns = useAvailableCooldowns().length > 0;
 

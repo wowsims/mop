@@ -1,4 +1,5 @@
-import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -6,23 +7,22 @@ import { describe, expect, it, vi } from 'vitest';
 // so this is the only place the rotation-type class is checked.
 vi.mock('./RotationTabBody', () => ({ RotationTabBody: () => <div className="rotation-tab-body-stub" /> }));
 
+const KEY = 1;
+const store = createSimStore();
+seedKeyed(store, 'players', KEY, { v: zeroVersions(PLAYER_FIELDS) } as unknown as PlayerSlice);
+
 let rotationType = APLRotationType.TypeAuto;
-const listeners = new Set<() => void>();
-const player = { getRotationType: () => rotationType };
+const player = { sim: { store }, storeKey: KEY, aplRotation: APLRotation.create(), getRotationType: () => rotationType };
 vi.mock('@sim/context/SimHostContext', () => ({ usePlayer: () => player }));
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => (listener: () => void) => {
-		listeners.add(listener);
-		return () => listeners.delete(listener);
-	},
-}));
 
 const { RotationTabPane } = await import('./RotationTabPane');
 
+// `useAplRotation` selects the slice's rotation counter, so the change signal is the bump the APL
+// editor's writes make — there is no subscription seam left to stub.
 const setRotationType = (type: APLRotationType) =>
 	act(() => {
 		rotationType = type;
-		listeners.forEach(listener => listener());
+		patchKeyed(store, 'players', KEY, {}, ['rotation']);
 	});
 
 describe('RotationTabPane', () => {

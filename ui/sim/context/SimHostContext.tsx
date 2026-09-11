@@ -3,6 +3,7 @@ import { createContext, type ReactNode, useContext } from 'react';
 
 import type { Sim } from '../sim';
 import type { IndividualSimHost } from '../sim_host';
+import type { IndividualSimUIConfig } from '../spec_config';
 
 const SimHostContext = createContext<IndividualSimHost<any> | null>(null);
 
@@ -20,3 +21,8 @@ export function useSimHost<SpecType extends Spec = any>(): IndividualSimHost<Spe
 
 export const usePlayer = <SpecType extends Spec = any>() => useSimHost<SpecType>().player;
 export const useSim = (): Sim => useSimHost().sim;
+
+/** The spec's declaration, built once in the IndividualSimUI constructor and never replaced: a context read, NOT a subscription — it never re-renders anything. Reactive state is in the store hooks. */
+export const useSpecConfig = <SpecType extends Spec = any>(): Readonly<IndividualSimUIConfig<SpecType>> => useSimHost<SpecType>().individualConfig;
+
+export const useSpecPresets = <SpecType extends Spec = any>(): Readonly<IndividualSimUIConfig<SpecType>['presets']> => useSpecConfig<SpecType>().presets;
