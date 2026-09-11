@@ -2,9 +2,8 @@ import './CharacterStats.scss';
 
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
-import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { useMemo } from 'react';
 
 import { CritCapRow } from './CritCapRow';
@@ -18,15 +17,14 @@ export const CharacterStats = () => {
 	const { displayStats, epReferenceStat, modifyDisplayStats, overwriteDisplayStats } = useSpecConfig();
 	const rows = useMemo(() => buildRows(player, displayStats, epReferenceStat), [player, displayStats, epReferenceStat]);
 
-	const subscribe = subscribeAll([
-		subscribePlayerField(player, 'currentStats'),
-		subscribeSimChange(player.sim),
-		subscribePlayerField(player, 'talentsString'),
-	]);
+	const currentStats = usePlayerStore('currentStats');
+	const bonusStats = usePlayerStore('bonusStats');
+	const gear = usePlayerStore('gear');
+	const race = usePlayerStore('race');
+	const inFrontOfTarget = usePlayerStore('inFrontOfTarget');
 
-	const snapshot = useStoreSubscribe(subscribe, () => {
+	const snapshot = useMemo(() => {
 		const racial = readRacialBonuses(player);
-		const bonusStats = player.getBonusStats();
 		const attribution = computeStatAttribution(
 			player.getCurrentStats(),
 			bonusStats,
@@ -35,15 +33,15 @@ export const CharacterStats = () => {
 			overwriteDisplayStats ? overwriteDisplayStats(player) : undefined,
 		);
 		return {
-			pending: !player.getCurrentStats().finalStats,
+			pending: !currentStats.finalStats,
 			racial,
-			bonusStats,
 			attribution,
 			critCap: shouldShowMeleeCritCap(player) ? { info: player.getMeleeCritCapInfo(), text: meleeCritCapDisplayString(player) } : null,
 		};
-	});
+		// `gear`, `race` and `inFrontOfTarget` reach the body through the player facade, not by name: they are invalidation keys, and dropping them from the list would stale the snapshot.
+	}, [player, currentStats, bonusStats, gear, race, inFrontOfTarget, modifyDisplayStats, overwriteDisplayStats]);
 
-	const { pending, racial, bonusStats, attribution, critCap } = snapshot;
+	const { pending, racial, attribution, critCap } = snapshot;
 	const show = (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => statDisplayString(player, racial, deltaStats, unitStat, includeBase);
 
 	return (
