@@ -4,8 +4,6 @@ import { ActionId } from '@sim/proto/action_id';
 import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
-import { useMemo } from 'react';
-
 export interface TabGemIconProps {
 	socketColor: GemColor;
 	gem: Gem | null;
@@ -13,7 +11,7 @@ export interface TabGemIconProps {
 
 // Not `GemSocket`: this one goes inside the tab's own <button>, and `GemSocket` is an anchor.
 export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
-	const actionId = useMemo(() => (gem ? ActionId.fromItemId(gem.id) : undefined), [gem]);
+	const actionId = gem ? ActionId.fromItemId(gem.id) : undefined;
 	const { iconUrl } = useActionId(actionId);
 	const emptyIconUrl = getEmptyGemSocketIconUrl(socketColor);
 

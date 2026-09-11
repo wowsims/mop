@@ -4,8 +4,6 @@ import { Button } from '@ui-kit/Button';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
-import { useMemo } from 'react';
-
 export type QuickSwapItem = Gem | Enchant;
 
 export interface QuickSwapEntry<T extends QuickSwapItem> {
@@ -22,7 +20,7 @@ export interface QuickSwapListProps<T extends QuickSwapItem> {
 }
 
 const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: QuickSwapEntry<T>; onItemClick: (item: T) => void }) => {
-	const actionId = useMemo(() => ('spellId' in entry.item ? ActionId.fromSpellId(entry.item.spellId) : ActionId.fromItemId(entry.item.id)), [entry.item]);
+	const actionId = 'spellId' in entry.item ? ActionId.fromSpellId(entry.item.spellId) : ActionId.fromItemId(entry.item.id);
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (

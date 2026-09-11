@@ -25,7 +25,7 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 	const player = usePlayer();
 	const actionConfig = useMemo(() => actionPickerConfig(available, index), [available, index]);
 	const timingsConfig = useMemo(() => timingsPickerConfig(index), [index]);
-	const actionId = useMemo(() => (id ? ActionId.fromProto(id) : undefined), [id]);
+	const actionId = id ? ActionId.fromProto(id) : undefined;
 	const { name } = useActionId(actionId);
 
 	return (

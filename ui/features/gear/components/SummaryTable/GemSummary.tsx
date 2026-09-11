@@ -17,7 +17,7 @@ import { SummaryTable } from './SummaryTable';
 import { SummaryTableRow } from './SummaryTableRow';
 
 const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
-	const actionId = useMemo(() => ActionId.fromItemId(gem.id), [gem.id]);
+	const actionId = ActionId.fromItemId(gem.id);
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (

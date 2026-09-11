@@ -6,7 +6,7 @@ import type { TalentConfig } from '@sim/talents/config';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { selectedColumn, withTalentCleared, withTalentSelected } from './utils/talents_string';
 
@@ -21,7 +21,7 @@ const LONG_TOUCH_MS = 750;
 export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }: TalentPickerProps<TalentsProto>) => {
 	const player = usePlayer();
 	const rootRef = useRef<HTMLAnchorElement>(null);
-	const actionId = useMemo(() => ActionId.fromSpellId(config.spellId), [config.spellId]);
+	const actionId = ActionId.fromSpellId(config.spellId);
 	const { iconUrl, href } = useActionId(actionId);
 	const selected = selectedColumn(talentsString, config.location.rowIdx) === config.location.colIdx;
 	const label = i18n.t(`${getClassI18nKey(player.getClass())}.${String(config.fieldName)}`, { ns: 'talents' }) || config.fancyName;

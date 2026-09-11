@@ -4,8 +4,6 @@ import type { GemColor } from '@generated/proto/common';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
-import { useMemo } from 'react';
-
 import { ItemCellAnchor, type ItemCellAnchorProps } from './ItemCellAnchor';
 
 export interface GemSocketProps extends Omit<ItemCellAnchorProps, 'href' | 'children'> {
@@ -15,7 +13,7 @@ export interface GemSocketProps extends Omit<ItemCellAnchorProps, 'href' | 'chil
 }
 
 export const GemSocket = ({ socketColor, gem, hidden, className, ...rest }: GemSocketProps) => {
-	const actionId = useMemo(() => (gem ? ActionId.fromItemId(gem.id) : undefined), [gem]);
+	const actionId = gem ? ActionId.fromItemId(gem.id) : undefined;
 	const { iconUrl, href } = useActionId(actionId);
 	const emptyIconUrl = getEmptyGemSocketIconUrl(socketColor);
 

@@ -7,8 +7,6 @@ import { translateBulkSlotName } from '@i18n/localization';
 import { NameDescriptionLabel } from '@features/gear/components/ItemCell';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { itemQualityClassName } from '@ui-kit/utils/css';
-import { useMemo } from 'react';
-
 import { baseIlvl } from '../../model/search';
 
 export interface BulkItemSearchRowProps {
@@ -17,7 +15,7 @@ export interface BulkItemSearchRowProps {
 }
 
 export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
-	const actionId = useMemo(() => ActionId.fromItem(item), [item]);
+	const actionId = ActionId.fromItem(item);
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (
