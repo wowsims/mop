@@ -13,7 +13,7 @@ export interface ReforgeSoftCapsTooltipProps {
 	additionalInformation: StatTooltipContent;
 }
 
-/** The breakpoint table hanging off the optimize button. Built per open, as tippy's `onShow` did, so the limits it shows are current. */
+/** The breakpoint table hanging off the optimize button. Built per open, so the limits it shows are current. */
 export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation }: ReforgeSoftCapsTooltipProps) => (
 	<>
 		<p>{i18n.t('sidebar.buttons.suggest_reforges.breakpoints_implemented')}</p>

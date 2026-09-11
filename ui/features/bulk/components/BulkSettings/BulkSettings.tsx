@@ -60,8 +60,8 @@ export const BulkSettings = () => {
 		() => player.getGear(),
 	);
 
-	// The vanilla picker cleared a frozen item its slot no longer holds from inside `getValue`.
-	// A store write during render is not safe in React, so the same reset runs after it instead.
+	// Clearing a frozen item whose slot no longer holds it writes to the store; that is not safe
+	// during render, so it runs in an effect after render instead.
 	useEffect(() => {
 		for (const pair of FROZEN_PAIRS) {
 			const frozenItem = frozenItems.get(pair.bulkSlot);

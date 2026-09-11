@@ -165,8 +165,8 @@ export const buildReplayModel = (result: SimResult, filter: SimResultFilter): Re
 	const enemies: ReplayEnemy[] = hitsByEnemy.map((hits, index) => ({
 		index,
 		name: targetNames[index] ?? i18n.t('combat_replay.training_dummy'),
-		// Merged per target, not across the whole filtered list: the vanilla merged one flat array keyed
-		// by spell alone, so a dot fading on one enemy absorbed the same dot landing on the next.
+		// Merged per target, not across the whole filtered list, so a dot fading on one enemy doesn't
+		// absorb the same dot landing on another.
 		auras: targets[index] ? uptimeAuras(targets[index].auraUptimeLogs) : [],
 		hits,
 		cumulativeDamage: cumulativeDamage(hits),

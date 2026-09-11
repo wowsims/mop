@@ -26,7 +26,7 @@ const DEFAULT_STAT_TOOLTIPS: Partial<Record<Stat, ReactNode>> = {
 	),
 };
 
-/** The panel's own entries, overridden per stat by the spec's. Evaluated once per popover open, which is the lifetime tippy's lazy `content` function had. */
+/** The panel's own entries, overridden per stat by the spec's. Evaluated once per popover open. */
 export const buildStatTooltips = (override: StatTooltipContent | undefined): Partial<Record<Stat, ReactNode>> => {
 	const tooltips: Partial<Record<Stat, ReactNode>> = { ...DEFAULT_STAT_TOOLTIPS };
 	for (const [stat, make] of Object.entries(override ?? {})) {

@@ -25,7 +25,7 @@ import { ReforgeSoftCapsTooltip } from './ReforgeSoftCapsTooltip';
 export interface ReforgePanelProps {
 	model: ReforgeOptimizerModel;
 	options?: ReforgeOptimizerOptions;
-	/** Where the popover mounts. tippy's default `appendTo` is the reference's parent, so on master the panel hangs inside this same action group — its containing block is the sticky `aside`, and `--settings-button-width` resolves there. */
+	/** Where the popover mounts: this same action group, whose containing block is the sticky `aside` — `--settings-button-width` resolves there. */
 	container?: HTMLElement | null;
 }
 
@@ -133,7 +133,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		trackEvent({ action: 'settings', category: 'reforging', label: 'suggest_start' });
 
 		wasCM.current = player.getChallengeModeEnabled();
-		// Reset per run: vanilla only ever set this, so every error after the first cancel was swallowed and the gear never restored.
+		// Reset per run, so an error after the first cancel is not swallowed and the gear is restored.
 		isCancelling.current = false;
 		try {
 			performance.mark('reforge-optimization-start');
@@ -181,7 +181,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				onOpenChange={nextOpen => {
 					setOpen(nextOpen);
 					if (!nextOpen) return;
-					// tippy's `hideOnClick` covered a click on the reference itself, so the cog's own hover tooltip never stood behind its popover. Closed through the ref rather than unmounted: `hidden` leaves react-tooltip open on the remount, with no anchor hover left to close it.
+					// Closed through the ref rather than unmounted: `hidden` leaves react-tooltip open on the remount, with no anchor hover left to close it.
 					settingsTooltipRef.current?.close();
 					trackPageView('Reforge Settings', 'reforge-settings');
 				}}
@@ -207,7 +207,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				place="bottom"
 				clickable
 				className="suggest-reforges-softcaps"
-				// Nothing rendered is tippy's `onShow: () => false`, and the limits are read per open, as they were.
+				// The limits are read per open.
 				render={() => {
 					const softCaps = model.softCapsConfigWithLimits;
 					if (!softCaps?.length) return null;

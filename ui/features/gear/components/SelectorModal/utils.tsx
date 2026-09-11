@@ -40,8 +40,8 @@ interface TabSpec<T extends ItemListType> {
 	onRemove: () => void;
 }
 
-// A tab with no rows is not built, which is the vanilla `addTab`'s first line. The cast is the one
-// the vanilla modal makes too: every tab is uniform apart from the type its rows carry.
+// A tab with no rows is not built. The cast is necessary because every tab is uniform apart from
+// the type its rows carry.
 const describe = <T extends ItemListType>(spec: TabSpec<T>): SelectorTab | null =>
 	spec.itemData.length ? ({ socketColor: GemColor.GemColorUnknown, ...spec } as unknown as SelectorTab) : null;
 

@@ -7,7 +7,7 @@ import { CopyButton } from '@ui-kit/CopyButton';
 
 export interface ReforgeDoneToastProps {
 	itemSlots: ItemSlot[];
-	/** The slots the run actually moved; every other slot renders its empty frame, as vanilla did. */
+	/** The slots the run actually moved; every other slot renders its empty frame. */
 	changedSlots: Map<ItemSlot, EquippedItem | undefined>;
 	previousGear: Gear | null;
 	/** `IndividualSimSettings.toJson` output, captured when the toast was raised. */

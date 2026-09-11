@@ -26,11 +26,7 @@ export interface TargetPickerProps {
 }
 
 /**
- * One target: three picker sections in the order the vanilla constructor built them.
- *
- * The vanilla class wrote its three sections with `rootElem.innerHTML`, which also erased anything
- * the `Input` base had already appended into that root — harmless only because the list never
- * passes an item a label or a description.
+ * One target: three picker sections, in order.
  */
 export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const context = useMemo(

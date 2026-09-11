@@ -1,5 +1,5 @@
-// The gear-planner hash is Wowhead's own format, moved verbatim from the vanilla importer. Nothing
-// about it is readable, so the test that means anything is a round trip: the *exporter* beside it
+// The gear-planner hash is Wowhead's own format. Nothing about it is readable, so the test that
+// means anything is a round trip: the *exporter* beside it
 // carries an independent writer (`writeBits`/`writeHash`), and every field the reader recovers has
 // to come back out of what the writer put in.
 import { WOWHEAD_DOMAIN } from '@sim/proto/wowhead';

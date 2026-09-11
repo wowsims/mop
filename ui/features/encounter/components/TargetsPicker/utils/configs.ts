@@ -39,15 +39,9 @@ const spellSchoolValues = [
 	SpellSchool.SpellSchoolShadow,
 ].map(value => ({ name: translateSpellSchool(value), value }));
 
-/**
- * Vanilla gave the five section-1 pickers unindexed ids (`target-picker-npc`, …) while every
- * section-2 and section-3 picker carried its target index. With more than one target that put
- * duplicate ids in the document, so each of those labels pointed at the *first* target's control:
- * clicking target 2's "Level" label focused target 1's select. The index is on all of them now.
- */
 const targetId = (targetIndex: number, name: string) => `target-${targetIndex}-picker-${name}`;
 
-// Module-private, as it was in the vanilla file: only the NPC preset match asks the question.
+// Module-private: only the NPC preset match asks the question.
 const equalTargetsIgnoreInputs = (target1: TargetProto | undefined, target2: TargetProto | undefined): boolean => {
 	if (!!target1 !== !!target2) return false;
 	if (!target1) return true;

@@ -10,7 +10,7 @@ export const EP_TOOLTIP_ID = 'ep-weights-tooltip';
 
 export const statName = (stat: Stat | undefined): string => (stat !== undefined ? translateStat(stat) : '??');
 
-/** The reference stat is read at render, so the tooltip follows a change of it — tippy resolved a function-valued `content` once, at creation. */
+/** The reference stat is read at render, so the tooltip follows a change of it. */
 const columnLabelTooltip = (column: StatsTableColumn): string => {
 	if (!column.getEpRefStat) return column.labelTooltip;
 	const refStatName = statName(column.getEpRefStat());

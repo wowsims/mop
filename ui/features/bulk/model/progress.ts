@@ -35,7 +35,7 @@ export const candidateGearProgress = ({
 	return { stage, title, current: completed, total, secondsRemaining };
 };
 
-/** Null where the vanilla tracker returned without updating: an unusable estimate leaves the last frame up. */
+/** Null where there is no update to report: an unusable estimate leaves the last frame up. */
 export const simProgress = (progress: ProgressMetrics, config: BulkSimProgressConfig, simStart: number, now: number): BulkProgress | null => {
 	const stageCurrentRound = config.stageCurrentRound ?? config.currentRound;
 	const stageRounds = config.stageRounds ?? config.totalRounds;

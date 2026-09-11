@@ -78,7 +78,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 		() => player.getEpWeights(),
 	);
 
-	// `calculateEp` writes `epValues` from `weights`, which normalisation leaves alone, so deriving it is what the vanilla panel's re-normalise-on-reference-change did.
+	// `calculateEp` writes `epValues` from `weights`, which normalisation leaves alone.
 	const result = useMemo(() => (simResult ? calculateEp(simResult, refStats) : null), [simResult, refStats]);
 	const prevSimResult = useMemo(() => result ?? emptyStatWeightsResult(), [result]);
 	const stats = useMemo(() => visibleEpUnitStats(epStatSet, showAllStats), [epStatSet, showAllStats]);

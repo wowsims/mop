@@ -185,7 +185,7 @@ describe('LogRunner', () => {
 		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls .btn-primary')][0]);
 
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
-		// The cast-completed line is gone from both, as it was in vanilla — that filter is on `logs`.
+		// The cast-completed line is gone from both — that filter is on `logs`.
 		expect(document.querySelector<HTMLTextAreaElement>('.exporter .exporter-textarea')!.value.split('\n')).toHaveLength(3);
 	});
 

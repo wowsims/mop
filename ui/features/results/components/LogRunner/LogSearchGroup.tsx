@@ -15,8 +15,8 @@ import { labelOf, sentenceCase, TYPED_FIELDS, valueCandidates } from './utils';
 // while `.log-fab-panel` drops its transform when expanded — see the stylesheet.
 const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 
-// Nameless to a screen reader, exactly as vanilla's was: giving it one needs a translation key the
-// locale files do not have, and inventing untranslated English here is the worse trade. Flagged.
+// Nameless to a screen reader: giving it one needs a translation key the locale files do not have,
+// and inventing untranslated English here is the worse trade. Flagged.
 const DeleteButton = ({ onClick }: { onClick: () => void }) => (
 	<button type="button" className="saved-data-set-delete" onClick={onClick}>
 		<Icon name="times" style="base" size="lg" />

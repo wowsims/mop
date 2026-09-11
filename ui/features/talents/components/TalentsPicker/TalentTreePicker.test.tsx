@@ -78,8 +78,8 @@ describe('TalentTreePicker', () => {
 		expect(onChange).toHaveBeenCalledWith('000000');
 	});
 
-	// Vanilla's `setSelected(false)` clears *this* talent, so the row's point survives — but
-	// `inputChanged()` still writes, which is what fires the tab's analytics event.
+	// Clearing this talent leaves the row's point untouched, but the change handler still fires,
+	// which is what fires the tab's analytics event.
 	it('leaves the row alone when right-clicking a talent that does not hold its point, and still writes', () => {
 		const onChange = tree('200000');
 		fireEvent.mouseDown(talentAt(0, 2), { button: 2 });

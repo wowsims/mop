@@ -58,7 +58,7 @@ describe('AuraMetricsTable', () => {
 		expect(rowNames(container)).toEqual(['Bloodbath', 'Recklessness']);
 	});
 
-	// Vanilla applies its pet filter to the pet groups too, so they always empty. Reproduced on purpose.
+	// The pet filter applies to the pet groups too, so they always empty. Reproduced on purpose.
 	it('drops every pet aura from the buffs table, the player list and the pet groups alike', () => {
 		result = playerResult([aura('Recklessness', 12), aura('Pet Only', 90, true)], [aura('Frenzy', 80, true)]);
 		const { container } = render(<AuraMetricsTable useDebuffs={false} />);

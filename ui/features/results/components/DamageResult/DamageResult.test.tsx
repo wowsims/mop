@@ -34,7 +34,7 @@ describe('DamageResult', () => {
 
 	it('reports healing and shielding as health rather than as an outcome', () => {
 		const healed = render(<DamageResult log={damage({ effect: 'healing' })} />).container;
-		// The double space is the port keeping the vanilla line byte for byte: 'Healed ' already ends in one.
+		// The double space is intentional: 'Healed ' already ends in one.
 		expect(healed.textContent).toBe('Healed  [Target 1] for 1234.50 health.');
 		expect(healed.querySelector('strong')!.className).toBe('resource-health');
 

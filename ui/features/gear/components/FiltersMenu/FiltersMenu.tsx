@@ -34,7 +34,7 @@ export interface FiltersMenuProps {
 	onOpenChange: (open: boolean) => void;
 }
 
-/** `${kebabCase(name)}-section` is vanilla's rule, kept as-is: the class is derived from the *translated* name, so `.general-section` exists in English only. */
+/** `${kebabCase(name)}-section`: the class is derived from the *translated* name, so `.general-section` exists in English only. */
 const MenuSection = ({ name, className, children }: { name: string; className?: ClassValue; children: ReactNode }) => (
 	<div className={clsx('menu-section', `${kebabCase(name)}-section`)}>
 		<div className="menu-section-header">

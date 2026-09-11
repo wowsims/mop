@@ -26,9 +26,8 @@ export const removePickerEntry = (entries: readonly BulkPickerEntry[], index: nu
 /**
  * One slot group's entries with `item` at `index`, in render order, or `'duplicate'`.
  *
- * Equipped entries are unshifted and user entries pushed, which is the order the vanilla group's
- * `insertAdjacentElement('afterbegin')` produced: the equipped pair ends up reversed against slot
- * order, and the batch's own items follow in index order.
+ * Equipped entries are unshifted and user entries pushed: the equipped pair ends up reversed
+ * against slot order, and the batch's own items follow in index order.
  */
 export const addPickerEntry = (
 	bulkSlot: BulkSimItemSlot,

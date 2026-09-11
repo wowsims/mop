@@ -1,6 +1,6 @@
 import type { TalentLocation } from '@sim/talents/config';
 
-/** MoP trees are six rows of three, and the vanilla picker hardcodes the six: `getTalentsString()` builds `Array.from(Array(6), …)` whatever the config holds. */
+/** MoP trees are six rows of three: `getTalentsString()` builds `Array.from(Array(6), …)` whatever the config holds. */
 export const TALENT_ROWS = 6;
 
 export const selectedColumn = (talentsString: string, rowIdx: number): number => {

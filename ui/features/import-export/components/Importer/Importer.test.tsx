@@ -1,7 +1,5 @@
 // What this pins is the shell's behaviour, which is everything the four importers share: what gets
-// handed to `onImport`, what happens to the dialog when it resolves and when it rejects, the two
-// upload-path defects the port fixes, and the analytics slug — which was wrong in vanilla and is
-// therefore the one thing here with no baseline to compare against.
+// handed to `onImport`, and what happens to the dialog when it resolves and when it rejects.
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { act, fireEvent, render } from '@testing-library/react';
@@ -12,8 +10,8 @@ import { Importer } from './Importer';
 const trackPageView = vi.hoisted(() => vi.fn());
 vi.mock('../../../../tracking/analytics', () => ({ trackPageView }));
 
-// Bootstrap's `Toast` needs a real layout to show; what matters here is only that a rejected import
-// reports one, and with the message the thrown error carried.
+// What matters here is only that a rejected import reports a toast, and with the message the
+// thrown error carried.
 const toasts = vi.hoisted(() => [] as Array<{ variant: string; body: unknown }>);
 vi.mock('@ui-kit/Toast', async importOriginal => ({
 	...(await importOriginal<typeof import('@ui-kit/Toast')>()),
@@ -79,9 +77,6 @@ describe('Importer', () => {
 		expect(onOpenChange).not.toHaveBeenCalled();
 	});
 
-	// DEFECT FIXED. `Importer.open()` passed `this.header.title` to `trackPageView`, and `this.header`
-	// is the `.modal-header` *element* — so its `title` is the (absent) HTML attribute, and every
-	// import page view was logged with an empty title and the slug `/import/`.
 	it('reports a page view under the importer title on open', () => {
 		renderImporter();
 		expect(trackPageView).toHaveBeenCalledWith('JSON Import', '/import/json-import');
@@ -92,8 +87,6 @@ describe('Importer', () => {
 		expect(trackPageView).not.toHaveBeenCalled();
 	});
 
-	// DEFECT FIXED. Vanilla wrote `textContent`, which is a textarea's *default* value: a field the
-	// user had already typed in ignored the upload entirely and imported the typed text instead.
 	it('an upload replaces text the user has already typed', async () => {
 		const { onImport } = renderImporter();
 		const textarea = rootElem.querySelector('textarea')!;
@@ -108,8 +101,6 @@ describe('Importer', () => {
 		expect(onImport).toHaveBeenCalledWith(host, 'from the file');
 	});
 
-	// DEFECT FIXED. Vanilla read `files[0]` unguarded, so cancelling the picker threw inside the
-	// listener rather than doing nothing.
 	it('ignores a cancelled file picker', async () => {
 		renderImporter();
 		const upload = rootElem.querySelector<HTMLInputElement>('.importer-upload-input')!;

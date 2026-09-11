@@ -13,7 +13,7 @@ export interface ReforgeFrozenSlotsProps {
 	freezeItemSlots: boolean;
 }
 
-/** Two slots per row, in the gear's own slot order. The slot list is read once per open, as the vanilla builder did. */
+/** Two slots per row, in the gear's own slot order. The slot list is read once per open. */
 export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: ReforgeFrozenSlotsProps) => {
 	const slotsByRow = useMemo(() => {
 		const allSlots = player.getGear().getItemSlots();
@@ -23,7 +23,7 @@ export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: Reforg
 
 	return (
 		<table className={clsx('mb-2', !freezeItemSlots && 'd-none')}>
-			{/* The vanilla table put its rows straight under <table>, which React reports as a nesting error — the parser's implied <tbody> is written out here instead. */}
+			{/* React reports rows placed directly under <table> as a nesting error, so the parser's implied <tbody> is written out here instead. */}
 			<tbody>
 				{slotsByRow.map((slots, rowIdx) => (
 					<tr key={rowIdx}>

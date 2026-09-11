@@ -31,7 +31,7 @@ const UNMEASURED: Measured = { for: null, width: 0, rowHeight: ESTIMATED_ROW_HEI
 const longestOf = (logs: ReadonlyArray<CombatLog>): CombatLog => logs.reduce((longest, log) => (log.raw.length > longest.raw.length ? log : longest));
 
 export interface LogRunnerProps {
-	/** The pane is open. A run that lands while it is closed is indexed the first time it opens, which is what vanilla's `deferUntilShown` bought. */
+	/** The pane is open. A run that lands while it is closed is indexed the first time it opens. */
 	active: boolean;
 }
 
@@ -61,8 +61,8 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 
 	const result = seen?.result ?? null;
 
-	// Keyed on the result rather than on `seen`: picking a target re-emits the same run under a new
-	// filter, and re-indexing it there is what vanilla's `requestId` cache existed to avoid.
+	// Keyed on the result rather than on `seen`, so picking a target — which re-emits the same run
+	// under a new filter — does not trigger re-indexing.
 	const logs = useMemo(() => (result ? result.logs.filter(log => !isCastCompleted(log)) : []), [result]);
 	const logIndex = useMemo(() => (logs.length ? new LogIndex(logs, index => logs[index].raw.includes(DEBUG_MARKER)) : null), [logs]);
 	const suggestions = logIndex?.suggestions() ?? EMPTY_SUGGESTIONS;
@@ -135,12 +135,11 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const rowHeight = measured.for === result ? measured.rowHeight : ESTIMATED_ROW_HEIGHT;
 
 	// Positioned out of flow, so it inherits the list's fonts without widening it. Both numbers come
-	// off the same row: the vanilla list measured its own first row for the height.
+	// off the same row.
 	//
-	// `offsetHeight`, the integer, as the vanilla list measured it — and deliberately, not by
-	// oversight. The fractional box is the more accurate number and was tried: it puts the two lists
-	// at different offsets for the same scroll position, because vanilla rounds and this is the list
-	// it has to line up with. The half pixel it rounds away is slack vanilla carries in its spacers.
+	// `offsetHeight`, the integer, is used deliberately, not by oversight. The fractional box is the
+	// more accurate number and was tried: it puts the two lists at different offsets for the same
+	// scroll position, since one of them rounds and this is the list it has to line up with.
 	const measureRow = useCallback(
 		(element: HTMLDivElement | null) => {
 			const row = element?.firstElementChild as HTMLElement | undefined;
@@ -151,7 +150,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	);
 
 	// A line never wraps, so a row wider than its own box means the list is too narrow. Reported per
-	// row on mount, which is where `@tanstack/react-virtual` leaves the vanilla `onRender` hook.
+	// row on mount, since `@tanstack/react-virtual` has no built-in width-repair hook.
 	const growToFit = useCallback((width: number) => {
 		setMeasured(current => (width > current.width ? { ...current, width } : current));
 	}, []);

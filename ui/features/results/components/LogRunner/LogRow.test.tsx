@@ -23,7 +23,7 @@ describe('LogRow', () => {
 		expect(container.querySelector('.log-event')!.textContent).toBe('a line');
 	});
 
-	// This is what replaces the vanilla list's `onRender` width repair, so it has to fire.
+	// This is the width-repair mechanism, so it has to fire.
 	it('reports its own width once, when the line does not fit', () => {
 		const onWidth = vi.fn();
 		sizedRow(900, 400);

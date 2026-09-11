@@ -24,7 +24,7 @@ import { FiltersMenu } from '../FiltersMenu';
 import { ItemListRow } from './ItemListRow';
 import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils';
 
-// Fixed, as the vanilla list was: it measured its first row and applied that height to all of them.
+// Fixed: one row's height, applied to all of them.
 const ROW_HEIGHT = 56;
 
 export interface ItemListProps {
@@ -130,7 +130,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						}}
 					/>
 				</div>
-				{/* Both weapon boxes are on every slot and hide themselves, as the vanilla row's were; only the picker inside is conditional. */}
+				{/* Both weapon boxes are on every slot and hide themselves; only the picker inside is conditional. */}
 				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-1h-weapons', !showWeaponOptions && 'hide')}>
 					{showWeaponOptions && (
 						<BooleanPicker

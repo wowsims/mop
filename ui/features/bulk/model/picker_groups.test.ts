@@ -17,7 +17,6 @@ const addAll = (bulkSlot: BulkSimItemSlot, adds: Array<[number, EquippedItem]>):
 
 describe('addPickerEntry', () => {
 	it('puts equipped entries in front of the batch and keeps the batch in index order', () => {
-		// Finger 1 then Finger 2, which the vanilla group prepended one after the other.
 		const entries = addAll(BulkSimItemSlot.ItemSlotHead, [
 			[0, item(1)],
 			[1, item(2)],

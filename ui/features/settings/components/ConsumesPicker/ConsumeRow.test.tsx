@@ -69,7 +69,7 @@ describe('ConsumeRow', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
 		expect(element.className.split(' ').sort().join(' ')).toBe('consumes-row input-inline input-root');
-		// A <span>, not vanilla's <label>: it names the row's icon group, not a form control.
+		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
 			'span.form-label',
 			'div.picker-group icon-group consumes-row-inputs consumes-engi',
@@ -111,8 +111,6 @@ describe('ConsumeRow', () => {
 	});
 
 	it('never hides a row that names no pickers', () => {
-		// Elixirs, food and pet: vanilla called `updateRow` for the potions and engineering rows only,
-		// so nothing else in this block has ever hidden.
 		const element = row(new Options());
 		expect(element.classList.contains('hide')).toBe(false);
 

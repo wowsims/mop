@@ -1,11 +1,10 @@
 @import 'shared/tokens';
 
-// tippy drew this panel and capped it at its own default `maxWidth: 350px`; the theme only raised the floor.
 .sim-popover-popup.reforge-optimiser-popover {
 	min-width: 300px;
 	max-width: 350px;
 
-	// `--settings-button-width` is declared on `.suggest-reforges-settings-group`, which the popup is portalled out of — as tippy's box was appended to <body>, where it never resolved either. The fallback is that same 36px.
+	// `--settings-button-width` is declared on `.suggest-reforges-settings-group`, which the popup is portalled out of, so it never resolves there either. The fallback is that same 36px.
 	@include media-breakpoint-down(lg) {
 		max-width: min(350px, calc(100dvw - var(--settings-button-width, 36px) - var(--spacer-3) * 2));
 	}
@@ -15,7 +14,6 @@
 	}
 }
 
-// tippy carried `maxWidth: 310` on the instance rather than in the theme, so this rule is new: `Tooltip.scss` caps every tooltip at 192px.
 .sim-tooltip.suggest-reforges-softcaps {
 	max-width: 310px;
 }

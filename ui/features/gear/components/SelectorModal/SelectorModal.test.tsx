@@ -60,7 +60,7 @@ const item = (id: number): EquippedItem => {
 };
 
 // `GearTabBody` holds the state and the pickers open it; the harness stands in for that pair, and
-// records what the modal's own rail asks for the way the opener object used to be spied on.
+// records what the modal's own rail asks for.
 const openSpy = vi.fn<OpenSelectorModal>();
 let openModal: OpenSelectorModal;
 let setModalOpen: (open: boolean) => void;
@@ -172,7 +172,6 @@ describe('SelectorModal', () => {
 		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
 	});
 
-	// Vanilla showed an empty body when the tab you were on stopped existing.
 	it('falls back to the first tab when the one you were on is gone', () => {
 		setup({ tabSet: [tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Reforging), tab(SelectorModalTabs.Gem1, 0)] });
 
@@ -190,8 +189,8 @@ describe('SelectorModal', () => {
 		expect(openPanes()).toEqual([SelectorModalTabs.Items]);
 	});
 
-	// Base UI stops keydown propagation at the popup, so the vanilla document-level rail navigation
-	// silently did nothing when it was ported verbatim.
+	// Base UI stops keydown propagation at the popup, so the rail must listen on the popup rather
+	// than the document.
 	it('navigates the rail from the popup and not from the document', () => {
 		setup();
 		const openTab = railOpens();

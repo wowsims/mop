@@ -1,6 +1,5 @@
-// The vanilla panel's sixteen recorded defects are the reason most of these assertions exist; each
-// one that fixes a defect says so. The store, the worker and the saved-data manager are stubbed —
-// what is under test is the view, and every source it reads is driven directly.
+// The store, the worker and the saved-data manager are stubbed — what is under test is the view,
+// and every source it reads is driven directly.
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Class, PseudoStat, Stat } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
@@ -356,8 +355,6 @@ describe('EpWeightsDialog', () => {
 		expect(player.getRefStat('dpsRefStat')).toBe(Stat.StatAgility);
 	});
 
-	// DEFECT FIXED. tippy resolves a function-valued `content` once at creation, so the "normalized
-	// by …" half of the label tooltip never followed a change of reference stat.
 	it('follows the reference stat in the column tooltip', () => {
 		renderDialog();
 		const dpsEpLabel = () => table().querySelectorAll('thead tr:first-child th')[3].querySelector('span')!;

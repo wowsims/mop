@@ -16,7 +16,7 @@ import type { ChartView } from './utils';
 import { resultKey } from './utils';
 
 export interface TimelineProps {
-	/** The timeline tab is open. While it is not, a finished run is held rather than drawn — the vanilla `deferUntilShown`. */
+	/** The timeline tab is open. While it is not, a finished run is held rather than drawn. */
 	active: boolean;
 }
 

@@ -7,11 +7,8 @@ import type { APLValueKind, ValidAPLValueKind } from './value_kinds';
 /**
  * What happens to the value the user already built when they pick a different kind for it.
  *
- * This was two long `else if` chains inside the two kind pickers' `setValue`, reading the live
- * picker back through `getInputValue()`. Nothing in it is about the DOM: the old implementation is
- * `source.value[oldKind]`, which is what the picker was showing. Pulled out here it is DOM-free,
- * so the rules — wrap into `not`, unwrap out of it, carry a list across `and`/`or` and
- * `min`/`max`, promote into a `cmp`'s left-hand side — are unit-testable.
+ * Nothing in it is about the DOM, so the rules — wrap into `not`, unwrap out of it, carry a list
+ * across `and`/`or` and `min`/`max`, promote into a `cmp`'s left-hand side — are unit-testable.
  */
 
 const wrapValue = <K extends ValidAPLValueKind>(kind: K, impl: unknown): APLValue => {
@@ -29,8 +26,7 @@ const LIST_PAIR: Record<keyof typeof LIST_KINDS, keyof typeof LIST_KINDS> = { an
  * The value to store when the kind picker moves from `oldKind` to `newKind`.
  *
  * Returns the whole `APLValue`; the caller assigns `.value` onto the existing message when there is
- * one (so the uuid survives) and stores the message itself when there is not — which is exactly
- * what the vanilla picker did.
+ * one (so the uuid survives) and stores the message itself when there is not.
  */
 export const swapValueKind = (source: APLValue | undefined, newKind: ValidAPLValueKind, freshImpl: () => unknown): APLValue => {
 	const oldKind = source?.value.oneofKind as APLValueKind;

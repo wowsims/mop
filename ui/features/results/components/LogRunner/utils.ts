@@ -10,7 +10,7 @@ import { OUTCOME_LABEL } from '../DamageResult';
 
 /**
  * A `SearchGroup` with the identity React needs to keep a group's half-typed value across the removal
- * of an earlier one — the guarantee vanilla got from a `WeakMap` keyed on the group object.
+ * of an earlier one.
  */
 export type IdentifiedSearchGroup = SearchGroup & { id: number };
 

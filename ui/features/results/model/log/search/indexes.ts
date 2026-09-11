@@ -21,8 +21,7 @@ type TypeFilter = { kinds: ReadonlyArray<LogKind> } | { effect: DamageEffect } |
 //
 // damage/heal/shield select an effect, not a kind: the 'damage' kind tags every damage-dealt line,
 // heals and shields included, so routing them through the kind index would make type:damage and
-// type:heal overlap instead of partition. A miss has no effect at all and matches neither, which
-// is what master's isDamage() reported for it too.
+// type:heal overlap instead of partition. A miss has no effect at all and matches neither.
 const TYPE_FILTERS = {
 	damage: { effect: 'damage' },
 	heal: { effect: 'healing' },

@@ -8,10 +8,10 @@ export interface LogRowProps {
 	log: CombatLog;
 	/**
 	 * How wide this line actually is, reported once as the row mounts. Lines never wrap, so a row
-	 * whose content scrolls out of its own box is the list being too narrow — vanilla read the
-	 * container's overflow in its `onRender` hook, which `@tanstack/react-virtual` has no counterpart
-	 * for. Reporting the width rather than the overflow keeps the report idempotent: several rows in
-	 * one window each say what they need and the widest wins, where summing overflows would not.
+	 * whose content scrolls out of its own box is the list being too narrow; `@tanstack/react-virtual`
+	 * has no built-in hook for that. Reporting the width rather than the overflow keeps the report
+	 * idempotent: several rows in one window each say what they need and the widest wins, where
+	 * summing overflows would not.
 	 */
 	onWidth?: (width: number) => void;
 }

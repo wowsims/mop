@@ -63,7 +63,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 	// A gear source that is not the player's own — the batch's item pickers — has nothing in `gear`
 	// to key on, so its own notification is what says the item moved. An effect rather than
 	// `useStoreSubscribe`, which marks its snapshot stale as it subscribes and would rebuild every
-	// tab's data a second time on each open; and only while open, because the dialog is kept mounted.
+	// tab's data a second time on each open.
 	const [externalRevision, setExternalRevision] = useState(0);
 	useEffect(() => {
 		if (!open || !gearData) return;
@@ -82,9 +82,8 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 		[player, slot, equippedItem, isBlacksmithing, challengeMode],
 	);
 
-	// The requested tab is resolved once per request, the way `setData` did it; a tab the user picks
-	// afterwards is taken as-is. Falling back to the first tab is the part vanilla left undone — it
-	// showed an empty body when the tab you were on stopped existing.
+	// The requested tab is resolved once per request; a tab the user picks afterwards is taken as-is.
+	// Falling back to the first tab avoids showing an empty body when the tab you were on no longer exists.
 	const requestedTab = request && eligibility ? resolveSelectedTab(request.tab, eligibility) : SelectorModalTabs.Items;
 	const currentTab = selected && request && selected.sequence === request.sequence ? selected.tab : requestedTab;
 	const activeTab = tabs.find(tab => tab.label === currentTab) ?? tabs[0] ?? null;

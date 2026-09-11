@@ -10,7 +10,7 @@ import { ReplayEmpty } from './ReplayEmpty';
 import { ReplayScene } from './ReplayScene';
 
 export interface CombatReplayProps {
-	/** The replay tab is open. While it is not, a finished run is held rather than parsed — the vanilla `deferUntilShown`. */
+	/** The replay tab is open. While it is not, a finished run is held rather than parsed. */
 	active: boolean;
 }
 
@@ -36,10 +36,8 @@ export const CombatReplay = ({ active }: CombatReplayProps) => {
 		});
 	}, [model, warmed]);
 
-	// The vanilla stopped playback both when the tab was hidden and on every new result — and did it
-	// before it built the scene. A layout effect for the same reason: a passive one runs after the
-	// browser has painted, so a re-run part-way through a fight would flash the new scene at the old
-	// playhead before resetting it.
+	// A layout effect: a passive one runs after the browser has painted, so a re-run part-way through
+	// a fight would flash the new scene at the old playhead before resetting it.
 	const { pause, seekTo } = clock;
 	useLayoutEffect(() => {
 		pause();

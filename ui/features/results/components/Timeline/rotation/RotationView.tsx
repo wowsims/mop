@@ -89,8 +89,8 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const estimateSize = useCallback((index: number) => rowFor(order[index]).height, [order, rowFor]);
 	const scrollsWithWindow = scrollport !== null && !(scrollport instanceof HTMLElement);
 
-	// Hiding a row must not empty the content, even for one commit. Vanilla's did, and that is a real
-	// defect: the browser clamps scrollTop against a document momentarily a whole rotation shorter,
+	// Hiding a row must not empty the content, even for one commit: the browser clamps scrollTop
+	// against a document momentarily a whole rotation shorter,
 	// and the height comes back with the scroll where the clamp left it — an 1105px jump against a
 	// real change of one row's 32px. The virtualizer re-measures inside the render the toggle causes,
 	// off a scroll offset and a scrollport rect that nothing has invalidated, so the spacers carry
@@ -438,9 +438,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				</div>
 			)}
 			{/* Rendered inline, not portaled: `.hide-threat-metrics` (scss/core/sim_ui/_shared.scss:131) is an
-			 * ancestor rule on `.sim-ui`, so a tooltip moved to `document.body` stops obeying the setting —
-			 * which is what master's tippy version does. `timeline.mjs` reads `textContent` and so cannot
-			 * see the difference. */}
+			 * ancestor rule on `.sim-ui`, so a tooltip moved to `document.body` stops obeying the setting. */}
 			{hoveredItem && (
 				<div ref={tooltipRef} className="timeline-hover-tooltip">
 					<RowItemTooltip item={hoveredItem} />

@@ -242,8 +242,6 @@ describe('ItemList', () => {
 		act(() => container.querySelector<HTMLElement>('.ilvl-label')!.click());
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 
-		// The vanilla list re-derived `sortBy` on every keystroke, so a chosen sort was undone by the
-		// next character typed.
 		fireEvent.change(container.querySelector('.selector-modal-search')!, { target: { value: 'a' } });
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 

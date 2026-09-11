@@ -53,8 +53,6 @@ describe('finishIndividualImport', () => {
 		for (const setter of [player.setRace, player.setGear, player.setTalentsString, player.setGlyphs, player.setProfessions]) setter.mockClear();
 	});
 
-	// The fix: all three vanilla callers invoked this without `await`, so this rejection was
-	// unhandled — the import silently did nothing.
 	it('rejects when the export is for another class, before touching the player', async () => {
 		await expect(finishIndividualImport(host, parsed({ charClass: Class.ClassMage }))).rejects.toThrow(
 			`Wrong Class! Expected Warrior but found ${classNames.get(Class.ClassMage)}!`,

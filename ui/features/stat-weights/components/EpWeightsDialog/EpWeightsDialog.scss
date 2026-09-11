@@ -21,7 +21,7 @@
 		}
 	}
 
-	// Was `.modal .modal-scroll-table`, whose only consumer was this table. Nothing constrains this element's height, so it never actually scrolls and the sticky `<th>` is inert — measured identical on the vanilla build.
+	// Nothing constrains this element's height, so it never actually scrolls and the sticky `<th>` is inert.
 	.results-ep-table-container {
 		position: relative;
 		flex: 1;

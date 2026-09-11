@@ -43,7 +43,6 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 			<EnumPicker modObject={encounter} config={preset} />
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}
 			{player.getPlayerSpec().isTankSpec && <NumberPicker modObject={encounter} config={minBaseDamage} />}
-			{/* Vanilla built this into the block's root and then moved it here with `insertBefore`. */}
 			<TargetInputsPicker encounter={encounter} targetIndex={0} />
 			<Button className="advanced-button" onClick={() => setAdvancedOpen(true)}>
 				{i18n.t('settings_tab.encounter.advanced')}

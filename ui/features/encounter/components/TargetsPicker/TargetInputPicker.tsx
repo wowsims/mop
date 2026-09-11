@@ -17,10 +17,7 @@ export interface TargetInputPickerProps {
 /**
  * One AI-declared target input, rendered as the picker its `InputType` names.
  *
- * Vanilla rebuilt the picker inside `setInputValue` and guarded against doing so twice by comparing
- * the live picker's *translated* label with the input's *raw* one — a comparison that only ever
- * matched in English, so under any other locale the picker was torn down and rebuilt on every
- * encounter notification. The enum branch had no guard at all. Rendering removes the question.
+ * Rendering it declaratively removes any need to guard against redundant rebuilds.
  */
 export const TargetInputPicker = ({ encounter, targetIndex, inputIndex, input }: TargetInputPickerProps) => {
 	const picker = useMemo(

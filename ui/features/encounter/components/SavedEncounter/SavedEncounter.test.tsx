@@ -128,8 +128,8 @@ describe('SavedEncounter', () => {
 			expect(chipNamed('Council').querySelector('.saved-data-set-name')!.getAttribute('data-tooltip-content')).toBe('Tank swaps at 3s');
 		});
 
-		// Vanilla `SettingsTabBody` never passes `enableWhen`/`onLoad` for encounter presets, only
-		// `tooltip`. Adding either back here would silently diverge from what the tab always sent.
+		// Encounter presets carry only `tooltip`, never `enableWhen`/`onLoad`. Adding either back here
+		// would silently diverge from that.
 		it('never disables an encounter preset', async () => {
 			presets = [{ name: 'Council', encounter: encounterWith(400) }];
 			await renderPanel();

@@ -145,7 +145,6 @@ describe('CooldownsPicker', () => {
 		expect(result.current).toHaveLength(1);
 	});
 
-	// The vanilla button carries no `btn`, so the shared Button has to stay unstyled.
 	it('renders the delete button with the vanilla class list and icon', () => {
 		setup([cooldownFor(1)]);
 		mount();

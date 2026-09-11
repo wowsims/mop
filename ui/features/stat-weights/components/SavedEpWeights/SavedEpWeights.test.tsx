@@ -216,9 +216,8 @@ describe('SavedEpWeights', () => {
 			expect(chips('custom')).toHaveLength(0);
 		});
 
-		// The only part of this port that can lose data, and no gate covers it: the storage key is the
-		// one the vanilla manager wrote, so an entry saved before the port has to keep loading. Every
-		// stat, not just the one the rest of these tests carry.
+		// The only part of this that can lose data, and no gate covers it: an entry saved under the old
+		// storage key has to keep loading. Every stat, not just the one the rest of these tests carry.
 		it('reads a set stored under the key the vanilla manager wrote', async () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: MIXED_JSON }));
 			await renderManager();

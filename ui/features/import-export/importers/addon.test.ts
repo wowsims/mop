@@ -5,8 +5,8 @@ import type { Database } from '@sim/proto/database';
 import type { GlyphConfig } from '@sim/talents/config';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// `getWSEVersion()` runs at module evaluation, exactly as the vanilla `static` initialiser did, so
-// importing this module fires a request. Stubbed in `vi.hoisted`, which runs before the imports.
+// `getWSEVersion()` runs at module evaluation, so importing this module fires a request. Stubbed
+// in `vi.hoisted`, which runs before the imports.
 const fetchStub = vi.hoisted(() => {
 	const stub = vi.fn((_url: string) => Promise.reject(new Error('offline')));
 	(globalThis as unknown as { fetch: unknown }).fetch = stub;

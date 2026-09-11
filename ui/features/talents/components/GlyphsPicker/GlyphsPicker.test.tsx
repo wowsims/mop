@@ -119,8 +119,8 @@ describe('GlyphsPicker', () => {
 		expect(link('major', 1).getAttribute('href')).toContain('wowhead');
 	});
 
-	// Vanilla's list anchor writes the value and nothing else, so the dialog stays open for a
-	// second pick. Reproduced rather than corrected.
+	// The anchor writes the value and nothing else, so the dialog stays open for a second pick.
+	// Reproduced rather than corrected.
 	it('marks the selected entry active and keeps the dialog open', async () => {
 		mount();
 		await openSlot('major', 0);
@@ -131,8 +131,8 @@ describe('GlyphsPicker', () => {
 		expect(dialogOpen()).toBe(true);
 	});
 
-	// Vanilla read the active entry off the picker's resolved glyph, so an id the list does not
-	// carry — a glyph imported from another class — fell back to the empty entry.
+	// The active entry is read off the picker's resolved glyph, so an id the list does not carry — a
+	// glyph imported from another class — falls back to the empty entry.
 	it('shows an id the list does not carry as the empty entry, and paints the slot empty', async () => {
 		mount({ major1: 1 });
 		await openSlot('major', 0);

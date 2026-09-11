@@ -38,7 +38,7 @@ const getRowId = <T>(_row: MetricRow<T>, index: number, parent?: { id: string })
 export interface UseMetricsTableOptions<T> {
 	columns: Array<MetricsColumnDef<T>>;
 	rows: Array<MetricRow<T>>;
-	/** The column `MetricsTable` opens sorted descending — vanilla's single `ColumnSortType.Descending`. */
+	/** The column `MetricsTable` opens sorted descending. */
 	sortColumnId: string;
 }
 

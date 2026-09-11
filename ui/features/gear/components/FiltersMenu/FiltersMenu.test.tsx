@@ -122,8 +122,6 @@ describe('FiltersMenu', () => {
 		expect(pickerIds()).toEqual(expect.arrayContaining(['filters-min-oh-weapon-speed', 'filters-max-oh-weapon-speed']));
 	});
 
-	// The vanilla constructor `return`ed out of the weapon branch here, so this pair is the one an
-	// early exit ported as a conditional would lose.
 	it('adds the ranged sections to a weapon slot only for a class with ranged weapons', () => {
 		setup({ weaponTypes: [WeaponType.WeaponTypeAxe] }, { slot: ItemSlot.ItemSlotMainHand });
 		expect(sections()).not.toContain('gear_tab.gear_picker.ranged_weapon_type');

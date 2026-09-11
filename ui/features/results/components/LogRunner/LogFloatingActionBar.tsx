@@ -28,7 +28,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 	// Same observer as the rotation's bar, for the same reason: built inside the hidden Results tab,
 	// the ratio goes 0 -> pinned without passing through 1, so [1] alone never fires again.
 	//
-	// The **last** entry, not vanilla's first. One delivery can carry several records, and the list
+	// The **last** entry. One delivery can carry several records, and the list
 	// growing under a bar that was already pinned produces exactly that pair — the short pane's
 	// `ratio: 1` followed by the tall pane's `0.98`. Reading the first leaves the bar unpinned for
 	// good, because nothing moves again to produce another record. Measured: with `[entry]` the log

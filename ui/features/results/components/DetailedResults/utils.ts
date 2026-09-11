@@ -19,5 +19,5 @@ export const DETAILED_RESULTS_TABS: ReadonlyArray<DetailedResultsTabConfig> = [
 
 export const DEFAULT_DETAILED_RESULTS_TAB = 'damageTab';
 
-/** Ties a pane to the tab button that controls it; the vanilla buttons carried no id, so no pane could point back at one. */
+/** Ties a pane to the tab button that controls it. */
 export const tabButtonId = (tabId: string): string => `${tabId}-nav`;

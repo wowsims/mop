@@ -43,7 +43,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 
 	const open = query.length > 0;
 	const matches = useMemo(() => (open ? searchBulkItems(allItems, query, minIlvl, maxIlvl) : null), [open, allItems, query, minIlvl, maxIlvl]);
-	// Clearing the box hides the list without emptying it, which is what the vanilla early return did.
+	// Clearing the box hides the list without emptying it.
 	const [shown, setShown] = useState<BulkSearchResult | null>(null);
 	useEffect(() => {
 		if (matches) setShown(matches);

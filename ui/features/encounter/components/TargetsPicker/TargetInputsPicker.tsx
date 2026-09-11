@@ -14,7 +14,7 @@ export interface TargetInputsPickerProps {
 	targetIndex: number;
 }
 
-/** The AI's own inputs for one target. Read-only as a list: `allowedActions: []` was vanilla's. */
+/** The AI's own inputs for one target. Read-only as a list. */
 export const TargetInputsPicker = ({ encounter, targetIndex }: TargetInputsPickerProps) => {
 	const config = useMemo(
 		(): ListPickerConfig<Encounter, TargetInput> => ({

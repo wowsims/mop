@@ -22,7 +22,7 @@ export interface UnitFieldProps {
  *
  * It binds through `DropdownField` rather than the unbound `UnitPicker`, because a bound picker's
  * root has to *be* the shell: `UnitPicker` renders a plain `div`, and nesting that inside one would
- * add an element the baseline does not have. The `UnitValue` → option mapping is shared with it.
+ * add an extra element. The `UnitValue` → option mapping is shared with it.
  *
  * The option list follows unit metadata, which is where pets and targets come from; the selected
  * label is re-resolved on every render, so a pet that gains a name updates without a store write.

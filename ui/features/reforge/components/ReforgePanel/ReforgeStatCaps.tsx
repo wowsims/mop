@@ -21,7 +21,7 @@ export interface ReforgeStatCapsProps {
 	useCustomEPValues: boolean;
 }
 
-/** The hard-cap table. Hidden rather than unmounted while custom EP values are off, as the vanilla table was. */
+/** The hard-cap table. Hidden rather than unmounted while custom EP values are off. */
 export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, useCustomEPValues }: ReforgeStatCapsProps) => {
 	const settings = model.settings;
 	const capsTooltipId = useId();

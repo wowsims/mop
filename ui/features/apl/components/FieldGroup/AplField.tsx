@@ -36,9 +36,7 @@ export interface AplFieldProps {
  *
  * A module-level lookup table — the mapped type this codebase otherwise prefers for a
  * discriminated union — would break exactly that: it reads the imported component while the cycle
- * is still initialising, and the first module in is the one that throws a `ReferenceError`. That is
- * also the shape vanilla had, in `valueKindFactories` / `actionKindFactories`, and why its authors
- * concluded the cluster could not be ported in halves.
+ * is still initialising, and the first module in is the one that throws a `ReferenceError`.
  */
 export const AplField = ({ player, spec, getParentValue }: AplFieldProps) => {
 	const id = useId();

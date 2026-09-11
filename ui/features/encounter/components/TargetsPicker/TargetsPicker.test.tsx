@@ -116,8 +116,6 @@ describe('TargetsPicker', () => {
 		expect(trackEvent).toHaveBeenCalledWith(expect.objectContaining({ label: 'remove-target' }));
 	});
 
-	// Vanilla gave the five section-1 pickers unindexed ids, so a second target repeated them and
-	// its labels resolved to the first target's controls.
 	it('gives every target its own picker ids', () => {
 		mount(new FakeEncounter([defaultTarget(), defaultTarget()]));
 
@@ -209,7 +207,7 @@ describe('TargetsPicker', () => {
 			mount(withInputs());
 			const inputRoots = [...document.querySelectorAll('.target-input-picker-root')];
 
-			// `float: true`, as vanilla set it, so the number box shows two decimals.
+			// `float: true`, so the number box shows two decimals.
 			expect(inputRoots[0].querySelector('input')!.value).toBe('3.00');
 			expect(inputRoots[1].querySelector('input')!.checked).toBe(true);
 			expect(inputRoots[2].querySelector('select')!.value).toBe('1');

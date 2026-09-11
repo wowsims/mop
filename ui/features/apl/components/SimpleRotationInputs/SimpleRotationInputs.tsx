@@ -6,9 +6,8 @@ import { RotationIconGroup } from './RotationIconGroup';
 /**
  * The simple-rotation block: the spec's icon row, then its inputs.
  *
- * Vanilla's `configureInputSection` pushed `'input-inline'` onto each `InputConfig.extraClassNames`
- * — a **write into the frozen spec object**, so a second construction appended the class again.
- * `inline` on the picker renders the same class through `PickerShell` and touches nothing.
+ * `inline` on the picker adds the class through `PickerShell` without writing into the spec
+ * object, so a second construction doesn't append it again.
  */
 export const SimpleRotationInputs = () => {
 	const host = useSimHost();

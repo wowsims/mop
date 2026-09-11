@@ -23,11 +23,11 @@ import { buildStatTooltips } from './utils';
 export interface ReforgeSettingsPanelProps {
 	model: ReforgeOptimizerModel;
 	options?: ReforgeOptimizerOptions;
-	/** Closes the popover, which is what `hideAll()` did when the EP weights dialog opened over it. */
+	/** Closes the popover when the EP weights dialog opens over it. */
 	onClose: () => void;
 }
 
-/** The popover's body. Mounted only while the popover is open, so every section is built per open — the lifetime tippy's `onShow`/`onHidden` pair hand-rolled. */
+/** The popover's body. Mounted only while the popover is open, so every section is built per open. */
 export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSettingsPanelProps) => {
 	const host = useSimHost();
 	const player = host.player;
@@ -126,7 +126,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					getValue: () => settings.relativeStatCapStat,
 					setValue: (_player, newValue) => settings.setRelativeStatCap(newValue),
 					showWhen: () => {
-						// The vanilla `showWhen` derived `relativeStatCap` as a side effect; it writes no store field, so it stays here rather than becoming an effect.
+						// This `showWhen` derives `relativeStatCap` as a side effect; it writes no store field, so it stays here rather than becoming an effect.
 						const canEnable = RelativeStatCap.hasRoRo(player);
 						if (!canEnable || settings.relativeStatCapStat === -1) {
 							settings.relativeStatCap = null;

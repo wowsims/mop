@@ -25,8 +25,7 @@ export interface GearChangeIconProps {
 
 /**
  * Parameterises the slot and the before/after pair; fixes the frame, the reforge marker and the
- * per-socket change markers. The vanilla `buildGearChangeIcon` stays live for the bulk results
- * renderer, so this is an additive twin rather than a replacement.
+ * per-socket change markers.
  */
 export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps) => {
 	const host = useSimHost();
