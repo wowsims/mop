@@ -59,9 +59,20 @@ Consumers reach state two ways:
    `SpecBehaviors.derivedSettings` hand a spec the host and let it subscribe by hand.
 
 3. **`tools/state-snapshots/snapshot.ts` constructs `Sim` + `Player` in node** under
-   `memory_env`, with `Worker` stubbed and no React in the bundle at all. It is the
-   only byte-exact gate on the model layer. Anything that made the model depend on a
-   React runtime would delete that gate.
+   `memory_env`, with `Worker` stubbed. It is the only byte-exact gate on the model layer.
+
+   > **Corrected 2026-09-11.** This point originally read "and no React in the bundle at
+   > all", and used that to argue the model may never depend on a React runtime. **That is
+   > false.** `snapshot.ts` imports `IndividualSimUIConfig` as a type only, but it imports
+   > every *spec*, and `ui/specs/mage/fire/spec.ts:14` pulls `registerCombustionThresholds`
+   > from `./calculate_combustion_thresholds.tsx`, which imports `@ui-kit/Button`,
+   > `@ui-kit/Dialog`, `@ui-kit/ProgressTrackerDialog`, `@ui-kit/SidebarActionButton` and
+   > `@ui-kit/Toast`. The harness bundle is ~4 MB **with React in it**; mage/fire is the sole
+   > runtime puller, since `spec_config.ts` imports `input_helpers`/`icon_inputs` as
+   > `import type` only. The gate never forbade React — it requires only that importing a
+   > spec has no side effect on serialization. Measured by the specs-in-React spike; see
+   > `specs-in-react.md`. Reasons 1 and 2 above stand on their own, so the conclusion is
+   > unchanged, but do not re-use this reason.
 
 So the end state is not "hooks instead of classes". It is, at most, "hooks **on top of**
 an unchanged class core" — and that layer already exists in `ui/sim/hooks/`
