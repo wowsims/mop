@@ -23,6 +23,8 @@ const host = (disabled = false, isHealingSpec = false) =>
 	({
 		disabled,
 		player: { getPlayerSpec: () => ({ isHealingSpec }) },
+		// The warnings only read the registry once the sim reports ready; every case here is a loaded sim.
+		sim: { waitForInit: () => Promise.resolve() },
 	}) as unknown as IndividualSimHost<any>;
 
 const progress = (dps: number, hps: number, completed: number, total: number, presimRunning = false) =>
@@ -176,7 +178,7 @@ describe('SimResultsPanel', () => {
 		expect(seen).toEqual([{ label: 'sidebar.results.stopping', disabled: true }]);
 	});
 
-	it('follows the warnings registry in both directions and lists one entry each', () => {
+	it('follows the warnings registry in both directions and lists one entry each', async () => {
 		let active = '';
 		let notify = () => {};
 		warnings.add({
@@ -189,6 +191,9 @@ describe('SimResultsPanel', () => {
 		const { view } = mount(panel, warnings);
 		const item = zone(view, '.warning-zone .sim-toolbar-item');
 		expect(item.classList.contains('hide')).toBe(true);
+
+		// The sim reports ready a microtask after mount, and the warnings say nothing until it does.
+		await act(async () => {});
 
 		act(() => {
 			active = 'Unspent talent points';

@@ -1,6 +1,7 @@
 import './SimResultsPanel.scss';
 
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
 import type { SimResultsManager } from '@features/results/model/results_manager';
 import type { WarningsRegistry } from '@features/results/model/warnings';
 import { useSyncExternalStore } from 'react';
@@ -20,6 +21,7 @@ export interface SimResultsPanelProps {
 
 export const SimResultsPanel = ({ panel, warnings, results }: SimResultsPanelProps) => {
 	const host = useSimHost();
+	const ready = useSimReady();
 	const stage = useSyncExternalStore(panel.subscribe, panel.getStage);
 	const abortHandler = useSyncExternalStore(panel.subscribe, panel.getAbortHandler);
 	const buttonsVisible = useSyncExternalStore(panel.subscribe, panel.getButtonsVisible);
@@ -35,7 +37,7 @@ export const SimResultsPanel = ({ panel, warnings, results }: SimResultsPanelPro
 			<div className="button-zone text-center" hidden={!buttonsVisible}>
 				{abortHandler && <AbortButton onAbort={abortHandler} />}
 			</div>
-			<SimWarnings warnings={warnings} />
+			<SimWarnings warnings={warnings} ready={ready} />
 			{host.disabled && <UnlaunchedNotice isHealingSpec={host.player.getPlayerSpec().isHealingSpec} />}
 		</div>
 	);
