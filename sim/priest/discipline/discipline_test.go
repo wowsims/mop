@@ -41,6 +41,29 @@ func TestDisciplinePriest(t *testing.T) {
 			},
 		})
 	}
+	// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
+	// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
+	shadowTier := core.WithSpec(
+		&proto.Player{
+			Class:         proto.Class_ClassPriest,
+			Race:          proto.Race_RaceUndead,
+			Equipment:     core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p5").GearSet,
+			Consumables:   FullConsumes,
+			Buffs:         core.FullIndividualBuffs,
+			TalentsString: StandardTalents,
+			Glyphs:        StandardGlyphs,
+			Profession1:   proto.Profession_Engineering,
+			Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
+			Profession2:   proto.Profession_Leatherworking,
+		},
+		PlayerOptions,
+	)
+	generators = append(generators, &core.SingleCharacterStatsTestGenerator{
+		Name: "p5-shadow-tier",
+		Request: &proto.ComputeStatsRequest{
+			Raid: core.SinglePlayerRaidProto(shadowTier, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
+		},
+	})
 	core.RunTestSuite(t, t.Name(), generators)
 }
 

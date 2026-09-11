@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 // T14 - Shadow
@@ -97,6 +98,10 @@ var ItemSetRegaliaOfTheTernionGlory = core.NewItemSet(core.ItemSet{
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			priest := agent.(PriestAgent).GetPriest()
+			// Discipline and Holy share these items; only Shadow has a Shadow Orb bar to hook.
+			if priest.Spec != proto.Spec_SpecShadowPriest {
+				return
+			}
 			mod := priest.Unit.AddDynamicMod(core.SpellModConfig{
 				Kind:       core.SpellMod_DamageDone_Pct,
 				FloatValue: 0.2,
