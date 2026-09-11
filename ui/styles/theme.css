@@ -1,0 +1,129 @@
+@theme {
+	--color-*: initial;
+	--breakpoint-*: initial;
+	--radius-*: initial;
+	--font-*: initial;
+	--text-*: initial;
+
+	--breakpoint-sm: 576px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 992px;
+	--breakpoint-xl: 1200px;
+	--breakpoint-xxl: 1400px;
+	--breakpoint-xxxl: 1600px;
+	--breakpoint-1080p: 1921px;
+	--breakpoint-1440p: 2561px;
+	--breakpoint-4k: 3841px;
+
+	--font-sans: SimDefaultFont, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+	--text-content: 0.75rem;
+	--text-body: 0.875rem;
+	--text-h6: 1rem;
+	--text-h5: 1.25rem;
+	--text-h4: 1.5rem;
+	--text-h3: 1.75rem;
+	--text-h2: 2rem;
+	--text-h1: 2.5rem;
+	--text-display: 5rem;
+
+	--radius-full: 9999px;
+
+	--color-transparent: transparent;
+	--color-current: currentColor;
+	--color-inherit: inherit;
+	--color-black: #000;
+	--color-white: #fff;
+	--color-off-white: #f0f0f0;
+
+	--color-gray-300: #dee2e6;
+	--color-gray-500: #adb5bd;
+	--color-gray-600: #6c757d;
+	--color-gray-700: #495057;
+	--color-gray-800: #323232;
+	--color-gray-900: #212529;
+
+	--color-background: #15171e;
+	--color-foreground: #fff;
+	--color-surface: #1e2633;
+	--color-surface-border: #373d57;
+	--color-border: #6c757d;
+	--color-table-even: #18191e;
+	--color-table-odd: #222328;
+
+	--color-primary: #0d6efd;
+	--color-secondary: #6c757d;
+	--color-success: #1eff00;
+	--color-danger: #dc3545;
+	--color-warning: #ffc107;
+	--color-info: #0dcaf0;
+	--color-cancel: #e68066;
+
+	--color-brand: #e0a335;
+	--color-expansion: #23c88c;
+
+	--color-link: #a5b1d6;
+	--color-link-hover: #fff;
+	--color-link-danger: #ef9eaa;
+	--color-link-warning: #faf07f;
+
+	--color-death-knight: rgb(194, 46, 70);
+	--color-druid: rgb(255, 125, 10);
+	--color-hunter: rgb(171, 212, 115);
+	--color-mage: rgb(105, 204, 240);
+	--color-monk: rgb(0, 255, 152);
+	--color-paladin: rgb(245, 140, 186);
+	--color-priest: rgb(255, 255, 255);
+	--color-rogue: rgb(255, 245, 105);
+	--color-shaman: rgb(36, 89, 255);
+	--color-warlock: rgb(148, 130, 201);
+	--color-warrior: rgb(199, 156, 110);
+
+	--color-physical: #e5cc80;
+	--color-arcane: #8ff2ff;
+	--color-fire: #eb4561;
+	--color-frost: #4a80ff;
+	--color-holy: #ffff8f;
+	--color-nature: #d1fa99;
+	--color-shadow: #b8a8f0;
+	--color-chaos: #a330c9;
+
+	--color-junk: #9d9d9d;
+	--color-common: #fff;
+	--color-uncommon: #1eff00;
+	--color-rare: #0070dd;
+	--color-epic: #a335ee;
+	--color-legendary: #ff8000;
+	--color-artifact: #e5cc80;
+	--color-heirloom: #0cf;
+
+	--color-health: #22ba00;
+	--color-mana: #2e93fa;
+	--color-energy: #ffd700;
+	--color-rage: #f00;
+	--color-focus: #cd853f;
+	--color-chi: #00ff98;
+	--color-combo-points: #ffa07a;
+	--color-holy-power: #eed98a;
+	--color-lunar-energy: #4a8aff;
+	--color-solar-energy: #d2952b;
+	--color-arcane-charges: #5c7cfa;
+	--color-shadow-orbs: #9b59d0;
+	--color-demonic-fury: #8e6fc9;
+	--color-burning-embers: #e8590c;
+	--color-soul-shards: #8551c9;
+
+	--color-dps: #ed5653;
+	--color-threat: #b56d07;
+	--color-hit: green;
+	--color-crit: blue;
+	--color-partial: yellow;
+	--color-miss: red;
+
+	--color-horde: red;
+	--color-alliance: blue;
+
+	--color-talent-full: #ffd100;
+	--color-talent-partial: #40bf40;
+}

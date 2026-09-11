@@ -1,0 +1,19 @@
+/* Not .scss on purpose: Tailwind v4 is documented as not designed to run through Sass. */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Preflight is omitted while Bootstrap's reboot is still loaded; stacking two resets changes rendering. */
+
+@import './theme.css';
+
+@source '../app';
+@source '../features';
+@source '../sim';
+@source '../specs';
+@source '../ui-kit';
+@source '../tracking';
+@source '../generated';
+@source '../index.html';
+@source '../index_template.html';

@@ -4,6 +4,7 @@ import fs from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { ConfigEnv, type CSSOptions, defineConfig, PluginOption, UserConfigExport } from 'vite';
 import { watchAndRun } from 'vite-plugin-watch-and-run';
@@ -151,6 +152,8 @@ export default defineConfig(({ command, mode }) => {
 			// `oxc.jsx.refresh` for `serve` and lets rolldown's native refresh wrapper instrument the
 			// modules. The `oxc` block below still states the transform for both commands.
 			react(),
+			// Only reaches `ui/styles/*.css`; the 104 SCSS files stay on sass-embedded.
+			tailwindcss(),
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			watchAndRun([
 				{

@@ -50,6 +50,7 @@
 		"react-tooltip": "^6.0.8",
 		"react-use": "17.6.1",
 		"shallow-equal": "^3.1.0",
+		"tailwindcss": "^4.3.3",
 		"uuid": "^11.1.0",
 		"zustand": "^5.0.15"
 	},
@@ -61,6 +62,7 @@
 		"@protobuf-ts/plugin-framework": "2.9.0",
 		"@protobuf-ts/protoc": "2.9.1",
 		"@protobuf-ts/runtime": "2.9.1",
+		"@tailwindcss/vite": "^4.3.3",
 		"@testing-library/dom": "^10.4.1",
 		"@testing-library/react": "^16.3.3",
 		"@types/async": "^3.2.25",
