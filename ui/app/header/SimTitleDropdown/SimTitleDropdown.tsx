@@ -55,7 +55,7 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
 					<SimLinkContent
 						iconPath={currentSpec.getIcon('large')}
 						label={i18n.t('sidebar.header.title')}
-						labelIsWhite
+						labelClassName="text-white"
 						title={PlayerSpecs.getFullSpecName(currentSpec)}
 						status={launchLabel(currentSpec.launch)}
 					/>
