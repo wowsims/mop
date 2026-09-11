@@ -38,7 +38,9 @@ ui/
                      /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
                      replace the 34 per-spec specs/<class>/<spec>/{index,_sim}.scss (PR 8a)
-  index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
+  index.html          the landing page, a React tree mounted by app/landing_entry.tsx on #root.
+                     Its components are in app/landing/
+  index_template.html, shared/, types/, tracking/   root, unchanged
 ```
 
 ## JSX
@@ -218,7 +220,8 @@ All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
 2. An entry in `ui/sim/player/specs/index.ts`, i.e. a `PlayerSpec` class (in
    `ui/sim/player/specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
    single source of truth for launch status, read by the sim dropdown and the landing page
-   (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
+   (`ui/app/landing/` renders the landing page's sim links from `PlayerSpecs`, no hand-written
+   list; a class row's badge is the roll-up of its specs', in `landing_classes.ts`).
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class color, background
    image), which the spec page links unconditionally.
 
@@ -234,14 +237,15 @@ the spec module up from the URL. A new spec's page therefore appears with no bui
 
 Copying one page 34× is only sound because the page is constant: `ui/index_template.html` carries
 no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
-`/index.ts`, `/app/spec_entry.ts`, `/i18n/localization.ts`), so vite rewrites them all to
+`/app/spec_entry.tsx`, `/i18n/localization.ts`), so vite rewrites them all to
 `/mop/...` and nothing in the built page depends on where it is served from. It is also the reason
 the 34 pages share one entry chunk (`bundle/spec_entry-<hash>.entry.js`, from the `spec_entry` key
 in `rollupOptions.input`) instead of the 34 near-identical ones the old per-page inputs produced.
 `ui/i18n/localization.ts`'s `extractClassAndSpecFromDataAttributes`
 derives class/spec from `location.pathname` the same way `specModuleKey` does above, falling back
-to `data-class`/`data-spec` attributes only if present (the landing page has neither and keeps its
-`data-i18n` behaviour).
+to `data-class`/`data-spec` attributes only if present. It is the spec page's path only: the landing
+page translates through `i18n.t` as it renders and calls `updateLandingPageMetadata` for its title
+and `<meta name="description">`.
 
 Rules shared by several specs of the same class live in `ui/specs/<class>/shared/` (e.g.
 `rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
