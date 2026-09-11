@@ -8,8 +8,8 @@ export interface GearChangeSocket {
 }
 
 /**
- * One entry per socket of the new item. `changed` walks the *previous* item's sockets, as the
- * vanilla builder does, so a slot that gained sockets reports only the ones it already had.
+ * One entry per socket of the new item. `changed` walks the *previous* item's sockets, so a slot
+ * that gained sockets reports only the ones it already had.
  */
 export const gearChangeSockets = (item: EquippedItem | undefined, previousItem: EquippedItem | undefined): GearChangeSocket[] => {
 	if (!item) return [];

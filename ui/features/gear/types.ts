@@ -7,9 +7,8 @@ import i18n from '@i18n/config';
 
 export type ItemListType = Item | Enchant | Gem | ReforgeData | ItemRandomSuffix | ItemLevelState;
 
-// Everything a row carries except its rendered name. The name is the one field the two view stacks
-// disagree about — the vanilla list builds DOM, the React one a `ReactNode` — so the helpers that
-// sort, search and favourite rows take this and stay usable from both.
+// Everything a row carries except its rendered name, so the helpers that sort, search and favourite
+// rows take this rather than a rendered row.
 export interface ItemDataFields<T extends ItemListType> {
 	item: T;
 	searchText: string;
