@@ -1,3 +1,7 @@
+#root {
+	height: 100%;
+}
+
 .homepage-image {
 	position: fixed;
 	width: 100%;
@@ -150,17 +154,45 @@
 						max-width: none;
 					}
 				}
-
-				.sim-link-dropdown {
-					.dropdown-menu {
-						@include media-breakpoint-down(lg) {
-							position: relative !important;
-							inset: 0 !important;
-							transform: none !important;
-						}
-					}
-				}
 			}
 		}
 	}
+}
+
+.landing-sim-link-positioner,
+.landing-language-positioner {
+	z-index: var(--dropdown-zindex);
+}
+
+.landing-sim-link-popup {
+	width: var(--anchor-width);
+	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
+	background: var(--bs-black-alpha-50);
+	// The popup takes focus when it opens; the rows below carry the visible state.
+	outline: none;
+
+	// Below lg the menu opens under its row and floats over the rows after it, where the class list
+	// is one or two columns wide and there is no room beside a row. Translucent over the page image
+	// is the wide-screen look, but translucent over another row is unreadable.
+	@include media-breakpoint-down(lg) {
+		background: var(--dropdown-bg);
+	}
+
+	.sim-link {
+		text-decoration: none;
+
+		&[data-highlighted] {
+			background-color: var(--bs-black-alpha-50);
+		}
+	}
+}
+
+.landing-language-popup {
+	min-width: var(--dropdown-min-width);
+	padding: var(--dropdown-padding-y) 0;
+	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
+	background-color: var(--dropdown-bg);
+	color: var(--dropdown-link-color);
+	font-size: var(--dropdown-font-size);
+	outline: none;
 }

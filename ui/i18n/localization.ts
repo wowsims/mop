@@ -34,7 +34,7 @@ import {
 	spellSchoolI18nKeys,
 	statI18nKeys,
 } from './entity_mapping';
-import { getLang, setLang, supportedLanguages } from './locale_service';
+import { getLang } from './locale_service';
 
 /**
  * Entity translation functions
@@ -167,17 +167,6 @@ export const translatePlayerSpec = (playerSpec: PlayerSpec<any>): string => {
  * Component Translation Helpers
  */
 
-export const extractClassAndSpecFromLink = (link: HTMLAnchorElement): { className?: string; specName?: string } => {
-	const parts = link.pathname.split('/').filter(Boolean);
-	if (parts.length >= 2) {
-		return {
-			className: parts[1],
-			specName: parts[2],
-		};
-	}
-	return {};
-};
-
 // The spec page template is identical for every spec (see ui/index_template.html),
 // so class/spec are no longer baked in as data-class/data-spec attributes; derive
 // them from the URL the same way ui/app/spec_entry.ts derives its spec module key
@@ -214,48 +203,13 @@ export const extractClassAndSpecFromDataAttributes = (): { className: string; sp
 	return null;
 };
 
-export const updateLanguageDropdown = (): void => {
-	const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="languageDropdown"]');
-	if (!dropdownMenu) return;
+// A <meta>'s text is its `content` attribute; `textContent` on it is invisible to crawlers.
+const setMetaDescription = (text: string): void => document.querySelector('meta[name="description"]')?.setAttribute('content', text);
 
-	const currentLang = getLang();
-	dropdownMenu.innerHTML = '';
-
-	Object.entries(supportedLanguages).forEach(([code, name]) => {
-		const handleClick = (e: Event) => {
-			e.preventDefault();
-			setLang(code);
-			window.location.reload();
-		};
-
-		const link = document.createElement('a');
-		link.className = `dropdown-item ${code === currentLang ? 'active' : ''}`;
-		link.href = '#';
-		link.textContent = name;
-		link.dataset.lang = code;
-		link.addEventListener('click', handleClick);
-
-		const languageItem = document.createElement('li');
-		languageItem.appendChild(link);
-		dropdownMenu.appendChild(languageItem);
-	});
-};
-
-export const updateDataI18nElements = (): void => {
-	document.querySelectorAll('[data-i18n]').forEach(element => {
-		const key = element.getAttribute('data-i18n');
-		const ns = element.getAttribute('data-i18n-ns');
-		if (key) {
-			const text = i18n.t(key, { ns: ns || undefined });
-			// The landing page tags its `<meta name="description">` with data-i18n, and a meta
-			// element carries its text in `content`, not as a child text node.
-			if (element instanceof HTMLMetaElement) {
-				element.setAttribute('content', text);
-			} else {
-				element.textContent = text;
-			}
-		}
-	});
+export const updateLandingPageMetadata = (): void => {
+	document.documentElement.lang = getLang();
+	document.title = i18n.t('landing.home.title');
+	setMetaDescription(i18n.t('landing.home.description'));
 };
 
 export const updateSimPageMetadata = (): void => {
@@ -269,30 +223,8 @@ export const updateSimPageMetadata = (): void => {
 		spec: translateSpec(className, specName),
 	};
 
-	document.querySelector('title')!.textContent = i18n.t('sim.title', translationData);
-	// A <meta>'s text is its `content` attribute; `textContent` on it is invisible to crawlers.
-	document.querySelector('meta[name="description"]')?.setAttribute('content', i18n.t('sim.description', translationData));
-};
-
-export const updateSimLinks = (): void => {
-	document.querySelectorAll('.sim-link-content').forEach(content => {
-		const classLabel = content.querySelector('.sim-link-label');
-		const specTitle = content.querySelector('.sim-link-title');
-		const link = content.closest('a');
-
-		if (classLabel && specTitle && link instanceof HTMLAnchorElement) {
-			const info = extractClassAndSpecFromLink(link);
-			if (info && info.className && info.specName) {
-				classLabel.textContent = translateClass(info.className);
-				specTitle.textContent = translateSpec(info.className, info.specName);
-			}
-		} else if (specTitle && link instanceof HTMLAnchorElement) {
-			const info = extractClassAndSpecFromLink(link);
-			if (info && info.className) {
-				specTitle.textContent = translateClass(info.className);
-			}
-		}
-	});
+	document.title = i18n.t('sim.title', translationData);
+	setMetaDescription(i18n.t('sim.description', translationData));
 };
 
 export const translateItemLabel = (itemLabel: string): string => {
@@ -331,43 +263,20 @@ export const translatePresetConfigurationCategory = (category: PresetConfigurati
  * Localization Initialization
  */
 
-export interface LocalizationOptions {
-	updateSimMetadata?: boolean;
-	updateSimLinks?: boolean;
-	updateLanguageDropdown?: boolean;
-}
-
-export const updateTranslations = (options: LocalizationOptions = {}): void => {
+export const updateTranslations = (): void => {
 	document.documentElement.lang = getLang();
-	updateDataI18nElements();
-
-	if (options.updateSimMetadata) {
-		updateSimPageMetadata();
-	}
-
-	if (options.updateSimLinks) {
-		updateSimLinks();
-	}
-
-	if (options.updateLanguageDropdown) {
-		updateLanguageDropdown();
-	}
+	updateSimPageMetadata();
 };
 
-export const initLocalization = (options?: LocalizationOptions): void => {
-	const finalOptions =
-		options || (extractClassAndSpecFromDataAttributes() ? { updateSimMetadata: true } : { updateSimLinks: true, updateLanguageDropdown: true });
-
+export const initLocalization = (): void => {
 	const initialize = () => {
 		if (!i18n.isInitialized) {
 			i18n.init();
 		}
 
-		i18n.on('languageChanged', () => {
-			updateTranslations(finalOptions);
-		});
+		i18n.on('languageChanged', updateTranslations);
 
-		updateTranslations(finalOptions);
+		updateTranslations();
 	};
 
 	if (document.readyState === 'loading') {
