@@ -1,6 +1,5 @@
 import { getBulkFreezeWeaponTypes } from '@sim/bulk/utils';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribeBulkField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
@@ -40,7 +39,7 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 									id: `bulk-${slot}-weapon-type-${weaponType}`,
 									label: translateWeaponType(weaponType),
 									inline: true,
-									storeSubscribe: () => subscribeBulkField(player, 'settings'),
+									storeField: 'bulk:settings',
 									getValue: () => weaponTypeFilters.get(slot)!.includes(weaponType),
 									setValue: (_modObj, newValue: boolean) => {
 										const filter = weaponTypeFilters.get(slot)!;

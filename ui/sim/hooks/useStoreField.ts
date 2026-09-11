@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 
 import { useOptionalSimHost } from '../context/SimHostContext';
 import type { IndividualSimHost } from '../sim_host';
-import type { EncounterSlice, PlayerField, RaidSlice, ReforgeField, SimSettingsSlice, UISlice } from '../state/sim_store';
+import type { BulkSlice, EncounterSlice, PlayerField, RaidSlice, ReforgeField, SimSettingsSlice, UISlice } from '../state/sim_store';
 import type { StoreSubscribe } from '../state/subscriptions';
 import {
 	subscribeAll,
+	subscribeBulkField,
 	subscribeEncounterField,
 	subscribePlayerField,
 	subscribePlayerReforgeField,
@@ -14,6 +15,8 @@ import {
 	subscribeUiField,
 } from '../state/subscriptions';
 
+type BulkField = keyof BulkSlice['v'];
+
 /** A store field named as data. A bare name is a player field; every other slice carries its scope. */
 export type StoreField =
 	| PlayerField
@@ -21,7 +24,8 @@ export type StoreField =
 	| `ui:${keyof UISlice}`
 	| `encounter:${keyof EncounterSlice}`
 	| `raid:${keyof RaidSlice}`
-	| `reforge:${ReforgeField}`;
+	| `reforge:${ReforgeField}`
+	| `bulk:${BulkField}`;
 
 const resolve = (host: IndividualSimHost<any>, field: StoreField): StoreSubscribe => {
 	const at = field.indexOf(':');
@@ -32,6 +36,7 @@ const resolve = (host: IndividualSimHost<any>, field: StoreField): StoreSubscrib
 	if (scope === 'ui') return subscribeUiField(host.sim, name as keyof UISlice);
 	if (scope === 'encounter') return subscribeEncounterField(host.sim.encounter, name as keyof EncounterSlice);
 	if (scope === 'raid') return subscribeRaidField(host.sim.raid, name as keyof RaidSlice);
+	if (scope === 'bulk') return subscribeBulkField(host.player, name as BulkField);
 	return subscribePlayerReforgeField(host.player, name as ReforgeField);
 };
 
