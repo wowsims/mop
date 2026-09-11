@@ -18,7 +18,7 @@ import { SummaryTableRow } from './SummaryTableRow';
 export const ReforgeSummary = () => {
 	const host = useSimHost();
 	const player = host.player;
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
 	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
 	const totals = useMemo(() => reforgeTotals(gear.getAllReforges()), [gear]);
 	const stats = Object.keys(totals).map(Number) as Stat[];

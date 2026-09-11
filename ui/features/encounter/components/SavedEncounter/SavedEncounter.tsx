@@ -38,10 +38,7 @@ export const SavedEncounter = () => {
 		[ready, config],
 	);
 
-	const encounterJson = useStoreSubscribe(
-		useMemo(() => subscribeEncounterChange(encounter), [encounter]),
-		() => encounterData(encounter),
-	);
+	const encounterJson = useStoreSubscribe(subscribeEncounterChange(encounter), () => encounterData(encounter));
 	const currentJson = useMemo(() => serializeEncounter(encounterJson), [encounterJson]);
 
 	const onLoad = useCallback(

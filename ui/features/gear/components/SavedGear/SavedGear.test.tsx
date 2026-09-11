@@ -25,9 +25,10 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerChange: () => (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange),
-}));
+vi.mock('@sim/state/subscriptions', () => {
+	const change = (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange);
+	return { subscribePlayerChange: () => change };
+});
 
 const STRINGS = vi.hoisted(
 	() =>

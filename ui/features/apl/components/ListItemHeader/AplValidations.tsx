@@ -8,7 +8,7 @@ import { ActionId } from '@sim/proto/action_id';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ListItemAction } from '@ui-kit/ListPicker';
 import { Tooltip } from '@ui-kit/Tooltip';
-import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useId, useRef, useState } from 'react';
 
 export interface AplValidationsProps {
 	/** The validations for this one list item, read fresh on every `currentStats` notification. */
@@ -69,7 +69,7 @@ export const AplValidations = ({ getValidations }: AplValidationsProps) => {
 	const read = useRef(getValidations);
 	read.current = getValidations;
 
-	const subscribe = useMemo(() => subscribePlayerField(player, 'currentStats'), [player]);
+	const subscribe = subscribePlayerField(player, 'currentStats');
 	const last = useRef<Array<APLValidation>>([]);
 	const validations = useStoreSubscribe(subscribe, () => {
 		const next = read.current(player);

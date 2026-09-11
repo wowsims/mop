@@ -26,18 +26,47 @@ export const shallowArrayEquals = (a: ReadonlyArray<unknown>, b: ReadonlyArray<u
 export interface StoreSubscribe {
 	(onChange: () => void): () => void;
 	readonly sel?: { store: SimStore; selector: (s: SimState) => unknown; equalityFn: (a: any, b: any) => boolean };
+	/** Identifies a cached source, so `subscribeAll` can key a composition on its parts. Absent on a caller-built source. */
+	readonly id?: number;
 }
 
+let nextSourceId = 0;
+
 function fromSelector<U>(store: SimStore, selector: (s: SimState) => U, equalityFn: (a: U, b: U) => boolean = Object.is): StoreSubscribe {
-	const sub = ((onChange: () => void) => subscribeGated(store.subscribe, selector, onChange, equalityFn)) as StoreSubscribe & { sel: StoreSubscribe['sel'] };
+	const sub = ((onChange: () => void) => subscribeGated(store.subscribe, selector, onChange, equalityFn)) as StoreSubscribe & {
+		sel: StoreSubscribe['sel'];
+		id: number;
+	};
 	sub.sel = { store, selector, equalityFn };
+	sub.id = nextSourceId++;
 	return sub;
+}
+
+// A source is a pure factory over (store, selector, equalityFn) — `subscribeGated` builds
+// the per-subscriber state on each call — so one identity can serve every subscriber.
+// React needs that identity to be stable: `useStoreSubscribe` re-subscribes whenever its
+// source changes identity, so a source rebuilt per render resubscribes per render. Anchored
+// on the owning facade, so a disposed player's sources are collected with it.
+const sourceCache = new WeakMap<object, Map<string, StoreSubscribe>>();
+
+function cached(owner: object, key: string, build: () => StoreSubscribe): StoreSubscribe {
+	let byKey = sourceCache.get(owner);
+	if (!byKey) sourceCache.set(owner, (byKey = new Map()));
+	let source = byKey.get(key);
+	if (!source) byKey.set(key, (source = build()));
+	return source;
 }
 
 // Composes several sources into one "any of these changed" source. Selector
 // sources on the same store become a single tuple selector, so a batch (or a
 // single write) touching several of them notifies exactly once.
 export function subscribeAll(subs: Array<StoreSubscribe>): StoreSubscribe {
+	const ids = subs.map(sub => sub.id);
+	if (subs.length && ids.every(id => id !== undefined)) return cached(subs[0], `all:${ids.join('|')}`, () => composeAll(subs));
+	return composeAll(subs);
+}
+
+function composeAll(subs: Array<StoreSubscribe>): StoreSubscribe {
 	const sels = subs.map(sub => sub.sel);
 	const store = sels[0]?.store;
 	if (store && sels.every(sel => sel?.store === store)) {
@@ -58,31 +87,33 @@ export function subscribeAll(subs: Array<StoreSubscribe>): StoreSubscribe {
 // facade bumps exactly when the old emitter would have fired.
 
 export function subscribePlayerField(player: Player<any>, field: PlayerField): StoreSubscribe {
-	return fromSelector(player.sim.store, s => s.players[player.storeKey]?.v[field]);
+	return cached(player, `field:${field}`, () => fromSelector(player.sim.store, s => s.players[player.storeKey]?.v[field]));
 }
 
 export function subscribeRunState(sim: Sim, kind: SimRunKind): StoreSubscribe {
-	return fromSelector(
-		sim.store,
-		s => s.runs[kind],
-		(a, b) => a.isRunning === b.isRunning && a.isAborting === b.isAborting,
+	return cached(sim, `run:${kind}`, () =>
+		fromSelector(
+			sim.store,
+			s => s.runs[kind],
+			(a, b) => a.isRunning === b.isRunning && a.isAborting === b.isAborting,
+		),
 	);
 }
 
 export function subscribeSimField(sim: Sim, field: keyof SimSettingsSlice): StoreSubscribe {
-	return fromSelector(sim.store, s => s.sim[field]);
+	return cached(sim, `sim:${field}`, () => fromSelector(sim.store, s => s.sim[field]));
 }
 
 export function subscribeUiField(sim: Sim, field: keyof UISlice): StoreSubscribe {
-	return fromSelector(sim.store, s => s.ui[field]);
+	return cached(sim, `ui:${field}`, () => fromSelector(sim.store, s => s.ui[field]));
 }
 
 export function subscribeEncounterField(encounter: Encounter, field: keyof EncounterSlice): StoreSubscribe {
-	return fromSelector(encounter.sim.store, s => s.encounter[field]);
+	return cached(encounter, `encounter:${field}`, () => fromSelector(encounter.sim.store, s => s.encounter[field]));
 }
 
 export function subscribeRaidField(raid: Raid, field: keyof RaidSlice): StoreSubscribe {
-	return fromSelector(raid.sim.store, s => s.raid[field]);
+	return cached(raid, `raid:${field}`, () => fromSelector(raid.sim.store, s => s.raid[field]));
 }
 
 // ---------------------------------------------------------------------------
@@ -128,16 +159,16 @@ export function raidTuple(s: SimState): Array<unknown> {
 }
 
 export function subscribePlayerChange(player: Player<any>): StoreSubscribe {
-	return fromSelector(player.sim.store, s => playerChangeKey(s, player.storeKey) ?? [], shallowArrayEquals);
+	return cached(player, 'change', () => fromSelector(player.sim.store, s => playerChangeKey(s, player.storeKey) ?? [], shallowArrayEquals));
 }
 
 // Party = its composition row, its buffs, and each member's player slice.
 export function subscribePartyChange(party: Party): StoreSubscribe {
-	return fromSelector(party.sim.store, s => partyTuple(s, party.getIndex()), shallowArrayEquals);
+	return cached(party, 'change', () => fromSelector(party.sim.store, s => partyTuple(s, party.getIndex()), shallowArrayEquals));
 }
 
 export function subscribeRaidChange(raid: Raid): StoreSubscribe {
-	return fromSelector(raid.sim.store, raidTuple, shallowArrayEquals);
+	return cached(raid, 'change', () => fromSelector(raid.sim.store, raidTuple, shallowArrayEquals));
 }
 
 // Everything the character-stats computation depends on (raid + encounter).
@@ -146,44 +177,44 @@ export function subscribeStatsInputs(sim: Sim): StoreSubscribe {
 }
 
 export function subscribeEncounterChange(encounter: Encounter): StoreSubscribe {
-	return fromSelector(encounter.sim.store, s => s.encounter);
+	return cached(encounter, 'change', () => fromSelector(encounter.sim.store, s => s.encounter));
 }
 
 // Sim settings + UI flags (legacy Sim.settingsChangeEmitter).
 export function subscribeSimSettingsChange(sim: Sim): StoreSubscribe {
-	return fromSelector(sim.store, simSettingsKey, shallowArrayEquals);
+	return cached(sim, 'settingsChange', () => fromSelector(sim.store, simSettingsKey, shallowArrayEquals));
 }
 
 // Mirrors the old Sim.changeEmitter: settings + raid + encounter. Server-derived
 // state (currentStats, metadata, rng seed) and the reforge / stat-weight slices
 // are NOT included — subscribe to those explicitly where needed.
 export function subscribeSimChange(sim: Sim): StoreSubscribe {
-	return fromSelector(sim.store, s => [...simSettingsKey(s), s.encounter, ...raidTuple(s)], shallowArrayEquals);
+	return cached(sim, 'change', () => fromSelector(sim.store, s => [...simSettingsKey(s), s.encounter, ...raidTuple(s)], shallowArrayEquals));
 }
 
 // Party buffs for one party (PartyBuffs is an empty proto in MoP, but the
 // picker binding still exists).
 export function subscribePartyBuffs(party: Party): StoreSubscribe {
-	return fromSelector(party.sim.store, s => s.raid.partyBuffs[party.getIndex()]);
+	return cached(party, 'buffs', () => fromSelector(party.sim.store, s => s.raid.partyBuffs[party.getIndex()]));
 }
 
 // Reforge-optimizer settings (per player; see ReforgeSettings).
 export function subscribeReforgeField(settings: ReforgeSettings, field: ReforgeField): StoreSubscribe {
-	return fromSelector(settings.store, s => s.reforge[settings.storeKey]?.v[field]);
+	return cached(settings, `field:${field}`, () => fromSelector(settings.store, s => s.reforge[settings.storeKey]?.v[field]));
 }
 
 export function subscribeReforgeChange(settings: ReforgeSettings): StoreSubscribe {
-	return fromSelector(settings.store, s => s.reforge[settings.storeKey]);
+	return cached(settings, 'change', () => fromSelector(settings.store, s => s.reforge[settings.storeKey]));
 }
 
 // Stat-weight modal settings (per player).
 export function subscribeStatWeightsChange(settings: StatWeightActionSettings): StoreSubscribe {
-	return fromSelector(settings.store, s => s.statWeights[settings.storeKey]?.v.settings);
+	return cached(settings, 'change', () => fromSelector(settings.store, s => s.statWeights[settings.storeKey]?.v.settings));
 }
 
 // Unit metadata (spells/auras) refreshed after a compute-stats round trip.
 export function subscribeUnitMetadata(sim: Sim): StoreSubscribe {
-	return fromSelector(sim.store, s => s.sim.metadataVersion);
+	return cached(sim, 'unitMetadata', () => fromSelector(sim.store, s => s.sim.metadataVersion));
 }
 
 // Bulk tab state (per player). `owner` is the player, or anything else
@@ -193,7 +224,7 @@ export interface BulkOwner {
 	readonly storeKey: number;
 }
 export function subscribeBulkField(owner: BulkOwner, field: 'settings' | 'items'): StoreSubscribe {
-	return fromSelector(owner.sim.store, s => s.bulk[owner.storeKey]?.v[field]);
+	return cached(owner, `bulk:${field}`, () => fromSelector(owner.sim.store, s => s.bulk[owner.storeKey]?.v[field]));
 }
 export function subscribeBulkChange(owner: BulkOwner): StoreSubscribe {
 	return subscribeAll([subscribeBulkField(owner, 'settings'), subscribeBulkField(owner, 'items')]);

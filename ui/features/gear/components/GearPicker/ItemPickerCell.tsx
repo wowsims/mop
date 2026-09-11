@@ -3,7 +3,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
 import { Tooltip } from '@ui-kit/Tooltip';
-import { useCallback, useId, useMemo } from 'react';
+import { useCallback, useId } from 'react';
 
 import { useOpenSelectorModal } from '../../hooks/useSelectorModal';
 import { createGearData } from '../../model/gear_data';
@@ -23,11 +23,11 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const player = host.player;
 	const tooltipId = useId();
 
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
 	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
 	const item = gear.getEquippedItem(slot);
 
-	const quickSwapSubscribe = useMemo(() => subscribeUiField(player.sim, 'showQuickSwap'), [player]);
+	const quickSwapSubscribe = subscribeUiField(player.sim, 'showQuickSwap');
 	const showQuickSwap = useStoreSubscribe(quickSwapSubscribe, () => player.sim.getShowQuickSwap());
 
 	const open = useCallback(

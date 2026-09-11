@@ -6,7 +6,7 @@ import { randomUUID } from '@sim/utils/misc';
 import type { InputConfig } from '@ui-kit/input';
 import { ListPicker, type ListPickerConfig } from '@ui-kit/ListPicker';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { GroupVariableRow } from './GroupVariableRow';
 
@@ -56,7 +56,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 		return changed ? reconciled : existing;
 	}, [player, groupNameField]);
 
-	const subscribe = useMemo(() => rotationSource(player), [player]);
+	const subscribe = rotationSource(player);
 	const variables = useStoreSubscribe(subscribe, reconcile);
 
 	const listConfig: ListPickerConfig<Player<any>, any> = {

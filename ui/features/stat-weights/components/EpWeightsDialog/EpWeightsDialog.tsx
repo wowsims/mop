@@ -65,18 +65,13 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 	});
 
 	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
-	const refStats = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'epRefStat'), [player]),
-		() => ({ dps: player.getRefStat('dpsRefStat'), heal: player.getRefStat('healRefStat'), tank: player.getRefStat('tankRefStat') }),
-	);
-	const epRatios = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'epRatios'), [player]),
-		() => player.getEpRatios(),
-	);
-	const epWeights = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'epWeights'), [player]),
-		() => player.getEpWeights(),
-	);
+	const refStats = useStoreSubscribe(subscribePlayerField(player, 'epRefStat'), () => ({
+		dps: player.getRefStat('dpsRefStat'),
+		heal: player.getRefStat('healRefStat'),
+		tank: player.getRefStat('tankRefStat'),
+	}));
+	const epRatios = useStoreSubscribe(subscribePlayerField(player, 'epRatios'), () => player.getEpRatios());
+	const epWeights = useStoreSubscribe(subscribePlayerField(player, 'epWeights'), () => player.getEpWeights());
 
 	// `calculateEp` writes `epValues` from `weights`, which normalisation leaves alone.
 	const result = useMemo(() => (simResult ? calculateEp(simResult, refStats) : null), [simResult, refStats]);

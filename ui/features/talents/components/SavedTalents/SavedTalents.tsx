@@ -36,9 +36,8 @@ export const SavedTalents = () => {
 		[ready, individualConfig, player],
 	);
 
-	const talents = useStoreSubscribe(
-		useMemo(() => subscribeAll([subscribePlayerField(player, 'talentsString'), subscribePlayerField(player, 'glyphs')]), [player]),
-		() => talentsData(player),
+	const talents = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'talentsString'), subscribePlayerField(player, 'glyphs')]), () =>
+		talentsData(player),
 	);
 	const currentJson = useMemo(() => serializeTalents(talents), [talents]);
 

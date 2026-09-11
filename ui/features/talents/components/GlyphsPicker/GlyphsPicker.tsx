@@ -36,7 +36,7 @@ export const GlyphsPicker = () => {
 	const majorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Major, playerClass, db) : []), [db, glyphsConfig, playerClass]);
 	const minorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Minor, playerClass, db) : []), [db, glyphsConfig, playerClass]);
 
-	const glyphsSubscribe = useMemo(() => subscribePlayerField(player, 'glyphs'), [player]);
+	const glyphsSubscribe = subscribePlayerField(player, 'glyphs');
 	const glyphs = useStoreSubscribe(glyphsSubscribe, () => player.getGlyphs());
 
 	const onOpen = useCallback((next: GlyphField) => {

@@ -43,9 +43,8 @@ export const SavedRotation = () => {
 		[ready, host, player],
 	);
 
-	const current = useStoreSubscribe(
-		useMemo(() => subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]), [player]),
-		() => SavedRotationProto.create({ rotation: player.getResolvedAplRotation() }),
+	const current = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]), () =>
+		SavedRotationProto.create({ rotation: player.getResolvedAplRotation() }),
 	);
 
 	// An Auto and an APL rotation can serialise differently and still be the same rotation, so this

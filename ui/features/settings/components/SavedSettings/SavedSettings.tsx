@@ -50,26 +50,22 @@ export const SavedSettings = () => {
 	}, [ready, host, config]);
 
 	const settings = useReadyStoreSubscribe(
-		useMemo(
-			() =>
-				subscribeAll([
-					subscribeRaidField(host.sim.raid, 'buffs'),
-					subscribeRaidField(host.sim.raid, 'debuffs'),
-					subscribePartyBuffs(host.player.getParty()!),
-					subscribePlayerField(host.player, 'buffs'),
-					subscribePlayerField(host.player, 'consumables'),
-					subscribePlayerField(host.player, 'race'),
-					subscribePlayerField(host.player, 'profession1'),
-					subscribePlayerField(host.player, 'profession2'),
-					subscribePlayerField(host.player, 'itemSwap'),
-					subscribePlayerField(host.player, 'reactionTime'),
-					subscribePlayerField(host.player, 'channelClipDelay'),
-					subscribePlayerField(host.player, 'inFrontOfTarget'),
-					subscribePlayerField(host.player, 'distanceFromTarget'),
-					subscribePlayerField(host.player, 'healingModel'),
-				]),
-			[host],
-		),
+		subscribeAll([
+			subscribeRaidField(host.sim.raid, 'buffs'),
+			subscribeRaidField(host.sim.raid, 'debuffs'),
+			subscribePartyBuffs(host.player.getParty()!),
+			subscribePlayerField(host.player, 'buffs'),
+			subscribePlayerField(host.player, 'consumables'),
+			subscribePlayerField(host.player, 'race'),
+			subscribePlayerField(host.player, 'profession1'),
+			subscribePlayerField(host.player, 'profession2'),
+			subscribePlayerField(host.player, 'itemSwap'),
+			subscribePlayerField(host.player, 'reactionTime'),
+			subscribePlayerField(host.player, 'channelClipDelay'),
+			subscribePlayerField(host.player, 'inFrontOfTarget'),
+			subscribePlayerField(host.player, 'distanceFromTarget'),
+			subscribePlayerField(host.player, 'healingModel'),
+		]),
 		// Reaches `player.getConsumes()`, so it dereferences a null `sim.db` before the sim is ready.
 		() => readSavedSettings(host),
 		ready,

@@ -20,8 +20,8 @@ const currencyIconUrl = (key: string, faction: Faction) => {
 
 export const UpgradeCostsSummary = () => {
 	const player = usePlayer();
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
-	const raceSubscribe = useMemo(() => subscribePlayerField(player, 'race'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
+	const raceSubscribe = subscribePlayerField(player, 'race');
 	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
 	const faction = useStoreSubscribe(raceSubscribe, () => player.getFaction());
 	const upgradeable = useMemo(() => itemsWithUpgradeOptions(gear.asArray()), [gear]);

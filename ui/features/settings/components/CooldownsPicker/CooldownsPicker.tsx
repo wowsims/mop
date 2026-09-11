@@ -5,7 +5,7 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { Tooltip } from '@ui-kit/Tooltip';
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
 
 import { useAvailableCooldowns } from '../../hooks/useAvailableCooldowns';
 import { CooldownRow } from './CooldownRow';
@@ -14,7 +14,7 @@ export const CooldownsPicker = () => {
 	const player = usePlayer();
 	const deleteTooltipId = useId();
 
-	const subscribe = useMemo(() => subscribeAll([subscribePlayerField(player, 'rotation'), subscribeUnitMetadata(player.sim)]), [player]);
+	const subscribe = subscribeAll([subscribePlayerField(player, 'rotation'), subscribeUnitMetadata(player.sim)]);
 	const cooldowns = useStoreSubscribe(subscribe, () => player.getSimpleCooldowns().cooldowns);
 	const available = useAvailableCooldowns();
 

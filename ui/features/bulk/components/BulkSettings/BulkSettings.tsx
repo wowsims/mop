@@ -6,7 +6,7 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useBulkState } from '../../hooks/useBulkState';
@@ -55,10 +55,7 @@ export const BulkSettings = () => {
 	const inheritUpgrades = useBulkState(slice => slice.inheritUpgrades);
 	const useLegacyBulkSim = useBulkState(slice => slice.useLegacyBulkSim);
 	const canRun = useBulkState(slice => canRunBatch(slice, bulkCombinationsLimit(player.sim.isNative)));
-	const gear = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'gear'), [player]),
-		() => player.getGear(),
-	);
+	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
 
 	// Clearing a frozen item whose slot no longer holds it writes to the store; that is not safe
 	// during render, so it runs in an effect after render instead.

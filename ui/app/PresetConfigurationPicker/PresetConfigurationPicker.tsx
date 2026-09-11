@@ -35,11 +35,7 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 
 	// The active check must never run against an uninitialised sim; `useReadyStoreSubscribe` keeps
 	// that true here.
-	const active = useReadyStoreSubscribe(
-		useMemo(() => subscribeSimChange(host.sim), [host]),
-		() => builds.map(build => isBuildActive(build, host)),
-		ready,
-	);
+	const active = useReadyStoreSubscribe(subscribeSimChange(host.sim), () => builds.map(build => isBuildActive(build, host)), ready);
 
 	if (!builds.length) return <div className="preset-configuration-picker-root saved-data-manager-root hide" />;
 

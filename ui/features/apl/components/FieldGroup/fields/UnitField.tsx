@@ -29,7 +29,7 @@ export interface UnitFieldProps {
  */
 export const UnitField = ({ player, config, unitSet }: UnitFieldProps) => {
 	const targetUI = unitSets[unitSet].targetUI;
-	const subscribe = useMemo(() => subscribeUnitMetadata(player.sim), [player]);
+	const subscribe = subscribeUnitMetadata(player.sim);
 	const models = useStoreSubscribe(subscribe, () => unitOptionModels(unitSet, player));
 	const options = useMemo(() => models.map(model => unitOption(model.unit, model.submenu)), [models]);
 

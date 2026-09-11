@@ -24,13 +24,10 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const openSelectorModal = useOpenSelectorModal();
 	const player = host.player;
 
-	const swapSubscribe = useMemo(() => subscribePlayerField(player, 'itemSwap'), [player]);
+	const swapSubscribe = subscribePlayerField(player, 'itemSwap');
 	const item = useStoreSubscribe(swapSubscribe, () => player.itemSwapSettings.getItem(slot));
 
-	const professionSubscribe = useMemo(
-		() => subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]),
-		[player],
-	);
+	const professionSubscribe = subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]);
 	const isBlacksmithing = useStoreSubscribe(professionSubscribe, () => player.isBlacksmithing());
 
 	const actionId = useMemo(() => item?.asActionId(), [item]);

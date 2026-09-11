@@ -10,7 +10,7 @@ import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
@@ -38,7 +38,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const sim = host.sim;
 	const resultsEmitter = host.resultChannel;
 
-	const settingsSubscribe = useMemo(() => subscribeSimSettingsChange(sim), [sim]);
+	const settingsSubscribe = subscribeSimSettingsChange(sim);
 	const { damage: showDamage, threat: showThreat, healing: showHealing } = useDisplayMetrics(sim);
 	const showExperimental = useShowExperimental(sim);
 

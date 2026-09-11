@@ -16,7 +16,7 @@ export interface RaidBuffsProps {
 export const RaidBuffs = ({ options, miscOptions }: RaidBuffsProps) => {
 	const player = usePlayer();
 	const sim = useSim();
-	const subscribe = useMemo(() => subscribeSimChange(sim), [sim]);
+	const subscribe = subscribeSimChange(sim);
 	const miscConfig = useMemo(
 		() => ({ inputs: miscOptions.map(option => option.config), label: i18n.t('settings_tab.raid_buffs.misc.label') }),
 		[miscOptions],

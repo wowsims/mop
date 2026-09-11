@@ -15,8 +15,8 @@ export interface QuickGemListProps {
 
 export const QuickGemList = ({ slot, socketIdx, onOpenDetail }: QuickGemListProps) => {
 	const player = usePlayer();
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
-	const filtersSubscribe = useMemo(() => subscribeSimField(player.sim, 'filters'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
+	const filtersSubscribe = subscribeSimField(player.sim, 'filters');
 	const currentItem = useStoreSubscribe(gearSubscribe, () => player.getEquippedItem(slot));
 	const favoriteGems = useStoreSubscribe(filtersSubscribe, () => player.sim.getFilters().favoriteGems);
 

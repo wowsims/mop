@@ -49,9 +49,8 @@ export interface ItemDetailCellProps {
 export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantTooltipId, socketTooltipId, extraLabels }: ItemDetailCellProps) => {
 	const player = usePlayer();
 
-	const isBlacksmithing = useStoreSubscribe(
-		useMemo(() => subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), [player]),
-		() => player.isBlacksmithing(),
+	const isBlacksmithing = useStoreSubscribe(subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')]), () =>
+		player.isBlacksmithing(),
 	);
 
 	const iconRef = useRef<HTMLAnchorElement>(null);

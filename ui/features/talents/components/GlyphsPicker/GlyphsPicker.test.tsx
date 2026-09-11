@@ -9,13 +9,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const listeners = vi.hoisted(() => new Set<() => void>());
 
-vi.mock('@sim/state/subscriptions', async importOriginal => ({
-	...(await importOriginal<typeof import('@sim/state/subscriptions')>()),
-	subscribePlayerField: () => (listener: () => void) => {
+vi.mock('@sim/state/subscriptions', async importOriginal => {
+	const field = (listener: () => void) => {
 		listeners.add(listener);
 		return () => listeners.delete(listener);
-	},
-}));
+	};
+	return { ...(await importOriginal<typeof import('@sim/state/subscriptions')>()), subscribePlayerField: () => field };
+});
 
 const { GlyphsPicker } = await import('./GlyphsPicker');
 

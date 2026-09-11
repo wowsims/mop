@@ -8,7 +8,7 @@ import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { type ReactNode, useId, useMemo } from 'react';
+import { type ReactNode, useId } from 'react';
 
 import { ReforgeStatCapRow } from './ReforgeStatCapRow';
 import { INCLUDED_STATS } from './utils';
@@ -27,10 +27,7 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 	const capsTooltipId = useId();
 	const resetTooltipId = useId();
 
-	const subscribe = useMemo(
-		() => subscribeAll([subscribeReforgeField(settings, 'useSoftCapBreakpoints'), subscribeReforgeField(settings, 'statCaps')]),
-		[settings],
-	);
+	const subscribe = subscribeAll([subscribeReforgeField(settings, 'useSoftCapBreakpoints'), subscribeReforgeField(settings, 'statCaps')]);
 
 	return (
 		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useCustomEPValues && 'hide')}>

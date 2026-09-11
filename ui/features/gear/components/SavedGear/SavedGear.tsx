@@ -45,10 +45,7 @@ export const SavedGear = () => {
 		[ready, individualConfig, player, sim],
 	);
 
-	const gear = useStoreSubscribe(
-		useMemo(() => subscribePlayerChange(player), [player]),
-		() => gearSetData(player),
-	);
+	const gear = useStoreSubscribe(subscribePlayerChange(player), () => gearSetData(player));
 	const currentJson = useMemo(() => serializeGearSet(gear), [gear]);
 
 	const onLoad = useCallback(

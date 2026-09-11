@@ -49,10 +49,7 @@ export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeig
 		[ready, individualConfig, player],
 	);
 
-	const epWeights = useStoreSubscribe(
-		useMemo(() => subscribePlayerField(player, 'epWeights'), [player]),
-		() => player.getEpWeights(),
-	);
+	const epWeights = useStoreSubscribe(subscribePlayerField(player, 'epWeights'), () => player.getEpWeights());
 	const currentJson = useMemo(() => serializeEpWeights(epWeightsData(epWeights)), [epWeights]);
 
 	const onLoad = useCallback(

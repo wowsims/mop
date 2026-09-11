@@ -7,7 +7,6 @@ import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import clsx from 'clsx';
-import { useMemo } from 'react';
 
 import { InputPicker } from '../InputPicker';
 
@@ -20,7 +19,7 @@ const NEVER: StoreSubscribe = () => () => {};
 export const CustomSection = ({ section }: CustomSectionProps) => {
 	const player = usePlayer() as Player<Spec>;
 	const when = section.when;
-	const subscribe = useMemo(() => (when ? subscribePlayerChange(player) : NEVER), [player, when]);
+	const subscribe = when ? subscribePlayerChange(player) : NEVER;
 	const visible = useStoreSubscribe(subscribe, () => !when || when(player));
 
 	return (

@@ -37,7 +37,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 
 export const GemSummary = () => {
 	const player = usePlayer();
-	const gearSubscribe = useMemo(() => subscribePlayerField(player, 'gear'), [player]);
+	const gearSubscribe = subscribePlayerField(player, 'gear');
 	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
 	const rows = useMemo(() => gemSummaryRows(gear.getAllGems(player.isBlacksmithing())), [gear, player]);
 
