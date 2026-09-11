@@ -37,6 +37,8 @@ func NewRestorationDruid(character *core.Character, options *proto.Player) *Rest
 		resto.SelfBuffs.InnervateTarget = restoOptions.Options.ClassOptions.InnervateTarget
 	}
 
+	resto.registerPassives()
+
 	return resto
 }
 
@@ -50,7 +52,6 @@ func (resto *RestorationDruid) GetDruid() *druid.Druid {
 
 func (resto *RestorationDruid) Initialize() {
 	resto.Druid.Initialize()
-	resto.registerPassives()
 }
 
 func (resto *RestorationDruid) ApplyTalents() {
@@ -60,19 +61,25 @@ func (resto *RestorationDruid) ApplyTalents() {
 
 // Stat-affecting Restoration passives. Healing spells are not implemented;
 // this spec is a gear planner only.
+//
+// Spec passives are always on. They are registered from the constructor
+// with the Base build phase, like the Mistweaver stance, so every measured
+// stat phase includes them and they stay active in the dependency manager
+// the reforge optimizer receives (ComputeStatsAndDeps re-applies Base, Gear
+// and Buffs only; anything registered from Initialize is measured by none).
 func (resto *RestorationDruid) registerPassives() {
 	// Natural Insight (112857): increases mana pool by 400%.
 	core.MakePermanent(resto.RegisterAura(core.Aura{
 		Label:      "Natural Insight" + resto.Label,
 		ActionID:   core.ActionID{SpellID: 112857},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase,
 	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
 
 	// Meditation (85101): 50% of mana regeneration from Spirit continues in combat.
 	core.MakePermanent(resto.RegisterAura(core.Aura{
 		Label:      "Meditation" + resto.Label,
 		ActionID:   core.ActionID{SpellID: 85101},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase,
 	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 
 	// Restoration Hotfix Passive (137012): mana regeneration from Spirit in
@@ -81,7 +88,7 @@ func (resto *RestorationDruid) registerPassives() {
 	core.MakePermanent(resto.RegisterAura(core.Aura{
 		Label:      "Hotfix Passive" + resto.Label,
 		ActionID:   core.ActionID{SpellID: 137012},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase,
 	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.05)
 }
 

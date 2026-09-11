@@ -35,6 +35,8 @@ func NewRestorationShaman(character *core.Character, options *proto.Player) *Res
 		Shaman: shaman.NewShaman(character, options.TalentsString, selfBuffs, false, restoOptions.ClassOptions.FeleAutocast),
 	}
 
+	resto.registerPassives()
+
 	return resto
 }
 
@@ -53,7 +55,6 @@ func (resto *RestorationShaman) Reset(sim *core.Simulation) {
 func (resto *RestorationShaman) Initialize() {
 	resto.Shaman.Initialize()
 	resto.Shaman.RegisterHealingSpells()
-	resto.registerPassives()
 }
 
 func (resto *RestorationShaman) ApplyTalents() {
@@ -63,18 +64,24 @@ func (resto *RestorationShaman) ApplyTalents() {
 
 // Stat-affecting Restoration passives. Healing spells are not implemented;
 // this spec is a gear planner only.
+//
+// Spec passives are always on. They are registered from the constructor
+// with the Base build phase, like the Mistweaver stance, so every measured
+// stat phase includes them and they stay active in the dependency manager
+// the reforge optimizer receives (ComputeStatsAndDeps re-applies Base, Gear
+// and Buffs only; anything registered from Initialize is measured by none).
 func (resto *RestorationShaman) registerPassives() {
 	// Spiritual Insight (112858): increases mana pool by 400%.
 	core.MakePermanent(resto.RegisterAura(core.Aura{
 		Label:      "Spiritual Insight" + resto.Label,
 		ActionID:   core.ActionID{SpellID: 112858},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase,
 	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
 
 	// Meditation (95862): 50% of mana regeneration from Spirit continues in combat.
 	core.MakePermanent(resto.RegisterAura(core.Aura{
 		Label:      "Meditation" + resto.Label,
 		ActionID:   core.ActionID{SpellID: 95862},
-		BuildPhase: core.CharacterBuildPhaseTalents,
+		BuildPhase: core.CharacterBuildPhaseBase,
 	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 }
