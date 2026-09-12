@@ -45,6 +45,15 @@ describe('LogSearchBar', () => {
 		expect(container.querySelector('.log-search-add-field .dropdown-picker-button')!.textContent).toBe('results_tab.details.logs.search_add_filter');
 	});
 
+	it('opens the add-filter menu upward and out of flow, for the drawer it clips against', async () => {
+		const { container } = mount([]);
+		await openAddField(container);
+
+		const positioner = document.querySelector('.dropdown-picker-positioner') as HTMLElement;
+		expect(positioner.getAttribute('data-side')).toBe('top');
+		expect(positioner.style.position).toBe('fixed');
+	});
+
 	it('offers every field the query language has', async () => {
 		const { container } = mount([]);
 		await openAddField(container);
