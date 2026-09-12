@@ -91,7 +91,7 @@ type: `import type` is erased at runtime but the lint bans the specifier either 
 narrow host interfaces instead — all of them in `@sim/sim_host`: `SimUIHost` and `SimHeaderHost`
 (the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`,
 plus the `isIndividualSimHost()` predicate that replaces `instanceof SimHostObject`). The
-host declares `implements IndividualSimHost` so the interfaces stay honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
+host declares `implements IndividualSimHost` so the interfaces stay honest. The per-spec config schema lives in `@sim/spec_config` (`IndividualSimUIConfig`,
 `InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
@@ -140,7 +140,7 @@ A spec is data. `ui/specs/<class>/<spec>/spec.ts` default-exports one `defineSpe
 the only code file the spec owns (besides `presets.ts` / `inputs.ts`):
 
 ```ts
-import { defineSpec } from '@features/spec_config';
+import { defineSpec } from '@sim/spec_config';
 
 export default defineSpec<Spec.SpecArmsWarrior>({
     spec: Spec.SpecArmsWarrior,          // identity
@@ -163,9 +163,9 @@ explicit type argument so `Player<Spec.SpecX>` callbacks keep their narrow type.
 ### Custom settings sections
 
 A custom section is data, never DOM. A spec that needs an extra block on the settings tab
-declares it as a `CustomSection` in `sections`, and `app/tabs/settings_tab.tsx`
-(`buildCustomSection`) renders it through the same `ContentBlock` + picker path the standard
-sections use:
+declares it as a `CustomSection` in `sections`, and `app/tabs/SettingsTabBody.tsx` renders each
+one through `<CustomSection>` (`@features/settings`) -- the same `ContentBlock` + picker path the
+standard sections use:
 
 ```ts
 sections: [{
@@ -182,8 +182,8 @@ sections: [{
 
 `iconInputs` land in a `picker-group icon-group` container above `inputs`, and every
 `.input-root` in the body then gets `input-inline` — exactly what the Other Settings block does.
-`when` is re-evaluated on `subscribePlayerChange`. The older `customSections` (an array of
-functions returning a `ContentBlock`) is deprecated and now unused; do not add to it.
+`when` is re-evaluated on `subscribePlayerChange`. `sections` is the only shape; the older
+`customSections` (an array of functions returning a `ContentBlock`) has been deleted.
 
 `reforge` may also be a function of the sim host, for options that need to call back into it.
 The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` where
