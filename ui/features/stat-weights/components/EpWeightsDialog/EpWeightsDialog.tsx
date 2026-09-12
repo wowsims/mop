@@ -47,6 +47,8 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 
 	const [statsType, setStatsType] = useState<StatsType>(StatsType.Ep);
 	const [showAllStats, setShowAllStats] = useState(false);
+	// The options live in the dialog body, which unmounts on close, so their read-back source is held here.
+	const options = useRef({ statsType: 0, showAllStats: false });
 	const [iterations, setIterations] = useState(0);
 	const [simResult, setSimResult] = useState<StatWeightsResult | null>(null);
 	const [progress, setProgress] = useState<ProgressTrackerState>({ stage: 'initializing' });
@@ -151,7 +153,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 		if (!result) return;
 		setIterations(runIterations);
 		setSimResult(result);
-	}, [sim, player, settings, epStats, epPseudoStats, epReferenceStat]);
+	}, [sim, settings, epStats, epPseudoStats, epReferenceStat, isRunning, startStatWeights]);
 
 	return (
 		<Dialog
@@ -170,7 +172,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			}>
 			<div className="d-flex flex-column flex-lg-row align-items-lg-start gap-3">
 				<div className="ep-weights-content order-1 order-lg-0">
-					<EpWeightsOptions onStatsTypeChange={setStatsType} onShowAllStatsChange={setShowAllStats} />
+					<EpWeightsOptions options={options.current} onStatsTypeChange={setStatsType} onShowAllStatsChange={setShowAllStats} />
 					<EpReferenceOptions epStats={epStats} epReferenceStat={epReferenceStat} />
 					<p>
 						{i18n.t('sidebar.buttons.stat_weights.modal.current_ep_description')}

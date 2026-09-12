@@ -106,10 +106,9 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 		);
 	}
 
-	// chart.js has no noData equivalent and would draw a pair of empty axes. Before the first spec
-	// there is nothing to say either way, so the canvas simply stands empty.
+	// chart.js has no noData equivalent and would draw a pair of empty axes, so the canvas is only
+	// mounted once there is a series to draw.
 	const hasData = !!spec && spec.datasets.length > 0;
-	const noData = !!spec && !hasData;
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -147,7 +146,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				onPanLeft={() => zoom.current.panBy(-PAN_STEP_PX)}
 				onPanRight={() => zoom.current.panBy(PAN_STEP_PX)}
 			/>
-			{!noData && (
+			{hasData && (
 				<div className="timeline-chart-canvas">
 					<canvas
 						ref={canvasRef}
@@ -160,7 +159,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 					/>
 				</div>
 			)}
-			{noData && <div className="timeline-chart-empty">{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>}
+			{!hasData && <div className="timeline-chart-empty">{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>}
 			{tip && (
 				<div ref={tooltipRef} className="timeline-hover-tooltip">
 					<ChartSeriesTooltip spec={tip.spec} log={tip.log} />

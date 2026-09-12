@@ -34,11 +34,13 @@
 // Rows are absolutely positioned and moved with `transform`, so a row's place among its siblings is
 // its place in the window rather than in the list. `VirtualList` stamps the real parity instead.
 .selector-modal-list-item {
-	&[data-stripe='even'] {
+	// Same specificity as `.selector-modal-list-item:hover`, and later in the bundle, so the stripe
+	// has to stand down while the row is hovered.
+	&[data-stripe='even']:not(:hover) {
 		background: var(--bs-table-row-odd-bg);
 	}
 
-	&[data-stripe='odd'] {
+	&[data-stripe='odd']:not(:hover) {
 		background: var(--bs-table-row-even-bg);
 	}
 }

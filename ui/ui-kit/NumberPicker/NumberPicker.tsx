@@ -56,7 +56,11 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 
 	useCommitChange(input, committed => {
 		if (positive) committed.value = applyPositive(committed.value, float, maxDecimalDigits);
-		setValue(parseValue(committed.value, float));
+		const parsed = parseValue(committed.value, float);
+		// A source that has nothing new to report never rings, and the effect above is all that
+		// rewrites the field — so the text the user committed has to be normalised here.
+		committed.value = formatSourceValue(parsed, float, showZeroes, maxDecimalDigits);
+		setValue(parsed);
 	});
 
 	return (

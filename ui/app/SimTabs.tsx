@@ -22,16 +22,16 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 	// The first tab is the one open on load, and an id no tab carries falls back to it.
 	const value = tabs.find(tab => tab.id === activeId)?.id ?? tabs[0]?.id;
 
+	// Base UI fires `onValueChange` for a user interaction only, so a pane opening a sibling tab
+	// reports the page view through here instead.
+	const activate = (id: string) => {
+		setActiveId(id);
+		trackPageView(tabs.find(tab => tab.id === id)?.title ?? id, id);
+	};
+
 	return (
-		<TabActivationContext value={setActiveId}>
-			<Tabs.Root
-				className="sim-tabs-root"
-				value={value}
-				onValueChange={next => {
-					const id = String(next);
-					setActiveId(id);
-					trackPageView(tabs.find(tab => tab.id === id)?.title ?? id, id);
-				}}>
+		<TabActivationContext value={activate}>
+			<Tabs.Root className="sim-tabs-root" value={value} onValueChange={next => activate(String(next))}>
 				<Tabs.List className="sim-tabs" activateOnFocus>
 					{tabs.map(tab => (
 						<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id)}>

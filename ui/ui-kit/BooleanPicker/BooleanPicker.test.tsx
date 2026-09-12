@@ -1,9 +1,10 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { useState } from 'react';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
 import { BooleanPicker } from './BooleanPicker';
-import type { BooleanPickerConfig } from './types';
+import type { AnyBooleanPickerConfig, BooleanPickerConfig, ControlledBooleanPickerConfig } from './types';
 
 // Stands in for a domain facade: a value plus the (onChange) => unsubscribe contract every
 // storeSubscribe helper in state/subscriptions.ts returns.
@@ -115,5 +116,46 @@ describe('BooleanPicker', () => {
 
 		fireEvent.mouseEnter(screen.getByText('Enable Item Swap'));
 		expect(await screen.findByText('Node tooltip')).toBeTruthy();
+	});
+});
+
+describe('BooleanPicker controlled', () => {
+	it('renders the value it is handed and reports every click, with no source of its own', () => {
+		const onChange = vi.fn();
+		const settings = new Settings();
+		render(<BooleanPicker modObject={settings} config={{ id: 'controlled', label: 'Controlled', value: true, onChange }} />);
+
+		expect(checkbox().checked).toBe(true);
+		expect(settings.listenerCount).toBe(0);
+
+		fireEvent.click(checkbox());
+		expect(onChange).toHaveBeenCalledWith(false);
+	});
+
+	it('follows the value the parent hands back, not the click', () => {
+		const Host = () => {
+			const [flag, setFlag] = useState(false);
+			return <BooleanPicker modObject={{}} config={{ id: 'controlled', label: 'Controlled', value: flag, onChange: setFlag }} />;
+		};
+		render(<Host />);
+
+		act(() => {
+			checkbox().click();
+		});
+		expect(checkbox().checked).toBe(true);
+	});
+});
+
+describe('BooleanPickerConfig', () => {
+	type Sourced = BooleanPickerConfig<Settings>;
+	type Controlled = ControlledBooleanPickerConfig<Settings>;
+	type Both = Omit<Sourced, 'value' | 'onChange'> & { value: boolean; onChange: (next: boolean) => void };
+	type Neither = Omit<Sourced, 'getValue' | 'setValue' | 'storeSubscribe' | 'storeField'>;
+
+	it('takes one end or the other, and refuses both at once or neither', () => {
+		expectTypeOf<Sourced>().toExtend<AnyBooleanPickerConfig<Settings>>();
+		expectTypeOf<Controlled>().toExtend<AnyBooleanPickerConfig<Settings>>();
+		expectTypeOf<Both>().not.toExtend<AnyBooleanPickerConfig<Settings>>();
+		expectTypeOf<Neither>().not.toExtend<AnyBooleanPickerConfig<Settings>>();
 	});
 });

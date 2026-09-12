@@ -1,4 +1,4 @@
-import type { InputConfig } from '@ui-kit/input';
+import type { ControlledConfig, InputConfig } from '@ui-kit/input';
 
 export interface EnumValueConfig {
 	name: string;
@@ -10,3 +10,7 @@ export interface EnumPickerConfig<ModObject> extends InputConfig<ModObject, numb
 	id: string;
 	values: Array<EnumValueConfig>;
 }
+
+export type ControlledEnumPickerConfig<ModObject> = ControlledConfig<ModObject, number> & { id: string; values: Array<EnumValueConfig> };
+
+export type AnyEnumPickerConfig<ModObject> = EnumPickerConfig<ModObject> | ControlledEnumPickerConfig<ModObject>;

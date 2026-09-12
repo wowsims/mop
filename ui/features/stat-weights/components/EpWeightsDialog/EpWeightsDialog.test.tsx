@@ -224,14 +224,17 @@ const openChanges: boolean[] = [];
 const DialogHarness = () => {
 	const [open, setOpen] = useState(true);
 	return (
-		<EpWeightsDialog
-			open={open}
-			onOpenChange={next => {
-				openChanges.push(next);
-				setOpen(next);
-			}}
-			settings={settings as never}
-		/>
+		<>
+			<button type="button" data-testid="toggle-open" onClick={() => setOpen(!open)} />
+			<EpWeightsDialog
+				open={open}
+				onOpenChange={next => {
+					openChanges.push(next);
+					setOpen(next);
+				}}
+				settings={settings as never}
+			/>
+		</>
 	);
 };
 
@@ -298,6 +301,31 @@ describe('EpWeightsDialog', () => {
 			fireEvent.change(select);
 		});
 		expect(table().className).toBe('results-ep-table stats-type-weight');
+	});
+
+	it('keeps the stats type and show-all pick in step with the table across a close and reopen', async () => {
+		const { getByTestId } = renderDialog();
+		const select = () => popup().querySelector<HTMLSelectElement>('#ep-type-select')!;
+		const showAll = () => popup().querySelector<HTMLInputElement>('#ep-show-all-stats')!;
+		act(() => {
+			select().value = '1';
+			fireEvent.change(select());
+		});
+		act(() => {
+			fireEvent.click(showAll());
+		});
+
+		await act(async () => {
+			fireEvent.click(getByTestId('toggle-open'));
+		});
+		expect(rootElem.querySelector('.ep-weights-menu')).toBeNull();
+		await act(async () => {
+			fireEvent.click(getByTestId('toggle-open'));
+		});
+
+		expect(table().className).toBe('results-ep-table stats-type-weight');
+		expect(select().value).toBe('1');
+		expect(showAll().checked).toBe(true);
 	});
 
 	// DEFECT FIXED. `makeEpRatioCell` was applied to the six EP cells and the six weight cells, both

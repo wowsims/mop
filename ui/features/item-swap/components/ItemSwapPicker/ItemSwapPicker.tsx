@@ -10,7 +10,7 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
-import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { LocaleHtml, Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';
 
 import { swapWithGear } from '../../model/swap_with_gear';
@@ -36,7 +36,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 			id: 'enable-item-swap',
 			reverse: true,
 			label: i18n.t('settings_tab.other.enable_item_swap.label'),
-			labelTooltip: i18n.t('settings_tab.other.enable_item_swap.tooltip'),
+			labelTooltip: <LocaleHtml html={i18n.t('settings_tab.other.enable_item_swap.tooltip')} />,
 			extraClassNames: ['input-inline'],
 			storeField: 'itemSwap',
 			getValue: (subject: Player<SpecType>) => subject.itemSwapSettings.getEnableItemSwap(),

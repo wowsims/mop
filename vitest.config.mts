@@ -11,7 +11,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
 	resolve: {
 		alias: {
-			'virtual:i18next-loader': path.resolve(here, 'tools/state-snapshots/stub-i18n.js'),
+			'virtual:i18next-loader': path.resolve(here, 'tools/vite/stub-i18n.js'),
 			...UI_ALIASES,
 		},
 	},
