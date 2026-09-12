@@ -75,7 +75,14 @@ to `en` only is an unfinished change, not a follow-up.
 
 ## The snapshot harness
 
-`tools/state-snapshots/` — `check.mjs` runs two passes, both as vite SSR builds into `tmp/harness/`
+**`tools/state-snapshots/` is developer-local and not tracked.** `npm run test:snapshots` and
+`test:snapshots:update` therefore do nothing in a fresh clone, and the 34/34 figure a PR quotes
+cannot be reproduced by a reviewer who does not have the harness. It stays local because
+`golden.json` is 3.9 MB and regenerating it is a fixture update, which only the repo owner does. The
+`virtual:i18next-loader` alias the unit tests need is a separate, **tracked** file
+(`tools/vite/stub-i18n.js`), so `npm run test:unit` works in a fresh clone regardless.
+
+`check.mjs` runs two passes, both as vite SSR builds into `tmp/harness/`
 executed under happy-dom by `run.mjs` (which stubs `Worker` and serves `/mop/assets/**` from the
 checkout so `Database.get()` loads the real `db.bin`):
 

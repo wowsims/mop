@@ -8,7 +8,10 @@
 	justify-content: center;
 }
 
-.consumes-battle-elixirs:has(.hide),
-.consumes-guardian-elixirs:has(.hide) {
+// `showWhen` used to render `class="hide"` on the picker inside; it unmounts it now, so the
+// wrapper is childless rather than holding a hidden child. `:empty` restates the same condition
+// for that, and keeps the wrapper from taking a `gap` in `.picker-group.icon-group`.
+.consumes-battle-elixirs:empty,
+.consumes-guardian-elixirs:empty {
 	display: none;
 }
