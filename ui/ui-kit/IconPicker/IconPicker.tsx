@@ -118,9 +118,9 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					active={fillImproved2 && currentValue > 2}
 					hidden={fillImproved2 && !(currentValue > 2)}
 				/>
-				<span className={clsx('icon-picker-label', config.states <= 2 && 'hide', currentValue > 0 && 'active')}>
-					{showCounterText ? String(currentValue) : null}
-				</span>
+				{config.states > 2 && (
+					<span className={clsx('icon-picker-label', currentValue > 0 && 'active')}>{showCounterText ? String(currentValue) : null}</span>
+				)}
 			</div>
 		</>
 	);

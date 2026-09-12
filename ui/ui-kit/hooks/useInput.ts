@@ -6,7 +6,7 @@ import { useCallback, useRef, useState } from 'react';
 export interface InputState<T, V = T> {
 	value: V;
 	setValue: (next: V) => void;
-	/** `showWhen` said no. Rendered as the `hide` class, not unmounted — see the skill. */
+	/** `showWhen` said no, so the picker renders nothing. */
 	hidden: boolean;
 	disabled: boolean;
 	/** Increments on every notification, including ones that leave the value unchanged. */

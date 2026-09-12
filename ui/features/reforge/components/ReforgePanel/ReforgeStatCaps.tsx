@@ -6,7 +6,6 @@ import { Stats } from '@sim/proto/stats';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
 
 import { ReforgeStatCapRow } from './ReforgeStatCapRow';
@@ -20,14 +19,16 @@ export interface ReforgeStatCapsProps {
 	useCustomEPValues: boolean;
 }
 
-/** The hard-cap table. Hidden rather than unmounted while custom EP values are off. */
+/** The hard-cap table, rendered only while custom EP values are on. */
 export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, useCustomEPValues }: ReforgeStatCapsProps) => {
 	const settings = model.settings;
 	const capsTooltipId = useId();
 	const resetTooltipId = useId();
 
+	if (!useCustomEPValues) return null;
+
 	return (
-		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useCustomEPValues && 'hide')}>
+		<table className="reforge-optimizer-stat-cap-table mb-2">
 			<thead>
 				<tr>
 					<th colSpan={4} className="pb-3">

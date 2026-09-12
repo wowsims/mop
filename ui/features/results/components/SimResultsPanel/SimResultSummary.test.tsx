@@ -56,7 +56,7 @@ const mount = (results: SimResultsManager) =>
 		</SimHostProvider>,
 	);
 
-const diffs = (container: HTMLElement) => [...container.querySelectorAll('.results-reference:not(.hide) > .results-reference-diff')];
+const diffs = (container: HTMLElement) => [...container.querySelectorAll('.results-reference > .results-reference-diff')];
 
 let results: SimResultsManager;
 
@@ -90,12 +90,13 @@ describe('SimResultSummary', () => {
 		]);
 	});
 
-	it('keeps every reference slot hidden and empty until a reference is saved', () => {
+	it('renders no reference slot at all until a reference is saved', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
 
 		expect(diffs(container)).toEqual([]);
-		expect(container.querySelectorAll('.results-reference.hide > .results-reference-diff')).toHaveLength(7);
+		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
+		expect(container.querySelectorAll('.results-metric')).toHaveLength(7);
 	});
 
 	it('fills the deltas in and flags the bar the moment the reference is set', () => {

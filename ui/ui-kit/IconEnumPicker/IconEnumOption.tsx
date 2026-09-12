@@ -17,10 +17,12 @@ export interface IconEnumOptionProps<ModObject, T> {
 export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, onSelect }: IconEnumOptionProps<ModObject, T>) => {
 	const { iconUrl, href } = useActionId(hidden ? undefined : valueConfig.actionId);
 
+	if (hidden) return null;
+
 	return (
 		<Menu.Item
 			render={<li />}
-			className={clsx('icon-dropdown-option', 'dropdown-option', hidden && 'hide')}
+			className={clsx('icon-dropdown-option', 'dropdown-option')}
 			onClick={event => {
 				event.preventDefault();
 				onSelect();
@@ -28,8 +30,8 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 			<a
 				className="icon-picker-button"
 				{...wowheadAnchorProps()}
-				href={hidden ? undefined : href || undefined}
-				style={hidden ? undefined : iconStyleOf(valueConfig, iconUrl)}
+				href={href || undefined}
+				style={iconStyleOf(valueConfig, iconUrl)}
 				{...tooltipAnchorProps(valueConfig.tooltip ? tooltipId : undefined, valueConfig.tooltip)}
 			/>
 		</Menu.Item>

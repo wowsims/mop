@@ -11,7 +11,6 @@ import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
 import { swapWithGear } from '../../model/swap_with_gear';
@@ -49,26 +48,28 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	return (
 		<div className="item-swap-picker-root">
 			<BooleanPicker modObject={player} config={enableConfig} />
-			<div className={clsx('input-root input-inline input-item-swap-container', !enabled && 'hide')}>
-				<span className="form-label" id={labelId}>
-					{i18n.t('settings_tab.other.item_swap.label')}
-				</span>
-				<Button
-					variant="unstyled"
-					className="gear-swap-icon"
-					aria-label={swapTooltip}
-					{...tooltipAnchorProps(swapId)}
-					onClick={() => swapWithGear(player, itemSlots)}>
-					<Icon name="arrows-rotate" className="me-1" />
-				</Button>
-				<Tooltip id={swapId} content={swapTooltip} />
-				<div className="picker-group icon-group" role="group" aria-labelledby={labelId}>
-					{itemSlots.map(itemSlot => (
-						<ItemSwapIcon key={itemSlot} slot={itemSlot} />
-					))}
+			{enabled && (
+				<div className="input-root input-inline input-item-swap-container">
+					<span className="form-label" id={labelId}>
+						{i18n.t('settings_tab.other.item_swap.label')}
+					</span>
+					<Button
+						variant="unstyled"
+						className="gear-swap-icon"
+						aria-label={swapTooltip}
+						{...tooltipAnchorProps(swapId)}
+						onClick={() => swapWithGear(player, itemSlots)}>
+						<Icon name="arrows-rotate" className="me-1" />
+					</Button>
+					<Tooltip id={swapId} content={swapTooltip} />
+					<div className="picker-group icon-group" role="group" aria-labelledby={labelId}>
+						{itemSlots.map(itemSlot => (
+							<ItemSwapIcon key={itemSlot} slot={itemSlot} />
+						))}
+					</div>
 				</div>
-			</div>
-			{note && <p className={clsx('form-text', !enabled && 'hide')}>{note}</p>}
+			)}
+			{note && enabled && <p className="form-text">{note}</p>}
 		</div>
 	);
 };

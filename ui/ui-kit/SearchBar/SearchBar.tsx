@@ -79,12 +79,8 @@ export const SearchBar = ({
 					value={draft}
 					onChange={event => handleInput(event.target.value)}
 				/>
-				{clearable && (
-					<button
-						type="button"
-						className={clsx('search-bar-clear-btn btn btn-link', clearClassName, !draft.length && 'hide')}
-						aria-label={clearLabel}
-						onClick={handleClear}>
+				{clearable && draft.length > 0 && (
+					<button type="button" className={clsx('search-bar-clear-btn btn btn-link', clearClassName)} aria-label={clearLabel} onClick={handleClear}>
 						<Icon name="times" />
 					</button>
 				)}

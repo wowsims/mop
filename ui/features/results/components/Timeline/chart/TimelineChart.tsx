@@ -1,7 +1,6 @@
 import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { Chart, type ChartOptions } from 'chart.js';
-import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
@@ -148,18 +147,20 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				onPanLeft={() => zoom.current.panBy(-PAN_STEP_PX)}
 				onPanRight={() => zoom.current.panBy(PAN_STEP_PX)}
 			/>
-			<div className={clsx('timeline-chart-canvas', noData && 'hide')}>
-				<canvas
-					ref={canvasRef}
-					role="img"
-					aria-label={i18n.t('results_tab.details.timeline.chart_options.chart_label')}
-					onPointerDown={event => zoom.current.down(event)}
-					onPointerMove={event => zoom.current.move(event)}
-					onPointerUp={event => zoom.current.up(event)}
-					onPointerCancel={event => zoom.current.cancel(event)}
-				/>
-			</div>
-			<div className={clsx('timeline-chart-empty', !noData && 'hide')}>{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>
+			{!noData && (
+				<div className="timeline-chart-canvas">
+					<canvas
+						ref={canvasRef}
+						role="img"
+						aria-label={i18n.t('results_tab.details.timeline.chart_options.chart_label')}
+						onPointerDown={event => zoom.current.down(event)}
+						onPointerMove={event => zoom.current.move(event)}
+						onPointerUp={event => zoom.current.up(event)}
+						onPointerCancel={event => zoom.current.cancel(event)}
+					/>
+				</div>
+			)}
+			{noData && <div className="timeline-chart-empty">{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>}
 			{tip && (
 				<div ref={tooltipRef} className="timeline-hover-tooltip">
 					<ChartSeriesTooltip spec={tip.spec} log={tip.log} />

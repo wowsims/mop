@@ -5,7 +5,6 @@ import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { TooltipButton } from '@ui-kit/TooltipButton';
-import clsx from 'clsx';
 import { useCallback, useId, useRef } from 'react';
 
 import type { ListDrag } from './drag_state';
@@ -134,33 +133,35 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ms-2" />}
 				</span>
 			)}
-			<div className={clsx('list-picker-items', value.length === 0 && 'hide')}>
-				{value.map((_item, index) => (
-					<ListPickerItem
-						key={index}
-						index={index}
-						listId={listId}
-						itemLabel={config.itemLabel}
-						inlineMenuBar={inlineMenuBar}
-						title={!inlineMenuBar && config.itemLabel ? `${config.itemLabel} ${index + 1}` : undefined}
-						dragGroup={config.dragGroup}
-						sameGroupOnly={config.sameGroupOnly}
-						canDelete={canDelete && canDeleteAt(index, config.minimumItems)}
-						canCopy={canCopy}
-						canMove={canMove}
-						extraActions={config.extraActions}
-						deleteTooltip={deleteTooltip}
-						copyTooltip={copyTooltip}
-						tooltipId={tooltipId}
-						onDelete={onDelete}
-						onCopy={onCopy}
-						makeDrag={makeDrag}
-						onDrop={onDrop}
-						header={renderItemHeader?.(index)}>
-						{renderItem(index, itemConfig(index))}
-					</ListPickerItem>
-				))}
-			</div>
+			{value.length > 0 && (
+				<div className="list-picker-items">
+					{value.map((_item, index) => (
+						<ListPickerItem
+							key={index}
+							index={index}
+							listId={listId}
+							itemLabel={config.itemLabel}
+							inlineMenuBar={inlineMenuBar}
+							title={!inlineMenuBar && config.itemLabel ? `${config.itemLabel} ${index + 1}` : undefined}
+							dragGroup={config.dragGroup}
+							sameGroupOnly={config.sameGroupOnly}
+							canDelete={canDelete && canDeleteAt(index, config.minimumItems)}
+							canCopy={canCopy}
+							canMove={canMove}
+							extraActions={config.extraActions}
+							deleteTooltip={deleteTooltip}
+							copyTooltip={copyTooltip}
+							tooltipId={tooltipId}
+							onDelete={onDelete}
+							onCopy={onCopy}
+							makeDrag={makeDrag}
+							onDrop={onDrop}
+							header={renderItemHeader?.(index)}>
+							{renderItem(index, itemConfig(index))}
+						</ListPickerItem>
+					))}
+				</div>
+			)}
 			{canCreate &&
 				(config.actions?.create?.useIcon ? (
 					<ListItemAction

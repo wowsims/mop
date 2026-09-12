@@ -41,9 +41,10 @@ describe('ItemSwapPicker', () => {
 		expect([...group.children].every(child => child.classList.contains('icon-picker-root'))).toBe(true);
 	});
 
-	it('hides the picker row while item swap is off', () => {
+	it('renders no picker row while item swap is off', () => {
 		const { container } = setup(false);
 
-		expect(container.querySelector('.input-item-swap-container')!.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.input-item-swap-container')).toBeNull();
+		expect(container.querySelector('.picker-group.icon-group')).toBeNull();
 	});
 });

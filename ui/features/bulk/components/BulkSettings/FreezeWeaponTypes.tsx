@@ -4,7 +4,6 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
-import clsx from 'clsx';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useBulkState } from '../../hooks/useBulkState';
@@ -22,8 +21,8 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 
 	return (
 		<div>
-			{!!weaponTypes.length && (
-				<div className={clsx('bulk-gear-freeze-weapontypes', frozenWeaponSlot === slot && 'hide')}>
+			{!!weaponTypes.length && frozenWeaponSlot !== slot && (
+				<div className="bulk-gear-freeze-weapontypes">
 					<h6 className="mb-2">
 						{slot === ItemSlot.ItemSlotMainHand
 							? i18n.t('bulk_tab.settings.freeze_weapon_types.mainhand_label')

@@ -267,14 +267,14 @@ describe('IconPicker', () => {
 		expect(allAnchors()[2].hidden).toBe(false);
 	});
 
-	it('hides the counter label at states 2 and shows it above', () => {
+	it('renders no counter label at states 2 and renders one above', () => {
 		const settings = new Settings(0);
 		const { rerender } = render(<IconPicker modObject={settings} config={configFor()} />);
-		const label = () => document.querySelector('.icon-picker-label')!;
-		expect(label().classList.contains('hide')).toBe(true);
+		const label = () => document.querySelector('.icon-picker-label');
+		expect(label()).toBeNull();
 
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
-		expect(label().classList.contains('hide')).toBe(false);
+		expect(label()).toBeTruthy();
 	});
 
 	it('writes the disabled attribute on the anchor as well as the class on the root', () => {

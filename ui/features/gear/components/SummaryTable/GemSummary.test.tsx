@@ -35,17 +35,17 @@ describe('GemSummary', () => {
 	it('renders its rows on the first paint, with no notification', () => {
 		const { container } = renderSummary(hostWith([gem(1, 'Bold'), gem(1, 'Bold'), gem(2, 'Delicate')]));
 
-		expect(container.querySelector('.summary-table-root')?.classList.contains('hide')).toBe(false);
+		expect(container.querySelector('.summary-table-root')).not.toBeNull();
 		const rows = [...container.querySelectorAll('.summary-table-row')].map(row => row.textContent);
 		expect(rows).toEqual(['Bold2', 'Delicate1']);
 	});
 
-	it('hides itself and builds no reset button when there are no gems', () => {
+	it('renders nothing at all when there are no gems', () => {
 		const { container } = renderSummary(hostWith([]));
 
-		expect(container.querySelector('.summary-table-root')?.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.summary-table-root')).toBeNull();
 		expect(container.querySelector('.summary-table-reset-button')).toBeNull();
-		expect(container.querySelector('.content-block-body')?.children).toHaveLength(0);
+		expect(container.querySelector('.content-block-body')).toBeNull();
 	});
 
 	it('strips the gems from the gear when reset is clicked', () => {

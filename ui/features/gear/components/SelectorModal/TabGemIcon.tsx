@@ -3,7 +3,6 @@ import type { UIGem as Gem } from '@generated/proto/ui';
 import { ActionId } from '@sim/proto/action_id';
 import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import clsx from 'clsx';
 export interface TabGemIconProps {
 	socketColor: GemColor;
 	gem: Gem | null;
@@ -17,7 +16,7 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 
 	return (
 		<span className="gem-socket-container">
-			<img className={clsx('gem-icon', !gem && 'hide')} src={gem ? iconUrl || undefined : emptyIconUrl} alt="" />
+			{gem && <img className="gem-icon" src={iconUrl || undefined} alt="" />}
 			<img className="socket-icon" src={emptyIconUrl} alt="" />
 		</span>
 	);

@@ -26,8 +26,10 @@ export interface MetricsTableProps<T> {
 export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, hasResult, rowClassName }: MetricsTableProps<T>) => {
 	const table = useMetricsTable({ columns, rows, sortColumnId });
 
+	if (hasResult && !rows.length) return null;
+
 	return (
-		<div className={clsx(rootClassName, hasResult && !rows.length && 'hide')}>
+		<div className={rootClassName}>
 			<table className="metrics-table">
 				<thead className="metrics-table-header">
 					{table.getHeaderGroups().map(headerGroup => (

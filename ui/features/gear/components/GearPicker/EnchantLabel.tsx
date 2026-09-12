@@ -3,7 +3,6 @@ import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { getEnchantDescription } from '@sim/proto/enchants';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
-import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ItemCellAnchor } from '../ItemCell';
@@ -47,10 +46,12 @@ export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: Ench
 
 	const href = actionId ? (actionId.spellId ? ActionId.makeSpellUrl(actionId.spellId) : ActionId.makeItemUrl(actionId.itemId)) : undefined;
 
+	if (!enchant) return null;
+
 	return (
 		<ItemCellAnchor
 			ref={anchorRef}
-			className={clsx(className, !enchant && 'hide')}
+			className={className}
 			role="button"
 			href={href}
 			onActivate={onActivate}

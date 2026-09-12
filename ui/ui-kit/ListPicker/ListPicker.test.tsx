@@ -89,13 +89,13 @@ describe('ListPicker', () => {
 			expect(bodies()).toEqual(['a', 'b']);
 		});
 
-		it('hides the items box while the list is empty, and unhides it when an item arrives', () => {
+		it('renders no items box while the list is empty, and renders one when an item arrives', () => {
 			const rows = rowsOf();
 			mount(rows);
-			expect(itemsBox().classList.contains('hide')).toBe(true);
+			expect(root().querySelector('.list-picker-items')).toBeNull();
 
 			act(() => rows.set([{ name: 'a' }]));
-			expect(itemsBox().classList.contains('hide')).toBe(false);
+			expect(itemsBox()).toBeTruthy();
 		});
 
 		it('puts the header before the body, with a numbered title, when the menu bar is not inline', () => {
@@ -435,11 +435,11 @@ describe('ListPicker', () => {
 	});
 
 	describe('showWhen and enableWhen', () => {
-		it('adds hide rather than unmounting', () => {
+		it('unmounts the whole list when showWhen says no', () => {
 			mount(rowsOf('a'), { showWhen: () => false });
 
-			expect(root().classList.contains('hide')).toBe(true);
-			expect(containers()).toHaveLength(1);
+			expect(document.querySelector('.list-picker-root')).toBeNull();
+			expect(document.querySelectorAll('.list-picker-item-container')).toHaveLength(0);
 		});
 
 		it('adds disabled when enableWhen says no', () => {

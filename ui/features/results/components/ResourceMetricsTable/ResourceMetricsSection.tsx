@@ -1,6 +1,5 @@
 import { ResourceMetrics } from '@sim/proto/sim_result';
 import type { ResourceType } from '@generated/proto/spell';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { buildMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
@@ -31,8 +30,10 @@ export interface ResourceMetricsSectionProps {
 export const ResourceMetricsSection = ({ resourceType, title, columns, resultData }: ResourceMetricsSectionProps) => {
 	const rows = useMemo(() => (resultData ? buildMetricRows(resourceGroups(resultData, resourceType), grouping) : NO_ROWS), [resultData, resourceType]);
 
+	if (!rows.length) return null;
+
 	return (
-		<div className={clsx('resource-metrics-table-container', !rows.length && 'hide')}>
+		<div className="resource-metrics-table-container">
 			<span className="resource-metrics-table-title">{title}</span>
 			<MetricsTable rootClassName="resource-metrics-table-root" columns={columns} rows={rows} sortColumnId="gain" hasResult={!!resultData} />
 		</div>

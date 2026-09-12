@@ -80,26 +80,25 @@ describe('CustomSection', () => {
 		expect(source.listeners.size).toBe(0);
 	});
 
-	it('hides the block root — not its body — when `when` is false at mount', () => {
-		const block = mount({ when: () => false });
-		expect(block.classList.contains('hide')).toBe(true);
-		expect(block.querySelector('.content-block-body')!.classList.contains('hide')).toBe(false);
+	it('renders no block at all when `when` is false at mount', () => {
+		expect(mount({ when: () => false })).toBeNull();
 	});
 
-	it('toggles `hide` in both directions as the player changes', () => {
-		const block = mount({ when: ((subject: typeof player) => subject.shown) as unknown as CustomSectionConfig<any>['when'] });
-		expect(block.classList.contains('hide')).toBe(false);
+	it('unmounts and remounts the block as the player changes', () => {
+		const block = () => document.querySelector('.content-block');
+		mount({ when: ((subject: typeof player) => subject.shown) as unknown as CustomSectionConfig<any>['when'] });
+		expect(block()).toBeTruthy();
 
 		act(() => {
 			player.shown = false;
 			source.notify();
 		});
-		expect(block.classList.contains('hide')).toBe(true);
+		expect(block()).toBeNull();
 
 		act(() => {
 			player.shown = true;
 			source.notify();
 		});
-		expect(block.classList.contains('hide')).toBe(false);
+		expect(block()).toBeTruthy();
 	});
 });

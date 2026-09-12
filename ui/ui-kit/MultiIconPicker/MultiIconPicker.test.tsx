@@ -168,17 +168,16 @@ describe('MultiIconPicker', () => {
 		expect(trigger().hasAttribute('href')).toBe(false);
 	});
 
-	it('renders showWhen as the hide class and leaves the node in the DOM', () => {
+	it('unmounts when showWhen goes false and mounts again when it comes back', () => {
 		const buffs = new Buffs();
 		mount(buffs, configFor({ showWhen: (player: any) => (player as Buffs).visible }));
-		expect(root().classList.contains('hide')).toBe(false);
+		expect(document.querySelector('.multi-icon-picker-root')).toBeTruthy();
 
 		act(() => buffs.setVisible(false));
-		expect(document.querySelector('.multi-icon-picker-root')).toBeTruthy();
-		expect(root().classList.contains('hide')).toBe(true);
+		expect(document.querySelector('.multi-icon-picker-root')).toBeNull();
 
 		act(() => buffs.setVisible(true));
-		expect(root().classList.contains('hide')).toBe(false);
+		expect(document.querySelector('.multi-icon-picker-root')).toBeTruthy();
 	});
 
 	it('clears from a right-click on the button and from the blank option, and not from a left-click', () => {
