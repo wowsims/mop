@@ -12,7 +12,7 @@ export interface DialogProps {
 	/** Not called for a close the user is not allowed to make — see `preventClose`. */
 	onOpenChange: (open: boolean) => void;
 	className?: string;
-	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`, `--bs-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--primary-dampened`, `--hover-color` and `--theme-component-text-color` do not resolve at all. */
+	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`, `--bs-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--primary-dampened` and `--theme-component-text-color` do not resolve at all. */
 	container?: HTMLElement | null;
 	size?: DialogSize;
 	title?: ReactNode;

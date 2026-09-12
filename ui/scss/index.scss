@@ -61,11 +61,10 @@ $theme-colors: (
 @import 'bootstrap/scss/alert';
 $theme-colors: $all-theme-colors !global;
 
-// `bootstrap/scss/close` is gone: `.btn-close` and `.btn-close-white` are the only classes it
-// defines and no TSX, TS or HTML in the tree emits either. The two project rules that style
-// `.btn-close` (`shared/_bootstrap_style_overrides.scss`, `gear_picker/_selector_modal.scss`) were
-// already dead against them and are left alone as pre-existing dead code.
-@import 'bootstrap/scss/modal';
+// `bootstrap/scss/close` and `bootstrap/scss/modal` are both gone: no TSX, TS or HTML in the tree
+// emits `.btn-close`, `.btn-close-white` or any `.modal*` class (the `modal` strings in the tree are
+// all prefixed component names — `apl-name-modal-body`, `progress-tracker-modal-*`). The project
+// rules that styled them went with the partials.
 
 // Bootstrap's helpers and its utilities API are gone; Tailwind renders those utilities now.
 // `bootstrap/scss/utilities` above is kept: it only builds the $utilities map, which
@@ -75,7 +74,6 @@ $theme-colors: $all-theme-colors !global;
 @import 'shared/mixins';
 @import 'shared/global';
 @import 'shared/global_old';
-@import 'shared/modal';
 
 // Custom Bootstrap style overrides
 @import 'shared/bootstrap_style_overrides';

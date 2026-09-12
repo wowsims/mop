@@ -94,7 +94,6 @@ $custom-breakpoints: (
 
 // Spacer variables
 :root {
-	--spacer-0: #{map-get($spacers, 0)};
 	--spacer-1: #{map-get($spacers, 1)};
 	--spacer-2: #{map-get($spacers, 2)};
 	--spacer-3: #{map-get($spacers, 3)};
@@ -230,7 +229,6 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 :root {
 	--table-cell-padding: 0.5rem;
 
-	--container-padding-sm: var(--gap-width-sm);
 	--container-padding-lg: 3rem;
 	--container-padding-xxl: 4rem;
 	--container-padding: var(--gap-width-sm);
@@ -248,11 +246,6 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 // Sizing
 :root {
 	// Make Bootstrap font sizes available as CSS vars
-	--h1-font-size: #{$h1-font-size};
-	--h2-font-size: #{$h2-font-size};
-	--h3-font-size: #{$h3-font-size};
-	--h4-font-size: #{$h4-font-size};
-	--h5-font-size: #{$h5-font-size};
 	--h6-font-size: #{$h6-font-size};
 }
 
@@ -307,7 +300,6 @@ $btn-font-size: 0.875rem;
 $btn-padding-y: 0.5rem;
 
 :root {
-	--btn-transition: #{$btn-transition};
 	// Add custom variable to reuse paddings
 	--btn-padding-y: #{$btn-padding-y};
 	--btn-padding-x: #{$btn-padding-x};
@@ -345,7 +337,6 @@ $dropdown-padding-y: 0;
 	// Add custom variable to reuse outside dropdowns
 	--dropdown-bg: #{$dropdown-bg};
 	--dropdown-border-width: #{$dropdown-border-width};
-	--dropdown-color: #{$dropdown-color};
 	--dropdown-link-active-bg: #{$dropdown-link-active-bg};
 	--dropdown-link-color: #{$dropdown-link-color};
 	--dropdown-link-hover-color: #{$dropdown-link-hover-color};
@@ -459,15 +450,6 @@ $tooltip-body-padding-y: var(--spacer-2);
 	--bs-tooltip-max-width-sm: #{$tooltip-max-width-sm};
 	--bs-tooltip-body-padding-x: #{$tooltip-body-padding-x};
 	--bs-tooltip-body-padding-y: #{$tooltip-body-padding-y};
-
-	--tooltip-bg: #{$tooltip-bg};
-	--tooltip-border: #{$tooltip-border};
-	--tooltip-body-color: #{$tooltip-body-color};
-	--tooltip-max-width: #{$tooltip-max-width};
-	--tooltip-max-width-lg: #{$tooltip-max-width-lg};
-	--tooltip-max-width-sm: #{$tooltip-max-width-sm};
-	--tooltip-body-padding-x: #{$tooltip-body-padding-x};
-	--tooltip-body-padding-y: #{$tooltip-body-padding-y};
 }
 
 // Toast
@@ -493,108 +475,14 @@ $toast-padding-y: var(--spacer-3);
 	--tab-color-hover: #{$nav-link-hover-color};
 	--tab-color-active: #{$nav-tabs-link-active-color};
 
-	// These three are the only names in this block that alias rather than interpolate, because the `--bs-*` spellings are not Bootstrap's: the project declares them itself, at `:root`, in `shared/_global.scss` and `shared/_bootstrap_style_overrides.scss`. They survive Bootstrap's removal, and `--body-font-size` is responsive there (14px, 16px at the 1080p breakpoint), so an alias is the only spelling that cannot silently drift from it.
-	--body-font-family: var(--bs-body-font-family);
-	--body-font-size: var(--bs-body-font-size);
-	--body-line-height: var(--bs-body-line-height);
-
 	// Base colors and links
-	--white: #{$white};
-	--white-rgb: #{to-rgb($white)};
-	--black: #{$black};
-	--black-alpha-50: #{map-get($custom-alpha, 'black-alpha-50')};
-	--black-alpha-75: #{map-get($custom-alpha, 'black-alpha-75')};
-	--primary: #{$primary};
-	--primary-rgb: #{to-rgb($primary)};
 	--body-bg: #{$body-bg};
-	--body-color: #{$body-color};
-	--link-color: #{$link-color};
-	--link-color-rgb: #{to-rgb($link-color)};
-	--link-hover-color-rgb: #{to-rgb($link-hover-color)};
 
 	// Grays
-	--gray: #{$gray-600};
-	--gray-300: #{$gray-300};
 	--gray-500: #{$gray-500};
-	--gray-600: #{$gray-600};
-	--gray-700: #{$gray-700};
-	--gray-800: #{$gray-800};
-	--gray-900: #{$gray-900};
 
 	// Theme colors
 	--border-color: #{$border-color};
-	--border-width: #{$border-width};
-	--danger: #{$danger};
-	--warning: #{$warning};
-	--secondary: #{$secondary};
-	--secondary-color: #{$body-secondary-color};
-	--orange: #{$orange};
-
-	// Custom theme colors
-	--brand: #{$brand};
-	--expansion: #{$expansion};
-	--off-white: #{map-get($custom-colors, 'off-white')};
-	--success: #{$success};
-
-	// Item quality colors
-	--quality-junk: #{$item-quality-junk};
-	--quality-common: #{$item-quality-common};
-	--quality-uncommon: #{$item-quality-uncommon};
-	--quality-rare: #{$item-quality-rare};
-	--quality-epic: #{$item-quality-epic};
-	--quality-legendary: #{$item-quality-legendary};
-	--quality-artifact: #{$item-quality-artifact};
-	--quality-heirloom: #{$item-quality-heirloom};
-
-	// Spell school colors
-	--school-physical: #{map-get($spell-school-colors, 'physical')};
-	--school-arcane: #{map-get($spell-school-colors, 'arcane')};
-	--school-fire: #{map-get($spell-school-colors, 'fire')};
-	--school-frost: #{map-get($spell-school-colors, 'frost')};
-	--school-holy: #{map-get($spell-school-colors, 'holy')};
-	--school-nature: #{map-get($spell-school-colors, 'nature')};
-	--school-shadow: #{map-get($spell-school-colors, 'shadow')};
-	--school-chaos: #{map-get($spell-school-colors, 'chaos')};
-
-	// Faction colors
-	--faction-horde: #{map-get($faction-colors, 'horde')};
-	--faction-alliance: #{map-get($faction-colors, 'alliance')};
-
-	// Resource colors
-	--resource-health: #{$health-color};
-	--resource-mana: #{$mana-color};
-	--resource-rage: #{$rage-color};
-	--resource-energy: #{$energy-color};
-	--resource-focus: #{$focus-color};
-	--resource-chi: #{$chi-color};
-	--resource-combo-points: #{$combo-points-color};
-	--resource-holy-power: #{$holy-power-color};
-	--resource-lunar-energy: #{$lunar-energy-color};
-	--resource-solar-energy: #{$solar-energy-color};
-
-	// Secondary resource colors
-	--resource-arcane-charges: #{$arcane-charges-color};
-	--resource-shadow-orbs: #{$shadow-orbs-color};
-	--resource-demonic-fury: #{$demonic-fury-color};
-	--resource-burning-embers: #{$burning-embers-color};
-	--resource-soul-shards: #{$soul-shards-color};
-
-	// Damage colors
-	--damage-hit: #{$damage-hit};
-	--damage-crit: #{$damage-crit};
-	--partial: #{$damage-partial};
-	--miss: #{$damage-miss};
-	--cancel: #{$damage-cancel};
-	--cancel-rgb: #{to-rgb($damage-cancel)};
-	--dps: #{$damage-dps};
-	--threat: #{$damage-threat};
-
-	// Link colors
-	--link-danger: #{map-get($link-colors, 'link-danger')};
-	--link-warning: #{map-get($link-colors, 'link-warning')};
-
-	// Talent colors
-	--talent-full: #{map-get($talent-colors, 'talent-full')};
 
 	// Table colors
 	--table-row-even-bg: #{map-get($table-colors, 'table-row-even-bg')};

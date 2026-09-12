@@ -28,7 +28,6 @@
 
 	// Custom variants we use for styling some components
 	--primary-dampened: #{color.mix($black, $base-color, 75%)};
-	--hover-color: #{$hover-color};
 
 	.btn-primary {
 		--bs-btn-bg: #{$base-color};
@@ -74,13 +73,6 @@
 		)};
 }
 
-@mixin vertical-center {
-	margin: 0;
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-}
-
 @mixin horizontal-center {
 	margin: 0;
 	position: absolute;
@@ -88,35 +80,9 @@
 	right: auto;
 }
 
-@mixin vertical-horizontal-center {
-	margin: 0 !important;
-	position: absolute !important;
-	top: 50% !important;
-	left: 50% !important;
-	transform: translate(-50%, -50%) !important;
-}
-
 @mixin vertical-bottom {
 	position: absolute;
 	bottom: 0;
-}
-
-@mixin horizontal-left {
-	position: absolute;
-	left: 0;
-}
-
-@mixin horizontal-right {
-	position: absolute;
-	right: 0;
-}
-
-@mixin screen-vertical-horizontal-center {
-	margin: 0;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%) !important;
 }
 
 @mixin wowhead-background-icon {
