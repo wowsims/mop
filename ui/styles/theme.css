@@ -1,5 +1,21 @@
 /* `static`: emit every token at :root even when no utility uses it, so hand-written CSS can read them. */
 @theme static {
+	/*
+	 * Four separate decisions, not one habit. Each reset was re-tested against
+	 * `node_modules/tailwindcss/theme.css` and each is still load-bearing on its own:
+	 *
+	 *   --color-*      suppresses Tailwind's ~250-swatch default palette, in a codebase with its own.
+	 *   --breakpoint-* our ladder is Bootstrap's (576/992/1200/1400 + four high-DPI stops). Without the
+	 *                  reset Tailwind's `2xl` (1536px) would sit alongside our `xxl` (1400px) as a
+	 *                  second, differently-sized name for the same idea.
+	 *   --radius-*     no radius token survives it, and that is the point: `$enable-rounded: false`.
+	 *                  It also stops a `rounded` LOCAL VARIABLE in two .tsx files (Tailwind scans for
+	 *                  bare candidate strings, not JSX attributes) from shipping a real `.rounded` rule.
+	 *   --text-*       see the scale below.
+	 *
+	 * `--font-weight-*` is deliberately NOT reset: `font-normal`/`font-bold` use Tailwind's defaults
+	 * as-is, which is what letting a default through looks like when it genuinely matches.
+	 */
 	--color-*: initial;
 	--breakpoint-*: initial;
 	--radius-*: initial;
@@ -19,6 +35,16 @@
 	--font-sans: SimDefaultFont, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+	/*
+	 * `xs`, `sm` and `base` have the same value as Tailwind's defaults and are re-declared ANYWAY.
+	 * They are a trap, not a duplication: every default `--text-*` ships a paired
+	 * `--text-*--line-height`, and `text-sm` emits `line-height` only when that companion exists.
+	 * Letting the default through turns `.text-sm` from `font-size` alone into
+	 * `font-size + line-height: calc(1.25 / 0.875)` = 1.4286 against the inherited 1.5 — measured,
+	 * not assumed. `text-sm` is the one size actually in markup, so that is a live regression.
+	 * Above `base` the values genuinely differ: this is Bootstrap's scale, and every `$font-size`
+	 * over 1.25rem is RFS-fluid, which is why `text-fluid-xl` exists in `tailwind.css`.
+	 */
 	--text-xs: 0.75rem;
 	--text-sm: 0.875rem;
 	--text-base: 1rem;
@@ -29,14 +55,9 @@
 	--text-4xl: 2.5rem;
 	--text-5xl: 5rem;
 
-	--radius-full: 9999px;
-
 	/* Design system. The bare `--color-*` namespace is the answer to "what are our colours?", and
 	   nothing else: everything under GAME DATA below is WoW's and is namespaced away from it. */
 
-	--color-transparent: transparent;
-	--color-current: currentColor;
-	--color-inherit: inherit;
 	--color-black: #000;
 	--color-white: #fff;
 	--color-off-white: #f0f0f0;
