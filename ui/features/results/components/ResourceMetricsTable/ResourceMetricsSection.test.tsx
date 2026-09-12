@@ -54,7 +54,7 @@ describe('ResourceMetricsSection', () => {
 		const { container } = section(resultDataWith([resource('Bloodthirst', 10), resource('Whirlwind', 30)]));
 
 		const wrapper = container.querySelector('.resource-metrics-table-container')!;
-		expect(wrapper.className).toBe('resource-metrics-table-container mb-5');
+		expect(wrapper.className).toBe('resource-metrics-table-container mb-[20px]');
 		expect(wrapper.querySelector('.resource-metrics-table-title')?.textContent).toBe('Rage');
 		expect(wrapper.querySelectorAll('.resource-metrics-table-root')).toHaveLength(1);
 		expect(wrapper.querySelectorAll('thead th')).toHaveLength(6);

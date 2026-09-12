@@ -8,7 +8,7 @@ export interface TooltipLogItemProps {
 
 export const TooltipLogItem = ({ log, children }: TooltipLogItemProps) => (
 	<li>
-		{log.actionId?.iconUrl && <img className="timeline-tooltip-icon size-5" src={log.actionId.iconUrl} alt="" />}
+		{log.actionId?.iconUrl && <img className="timeline-tooltip-icon size-[20px]" src={log.actionId.iconUrl} alt="" />}
 		{log.actionId && <span>{log.actionId.name}</span>}
 		<span className="series-color">{children}</span>
 	</li>
