@@ -24,6 +24,13 @@ const refresh = (key: string) => {
 	listeners.get(key)?.forEach(notify => notify());
 };
 
+/**
+ * The other door into the same storage: `Env.storage` writes from the model layer (the settings
+ * envelope, stat weights, bulk settings) land here too, so a React reader of that key sees them.
+ * `ui/app/browser_env.ts` is what routes them through.
+ */
+export const notifyStorageWrite = (key: string) => refresh(key);
+
 let watching = false;
 const watchOtherTabs = () => {
 	if (watching || typeof window === 'undefined') return;
