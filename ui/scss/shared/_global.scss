@@ -119,10 +119,7 @@ kbd {
 	filter: brightness(0.5);
 }
 
-.interactive {
-	cursor: pointer;
-	user-select: none;
-}
+// `.interactive` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`.
 
 .hide {
 	display: none !important;

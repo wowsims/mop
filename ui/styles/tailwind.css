@@ -86,6 +86,20 @@
 }
 
 /*
+ * Project utilities. A composed name earns a place here when it says something the two or three
+ * utilities it expands to do not — `interactive` is "this responds to a click", which is why the
+ * four call sites read better than `cursor-pointer select-none` would.
+ *
+ * It moves out of `shared/_global.scss` for two reasons beyond the name: that file is compiled into
+ * BOTH CSS chunks, so the rule shipped twice; and as a utility it is finally in the same layer as
+ * everything else that behaves like one.
+ */
+@utility interactive {
+	cursor: pointer;
+	user-select: none;
+}
+
+/*
  * Bootstrap utility shim, for `ui/specs/**` only.
  *
  * That tree is frozen, so its one remaining consumer of Bootstrap utilities —
