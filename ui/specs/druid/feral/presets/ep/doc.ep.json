@@ -1,0 +1,14 @@
+{
+	"name": "DoC Bear-Weave",
+	"stats": {
+		"StatStrength": 0.39,
+		"StatAgility": 1.0,
+		"StatAttackPower": 0.37,
+		"StatHitRating": 0.45,
+		"StatExpertiseRating": 0.45,
+		"StatCritRating": 0.36,
+		"StatHasteRating": 0.27,
+		"StatMasteryRating": 0.42
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.73 }
+}

@@ -5,19 +5,18 @@
 OUT_DIR := dist/mop
 # Windows won't launch an extensionless binary -- air just pops a file-association prompt.
 BIN_EXT := $(shell go env GOEXE)
-TS_CORE_SRC := $(shell find ui/core -name '*.ts' -type f)
 ASSETS_INPUT := $(shell find assets/ -type f)
 ASSETS := $(patsubst assets/%,$(OUT_DIR)/assets/%,$(ASSETS_INPUT))
 # Recursive wildcard function. Needs to be '=' instead of ':=' because of recursion.
 rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
-AUTO_GEN_FILES_TS := ui/core/player_classes/capabilities_auto_gen.ts ui/core/components/individual_sim_ui/bulk/constants_auto_gen.ts ui/core/wasm/bulk_sim/constants_auto_gen.ts
+AUTO_GEN_FILES_TS := ui/sim/player_classes/capabilities_auto_gen.ts ui/sim/bulk/constants_auto_gen.ts ui/sim/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \
-  ui/core/proto/api.ts \
+  ui/generated/proto/api.ts \
   $(ASSETS) \
   $(OUT_DIR)/bundle/.dirstamp
 	touch $@
@@ -30,22 +29,15 @@ $(OUT_DIR)/bundle/.dirstamp: \
   tools/vite/spec_pages.mts \
   node_modules \
   tsconfig.json \
-  ui/core/index.ts \
-  ui/core/proto/api.ts
+  ui/generated/proto/api.ts
 	node_modules/typescript/bin/tsc --noEmit
 	npx tsx vite.build-workers.mts
 	npx vite build
 	touch $@
 
-ui/core/index.ts: $(TS_CORE_SRC)
-	find ui/core -name '*.ts' | \
-	  awk -F 'ui/core/' '{ print "import \x22./" $$2 "\x22;" }' | \
-	  sed 's/\.ts";$$/";/' | \
-	  grep -v 'import "./index";' > $@
-
 .PHONY: clean
 clean:
-	rm -rf ui/core/proto/*.ts \
+	rm -rf ui/generated/proto/*.ts \
 	  sim/core/proto/*.pb.go \
 	  wowsimmop$(BIN_EXT) \
 	  wowsimmop-windows.exe \
@@ -54,15 +46,14 @@ clean:
 	  wowsimmop-amd64-linux \
 	  dist \
 	  binary_dist \
-	  ui/core/index.ts \
-	  ui/core/proto/*.ts \
+	  ui/generated/proto/*.ts \
 	  node_modules
 	find . -name "*.results.tmp" -type f -delete
 
-ui/core/proto/api.ts: proto/*.proto node_modules
-	npx protoc --ts_opt generate_dependencies --ts_out ui/core/proto --proto_path proto proto/api.proto
-	npx protoc --ts_out ui/core/proto --proto_path proto proto/test.proto
-	npx protoc --ts_out ui/core/proto --proto_path proto proto/ui.proto
+ui/generated/proto/api.ts: proto/*.proto node_modules
+	npx protoc --ts_opt generate_dependencies --ts_out ui/generated/proto --proto_path proto proto/api.proto
+	npx protoc --ts_out ui/generated/proto --proto_path proto proto/test.proto
+	npx protoc --ts_out ui/generated/proto --proto_path proto proto/ui.proto
 
 .PHONY: package.json
 
@@ -100,7 +91,7 @@ wasm: $(OUT_DIR)/lib.wasm.gz
 # Builds the generic .wasm, with all items included.
 # Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
 # The main thread decompresses and compiles it once (see getSharedWasmModule in
-# ui/core/worker_pool.ts) and shares the compiled module with every worker.
+# ui/sim/workers/worker_pool.ts) and shares the compiled module with every worker.
 WASM_FEATURES := --enable-sign-ext --enable-nontrapping-float-to-int --enable-mutable-globals --enable-bulk-memory
 $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
@@ -140,7 +131,7 @@ binary_dist: $(OUT_DIR)/.dirstamp
 
 # Rebuild the protobuf generated code.
 .PHONY: proto
-proto: sim/core/proto/api.pb.go ui/core/proto/api.ts
+proto: sim/core/proto/api.pb.go ui/generated/proto/api.ts
 
 # Builds the web server with the compiled client.
 .PHONY: wowsimmop

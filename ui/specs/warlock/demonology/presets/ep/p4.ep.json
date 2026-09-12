@@ -1,0 +1,11 @@
+{
+	"name": "Default < 560",
+	"stats": {
+		"StatIntellect": 1.24,
+		"StatSpellPower": 1.0,
+		"StatHitRating": 0.93,
+		"StatCritRating": 0.6,
+		"StatHasteRating": 0.66,
+		"StatMasteryRating": 0.63
+	}
+}

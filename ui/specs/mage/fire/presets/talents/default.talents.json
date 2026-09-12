@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "111121",
+	"glyphs": {
+		"major1": "GlyphOfCombustion",
+		"major2": "GlyphOfInfernoBlast",
+		"major3": "GlyphOfRapidDisplacement",
+		"minor1": "GlyphOfMomentum",
+		"minor2": "GlyphOfLooseMana",
+		"minor3": "GlyphOfRapidTeleportation"
+	}
+}

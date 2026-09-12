@@ -1,0 +1,13 @@
+{
+	"name": "P5 (Dire Beast)",
+	"stats": {
+		"StatAgility": 1,
+		"StatHitRating": 0.37,
+		"StatExpertiseRating": 0.37,
+		"StatHasteRating": 0.37,
+		"StatRangedAttackPower": 0.36,
+		"StatCritRating": 0.36,
+		"StatMasteryRating": 0.26
+	},
+	"pseudoStats": { "PseudoStatRangedDps": 0.67 }
+}

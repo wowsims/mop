@@ -1,0 +1,10 @@
+{
+	"name": "Default",
+	"talentsString": "231221",
+	"glyphs": {
+		"major1": "GlyphOfSoulstone",
+		"major2": "GlyphOfEternalResolve",
+		"major3": "GlyphOfImpSwarm",
+		"minor3": "GlyphOfUnendingBreath"
+	}
+}

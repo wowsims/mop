@@ -1,0 +1,12 @@
+{
+	"name": "P2",
+	"stats": {
+		"StatIntellect": 1.0,
+		"StatSpellPower": 0.82,
+		"StatCritRating": 0.37,
+		"StatHasteRating": 0.47,
+		"StatHitRating": 1.1,
+		"StatSpirit": 1.1,
+		"StatMasteryRating": 0.44
+	}
+}

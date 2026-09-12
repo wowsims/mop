@@ -1,0 +1,19 @@
+{
+	"name": "Balanced Post-Caps",
+	"stats": {
+		"StatHealth": 0.08,
+		"StatStamina": 1.77,
+		"StatAgility": 1.0,
+		"StatArmor": 0.73,
+		"StatBonusArmor": 0.17,
+		"StatDodgeRating": 0.22,
+		"StatMasteryRating": 0.36,
+		"StatStrength": 0.19,
+		"StatAttackPower": 0.18,
+		"StatHitRating": 0.0,
+		"StatExpertiseRating": 0.0,
+		"StatCritRating": 1.16,
+		"StatHasteRating": 1.35
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.75 }
+}

@@ -1,0 +1,17 @@
+{
+	"name": "P5 - TG",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatAgility": 0.12,
+		"StatAttackPower": 0.45,
+		"StatExpertiseRating": 3.04,
+		"StatHitRating": 3.61,
+		"StatCritRating": 1.86,
+		"StatHasteRating": 0.84,
+		"StatMasteryRating": 1.28
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 2.58,
+		"PseudoStatOffHandDps": 1.26
+	}
+}

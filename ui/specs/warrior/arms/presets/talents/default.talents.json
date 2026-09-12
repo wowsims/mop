@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "113132",
+	"glyphs": {
+		"major1": "GlyphOfBullRush",
+		"major2": "GlyphOfUnendingRage",
+		"major3": "GlyphOfDeathFromAbove"
+	}
+}

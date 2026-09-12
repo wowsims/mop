@@ -1,0 +1,17 @@
+{
+	"name": "P2 - SMF",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatAgility": 0.06,
+		"StatAttackPower": 0.45,
+		"StatExpertiseRating": 1.19,
+		"StatHitRating": 1.37,
+		"StatCritRating": 0.94,
+		"StatHasteRating": 0.41,
+		"StatMasteryRating": 0.59
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 2.15,
+		"PseudoStatOffHandDps": 1.31
+	}
+}

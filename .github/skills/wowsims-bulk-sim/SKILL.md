@@ -17,20 +17,20 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, staging/finalist beha
 - Core staged runner: sim/core/bulk/bulk_sim.go; per-stage logic + finalist stage: sim/core/bulk/stage.go; paired statistics: sim/core/bulk/statistics.go.
 - Local/server reforge pre-pass wrapper: sim/web/bulk.go.
 - Web endpoint registration: sim/web/main.go (/bulkSimAsync; per-handler errorProgress; isFinalProgress).
-- Frontend orchestration, content seed, cache partitioning: ui/core/sim.ts (runBulkSim).
-- Bulk utilities and cache helpers: ui/core/components/individual_sim_ui/bulk/utils.ts.
-- Results display (tie groups, ±CI, change icons): ui/core/components/individual_sim_ui/bulk_tab.tsx + bulk/bulk_sim_results_renderer.tsx + ui/core/components/gear_change_icon.tsx.
-- Generic cache storage: ui/core/reforge_cache.ts (sync hashString from ui/core/utils.ts; values are plain `equipmentSpec:`-prefixed proto JSON; age-index-ranged prune).
-- Browser WASM Bulk Sim path: ui/core/wasm/bulk_sim/ (index, stage, batch, merge, statistics, progress, carry_over, estimate, types) — a deliberate line-for-line mirror of sim/core/bulk.
-- Generated constants (never hand-edit; `go run ./tools/database/gen_db -gen=go-to-ts`): ui/core/components/individual_sim_ui/bulk/constants_auto_gen.ts (slot maps) and ui/core/wasm/bulk_sim/constants_auto_gen.ts (tuning constants + stage ladder), emitted by tools/database/gen_bulksim_constants.ts.go from the exported consts in sim/core/bulk.
+- Frontend orchestration, content seed, cache partitioning: ui/sim/sim.ts (runBulkSim).
+- Bulk utilities and cache helpers: ui/sim/bulk/utils.ts.
+- Results display (tie groups, ±CI, change icons): ui/features/bulk/components/BulkResults/ (BulkResults.tsx + BulkResultRow.tsx) + ui/app/tabs/BulkTabBody.tsx + ui/features/gear/components/GearChangeIcon/.
+- Generic cache storage: ui/sim/bulk/reforge_cache.ts (sync hashString from ui/sim/utils/misc.ts; values are plain `equipmentSpec:`-prefixed proto JSON; age-index-ranged prune).
+- Browser WASM Bulk Sim path: ui/sim/wasm/bulk_sim/ (index, stage, batch, merge, statistics, progress, carry_over, estimate, types) — a deliberate line-for-line mirror of sim/core/bulk.
+- Generated constants (never hand-edit; `go run ./tools/database/gen_db -gen=go-to-ts`): ui/sim/bulk/constants_auto_gen.ts (slot maps) and ui/sim/wasm/bulk_sim/constants_auto_gen.ts (tuning constants + stage ladder), emitted by tools/database/gen_bulksim_constants.ts.go from the exported consts in sim/core/bulk.
 
 ## Determinism and Statistics
 - Content-derived seed: runBulkSim hashes baseline gear + BulkSettings + cache-relevant reforge config into simOptions.randomSeed (utils hashString; per-part digests combined). Same setup → bit-identical results; any change → fresh sample. An explicit fixed RNG seed takes precedence; lastUsedRngSeed is updated to the seed actually used.
 - Candidates share seed sequences (candidate N runs seed+N per stage; adaptive/finalist reruns offset by iterations already run). Comparisons between candidates therefore use PAIRED errors (bulkSimPairedDpsError over AllValues), far tighter than per-result stdev.
 - Finalist stage (runBulkSimFinalistStage / runConcurrentBulkSimFinalistStage): after the high stage, the top `topResults` candidates + baseline get lockstep extra iterations until every adjacent pair separates under a paired z-test at Z95 (bulkSimZ95 / Z_95 — no cull conservatism factor), or the budget (BulkSimFinalistMaxExtraIterationMultiplier × high-stage iterations) is spent. Its returned results ARE the refined, DPS-sorted display set.
 - Shipped per top result: paired_error_to_next_result and paired_error_to_baseline (computed before AllValues are stripped; 0 = could not pair).
-- FE display: adjacent results still inside the paired tie threshold render in one labeled tie group (bulk_tab tie chains; unpaired zTest fallback when paired data is absent); each row shows a ±95% CI (stDevToConf95 — deliberately the unpaired per-row error, a different quantity from the pairwise grouping test).
-- The single significance threshold lives in ui/core/utils.ts (Z_95, zTest) and sim/core/bulk/statistics.go (bulkSimZ95); keep them equal.
+- FE display: adjacent results still inside the paired tie threshold render in one labeled tie group (BulkResults.tsx tie chains; unpaired zTest fallback when paired data is absent); each row shows a ±95% CI (stDevToConf95 — deliberately the unpaired per-row error, a different quantity from the pairwise grouping test).
+- The single significance threshold lives in ui/sim/utils/math.ts (Z_95, zTest) and sim/core/bulk/statistics.go (bulkSimZ95); keep them equal.
 
 ## Core Invariants
 - Baseline gear source is base_request.raid.parties[0].players[0].equipment.

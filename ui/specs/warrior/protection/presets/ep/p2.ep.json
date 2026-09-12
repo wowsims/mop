@@ -1,0 +1,20 @@
+{
+	"name": "P2 - Default",
+	"stats": {
+		"StatStrength": 1,
+		"StatStamina": 1.07,
+		"StatHitRating": 1.78,
+		"StatCritRating": 0.7,
+		"StatHasteRating": 0.11,
+		"StatExpertiseRating": 1.77,
+		"StatDodgeRating": 0.82,
+		"StatParryRating": 0.82,
+		"StatMasteryRating": 0.19,
+		"StatAttackPower": 0.33,
+		"StatArmor": 0.55,
+		"StatBonusArmor": 0.55
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 0.96
+	}
+}

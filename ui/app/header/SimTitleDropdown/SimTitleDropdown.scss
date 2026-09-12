@@ -1,0 +1,40 @@
+.sim-title-positioner {
+	z-index: 1500;
+
+	&[data-base-ui-inert],
+	&[data-base-ui-inert] * {
+		pointer-events: auto !important;
+	}
+}
+
+.sim-title-popup {
+	width: var(--anchor-width);
+	border: none;
+	background: var(--bs-body-bg);
+
+	&--specs {
+		width: auto;
+		min-width: 300px;
+	}
+
+	.sim-link {
+		display: block;
+		width: 100%;
+		border: 0;
+		background: var(--bs-body-bg);
+		text-align: left;
+		text-decoration: none;
+
+		&:hover,
+		&:focus,
+		&[data-highlighted],
+		&[data-popup-open] {
+			background: var(--dropdown-link-hover-bg);
+		}
+	}
+
+	.sim-link-content {
+		padding-left: var(--gap-width);
+		padding-right: var(--gap-width);
+	}
+}

@@ -1,9 +1,7 @@
 # nodejs modules
 node_modules
 
-ui/core/index.ts
-ui/core/**/*_auto_gen.ts
-ui/*/*/index.html
+ui/**/*_auto_gen.ts
 .dirstamp
 
 # IDE folders
@@ -47,7 +45,6 @@ mop.sln
 # agents
 graphify-out
 .claude
-CLAUDE.md
 tools/db2tool/listfile.csv
 tools/db2tool/DBDCache/
 tools/db2tool/dbfilesclient/

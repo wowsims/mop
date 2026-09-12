@@ -1,0 +1,18 @@
+{
+	"name": "P2 - Balanced",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 1.02,
+		"StatHitRating": 1.17,
+		"StatCritRating": 0.6,
+		"StatHasteRating": 0.59,
+		"StatExpertiseRating": 1.02,
+		"StatDodgeRating": 0.74,
+		"StatParryRating": 0.75,
+		"StatMasteryRating": 0.47,
+		"StatAttackPower": 0.25,
+		"StatArmor": 0.54,
+		"StatBonusArmor": 0.54
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 2.7 }
+}

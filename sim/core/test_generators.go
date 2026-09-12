@@ -537,7 +537,7 @@ type CharacterSuiteConfig struct {
 
 // FullCharacterTestSuiteGenerator generates a full test suite for a character.
 // Also accepts JSON build config, Example:
-// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/arms/builds", "default", ItemFilter, proto.Stat_StatStrength, nil)
+// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/specs/warrior/arms/builds", "default", ItemFilter, proto.Stat_StatStrength, nil)
 func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGenerator {
 	testIndex := 0
 	return MapSlice(configs, func(config CharacterSuiteConfig) TestGenerator {

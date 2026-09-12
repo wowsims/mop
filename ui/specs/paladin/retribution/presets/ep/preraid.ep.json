@@ -1,0 +1,15 @@
+{
+	"name": "Pre-raid",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatHitRating": 0.72,
+		"StatExpertiseRating": 0.63,
+		"StatHasteRating": 0.56,
+		"StatAttackPower": 0.44,
+		"StatMasteryRating": 0.41,
+		"StatCritRating": 0.38
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.77
+	}
+}

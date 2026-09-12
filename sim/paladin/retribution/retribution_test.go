@@ -19,7 +19,7 @@ func TestRetribution(t *testing.T) {
 			Class: proto.Class_ClassPaladin,
 			Race:  proto.Race_RaceBloodElf,
 
-			GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p5"),
+			GearSet: core.GetGearSet("../../../ui/specs/paladin/retribution/gear_sets", "p5"),
 
 			Talents: "000023",
 			OtherTalentSets: []core.TalentsCombo{
@@ -50,7 +50,7 @@ func TestRetribution(t *testing.T) {
 				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
 			},
 
-			Rotation: core.GetAplRotation("../../../ui/paladin/retribution/apls", "default"),
+			Rotation: core.GetAplRotation("../../../ui/specs/paladin/retribution/apls", "default"),
 
 			Profession1: proto.Profession_Engineering,
 			Profession2: proto.Profession_Herbalism,

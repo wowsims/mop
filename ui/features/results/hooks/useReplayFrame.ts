@@ -1,0 +1,51 @@
+import { createContext, useContext, useLayoutEffect, useRef, useState } from 'react';
+
+import type { ReplayFrames, ReplayPainter } from './useReplayClock';
+
+const IDLE: ReplayFrames = { getTime: () => 0, subscribe: () => () => {} };
+
+export const ReplayFramesContext = createContext<ReplayFrames>(IDLE);
+
+/**
+ * Writes into this component's own nodes once per frame. The painter is latched in a ref so an inline
+ * arrow does not resubscribe, and it also runs after every render: a leaf that mounts or whose props
+ * change mid-fight would otherwise hold the previous frame's value until the next tick — and while
+ * the replay is paused there is no next tick. Measured 2026-09-10: the HUD leaves on change-guarded
+ * state instead cost +120% JS calls (arms) and +55% (windwalker) over 600 frames of 3x playback.
+ */
+export const useReplayFrame = (paint: ReplayPainter) => {
+	const frames = useContext(ReplayFramesContext);
+	const latest = useRef(paint);
+	latest.current = paint;
+
+	useLayoutEffect(() => {
+		// Wrapped rather than returned: a painter that happens to return something — `classList.toggle`
+		// does — would otherwise be read back as this effect's cleanup.
+		latest.current(frames.getTime());
+	});
+	useLayoutEffect(() => frames.subscribe(time => latest.current(time)), [frames]);
+};
+
+const EMPTY: ReadonlyArray<never> = [];
+
+/**
+ * A list the playhead decides the contents of — the cast strip, an aura row. Recomputed every frame
+ * but committed only when its key changes, which is what keeps a per-frame `setState` out of a
+ * structure that only turns over a few times a second. `source` is the list it was derived from, so a
+ * new fight cannot be mistaken for the same frame.
+ */
+export const useFrameList = <T>(source: unknown, compute: (time: number) => T[], keyOf: (item: T) => string): ReadonlyArray<T> => {
+	const [items, setItems] = useState<ReadonlyArray<T>>(EMPTY);
+	// Seeded with a key no join can produce, so the very first frame always commits.
+	const painted = useRef<{ source: unknown; key: string }>({ source: null, key: ' ' });
+
+	useReplayFrame(time => {
+		const next = compute(time);
+		const key = next.map(keyOf).join('\0');
+		if (painted.current.source === source && painted.current.key === key) return;
+		painted.current = { source, key };
+		setItems(next);
+	});
+
+	return items;
+};

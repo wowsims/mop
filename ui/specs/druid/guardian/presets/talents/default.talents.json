@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "010101",
+	"glyphs": {
+		"major1": "GlyphOfMightOfUrsoc",
+		"major2": "GlyphOfMaul",
+		"major3": "GlyphOfStampedingRoar"
+	}
+}

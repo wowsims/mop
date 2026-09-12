@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "311122",
+	"glyphs": {
+		"major1": "GlyphOfSplittingIce",
+		"major2": "GlyphOfIcyVeins",
+		"major3": "GlyphOfWaterElemental",
+		"minor1": "GlyphOfMomentum",
+		"minor2": "GlyphOfLooseMana",
+		"minor3": "GlyphOfTheUnboundElemental"
+	}
+}

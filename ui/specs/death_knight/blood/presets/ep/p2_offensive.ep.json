@@ -1,0 +1,18 @@
+{
+	"name": "P2 - Offensive",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 0.56,
+		"StatHitRating": 1.42,
+		"StatCritRating": 0.75,
+		"StatHasteRating": 0.71,
+		"StatExpertiseRating": 1.25,
+		"StatDodgeRating": 0.65,
+		"StatParryRating": 0.66,
+		"StatMasteryRating": 0.26,
+		"StatAttackPower": 0.32,
+		"StatArmor": 0.3,
+		"StatBonusArmor": 0.35
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 2.9 }
+}

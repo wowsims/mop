@@ -1,0 +1,13 @@
+{
+	"name": "2h Obliterate",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatHitRating": 1.67,
+		"StatExpertiseRating": 1.59,
+		"StatHasteRating": 0.49,
+		"StatCritRating": 0.62,
+		"StatAttackPower": 0.37,
+		"StatMasteryRating": 0.56
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 2.95 }
+}

@@ -3,7 +3,7 @@
 		margin-bottom: 0;
 	}
 
-	.modal-header {
+	.sim-dialog-header {
 		padding-bottom: 0;
 
 		.selector-modal-tabs {
@@ -32,9 +32,10 @@
 		}
 
 		.btn-danger {
-			margin: calc(-0.5 * var(--bs-modal-header-padding-y)) var(--spacer-3) calc(-0.5 * var(--bs-modal-header-padding-y)) auto;
+			margin: calc(-0.5 * var(--modal-header-padding-y)) var(--spacer-3) calc(-0.5 * var(--modal-header-padding-y)) auto;
 
-			& + .btn-close {
+			& + .btn-close,
+			& + .sim-dialog-close {
 				margin-left: 0;
 			}
 		}
@@ -46,7 +47,7 @@
 		padding: 0;
 
 		.selector-modal-filters {
-			margin-bottom: var(--bs-modal-padding);
+			margin-bottom: var(--modal-padding);
 			display: flex;
 			align-items: center;
 

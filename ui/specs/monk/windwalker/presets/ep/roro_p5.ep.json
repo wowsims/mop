@@ -1,0 +1,16 @@
+{
+	"name": "RoRo >= 560",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatHitRating": 2.46,
+		"StatCritRating": 0.83,
+		"StatHasteRating": 1.05,
+		"StatExpertiseRating": 2.11,
+		"StatMasteryRating": 0.39,
+		"StatAttackPower": 0.34
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 2.19,
+		"PseudoStatOffHandDps": 1.1
+	}
+}

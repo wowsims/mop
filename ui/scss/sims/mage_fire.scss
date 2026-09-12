@@ -1,0 +1,22 @@
+// Fire Mage has extra rules beyond the shared theme in sim.scss.
+.fire-mage-sim-ui {
+	.number-picker-input[id^='combust'] {
+		width: 7rem;
+		text-align: right;
+	}
+}
+
+.combustion-thresholds-modal {
+	table {
+		td,
+		th {
+			padding: 0.5rem 1rem;
+			text-align: right;
+			font-size: var(--content-font-size);
+		}
+
+		th {
+			border-bottom: 2px solid var(--border-color);
+		}
+	}
+}

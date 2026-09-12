@@ -1,0 +1,1 @@
+export { HealingMetricsTable } from './HealingMetricsTable';

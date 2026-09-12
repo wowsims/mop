@@ -1,0 +1,39 @@
+import type { ActionId } from '@sim/proto/action_id';
+import { externalRel } from '@sim/utils/links';
+import { useActionId } from '@ui-kit/hooks/useActionId';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
+import type { ClassValue } from 'clsx';
+import clsx from 'clsx';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
+import { useRef } from 'react';
+
+export interface ReplayIconProps {
+	actionId: ActionId | null;
+	className: ClassValue;
+	tooltip: 'spell' | 'buffAura';
+	style?: CSSProperties;
+	/** Passed in by a caller that also paints the anchor every frame, so the two share one node. */
+	anchorRef?: RefObject<HTMLAnchorElement | null>;
+	children?: ReactNode;
+}
+
+/** The replay's one icon: the cast strip, the aura rows and the action grid are all this with a different class. */
+export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, children }: ReplayIconProps) => {
+	const { iconUrl, href } = useActionId(actionId ?? undefined);
+	const ownRef = useRef<HTMLAnchorElement>(null);
+	const ref = anchorRef ?? ownRef;
+
+	const wowheadProps = useActionIdWowheadDataset(actionId, tooltip === 'buffAura');
+
+	return (
+		<a
+			ref={ref}
+			className={clsx(className)}
+			href={href || undefined}
+			rel={externalRel(href, undefined)}
+			style={iconUrl ? { ...style, backgroundImage: `url('${iconUrl}')` } : style}
+			{...wowheadProps}>
+			{children}
+		</a>
+	);
+};

@@ -1,0 +1,15 @@
+{
+	"name": "P5",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatHitRating": 0.68,
+		"StatExpertiseRating": 0.68,
+		"StatHasteRating": 0.67,
+		"StatMasteryRating": 0.62,
+		"StatCritRating": 0.56,
+		"StatAttackPower": 0.44
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.86
+	}
+}

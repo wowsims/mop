@@ -1,0 +1,91 @@
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
+import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
+import { useSavedPanel } from '@features/hooks/useSavedPanel';
+import { SavedSettings as SavedSettingsProto } from '@generated/proto/ui';
+import i18n from '@i18n/config';
+import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
+import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
+import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
+import { useMemo } from 'react';
+
+import { useSavedSettings } from '../../hooks/useSavedSettings';
+import { serializeSettings } from './utils';
+
+export const SavedSettings = () => {
+	const host = useSimHost();
+	const presets = useSpecPresets();
+	const ready = useSimReady();
+
+	const label = i18n.t('settings_tab.saved_settings.settings');
+
+	const savedDataPresets = useMemo<Array<SavedDataPanelEntry<SavedSettingsProto>>>(() => {
+		if (!ready) return [];
+		const settingsPresets = (presets.settings ?? []).map(settings => {
+			const data = SavedSettingsProto.create({
+				race: settings.race,
+				raidBuffs: settings.raidBuffs,
+				playerBuffs: settings.buffs,
+				debuffs: settings.debuffs,
+				consumables: settings.consumables,
+				professions:
+					settings.playerOptions?.profession1 && settings.playerOptions?.profession2
+						? [settings.playerOptions.profession1, settings.playerOptions.profession2]
+						: undefined,
+				distanceFromTarget: settings.playerOptions?.distanceFromTarget,
+				reactionTimeMs: settings.playerOptions?.reactionTimeMs,
+				channelClipDelayMs: settings.playerOptions?.channelClipDelayMs,
+				inFrontOfTarget: settings.playerOptions?.inFrontOfTarget,
+				enableItemSwap: settings.playerOptions?.enableItemSwap,
+			});
+			return { name: settings.name, data, json: serializeSettings(data), tooltip: settings.tooltip, isPreset: true };
+		});
+		const itemSwapPresets = (presets.itemSwaps ?? []).map(presetItemSwap => {
+			const data = SavedSettingsProto.create({ ...readSavedSettings(host), enableItemSwap: true, itemSwap: presetItemSwap.itemSwap });
+			return { name: presetItemSwap.name, data, json: serializeSettings(data), tooltip: presetItemSwap.tooltip, isPreset: true };
+		});
+		return [...settingsPresets, ...itemSwapPresets];
+	}, [ready, host, presets]);
+
+	const settings = useReadyStoreSubscribe(
+		subscribeAll([
+			subscribeRaidField(host.sim.raid, 'buffs'),
+			subscribeRaidField(host.sim.raid, 'debuffs'),
+			subscribePartyBuffs(host.player.getParty()!),
+			subscribePlayerField(host.player, 'buffs'),
+			subscribePlayerField(host.player, 'consumables'),
+			subscribePlayerField(host.player, 'race'),
+			subscribePlayerField(host.player, 'profession1'),
+			subscribePlayerField(host.player, 'profession2'),
+			subscribePlayerField(host.player, 'itemSwap'),
+			subscribePlayerField(host.player, 'reactionTime'),
+			subscribePlayerField(host.player, 'channelClipDelay'),
+			subscribePlayerField(host.player, 'inFrontOfTarget'),
+			subscribePlayerField(host.player, 'distanceFromTarget'),
+			subscribePlayerField(host.player, 'healingModel'),
+		]),
+		// Reaches `player.getConsumes()`, so it dereferences a null `sim.db` before the sim is ready.
+		() => readSavedSettings(host),
+		ready,
+	);
+
+	const panel = useSavedPanel({
+		label,
+		storage: useSavedSettings(),
+		current: settings,
+		serialize: serializeSettings,
+		load: entry => applySavedSettings(host, entry.data),
+	});
+
+	return (
+		<SavedDataPanel
+			container={host.rootElem}
+			title={i18n.t('settings_tab.saved_settings.title')}
+			nameLabel={i18n.t('settings_tab.saved_settings.settings_name')}
+			saveButtonText={i18n.t('settings_tab.saved_settings.save_settings')}
+			presets={savedDataPresets}
+			{...panel}
+		/>
+	);
+};

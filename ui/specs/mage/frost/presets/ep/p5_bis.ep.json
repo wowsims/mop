@@ -1,0 +1,11 @@
+{
+	"name": "Item Level >= 560",
+	"stats": {
+		"StatIntellect": 1.31,
+		"StatSpellPower": 1,
+		"StatHitRating": 2.15,
+		"StatCritRating": 0.77,
+		"StatHasteRating": 0.75,
+		"StatMasteryRating": 0.71
+	}
+}
