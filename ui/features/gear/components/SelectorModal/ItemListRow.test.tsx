@@ -70,6 +70,7 @@ const renderRow = (
 		itemData: makeItemData(),
 		label: SelectorModalTabs.Items,
 		slot: ItemSlot.ItemSlotHead,
+		active: false,
 		equippedEP: null,
 		itemEP: 0,
 		favourited: false,
@@ -160,14 +161,14 @@ describe('ItemListRow', () => {
 		const { container } = renderRow({ equippedEP: 5, itemEP: 8 });
 		const delta = container.querySelector('.selector-modal-list-item-ep-delta');
 		expect(delta?.textContent).toBe('+3');
-		expect(delta?.classList.contains('positive')).toBe(true);
+		expect(delta?.getAttribute('data-sign')).toBe('positive');
 	});
 
 	it('shows a negative delta for a lower-ep item', () => {
 		const { container } = renderRow({ equippedEP: 8, itemEP: 5 });
 		const delta = container.querySelector('.selector-modal-list-item-ep-delta');
 		expect(delta?.textContent).toBe('-3');
-		expect(delta?.classList.contains('negative')).toBe(true);
+		expect(delta?.getAttribute('data-sign')).toBe('negative');
 	});
 
 	it('carries the item quality class on the name, and wires the icon and anchor to useActionId', () => {

@@ -54,7 +54,7 @@ describe('ItemCell', () => {
 		);
 
 		const root = container.firstElementChild!;
-		expect(root.lastElementChild?.className).toBe('favourite');
+		expect(root.lastElementChild?.classList.contains('favourite')).toBe(true);
 		expect(root.querySelector('.item-picker-labels-container .favourite')).toBeNull();
 	});
 });

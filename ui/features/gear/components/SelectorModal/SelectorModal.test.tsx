@@ -156,24 +156,24 @@ describe('SelectorModal', () => {
 		tabs.eligibility.mockReturnValue({ hasEnchants: false, hasReforges: true, hasUpgrades: true, socketCount: 2 });
 		setup({ requestTab: SelectorModalTabs.Enchants });
 
-		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
+		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Items);
 	});
 
 	it('keeps the tab the user picks for the life of one request, and resets on the next', () => {
 		setup();
 
 		act(() => tabButtons()[1].click());
-		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Enchants);
+		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Enchants);
 
 		act(() => openModal(OPEN_SLOT, SelectorModalTabs.Items, gearData));
-		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
+		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Items);
 	});
 
 	it('falls back to the first tab when the one you were on is gone', () => {
 		setup({ tabSet: [tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Reforging), tab(SelectorModalTabs.Gem1, 0)] });
 
 		act(() => tabButtons()[2].click());
-		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Gem1);
+		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Gem1);
 
 		panes.rendered.length = 0;
 		tabs.build.mockReturnValue([tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Reforging)]);
@@ -182,7 +182,7 @@ describe('SelectorModal', () => {
 			store.notify();
 		});
 
-		expect(tabButtons().find(button => button.classList.contains('active'))?.dataset.label).toBe(SelectorModalTabs.Items);
+		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Items);
 		expect(openPanes()).toEqual([SelectorModalTabs.Items]);
 	});
 

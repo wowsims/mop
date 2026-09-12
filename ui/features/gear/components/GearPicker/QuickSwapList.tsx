@@ -1,8 +1,8 @@
-import { ActionId } from '@sim/proto/action_id';
 import type { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
+import { ActionId } from '@sim/proto/action_id';
 import { Button } from '@ui-kit/Button';
-import { itemQualityClassName } from '@ui-kit/utils/css';
 import { useActionId } from '@ui-kit/hooks/useActionId';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 export type QuickSwapItem = Gem | Enchant;
 
@@ -28,6 +28,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 			<a
 				href={href || undefined}
 				className={clsx('tooltip-quick-swap__anchor flex items-center', entry.active && 'active')}
+				data-active={entry.active ? '' : undefined}
 				onClick={event => {
 					event.preventDefault();
 					onItemClick(entry.item);

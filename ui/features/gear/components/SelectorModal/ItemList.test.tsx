@@ -37,8 +37,13 @@ vi.mock('@ui-kit/VirtualList', () => ({
 }));
 
 vi.mock('./ItemListRow', () => ({
-	ItemListRow: ({ itemData, itemEP, equippedEP, favourited, onToggleFavourite }: any) => (
-		<span data-row={itemData.name} data-ep={itemEP} data-equipped-ep={String(equippedEP)} data-favourited={String(favourited)}>
+	ItemListRow: ({ itemData, active, itemEP, equippedEP, favourited, onToggleFavourite }: any) => (
+		<span
+			data-row={itemData.name}
+			data-active={active ? '' : undefined}
+			data-ep={itemEP}
+			data-equipped-ep={String(equippedEP)}
+			data-favourited={String(favourited)}>
 			<button type="button" data-toggle={itemData.name} onClick={onToggleFavourite} />
 		</span>
 	),
@@ -256,7 +261,7 @@ describe('ItemList', () => {
 		const { container } = setup({ equipped });
 
 		const rows = Array.from(container.querySelectorAll('.virtual-list-row'));
-		expect(rows.map(node => node.classList.contains('active'))).toEqual([true, false, false]);
+		expect(rows.map(node => node.querySelector('[data-row]')!.hasAttribute('data-active'))).toEqual([true, false, false]);
 		expect(Array.from(container.querySelectorAll('[data-row]')).map(node => (node as HTMLElement).dataset.equippedEp)).toEqual(['520', '520', '520']);
 	});
 
@@ -276,7 +281,7 @@ describe('ItemList', () => {
 	it('hides the EP column through the list class when EP values are off', () => {
 		showEPValues = false;
 		const { container } = setup();
-		expect(container.querySelector('.selector-modal-list')!.classList.contains('hide-ep')).toBe(true);
+		expect(container.querySelector('.selector-modal-list')!.hasAttribute('data-hide-ep')).toBe(true);
 		expect(container.querySelector<HTMLElement>('.ep-label')!.style.display).toBe('none');
 	});
 

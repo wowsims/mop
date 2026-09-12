@@ -40,7 +40,7 @@ describe('SlotRailIcon', () => {
 		const { container, rerender } = setup({ slot: ItemSlot.ItemSlotFeet, active: false });
 		let wrapper = container.querySelector<HTMLElement>('.item-picker-icon-wrapper')!;
 		expect(wrapper.dataset.slot).toBe(String(ItemSlot.ItemSlotFeet));
-		expect(wrapper.classList.contains('active')).toBe(false);
+		expect(wrapper.hasAttribute('data-active')).toBe(false);
 
 		rerender(
 			<SimHostProvider host={fakeHost()}>
@@ -48,7 +48,7 @@ describe('SlotRailIcon', () => {
 			</SimHostProvider>,
 		);
 		wrapper = container.querySelector<HTMLElement>('.item-picker-icon-wrapper')!;
-		expect(wrapper.classList.contains('active')).toBe(true);
+		expect(wrapper.hasAttribute('data-active')).toBe(true);
 	});
 
 	it('shows the equipped item icon when a slot is filled', () => {

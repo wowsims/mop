@@ -187,8 +187,8 @@ describe('SavedGear', () => {
 			];
 			await renderPanel();
 
-			expect(chipNamed('On').classList.contains('disabled')).toBe(false);
-			expect(chipNamed('Off').classList.contains('disabled')).toBe(true);
+			expect(chipNamed('On').hasAttribute('data-disabled')).toBe(false);
+			expect(chipNamed('Off').hasAttribute('data-disabled')).toBe(true);
 
 			fireEvent.click(chipNamed('On').querySelector('.saved-data-set-name')!);
 			expect(onLoad).toHaveBeenCalledWith(player);

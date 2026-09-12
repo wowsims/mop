@@ -28,7 +28,7 @@ export const SlotRailIcon = ({ slot, item, isBlacksmithing, active, tooltipId, o
 	useEquippedItemWowheadDataset([anchorRef], player, item, isBlacksmithing);
 
 	return (
-		<div className={clsx('item-picker-icon-wrapper', active && 'active')} data-slot={slot}>
+		<div className={clsx('item-picker-icon-wrapper', active && 'active')} data-active={active ? '' : undefined} data-slot={slot}>
 			<ItemCellAnchor
 				ref={anchorRef}
 				className="item-picker-icon"

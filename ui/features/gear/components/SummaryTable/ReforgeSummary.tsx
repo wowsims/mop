@@ -1,12 +1,12 @@
-import { useSimHost } from '@sim/context/SimHostContext';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { Stat } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Icon } from '@ui-kit/Icon';
 import { useMemo } from 'react';
 
@@ -52,7 +52,9 @@ export const ReforgeSummary = () => {
 				return (
 					<SummaryTableRow key={stat}>
 						<div>{translateStat(stat)}</div>
-						<div className={value > 0 ? 'positive' : 'negative'}>{value}</div>
+						<div className={value > 0 ? 'positive' : 'negative'} data-sign={value > 0 ? 'positive' : 'negative'}>
+							{value}
+						</div>
 					</SummaryTableRow>
 				);
 			})}

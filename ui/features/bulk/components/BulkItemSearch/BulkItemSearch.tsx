@@ -78,7 +78,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					clearable
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
 					clearClassName="cancel-bulk-gear-search-btn">
-					<ul className={clsx('bulk-gear-search-results dropdown-menu no-hover', open && 'show')}>
+					<ul className={clsx('bulk-gear-search-results dropdown-menu no-hover', open && 'show')} data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (
 							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
 						))}

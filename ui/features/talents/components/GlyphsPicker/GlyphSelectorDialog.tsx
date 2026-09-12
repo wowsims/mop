@@ -1,7 +1,7 @@
 import i18n from '@i18n/config';
-import { itemQualityClassName } from '@ui-kit/utils/css';
 import { Dialog } from '@ui-kit/Dialog';
 import { SearchBar } from '@ui-kit/SearchBar';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 
@@ -27,7 +27,9 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 				{entries.map(entry => (
 					<li
 						key={entry.id}
-						className={clsx('selector-modal-list-item', entry.id === activeId && 'active', !matchesGlyphSearch(entry.name, search) && 'hidden')}>
+						className={clsx('selector-modal-list-item', entry.id === activeId && 'active', !matchesGlyphSearch(entry.name, search) && 'hidden')}
+						data-active={entry.id === activeId ? '' : undefined}
+						hidden={!matchesGlyphSearch(entry.name, search)}>
 						<a
 							className="selector-modal-list-item-link"
 							href={glyphUrl(entry)}

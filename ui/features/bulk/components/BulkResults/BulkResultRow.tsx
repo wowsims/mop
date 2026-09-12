@@ -110,6 +110,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 				<button
 					type="button"
 					className={clsx('btn btn-primary bulk-equip-btn', isBaseResult && 'hidden')}
+					hidden={isBaseResult}
 					onClick={() => {
 						host.player.setGear(result.gear);
 						activateTab('gear-tab');

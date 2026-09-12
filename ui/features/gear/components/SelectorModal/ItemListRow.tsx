@@ -2,11 +2,11 @@ import { addBulkItem, hasBulkItem, removeBulkItem } from '@features/bulk/model/i
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { isIndividualSimHost } from '@sim/sim_host';
 import { subscribeBulkField } from '@sim/state/subscriptions';
-import { Icon } from '@ui-kit/Icon';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { Icon } from '@ui-kit/Icon';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
@@ -22,6 +22,7 @@ export interface ItemListRowProps {
 	itemData: ItemData<ItemListType, ReactNode>;
 	label: SelectorModalTabs;
 	slot: ItemSlot;
+	active: boolean;
 	equippedEP: number | null;
 	itemEP: number;
 	favourited: boolean;
@@ -41,6 +42,7 @@ export const ItemListRow = ({
 	itemData,
 	label,
 	slot,
+	active,
 	equippedEP,
 	itemEP,
 	favourited,
@@ -64,7 +66,7 @@ export const ItemListRow = ({
 	return (
 		<>
 			{showIlvl && <div className="selector-modal-list-item-ilvl-container">{itemData.ilvl || (itemData.item as unknown as Item).ilvl}</div>}
-			<div className="selector-modal-list-label-cell gap-1">
+			<div className="selector-modal-list-label-cell gap-1" data-active={active ? '' : undefined}>
 				<ItemCellAnchor className="selector-modal-list-item-link" href={href || undefined} data-whtticon="false" onActivate={onEquip}>
 					<img className="selector-modal-list-item-icon" src={iconUrl || undefined} alt="" />
 					<span className={clsx('selector-modal-list-item-name', itemQualityClassName(itemData.quality))}>
@@ -82,7 +84,9 @@ export const ItemListRow = ({
 			{showEp && (
 				<div className="selector-modal-list-item-ep">
 					<span className="selector-modal-list-item-ep-value">{itemEP < 9.95 ? itemEP.toFixed(1) : Math.round(itemEP).toString()}</span>
-					<span className={clsx('selector-modal-list-item-ep-delta', delta?.tone)}>{delta?.text}</span>
+					<span className={clsx('selector-modal-list-item-ep-delta', delta?.tone)} data-sign={delta?.tone ?? undefined}>
+						{delta?.text}
+					</span>
 				</div>
 			)}
 			<div className="selector-modal-list-item-favorite-container">

@@ -125,8 +125,8 @@ describe('GlyphsPicker', () => {
 		await openSlot('major', 0);
 		fireEvent.click(listItems()[1].querySelector('a')!);
 
-		await waitFor(() => expect(listItems()[1].classList.contains('active')).toBe(true));
-		expect(listItems().filter(item => item.classList.contains('active'))).toHaveLength(1);
+		await waitFor(() => expect(listItems()[1].hasAttribute('data-active')).toBe(true));
+		expect(listItems().filter(item => item.hasAttribute('data-active'))).toHaveLength(1);
 		expect(dialogOpen()).toBe(true);
 	});
 
@@ -136,8 +136,8 @@ describe('GlyphsPicker', () => {
 		mount({ major1: 1 });
 		await openSlot('major', 0);
 
-		expect(listItems()[0].classList.contains('active')).toBe(true);
-		expect(listItems().filter(item => item.classList.contains('active'))).toHaveLength(1);
+		expect(listItems()[0].hasAttribute('data-active')).toBe(true);
+		expect(listItems().filter(item => item.hasAttribute('data-active'))).toHaveLength(1);
 		expect(link('major', 0).querySelector('img')!.getAttribute('src')).toContain('inventoryslot_empty');
 	});
 
@@ -164,10 +164,10 @@ describe('GlyphsPicker', () => {
 
 		fireEvent.change(searchBox(), { target: { value: target } });
 
-		await waitFor(() => expect(listItems().filter(item => !item.classList.contains('hidden'))).toHaveLength(1));
-		expect(listItems()[1].classList.contains('hidden')).toBe(false);
+		await waitFor(() => expect(listItems().filter(item => !item.hidden)).toHaveLength(1));
+		expect(listItems()[1].hidden).toBe(false);
 
 		fireEvent.change(searchBox(), { target: { value: '' } });
-		await waitFor(() => expect(listItems().filter(item => item.classList.contains('hidden'))).toHaveLength(0));
+		await waitFor(() => expect(listItems().filter(item => item.hidden)).toHaveLength(0));
 	});
 });

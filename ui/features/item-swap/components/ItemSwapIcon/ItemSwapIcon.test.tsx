@@ -87,7 +87,7 @@ describe('ItemSwapIcon', () => {
 		const { view } = setup();
 
 		expect(view.container.querySelectorAll('.icon-picker-root.icon-picker')).toHaveLength(SLOTS.length);
-		expect(icons(view.container).map(icon => icon.classList.contains('active'))).toEqual([false, false, false, false]);
+		expect(icons(view.container).map(icon => icon.hasAttribute('data-active'))).toEqual([false, false, false, false]);
 		expect(icons(view.container)[0].style.backgroundImage).toContain('/mop/assets/item_slots/mainhand.jpg');
 	});
 
@@ -95,7 +95,7 @@ describe('ItemSwapIcon', () => {
 		const { view } = setup(new Map([[ItemSlot.ItemSlotMainHand, equippedItem(1234)]]));
 
 		const [mainHand] = icons(view.container);
-		expect(mainHand.classList.contains('active')).toBe(true);
+		expect(mainHand.hasAttribute('data-active')).toBe(true);
 		expect(mainHand.getAttribute('href')).toBe('https://wowhead.test/item=1234');
 		expect(mainHand.style.backgroundImage).toContain('icon-1234.jpg');
 	});

@@ -40,6 +40,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 			<ItemCellAnchor
 				ref={iconRef}
 				className={clsx('icon-picker-button', item && 'active')}
+				data-active={item ? '' : undefined}
 				role="button"
 				aria-label={name || translateSlotName(slot) || undefined}
 				href={href || undefined}

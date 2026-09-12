@@ -51,6 +51,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 				<a ref={linkRef} className="gear-change-icon-link" href={item ? href || undefined : undefined} data-whtticon={item ? 'false' : undefined} />
 				<div
 					className={clsx('gear-change-icon-reforge interactive', !showReforge && 'hidden')}
+					hidden={!showReforge}
 					{...(showReforge ? tooltipAnchorProps(`${tooltipId}-reforge`) : {})}
 				/>
 				<div className="item-picker-sockets-container">

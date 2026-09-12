@@ -1,14 +1,14 @@
 import { Class, ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
-import type { EquippedItem } from '@sim/proto/equipped_item';
 import { SortDirection } from '@sim/constants/other';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { VirtualList } from '@ui-kit/VirtualList';
@@ -19,7 +19,7 @@ import { applyFavourite, isItemFavourited } from '../../model/favourites';
 import { getItemIdByItemType } from '../../model/item_ids';
 import { matchesSearch } from '../../model/item_search';
 import { defaultSortBy, ItemListSortBy, sortItemIdxs } from '../../model/item_sort';
-import { type ItemDataFields, getTranslatedTabLabel, type ItemListType, SelectorModalTabs } from '../../types';
+import { getTranslatedTabLabel, type ItemDataFields, type ItemListType, SelectorModalTabs } from '../../types';
 import { FiltersMenu } from '../FiltersMenu';
 import { ItemListRow } from './ItemListRow';
 import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils';
@@ -219,7 +219,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 				<h6 className="favorite-label" />
 				{label === SelectorModalTabs.Items && <h6 className="compare-label" />}
 			</div>
-			<div ref={listRef} className={clsx('selector-modal-list', !showEPValues && 'hide-ep')} tabIndex={0}>
+			<div ref={listRef} className={clsx('selector-modal-list', !showEPValues && 'hide-ep')} data-hide-ep={!showEPValues ? '' : undefined} tabIndex={0}>
 				<VirtualList
 					count={itemsToDisplay.length}
 					rowHeight={ROW_HEIGHT}
@@ -232,6 +232,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								itemData={row}
 								label={label}
 								slot={slot}
+								active={row.id === equippedId}
 								equippedEP={equippedEP}
 								itemEP={computeEP(row.item)}
 								favourited={isFavourited(row)}
