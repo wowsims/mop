@@ -153,7 +153,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 		if (!result) return;
 		setIterations(runIterations);
 		setSimResult(result);
-	}, [sim, player, settings, epStats, epPseudoStats, epReferenceStat]);
+	}, [sim, settings, epStats, epPseudoStats, epReferenceStat, isRunning, startStatWeights]);
 
 	return (
 		<Dialog
