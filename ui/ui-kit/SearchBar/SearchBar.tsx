@@ -1,11 +1,11 @@
+import './SearchBar.scss';
+
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
-
-import './SearchBar.scss';
 
 export interface SearchBarProps {
 	value: string;
@@ -62,7 +62,7 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className="input-root search-bar-root">
+		<Field.Root className="input-root search-bar-root" data-testid="search-bar-root">
 			{label && (
 				<Field.Label htmlFor={id} className="form-label">
 					{label}
@@ -80,7 +80,12 @@ export const SearchBar = ({
 					onChange={event => handleInput(event.target.value)}
 				/>
 				{clearable && draft.length > 0 && (
-					<button type="button" className={clsx('search-bar-clear-btn btn btn-link', clearClassName)} aria-label={clearLabel} onClick={handleClear}>
+					<button
+						type="button"
+						className={clsx('search-bar-clear-btn btn btn-link', clearClassName)}
+						data-testid="search-bar-clear-btn"
+						aria-label={clearLabel}
+						onClick={handleClear}>
 						<Icon name="times" />
 					</button>
 				)}

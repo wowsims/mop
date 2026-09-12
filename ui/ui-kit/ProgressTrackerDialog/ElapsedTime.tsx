@@ -23,7 +23,7 @@ export const ElapsedTime = ({ running }: ElapsedTimeProps) => {
 	}, [running]);
 
 	return (
-		<span ref={elapsed} className="time-elapsed">
+		<span ref={elapsed} className="time-elapsed" data-testid="time-elapsed">
 			{ZERO}
 		</span>
 	);

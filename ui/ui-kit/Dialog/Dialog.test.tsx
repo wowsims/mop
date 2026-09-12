@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Dialog } from './Dialog';
@@ -20,7 +20,7 @@ describe('Dialog', () => {
 		const popup = screen.getByRole('dialog');
 		expect(Array.from(popup.classList).sort()).toEqual(['advanced-encounter-picker-modal', 'sim-dialog-popup', 'sim-dialog-popup--xl']);
 		expect(Array.from(popup.children).map(el => el.className)).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);
-		expect(popup.querySelector('.sim-dialog-body')?.textContent).toBe('contents');
+		expect(within(popup).getByTestId('sim-dialog-body').textContent).toBe('contents');
 	});
 
 	// The default portal target is `<body>`, which is outside `.sim-ui` and so outside the spec theme
@@ -97,14 +97,14 @@ describe('Dialog', () => {
 				body
 			</Dialog>,
 		);
-		expect(screen.getByRole('dialog').querySelector('.sim-dialog-header')?.className).toBe('sim-dialog-header sim-dialog-header--bare');
+		expect(within(screen.getByRole('dialog')).getByTestId('sim-dialog-header').className).toBe('sim-dialog-header sim-dialog-header--bare');
 
 		rerender(
 			<Dialog open onOpenChange={() => {}} header={false} preventClose>
 				body
 			</Dialog>,
 		);
-		expect(screen.getByRole('dialog').querySelector('.sim-dialog-header')).toBeNull();
+		expect(within(screen.getByRole('dialog')).queryByTestId('sim-dialog-header')).toBeNull();
 	});
 
 	// Base UI makes the popup the focus target, guards it either side, and hides everything else.
@@ -165,8 +165,8 @@ describe('Dialog', () => {
 			</Dialog>,
 		);
 
-		expect(document.querySelectorAll('.sim-dialog-backdrop--elevated')).toHaveLength(1);
-		expect(document.querySelectorAll('.sim-dialog-viewport--elevated')).toHaveLength(1);
+		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.classList.contains('sim-dialog-backdrop--elevated'))).toHaveLength(1);
+		expect(screen.getAllByTestId('sim-dialog-viewport').filter(el => el.classList.contains('sim-dialog-viewport--elevated'))).toHaveLength(1);
 	});
 
 	it('leaves a nested dialog without one when it is not elevated', () => {
@@ -178,6 +178,6 @@ describe('Dialog', () => {
 			</Dialog>,
 		);
 
-		expect(document.querySelectorAll('.sim-dialog-backdrop--elevated')).toHaveLength(0);
+		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.classList.contains('sim-dialog-backdrop--elevated'))).toHaveLength(0);
 	});
 });

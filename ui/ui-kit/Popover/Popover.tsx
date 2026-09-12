@@ -32,6 +32,7 @@ export interface PopoverProps {
 	/** Base UI moves focus to the first tabbable element in the popup; `false` leaves it on the trigger. */
 	initialFocus?: boolean;
 	children?: ReactNode;
+	testId?: string;
 }
 
 // Every anchored popup in the tree sits 10px off its anchor.
@@ -53,6 +54,7 @@ export const Popover = ({
 	delay,
 	initialFocus = false,
 	children,
+	testId,
 }: PopoverProps) => {
 	const portalContainer = usePortalContainer();
 	return (
@@ -63,9 +65,15 @@ export const Popover = ({
 				</BasePopover.Trigger>
 			)}
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BasePopover.Portal className="sim-popover-portal contents" container={container ?? portalContainer ?? undefined}>
-				<BasePopover.Positioner className="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
-					<BasePopover.Popup className={clsx('sim-popover-popup', className)} initialFocus={initialFocus}>
+			<BasePopover.Portal className="sim-popover-portal contents" data-testid="sim-popover-portal" container={container ?? portalContainer ?? undefined}>
+				<BasePopover.Positioner
+					className="sim-popover-positioner"
+					data-testid="sim-popover-positioner"
+					anchor={anchor}
+					side={side}
+					align={align}
+					sideOffset={sideOffset}>
+					<BasePopover.Popup className={clsx('sim-popover-popup', className)} data-testid={testId ?? 'sim-popover-popup'} initialFocus={initialFocus}>
 						{children}
 					</BasePopover.Popup>
 				</BasePopover.Positioner>

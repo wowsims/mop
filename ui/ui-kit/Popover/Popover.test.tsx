@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { PopoverProps } from './Popover';
@@ -164,7 +164,7 @@ describe('Popover', () => {
 		document.body.appendChild(host);
 
 		const { unmount } = openPopover({ container: host });
-		expect(host.querySelectorAll('.sim-popover-portal').length).toBe(1);
+		expect(within(host).getAllByTestId('sim-popover-portal')).toHaveLength(1);
 
 		unmount();
 		expect(host.innerHTML).toBe('');

@@ -21,9 +21,21 @@ export interface ProgressTrackerDialogProps {
 	onCancel?: () => void;
 	container?: HTMLElement | null;
 	ref?: Ref<ProgressTrackerHandle>;
+	testId?: string;
 }
 
-export const ProgressTrackerDialog = ({ open, title, state, className, warning, hasProgressBar, onCancel, container, ref }: ProgressTrackerDialogProps) => (
+export const ProgressTrackerDialog = ({
+	open,
+	title,
+	state,
+	className,
+	warning,
+	hasProgressBar,
+	onCancel,
+	container,
+	ref,
+	testId,
+}: ProgressTrackerDialogProps) => (
 	<Dialog
 		open={open}
 		onOpenChange={() => {}}
@@ -33,18 +45,31 @@ export const ProgressTrackerDialog = ({ open, title, state, className, warning, 
 		title={title}
 		preventClose
 		keepMounted
-		elevated>
-		<div className="progress-tracker-modal-content" data-stage={state.stage}>
-			{warning && <div className="progress-tracker-modal-warning">{warning}</div>}
+		elevated
+		testId={testId}>
+		<div className="progress-tracker-modal-content" data-testid="progress-tracker-modal-content" data-stage={state.stage}>
+			{warning && (
+				<div className="progress-tracker-modal-warning" data-testid="progress-tracker-modal-warning">
+					{warning}
+				</div>
+			)}
 			{hasProgressBar && <ProgressTrackerBar running={open} ref={ref} />}
-			<div className="progress-tracker-modal-time-display">
+			<div className="progress-tracker-modal-time-display" data-testid="progress-tracker-modal-time-display">
 				<strong>{i18n.t('common.elapsed_time')}:</strong> <ElapsedTime running={open} />
 			</div>
-			<div className={clsx('progress-tracker-modal-message', !state.message && 'hidden')} data-stage={state.stage} hidden={!state.message}>
+			<div
+				className={clsx('progress-tracker-modal-message', !state.message && 'hidden')}
+				data-testid="progress-tracker-modal-message"
+				data-stage={state.stage}
+				hidden={!state.message}>
 				{state.message}
 			</div>
 			{onCancel && (
-				<Button variant="outline-cancel" className="progress-tracker-modal-cancel-btn" onClick={onCancel}>
+				<Button
+					variant="outline-cancel"
+					className="progress-tracker-modal-cancel-btn"
+					data-testid="progress-tracker-modal-cancel-btn"
+					onClick={onCancel}>
 					<Icon name="ban" style="base" className="mr-1" />
 					{i18n.t('sidebar.results.reference.cancel')}
 				</Button>

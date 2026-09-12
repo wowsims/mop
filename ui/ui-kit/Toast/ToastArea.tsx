@@ -22,7 +22,7 @@ export const ToastArea = ({ manager, container, inline = false, className, limit
 	return (
 		<BaseToast.Provider toastManager={manager.base} timeout={DEFAULT_TOAST_DELAY} limit={limit}>
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BaseToast.Portal className="sim-toast-portal" container={container ?? portalContainer ?? undefined}>
+			<BaseToast.Portal className="sim-toast-portal" data-testid="sim-toast-portal" container={container ?? portalContainer ?? undefined}>
 				<ToastViewport className={clsx(inline && 'sim-toast-viewport--inline', className)} />
 			</BaseToast.Portal>
 		</BaseToast.Provider>

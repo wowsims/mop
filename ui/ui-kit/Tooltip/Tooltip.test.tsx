@@ -23,7 +23,7 @@ describe('Tooltip', () => {
 		await screen.findByText('Reforge to hit cap');
 
 		unmount();
-		expect(document.querySelectorAll('.sim-tooltip')).toHaveLength(0);
+		expect(screen.queryByRole('tooltip')).toBeNull();
 		expect(document.body.textContent).not.toContain('Reforge to hit cap');
 	});
 

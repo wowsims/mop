@@ -13,7 +13,7 @@ export interface DialogProps {
 	/** Not called for a close the user is not allowed to make — see `preventClose`. */
 	onOpenChange: (open: boolean) => void;
 	className?: string;
-	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`, `--bs-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the same markup is Bootstrap's `rgb(13, 110, 253)` on white, and `--theme-component-text-color` does not resolve at all. */
+	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — which is where the spec theme lives. Measured on `warrior/arms`: inside `.sim-ui`, `--color-primary` is `rgb(199, 156, 110)` and a `.btn-primary` is brown on black; on `<body>` the same markup is Bootstrap's `rgb(13, 110, 253)` on white. */
 	container?: HTMLElement | null;
 	size?: DialogSize;
 	title?: ReactNode;
@@ -33,6 +33,7 @@ export interface DialogProps {
 	/** On the popup, which is where Base UI stops keydown propagation — a listener above it never sees a key. */
 	onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
 	children?: ReactNode;
+	testId?: string;
 }
 
 export const Dialog = ({
@@ -51,6 +52,7 @@ export const Dialog = ({
 	elevated = false,
 	onKeyDown,
 	children,
+	testId,
 }: DialogProps) => {
 	const portalContainer = usePortalContainer();
 	return (
@@ -64,26 +66,47 @@ export const Dialog = ({
 				onOpenChange(nextOpen);
 			}}>
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BaseDialog.Portal className="sim-dialog-portal" container={container ?? portalContainer ?? undefined} keepMounted={keepMounted}>
+			<BaseDialog.Portal
+				className="sim-dialog-portal"
+				data-testid="sim-dialog-portal"
+				container={container ?? portalContainer ?? undefined}
+				keepMounted={keepMounted}>
 				{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
-				<BaseDialog.Backdrop className={clsx('sim-dialog-backdrop', elevated && 'sim-dialog-backdrop--elevated')} forceRender={elevated} />
-				<BaseDialog.Viewport className={clsx('sim-dialog-viewport', elevated && 'sim-dialog-viewport--elevated')}>
+				<BaseDialog.Backdrop
+					className={clsx('sim-dialog-backdrop', elevated && 'sim-dialog-backdrop--elevated')}
+					data-testid="sim-dialog-backdrop"
+					forceRender={elevated}
+				/>
+				<BaseDialog.Viewport className={clsx('sim-dialog-viewport', elevated && 'sim-dialog-viewport--elevated')} data-testid="sim-dialog-viewport">
 					<BaseDialog.Popup
 						className={clsx('sim-dialog-popup', `sim-dialog-popup--${size}`, scrollContents && 'sim-dialog-popup--scroll', className)}
+						data-testid={testId ?? 'sim-dialog-popup'}
 						onKeyDown={onKeyDown}>
 						{(title != null || headerChildren != null || !preventClose) && (
-							<div className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}>
-								{title != null && <BaseDialog.Title className="sim-dialog-title">{title}</BaseDialog.Title>}
+							<div
+								className={clsx('sim-dialog-header', !header && title == null && headerChildren == null && 'sim-dialog-header--bare')}
+								data-testid="sim-dialog-header">
+								{title != null && (
+									<BaseDialog.Title className="sim-dialog-title" data-testid="sim-dialog-title">
+										{title}
+									</BaseDialog.Title>
+								)}
 								{headerChildren}
 								{!preventClose && (
-									<BaseDialog.Close className="sim-dialog-close" aria-label="Close">
+									<BaseDialog.Close className="sim-dialog-close" data-testid="sim-dialog-close" aria-label="Close">
 										<Icon name="times" size="2xl" />
 									</BaseDialog.Close>
 								)}
 							</div>
 						)}
-						<div className="sim-dialog-body">{children}</div>
-						{footer != null && <div className="sim-dialog-footer">{footer}</div>}
+						<div className="sim-dialog-body" data-testid="sim-dialog-body">
+							{children}
+						</div>
+						{footer != null && (
+							<div className="sim-dialog-footer" data-testid="sim-dialog-footer">
+								{footer}
+							</div>
+						)}
 					</BaseDialog.Popup>
 				</BaseDialog.Viewport>
 			</BaseDialog.Portal>

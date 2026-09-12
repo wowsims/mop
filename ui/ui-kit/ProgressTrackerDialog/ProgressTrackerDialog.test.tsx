@@ -47,9 +47,9 @@ const renderDialog = (props: { open?: boolean; onCancel?: () => void } = {}) => 
 };
 
 const bar = () => screen.getByRole('progressbar');
-const barFill = () => document.querySelector<HTMLElement>('.progress-tracker-bar-indicator')!;
-const barText = () => document.querySelector('.progress-tracker-modal-progress-text');
-const barTitle = () => document.querySelector('.progress-tracker-modal-progress-title');
+const barFill = () => screen.getByTestId('progress-tracker-bar-indicator');
+const barText = () => screen.queryByTestId('progress-tracker-modal-progress-text');
+const barTitle = () => screen.queryByTestId('progress-tracker-modal-progress-title');
 
 describe('ProgressTrackerDialog', () => {
 	beforeEach(() => {
@@ -125,15 +125,15 @@ describe('ProgressTrackerDialog', () => {
 		act(() => setStage({ stage: 'complete', message: 'done' }));
 
 		expect(commits.mock.calls.length).toBe(atMount + 1);
-		expect(document.querySelector('.progress-tracker-modal-content')!.getAttribute('data-stage')).toBe('complete');
-		const message = document.querySelector<HTMLElement>('.progress-tracker-modal-message')!;
+		expect(screen.getByTestId('progress-tracker-modal-content').getAttribute('data-stage')).toBe('complete');
+		const message = screen.getByTestId('progress-tracker-modal-message');
 		expect(message.textContent).toBe('done');
 		expect(message.hidden).toBe(false);
 	});
 
 	it('hides the message while there is none', () => {
 		renderDialog();
-		expect(document.querySelector<HTMLElement>('.progress-tracker-modal-message')!.hidden).toBe(true);
+		expect(screen.getByTestId('progress-tracker-modal-message').hidden).toBe(true);
 	});
 
 	it('cannot be closed, and cancels through its own button', () => {
@@ -144,7 +144,7 @@ describe('ProgressTrackerDialog', () => {
 		fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
 		expect(screen.getByRole('dialog')).toBeTruthy();
 
-		const cancel = document.querySelector<HTMLButtonElement>('button.progress-tracker-modal-cancel-btn')!;
+		const cancel = screen.getByTestId('progress-tracker-modal-cancel-btn');
 		expect(cancel.getAttribute('type')).toBe('button');
 		fireEvent.click(cancel);
 		expect(onCancel).toHaveBeenCalledTimes(1);
@@ -152,7 +152,7 @@ describe('ProgressTrackerDialog', () => {
 
 	it('renders no cancel button when there is nothing to cancel', () => {
 		renderDialog();
-		expect(document.querySelector('button.progress-tracker-modal-cancel-btn')).toBeNull();
+		expect(screen.queryByTestId('progress-tracker-modal-cancel-btn')).toBeNull();
 	});
 
 	it('names the dialog from its title, and keeps it mounted but hidden while closed', () => {
@@ -161,7 +161,7 @@ describe('ProgressTrackerDialog', () => {
 
 		screen.getByRole('dialog').remove();
 		renderDialog({ open: false });
-		const popup = document.querySelector('.progress-tracker-dialog')!;
+		const popup = screen.getByRole('dialog', { hidden: true });
 		expect(popup.classList.contains('sim-dialog-popup--md')).toBe(true);
 		expect(popup.hasAttribute('hidden')).toBe(true);
 	});
@@ -176,7 +176,7 @@ describe('ElapsedTime', () => {
 		vi.useRealTimers();
 	});
 
-	const text = () => document.querySelector('.time-elapsed')!.textContent;
+	const text = () => screen.getByTestId('time-elapsed').textContent;
 
 	it('ticks the readout without rendering', () => {
 		const commits = vi.fn();

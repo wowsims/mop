@@ -21,6 +21,7 @@ export interface ConfirmPopoverProps {
 	/** Omit for a message that is only acknowledged: one dismissing button, no cancel. */
 	onConfirm?: () => void;
 	children?: ReactNode;
+	testId?: string;
 }
 
 export const ConfirmPopover = ({
@@ -36,6 +37,7 @@ export const ConfirmPopover = ({
 	cancelLabel,
 	onConfirm,
 	children,
+	testId,
 }: ConfirmPopoverProps) => (
 	<Popover
 		open={open}
@@ -46,9 +48,12 @@ export const ConfirmPopover = ({
 		triggerProps={triggerProps}
 		container={container}
 		side={side}
+		testId={testId}
 		className="sim-confirm-popover">
-		<p className="sim-confirm-popover-message">{children}</p>
-		<div className="sim-confirm-popover-actions">
+		<p className="sim-confirm-popover-message" data-testid="sim-confirm-popover-message">
+			{children}
+		</p>
+		<div className="sim-confirm-popover-actions" data-testid="sim-confirm-popover-actions">
 			{onConfirm ? (
 				<>
 					<Button variant="outline-cancel" size="sm" onClick={() => onOpenChange(false)}>

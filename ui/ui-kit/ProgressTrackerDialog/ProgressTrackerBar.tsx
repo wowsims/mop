@@ -26,13 +26,17 @@ export const ProgressTrackerBar = ({ running, ref }: ProgressTrackerBarProps) =>
 
 	return (
 		<div className="progress-tracker-modal-progress-container">
-			{title && <div className="progress-tracker-modal-progress-title mb-2">{title}</div>}
+			{title && (
+				<div className="progress-tracker-modal-progress-title mb-2" data-testid="progress-tracker-modal-progress-title">
+					{title}
+				</div>
+			)}
 			<Progress.Root value={rounded} max={total}>
 				<Progress.Track className="progress-tracker-bar-track">
-					<Progress.Indicator className="progress-tracker-bar-indicator" />
+					<Progress.Indicator className="progress-tracker-bar-indicator" data-testid="progress-tracker-bar-indicator" />
 				</Progress.Track>
 			</Progress.Root>
-			{measured && <div className="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
+			{measured && <div className="progress-tracker-modal-progress-text" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
 		</div>
 	);
 };

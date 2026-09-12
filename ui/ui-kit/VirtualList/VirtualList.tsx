@@ -71,12 +71,13 @@ export const VirtualList = ({
 	});
 
 	return (
-		<div className={clsx('virtual-list', className)} style={{ position: 'relative', height: virtualizer.getTotalSize() }}>
+		<div className={clsx('virtual-list', className)} data-testid="virtual-list" style={{ position: 'relative', height: virtualizer.getTotalSize() }}>
 			{virtualizer.getVirtualItems().map(item => (
 				<div
 					key={item.key}
 					data-index={item.index}
 					data-stripe={item.index % 2 === 0 ? 'even' : 'odd'}
+					data-testid="virtual-list-row"
 					className={clsx('virtual-list-row', rowClassName?.(item.index))}
 					style={{
 						position: 'absolute',

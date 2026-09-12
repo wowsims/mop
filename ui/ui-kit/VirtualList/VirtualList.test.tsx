@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react';
+import { act, render, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { VirtualList } from './VirtualList';
@@ -41,13 +41,13 @@ const scrollTo = async (element: HTMLElement, top: number) => {
 	});
 };
 
-const rows = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('.virtual-list-row')];
+const rows = (container: HTMLElement) => within(container).queryAllByTestId('virtual-list-row');
 
 describe('VirtualList', () => {
 	it('reserves the full scroll height while rendering only a window of rows', () => {
 		const { container } = renderList(1000);
 
-		const list = container.querySelector<HTMLElement>('.virtual-list')!;
+		const list = within(container).getByTestId('virtual-list');
 		expect(list.style.height).toBe(`${1000 * ROW_HEIGHT}px`);
 		// A 200px viewport over 20px rows is ten rows, plus `overscan` on each side.
 		expect(rows(container).length).toBe(VIEWPORT / ROW_HEIGHT + 2);
@@ -95,7 +95,7 @@ describe('VirtualList', () => {
 	it('renders nothing but keeps its height at zero for an empty list', () => {
 		const { container } = renderList(0);
 
-		expect(container.querySelector<HTMLElement>('.virtual-list')!.style.height).toBe('0px');
+		expect(within(container).getByTestId('virtual-list').style.height).toBe('0px');
 		expect(rows(container)).toHaveLength(0);
 	});
 

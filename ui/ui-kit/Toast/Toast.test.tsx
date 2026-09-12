@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createToastManager, DEFAULT_TOAST_DELAY, toastManager } from './manager';
 import { ToastArea } from './ToastArea';
 
-const standardViewport = () => document.querySelector('.sim-toast-viewport:not(.sim-toast-viewport--inline)') as HTMLElement;
+const standardViewport = () => screen.getAllByTestId('sim-toast-viewport').find(el => !el.classList.contains('sim-toast-viewport--inline'))!;
 
 afterEach(() => {
 	vi.useRealTimers();
@@ -18,11 +18,11 @@ describe('Toast', () => {
 			toastManager.add({ variant: 'success', body: 'Import successful!' });
 		});
 
-		const toast = standardViewport().querySelector('.sim-toast')!;
+		const toast = within(standardViewport()).getByTestId('sim-toast');
 		expect(Array.from(toast.classList)).toEqual(['sim-toast', 'sim-toast--success']);
-		expect(toast.querySelector('.sim-toast-title')?.textContent).toBe('WowSims');
-		expect(toast.querySelector('.sim-toast-body')?.textContent).toBe('Import successful!');
-		expect(toast.getAttribute('aria-describedby')).toBe(toast.querySelector('.sim-toast-body')?.id);
+		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('WowSims');
+		expect(within(toast).getByTestId('sim-toast-body').textContent).toBe('Import successful!');
+		expect(toast.getAttribute('aria-describedby')).toBe(within(toast).getByTestId('sim-toast-body').id);
 	});
 
 	it('takes the title and the caller class from the options', () => {
@@ -31,9 +31,9 @@ describe('Toast', () => {
 			toastManager.add({ variant: 'warning', body: 'Download it', title: 'Native sim', className: 'toast-notice-native-download' });
 		});
 
-		const toast = standardViewport().querySelector('.sim-toast')!;
+		const toast = within(standardViewport()).getByTestId('sim-toast');
 		expect(Array.from(toast.classList)).toEqual(['sim-toast', 'sim-toast--warning', 'toast-notice-native-download']);
-		expect(toast.querySelector('.sim-toast-title')?.textContent).toBe('Native sim');
+		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('Native sim');
 	});
 
 	// `body` is block content at several sites — `NoticeNativeSim` passes a `<div>` wrapping a `<p>`
@@ -53,7 +53,7 @@ describe('Toast', () => {
 			});
 		});
 
-		const body = standardViewport().querySelector('.sim-toast-body')!;
+		const body = within(standardViewport()).getByTestId('sim-toast-body');
 		expect(body.tagName).toBe('DIV');
 		expect(body.querySelector('p')?.textContent).toBe('Run it natively');
 	});
@@ -91,7 +91,7 @@ describe('Toast', () => {
 		});
 
 		const standard = standardViewport();
-		const notice = host.querySelector('.sim-toast-viewport--inline') as HTMLElement;
+		const notice = within(host).getByTestId('sim-toast-viewport');
 
 		expect(within(standard).getByText('standard body')).toBeTruthy();
 		expect(within(standard).queryByText('notice body')).toBeNull();
@@ -128,7 +128,7 @@ describe('Toast', () => {
 
 		const icon = screen.getByRole('button', { name: 'Close' }).querySelector('i')!;
 		expect(Array.from(icon.classList)).toEqual(['fas', 'fa-times', 'fa-lg']);
-		expect(standardViewport().querySelector('.sim-toast-icon')?.className).toBe('fas fa-circle-exclamation fa-2xl sim-toast-icon');
+		expect(within(standardViewport()).getByTestId('sim-toast-icon').className).toBe('fas fa-circle-exclamation fa-2xl sim-toast-icon');
 	});
 
 	// The negative half is the control: without it the positive half passes even if no timer ever runs.
@@ -162,12 +162,12 @@ describe('Toast', () => {
 		act(() => {
 			manager.add({ variant: 'warning', body: 'orphan', autohide: false });
 		});
-		expect(document.querySelectorAll('.sim-toast')).toHaveLength(1);
+		expect(screen.getAllByTestId('sim-toast')).toHaveLength(1);
 
 		unmount();
 
-		expect(document.querySelectorAll('.sim-toast')).toHaveLength(0);
-		expect(document.querySelectorAll('.sim-toast-viewport')).toHaveLength(0);
+		expect(screen.queryAllByTestId('sim-toast')).toHaveLength(0);
+		expect(screen.queryAllByTestId('sim-toast-viewport')).toHaveLength(0);
 		expect(host.childElementCount).toBe(0);
 
 		host.remove();

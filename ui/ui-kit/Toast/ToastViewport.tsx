@@ -12,7 +12,7 @@ export const ToastViewport = ({ className }: ToastViewportProps) => {
 	const { toasts } = BaseToast.useToastManager<ToastData>();
 
 	return (
-		<BaseToast.Viewport className={clsx('sim-toast-viewport', className)}>
+		<BaseToast.Viewport className={clsx('sim-toast-viewport', className)} data-testid="sim-toast-viewport">
 			{toasts.map(toast => (
 				<Toast key={toast.id} toast={toast} />
 			))}
