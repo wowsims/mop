@@ -1,5 +1,6 @@
 import type { StoreField } from '@sim/hooks/useStoreField';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
+import type { ReactElement } from 'react';
 
 export type StoreBinding<ModObject> =
 	| { storeSubscribe: (obj: ModObject) => StoreSubscribe; storeField?: StoreField | ReadonlyArray<StoreField> }
@@ -8,7 +9,7 @@ export type StoreBinding<ModObject> =
 /** What an input renders, whichever end its value comes from. */
 export interface InputChrome<ModObject> {
 	label?: string;
-	labelTooltip?: string | Element;
+	labelTooltip?: string | Element | ReactElement;
 	description?: string | Element;
 	inline?: boolean;
 	id?: string;

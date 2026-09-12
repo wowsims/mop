@@ -11,10 +11,15 @@ class Settings {
 	private listeners = new Set<() => void>();
 	/** Counts writes through the config, so "committed nothing" is testable. */
 	writes = 0;
-	constructor(public value = 0) {}
+	constructor(
+		public value = 0,
+		private readonly quiet = false,
+	) {}
 	set(next: number) {
+		const changed = next !== this.value;
 		this.value = next;
-		this.listeners.forEach(listener => listener());
+		// `quiet` is the APL row source: it relays a change and swallows a write that moves nothing.
+		if (changed || !this.quiet) this.listeners.forEach(listener => listener());
 	}
 	readonly subscribe: StoreSubscribe = listener => {
 		this.listeners.add(listener);
@@ -267,5 +272,15 @@ describe('NumberPicker', () => {
 
 		act(() => settings.set(7));
 		expect(input().value).toBe('7');
+	});
+
+	it('shows the parsed value after a commit a quiet source has nothing to report about', () => {
+		const settings = new Settings(12, true);
+		render(<NumberPicker modObject={settings} config={configFor()} />);
+
+		fireEvent.change(input(), { target: { value: '12abc' } });
+
+		expect(settings.value).toBe(12);
+		expect(input().value).toBe('12');
 	});
 });

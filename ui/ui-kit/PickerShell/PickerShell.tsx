@@ -3,7 +3,7 @@ import { adoptNode, isNode } from '../utils/dom';
 import type { AnyInputConfig } from '@ui-kit/input';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { type ReactNode, type Ref, useMemo } from 'react';
+import { isValidElement, type ReactNode, type Ref, useMemo } from 'react';
 
 const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join(' ');
 
@@ -19,12 +19,13 @@ export interface PickerShellProps<ModObject, T, V> {
 
 export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabled, leading, children, ref }: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
-	if (tooltip !== undefined && typeof tooltip !== 'string' && !isNode(tooltip)) {
-		console.warn(`${className} ${config.id}: labelTooltip is neither a string nor a node, so it is not rendered.`, tooltip);
+	const renderable = typeof tooltip === 'string' || isNode(tooltip) || isValidElement(tooltip);
+	if (tooltip !== undefined && !renderable) {
+		console.warn(`${className} ${config.id}: labelTooltip is neither a string, a node nor an element, so it is not rendered.`, tooltip);
 	}
-	const tooltipId = typeof tooltip === 'string' || isNode(tooltip) ? `${config.id}-tooltip` : undefined;
+	const tooltipId = renderable ? `${config.id}-tooltip` : undefined;
 	const tooltipNode = useMemo(
-		() => (tooltipId ? <Tooltip id={tooltipId} content={isNode(tooltip) ? <span ref={adoptNode(tooltip)} /> : (tooltip as string)} /> : null),
+		() => (tooltipId ? <Tooltip id={tooltipId} content={isNode(tooltip) ? <span ref={adoptNode(tooltip)} /> : (tooltip as ReactNode)} /> : null),
 		[tooltipId, tooltip],
 	);
 
