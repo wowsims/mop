@@ -3,6 +3,7 @@ import { DatabaseFilters, SourceFilterOption, UIItem_FactionRestriction } from '
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const store = vi.hoisted(() => {
@@ -54,9 +55,11 @@ describe('FiltersMenu', () => {
 		});
 
 		render(
-			<SimHostProvider host={host}>
-				<FiltersMenu slot={slot} open={open} onOpenChange={onOpenChange} />
-			</SimHostProvider>,
+			<PortalContainerContext value={rootElem}>
+				<SimHostProvider host={host}>
+					<FiltersMenu slot={slot} open={open} onOpenChange={onOpenChange} />
+				</SimHostProvider>
+			</PortalContainerContext>,
 		);
 		return { onOpenChange };
 	};

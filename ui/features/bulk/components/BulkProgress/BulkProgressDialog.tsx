@@ -31,7 +31,6 @@ export const BulkProgressDialog = () => {
 	return (
 		<ProgressTrackerDialog
 			open
-			container={host.rootElem}
 			className="bulk-sim-progress-tracker"
 			title="Bulk Sim"
 			state={{ stage: state.stage, message: state.hasMessage ? MESSAGE : undefined }}

@@ -60,7 +60,6 @@ export const Exporter = ({
 			open={open}
 			onOpenChange={onOpenChange}
 			className="exporter"
-			container={host.rootElem}
 			title={title}
 			footer={
 				<>

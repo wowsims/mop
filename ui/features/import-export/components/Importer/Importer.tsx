@@ -43,7 +43,6 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			open={open}
 			onOpenChange={onOpenChange}
 			className="importer"
-			container={host.rootElem}
 			title={title}
 			footer={
 				<div className="flex gap-2">

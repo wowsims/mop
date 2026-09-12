@@ -112,7 +112,6 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 				open={open}
 				onOpenChange={state.setOpen}
 				className="selector-modal"
-				container={host.rootElem}
 				size="xl"
 				onKeyDown={onRailKeyDown}
 				headerChildren={

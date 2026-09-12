@@ -80,7 +80,6 @@ export const SavedSettings = () => {
 
 	return (
 		<SavedDataPanel
-			container={host.rootElem}
 			title={i18n.t('settings_tab.saved_settings.title')}
 			nameLabel={i18n.t('settings_tab.saved_settings.settings_name')}
 			saveButtonText={i18n.t('settings_tab.saved_settings.save_settings')}

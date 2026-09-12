@@ -1,6 +1,7 @@
 @layer theme, base, components, utilities;
 
 @import 'tailwindcss/theme.css' layer(theme);
+@import './vendor.css';
 @import 'tailwindcss/utilities.css' important;
 
 @import './theme.css';

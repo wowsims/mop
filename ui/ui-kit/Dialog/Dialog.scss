@@ -4,7 +4,7 @@
 .sim-dialog-backdrop {
 	position: fixed;
 	inset: 0;
-	z-index: var(--modal-backdrop-zindex);
+	z-index: var(--z-modal-backdrop);
 	background-color: var(--modal-backdrop-bg);
 	opacity: var(--modal-backdrop-opacity);
 	transition: var(--transition-fade);
@@ -15,7 +15,7 @@
 	}
 
 	&.sim-dialog-backdrop--elevated {
-		z-index: var(--modal-elevated-backdrop-zindex);
+		z-index: var(--z-modal-elevated-backdrop);
 	}
 }
 
@@ -23,14 +23,14 @@
 .sim-dialog-viewport {
 	position: fixed;
 	inset: 0;
-	z-index: var(--modal-zindex);
+	z-index: var(--z-modal);
 	overflow-x: hidden;
 	overflow-y: auto;
 	opacity: 1;
 	transition: var(--transition-fade);
 
 	&.sim-dialog-viewport--elevated {
-		z-index: var(--modal-elevated-zindex);
+		z-index: var(--z-modal-elevated);
 	}
 
 	&[data-starting-style],

@@ -1,5 +1,4 @@
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import clsx from 'clsx';
@@ -40,7 +39,6 @@ export const AplNameDialog = ({
 	onCancel,
 	onClose,
 }: AplNameDialogProps) => {
-	const host = useSimHost();
 	const inputId = useId();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [name, setName] = useState(defaultValue || '');
@@ -71,7 +69,6 @@ export const AplNameDialog = ({
 				onClose();
 			}}
 			className="apl-name-modal"
-			container={host.rootElem}
 			size="sm"
 			title={title}
 			footer={

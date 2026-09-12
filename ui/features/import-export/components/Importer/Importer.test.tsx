@@ -3,6 +3,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Importer } from './Importer';
@@ -33,11 +34,13 @@ const renderImporter = (props: Partial<Parameters<typeof Importer>[0]> = {}) => 
 	const onImport = props.onImport ?? vi.fn().mockResolvedValue(undefined);
 	const onOpenChange = props.onOpenChange ?? vi.fn();
 	render(
-		<SimHostProvider host={host}>
-			<Importer open title="JSON Import" allowFileUpload {...props} onImport={onImport} onOpenChange={onOpenChange}>
-				<p>how to</p>
-			</Importer>
-		</SimHostProvider>,
+		<PortalContainerContext value={rootElem}>
+			<SimHostProvider host={host}>
+				<Importer open title="JSON Import" allowFileUpload {...props} onImport={onImport} onOpenChange={onOpenChange}>
+					<p>how to</p>
+				</Importer>
+			</SimHostProvider>
+		</PortalContainerContext>,
 	);
 	return { onImport, onOpenChange };
 };

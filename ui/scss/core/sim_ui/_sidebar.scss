@@ -9,7 +9,7 @@
 	align-items: stretch;
 	background: var(--color-background);
 	height: 100dvh;
-	z-index: var(--sidebar-z-index);
+	z-index: var(--z-sidebar);
 
 	@include media-breakpoint-down(lg) {
 		position: relative;
@@ -111,7 +111,7 @@
 
 	&.loading {
 		transition: none;
-		color: var(--bs-btn-disabled-bg);
+		color: var(--color-primary-disabled);
 
 		.sim-sidebar-action-button-loading-icon {
 			display: block;
@@ -125,5 +125,5 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	color: var(--bs-btn-disabled-color);
+	color: var(--color-primary-disabled-foreground);
 }

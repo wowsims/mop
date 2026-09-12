@@ -1,7 +1,7 @@
 @import 'shared/tokens';
 
 .sim-popover-positioner {
-	z-index: var(--dropdown-zindex);
+	z-index: var(--z-dropdown);
 }
 
 // Styled with the tooltip's tokens, not the dropdown's.

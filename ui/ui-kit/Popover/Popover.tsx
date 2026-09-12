@@ -1,6 +1,7 @@
 import './Popover.scss';
 
 import { Popover as BasePopover } from '@base-ui/react/popover';
+import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
@@ -52,20 +53,23 @@ export const Popover = ({
 	delay,
 	initialFocus = false,
 	children,
-}: PopoverProps) => (
-	<BasePopover.Root open={open} modal={false} onOpenChange={nextOpen => onOpenChange?.(nextOpen)}>
-		{trigger != null && (
-			<BasePopover.Trigger className={clsx(triggerClassName)} openOnHover={openOnHover} delay={delay} {...triggerProps}>
-				{trigger}
-			</BasePopover.Trigger>
-		)}
-		{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-		<BasePopover.Portal className="sim-popover-portal contents" container={container}>
-			<BasePopover.Positioner className="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
-				<BasePopover.Popup className={clsx('sim-popover-popup', className)} initialFocus={initialFocus}>
-					{children}
-				</BasePopover.Popup>
-			</BasePopover.Positioner>
-		</BasePopover.Portal>
-	</BasePopover.Root>
-);
+}: PopoverProps) => {
+	const portalContainer = usePortalContainer();
+	return (
+		<BasePopover.Root open={open} modal={false} onOpenChange={nextOpen => onOpenChange?.(nextOpen)}>
+			{trigger != null && (
+				<BasePopover.Trigger className={clsx(triggerClassName)} openOnHover={openOnHover} delay={delay} {...triggerProps}>
+					{trigger}
+				</BasePopover.Trigger>
+			)}
+			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
+			<BasePopover.Portal className="sim-popover-portal contents" container={container ?? portalContainer ?? undefined}>
+				<BasePopover.Positioner className="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
+					<BasePopover.Popup className={clsx('sim-popover-popup', className)} initialFocus={initialFocus}>
+						{children}
+					</BasePopover.Popup>
+				</BasePopover.Positioner>
+			</BasePopover.Portal>
+		</BasePopover.Root>
+	);
+};

@@ -1,4 +1,3 @@
-import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 import { Dialog } from '@ui-kit/Dialog';
 import { useSyncExternalStore } from 'react';
@@ -10,12 +9,11 @@ export interface CrashReportDialogProps {
 }
 
 export const CrashReportDialog = ({ opener }: CrashReportDialogProps) => {
-	const host = useSimHost();
 	const open = useSyncExternalStore(opener.subscribe, opener.isOpen);
 	const link = useSyncExternalStore(opener.subscribe, opener.getLink);
 
 	return (
-		<Dialog open={open} onOpenChange={opener.setOpen} className="crash" container={host.rootElem} title={i18n.t('sim.crash_modal.title')}>
+		<Dialog open={open} onOpenChange={opener.setOpen} className="crash" title={i18n.t('sim.crash_modal.title')}>
 			<div className="sim-crash-report">
 				<h3 className="sim-crash-report-header">{i18n.t('sim.crash_modal.header')}</h3>
 				{/* Keyed so a second crash replaces the text: the field is uncontrolled. */}

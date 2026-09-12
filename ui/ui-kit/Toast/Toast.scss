@@ -13,7 +13,7 @@
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	z-index: var(--toast-z-index);
+	z-index: var(--z-toast);
 	flex-direction: column;
 	align-items: flex-end;
 	gap: var(--spacer-2);

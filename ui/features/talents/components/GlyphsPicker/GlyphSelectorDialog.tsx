@@ -1,4 +1,3 @@
-import { useSimHost } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import { Dialog } from '@ui-kit/Dialog';
@@ -17,13 +16,12 @@ export interface GlyphSelectorDialogProps {
 }
 
 export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, onSelect }: GlyphSelectorDialogProps) => {
-	const host = useSimHost();
 	const [search, setSearch] = useState('');
 	const entries = useMemo(() => [emptyGlyphData, ...options], [options]);
 	const activeId = entries.some(entry => entry.id === selectedId) ? selectedId : emptyGlyphData.id;
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange} className="glyph-modal" container={host.rootElem} title={i18n.t('talents_tab.glyphs.modal.title')}>
+		<Dialog open={open} onOpenChange={onOpenChange} className="glyph-modal" title={i18n.t('talents_tab.glyphs.modal.title')}>
 			<SearchBar className="selector-modal-search max-w-48" placeholder={i18n.t('common.search')} value={search} onChange={setSearch} />
 			<ul className="selector-modal-list">
 				{entries.map(entry => (

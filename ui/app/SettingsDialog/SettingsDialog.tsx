@@ -182,7 +182,6 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			open={open}
 			onOpenChange={onOpenChange}
 			className="settings-menu"
-			container={host.rootElem}
 			title={i18n.t('info.options.title')}
 			footer={
 				<>

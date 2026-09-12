@@ -7,6 +7,7 @@ import { Stats, UnitStat } from '@sim/proto/stats';
 import { SimRuns } from '@sim/sim_runs';
 import { createSimStore } from '@sim/state/sim_store';
 import { act, fireEvent, render } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -239,9 +240,11 @@ const renderDialog = () => {
 	document.body.appendChild(rootElem);
 	openChanges.length = 0;
 	return render(
-		<SimHostProvider host={host}>
-			<DialogHarness />
-		</SimHostProvider>,
+		<PortalContainerContext value={rootElem}>
+			<SimHostProvider host={host}>
+				<DialogHarness />
+			</SimHostProvider>
+		</PortalContainerContext>,
 	);
 };
 

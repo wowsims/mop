@@ -9,7 +9,7 @@
 	margin-right: calc(-1 * var(--spacing-page));
 	white-space: nowrap;
 	transition: background-color 0.15s ease-in-out;
-	z-index: var(--header-z-index);
+	z-index: var(--z-header);
 
 	@include media-breakpoint-down(lg) {
 		padding-top: var(--spacing-gutter-sm);

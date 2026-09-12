@@ -1,6 +1,7 @@
 import '../shared/page_boot';
 
 import { updateLandingPageMetadata } from '@i18n/localization';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -13,6 +14,8 @@ if (!rootElem) throw new Error('No #root element on the page; ui/index.html shou
 
 createRoot(rootElem).render(
 	<StrictMode>
-		<LandingPage />
+		<PortalContainerContext value={rootElem}>
+			<LandingPage />
+		</PortalContainerContext>
 	</StrictMode>,
 );

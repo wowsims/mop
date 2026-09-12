@@ -1,6 +1,6 @@
 // The popup carries its own class rather than `.dropdown-menu`: that class is `display: none` until `.show` is added.
 .multi-icon-picker-positioner {
-	z-index: var(--dropdown-zindex);
+	z-index: var(--z-dropdown);
 }
 
 .icon-picker .multi-icon-picker-menu {

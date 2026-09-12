@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export interface ListItemPopoverProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	container: HTMLElement | null;
+	container?: HTMLElement | null;
 	children?: ReactNode;
 }
 

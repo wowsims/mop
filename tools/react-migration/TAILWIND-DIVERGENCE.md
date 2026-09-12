@@ -1321,3 +1321,73 @@ still says `` `--container-padding` `` (stale prose reference, not a rule agains
 *content* the brief didn't ask to edit); `_bulk_tab.scss:117,124`'s local custom property
 `--bulk-gear-combo-gap-width` contains `gap-width` as a substring of its own name, not a read of the
 deleted `--gap-width` token.
+
+## Stage 4 — B0 / A-U0: portal container default, vendor.css, primary-derived and z tokens
+
+`usePortalContainer` (`ui/ui-kit/hooks/usePortalContainer.ts`) gives `Dialog`, `Popover` and
+`ToastArea` a `PortalContainerContext` fallback for their `container` prop, so every consumer that
+used to pass `container={host.rootElem}` (or, in `SimShell`, `container={rootEl}` on its own
+`ToastArea`) can drop that prop entirely. The default is tree-neutral by construction: `host.rootElem`
+is `dom.root` (`ui/app/individual_sim_ui.tsx:107`), the same `.sim-ui` element `SimShell` stores as
+`rootEl` and now provides through `PortalContainerContext` (`ui/app/SimShell.tsx`), and
+`landing_entry.tsx` provides its own `#root` the same way. So every portal keeps landing exactly where
+it does today — nothing moved, nothing new was inserted into the tree. An explicit `container` prop
+still wins over the context (`container ?? portalContainer ?? undefined`); the sites that keep one
+pass something the context can't provide — `headerElem`, `group`/`slot`/`dropend` anchors,
+`host.simActionsContainer`, a `container` variable threaded from a caller, `ImportWarning.tsx`'s
+`container={host}`, and `NoticeNativeSim` — plus the two `container={host.rootElem}` sites frozen in
+`ui/specs/**`. `ReforgePanel.tsx`'s settings popover keeps forwarding its own `container` prop
+unchanged (no more `?? host.rootElem` fallback); its progress-tracker dialog drops the prop entirely,
+same as every other now-parameterless dialog.
+
+One correction versus the brief: `container ?? portalContainer` alone is not safe — Base UI's
+`FloatingPortal` treats an explicitly-passed `container={null}` as "wait for the container to be
+resolved" and never renders (see `useFloatingPortalNode` in
+`node_modules/@base-ui/react/floating-ui-react/components/FloatingPortal.js`), which is different
+from an `undefined` prop, where it falls back to `document.body`. `PortalContainerContext`'s default
+(no provider above) is `null`, so without a final `?? undefined` every dialog/popover/toast rendered
+outside a provider (most component tests) silently stopped rendering at all. All three components use
+`container ?? portalContainer ?? undefined`. A handful of existing tests that asserted `container=
+{host.rootElem}` behavior (`FiltersMenu.test.tsx`, `Importer.test.tsx`, `ReforgePanel.test.tsx`,
+`EpWeightsDialog.test.tsx`) needed the same fix production code gets: they now wrap their `render()`
+call in `<PortalContainerContext value={rootElem}>` (or `host.rootElem`) alongside their existing
+`SimHostProvider`, instead of relying on a `container` prop the component no longer takes.
+
+`vendor.css` (`ui/styles/vendor.css`, imported unlayered before `tailwindcss/utilities.css`) carries
+three react-tooltip rules straight from `Tooltip.scss` (untouched — B0 deletes no SCSS, U1 does):
+`.sim-tooltip`'s `z-index` and `--rt-opacity: 1`, its `[class*='styles-module_content']` padding, and
+the `--unpadded` override. `--rt-opacity: 1` exists because a flat `opacity: 1` on react-tooltip's
+generated class would kill its closing transition — the tooltip unmounts only on `transitionend`, so
+without the custom property overriding react-tooltip's own closing-opacity variable, the tooltip would
+either vanish instantly or never unmount. Measured but not carried: `[data-base-ui-inert]`. Base UI
+1.7.0 applies that attribute through `markOthers` to elements *outside* an open modal dialog, so
+`SimTitleDropdown.scss:4`'s selector is live, but the attribute lands on our own `.sim-title-dropdown`
+element rather than something vendor.css would need to reach into — it converts to an inline
+`data-[base-ui-inert]:` Tailwind variant at U3, not a vendor.css rule.
+
+The A-U0 tokens add two families to `theme.css`'s `@theme static` block. The primary-derived set
+(`--color-primary-hover/-active/-dampened/-disabled/-disabled-foreground`) gets `color-mix()`
+fallbacks at `:root` scope (hover/active at Bootstrap's 30%/20% black-mix shade amounts —
+`$btn-hover-bg-shade-amount` is 30% per `_variables.scss:247`, active keeps Bootstrap's default 20%)
+and, separately, literal Sass values re-declared inside `theme-color` in `_mixins.scss` (replacing the
+deleted `--primary-dampened`, whose one reader — `_saved_data_manager.scss:52` — now reads
+`--color-primary-dampened`). Both are needed, not redundant: a custom property's `var()` reference
+resolves relative to the element the property is declared *on*, so a `:root` fallback using
+`var(--color-primary)` would never see a spec's `--color-primary` override further down the tree
+inside `.sim-ui`'s spec-root class — the mixin has to re-declare the literal Sass-computed color right
+there. The mixin literals also keep the rendering probe's computed value in its native `rgb(...)` form
+inside `.sim-ui`, whereas a `color-mix()` declaration serialises its computed value as
+`color(srgb ...)` instead — a form the probe doesn't expect. `--color-surface-raised` and
+`--color-surface-hover` are added the same way at `:root`, copying `--dropdown-bg` and
+`--dropdown-link-hover-bg`'s existing `color-mix()` values verbatim. The two leftover `--bs-btn-disabled-*`
+reads A-S3 left behind are picked up here: `_sidebar.scss:114` → `--color-primary-disabled`,
+`:128` → `--color-primary-disabled-foreground`.
+
+The nine `--z-*` renames (`theme.css`'s `:root {}` block, values unchanged): `--header-z-index` →
+`--z-header` (100), `--sidebar-z-index` → `--z-sidebar` (200), `--tooltip-z-index` → `--z-tooltip`
+(1080), `--toast-z-index` → `--z-toast` (9999), `--dropdown-zindex` → `--z-dropdown` (1000),
+`--modal-zindex` → `--z-modal` (1055), `--modal-backdrop-zindex` → `--z-modal-backdrop` (1050),
+`--modal-elevated-backdrop-zindex` → `--z-modal-elevated-backdrop` (1060), `--modal-elevated-zindex` →
+`--z-modal-elevated` (1065). All 16 code reads across 13 `.scss` files were repointed at the new names;
+the one prose mention in `_sticky_toolbar.scss:11`'s comment (`... less than var(--header-z-index)
+...`) is left as literal text, untouched, per the brief.

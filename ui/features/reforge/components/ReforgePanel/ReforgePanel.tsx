@@ -185,7 +185,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					settingsTooltipRef.current?.close();
 					trackPageView('Reforge Settings', 'reforge-settings');
 				}}
-				container={container ?? host.rootElem}
+				container={container}
 				side="right"
 				align="start"
 				className="reforge-optimiser-popover"
@@ -223,7 +223,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 			{progressOpen && (
 				<ProgressTrackerDialog
 					open
-					container={host.rootElem}
 					className="reforge-optimizer-progress-tracker"
 					title="Optimizing Reforges"
 					state={{ stage: 'initializing' }}

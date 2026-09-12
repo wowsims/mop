@@ -1,6 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const trackPageView = vi.fn();
@@ -22,9 +23,11 @@ const host = fakeHost({ rootElem: document.createElement('div'), sim: { runs: { 
 
 const renderPanel = () =>
 	render(
-		<SimHostProvider host={host}>
-			<ReforgePanel model={model} />
-		</SimHostProvider>,
+		<PortalContainerContext value={host.rootElem}>
+			<SimHostProvider host={host}>
+				<ReforgePanel model={model} />
+			</SimHostProvider>
+		</PortalContainerContext>,
 	);
 
 beforeEach(() => {

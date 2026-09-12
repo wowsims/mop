@@ -5,6 +5,7 @@ import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import type { Sim } from '@sim/sim';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { StickyHeaderContext } from '@ui-kit/hooks/useStickyToolbar';
 import { SocialLink } from '@ui-kit/SocialLink';
 import { ToastArea, toastManager } from '@ui-kit/Toast';
@@ -67,48 +68,50 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 
 	return (
 		<StickyHeaderContext value={headerEl}>
-			<div ref={root} className={simUiClasses({ className, spec, metrics })}>
-				<div className="sim-root">
-					<div className="sim-bg" />
-					{noticeText ? <div className="notices-banner alert border-b border-border mb-0 text-center">{noticeText}</div> : null}
-					<div className="sim-container">
-						<aside className="sim-sidebar">
-							<div className="sim-title">
-								<SimTitleDropdown currentSpec={spec} />
-							</div>
-							<div className="sim-sidebar-content">
-								{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
-								<div ref={sidebarActions} className="sim-sidebar-actions">
-									<IterationsPicker sim={sim} />
-									{host && <SimSidebarActions host={host} />}
+			<PortalContainerContext value={rootEl}>
+				<div ref={root} className={simUiClasses({ className, spec, metrics })}>
+					<div className="sim-root">
+						<div className="sim-bg" />
+						{noticeText ? <div className="notices-banner alert border-b border-border mb-0 text-center">{noticeText}</div> : null}
+						<div className="sim-container">
+							<aside className="sim-sidebar">
+								<div className="sim-title">
+									<SimTitleDropdown currentSpec={spec} />
 								</div>
-								<div className="sim-sidebar-results">
-									{host && <SimResultsPanel panel={host.resultsPanel} warnings={host.warnings} results={host.raidSimResultsManager} />}
-								</div>
-								<div className="sim-sidebar-stats">{host && <CharacterStats />}</div>
-								<div className="sim-sidebar-socials">
-									{SOCIALS.map(social => (
-										<SocialLink key={social.key} social={social} />
-									))}
-								</div>
-							</div>
-						</aside>
-						<div className="sim-content container-fluid">
-							<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
-								<div className="sim-header-container">
-									<div className="sim-tabs-mount">{host && <SimTabsSection host={host} />}</div>
-									<div className="import-export nav">{host && <SimImportExport />}</div>
-									<div className="sim-toolbar nav">
-										<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
+								<div className="sim-sidebar-content">
+									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
+									<div ref={sidebarActions} className="sim-sidebar-actions">
+										<IterationsPicker sim={sim} />
+										{host && <SimSidebarActions host={host} />}
+									</div>
+									<div className="sim-sidebar-results">
+										{host && <SimResultsPanel panel={host.resultsPanel} warnings={host.warnings} results={host.raidSimResultsManager} />}
+									</div>
+									<div className="sim-sidebar-stats">{host && <CharacterStats />}</div>
+									<div className="sim-sidebar-socials">
+										{SOCIALS.map(social => (
+											<SocialLink key={social.key} social={social} />
+										))}
 									</div>
 								</div>
-							</header>
-							<main ref={main} className="sim-main" />
+							</aside>
+							<div className="sim-content container-fluid">
+								<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
+									<div className="sim-header-container">
+										<div className="sim-tabs-mount">{host && <SimTabsSection host={host} />}</div>
+										<div className="import-export nav">{host && <SimImportExport />}</div>
+										<div className="sim-toolbar nav">
+											<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
+										</div>
+									</div>
+								</header>
+								<main ref={main} className="sim-main" />
+							</div>
 						</div>
 					</div>
+					<ToastArea manager={toastManager} />
 				</div>
-				<ToastArea manager={toastManager} container={rootEl} />
-			</div>
+			</PortalContainerContext>
 		</StickyHeaderContext>
 	);
 };

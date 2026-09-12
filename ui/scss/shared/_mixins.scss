@@ -25,9 +25,13 @@
 	// This is why no Tailwind variant is needed for the 34 spec themes.
 	--color-primary: #{$base-color};
 	--color-primary-foreground: #{$text-color};
+	--color-primary-hover: #{$hover-color};
+	--color-primary-active: #{$interact-color};
+	--color-primary-dampened: #{color.mix($black, $base-color, 75%)};
+	--color-primary-disabled: #{color.mix($gray-600, $base-color, 50%)};
+	--color-primary-disabled-foreground: #{$text-color};
 
 	// Custom variants we use for styling some components
-	--primary-dampened: #{color.mix($black, $base-color, 75%)};
 
 	.btn-primary {
 		--bs-btn-bg: #{$base-color};
