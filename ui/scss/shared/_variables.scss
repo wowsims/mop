@@ -254,11 +254,10 @@ $theme-colors: map-merge($theme-colors, $table-colors);
 	--h4-font-size: #{$h4-font-size};
 	--h5-font-size: #{$h5-font-size};
 	--h6-font-size: #{$h6-font-size};
-
-	--content-font-size: 0.75rem;
-	--icon-size-sm: 1rem;
-	--icon-size-md: 2.5rem;
 }
+
+// The content font size and the two icon box sizes used to live in the block above. They are theme
+// tokens now, in `ui/styles/theme.css`: `--text-ui`, `--spacing-icon-sm` and `--spacing-icon-md`.
 
 // Z-index variables
 :root {
@@ -324,7 +323,7 @@ $input-focus-bg: $input-bg;
 $input-focus-border-color: color-mix(in srgb, $input-border-color, $white 20%);
 $input-focus-box-shadow: 0 0 0.25rem color-mix(in srgb, $body-bg, $white 20%);
 $input-focus-color: $white;
-$input-font-size: var(--content-font-size);
+$input-font-size: var(--text-ui);
 $input-placeholder-color: $border-color;
 
 :root {
@@ -375,7 +374,7 @@ $form-check-margin-bottom: 0;
 $form-check-padding-start: $form-check-input-width;
 
 $form-label-margin-bottom: 0.25rem;
-$form-label-font-size: var(--content-font-size);
+$form-label-font-size: var(--text-ui);
 $form-label-font-weight: normal;
 
 $form-select-bg: $input-bg;
@@ -384,11 +383,11 @@ $form-select-color: $white;
 $form-select-disabled-bg: color-mix(in srgb, $body-bg, $white 20%);
 $form-select-focus-border-color: $input-focus-border-color;
 $form-select-focus-box-shadow: 0 0 0.25rem color-mix(in srgb, $body-bg, $white 20%);
-$form-select-font-size: var(--content-font-size);
+$form-select-font-size: var(--text-ui);
 $form-select-indicator: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
 
 $form-text-color: $gray-600;
-$form-text-font-size: var(--content-font-size);
+$form-text-font-size: var(--text-ui);
 
 // Modal
 $modal-content-bg: $body-bg;

@@ -48,7 +48,7 @@ const describe = <T extends ItemListType>(spec: TabSpec<T>): SelectorTab | null 
 const randomSuffixName = ({ label, statString }: { label: string; statString: string }): ReactNode => (
 	<div className="flex flex-col">
 		{label}
-		<span className="fs-content positive mt-1">{statString}</span>
+		<span className="text-ui positive mt-1">{statString}</span>
 	</div>
 );
 

@@ -100,6 +100,24 @@
 }
 
 /*
+ * `.fs-content` did not get the same treatment: it was exactly one declaration, `font-size:
+ * var(--content-font-size)`, so promoting that variable to `--text-ui` made Tailwind's own
+ * `text-ui` an exact replacement and the class pure alias. `icon-sm` composes two more
+ * declarations than the token expresses, so it stays a name.
+ *
+ * Same `important` check as `interactive`: nothing in `ui/` sets `display`, `width`, `height`,
+ * `min-width` or `background-size` on either element that carries it (`ActionLink`'s log icon,
+ * `LogSearchGroup`'s spell icon). `.log-event .icon` sets only `vertical-align`.
+ */
+@utility icon-sm {
+	display: inline-block;
+	min-width: var(--spacing-icon-sm);
+	width: var(--spacing-icon-sm);
+	height: var(--spacing-icon-sm);
+	background-size: cover;
+}
+
+/*
  * Bootstrap utility shim, for `ui/specs/**` only.
  *
  * That tree is frozen, so its one remaining consumer of Bootstrap utilities —

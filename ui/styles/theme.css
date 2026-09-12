@@ -55,6 +55,28 @@
 	--text-4xl: 2.5rem;
 	--text-5xl: 5rem;
 
+	/*
+	 * Semantic, not a scale step: the size of form controls and dense data labels — inputs, form
+	 * labels, gear-picker labels, character stats, saved-data names. Was `--content-font-size` in
+	 * `shared/_variables.scss`, where the name said nothing; 17 SCSS rules and `$input-font-size`,
+	 * `$form-label-font-size`, `$form-select-font-size` and `$form-text-font-size` all read it.
+	 *
+	 * NOT called `--text-body`, which is what "content" was reaching for, because it is measurably
+	 * not the body text size. Body copy on these pages is 1rem / 14px — 26 306 elements against
+	 * 8 118 at this 0.75rem — and `$custom-font-sizes` already spelled `body` as 0.875rem for
+	 * Bootstrap's `.fs-body`. A reader who wrote `text-body` expecting the default size would get a
+	 * size two steps below it.
+	 */
+	--text-ui: 0.75rem;
+
+	/*
+	 * The icon box scale, promoted out of `shared/_variables.scss` so it is one token vocabulary
+	 * rather than two. `--spacing-*` is the namespace behind `size-*`/`w-*`/`h-*`/`min-w-*`, so
+	 * these now generate real utilities as well as being readable by `var()`.
+	 */
+	--spacing-icon-sm: 1rem;
+	--spacing-icon-md: 2.5rem;
+
 	/* Design system. The bare `--color-*` namespace is the answer to "what are our colours?", and
 	   nothing else: everything under GAME DATA below is WoW's and is namespaced away from it. */
 

@@ -125,25 +125,18 @@ kbd {
 	display: none !important;
 }
 
-.icon-sm {
-	display: inline-block;
-	min-width: var(--icon-size-sm);
-	width: var(--icon-size-sm);
-	height: var(--icon-size-sm);
-	background-size: cover;
-}
+// `.icon-sm` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`.
 
 .icon-md {
 	display: inline-block;
-	min-width: var(--icon-size-md);
-	width: var(--icon-size-md);
-	height: var(--icon-size-md);
+	min-width: var(--spacing-icon-md);
+	width: var(--spacing-icon-md);
+	height: var(--spacing-icon-md);
 	background-size: cover;
 }
 
-.fs-content {
-	font-size: var(--content-font-size);
-}
+// `.fs-content` is gone: it was exactly `font-size: var(--text-ui)`, which is what Tailwind emits
+// for `text-ui` now that the token is in the theme.
 
 @each $label, $value in $item-quality-colors {
 	.item-quality-#{$label} {

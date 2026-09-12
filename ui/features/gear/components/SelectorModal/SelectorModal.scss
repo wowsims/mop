@@ -11,7 +11,7 @@
 .selector-modal.sim-dialog-popup {
 	// Room for the rail on both sides of the centred popup: the viewport clips horizontally, and the
 	// second term keeps the gutter at `--modal-margin + rail/2` on any width narrower than the cap.
-	max-width: min(calc(var(--modal-width-xl) - var(--icon-size-md)), calc(100vw - (2 * var(--modal-margin)) - var(--icon-size-md)));
+	max-width: min(calc(var(--modal-width-xl) - var(--spacing-icon-md)), calc(100vw - (2 * var(--modal-margin)) - var(--spacing-icon-md)));
 
 	.gear-picker-modal-slots {
 		// The containing block is the popup's padding box, so the offset is pulled back over its

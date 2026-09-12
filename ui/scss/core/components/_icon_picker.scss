@@ -64,7 +64,7 @@
 	// where `width: 100%` plus `margin: 1px` put it inside the anchor, and the negative inline margin
 	// leaves the container zero outer width so the label after it does not move.
 	.icon-picker-button + .icon-input-level-container {
-		--icon-input-level-size: calc(var(--icon-size-md) - 2px);
+		--icon-input-level-size: calc(var(--spacing-icon-md) - 2px);
 
 		// The root is a flex item that shrinks, and without this the container joins the label in
 		// absorbing that instead of staying the size of the anchor it covers.

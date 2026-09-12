@@ -30,7 +30,7 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 							? i18n.t('bulk_tab.settings.freeze_weapon_types.mainhand_label')
 							: i18n.t('bulk_tab.settings.freeze_weapon_types.offhand_label')}
 					</h6>
-					<div className="fs-content mb-2">{i18n.t('bulk_tab.settings.freeze_weapon_types.tooltip')}</div>
+					<div className="text-ui mb-2">{i18n.t('bulk_tab.settings.freeze_weapon_types.tooltip')}</div>
 					<div className="bulk-gear-freeze-weapontypes__list gap-1">
 						{weaponTypes.map(weaponType => (
 							<BooleanPicker
