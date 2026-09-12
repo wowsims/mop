@@ -45,5 +45,10 @@ func (unit *Unit) GetDiminishedBlockChance() float64 {
 	// undiminished Block % = B
 	// diminished Block % = (B * Cb)/((k*Cb) + B)
 	blockPercent := unit.stats[stats.BlockPercent]
-	return (blockPercent * unit.avoidanceParams.c_b) / (unit.avoidanceParams.k*unit.avoidanceParams.c_b + blockPercent) / 100
+	denominator := unit.avoidanceParams.k*unit.avoidanceParams.c_b + blockPercent
+	// Classes without a block cap (c_b == 0) holding a shield would otherwise divide 0 by 0.
+	if denominator == 0 {
+		return 0
+	}
+	return (blockPercent * unit.avoidanceParams.c_b) / denominator / 100
 }

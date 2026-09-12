@@ -42,7 +42,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-AlacrityofXuen-103989"
  value: {
-  dps: 471568.36704
+  dps: 471521.50162
   tps: 2.92889388299e+06
   dtps: 22700.58339
   hps: 45767.94518
@@ -51,10 +51,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-ArcaneBadgeoftheShieldwall-93347"
  value: {
-  dps: 462915.32754
-  tps: 2.8836563848e+06
+  dps: 462862.63819
+  tps: 2.88389443278e+06
   dtps: 24076.02563
-  hps: 45696.63962
+  hps: 45696.44641
  }
 }
 dps_results: {
@@ -555,10 +555,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Dominator'sArcaneBadge-93342"
  value: {
-  dps: 462915.32754
-  tps: 2.8836563848e+06
+  dps: 462862.63819
+  tps: 2.88389443278e+06
   dtps: 24076.02563
-  hps: 45696.63962
+  hps: 45696.44641
  }
 }
 dps_results: {
@@ -726,10 +726,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EmblemoftheCatacombs-83733"
  value: {
-  dps: 461942.32225
-  tps: 2.87807482155e+06
+  dps: 461987.54529
+  tps: 2.87838458806e+06
   dtps: 23623.37863
-  hps: 45750.07828
+  hps: 45750.59578
  }
 }
 dps_results: {
@@ -870,7 +870,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-FelsoulIdolofDestruction-101263"
  value: {
-  dps: 465511.21741
+  dps: 465629.11504
   tps: 2.89796931672e+06
   dtps: 23276.97492
   hps: 45725.31661
@@ -1707,8 +1707,8 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 471181.45109
-  tps: 2.93001973481e+06
+  dps: 471055.78878
+  tps: 2.92914009862e+06
   dtps: 24624.89816
   hps: 45712.01051
  }
@@ -1815,10 +1815,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-RelicofKypariZar-84075"
  value: {
-  dps: 463900.12348
-  tps: 2.89150293784e+06
-  dtps: 23731.60028
-  hps: 45727.75958
+  dps: 463980.44275
+  tps: 2.89176173532e+06
+  dtps: 23734.98775
+  hps: 45728.39501
  }
 }
 dps_results: {
@@ -1959,10 +1959,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-SigilofFidelity-83737"
  value: {
-  dps: 466029.05659
-  tps: 2.90093500862e+06
+  dps: 466074.27963
+  tps: 2.90124477512e+06
   dtps: 24175.29838
-  hps: 45741.04956
+  hps: 45741.56706
  }
 }
 dps_results: {

@@ -18,7 +18,7 @@ character_stats_results: {
   final_stats: 55762.85
   final_stats: 0
   final_stats: 0
-  final_stats: 19911.1
+  final_stats: 28961.6
   final_stats: 0
   final_stats: 749523
   final_stats: 300000
@@ -610,7 +610,7 @@ dps_results: {
  key: "TestShadow-AllItems-EmberPrimalDiamond"
  value: {
   dps: 430119.92111
-  tps: 396293.53841
+  tps: 396303.55841
   hps: 4376.56223
  }
 }

@@ -97,8 +97,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-BattleplateofResoundingRings"
  value: {
-  dps: 372151.76046
-  tps: 2.26620532181e+06
+  dps: 372152.20035
+  tps: 2.26620840107e+06
   dtps: 44686.9419
  }
 }
@@ -769,8 +769,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-FearwurmRelic-84070"
  value: {
-  dps: 413329.26632
-  tps: 2.52406578812e+06
+  dps: 413227.31209
+  tps: 2.52402551485e+06
   dtps: 16881.04604
  }
 }

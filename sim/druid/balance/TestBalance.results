@@ -610,7 +610,7 @@ dps_results: {
  key: "TestBalance-AllItems-EmberPrimalDiamond"
  value: {
   dps: 480508.26585
-  tps: 477123.71476
+  tps: 477123.82476
   hps: 44500.45387
  }
 }
@@ -1553,9 +1553,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 470775.6141
-  tps: 468991.77663
-  hps: 45066.20605
+  dps: 470781.7827
+  tps: 468997.87236
+  hps: 45066.62097
  }
 }
 dps_results: {
@@ -2057,9 +2057,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 470775.6141
-  tps: 468991.77663
-  hps: 45066.20605
+  dps: 470781.7827
+  tps: 468997.87236
+  hps: 45066.62097
  }
 }
 dps_results: {

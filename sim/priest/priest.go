@@ -79,15 +79,23 @@ func (priest *Priest) AddPartyBuffs(_ *proto.PartyBuffs) {
 }
 
 func (priest *Priest) Initialize() {
+	// Inner Fire (588): +10% spell power and +60% armor. Glyph of Inner Fire
+	// (55686) increases the armor gained by 50%, so +90%: three logged priests
+	// with the glyph sit at exactly 1.9x their unbuffed armor.
 	if priest.SelfBuffs.UseInnerFire {
+		armorMultiplier := core.TernaryFloat64(priest.HasMajorGlyph(proto.PriestMajorGlyph_GlyphOfInnerFire), 1.9, 1.6)
 		priest.MultiplyStat(stats.SpellPower, 1.1)
-		priest.ApplyEquipScaling(stats.Armor, 1.1)
+		priest.ApplyEquipScaling(stats.Armor, armorMultiplier)
 		core.MakePermanent(priest.RegisterAura(core.Aura{
 			Label:    "Inner Fire",
 			ActionID: core.ActionID{SpellID: 588},
 		}))
 	}
 
+	// Mysticism (89745): +5% Intellect while wearing only cloth. Priests can
+	// only wear cloth, so a static multiplier is exact, and unlike the armor
+	// specialization tracker's Talents-phase aura it stays visible to the
+	// reforge optimizer (ComputeStatsAndDeps re-applies Base, Gear and Buffs only).
 	priest.MultiplyStat(stats.Intellect, 1.05)
 	priest.registerShadowWordPainSpell()
 	priest.registerShadowfiendSpell()

@@ -47,7 +47,11 @@ var ItemSetRegaliaOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Nature's Grace now also grants 1000 critical strike and 1000 mastery for its duration.
-			druid := agent.(*BalanceDruid)
+			// Restoration shares these items; the bonus is Balance-only.
+			druid, ok := agent.(*BalanceDruid)
+			if !ok {
+				return
+			}
 			aura := druid.NewTemporaryStatsAura(
 				"Druid T15 Balance 4P Bonus",
 				core.ActionID{SpellID: 138350},
@@ -76,7 +80,11 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Arcane spells cast while in Lunar Eclipse will shoot a single Lunar Bolt at the target. Nature spells cast while in a Solar Eclipse will shoot a single Solar Bolt at the target.
-			moonkin := agent.(*BalanceDruid)
+			// Restoration shares these items; the bonus is Balance-only.
+			moonkin, ok := agent.(*BalanceDruid)
+			if !ok {
+				return
+			}
 			solarBolt := moonkin.registerT16BoltSpell(144772, core.SpellSchoolNature, SolarEclipse)
 			lunarBolt := moonkin.registerT16BoltSpell(144770, core.SpellSchoolArcane, LunarEclipse)
 
@@ -110,7 +118,11 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Your chance to get Shooting Stars from a critical strike from Moonfire or Sunfire is increased by 8%.
-			moonkin := agent.(*BalanceDruid)
+			// Restoration shares these items; the bonus is Balance-only.
+			moonkin, ok := agent.(*BalanceDruid)
+			if !ok {
+				return
+			}
 			moonkin.ShootingStarsProcChance += 0.08
 		},
 	},

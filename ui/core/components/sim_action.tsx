@@ -18,7 +18,7 @@ export function addSimAction(simUI: SimUI): SimResultsManager {
 	let isRunning = false;
 	let waitAbort = false;
 
-	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
+	const simButton = simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
 		trackEvent({
 			action: 'sim',
 			category: 'simulate',
@@ -53,6 +53,7 @@ export function addSimAction(simUI: SimUI): SimResultsManager {
 			isRunning = false;
 		}
 	});
+	if (simUI.simDisabled) simButton.classList.add('d-none');
 
 	const resultsManager = new SimResultsManager(simUI);
 	simUI.sim.simResultEmitter.on((eventID, simResult) => {

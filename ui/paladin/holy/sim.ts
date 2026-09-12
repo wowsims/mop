@@ -1,13 +1,20 @@
-import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
-import { Player } from '../../core/player.js';
+import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
+import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
+import * as Mechanics from '../../core/constants/mechanics';
+import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
+import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl.js';
-import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats.js';
-import * as HolyInputs from '../../paladin/holy/inputs.js';
-import * as Presets from './presets.js';
+import { StatCapType } from '../../core/proto/api';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import * as PaladinInputs from '../inputs';
+import * as Presets from './presets';
 
+const hasteBreakpoints = Presets.HOLY_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
+
+// Gear planner only: no healing spells are implemented, so there is no simulation for this spec.
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 	cssClass: 'holy-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
@@ -15,46 +22,71 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatMasteryRating],
-	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
+	epStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating],
+	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating, Stat.StatArmor, Stat.StatStamina],
-		[PseudoStat.PseudoStatSpellHastePercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHitPercent],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpirit,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
+		[PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent, PseudoStat.PseudoStatSpellHitPercent],
 	),
 	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_GEAR_PRESET.gear,
+		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_EP_PRESET.epWeights,
+		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		// Default soft caps for the Reforge optimizer: reach an Eternal Flame tick breakpoint, then
+		// value haste at QE Live's weight.
+		softCapBreakpoints: (() => {
+			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [hasteBreakpoints.get('12-tick - Eternal Flame')!, hasteBreakpoints.get('13-tick - Eternal Flame')!],
+				capType: StatCapType.TypeThreshold,
+				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			});
+			return [hasteSoftCapConfig];
+		})(),
+		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('12-tick - Eternal Flame')!),
+		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
-		talents: Presets.StandardTalents.data,
+		talents: Presets.DefaultTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
-		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: Presets.DefaultRaidBuffs,
+		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
+			arcaneBrilliance: true,
+			blessingOfKings: true,
+			mindQuickening: true,
+			leaderOfThePack: true,
+			blessingOfMight: true,
+		}),
 		partyBuffs: PartyBuffs.create({}),
-
 		individualBuffs: IndividualBuffs.create({}),
-		debuffs: Presets.DefaultDebuffs,
+		debuffs: Debuffs.create({}),
 	},
 
 	// IconInputs to include in the 'Player' section on the settings tab.
-	playerIconInputs: [],
-	// Inputs to include in the 'Rotation' section on the settings tab.
-	rotationInputs: HolyInputs.PaladinRotationConfig,
+	playerIconInputs: [PaladinInputs.StartingSealSelection()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	// Stamina is not an EP stat for healers, but the buff still belongs in the stats panel.
+	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [OtherInputs.InputDelay, OtherInputs.TankAssignment],
+		inputs: [],
 	},
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
@@ -62,15 +94,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET],
+		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents],
+		talents: [Presets.DefaultTalents],
+		// Preset rotations that the user can quickly select.
 		rotations: [],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_GEAR_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P5_PRESET],
 	},
 
-	autoRotation: (_player: Player<Spec.SpecHolyPaladin>): APLRotation => {
+	autoRotation: (_: Player<Spec.SpecHolyPaladin>): APLRotation => {
 		return APLRotation.create();
 	},
 });
@@ -78,5 +111,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 export class HolyPaladinSimUI extends IndividualSimUI<Spec.SpecHolyPaladin> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecHolyPaladin>) {
 		super(parentElem, player, SPEC_CONFIG);
+
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: Presets.HOLY_BREAKPOINTS,
+			enableBreakpointLimits: true,
+		});
 	}
 }

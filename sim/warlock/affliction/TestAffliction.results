@@ -601,9 +601,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 440530.51735
-  tps: 305612.61882
-  hps: 4523.44624
+  dps: 440789.21943
+  tps: 304981.53505
+  hps: 4530.19206
  }
 }
 dps_results: {
@@ -1545,8 +1545,8 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 387851.05462
-  tps: 269652.77484
+  dps: 387845.27272
+  tps: 269648.47644
   hps: 5105.08572
  }
 }
@@ -2049,8 +2049,8 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 387851.05462
-  tps: 269652.77484
+  dps: 387845.27272
+  tps: 269648.47644
   hps: 5105.08572
  }
 }

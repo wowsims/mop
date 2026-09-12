@@ -201,7 +201,7 @@ export class DetailedResults extends Component {
 		this.rootElem.appendChild(
 			<>
 				<div className="detailed-results-controls-div">
-					<button className="detailed-results-1-iteration-button btn btn-primary" ref={simButtonRef} disabled={simUI.disabled}>
+					<button className="detailed-results-1-iteration-button btn btn-primary" ref={simButtonRef} disabled={simUI.simDisabled}>
 						{i18n.t('results_tab.details.sim_1_iteration')}
 					</button>
 					<button className="detailed-results-death-iteration-button btn btn-primary" ref={deathButtonRef} disabled={true}>

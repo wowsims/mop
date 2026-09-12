@@ -35,9 +35,7 @@ func NewRestorationShaman(character *core.Character, options *proto.Player) *Res
 		Shaman: shaman.NewShaman(character, options.TalentsString, selfBuffs, false, restoOptions.ClassOptions.FeleAutocast),
 	}
 
-	// if resto.HasMHWeapon() {
-	// 	resto.ApplyEarthlivingImbueToItem(resto.GetMHWeapon())
-	// }
+	resto.registerPassives()
 
 	return resto
 }
@@ -53,29 +51,8 @@ func (resto *RestorationShaman) GetShaman() *shaman.Shaman {
 func (resto *RestorationShaman) Reset(sim *core.Simulation) {
 	resto.Shaman.Reset(sim)
 }
-func (resto *RestorationShaman) GetMainTarget() *core.Unit {
-	// TODO: make this just grab first player that isn't self.
-	target := resto.Env.Raid.GetFirstTargetDummy()
-	if target == nil {
-		return &resto.Unit
-	} else {
-		return &target.Unit
-	}
-}
 
 func (resto *RestorationShaman) Initialize() {
-	// resto.CurrentTarget = resto.GetMainTarget()
-
-	// // Has to be here because earthliving can cast hots and needs Env to be set to create the hots.
-	// procMask := core.ProcMaskUnknown
-	// if resto.HasMHWeapon() {
-	// 	procMask |= core.ProcMaskMeleeMH
-	// }
-	// if resto.HasOHWeapon() {
-	// 	procMask |= core.ProcMaskMeleeOH
-	// }
-	// resto.RegisterEarthlivingImbue(procMask)
-
 	resto.Shaman.Initialize()
 	resto.Shaman.RegisterHealingSpells()
 }
@@ -83,4 +60,28 @@ func (resto *RestorationShaman) Initialize() {
 func (resto *RestorationShaman) ApplyTalents() {
 	resto.Shaman.ApplyTalents()
 	resto.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeMail, 86529)
+}
+
+// Stat-affecting Restoration passives. Healing spells are not implemented;
+// this spec is a gear planner only.
+//
+// Spec passives are always on. They are registered from the constructor
+// with the Base build phase, like the Mistweaver stance, so every measured
+// stat phase includes them and they stay active in the dependency manager
+// the reforge optimizer receives (ComputeStatsAndDeps re-applies Base, Gear
+// and Buffs only; anything registered from Initialize is measured by none).
+func (resto *RestorationShaman) registerPassives() {
+	// Spiritual Insight (112858): increases mana pool by 400%.
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Spiritual Insight" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 112858},
+		BuildPhase: core.CharacterBuildPhaseBase,
+	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
+
+	// Meditation (95862): 50% of mana regeneration from Spirit continues in combat.
+	core.MakePermanent(resto.RegisterAura(core.Aura{
+		Label:      "Meditation" + resto.Label,
+		ActionID:   core.ActionID{SpellID: 95862},
+		BuildPhase: core.CharacterBuildPhaseBase,
+	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 }

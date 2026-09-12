@@ -7,6 +7,8 @@ import { Spec } from './proto/common';
 
 export enum LaunchStatus {
 	Unlaunched,
+	// Gear, gems, enchants, talents and the reforge optimizer work. No simulation.
+	GearPlanner,
 	Alpha,
 	Beta,
 	Launched,
@@ -50,8 +52,8 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 		status: LaunchStatus.Launched,
 	},
 	[Spec.SpecRestorationDruid]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	// Hunter
 	[Spec.SpecBeastMasteryHunter]: {
@@ -85,8 +87,8 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 		status: LaunchStatus.Launched,
 	},
 	[Spec.SpecMistweaverMonk]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	[Spec.SpecWindwalkerMonk]: {
 		phase: Phase.Phase5,
@@ -94,8 +96,8 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 	},
 	// Paladin
 	[Spec.SpecHolyPaladin]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	[Spec.SpecProtectionPaladin]: {
 		phase: Phase.Phase5,
@@ -107,12 +109,12 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 	},
 	// Priest
 	[Spec.SpecDisciplinePriest]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	[Spec.SpecHolyPriest]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	[Spec.SpecShadowPriest]: {
 		phase: Phase.Phase5,
@@ -141,8 +143,8 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 		status: LaunchStatus.Launched,
 	},
 	[Spec.SpecRestorationShaman]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	},
 	// Warlock
 	[Spec.SpecAfflictionWarlock]: {
