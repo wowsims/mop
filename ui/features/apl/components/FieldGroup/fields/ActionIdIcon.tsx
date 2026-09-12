@@ -1,9 +1,8 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
-import { useCallback, useRef } from 'react';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
+import { useRef } from 'react';
 
 export interface ActionIdIconProps {
 	actionId: ActionId;
@@ -15,8 +14,7 @@ export interface ActionIdIconProps {
 export const ActionIdIcon = ({ actionId, useBuffAura }: ActionIdIconProps) => {
 	const anchorRef = useRef<HTMLAnchorElement>(null);
 	const { iconUrl, href } = useActionId(actionId);
-	const resolve = useCallback(() => actionIdWowheadTooltipData(actionId, { useBuffAura }), [actionId, useBuffAura]);
-	useWowheadDataset(anchorRef, resolve);
+	useActionIdWowheadDataset(anchorRef, actionId, useBuffAura);
 
 	return (
 		<a

@@ -1,12 +1,11 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { ItemLevelState, type ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
+import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
@@ -54,8 +53,7 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 	const nameRef = useRef<HTMLAnchorElement>(null);
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
-	const resolveTooltip = useMemo(() => (item ? () => equippedItemWowheadTooltipData(player, item, isBlacksmithing) : null), [player, item, isBlacksmithing]);
-	useWowheadDataset([iconRef, nameRef], resolveTooltip);
+	useEquippedItemWowheadDataset([iconRef, nameRef], player, item, isBlacksmithing);
 
 	const reforgeData = item?.getReforgeData();
 

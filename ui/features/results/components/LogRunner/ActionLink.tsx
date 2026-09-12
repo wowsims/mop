@@ -1,9 +1,8 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
-import { useMemo, useRef } from 'react';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
+import { useRef } from 'react';
 
 export interface ActionLinkProps {
 	actionId: ActionId;
@@ -19,8 +18,7 @@ export const ActionLink = ({ actionId, isAura }: ActionLinkProps) => {
 	const { iconUrl, name, href } = useActionId(actionId);
 	const anchorRef = useRef<HTMLAnchorElement>(null);
 
-	const resolveTooltip = useMemo(() => () => actionIdWowheadTooltipData(actionId, { useBuffAura: isAura }), [actionId, isAura]);
-	useWowheadDataset(anchorRef, resolveTooltip);
+	useActionIdWowheadDataset(anchorRef, actionId, isAura);
 
 	return (
 		<a ref={anchorRef} className="log-action" target="_blank" href={href || undefined} rel={externalRel(href, undefined)}>

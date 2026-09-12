@@ -1,9 +1,8 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
-import { useMemo, useRef } from 'react';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
+import { useRef } from 'react';
 
 export interface RotationRowIconProps {
 	actionId: ActionId;
@@ -15,11 +14,7 @@ export const RotationRowIcon = ({ actionId, tooltip }: RotationRowIconProps) => 
 	const { iconUrl, href } = useActionId(actionId);
 	const anchorRef = useRef<HTMLAnchorElement>(null);
 
-	const resolveTooltip = useMemo(
-		() => (tooltip ? () => actionIdWowheadTooltipData(actionId, { useBuffAura: tooltip === 'buffAura' }) : null),
-		[actionId, tooltip],
-	);
-	useWowheadDataset(anchorRef, resolveTooltip);
+	useActionIdWowheadDataset(anchorRef, tooltip ? actionId : null, tooltip === 'buffAura');
 
 	return (
 		<a
