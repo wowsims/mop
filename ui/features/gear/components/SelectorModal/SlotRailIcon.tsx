@@ -5,7 +5,7 @@ import type { EquippedItem } from '@sim/proto/equipped_item';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import clsx from 'clsx';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 import { ItemCellAnchor } from '../ItemCell';
@@ -21,16 +21,14 @@ export interface SlotRailIconProps {
 
 export const SlotRailIcon = ({ slot, item, isBlacksmithing, active, tooltipId, onOpen }: SlotRailIconProps) => {
 	const player = usePlayer();
-	const anchorRef = useRef<HTMLAnchorElement>(null);
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
 
-	useEquippedItemWowheadDataset([anchorRef], player, item, isBlacksmithing);
+	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
 		<div className={clsx('item-picker-icon-wrapper', active && 'active')} data-slot={slot}>
 			<ItemCellAnchor
-				ref={anchorRef}
 				className="item-picker-icon"
 				role="button"
 				href={href || undefined}
@@ -39,6 +37,7 @@ export const SlotRailIcon = ({ slot, item, isBlacksmithing, active, tooltipId, o
 				data-tooltip-id={tooltipId}
 				data-slot-label={translateSlotName(slot) ?? ''}
 				style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
+				{...wowheadProps}
 			/>
 		</div>
 	);

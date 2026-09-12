@@ -4,7 +4,6 @@ import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
 import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
-import { useRef } from 'react';
 
 export interface MetricsActionCellProps {
 	name: string;
@@ -17,19 +16,17 @@ export interface MetricsActionCellProps {
 
 export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, expanded, onToggle }: MetricsActionCellProps) => {
 	const { iconUrl, href } = useActionId(actionId);
-	const iconRef = useRef<HTMLAnchorElement>(null);
-
-	useActionIdWowheadDataset(iconRef, actionId, useBuffAura);
+	const wowheadProps = useActionIdWowheadDataset(actionId, useBuffAura);
 
 	return (
 		<div className="metrics-action">
 			<a
-				ref={iconRef}
 				className="metrics-action-icon"
 				aria-label={name}
 				href={href || undefined}
 				rel={externalRel(href, undefined)}
 				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
+				{...wowheadProps}
 			/>
 			<span className="metrics-action-name text-truncate">{name}</span>
 			{expandable && (

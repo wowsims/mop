@@ -11,7 +11,7 @@ import { subscribePlayerField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import clsx from 'clsx';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { createItemSwapGearData } from '../../model/gear_data';
 
@@ -32,13 +32,11 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, name, href } = useActionId(actionId);
 
-	const iconRef = useRef<HTMLAnchorElement>(null);
-	useEquippedItemWowheadDataset(iconRef, player, item, isBlacksmithing);
+	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
 		<div className="icon-picker-root icon-picker">
 			<ItemCellAnchor
-				ref={iconRef}
 				className={clsx('icon-picker-button', item && 'active')}
 				role="button"
 				aria-label={name || translateSlotName(slot) || undefined}
@@ -46,6 +44,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 				data-whtticon={item ? 'false' : undefined}
 				onActivate={() => openSelectorModal(slot, SelectorModalTabs.Items, createItemSwapGearData(player, slot))}
 				style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
+				{...wowheadProps}
 			/>
 			<div className="item-picker-sockets-container">
 				{item?.allSocketColors().map((socketColor, gemIdx) => (

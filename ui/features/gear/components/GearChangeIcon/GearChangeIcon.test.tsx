@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: 'icon.png', name: 'Item', href: 'https://wowhead/item', ready: true }) }));
-vi.mock('@ui-kit/hooks/useWowheadDataset', () => ({ useWowheadDataset: () => {} }));
+vi.mock('@ui-kit/hooks/useWowheadDataset', () => ({ useWowheadDataset: () => ({}) }));
 vi.mock('@sim/proto/action_id/dom', () => ({ equippedItemWowheadTooltipData: () => Promise.resolve('') }));
 vi.mock('../../model/empty_slot_icons', () => ({ getEmptySlotIconUrl: () => 'empty-slot.png' }));
 vi.mock('@sim/proto/gems', () => ({ getEmptyGemSocketIconUrl: (color: number) => `socket-${color}.png` }));

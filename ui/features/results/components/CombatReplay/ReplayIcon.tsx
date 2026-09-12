@@ -23,7 +23,7 @@ export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, chi
 	const ownRef = useRef<HTMLAnchorElement>(null);
 	const ref = anchorRef ?? ownRef;
 
-	useActionIdWowheadDataset(ref, actionId, tooltip === 'buffAura');
+	const wowheadProps = useActionIdWowheadDataset(actionId, tooltip === 'buffAura');
 
 	return (
 		<a
@@ -31,7 +31,8 @@ export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, chi
 			className={clsx(className)}
 			href={href || undefined}
 			rel={externalRel(href, undefined)}
-			style={iconUrl ? { ...style, backgroundImage: `url('${iconUrl}')` } : style}>
+			style={iconUrl ? { ...style, backgroundImage: `url('${iconUrl}')` } : style}
+			{...wowheadProps}>
 			{children}
 		</a>
 	);

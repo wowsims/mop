@@ -11,7 +11,7 @@ import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { useId, useMemo, useRef } from 'react';
+import { useId, useMemo } from 'react';
 
 import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
 import { gearChangeSockets } from './utils';
@@ -37,8 +37,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
 
-	const linkRef = useRef<HTMLAnchorElement>(null);
-	useEquippedItemWowheadDataset(linkRef, player, item, isBlacksmithing);
+	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	const reforge = item?.reforge;
 	const showReforge = !!item && (!!reforge || !!previousItem?.reforge);
@@ -48,7 +47,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 		<div className="item-picker-root gear-change-icon">
 			<div className="gear-change-icon-frame">
 				<div className="item-picker-icon-wrapper" style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }} />
-				<a ref={linkRef} className="gear-change-icon-link" href={item ? href || undefined : undefined} data-whtticon={item ? 'false' : undefined} />
+				<a className="gear-change-icon-link" href={item ? href || undefined : undefined} data-whtticon={item ? 'false' : undefined} {...wowheadProps} />
 				<div
 					className={clsx('gear-change-icon-reforge interactive', !showReforge && 'd-none')}
 					{...(showReforge ? tooltipAnchorProps(`${tooltipId}-reforge`) : {})}

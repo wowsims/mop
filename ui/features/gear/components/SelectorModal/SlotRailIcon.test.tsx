@@ -85,10 +85,10 @@ describe('SlotRailIcon', () => {
 
 	it('only asks for a wowhead tooltip resolver when a slot is filled', () => {
 		setup({ item: equippedItem(1) });
-		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.anything(), expect.any(Function));
+		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.any(Function));
 
 		useWowheadDataset.mockClear();
 		setup({ item: null });
-		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.anything(), null);
+		expect(useWowheadDataset).toHaveBeenLastCalledWith(null);
 	});
 });

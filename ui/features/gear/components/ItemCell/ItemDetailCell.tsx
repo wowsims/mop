@@ -9,7 +9,7 @@ import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowh
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
-import { type ReactNode, useMemo, useRef } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 import { MISSING_RANDOM_SUFFIX_WARNING } from '../../item_notices';
 import { SelectorModalTabs } from '../../types';
@@ -49,11 +49,9 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 
 	const isBlacksmithing = useIsBlacksmithing();
 
-	const iconRef = useRef<HTMLAnchorElement>(null);
-	const nameRef = useRef<HTMLAnchorElement>(null);
 	const actionId = useMemo(() => item?.asActionId(), [item]);
 	const { iconUrl, href } = useActionId(actionId);
-	useEquippedItemWowheadDataset([iconRef, nameRef], player, item, isBlacksmithing);
+	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	const reforgeData = item?.getReforgeData();
 
@@ -72,13 +70,13 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			}
 			icon={
 				<ItemCellAnchor
-					ref={iconRef}
 					className="item-picker-icon"
 					role="button"
 					href={href || undefined}
 					onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
 					data-whtticon={item ? 'false' : undefined}
 					style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
+					{...wowheadProps}
 				/>
 			}
 			sockets={
@@ -98,12 +96,12 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			name={
 				<>
 					<ItemCellAnchor
-						ref={nameRef}
 						className={clsx('item-picker-name-container', itemQualityClassName(item?.item.quality))}
 						role="button"
 						href={href || undefined}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
-						data-whtticon={item ? 'false' : undefined}>
+						data-whtticon={item ? 'false' : undefined}
+						{...wowheadProps}>
 						{item ? (
 							<>
 								<span className="item-picker-name">
