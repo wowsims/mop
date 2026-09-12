@@ -3,6 +3,7 @@ import './MetricsTotalBar.scss';
 import type { SpellSchool } from '@generated/proto/common';
 import { spellSchoolNames } from '@sim/proto/names';
 import { formatToCompactNumber, formatToPercent } from '@sim/utils/format';
+import { CLASS_BG, SPELL_SCHOOL_BG } from '@ui-kit/utils/colors';
 import { cssVars } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import type { CSSProperties } from 'react';
@@ -29,8 +30,8 @@ export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, s
 				<div
 					className={clsx(
 						'metrics-total-bar-fill',
-						spellSchoolString && `bg-spell-school-${spellSchoolString.toLowerCase()}`,
-						classColor && `bg-class-${classColor.toLowerCase()}`,
+						spellSchoolString && SPELL_SCHOOL_BG[spellSchoolString.toLowerCase()],
+						classColor && CLASS_BG[classColor.toLowerCase()],
 					)}
 					style={fill(value, max)}
 				/>

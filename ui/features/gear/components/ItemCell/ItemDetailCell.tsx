@@ -1,9 +1,9 @@
-import { usePlayer } from '@sim/context/SimHostContext';
-import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
-import type { EquippedItem } from '@sim/proto/equipped_item';
 import { ItemLevelState, type ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
+import { usePlayer } from '@sim/context/SimHostContext';
+import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import { itemQualityClassName } from '@ui-kit/utils/css';
@@ -12,8 +12,8 @@ import clsx from 'clsx';
 import { type ReactNode, useMemo, useRef } from 'react';
 
 import { MISSING_RANDOM_SUFFIX_WARNING } from '../../item_notices';
-import { SelectorModalTabs } from '../../types';
 import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
+import { SelectorModalTabs } from '../../types';
 import { EnchantLabel } from '../GearPicker/EnchantLabel';
 import { ItemNoticeIcon } from '../GearPicker/ItemNoticeIcon';
 import { GemSocket } from './GemSocket';
@@ -65,7 +65,7 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 					<>
 						{item.ilvl.toString()}
 						{!!(item.upgrade !== ItemLevelState.ChallengeMode && item.ilvlFromBase) && (
-							<span className="item-quality-uncommon">+{item.ilvlFromBase}</span>
+							<span className="text-quality-uncommon">+{item.ilvlFromBase}</span>
 						)}
 					</>
 				) : null

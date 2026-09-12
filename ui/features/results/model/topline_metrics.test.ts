@@ -1,4 +1,5 @@
 import { PlayerSpecs } from '@sim/player/specs/index';
+import { DANGER_TEXT } from '@ui-kit/utils/colors';
 import { describe, expect, it, vi } from 'vitest';
 
 import { showsOutOfMana, toplineResultMetrics } from './topline_metrics';
@@ -91,10 +92,15 @@ describe('toplineResultMetrics', () => {
 		[1, 'safe'],
 		[10, 'warning'],
 		[100, 'danger'],
-	])('grades %d seconds out of mana as %s', (secondsOomAvg, danger) => {
+	] as const)('grades %d seconds out of mana as %s', (secondsOomAvg, danger) => {
 		const metrics = toplineResultMetrics(simResult([player({ secondsOomAvg })]), undefined, { showOutOfMana: true });
+		const dangerClass = DANGER_TEXT[danger];
 
-		expect(metrics.at(-1)).toMatchObject({ metric: 'oom', classes: `results-sim-oom ${danger}`, unit: 'seconds' });
+		expect(metrics.at(-1)).toMatchObject({
+			metric: 'oom',
+			classes: dangerClass ? `results-sim-oom ${dangerClass}` : 'results-sim-oom',
+			unit: 'seconds',
+		});
 	});
 
 	it('leaves out-of-mana out unless it is asked for', () => {

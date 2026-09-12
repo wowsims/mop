@@ -23,8 +23,8 @@ describe('DamageResult', () => {
 		);
 
 		expect(container.textContent).toBe('Crit [Target 1] for 1234.50 damage (Physical).');
-		expect(container.querySelector('strong')!.classList.contains('text-danger')).toBe(true);
-		expect(container.querySelector('strong')!.classList.contains('spell-school-physical')).toBe(true);
+		expect(container.querySelector('strong')!.classList.contains('text-danger')).toBe(false);
+		expect(container.querySelector('strong')!.classList.contains('text-school-physical')).toBe(true);
 	});
 
 	// A periodic hit reads as a Tick, but a periodic crit still reads as a Crit.
@@ -37,7 +37,7 @@ describe('DamageResult', () => {
 		const healed = render(<DamageResult log={damage({ effect: 'healing' })} />).container;
 		// The double space is intentional: 'Healed ' already ends in one.
 		expect(healed.textContent).toBe('Healed  [Target 1] for 1234.50 health.');
-		expect(healed.querySelector('strong')!.classList.contains('resource-health')).toBe(true);
+		expect(healed.querySelector('strong')!.classList.contains('text-resource-health')).toBe(true);
 
 		expect(render(<DamageResult log={damage({ effect: 'shielding' })} />).container.textContent).toBe('Shielded  [Target 1] for 1234.50 health.');
 	});

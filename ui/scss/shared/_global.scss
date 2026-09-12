@@ -109,52 +109,6 @@ p {
 // `.fs-content` is gone: it was exactly `font-size: var(--text-ui)`, which is what Tailwind emits
 // for `text-ui` now that the token is in the theme.
 
-@each $label, $value in $item-quality-colors {
-	.item-quality-#{$label} {
-		color: var(--bs-#{$label}) !important;
-	}
-}
-
-@each $label, $value in $resource-colors {
-	.resource-#{$label} {
-		color: var(--bs-#{$label}) !important;
-	}
-}
-
-@each $label, $value in $damage-colors {
-	.damage-#{$label} {
-		color: var(--bs-#{$label}) !important;
-	}
-}
-
-@each $label, $value in $faction-colors {
-	.faction-#{$label} {
-		color: var(--bs-#{$label}) !important;
-	}
-}
-
-@each $label, $value in $spell-school-colors {
-	.spell-school-#{$label} {
-		color: var(--bs-#{$label}) !important;
-	}
-	.bg-spell-school-#{$label} {
-		background: var(--bs-#{$label}) !important;
-	}
-}
-
-@each $label, $value in $multi-spell-school-colors {
-	.spell-school-#{$label} {
-		color: var(--color-primary);
-		background-image: $value;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
-	}
-
-	.bg-spell-school-#{$label} {
-		background: $value;
-	}
-}
-
 // Restores exactly what the two resets above used to strip, and no more: `:focus-visible` fires for
 // keyboard focus and not for a mouse click, which is the behaviour those `outline: none` lines were
 // really reaching for. Bare element selectors, so any component rule still outranks this.

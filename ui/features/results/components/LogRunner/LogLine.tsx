@@ -14,8 +14,9 @@ import type {
 	StatChangeLog,
 } from '@sim/proto/combat_log';
 import { matchTimestampPrefix } from '@sim/proto/combat_log';
-import { resourceClassName, resourceNames } from '@sim/proto/names';
+import { resourceNames } from '@sim/proto/names';
 import { SECONDARY_RESOURCES } from '@sim/proto/secondary_resource';
+import { resourceTextClass } from '@ui-kit/utils/colors';
 import type { ComponentType } from 'react';
 
 import { DamageResult } from '../DamageResult';
@@ -55,7 +56,7 @@ const ResourceLine = ({ log }: { log: ResourceLog }) => {
 	const verb = isHealth ? (log.isSpend ? 'Lost' : 'Recovered') : log.isSpend ? 'Spent' : 'Gained';
 	const resourceName =
 		log.secondaryResourceType !== undefined ? SECONDARY_RESOURCES.get(log.secondaryResourceType)!.name : resourceNames.get(log.resourceType)!;
-	const resourceClass = resourceClassName(resourceName);
+	const resourceClass = resourceTextClass(log.resourceType, log.secondaryResourceType);
 
 	return (
 		<>

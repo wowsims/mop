@@ -1,12 +1,14 @@
+import { NameDescriptionLabel } from '@features/gear/components/ItemCell';
+import { type UIItem, UIItem_FactionRestriction } from '@generated/proto/ui';
+import { translateBulkSlotName } from '@i18n/localization';
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@sim/bulk/utils';
 import { ActionId } from '@sim/proto/action_id';
 import { getEligibleItemSlots } from '@sim/proto/items';
 import { externalRel } from '@sim/utils/links';
-import { type UIItem, UIItem_FactionRestriction } from '@generated/proto/ui';
-import { translateBulkSlotName } from '@i18n/localization';
-import { NameDescriptionLabel } from '@features/gear/components/ItemCell';
 import { useActionId } from '@ui-kit/hooks/useActionId';
+import { FACTION_TEXT } from '@ui-kit/utils/colors';
 import { itemQualityClassName } from '@ui-kit/utils/css';
+
 import { baseIlvl } from '../../model/search';
 
 export interface BulkItemSearchRowProps {
@@ -38,8 +40,12 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">
 						<span className={itemQualityClassName(item.quality)}>{item.name}</span>
 						{!!item.nameDescription && <NameDescriptionLabel nameDescription={item.nameDescription} />}
-						{item.factionRestriction === UIItem_FactionRestriction.HORDE_ONLY && <span className="faction-horde">(H)</span>}
-						{item.factionRestriction === UIItem_FactionRestriction.ALLIANCE_ONLY && <span className="faction-alliance">(A)</span>}
+						{item.factionRestriction === UIItem_FactionRestriction.HORDE_ONLY && (
+							<span className={FACTION_TEXT[UIItem_FactionRestriction.HORDE_ONLY]}>(H)</span>
+						)}
+						{item.factionRestriction === UIItem_FactionRestriction.ALLIANCE_ONLY && (
+							<span className={FACTION_TEXT[UIItem_FactionRestriction.ALLIANCE_ONLY]}>(A)</span>
+						)}
 					</div>
 					<small>{translateBulkSlotName(ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT.get(getEligibleItemSlots(item)[0])!)}</small>
 				</div>

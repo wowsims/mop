@@ -1,14 +1,15 @@
 // The topline metric list, as data. One model, two renderers: the sidebar panel draws it as a
 // column of `.results-metric` divs, the three detailed-results panes draw it as a one-row table.
 // Neither layout lives here — both are `components/ResultMetricList`, picked by its `layout` prop.
+import { Spec } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { DeathKnight } from '@sim/player/classes/death_knight';
 import { Hunter } from '@sim/player/classes/hunter';
 import { Rogue } from '@sim/player/classes/rogue';
 import { Warrior } from '@sim/player/classes/warrior';
 import { PlayerSpecs } from '@sim/player/specs/index';
 import { ActionMetrics, type SimResult, type SimResultFilter } from '@sim/proto/sim_result';
-import { Spec } from '@generated/proto/common';
-import i18n from '@i18n/config';
+import { DANGER_TEXT } from '@ui-kit/utils/colors';
 
 import { metricsClasses, resultMetricCategories, resultMetricClasses, type ResultMetrics } from './sim_results';
 
@@ -126,7 +127,7 @@ export const toplineResultMetrics = (simResult: SimResult, filter?: SimResultFil
 		const percentOOM = secondsOOM / simResult.encounterMetrics.durationSeconds;
 		const dangerLevel = percentOOM < 0.01 ? 'safe' : percentOOM < 0.05 ? 'warning' : 'danger';
 
-		resultColumns.push(column('oom', secondsOOM, { unit: 'seconds', extraClass: dangerLevel }));
+		resultColumns.push(column('oom', secondsOOM, { unit: 'seconds', extraClass: DANGER_TEXT[dangerLevel] }));
 	}
 
 	return resultColumns;

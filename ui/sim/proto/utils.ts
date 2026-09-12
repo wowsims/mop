@@ -2,11 +2,11 @@ import { Player } from '@generated/proto/api';
 import { Class, Faction, Profession, Race, RaidBuffs, Spec, UnitReference, UnitReference_Type } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 
-import { getEnumValues } from '../utils/collections';
-import { PlayerClass } from '../player/player_class';
 import { PlayerClasses } from '../player/classes';
+import { PlayerClass } from '../player/player_class';
 import { PlayerSpec } from '../player/player_spec';
 import { PlayerSpecs } from '../player/specs';
+import { getEnumValues } from '../utils/collections';
 
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {
@@ -18,9 +18,23 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
+const CLASS_TEXT: Record<string, string> = {
+	'death-knight': 'text-class-death-knight',
+	druid: 'text-class-druid',
+	hunter: 'text-class-hunter',
+	mage: 'text-class-mage',
+	monk: 'text-class-monk',
+	paladin: 'text-class-paladin',
+	priest: 'text-class-priest',
+	rogue: 'text-class-rogue',
+	shaman: 'text-class-shaman',
+	warlock: 'text-class-warlock',
+	warrior: 'text-class-warrior',
+};
+
 /** The class-colour class. `--color-class-*` in `styles/theme.css` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
 export function textClassName(className: string): string {
-	return `text-class-${className}`;
+	return CLASS_TEXT[className];
 }
 export function textClassNameForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return textClassName(PlayerClasses.getCssScheme(playerClass));

@@ -5,6 +5,7 @@ import { PlayerClasses } from '@sim/player/classes/index';
 import type { PlayerClass } from '@sim/player/player_class';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import { SimLinkContent } from '@ui-kit/SimLinkContent';
+import { CLASS_BORDER } from '@ui-kit/utils/colors';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useMedia } from 'react-use';
@@ -31,7 +32,7 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 				<Menu.Trigger openOnHover delay={0} className={clsx('sim-link', textClassNameForClass(playerClass))}>
 					<SimLinkContent
 						iconPath={playerClass.getIcon('large')}
-						iconClassName={`border-class-${PlayerClasses.getCssScheme(playerClass)}`}
+						iconClassName={CLASS_BORDER[PlayerClasses.getCssScheme(playerClass)]}
 						title={className}
 						status={translateStatus(classLaunchStatus(playerClass))}
 					/>
