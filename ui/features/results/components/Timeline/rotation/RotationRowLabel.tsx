@@ -18,6 +18,6 @@ export const RotationRowLabel = ({ text, icon, onHide, className }: RotationRowL
 	<div className={clsx('rotation-row-label', className)}>
 		{onHide && <button type="button" className="rotation-row-hide fas fa-eye-slash" title="Hide row" aria-label={`Hide ${text}`} onClick={onHide} />}
 		{icon}
-		<span className="rotation-label-text">{text}</span>
+		<span className="rotation-label-text overflow-hidden text-ellipsis">{text}</span>
 	</div>
 );

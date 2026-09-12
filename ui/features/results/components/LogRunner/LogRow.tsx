@@ -27,7 +27,7 @@ export const LogRow = ({ log, onWidth }: LogRowProps) => {
 
 	return (
 		<div ref={measure} className="log-runner-row">
-			<div className="log-timestamp">{formattedTimestamp(log)}</div>
+			<div className="log-timestamp text-right tabular-nums">{formattedTimestamp(log)}</div>
 			<div className="log-event">
 				<LogLine log={log} />
 			</div>

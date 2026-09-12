@@ -129,11 +129,6 @@
 	}
 }
 
-.talent-tree-row {
-	display: grid;
-	grid-template-columns: 4rem repeat(3, 1fr);
-}
-
 .talent-tree-level {
 	padding: calc(var(--talent-icon-size) / 5);
 	align-content: center;

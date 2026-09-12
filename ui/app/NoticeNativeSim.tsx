@@ -52,5 +52,5 @@ export const NoticeNativeSim = ({ container }: NoticeNativeSimProps) => {
 
 	if (!visible) return null;
 
-	return <ToastArea manager={manager} container={container} inline className="toast-notice-native-download" />;
+	return <ToastArea manager={manager} container={container} inline className="toast-notice-native-download order-[100] w-full" />;
 };

@@ -68,7 +68,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 			<div className="log-fab-clip">
 				<div className="log-fab-panel">
 					{/* The clip wrapper only hides the collapsed panel; inert is what takes it out of the tab order. */}
-					<div className="log-fab-panel-inner" inert={!expanded}>
+					<div className="log-fab-panel-inner min-h-0 overflow-hidden" inert={!expanded}>
 						<div className="log-fab-filters">
 							<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
 						</div>
@@ -89,7 +89,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 							? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
 							: i18n.t('results_tab.details.logs.floatingActionBar.none')}
 					</span>
-					<span className="log-fab-preview">
+					<span className="log-fab-preview truncate opacity-75">
 						{labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
 					</span>
 				</button>

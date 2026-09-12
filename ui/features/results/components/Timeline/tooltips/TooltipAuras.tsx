@@ -17,7 +17,7 @@ export const TooltipAuras = ({ log }: TooltipAurasProps) => {
 			<ul className="timeline-active-auras">
 				{log.activeAuras.map((auraLog, index) => (
 					<li key={index}>
-						{auraLog.actionId!.iconUrl && <img className="timeline-tooltip-icon" src={auraLog.actionId!.iconUrl} alt="" />}
+						{auraLog.actionId!.iconUrl && <img className="timeline-tooltip-icon size-5" src={auraLog.actionId!.iconUrl} alt="" />}
 						<span>{auraLog.actionId!.name}</span>
 					</li>
 				))}

@@ -45,15 +45,6 @@
 	width: var(--log-runner-list-width, max-content);
 }
 
-.log-runner-measurer {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: max-content;
-	visibility: hidden;
-	pointer-events: none;
-}
-
 .log-runner-header,
 .log-runner-row {
 	display: grid;
@@ -99,11 +90,6 @@
 	// Uniform row height is what makes the virtual list's offsets correct, so a long
 	// line scrolls sideways instead of wrapping.
 	white-space: nowrap;
-}
-
-.log-timestamp {
-	text-align: right;
-	font-variant-numeric: tabular-nums;
 }
 
 .log-event {
@@ -156,13 +142,6 @@
 	z-index: 1;
 }
 
-.log-fab-preview {
-	overflow: hidden;
-	opacity: 0.75;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 .log-fab-controls {
 	display: flex;
 	align-items: center;
@@ -204,11 +183,6 @@
 	@media (prefers-reduced-motion: reduce) {
 		transition: none;
 	}
-}
-
-.log-fab-panel-inner {
-	min-height: 0;
-	overflow: hidden;
 }
 
 .log-search-bar {
@@ -258,10 +232,6 @@
 	line-height: 1.5;
 }
 
-.log-search-group-join {
-	margin-left: auto;
-}
-
 // The same override the APL applies inside its picker root: the button is sitting inline in a
 // row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
 .log-search-add-field,
@@ -270,10 +240,6 @@
 		padding: 0;
 		border: 0;
 	}
-}
-
-.log-search-group-input {
-	width: 8rem;
 }
 
 .log-search-chip {

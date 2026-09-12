@@ -24,7 +24,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange} className="glyph-modal" container={host.rootElem} title={i18n.t('talents_tab.glyphs.modal.title')}>
-			<SearchBar className="selector-modal-search" placeholder={i18n.t('common.search')} value={search} onChange={setSearch} />
+			<SearchBar className="selector-modal-search max-w-48" placeholder={i18n.t('common.search')} value={search} onChange={setSearch} />
 			<ul className="selector-modal-list">
 				{entries.map(entry => (
 					<li

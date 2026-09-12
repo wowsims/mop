@@ -11,13 +11,6 @@
 		border-width 0.15s ease-in-out;
 }
 
-.rotation-fab-preview {
-	overflow: hidden;
-	opacity: 0.75;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 .rotation-fab-toggle {
 	position: relative;
 	display: inline-flex;
@@ -64,11 +57,6 @@
 	@media (prefers-reduced-motion: reduce) {
 		transition: none;
 	}
-}
-
-.rotation-fab-panel-inner {
-	min-height: 0;
-	overflow: hidden;
 }
 
 .rotation-fab-groups {
@@ -169,12 +157,6 @@
 	color: var(--bs-lunar-energy);
 }
 
-.timeline-root {
-	display: flex;
-	height: 100%;
-	flex-direction: column;
-}
-
 .timeline-disclaimer {
 	display: flex;
 	align-items: flex-start;
@@ -208,10 +190,6 @@
 			box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
 		}
 	}
-}
-
-.timeline-plots-container {
-	flex-grow: 1;
 }
 
 .timeline-plot > div {
@@ -287,11 +265,6 @@
 	align-items: center;
 }
 
-.timeline-tooltip-icon {
-	width: 20px;
-	height: 20px;
-}
-
 .series-color {
 	font-weight: bold;
 }
@@ -305,26 +278,6 @@
 	flex-direction: column;
 	height: 100%;
 	gap: var(--spacer-2);
-}
-
-.timeline-chart-toolbar {
-	width: auto;
-	margin-left: auto;
-	flex-shrink: 0;
-	align-self: flex-start;
-}
-
-.timeline-chart-canvas {
-	position: relative;
-	flex: 1;
-	min-height: 0;
-}
-
-.timeline-chart-empty {
-	display: flex;
-	flex: 1;
-	align-items: center;
-	justify-content: center;
 }
 
 // Shared by the chart and the rotation: both anchor a hover tooltip to a point in the viewport
@@ -528,11 +481,6 @@
 	&:hover {
 		color: var(--bs-link-danger);
 	}
-}
-
-.rotation-label-text {
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 .rotation-row-header .rotation-row-label {

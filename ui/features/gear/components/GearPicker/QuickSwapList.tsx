@@ -33,7 +33,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 					onItemClick(entry.item);
 				}}>
 				<img alt={entry.item.name} className="tooltip-quick-swap__icon gem-icon shrink-0" src={iconUrl || undefined} />
-				<span className={clsx('tooltip-quick-swap__label text-left', itemQualityClassName(entry.item.quality))}>{entry.item.name}</span>
+				<span className={clsx('tooltip-quick-swap__label truncate text-left', itemQualityClassName(entry.item.quality))}>{entry.item.name}</span>
 			</a>
 		</li>
 	);
@@ -45,7 +45,7 @@ export const QuickSwapList = <T extends QuickSwapItem>({ title, emptyMessage, en
 	<>
 		<h3 className="tooltip-quick-swap__title h6 text-center">{title}</h3>
 		{entries.length ? (
-			<ul className="tooltip-quick-swap__list">
+			<ul className="tooltip-quick-swap__list max-h-[206px] overflow-y-auto">
 				{entries.map(entry => (
 					<QuickSwapRow key={keyOf(entry.item)} entry={entry} onItemClick={onItemClick} />
 				))}

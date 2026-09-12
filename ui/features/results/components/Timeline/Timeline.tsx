@@ -60,7 +60,7 @@ export const Timeline = ({ active }: TimelineProps) => {
 	const spec = useMemo(() => (armed ? chartSpec(armed.player, armed.duration, secondaryResource) : null), [armed, secondaryResource]);
 
 	return (
-		<div className="timeline-root">
+		<div className="timeline-root flex h-full flex-col">
 			<div className="timeline-disclaimer">
 				<div className="timeline-disclaimer-text flex flex-col">
 					<p>
@@ -71,7 +71,7 @@ export const Timeline = ({ active }: TimelineProps) => {
 				</div>
 				<ChartViewPicker value={view} onChange={setView} />
 			</div>
-			<div className="timeline-plots-container">
+			<div className="timeline-plots-container grow">
 				{chartVisible ? (
 					<div className="timeline-plot dps-resources-plot">
 						<TimelineChart spec={spec} />

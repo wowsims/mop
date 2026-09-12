@@ -47,7 +47,7 @@ export const CharacterStats = () => {
 	return (
 		<div className="character-stats-root">
 			<h3 className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</h3>
-			<table className="character-stats-table" aria-busy={pending || undefined}>
+			<table className="character-stats-table p-2.5" aria-busy={pending || undefined}>
 				{rows.map(group => (
 					<tbody key={group.key}>
 						{group.rows.map(row =>

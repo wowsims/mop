@@ -65,11 +65,6 @@
 	margin-bottom: 0;
 }
 
-.tooltip-quick-swap__list {
-	max-height: 206px;
-	overflow-y: auto;
-}
-
 .tooltip-quick-swap__anchor {
 	cursor: pointer;
 	background-color: var(--bs-table-row-even-bg);
@@ -91,12 +86,6 @@
 		outline: 1px solid var(--bs-link-color);
 		outline-offset: -1px;
 	}
-}
-
-.tooltip-quick-swap__label {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
 }
 
 .tooltip-quick-swap__empty {

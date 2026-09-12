@@ -60,7 +60,7 @@ export const Popover = ({
 			</BasePopover.Trigger>
 		)}
 		{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-		<BasePopover.Portal className="sim-popover-portal" container={container}>
+		<BasePopover.Portal className="sim-popover-portal contents" container={container}>
 			<BasePopover.Positioner className="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
 				<BasePopover.Popup className={clsx('sim-popover-popup', className)} initialFocus={initialFocus}>
 					{children}

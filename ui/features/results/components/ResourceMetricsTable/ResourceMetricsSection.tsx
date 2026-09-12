@@ -33,7 +33,7 @@ export const ResourceMetricsSection = ({ resourceType, title, columns, resultDat
 	if (!rows.length) return null;
 
 	return (
-		<div className="resource-metrics-table-container">
+		<div className="resource-metrics-table-container mb-5">
 			<span className="resource-metrics-table-title">{title}</span>
 			<MetricsTable rootClassName="resource-metrics-table-root" columns={columns} rows={rows} sortColumnId="gain" hasResult={!!resultData} />
 		</div>

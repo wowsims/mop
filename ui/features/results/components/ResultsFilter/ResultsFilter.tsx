@@ -20,7 +20,7 @@ export const ResultsFilter = ({ target, onTargetChange }: ResultsFilterProps) =>
 	const options = useMemo(() => (resultData ? unitOptions(resultData.result) : []), [resultData]);
 
 	return (
-		<div className="results-filter-root">
+		<div className="results-filter-root flex items-center text-[20px]">
 			<UnitPicker
 				id="results-filter-target-filter"
 				className={['target-filter-root', !resultData && 'hidden']}

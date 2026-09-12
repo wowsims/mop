@@ -229,7 +229,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 						renderRow={position => <LogRow log={logs[visibleIndexes[position]]} onWidth={growToFit} />}
 					/>
 					{needsMeasure && (
-						<div ref={measureRow} className="log-runner-measurer">
+						<div ref={measureRow} className="log-runner-measurer pointer-events-none invisible absolute top-0 left-0 w-max">
 							<LogRow log={longestOf(logs)} />
 						</div>
 					)}

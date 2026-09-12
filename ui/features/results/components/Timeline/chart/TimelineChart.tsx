@@ -148,7 +148,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				onPanRight={() => zoom.current.panBy(PAN_STEP_PX)}
 			/>
 			{!noData && (
-				<div className="timeline-chart-canvas">
+				<div className="timeline-chart-canvas relative flex-1 min-h-0">
 					<canvas
 						ref={canvasRef}
 						role="img"
@@ -160,7 +160,11 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 					/>
 				</div>
 			)}
-			{noData && <div className="timeline-chart-empty">{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}</div>}
+			{noData && (
+				<div className="timeline-chart-empty flex flex-1 items-center justify-center">
+					{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}
+				</div>
+			)}
 			{tip && (
 				<div ref={tooltipRef} className="timeline-hover-tooltip">
 					<ChartSeriesTooltip spec={tip.spec} log={tip.log} />

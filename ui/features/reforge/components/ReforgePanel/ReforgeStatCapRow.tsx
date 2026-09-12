@@ -48,7 +48,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 		<>
 			<tr className="reforge-optimizer-stat-cap-item">
 				<td>
-					<div className="reforge-optimizer-stat-cap-item-label">
+					<div className="reforge-optimizer-stat-cap-item-label whitespace-nowrap">
 						{statName}{' '}
 						{!!tooltip && (
 							<>

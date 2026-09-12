@@ -31,7 +31,7 @@ export const FieldGroup = ({ player, config, fields }: FieldGroupProps) => {
 	const getParentValue = () => config.getValue(player);
 
 	return (
-		<PickerShell config={{ ...config, id: config.id || generatedId }} className="apl-picker-builder-root" hidden={false} disabled={false}>
+		<PickerShell config={{ ...config, id: config.id || generatedId }} className="apl-picker-builder-root w-auto flex-row" hidden={false} disabled={false}>
 			{/* The field list is fixed by the kind, so the position is the identity. */}
 			{specs.map((spec, index) => (
 				<AplField key={index} player={player} spec={spec} getParentValue={getParentValue} />

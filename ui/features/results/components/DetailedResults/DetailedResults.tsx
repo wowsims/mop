@@ -180,7 +180,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 			</div>
 			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
 				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')}>
-					<div className="results-filter">
+					<div className="results-filter flex items-center">
 						<ResultsFilter
 							target={target}
 							onTargetChange={next => {
@@ -189,7 +189,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 							}}
 						/>
 					</div>
-					<div className="tabs-filler" />
+					<div className="tabs-filler grow" />
 					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} />
 				</div>
 				<div className="tab-content">

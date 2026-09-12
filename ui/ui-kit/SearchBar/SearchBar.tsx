@@ -68,7 +68,7 @@ export const SearchBar = ({
 					{label}
 				</Field.Label>
 			)}
-			<div className="search-bar-input-group">
+			<div className="search-bar-input-group relative flex items-center">
 				<Input
 					id={id}
 					type="text"

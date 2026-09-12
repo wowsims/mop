@@ -94,7 +94,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 			<div className="rotation-fab-clip">
 				<div className="rotation-fab-panel">
 					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}
-					<div className="rotation-fab-panel-inner" inert={!expanded}>
+					<div className="rotation-fab-panel-inner min-h-0 overflow-hidden" inert={!expanded}>
 						<div className="rotation-fab-groups">
 							{groups.map(group => (
 								<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
@@ -117,7 +117,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 							? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
 							: i18n.t('results_tab.details.timeline.floatingActionBar.allShown')}
 					</span>
-					<span className="rotation-fab-preview">
+					<span className="rotation-fab-preview truncate opacity-75">
 						{preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
 					</span>
 				</button>

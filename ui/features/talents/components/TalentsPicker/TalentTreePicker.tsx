@@ -45,7 +45,7 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 			<div className="talent-tree-background" style={{ backgroundImage: `url('${config.backgroundUrl}')` }} />
 			<div className="talent-tree-main">
 				{rows.map((row, rowIdx) => (
-					<div className="talent-tree-row" key={rowIdx}>
+					<div className="talent-tree-row grid grid-cols-[4rem_repeat(3,1fr)]" key={rowIdx}>
 						<div className="talent-tree-level">{(rowIdx + 1) * LEVELS_PER_ROW}</div>
 						{row.map(talent => (
 							<TalentPicker

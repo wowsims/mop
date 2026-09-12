@@ -24,7 +24,7 @@ export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, s
 	const spellSchoolString = typeof spellSchool === 'number' ? spellSchoolNames.get(spellSchool) : undefined;
 	return (
 		<div className="metrics-total relative flex justify-between w-full">
-			<div className="metrics-total-percentage">{formatToPercent(percentage || 0)}</div>
+			<div className="metrics-total-percentage shrink-0">{formatToPercent(percentage || 0)}</div>
 			<div className="metrics-total-bar ml-1 mr-1">
 				<div
 					className={clsx(

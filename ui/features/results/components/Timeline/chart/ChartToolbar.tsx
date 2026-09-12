@@ -18,7 +18,7 @@ export const ChartToolbar = ({ onReset, onZoomIn, onZoomOut, onPanLeft, onPanRig
 	];
 
 	return (
-		<div className="timeline-chart-toolbar btn-group btn-group-sm" role="group">
+		<div className="timeline-chart-toolbar btn-group btn-group-sm ml-auto w-auto shrink-0 self-start" role="group">
 			{buttons.map(button => {
 				const label = i18n.t(`results_tab.details.timeline.chart_options.${button.key}`);
 				return (

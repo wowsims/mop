@@ -62,7 +62,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 		<div className="log-search-group">
 			<div className="log-search-group-head">
 				<span className="log-search-group-field">{sentenceCase(group.field)}</span>
-				<div className="log-search-group-join btn-group btn-group-sm" role="group">
+				<div className="log-search-group-join btn-group btn-group-sm ml-auto" role="group">
 					{(['and', 'or'] as const).map(join => (
 						<button
 							key={join}
@@ -91,7 +91,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						<>
 							<input
 								type="text"
-								className="form-control form-control-sm log-search-group-input"
+								className="form-control form-control-sm log-search-group-input w-32"
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}

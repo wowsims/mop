@@ -124,10 +124,10 @@ export const buildSelectorTabs = ({ player, slot, gearData, equippedItem, isBlac
 					label: SelectorModalTabs.Reforging,
 					itemData: reforgesTabData(player, gearData, equippedItem, reforgeData => (
 						<div>
-							<span className="reforge-value negative">
+							<span className="reforge-value negative inline-block w-40">
 								{reforgeData.fromAmount} {translateStat(reforgeData.fromStat)}
 							</span>
-							<span className="reforge-value positive">
+							<span className="reforge-value positive inline-block w-40">
 								+{reforgeData.toAmount} {translateStat(reforgeData.toStat)}
 							</span>
 						</div>

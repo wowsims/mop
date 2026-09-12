@@ -51,7 +51,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 						return (
 							<tr key={unitStat.getKey()} className="reforge-optimizer-stat-cap-item">
 								<td>
-									<div className="reforge-optimizer-stat-cap-item-label">{statName}</div>
+									<div className="reforge-optimizer-stat-cap-item-label whitespace-nowrap">{statName}</div>
 								</td>
 								<td colSpan={2}>
 									<EnumPicker

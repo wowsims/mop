@@ -23,7 +23,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 	return (
 		<SummaryTableRow>
 			<a
-				className={clsx('summary-table-link', itemQualityClassName(gem.quality))}
+				className={clsx('summary-table-link flex items-center', itemQualityClassName(gem.quality))}
 				data-whtticon="false"
 				target="_blank"
 				href={href || undefined}
