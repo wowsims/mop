@@ -7,13 +7,18 @@
 // bounding box of every element, keyed by its structural position rather than by its classes.
 import { mkdirSync, writeFileSync } from 'node:fs';
 
-import { launch } from './browser.mjs';
+import { launch, q } from './browser.mjs';
 
 const OUT = process.env.OUT ?? '/tmp/claude-1000/-home-lutz-personal-wowsims-mop/a456ffb7-c358-4299-a16d-31ee7d7a10b3/scratchpad/tw/probe';
 const PORTS = { react: Number(process.env.REACT_PORT ?? 3402), tw: Number(process.env.TW_PORT ?? 3404) };
-const WIDTHS = [1600, 700];
-const SPECS = (process.env.SPECS ?? 'warrior/arms,mage/fire').split(',');
-const TABS = ['gear', 'settings', 'rotation', 'results'];
+// 2200 is the untested regime: below 1921px the root font-size is 14px, at or above it 16px — every
+// other width in this file sits under that switch.
+const WIDTHS = [2200, 1600, 700];
+const SPECS = (process.env.SPECS ?? 'warrior/arms,mage/fire,warrior/protection').split(',');
+// The pane ids `SimTabDef` registers them under (`ui/app/SimTabsSection.tsx`), not link text or hrefs
+// — React's tab strip is a Base UI `<button role="tab">` with no href, and the batch tab's visible
+// text is "Batch" plus a badge, so text/href matching (vanilla's scheme) cannot find it.
+const TABS = ['gear-tab', 'settings-tab', 'talents-tab', 'rotation-tab', 'detailed-results-tab-tab', 'bulk-tab'];
 
 const PROPS = [
 	'display','position','top','right','bottom','left','float','clear',
@@ -47,11 +52,11 @@ const settle = (page, ms) => page.waitForTimeout(ms);
 
 const openTab = async (page, id) => {
 	const ok = await page.evaluate(name => {
-		const link = [...document.querySelectorAll('a,button,[role="tab"]')].find(
-			el => (el.getAttribute('href') === `#${name}-tab` || (el.textContent || '').trim().toLowerCase() === name) && el.offsetParent !== null,
+		const tab = [...document.querySelectorAll('[role="tab"]')].find(
+			el => el.offsetParent !== null && (el.classList.contains(name) || el.getAttribute('aria-controls') === name),
 		);
-		if (!link) return false;
-		link.click();
+		if (!tab) return false;
+		tab.click();
 		return true;
 	}, id);
 	if (ok) await page.waitForTimeout(700);
@@ -65,7 +70,7 @@ const capture = async (browser, port, url, width, { tabs = false } = {}) => {
 	});
 	await page.setViewportSize({ width, height: 1000 });
 	await page.goto(url.replace('PORT', String(port)), { waitUntil: 'load', timeout: 60000 });
-	await page.waitForSelector(tabs ? '.sim-ui' : 'body', { timeout: 60000 });
+	await page.waitForSelector(tabs ? q('sim-ui') : 'body', { timeout: 60000 });
 	await settle(page, 2500);
 	const shots = {};
 	if (!tabs) {
@@ -80,6 +85,14 @@ const capture = async (browser, port, url, width, { tabs = false } = {}) => {
 		shots[t] = found ? await page.evaluate(SNAP, PROPS) : [`TAB-NOT-FOUND ${t}`];
 		pngs[t] = await page.screenshot({ fullPage: false });
 	}
+	// Results-stuck: the results pane scrolled 400px down, with the sticky toolbar caught mid-stick —
+	// precedent `header-toolbar.mjs`'s own scroll of the sim root. Re-open the results tab first since
+	// the loop above leaves the last tab (`bulk-tab`) open.
+	await openTab(page, 'detailed-results-tab-tab');
+	await page.evaluate(sel => document.querySelector(sel)?.scrollTo({ top: 400 }), q('sim-ui'));
+	await settle(page, 700);
+	shots['results-stuck'] = await page.evaluate(SNAP, PROPS);
+	pngs['results-stuck'] = await page.screenshot({ fullPage: false });
 	await page.close();
 	return { shots, png: pngs };
 };

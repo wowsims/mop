@@ -1199,3 +1199,46 @@ first two are C-2's, the third is a later step's).
 
 **README.md**: the `parity.mjs`/`panes-parity.mjs` table rows now say they compare tag trees keyed by
 position and ignore class lists.
+
+## Stage 4 — C-1b: the rendering probe widened, css-vars retired
+
+`tw-probe.mjs` gained a third width, a wider spec list, all six tabs by pane id instead of four by
+link text, and a `results-stuck` capture; `css-vars.mjs` was deleted outright.
+
+- **Widths: `[2200, 1600, 700]`, was `[1600, 700]`.** 2200 is the untested regime: `theme.css`'s root
+  font-size switches from 14px to 16px at 1921px, and nothing below this unit had ever rendered above
+  that line. A layout bug that only shows up once `1rem` is a sixth larger — a padding that overflows,
+  a flex item that wraps a line early — would have shipped invisibly at every width this probe used to
+  cover.
+- **Specs: `+warrior/protection`.** Carries the tank `data-*` root state (`hide-threat-metrics` et al,
+  the same reason `browser.mjs:26` already added it to the shared `SPECS` list) — the two DPS specs
+  never exercise it.
+- **`TABS` and `openTab`: pane ids, not link text or hrefs.** Vanilla's tab strip is anchors, so the
+  old `openTab` matched `href === '#<name>-tab'` or the lowercased link text. React's strip
+  (`ui/app/SimTabs.tsx`) is Base UI: `<button role="tab" className={clsx('sim-tab-link', tab.id)}>`,
+  no `href`, and the batch tab's visible text is "Batch" plus a `TabBadge` — neither predicate matches
+  anything. `TABS` is now the six pane ids `SimTabDef` registers
+  (`ui/app/SimTabsSection.tsx`): `gear-tab`, `settings-tab`, `talents-tab`, `rotation-tab`,
+  `detailed-results-tab-tab`, `bulk-tab`. `openTab` now scans `[role="tab"]` for the first visible one
+  whose class list contains the id or whose `aria-controls` equals it — the class check is what
+  actually fires (Base UI's `aria-controls` points at a generated panel id, not the pane id string),
+  the attribute check is kept as the future-proof fallback the plan asked for.
+- **`waitForSelector` reads `q('sim-ui')`, not the bare class.** `q`, exported from `browser.mjs`,
+  matches `.sim-ui` and its `data-testid="sim-ui"` replacement, so the probe survives whichever one a
+  given build ships.
+- **`results-stuck`.** After the six-tab loop (which leaves `bulk-tab` open, the last entry), the
+  results tab is re-opened, the sim root is scrolled 400px
+  (`document.querySelector(q('sim-ui'))?.scrollTo({ top: 400 })`, evaluated in the page — precedent
+  `header-toolbar.mjs`'s own `.sim-header` sticky check, which scrolls the same root the same way),
+  settled ~700ms, then snapshotted and screenshotted like every other key. It exercises the sticky
+  toolbar mid-stick, a state none of the six at-rest tab captures reach.
+- **`css-vars.mjs` retired.** Its only floor was the `--bs-modal-*` family: it asserted that any
+  element resolving `var(--bs-modal-*)` outside Bootstrap's own `.modal` scope matched what the
+  baseline resolved there too (that was how the progress tracker's missing border was caught). A-S1
+  removed Bootstrap's `modal` import outright, and `/usr/bin/grep -rn -- "--bs-modal" ui` now returns
+  only two comments (`_bootstrap_style_overrides.scss`'s explanatory note and the deleted gate's own
+  header, gone with it) — zero live reads. A gate whose watched properties no longer exist anywhere
+  can only ever report "0 declarations found" or pass vacuously; neither tells anyone anything, so it
+  is deleted rather than kept as dead weight. Its README row and run-block line are removed; the
+  README's new `tw-probe.mjs` section carries the one-sentence retirement note instead of a table row
+  for a file that no longer exists.
