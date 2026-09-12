@@ -24,5 +24,8 @@ export default defineConfig({
 		setupFiles: [path.resolve(here, 'vitest.setup.ts')],
 		include: ['ui/**/*.test.ts', 'ui/**/*.test.tsx'],
 		restoreMocks: true,
+		// An externalised dependency imports chart.js natively, past `vi.mock('chart.js')`, and the
+		// real one cannot build its scales under happy-dom.
+		server: { deps: { inline: ['react-chartjs-2'] } },
 	},
 });
