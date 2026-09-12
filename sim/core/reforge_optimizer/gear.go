@@ -190,7 +190,7 @@ func (o *reforgeOptimizer) applyLPSolution(selectedVars []string) *proto.Equipme
 // minimizeRegems cuts the number of gems the player must actually buy. For each socket the
 // solver changed, it locates where that socket's original gem now lives (via findGem) and swaps
 // the two gems back — reusing a gem the player already owns instead of buying a new one — unless
-// doing so would drop a socket-color match the solver found.
+// doing so would cost the socket bonuses the solver claimed.
 func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
 	originalGear := o.originalEquipment
 	if originalGear == nil {
@@ -206,7 +206,7 @@ func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
 			continue
 		}
 
-		for socketIdx, socketColor := range currentSocketColors(*newItem, o.isBlacksmithing, o.settings) {
+		for socketIdx := range currentSocketColors(*newItem, o.isBlacksmithing, o.settings) {
 			socketKey := reforgeSocketKey{slot: slot, socketIdx: socketIdx}
 			if finalizedSocketKeys[socketKey] {
 				continue
@@ -218,15 +218,15 @@ func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
 			if newGemID == 0 || originalGemID == 0 || newGemID == originalGemID {
 				continue
 			}
-			newGem, newOk := core.GetGemByID(newGemID)
-			originalGem, originalOk := core.GetGemByID(originalGemID)
+			_, newOk := core.GetGemByID(newGemID)
+			_, originalOk := core.GetGemByID(originalGemID)
 			if !newOk || !originalOk {
 				continue
 			}
-			// The decision to keep or undo this swap is left entirely to the net-match comparison
-			// below, which weighs both sockets together. A per-socket short-circuit here — keeping
-			// the swap merely because the solver's gem matches this socket — would wrongly leave a
-			// match-neutral same-color swap in place (the brm-weapon-gem-desync scenario).
+			// The decision to keep or undo this swap is left entirely to the socket-bonus
+			// comparison below, which weighs both items together. A per-socket short-circuit here —
+			// keeping the swap merely because the solver's gem matches this socket — would wrongly
+			// leave a bonus-neutral same-color swap in place (the brm-weapon-gem-desync scenario).
 
 			for _, loc := range o.findGem(newGear, originalGemID) {
 				if o.frozenSlots[loc.slot] {
@@ -237,25 +237,30 @@ func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
 					continue
 				}
 				matchedItem := newGear.GetItemBySlot(loc.slot)
-				matchedColors := currentSocketColors(*matchedItem, o.isBlacksmithing, o.settings)
-				if loc.socketIdx >= len(matchedColors) {
+				if loc.socketIdx >= len(currentSocketColors(*matchedItem, o.isBlacksmithing, o.settings)) {
 					continue
 				}
-				matchedSocketColor := matchedColors[loc.socketIdx]
-				// Restore the original gem here only if it does not reduce the total socket-color
-				// matches across BOTH sockets involved. Weighing both sockets (not just the one the
-				// gem moved to) preserves a genuine color-match upgrade the solver found while still
-				// undoing a match-neutral shuffle (e.g. two same-color MH/OH weapon sockets) that
-				// would otherwise be a pointless regem.
-				matchesIfSwapped := boolToInt(core.GemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(core.GemMatchesSocket(newGem.Color, matchedSocketColor))
-				matchesIfKept := boolToInt(core.GemMatchesSocket(newGem.Color, socketColor)) + boolToInt(core.GemMatchesSocket(originalGem.Color, matchedSocketColor))
-				if matchesIfSwapped < matchesIfKept {
+				// A swap moves gems between sockets without changing which gems are equipped, so
+				// the only stats at stake are the two items' socket bonuses. Those are all-or-
+				// nothing per ITEM, which is why a per-socket color-match count is not a safe
+				// guard: shuffling one match off a fully-matched item onto a partly-matched one is
+				// match-neutral yet loses a bonus outright. Require instead that the two items'
+				// earned bonuses come out IDENTICAL, which is the condition under which the swap
+				// is provably free. Scoring the two arrangements by EP would not be safe here: the
+				// solver's caps live in the LP's constraints, not in its weights, so a pre-cap EP
+				// comparison would happily trade an Intellect bonus for a Hit one the player is
+				// already capped on.
+				bonusIfKept := o.socketBonusStats(newItem).Add(o.socketBonusStats(matchedItem))
+				setGemIDAt(newItem, socketIdx, originalGemID)
+				setGemIDAt(matchedItem, loc.socketIdx, newGemID)
+				bonusIfSwapped := o.socketBonusStats(newItem).Add(o.socketBonusStats(matchedItem))
+				if bonusIfSwapped != bonusIfKept {
+					setGemIDAt(newItem, socketIdx, newGemID)
+					setGemIDAt(matchedItem, loc.socketIdx, originalGemID)
 					continue
 				}
 
 				finalizedSocketKeys[matchedKey] = true
-				setGemIDAt(newItem, socketIdx, originalGemID)
-				setGemIDAt(matchedItem, loc.socketIdx, newGemID)
 				break
 			}
 		}
@@ -297,11 +302,20 @@ func (o *reforgeOptimizer) findGem(equipment *core.Equipment, gemID int32) []gem
 	return locations
 }
 
-func boolToInt(b bool) int {
-	if b {
-		return 1
+// socketBonusStats returns an item's socket bonus, or zero stats when the bonus is not earned.
+// The bonus applies only when every colored socket holds a color-matching gem, mirroring the
+// all-or-nothing rule the LP models via its SocketBonusLink constraints.
+func (o *reforgeOptimizer) socketBonusStats(item *core.Item) stats.Stats {
+	for socketIdx, socketColor := range currentSocketColors(*item, o.isBlacksmithing, o.settings) {
+		if !isColoredSocket(socketColor) {
+			continue
+		}
+		gem, ok := core.GetGemByID(gemIDAt(item, socketIdx))
+		if !ok || !core.GemMatchesSocket(gem.Color, socketColor) {
+			return stats.Stats{}
+		}
 	}
-	return 0
+	return item.SocketBonus
 }
 
 var amplificationTrinketItemIDs = buildAmplificationTrinketItemIDSet()
