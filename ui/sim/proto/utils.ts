@@ -18,9 +18,9 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
-/** The class-colour class. `$class-colors` in `_variables.scss` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
+/** The class-colour class. `--color-class-*` in `styles/theme.css` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
 export function textClassName(className: string): string {
-	return `text-${className}`;
+	return `text-class-${className}`;
 }
 export function textClassNameForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return textClassName(PlayerClasses.getCssScheme(playerClass));

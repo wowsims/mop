@@ -26,12 +26,15 @@
 
 /*
  * Class-colour utilities are built by interpolation, which Tailwind's scanner cannot see:
- * `textClassName()` in `sim/proto/utils.ts` returns `text-${slug}`, `LandingClassMenu` builds
- * `border-${slug}` and `MetricsTotalBar` builds `bg-${slug}`. Bootstrap emitted all of these
- * unconditionally from `$theme-colors`; Tailwind emits only what it finds, so without this the
+ * `textClassName()` in `sim/proto/utils.ts` returns `text-class-${slug}`, `LandingClassMenu` builds
+ * `border-class-${slug}` and `MetricsTotalBar` builds `bg-class-${slug}`. Bootstrap emitted all of
+ * these unconditionally from `$theme-colors`; Tailwind emits only what it finds, so without this the
  * landing page's class links and the sim-title dropdown lose their colour entirely.
+ *
+ * The `class-` segment is the point of the namespace: this is the one safelist in the build, so it
+ * is the one place a bare slug could shadow a real utility name. `text-class-monk` cannot.
  */
-@source inline("{text,bg,border}-{death-knight,druid,hunter,mage,monk,paladin,priest,rogue,shaman,warlock,warrior}");
+@source inline("{text,bg,border}-class-{death-knight,druid,hunter,mage,monk,paladin,priest,rogue,shaman,warlock,warrior}");
 
 /*
  * `.container` stays Bootstrap's. Tailwind's own container utility sets `max-width` to each

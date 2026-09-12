@@ -1,6 +1,7 @@
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { textClassName } from '@sim/proto/utils';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -35,7 +36,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 					className="results-sim-set-reference"
 					onClick={() => results.setReference()}
 					{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.use_as_reference'))}>
-					<i className={`fa fa-map-pin fa-lg text-${cssScheme} mr-2`} />
+					<i className={`fa fa-map-pin fa-lg ${textClassName(cssScheme)} mr-2`} />
 					{i18n.t('sidebar.results.reference.save_as_reference')}
 				</button>
 				<div className="results-sim-reference-bar">

@@ -31,7 +31,7 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 				<Menu.Trigger openOnHover delay={0} className={clsx('sim-link', textClassNameForClass(playerClass))}>
 					<SimLinkContent
 						iconPath={playerClass.getIcon('large')}
-						iconClassName={`border-${PlayerClasses.getCssScheme(playerClass)}`}
+						iconClassName={`border-class-${PlayerClasses.getCssScheme(playerClass)}`}
 						title={className}
 						status={translateStatus(classLaunchStatus(playerClass))}
 					/>

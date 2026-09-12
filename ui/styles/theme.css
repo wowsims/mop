@@ -31,6 +31,9 @@
 
 	--radius-full: 9999px;
 
+	/* Design system. The bare `--color-*` namespace is the answer to "what are our colours?", and
+	   nothing else: everything under GAME DATA below is WoW's and is namespaced away from it. */
+
 	--color-transparent: transparent;
 	--color-current: currentColor;
 	--color-inherit: inherit;
@@ -72,61 +75,72 @@
 	--color-link-danger: #ef9eaa;
 	--color-link-warning: #faf07f;
 
-	--color-death-knight: rgb(194, 46, 70);
-	--color-druid: rgb(255, 125, 10);
-	--color-hunter: rgb(171, 212, 115);
-	--color-mage: rgb(105, 204, 240);
-	--color-monk: rgb(0, 255, 152);
-	--color-paladin: rgb(245, 140, 186);
-	--color-priest: rgb(255, 255, 255);
-	--color-rogue: rgb(255, 245, 105);
-	--color-shaman: rgb(36, 89, 255);
-	--color-warlock: rgb(148, 130, 201);
-	--color-warrior: rgb(199, 156, 110);
+	/* GAME DATA. These values are the game's, not ours: rename a token freely, never change a value.
+	   Namespacing them keeps `bg-class-mage` out of `bg-primary`'s vocabulary, and — since
+	   `sim/proto/utils.ts` builds these names by interpolation — keeps a slug from ever colliding
+	   with a real utility, as a bare `--color-shadow` does with `text-shadow`/`shadow-shadow`. */
 
-	--color-physical: #e5cc80;
-	--color-arcane: #8ff2ff;
-	--color-fire: #eb4561;
-	--color-frost: #4a80ff;
-	--color-holy: #ffff8f;
-	--color-nature: #d1fa99;
-	--color-shadow: #b8a8f0;
-	--color-chaos: #a330c9;
+	/* Keyed by `PlayerClasses.getCssScheme()`; safelisted in `tailwind.css`. */
+	--color-class-death-knight: rgb(194, 46, 70);
+	--color-class-druid: rgb(255, 125, 10);
+	--color-class-hunter: rgb(171, 212, 115);
+	--color-class-mage: rgb(105, 204, 240);
+	--color-class-monk: rgb(0, 255, 152);
+	--color-class-paladin: rgb(245, 140, 186);
+	--color-class-priest: rgb(255, 255, 255);
+	--color-class-rogue: rgb(255, 245, 105);
+	--color-class-shaman: rgb(36, 89, 255);
+	--color-class-warlock: rgb(148, 130, 201);
+	--color-class-warrior: rgb(199, 156, 110);
 
-	--color-junk: #9d9d9d;
-	--color-common: #fff;
-	--color-uncommon: #1eff00;
-	--color-rare: #0070dd;
-	--color-epic: #a335ee;
-	--color-legendary: #ff8000;
-	--color-artifact: #e5cc80;
-	--color-heirloom: #0cf;
+	--color-school-physical: #e5cc80;
+	--color-school-arcane: #8ff2ff;
+	--color-school-fire: #eb4561;
+	--color-school-frost: #4a80ff;
+	--color-school-holy: #ffff8f;
+	--color-school-nature: #d1fa99;
+	--color-school-shadow: #b8a8f0;
+	--color-school-chaos: #a330c9;
 
-	--color-health: #22ba00;
-	--color-mana: #2e93fa;
-	--color-energy: #ffd700;
-	--color-rage: #f00;
-	--color-focus: #cd853f;
-	--color-chi: #00ff98;
-	--color-combo-points: #ffa07a;
-	--color-holy-power: #eed98a;
-	--color-lunar-energy: #4a8aff;
-	--color-solar-energy: #d2952b;
-	--color-arcane-charges: #5c7cfa;
-	--color-shadow-orbs: #9b59d0;
-	--color-demonic-fury: #8e6fc9;
-	--color-burning-embers: #e8590c;
-	--color-soul-shards: #8551c9;
+	/* Keyed by the `ItemQuality` proto enum, via `itemQualityClassName()`. */
+	--color-quality-junk: #9d9d9d;
+	--color-quality-common: #fff;
+	--color-quality-uncommon: #1eff00;
+	--color-quality-rare: #0070dd;
+	--color-quality-epic: #a335ee;
+	--color-quality-legendary: #ff8000;
+	--color-quality-artifact: #e5cc80;
+	--color-quality-heirloom: #0cf;
 
-	--color-dps: #ed5653;
-	--color-threat: #b56d07;
-	--color-hit: green;
-	--color-crit: blue;
-	--color-partial: yellow;
-	--color-miss: red;
+	/* Player resources, primary and secondary alike — a spec has at most one secondary. */
+	--color-resource-health: #22ba00;
+	--color-resource-mana: #2e93fa;
+	--color-resource-energy: #ffd700;
+	--color-resource-rage: #f00;
+	--color-resource-focus: #cd853f;
+	--color-resource-chi: #00ff98;
+	--color-resource-combo-points: #ffa07a;
+	--color-resource-holy-power: #eed98a;
+	--color-resource-lunar-energy: #4a8aff;
+	--color-resource-solar-energy: #d2952b;
+	--color-resource-arcane-charges: #5c7cfa;
+	--color-resource-shadow-orbs: #9b59d0;
+	--color-resource-demonic-fury: #8e6fc9;
+	--color-resource-burning-embers: #e8590c;
+	--color-resource-soul-shards: #8551c9;
 
-	--color-horde: red;
-	--color-alliance: blue;
+	/* The four outcomes of one attack roll. */
+	--color-outcome-hit: green;
+	--color-outcome-crit: blue;
+	--color-outcome-partial: yellow;
+	--color-outcome-miss: red;
+
+	/* Aggregate metric series — two charted quantities, not two outcomes. */
+	--color-metric-dps: #ed5653;
+	--color-metric-threat: #b56d07;
+
+	--color-faction-horde: red;
+	--color-faction-alliance: blue;
 
 	--color-talent-full: #ffd100;
 	--color-talent-partial: #40bf40;

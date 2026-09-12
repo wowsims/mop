@@ -30,7 +30,7 @@ export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, s
 					className={clsx(
 						'metrics-total-bar-fill',
 						spellSchoolString && `bg-spell-school-${spellSchoolString.toLowerCase()}`,
-						classColor && `bg-${classColor.toLowerCase()}`,
+						classColor && `bg-class-${classColor.toLowerCase()}`,
 					)}
 					style={fill(value, max)}
 				/>

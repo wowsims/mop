@@ -67,10 +67,10 @@ describe('UnitPicker', () => {
 
 	it('puts a unit colour on the option and on the trigger that shows it', async () => {
 		mount(targetRef(0));
-		expect(trigger().className).toContain('text-warrior');
+		expect(trigger().className).toContain('text-class-warrior');
 
 		await open();
-		expect(items()[1].className).toContain('text-warrior');
+		expect(items()[1].className).toContain('text-class-warrior');
 		expect(items()[0].className).not.toContain('text-');
 	});
 

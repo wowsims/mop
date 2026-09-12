@@ -57,7 +57,7 @@ describe('ResultsFilter', () => {
 		await open();
 
 		expect(items()[1].querySelector('img.unit-picker-item-icon')!.getAttribute('src')).toBe('boss.jpg');
-		expect(items()[1].className).toContain('text-warrior');
+		expect(items()[1].className).toContain('text-class-warrior');
 		// All Targets carries an empty icon url on purpose, so it draws nothing.
 		expect(items()[0].querySelector('.unit-picker-item-icon')).toBeNull();
 	});
