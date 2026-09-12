@@ -138,13 +138,13 @@ describe('SavedSettings', () => {
 			itemSwapPresets = [{ name: 'Council Swap', itemSwap: ItemSwap.create() }];
 			await renderPanel();
 
-			expect(chipNamed('Council Swap').classList.contains('active')).toBe(false);
+			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(false);
 
 			await act(async () => {
 				savedSettingsModel.applySavedSettings(host, settingsWith(Race.RaceOrc));
 			});
 
-			expect(chipNamed('Council Swap').classList.contains('active')).toBe(false);
+			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(false);
 		});
 
 		it('holds the presets back until the sim is ready', () => {

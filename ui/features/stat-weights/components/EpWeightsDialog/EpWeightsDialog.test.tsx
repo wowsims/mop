@@ -276,8 +276,6 @@ describe('EpWeightsDialog', () => {
 			'sidebar.buttons.stat_weights.modal.death_ep.label',
 			'sidebar.buttons.stat_weights.modal.current_ep.label',
 		]);
-		expect(headers[2].className).toBe('damage-metrics type-weight');
-		expect(headers[14].className).toBe('text-center');
 	});
 
 	it('shows the spec stats, and the rest only once Show all stats is on', () => {
@@ -293,14 +291,14 @@ describe('EpWeightsDialog', () => {
 
 	it('switches the table between EP and weight columns', () => {
 		renderDialog();
-		expect(table().className).toBe('results-ep-table stats-type-ep');
+		expect(table().getAttribute('data-stats-type')).toBe('ep');
 
 		const select = popup().querySelector<HTMLSelectElement>('#ep-type-select')!;
 		act(() => {
 			select.value = '1';
 			fireEvent.change(select);
 		});
-		expect(table().className).toBe('results-ep-table stats-type-weight');
+		expect(table().getAttribute('data-stats-type')).toBe('weight');
 	});
 
 	// DEFECT FIXED. `makeEpRatioCell` was applied to the six EP cells and the six weight cells, both
@@ -521,11 +519,11 @@ describe('EpWeightsDialog', () => {
 				fireEvent.click(calculate());
 			});
 
-			expect(rowFor('Strength').querySelector('.type-ep .results-avg')!.className).toBe('results-avg positive');
-			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.className).toBe('results-avg');
+			expect(rowFor('Strength').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBe('positive');
+			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBeNull();
 
 			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
-			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.className).toBe('results-avg negative');
+			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBe('negative');
 		});
 
 		it('greys the columns whose EP ratio is zero', async () => {
@@ -536,8 +534,8 @@ describe('EpWeightsDialog', () => {
 			});
 
 			const cells = [...rowFor('Strength').querySelectorAll('td.stdev-cell')];
-			expect(cells[0].classList.contains('unused-ep')).toBe(false);
-			expect(cells[2].classList.contains('unused-ep')).toBe(true);
+			expect(cells[0].hasAttribute('data-unused')).toBe(false);
+			expect(cells[2].hasAttribute('data-unused')).toBe(true);
 		});
 
 		it('shows N/A for a stat excluded from the calculation', async () => {

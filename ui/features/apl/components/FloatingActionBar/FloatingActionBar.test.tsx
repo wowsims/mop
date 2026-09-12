@@ -96,13 +96,13 @@ describe('FloatingActionBar', () => {
 	it('toggles the stuck class on each IntersectionObserver delivery', () => {
 		const { container } = mount();
 		const root = container.querySelector('.apl-floating-action-bar-root') as HTMLElement;
-		expect(root.classList.contains('stuck')).toBe(false);
+		expect(root.hasAttribute('data-stuck')).toBe(false);
 
 		const observer = FakeIntersectionObserver.instances[0];
 		act(() => observer.fire());
-		expect(root.classList.contains('stuck')).toBe(true);
+		expect(root.hasAttribute('data-stuck')).toBe(true);
 
 		act(() => observer.fire());
-		expect(root.classList.contains('stuck')).toBe(false);
+		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 });

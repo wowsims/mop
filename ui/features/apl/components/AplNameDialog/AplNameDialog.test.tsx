@@ -46,7 +46,7 @@ describe('AplNameDialog', () => {
 		});
 
 		expect(confirmButton().disabled).toBe(true);
-		expect(input().classList.contains('is-invalid')).toBe(true);
+		expect(input().getAttribute('aria-invalid')).toBe('true');
 		expect(screen.getByText('rotation_tab.apl.nameModal.nameConflict')).toBeTruthy();
 	});
 

@@ -149,10 +149,10 @@ describe('TargetsPicker', () => {
 		const encounter = new FakeEncounter([TargetProto.create({ dualWield: false })]);
 		mount(encounter);
 		const penalty = () => document.querySelector('#target-0-picker-dw-miss-penalty')!.closest('.input-root')!;
-		expect(penalty().classList.contains('disabled')).toBe(true);
+		expect(penalty().hasAttribute('data-disabled')).toBe(true);
 
 		act(() => encounter.modifyTarget(0, target => (target.dualWield = true)));
-		expect(penalty().classList.contains('disabled')).toBe(false);
+		expect(penalty().hasAttribute('data-disabled')).toBe(false);
 	});
 
 	// Encounters register a preset per raid size and difficulty, all sharing one npc id — which is
@@ -219,7 +219,7 @@ describe('TargetsPicker', () => {
 
 			expect(list.querySelector('.list-picker-new-button')).toBeNull();
 			expect(list.querySelector('.list-picker-item-actions')).toBeNull();
-			expect([...list.querySelectorAll('.list-picker-item-container')].every(item => !item.classList.contains('draggable'))).toBe(true);
+			expect([...list.querySelectorAll('.list-picker-item-container')].every(item => !item.hasAttribute('data-draggable'))).toBe(true);
 		});
 
 		it('writes a number input back to its own index', () => {

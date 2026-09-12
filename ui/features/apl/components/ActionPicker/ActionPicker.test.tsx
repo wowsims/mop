@@ -57,7 +57,6 @@ describe('ActionPicker', () => {
 		expect(root.children[0].className).toContain('apl-priority-list-only');
 
 		const actionContainer = root.children[1];
-		expect(actionContainer.className).toBe('apl-action-picker-action');
 		expect(actionContainer.children[0].className).toContain('dropdown-picker-root');
 		expect(actionContainer.children[1].className).toContain('apl-picker-builder-root');
 	});

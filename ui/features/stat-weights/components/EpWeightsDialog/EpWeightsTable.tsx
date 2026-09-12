@@ -42,7 +42,7 @@ export const EpWeightsTable = ({
 	onComputeEp,
 }: EpWeightsTableProps) => (
 	<div className="results-ep-table-container">
-		<table className={clsx('results-ep-table', `stats-type-${statsType}`)}>
+		<table className={clsx('results-ep-table', `stats-type-${statsType}`)} data-stats-type={statsType}>
 			<thead>
 				<EpWeightsHeader columns={columns} />
 				<EpRatiosRow columns={columns} player={player} onComputeEp={onComputeEp} />

@@ -29,7 +29,7 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 	const { name } = useActionId(actionId);
 
 	return (
-		<div className={clsx('cooldown-picker', isAdd && 'add-cooldown-picker')}>
+		<div className={clsx('cooldown-picker', isAdd && 'add-cooldown-picker')} data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
 			<label className="cooldown-picker-label form-label">{name}</label>
 			<NumberListPicker modObject={player} config={timingsConfig} />

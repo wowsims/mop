@@ -119,7 +119,7 @@ describe('SavedEpWeights', () => {
 			fireEvent.change(nameInput(), { target: { value: 'Raiding' } });
 			fireEvent.click(saveButton());
 
-			expect(chipNamed('Raiding').classList.contains('active')).toBe(true);
+			expect(chipNamed('Raiding').hasAttribute('data-active')).toBe(true);
 		});
 
 		it('refuses an empty name with an alert and writes nothing', async () => {
@@ -184,8 +184,8 @@ describe('SavedEpWeights', () => {
 			player.epWeights = weights(3);
 			await renderManager();
 
-			expect(chipNamed('Mine').classList.contains('active')).toBe(true);
-			expect(chipNamed('Default').classList.contains('active')).toBe(true);
+			expect(chipNamed('Mine').hasAttribute('data-active')).toBe(true);
+			expect(chipNamed('Default').hasAttribute('data-active')).toBe(true);
 		});
 
 		it('stamps the name input with the set the current weights match', async () => {
@@ -194,7 +194,7 @@ describe('SavedEpWeights', () => {
 			await renderManager();
 
 			expect(nameInput().value).toBe('Raiding');
-			expect(chipNamed('Raiding').classList.contains('active')).toBe(true);
+			expect(chipNamed('Raiding').hasAttribute('data-active')).toBe(true);
 		});
 
 		it('skips an unparseable entry and keeps the rest', async () => {
@@ -278,8 +278,8 @@ describe('SavedEpWeights', () => {
 			];
 			await renderManager();
 
-			expect(chipNamed('On').classList.contains('disabled')).toBe(false);
-			expect(chipNamed('Off').classList.contains('disabled')).toBe(true);
+			expect(chipNamed('On').hasAttribute('data-disabled')).toBe(false);
+			expect(chipNamed('Off').hasAttribute('data-disabled')).toBe(true);
 		});
 
 		it('renders each section only once it has a chip', async () => {

@@ -85,6 +85,7 @@ export const AplNameDialog = ({
 					ref={inputRef}
 					type="text"
 					className={clsx('form-control', conflict && 'is-invalid')}
+					aria-invalid={conflict}
 					placeholder={placeholder || ''}
 					value={name}
 					onChange={event => setName(event.target.value)}

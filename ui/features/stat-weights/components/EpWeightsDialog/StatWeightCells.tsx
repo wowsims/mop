@@ -23,7 +23,7 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 
 	return (
 		<>
-			<td className={clsx('stdev-cell', 'type-weight', unused && 'unused-ep', metricClass)}>
+			<td className={clsx('stdev-cell', 'type-weight', unused && 'unused-ep', metricClass)} data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
 						value={stat.getProtoValue(statWeights.weights!)}
@@ -34,13 +34,14 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 					<NotApplicable />
 				)}
 			</td>
-			<td className={clsx('stdev-cell', 'type-ep', unused && 'unused-ep', metricClass)}>
+			<td className={clsx('stdev-cell', 'type-ep', unused && 'unused-ep', metricClass)} data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
 						value={stat.getProtoValue(statWeights.epValues!)}
 						stdev={stat.getProtoValue(statWeights.epValuesStdev!)}
 						iterations={iterations}
 						className={delta}
+						sign={delta}
 					/>
 				) : (
 					<NotApplicable />

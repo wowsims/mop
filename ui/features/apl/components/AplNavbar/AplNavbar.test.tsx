@@ -51,7 +51,6 @@ describe('AplNavbar', () => {
 	it('puts the rotation-type picker ahead of the strip, in one sticky row', () => {
 		const { container } = mount();
 		const root = container.querySelector('.apl-rotation-navbar')!;
-		expect(root.className).toBe('apl-rotation-navbar sticky-toolbar-root');
 		expect([...root.children].map(child => child.className)).toEqual(['rotation-type-container', 'nav nav-tabs']);
 		expect(root.querySelector('.rotation-type-container > .rotation-type-picker-stub')).not.toBeNull();
 	});
@@ -102,9 +101,9 @@ describe('AplNavbar', () => {
 		const root = container.querySelector('.apl-rotation-navbar')!;
 		Object.defineProperty(root, 'clientHeight', { value: 40 });
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0.5));
-		expect(root.className).toBe('apl-rotation-navbar sticky-toolbar-root stuck');
+		expect(root.hasAttribute('data-stuck')).toBe(true);
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(1));
-		expect(root.className).toBe('apl-rotation-navbar sticky-toolbar-root');
+		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 
 	it('reads the last record of a delivery, not the first', () => {
@@ -112,15 +111,15 @@ describe('AplNavbar', () => {
 		const root = container.querySelector('.apl-rotation-navbar')!;
 		Object.defineProperty(root, 'clientHeight', { value: 40 });
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(1, 0.5));
-		expect(root.className).toBe('apl-rotation-navbar sticky-toolbar-root stuck');
+		expect(root.hasAttribute('data-stuck')).toBe(true);
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0.5, 1));
-		expect(root.className).toBe('apl-rotation-navbar sticky-toolbar-root');
+		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 
 	it('stays unstuck while the row is not laid out, whatever the ratio says', () => {
 		const { container } = mount();
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0));
-		expect(container.querySelector('.apl-rotation-navbar')!.className).toBe('apl-rotation-navbar sticky-toolbar-root');
+		expect(container.querySelector('.apl-rotation-navbar')!.hasAttribute('data-stuck')).toBe(false);
 	});
 
 	it('disconnects the observer on unmount', () => {

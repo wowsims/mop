@@ -85,7 +85,7 @@ describe('CooldownsPicker', () => {
 		mount();
 
 		expect(rows()).toHaveLength(3);
-		expect(rows().map(row => row.classList.contains('add-cooldown-picker'))).toEqual([false, false, true]);
+		expect(rows().map(row => row.hasAttribute('data-add'))).toEqual([false, false, true]);
 	});
 
 	it('names each row after its own cooldown, and leaves the trailing row unnamed', async () => {

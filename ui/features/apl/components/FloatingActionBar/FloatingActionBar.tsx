@@ -45,7 +45,7 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 	}, []);
 
 	return (
-		<div ref={rootRef} className={stuck ? 'apl-floating-action-bar-root stuck' : 'apl-floating-action-bar-root'}>
+		<div ref={rootRef} className={stuck ? 'apl-floating-action-bar-root stuck' : 'apl-floating-action-bar-root'} data-stuck={stuck ? '' : undefined}>
 			<Button variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>
 				<Icon name="plus" className="mr-2" />
 				{newLabel}

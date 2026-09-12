@@ -132,7 +132,7 @@ describe('SavedEncounter', () => {
 			presets = [{ name: 'Council', encounter: encounterWith(400) }];
 			await renderPanel();
 
-			expect(chipNamed('Council').classList.contains('disabled')).toBe(false);
+			expect(chipNamed('Council').hasAttribute('data-disabled')).toBe(false);
 		});
 
 		it('holds the presets back until the sim is ready', () => {
