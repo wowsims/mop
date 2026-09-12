@@ -1,5 +1,6 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { EnumPicker } from './EnumPicker';
@@ -167,5 +168,33 @@ describe('EnumPicker', () => {
 
 		fireEvent.mouseEnter(screen.getByText('Pet Mode'));
 		expect(await screen.findByText('Node tooltip')).toBeTruthy();
+	});
+});
+
+describe('EnumPicker controlled', () => {
+	// The select is uncontrolled DOM, so a pick the parent does not accept has to be undone here.
+	it('snaps back to the parent value when a pick leaves it where it was', () => {
+		const Host = () => {
+			const [mode, setMode] = useState(0);
+			return (
+				<EnumPicker
+					modObject={{}}
+					config={{ id: 'pet-mode', label: 'Pet Mode', values, value: mode, onChange: next => setMode(next === 2 ? mode : next) }}
+				/>
+			);
+		};
+		render(<Host />);
+
+		act(() => {
+			select().value = '2';
+			fireEvent.change(select());
+		});
+		expect(select().value).toBe('0');
+
+		act(() => {
+			select().value = '1';
+			fireEvent.change(select());
+		});
+		expect(select().value).toBe('1');
 	});
 });

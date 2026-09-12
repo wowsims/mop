@@ -34,10 +34,9 @@ export const RequiredSetBonuses = () => {
 								id: `${setBonusDomId(setBonus)}-2p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_2p'),
 								inline: true,
-								storeField: ['bulk:settings', 'bulk:items'],
 								enableWhen: () => canEnableRequiredTwoPiece(requiredSetBonuses, setBonus.setId, canSatisfy),
-								getValue: () => requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
-								setValue: (_modObj, newValue) => {
+								value: requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
+								onChange: (newValue: boolean) => {
 									setBulkRequiredSetBonus(player, setBonus, newValue ? 2 : 0);
 									trackEvent({ action: 'settings', category: 'batch_sim', label: 'required_set_bonus', value: newValue ? 2 : 0 });
 								},
@@ -52,10 +51,9 @@ export const RequiredSetBonuses = () => {
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
 								inline: true,
 								extraClassNames: ['bulk-required-set-bonus'],
-								storeField: ['bulk:settings', 'bulk:items'],
 								enableWhen: () => canEnableRequiredFourPiece(requiredSetBonuses, setBonus, canSatisfy),
-								getValue: () => requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
-								setValue: (_modObj, newValue) => {
+								value: requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
+								onChange: (newValue: boolean) => {
 									setBulkRequiredSetBonus(player, setBonus, newValue ? 4 : 0);
 									trackEvent({ action: 'settings', category: 'batch_sim', label: 'required_set_bonus', value: newValue ? 4 : 0 });
 								},

@@ -2,11 +2,11 @@ import { Input } from '@base-ui/react/input';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
 
-import type { BooleanPickerConfig } from './types';
+import type { AnyBooleanPickerConfig } from './types';
 
 export interface BooleanPickerProps<ModObject> {
 	modObject: ModObject;
-	config: BooleanPickerConfig<ModObject>;
+	config: AnyBooleanPickerConfig<ModObject>;
 }
 
 export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerProps<ModObject>) => {

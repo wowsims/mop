@@ -1,6 +1,6 @@
 import { Field } from '@base-ui/react/field';
 import { adoptNode, isNode } from '../utils/dom';
-import type { InputConfig } from '@ui-kit/input';
+import type { AnyInputConfig } from '@ui-kit/input';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, type Ref, useMemo } from 'react';
@@ -8,7 +8,7 @@ import { type ReactNode, type Ref, useMemo } from 'react';
 const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join(' ');
 
 export interface PickerShellProps<ModObject, T, V> {
-	config: InputConfig<ModObject, T, V> & { id: string };
+	config: AnyInputConfig<ModObject, T, V> & { id: string };
 	className: string;
 	hidden: boolean;
 	disabled: boolean;

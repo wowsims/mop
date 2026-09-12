@@ -38,9 +38,8 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 									id: `bulk-${slot}-weapon-type-${weaponType}`,
 									label: translateWeaponType(weaponType),
 									inline: true,
-									storeField: 'bulk:settings',
-									getValue: () => weaponTypeFilters.get(slot)!.includes(weaponType),
-									setValue: (_modObj, newValue: boolean) => {
+									value: weaponTypeFilters.get(slot)!.includes(weaponType),
+									onChange: (newValue: boolean) => {
 										const filter = weaponTypeFilters.get(slot)!;
 										setBulkWeaponTypeFilter(player, slot, newValue ? [...filter, weaponType] : filter.filter(type => type !== weaponType));
 										trackEvent({ action: 'settings', category: 'batch_sim', label: `freeze_${slot}_weapon_type`, value: newValue });

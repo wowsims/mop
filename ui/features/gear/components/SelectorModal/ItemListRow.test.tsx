@@ -20,11 +20,14 @@ const batch = vi.hoisted(() => ({
 
 const store = vi.hoisted(() => {
 	const listeners = new Set<() => void>();
+	const state = {};
 	return {
 		subscribe: (callback: () => void) => {
 			listeners.add(callback);
 			return () => listeners.delete(callback);
 		},
+		getState: () => state,
+		getInitialState: () => state,
 	};
 });
 
@@ -64,7 +67,7 @@ const renderRow = (
 	onWrapperClick?: () => void,
 ) => {
 	Object.assign(batch, { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn() }, batchOverrides);
-	const host = fakeHost();
+	const host = fakeHost({ sim: { store } });
 
 	const props: ItemListRowProps = {
 		itemData: makeItemData(),
@@ -80,15 +83,22 @@ const renderRow = (
 		...overrides,
 	};
 
-	const { container } = render(
+	const tree = (next: ItemListRowProps) => (
 		<SimHostProvider host={host}>
 			<div onClick={onWrapperClick}>
-				<ItemListRow {...props} />
+				<ItemListRow {...next} />
 			</div>
-		</SimHostProvider>,
+		</SimHostProvider>
 	);
+	const { container, rerender } = render(tree(props));
 
-	return { container, wrapper: container.firstElementChild as HTMLElement, batch, props };
+	return {
+		container,
+		wrapper: container.firstElementChild as HTMLElement,
+		batch,
+		props,
+		rerender: (next: Partial<ItemListRowProps>) => rerender(tree({ ...props, ...next })),
+	};
 };
 
 describe('ItemListRow', () => {
@@ -237,6 +247,26 @@ describe('ItemListRow', () => {
 		fireEvent.click(inBatch.container.querySelector('.selector-modal-list-item-compare')!);
 		expect(inBatch.batch.removeItem).toHaveBeenCalledTimes(1);
 		expect(inBatch.batch.addItem).not.toHaveBeenCalled();
+	});
+
+	it('re-reads the batch flag when a recycled row is handed a different item', () => {
+		const { container, rerender } = renderRow({ itemData: makeItemData({ id: 1 }) }, { hasItem: vi.fn((spec: any) => spec.id === 2) });
+		const compare = () => container.querySelector('.selector-modal-list-item-compare')!;
+		expect(compare().getAttribute('data-in-batch')).toBe('false');
+
+		rerender({ itemData: makeItemData({ id: 2 }) });
+
+		expect(compare().getAttribute('data-in-batch')).toBe('true');
+	});
+
+	it('acts on the item the recycled row now shows, not the one it showed before', () => {
+		const { container, batch, rerender } = renderRow({ itemData: makeItemData({ id: 1 }) }, { hasItem: vi.fn((spec: any) => spec.id === 1) });
+
+		rerender({ itemData: makeItemData({ id: 2 }) });
+		fireEvent.click(container.querySelector('.selector-modal-list-item-compare')!);
+
+		expect(batch.addItem).toHaveBeenCalledTimes(1);
+		expect(batch.removeItem).not.toHaveBeenCalled();
 	});
 
 	it('renders the compare container on the items tab alone', () => {
