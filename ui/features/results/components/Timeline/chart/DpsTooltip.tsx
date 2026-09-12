@@ -12,7 +12,7 @@ export interface DpsTooltipProps {
 export const DpsTooltip = ({ log }: DpsTooltipProps) => (
 	<div className="timeline-tooltip dps">
 		<div className="timeline-tooltip-header">
-			<span className="bold">{log.timestamp.toFixed(2)}s</span>
+			<span className="font-bold">{log.timestamp.toFixed(2)}s</span>
 		</div>
 		<div className="timeline-tooltip-body">
 			<ul className="timeline-dps-events">

@@ -11,7 +11,7 @@ export interface ThreatTooltipProps {
 export const ThreatTooltip = ({ log }: ThreatTooltipProps) => (
 	<div className="timeline-tooltip threat">
 		<div className="timeline-tooltip-header">
-			<span className="bold">{log.timestamp.toFixed(2)}s</span>
+			<span className="font-bold">{log.timestamp.toFixed(2)}s</span>
 		</div>
 		<div className="timeline-tooltip-body">
 			<div className="timeline-tooltip-body-row">

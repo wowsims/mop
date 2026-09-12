@@ -12,7 +12,7 @@ export const TooltipAuras = ({ log }: TooltipAurasProps) => {
 	return (
 		<div className="timeline-tooltip-auras">
 			<div className="timeline-tooltip-body-row">
-				<span className="bold">{i18n.t('results_tab.details.timeline.tooltips.active_auras')}</span>
+				<span className="font-bold">{i18n.t('results_tab.details.timeline.tooltips.active_auras')}</span>
 			</div>
 			<ul className="timeline-active-auras">
 				{log.activeAuras.map((auraLog, index) => (

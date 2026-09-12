@@ -28,7 +28,7 @@ export const ResourceTooltip = ({ log, maxValue, includeAuras }: ResourceTooltip
 	return (
 		<div className={`timeline-tooltip ${kebabCase(resourceName)}`}>
 			<div className="timeline-tooltip-header">
-				<span className="bold">{log.timestamp.toFixed(2)}s</span>
+				<span className="font-bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
 			<div className="timeline-tooltip-body">
 				<div className="timeline-tooltip-body-row">
