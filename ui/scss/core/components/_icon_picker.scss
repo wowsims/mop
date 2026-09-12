@@ -1,5 +1,25 @@
 @use 'sass:map';
 
+// `.icon-md` inlined. It had no markup users and this `@extend` was its only consumer, but the
+// extend emitted these declarations at `.icon-md`'s position in `shared/_global.scss` — early.
+// Written plainly here they would land AFTER `_item_swap_picker.scss`, which sets
+// `width`/`height: var(--item-swap-picker-size)` on the same elements at the same specificity
+// (0,2,0) and wins today on source order alone; the item-swap icons would have gone 56px -> 35px.
+// `:where()` holds this at 0,1,0 — what `.icon-md` itself weighed — so that override, and the
+// `display: block` below, win on specificity instead of on order.
+//
+// `display: inline-block` is deliberately not carried over: the rule below sets `display: block`
+// on exactly these selectors, so it never applied to anything.
+:where(.icon-picker) {
+	.icon-picker-button,
+	.icon-dropdown-option {
+		min-width: var(--spacing-icon-md);
+		width: var(--spacing-icon-md);
+		height: var(--spacing-icon-md);
+		background-size: cover;
+	}
+}
+
 .icon-picker {
 	width: unset !important;
 	margin-bottom: 0;
@@ -8,8 +28,6 @@
 
 	.icon-picker-button,
 	.icon-dropdown-option {
-		@extend .icon-md;
-
 		border: var(--border-default);
 		transition: border-color 0.15s ease-in-out;
 		position: relative;

@@ -125,15 +125,8 @@ kbd {
 	display: none !important;
 }
 
-// `.icon-sm` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`.
-
-.icon-md {
-	display: inline-block;
-	min-width: var(--spacing-icon-md);
-	width: var(--spacing-icon-md);
-	height: var(--spacing-icon-md);
-	background-size: cover;
-}
+// `.icon-sm` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`. `.icon-md` had no markup
+// users at all and is inlined into its one `@extend` consumer, `core/components/_icon_picker.scss`.
 
 // `.fs-content` is gone: it was exactly `font-size: var(--text-ui)`, which is what Tailwind emits
 // for `text-ui` now that the token is in the theme.
