@@ -1,7 +1,7 @@
 import { Field } from '@base-ui/react/field';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { EnumPickerConfig } from './types';
 
@@ -14,20 +14,20 @@ export interface EnumPickerProps<ModObject> {
 
 export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
-	const selectRef = useRef<HTMLSelectElement>(null);
+	const [select, setSelect] = useState<HTMLSelectElement | null>(null);
+	const attachSelect = useCallback((element: HTMLElement | null) => setSelect(element instanceof HTMLSelectElement ? element : null), []);
 
 	// Deliberately not keyed on config.values: config is usually an object literal in the parent's render, so that would re-assign select.value on every render — which closes the dropdown if the user has it open.
 	useLayoutEffect(() => {
-		const select = selectRef.current;
 		if (!select) return;
 		select.value = String(value);
-	}, [value, revision]);
+	}, [value, revision, select]);
 
 	return (
 		<PickerShell config={config} className="enum-picker-root" hidden={hidden} disabled={disabled}>
 			<Field.Control
 				render={<select />}
-				ref={selectRef}
+				ref={attachSelect}
 				id={config.id}
 				className="enum-picker-selector form-select"
 				aria-label={ariaLabel}

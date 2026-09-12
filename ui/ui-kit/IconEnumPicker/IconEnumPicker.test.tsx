@@ -243,24 +243,21 @@ describe('IconEnumPicker', () => {
 		expect(items().some((_item, index) => optionAnchor(index).classList.contains('active'))).toBe(false);
 	});
 
-	it('renders a value’s showWhen as the hide class and leaves the option in the DOM', () => {
+	it('unmounts a value whose showWhen is false and brings the option back with it', () => {
 		const options = new Options();
 		const config = configFor({
 			values: [{ value: 0 }, { actionId: frostId, value: 1 }, { actionId: moltenId, value: 2, showWhen: (obj: Options) => obj.engineer }],
 		});
 		mount(options, config);
 		open();
-		expect(items()[2].classList.contains('hide')).toBe(false);
+		expect(items()).toHaveLength(3);
+		expect(optionAnchor(2).getAttribute('href')).toBe(ActionId.makeSpellUrl(30482));
 
 		act(() => options.setEngineer(false));
-		expect(items()).toHaveLength(3);
-		expect(items()[2].classList.contains('hide')).toBe(true);
-		// A hidden option loses its link and its image, as `setImage`'s early return leaves them.
-		expect(optionAnchor(2).hasAttribute('href')).toBe(false);
-		expect(iconOf(optionAnchor(2))).toBe('');
+		expect(items()).toHaveLength(2);
 
 		act(() => options.setEngineer(true));
-		expect(items()[2].classList.contains('hide')).toBe(false);
+		expect(items()).toHaveLength(3);
 		expect(optionAnchor(2).getAttribute('href')).toBe(ActionId.makeSpellUrl(30482));
 	});
 
@@ -279,28 +276,27 @@ describe('IconEnumPicker', () => {
 		expect(options.armor).toBe(0);
 	});
 
-	it('hides the whole picker unless some option carries an actionId and is shown', () => {
+	it('renders no picker at all unless some option carries an actionId and is shown', () => {
 		const options = new Options();
 		// The override on showWhen(): a list of colour-only values names nothing to show.
 		mount(options, configFor({ values: [{ value: 0, color: 'grey' }] }));
-		expect(root().classList.contains('hide')).toBe(true);
+		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
 	});
 
-	it('renders the picker’s own showWhen as the hide class, and puts the value aside across it', () => {
+	it('unmounts on its own showWhen, and puts the value aside across it', () => {
 		const options = new Options();
 		options.armor = 2;
 		mount(options, configFor({ showWhen: (obj: Options) => obj.visible }));
-		expect(root().classList.contains('hide')).toBe(false);
-
-		// storeValue(): zeroed while away, and the node stays.
-		act(() => options.setVisible(false));
 		expect(document.querySelector('.icon-enum-picker-root')).toBeTruthy();
-		expect(root().classList.contains('hide')).toBe(true);
+
+		// storeValue(): zeroed while away, and nothing is left in the tree.
+		act(() => options.setVisible(false));
+		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
 		expect(options.armor).toBe(0);
 
 		// restoreValue(): the source was still zero, so what was put aside comes back.
 		act(() => options.setVisible(true));
-		expect(root().classList.contains('hide')).toBe(false);
+		expect(document.querySelector('.icon-enum-picker-root')).toBeTruthy();
 		expect(options.armor).toBe(2);
 	});
 
@@ -317,24 +313,16 @@ describe('IconEnumPicker', () => {
 		expect(options.armor).toBe(1);
 	});
 
-	it('drops the put-aside value when an option is chosen', () => {
+	it('offers nothing to choose while hidden, so the put-aside value can only be beaten from the source', () => {
 		const options = new Options();
 		options.armor = 2;
 		mount(options, configFor({ showWhen: (obj: Options) => obj.visible }));
 
 		act(() => options.setVisible(false));
 		expect(options.armor).toBe(0);
-		open();
-		// Choosing while hidden still clears `storedValue`. The write notifies, the picker is still
-		// hidden, so it puts the *new* value aside and zeroes again — which is the observable
-		// difference: without the clear, 1 would stay in the source and 2 would still be waiting to
-		// come back.
-		act(() => {
-			fireEvent.click(items()[1]);
-		});
-		expect(options.armor).toBe(0);
-		act(() => options.setVisible(true));
-		expect(options.armor).toBe(1);
+		// The menu went with the picker, so there is no option to click — a write to the source is the
+		// only thing that can still beat what was put aside, which the test above covers.
+		expect(document.querySelector('ul.icon-enum-picker-menu')).toBeNull();
 	});
 
 	it('writes disabled on the anchor as well as the class on the root', () => {
@@ -410,7 +398,7 @@ describe('IconEnumPicker', () => {
 				<IconEnumPicker modObject={options} config={configFor({ showWhen: (obj: Options) => obj.visible })} />
 			</StrictMode>,
 		);
-		expect(root().classList.contains('hide')).toBe(true);
+		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
 		expect(options.armor).toBe(2);
 
 		// And nothing was put aside, so coming back is a no-op rather than a restore.

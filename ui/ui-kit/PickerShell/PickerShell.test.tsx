@@ -25,8 +25,14 @@ const root = () => document.querySelector('.input-root')!;
 
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
-		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
-		expect(root().getAttribute('class')).toBe('input-root number-picker-root input-inline apl-picker disabled hide');
+		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { disabled: true });
+		expect(root().getAttribute('class')).toBe('input-root number-picker-root input-inline apl-picker disabled');
+	});
+
+	it('renders nothing at all when hidden', () => {
+		const { container } = shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
+		expect(container.querySelector('.input-root')).toBeNull();
+		expect(container.querySelector('input')).toBeNull();
 	});
 
 	it('omits the state classes when neither applies', () => {

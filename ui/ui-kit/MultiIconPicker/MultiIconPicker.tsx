@@ -46,8 +46,10 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 	const labelId = useId();
 	const groupProps = config.label ? { role: 'group', 'aria-labelledby': labelId } : {};
 
+	if (hidden) return null;
+
 	return (
-		<div className={clsx('multi-icon-picker-root', 'icon-picker', hidden && 'hide')} {...groupProps}>
+		<div className={clsx('multi-icon-picker-root', 'icon-picker')} {...groupProps}>
 			<div className="dropend" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger

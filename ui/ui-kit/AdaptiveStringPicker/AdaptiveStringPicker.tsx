@@ -2,7 +2,7 @@ import { Input } from '@base-ui/react/input';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { StringPickerConfig } from './types';
 
@@ -19,20 +19,20 @@ const updateSize = (input: HTMLInputElement | null) => {
 
 export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: AdaptiveStringPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
-	const inputRef = useRef<HTMLInputElement>(null);
+	const [input, setInput] = useState<HTMLInputElement | null>(null);
+	const attachInput = useCallback((element: HTMLElement | null) => setInput(element instanceof HTMLInputElement ? element : null), []);
 
 	useLayoutEffect(() => {
-		const input = inputRef.current;
 		if (!input) return;
 		input.value = value;
 		updateSize(input);
-	}, [value, revision]);
+	}, [value, revision, input]);
 
-	useCommitChange(inputRef, input => setValue(input.value));
+	useCommitChange(input, committed => setValue(committed.value));
 
 	return (
 		<PickerShell config={config} className="adaptive-string-picker-root" hidden={hidden} disabled={disabled}>
-			<Input type="text" ref={inputRef} id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(inputRef.current)} />
+			<Input type="text" ref={attachInput} id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(input)} />
 		</PickerShell>
 	);
 };

@@ -37,13 +37,10 @@ describe('SearchBar', () => {
 	it('shows a clear button once there is text, and clearing it calls onChange with an empty string', () => {
 		const onChange = vi.fn();
 		render(<SearchBar value="" onChange={onChange} clearable clearLabel="Clear" />);
-		// Present but hidden, not unmounted: the class is what a caller's stylesheet and the parity
-		// gates read, and an element that comes and goes is a tree diff.
-		expect(screen.getByRole('button', { name: 'Clear', hidden: true }).classList.contains('hide')).toBe(true);
+		expect(screen.queryByRole('button', { name: 'Clear', hidden: true })).toBeNull();
 
 		fireEvent.change(input(), { target: { value: 'abc' } });
 		const clearButton = screen.getByRole('button', { name: 'Clear' });
-		expect(clearButton.classList.contains('hide')).toBe(false);
 		fireEvent.click(clearButton);
 		expect(onChange).toHaveBeenLastCalledWith('');
 		expect(input().value).toBe('');
