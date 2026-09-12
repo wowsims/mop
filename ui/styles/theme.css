@@ -172,15 +172,23 @@
 	--color-resource-burning-embers: #e8590c;
 	--color-resource-soul-shards: #8551c9;
 
-	/* The four outcomes of one attack roll. */
-	--color-outcome-hit: green;
-	--color-outcome-crit: blue;
-	--color-outcome-partial: yellow;
-	--color-outcome-miss: red;
-
-	/* Aggregate metric series — two charted quantities, not two outcomes. */
-	--color-metric-dps: #ed5653;
-	--color-metric-threat: #b56d07;
+	/*
+	 * One namespace, not the `outcome` / `metric` split this used to carry. `damage` is not my
+	 * coinage: `shared/_variables.scss` already merges exactly these six into `$damage-colors`,
+	 * `shared/_global.scss` generates `.damage-*` from that map, and every consumer in the tree
+	 * reaches them through the `--bs-hit` / `--bs-crit` / `--bs-partial` / `--bs-miss` / `--bs-dps`
+	 * / `--bs-threat` that map emits — the Timeline's rotation rows and chart series, and
+	 * CombatReplay's hit rings. So this name spans both colour worlds and maps one-to-one.
+	 *
+	 * `threat` is not literally damage. `$damage-threat` in the shipping SCSS already says it is,
+	 * and agreeing with the code beats inventing a seventh name for one token.
+	 */
+	--color-damage-hit: green;
+	--color-damage-crit: blue;
+	--color-damage-partial: yellow;
+	--color-damage-miss: red;
+	--color-damage-dps: #ed5653;
+	--color-damage-threat: #b56d07;
 
 	--color-faction-horde: red;
 	--color-faction-alliance: blue;
