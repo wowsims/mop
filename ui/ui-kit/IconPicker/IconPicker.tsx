@@ -94,6 +94,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					!useImprovedIcons && config.states > 2 && 'use-counter',
 					currentValue > 0 && 'active',
 				)}
+				data-active={currentValue > 0 ? '' : undefined}
 				{...wowheadAnchorProps()}
 				// The glyph is a background image and the counter is a sibling now, so without this the
 				// anchor announces nothing; `name` is empty until `useActionId` resolves.
@@ -119,7 +120,9 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					hidden={fillImproved2 && !(currentValue > 2)}
 				/>
 				{config.states > 2 && (
-					<span className={clsx('icon-picker-label', currentValue > 0 && 'active')}>{showCounterText ? String(currentValue) : null}</span>
+					<span className={clsx('icon-picker-label', currentValue > 0 && 'active')} data-active={currentValue > 0 ? '' : undefined}>
+						{showCounterText ? String(currentValue) : null}
+					</span>
 				)}
 			</div>
 		</>

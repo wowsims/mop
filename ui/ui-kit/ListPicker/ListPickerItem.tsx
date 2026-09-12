@@ -261,6 +261,9 @@ export const ListPickerItem = ({
 				dragging && 'dragfrom',
 				dragOver && 'dragto',
 			)}
+			data-layout={inlineMenuBar ? 'inline' : undefined}
+			data-draggable={canMove ? '' : undefined}
+			data-drag={dragging ? 'from' : dragOver ? 'to' : undefined}
 			draggable={canMove && armed ? true : undefined}
 			onMouseDown={canMove ? onMouseDown : undefined}
 			onDragStart={canMove ? onDragStart : undefined}

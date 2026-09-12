@@ -16,6 +16,7 @@ export const ImprovedAnchor = ({ actionId, className, active, hidden }: Improved
 	return (
 		<a
 			className={clsx('icon-picker-button icon-input-improved', className, active && 'active')}
+			data-active={active ? '' : undefined}
 			{...wowheadAnchorProps()}
 			href={href || undefined}
 			rel={externalRel(href, undefined)}

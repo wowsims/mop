@@ -91,7 +91,7 @@ describe('IconEnumPicker', () => {
 
 		// `input-root` and `icon-picker` come from the shell and from the picker; `dropdown` is added
 		// for the default (vertical) direction.
-		expect(root().className.split(' ').sort().join(' ')).toBe('dropdown icon-enum-picker-root icon-picker input-root');
+		expect(['dropdown', 'icon-enum-picker-root', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
 
 		// The order is the whole reason the slot exists: Base UI appends its portal element to the
 		// container in a later commit than React places the root's own children, so a portal aimed
@@ -143,17 +143,17 @@ describe('IconEnumPicker', () => {
 		// `href` at all.
 		expect(iconOf(button())).toBe('');
 		expect(button().hasAttribute('href')).toBe(false);
-		expect(button().classList.contains('active')).toBe(false);
+		expect(button().hasAttribute('data-active')).toBe(false);
 
 		act(() => options.set(2));
 		expect(iconOf(button())).toBe('molten.jpg');
 		expect(button().getAttribute('href')).toBe(ActionId.makeSpellUrl(30482));
-		expect(button().classList.contains('active')).toBe(true);
+		expect(button().hasAttribute('data-active')).toBe(true);
 
 		act(() => options.set(0));
 		expect(iconOf(button())).toBe('');
 		expect(button().hasAttribute('href')).toBe(false);
-		expect(button().classList.contains('active')).toBe(false);
+		expect(button().hasAttribute('data-active')).toBe(false);
 	});
 
 	it('leaves the button unlinked for an id that names neither an item nor a spell', () => {
@@ -240,7 +240,7 @@ describe('IconEnumPicker', () => {
 			ActionId.makeSpellUrl(7302),
 			ActionId.makeSpellUrl(30482),
 		]);
-		expect(items().some((_item, index) => optionAnchor(index).classList.contains('active'))).toBe(false);
+		expect(items().some((_item, index) => optionAnchor(index).hasAttribute('data-active'))).toBe(false);
 	});
 
 	it('unmounts a value whose showWhen is false and brings the option back with it', () => {
@@ -329,7 +329,7 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		mount(options, configFor({ enableWhen: () => false }));
 
-		expect(root().classList.contains('disabled')).toBe(true);
+		expect(root().hasAttribute('data-disabled')).toBe(true);
 		expect(button().hasAttribute('disabled')).toBe(true);
 		// `disabled` lands on the root, not the button — so a disabled icon-enum picker still opened
 		// its menu, and this one still can.
@@ -340,7 +340,7 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		options.armor = 2;
 		mount(options, configFor({ enableWhen: () => false }));
-		expect(button().classList.contains('active')).toBe(false);
+		expect(button().hasAttribute('data-active')).toBe(false);
 	});
 
 	it('lays the menu out from numColumns, and turns it sideways for a horizontal picker', () => {
@@ -415,7 +415,7 @@ describe('IconEnumPicker', () => {
 		expect(button().getAttribute('href')).toBe(ActionId.makeSpellUrl(30482));
 		// `update()` runs after `setInputValue`, so the backup branch's own `setActive(false)` never
 		// survives: a non-zero value is active whether or not the list carries it.
-		expect(button().classList.contains('active')).toBe(true);
+		expect(button().hasAttribute('data-active')).toBe(true);
 	});
 });
 

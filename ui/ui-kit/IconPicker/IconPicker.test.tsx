@@ -156,14 +156,14 @@ describe('IconPicker', () => {
 	it('marks the main anchor and label active once the value is above zero', () => {
 		const settings = new Settings(1);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
-		expect(mainAnchor().classList.contains('active')).toBe(true);
-		expect(document.querySelector('.icon-picker-label')!.classList.contains('active')).toBe(true);
+		expect(mainAnchor().hasAttribute('data-active')).toBe(true);
+		expect(document.querySelector('.icon-picker-label')!.hasAttribute('data-active')).toBe(true);
 	});
 
 	it('does not mark the main anchor active at zero', () => {
 		const settings = new Settings(0);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
-		expect(mainAnchor().classList.contains('active')).toBe(false);
+		expect(mainAnchor().hasAttribute('data-active')).toBe(false);
 	});
 
 	it('marks only the second improved anchor active, and hides the first, above value 2', () => {
@@ -172,7 +172,7 @@ describe('IconPicker', () => {
 		const [, improved1, improved2] = allAnchors();
 		expect(improved1.hidden).toBe(true);
 		expect(improved2.hidden).toBe(false);
-		expect(improved2.classList.contains('active')).toBe(true);
+		expect(improved2.hasAttribute('data-active')).toBe(true);
 	});
 
 	it('stores the value and zeroes the source when showWhen goes false, and restores it when true again', () => {
@@ -244,11 +244,11 @@ describe('IconPicker', () => {
 		const settings = new Settings(1);
 		const config = configFor({ states: 3, improvedId });
 		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[1].classList.contains('active')).toBe(false);
+		expect(allAnchors()[1].hasAttribute('data-active')).toBe(false);
 
 		act(() => settings.set(2));
 		rerender(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[1].classList.contains('active')).toBe(true);
+		expect(allAnchors()[1].hasAttribute('data-active')).toBe(true);
 	});
 
 	it('hides the second improved anchor until value 3, and only when states 4 configures it', () => {
@@ -281,7 +281,7 @@ describe('IconPicker', () => {
 		const settings = new Settings(0);
 		render(<IconPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(mainAnchor().hasAttribute('disabled')).toBe(true);
-		expect(document.querySelector('.icon-picker-root')!.classList.contains('disabled')).toBe(true);
+		expect(document.querySelector('.icon-picker-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it("renders the level container as the anchor's next sibling, so no anchor sits inside another", () => {

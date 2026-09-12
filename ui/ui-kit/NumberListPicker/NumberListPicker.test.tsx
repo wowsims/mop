@@ -80,7 +80,7 @@ describe('NumberListPicker', () => {
 		const settings = new Settings();
 		render(<NumberListPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(input().disabled).toBe(true);
-		expect(input().closest('.input-root')!.classList.contains('disabled')).toBe(true);
+		expect(input().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('renders the same shape as the vanilla picker: label, description, then the input', () => {

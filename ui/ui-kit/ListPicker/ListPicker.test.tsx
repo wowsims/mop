@@ -112,14 +112,14 @@ describe('ListPicker', () => {
 			const children = [...containers()[0].children].map(child => child.className);
 			expect(children).toEqual(['list-picker-item', 'list-picker-item-header']);
 			expect(containers()[0].querySelector('.list-picker-item-title')).toBeNull();
-			expect(containers()[0].classList.contains('inline')).toBe(true);
+			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
 		});
 
 		it('carries the kebab-cased item label as a class while the item is draggable', () => {
 			mount(rowsOf('a'), { itemLabel: 'Pre-Pull Action' });
 
 			expect(containers()[0].classList.contains('pre-pull-action')).toBe(true);
-			expect(containers()[0].classList.contains('draggable')).toBe(true);
+			expect(containers()[0].hasAttribute('data-draggable')).toBe(true);
 		});
 
 		it('folds the layout flags onto the root', () => {
@@ -131,7 +131,7 @@ describe('ListPicker', () => {
 			expect(classes).toContain('horizontal');
 			expect(classes).toContain('targets-picker');
 			// horizontalLayout forces the inline menu bar.
-			expect(containers()[0].classList.contains('inline')).toBe(true);
+			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
 		});
 
 		it('renders the title as a span, not a label, and hangs the tooltip button inside it', () => {
@@ -219,7 +219,7 @@ describe('ListPicker', () => {
 
 			expect(root().querySelector('.list-picker-item-actions')).toBeNull();
 			expect(newButton()).toBeNull();
-			expect(containers()[0].classList.contains('draggable')).toBe(false);
+			expect(containers()[0].hasAttribute('data-draggable')).toBe(false);
 		});
 
 		it('renders extra actions in the menu, between delete and copy', () => {
@@ -336,13 +336,13 @@ describe('ListPicker', () => {
 			mount(rowsOf('a', 'b'));
 
 			startDrag(0);
-			expect(containers()[0].classList.contains('dragfrom')).toBe(true);
+			expect(containers()[0].getAttribute('data-drag')).toBe('from');
 			act(() => void fireEvent.dragEnter(containers()[1], { dataTransfer: dataTransfer() }));
-			expect(containers()[1].classList.contains('dragto')).toBe(true);
+			expect(containers()[1].getAttribute('data-drag')).toBe('to');
 
 			act(() => void fireEvent.dragEnd(containers()[0], { dataTransfer: dataTransfer() }));
-			expect(containers()[0].classList.contains('dragfrom')).toBe(false);
-			expect(containers()[1].classList.contains('dragto')).toBe(false);
+			expect(containers()[0].hasAttribute('data-drag')).toBe(false);
+			expect(containers()[1].hasAttribute('data-drag')).toBe(false);
 		});
 
 		it('clears the drag slot when the drag ends', () => {
@@ -445,7 +445,7 @@ describe('ListPicker', () => {
 		it('adds disabled when enableWhen says no', () => {
 			mount(rowsOf('a'), { enableWhen: () => false });
 
-			expect(root().classList.contains('disabled')).toBe(true);
+			expect(root().hasAttribute('data-disabled')).toBe(true);
 		});
 
 		// `disabled` is only valid on a form control, and nothing in the tree selects `[disabled]`.

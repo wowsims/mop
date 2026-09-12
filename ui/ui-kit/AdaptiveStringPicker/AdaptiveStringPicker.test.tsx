@@ -119,7 +119,7 @@ describe('AdaptiveStringPicker', () => {
 		const settings = new Settings();
 		render(<AdaptiveStringPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(input().disabled).toBe(true);
-		expect(input().closest('.input-root')!.classList.contains('disabled')).toBe(true);
+		expect(input().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('reads the value back raw, with no parsing', () => {

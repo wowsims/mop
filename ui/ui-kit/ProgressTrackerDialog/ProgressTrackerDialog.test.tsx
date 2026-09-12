@@ -126,14 +126,14 @@ describe('ProgressTrackerDialog', () => {
 
 		expect(commits.mock.calls.length).toBe(atMount + 1);
 		expect(document.querySelector('.progress-tracker-modal-content')!.getAttribute('data-stage')).toBe('complete');
-		const message = document.querySelector('.progress-tracker-modal-message')!;
+		const message = document.querySelector<HTMLElement>('.progress-tracker-modal-message')!;
 		expect(message.textContent).toBe('done');
-		expect(message.classList.contains('hidden')).toBe(false);
+		expect(message.hidden).toBe(false);
 	});
 
 	it('hides the message while there is none', () => {
 		renderDialog();
-		expect(document.querySelector('.progress-tracker-modal-message')!.classList.contains('hidden')).toBe(true);
+		expect(document.querySelector<HTMLElement>('.progress-tracker-modal-message')!.hidden).toBe(true);
 	});
 
 	it('cannot be closed, and cancels through its own button', () => {

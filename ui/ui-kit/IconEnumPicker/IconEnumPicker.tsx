@@ -80,6 +80,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					openOnHover
 					delay={0}
 					className={clsx('icon-picker-button', active && 'active')}
+					data-active={active ? '' : undefined}
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}
 					data-whtticon="false"
 					data-disable-wowhead-touch-tooltip="true"

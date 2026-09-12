@@ -58,6 +58,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						openOnHover
 						delay={0}
 						className={clsx('icon-picker-button', actionId && 'active')}
+						data-active={actionId ? '' : undefined}
 						// The trigger is a bare anchor carrying a background image, so it announced nothing — and Base UI points the popup's `aria-labelledby` at it, which would have made the group nameless too.
 						aria-label={config.label}
 						{...wowheadAnchorProps({ icon: false })}

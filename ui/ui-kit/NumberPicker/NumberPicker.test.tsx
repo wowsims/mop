@@ -94,7 +94,7 @@ describe('NumberPicker', () => {
 		const settings = new Settings();
 		render(<NumberPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(input().disabled).toBe(true);
-		expect(input().closest('.input-root')!.classList.contains('disabled')).toBe(true);
+		expect(input().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {

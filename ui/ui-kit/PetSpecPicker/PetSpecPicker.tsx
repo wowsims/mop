@@ -41,6 +41,7 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 					<div
 						key={spec}
 						className={clsx('talent-picker-root pet-spec-item', spec === active && 'selected')}
+						data-selected={spec === active ? '' : undefined}
 						{...tooltipAnchorProps(`${id}-${spec}`)}
 						onClick={() => select(spec)}>
 						<div

@@ -70,7 +70,7 @@ describe('BooleanPicker', () => {
 		const settings = new Settings();
 		render(<BooleanPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(checkbox().disabled).toBe(true);
-		expect(checkbox().closest('.input-root')!.classList.contains('disabled')).toBe(true);
+		expect(checkbox().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {

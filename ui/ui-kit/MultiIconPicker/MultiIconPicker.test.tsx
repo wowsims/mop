@@ -81,7 +81,7 @@ describe('MultiIconPicker', () => {
 	it('builds the root, the dropend and the option list vanilla built', () => {
 		mount(new Buffs());
 
-		expect(root().className).toBe('multi-icon-picker-root icon-picker');
+		expect(['multi-icon-picker-root', 'icon-picker'].every(cls => root().classList.contains(cls))).toBe(true);
 		expect(root().children[0].className).toBe('dropend');
 		expect(trigger()).toBeTruthy();
 		// No `keepMounted`: the trigger is all the dropend holds until somebody opens the menu.
@@ -122,11 +122,11 @@ describe('MultiIconPicker', () => {
 	it('takes the button image from the first active child, not the last', () => {
 		const buffs = new Buffs();
 		mount(buffs);
-		expect(trigger().classList.contains('active')).toBe(false);
+		expect(trigger().hasAttribute('data-active')).toBe(false);
 		expect(backgroundIcon()).toBe('');
 
 		act(() => buffs.set('emperor', 1));
-		expect(trigger().classList.contains('active')).toBe(true);
+		expect(trigger().hasAttribute('data-active')).toBe(true);
 		expect(backgroundIcon()).toBe('emperor.jpg');
 
 		// Kings is earlier in the list, so it takes the icon over the one already on.
@@ -135,7 +135,7 @@ describe('MultiIconPicker', () => {
 
 		act(() => buffs.set('kings', 0));
 		act(() => buffs.set('emperor', 0));
-		expect(trigger().classList.contains('active')).toBe(false);
+		expect(trigger().hasAttribute('data-active')).toBe(false);
 		expect(backgroundIcon()).toBe('');
 	});
 
@@ -153,11 +153,11 @@ describe('MultiIconPicker', () => {
 		const buffs = new Buffs();
 		mount(buffs, configFor({ categoryId }));
 
-		expect(trigger().classList.contains('active')).toBe(false);
+		expect(trigger().hasAttribute('data-active')).toBe(false);
 		expect(backgroundIcon()).toBe('category.jpg');
 
 		act(() => buffs.set('kings', 1));
-		expect(trigger().classList.contains('active')).toBe(true);
+		expect(trigger().hasAttribute('data-active')).toBe(true);
 		expect(backgroundIcon()).toBe('category.jpg');
 	});
 

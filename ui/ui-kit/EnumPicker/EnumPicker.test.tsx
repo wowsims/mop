@@ -90,7 +90,7 @@ describe('EnumPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<EnumPicker modObject={settings} config={configFor({ inline: true, extraClassNames: ['encounter-picker-field'] })} />);
 		const root = container.firstElementChild!;
-		expect(root.classList.contains('input-inline')).toBe(true);
+		expect(root.getAttribute('data-layout')).toBe('inline');
 		expect(root.classList.contains('encounter-picker-field')).toBe(true);
 		expect(root.querySelector('label')!.getAttribute('for')).toBe(select().id);
 	});
@@ -129,7 +129,7 @@ describe('EnumPicker', () => {
 		const settings = new Settings();
 		render(<EnumPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(select().disabled).toBe(true);
-		expect(select().closest('.input-root')!.classList.contains('disabled')).toBe(true);
+		expect(select().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {

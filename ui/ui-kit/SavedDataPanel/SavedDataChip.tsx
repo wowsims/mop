@@ -37,7 +37,10 @@ export const SavedDataChip = <T,>({
 	const [confirming, setConfirming] = useState(false);
 
 	return (
-		<div className={clsx('saved-data-set-chip badge rounded-full', active && 'active', disabled && 'disabled')}>
+		<div
+			className={clsx('saved-data-set-chip badge rounded-full', active && 'active', disabled && 'disabled')}
+			data-active={active ? '' : undefined}
+			data-disabled={disabled ? '' : undefined}>
 			<Button
 				variant="unstyled"
 				className="saved-data-set-name"

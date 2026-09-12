@@ -38,7 +38,7 @@ describe('UnitPicker', () => {
 	it('keeps the class names the unit-picker stylesheet selects on', () => {
 		mount(allTargets);
 
-		expect(root().className).toBe('dropdown-picker-root dropdown unit-picker-root target-filter-root');
+		expect(['dropdown-picker-root', 'dropdown', 'unit-picker-root', 'target-filter-root'].every(cls => root().classList.contains(cls))).toBe(true);
 		expect(trigger().id).toBe('results-filter-target-filter');
 	});
 

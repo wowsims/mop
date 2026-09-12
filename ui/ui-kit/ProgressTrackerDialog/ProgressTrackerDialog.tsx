@@ -40,7 +40,7 @@ export const ProgressTrackerDialog = ({ open, title, state, className, warning, 
 			<div className="progress-tracker-modal-time-display">
 				<strong>{i18n.t('common.elapsed_time')}:</strong> <ElapsedTime running={open} />
 			</div>
-			<div className={clsx('progress-tracker-modal-message', !state.message && 'hidden')} data-stage={state.stage}>
+			<div className={clsx('progress-tracker-modal-message', !state.message && 'hidden')} data-stage={state.stage} hidden={!state.message}>
 				{state.message}
 			</div>
 			{onCancel && (
