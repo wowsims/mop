@@ -68,14 +68,14 @@ describe('RotationTabBody', () => {
 		expect(container.querySelector('#apl-action-groups')!.classList.contains('active')).toBe(true);
 	});
 
-	it('hides the cooldown settings while the spec offers no major cooldowns', () => {
+	it('renders no cooldown settings while the spec offers no major cooldowns', () => {
 		simple = true;
 		const { container, rerender } = render(<RotationTabBody />);
-		expect(container.querySelector('.cooldown-settings')!.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.cooldown-settings')).toBeNull();
 
 		available = [{}];
 		rerender(<RotationTabBody />);
-		expect(container.querySelector('.cooldown-settings')!.classList.contains('hide')).toBe(false);
+		expect(container.querySelector('.cooldown-settings')).not.toBeNull();
 	});
 
 	it('renders the navbar ahead of both columns, which is what the layout depends on', () => {

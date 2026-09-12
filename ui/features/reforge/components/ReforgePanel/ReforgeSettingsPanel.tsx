@@ -59,11 +59,13 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 					},
 				}}
 			/>
-			<div className={clsx('mb-0', useCustomEPValues && 'hide')}>
-				<p>{i18n.t('sidebar.buttons.suggest_reforges.enable_modification')}</p>
-				<p>{i18n.t('sidebar.buttons.suggest_reforges.modify_in_editor')}</p>
-				<p>{i18n.t('sidebar.buttons.suggest_reforges.hard_cap_info')}</p>
-			</div>
+			{!useCustomEPValues && (
+				<div className="mb-0">
+					<p>{i18n.t('sidebar.buttons.suggest_reforges.enable_modification')}</p>
+					<p>{i18n.t('sidebar.buttons.suggest_reforges.modify_in_editor')}</p>
+					<p>{i18n.t('sidebar.buttons.suggest_reforges.hard_cap_info')}</p>
+				</div>
+			)}
 			<ReforgeStatCaps
 				model={model}
 				player={player}

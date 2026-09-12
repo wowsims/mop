@@ -24,8 +24,10 @@ export interface ReforgeBreakpointLimitsProps {
 export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useSoftCapBreakpoints }: ReforgeBreakpointLimitsProps) => {
 	const tooltipId = useId();
 
+	if (!useSoftCapBreakpoints) return null;
+
 	return (
-		<table className={clsx('reforge-optimizer-stat-cap-table mb-2', !useSoftCapBreakpoints && 'hide')}>
+		<table className="reforge-optimizer-stat-cap-table mb-2">
 			<thead>
 				<tr>
 					<th colSpan={3} className="pb-3">

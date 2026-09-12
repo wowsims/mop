@@ -94,7 +94,7 @@ const becomeReady = async () => {
 const blocks = (container: HTMLElement, column: string) =>
 	[...container.querySelectorAll(`.${column} > .content-block`)].map(block => [...block.classList].find(name => name !== 'content-block'));
 
-const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > .content-block-body`)!;
+const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > .content-block-body`);
 
 describe('SettingsTabBody', () => {
 	beforeEach(() => {
@@ -162,18 +162,19 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelectorAll('.stat-option-icons-root')).toHaveLength(2);
 	});
 
-	it('hides the buffs and debuffs bodies when their own option lists are empty', async () => {
+	it('renders no buffs or debuffs body when their own option lists are empty', async () => {
 		lists.value = { buffs: [], debuffs: [], externalDamage: [], externalDefensive: [] };
 		const container = mount();
 		await becomeReady();
-		expect(bodyOf(container, 'buffs-settings').classList.contains('hide')).toBe(true);
-		expect(bodyOf(container, 'debuffs-settings').classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.buffs-settings')).not.toBeNull();
+		expect(bodyOf(container, 'buffs-settings')).toBeNull();
+		expect(bodyOf(container, 'debuffs-settings')).toBeNull();
 	});
 
 	it('leaves those bodies alone when the lists are not empty', async () => {
 		const container = mount();
 		await becomeReady();
-		expect(bodyOf(container, 'buffs-settings').className).toBe('content-block-body');
-		expect(bodyOf(container, 'debuffs-settings').className).toBe('content-block-body');
+		expect(bodyOf(container, 'buffs-settings')!.className).toBe('content-block-body');
+		expect(bodyOf(container, 'debuffs-settings')!.className).toBe('content-block-body');
 	});
 });

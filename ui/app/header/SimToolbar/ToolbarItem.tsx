@@ -32,7 +32,7 @@ export const ToolbarItem = ({
 }: ToolbarItemProps) => {
 	const id = useId();
 	const anchor = tooltip ? tooltipAnchorProps(id) : {};
-	const classes = clsx(className, hidden && 'hide');
+	const classes = clsx(className);
 	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the tooltip is a `data-` attribute no assistive tech reads.
 	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (
@@ -43,15 +43,16 @@ export const ToolbarItem = ({
 	);
 	return (
 		<div className="sim-toolbar-item">
-			{href ? (
-				<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} {...anchor}>
-					{content}
-				</Button>
-			) : (
-				<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} {...anchor}>
-					{content}
-				</Button>
-			)}
+			{!hidden &&
+				(href ? (
+					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} {...anchor}>
+						{content}
+					</Button>
+				) : (
+					<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} {...anchor}>
+						{content}
+					</Button>
+				))}
 			{tooltip && <Tooltip id={id} place={place} content={tooltip} />}
 		</div>
 	);

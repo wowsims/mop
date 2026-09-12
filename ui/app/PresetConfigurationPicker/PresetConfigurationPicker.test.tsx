@@ -85,11 +85,11 @@ describe('PresetConfigurationPicker', () => {
 		expect((applyBuild.mock.calls[0][0] as { name: string }).name).toBe('P2');
 	});
 
-	// Five specs have no builds at all, so the hidden root is what those panes contain.
-	it('renders a hidden root and no content block when there are no builds', () => {
+	// Five specs have no builds at all, so nothing at all is what those panes contain.
+	it('renders nothing when there are no builds', () => {
 		const { container } = setup([]);
 
-		expect(container.querySelector('.preset-configuration-picker-root')?.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.preset-configuration-picker-root')).toBeNull();
 		expect(container.querySelector('.content-block')).toBeNull();
 	});
 

@@ -15,20 +15,19 @@ export interface SummaryTableProps {
 	children?: ReactNode;
 }
 
-export const SummaryTable = ({ title, className, headerClassName, empty, reset, children }: SummaryTableProps) => (
-	<div className={empty ? 'summary-table-root hide' : 'summary-table-root'}>
-		<ContentBlock
-			className={['summary-table-container', className]}
-			config={{ header: { title, className: headerClassName } }}
-			headerChildren={
-				!empty && (
+export const SummaryTable = ({ title, className, headerClassName, empty, reset, children }: SummaryTableProps) =>
+	empty ? null : (
+		<div className="summary-table-root">
+			<ContentBlock
+				className={['summary-table-container', className]}
+				config={{ header: { title, className: headerClassName } }}
+				headerChildren={
 					<Button variant="link" size="sm" className="btn-reset summary-table-reset-button" onClick={reset.onReset}>
 						<Icon name="times" className="me-1" />
 						{reset.label}
 					</Button>
-				)
-			}>
-			{!empty && children}
-		</ContentBlock>
-	</div>
-);
+				}>
+				{children}
+			</ContentBlock>
+		</div>
+	);
