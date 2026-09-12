@@ -5,7 +5,7 @@ import { RotationRowIcon } from './RotationRowIcon';
 import { actionId } from './testing';
 
 const tooltipData = vi.hoisted(() => vi.fn(() => Promise.resolve('spell=1')));
-vi.mock('@sim/proto/action_id/dom', () => ({ actionIdWowheadTooltipData: tooltipData }));
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: tooltipData }));
 
 const mount = (tooltip?: 'spell' | 'buffAura') =>
 	render(<RotationRowIcon actionId={actionId('Fireball')} tooltip={tooltip} />).container.querySelector<HTMLAnchorElement>('.rotation-row-icon')!;

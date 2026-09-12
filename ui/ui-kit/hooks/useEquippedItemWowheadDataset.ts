@@ -1,5 +1,5 @@
 import type { Player } from '@sim/player/player';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
+import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/tooltip_data';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { useMemo } from 'react';
 

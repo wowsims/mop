@@ -20,7 +20,7 @@ const tooltip = vi.hoisted(() => ({ settles: [] as Array<(url: string) => void> 
 
 vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
-vi.mock('@sim/proto/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
 	actionIdWowheadTooltipData: () => new Promise<string>(() => {}),
 }));

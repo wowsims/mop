@@ -6,7 +6,7 @@ import type { ReplayModel } from '../../model/replay';
 import type { SimResultData } from '../../model/result_data';
 import { replayAction, replayAura, replayEnemy, replayHit, replayModel, resourceRow } from './testing';
 
-vi.mock('@sim/proto/action_id/dom', () => ({ actionIdWowheadTooltipData: () => Promise.resolve('spell=1') }));
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: () => Promise.resolve('spell=1') }));
 
 let result: SimResultData | null = null;
 let model: ReplayModel;

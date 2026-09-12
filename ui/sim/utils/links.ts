@@ -17,9 +17,3 @@ export const externalRel = (href: string | undefined, rel: string | undefined): 
 	});
 	return tokens.join(' ');
 };
-
-export const setExternalAwareHref = (elem: HTMLAnchorElement, href: string) => {
-	elem.href = href;
-	const rel = externalRel(href, elem.getAttribute('rel') ?? undefined);
-	if (rel) elem.setAttribute('rel', rel);
-};

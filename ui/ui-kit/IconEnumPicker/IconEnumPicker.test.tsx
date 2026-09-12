@@ -161,7 +161,7 @@ describe('IconEnumPicker', () => {
 		options.armor = 1;
 		mount(options, configFor({ values: [{ value: 0 }, { actionId: noPetId, value: 1 }] }));
 
-		// `setActionIdWowheadHref` writes nothing without an itemId or a spellId — but the icon is
+		// `useActionId` resolves no href without an itemId or a spellId — but the icon is
 		// still filled in, which is the pair this entry exists to keep apart.
 		expect(iconOf(button())).toBe('questionmark.jpg');
 		expect(button().hasAttribute('href')).toBe(false);

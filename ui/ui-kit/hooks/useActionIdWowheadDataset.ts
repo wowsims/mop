@@ -1,5 +1,5 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
+import { actionIdWowheadTooltipData } from '@sim/proto/action_id/tooltip_data';
 import { useMemo } from 'react';
 
 import { useWowheadDataset } from './useWowheadDataset';

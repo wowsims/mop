@@ -9,7 +9,7 @@ const resolved = vi.hoisted(() => ({ state: { iconUrl: '', name: '', href: '', r
 const wowhead = vi.hoisted(() => ({ calls: [] as Array<unknown> }));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => resolved.state }));
-vi.mock('@sim/proto/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({
 	actionIdWowheadTooltipData: (...args: Array<unknown>) => {
 		wowhead.calls.push(args);
 		return Promise.resolve('spell=34026');
