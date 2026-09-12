@@ -7,7 +7,7 @@ button.metrics-table-sort {
 	// `shared/_global.scss` clears `outline` on every button, so a focusable control needs its own
 	// indicator or it is reachable with no way to see where you are.
 	&:focus-visible {
-		outline: 1px solid var(--bs-link-color);
+		outline: 1px solid var(--color-link);
 		outline-offset: 1px;
 	}
 }
@@ -19,7 +19,7 @@ button.expand-toggle {
 	color: inherit;
 
 	&:focus-visible {
-		outline: 1px solid var(--bs-link-color);
+		outline: 1px solid var(--color-link);
 		outline-offset: 1px;
 	}
 }

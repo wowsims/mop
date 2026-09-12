@@ -7,7 +7,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
-	background: var(--bs-body-bg);
+	background: var(--color-background);
 	height: 100dvh;
 	z-index: var(--sidebar-z-index);
 
@@ -18,12 +18,12 @@
 	}
 
 	.sim-sidebar-content {
-		padding: var(--gap-width);
+		padding: var(--spacing-gutter);
 		display: flex;
 		flex: 1;
 		flex-direction: column;
 		overflow-y: auto;
-		scrollbar-color: var(--bs-primary) var(--bs-body-bg);
+		scrollbar-color: var(--color-primary) var(--color-background);
 		scrollbar-width: thin;
 
 		&::-webkit-scrollbar {
@@ -31,20 +31,20 @@
 		}
 
 		&::-webkit-scrollbar-track {
-			background-color: var(--bs-body-bg);
+			background-color: var(--color-background);
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background-color: var(--bs-primary);
+			background-color: var(--color-primary);
 		}
 
 		@include media-breakpoint-down(xxl) {
-			padding-left: calc(var(--gap-width-sm) * 2);
-			padding-right: calc(var(--gap-width-sm) * 2);
+			padding-left: calc(var(--spacing-gutter-sm) * 2);
+			padding-right: calc(var(--spacing-gutter-sm) * 2);
 		}
 
 		@include media-breakpoint-down(lg) {
-			padding: calc(var(--gap-width-sm) * 2) var(--gap-width-sm);
+			padding: calc(var(--spacing-gutter-sm) * 2) var(--spacing-gutter-sm);
 			min-height: 0;
 		}
 
@@ -53,14 +53,14 @@
 		}
 
 		.sim-sidebar-actions {
-			padding-left: var(--container-padding);
-			padding-right: var(--container-padding);
-			margin-left: calc(var(--gap-width) * -1);
-			margin-right: calc(var(--gap-width) * -1);
+			padding-left: var(--spacing-page);
+			padding-right: var(--spacing-page);
+			margin-left: calc(var(--spacing-gutter) * -1);
+			margin-right: calc(var(--spacing-gutter) * -1);
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			gap: var(--block-spacer);
+			gap: var(--spacing-block);
 
 			@include media-breakpoint-down(xxl) {
 				padding: 0;

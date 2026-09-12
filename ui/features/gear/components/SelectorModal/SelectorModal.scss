@@ -35,10 +35,10 @@
 // its place in the window rather than in the list. `VirtualList` stamps the real parity instead.
 .selector-modal-list-item {
 	&[data-stripe='even'] {
-		background: var(--bs-table-row-odd-bg);
+		background: var(--color-table-odd);
 	}
 
 	&[data-stripe='odd'] {
-		background: var(--bs-table-row-even-bg);
+		background: var(--color-table-even);
 	}
 }

@@ -8,7 +8,7 @@
 
 .summary-tables-container {
 	display: grid;
-	grid-gap: var(--section-spacer);
+	grid-gap: var(--spacing-section);
 	grid-template-columns: repeat(2, 1fr);
 	grid-auto-flow: row;
 

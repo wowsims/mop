@@ -1,7 +1,7 @@
 .content-block {
 	display: flex;
 	flex-direction: column;
-	gap: var(--block-spacer);
+	gap: var(--spacing-block);
 
 	.content-block-header {
 		display: flex;
@@ -23,6 +23,6 @@
 	.content-block-body {
 		display: flex;
 		flex-direction: column;
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 	}
 }

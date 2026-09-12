@@ -1,6 +1,6 @@
 :root {
 	--theme-background-color: DarkSlateGrey;
-	--theme-background-image: linear-gradient(var(--bs-black), var(--bs-black));
+	--theme-background-image: linear-gradient(var(--color-black), var(--color-black));
 	--theme-background-opacity: 0.9;
 }
 
@@ -53,20 +53,20 @@
 
 .safe,
 .positive {
-	color: var(--bs-success) !important;
+	color: var(--color-success) !important;
 }
 
 .danger,
 .negative {
-	color: var(--bs-danger) !important;
+	color: var(--color-danger) !important;
 }
 
 .warning {
-	color: var(--bs-partial);
+	color: var(--color-damage-partial);
 	text-shadow:
-		0 0 var(--spacer-2) var(--bs-danger),
-		0 0 var(--spacer-2) var(--bs-danger),
-		0 0 var(--spacer-2) var(--bs-danger);
+		0 0 var(--spacer-2) var(--color-danger),
+		0 0 var(--spacer-2) var(--color-danger),
+		0 0 var(--spacer-2) var(--color-danger);
 }
 
 a {

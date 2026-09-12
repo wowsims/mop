@@ -1,6 +1,6 @@
 .tab-pane-content-container {
 	display: flex;
-	gap: var(--container-padding);
+	gap: var(--spacing-page);
 	flex-wrap: wrap;
 
 	@include media-breakpoint-down(xl) {
@@ -8,7 +8,7 @@
 	}
 
 	@include media-breakpoint-down(lg) {
-		gap: var(--section-spacer);
+		gap: var(--spacing-section);
 	}
 
 	.tab-panel-left,
@@ -18,7 +18,7 @@
 
 	.tab-panel-left {
 		display: grid;
-		gap: var(--section-spacer);
+		gap: var(--spacing-section);
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		flex: 4;
 
@@ -32,13 +32,13 @@
 		min-width: 200px;
 		display: flex;
 		flex-direction: column;
-		gap: var(--section-spacer);
+		gap: var(--spacing-section);
 		flex: 1.25;
 	}
 
 	.tab-panel-col {
 		display: flex;
 		flex-direction: column;
-		gap: var(--section-spacer);
+		gap: var(--spacing-section);
 	}
 }

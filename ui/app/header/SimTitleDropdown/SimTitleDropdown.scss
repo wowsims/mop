@@ -10,7 +10,7 @@
 .sim-title-popup {
 	width: var(--anchor-width);
 	border: none;
-	background: var(--bs-body-bg);
+	background: var(--color-background);
 
 	&--specs {
 		width: auto;
@@ -21,7 +21,7 @@
 		display: block;
 		width: 100%;
 		border: 0;
-		background: var(--bs-body-bg);
+		background: var(--color-background);
 		text-align: left;
 		text-decoration: none;
 
@@ -34,7 +34,7 @@
 	}
 
 	.sim-link-content {
-		padding-left: var(--gap-width);
-		padding-right: var(--gap-width);
+		padding-left: var(--spacing-gutter);
+		padding-right: var(--spacing-gutter);
 	}
 }

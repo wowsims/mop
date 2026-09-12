@@ -12,7 +12,7 @@
 }
 
 .progress-tracker-modal-warning {
-	border: 1px solid var(--bs-warning);
+	border: 1px solid var(--color-warning);
 	padding: var(--spacer-3);
 	font-size: var(--btn-font-size);
 }
@@ -45,11 +45,11 @@
 	.progress-bar {
 		background: linear-gradient(
 			90deg,
-			var(--bs-success) 0%,
-			color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 25%,
-			var(--bs-success) 50%,
-			color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 75%,
-			var(--bs-success) 100%
+			var(--color-success) 0%,
+			color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 25%,
+			var(--color-success) 50%,
+			color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 75%,
+			var(--color-success) 100%
 		);
 		background-size: 200% 100%;
 		animation: loading-shimmer 6s linear infinite;
@@ -60,7 +60,7 @@
 .progress-tracker-modal-progress-text {
 	font-size: 12px;
 	text-align: right;
-	color: var(--bs-border-color);
+	color: var(--color-border);
 }
 
 @keyframes loading-shimmer {

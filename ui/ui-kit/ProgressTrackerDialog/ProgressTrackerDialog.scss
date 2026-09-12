@@ -23,11 +23,11 @@
 .progress-tracker-bar-indicator {
 	background: linear-gradient(
 		90deg,
-		var(--bs-success) 0%,
-		color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 25%,
-		var(--bs-success) 50%,
-		color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 75%,
-		var(--bs-success) 100%
+		var(--color-success) 0%,
+		color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 25%,
+		var(--color-success) 50%,
+		color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 75%,
+		var(--color-success) 100%
 	);
 	background-size: 200% 100%;
 	// `loading-shimmer` is declared next to the shared rules in scss/core/components/_progress_tracker_modal.scss.

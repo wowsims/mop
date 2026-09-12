@@ -1,11 +1,11 @@
 .gear-picker-root {
 	&:not(.gear-picker-root-bulk) {
 		display: grid;
-		gap: var(--section-spacer);
+		gap: var(--spacing-section);
 		grid-template-columns: 1fr 1fr;
 
 		@include media-breakpoint-down(lg) {
-			gap: var(--block-spacer);
+			gap: var(--spacing-block);
 		}
 
 		@include media-breakpoint-down(sm) {
@@ -17,7 +17,7 @@
 	.gear-picker-right {
 		display: flex;
 		flex-direction: column;
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 	}
 
 	.gear-picker-left {
@@ -27,7 +27,7 @@
 
 			// Add space to separate weapon categories
 			&:nth-child(6) {
-				margin-bottom: var(--section-spacer);
+				margin-bottom: var(--spacing-section);
 			}
 		}
 	}
@@ -58,7 +58,7 @@
 	.item-picker-ilvl {
 		position: absolute;
 		padding-left: 1px;
-		background: var(--bs-black-alpha-75);
+		background: rgb(0 0 0 / 0.75);
 		font-size: var(--text-ui);
 		z-index: 1;
 		pointer-events: none;
@@ -97,22 +97,22 @@
 		}
 
 		.item-picker-name-container {
-			color: var(--bs-white);
+			color: var(--color-white);
 			font-size: var(--h6-font-size);
 		}
 
 		.item-picker-reforge {
-			color: var(--bs-uncommon);
+			color: var(--color-quality-uncommon);
 			font-size: var(--text-ui);
 		}
 
 		.item-picker-enchant {
-			color: var(--bs-uncommon);
+			color: var(--color-quality-uncommon);
 			font-size: var(--text-ui);
 		}
 
 		.item-picker-tinker {
-			color: var(--bs-uncommon);
+			color: var(--color-quality-uncommon);
 			font-size: var(--text-ui);
 		}
 	}
@@ -133,7 +133,7 @@
 .item-picker-ilvl {
 	position: absolute;
 	padding-left: 1px;
-	background: var(--bs-black-alpha-75);
+	background: rgb(0 0 0 / 0.75);
 	font-size: var(--text-ui);
 	z-index: 1;
 	pointer-events: none;
@@ -189,6 +189,6 @@
 
 .heroic-label {
 	margin-left: var(--spacer-1);
-	color: var(--bs-uncommon);
+	color: var(--color-quality-uncommon);
 	font-size: var(--text-ui);
 }

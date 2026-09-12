@@ -6,7 +6,7 @@
 	.icon-picker-button,
 	.gem-socket-container {
 		&:focus-visible {
-			outline: 1px solid var(--bs-link-color);
+			outline: 1px solid var(--color-link);
 			outline-offset: 1px;
 		}
 	}

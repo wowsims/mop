@@ -17,7 +17,7 @@
 	}
 
 	.sim-link {
-		background: var(--bs-body-bg);
+		background: var(--color-background);
 		height: 100%;
 		width: 100%;
 
@@ -29,8 +29,8 @@
 		}
 
 		.sim-link-content {
-			padding-left: var(--gap-width);
-			padding-right: var(--gap-width);
+			padding-left: var(--spacing-gutter);
+			padding-right: var(--spacing-gutter);
 		}
 	}
 }

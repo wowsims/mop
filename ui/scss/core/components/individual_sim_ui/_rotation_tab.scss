@@ -47,7 +47,7 @@
 			--columns: 1fr 1fr;
 			display: grid;
 			grid-template-columns: var(--columns);
-			gap: var(--container-padding);
+			gap: var(--spacing-page);
 
 			@include media-breakpoint-down(xl) {
 				--columns: 1fr;
@@ -56,7 +56,7 @@
 	}
 
 	.rotation-tab-apl {
-		gap: var(--gap-width) var(--container-padding);
+		gap: var(--spacing-gutter) var(--spacing-page);
 
 		.apl-rotation-navbar {
 			flex: 1 0 100%;
@@ -74,7 +74,7 @@
 
 		.tab-pane {
 			padding-top: 0;
-			gap: var(--section-spacer);
+			gap: var(--spacing-section);
 
 			&.active {
 				display: flex;

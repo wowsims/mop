@@ -29,9 +29,9 @@ function valueScale(color: string, text: string, max: number, extra?: Partial<Sc
 	} as ScaleOptions<'linear'>;
 }
 
-export const dpsColor = () => cssVarColor('--bs-dps');
-const manaColor = () => cssVarColor('--bs-mana');
-export const threatColor = () => cssVarColor('--bs-threat');
+export const dpsColor = () => cssVarColor('--color-damage-dps');
+const manaColor = () => cssVarColor('--color-resource-mana');
+export const threatColor = () => cssVarColor('--color-damage-threat');
 
 export const Y_DPS = 'yDps';
 export const Y_MANA = 'yMana';

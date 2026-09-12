@@ -4,13 +4,13 @@
 	.saved-data-container {
 		display: flex;
 		flex-direction: column;
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 
 		.saved-data-presets,
 		.saved-data-custom {
 			display: flex;
 			flex-wrap: wrap;
-			gap: var(--block-spacer);
+			gap: var(--spacing-block);
 		}
 	}
 
@@ -24,7 +24,7 @@
 		}
 
 		.saved-data-save-input {
-			margin-bottom: var(--block-spacer);
+			margin-bottom: var(--spacing-block);
 		}
 	}
 }
@@ -33,14 +33,14 @@
 	@extend .btn;
 
 	padding: 0;
-	border: 1px solid var(--bs-primary) !important;
+	border: 1px solid var(--color-primary) !important;
 	display: flex;
 	font-size: var(--text-ui);
 	font-weight: normal;
 	transition: $btn-transition;
 
 	&.active {
-		background-color: var(--bs-primary);
+		background-color: var(--color-primary);
 
 		.saved-data-set-name,
 		.saved-data-set-delete {

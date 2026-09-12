@@ -15,10 +15,10 @@
 	.bulk-gear-search-container {
 		position: relative;
 		display: grid;
-		gap: var(--gap-width);
+		gap: var(--spacing-gutter);
 		padding: var(--spacer-3);
 		border: var(--border-default);
-		background: var(--bs-body-bg);
+		background: var(--color-background);
 		grid-template-columns: 1fr 1fr;
 
 		@include media-breakpoint-up(md) {
@@ -106,9 +106,9 @@
 		}
 
 		.ilvl-filters-separator {
-			margin-left: var(--block-spacer);
-			margin-right: var(--block-spacer);
-			margin-top: var(--block-spacer);
+			margin-left: var(--spacing-block);
+			margin-right: var(--spacing-block);
+			margin-top: var(--spacing-block);
 		}
 	}
 }

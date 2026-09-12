@@ -15,7 +15,7 @@ th {
 	// Allow for styled scrolling
 	max-height: 100vh;
 	overflow-y: auto;
-	scrollbar-color: var(--bs-primary) var(--bs-body-bg);
+	scrollbar-color: var(--color-primary) var(--color-background);
 	scrollbar-width: thin;
 
 	&::-webkit-scrollbar {
@@ -23,11 +23,11 @@ th {
 	}
 
 	&::-webkit-scrollbar-track {
-		background-color: var(--bs-body-bg);
+		background-color: var(--color-background);
 	}
 
 	&::-webkit-scrollbar-thumb {
-		background-color: var(--bs-primary);
+		background-color: var(--color-primary);
 	}
 
 	.sim-root {
@@ -60,7 +60,7 @@ th {
 		}
 
 		.sim-content {
-			padding: 0 var(--container-padding) var(--container-padding) var(--container-padding);
+			padding: 0 var(--spacing-page) var(--spacing-page) var(--spacing-page);
 			flex: 4;
 			z-index: 1;
 		}
@@ -71,7 +71,7 @@ th {
 	max-width: 400px;
 
 	i {
-		color: var(--bs-danger);
+		color: var(--color-danger);
 	}
 }
 

@@ -1,13 +1,13 @@
 .list-picker-root {
 	flex-direction: column;
 	align-items: center;
-	gap: var(--block-spacer);
+	gap: var(--spacing-block);
 
 	.list-picker-title {
 		width: 100%;
 		display: flex;
 		border-bottom: var(--border-default);
-		margin-bottom: var(--block-spacer);
+		margin-bottom: var(--spacing-block);
 		font-size: 1rem;
 		font-weight: bold;
 	}
@@ -18,7 +18,7 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 
 		.list-picker-item-container {
 			position: relative;
@@ -29,7 +29,7 @@
 			}
 
 			&.dragfrom {
-				background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
+				background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
 				filter: opacity(0.5);
 				cursor: move;
 			}
@@ -48,7 +48,7 @@
 						left: calc(var(--drag-background-spacing) * -1);
 						height: calc(100% + var(--drag-background-spacing) * 2);
 						width: calc(100% + var(--drag-background-spacing) * 2);
-						background-color: color-mix(in srgb, var(--bs-border-color) 20%, transparent);
+						background-color: color-mix(in srgb, var(--color-border) 20%, transparent);
 						pointer-events: none;
 					}
 				}
@@ -75,9 +75,9 @@
 			}
 
 			.list-picker-item-header {
-				padding-bottom: var(--block-spacer);
+				padding-bottom: var(--spacing-block);
 				border-bottom: var(--border-default);
-				margin-bottom: var(--block-spacer);
+				margin-bottom: var(--spacing-block);
 				display: flex;
 				align-items: center;
 				flex: 1;

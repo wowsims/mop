@@ -1,5 +1,4 @@
 /* stylelint-disable plugin/stylelint-bem-namics */
-$gray-800: #323232;
 
 :root {
 	--bs-body-font-family: SimDefaultFont;
@@ -57,37 +56,37 @@ $gray-800: #323232;
 	margin-top: 0;
 
 	&:focus {
-		box-shadow: 0 0 0.25rem var(--bs-primary);
+		box-shadow: 0 0 0.25rem var(--color-primary);
 	}
 
 	&:checked[type='checkbox'] {
-		background-color: var(--bs-primary);
+		background-color: var(--color-primary);
 		background-image: var(--form-check-box-bg-image);
 	}
 
 	&:checked[type='radio'] {
-		background-color: var(--bs-primary);
+		background-color: var(--color-primary);
 		background-image: var(--form-check-radio-bg-image);
 	}
 }
 
 .link-warning {
-	color: var(--bs-link-warning) !important;
+	color: var(--color-link-warning) !important;
 }
 
 .link-danger {
-	color: var(--bs-link-danger) !important;
+	color: var(--color-link-danger) !important;
 }
 
 .link-success {
-	color: var(--bs-success) !important;
+	color: var(--color-success) !important;
 }
 
 .navbar {
 	.navbar-toggler {
 		border: 0;
 		box-shadow: none;
-		color: var(--bs-white);
+		color: var(--color-white);
 
 		@include media-breakpoint-down(md) {
 			position: absolute;

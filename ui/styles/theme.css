@@ -32,6 +32,12 @@
 
 	--spacing-icon-sm: 1rem;
 	--spacing-icon-md: 2.5rem;
+	--spacing-block: 0.75rem;
+	--spacing-gutter: 1.5rem;
+	--spacing-gutter-sm: 0.5rem;
+	--spacing-page: 0.5rem;
+	--spacing-section: 2rem;
+	--spacing-cell: 0.5rem;
 
 	--color-black: #000;
 	--color-white: #fff;
@@ -41,7 +47,7 @@
 	--color-gray-500: #adb5bd;
 	--color-gray-600: #6c757d;
 	--color-gray-700: #495057;
-	--color-gray-800: #323232;
+	--color-gray-800: #343a40;
 	--color-gray-900: #212529;
 
 	--color-background: #15171e;
@@ -137,19 +143,8 @@
 	--spacer-3: 1rem;
 	--spacer-4: 1.5rem;
 	--spacer-5: 3rem;
-	--border-default: 1px solid var(--bs-border-color);
-	--table-cell-padding: 0.5rem;
-	--container-padding-lg: 3rem;
-	--container-padding-xxl: 4rem;
-	--container-padding: var(--gap-width-sm);
-	--section-spacer-sm: 2rem;
-	--section-spacer-lg: calc(var(--container-padding) / 2);
-	--section-spacer-xxl: calc(var(--container-padding) / 2);
-	--section-spacer: var(--section-spacer-sm);
-	--block-spacer: 0.75rem;
+	--border-default: 1px solid var(--color-border);
 	--dr-filling-pane-min-height: 70vh;
-	--gap-width: 1.5rem;
-	--gap-width-sm: 0.5rem;
 	--h6-font-size: 1rem;
 	--header-z-index: 100;
 	--sidebar-z-index: 200;
@@ -162,7 +157,7 @@
 	--input-padding-y: 0.375rem;
 	--input-padding-x: 0.75rem;
 	--dropdown-bg: color-mix(in srgb, #15171e, #fff 5%);
-	--dropdown-border-width: var(--bs-border-width);
+	--dropdown-border-width: 1px;
 	--dropdown-link-active-bg: color-mix(in srgb, #15171e, #fff 5%);
 	--dropdown-link-color: #fff;
 	--dropdown-link-hover-color: #fff;
@@ -182,7 +177,7 @@
 	--modal-width-lg: 800px;
 	--modal-width-xl: 1140px;
 	--modal-bg: #15171e;
-	--modal-border-width: var(--bs-border-width);
+	--modal-border-width: 1px;
 	--modal-border-color: #373d57;
 	--modal-padding: 1.25rem;
 	--modal-transition: transform 0.3s ease-out;
@@ -190,34 +185,34 @@
 	--modal-header-padding: 1.25rem;
 	--modal-header-padding-y: 1rem;
 	--modal-header-padding-x: 1rem;
-	--modal-header-border-width: var(--bs-border-width);
+	--modal-header-border-width: 1px;
 	--modal-header-border-color: #6c757d;
 	--modal-title-font-size: 1.25rem;
 	--modal-title-line-height: 1.5;
 	--modal-close-color: #a5b1d6;
-	--modal-footer-border-width: var(--bs-border-width);
-	--modal-footer-border-color: var(--bs-border-color);
+	--modal-footer-border-width: 1px;
+	--modal-footer-border-color: var(--color-border);
 	--modal-backdrop-zindex: 1050;
 	--modal-elevated-backdrop-zindex: 1060;
 	--modal-elevated-zindex: 1065;
 	--modal-backdrop-bg: #000;
 	--modal-backdrop-opacity: 0.5;
-	--bs-tooltip-bg: color-mix(in srgb, #15171e, #fff 5%);
-	--bs-tooltip-border: #373d57;
-	--bs-tooltip-body-color: #fff;
-	--bs-tooltip-max-width: 15vw;
-	--bs-tooltip-max-width-lg: 25vw;
-	--bs-tooltip-max-width-sm: 75vw;
-	--bs-tooltip-body-padding-x: var(--spacer-2);
-	--bs-tooltip-body-padding-y: var(--spacer-2);
+	--tooltip-bg: color-mix(in srgb, #15171e, #fff 5%);
+	--tooltip-border: #373d57;
+	--tooltip-body-color: #fff;
+	--tooltip-max-width: 15vw;
+	--tooltip-max-width-lg: 25vw;
+	--tooltip-max-width-sm: 75vw;
+	--tooltip-body-padding-x: var(--spacer-2);
+	--tooltip-body-padding-y: var(--spacer-2);
 	--focus-ring: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 	--transition-fade: opacity 0.15s linear;
 	--tab-padding-y: var(--spacer-3);
 	--tab-padding-x: 1rem;
 	--tab-font-size: 0.875rem;
 	--tab-transition: var(--link-transition);
-	--tab-color: var(--bs-link-color);
-	--tab-color-hover: var(--bs-link-hover-color);
+	--tab-color: var(--color-link);
+	--tab-color-hover: var(--color-link-hover);
 	--tab-color-active: #fff;
 	--body-bg: #15171e;
 	--gray-500: #adb5bd;
@@ -225,4 +220,18 @@
 	--table-row-even-bg: #18191e;
 	--table-row-even-bg-hsl: 230deg, 11.1111111111%, 10.5882352941%;
 	--table-row-odd-bg: #222328;
+}
+
+@media (width >= 992px) {
+	:root {
+		--spacing-page: 3rem;
+		--spacing-section: 1.5rem;
+	}
+}
+
+@media (width >= 1400px) {
+	:root {
+		--spacing-page: 4rem;
+		--spacing-section: 2rem;
+	}
 }

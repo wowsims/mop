@@ -1,10 +1,10 @@
 /* stylelint-disable plugin/stylelint-bem-namics */
 :root {
-	--bs-body-font-size: 14px;
-	font-size: var(--bs-body-font-size);
+	--font-size-root: 14px;
+	font-size: var(--font-size-root);
 
 	@include media-breakpoint-up(1080p) {
-		--bs-body-font-size: 16px;
+		--font-size-root: 16px;
 	}
 
 	// We want to apply only to 1440p monitors, NOT 1080p Ultrawide
@@ -16,21 +16,12 @@
 	// 	--bs-body-font-size: 24px;
 	// }
 
-	@include media-breakpoint-up(lg) {
-		--section-spacer: var(--section-spacer-lg) !important;
-		--container-padding: var(--container-padding-lg) !important;
-	}
-
-	@include media-breakpoint-up(xxl) {
-		--section-spacer: var(--section-spacer-xxl) !important;
-		--container-padding: var(--container-padding-xxl) !important;
-	}
 }
 
 html {
 	height: 100%;
 	color-scheme: dark;
-	font-size: var(--bs-body-font-size);
+	font-size: var(--font-size-root);
 }
 
 body {
@@ -53,7 +44,7 @@ button {
 	border: 0;
 	background-color: transparent;
 	padding: 0;
-	color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+	color: var(--color-link);
 	text-decoration: none;
 	width: auto;
 	text-align: inherit;
@@ -61,7 +52,7 @@ button {
 	transition: $btn-transition;
 
 	&:hover {
-		--bs-link-color-rgb: var(--bs-link-hover-color-rgb);
+		color: var(--color-link-hover);
 	}
 }
 
@@ -74,12 +65,12 @@ button[class*='btn-link'] {
 	transition: color 0.15s ease-in-out;
 
 	&.link-alt {
-		color: var(--bs-white);
+		color: var(--color-white);
 
 		&:hover,
 		&:focus,
 		&.active {
-			color: var(--bs-brand);
+			color: var(--color-brand);
 		}
 	}
 }
@@ -103,7 +94,7 @@ h6 {
 }
 
 p {
-	margin-bottom: var(--block-spacer);
+	margin-bottom: var(--spacing-block);
 }
 
 .dragto:not(.dragfrom) {
@@ -153,7 +144,7 @@ p {
 
 @each $label, $value in $multi-spell-school-colors {
 	.spell-school-#{$label} {
-		color: var(--bs-primary);
+		color: var(--color-primary);
 		background-image: $value;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -169,7 +160,7 @@ p {
 // really reaching for. Bare element selectors, so any component rule still outranks this.
 a:focus-visible,
 button:focus-visible {
-	outline: 1px solid var(--bs-link-color);
+	outline: 1px solid var(--color-link);
 	outline-offset: 1px;
 }
 
@@ -185,5 +176,5 @@ button:focus-visible {
 
 .notices-banner {
 	width: 100%;
-	background: color-mix(in srgb, var(--bs-body-bg), var(--bs-white) 5%);
+	background: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
 }

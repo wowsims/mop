@@ -1242,3 +1242,82 @@ link text, and a `results-stuck` capture; `css-vars.mjs` was deleted outright.
   is deleted rather than kept as dead weight. Its README row and run-block line are removed; the
   README's new `tw-probe.mjs` section carries the one-sentence retirement note instead of a table row
   for a file that no longer exists.
+
+## Stage 4 — A-S3: `--bs-*` reads → project tokens
+
+Every `var(--bs-X)` read across `.scss`/`.css`/`.ts`/`.tsx` was renamed to the matching project token
+(`theme.css`'s `@theme static` block, or the pre-existing `:root` twins for tabs/tooltips). The
+starting census (340 reads, 79 names) ended at exactly three residual reads: `--bs-gutter-x` (×2,
+`tailwind.css`'s `@utility container`, self-declared and out of scope until U-landing) and
+`--bs-btn-disabled-bg`/`--bs-btn-disabled-color` (`_sidebar.scss:114,128`, deliberately left — see
+below).
+
+**Value-identity proof source.** Every rename was checked against the Bootstrap `:root` block in the
+built baseline bundle: the `--bs-*` custom property's value there equals the corresponding
+`theme.css` token's value. `--bs-body-bg`, `--bs-body-color`, `--bs-border-color`,
+`--bs-secondary-color`, and `--bs-link-*` all carry a second value under a `[data-bs-theme=dark]`
+override in Bootstrap's stylesheet, but that selector is never active in this app (no
+`data-bs-theme` attribute is ever set), so only the root value was load-bearing.
+
+**Why Group B (alpha colours) is written as literals, not `rgba(var(--x-rgb), a)`.** Chrome computes
+`color-mix(in srgb, #fff 80%, transparent)` to `color(srgb 1 1 1 / 0.8)`, but computes
+`rgb(255 255 255 / 0.8)` to `rgba(255, 255, 255, 0.8)` — two different serializations for the same
+color. The rendering probe diffs computed style strings, so a static alpha color has to be written in
+whichever form the probe already expects for these exact sites, which is the literal
+`rgb(r g b / a)`/`rgba(...)` form Bootstrap itself was emitting. The one exception is
+`Timeline.scss:190`'s `rgba(var(--bs-primary-rgb), 0.5)`, which sits on a `:focus-visible` box-shadow
+the rendering probe never exercises — that site was converted to
+`color-mix(in srgb, var(--color-primary) 50%, transparent)` instead, since nothing pins its computed
+form and `color-mix` tracks the token going forward.
+
+**Three deviations from the plan, as instructed to record:**
+1. `_bootstrap_style_overrides.scss:5-6` (`--bs-body-font-family` / `--bs-body-line-height`) were
+   *not* deleted, contrary to the plan's text. They're declarations Bootstrap's `reboot` still reads
+   for `body { font-family; line-height }`; deleting them now would drop body line-height to the
+   browser default (1.5) until `reboot` itself is removed at step 26. They stay until then.
+2. `_sidebar.scss:114,128` (`var(--bs-btn-disabled-bg)` / `var(--bs-btn-disabled-color)`) were left
+   untouched. They resolve inside the themed `.btn-primary` scope, and their replacement tokens
+   (`--color-primary-disabled`, `--color-primary-disabled-foreground`) don't exist yet — they're
+   created by the next step, B0.
+3. The plan's correction (3) guessed `.import-link` (one of the `--bs-nav-link-*` read sites) had no
+   `.nav` ancestor. It does — `SimShell.tsx:100-101` renders `import-export nav` — so all eight
+   `--bs-nav-link-padding-y`/four `-padding-x`/one `-font-size` reads resolve to `.nav`'s scope
+   values, which are exactly the `--tab-padding-y`/`--tab-padding-x`/`--tab-font-size` `:root` twins
+   already in `theme.css`. Renamed straight to those, no new tokens needed.
+
+**`$gray-800` deletion proof.** `_bootstrap_style_overrides.scss:2` declared `$gray-800: #323232`, a
+Sass variable. Its only reader, `_variables.scss:83` (`gray-800-alpha-50: rgba($gray-800, 0.5)`),
+evaluates before that declaration line in Sass's import order, so it was already picking up
+Bootstrap's own `$gray-800` default (`#343a40`) — confirmed by the built bundle's
+`--bs-gray-800-alpha-50` resolving to `#343a4080`, not `#32323280`. The override line was dead. It's
+deleted, and `theme.css`'s `--color-gray-800` is corrected from `#323232` to `#343a40` to match what
+was actually rendering; no `gray-800` Tailwind utility exists anywhere in `.ts`/`.tsx`, so nothing
+visible changes.
+
+**`--font-size-root` mechanism.** `_global.scss`'s old `--bs-body-font-size` (14px, 16px at 1080p) is
+renamed to `--font-size-root`, still set on `:root` and read by `html { font-size }`. Bootstrap's
+`reboot` then reads its own `--bs-body-font-size: 1rem` for `body { font-size }`, which resolves to
+the same pixel value because `html` already carries the root size — `1rem` is relative to `html`'s
+font-size, not a hardcoded value, so the two layers stay in sync without any Bootstrap variable being
+touched.
+
+**The six spacing tokens** (`--spacing-block`, `--spacing-gutter`, `--spacing-gutter-sm`,
+`--spacing-page`, `--spacing-section`, `--spacing-cell`) replace `--block-spacer`, `--gap-width`,
+`--gap-width-sm`, `--container-padding`, `--section-spacer`, `--table-cell-padding` respectively,
+added to `theme.css`'s `@theme static` block so they're real Tailwind-visible tokens rather than
+private `:root` twins. The eleven now-dead declarations they replaced (`--table-cell-padding`,
+`--container-padding{,-lg,-xxl}`, `--section-spacer{,-sm,-lg,-xxl}`, `--block-spacer`, `--gap-width`,
+`--gap-width-sm`) are deleted from `theme.css`'s `:root {}` block. The responsive overrides
+(`_global.scss`'s `@include media-breakpoint-up(lg/xxl)` blocks, which used `!important` to beat the
+`:root` declaration under Sass's Bootstrap-driven cascade) move to `theme.css` itself as two plain
+`@media` blocks appended after `:root {}`, with no `!important`: an unlayered `:root` rule already
+beats the layered `@theme static` emission on specificity/cascade-layer order alone, so the
+`!important` escape hatch is no longer needed. The `lg` values are unchanged (`section-spacer-lg` was
+`calc(container-padding-lg / 2)` = 1.5rem; `xxl`'s was `calc(container-padding-xxl / 2)` = 2rem).
+
+**Two harmless residual text matches**, not live tokens, left as-is because this step touches only
+`var(--bs-*)`/spacing-token reads, not prose or unrelated identifiers: `LogRunner.scss:8`'s comment
+still says `` `--container-padding` `` (stale prose reference, not a rule against touching comment
+*content* the brief didn't ask to edit); `_bulk_tab.scss:117,124`'s local custom property
+`--bulk-gear-combo-gap-width` contains `gap-width` as a substring of its own name, not a read of the
+deleted `--gap-width` token.

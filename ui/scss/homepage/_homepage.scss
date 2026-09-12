@@ -30,7 +30,7 @@
 	.homepage-header {
 		.homepage-header-container {
 			display: flex;
-			padding-top: var(--section-spacer);
+			padding-top: var(--spacing-section);
 
 			@include media-breakpoint-down(md) {
 				display: flex;
@@ -59,7 +59,7 @@
 					// Was `@extend .fw-bold`, which came from Bootstrap's utilities API. Stated directly
 					// now that the API is gone — an @extend of a missing class fails silently.
 					font-weight: 700;
-					color: var(--bs-brand);
+					color: var(--color-brand);
 					margin: 0;
 					line-height: 1;
 				}
@@ -74,14 +74,14 @@
 		}
 
 		.expansion-title {
-			color: var(--bs-expansion);
+			color: var(--color-expansion);
 			margin: 0;
 		}
 	}
 
 	.homepage-content-container {
-		padding-top: var(--container-padding);
-		padding-bottom: var(--container-padding);
+		padding-top: var(--spacing-page);
+		padding-bottom: var(--spacing-page);
 		flex-direction: column;
 
 		@include media-breakpoint-down(md) {
@@ -89,7 +89,7 @@
 		}
 
 		.info-container {
-			margin-bottom: var(--container-padding);
+			margin-bottom: var(--spacing-page);
 			display: flex;
 			flex-direction: column;
 
@@ -177,7 +177,7 @@
 .landing-sim-link-popup {
 	width: var(--anchor-width);
 	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
-	background: var(--bs-black-alpha-50);
+	background: rgb(0 0 0 / 0.5);
 	// The popup takes focus when it opens; the rows below carry the visible state.
 	outline: none;
 
@@ -192,7 +192,7 @@
 		text-decoration: none;
 
 		&[data-highlighted] {
-			background-color: var(--bs-black-alpha-50);
+			background-color: rgb(0 0 0 / 0.5);
 		}
 	}
 }

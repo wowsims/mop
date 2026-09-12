@@ -50,7 +50,7 @@
 .sim-tab-panel {
 	max-width: 100%;
 	flex-grow: 1;
-	padding-top: var(--gap-width);
+	padding-top: var(--spacing-gutter);
 	opacity: 1;
 	transition: var(--transition-fade);
 
@@ -59,6 +59,6 @@
 	}
 
 	@include media-breakpoint-down(lg) {
-		padding-top: calc(var(--gap-width-sm) * 2);
+		padding-top: calc(var(--spacing-gutter-sm) * 2);
 	}
 }

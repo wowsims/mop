@@ -6,18 +6,18 @@
 	}
 
 	.ep-weights-options {
-		margin-bottom: var(--block-spacer);
+		margin-bottom: var(--spacing-block);
 	}
 
 	.ep-reference-options {
-		margin-bottom: var(--block-spacer);
+		margin-bottom: var(--spacing-block);
 
 		.form-label {
 			font-weight: bold;
 		}
 
 		p {
-			margin-top: var(--block-spacer);
+			margin-top: var(--spacing-block);
 		}
 	}
 
@@ -56,7 +56,7 @@
 				background-color: var(--table-row-even-bg);
 
 				td {
-					padding: var(--table-cell-padding);
+					padding: var(--spacing-cell);
 				}
 
 				.input-root {
@@ -92,7 +92,7 @@
 				}
 
 				td {
-					padding: var(--table-cell-padding);
+					padding: var(--spacing-cell);
 
 					.fas {
 						display: inline;

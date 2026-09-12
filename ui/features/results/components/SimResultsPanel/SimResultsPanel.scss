@@ -11,7 +11,7 @@
 .warning-zone .warning,
 .sim-abort-button {
 	&:focus-visible {
-		outline: 1px solid var(--bs-link-color);
+		outline: 1px solid var(--color-link);
 		outline-offset: 1px;
 	}
 }

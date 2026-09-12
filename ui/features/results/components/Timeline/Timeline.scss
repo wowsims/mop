@@ -4,7 +4,7 @@
 	@include bottom-floating-action-bar(var(--spacer-2));
 	z-index: 4;
 	box-sizing: border-box;
-	margin-bottom: calc(-1 * var(--container-padding));
+	margin-bottom: calc(-1 * var(--spacing-page));
 	min-height: var(--rotation-fab-h);
 	transition:
 		padding 0.15s ease-in-out,
@@ -28,7 +28,7 @@
 	min-width: 0;
 
 	.stuck & {
-		background: var(--bs-body-bg);
+		background: var(--color-background);
 	}
 }
 
@@ -46,8 +46,8 @@
 
 .rotation-fab-panel {
 	transform: translate3d(0, 100%, 0);
-	border: var(--bs-border-width) solid var(--bs-border-color);
-	background: var(--bs-body-bg);
+	border: 1px solid var(--color-border);
+	background: var(--color-background);
 	transition: transform 150ms ease;
 
 	.rotation-floating-action-bar-root[data-expanded='true'] & {
@@ -84,77 +84,77 @@
 // so the timeline classes the row by name.
 .secondary-resource--arcane-charges .series-color,
 .secondary-resource--arcane-charges.series-color {
-	color: var(--bs-arcane-charges);
+	color: var(--color-resource-arcane-charges);
 }
 
 .secondary-resource--shadow-orbs .series-color,
 .secondary-resource--shadow-orbs.series-color {
-	color: var(--bs-shadow-orbs);
+	color: var(--color-resource-shadow-orbs);
 }
 
 .secondary-resource--demonic-fury .series-color,
 .secondary-resource--demonic-fury.series-color {
-	color: var(--bs-demonic-fury);
+	color: var(--color-resource-demonic-fury);
 }
 
 .secondary-resource--burning-embers .series-color,
 .secondary-resource--burning-embers.series-color {
-	color: var(--bs-burning-embers);
+	color: var(--color-resource-burning-embers);
 }
 
 .secondary-resource--soul-shards .series-color,
 .secondary-resource--soul-shards.series-color {
-	color: var(--bs-soul-shards);
+	color: var(--color-resource-soul-shards);
 }
 
 .secondary-resource--holy-power .series-color,
 .secondary-resource--holy-power.series-color {
-	color: var(--bs-holy-power);
+	color: var(--color-resource-holy-power);
 }
 
 .threat .series-color,
 .threat.series-color {
-	color: var(--bs-threat);
+	color: var(--color-damage-threat);
 }
 
 .health .series-color,
 .health.series-color {
-	color: var(--bs-health);
+	color: var(--color-resource-health);
 }
 
 .mana .series-color,
 .mana.series-color {
-	color: var(--bs-mana);
+	color: var(--color-resource-mana);
 }
 
 .energy .series-color,
 .energy.series-color {
-	color: var(--bs-energy);
+	color: var(--color-resource-energy);
 }
 
 .rage .series-color,
 .rage.series-color {
-	color: var(--bs-rage);
+	color: var(--color-resource-rage);
 }
 
 .focus .series-color,
 .focus.series-color {
-	color: var(--bs-focus);
+	color: var(--color-resource-focus);
 }
 
 .combo-points .series-color,
 .combo-points.series-color {
-	color: var(--bs-combo-points);
+	color: var(--color-resource-combo-points);
 }
 
 .solar-energy .series-color,
 .solar-energy.series-color {
-	color: var(--bs-solar-energy);
+	color: var(--color-resource-solar-energy);
 }
 
 .lunar-energy .series-color,
 .lunar-energy.series-color {
-	color: var(--bs-lunar-energy);
+	color: var(--color-resource-lunar-energy);
 }
 
 .timeline-disclaimer {
@@ -176,10 +176,10 @@
 		align-self: flex-start;
 
 		.btn-outline-primary {
-			--bs-btn-hover-bg: var(--bs-primary);
-			--bs-btn-hover-border-color: var(--bs-primary);
-			--bs-btn-active-bg: var(--bs-primary);
-			--bs-btn-active-border-color: var(--bs-primary);
+			--bs-btn-hover-bg: var(--color-primary);
+			--bs-btn-hover-border-color: var(--color-primary);
+			--bs-btn-active-bg: var(--color-primary);
+			--bs-btn-active-border-color: var(--color-primary);
 		}
 
 		.btn-check:focus + .btn {
@@ -187,7 +187,7 @@
 		}
 
 		.btn-check:focus-visible + .btn {
-			box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
+			box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--color-primary) 50%, transparent);
 		}
 	}
 }
@@ -251,7 +251,7 @@
 }
 
 .timeline-tooltip-header {
-	border-bottom: 1px solid var(--bs-white);
+	border-bottom: 1px solid var(--color-white);
 }
 
 .timeline-tooltip-body {
@@ -270,7 +270,7 @@
 }
 
 .timeline-tooltip-auras {
-	border-top: 1px solid var(--bs-white);
+	border-top: 1px solid var(--color-white);
 }
 
 .timeline-chart {
@@ -288,10 +288,10 @@
 	top: calc(var(--tooltip-y, 0) * 1px);
 	z-index: 1000;
 	pointer-events: none;
-	background-color: var(--bs-tooltip-bg);
-	border: var(--bs-tooltip-border) 1px solid;
-	color: var(--bs-tooltip-body-color);
-	padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+	background-color: var(--tooltip-bg);
+	border: var(--tooltip-border) 1px solid;
+	color: var(--tooltip-body-color);
+	padding: var(--tooltip-body-padding-y) var(--tooltip-body-padding-x);
 	max-width: min(94vw, 68rem);
 	max-height: 80vh;
 	overflow: hidden;
@@ -301,11 +301,11 @@
 	--pps: 100px;
 	--duration: 0;
 	--label-w: clamp(8rem, 14rem, 20rem);
-	--rotation-fab-h: calc(2.75rem + 2 * var(--spacer-2) + 2 * var(--bs-border-width));
+	--rotation-fab-h: calc(2.75rem + 2 * var(--spacer-2) + 2 * 1px);
 	--rotation-item-h: 24px;
-	--rotation-row-bg: var(--bs-body-bg);
+	--rotation-row-bg: var(--color-background);
 	--rotation-cast-bg: rgba(229, 204, 128, 0.7);
-	--rotation-cast-cancel-bg: rgba(var(--bs-cancel-rgb), 0.7);
+	--rotation-cast-cancel-bg: rgb(230 128 102 / 0.7);
 	--rotation-aura-bg: rgba(0, 0, 255, 0.52);
 	--rotation-travel-bg: rgba(249, 192, 255, 0.6);
 	--rotation-tick-bg: maroon;
@@ -314,7 +314,7 @@
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
-	color: var(--bs-white);
+	color: var(--color-white);
 
 	@include media-breakpoint-down(lg) {
 		.rotation-label-text {
@@ -330,8 +330,8 @@
 	display: flex;
 	flex: 0 0 30px;
 	height: 30px;
-	margin-right: calc(-1 * var(--container-padding));
-	background: var(--bs-body-bg);
+	margin-right: calc(-1 * var(--spacing-page));
+	background: var(--color-background);
 }
 
 .rotation-corner,
@@ -349,12 +349,12 @@
 	padding: 0 var(--spacer-1);
 	border: 0;
 	background: transparent;
-	color: var(--bs-white);
+	color: var(--color-white);
 	line-height: 1;
 	cursor: pointer;
 
 	&:hover {
-		color: var(--bs-brand);
+		color: var(--color-brand);
 	}
 }
 
@@ -364,8 +364,8 @@
 	box-sizing: border-box;
 	min-width: 0;
 	overflow: hidden;
-	border-bottom: 1px solid var(--bs-white);
-	color: var(--bs-white);
+	border-bottom: 1px solid var(--color-white);
+	color: var(--color-white);
 	font-size: 12px;
 	font-weight: bold;
 }
@@ -409,7 +409,7 @@
 	position: relative;
 	flex: 0 0 auto;
 	min-height: 0;
-	margin-right: calc(-1 * var(--container-padding));
+	margin-right: calc(-1 * var(--spacing-page));
 	overflow-x: auto;
 	overflow-y: hidden;
 	outline: none;
@@ -438,7 +438,7 @@
 	box-sizing: border-box;
 	height: calc(var(--row-h) * 1px);
 	margin: 0;
-	border-bottom: 1px solid var(--bs-gray-700);
+	border-bottom: 1px solid var(--color-gray-700);
 	contain: layout style;
 	background-color: var(--rotation-row-bg);
 }
@@ -475,11 +475,11 @@
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--bs-white);
+	color: var(--color-white);
 	cursor: pointer;
 
 	&:hover {
-		color: var(--bs-link-danger);
+		color: var(--color-link-danger);
 	}
 }
 
@@ -489,7 +489,7 @@
 }
 
 .rotation-row-separator {
-	border-bottom-color: var(--bs-white);
+	border-bottom-color: var(--color-white);
 }
 
 .rotation-measurer {
@@ -526,24 +526,24 @@
 		background-color: var(--rotation-cast-cancel-bg);
 
 		.rotation-item-icon {
-			border-color: var(--bs-cancel);
+			border-color: var(--color-cancel);
 		}
 	}
 
 	&.outcome-miss .rotation-item-icon {
-		border-color: var(--bs-miss);
+		border-color: var(--color-damage-miss);
 	}
 
 	&.outcome-partial .rotation-item-icon {
-		border-color: var(--bs-partial);
+		border-color: var(--color-damage-partial);
 	}
 
 	&.outcome-hit .rotation-item-icon {
-		border-color: var(--bs-hit);
+		border-color: var(--color-damage-hit);
 	}
 
 	&.outcome-crit .rotation-item-icon {
-		border-color: var(--bs-crit);
+		border-color: var(--color-damage-crit);
 	}
 }
 
@@ -552,7 +552,7 @@
 	flex: 0 0 auto;
 	width: var(--rotation-item-h);
 	height: var(--rotation-item-h);
-	border-bottom: 3px solid var(--bs-gray);
+	border-bottom: 3px solid var(--color-gray-600);
 }
 
 // Sits inside the cast bar, so top: 0 already puts it in the same band.
@@ -594,8 +594,8 @@
 	width: calc(var(--pps) * var(--dur));
 	height: 100%;
 	overflow-x: hidden;
-	border-left: 1px solid var(--bs-gray);
-	border-right: 1px solid var(--bs-gray);
+	border-left: 1px solid var(--color-gray-600);
+	border-right: 1px solid var(--color-gray-600);
 	font-weight: bold;
 }
 
@@ -607,22 +607,22 @@
 	height: calc(var(--fill) * 1%);
 
 	&.focus {
-		background-color: var(--bs-orange);
+		background-color: var(--color-orange);
 	}
 
 	&.energy {
-		background-color: var(--bs-partial);
+		background-color: var(--color-damage-partial);
 	}
 
 	&.lunar-energy {
 		width: 24px;
-		background-color: var(--bs-lunar-energy);
+		background-color: var(--color-resource-lunar-energy);
 	}
 
 	&.solar-energy {
 		top: 0;
 		width: 24px;
-		background-color: var(--bs-solar-energy);
+		background-color: var(--color-resource-solar-energy);
 	}
 }
 
@@ -644,26 +644,26 @@
 
 	.rotation-item-cast {
 		min-width: max(2px, calc(var(--pps) * var(--dur)));
-		background-color: var(--bs-gray-700);
+		background-color: var(--color-gray-700);
 
 		&.outcome-hit {
-			background-color: var(--bs-hit);
+			background-color: var(--color-damage-hit);
 		}
 
 		&.outcome-crit {
-			background-color: var(--bs-crit);
+			background-color: var(--color-damage-crit);
 		}
 
 		&.outcome-miss {
-			background-color: var(--bs-miss);
+			background-color: var(--color-damage-miss);
 		}
 
 		&.outcome-partial {
-			background-color: var(--bs-partial);
+			background-color: var(--color-damage-partial);
 		}
 
 		&.cast-cancelled {
-			background-color: var(--bs-cancel);
+			background-color: var(--color-cancel);
 		}
 	}
 }

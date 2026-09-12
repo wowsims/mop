@@ -20,7 +20,7 @@
 	height: 100%;
 	flex-shrink: 1;
 	flex-grow: 1;
-	background-color: color-mix(in srgb, var(--bs-white) 5%, transparent);
+	background-color: color-mix(in srgb, var(--color-white) 5%, transparent);
 }
 
 .metrics-total-bar-fill {

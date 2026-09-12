@@ -24,7 +24,7 @@
 		background:
 			center / var(--reforge-glyph-border-size) url('https://wow.zamimg.com/images/Icon/medium/border/default.png') no-repeat,
 			center / contain url('https://wow.zamimg.com/images/wow/interface/cursor/crosshair/reforge.png') no-repeat;
-		background-color: var(--bs-gray-800);
+		background-color: var(--color-gray-800);
 		border-radius: 3px;
 	}
 
@@ -42,6 +42,6 @@
 	.fa-exclamation-circle {
 		margin-left: 1px;
 		font-size: var(--changed-socket-marker-size);
-		color: var(--bs-danger);
+		color: var(--color-danger);
 	}
 }

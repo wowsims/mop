@@ -2,7 +2,7 @@
 // emits inside `.modal` only — same values, and the portaled popup is not inside a `.modal`.
 .filters-menu {
 	.sim-dialog-body {
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 	}
 
 	.menu-section {
@@ -14,7 +14,7 @@
 
 		&.general-section {
 			.menu-section-content {
-				gap: var(--block-spacer);
+				gap: var(--spacing-block);
 			}
 		}
 

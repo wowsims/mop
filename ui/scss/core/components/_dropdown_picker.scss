@@ -3,7 +3,7 @@
 		border: 0;
 
 		&:hover {
-			color: rgba(var(--bs-white-rgb), 0.8);
+			color: rgb(255 255 255 / 0.8);
 		}
 	}
 }
@@ -23,5 +23,5 @@
 }
 
 .dropdown-header {
-	color: var(--bs-gray-300);
+	color: var(--color-gray-300);
 }

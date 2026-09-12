@@ -102,12 +102,12 @@
 	bottom: 0;
 	display: flex;
 	align-items: center;
-	margin-top: var(--block-spacer);
-	border: 0 solid var(--bs-border-color);
+	margin-top: var(--spacing-block);
+	border: 0 solid var(--color-border);
 
 	&.stuck {
 		padding: $padding;
-		border-width: var(--bs-border-width);
-		background: var(--bs-body-bg);
+		border-width: 1px;
+		background: var(--color-background);
 	}
 }

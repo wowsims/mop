@@ -8,7 +8,7 @@
 	.item-picker-reforge,
 	.gem-socket-container {
 		&:focus-visible {
-			outline: 1px solid var(--bs-link-color);
+			outline: 1px solid var(--color-link);
 			outline-offset: 1px;
 		}
 	}
@@ -38,7 +38,7 @@
 
 		&:nth-child(odd) {
 			.tooltip-quick-swap__anchor {
-				background-color: var(--bs-table-row-odd-bg);
+				background-color: var(--color-table-odd);
 			}
 		}
 	}
@@ -67,7 +67,7 @@
 
 .tooltip-quick-swap__anchor {
 	cursor: pointer;
-	background-color: var(--bs-table-row-even-bg);
+	background-color: var(--color-table-even);
 	transition: var(--link-transition);
 	border: 1px solid transparent;
 	transition-property: background-color, color, border;
@@ -79,16 +79,16 @@
 	}
 
 	&.active {
-		border-color: var(--bs-success);
+		border-color: var(--color-success);
 	}
 
 	&:focus-visible {
-		outline: 1px solid var(--bs-link-color);
+		outline: 1px solid var(--color-link);
 		outline-offset: -1px;
 	}
 }
 
 .tooltip-quick-swap__empty {
 	margin-bottom: 0;
-	color: var(--bs-link-danger);
+	color: var(--color-link-danger);
 }

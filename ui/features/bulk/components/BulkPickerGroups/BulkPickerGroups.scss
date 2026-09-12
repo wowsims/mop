@@ -10,7 +10,7 @@
 	}
 
 	.content-block-body {
-		gap: var(--block-spacer);
+		gap: var(--spacing-block);
 	}
 }
 
@@ -18,7 +18,7 @@
 	border: var(--border-default);
 
 	&.bulk-item-picker-equipped {
-		border-color: var(--bs-brand);
+		border-color: var(--color-brand);
 	}
 
 	&.bulk-item-picker-frozen {

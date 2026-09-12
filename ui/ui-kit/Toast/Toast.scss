@@ -36,7 +36,7 @@
 
 .sim-toast {
 	// Info toasts share this colour on purpose, so there is no `--info` override.
-	--icon-color: var(--bs-warning);
+	--icon-color: var(--color-warning);
 	width: 100%;
 	max-width: 100%;
 	border: $toast-border-width solid $toast-border-color;
@@ -65,11 +65,11 @@
 	}
 
 	&--success {
-		--icon-color: var(--bs-success);
+		--icon-color: var(--color-success);
 	}
 
 	&--error {
-		--icon-color: var(--bs-danger);
+		--icon-color: var(--color-danger);
 	}
 }
 

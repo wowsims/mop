@@ -7,10 +7,10 @@
 	text-align: center;
 	font-size: 9px;
 	font-weight: 700;
-	color: var(--bs-white);
+	color: var(--color-white);
 	text-shadow:
-		0 0 4px var(--bs-black),
-		0 0 4px var(--bs-black);
+		0 0 4px var(--color-black),
+		0 0 4px var(--color-black);
 	line-height: 1;
 }
 
@@ -29,8 +29,8 @@
 	min-height: 0;
 	padding-bottom: 16px;
 	overflow: hidden;
-	background: var(--bs-body-bg);
-	color: var(--bs-secondary-color);
+	background: var(--color-background);
+	color: var(--color-muted);
 	font-family: inherit;
 
 	.cr-empty {
@@ -41,7 +41,7 @@
 		gap: 10px;
 		padding: 60px 20px;
 		text-align: center;
-		color: color-mix(in srgb, var(--bs-white) 50%, transparent);
+		color: color-mix(in srgb, var(--color-white) 50%, transparent);
 		flex: 1;
 	}
 
@@ -53,7 +53,7 @@
 	.cr-empty-title {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		color: color-mix(in srgb, var(--color-white) 70%, transparent);
 	}
 
 	.cr-empty-desc {
@@ -69,7 +69,7 @@
 		min-height: 0;
 		overflow: hidden;
 		isolation: isolate;
-		background: radial-gradient(ellipse at 50% 80%, color-mix(in srgb, var(--bs-body-bg) 65%, var(--bs-warning) 35%) 0%, var(--bs-body-bg) 70%);
+		background: radial-gradient(ellipse at 50% 80%, color-mix(in srgb, var(--color-background) 65%, var(--color-warning) 35%) 0%, var(--color-background) 70%);
 	}
 
 	// Full-panel vignette (same stacking context as the scene gradient — avoids a “second slab” over CDM/controls).
@@ -78,7 +78,7 @@
 		inset: 0;
 		z-index: 0;
 		pointer-events: none;
-		background: radial-gradient(ellipse at 50% 50%, transparent 40%, color-mix(in srgb, var(--bs-black) 70%, transparent) 100%);
+		background: radial-gradient(ellipse at 50% 50%, transparent 40%, color-mix(in srgb, var(--color-black) 70%, transparent) 100%);
 	}
 
 	// ── Arena ──
@@ -114,7 +114,7 @@
 		height: 42px;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 15%, transparent) inset;
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-white) 15%, transparent) inset;
 		cursor: pointer;
 		transition: box-shadow 0.1s;
 		display: block;
@@ -125,8 +125,8 @@
 
 		&.cr-strip-icon-active {
 			box-shadow:
-				0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset,
-				0 0 10px color-mix(in srgb, var(--bs-white) 30%, transparent);
+				0 0 0 2px color-mix(in srgb, var(--color-white) 70%, transparent) inset,
+				0 0 10px color-mix(in srgb, var(--color-white) 30%, transparent);
 		}
 	}
 
@@ -136,7 +136,7 @@
 		right: 2px;
 		font-size: 9px;
 		font-weight: 900;
-		color: var(--bs-crit);
+		color: var(--color-damage-crit);
 		line-height: 1;
 	}
 
@@ -184,7 +184,7 @@
 	.cr-nameplate {
 		position: relative;
 		width: 100%;
-		background: color-mix(in srgb, var(--bs-black) 55%, transparent);
+		background: color-mix(in srgb, var(--color-black) 55%, transparent);
 		border-radius: 6px;
 		padding: 4px 6px;
 		z-index: 2;
@@ -204,7 +204,7 @@
 		height: 42px;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 20%, transparent) inset;
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-white) 20%, transparent) inset;
 		cursor: pointer;
 		flex-shrink: 0;
 		display: block;
@@ -215,7 +215,7 @@
 		transition: box-shadow 0.1s;
 
 		&.cr-aura-icon-active {
-			box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset;
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-white) 70%, transparent) inset;
 		}
 	}
 
@@ -229,10 +229,10 @@
 		right: 2px;
 		font-size: 9px;
 		font-weight: 900;
-		color: var(--bs-white);
+		color: var(--color-white);
 		text-shadow:
-			0 0 3px var(--bs-black),
-			0 0 3px var(--bs-black);
+			0 0 3px var(--color-black),
+			0 0 3px var(--color-black);
 		line-height: 1;
 	}
 
@@ -240,7 +240,7 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-align: center;
-		color: var(--bs-danger);
+		color: var(--color-danger);
 		margin-bottom: 3px;
 		white-space: nowrap;
 		overflow: hidden;
@@ -250,14 +250,14 @@
 	.cr-hp-bar {
 		position: relative;
 		height: 8px;
-		background: color-mix(in srgb, var(--bs-white) 10%, transparent);
+		background: color-mix(in srgb, var(--color-white) 10%, transparent);
 		border-radius: 4px;
 		overflow: hidden;
 	}
 
 	.cr-hp-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--bs-success), color-mix(in srgb, var(--bs-success) 70%, var(--bs-white)));
+		background: linear-gradient(90deg, var(--color-success), color-mix(in srgb, var(--color-success) 70%, var(--color-white)));
 		border-radius: 4px;
 		transition: width 0.05s linear;
 	}
@@ -270,8 +270,8 @@
 		justify-content: center;
 		font-size: 7px;
 		font-weight: 700;
-		color: var(--bs-white);
-		text-shadow: 1px 1px 3px var(--bs-black);
+		color: var(--color-white);
+		text-shadow: 1px 1px 3px var(--color-black);
 	}
 
 	.cr-silhouette {
@@ -290,7 +290,7 @@
 			display: block;
 			object-fit: contain;
 			object-position: center bottom;
-			filter: drop-shadow(0 0 14px color-mix(in srgb, var(--bs-crit) 40%, transparent));
+			filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-damage-crit) 40%, transparent));
 			user-select: none;
 		}
 	}
@@ -311,29 +311,29 @@
 		position: absolute;
 		transform: translate(-50%, -50%);
 		border-radius: 50%;
-		background: radial-gradient(circle, var(--bs-white) 0%, color-mix(in srgb, var(--bs-warning) 60%, transparent) 50%, transparent 100%);
+		background: radial-gradient(circle, var(--color-white) 0%, color-mix(in srgb, var(--color-warning) 60%, transparent) 50%, transparent 100%);
 	}
 
 	.cr-hit-ring {
 		position: absolute;
 		transform: translate(-50%, -50%);
 		border-radius: 50%;
-		border: 2px solid var(--bs-hit);
-		color: var(--bs-hit);
+		border: 2px solid var(--color-damage-hit);
+		color: var(--color-damage-hit);
 
 		&.cr-hit-outcome-hit {
-			border-color: var(--bs-hit);
-			color: var(--bs-hit);
+			border-color: var(--color-damage-hit);
+			color: var(--color-damage-hit);
 		}
 
 		&.cr-hit-outcome-crit {
-			border-color: var(--bs-crit);
-			color: var(--bs-crit);
+			border-color: var(--color-damage-crit);
+			color: var(--color-damage-crit);
 		}
 
 		&.cr-hit-outcome-crit-secondary {
-			border-color: var(--bs-warning);
-			color: var(--bs-warning);
+			border-color: var(--color-warning);
+			color: var(--color-warning);
 		}
 	}
 
@@ -344,19 +344,19 @@
 		white-space: nowrap;
 		font-size: 1rem;
 		font-weight: 800;
-		color: color-mix(in srgb, var(--bs-warning) 80%, var(--bs-white));
+		color: color-mix(in srgb, var(--color-warning) 80%, var(--color-white));
 		text-shadow:
-			0 0 6px var(--bs-black),
-			0 0 6px var(--bs-black),
-			0 2px 4px color-mix(in srgb, var(--bs-black) 80%, transparent);
+			0 0 6px var(--color-black),
+			0 0 6px var(--color-black),
+			0 2px 4px color-mix(in srgb, var(--color-black) 80%, transparent);
 		pointer-events: none;
 
 		&.cr-dmg-crit {
-			color: var(--bs-crit);
+			color: var(--color-damage-crit);
 			font-size: 1.3rem;
 			text-shadow:
-				0 0 8px var(--bs-danger),
-				0 0 8px var(--bs-danger);
+				0 0 8px var(--color-danger),
+				0 0 8px var(--color-danger);
 		}
 	}
 
@@ -366,7 +366,7 @@
 		bottom: 8px;
 		font-size: 1.2rem;
 		font-weight: 700;
-		color: color-mix(in srgb, var(--bs-white) 50%, transparent);
+		color: color-mix(in srgb, var(--color-white) 50%, transparent);
 		align-self: center;
 	}
 
@@ -378,8 +378,8 @@
 		flex-shrink: 0;
 		width: 50%;
 		align-self: center;
-		background: color-mix(in srgb, var(--bs-black) 92%, transparent);
-		border-top: 1px solid color-mix(in srgb, var(--bs-white) 8%, transparent);
+		background: color-mix(in srgb, var(--color-black) 92%, transparent);
+		border-top: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
 		padding: 8px 16px;
 		display: flex;
 		flex-direction: column;
@@ -399,7 +399,7 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		flex-shrink: 0;
-		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		color: color-mix(in srgb, var(--color-white) 70%, transparent);
 	}
 
 	// Left-to-right buff icons; wraps to additional rows, fixed three-row max-height so the CDM doesn't jump in height.
@@ -423,7 +423,7 @@
 		flex-shrink: 0;
 		height: 18px;
 		min-height: 18px;
-		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		background: color-mix(in srgb, var(--color-white) 7%, transparent);
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -433,7 +433,7 @@
 		width: 0;
 		border-radius: 4px;
 		transition: width 0.05s linear;
-		background: linear-gradient(90deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary) 78%, var(--bs-white)));
+		background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 78%, var(--color-white)));
 	}
 
 	.cr-cast-bar-label {
@@ -444,8 +444,8 @@
 		justify-content: center;
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: var(--bs-white);
-		text-shadow: 1px 1px 4px var(--bs-black);
+		color: var(--color-white);
+		text-shadow: 1px 1px 4px var(--color-black);
 		pointer-events: none;
 	}
 
@@ -455,7 +455,7 @@
 		top: 50%;
 		transform: translateY(-50%);
 		font-size: 0.65rem;
-		color: color-mix(in srgb, var(--bs-white) 75%, transparent);
+		color: color-mix(in srgb, var(--color-white) 75%, transparent);
 		pointer-events: none;
 	}
 
@@ -478,7 +478,7 @@
 		position: relative;
 		height: 12px;
 		width: 100%;
-		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		background: color-mix(in srgb, var(--color-white) 7%, transparent);
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -496,7 +496,7 @@
 		transform: translateY(-50%);
 		font-size: 0.6rem;
 		font-weight: 600;
-		color: color-mix(in srgb, var(--bs-white) 80%, transparent);
+		color: color-mix(in srgb, var(--color-white) 80%, transparent);
 		pointer-events: none;
 	}
 
@@ -506,7 +506,7 @@
 		top: 50%;
 		transform: translateY(-50%);
 		font-size: 0.6rem;
-		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		color: color-mix(in srgb, var(--color-white) 70%, transparent);
 		pointer-events: none;
 	}
 
@@ -522,14 +522,14 @@
 	.cr-dot-label {
 		font-size: 0.6rem;
 		font-weight: 600;
-		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		color: color-mix(in srgb, var(--color-white) 70%, transparent);
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
 
 	.cr-dot-val {
 		font-size: 0.6rem;
-		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		color: color-mix(in srgb, var(--color-white) 60%, transparent);
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
@@ -550,7 +550,7 @@
 	}
 
 	.cr-segment--empty {
-		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		background: color-mix(in srgb, var(--color-white) 7%, transparent);
 	}
 
 	// The resource's own colour arrives on .cr-seg-bar, so lighting a pip is one class toggle rather
@@ -574,7 +574,7 @@
 		height: 42px;
 		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 20%, transparent) inset;
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-white) 20%, transparent) inset;
 		cursor: pointer;
 		transition: box-shadow 0.1s;
 		display: block;
@@ -585,7 +585,7 @@
 		flex-shrink: 0;
 
 		&.cr-action-icon-active {
-			box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset;
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-white) 70%, transparent) inset;
 		}
 	}
 
@@ -597,7 +597,7 @@
 		flex-shrink: 0;
 		padding: 6px 12px 8px;
 		background: transparent;
-		border-top: 1px solid color-mix(in srgb, var(--bs-white) 6%, transparent);
+		border-top: 1px solid color-mix(in srgb, var(--color-white) 6%, transparent);
 	}
 
 	.cr-ctrl-row {
@@ -614,16 +614,16 @@
 	.cr-ctrl-btn,
 	.cr-play-btn {
 		padding: 4px 8px;
-		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
-		border: 1px solid color-mix(in srgb, var(--bs-white) 15%, transparent);
+		background: color-mix(in srgb, var(--color-white) 7%, transparent);
+		border: 1px solid color-mix(in srgb, var(--color-white) 15%, transparent);
 		border-radius: 5px;
-		color: var(--bs-body-color);
+		color: var(--color-foreground);
 		font-size: 0.8rem;
 		cursor: pointer;
 		transition: background 0.1s;
 
 		&:hover {
-			background: color-mix(in srgb, var(--bs-white) 15%, transparent);
+			background: color-mix(in srgb, var(--color-white) 15%, transparent);
 		}
 	}
 
@@ -638,23 +638,23 @@
 
 	.cr-speed-btn {
 		padding: 3px 8px;
-		background: color-mix(in srgb, var(--bs-white) 5%, transparent);
-		border: 1px solid color-mix(in srgb, var(--bs-white) 12%, transparent);
+		background: color-mix(in srgb, var(--color-white) 5%, transparent);
+		border: 1px solid color-mix(in srgb, var(--color-white) 12%, transparent);
 		border-radius: 4px;
-		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		color: color-mix(in srgb, var(--color-white) 60%, transparent);
 		font-size: 0.75rem;
 		cursor: pointer;
 
 		&.active {
-			border-color: color-mix(in srgb, var(--bs-white) 50%, transparent);
-			color: var(--bs-white);
+			border-color: color-mix(in srgb, var(--color-white) 50%, transparent);
+			color: var(--color-white);
 		}
 	}
 
 	.cr-time-display {
 		font-size: 0.75rem;
 		font-variant-numeric: tabular-nums;
-		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		color: color-mix(in srgb, var(--color-white) 60%, transparent);
 		margin-left: auto;
 	}
 
@@ -664,7 +664,7 @@
 
 	.cr-scrubber {
 		width: 100%;
-		accent-color: var(--bs-secondary);
+		accent-color: var(--color-secondary);
 		cursor: pointer;
 	}
 }
