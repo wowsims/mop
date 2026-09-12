@@ -18,7 +18,7 @@ export interface ReforgeDoneToastProps {
 export const ReforgeDoneToast = ({ itemSlots, changedSlots, previousGear, settingsExport, onCopied }: ReforgeDoneToastProps) => (
 	<>
 		<p className="mb-0">{i18n.t('gear_tab.reforge_success.title')}</p>
-		<ul className="suggest-reforges-gear-list list-reset">
+		<ul className="suggest-reforges-gear-list m-0 list-none p-0">
 			{itemSlots.map(slot => (
 				<li key={slot}>
 					<GearChangeIcon slot={slot} item={changedSlots.get(slot)} previousItem={previousGear?.getEquippedItem(slot) ?? undefined} />

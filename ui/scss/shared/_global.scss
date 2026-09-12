@@ -115,12 +115,6 @@ kbd {
 	color: var(--bs-white);
 }
 
-.list-reset {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
 .dragto:not(.dragfrom) {
 	filter: brightness(0.5);
 }
@@ -148,37 +142,6 @@ kbd {
 	width: var(--icon-size-md);
 	height: var(--icon-size-md);
 	background-size: cover;
-}
-
-.p-gap {
-	@extend .px-gap;
-	@extend .py-gap;
-}
-
-.pl-gap {
-	padding-left: var(--gap-width);
-}
-
-.pr-gap {
-	padding-right: var(--gap-width);
-}
-
-.pt-gap {
-	padding-top: var(--gap-width);
-}
-
-.pb-gap {
-	padding-bottom: var(--gap-width);
-}
-
-.px-gap {
-	@extend .pl-gap;
-	@extend .pr-gap;
-}
-
-.py-gap {
-	@extend .pt-gap;
-	@extend .pb-gap;
 }
 
 .fs-content {

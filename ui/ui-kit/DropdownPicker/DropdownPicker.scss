@@ -21,12 +21,6 @@
 	font-size: var(--dropdown-font-size);
 }
 
-.dropdown-picker-list {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
 .dropdown-picker-item {
 	// `.dropdown-picker-item .dropdown-item` in `_dropdown_picker.scss` is what laid the icon beside
 	// the label; the option is one element here, so it carries the flex row itself.

@@ -32,7 +32,7 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 					setActiveId(id);
 					trackPageView(tabs.find(tab => tab.id === id)?.title ?? id, id);
 				}}>
-				<Tabs.List className="sim-tabs" activateOnFocus>
+				<Tabs.List className="sim-tabs m-0 flex list-none flex-nowrap items-end p-0" activateOnFocus>
 					{tabs.map(tab => (
 						<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id)}>
 							{tab.title}
