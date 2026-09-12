@@ -24,6 +24,12 @@
 @source '../index.html';
 @source '../index_template.html';
 
+/* Translation values carry markup that carries class names (`bulk_tab.description` spells
+   `<span className="bold">`), and `LocaleHtml`'s `Trans` renders them as real elements, so the
+   class applies. A utility named only in a translation string emits nothing without this, with no
+   gate to catch it. Scoped to the JSON, not `assets`, which holds `db.bin` and the icon sets. */
+@source '../../assets/locales/**/*.json';
+
 /*
  * Class-colour utilities are built by interpolation, which Tailwind's scanner cannot see:
  * `textClassName()` in `sim/proto/utils.ts` returns `text-class-${slug}`, `LandingClassMenu` builds
