@@ -30,7 +30,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 				layout="list"
 				referenceDiffs={reference ? referenceDiffs(current.simResult, reference.simResult) : undefined}
 			/>
-			<div className={clsx('results-sim-reference', reference && 'has-reference')}>
+			<div className={clsx('results-sim-reference', reference && 'has-reference')} data-has-reference={reference ? '' : undefined}>
 				<button
 					type="button"
 					className="results-sim-set-reference"

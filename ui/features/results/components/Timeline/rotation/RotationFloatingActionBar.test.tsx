@@ -73,7 +73,7 @@ describe('RotationFloatingActionBar', () => {
 		const [alpha, beta] = chips(container);
 		expect(alpha.getAttribute('aria-checked')).toBe('true');
 		expect(beta.getAttribute('aria-checked')).toBe('false');
-		expect(beta.className).not.toContain('active');
+		expect(beta.hasAttribute('data-active')).toBe(false);
 
 		fireEvent.click(beta);
 		expect(onToggle).toHaveBeenCalledWith('cast:1');
@@ -130,9 +130,9 @@ describe('RotationFloatingActionBar', () => {
 
 		// One delivery, oldest first: reading the first record would leave the bar unpinned.
 		act(() => observed[0].callback([{ intersectionRatio: 1 }, { intersectionRatio: 0.5 }] as Array<IntersectionObserverEntry>, {} as IntersectionObserver));
-		expect(root.className).toContain('stuck');
+		expect(root.hasAttribute('data-stuck')).toBe(true);
 
 		act(() => observed[0].callback([{ intersectionRatio: 0.5 }, { intersectionRatio: 1 }] as Array<IntersectionObserverEntry>, {} as IntersectionObserver));
-		expect(root.className).not.toContain('stuck');
+		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 });

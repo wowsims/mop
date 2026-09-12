@@ -82,7 +82,7 @@ describe('SimResultSummary', () => {
 			'tto',
 			'hps',
 		]);
-		expect(container.querySelector('.results-sim-reference')?.className).toBe('results-sim-reference');
+		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(false);
 		expect([...container.querySelectorAll('.results-sim-reference button')].map(button => button.getAttribute('type'))).toEqual([
 			'button',
 			'button',
@@ -104,12 +104,12 @@ describe('SimResultSummary', () => {
 		const { container } = mount(results);
 
 		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
-		expect(container.querySelector('.results-sim-reference')?.className).toBe('results-sim-reference has-reference');
+		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(true);
 
 		// Same run on both sides: every rendered metric gets a delta, all of them zero and none coloured.
 		expect(diffs(container)).toHaveLength(7);
 		expect(new Set(diffs(container).map(diff => diff.textContent))).toEqual(new Set(['+0.00 (0.00%)']));
-		expect(new Set(diffs(container).map(diff => diff.className))).toEqual(new Set(['results-reference-diff']));
+		expect(new Set(diffs(container).map(diff => diff.getAttribute('data-sign')))).toEqual(new Set([null]));
 	});
 
 	it('colours a significant gain positive and carries the z score on the anchor', () => {
@@ -120,7 +120,7 @@ describe('SimResultSummary', () => {
 
 		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
 		expect(dps.textContent).toBe('+100.00 (10.00%)');
-		expect(dps.className).toBe('results-reference-diff positive');
+		expect(dps.getAttribute('data-sign')).toBe('positive');
 		expect(dps.getAttribute('data-tooltip-content')).toMatch(/^Difference is significantly different \(Z = \d+\.\d{3}\)\.$/);
 	});
 
@@ -130,7 +130,7 @@ describe('SimResultSummary', () => {
 		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
 		act(() => fireEvent.click(container.querySelector('.results-sim-reference-delete')!));
 
-		expect(container.querySelector('.results-sim-reference')?.className).toBe('results-sim-reference');
+		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(false);
 		expect(diffs(container)).toEqual([]);
 	});
 
@@ -144,6 +144,6 @@ describe('SimResultSummary', () => {
 
 		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
 		expect(dps.textContent).toBe('-100.00 (10.00%)');
-		expect(dps.className).toBe('results-reference-diff negative');
+		expect(dps.getAttribute('data-sign')).toBe('negative');
 	});
 });

@@ -2,8 +2,8 @@ import { flexRender, type Row } from '@tanstack/react-table';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
-import type { MetricRow } from '../../model/grouping';
 import type { MetricsTableFeatures } from '../../hooks/useMetricsTable';
+import type { MetricRow } from '../../model/grouping';
 
 export interface MetricsTableRowProps<T> {
 	row: Row<MetricsTableFeatures, MetricRow<T>>;
@@ -23,6 +23,7 @@ export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<
 					rowClassName?.(row.original.metric),
 				) || undefined
 			}
+			data-expanded={isParent && row.getIsExpanded() ? '' : undefined}
 			onClick={isParent ? row.getToggleExpandedHandler() : undefined}>
 			{row.getAllCells().map(cell => {
 				const tooltipId = cell.column.columnDef.meta?.tooltipId;

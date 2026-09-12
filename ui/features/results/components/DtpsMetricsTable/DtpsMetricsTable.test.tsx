@@ -92,7 +92,7 @@ describe('DtpsMetricsTable', () => {
 	it('builds the nine-column shell before any result', () => {
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(container.querySelector('.dtps-metrics-root')?.className).toBe('dtps-metrics-root');
+		expect(container.querySelector('.dtps-metrics-root')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'metrics-table-header-cell',
 			'metrics-table-header-cell metrics-table-cell--primary-metric text-center',

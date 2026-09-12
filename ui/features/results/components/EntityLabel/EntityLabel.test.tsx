@@ -11,14 +11,14 @@ describe('EntityLabel', () => {
 		const { container } = render(<EntityLabel entity={entity({ name: 'Warrior', index: 2 })} />);
 
 		expect(container.textContent).toBe('[Warrior 3]');
-		expect(container.querySelector('span')!.className).toBe('text-primary');
+		expect(container.querySelector('span')!.classList.contains('text-primary')).toBe(true);
 	});
 
 	it('names a target by number rather than by name, in the danger colour', () => {
 		const { container } = render(<EntityLabel entity={entity({ name: 'Boss', index: 0, isTarget: true })} />);
 
 		expect(container.textContent).toBe('[Target 1]');
-		expect(container.querySelector('span')!.className).toBe('text-danger');
+		expect(container.querySelector('span')!.classList.contains('text-danger')).toBe(true);
 	});
 
 	// A pet's bracket carries its owner, and the pet's own name sits outside it unstyled.

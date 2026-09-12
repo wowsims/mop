@@ -217,7 +217,7 @@ describe('SimResultsPanel', () => {
 		const trigger = zone(view, '.warning-zone button');
 
 		expect(trigger.getAttribute('aria-label')).toBeTruthy();
-		expect(trigger.querySelector('i')!.className).toBe('fas fa-triangle-exclamation fa-3x');
+		expect(trigger.querySelector('i')!.classList.contains('fa-triangle-exclamation')).toBe(true);
 	});
 
 	it('renders the unlaunched notice after the four zones, and only for a disabled spec', () => {

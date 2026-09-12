@@ -107,8 +107,8 @@ describe('CombatReplay', () => {
 
 		const icons = [...container.querySelectorAll<HTMLElement>('.cr-strip-icon')];
 		expect(icons).toHaveLength(2);
-		expect(icons[0].className).toBe('cr-strip-icon');
-		expect(icons[1].className).toBe('cr-strip-icon cr-strip-icon-active');
+		expect(icons[0].classList.contains('cr-strip-icon-active')).toBe(false);
+		expect(icons[1].classList.contains('cr-strip-icon-active')).toBe(true);
 		expect(icons[0].style.opacity).toBe('0.25');
 		expect(icons[1].style.opacity).toBe('1');
 		expect(texts(container, '.cr-crit-badge')).toEqual(['!']);
@@ -126,10 +126,9 @@ describe('CombatReplay', () => {
 	it('lights the action grid for the spell just cast', () => {
 		const container = mount();
 		seek(container, 2.1);
-		expect([...container.querySelectorAll('.cr-action-icon')].map(icon => icon.className)).toEqual([
-			'cr-action-icon',
-			'cr-action-icon cr-action-icon-active',
-		]);
+		const actionIcons = [...container.querySelectorAll<HTMLElement>('.cr-action-icon')];
+		expect(actionIcons.map(icon => icon.classList.contains('cr-action-icon-active'))).toEqual([false, true]);
+		expect(actionIcons.map(icon => icon.hasAttribute('data-active'))).toEqual([false, true]);
 	});
 
 	it('shows the buffs that are up, counting down and stacked', () => {
@@ -209,11 +208,11 @@ describe('CombatReplay', () => {
 	it('flips the play button to a pause while it runs', () => {
 		const container = mount();
 		const play = container.querySelector<HTMLButtonElement>('.cr-play-btn')!;
-		expect(play.querySelector('i')!.className).toBe('fas fa-play');
+		expect(play.querySelector('i')!.classList.contains('fa-play')).toBe(true);
 		fireEvent.click(play);
-		expect(play.querySelector('i')!.className).toBe('fas fa-pause');
+		expect(play.querySelector('i')!.classList.contains('fa-pause')).toBe(true);
 		fireEvent.click(play);
-		expect(play.querySelector('i')!.className).toBe('fas fa-play');
+		expect(play.querySelector('i')!.classList.contains('fa-play')).toBe(true);
 	});
 
 	it('advances the playhead on each animation frame, and stops when paused', () => {
@@ -231,9 +230,9 @@ describe('CombatReplay', () => {
 	it('marks the chosen speed and plays at it', () => {
 		const container = mount();
 		const speeds = [...container.querySelectorAll<HTMLButtonElement>('.cr-speed-btn')];
-		expect(speeds.map(button => button.className)).toEqual(['cr-speed-btn active', 'cr-speed-btn', 'cr-speed-btn']);
+		expect(speeds.map(button => button.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
 		fireEvent.click(speeds[2]);
-		expect(speeds.map(button => button.className)).toEqual(['cr-speed-btn', 'cr-speed-btn', 'cr-speed-btn active']);
+		expect(speeds.map(button => button.getAttribute('aria-pressed'))).toEqual(['false', 'false', 'true']);
 
 		fireEvent.click(container.querySelector<HTMLButtonElement>('.cr-play-btn')!);
 		step(1000);
@@ -245,7 +244,7 @@ describe('CombatReplay', () => {
 		const container = mount();
 		fireEvent.click(container.querySelector<HTMLButtonElement>('.cr-play-btn')!);
 		fireEvent.mouseDown(container.querySelector('.cr-scrubber')!);
-		expect(container.querySelector('.cr-play-btn i')!.className).toBe('fas fa-play');
+		expect(container.querySelector('.cr-play-btn i')!.classList.contains('fa-play')).toBe(true);
 	});
 
 	it('rewinds to the start when its tab closes', () => {

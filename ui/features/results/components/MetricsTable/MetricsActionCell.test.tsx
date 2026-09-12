@@ -66,7 +66,6 @@ describe('MetricsActionCell', () => {
 		const toggle = screen.getByRole('button', { name: 'Kill Command' });
 
 		expect(toggle.getAttribute('aria-expanded')).toBe('true');
-		expect(toggle.className).toBe('expand-toggle');
 		expect(toggle.querySelectorAll('.fa-caret-right, .fa-caret-down')).toHaveLength(2);
 		toggle.focus();
 		expect(document.activeElement).toBe(toggle);

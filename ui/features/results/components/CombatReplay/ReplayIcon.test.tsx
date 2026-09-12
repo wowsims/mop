@@ -25,7 +25,8 @@ describe('ReplayIcon', () => {
 			<ReplayIcon actionId={actionId('Fireball')} className={['cr-strip-icon', 'cr-strip-icon-active']} tooltip="spell" style={{ opacity: 0.5 }} />,
 		);
 
-		expect(icon.className).toBe('cr-strip-icon cr-strip-icon-active');
+		expect(icon.classList.contains('cr-strip-icon')).toBe(true);
+		expect(icon.classList.contains('cr-strip-icon-active')).toBe(true);
 		expect(icon.style.opacity).toBe('0.5');
 		expect(icon.style.backgroundImage).toContain('Fireball.png');
 	});

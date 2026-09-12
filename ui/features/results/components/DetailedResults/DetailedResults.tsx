@@ -162,7 +162,11 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 				!showThreat && hideMetricsClassName('threat'),
 				!showHealing && hideMetricsClassName('healing'),
 				!showExperimental && 'hide-experimental',
-			)}>
+			)}
+			data-hide-damage={!showDamage ? '' : undefined}
+			data-hide-threat={!showThreat ? '' : undefined}
+			data-hide-healing={!showHealing ? '' : undefined}
+			data-hide-experimental={!showExperimental ? '' : undefined}>
 			<div className="detailed-results-controls-div">
 				<button
 					className="detailed-results-1-iteration-button btn btn-primary"
@@ -179,7 +183,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 				</button>
 			</div>
 			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
-				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')}>
+				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')} data-stuck={stuck ? '' : undefined}>
 					<div className="results-filter flex items-center">
 						<ResultsFilter
 							target={target}

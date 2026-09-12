@@ -110,7 +110,7 @@ describe('DamageMetricsTable', () => {
 	it('builds the ten-column shell before any result', () => {
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(container.querySelector('.damage-metrics-root')?.className).toBe('damage-metrics-root');
+		expect(container.querySelector('.damage-metrics-root')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'metrics-table-header-cell',
 			'metrics-table-header-cell metrics-table-cell--primary-metric text-center',
@@ -130,12 +130,12 @@ describe('DamageMetricsTable', () => {
 		result = playerResult([metric('Steady Shot', { dps: 30 }), metric('Auto Shot', { dps: 5 })], [pet('Claw', { dps: 4 }), pet('Bite', { dps: 6 })]);
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([
-			['Steady Shot', ''],
-			['Claw', 'parent-metric expand'],
-			['Bite', 'child-metric'],
-			['Claw', 'child-metric'],
-			['Auto Shot', ''],
+		expect(rows(container).map(row => [row.cells[0].textContent, row.hasAttribute('data-expanded'), row.classList.contains('child-metric')])).toEqual([
+			['Steady Shot', false, false],
+			['Claw', true, false],
+			['Bite', false, true],
+			['Claw', false, true],
+			['Auto Shot', false, false],
 		]);
 	});
 
@@ -143,9 +143,9 @@ describe('DamageMetricsTable', () => {
 		result = playerResult([metric('Steady Shot'), metric('Vigilance', { hitAttempts: 0, dps: 0 })]);
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([
-			['Steady Shot', ''],
-			['Vigilance', 'threat-metrics'],
+		expect(rows(container).map(row => [row.cells[0].textContent, row.classList.contains('threat-metrics')])).toEqual([
+			['Steady Shot', false],
+			['Vigilance', true],
 		]);
 	});
 

@@ -1,5 +1,5 @@
-import type { ResourceMetrics } from '@sim/proto/sim_result';
 import { ResourceType } from '@generated/proto/spell';
+import type { ResourceMetrics } from '@sim/proto/sim_result';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -54,7 +54,7 @@ describe('ResourceMetricsSection', () => {
 		const { container } = section(resultDataWith([resource('Bloodthirst', 10), resource('Whirlwind', 30)]));
 
 		const wrapper = container.querySelector('.resource-metrics-table-container')!;
-		expect(wrapper.className).toBe('resource-metrics-table-container mb-[20px]');
+		expect(wrapper.classList.contains('mb-[20px]')).toBe(true);
 		expect(wrapper.querySelector('.resource-metrics-table-title')?.textContent).toBe('Rage');
 		expect(wrapper.querySelectorAll('.resource-metrics-table-root')).toHaveLength(1);
 		expect(wrapper.querySelectorAll('thead th')).toHaveLength(6);

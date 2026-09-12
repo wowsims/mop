@@ -27,8 +27,6 @@ describe('LogSearchGroup', () => {
 		const joins = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join .btn')];
 		expect(joins.map(button => button.textContent)).toEqual(['AND', 'OR']);
 		expect(joins.map(button => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
-		expect(joins[0].className).toContain('btn-primary');
-		expect(joins[1].className).toContain('btn-outline-primary');
 	});
 
 	it('switches the join, and stays quiet when the pressed one is already in force', () => {

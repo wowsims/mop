@@ -13,7 +13,10 @@ export interface ResultReferenceDiffProps {
 export const ResultReferenceDiff = ({ diff, tooltipId }: ResultReferenceDiffProps) =>
 	diff ? (
 		<div className="results-reference">
-			<span className={clsx('results-reference-diff', diff.tone)} {...tooltipAnchorProps(tooltipId, diff.significance)}>
+			<span
+				className={clsx('results-reference-diff', diff.tone)}
+				data-sign={diff.tone ?? undefined}
+				{...tooltipAnchorProps(tooltipId, diff.significance)}>
 				{diff.text}
 			</span>{' '}
 			{i18n.t('sidebar.results.reference.vs_ref')}

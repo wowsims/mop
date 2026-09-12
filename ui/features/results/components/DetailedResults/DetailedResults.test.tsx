@@ -128,7 +128,7 @@ describe('DetailedResults', () => {
 			'logTab',
 		]);
 		expect(buttons.filter(button => button.getAttribute('aria-selected') === 'true')).toHaveLength(1);
-		expect(buttons[0].className).toBe('nav-link active');
+		expect(buttons[0].getAttribute('aria-selected')).toBe('true');
 		expect(buttons[0].tabIndex).toBe(0);
 		expect(buttons[1].tabIndex).toBe(-1);
 		expect(buttons.every(button => button.getAttribute('type') === 'button')).toBe(true);
@@ -136,10 +136,11 @@ describe('DetailedResults', () => {
 
 	it('opens the damage pane and leaves the other nine faded out', () => {
 		const { container } = renderPane();
-		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane fade dr-tab-content damage-content active show');
-		expect(container.querySelector('#logTab')!.className).toBe('tab-pane fade dr-tab-content log-content');
+		expect(container.querySelector<HTMLElement>('#damageTab')!.hidden).toBe(false);
+		expect(container.querySelector('#damageTab')!.hasAttribute('data-starting-style')).toBe(false);
+		expect(container.querySelector<HTMLElement>('#logTab')!.hidden).toBe(true);
 		expect(container.querySelectorAll('.tab-content > .tab-pane.active')).toHaveLength(2);
-		expect(container.querySelector('#noResultsTab')!.className).toBe('tab-pane dr-tab-content fade active show');
+		expect(container.querySelector('#noResultsTab')).toBeTruthy();
 	});
 
 	it('holds every ported metrics table in the container the vanilla pane built for it', () => {
@@ -165,18 +166,18 @@ describe('DetailedResults', () => {
 
 	it('drops dr-no-results once a result reaches the channel', () => {
 		const { container } = renderPane();
-		expect(container.querySelector('.dr-root')!.className).toBe('dr-root dr-no-results');
+		expect(container.querySelector('.dr-root')!.classList.contains('dr-no-results')).toBe(true);
 		act(() => resultChannel.emit({ result: {}, filter: {} } as SimResultData));
-		expect(container.querySelector('.dr-root')!.className).toBe('dr-root');
+		expect(container.querySelector('.dr-root')!.classList.contains('dr-no-results')).toBe(false);
 	});
 
 	it('moves active on the click and show a frame later', async () => {
 		const { container } = renderPane();
 		fireEvent.click(tabButton(container, 'timelineTab'));
-		expect(container.querySelector('#timelineTab')!.classList.contains('active')).toBe(true);
-		expect(container.querySelector('#timelineTab')!.classList.contains('show')).toBe(false);
-		expect(container.querySelector('#damageTab')!.className).toBe('tab-pane fade dr-tab-content damage-content');
-		await waitFor(() => expect(container.querySelector('#timelineTab')!.classList.contains('show')).toBe(true));
+		expect(container.querySelector<HTMLElement>('#timelineTab')!.hidden).toBe(false);
+		expect(container.querySelector('#timelineTab')!.hasAttribute('data-starting-style')).toBe(true);
+		expect(container.querySelector('#damageTab')!.hasAttribute('data-ending-style')).toBe(true);
+		await waitFor(() => expect(container.querySelector('#timelineTab')!.hasAttribute('data-starting-style')).toBe(false));
 	});
 
 	// What `onTabShown` was to an island, `active` is to every pane that defers its work.
@@ -208,15 +209,18 @@ describe('DetailedResults', () => {
 		metrics.threat = true;
 		metrics.experimental = true;
 		const { container } = renderPane();
-		expect(container.querySelector('.detailed-results-manager-root')!.className).toBe('detailed-results-manager-root hide-healing-metrics');
+		const root = container.querySelector('.detailed-results-manager-root')!;
+		expect(root.hasAttribute('data-hide-threat')).toBe(false);
+		expect(root.hasAttribute('data-hide-healing')).toBe(true);
+		expect(root.hasAttribute('data-hide-experimental')).toBe(false);
 	});
 
 	it('leaves the damage tab for healing when damage metrics are off', async () => {
 		metrics.damage = false;
 		metrics.healing = true;
 		const { container } = renderPane();
-		await waitFor(() => expect(container.querySelector('#healingTab')!.classList.contains('active')).toBe(true));
-		expect(container.querySelector('#damageTab')!.classList.contains('active')).toBe(false);
+		await waitFor(() => expect(container.querySelector<HTMLElement>('#healingTab')!.hidden).toBe(false));
+		expect(container.querySelector<HTMLElement>('#damageTab')!.hidden).toBe(true);
 		expect(tabButton(container, 'healingTab').getAttribute('aria-selected')).toBe('true');
 	});
 

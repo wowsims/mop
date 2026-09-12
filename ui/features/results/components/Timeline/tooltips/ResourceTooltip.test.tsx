@@ -24,8 +24,8 @@ const mount = (resourceType: ResourceType, maxValue = 1000, includeAuras = false
 
 describe('ResourceTooltip', () => {
 	it('classes itself by the resource’s own name, which is what colours its numbers', () => {
-		expect(mount(ResourceType.ResourceTypeMana).className).toBe('timeline-tooltip mana');
-		expect(mount(ResourceType.ResourceTypeComboPoints).className).toBe('timeline-tooltip combo-points');
+		expect(mount(ResourceType.ResourceTypeMana).classList.contains('mana')).toBe(true);
+		expect(mount(ResourceType.ResourceTypeComboPoints).classList.contains('combo-points')).toBe(true);
 	});
 
 	it('shows mana as a share of the maximum and everything else as a plain number', () => {

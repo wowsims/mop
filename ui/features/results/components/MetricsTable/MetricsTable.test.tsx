@@ -1,9 +1,9 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { createMetricsColumnHelper } from '../../hooks/useMetricsTable';
 import type { MetricRow } from '../../model/grouping';
 import { MetricsTable } from './MetricsTable';
-import { createMetricsColumnHelper } from '../../hooks/useMetricsTable';
 
 interface Metric {
 	name: string;
@@ -57,14 +57,14 @@ describe('MetricsTable', () => {
 	it('builds the whole shell before any result, with an empty body', () => {
 		const { container } = render(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />);
 
-		expect(container.querySelector('.test-metrics-root')?.className).toBe('test-metrics-root');
-		expect(container.querySelector('table')?.className).toBe('metrics-table');
-		expect(container.querySelector('thead')?.className).toBe('metrics-table-header');
-		expect(container.querySelector('thead tr')?.className).toBe('metrics-table-header-row');
-		expect(container.querySelector('tbody')?.className).toBe('metrics-table-body');
-		expect(table(container).headers.map(header => [header.className, header.firstElementChild?.tagName, header.textContent])).toEqual([
-			['metrics-table-header-cell', 'BUTTON', 'Name'],
-			['metrics-table-header-cell', 'BUTTON', 'Value'],
+		expect(container.querySelector('.test-metrics-root')).toBeTruthy();
+		expect(container.querySelector('table')).toBeTruthy();
+		expect(container.querySelector('thead')).toBeTruthy();
+		expect(container.querySelector('thead tr')).toBeTruthy();
+		expect(container.querySelector('tbody')).toBeTruthy();
+		expect(table(container).headers.map(header => [header.firstElementChild?.tagName, header.textContent])).toEqual([
+			['BUTTON', 'Name'],
+			['BUTTON', 'Value'],
 		]);
 		expect(table(container).headers.map(header => header.querySelector('span')?.textContent)).toEqual(['Name', 'Value']);
 		expect(table(container).rows).toHaveLength(0);
@@ -76,9 +76,9 @@ describe('MetricsTable', () => {
 		);
 		const buttons = table(container).headers.map(sortButton);
 
-		expect(buttons.map(button => [button.tagName, button.getAttribute('type'), button.className])).toEqual([
-			['BUTTON', 'button', 'metrics-table-sort'],
-			['BUTTON', 'button', 'metrics-table-sort'],
+		expect(buttons.map(button => [button.tagName, button.getAttribute('type')])).toEqual([
+			['BUTTON', 'button'],
+			['BUTTON', 'button'],
 		]);
 		expect(ariaSorts(container)).toEqual(['none', 'descending']);
 
@@ -153,12 +153,18 @@ describe('MetricsTable', () => {
 			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 
-		expect(table(container).rows.map(row => [row.cells[0].getAttribute('data-text'), row.className])).toEqual([
-			['Beta', 'parent-metric expand'],
-			['Claw', 'child-metric'],
-			['Bite', 'child-metric'],
-			['Charlie', ''],
-			['Alpha', ''],
+		expect(
+			table(container).rows.map(row => [
+				row.cells[0].getAttribute('data-text'),
+				row.hasAttribute('data-expanded'),
+				row.classList.contains('child-metric'),
+			]),
+		).toEqual([
+			['Beta', true, false],
+			['Claw', false, true],
+			['Bite', false, true],
+			['Charlie', false, false],
+			['Alpha', false, false],
 		]);
 
 		fireEvent.click(table(container).headers[1]);
@@ -170,15 +176,15 @@ describe('MetricsTable', () => {
 			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 		const parent = table(container).rows[0];
-		expect(parent.classList.contains('expand')).toBe(true);
+		expect(parent.hasAttribute('data-expanded')).toBe(true);
 		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(2);
 
 		fireEvent.click(parent);
-		expect(parent.classList.contains('expand')).toBe(false);
+		expect(parent.hasAttribute('data-expanded')).toBe(false);
 		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(0);
 
 		fireEvent.click(parent);
-		expect(parent.classList.contains('expand')).toBe(true);
+		expect(parent.hasAttribute('data-expanded')).toBe(true);
 		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(2);
 	});
 

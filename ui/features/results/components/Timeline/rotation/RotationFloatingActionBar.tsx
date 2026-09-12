@@ -90,7 +90,12 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 	};
 
 	return (
-		<div ref={rootRef} className={clsx('rotation-floating-action-bar-root', stuck && 'stuck')} data-expanded={String(expanded)} onKeyDown={onKeyDown}>
+		<div
+			ref={rootRef}
+			className={clsx('rotation-floating-action-bar-root', stuck && 'stuck')}
+			data-stuck={stuck ? '' : undefined}
+			data-expanded={String(expanded)}
+			onKeyDown={onKeyDown}>
 			<div className="rotation-fab-clip">
 				<div className="rotation-fab-panel">
 					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}

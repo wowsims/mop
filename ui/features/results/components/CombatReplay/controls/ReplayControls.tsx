@@ -40,7 +40,12 @@ export const ReplayControls = ({ clock }: ReplayControlsProps) => (
 			))}
 			<div className="cr-speed-btns">
 				{RATES.map(rate => (
-					<button key={rate} type="button" className={clsx('cr-speed-btn', clock.rate === rate && 'active')} onClick={() => clock.setRate(rate)}>
+					<button
+						key={rate}
+						type="button"
+						className={clsx('cr-speed-btn', clock.rate === rate && 'active')}
+						aria-pressed={clock.rate === rate}
+						onClick={() => clock.setRate(rate)}>
 						{rate}x
 					</button>
 				))}

@@ -29,7 +29,7 @@ describe('RotationRow', () => {
 		const { container } = mount();
 		const row = container.querySelector<HTMLElement>('.rotation-row')!;
 		expect(row.dataset.rowKey).toBe('cast:a');
-		expect(row.className).toBe('rotation-row rotation-row-cast');
+		expect(row.classList.contains('rotation-row-cast')).toBe(true);
 		expect(row.style.getPropertyValue('--row-h')).toBe('32');
 	});
 

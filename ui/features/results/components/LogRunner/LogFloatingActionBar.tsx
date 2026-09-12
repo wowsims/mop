@@ -58,6 +58,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 		<div
 			ref={rootRef}
 			className={clsx('log-floating-action-bar-root', stuck && 'stuck')}
+			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={event => {
 				if (event.key !== 'Escape' || !expanded) return;

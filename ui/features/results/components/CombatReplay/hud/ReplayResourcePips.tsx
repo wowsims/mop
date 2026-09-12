@@ -31,6 +31,7 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 		for (let index = 0; index < pips.length; index++) {
 			pips[index].classList.toggle('cr-segment--filled', index < filled);
 			pips[index].classList.toggle('cr-segment--empty', index >= filled);
+			pips[index].toggleAttribute('data-filled', index < filled);
 		}
 	});
 

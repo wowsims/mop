@@ -20,6 +20,7 @@ export const ReplayAuraIcon = ({ aura }: ReplayAuraIconProps) => {
 		if (remaining.current) remaining.current.textContent = frame.remaining;
 		if (stacks.current) stacks.current.textContent = frame.stacks;
 		anchor.current?.classList.toggle('cr-aura-icon-active', frame.fresh);
+		anchor.current?.toggleAttribute('data-active', frame.fresh);
 	});
 
 	return (

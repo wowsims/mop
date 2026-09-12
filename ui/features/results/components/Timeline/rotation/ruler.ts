@@ -80,6 +80,7 @@ export class Ruler {
 			elem.style.setProperty('--t', String(time));
 			elem.textContent = formatTick(time, this.labelStep);
 			elem.classList.toggle('is-first', index === 0);
+			elem.toggleAttribute('data-first', index === 0);
 		});
 	}
 

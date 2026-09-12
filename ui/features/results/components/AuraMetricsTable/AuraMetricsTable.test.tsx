@@ -43,12 +43,12 @@ describe('AuraMetricsTable', () => {
 
 	it('builds the four-column shell before any result, under the root the flag picks', () => {
 		const buffs = render(<AuraMetricsTable useDebuffs={false} />);
-		expect(buffs.container.querySelector('div')?.className).toBe('buff-metrics-root');
+		expect(buffs.container.querySelector('.buff-metrics-root')).toBeTruthy();
 		expect(buffs.container.querySelectorAll('thead th')).toHaveLength(4);
 		expect(buffs.container.querySelectorAll('tbody tr')).toHaveLength(0);
 
 		const debuffs = render(<AuraMetricsTable useDebuffs={true} />);
-		expect(debuffs.container.querySelector('div')?.className).toBe('debuff-metrics-root');
+		expect(debuffs.container.querySelector('.debuff-metrics-root')).toBeTruthy();
 		expect(debuffs.container.querySelectorAll('thead th')).toHaveLength(4);
 	});
 

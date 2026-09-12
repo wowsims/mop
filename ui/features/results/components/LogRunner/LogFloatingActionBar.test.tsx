@@ -144,7 +144,7 @@ describe('LogFloatingActionBar', () => {
 
 			deliver(container, [0.98]);
 
-			expect(root(container).className).toContain('stuck');
+			expect(root(container).hasAttribute('data-stuck')).toBe(true);
 		});
 
 		it('lets go once the bar is fully in view again', () => {
@@ -153,7 +153,7 @@ describe('LogFloatingActionBar', () => {
 
 			deliver(container, [1]);
 
-			expect(root(container).className).not.toContain('stuck');
+			expect(root(container).hasAttribute('data-stuck')).toBe(false);
 		});
 
 		// A pane the tab switch closed has no box at all, and a ratio of 0 would otherwise read as
@@ -164,7 +164,7 @@ describe('LogFloatingActionBar', () => {
 
 			deliver(container, [0], 0);
 
-			expect(root(container).className).not.toContain('stuck');
+			expect(root(container).hasAttribute('data-stuck')).toBe(false);
 		});
 
 		// One delivery can carry several records, oldest first. The list growing under a bar that was
@@ -175,7 +175,7 @@ describe('LogFloatingActionBar', () => {
 
 			deliver(container, [1, 0.98]);
 
-			expect(root(container).className).toContain('stuck');
+			expect(root(container).hasAttribute('data-stuck')).toBe(true);
 		});
 	});
 });
