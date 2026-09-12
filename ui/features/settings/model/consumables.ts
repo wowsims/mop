@@ -43,7 +43,7 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 			values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') } as unknown as IconEnumValueConfig<Player<SpecType>, T>].concat(valueOptions),
 			equals: (a: T, b: T) => a == b,
 			zeroValue: 0 as T,
-			storeField: ['consumables', 'gear', 'profession1', 'profession2'],
+			storeField: ['consumables', 'gear', 'profession1', 'profession2', 'race'],
 			showWhen: (player: Player<any>) => (!args.showWhen || args.showWhen(player)) && valueOptions.some(option => option.showWhen?.(player)),
 			getValue: (player: Player<any>) => player.getConsumes()[args.consumesFieldName] as T,
 			setValue: (player: Player<any>, newValue: number) => {
