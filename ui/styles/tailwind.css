@@ -1,16 +1,7 @@
-/* Not .scss on purpose: Tailwind v4 is documented as not designed to run through Sass. */
 @layer theme, base, components, utilities;
 
 @import 'tailwindcss/theme.css' layer(theme);
-/* Unlayered AND important, which is exactly where Bootstrap's utility API sat. `important` because
-   every component rule here was written against important-by-default utilities. Unlayered because
-   the cascade REVERSES layer order for important declarations: a layered `!important` utility beats
-   an unlayered `!important` project rule regardless of specificity, which silently overrode
-   `.suggest-reforges-settings-group`'s `display: grid !important`. Unlayered puts specificity back
-   in charge, as it was. */
 @import 'tailwindcss/utilities.css' important;
-
-/* Preflight is omitted while Bootstrap's reboot is still loaded; stacking two resets changes rendering. */
 
 @import './theme.css';
 
@@ -24,35 +15,10 @@
 @source '../index.html';
 @source '../index_template.html';
 
-/* Translation values carry markup that carries class names (`bulk_tab.description` spells
-   `<span className="bold">`), and `LocaleHtml`'s `Trans` renders them as real elements, so the
-   class applies. A utility named only in a translation string emits nothing without this, with no
-   gate to catch it. Scoped to the JSON, not `assets`, which holds `db.bin` and the icon sets. */
 @source '../../assets/locales/**/*.json';
 
-/*
- * Class-colour utilities are built by interpolation, which Tailwind's scanner cannot see:
- * `textClassName()` in `sim/proto/utils.ts` returns `text-class-${slug}`, `LandingClassMenu` builds
- * `border-class-${slug}` and `MetricsTotalBar` builds `bg-class-${slug}`. Bootstrap emitted all of
- * these unconditionally from `$theme-colors`; Tailwind emits only what it finds, so without this the
- * landing page's class links and the sim-title dropdown lose their colour entirely.
- *
- * The `class-` segment is the point of the namespace: this is the one safelist in the build, so it
- * is the one place a bare slug could shadow a real utility name. `text-class-monk` cannot.
- */
 @source inline("{text,bg,border}-class-{death-knight,druid,hunter,mage,monk,paladin,priest,rogue,shaman,warlock,warrior}");
 
-/*
- * `.container` stays Bootstrap's. Tailwind's own container utility sets `max-width` to each
- * BREAKPOINT (576/768/.../3841), Bootstrap's sets it to 540/720/960/1140/1320, and `important` made
- * Tailwind's win — which made the landing page full-bleed. Overriding the utility with an empty
- * body would stop Tailwind emitting a competing rule, but an empty `@utility` is a build error, so
- * this restates the container instead. Note it encodes Bootstrap's rules AND
- * `shared/_bootstrap_style_overrides.scss`'s `media-breakpoint-down(lg)` override together, because
- * that override is not `!important` and so cannot win against a Tailwind utility the way it won
- * against Bootstrap's plain `.container`. Below 992px the container is full-bleed and unmargined;
- * above it, Bootstrap's 960/1140/1320 ladder applies. Remove when `.container` leaves Bootstrap.
- */
 @utility container {
 	--bs-gutter-x: 1.5rem;
 	--bs-gutter-y: 0;
@@ -76,13 +42,6 @@
 	}
 }
 
-/*
- * Fluid counterpart to `text-xl`, reproducing Bootstrap's RFS. Bootstrap runs every `$font-size`
- * above 1.25rem through RFS, so `.fs-4` was never a flat 1.5rem — it is
- * `calc(1.275rem + 0.3vw)` until 1200px and 1.5rem beyond. A flat value looked right at 1600px and
- * was 1px too large at 700px. Sizes below RFS's 1.25rem floor (`fs-body`) never scaled, so the
- * plain `--text-*` tokens are exact for those.
- */
 @utility text-fluid-xl {
 	font-size: calc(1.275rem + 0.3vw);
 
@@ -91,30 +50,11 @@
 	}
 }
 
-/*
- * Project utilities. A composed name earns a place here when it says something the two or three
- * utilities it expands to do not — `interactive` is "this responds to a click", which is why the
- * four call sites read better than `cursor-pointer select-none` would.
- *
- * It moves out of `shared/_global.scss` for two reasons beyond the name: that file is compiled into
- * BOTH CSS chunks, so the rule shipped twice; and as a utility it is finally in the same layer as
- * everything else that behaves like one.
- */
 @utility interactive {
 	cursor: pointer;
 	user-select: none;
 }
 
-/*
- * `.fs-content` did not get the same treatment: it was exactly one declaration, `font-size:
- * var(--content-font-size)`, so promoting that variable to `--text-ui` made Tailwind's own
- * `text-ui` an exact replacement and the class pure alias. `icon-sm` composes two more
- * declarations than the token expresses, so it stays a name.
- *
- * Same `important` check as `interactive`: nothing in `ui/` sets `display`, `width`, `height`,
- * `min-width` or `background-size` on either element that carries it (`ActionLink`'s log icon,
- * `LogSearchGroup`'s spell icon). `.log-event .icon` sets only `vertical-align`.
- */
 @utility icon-sm {
 	display: inline-block;
 	min-width: var(--spacing-icon-sm);
@@ -123,18 +63,6 @@
 	background-size: cover;
 }
 
-/*
- * Bootstrap utility shim, for `ui/specs/**` only.
- *
- * That tree is frozen, so its one remaining consumer of Bootstrap utilities —
- * `specs/mage/fire/calculate_combustion_thresholds.tsx`, the Combustion Thresholds modal — cannot be
- * rewritten here. These six names are the exact set it still uses, at Bootstrap's exact values.
- * `.gap-3` has to restate 1rem because Tailwind's own `gap-3` is 0.75rem, and it wins only by
- * following the utilities import in source order.
- *
- * Delete this block together with those class names when the freeze lifts. Nothing outside
- * `ui/specs/` may use them.
- */
 .d-flex {
 	display: flex !important;
 }
