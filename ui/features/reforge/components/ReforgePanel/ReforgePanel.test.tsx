@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,11 +18,7 @@ const model = {
 	previousGear: null,
 } as any;
 
-const host = {
-	rootElem: document.createElement('div'),
-	player: {},
-	sim: { runs: { isRunning: () => false } },
-} as unknown as IndividualSimHost<any>;
+const host = fakeHost({ rootElem: document.createElement('div'), sim: { runs: { isRunning: () => false } } });
 
 const renderPanel = () =>
 	render(

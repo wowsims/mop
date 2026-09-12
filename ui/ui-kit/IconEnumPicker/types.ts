@@ -1,6 +1,5 @@
 import type { ActionId } from '@sim/proto/action_id';
-import type { StoreSubscribe } from '@sim/state/subscriptions';
-import type { InputConfig } from '@ui-kit/input';
+import type { InputConfig, StoreBinding } from '@ui-kit/input';
 
 export enum IconEnumPickerDirection {
 	Vertical = 'vertical',
@@ -24,9 +23,7 @@ export interface IconEnumValueConfig<ModObject, T> {
 	showWhen?: (obj: ModObject) => boolean;
 }
 
-export interface IconEnumPickerConfig<ModObject, T> extends InputConfig<ModObject, T> {
-	// Required here: an icon enum picker has no parent that refreshes it.
-	storeSubscribe: (obj: ModObject) => StoreSubscribe;
+interface IconEnumPickerBase<ModObject, T> extends InputConfig<ModObject, T> {
 	numColumns?: number;
 	values: Array<IconEnumValueConfig<ModObject, T>>;
 	// Value that will be considered inactive.
@@ -40,3 +37,6 @@ export interface IconEnumPickerConfig<ModObject, T> extends InputConfig<ModObjec
 	backupIconUrl?: (value: T) => ActionId;
 	showWhen?: (obj: ModObject) => boolean;
 }
+
+// Required here: an icon enum picker has no parent that refreshes it.
+export type IconEnumPickerConfig<ModObject, T> = IconEnumPickerBase<ModObject, T> & StoreBinding<ModObject>;

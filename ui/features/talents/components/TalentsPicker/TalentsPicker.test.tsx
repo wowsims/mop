@@ -1,7 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { IndividualSimHost } from '@sim/sim_host';
 import type { TalentsConfig } from '@sim/talents/config';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -15,7 +15,7 @@ let talentsString: string;
 
 const mount = () => {
 	const player = { getTalentsString: () => talentsString } as unknown as Player<any>;
-	const host = { player, rootElem: document.body } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ player, rootElem: document.body });
 	const config = {
 		id: 'talents-picker',
 		getValue: () => talentsString,

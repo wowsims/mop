@@ -18,19 +18,16 @@ describe('TabGemIcon', () => {
 
 		const gemIcon = container.querySelector<HTMLImageElement>('.gem-icon')!;
 		const socketIcon = container.querySelector<HTMLImageElement>('.socket-icon')!;
-		expect(gemIcon.classList.contains('hide')).toBe(false);
 		expect(gemIcon.src).toContain('gem-icon.jpg');
 		expect(socketIcon.src).toContain(getEmptyGemSocketIconUrl(GemColor.GemColorRed));
 	});
 
-	it('hides the gem icon and points both images at the empty socket for an empty socket', () => {
+	it('renders no gem icon and points the socket image at the empty socket for an empty socket', () => {
 		const { container } = render(<TabGemIcon socketColor={GemColor.GemColorRed} gem={null} />);
 
-		const gemIcon = container.querySelector<HTMLImageElement>('.gem-icon')!;
 		const socketIcon = container.querySelector<HTMLImageElement>('.socket-icon')!;
 		const emptyUrl = getEmptyGemSocketIconUrl(GemColor.GemColorRed);
-		expect(gemIcon.classList.contains('hide')).toBe(true);
-		expect(gemIcon.src).toContain(emptyUrl);
+		expect(container.querySelector('.gem-icon')).toBeNull();
 		expect(socketIcon.src).toContain(emptyUrl);
 		expect(useActionId).toHaveBeenCalledWith(undefined);
 	});

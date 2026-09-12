@@ -22,10 +22,10 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 	const subscribe = when ? subscribePlayerChange(player) : NEVER;
 	const visible = useStoreSubscribe(subscribe, () => !when || when(player));
 
+	if (!visible) return null;
+
 	return (
-		<ContentBlock
-			className={[section.className || section.id, 'custom-section', !visible && 'hide']}
-			config={{ header: { title: section.title, tooltip: section.tooltip } }}>
+		<ContentBlock className={[section.className || section.id, 'custom-section']} config={{ header: { title: section.title, tooltip: section.tooltip } }}>
 			{!!section.iconInputs?.length && (
 				<div className={clsx('picker-group', section.iconGroupClassName, 'icon-group')}>
 					{section.iconInputs.map((config, index) => {

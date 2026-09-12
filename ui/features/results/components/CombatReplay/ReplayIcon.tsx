@@ -1,12 +1,11 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { CSSProperties, ReactNode, RefObject } from 'react';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 export interface ReplayIconProps {
 	actionId: ActionId | null;
@@ -24,11 +23,7 @@ export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, chi
 	const ownRef = useRef<HTMLAnchorElement>(null);
 	const ref = anchorRef ?? ownRef;
 
-	const resolveTooltip = useMemo(
-		() => (actionId ? () => actionIdWowheadTooltipData(actionId, { useBuffAura: tooltip === 'buffAura' }) : null),
-		[actionId, tooltip],
-	);
-	useWowheadDataset(ref, resolveTooltip);
+	useActionIdWowheadDataset(ref, actionId, tooltip === 'buffAura');
 
 	return (
 		<a

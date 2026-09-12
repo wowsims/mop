@@ -23,17 +23,17 @@ export const PlayerSettings = ({ iconInputs, inputs }: PlayerSettingsProps) => {
 
 	return (
 		<>
-			<div
-				className={clsx('picker-group', 'player-icon-group', 'icon-group', iconInputs.length === 0 && 'hide')}
-				style={{ gridTemplateColumns: iconGridColumns(iconInputs.length) }}>
-				{iconInputs.map((config, index) =>
-					config.type === 'icon' ? (
-						<IconPicker key={index} modObject={player} config={config} />
-					) : (
-						<IconEnumPicker key={index} modObject={player} config={config} />
-					),
-				)}
-			</div>
+			{iconInputs.length > 0 && (
+				<div className={clsx('picker-group', 'player-icon-group', 'icon-group')} style={{ gridTemplateColumns: iconGridColumns(iconInputs.length) }}>
+					{iconInputs.map((config, index) =>
+						config.type === 'icon' ? (
+							<IconPicker key={index} modObject={player} config={config} />
+						) : (
+							<IconEnumPicker key={index} modObject={player} config={config} />
+						),
+					)}
+				</div>
+			)}
 			<EnumPicker modObject={player} config={race} />
 			{inputs.map(config => (
 				<InputPicker key={config.id} config={config} />

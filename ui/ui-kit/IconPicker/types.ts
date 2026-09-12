@@ -1,15 +1,12 @@
 import type { ActionId } from '@sim/proto/action_id';
-import type { StoreSubscribe } from '@sim/state/subscriptions';
-import type { InputConfig } from '@ui-kit/input';
+import type { InputConfig, StoreBinding } from '@ui-kit/input';
 
 // Data for creating an icon-based input component.
 //
 // E.g. one of these for arcane brilliance, another for kings, etc.
 // ModObject is the object being modified (Sim, Player, or Target).
 // ValueType is either number or boolean.
-export interface IconPickerConfig<ModObject, ValueType> extends InputConfig<ModObject, ValueType> {
-	// Required here: an icon picker has no parent that refreshes it.
-	storeSubscribe: (obj: ModObject) => StoreSubscribe;
+interface IconPickerBase<ModObject, ValueType> extends InputConfig<ModObject, ValueType> {
 	actionId: ActionId;
 
 	// The number of possible 'states' this icon can have. Most inputs will use 2
@@ -22,3 +19,6 @@ export interface IconPickerConfig<ModObject, ValueType> extends InputConfig<ModO
 	// Only used if states >= 4.
 	improvedId2?: ActionId;
 }
+
+// Required here: an icon picker has no parent that refreshes it.
+export type IconPickerConfig<ModObject, ValueType> = IconPickerBase<ModObject, ValueType> & StoreBinding<ModObject>;

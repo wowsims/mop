@@ -1,7 +1,7 @@
 // What this pins is the shell's behaviour, which is everything the four importers share: what gets
 // handed to `onImport`, and what happens to the dialog when it resolves and when it rejects.
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,7 +27,7 @@ vi.mock('@ui-kit/Toast', async importOriginal => ({
 const rootElem = document.createElement('div');
 
 /** The three references `useSimHost` hands out; the importer only ever reads `rootElem`. */
-const host = { rootElem } as unknown as IndividualSimHost<any>;
+const host = fakeHost({ rootElem });
 
 const renderImporter = (props: Partial<Parameters<typeof Importer>[0]> = {}) => {
 	const onImport = props.onImport ?? vi.fn().mockResolvedValue(undefined);

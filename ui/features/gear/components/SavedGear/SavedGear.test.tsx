@@ -1,8 +1,8 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import { subscribeGated } from '@sim/state/batch';
-import { Stats } from '@sim/proto/stats';
 import { EquipmentSpec, ItemSpec } from '@generated/proto/common';
 import { SavedGearSet } from '@generated/proto/ui';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { Stats } from '@sim/proto/stats';
+import { subscribeGated } from '@sim/state/batch';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,10 +25,9 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => {
-	const change = (onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange);
-	return { subscribePlayerChange: () => change };
-});
+vi.mock('@sim/state/subscriptions', async () =>
+	(await import('@sim/testing')).mockSubscriptions((onChange: () => void) => subscribeGated(source.subscribe, v => v, onChange)),
+);
 
 const STRINGS = vi.hoisted(
 	() =>

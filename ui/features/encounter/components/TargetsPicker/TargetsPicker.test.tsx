@@ -16,7 +16,7 @@ const source = vi.hoisted(() => {
 		notify: () => Array.from(listeners).forEach(listener => listener()),
 	};
 });
-vi.mock('@sim/state/subscriptions', () => ({ subscribeEncounterField: () => source.subscribe }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(source.subscribe));
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 vi.mock('@i18n/localization', () => ({
 	translateItemLabel: (label: string) => label,

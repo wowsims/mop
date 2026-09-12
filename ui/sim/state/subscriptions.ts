@@ -10,7 +10,18 @@ import type { ReforgeSettings } from '../settings/reforge_settings';
 import type { Sim } from '../sim';
 import type { StatWeightActionSettings } from '../settings/stat_weight_settings';
 import { subscribeGated } from './batch';
-import type { EncounterSlice, PlayerField, RaidSlice, ReforgeField, SimRunKind, SimSettingsSlice, SimState, SimStore, UISlice } from './sim_store';
+import type {
+	EncounterSlice,
+	PlayerField,
+	RaidSlice,
+	ReforgeField,
+	SimRunKind,
+	SimSettingsSlice,
+	SimState,
+	SimStore,
+	StatWeightsSlice,
+	UISlice,
+} from './sim_store';
 import { PLAYER_FIELDS } from './sim_store';
 
 // Fields whose change counts as a "player settings change" for aggregate
@@ -217,6 +228,10 @@ export function subscribeReforgeChange(settings: ReforgeSettings): StoreSubscrib
 // Stat-weight modal settings (per player).
 export function subscribeStatWeightsChange(settings: StatWeightActionSettings): StoreSubscribe {
 	return cached(settings, 'change', () => fromSelector(settings.store, s => s.statWeights[settings.storeKey]?.v.settings));
+}
+
+export function subscribePlayerStatWeightsField(player: Player<any>, field: keyof StatWeightsSlice['v']): StoreSubscribe {
+	return cached(player, `statWeights:${field}`, () => fromSelector(player.sim.store, s => s.statWeights[player.storeKey]?.v[field]));
 }
 
 // Unit metadata (spells/auras) refreshed after a compute-stats round trip.

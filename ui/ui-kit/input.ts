@@ -1,6 +1,10 @@
 import type { StoreField } from '@sim/hooks/useStoreField';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 
+export type StoreBinding<ModObject> =
+	| { storeSubscribe: (obj: ModObject) => StoreSubscribe; storeField?: StoreField | ReadonlyArray<StoreField> }
+	| { storeSubscribe?: undefined; storeField: StoreField | ReadonlyArray<StoreField> };
+
 /**
  * Data for creating a new input UI element.
  */

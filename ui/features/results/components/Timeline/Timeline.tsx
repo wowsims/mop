@@ -3,7 +3,6 @@ import './Timeline.scss';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { UnitMetrics } from '@sim/proto/sim_result';
-import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
@@ -73,14 +72,17 @@ export const Timeline = ({ active }: TimelineProps) => {
 				<ChartViewPicker value={view} onChange={setView} />
 			</div>
 			<div className="timeline-plots-container">
-				<div className={clsx('timeline-plot dps-resources-plot', !chartVisible && 'hide')}>
-					<TimelineChart spec={spec} />
-				</div>
-				<div className={clsx('timeline-plot rotation-plot', chartVisible && 'hide')}>
-					<div className="rotation-next">
-						<RotationView model={model} />
+				{chartVisible ? (
+					<div className="timeline-plot dps-resources-plot">
+						<TimelineChart spec={spec} />
 					</div>
-				</div>
+				) : (
+					<div className="timeline-plot rotation-plot">
+						<div className="rotation-next">
+							<RotationView model={model} />
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

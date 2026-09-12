@@ -1,15 +1,15 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import { PlayerSpecs } from '@sim/player/specs/index';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { Raid as RaidProto } from '@generated/proto/api';
 import { Encounter as EncounterProto } from '@generated/proto/common';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { PlayerSpecs } from '@sim/player/specs/index';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SimResultsManager } from '../../model/results_manager';
 import { SimResultSummary } from './SimResultSummary';
 
-const host = { config: { cssScheme: 'mage' } } as unknown as IndividualSimHost<any>;
+const host = fakeHost({ config: { cssScheme: 'mage' } });
 
 const dist = (avg: number, stdev = 0) => ({ avg, stdev });
 
@@ -56,7 +56,7 @@ const mount = (results: SimResultsManager) =>
 		</SimHostProvider>,
 	);
 
-const diffs = (container: HTMLElement) => [...container.querySelectorAll('.results-reference:not(.hide) > .results-reference-diff')];
+const diffs = (container: HTMLElement) => [...container.querySelectorAll('.results-reference > .results-reference-diff')];
 
 let results: SimResultsManager;
 
@@ -90,12 +90,13 @@ describe('SimResultSummary', () => {
 		]);
 	});
 
-	it('keeps every reference slot hidden and empty until a reference is saved', () => {
+	it('renders no reference slot at all until a reference is saved', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
 
 		expect(diffs(container)).toEqual([]);
-		expect(container.querySelectorAll('.results-reference.hide > .results-reference-diff')).toHaveLength(7);
+		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
+		expect(container.querySelectorAll('.results-metric')).toHaveLength(7);
 	});
 
 	it('fills the deltas in and flags the bar the moment the reference is set', () => {

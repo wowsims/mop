@@ -17,9 +17,11 @@ export const GemSocket = ({ socketColor, gem, hidden, className, ...rest }: GemS
 	const { iconUrl, href } = useActionId(actionId);
 	const emptyIconUrl = getEmptyGemSocketIconUrl(socketColor);
 
+	if (hidden) return null;
+
 	return (
-		<ItemCellAnchor {...rest} className={clsx('gem-socket-container', hidden && 'hide', className)} href={href}>
-			<img className={clsx('gem-icon', !gem && 'hide')} src={gem ? iconUrl || undefined : emptyIconUrl} alt="" />
+		<ItemCellAnchor {...rest} className={clsx('gem-socket-container', className)} href={href}>
+			{gem && <img className="gem-icon" src={iconUrl || undefined} alt="" />}
 			<img className="socket-icon" src={emptyIconUrl} alt="" />
 		</ItemCellAnchor>
 	);

@@ -54,7 +54,7 @@ const sortButton = (header: HTMLElement) => header.querySelector('button')!;
 const ariaSorts = (container: HTMLElement) => table(container).headers.map(header => header.getAttribute('aria-sort'));
 
 describe('MetricsTable', () => {
-	it('builds the whole shell before any result, with an empty body and no hide', () => {
+	it('builds the whole shell before any result, with an empty body', () => {
 		const { container } = render(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />);
 
 		expect(container.querySelector('.test-metrics-root')?.className).toBe('test-metrics-root');
@@ -90,14 +90,14 @@ describe('MetricsTable', () => {
 		expect(ariaSorts(container)).toEqual(['ascending', 'none']);
 	});
 
-	it('hides the root only once a result has produced no rows', () => {
+	it('unmounts the root only once a result has produced no rows', () => {
 		const { container, rerender } = render(
 			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />,
 		);
-		expect(container.querySelector('.test-metrics-root')?.classList.contains('hide')).toBe(false);
+		expect(container.querySelector('.test-metrics-root')).toBeTruthy();
 
 		rerender(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={true} />);
-		expect(container.querySelector('.test-metrics-root')?.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.test-metrics-root')).toBeNull();
 	});
 
 	it('opens sorted descending on the configured column', () => {

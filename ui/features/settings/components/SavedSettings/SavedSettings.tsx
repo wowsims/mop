@@ -2,14 +2,14 @@ import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import { applySavedSettings, readSavedSettings } from '@features/settings/model/saved_settings';
+import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import { SavedSettings as SavedSettingsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { trackEvent } from '../../../../tracking/analytics';
 import { useSavedSettings } from '../../hooks/useSavedSettings';
 import { serializeSettings } from './utils';
 
@@ -19,7 +19,6 @@ export const SavedSettings = () => {
 	const ready = useSimReady();
 
 	const label = i18n.t('settings_tab.saved_settings.settings');
-	const { entries: userData, save, remove } = useSavedSettings();
 
 	const savedDataPresets = useMemo<Array<SavedDataPanelEntry<SavedSettingsProto>>>(() => {
 		if (!ready) return [];
@@ -70,45 +69,23 @@ export const SavedSettings = () => {
 		() => readSavedSettings(host),
 		ready,
 	);
-	const currentJson = useMemo(() => (settings ? serializeSettings(settings) : ''), [settings]);
 
-	const onLoad = useCallback(
-		(entry: SavedDataPanelEntry<SavedSettingsProto>) => {
-			applySavedSettings(host, entry.data);
-			trackEvent({ action: 'settings', category: 'load', label });
-		},
-		[host, label],
-	);
-
-	const onSave = useCallback(
-		(name: string) => {
-			save(name, readSavedSettings(host));
-			trackEvent({ action: 'settings', category: 'save', label });
-		},
-		[host, label, save],
-	);
-
-	const onDelete = useCallback(
-		(entry: SavedDataPanelEntry<SavedSettingsProto>) => {
-			remove(entry.name);
-			trackEvent({ action: 'settings', category: 'delete', label });
-		},
-		[label, remove],
-	);
+	const panel = useSavedPanel({
+		label,
+		storage: useSavedSettings(),
+		current: settings,
+		serialize: serializeSettings,
+		load: entry => applySavedSettings(host, entry.data),
+	});
 
 	return (
 		<SavedDataPanel
 			container={host.rootElem}
 			title={i18n.t('settings_tab.saved_settings.title')}
-			label={label}
 			nameLabel={i18n.t('settings_tab.saved_settings.settings_name')}
 			saveButtonText={i18n.t('settings_tab.saved_settings.save_settings')}
 			presets={savedDataPresets}
-			userData={userData}
-			currentJson={currentJson}
-			onLoad={onLoad}
-			onSave={onSave}
-			onDelete={onDelete}
+			{...panel}
 		/>
 	);
 };

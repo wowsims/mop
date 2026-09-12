@@ -3,7 +3,6 @@ import i18n from '@i18n/config';
 import type { Player } from '@sim/player/player';
 import type { Encounter } from '@sim/raid/encounter';
 import type { Raid } from '@sim/raid/raid';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField, subscribeRaidField } from '@sim/state/subscriptions';
 import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
 import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 
@@ -25,7 +24,7 @@ const field = (encounter: Encounter, spec: Field): NumberPickerConfig<Encounter>
 	id: spec.id,
 	label: i18n.t(`settings_tab.encounter.${spec.key}.label`),
 	labelTooltip: i18n.t(`settings_tab.encounter.${spec.key}.tooltip`),
-	storeSubscribe: subscribeEncounterChange,
+	storeField: 'encounter:*',
 	getValue: spec.get,
 	setValue: (subject, newValue) => {
 		trackEvent({ action: 'settings', category: spec.category, label: spec.label, value: newValue });
@@ -99,7 +98,7 @@ export const numAlliesConfig = (player: Player<any>): NumberPickerConfig<Raid> =
 	id: 'encounter-num-allies',
 	label: i18n.t('settings_tab.encounter.num_allies.label'),
 	labelTooltip: i18n.t('settings_tab.encounter.num_allies.tooltip'),
-	storeSubscribe: (raid: Raid) => subscribeAll([subscribeRaidField(raid, 'targetDummies'), subscribePlayerField(player, 'itemSwap')]),
+	storeField: ['raid:targetDummies', 'itemSwap'],
 	getValue: (raid: Raid) => raid.getTargetDummies(),
 	setValue: (raid: Raid, newValue: number) => raid.setTargetDummies(newValue),
 	// Monks' count is talent-driven, so they never choose it.
@@ -110,7 +109,7 @@ export const minBaseDamageConfig = (): NumberPickerConfig<Encounter> => ({
 	id: 'encounter-min-base-damage',
 	label: i18n.t('settings_tab.encounter.min_base_damage.label'),
 	labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
-	storeSubscribe: subscribeEncounterChange,
+	storeField: 'encounter:*',
 	getValue: (encounter: Encounter) => encounter.primaryTarget.minBaseDamage,
 	setValue: (encounter: Encounter, newValue: number) =>
 		encounter.modifyTarget(0, target => {
@@ -125,7 +124,7 @@ export const presetEncounterConfig = (encounter: Encounter): EnumPickerConfig<En
 		label: i18n.t('settings_tab.encounter.encounter_preset.label'),
 		extraClassNames: ['damage-metrics', 'npc-picker'],
 		values: [{ name: i18n.t('common.custom'), value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
-		storeSubscribe: subscribeEncounterChange,
+		storeField: 'encounter:*',
 		getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),
 		setValue: (subject: Encounter, newValue: number) => {
 			if (newValue !== -1) subject.applyPreset(presets[newValue]);

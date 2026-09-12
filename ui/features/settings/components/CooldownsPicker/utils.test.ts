@@ -4,9 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { actionPickerConfig, availableCooldowns, deleteCooldown, timingsPickerConfig } from './utils';
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => () => () => undefined,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 
 const spell = (id: ActionId, isMajorCooldown: boolean) => ({ id, data: { isMajorCooldown } });

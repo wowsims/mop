@@ -1,7 +1,7 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import { Stats } from '@sim/proto/stats';
 import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { Stats } from '@sim/proto/stats';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -19,9 +19,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => source.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(source.subscribe));
 
 const STRINGS = vi.hoisted(
 	() =>
@@ -284,12 +282,12 @@ describe('SavedEpWeights', () => {
 			expect(chipNamed('Off').classList.contains('disabled')).toBe(true);
 		});
 
-		it('hides each section until it has a chip', async () => {
+		it('renders each section only once it has a chip', async () => {
 			presets = [{ name: 'Default', epWeights: weights(3) }];
 			await renderManager();
 
-			expect(document.querySelector('.saved-data-presets')!.classList.contains('hide')).toBe(false);
-			expect(document.querySelector('.saved-data-custom')!.classList.contains('hide')).toBe(true);
+			expect(document.querySelector('.saved-data-presets')).toBeTruthy();
+			expect(document.querySelector('.saved-data-custom')).toBeNull();
 		});
 
 		it('holds the presets back until the sim is ready, as the vanilla manager did', () => {

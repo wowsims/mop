@@ -24,8 +24,10 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 		[configs, player, profession1, profession2],
 	);
 
+	if (!shown) return null;
+
 	return (
-		<div className={clsx('consumes-row', 'input-root', 'input-inline', !shown && 'hide')} role="group" aria-labelledby={labelId}>
+		<div className={clsx('consumes-row', 'input-root', 'input-inline')} role="group" aria-labelledby={labelId}>
 			<span className="form-label" id={labelId}>
 				{i18n.t(`settings_tab.consumables.${name}.title`)}
 			</span>

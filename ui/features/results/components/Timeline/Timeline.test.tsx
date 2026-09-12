@@ -123,7 +123,7 @@ describe('Timeline', () => {
 	it('leaves the chart series unbuilt until the DPS view is picked, then keeps them', () => {
 		const view = mount(true);
 		emit(resultFor('a', 'p1'), view.again);
-		expect(state.specs.at(-1)).toBeNull();
+		expect(state.specs).toHaveLength(0);
 		expect(state.charted).toBe(0);
 
 		act(() => {
@@ -141,15 +141,15 @@ describe('Timeline', () => {
 		expect(state.charted).toBe(1);
 	});
 
-	it('hides the pane that is not showing rather than unmounting it', () => {
+	it('mounts only the pane that is showing', () => {
 		const view = mount(true);
-		expect(view.container.querySelector('.dps-resources-plot')!.className).toContain('hide');
-		expect(view.container.querySelector('.rotation-plot')!.className).not.toContain('hide');
+		expect(view.container.querySelector('.dps-resources-plot')).toBeNull();
+		expect(view.container.querySelector('.rotation-plot')).toBeTruthy();
 
 		act(() => {
 			fireEvent.click(view.container.querySelector('#timeline-chart-view-dps')!);
 		});
-		expect(view.container.querySelector('.dps-resources-plot')!.className).not.toContain('hide');
-		expect(view.container.querySelector('.rotation-plot')!.className).toContain('hide');
+		expect(view.container.querySelector('.dps-resources-plot')).toBeTruthy();
+		expect(view.container.querySelector('.rotation-plot')).toBeNull();
 	});
 });

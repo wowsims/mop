@@ -28,13 +28,13 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 		[tooltipId, tooltip],
 	);
 
+	if (hidden) return null;
+
 	return (
 		<Field.Root
 			ref={ref}
 			disabled={disabled}
-			className={dedupe(
-				clsx('input-root', className, config.inline && 'input-inline', config.extraClassNames, disabled && 'disabled', hidden && 'hide'),
-			)}>
+			className={dedupe(clsx('input-root', className, config.inline && 'input-inline', config.extraClassNames, disabled && 'disabled'))}>
 			{leading}
 			{config.label && (
 				// `htmlFor` explicitly rather than letting Field derive it.

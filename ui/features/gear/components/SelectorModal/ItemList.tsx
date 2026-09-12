@@ -121,9 +121,8 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						}}
 					/>
 				</div>
-				{/* Both weapon boxes are on every slot and hide themselves; only the picker inside is conditional. */}
-				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-1h-weapons', !showWeaponOptions && 'hide')}>
-					{showWeaponOptions && (
+				{showWeaponOptions && (
+					<div className="sim-input selector-modal-boolean-option selector-modal-show-1h-weapons">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -140,10 +139,10 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								},
 							}}
 						/>
-					)}
-				</div>
-				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-2h-weapons', !showWeaponOptions && 'hide')}>
-					{showWeaponOptions && (
+					</div>
+				)}
+				{showWeaponOptions && (
+					<div className="sim-input selector-modal-boolean-option selector-modal-show-2h-weapons">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -160,26 +159,28 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								},
 							}}
 						/>
-					)}
-				</div>
-				<div className={clsx('sim-input selector-modal-boolean-option selector-modal-show-matching-gems', !label.startsWith('Gem') && 'hide')}>
-					<BooleanPicker
-						modObject={sim}
-						config={{
-							id: 'show-matching-gems-selector',
-							extraClassNames: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
-							label: i18n.t('settings_tab.other.show_matching_gems.label'),
-							inline: true,
-							storeField: 'sim:filters',
-							getValue: subject => subject.getFilters().matchingGemsOnly,
-							setValue: (subject, newValue) => {
-								const next = subject.getFilters();
-								next.matchingGemsOnly = newValue;
-								subject.setFilters(next);
-							},
-						}}
-					/>
-				</div>
+					</div>
+				)}
+				{label.startsWith('Gem') && (
+					<div className="sim-input selector-modal-boolean-option selector-modal-show-matching-gems">
+						<BooleanPicker
+							modObject={sim}
+							config={{
+								id: 'show-matching-gems-selector',
+								extraClassNames: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
+								label: i18n.t('settings_tab.other.show_matching_gems.label'),
+								inline: true,
+								storeField: 'sim:filters',
+								getValue: subject => subject.getFilters().matchingGemsOnly,
+								setValue: (subject, newValue) => {
+									const next = subject.getFilters();
+									next.matchingGemsOnly = newValue;
+									subject.setFilters(next);
+								},
+							}}
+						/>
+					</div>
+				)}
 				{showEPOptions && (
 					<div className="sim-input selector-modal-boolean-option selector-modal-show-ep-values">
 						<BooleanPicker
@@ -216,7 +217,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</button>
 				</h6>
 				<h6 className="favorite-label" />
-				<h6 className={clsx('compare-label', label !== SelectorModalTabs.Items && 'hide')} />
+				{label === SelectorModalTabs.Items && <h6 className="compare-label" />}
 			</div>
 			<div ref={listRef} className={clsx('selector-modal-list', !showEPValues && 'hide-ep')} tabIndex={0}>
 				<VirtualList

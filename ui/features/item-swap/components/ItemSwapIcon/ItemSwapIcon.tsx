@@ -7,10 +7,9 @@ import { translateSlotName } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
+import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import clsx from 'clsx';
 import { useMemo, useRef } from 'react';
 
@@ -34,8 +33,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const { iconUrl, name, href } = useActionId(actionId);
 
 	const iconRef = useRef<HTMLAnchorElement>(null);
-	const resolveTooltip = useMemo(() => (item ? () => equippedItemWowheadTooltipData(player, item, isBlacksmithing) : null), [player, item, isBlacksmithing]);
-	useWowheadDataset(iconRef, resolveTooltip);
+	useEquippedItemWowheadDataset(iconRef, player, item, isBlacksmithing);
 
 	return (
 		<div className="icon-picker-root icon-picker">

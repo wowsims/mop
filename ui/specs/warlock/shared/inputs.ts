@@ -1,7 +1,6 @@
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { WarlockSpecs } from '@sim/proto/spec_types';
-import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { WarlockOptions_Summon as Summon } from '@generated/proto/warlock';
 import * as InputHelpers from '@ui-kit/input_helpers';
@@ -24,5 +23,5 @@ export const PetInput = <SpecType extends WarlockSpecs>() =>
 			{ actionId: ActionId.fromSpellId(712), value: Summon.Succubus },
 			{ actionId: ActionId.fromSpellId(697), value: Summon.Voidwalker },
 		],
-		storeSubscribe: (player: Player<SpecType>) => subscribePlayerChange(player),
+		storeField: 'player:*',
 	});

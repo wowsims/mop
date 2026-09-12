@@ -1,5 +1,4 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribeBulkChange } from '@sim/state/subscriptions';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { useMemo } from 'react';
@@ -35,7 +34,7 @@ export const RequiredSetBonuses = () => {
 								id: `${setBonusDomId(setBonus)}-2p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_2p'),
 								inline: true,
-								storeSubscribe: () => subscribeBulkChange(player),
+								storeField: ['bulk:settings', 'bulk:items'],
 								enableWhen: () => canEnableRequiredTwoPiece(requiredSetBonuses, setBonus.setId, canSatisfy),
 								getValue: () => requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
 								setValue: (_modObj, newValue) => {
@@ -53,7 +52,7 @@ export const RequiredSetBonuses = () => {
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
 								inline: true,
 								extraClassNames: ['bulk-required-set-bonus'],
-								storeSubscribe: () => subscribeBulkChange(player),
+								storeField: ['bulk:settings', 'bulk:items'],
 								enableWhen: () => canEnableRequiredFourPiece(requiredSetBonuses, setBonus, canSatisfy),
 								getValue: () => requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
 								setValue: (_modObj, newValue) => {

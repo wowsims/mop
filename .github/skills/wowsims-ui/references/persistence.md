@@ -40,14 +40,16 @@ only fires on a path with saved settings.
 ## Storage keys
 
 The key is built by the caller and handed in — the state layer never derives one.
-`SimUI.getStorageKey(postfix)` is the builder; `ui/sim/constants/other.ts` holds
-`LOCAL_STORAGE_PREFIX`. Suffixes in use:
+`SimHostObject.getStorageKey(postfix)` (`ui/app/individual_sim_ui.tsx`) is the builder, over
+`specStorageKey` in `ui/sim/state/storage_keys.ts`; `ui/sim/constants/other.ts` holds
+`LOCAL_STORAGE_PREFIX`. Suffixes in use — the saved-data ones live in `storage_keys.ts`, the first
+two in `persistence.ts`:
 
 | Constant                                                  | Key                                                                                            |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `SETTINGS_STORAGE_SUFFIX`                                 | the settings envelope, per spec                                                                |
 | `SHARED_SAVED_ENCOUNTER_STORAGE_KEY`                      | saved encounters — deliberately **not** per-spec prefixed, so they are shared across every sim |
-| `'__statweight_settings__'`                               | stat-weight action settings                                                                    |
+| `STAT_WEIGHT_SETTINGS_STORAGE_KEY`                        | stat-weight action settings (`'__statweight_settings__'`)                                      |
 | `SAVED_GEAR_STORAGE_KEY` / `SAVED_EP_WEIGHTS_STORAGE_KEY` | the saved-data slots                                                                           |
 
 If you add a key, add it via `getStorageKey` unless you positively want it shared across specs, and

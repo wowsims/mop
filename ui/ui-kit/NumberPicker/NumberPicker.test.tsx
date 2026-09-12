@@ -84,10 +84,10 @@ describe('NumberPicker', () => {
 		expect(settings.listenerCount).toBe(0);
 	});
 
-	it('hides with the `hide` class when showWhen is false, keeping the node', () => {
+	it('renders nothing when showWhen is false', () => {
 		const settings = new Settings();
-		render(<NumberPicker modObject={settings} config={configFor({ showWhen: () => false })} />);
-		expect(input().closest('.input-root')!.classList.contains('hide')).toBe(true);
+		const { container } = render(<NumberPicker modObject={settings} config={configFor({ showWhen: () => false })} />);
+		expect(container.querySelector('.input-root')).toBeNull();
 	});
 
 	it('disables the input and marks the root when enableWhen is false', () => {

@@ -73,20 +73,19 @@ describe('ConsumeRow', () => {
 		expect(caption.id).not.toBe('');
 	});
 
-	it('hides the row when every picker in it is hidden, and shows it again', () => {
+	it('unmounts the row when every picker in it is hidden, and mounts it again', () => {
 		const options = new Options();
-		const element = row(options, [configFor(opts => opts.engineer), configFor(opts => opts.engineer)]);
-		expect(element.classList.contains('hide')).toBe(false);
+		row(options, [configFor(opts => opts.engineer), configFor(opts => opts.engineer)]);
+		expect(document.querySelector('.consumes-row')).toBeTruthy();
 
 		options.engineer = false;
 		act(() => options.changeProfession(1));
-		expect(element.classList.contains('hide')).toBe(true);
-		// `updateRow` toggles a class; the row and its pickers stay in the document either way.
-		expect(document.querySelector('.consumes-engi')).toBeTruthy();
+		expect(document.querySelector('.consumes-row')).toBeNull();
+		expect(document.querySelector('.consumes-engi')).toBeNull();
 
 		options.engineer = true;
 		act(() => options.changeProfession(2));
-		expect(element.classList.contains('hide')).toBe(false);
+		expect(document.querySelector('.consumes-row')).toBeTruthy();
 	});
 
 	it('keeps the row shown while any one of its pickers is', () => {
@@ -95,27 +94,27 @@ describe('ConsumeRow', () => {
 
 		options.engineer = false;
 		act(() => options.changeProfession(1));
-		expect(element.classList.contains('hide')).toBe(false);
+		expect(document.body.contains(element)).toBe(true);
 	});
 
-	it('never hides a row that names no pickers', () => {
+	it('never unmounts a row that names no pickers', () => {
 		const options = new Options();
 		const element = row(options);
-		expect(element.classList.contains('hide')).toBe(false);
+		expect(document.body.contains(element)).toBe(true);
 
 		act(() => options.changeProfession(1));
-		expect(element.classList.contains('hide')).toBe(false);
+		expect(document.body.contains(element)).toBe(true);
 	});
 
 	it('watches the two professions and nothing else', () => {
 		const options = new Options();
-		const element = row(options, [configFor(opts => opts.engineer)]);
+		row(options, [configFor(opts => opts.engineer)]);
 
 		options.engineer = false;
 		act(() => options.changeSomethingElse());
-		expect(element.classList.contains('hide')).toBe(false);
+		expect(document.querySelector('.consumes-row')).toBeTruthy();
 
 		act(() => options.changeProfession(1));
-		expect(element.classList.contains('hide')).toBe(true);
+		expect(document.querySelector('.consumes-row')).toBeNull();
 	});
 });

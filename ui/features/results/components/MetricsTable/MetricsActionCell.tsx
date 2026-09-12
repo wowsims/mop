@@ -1,11 +1,10 @@
 import { externalRel } from '@sim/utils/links';
 import type { ActionId } from '@sim/proto/action_id';
-import { actionIdWowheadTooltipData } from '@sim/proto/action_id/dom';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
 import { Icon } from '@ui-kit/Icon';
-import { useMemo, useRef } from 'react';
+import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
+import { useRef } from 'react';
 
 export interface MetricsActionCellProps {
 	name: string;
@@ -20,8 +19,7 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 	const { iconUrl, href } = useActionId(actionId);
 	const iconRef = useRef<HTMLAnchorElement>(null);
 
-	const resolveTooltip = useMemo(() => () => actionIdWowheadTooltipData(actionId, { useBuffAura }), [actionId, useBuffAura]);
-	useWowheadDataset(iconRef, resolveTooltip);
+	useActionIdWowheadDataset(iconRef, actionId, useBuffAura);
 
 	return (
 		<div className="metrics-action">

@@ -9,15 +9,18 @@ const source = vi.hoisted(() => {
 	const listeners = new Set<() => void>();
 	return { listeners, subscribed: 0, notify: () => listeners.forEach(listener => listener()) };
 });
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerChange: () => {
-		source.subscribed++;
-		return (onChange: () => void) => {
-			source.listeners.add(onChange);
-			return () => source.listeners.delete(onChange);
-		};
-	},
-}));
+vi.mock('@sim/state/subscriptions', async () => {
+	const { mockSubscriptions, noopSubscribe } = await import('@sim/testing');
+	return mockSubscriptions(noopSubscribe, {
+		subscribePlayerChange: () => {
+			source.subscribed++;
+			return (onChange: () => void) => {
+				source.listeners.add(onChange);
+				return () => source.listeners.delete(onChange);
+			};
+		},
+	});
+});
 
 // Both take a live player and are covered by their own suites.
 vi.mock('@ui-kit/IconPicker', () => ({
@@ -80,26 +83,25 @@ describe('CustomSection', () => {
 		expect(source.listeners.size).toBe(0);
 	});
 
-	it('hides the block root — not its body — when `when` is false at mount', () => {
-		const block = mount({ when: () => false });
-		expect(block.classList.contains('hide')).toBe(true);
-		expect(block.querySelector('.content-block-body')!.classList.contains('hide')).toBe(false);
+	it('renders no block at all when `when` is false at mount', () => {
+		expect(mount({ when: () => false })).toBeNull();
 	});
 
-	it('toggles `hide` in both directions as the player changes', () => {
-		const block = mount({ when: ((subject: typeof player) => subject.shown) as unknown as CustomSectionConfig<any>['when'] });
-		expect(block.classList.contains('hide')).toBe(false);
+	it('unmounts and remounts the block as the player changes', () => {
+		const block = () => document.querySelector('.content-block');
+		mount({ when: ((subject: typeof player) => subject.shown) as unknown as CustomSectionConfig<any>['when'] });
+		expect(block()).toBeTruthy();
 
 		act(() => {
 			player.shown = false;
 			source.notify();
 		});
-		expect(block.classList.contains('hide')).toBe(true);
+		expect(block()).toBeNull();
 
 		act(() => {
 			player.shown = true;
 			source.notify();
 		});
-		expect(block.classList.contains('hide')).toBe(false);
+		expect(block()).toBeTruthy();
 	});
 });

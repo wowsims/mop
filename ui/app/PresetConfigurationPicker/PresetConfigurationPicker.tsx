@@ -30,7 +30,7 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 	// that true here.
 	const active = useReadyStoreSubscribe(subscribeSimChange(host.sim), () => builds.map(build => isBuildActive(build, host)), ready);
 
-	if (!builds.length) return <div className="preset-configuration-picker-root saved-data-manager-root hide" />;
+	if (!builds.length) return null;
 
 	return (
 		<div className="preset-configuration-picker-root saved-data-manager-root">

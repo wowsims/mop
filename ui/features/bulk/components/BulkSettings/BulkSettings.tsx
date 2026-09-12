@@ -1,7 +1,7 @@
 import { BulkSimItemSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { usePlayer, useSimHost } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribeBulkChange, subscribeBulkField, subscribePlayerField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
@@ -75,7 +75,7 @@ export const BulkSettings = () => {
 			{ name: i18n.t(pair.slotKeys[0], { ns: 'character' }), value: pair.slots[0] },
 			{ name: i18n.t(pair.slotKeys[1], { ns: 'character' }), value: pair.slots[1] },
 		],
-		storeSubscribe: () => subscribeBulkChange(player),
+		storeField: ['bulk:settings', 'bulk:items'] as const,
 		getValue: () => frozenItemSlot(player.getGear(), pair.slots, frozenItems.get(pair.bulkSlot)) ?? -1,
 		setValue: (_modObj: typeof player, newValue: number) => {
 			setBulkFrozenItem(player, pair.bulkSlot, newValue === -1 ? null : player.getGear().getEquippedItem(newValue));
@@ -99,7 +99,7 @@ export const BulkSettings = () => {
 								label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
 								labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
 								inline: true,
-								storeSubscribe: () => subscribeBulkField(player, 'settings'),
+								storeField: 'bulk:settings',
 								getValue: () => useLegacyBulkSim,
 								setValue: (_modObj, newValue: boolean) => {
 									setBulkUseLegacyBulkSim(player, newValue);
@@ -116,7 +116,7 @@ export const BulkSettings = () => {
 								label: i18n.t('bulk_tab.settings.inherit_upgrades.label'),
 								labelTooltip: i18n.t('bulk_tab.settings.inherit_upgrades.tooltip'),
 								inline: true,
-								storeSubscribe: () => subscribeBulkField(player, 'settings'),
+								storeField: 'bulk:settings',
 								getValue: () => inheritUpgrades,
 								setValue: (_modObj, newValue: boolean) => {
 									setBulkInheritUpgrades(player, newValue);
@@ -145,7 +145,7 @@ export const BulkSettings = () => {
 											{ name: i18n.t('slots.main_hand', { ns: 'character' }), value: ItemSlot.ItemSlotMainHand },
 											{ name: i18n.t('slots.off_hand', { ns: 'character' }), value: ItemSlot.ItemSlotOffHand },
 										],
-										storeSubscribe: () => subscribeBulkChange(player),
+										storeField: ['bulk:settings', 'bulk:items'],
 										getValue: () => frozenWeaponSlot ?? -1,
 										setValue: (_modObj, newValue: number) => {
 											setBulkFrozenWeaponSlot(player, newValue === -1 ? null : newValue);

@@ -11,10 +11,12 @@
 #
 # A path is only checked when it is unambiguous: it must start with a real
 # top-level directory or be a known root file, and contain no glob or
-# placeholder character (* < { … space). Generated and build output is skipped
-# because it is absent in a clean checkout by design — that covers ui/generated,
-# dist, tmp, binary_dist, node_modules and every *_auto_gen.ts. Anything this
-# skill deliberately names as *not* existing goes in ABSENT_BY_DESIGN below.
+# placeholder character (* < { … space). A trailing `:<line>` is stripped, so a
+# `file.ts:123` citation is checked as the file. Generated and build output is
+# skipped because it is absent in a clean checkout by design — that covers
+# ui/generated, dist, tmp, binary_dist, node_modules and every *_auto_gen.ts.
+# Anything this skill deliberately names as *not* existing, or as present only
+# through .git/info/exclude, goes in ABSENT_BY_DESIGN below.
 
 set -eu
 
@@ -24,7 +26,10 @@ cd "$repo"
 
 # Paths this skill names precisely because they are gone or uncommitted.
 ABSENT_BY_DESIGN="tools/browser-perf/
+tools/react-migration/
+tools/react-migration/README.md
 tools/restructure/move.mjs
+ui/index.ts
 ui/worker/highs.js"
 
 fail=0
@@ -36,6 +41,7 @@ paths=$(cat "$here"/SKILL.md "$here"/references/*.md |
 	grep -E '^(ui|tools|assets|schemas|proto|sim|cmd|docs)/|^\.github/|^(package\.json|tsconfig\.json|makefile|test-locales\.mjs|vite\.[a-z.-]*mts|vitest\.config\.mts|\.oxlintrc\.json|\.oxfmtrc\.json|STATE_UI_SEPARATION_PLAN\.md)$' |
 	grep -Ev '[*<{ ]|…' |
 	grep -Ev '^(ui/generated|dist|tmp|binary_dist|node_modules)/|_auto_gen\.ts$' |
+	sed -E 's/:[0-9]+$//' |
 	sort -u)
 
 for p in $paths; do

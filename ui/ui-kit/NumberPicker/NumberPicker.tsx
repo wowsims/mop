@@ -3,7 +3,7 @@ import { formatToNumber } from '@sim/utils/format';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import { useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { NumberPickerConfig } from './types';
 
@@ -35,7 +35,8 @@ const updateSize = (input: HTMLInputElement | null) => {
 
 export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
-	const inputRef = useRef<HTMLInputElement>(null);
+	const [input, setInput] = useState<HTMLInputElement | null>(null);
+	const attachInput = useCallback((element: HTMLElement | null) => setInput(element instanceof HTMLInputElement ? element : null), []);
 
 	const float = config.float ?? false;
 	const positive = config.positive ?? false;
@@ -45,29 +46,28 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 	const display = formatSourceValue(value, float, showZeroes, maxDecimalDigits);
 
 	useLayoutEffect(() => {
-		const input = inputRef.current;
 		if (!input) return;
 		input.value = display;
-	}, [display, revision]);
+	}, [display, revision, input]);
 
 	useLayoutEffect(() => {
-		updateSize(inputRef.current);
-	}, []);
+		updateSize(input);
+	}, [input]);
 
-	useCommitChange(inputRef, input => {
-		if (positive) input.value = applyPositive(input.value, float, maxDecimalDigits);
-		setValue(parseValue(input.value, float));
+	useCommitChange(input, committed => {
+		if (positive) committed.value = applyPositive(committed.value, float, maxDecimalDigits);
+		setValue(parseValue(committed.value, float));
 	});
 
 	return (
 		<PickerShell config={config} className="number-picker-root" hidden={hidden} disabled={disabled}>
 			<Input
 				type="text"
-				ref={inputRef}
+				ref={attachInput}
 				id={config.id}
 				className="form-control number-picker-input"
 				disabled={disabled}
-				onInput={() => updateSize(inputRef.current)}
+				onInput={() => updateSize(input)}
 			/>
 		</PickerShell>
 	);

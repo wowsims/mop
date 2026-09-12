@@ -5,11 +5,10 @@ import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
-import { equippedItemWowheadTooltipData } from '@sim/proto/action_id/dom';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useWowheadDataset } from '@ui-kit/hooks/useWowheadDataset';
+import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useRef } from 'react';
@@ -39,8 +38,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 	const { iconUrl, href } = useActionId(actionId);
 
 	const linkRef = useRef<HTMLAnchorElement>(null);
-	const resolveTooltip = useMemo(() => (item ? () => equippedItemWowheadTooltipData(player, item, isBlacksmithing) : null), [player, item, isBlacksmithing]);
-	useWowheadDataset(linkRef, resolveTooltip);
+	useEquippedItemWowheadDataset(linkRef, player, item, isBlacksmithing);
 
 	const reforge = item?.reforge;
 	const showReforge = !!item && (!!reforge || !!previousItem?.reforge);

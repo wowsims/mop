@@ -2,7 +2,6 @@ import { sanitizeId } from '@sim/utils/format';
 import type { Player } from '@sim/player/player';
 import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import { subscribeStatWeightsChange } from '@sim/state/subscriptions';
 import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
@@ -46,7 +45,7 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 							id: `sw-stat-toggle-${sanitizeId(fullName)}`,
 							getValue: () => !settings.isUnitStatExcludedFromCalc(stat),
 							setValue: (subject, newValue) => subject.setStatExcluded(stat, !newValue),
-							storeSubscribe: subject => subscribeStatWeightsChange(subject),
+							storeField: 'statWeights:settings',
 							enableWhen: () => !stat.isStat() || epReferenceStat !== stat.getStat(),
 						}}
 					/>

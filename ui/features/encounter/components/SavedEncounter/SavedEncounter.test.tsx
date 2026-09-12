@@ -1,6 +1,6 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
 import { Encounter as EncounterProto } from '@generated/proto/common';
 import { SavedEncounter as SavedEncounterProto } from '@generated/proto/ui';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,9 +18,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeEncounterChange: () => source.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(source.subscribe));
 
 const STRINGS = vi.hoisted(
 	() =>

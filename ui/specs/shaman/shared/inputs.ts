@@ -2,7 +2,6 @@ import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { ShamanSpecs } from '@sim/proto/spec_types';
 import type { CustomSection } from '@sim/spec_config';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { Spec } from '@generated/proto/common';
 import { ShamanImbue, ShamanShield } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
@@ -40,7 +39,7 @@ export const ShamanImbueMHSwap = <SpecType extends ShamanSpecs>() =>
 			{ actionId: ActionId.fromSpellId(8024), value: ShamanImbue.FlametongueWeapon },
 		],
 		showWhen: (player: Player<SpecType>) => player.itemSwapSettings.getEnableItemSwap(),
-		storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')]),
+		storeField: ['specOptions', 'itemSwap'],
 	});
 
 type FeleAutocastFlag = 'autocastFireblast' | 'autocastFirenova' | 'autocastImmolate' | 'autocastEmpower';
@@ -55,7 +54,7 @@ const feleAutocastIconInput = <SpecType extends ShamanSpecs>(spellId: number, fl
 			newOptions.feleAutocast![flag] = newValue;
 			player.setClassOptions(newOptions);
 		},
-		storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
+		storeField: 'specOptions',
 	});
 
 // The Fire Elemental autocast toggles every shaman spec that shows totems gets.

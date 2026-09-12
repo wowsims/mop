@@ -13,6 +13,8 @@ export interface ContentBlockHeaderProps {
 
 export interface ContentBlockConfigProps {
 	bodyClassName?: ClassValue;
+	/** For a block whose body would be empty: the body element is not rendered at all. */
+	withoutBody?: boolean;
 	header?: ContentBlockHeaderProps;
 }
 
@@ -41,9 +43,11 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 					{headerChildren}
 				</div>
 			)}
-			<div ref={bodyRef} className={clsx('content-block-body', config.bodyClassName)}>
-				{children}
-			</div>
+			{!config.withoutBody && (
+				<div ref={bodyRef} className={clsx('content-block-body', config.bodyClassName)}>
+					{children}
+				</div>
+			)}
 		</div>
 	);
 };

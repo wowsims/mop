@@ -15,7 +15,6 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { tabPaneClass } from '@ui-kit/tab_pane_class';
-import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -79,11 +78,15 @@ export const RotationTabBody = () => {
 								<ContentBlock className="rotation-settings" config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 									<SimpleRotationInputs />
 								</ContentBlock>
-								<ContentBlock
-									className={clsx('cooldown-settings', !hasCooldowns && 'hide')}
-									config={{ header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') } }}>
-									<CooldownsPicker />
-								</ContentBlock>
+								{hasCooldowns && (
+									<ContentBlock
+										className="cooldown-settings"
+										config={{
+											header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') },
+										}}>
+										<CooldownsPicker />
+									</ContentBlock>
+								)}
 							</div>
 						</div>
 						<div className="rotation-tab-col tab-panel-right">

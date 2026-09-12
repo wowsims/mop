@@ -19,11 +19,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeAll: () => source.subscribe,
-	subscribePlayerField: () => source.subscribe,
-	subscribeUnitMetadata: () => source.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(source.subscribe));
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 
 let impl: Record<string, any>;

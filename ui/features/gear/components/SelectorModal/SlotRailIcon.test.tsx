@@ -2,7 +2,7 @@ import { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -25,8 +25,7 @@ const equippedItem = (id: number) =>
 	}) as unknown as EquippedItem;
 
 const setup = (props: Partial<Parameters<typeof SlotRailIcon>[0]> = {}) => {
-	const player = {} as unknown as IndividualSimHost<any>['player'];
-	const host = { player } as unknown as IndividualSimHost<any>;
+	const host = fakeHost();
 	const onOpen = vi.fn();
 	const result = render(
 		<SimHostProvider host={host}>
@@ -44,7 +43,7 @@ describe('SlotRailIcon', () => {
 		expect(wrapper.classList.contains('active')).toBe(false);
 
 		rerender(
-			<SimHostProvider host={{ player: {} } as unknown as IndividualSimHost<any>}>
+			<SimHostProvider host={fakeHost()}>
 				<SlotRailIcon slot={ItemSlot.ItemSlotFeet} item={null} isBlacksmithing={false} active={true} tooltipId="rail-tooltip" onOpen={vi.fn()} />
 			</SimHostProvider>,
 		);

@@ -1,7 +1,7 @@
 import { ArmorType, ItemSlot, RangedWeaponType, WeaponType } from '@generated/proto/common';
 import { DatabaseFilters, SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,11 +16,7 @@ const store = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeSimField: () => store.subscribe,
-	subscribeUiField: () => store.subscribe,
-	subscribeAll: () => store.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 
 const { FiltersMenu } = await import('./FiltersMenu');
 
@@ -45,7 +41,7 @@ describe('FiltersMenu', () => {
 		rootElem = document.createElement('div');
 		rootElem.className = 'sim-ui';
 		document.body.appendChild(rootElem);
-		const host = {
+		const host = fakeHost({
 			rootElem,
 			player: {
 				sim: {
@@ -55,7 +51,7 @@ describe('FiltersMenu', () => {
 				getPlayerClass: () => ({ armorTypes, weaponTypes: weaponTypes.map(weaponType => ({ weaponType })), rangedWeaponTypes }),
 				getPlayerSpec: () => ({ canDualWield }),
 			},
-		} as unknown as IndividualSimHost<any>;
+		});
 
 		render(
 			<SimHostProvider host={host}>

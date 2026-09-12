@@ -2,15 +2,15 @@ import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Stats } from '@sim/proto/stats';
 import { subscribePlayerField } from '@sim/state/subscriptions';
+import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import type { SavedEPWeights } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import type { ClassValue } from 'clsx';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { trackEvent } from '../../../../tracking/analytics';
 import { useSavedEpWeights } from '../../hooks/useSavedEpWeights';
 import { epWeightsData, serializeEpWeights } from './utils';
 
@@ -30,7 +30,6 @@ export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeig
 	const ready = useSimReady();
 
 	const label = i18n.t('sidebar.buttons.stat_weights.modal.ep');
-	const { entries: userData, save, remove } = useSavedEpWeights();
 
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedEPWeights>>>(
 		() =>
@@ -50,47 +49,26 @@ export const SavedEpWeights = ({ className, loadOnly, presetsOnly }: SavedEpWeig
 		[ready, individualConfig, player],
 	);
 
-	const epWeights = useStoreSubscribe(subscribePlayerField(player, 'epWeights'), () => player.getEpWeights());
-	const currentJson = useMemo(() => serializeEpWeights(epWeightsData(epWeights)), [epWeights]);
+	const current = useStoreSubscribe(subscribePlayerField(player, 'epWeights'), () => epWeightsData(player.getEpWeights()));
 
-	const onLoad = useCallback(
-		(entry: SavedDataPanelEntry<SavedEPWeights>) => {
-			player.setEpWeights(Stats.fromProto(entry.data.epWeights));
-			trackEvent({ action: 'settings', category: 'load', label });
-		},
-		[player, label],
-	);
-
-	const onSave = useCallback(
-		(name: string) => {
-			save(name, epWeightsData(player.getEpWeights()));
-			trackEvent({ action: 'settings', category: 'save', label });
-		},
-		[player, label, save],
-	);
-
-	const onDelete = useCallback(
-		(entry: SavedDataPanelEntry<SavedEPWeights>) => {
-			remove(entry.name);
-			trackEvent({ action: 'settings', category: 'delete', label });
-		},
-		[label, remove],
-	);
+	const panel = useSavedPanel({
+		label,
+		storage: useSavedEpWeights(),
+		current,
+		serialize: serializeEpWeights,
+		load: entry => player.setEpWeights(Stats.fromProto(entry.data.epWeights)),
+	});
 
 	return (
 		<SavedDataPanel
 			container={host.rootElem}
 			className={className}
 			title={i18n.t('sidebar.buttons.stat_weights.saved_ep_weights.title')}
-			label={label}
 			nameLabel={i18n.t('sidebar.buttons.stat_weights.title')}
 			loadOnly={loadOnly || presetsOnly}
 			presets={presets}
-			userData={presetsOnly ? NO_USER_DATA : userData}
-			currentJson={currentJson}
-			onLoad={onLoad}
-			onSave={onSave}
-			onDelete={onDelete}
+			{...panel}
+			userData={presetsOnly ? NO_USER_DATA : panel.userData}
 		/>
 	);
 };

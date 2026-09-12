@@ -29,11 +29,11 @@ component, including `ui/scss/sims/sim.scss`. `npm run lint:css` is stylelint ov
 
 ## JSX dialect
 
-React is the default (`tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both vite
-configs use the automatic runtime), so a **new `.tsx` file is a React file**. A file that still
-builds real DOM nodes opts out on line 1 with `/** @jsxImportSource @jsx-vanilla */`, routed to the
-shim in `ui/shared/jsx-vanilla/`. Porting a file to React means deleting that pragma; the pragma
-count only goes down. A `.tsx` file with no JSX in it should be `.ts`.
+React is the **only** dialect. `tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react` and
+both vite configs use the automatic runtime, so every `.tsx` file is a React file and there is no
+per-file opt-out: the `@jsxImportSource` pragma, the `tsx-vanilla` package and the shim under
+`ui/shared/` that they routed to are all gone, along with the vanilla widget stack that used them.
+A `.tsx` file with no JSX in it should be `.ts`.
 
 ## Fixtures and generated files
 
@@ -45,8 +45,10 @@ count only goes down. A `.tsx` file with no JSX in it should be `.ts`.
 
 ## Authoring a spec
 
-`ui/README.md`'s "How to author a spec" is the full version and is current; this is the shape and
-the traps.
+`ui/README.md`'s "How to author a spec" is the long version; this is the shape and the traps. The
+README is enforced by nothing and is currently wrong in three places — it names `@features/spec_config`
+(which is `@sim/spec_config`), a `buildCustomSection` in `app/tabs/settings_tab.tsx` (that file is
+gone), and `customSections` (deleted) — so prefer this file and the code where they disagree.
 
 A spec is **data**. `ui/specs/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` and is
 the only code file the spec owns besides `presets.ts` / `inputs.ts`. There is no `sim.ts`, no
@@ -60,8 +62,9 @@ Adding one is three edits and no page:
    real JSX, for their reforge tooltips).
 2. A `PlayerSpec` class in `ui/sim/player/specs/<class>.ts` with its `launch: { phase, status }`,
    exported through `ui/sim/player/specs/index.ts`. That field is the single source of truth for
-   launch status — the sim dropdown and the landing page both read it, and `ui/index.ts` renders the
-   landing page's sim links from `PlayerSpecs` rather than a hand-written list.
+   launch status: `ui/app/header/SimTitleDropdown/` reads it on a spec page, and the landing page
+   (`ui/app/landing/`, entered from `ui/app/landing_entry.tsx`) builds its class menu and its per-spec
+   status badges from `PlayerSpecs` via `ui/app/landing/landing_classes.ts`, not a hand-written list.
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class colour, background
    image), which every spec page links unconditionally.
 
@@ -80,9 +83,10 @@ Two traps:
 - **A custom settings section is data, never DOM.** Declare `sections: [CustomSection]` (typed in
   `ui/sim/spec_config.ts`) and `ui/features/settings/components/CustomSection/CustomSection.tsx`
   renders it, from `ui/app/tabs/SettingsTabBody.tsx`, through the same `ContentBlock` + picker path
-  the standard sections use. The older `customSections` (an array of functions returning a
-  `ContentBlock`) is deprecated and has no callers; do not add to it. `ui/README.md` still points at
-  a `buildCustomSection` in `app/tabs/settings_tab.tsx`; that file is gone.
+  the standard sections use. `sections` is the only shape — the older `customSections` (an array of
+  functions returning a `ContentBlock`) was deprecated and is now deleted; only `ui/README.md`'s prose
+  still mentions it, along with a `buildCustomSection` in `app/tabs/settings_tab.tsx` that is gone.
+  `ui/specs/shaman/shared/inputs.ts` is the worked example.
 
 Rules shared by several specs of one class live in `ui/specs/<class>/shared/`
 (`{inputs,presets,derived}.ts`). Constants used by more than one class — the melee-hit/expertise and
@@ -118,6 +122,6 @@ unfinished change.
 | `import/no-cycle` is off                                     | 188 warnings across `ui/` when evaluated; cycles are caught by the harness |
 | Aliases are `tsconfig` `paths`, not `package.json` `imports` | `tsc` under `moduleResolution: "bundler"` does not resolve `#foo/*`        |
 | Only `ui/app` may `createRoot`                               | lint-banned in ui-kit and features; createRoot-per-leaf was rejected       |
-| `customSections` stays deprecated rather than deleted        | one renderer, not two; new specs use `sections`                            |
+| `sections` is the only custom-section shape                  | one renderer, not two; `customSections` was deprecated, then deleted       |
 | The move tool is gone                                        | the restructure landed; move by hand and re-sort imports (see `layers.md`) |
 | `oxfmt`, not prettier                                        | prettier is not a dependency; do not add a second formatter for `ui/`      |

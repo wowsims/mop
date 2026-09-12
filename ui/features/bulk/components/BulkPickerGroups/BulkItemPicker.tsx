@@ -72,11 +72,11 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 			}}
 			action={
 				<div className="item-picker-actions-container">
-					{index >= 0 && (
+					{index >= 0 && state.isEditable && (
 						<>
 							<button
 								type="button"
-								className={clsx('btn btn-link link-danger item-picker-actions-btn', !state.isEditable && 'hide')}
+								className="btn btn-link link-danger item-picker-actions-btn"
 								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />
