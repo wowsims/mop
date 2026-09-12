@@ -1,5 +1,5 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,17 +11,14 @@ vi.mock('../preset_build_state', () => ({
 	buildCategories: () => ['Gear'],
 	isBuildActive: (build: { name: string }) => activeNames.has(build.name),
 }));
-vi.mock('@sim/state/subscriptions', () => {
-	const never = () => () => {};
-	return { subscribeSimChange: () => never };
-});
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@sim/hooks/useSimReady', () => ({ useSimReady: () => ready }));
 
 let ready = true;
 const { PresetConfigurationPicker } = await import('./PresetConfigurationPicker');
 
 const setup = (builds: Array<Record<string, unknown>>, categories = ['gear']) => {
-	const host = { sim: {}, individualConfig: { presets: { builds } } } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ individualConfig: { presets: { builds } } });
 	return render(
 		<SimHostProvider host={host}>
 			<PresetConfigurationPicker categories={categories as never} />

@@ -2,13 +2,12 @@ import { OpenSelectorModalContext } from '@features/gear/hooks/useSelectorModal'
 import { ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { createSimStore } from '@sim/state/sim_store';
+import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-const noopSubscribe = () => () => {};
-vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => noopSubscribe, subscribeAll: () => noopSubscribe }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 vi.mock('@sim/proto/action_id/dom', () => ({ setEquippedItemWowheadData: () => {} }));
 vi.mock('@ui-kit/BooleanPicker', () => ({ BooleanPicker: () => <div className="boolean-picker-root" /> }));
@@ -22,7 +21,7 @@ const setup = (enabled: boolean) => {
 		sim: { store: createSimStore() },
 		itemSwapSettings: { getEnableItemSwap: () => enabled, getItem: () => null },
 	} as unknown as Player<any>;
-	const host = { player } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ player });
 	return render(
 		<SimHostProvider host={host}>
 			<OpenSelectorModalContext value={vi.fn()}>

@@ -1,8 +1,8 @@
+import { ItemLevelState, ItemQuality, ItemSlot, Spec } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { createSimStore } from '@sim/state/sim_store';
-import { ItemLevelState, ItemQuality, ItemSlot, Spec } from '@generated/proto/common';
+import { fakeHost } from '@sim/testing';
 import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -18,11 +18,7 @@ const store = vi.hoisted(() => {
 });
 const tooltip = vi.hoisted(() => ({ settles: [] as Array<(url: string) => void> }));
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => store.subscribe,
-	subscribeUiField: () => store.subscribe,
-	subscribeAll: () => store.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 vi.mock('@sim/proto/action_id/dom', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
@@ -57,7 +53,7 @@ describe('ItemPickerCell', () => {
 			getGear: () => gear,
 			getSpec: () => Spec.SpecUnknown,
 		} as unknown as Player<any>;
-		const host = { player } as unknown as IndividualSimHost<any>;
+		const host = fakeHost({ player });
 
 		tooltip.settles.length = 0;
 		const { container } = render(

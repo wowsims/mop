@@ -2,11 +2,11 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { createSimStore } from '@sim/state/sim_store';
+import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-const noopSubscribe = () => () => {};
-vi.mock('@sim/state/subscriptions', () => ({ subscribeAll: () => noopSubscribe, subscribePlayerField: () => noopSubscribe }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 
 const { GemSummary } = await import('./GemSummary');
@@ -21,7 +21,7 @@ const hostWith = (gems: Array<ReturnType<typeof gem>>, setGear = vi.fn()) => {
 		canDualWield2H: () => false,
 		setGear,
 	} as unknown as Player<any>;
-	return { player } as unknown as IndividualSimHost<any>;
+	return fakeHost({ player });
 };
 
 const renderSummary = (host: IndividualSimHost<any>) =>

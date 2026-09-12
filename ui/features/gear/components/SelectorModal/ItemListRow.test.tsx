@@ -1,7 +1,7 @@
 import { ItemQuality, ItemSlot, type ItemSpec } from '@generated/proto/common';
 import type { UIItem as Item } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { fireEvent, render } from '@testing-library/react';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import type { ReactNode } from 'react';
@@ -31,7 +31,7 @@ const store = vi.hoisted(() => {
 vi.mock('@ui-kit/hooks/useActionId', () => ({
 	useActionId: () => ({ iconUrl: 'icon-url.png', name: 'item-name', href: 'https://example.com/item', ready: true }),
 }));
-vi.mock('@sim/state/subscriptions', () => ({ subscribeBulkField: () => store.subscribe }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 vi.mock('@features/bulk/model/items', () => ({
 	hasBulkItem: (_player: unknown, spec: ItemSpec) => batch.hasItem(spec),
 	addBulkItem: (_player: unknown, spec: ItemSpec) => batch.addItem(spec),
@@ -64,7 +64,7 @@ const renderRow = (
 	onWrapperClick?: () => void,
 ) => {
 	Object.assign(batch, { hasItem: vi.fn(() => false), addItem: vi.fn(), removeItem: vi.fn() }, batchOverrides);
-	const host = { player: {}, sim: {} } as unknown as IndividualSimHost<any>;
+	const host = fakeHost();
 
 	const props: ItemListRowProps = {
 		itemData: makeItemData(),

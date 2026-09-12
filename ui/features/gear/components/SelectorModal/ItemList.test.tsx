@@ -3,6 +3,7 @@ import { DatabaseFilters, UIItem as Item } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,12 +21,7 @@ const store = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeSimField: () => store.subscribe,
-	subscribeUiField: () => store.subscribe,
-	subscribeBulkField: () => store.subscribe,
-	subscribeAll: () => store.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 
 // Every row, so the assertions are about what the list selected rather than what it windowed.
 vi.mock('@ui-kit/VirtualList', () => ({
@@ -125,7 +121,7 @@ describe('ItemList', () => {
 		setFilters = vi.fn((next: DatabaseFilters) => {
 			filters = next;
 		});
-		host = {
+		host = fakeHost({
 			player: {
 				sim: {
 					db: { getNpc: () => undefined },
@@ -141,7 +137,7 @@ describe('ItemList', () => {
 				filterEnchantData: (idxs: number[]) => idxs,
 				filterGemData: (idxs: number[]) => idxs,
 			},
-		} as unknown as IndividualSimHost<any>;
+		});
 	});
 
 	it('offers the filters button and its dialog only on the items tab', () => {

@@ -3,9 +3,10 @@
 // Progress is refs and DOM writes; only a stage change renders. `sim-progress.mjs` drives the real
 // thing in a browser, but it waits for text to appear, so it passes on tick two and can never see
 // that tick one's numbers were dropped — that gap is what the "same commit" case below covers.
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { IndividualSimHost, SimWarning } from '@sim/sim_host';
 import { ProgressMetrics } from '@generated/proto/api';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import type { SimWarning } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { act, render } from '@testing-library/react';
 import { Profiler } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -20,12 +21,12 @@ import { SimResultsPanel } from './SimResultsPanel';
 vi.mock('./SimResultSummary', () => ({ SimResultSummary: () => <div className="sim-result-summary-root" /> }));
 
 const host = (disabled = false, isHealingSpec = false) =>
-	({
+	fakeHost({
 		disabled,
 		player: { getPlayerSpec: () => ({ isHealingSpec }) },
 		// The warnings only read the registry once the sim reports ready; every case here is a loaded sim.
 		sim: { waitForInit: () => Promise.resolve() },
-	}) as unknown as IndividualSimHost<any>;
+	});
 
 const progress = (dps: number, hps: number, completed: number, total: number, presimRunning = false) =>
 	ProgressMetrics.create({ dps, hps, completedIterations: completed, totalIterations: total, presimRunning });

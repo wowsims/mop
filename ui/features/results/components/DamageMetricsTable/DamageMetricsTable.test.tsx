@@ -15,10 +15,7 @@ vi.mock('@sim/context/SimHostContext', async importOriginal => ({
 	// `useDisplayMetrics` reads all three flags through one subscription; only threat varies per case here.
 	useSim: () => ({ getShowThreatMetrics: () => showThreatMetrics, getShowDamageMetrics: () => true, getShowHealingMetrics: () => true }),
 }));
-vi.mock('@sim/state/subscriptions', async importOriginal => ({
-	...(await importOriginal<typeof import('@sim/state/subscriptions')>()),
-	subscribeUiField: () => () => () => {},
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 
 const NONE = { value: 0, percentage: 0, average: 0 };
 

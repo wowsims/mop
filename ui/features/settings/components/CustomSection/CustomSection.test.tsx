@@ -9,15 +9,18 @@ const source = vi.hoisted(() => {
 	const listeners = new Set<() => void>();
 	return { listeners, subscribed: 0, notify: () => listeners.forEach(listener => listener()) };
 });
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerChange: () => {
-		source.subscribed++;
-		return (onChange: () => void) => {
-			source.listeners.add(onChange);
-			return () => source.listeners.delete(onChange);
-		};
-	},
-}));
+vi.mock('@sim/state/subscriptions', async () => {
+	const { mockSubscriptions, noopSubscribe } = await import('@sim/testing');
+	return mockSubscriptions(noopSubscribe, {
+		subscribePlayerChange: () => {
+			source.subscribed++;
+			return (onChange: () => void) => {
+				source.listeners.add(onChange);
+				return () => source.listeners.delete(onChange);
+			};
+		},
+	});
+});
 
 // Both take a live player and are covered by their own suites.
 vi.mock('@ui-kit/IconPicker', () => ({

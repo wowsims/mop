@@ -1,9 +1,9 @@
 // The tail three importers share. Two things here are behaviour rather than plumbing: the class
 // guard, which now reaches the caller instead of becoming an unhandled rejection, and which of the
 // two closing toasts is shown.
-import { classNames } from '@sim/proto/names';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
+import { classNames } from '@sim/proto/names';
+import { fakeHost } from '@sim/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { finishIndividualImport } from './finish_individual_import';
@@ -35,7 +35,7 @@ const player = {
 	setGlyphs: vi.fn(),
 	setProfessions: vi.fn(),
 };
-const host = { player, sim: { db: { lookupEquipmentSpec: vi.fn(() => 'the gear') } } } as unknown as IndividualSimHost<any>;
+const host = fakeHost({ player, sim: { db: { lookupEquipmentSpec: vi.fn(() => 'the gear') } } });
 
 const parsed = (overrides: Partial<Parameters<typeof finishIndividualImport>[1]> = {}) => ({
 	charClass: Class.ClassWarrior,

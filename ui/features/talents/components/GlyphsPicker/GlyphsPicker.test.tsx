@@ -1,21 +1,20 @@
+import { Class, Glyphs } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { Database } from '@sim/proto/database';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { classGlyphsConfig } from '@sim/talents/factory';
-import { Class, Glyphs } from '@generated/proto/common';
+import { fakeHost } from '@sim/testing';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const listeners = vi.hoisted(() => new Set<() => void>());
 
-vi.mock('@sim/state/subscriptions', async importOriginal => {
-	const field = (listener: () => void) => {
+vi.mock('@sim/state/subscriptions', async () =>
+	(await import('@sim/testing')).mockSubscriptions((listener: () => void) => {
 		listeners.add(listener);
 		return () => listeners.delete(listener);
-	};
-	return { ...(await importOriginal<typeof import('@sim/state/subscriptions')>()), subscribePlayerField: () => field };
-});
+	}),
+);
 
 const { GlyphsPicker } = await import('./GlyphsPicker');
 
@@ -36,7 +35,7 @@ const mount = (initial: Partial<Glyphs> = {}) => {
 			listeners.forEach(listener => listener());
 		},
 	} as unknown as Player<any>;
-	const host = { player, rootElem: document.body } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ player, rootElem: document.body });
 	return render(
 		<SimHostProvider host={host}>
 			<GlyphsPicker />

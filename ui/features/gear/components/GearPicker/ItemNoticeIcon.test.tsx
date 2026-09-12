@@ -1,7 +1,6 @@
 import { Spec } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player/player';
-import type { IndividualSimHost } from '@sim/sim_host';
+import { fakeHost } from '@sim/testing';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -12,7 +11,7 @@ import { ItemNoticeIcon } from './ItemNoticeIcon';
 const SPEC_SPECIFIC_ITEM = 90101;
 
 const mount = (itemId: number, additionalNotice?: ReactNode, spec: Spec = Spec.SpecUnknown) => {
-	const host = { player: { getSpec: () => spec } as unknown as Player<any> } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ player: { getSpec: () => spec } });
 	return render(
 		<SimHostProvider host={host}>
 			<ItemNoticeIcon itemId={itemId} additionalNotice={additionalNotice} />

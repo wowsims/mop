@@ -1,15 +1,15 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
-import { PlayerSpecs } from '@sim/player/specs/index';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { Raid as RaidProto } from '@generated/proto/api';
 import { Encounter as EncounterProto } from '@generated/proto/common';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { PlayerSpecs } from '@sim/player/specs/index';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SimResultsManager } from '../../model/results_manager';
 import { SimResultSummary } from './SimResultSummary';
 
-const host = { config: { cssScheme: 'mage' } } as unknown as IndividualSimHost<any>;
+const host = fakeHost({ config: { cssScheme: 'mage' } });
 
 const dist = (avg: number, stdev = 0) => ({ avg, stdev });
 

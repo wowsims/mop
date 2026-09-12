@@ -1,21 +1,24 @@
+import { Faction, ItemQuality } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import type { IndividualSimHost } from '@sim/sim_host';
-import { Faction, ItemQuality } from '@generated/proto/common';
+import { fakeHost } from '@sim/testing';
 import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const { listeners } = vi.hoisted(() => ({ listeners: new Map<string, Set<() => void>>() }));
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: (_player: unknown, field: string) => (callback: () => void) => {
-		const forField = listeners.get(field) ?? new Set<() => void>();
-		listeners.set(field, forField);
-		forField.add(callback);
-		return () => forField.delete(callback);
-	},
-}));
+vi.mock('@sim/state/subscriptions', async () => {
+	const { mockSubscriptions, noopSubscribe } = await import('@sim/testing');
+	return mockSubscriptions(noopSubscribe, {
+		subscribePlayerField: (_player: unknown, field: string) => (callback: () => void) => {
+			const forField = listeners.get(field) ?? new Set<() => void>();
+			listeners.set(field, forField);
+			forField.add(callback);
+			return () => forField.delete(callback);
+		},
+	});
+});
 
 const { UpgradeCostsSummary } = await import('./UpgradeCostsSummary');
 
@@ -29,7 +32,7 @@ const renderSummary = (faction: () => Faction) => {
 	const gear = { asArray: () => [gladiatorCloak] };
 	const player = { getGear: () => gear, getFaction: faction, canDualWield2H: () => false, setGear: vi.fn() } as unknown as Player<any>;
 	return render(
-		<SimHostProvider host={{ player } as unknown as IndividualSimHost<any>}>
+		<SimHostProvider host={fakeHost({ player })}>
 			<UpgradeCostsSummary />
 		</SimHostProvider>,
 	);

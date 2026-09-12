@@ -1,12 +1,11 @@
+import { ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import type { IndividualSimHost } from '@sim/sim_host';
-import { ItemSlot } from '@generated/proto/common';
+import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-const noopSubscribe = () => () => {};
-vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => noopSubscribe, subscribeSimField: () => noopSubscribe }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 
 const { QuickEnchantList } = await import('./QuickEnchantList');
@@ -31,7 +30,7 @@ describe('QuickEnchantList', () => {
 			getEquippedItem: () => equipped,
 			equipItem,
 		} as unknown as Player<any>;
-		const host = { player } as unknown as IndividualSimHost<any>;
+		const host = fakeHost({ player });
 		const view = render(
 			<SimHostProvider host={host}>
 				<QuickEnchantList slot={ItemSlot.ItemSlotHead} onOpenDetail={() => {}} />

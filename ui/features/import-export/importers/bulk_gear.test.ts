@@ -1,7 +1,7 @@
 // The batch importer's `onImport` is the whole of it: what reaches `addItems`, and what a bad payload
 // does — a throw, which the shell turns into the error toast.
-import type { IndividualSimHost } from '@sim/sim_host';
 import { EquipmentSpec, ItemSpec } from '@generated/proto/common';
+import { fakeHost } from '@sim/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const loadLeftovers = vi.hoisted(() => vi.fn());
@@ -14,7 +14,7 @@ import { BULK_GEAR_IMPORTER } from './bulk_gear';
 const KNOWN_ITEM = 1;
 // Survives the `id > 0` test and then fails the lookup, which is the second half of the filter.
 const UNKNOWN_ITEM = 3;
-const host = { player: {} } as unknown as IndividualSimHost<any>;
+const host = fakeHost();
 
 const json = (...ids: number[]) => EquipmentSpec.toJsonString(EquipmentSpec.create({ items: ids.map(id => ItemSpec.create({ id })) }));
 

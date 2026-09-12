@@ -4,8 +4,8 @@ import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import type { IndividualSimHost } from '@sim/sim_host';
 import { createSimStore } from '@sim/state/sim_store';
+import { fakeHost } from '@sim/testing';
 import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -19,7 +19,7 @@ const recordingSubscribe = () => (_onChange: () => void) => {
 	return release;
 };
 
-vi.mock('@sim/state/subscriptions', () => ({ subscribePlayerField: () => recordingSubscribe() }));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(recordingSubscribe()));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({
 	useActionId: (actionId?: { itemId: number }) =>
@@ -62,7 +62,7 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 		itemSwapSettings: { getItem: (slot: ItemSlot) => swap.get(slot) ?? null, equipItem },
 		getChallengeModeEnabled: () => false,
 	} as unknown as Player<any>;
-	const host = { player } as unknown as IndividualSimHost<any>;
+	const host = fakeHost({ player });
 	const view = render(
 		<SimHostProvider host={host}>
 			<OpenSelectorModalContext value={openTab}>

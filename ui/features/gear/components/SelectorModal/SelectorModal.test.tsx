@@ -3,6 +3,7 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { createSimStore } from '@sim/state/sim_store';
+import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { useMemo } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -22,11 +23,7 @@ const store = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribePlayerField: () => store.subscribe,
-	subscribeUiField: () => store.subscribe,
-	subscribeAll: () => store.subscribe,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 
 const tabs = vi.hoisted(() => ({ build: vi.fn(), eligibility: vi.fn() }));
 vi.mock('./utils', () => ({ buildSelectorTabs: tabs.build, eligibilityFor: tabs.eligibility }));
@@ -120,7 +117,7 @@ describe('SelectorModal', () => {
 		const rootElem = document.createElement('div');
 		rootElem.className = 'sim-ui';
 		document.body.appendChild(rootElem);
-		host = {
+		host = fakeHost({
 			rootElem,
 			player: {
 				sim: { store: createSimStore() },
@@ -129,7 +126,7 @@ describe('SelectorModal', () => {
 				equipItem: () => undefined,
 				getEquippedItem: (slot: ItemSlot) => equippedItems.get(slot) ?? null,
 			},
-		} as unknown as IndividualSimHost<any>;
+		});
 	});
 
 	afterEach(() => {

@@ -1,6 +1,6 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
 import { ItemSwap, Race } from '@generated/proto/common';
 import { SavedSettings as SavedSettingsProto } from '@generated/proto/ui';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,12 +18,7 @@ const source = vi.hoisted(() => {
 	};
 });
 
-vi.mock('@sim/state/subscriptions', () => ({
-	subscribeAll: () => source.subscribe,
-	subscribePartyBuffs: () => () => () => undefined,
-	subscribePlayerField: () => () => () => undefined,
-	subscribeRaidField: () => () => () => undefined,
-}));
+vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(source.subscribe));
 
 const savedSettingsModel = vi.hoisted(() => ({
 	readSavedSettings: vi.fn(),
