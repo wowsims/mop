@@ -17,7 +17,7 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 
 	return (
 		<span className="gem-socket-container">
-			<img className={clsx('gem-icon', !gem && 'hide')} src={gem ? iconUrl || undefined : emptyIconUrl} alt="" />
+			{gem && <img className="gem-icon" src={iconUrl || undefined} alt="" />}
 			<img className="socket-icon" src={emptyIconUrl} alt="" />
 		</span>
 	);

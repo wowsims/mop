@@ -239,11 +239,11 @@ describe('ItemListRow', () => {
 		expect(inBatch.batch.addItem).not.toHaveBeenCalled();
 	});
 
-	it('hides the compare container off the items tab', () => {
+	it('renders the compare container on the items tab alone', () => {
 		const items = renderRow({ label: SelectorModalTabs.Items });
-		expect(items.container.querySelector('.selector-modal-list-item-compare-container')?.classList.contains('hide')).toBe(false);
+		expect(items.container.querySelector('.selector-modal-list-item-compare-container')).not.toBeNull();
 
 		const enchants = renderRow({ label: SelectorModalTabs.Enchants });
-		expect(enchants.container.querySelector('.selector-modal-list-item-compare-container')?.classList.contains('hide')).toBe(true);
+		expect(enchants.container.querySelector('.selector-modal-list-item-compare-container')).toBeNull();
 	});
 });

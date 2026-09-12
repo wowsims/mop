@@ -28,7 +28,7 @@ describe('SimWarnings', () => {
 		render(<SimWarnings warnings={registryWith('an enchant needs a profession')} ready />);
 
 		expect(shown()).toBe(true);
-		expect(zone().querySelector('.warning')?.getAttribute('aria-label')).toBe('sidebar.warnings.label');
+		expect(zone()?.querySelector('.warning')?.getAttribute('aria-label')).toBe('sidebar.warnings.label');
 	});
 
 	it('stays quiet when a ready sim has nothing to say', () => {

@@ -135,18 +135,16 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 						tooltipId={enchantTooltipId}
 					/>
 					<EnchantLabel className="item-picker-tinker" enchant={item?.tinker} onActivate={onOpen && (() => onOpen(SelectorModalTabs.Tinkers))} />
-					<ItemCellAnchor
-						className={clsx('item-picker-reforge', !reforgeData && 'hide')}
-						role="button"
-						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Reforging))}>
-						{reforgeData &&
-							i18n.t('gear_tab.gear_picker.reforge_text', {
+					{reforgeData && (
+						<ItemCellAnchor className="item-picker-reforge" role="button" onActivate={onOpen && (() => onOpen(SelectorModalTabs.Reforging))}>
+							{i18n.t('gear_tab.gear_picker.reforge_text', {
 								fromAmount: Math.abs(reforgeData.fromAmount),
 								fromStat: translateStat(reforgeData.reforge?.fromStat),
 								toAmount: reforgeData.toAmount,
 								toStat: translateStat(reforgeData.reforge?.toStat),
 							})}
-					</ItemCellAnchor>
+						</ItemCellAnchor>
+					)}
 					{extraLabels}
 				</>
 			}

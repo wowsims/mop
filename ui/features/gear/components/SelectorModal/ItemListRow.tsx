@@ -98,19 +98,21 @@ export const ItemListRow = ({
 					<Icon name="star" style={favourited ? 'solid' : 'regular'} size="xl" />
 				</button>
 			</div>
-			<div className={clsx('selector-modal-list-item-compare-container', !isItemsTab && 'hide')}>
-				<button
-					type="button"
-					className={clsx('selector-modal-list-item-compare btn btn-link p-0', inBatch && 'text-brand')}
-					data-tooltip-id={compareTooltipId}
-					data-in-batch={String(inBatch)}
-					onClick={() => {
-						if (batchPlayer) (inBatch ? removeBulkItem : addBulkItem)(batchPlayer, ItemSpec.create({ id: itemData.id }));
-						trackEvent({ action: 'click', category: 'batch', label: inBatch ? 'remove-item' : 'add-item' });
-					}}>
-					<Icon name="arrow-right-arrow-left" size="xl" />
-				</button>
-			</div>
+			{isItemsTab && (
+				<div className="selector-modal-list-item-compare-container">
+					<button
+						type="button"
+						className={clsx('selector-modal-list-item-compare btn btn-link p-0', inBatch && 'text-brand')}
+						data-tooltip-id={compareTooltipId}
+						data-in-batch={String(inBatch)}
+						onClick={() => {
+							if (batchPlayer) (inBatch ? removeBulkItem : addBulkItem)(batchPlayer, ItemSpec.create({ id: itemData.id }));
+							trackEvent({ action: 'click', category: 'batch', label: inBatch ? 'remove-item' : 'add-item' });
+						}}>
+						<Icon name="arrow-right-arrow-left" size="xl" />
+					</button>
+				</div>
+			)}
 		</>
 	);
 };

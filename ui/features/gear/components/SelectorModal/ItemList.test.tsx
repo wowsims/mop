@@ -177,22 +177,22 @@ describe('ItemList', () => {
 		expect(head.container.querySelector('#show-ep-values-selector')).not.toBeNull();
 	});
 
-	it('shows the matching-gems option on a gem tab and hides it everywhere else', () => {
+	it('renders the matching-gems option on a gem tab and nowhere else', () => {
 		const { container, unmount } = setup();
-		expect(container.querySelector('.selector-modal-show-matching-gems')!.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.selector-modal-show-matching-gems')).toBeNull();
 		unmount();
 
 		const gems = setup({ label: SelectorModalTabs.Gem2 });
-		expect(gems.container.querySelector('.selector-modal-show-matching-gems')!.classList.contains('hide')).toBe(false);
+		expect(gems.container.querySelector('.selector-modal-show-matching-gems')).not.toBeNull();
 	});
 
 	it('offers the weapon options in a main hand and, for a warrior, an off hand — never in another slot', () => {
 		const shown = (slot: ItemSlot, label = SelectorModalTabs.Items) => {
 			const { container, unmount } = setup({ slot, label });
-			const hidden = container.querySelector('.selector-modal-show-1h-weapons')!.classList.contains('hide');
-			expect(!!container.querySelector('#show-1h-weapons-selector')).toBe(!hidden);
+			const box = !!container.querySelector('.selector-modal-show-1h-weapons');
+			expect(!!container.querySelector('#show-1h-weapons-selector')).toBe(box);
 			unmount();
-			return !hidden;
+			return box;
 		};
 
 		expect(shown(ItemSlot.ItemSlotMainHand)).toBe(true);
@@ -204,7 +204,7 @@ describe('ItemList', () => {
 	it('withholds the off hand weapon options from a class that is not a warrior', () => {
 		(host.player as any).getClass = () => Class.ClassRogue;
 		const { container } = setup({ slot: ItemSlot.ItemSlotOffHand });
-		expect(container.querySelector('.selector-modal-show-2h-weapons')!.classList.contains('hide')).toBe(true);
+		expect(container.querySelector('.selector-modal-show-2h-weapons')).toBeNull();
 	});
 
 	it('names the remove button after the tab it is on', () => {
@@ -220,17 +220,17 @@ describe('ItemList', () => {
 		expect(labelFor(SelectorModalTabs.Gem3)).toContain('remove_gem');
 	});
 
-	it('gives the ilvl column to items and upgrades and the source column to items alone', () => {
+	it('gives the ilvl column to items and upgrades and the source and compare columns to items alone', () => {
 		const { container, unmount } = setup();
 		expect(headers(container)).toEqual(['ilvl-label', 'item-label', 'source-label', 'ep-label', 'favorite-label', 'compare-label']);
 		unmount();
 
 		const upgrades = setup({ label: SelectorModalTabs.Upgrades });
-		expect(headers(upgrades.container)).toEqual(['ilvl-label', 'item-label', 'ep-label', 'favorite-label', 'compare-label']);
+		expect(headers(upgrades.container)).toEqual(['ilvl-label', 'item-label', 'ep-label', 'favorite-label']);
 		upgrades.unmount();
 
 		const enchants = setup({ label: SelectorModalTabs.Enchants });
-		expect(headers(enchants.container)).toEqual(['item-label', 'ep-label', 'favorite-label', 'compare-label']);
+		expect(headers(enchants.container)).toEqual(['item-label', 'ep-label', 'favorite-label']);
 	});
 
 	it('narrows the rows to the search, without losing the sort the user chose', () => {
