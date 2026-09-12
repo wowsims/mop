@@ -84,8 +84,8 @@ th {
 	height: 100vh;
 	background-image:
 		linear-gradient(
-			rgba(var(--theme-background-color), var(--theme-background-opacity)),
-			rgba(var(--theme-background-color), var(--theme-background-opacity))
+			color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent),
+			color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent)
 		),
 		var(--theme-background-image);
 	background-repeat: no-repeat;

@@ -31,8 +31,8 @@
 // map), which leaves primary, secondary, danger, cancel and light.
 //
 // Only the emitted rule sets change. `--bs-*` colour tokens come from `root`, which has already
-// run, and `theme-color()`'s per-spec `--bs-btn-*` blocks are written against `.btn-primary` and
-// `.btn-outline-primary` by hand.
+// run, and the shared `.sim-ui .btn-primary` / `.sim-ui .btn-outline-primary` `--bs-btn-*` blocks
+// in `_bootstrap_style_overrides.scss` are written by hand.
 $all-theme-colors: $theme-colors;
 $button-theme-colors: (
 	'primary': map-get($all-theme-colors, 'primary'),

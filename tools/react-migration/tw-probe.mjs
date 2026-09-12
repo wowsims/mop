@@ -5,6 +5,8 @@
 // Class lists are deliberately NOT compared — that is the whole point of the Tailwind migration.
 // What must not move is what the browser actually resolves: 54 computed properties and the
 // bounding box of every element, keyed by its structural position rather than by its classes.
+// A-S4 makes derived theme colours color-mix(), which Chrome serialises as color(srgb ...)
+// instead of rgb()/rgba(); normalise both ports so that is not reported as a divergence.
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 import { launch, q } from './browser.mjs';
@@ -35,11 +37,21 @@ const PROPS = [
 ];
 
 const SNAP = props => {
+	const normalizeColor = value => {
+		const m = value.match(/^color\(srgb\s+([\d.]+|none)\s+([\d.]+|none)\s+([\d.]+|none)(?:\s*\/\s*([\d.]+|none))?\)$/);
+		if (!m) return value;
+		const chan = v => Math.round((v === 'none' ? 0 : Number(v)) * 255 + 1e-4);
+		const [r, g, b] = [chan(m[1]), chan(m[2]), chan(m[3])];
+		if (m[4] === undefined) return `rgb(${r}, ${g}, ${b})`;
+		const a = m[4] === 'none' ? 0 : Number(m[4]);
+		if (a === 1) return `rgb(${r}, ${g}, ${b})`;
+		return `rgba(${r}, ${g}, ${b}, ${String(Math.round(a * 1000) / 1000)})`;
+	};
 	const out = [];
 	const walk = (el, path) => {
 		const cs = getComputedStyle(el);
 		const r = el.getBoundingClientRect();
-		const vals = props.map(p => cs.getPropertyValue(p)).join('|');
+		const vals = props.map(p => normalizeColor(cs.getPropertyValue(p))).join('|');
 		out.push(`${path} ${el.tagName.toLowerCase()} [${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}] ${vals}`);
 		let i = 0;
 		for (const c of el.children) walk(c, `${path}/${i++}`);

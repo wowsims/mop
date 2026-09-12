@@ -26,7 +26,7 @@
 	}
 
 	&.stuck {
-		background: rgba(var(--theme-background-color), var(--theme-background-opacity));
+		background: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
 
 		&::after {
 			width: 100%;

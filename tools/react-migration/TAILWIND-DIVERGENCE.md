@@ -1391,3 +1391,168 @@ The nine `--z-*` renames (`theme.css`'s `:root {}` block, values unchanged): `--
 `--z-modal-elevated` (1065). All 16 code reads across 13 `.scss` files were repointed at the new names;
 the one prose mention in `_sticky_toolbar.scss:11`'s comment (`... less than var(--header-z-index)
 ...`) is left as literal text, untouched, per the brief.
+
+## Stage 4 — A-S4: colour single-source, the theme layer as CSS
+
+`theme.css` is now the only place a spec's colour theme is defined. The 34-entry `$sim-themes`
+Sass map in `ui/scss/sims/sim.scss` and the `theme-color()` mixin in `ui/scss/shared/_mixins.scss`
+(which turned each map entry into a per-spec `.<spec>-sim-ui { ... }` block via Sass colour math)
+are both deleted; nothing else in the tree read `map.get`/`color.mix` for theming, so nothing else
+needed to change to keep emitting the same custom properties.
+
+The derivation formulas move to plain CSS `color-mix()` on `.sim-ui` instead of Sass:
+`--theme-background-color` is 10% `--color-primary` over black (matching the old `mix($black,
+$base-color, 90%)`, which is 90% black / 10% base); `--color-primary-hover` is 70% primary over
+black, `--color-primary-active` 80%, `--color-primary-dampened` 25%; `--color-primary-disabled` is
+50% `--color-gray-600` mixed with primary. The five primary-derived tokens (`--color-primary-hover`,
+`-active`, `-dampened`, `-disabled`, `-disabled-foreground`) stay declared twice: once in
+`@theme static` against the plain `--color-primary` default, which is what makes Tailwind emit the
+`bg-primary-hover` / `text-primary-disabled-foreground` utilities other units consume (a token
+missing from `@theme static` means the corresponding utility class emits nothing, silently, so it
+can't only live on `.sim-ui`) — and again, identically, on `.sim-ui`, because a custom property
+inside a `var()` fallback or a `color-mix()` argument resolves against the element it is declared
+on: a `:root`/`@theme` declaration can never see the `--theme-color` a spec's root class sets, so
+the per-spec values need their own declaration on the element (`.sim-ui`) that actually carries
+both the spec class and the theme colour. Each of the eleven classes gets one grouped rule
+setting `--theme-color` / `--theme-color-foreground` to `var(--color-class-<x>)` /
+`var(--color-class-<x>-foreground)`, and `.sim-ui`'s own `--color-primary: var(--theme-color,
+#0d6efd)` picks that up (or falls back to Bootstrap blue outside any spec root).
+
+The eleven foreground literals (`#fff` for death-knight and shaman, `#000` for the other nine)
+are hand-measured matches for Bootstrap's `color-contrast()`, and a new vitest
+(`ui/styles/theme.test.ts`) parses `theme.css`'s eleven `--color-class-<x>` / `-foreground` pairs
+and recomputes WCAG 2 relative luminance / contrast ratio against both black and white, asserting
+each foreground is the one `color-contrast()` would have picked — so the literals can't silently
+drift from the colours next to them. It lives at `ui/styles/theme.test.ts` rather than
+`ui/ui-kit/utils/`, since the vitest `include` glob (`ui/**/*.test.ts`) already covers
+`ui/styles/**` and colocating it with `theme.css` avoids an import across the tree.
+
+The two `--form-check-box-bg-image` / `--form-check-radio-bg-image` data-URL SVGs can't hold a
+`var()` (parsed SVG attributes don't resolve custom properties), so — as before — they exist as
+literal strings, just four of them now instead of 68: one box/radio pair with a `#000` stroke on
+`.sim-ui` (default, for the nine `#000`-foreground classes) and one pair with `#fff` re-declared on
+the six death-knight/shaman spec roots. All four literal strings were copied byte-for-byte out of
+the last built bundle (`dist/mop/bundle/spec_entry-o7Nm4psv.style.css`) rather than re-encoded by
+hand, so the escaped SVG markup is guaranteed identical to what Sass's `escape-svg()` used to emit.
+
+The 68 old `.<spec>-sim-ui .btn-primary` / `.btn-outline-primary` blocks (34 specs × 2) become two
+rules, `.sim-ui .btn-primary` and `.sim-ui .btn-outline-primary`, in
+`_bootstrap_style_overrides.scss`. Both keep the old rules' `(0, 2, 0)` specificity (two classes,
+zero IDs, zero elements) so they still outrank Bootstrap's own `.btn-primary`; only the `--bs-btn-*`
+values change, from a literal Sass colour to a `var(--color-primary...)` chain that now resolves
+per spec through `.sim-ui`'s cascade instead of per spec through a hand-written block.
+
+The three consumers of `rgba(var(--theme-background-color), var(--theme-background-opacity))`
+(`_shared.scss:87-88`, `_sticky_toolbar.scss:29`) become
+`color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%),
+transparent)`, because `--theme-background-color` is now a `color-mix()` result itself (a genuine
+color value) rather than an `r, g, b` triplet string that `rgba()` could splice channels out of.
+`_saved_data_manager.scss:47`'s `var(--theme-component-text-color)` becomes
+`var(--color-primary-foreground)` — the same value, now under the vocabulary the rest of the theme
+layer uses. `_global_old.scss`'s `:root { --theme-background-* }` block is deleted outright: nothing
+outside `.sim-ui` ever read those three properties, and `.sim-ui` itself always overrides them now.
+
+Chrome serialises a `color-mix()` computed value as `color(srgb r g b / a)` rather than
+`rgb()`/`rgba()`, so `tw-probe.mjs`'s `SNAP` gained a `normalizeColor()` step applied to every
+computed-style read: it matches `color(srgb ...)` (with or without an alpha channel), converts the
+0-1 channel floats back to 0-255 integers, and reprints as `rgb(r, g, b)` (alpha absent or 1) or
+`rgba(r, g, b, a)` otherwise, with alpha rounded to three decimals so `0.95` still prints as `0.95`.
+The pre-Tailwind baseline never emits `color(srgb ...)` for anything the probe reads, so the
+normaliser is a no-op on that port and only changes what the Tailwind port's snapshot looks like.
+
+Net effect on `theme.css`: one ~230-line Sass map + 76-line mixin (used only to emit 34 near-copies
+of the same nine-property block) is replaced by a `.sim-ui` base block, eleven colour-group rules,
+one six-class form-check override, ~21 background-image rules (grouped by shared image), and one
+opacity override for the three hunter specs — well under half the line count of the generated CSS
+it replaces, with the actual color math now visible as plain `color-mix()` instead of buried in
+Sass function calls resolved at build time.
+
+The probe's `normalizeColor()` channel rounding needed a small epsilon fix: `--color-primary-disabled`
+is a 50/50 `color-mix`, so its channels sit at exact half values (e.g. warrior 136.5/117.5, mage
+106.5/182.5). Sass rounds a `.5` up, but Chrome serialises `color(srgb ...)` with six decimal
+places, and `0.535294 * 255 = 136.49997` — 3e-5 below the true half — so a plain `Math.round` on
+the disabled `.btn-primary` rounded down instead (`rgb(154, 136, 117)` vs Sass's
+`rgb(154, 137, 118)`, `rgb(106, 161, 182)` vs `rgb(107, 161, 183)`), a 63-section false divergence.
+`chan()` now rounds `v * 255 + 1e-4`: the epsilon is far below the 1/255 spacing between any two
+non-half channel values, so it only nudges the printed-half cases back up to match the paint
+rounding, and changes nothing else.
+
+## Stage 4 — A-S5: static colour lookups; the three utilities
+
+The six `@each` loops in `_global.scss` (`item-quality-*`, `resource-*`, `damage-*`, `faction-*`,
+`spell-school-*` + `bg-spell-school-*`, plus the multi-school gradients) interpolated a Sass map
+key into a class name at build time, so the seven call sites that built the matching class with a
+JS template literal (`` `spell-school-${x}` ``, `` `bg-class-${x}` ``, `` `text-class-${x}` ``, …)
+were invisible to Tailwind's content scanner — the only reason `tailwind.css` carried a hand-written
+`@source inline("{text,bg,border}-class-{…}")` safelist for the three worst offenders. Every one of
+those call sites now indexes a static `Record<string, string>` in the new `ui/ui-kit/utils/colors.ts`
+(`QUALITY_TEXT`, `RESOURCE_TEXT`/`SECONDARY_RESOURCE_TEXT`, `SPELL_SCHOOL_TEXT`/`SPELL_SCHOOL_BG`,
+`FACTION_TEXT`, `CLASS_TEXT`/`CLASS_BG`/`CLASS_BORDER`, `DANGER_TEXT`) whose values are string
+literals — every class name the scanner needs to see is now sitting in a `.ts` file, verbatim, so
+the safelist is gone along with the loops it existed only to cover.
+
+The nine multi-school gradients (`astral`, `shadowflame`, `spellfire`, `spellfrost`, `frostfire`,
+`shadowfrost`, `plague`, `firestorm`, `elemental`) become core `bg-linear-to-r` utility stacks with
+the `/srgb` interpolation modifier — `bg-linear-to-r/srgb from-school-<a> to-school-<b>` (plus
+`via-school-<mid>` for `elemental`). Tailwind v4's gradients interpolate in `oklab` by default;
+the modifier is load-bearing because the original `_variables.scss` gradients were plain CSS
+`linear-gradient(90deg, …)`, computed in sRGB, and an oklab interpolation between the same two
+endpoints produces different intermediate pixels even though the endpoints themselves match.
+
+`DamageResult.tsx` used to stack `text-danger` with the interpolated `spell-school-<x>` class and
+let the `!important` loop rule win the cascade fight for `color`. Two Tailwind `color` utilities on
+one element are unordered (whichever the compiler emits last in the stylesheet wins, not source
+order in the class list), so the fix is to never emit both: `schoolClass ?? 'text-danger'` picks
+`SPELL_SCHOOL_TEXT[school]` when a school is present and falls back to `text-danger` only when it
+is not — the same rendered outcome as before (the loop rule's `!important` always beat `text-danger`
+when a school existed), reached by replacement instead of a cascade fight this time.
+
+`topline_metrics.ts`'s `dangerLevel` (`'safe' | 'warning' | 'danger'`) is looked up through the new
+`DANGER_TEXT` record rather than staying the three bare literal class names it used to pass through
+as `extraClass`. All three grades match `_global_old.scss`'s current, active rules exactly: `.safe,
+.positive { color: var(--color-success) !important; }` (still imported from `ui/scss/index.scss`
+today) is why `safe` maps to `'text-success'` rather than being left uncoloured — an earlier draft
+of this record wrongly assumed `.safe` had no rule and left it `undefined`; it does, and dropping
+the colour would have been a rendered-output regression. That mapping dies together with
+`_global_old.scss` at whichever unit retires it (U-base): once the file is gone, `'text-success'` is
+just an ordinary Tailwind utility with no special-case history to account for. `warning` and
+`danger` do match `_global_old.scss`'s existing `.warning`/`.danger` rules exactly
+(`text-damage-partial` plus the triple `text-shadow`, and `text-danger`, respectively), since those
+two are still in active use elsewhere and changing them
+was out of scope.
+
+The class-colour table (`CLASS_TEXT`/`CLASS_BG`/`CLASS_BORDER`) lives in `ui/ui-kit/utils/colors.ts`
+for every caller except `ui/sim/proto/utils.ts`'s `textClassName`/`textClassNameForClass`/
+`textClassNameForSpec`: `.oxlintrc.json` forbids `ui/sim` from importing `@ui-kit`, so
+`ui/sim/proto/utils.ts` keeps its own literal `CLASS_TEXT` table (the same eleven entries,
+duplicated rather than imported) and `textClassName` now indexes it instead of building
+`` `text-class-${className}` ``. The duplication is the cost of the layering rule; the alternative
+would have been moving `getCssScheme`'s callers into `ui-kit`, which was out of scope here.
+
+The interpolated `color: var(--bs-#{$label})` the six loops emitted is exactly why A-S3's earlier
+census of literal-class markup never listed `.item-quality-*` / `.resource-*` / `.spell-school-*`
+etc. as Tailwind-utility candidates in the same pass as the rest of `_global.scss` — the loops
+themselves were invisible to a static read of the file (the class names only exist after Sass
+expands the `$item-quality-colors` etc. maps), so they only became visible once their generated
+output was traced from the call sites forward. They are gone now, along with `$damage-colors`'
+loop, which had no emitter at all (`grep` found zero call sites for any `damage-<x>` class) and is
+simply deleted rather than ported to a lookup table nothing would ever index.
+
+The three new `@utility`s (`focus-ring`, `focus-ring-inset`, `active-underline`, `fade-in-out`) sit
+in `tailwind.css` unworn — no markup in this unit's scope references them yet — verified to compile
+cleanly (including the `&::after` and `&[data-starting-style]`/`&[data-ending-style]` nesting)
+via a throwaway `@tailwindcss/cli` build against a scratch HTML file carrying all four classes; all
+four rules appeared in the generated output. Their override proofs, for whichever unit wires them
+onto markup next: `focus-ring` matches the non-`!important` `outline`/`outline-offset` pair every
+one of its eight carriers sets today (`SimResultsPanel.scss:14`, `MetricsTable.scss:10,22`,
+`ItemSwapPicker.scss:9`, `GearPicker.scss:11`, `GlyphsPicker.scss:35,62`, and the canonical
+`_global.scss:163` `a:focus-visible, button:focus-visible` rule this brief's `_global.scss` diff
+left untouched); `focus-ring-inset` is the same pair with a negative offset, matching
+`GearPicker.scss:86`. `active-underline` reproduces `_header.scss:18-30` and
+`_sticky_toolbar.scss:14-26`'s shared eleven-declaration `::after` byte-for-byte, including the
+`calc(100% - 2 * var(--spacing-page))` width and the `width 0.15s ease-in-out` transition, so a
+`data-[stuck]:` variant can drive it. `fade-in-out` reproduces the `transition: var(--transition-fade)`
+plus starting/ending-style opacity pattern shared by `Dialog.scss:10-13,30-37,54`,
+`Popover.scss:20-23`, `Toast.scss:50-57`, and `ProgressTrackerDialog.scss:8`; `SimTabs.scss:55-57`
+only sets the enter-only half of that pattern (no exit transition), so a future caller wiring
+`fade-in-out` onto `SimTabs` markup should confirm that is deliberate rather than assume full parity.
