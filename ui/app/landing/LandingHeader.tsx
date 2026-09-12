@@ -37,7 +37,7 @@ export const LandingHeader = () => {
 						</a>
 						{toggler('bars')}
 					</div>
-					<div id={COLLAPSE_ID} className={clsx('navbar-collapse homepage-header-collapse order-2 md:order-1', !open && 'hide')}>
+					<div id={COLLAPSE_ID} className={clsx('navbar-collapse homepage-header-collapse order-2 md:order-1', !open && 'hidden')}>
 						<div className="navbar-nav">
 							{toggler('times')}
 							<a href="https://discord.gg/p3DgvmnDCS" target="_blank" rel="noreferrer" className="nav-link link-alt">

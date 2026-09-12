@@ -121,10 +121,6 @@ kbd {
 
 // `.interactive` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`.
 
-.hide {
-	display: none !important;
-}
-
 // `.icon-sm` is now a Tailwind `@utility`, in `ui/styles/tailwind.css`. `.icon-md` had no markup
 // users at all and is inlined into its one `@extend` consumer, `core/components/_icon_picker.scss`.
 
