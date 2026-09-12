@@ -18,14 +18,53 @@
 @import 'bootstrap/scss/containers';
 @import 'bootstrap/scss/grid';
 @import 'bootstrap/scss/forms';
+
+// `buttons` and `alert` are the only two components that loop `$theme-colors` to emit one rule set
+// per colour, and this project merges twelve of its own maps into that variable — 72 keys, against
+// Bootstrap's 8. Unnarrowed they emit 144 `.btn-*` variants and 72 `.alert-*` variants, of which
+// the app uses five and one.
+//
+// `$button-theme-colors` is the closed set: `ui-kit/Button/Button.tsx` is the single funnel for
+// every `btn-*` class in the tree and its `ButtonVariant` union names them all — primary,
+// secondary, danger, cancel, link, outline-primary, outline-light, outline-cancel, unstyled.
+// `link` and `unstyled` need no colour ( `.btn-link` is emitted from `$btn-link-*`, not from the
+// map), which leaves primary, secondary, danger, cancel and light.
+//
+// Only the emitted rule sets change. `--bs-*` colour tokens come from `root`, which has already
+// run, and `theme-color()`'s per-spec `--bs-btn-*` blocks are written against `.btn-primary` and
+// `.btn-outline-primary` by hand.
+$all-theme-colors: $theme-colors;
+$button-theme-colors: (
+	'primary': map-get($all-theme-colors, 'primary'),
+	'secondary': map-get($all-theme-colors, 'secondary'),
+	'danger': map-get($all-theme-colors, 'danger'),
+	'cancel': map-get($all-theme-colors, 'cancel'),
+	'light': map-get($all-theme-colors, 'light'),
+);
+
+$theme-colors: $button-theme-colors !global;
+
 @import 'bootstrap/scss/buttons';
+$theme-colors: $all-theme-colors !global;
+
 @import 'bootstrap/scss/transitions';
 @import 'bootstrap/scss/dropdown';
 @import 'bootstrap/scss/nav';
 @import 'bootstrap/scss/navbar';
 @import 'bootstrap/scss/badge';
+
+// `.alert` is on one element (`SimShell`'s notices banner) and no `.alert-<colour>` is anywhere.
+$theme-colors: (
+	'primary': map-get($all-theme-colors, 'primary'),
+) !global;
+
 @import 'bootstrap/scss/alert';
-@import 'bootstrap/scss/close';
+$theme-colors: $all-theme-colors !global;
+
+// `bootstrap/scss/close` is gone: `.btn-close` and `.btn-close-white` are the only classes it
+// defines and no TSX, TS or HTML in the tree emits either. The two project rules that style
+// `.btn-close` (`shared/_bootstrap_style_overrides.scss`, `gear_picker/_selector_modal.scss`) were
+// already dead against them and are left alone as pre-existing dead code.
 @import 'bootstrap/scss/modal';
 
 // Bootstrap's helpers and its utilities API are gone; Tailwind renders those utilities now.
