@@ -2,6 +2,7 @@
 	"recommendations": [
 		"oxc.oxc-vscode",
 		"stylelint.vscode-stylelint",
+		"bradlc.vscode-tailwindcss",
 		"visualstudioexptteam.vscodeintellicode",
 		"editorconfig.editorconfig",
 		"phoenisx.cssvar"
