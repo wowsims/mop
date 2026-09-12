@@ -60,15 +60,15 @@ beforeEach(() => {
 describe('TimelineChart', () => {
 	it('stands empty before the first spec, saying nothing about whether there is data', () => {
 		const { container } = render(<TimelineChart spec={null} />);
-		expect(container.querySelector('.timeline-chart-empty')!.className).toContain('hide');
-		expect(container.querySelector('.timeline-chart-canvas')!.className).not.toContain('hide');
+		expect(container.querySelector('.timeline-chart-empty')).toBeNull();
+		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
 		expect(charts).toHaveLength(0);
 	});
 
 	it('shows the waiting state for a spec that carries no series, and still builds no chart', () => {
 		const { container } = render(<TimelineChart spec={spec()} />);
-		expect(container.querySelector('.timeline-chart-empty')!.className).not.toContain('hide');
-		expect(container.querySelector('.timeline-chart-canvas')!.className).toContain('hide');
+		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
+		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
 		expect(charts).toHaveLength(0);
 	});
 
@@ -76,8 +76,8 @@ describe('TimelineChart', () => {
 		const { container } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
 		expect(charts).toHaveLength(1);
 		expect(charts[0].config.data.datasets.map(entry => entry.label)).toEqual(['DPS']);
-		expect(container.querySelector('.timeline-chart-empty')!.className).toContain('hide');
-		expect(container.querySelector('.timeline-chart-canvas')!.className).not.toContain('hide');
+		expect(container.querySelector('.timeline-chart-empty')).toBeNull();
+		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
 	});
 
 	it('starts with threat off and every other series on', () => {

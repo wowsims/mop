@@ -189,8 +189,8 @@ describe('SimResultsPanel', () => {
 			getContent: () => active,
 		});
 		const { view } = mount(panel, warnings);
-		const item = zone(view, '.warning-zone .sim-toolbar-item');
-		expect(item.classList.contains('hide')).toBe(true);
+		const item = () => view.container.querySelector('.warning-zone .sim-toolbar-item');
+		expect(item()).toBeNull();
 
 		// The sim reports ready a microtask after mount, and the warnings say nothing until it does.
 		await act(async () => {});
@@ -199,18 +199,20 @@ describe('SimResultsPanel', () => {
 			active = 'Unspent talent points';
 			notify();
 		});
-		expect(item.classList.contains('hide')).toBe(false);
+		expect(item()).toBeTruthy();
 
 		act(() => {
 			active = '';
 			notify();
 		});
-		expect(item.classList.contains('hide')).toBe(true);
+		expect(item()).toBeNull();
 	});
 
-	it('names the warning trigger and draws its glyph through Icon', () => {
+	it('names the warning trigger and draws its glyph through Icon', async () => {
 		warnings.add(staticWarning(() => 'a warning'));
 		const { view } = mount(panel, warnings);
+		// The trigger only mounts once the sim reports ready and the registry has something to say.
+		await act(async () => {});
 		const trigger = zone(view, '.warning-zone button');
 
 		expect(trigger.getAttribute('aria-label')).toBeTruthy();

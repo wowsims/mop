@@ -59,10 +59,11 @@ describe('ResultMetricList row layout', () => {
 		expect(new Set(anchors.map(anchor => anchor.getAttribute('data-tooltip-id'))).size).toBe(1);
 	});
 
-	it('keeps the reference slot the sidebar fills in', () => {
+	it('renders no reference slot until the sidebar fills one in', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
-		expect(container.querySelectorAll('td > .results-reference.hide > .results-reference-diff')).toHaveLength(4);
+		expect(container.querySelectorAll('td')).toHaveLength(4);
+		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
 	});
 });
 

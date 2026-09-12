@@ -12,8 +12,8 @@ const registryWith = (...contents: string[]) => {
 	return registry;
 };
 
-const zone = () => document.querySelector('.warning-zone .sim-toolbar-item') as HTMLElement;
-const shown = () => !zone().classList.contains('hide');
+const zone = () => document.querySelector('.warning-zone .sim-toolbar-item') as HTMLElement | null;
+const shown = () => !!zone();
 
 describe('SimWarnings', () => {
 	// Every warning judges gear and talents, which are empty until the sim loads, so an unready sim
