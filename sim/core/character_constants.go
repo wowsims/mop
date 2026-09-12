@@ -105,7 +105,9 @@ var ClassWeaponTypeCapabilities = map[proto.Class]map[proto.WeaponType]EligibleW
 }
 
 var ClassRangedWeaponTypeCapabilities = map[proto.Class][]proto.RangedWeaponType{
-	proto.Class_ClassWarrior:     {proto.RangedWeaponType_RangedWeaponTypeBow, proto.RangedWeaponType_RangedWeaponTypeCrossbow, proto.RangedWeaponType_RangedWeaponTypeGun, proto.RangedWeaponType_RangedWeaponTypeThrown},
+	// MoP 5.0 removed the ranged slot: warriors lost bows, guns and thrown entirely, which is why no
+	// class here lists Thrown any more and rogues and paladins are already empty.
+	proto.Class_ClassWarrior:     {},
 	proto.Class_ClassPaladin:     {},
 	proto.Class_ClassHunter:      {proto.RangedWeaponType_RangedWeaponTypeBow, proto.RangedWeaponType_RangedWeaponTypeCrossbow, proto.RangedWeaponType_RangedWeaponTypeGun},
 	proto.Class_ClassRogue:       {},
