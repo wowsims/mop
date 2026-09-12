@@ -16,11 +16,11 @@ import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
 import type { SimHostObject } from './individual_sim_ui';
 import { IterationsPicker } from './IterationsPicker';
-import { showsEpRatios, simUiClasses } from './shell_classes';
-import type { ShellDom } from './types/shell_dom';
+import { showsEpRatios, simUiAttributes, simUiClasses } from './shell_classes';
 import { SimImportExport } from './SimImportExport';
 import { SimSidebarActions } from './SimSidebarActions';
 import { SimTabsSection } from './SimTabsSection';
+import type { ShellDom } from './types/shell_dom';
 
 export interface SimShellProps {
 	domRef: RefObject<ShellDom | null>;
@@ -69,7 +69,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 	return (
 		<StickyHeaderContext value={headerEl}>
 			<PortalContainerContext value={rootEl}>
-				<div ref={root} className={simUiClasses({ className, spec, metrics })}>
+				<div ref={root} className={simUiClasses({ className, spec, metrics })} {...simUiAttributes({ spec, metrics })}>
 					<div className="sim-root">
 						<div className="sim-bg" />
 						{noticeText ? <div className="notices-banner alert border-b border-border mb-0 text-center">{noticeText}</div> : null}
@@ -96,7 +96,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								</div>
 							</aside>
 							<div className="sim-content container-fluid">
-								<header ref={header} className={clsx('sim-header', stuck && 'stuck')}>
+								<header ref={header} className={clsx('sim-header', stuck && 'stuck')} data-stuck={stuck ? '' : undefined}>
 									<div className="sim-header-container">
 										<div className="sim-tabs-mount">{host && <SimTabsSection host={host} />}</div>
 										<div className="import-export nav">{host && <SimImportExport />}</div>

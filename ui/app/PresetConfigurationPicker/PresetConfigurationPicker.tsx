@@ -1,11 +1,11 @@
-import type { PresetConfigurationCategory } from '@sim/constants/preset_categories';
-import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
-import { subscribeSimChange } from '@sim/state/subscriptions';
 import { applyBuild } from '@features/settings/model/apply_build';
 import i18n from '@i18n/config';
-import { Button } from '@ui-kit/Button';
+import type { PresetConfigurationCategory } from '@sim/constants/preset_categories';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import { subscribeSimChange } from '@sim/state/subscriptions';
+import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
@@ -45,6 +45,7 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 									key={build.name}
 									variant="unstyled"
 									className={clsx('saved-data-set-chip badge rounded-full', active?.[index] && 'active')}
+									data-active={active?.[index] ? '' : undefined}
 									{...tooltipAnchorProps(tooltipId, build.name)}>
 									<span className="saved-data-set-name" role="button" onClick={() => applyBuild(build, host)}>
 										{build.name}

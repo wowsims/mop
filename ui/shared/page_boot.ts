@@ -9,7 +9,10 @@ if (history.scrollRestoration) {
 	window.onbeforeunload = () => window.scrollTo(0, 0);
 }
 
-const markReady = () => document.body.classList.add('ready');
+const markReady = () => {
+	document.body.classList.add('ready');
+	document.body.toggleAttribute('data-ready', true);
+};
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
 	setTimeout(markReady, 1);

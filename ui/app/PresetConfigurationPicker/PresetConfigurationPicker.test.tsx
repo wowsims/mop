@@ -67,7 +67,7 @@ describe('PresetConfigurationPicker', () => {
 			{ name: 'P2', gear: {} },
 		]);
 
-		expect(chips(container).map(chip => chip.classList.contains('active'))).toEqual([false, true]);
+		expect(chips(container).map(chip => chip.hasAttribute('data-active'))).toEqual([false, true]);
 	});
 
 	it('applies the build the name was clicked on', () => {

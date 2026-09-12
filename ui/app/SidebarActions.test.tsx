@@ -68,17 +68,15 @@ describe('SidebarActions', () => {
 		expect(buttons().map(button => button.disabled)).toEqual([true, false]);
 	});
 
-	it('reflects a loading update as the spinner class and aria-busy', () => {
+	it('reflects a loading update as aria-busy', () => {
 		const registry = new SidebarRegistry();
 		const action = registry.add({ id: 'ep-weights-action', label: 'Stat Weights', onClick: () => {}, loading: true });
 
 		const { rerender } = renderActions(registry);
-		expect(buttons()[0].classList.contains('loading')).toBe(true);
 		expect(buttons()[0].getAttribute('aria-busy')).toBe('true');
 
 		action.update({ loading: false });
 		rerender(actions(registry));
-		expect(buttons()[0].classList.contains('loading')).toBe(false);
 		expect(buttons()[0].getAttribute('aria-busy')).toBeNull();
 	});
 

@@ -1,7 +1,7 @@
 import type { PlayerSpec } from '@sim/player/player_spec';
 import { describe, expect, it } from 'vitest';
 
-import { metricVisibilityClasses, showsEpRatios, simTypeClasses, simUiClasses } from './shell_classes';
+import { metricVisibilityClasses, showsEpRatios, simTypeClasses, simUiAttributes, simUiClasses } from './shell_classes';
 
 const spec = (parts: Partial<PlayerSpec<any>>) =>
 	({ isHealingSpec: false, isTankSpec: false, isMeleeDpsSpec: false, isRangedDpsSpec: false, ...parts }) as PlayerSpec<any>;
@@ -66,7 +66,7 @@ describe('metricVisibilityClasses', () => {
 describe('simUiClasses', () => {
 	it('always carries the two roots and the spec class', () => {
 		const classes = tokens(simUiClasses({ className: 'arms-warrior-sim-ui', spec: spec({ isMeleeDpsSpec: true }), metrics: ALL_ON }));
-		expect(classes).toEqual(['arms-warrior-sim-ui', 'sim-type--dps', 'sim-type--melee', 'sim-ui']);
+		expect(classes).toEqual(['arms-warrior-sim-ui', 'group/sim', 'sim-type--dps', 'sim-type--melee', 'sim-ui']);
 	});
 
 	it('adds every hide class when the toggles are all off', () => {
@@ -78,6 +78,7 @@ describe('simUiClasses', () => {
 			}),
 		);
 		expect(classes).toEqual([
+			'group/sim',
 			'hide-damage-metrics',
 			'hide-ep-ratios',
 			'hide-experimental',
@@ -87,5 +88,32 @@ describe('simUiClasses', () => {
 			'sim-type--heal',
 			'sim-ui',
 		]);
+	});
+});
+
+describe('simUiAttributes', () => {
+	it('emits a sim type and an attack only for the dps case', () => {
+		expect(simUiAttributes({ spec: spec({ isTankSpec: true }), metrics: ALL_ON })['data-sim-type']).toBe('tank');
+		expect(simUiAttributes({ spec: spec({ isTankSpec: true }), metrics: ALL_ON })['data-sim-attack']).toBeUndefined();
+
+		expect(simUiAttributes({ spec: spec({ isMeleeDpsSpec: true }), metrics: ALL_ON })['data-sim-type']).toBe('dps');
+		expect(simUiAttributes({ spec: spec({ isMeleeDpsSpec: true }), metrics: ALL_ON })['data-sim-attack']).toBe('melee');
+	});
+
+	it('hides damage independently of threat on a tank that shows threat', () => {
+		const metrics = { ...ALL_ON, damage: false, threat: true };
+		const attrs = simUiAttributes({ spec: spec({ isTankSpec: true }), metrics });
+		expect(attrs['data-hide-damage']).toBe('');
+		expect(attrs['data-hide-threat']).toBeUndefined();
+	});
+
+	it('follows metrics.healing for the hide-healing attribute', () => {
+		expect(simUiAttributes({ spec: spec({ isTankSpec: true }), metrics: { ...ALL_ON, healing: false } })['data-hide-healing']).toBe('');
+		expect(simUiAttributes({ spec: spec({ isTankSpec: true }), metrics: ALL_ON })['data-hide-healing']).toBeUndefined();
+	});
+
+	it('hides ep ratios when showsEpRatios is false', () => {
+		const metrics = { ...ALL_ON, damage: false, threat: false, healing: false, epRatios: false };
+		expect(simUiAttributes({ spec: spec({ isTankSpec: true }), metrics })['data-hide-ep-ratios']).toBe('');
 	});
 });

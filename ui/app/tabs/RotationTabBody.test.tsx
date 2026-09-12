@@ -32,7 +32,8 @@ vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host, useSpecC
 
 const { RotationTabBody } = await import('./RotationTabBody');
 
-const paneClasses = (container: HTMLElement) => [...container.querySelectorAll('.rotation-tab-apl .tab-pane')].map(pane => [pane.id, pane.className] as const);
+const paneStates = (container: HTMLElement) =>
+	[...container.querySelectorAll('.rotation-tab-apl .tab-pane')].map(pane => [pane.id, (pane as HTMLElement).hidden] as const);
 
 beforeEach(() => vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver));
 afterEach(() => {
@@ -44,10 +45,10 @@ afterEach(() => {
 describe('RotationTabBody', () => {
 	it('opens the priority pane and leaves the other two faded out', () => {
 		const { container } = render(<RotationTabBody />);
-		expect(paneClasses(container)).toEqual([
-			['apl-priority-list', 'tab-pane fade active show'],
-			['apl-action-groups', 'tab-pane fade'],
-			['apl-variables', 'tab-pane fade'],
+		expect(paneStates(container)).toEqual([
+			['apl-priority-list', false],
+			['apl-action-groups', true],
+			['apl-variables', true],
 		]);
 		expect(container.querySelectorAll('.rotation-tab-apl [role=tabpanel]')).toHaveLength(3);
 	});
@@ -55,9 +56,10 @@ describe('RotationTabBody', () => {
 	it('moves active on the click and show a frame later', async () => {
 		const { container } = render(<RotationTabBody />);
 		fireEvent.click(container.querySelector('[aria-controls="apl-variables"]')!);
-		expect(container.querySelector('#apl-variables')!.className).toBe('tab-pane fade active');
-		expect(container.querySelector('#apl-priority-list')!.className).toBe('tab-pane fade');
-		await waitFor(() => expect(container.querySelector('#apl-variables')!.className).toBe('tab-pane fade active show'));
+		expect(container.querySelector<HTMLElement>('#apl-variables')!.hidden).toBe(false);
+		expect(container.querySelector('#apl-variables')!.hasAttribute('data-starting-style')).toBe(true);
+		expect(container.querySelector('#apl-priority-list')!.hasAttribute('data-ending-style')).toBe(true);
+		await waitFor(() => expect(container.querySelector('#apl-variables')!.hasAttribute('data-starting-style')).toBe(false));
 	});
 
 	it('drives the strip and the panes off one selection', () => {
@@ -65,7 +67,7 @@ describe('RotationTabBody', () => {
 		fireEvent.click(container.querySelector('[aria-controls="apl-action-groups"]')!);
 		const selected = [...container.querySelectorAll('[role=tab]')].filter(tab => tab.getAttribute('aria-selected') === 'true');
 		expect(selected.map(tab => tab.getAttribute('aria-controls'))).toEqual(['apl-action-groups']);
-		expect(container.querySelector('#apl-action-groups')!.classList.contains('active')).toBe(true);
+		expect(container.querySelector<HTMLElement>('#apl-action-groups')!.hidden).toBe(false);
 	});
 
 	it('renders no cooldown settings while the spec offers no major cooldowns', () => {

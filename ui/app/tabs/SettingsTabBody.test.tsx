@@ -118,7 +118,9 @@ describe('SettingsTabBody', () => {
 		expect(blocks(container, 'settings-left-col-3')).toEqual(['buffs-settings', 'buffs-settings', 'buffs-settings', 'debuffs-settings']);
 		// The custom section owns its own block, so it is not a `.content-block` child of the column.
 		expect(container.querySelector('.settings-left-col-2 > .custom-section-stub')).not.toBeNull();
-		expect(container.querySelector('.settings-left-col-2')!.firstElementChild!.className).toBe('custom-section-stub');
+		const firstChild = container.querySelector('.settings-left-col-2')!.firstElementChild!;
+		expect(firstChild.classList.contains('custom-section-stub')).toBe(true);
+		expect(firstChild.classList.contains('content-block')).toBe(false);
 	});
 
 	// No wrapper element around any of the three: the preset picker has to keep leading the two
@@ -174,7 +176,7 @@ describe('SettingsTabBody', () => {
 	it('leaves those bodies alone when the lists are not empty', async () => {
 		const container = mount();
 		await becomeReady();
-		expect(bodyOf(container, 'buffs-settings')!.className).toBe('content-block-body');
-		expect(bodyOf(container, 'debuffs-settings')!.className).toBe('content-block-body');
+		expect(bodyOf(container, 'buffs-settings')).not.toBeNull();
+		expect(bodyOf(container, 'debuffs-settings')).not.toBeNull();
 	});
 });

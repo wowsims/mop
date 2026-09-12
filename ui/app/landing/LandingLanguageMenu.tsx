@@ -25,6 +25,7 @@ export const LandingLanguageMenu = () => {
 									key={code}
 									render={<button type="button" />}
 									className={clsx('dropdown-item', code === currentLang && 'active')}
+									data-active={code === currentLang ? '' : undefined}
 									data-lang={code}
 									onClick={() => selectLang(code)}>
 									{name}

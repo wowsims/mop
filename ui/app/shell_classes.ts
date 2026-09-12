@@ -1,5 +1,5 @@
-import type { PlayerSpec } from '@sim/player/player_spec';
 import { hideMetricsClassName } from '@features/results/model/sim_results';
+import type { PlayerSpec } from '@sim/player/player_spec';
 import clsx from 'clsx';
 
 export interface MetricVisibility {
@@ -39,4 +39,24 @@ export interface SimUiClassesArgs {
 }
 
 export const simUiClasses = ({ className, spec, metrics }: SimUiClassesArgs): string =>
-	clsx('sim-ui', className, simTypeClasses(spec), metricVisibilityClasses(metrics));
+	clsx('sim-ui', 'group/sim', className, simTypeClasses(spec), metricVisibilityClasses(metrics));
+
+export interface SimUiAttributesArgs {
+	spec: PlayerSpec<any>;
+	metrics: MetricVisibility;
+}
+
+export const simUiAttributes = ({ spec, metrics }: SimUiAttributesArgs): Record<string, string | undefined> => {
+	const simType = spec.isHealingSpec ? 'heal' : spec.isTankSpec ? 'tank' : spec.isMeleeDpsSpec || spec.isRangedDpsSpec ? 'dps' : undefined;
+	const simAttack = simType === 'dps' ? (spec.isMeleeDpsSpec ? 'melee' : 'ranged') : undefined;
+
+	return {
+		'data-sim-type': simType,
+		'data-sim-attack': simAttack,
+		'data-hide-damage': metrics.damage ? undefined : '',
+		'data-hide-threat': metrics.threat ? undefined : '',
+		'data-hide-healing': metrics.healing ? undefined : '',
+		'data-hide-ep-ratios': metrics.epRatios ? undefined : '',
+		'data-hide-experimental': metrics.experimental ? undefined : '',
+	};
+};
