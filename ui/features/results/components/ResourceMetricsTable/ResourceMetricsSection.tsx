@@ -1,6 +1,5 @@
 import { ResourceMetrics } from '@sim/proto/sim_result';
 import type { ResourceType } from '@generated/proto/spell';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { buildMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';

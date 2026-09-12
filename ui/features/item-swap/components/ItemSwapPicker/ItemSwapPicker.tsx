@@ -11,7 +11,6 @@ import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 
 import { swapWithGear } from '../../model/swap_with_gear';

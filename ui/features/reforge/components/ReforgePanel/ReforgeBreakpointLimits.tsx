@@ -8,7 +8,6 @@ import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId } from 'react';
 
 import { INCLUDED_STATS } from './utils';

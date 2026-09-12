@@ -1,7 +1,6 @@
 import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { Chart, type ChartOptions } from 'chart.js';
-import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';

@@ -5,7 +5,6 @@ import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { TooltipButton } from '@ui-kit/TooltipButton';
-import clsx from 'clsx';
 import { useCallback, useId, useRef } from 'react';
 
 import type { ListDrag } from './drag_state';

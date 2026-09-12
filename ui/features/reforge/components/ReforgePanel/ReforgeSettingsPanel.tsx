@@ -9,7 +9,6 @@ import { batch } from '@sim/state/batch';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';

@@ -4,7 +4,6 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
-import clsx from 'clsx';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useBulkState } from '../../hooks/useBulkState';

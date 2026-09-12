@@ -15,7 +15,6 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { tabPaneClass } from '@ui-kit/tab_pane_class';
-import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 

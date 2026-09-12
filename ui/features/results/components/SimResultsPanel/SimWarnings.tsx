@@ -4,7 +4,6 @@ import { useReadyStoreSubscribe } from '@sim/hooks/useReadyStoreSubscribe';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId } from 'react';
 
 export interface SimWarningsProps {

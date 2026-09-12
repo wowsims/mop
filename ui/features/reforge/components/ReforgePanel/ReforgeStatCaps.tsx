@@ -6,7 +6,6 @@ import { Stats } from '@sim/proto/stats';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
 
 import { ReforgeStatCapRow } from './ReforgeStatCapRow';
