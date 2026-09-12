@@ -1,7 +1,8 @@
 import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
-import { Chart, type ChartOptions } from 'chart.js';
-import { useEffect, useRef } from 'react';
+import type { Chart as ChartJS, ChartData, ChartOptions, Plugin } from 'chart.js';
+import { useEffect, useMemo, useRef } from 'react';
+import { Chart } from 'react-chartjs-2';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { AnnotationSpec, TimelineChartSpec, TimelineDataset, TimelinePoint, TooltipSpec } from '../../../model/timeline/chart/types';
@@ -9,7 +10,7 @@ import { annotationsPlugin } from './annotations';
 import { ChartSeriesTooltip } from './ChartSeriesTooltip';
 import { ChartToolbar } from './ChartToolbar';
 import { THREAT_SERIES_ID } from './series';
-import { ChartZoom, type XRange } from './zoom';
+import { ChartZoom } from './zoom';
 
 const PAN_STEP_PX = 60;
 const ZOOM_STEP = 1.2;
@@ -20,8 +21,7 @@ export interface TimelineChartProps {
 }
 
 export const TimelineChart = ({ spec }: TimelineChartProps) => {
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const chartRef = useRef<Chart<'line'> | null>(null);
+	const chartRef = useRef<ChartJS<'line'> | undefined>(undefined);
 	const annotations = useRef<AnnotationSpec | null>(null);
 	// Keyed by the stable series id, not by dataset index or legend label, so a toggle survives both a
 	// dataset rebuild and a UI language change.
@@ -34,19 +34,17 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 
 	const isSeriesVisible = (seriesId: string) => seriesVisible.current.get(seriesId) ?? seriesId !== THREAT_SERIES_ID;
 
-	// The one raw options object the chart is configured with. chart.js replaces its `scales` in place
-	// on every update, so this reference — not `chart.options`, which is a resolver proxy — is what the
-	// scales and the zoom range have to be written through.
-	const options = useRef<ChartOptions<'line'>>(undefined as never);
-	if (!options.current) {
-		options.current = {
+	// Everything about the chart except its scales, which are the only part a new result changes.
+	// Held rather than rebuilt so react-chartjs-2's options effect fires once per result, not per render.
+	const behaviour = useRef<ChartOptions<'line'>>(undefined as never);
+	if (!behaviour.current) {
+		behaviour.current = {
 			animation: false,
 			responsive: true,
 			maintainAspectRatio: false,
 			parsing: false,
 			normalized: true,
 			interaction: { mode: 'nearest', axis: 'xy', intersect: false },
-			scales: {},
 			plugins: {
 				legend: {
 					position: 'top',
@@ -94,8 +92,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 	const zoom = useRef<ChartZoom>(undefined as never);
 	if (!zoom.current) {
 		zoom.current = new ChartZoom(
-			() => chartRef.current,
-			() => options.current.scales?.x as XRange | undefined,
+			() => chartRef.current ?? null,
 			dragging => {
 				suppressed.current = dragging;
 				if (dragging) {
@@ -106,36 +103,25 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 		);
 	}
 
+	const plugins = useRef<Array<Plugin<'line'>>>(undefined as never);
+	if (!plugins.current) plugins.current = [annotationsPlugin(() => annotations.current), zoom.current.plugin()];
+
 	// chart.js has no noData equivalent and would draw a pair of empty axes, so the canvas is only
 	// mounted once there is a series to draw.
 	const hasData = !!spec && spec.datasets.length > 0;
 
+	// Written here rather than from an effect: a child's effects run before its parent's, and the one
+	// react-chartjs-2 updates the chart from draws synchronously, so an effect would paint the new
+	// result's series under the previous result's cooldown bands.
+	annotations.current = spec?.annotations ?? null;
+	if (spec) for (const dataset of spec.datasets) dataset.hidden = !isSeriesVisible(dataset.seriesId);
+
+	const data = useMemo<ChartData<'line', Array<TimelinePoint>>>(() => ({ datasets: spec?.datasets ?? [] }), [spec]);
+	const options = useMemo<ChartOptions<'line'>>(() => ({ ...behaviour.current, scales: spec?.scales ?? {} }), [spec]);
+
 	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!spec || !hasData || !canvas) return;
-
-		annotations.current = spec.annotations;
-		options.current.scales = spec.scales;
-		zoom.current.setDuration(spec.duration);
-		zoom.current.write();
-		for (const dataset of spec.datasets) dataset.hidden = !isSeriesVisible(dataset.seriesId);
-
-		const chart = new Chart(canvas, {
-			type: 'line',
-			data: { datasets: spec.datasets },
-			options: options.current,
-			plugins: [annotationsPlugin(() => annotations.current), zoom.current.plugin()],
-		});
-		chartRef.current = chart;
-
-		return () => {
-			chartRef.current = null;
-			tipKey.current = '';
-			hideTip();
-			chart.destroy();
-		};
-		// oxlint-disable-next-line react-hooks/exhaustive-deps
-	}, [spec, hasData]);
+		if (spec) zoom.current.setDuration(spec.duration);
+	}, [spec]);
 
 	return (
 		<div className="timeline-chart">
@@ -148,9 +134,16 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 			/>
 			{hasData && (
 				<div className="timeline-chart-canvas">
-					<canvas
-						ref={canvasRef}
-						role="img"
+					<Chart
+						type="line"
+						ref={chartRef}
+						data={data}
+						options={options}
+						plugins={plugins.current}
+						// react-chartjs-2 otherwise matches a new result's datasets to the old ones by
+						// `label`, which is translated and can collide; `seriesId` is the stable key.
+						datasetIdKey="seriesId"
+						updateMode="none"
 						aria-label={i18n.t('results_tab.details.timeline.chart_options.chart_label')}
 						onPointerDown={event => zoom.current.down(event)}
 						onPointerMove={event => zoom.current.move(event)}
