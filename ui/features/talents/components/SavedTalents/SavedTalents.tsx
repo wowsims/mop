@@ -1,14 +1,14 @@
 import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { batch } from '@sim/state/batch';
+import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import { Glyphs } from '@generated/proto/common';
 import type { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { trackEvent } from '../../../../tracking/analytics';
 import { useSavedTalents } from '../../hooks/useSavedTalents';
 import { useTalents } from '../../hooks/useTalents';
 import { serializeTalents } from './utils';
@@ -20,7 +20,6 @@ export const SavedTalents = () => {
 	const ready = useSimReady();
 
 	const label = i18n.t('talents_tab.saved_talents.label');
-	const { entries: userData, save, remove } = useSavedTalents();
 
 	const presets = useMemo<Array<SavedDataPanelEntry<SavedTalentsProto>>>(
 		() =>
@@ -36,41 +35,22 @@ export const SavedTalents = () => {
 		[ready, individualConfig, player],
 	);
 
-	const talents = useTalents();
-	const currentJson = useMemo(() => serializeTalents(talents), [talents]);
-
-	const onLoad = useCallback(
-		(entry: SavedDataPanelEntry<SavedTalentsProto>) => {
+	const panel = useSavedPanel({
+		label,
+		storage: useSavedTalents(),
+		current: useTalents(),
+		serialize: serializeTalents,
+		load: entry =>
 			batch(() => {
 				player.setTalentsString(entry.data.talentsString);
 				player.setGlyphs(entry.data.glyphs || Glyphs.create());
-			});
-			trackEvent({ action: 'settings', category: 'load', label });
-		},
-		[player, label],
-	);
-
-	const onSave = useCallback(
-		(name: string) => {
-			save(name, talents);
-			trackEvent({ action: 'settings', category: 'save', label });
-		},
-		[talents, label, save],
-	);
-
-	const onDelete = useCallback(
-		(entry: SavedDataPanelEntry<SavedTalentsProto>) => {
-			remove(entry.name);
-			trackEvent({ action: 'settings', category: 'delete', label });
-		},
-		[label, remove],
-	);
+			}),
+	});
 
 	return (
 		<SavedDataPanel
 			container={host.rootElem}
 			title={i18n.t('talents_tab.saved_talents.title')}
-			label={label}
 			nameLabel={i18n.t('talents_tab.saved_talents.name_label')}
 			saveButtonText={i18n.t('talents_tab.saved_talents.save_button')}
 			deleteLabel={i18n.t('talents_tab.saved_talents.delete.tooltip')}
@@ -78,11 +58,7 @@ export const SavedTalents = () => {
 			chooseNameAlert={i18n.t('talents_tab.saved_talents.alerts.choose_name')}
 			nameExistsAlert={i18n.t('talents_tab.saved_talents.alerts.name_exists')}
 			presets={presets}
-			userData={userData}
-			currentJson={currentJson}
-			onLoad={onLoad}
-			onSave={onSave}
-			onDelete={onDelete}
+			{...panel}
 		/>
 	);
 };

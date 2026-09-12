@@ -23,6 +23,8 @@ ui/
                      helpers that are neither a component nor DOM-free). The twelve are
                      apl, bulk, character-stats, encounter, gear, import-export, item-swap,
                      reforge, results, settings, stat-weights, talents. alias @features
+  features/hooks/    React hooks several features share and none owns (useSavedPanel), one
+                     per file, beside the twelve capability folders
   app/               shells + chrome that compose features, and the only place allowed to
                      import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
                      tabs/ (a React <X>TabBody per tab), header/, SettingsDialog/,
