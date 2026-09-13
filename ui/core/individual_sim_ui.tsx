@@ -445,7 +445,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		//this.sim.showExperimentalChangeEmitter.on(() => {
 		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
 		//});
-		if (this.simDisabled) bulkTab.navItem.classList.add('d-none');
 		return bulkTab;
 	}
 
@@ -458,8 +457,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private addRotationTab() {
-		const rotationTab = new RotationTab(this.simTabContentsContainer, this);
-		if (this.simDisabled) rotationTab.navItem.classList.add('d-none');
+		new RotationTab(this.simTabContentsContainer, this);
 	}
 
 	private addDetailedResultsTab() {

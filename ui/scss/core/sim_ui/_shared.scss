@@ -142,6 +142,18 @@ th {
 	}
 }
 
+// Sims that cannot run (SimUI.simDisabled): no Simulate button, iterations,
+// stat weight calculation, bulk or rotation tab.
+.sim-disabled {
+	.dps-action,
+	.iterations-picker,
+	.calc-weights,
+	.nav-item.bulk-tab,
+	.nav-item.rotation-tab {
+		display: none !important;
+	}
+}
+
 .hide-experimental {
 	.experimental {
 		display: none !important;

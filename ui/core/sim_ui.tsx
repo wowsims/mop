@@ -110,6 +110,8 @@ export abstract class SimUI extends Component {
 		this.simContentContainer.appendChild(this.simMain);
 
 		this.rootElem.classList.add(this.config.cssClass);
+		// Hides the simulation controls; see .sim-disabled in the sim_ui stylesheet.
+		if (this.simDisabled) this.rootElem.classList.add('sim-disabled');
 
 		if (this.config.spec?.isHealingSpec) {
 			this.rootElem.classList.add('sim-type--heal');
@@ -199,7 +201,6 @@ export abstract class SimUI extends Component {
 				sim.setIterations(eventID, newValue);
 			},
 		}).rootElem;
-		if (this.simDisabled) this.iterationsPicker.classList.add('d-none');
 
 		const resultsViewerElem = this.rootElem.querySelector('.sim-sidebar-results') as HTMLElement;
 		this.resultsViewer = new ResultsViewer(resultsViewerElem);
