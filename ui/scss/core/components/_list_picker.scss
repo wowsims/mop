@@ -1,13 +1,13 @@
 .list-picker-root {
 	flex-direction: column;
 	align-items: center;
-	gap: var(--spacing-block);
+	gap: var(--spacing-stack);
 
 	.list-picker-title {
 		width: 100%;
 		display: flex;
 		border-bottom: var(--border-default);
-		margin-bottom: var(--spacing-block);
+		margin-bottom: var(--spacing-stack);
 		font-size: 1rem;
 		font-weight: bold;
 	}
@@ -18,7 +18,7 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 
 		.list-picker-item-container {
 			position: relative;
@@ -75,9 +75,9 @@
 			}
 
 			.list-picker-item-header {
-				padding-bottom: var(--spacing-block);
+				padding-bottom: var(--spacing-stack);
 				border-bottom: var(--border-default);
-				margin-bottom: var(--spacing-block);
+				margin-bottom: var(--spacing-stack);
 				display: flex;
 				align-items: center;
 				flex: 1;

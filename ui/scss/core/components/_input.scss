@@ -67,7 +67,7 @@
 .picker-group {
 	width: 100%;
 	display: grid;
-	gap: var(--spacing-block);
+	gap: var(--spacing-stack);
 	grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 
 	.input-root {

@@ -59,7 +59,7 @@ describe('ConsumeRow', () => {
 		expect(element.className.split(' ').sort().join(' ')).toBe('consumes-row input-inline input-root');
 		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
-			'span.form-label',
+			'span.inline-block mb-1 text-ui font-normal form-label',
 			'div.picker-group icon-group consumes-row-inputs consumes-engi',
 		]);
 	});

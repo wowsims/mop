@@ -32,7 +32,7 @@
 
 	--spacing-icon-sm: 1rem;
 	--spacing-icon-md: 2.5rem;
-	--spacing-block: 0.75rem;
+	--spacing-stack: 0.75rem;
 	--spacing-gutter: 1.5rem;
 	--spacing-gutter-sm: 0.5rem;
 	--spacing-page: 0.5rem;
@@ -157,6 +157,7 @@
 	--color-talent-partial: #40bf40;
 
 	--animate-shimmer: loading-shimmer 6s linear infinite;
+	--animate-skeleton: character-stats-skeleton-shimmer 1.2s ease-in-out infinite;
 }
 
 :root {
@@ -245,6 +246,16 @@
 }
 
 @keyframes loading-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+
+	to {
+		background-position: -200% 0;
+	}
+}
+
+@keyframes character-stats-skeleton-shimmer {
 	from {
 		background-position: 200% 0;
 	}

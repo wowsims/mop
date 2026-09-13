@@ -2,11 +2,11 @@
 	--item-swap-picker-size: 4rem;
 	--column-count: 4;
 	display: grid;
-	gap: var(--spacing-block);
+	gap: var(--spacing-stack);
 
 	.input-item-swap-container {
 		flex-wrap: wrap;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 	}
 
 	.picker-group {

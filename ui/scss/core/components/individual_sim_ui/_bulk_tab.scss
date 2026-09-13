@@ -109,7 +109,7 @@
 	.bulk-gear-actions {
 		display: flex;
 		grid-auto-flow: column;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 	}
 
 	.bulk-gear-combo {

@@ -2,6 +2,7 @@ import { useSim } from '@sim/context/SimHostContext';
 import { formatToNumber } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import { Icon } from '@ui-kit/Icon';
+import { Spinner } from '@ui-kit/Spinner';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -19,7 +20,7 @@ export const CombinationsCount = () => {
 	if (pending) {
 		return (
 			<div className="bulk-combinations-count h4">
-				<div className="loader" />
+				<Spinner />
 			</div>
 		);
 	}

@@ -3,6 +3,7 @@ import { kebabCase } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
+import { TextArea } from '@ui-kit/FormControl';
 import { downloadString } from '@ui-kit/utils/dom';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { Icon } from '@ui-kit/Icon';
@@ -80,7 +81,7 @@ export const Exporter = ({
 			}>
 			{selectCategories && <ExporterCategoryPickers categories={categories.current} onChange={onCategoryChange} />}
 			{/* `defaultValue` for the mount, the effect above for a change while open: the popup mounts a commit after the effect first runs, so a ref write alone leaves the box empty. */}
-			<textarea spellCheck={false} className="exporter-textarea form-control" ref={textRef} defaultValue={data} />
+			<TextArea spellCheck={false} className="exporter-textarea form-control" ref={textRef} defaultValue={data} />
 		</Dialog>
 	);
 };

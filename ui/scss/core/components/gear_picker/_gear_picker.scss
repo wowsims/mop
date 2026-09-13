@@ -5,7 +5,7 @@
 		grid-template-columns: 1fr 1fr;
 
 		@include media-breakpoint-down(lg) {
-			gap: var(--spacing-block);
+			gap: var(--spacing-stack);
 		}
 
 		@include media-breakpoint-down(sm) {
@@ -17,7 +17,7 @@
 	.gear-picker-right {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 	}
 
 	.gear-picker-left {

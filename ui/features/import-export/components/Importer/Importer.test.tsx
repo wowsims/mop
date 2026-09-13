@@ -130,7 +130,10 @@ describe('Importer', () => {
 	it('puts the description above the textarea, inside .import-description', () => {
 		renderImporter();
 		const body = rootElem.querySelector('[data-testid="sim-dialog-body"] > div')!;
-		expect(Array.from(body.children).map(el => el.className)).toEqual(['import-description', 'importer-textarea form-control']);
+		expect(Array.from(body.children).map(el => el.className)).toEqual([
+			'import-description',
+			'block w-full px-3 py-1.5 text-ui leading-normal text-foreground bg-surface border border-surface-border importer-textarea form-control',
+		]);
 		expect(body.querySelector('.import-description')!.textContent).toBe('how to');
 	});
 });

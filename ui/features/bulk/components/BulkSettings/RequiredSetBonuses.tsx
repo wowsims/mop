@@ -1,6 +1,7 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
+import { FieldLabel } from '@ui-kit/FormControl';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -24,9 +25,9 @@ export const RequiredSetBonuses = () => {
 			{!!setBonuses.length && <h6>{i18n.t('bulk_tab.settings.required_set_bonuses.label')}</h6>}
 			{setBonuses.map(setBonus => (
 				<div key={setBonus.setId} className="bulk-required-set-bonus flex flex-col gap-1">
-					<div className="form-label">
+					<FieldLabel as="div" className="form-label">
 						{setBonus.setName} {i18n.t('bulk_tab.settings.required_set_bonuses.available_pieces', { count: setBonus.totalPieces })}
-					</div>
+					</FieldLabel>
 					{setBonus.totalPieces >= 2 && (
 						<BooleanPicker
 							modObject={player}

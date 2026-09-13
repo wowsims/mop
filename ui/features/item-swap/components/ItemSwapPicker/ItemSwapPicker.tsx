@@ -9,6 +9,7 @@ import { subscribePlayerField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
+import { FieldLabel, HelpText } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';
@@ -50,9 +51,9 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
 				<div className="input-root input-inline input-item-swap-container">
-					<span className="form-label" id={labelId}>
+					<FieldLabel as="span" className="form-label" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
-					</span>
+					</FieldLabel>
 					<Button
 						variant="unstyled"
 						className="gear-swap-icon"
@@ -69,7 +70,11 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					</div>
 				</div>
 			)}
-			{note && enabled && <p className="form-text">{note}</p>}
+			{note && enabled && (
+				<HelpText as="p" className="form-text">
+					{note}
+				</HelpText>
+			)}
 		</div>
 	);
 };

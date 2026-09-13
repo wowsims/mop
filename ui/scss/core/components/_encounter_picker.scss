@@ -1,7 +1,7 @@
 .encounter-picker-root {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--spacing-block);
+	gap: var(--spacing-stack);
 
 	.execute-group {
 		width: 100%;
@@ -28,7 +28,7 @@
 	.encounter-header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 	}
 
 	.encounter-picker {
@@ -45,7 +45,7 @@
 
 	.target-picker-root {
 		display: grid;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 		grid-template-columns: 1fr;
 
 		@include media-breakpoint-up(xl) {

@@ -1,6 +1,6 @@
 .consumes-picker-root {
 	display: grid;
-	gap: var(--spacing-block);
+	gap: var(--spacing-stack);
 
 	@include media-breakpoint-down(lg) {
 		grid-template-columns: repeat(3, 1fr);

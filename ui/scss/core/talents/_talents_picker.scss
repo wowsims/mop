@@ -1,6 +1,6 @@
 :root {
-	--talent-tree-header-padding-x: var(--spacing-block);
-	--talent-tree-header-padding-y: var(--spacing-block);
+	--talent-tree-header-padding-x: var(--spacing-stack);
+	--talent-tree-header-padding-y: var(--spacing-stack);
 	--talent-tree-header-icon-size: 2rem;
 	--talent-tree-header-size: calc(var(--talent-tree-header-icon-size) + 2 * var(--talent-tree-header-padding-y));
 
@@ -117,15 +117,15 @@
 }
 
 .talent-tree-main {
-	margin: var(--spacing-block) 2vw;
+	margin: var(--spacing-stack) 2vw;
 	z-index: 1;
 
 	@include media-breakpoint-down(xxxl) {
-		margin: var(--spacing-block) auto;
+		margin: var(--spacing-stack) auto;
 	}
 
 	@include media-breakpoint-down(lg) {
-		margin: var(--spacing-block) var(--talent-icon-size);
+		margin: var(--spacing-stack) var(--talent-icon-size);
 	}
 }
 
@@ -206,7 +206,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--spacer-1);
-	margin: var(--spacing-block) 0;
+	margin: var(--spacing-stack) 0;
 
 	@include media-breakpoint-down(md) {
 		flex-direction: column;

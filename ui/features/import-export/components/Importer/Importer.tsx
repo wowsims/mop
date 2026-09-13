@@ -5,6 +5,7 @@ import { kebabCase } from '@sim/utils/format';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
+import { TextArea } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
 import { toastManager } from '@ui-kit/Toast';
 import type { ReactNode } from 'react';
@@ -71,7 +72,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			}>
 			<div>
 				<div className="import-description">{children}</div>
-				<textarea spellCheck={false} className="importer-textarea form-control" ref={textRef} />
+				<TextArea spellCheck={false} className="importer-textarea form-control" ref={textRef} />
 			</div>
 		</Dialog>
 	);

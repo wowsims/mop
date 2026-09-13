@@ -4,6 +4,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import type { SimResultsManager } from '@features/results/model/results_manager';
 import type { WarningsRegistry } from '@features/results/model/warnings';
+import { Spinner } from '@ui-kit/Spinner';
 import { useSyncExternalStore } from 'react';
 
 import { AbortButton } from './AbortButton';
@@ -29,7 +30,7 @@ export const SimResultsPanel = ({ panel, warnings, results }: SimResultsPanelPro
 	return (
 		<div className="results-viewer">
 			<div className="results-pending" hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
-				{stage === ResultsPanelStage.Running ? <SimProgress panel={panel} /> : <div className="loader" />}
+				{stage === ResultsPanelStage.Running ? <SimProgress panel={panel} /> : <Spinner />}
 			</div>
 			<div className="results-content" hidden={stage !== ResultsPanelStage.Result}>
 				{results && <SimResultSummary results={results} />}

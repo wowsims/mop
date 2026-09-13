@@ -2,6 +2,7 @@ import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { Player } from '@sim/player/player';
+import { FieldLabel } from '@ui-kit/FormControl';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
 import clsx from 'clsx';
@@ -28,9 +29,9 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 
 	return (
 		<div className={clsx('consumes-row', 'input-root', 'input-inline')} role="group" aria-labelledby={labelId}>
-			<span className="form-label" id={labelId}>
+			<FieldLabel as="span" className="form-label" id={labelId}>
 				{i18n.t(`settings_tab.consumables.${name}.title`)}
-			</span>
+			</FieldLabel>
 			{children}
 		</div>
 	);

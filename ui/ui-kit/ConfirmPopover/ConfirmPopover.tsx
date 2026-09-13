@@ -49,7 +49,7 @@ export const ConfirmPopover = ({
 		testId={testId}
 		className="sim-confirm-popover"
 		maxWidth="max-w-[220px]">
-		<p className="sim-confirm-popover-message mb-(--spacing-block)" data-testid="sim-confirm-popover-message">
+		<p className="sim-confirm-popover-message mb-(--spacing-stack)" data-testid="sim-confirm-popover-message">
 			{children}
 		</p>
 		<div className="sim-confirm-popover-actions flex justify-end gap-2" data-testid="sim-confirm-popover-actions">

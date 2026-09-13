@@ -2,6 +2,7 @@ import type { ActionID as ActionIdProto } from '@generated/proto/common';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { ActionId } from '@sim/proto/action_id';
 import { Button } from '@ui-kit/Button';
+import { FieldLabel } from '@ui-kit/FormControl';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
@@ -31,7 +32,7 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 	return (
 		<div className={clsx('cooldown-picker', isAdd && 'add-cooldown-picker')} data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
-			<label className="cooldown-picker-label form-label">{name}</label>
+			<FieldLabel className="cooldown-picker-label form-label">{name}</FieldLabel>
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
 				variant="unstyled"

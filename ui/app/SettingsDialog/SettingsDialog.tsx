@@ -9,6 +9,7 @@ import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import type { EnumPickerConfig, EnumValueConfig } from '@ui-kit/EnumPicker/types';
+import { HelpText } from '@ui-kit/FormControl';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 import { toastManager } from '@ui-kit/Toast';
@@ -197,10 +198,10 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 						<div className="fixed-rng-seed">
 							<NumberPicker modObject={sim} config={fixedRngSeedConfig} />
 						</div>
-						<div className="form-text">
+						<HelpText as="div" className="form-text">
 							<span>{i18n.t('info.options.fixed_rng_seed.last_used')}</span>&nbsp;
 							<span className="last-used-rng-seed">{lastUsedRngSeed}</span>
-						</div>
+						</HelpText>
 					</div>
 					<div className="language-picker">
 						<EnumPicker modObject={sim} config={languageConfig} />
@@ -219,9 +220,9 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 					<div className="use-concurrent-workers-picker">
 						<EnumPicker modObject={sim} config={concurrencyConfig} />
 					</div>
-					<div className="form-text" hidden={!firefox}>
+					<HelpText as="div" className="form-text" hidden={!firefox}>
 						{firefox ? FIREFOX_WORKER_NOTE : ''}
-					</div>
+					</HelpText>
 				</div>
 			</div>
 		</Dialog>

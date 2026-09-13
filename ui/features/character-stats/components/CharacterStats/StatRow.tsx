@@ -6,6 +6,7 @@ import { PseudoStat, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
+import { Skeleton } from '@ui-kit/Skeleton';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -39,7 +40,7 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 			</td>
 			<td className="character-stats-table-value">
 				{pending ? (
-					<span className="character-stats-skeleton" />
+					<Skeleton />
 				) : (
 					<>
 						<div className="stat-value-link-container">

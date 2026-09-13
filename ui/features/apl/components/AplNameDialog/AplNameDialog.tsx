@@ -1,6 +1,7 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
+import { FieldLabel } from '@ui-kit/FormControl';
 import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -77,9 +78,9 @@ export const AplNameDialog = ({
 				</Button>
 			}>
 			<div className="apl-name-modal-body">
-				<label className="form-label" htmlFor={inputId}>
+				<FieldLabel className="form-label" htmlFor={inputId}>
 					{inputLabel}
-				</label>
+				</FieldLabel>
 				<input
 					id={inputId}
 					ref={inputRef}
