@@ -370,15 +370,21 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 					size="md"
 					title={i18n.t('fire_mage.combustion_thresholds.modal_title')}
 					preventClose>
-					<div className="combustion-threshold-results flex flex-col items-end gap-4">
-						<div className="table-responsive w-full">
+					<div className="flex flex-col items-end gap-4">
+						<div className="w-full">
 							<table>
 								<thead>
 									<tr>
-										<th>{i18n.t('fire_mage.combustion_thresholds.table.threshold')}</th>
-										<th>{i18n.t('fire_mage.combustion_thresholds.table.current')}</th>
-										<th></th>
-										<th>{i18n.t('fire_mage.combustion_thresholds.table.new')}</th>
+										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+											{i18n.t('fire_mage.combustion_thresholds.table.threshold')}
+										</th>
+										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+											{i18n.t('fire_mage.combustion_thresholds.table.current')}
+										</th>
+										<th className="py-2 px-4 text-right text-xs border-b-2 border-border"></th>
+										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+											{i18n.t('fire_mage.combustion_thresholds.table.new')}
+										</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -386,10 +392,12 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 										const typedKey = key as keyof FireMage_Rotation;
 										return (
 											<tr key={key}>
-												<th>{i18n.t(CATEGORY_LABELS[typedKey])}</th>
-												<td className="negative">{Math.round(results.currentValues[typedKey])}</td>
-												<td>→</td>
-												<td className="positive">{Math.round(value)}</td>
+												<th className="py-2 px-4 text-right text-xs border-b-2 border-border">{i18n.t(CATEGORY_LABELS[typedKey])}</th>
+												<td className="negative py-2 px-4 text-right text-xs text-danger">
+													{Math.round(results.currentValues[typedKey])}
+												</td>
+												<td className="py-2 px-4 text-right text-xs">→</td>
+												<td className="positive py-2 px-4 text-right text-xs text-success">{Math.round(value)}</td>
 											</tr>
 										);
 									})}

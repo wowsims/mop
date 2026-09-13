@@ -5,18 +5,3 @@
 		text-align: right;
 	}
 }
-
-.combustion-thresholds-modal {
-	table {
-		td,
-		th {
-			padding: 0.5rem 1rem;
-			text-align: right;
-			font-size: var(--text-ui);
-		}
-
-		th {
-			border-bottom: 2px solid var(--border-color);
-		}
-	}
-}

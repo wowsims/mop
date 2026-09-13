@@ -61,8 +61,6 @@ const feleAutocastIconInput = <SpecType extends ShamanSpecs>(spellId: number, fl
 export const totemsSection = <SpecType extends ShamanSpecs>(): CustomSection<SpecType> => ({
 	id: 'totems',
 	title: 'Totems',
-	className: 'totems-settings',
-	iconGroupClassName: 'totem-dropdowns-container',
 	iconInputs: [
 		feleAutocastIconInput<SpecType>(57984, 'autocastFireblast'),
 		feleAutocastIconInput<SpecType>(117588, 'autocastFirenova'),
