@@ -25,18 +25,23 @@ export interface CooldownRowProps {
 export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: CooldownRowProps) => {
 	const player = usePlayer();
 	const actionConfig = useMemo(() => actionPickerConfig(available, index), [available, index]);
-	const timingsConfig = useMemo(() => timingsPickerConfig(index), [index]);
+	const timingsConfig = useMemo(() => timingsPickerConfig(index, isAdd), [index, isAdd]);
 	const actionId = id ? ActionId.fromProto(id) : undefined;
 	const { name } = useActionId(actionId);
 
 	return (
-		<div className={clsx('cooldown-picker', isAdd && 'add-cooldown-picker')} data-add={isAdd ? '' : undefined}>
+		<div
+			className={clsx(
+				'cooldown-picker flex items-center justify-between mb-(--spacing-stack) [&>*:not(:last-child)]:mr-2',
+				isAdd && 'add-cooldown-picker',
+			)}
+			data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
-			<FieldLabel className="cooldown-picker-label">{name}</FieldLabel>
+			<FieldLabel className="cooldown-picker-label min-w-[30%] overflow-hidden text-ellipsis">{name}</FieldLabel>
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
 				variant="unstyled"
-				className="delete-cooldown link-danger"
+				className={clsx('delete-cooldown link-danger text-link-danger', isAdd && 'invisible')}
 				onClick={() => deleteCooldown(player, index)}
 				{...tooltipAnchorProps(deleteTooltipId)}>
 				<Icon name="times" style="base" size="xl" />

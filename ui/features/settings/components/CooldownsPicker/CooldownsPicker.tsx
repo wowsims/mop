@@ -1,5 +1,3 @@
-import './CooldownsPicker.scss';
-
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { useAplRotation } from '@sim/hooks/useAplRotation';
@@ -17,7 +15,7 @@ export const CooldownsPicker = () => {
 	const available = useAvailableCooldowns();
 
 	return (
-		<div className="cooldowns-picker-root">
+		<div className="cooldowns-picker-root flex flex-col">
 			{Array.from({ length: cooldowns.length + 1 }, (_, index) => (
 				<CooldownRow
 					key={index}
