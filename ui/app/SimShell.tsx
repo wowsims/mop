@@ -118,7 +118,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								</div>
 							</aside>
 							<div
-								className="container-fluid flex flex-col min-w-[calc(275px+1vw)] pt-0 pr-page pb-page pl-page flex-[4] z-1 max-lg:w-full max-lg:min-h-auto"
+								className="container-fluid flex flex-col min-w-[calc(275px+1vw)] pt-0 pr-page pb-page pl-page flex-4 z-1 max-lg:w-full max-lg:min-h-auto"
 								data-testid="sim-content">
 								<header
 									ref={header}

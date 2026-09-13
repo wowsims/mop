@@ -39,7 +39,7 @@ const MenuSection = ({ name, className, children }: { name: string; className?: 
 		<div className="menu-section-header flex-1">
 			<h6 className="menu-section-title">{name}</h6>
 		</div>
-		<div className={clsx('menu-section-content flex flex-col flex-[3]', className ?? 'gap-(--spacing-stack)')}>{children}</div>
+		<div className={clsx('menu-section-content flex flex-col flex-3', className ?? 'gap-(--spacing-stack)')}>{children}</div>
 	</div>
 );
 
