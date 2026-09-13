@@ -40,7 +40,11 @@ export const CombinationsCount = () => {
 			</span>
 			{showWarning && (
 				<>
-					<button type="button" className="warning link-warning xl:max-xxl:order-[-1]" {...tooltipAnchorProps(tooltipId)}>
+					<button
+						type="button"
+						className="warning link-warning text-link-warning xl:max-xxl:order-[-1]"
+						{...tooltipAnchorProps(tooltipId)}
+					>
 						<Icon name="exclamation-triangle" size="2x" />
 					</button>
 					<Tooltip id={tooltipId} place="left" content={i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(iterationsLimit) })} />
