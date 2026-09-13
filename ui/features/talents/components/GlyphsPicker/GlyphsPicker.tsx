@@ -1,5 +1,3 @@
-import './GlyphsPicker.scss';
-
 import { usePlayer } from '@sim/context/SimHostContext';
 import { Database } from '@sim/proto/database';
 import { subscribePlayerField } from '@sim/state/subscriptions';
@@ -47,11 +45,15 @@ export const GlyphsPicker = () => {
 	const isMajor = (majorGlyphFields as ReadonlyArray<GlyphField>).includes(field);
 
 	return (
-		<div className="glyphs-picker-root">
-			<ContentBlock className="major-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.major'), className: 'border-0' } }}>
+		<div className="glyphs-picker-root grid gap-section grid-cols-1 pt-2 md:max-1080p:w-full md:max-1080p:gap-0 md:max-1080p:grid-cols-2 md:max-1080p:pt-0">
+			<ContentBlock
+				className="major-glyphs gap-0"
+				config={{ header: { title: i18n.t('talents_tab.glyphs.major'), className: 'border-0' }, bodyClassName: 'grid' }}>
 				{!!db && majorGlyphFields.map(major => <GlyphPicker key={major} field={major} options={majorOptions} onOpen={onOpen} />)}
 			</ContentBlock>
-			<ContentBlock className="minor-glyphs" config={{ header: { title: i18n.t('talents_tab.glyphs.minor'), className: 'border-0' } }}>
+			<ContentBlock
+				className="minor-glyphs gap-0"
+				config={{ header: { title: i18n.t('talents_tab.glyphs.minor'), className: 'border-0' }, bodyClassName: 'grid' }}>
 				{!!db && minorGlyphFields.map(minor => <GlyphPicker key={minor} field={minor} options={minorOptions} onOpen={onOpen} />)}
 			</ContentBlock>
 			<GlyphSelectorDialog

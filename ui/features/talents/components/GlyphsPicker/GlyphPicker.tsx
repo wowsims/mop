@@ -23,9 +23,9 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 	const wowheadProps = useWowheadDataset(resolveTooltip);
 
 	return (
-		<PickerShell config={config} className="glyph-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="glyph-picker-root mb-0 flex-row flex-1" hidden={hidden} disabled={disabled}>
 			<a
-				className="glyph-link"
+				className="glyph-link flex gap-(--spacing-stack) focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
 				role="button"
 				href={selected ? glyphUrl(selected) : undefined}
 				data-whtticon="false"
@@ -34,9 +34,9 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 					onOpen(field);
 				}}
 				{...wowheadProps}>
-				<img className="item-picker-icon" src={shown.iconUrl} />
-				<div className="item-picker-labels-container ui-item-picker-labels-container">
-					<span className="item-picker-name-container ui-item-picker-name-container">{shown.name}</span>
+				<img className="item-picker-icon size-12 border border-border" src={shown.iconUrl} />
+				<div className="item-picker-labels-container p-0 justify-center">
+					<span className="item-picker-name-container">{shown.name}</span>
 				</div>
 			</a>
 		</PickerShell>
