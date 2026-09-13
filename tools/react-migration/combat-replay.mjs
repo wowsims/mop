@@ -43,11 +43,11 @@ const READ_REPLAY = () => {
 		`time ${root.querySelector('.cr-time-display')?.textContent}`,
 		`scrubber ${root.querySelector('.cr-scrubber')?.value}`,
 		`castbar "${root.querySelector('.cr-cast-bar-label')?.textContent}" "${root.querySelector('.cr-cast-bar-time')?.textContent}" w=${width(root.querySelector('.cr-cast-bar-fill'))}`,
-		`ticker n=${root.querySelectorAll('.cr-strip-icon').length} active=${root.querySelectorAll('.cr-strip-icon-active').length} crit=${root.querySelectorAll('.cr-crit-badge').length}`,
+		`ticker n=${root.querySelectorAll('.cr-strip-icon').length} active=${root.querySelectorAll('.cr-strip-icon[data-active]').length} crit=${root.querySelectorAll('.cr-crit-badge').length}`,
 		`ticker-dmg ${text(root, '.cr-dmg-badge').join(',')}`,
 		`ticker-icons ${[...root.querySelectorAll('.cr-strip-icon')].map(icon).join(',')}`,
 		`ticker-fade ${[...root.querySelectorAll('.cr-strip-icon')].map(element => Number(getComputedStyle(element).opacity).toFixed(2)).join(',')}`,
-		`buffs n=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon').length} fresh=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon-active').length}`,
+		`buffs n=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon').length} fresh=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon[data-active]').length}`,
 		`buff-icons ${[...root.querySelectorAll('.cr-buff-icons .cr-aura-icon')].map(icon).join(',')}`,
 		`buff-timers ${text(root, '.cr-buff-icons .cr-aura-time-badge').join(',')}`,
 		`buff-stacks ${text(root, '.cr-buff-icons .cr-aura-stack-badge').join(',')}`,
@@ -60,7 +60,7 @@ const READ_REPLAY = () => {
 		// the port moves the gradient out of an inline style and into a class fed by custom properties.
 		`pips ${[...root.querySelectorAll('.cr-segment')].map(element => (getComputedStyle(element).backgroundImage === 'none' ? '.' : '#')).join('')}`,
 		`pip-lit ${[...root.querySelectorAll('.cr-segment')].map(element => getComputedStyle(element).backgroundImage.replace(/\s+/g, '')).filter(value => value !== 'none')[0] ?? 'none'}`,
-		`grid n=${root.querySelectorAll('.cr-action-icon').length} active=${root.querySelectorAll('.cr-action-icon-active').length}`,
+		`grid n=${root.querySelectorAll('.cr-action-icon').length} active=${root.querySelectorAll('.cr-action-icon[data-active]').length}`,
 		`grid-icons ${[...root.querySelectorAll('.cr-action-icon')].map(icon).join(',')}`,
 		...cards.map(card =>
 			[
@@ -80,7 +80,7 @@ const READ_REPLAY = () => {
 				`ring=${[...card.querySelectorAll('.cr-hit-ring')].map(width).join('/')}`,
 			].join(' '),
 		),
-		`speeds ${[...root.querySelectorAll('.cr-speed-btn')].map(button => `${button.textContent.trim()}${button.classList.contains('active') ? '*' : ''}`).join(' ')}`,
+		`speeds ${[...root.querySelectorAll('.cr-speed-btn')].map(button => `${button.textContent.trim()}${button.getAttribute('aria-pressed') === 'true' ? '*' : ''}`).join(' ')}`,
 		`play ${root.querySelector('.cr-play-btn i')?.className}`,
 	];
 };
@@ -224,7 +224,7 @@ const collect = async (browser, port, spec, seeded) => {
 		`advances ${running !== started}`,
 		`freezes ${paused === stillPaused}`,
 		`play ${await page.evaluate(() => document.querySelector('.cr-play-btn i')?.className)}`,
-		`speeds ${await page.evaluate(() => [...document.querySelectorAll('.cr-speed-btn')].map(button => (button.classList.contains('active') ? '*' : '-')).join(''))}`,
+		`speeds ${await page.evaluate(() => [...document.querySelectorAll('.cr-speed-btn')].map(button => (button.getAttribute('aria-pressed') === 'true' ? '*' : '-')).join(''))}`,
 	];
 
 	// Back to the tab it came from, then in again: the vanilla stopped playback on hide and held the

@@ -107,8 +107,8 @@ describe('CombatReplay', () => {
 
 		const icons = [...container.querySelectorAll<HTMLElement>('.cr-strip-icon')];
 		expect(icons).toHaveLength(2);
-		expect(icons[0].classList.contains('cr-strip-icon-active')).toBe(false);
-		expect(icons[1].classList.contains('cr-strip-icon-active')).toBe(true);
+		expect(icons[0].hasAttribute('data-active')).toBe(false);
+		expect(icons[1].hasAttribute('data-active')).toBe(true);
 		expect(icons[0].style.opacity).toBe('0.25');
 		expect(icons[1].style.opacity).toBe('1');
 		expect(texts(container, '.cr-crit-badge')).toEqual(['!']);
@@ -127,7 +127,6 @@ describe('CombatReplay', () => {
 		const container = mount();
 		seek(container, 2.1);
 		const actionIcons = [...container.querySelectorAll<HTMLElement>('.cr-action-icon')];
-		expect(actionIcons.map(icon => icon.classList.contains('cr-action-icon-active'))).toEqual([false, true]);
 		expect(actionIcons.map(icon => icon.hasAttribute('data-active'))).toEqual([false, true]);
 	});
 
@@ -185,13 +184,7 @@ describe('CombatReplay', () => {
 		expect(container.querySelector<HTMLElement>('.cr-res-bar-fill')!.style.width).toBe('60%');
 		expect(container.querySelector('.cr-bar-val')!.textContent).toBe('60/100');
 		expect(container.querySelector('.cr-dot-val')!.textContent).toBe('3/5');
-		expect([...container.querySelectorAll('.cr-segment')].map(pip => pip.className)).toEqual([
-			'cr-segment cr-segment--filled',
-			'cr-segment cr-segment--filled',
-			'cr-segment cr-segment--filled',
-			'cr-segment cr-segment--empty',
-			'cr-segment cr-segment--empty',
-		]);
+		expect([...container.querySelectorAll('.cr-segment')].map(pip => pip.hasAttribute('data-filled'))).toEqual([true, true, true, false, false]);
 	});
 
 	it('seeks by the step the button carries', () => {

@@ -31,7 +31,7 @@ describe('paintHitLayer', () => {
 
 		expect(roots()[0].querySelectorAll('.cr-hit-ring')).toHaveLength(1);
 		expect(roots()[1].querySelectorAll('.cr-hit-ring')).toHaveLength(2);
-		expect(roots()[1].querySelector('.cr-dmg-num')!.className).toBe('cr-dmg-num cr-dmg-crit');
+		expect(roots()[1].querySelector('.cr-dmg-num')!.classList.contains('cr-dmg-crit')).toBe(true);
 	});
 
 	it('leaves out the number when the hit dealt nothing', () => {
