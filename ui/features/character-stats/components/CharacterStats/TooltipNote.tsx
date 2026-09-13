@@ -3,7 +3,7 @@ export interface TooltipNoteProps {
 }
 
 export const TooltipNote = ({ text }: TooltipNoteProps) => (
-	<div className="character-stats-tooltip-row">
+	<div className="character-stats-tooltip-row flex justify-between">
 		<span>
 			<i>{text}</i>
 		</span>

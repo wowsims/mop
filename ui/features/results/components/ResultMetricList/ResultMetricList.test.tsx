@@ -25,17 +25,17 @@ describe('ResultMetricList row layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
 		expect([...container.querySelectorAll('th')].map(cell => cell.className)).toEqual([
-			'metrics-table-header-cell results-sim-dps',
-			'metrics-table-header-cell results-sim-tmi',
-			'metrics-table-header-cell results-sim-tto',
-			'metrics-table-header-cell results-sim-oom danger',
+			'metrics-table-header-cell ui-metrics-header-cell results-sim-dps',
+			'metrics-table-header-cell ui-metrics-header-cell results-sim-tmi',
+			'metrics-table-header-cell ui-metrics-header-cell results-sim-tto',
+			'metrics-table-header-cell ui-metrics-header-cell results-sim-oom danger',
 		]);
 		expect(cells(container, 'th')).toEqual(['DPS', 'TMI', 'TTO', 'OOM']);
 		expect([...container.querySelectorAll('td')].map(cell => cell.className)).toEqual([
-			'text-center align-top results-sim-dps',
-			'text-center align-top results-sim-tmi',
-			'text-center align-top results-sim-tto',
-			'text-center align-top results-sim-oom danger',
+			'text-center align-top ui-metrics-cell results-sim-dps',
+			'text-center align-top ui-metrics-cell results-sim-tmi',
+			'text-center align-top ui-metrics-cell results-sim-tto',
+			'text-center align-top ui-metrics-cell results-sim-oom danger',
 		]);
 	});
 

@@ -22,20 +22,20 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 	return (
 		<>
 			{layout === 'row' ? (
-				<table className="metrics-table">
+				<table className="metrics-table ui-metrics-table">
 					<thead className="metrics-table-header">
-						<tr className="metrics-table-header-row">
+						<tr className="metrics-table-header-row ui-metrics-header-row">
 							{metrics.map(({ metric, name, classes }) => (
-								<th key={metric} className={clsx('metrics-table-header-cell', classes)} data-metric={metric} {...anchorFor(metric)}>
+								<th key={metric} className={clsx('metrics-table-header-cell ui-metrics-header-cell', classes)} data-metric={metric} {...anchorFor(metric)}>
 									{name}
 								</th>
 							))}
 						</tr>
 					</thead>
 					<tbody className="metrics-table-body">
-						<tr>
+						<tr className="ui-metrics-row">
 							{metrics.map(column => (
-								<td key={column.metric} className={clsx('text-center align-top', column.classes)}>
+								<td key={column.metric} className={clsx('text-center align-top ui-metrics-cell', column.classes)}>
 									<div className="topline-result-avg">{formatAverage(column, layout)}</div>
 									{column.stdev ? (
 										<div className="topline-result-stdev">
