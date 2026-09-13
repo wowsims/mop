@@ -2019,6 +2019,19 @@ export const defaultRaidBuffMajorDamageCooldowns = (classID?: Class): Partial<Ra
 	});
 };
 
+// The raid buffs every healer gear planner starts with: the caster stat buffs plus the major
+// damage cooldowns.
+export const defaultHealerRaidBuffs = (): RaidBuffs => {
+	return RaidBuffs.create({
+		...defaultRaidBuffMajorDamageCooldowns(),
+		arcaneBrilliance: true,
+		blessingOfKings: true,
+		mindQuickening: true,
+		leaderOfThePack: true,
+		blessingOfMight: true,
+	});
+};
+
 // Adds missing Consumables and SpellEffects to the given player proto.
 export const extendPlayerProtoWithMissingEffects = (playerProto: Player, db: Database) => {
 	const newConsumables: Consumable[] = [];

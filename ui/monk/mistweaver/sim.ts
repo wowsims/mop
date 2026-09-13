@@ -9,7 +9,7 @@ import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { defaultHealerRaidBuffs } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
 
 const hasteBreakpoints = Presets.MISTWEAVER_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
@@ -95,12 +95,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			arcaneBrilliance: true,
-			blessingOfKings: true,
-			mindQuickening: true,
-			leaderOfThePack: true,
-			blessingOfMight: true,
+			...defaultHealerRaidBuffs(),
 			unholyAura: true,
 			bloodlust: true,
 		}),

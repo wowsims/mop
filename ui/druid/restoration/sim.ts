@@ -6,9 +6,9 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { defaultHealerRaidBuffs } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
 
 const hasteBreakpoints = Presets.RESTORATION_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
@@ -55,14 +55,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationDruid, {
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			arcaneBrilliance: true,
-			blessingOfKings: true,
-			mindQuickening: true,
-			leaderOfThePack: true,
-			blessingOfMight: true,
-		}),
+		raidBuffs: defaultHealerRaidBuffs(),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({}),
