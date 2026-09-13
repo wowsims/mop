@@ -83,18 +83,18 @@ describe('HealingMetricsTable', () => {
 
 		expect(container.querySelector('.healing-metrics-root')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
-			'metrics-table-header-cell',
-			'metrics-table-header-cell metrics-table-cell--primary-metric text-center',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell text-success',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric text-center',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell text-success',
 		]);
 		expect(rows(container)).toHaveLength(0);
 	});

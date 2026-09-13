@@ -15,23 +15,22 @@ export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<
 	const isParent = row.getCanExpand();
 	return (
 		<tr
-			className={
-				clsx(
-					isParent && 'parent-metric',
-					isParent && row.getIsExpanded() && 'expand',
-					row.depth > 0 && 'child-metric',
-					rowClassName?.(row.original.metric),
-				) || undefined
-			}
+			className={clsx(
+				'ui-metrics-row',
+				isParent && 'parent-metric cursor-pointer',
+				isParent && row.getIsExpanded() && 'expand',
+				row.depth > 0 && 'child-metric',
+				rowClassName?.(row.original.metric),
+			)}
 			data-expanded={isParent && row.getIsExpanded() ? '' : undefined}
 			onClick={isParent ? row.getToggleExpandedHandler() : undefined}>
-			{row.getAllCells().map(cell => {
+			{row.getAllCells().map((cell, index) => {
 				const tooltipId = cell.column.columnDef.meta?.tooltipId;
 				return (
 					// The model value, which the display string may round or abbreviate away.
 					<td
 						key={cell.id}
-						className={cell.column.columnDef.meta?.columnClass}
+						className={clsx('ui-metrics-cell', row.depth > 0 && index === 0 && 'pl-[20px]', cell.column.columnDef.meta?.columnClass)}
 						data-text={String(cell.getValue())}
 						{...tooltipAnchorProps(tooltipId)}
 						data-row-id={tooltipId ? row.id : undefined}>

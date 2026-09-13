@@ -70,7 +70,7 @@ describe('SimResultsPanel', () => {
 		const viewer = zone(view, '.results-viewer');
 
 		expect([...viewer.children].map(el => el.className)).toEqual([
-			'results-pending',
+			'results-pending [&_.loader]:m-auto',
 			'results-content',
 			'button-zone text-center',
 			'warning-zone text-center',

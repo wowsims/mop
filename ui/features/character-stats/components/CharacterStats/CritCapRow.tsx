@@ -16,9 +16,9 @@ export interface CritCapRowProps {
 export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 	const id = useId();
 	return (
-		<tr className="character-stats-table-row">
-			<td className="character-stats-table-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
-			<td className="character-stats-table-value">
+		<tr className="character-stats-table-row ui-character-stats-row">
+			<td className="character-stats-table-label ui-character-stats-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
+			<td className="character-stats-table-value ui-character-stats-value">
 				<div className="stat-value-link-container">
 					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} {...tooltipAnchorProps(id)}>
 						{`${text} `}

@@ -94,15 +94,15 @@ describe('DtpsMetricsTable', () => {
 
 		expect(container.querySelector('.dtps-metrics-root')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
-			'metrics-table-header-cell',
-			'metrics-table-header-cell metrics-table-cell--primary-metric text-center',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell',
-			'metrics-table-header-cell text-success',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric text-center',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell',
+			'metrics-table-header-cell ui-metrics-header-cell text-success',
 		]);
 		expect(rows(container)).toHaveLength(0);
 	});
@@ -111,7 +111,7 @@ describe('DtpsMetricsTable', () => {
 		result = targetResult([metric('Melee')]);
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([['Melee', '']]);
+		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([['Melee', 'ui-metrics-row']]);
 	});
 
 	it('merges the same ability across targets into one parent with a child per target', () => {
@@ -119,9 +119,9 @@ describe('DtpsMetricsTable', () => {
 		const { container } = render(<DtpsMetricsTable />);
 
 		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([
-			['Melee', 'parent-metric expand'],
-			['Melee', 'child-metric'],
-			['Melee', 'child-metric'],
+			['Melee', 'ui-metrics-row parent-metric cursor-pointer expand'],
+			['Melee', 'ui-metrics-row child-metric'],
+			['Melee', 'ui-metrics-row child-metric'],
 		]);
 	});
 

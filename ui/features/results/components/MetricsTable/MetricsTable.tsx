@@ -30,15 +30,15 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 
 	return (
 		<div className={rootClassName}>
-			<table className="metrics-table">
+			<table className="metrics-table ui-metrics-table">
 				<thead className="metrics-table-header">
 					{table.getHeaderGroups().map(headerGroup => (
-						<tr className="metrics-table-header-row" key={headerGroup.id}>
+						<tr className="metrics-table-header-row ui-metrics-header-row" key={headerGroup.id}>
 							{headerGroup.headers.map(header => (
 								<th
 									key={header.id}
 									className={clsx(
-										'metrics-table-header-cell',
+										'metrics-table-header-cell ui-metrics-header-cell',
 										header.column.columnDef.meta?.columnClass,
 										header.column.columnDef.meta?.headerCellClass,
 									)}

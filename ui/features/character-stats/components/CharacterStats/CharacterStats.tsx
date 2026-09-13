@@ -1,5 +1,3 @@
-import './CharacterStats.scss';
-
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import i18n from '@i18n/config';
@@ -45,9 +43,9 @@ export const CharacterStats = () => {
 	const show = (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => statDisplayString(player, racial, deltaStats, unitStat, includeBase);
 
 	return (
-		<div className="character-stats-root">
-			<h3 className="character-stats-label">{i18n.t('sidebar.character_stats.title')}</h3>
-			<table className="character-stats-table p-[10px]" aria-busy={pending || undefined}>
+		<div className="character-stats-root w-full">
+			<h3 className="character-stats-label inline-block m-0 mb-2 text-base font-bold leading-tight">{i18n.t('sidebar.character_stats.title')}</h3>
+			<table className="character-stats-table w-full p-[10px]" aria-busy={pending || undefined}>
 				{rows.map(group => (
 					<tbody key={group.key}>
 						{group.rows.map(row =>

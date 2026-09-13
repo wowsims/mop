@@ -29,7 +29,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 			<Tooltip
 				ref={popover}
 				id={`${id}-popover`}
-				className="bonus-stats-popover"
+				className="bonus-stats-popover [&_.number-picker-root]:flex-col [&_.number-picker-input]:w-32 [&_.number-picker-input]:m-0 [&_.number-picker-input]:flex-1"
 				align="start"
 				place="right"
 				openOnClick

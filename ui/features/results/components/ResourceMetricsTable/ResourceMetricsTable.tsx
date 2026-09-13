@@ -1,5 +1,3 @@
-import './ResourceMetricsTable.scss';
-
 import { usePlayer } from '@sim/context/SimHostContext';
 import { ResourceMetrics } from '@sim/proto/sim_result';
 import { orderedResourceTypes } from '@sim/proto/utils';

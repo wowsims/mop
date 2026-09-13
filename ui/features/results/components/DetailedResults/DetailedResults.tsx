@@ -158,7 +158,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	return (
 		<div
 			className={clsx(
-				'detailed-results-manager-root',
+				'detailed-results-manager-root flex flex-col [&>*]:min-h-0',
 				!showDamage && hideMetricsClassName('damage'),
 				!showThreat && hideMetricsClassName('threat'),
 				!showHealing && hideMetricsClassName('healing'),
@@ -168,7 +168,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 			data-hide-threat={!showThreat ? '' : undefined}
 			data-hide-healing={!showHealing ? '' : undefined}
 			data-hide-experimental={!showExperimental ? '' : undefined}>
-			<div className="detailed-results-controls-div">
+			<div className="detailed-results-controls-div flex mb-3">
 				<Button
 					className="detailed-results-1-iteration-button"
 					disabled={host.disabled}
@@ -178,7 +178,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					}}>
 					{i18n.t('results_tab.details.sim_1_iteration')}
 				</Button>
-				<Button className="detailed-results-death-iteration-button" disabled={deathDisabled} onClick={onSimulateDeath}>
+				<Button className="detailed-results-death-iteration-button ml-3" disabled={deathDisabled} onClick={onSimulateDeath}>
 					{i18n.t('results_tab.details.sim_1_death')}
 				</Button>
 			</div>

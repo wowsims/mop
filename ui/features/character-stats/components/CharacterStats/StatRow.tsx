@@ -33,12 +33,12 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 	const { modifiers, customBonus } = masteryScaling(player);
 
 	return (
-		<tr className="character-stats-table-row">
-			<td className="character-stats-table-label">
+		<tr className="character-stats-table-row ui-character-stats-row">
+			<td className="character-stats-table-label ui-character-stats-label">
 				{unitStat.getShortName(player.getClass())}
 				{isMastery && <div>{translateMasterySpellName(player.getSpec())}</div>}
 			</td>
-			<td className="character-stats-table-value">
+			<td className="character-stats-table-value ui-character-stats-value">
 				{pending ? (
 					<Skeleton />
 				) : (

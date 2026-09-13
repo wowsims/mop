@@ -16,5 +16,5 @@ export const ToplineResults = () => {
 		return toplineResultMetrics(result, filter, { showOutOfMana: showsOutOfMana(result, filter) });
 	}, [resultData]);
 
-	return <div className="topline-results-root results-sim">{metrics && <ResultMetricList metrics={metrics} layout="row" />}</div>;
+	return <div className="topline-results-root results-sim pb-6">{metrics && <ResultMetricList metrics={metrics} layout="row" />}</div>;
 };

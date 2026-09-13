@@ -1,5 +1,3 @@
-import './SimResultsPanel.scss';
-
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import type { SimResultsManager } from '@features/results/model/results_manager';
@@ -29,7 +27,7 @@ export const SimResultsPanel = ({ panel, warnings, results }: SimResultsPanelPro
 
 	return (
 		<div className="results-viewer">
-			<div className="results-pending" hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
+			<div className="results-pending [&_.loader]:m-auto" hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
 				{stage === ResultsPanelStage.Running ? <SimProgress panel={panel} /> : <Spinner />}
 			</div>
 			<div className="results-content" hidden={stage !== ResultsPanelStage.Result}>

@@ -1,5 +1,3 @@
-import './MetricsCombinedTooltip.scss';
-
 import { formatToCompactNumber } from '@sim/utils/format';
 import type { SpellSchool } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -38,13 +36,19 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 	const hasAverageColumn = displayGroups.some(group => group.data.some(entry => typeof entry.average === 'number'));
 
 	return (
-		<table className="metrics-table">
+		<table className="metrics-table ui-metrics-table">
 			<thead className="metrics-table-header">
-				<tr className="metrics-table-header-row">
-					<th className="metrics-table-header-cell">{headerValues?.[0] || i18n.t('results_tab.details.tooltip_table.type')}</th>
-					<th className="metrics-table-header-cell">{headerValues?.[1] || i18n.t('results_tab.details.tooltip_table.count')}</th>
+				<tr className="metrics-table-header-row ui-metrics-header-row">
+					<th className="metrics-table-header-cell ui-metrics-header-cell">
+						{headerValues?.[0] || i18n.t('results_tab.details.tooltip_table.type')}
+					</th>
+					<th className="metrics-table-header-cell ui-metrics-header-cell">
+						{headerValues?.[1] || i18n.t('results_tab.details.tooltip_table.count')}
+					</th>
 					{hasAverageColumn && (
-						<th className="metrics-table-header-cell">{headerValues?.[2] || i18n.t('results_tab.details.tooltip_table.average')}</th>
+						<th className="metrics-table-header-cell ui-metrics-header-cell">
+							{headerValues?.[2] || i18n.t('results_tab.details.tooltip_table.average')}
+						</th>
 					)}
 				</tr>
 			</thead>
@@ -55,7 +59,7 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 					return (
 						<Fragment key={groupName ?? groupIndex}>
 							{groupName && displayGroups.length > 1 && (
-								<tr className={clsx('metrics-table-group-header', className)}>
+								<tr className={clsx('metrics-table-group-header ui-metrics-row', className)}>
 									<th className="text-left font-normal" colSpan={columnCount}>
 										{groupName}
 									</th>
@@ -64,9 +68,9 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 							{[...data]
 								.sort((a, b) => b.value - a.value)
 								.map(({ name, value, percentage, average }) => (
-									<tr className={clsx(className)} key={name}>
-										<td>{name}</td>
-										<td>
+									<tr className={clsx('ui-metrics-row', className)} key={name}>
+										<td className="ui-metrics-cell">{name}</td>
+										<td className="ui-metrics-cell">
 											{hasMetricBars ? (
 												<MetricsTotalBar
 													spellSchool={spellSchool}
@@ -79,7 +83,7 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 												formatToCompactNumber(value)
 											)}
 										</td>
-										{typeof average === 'number' && <td>{formatToCompactNumber(average)}</td>}
+										{typeof average === 'number' && <td className="ui-metrics-cell">{formatToCompactNumber(average)}</td>}
 									</tr>
 								))}
 						</Fragment>

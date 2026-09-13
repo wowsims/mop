@@ -1,5 +1,3 @@
-import './DpsHistogram.scss';
-
 import i18n from '@i18n/config';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { useMemo } from 'react';
@@ -58,5 +56,5 @@ export const DpsHistogram = () => {
 		[],
 	);
 
-	return <div className="dps-histogram-root">{data && <Bar data={data} options={options} />}</div>;
+	return <div className="dps-histogram-root h-64 w-full mt-3 mx-auto">{data && <Bar data={data} options={options} />}</div>;
 };
