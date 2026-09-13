@@ -99,22 +99,3 @@
 	}
 }
 
-.d-flex {
-	display: flex !important;
-}
-.flex-column {
-	flex-direction: column !important;
-}
-.align-items-end {
-	align-items: flex-end !important;
-}
-.justify-content-end {
-	justify-content: flex-end !important;
-}
-.w-100 {
-	width: 100% !important;
-}
-.combustion-threshold-results.gap-3,
-.combustion-threshold-results .gap-3 {
-	gap: 1rem !important;
-}

@@ -370,8 +370,8 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 					size="md"
 					title={i18n.t('fire_mage.combustion_thresholds.modal_title')}
 					preventClose>
-					<div className="combustion-threshold-results d-flex flex-column align-items-end gap-3">
-						<div className="table-responsive w-100">
+					<div className="combustion-threshold-results flex flex-col items-end gap-4">
+						<div className="table-responsive w-full">
 							<table>
 								<thead>
 									<tr>
@@ -396,7 +396,7 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 								</tbody>
 							</table>
 						</div>
-						<div className="d-flex justify-content-end w-100 gap-3">
+						<div className="flex justify-end w-full gap-4">
 							<Button variant="outline-primary" onClick={() => setResultsOpen(false)}>
 								{i18n.t('fire_mage.combustion_thresholds.close')}
 							</Button>
