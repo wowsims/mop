@@ -1,3 +1,4 @@
+import { TIMELINE_SERIES_TEXT } from '@ui-kit/utils/colors';
 import { cssVars } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 
@@ -11,16 +12,23 @@ export interface ResourceItemProps {
 	cssName: string;
 }
 
+const FILL_CLASSES: Record<string, string> = {
+	focus: 'bottom-0 w-[10px] bg-orange',
+	energy: 'bottom-0 w-[10px] bg-damage-partial',
+	'lunar-energy': 'bottom-0 w-[24px] bg-resource-lunar-energy',
+	'solar-energy': 'top-0 w-[24px] bg-resource-solar-energy',
+};
+
 export const ResourceItem = ({ item, index, cssName }: ResourceItemProps) => (
 	<div
-		className={clsx('rotation-item rotation-item-resource series-color', cssName)}
+		className={clsx('ui-timeline-item ui-timeline-item-slice rotation-item-resource top-0 series-color', TIMELINE_SERIES_TEXT[cssName], cssName)}
 		data-item-index={index}
 		style={spanStyle(item.start, item.end - item.start)}>
 		<div
-			className={clsx('rotation-item-resource-fill', cssName)}
+			className={clsx('rotation-item-resource-fill absolute left-0 h-[calc(var(--fill)*1%)]', FILL_CLASSES[cssName])}
 			hidden={item.display !== 'fill'}
 			style={item.display === 'fill' ? cssVars({ '--fill': String(item.fillPercent) }) : undefined}
 		/>
-		<span className="rotation-item-resource-text">{item.text}</span>
+		<span className="rotation-item-resource-text group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden">{item.text}</span>
 	</div>
 );

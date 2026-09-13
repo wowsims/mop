@@ -11,11 +11,14 @@ export interface AuraItemProps {
 
 export const AuraItem = ({ item, index }: AuraItemProps) => (
 	<div
-		className={clsx('rotation-item rotation-item-aura', item.sharesRowWithCast && 'shares-row')}
+		className={clsx(
+			'ui-timeline-item rotation-item-aura top-(--rotation-item-top) min-w-[calc(var(--pps)*var(--dur))] h-(--rotation-item-h) bg-[rgb(0_0_255/0.52)] opacity-50',
+			item.sharesRowWithCast && 'shares-row',
+		)}
 		data-item-index={index}
 		style={spanStyle(item.start, item.end - item.start)}>
 		{item.stacks.map((segment, at) => (
-			<AuraStack key={at} segment={segment} />
+			<AuraStack key={at} segment={segment} indent={item.sharesRowWithCast} />
 		))}
 	</div>
 );

@@ -12,8 +12,7 @@ const vars = (element: HTMLElement) => ({ t: element.style.getPropertyValue('--t
 describe('RowItemView', () => {
 	it('draws a cast as a bar carrying its outcome, its span and the row’s icon', () => {
 		const element = mount({ kind: 'cast', start: 2, end: 3.5, outcome: 'crit', cancelled: false, travelStart: null, travelDuration: null } as CastItem);
-		expect(element.classList.contains('outcome-crit')).toBe(true);
-		expect(element.classList.contains('cast-cancelled')).toBe(false);
+		expect(element.dataset.outcome).toBe('crit');
 		expect(vars(element)).toEqual({ t: '2', dur: '1.5' });
 		expect(element.dataset.itemIndex).toBe('3');
 		expect(element.querySelector<HTMLElement>('.rotation-item-icon')!.style.backgroundImage).toContain('bolt.png');
@@ -22,7 +21,7 @@ describe('RowItemView', () => {
 
 	it('marks a cancelled cast and shows the travel leg when there is one', () => {
 		const element = mount({ kind: 'cast', start: 0, end: 1, outcome: 'none', cancelled: true, travelStart: 1, travelDuration: 0.4 } as CastItem);
-		expect(element.classList.contains('cast-cancelled')).toBe(true);
+		expect(element.dataset.outcome).toBe('cancelled');
 		const travel = element.querySelector<HTMLElement>('.rotation-item-travel')!;
 		expect(travel.hidden).toBe(false);
 		expect(vars(travel)).toEqual({ t: '1', dur: '0.4' });
