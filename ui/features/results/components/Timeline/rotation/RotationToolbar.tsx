@@ -1,4 +1,5 @@
 import i18n from '@i18n/config';
+import { IconButton } from '@ui-kit/IconButton';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { forwardRef, useId } from 'react';
 
@@ -28,15 +29,14 @@ export const RotationToolbar = forwardRef<HTMLDivElement, RotationToolbarProps>(
 			{buttons.map(button => {
 				const label = i18n.t(`results_tab.details.timeline.chart_options.${button.key}`);
 				return (
-					<button
+					<IconButton
 						key={button.key}
-						type="button"
-						className="rotation-zoom-button"
-						aria-label={label}
+						label={label}
+						className="rotation-zoom-button py-0 px-1 leading-none"
 						onClick={button.run}
 						{...tooltipAnchorProps(tooltipId, label)}>
 						<i className={button.icon} />
-					</button>
+					</IconButton>
 				);
 			})}
 			<Tooltip id={tooltipId} place="bottom" />

@@ -1,3 +1,4 @@
+import { IconButton } from '@ui-kit/IconButton';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
@@ -16,7 +17,7 @@ export interface RotationRowLabelProps {
  */
 export const RotationRowLabel = ({ text, icon, onHide, className }: RotationRowLabelProps) => (
 	<div className={clsx('rotation-row-label', className)}>
-		{onHide && <button type="button" className="rotation-row-hide fas fa-eye-slash" title="Hide row" aria-label={`Hide ${text}`} onClick={onHide} />}
+		{onHide && <IconButton label={`Hide ${text}`} title="Hide row" className="rotation-row-hide fas fa-eye-slash p-0" onClick={onHide} />}
 		{icon}
 		<span className="rotation-label-text overflow-hidden text-ellipsis">{text}</span>
 	</div>

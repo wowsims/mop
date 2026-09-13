@@ -1,8 +1,8 @@
+import i18n from '@i18n/config';
+import { translatePlayerSpec } from '@i18n/localization';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { PlayerSpecs } from '@sim/player/specs';
 import type { TalentTreeConfig } from '@sim/talents/config';
-import i18n from '@i18n/config';
-import { translatePlayerSpec } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -35,7 +35,7 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<span className="talent-tree-title">{translatePlayerSpec(spec)}</span>
 				<Button
 					variant={null}
-					className="talent-tree-reset link-danger"
+					className="talent-tree-reset link-danger text-link-danger"
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
 					<Icon name="times" style="base" />

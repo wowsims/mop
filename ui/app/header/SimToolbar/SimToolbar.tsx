@@ -1,11 +1,11 @@
+import i18n from '@i18n/config';
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL, SOCIALS } from '@sim/constants/other';
 import { useOutdatedNativeSim } from '@sim/hooks/useOutdatedNativeSim';
 import type { Sim } from '@sim/sim';
-import i18n from '@i18n/config';
+import { SocialLink } from '@ui-kit/SocialLink';
 import { isNative } from '@ui-kit/utils/dom';
 import type { ReactNode } from 'react';
 
-import { SocialLink } from '@ui-kit/SocialLink';
 import { ToolbarItem } from './ToolbarItem';
 
 export interface SimToolbarProps {
@@ -22,7 +22,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 	return (
 		<>
 			<ToolbarItem
-				className="known-issues link-danger"
+				className="known-issues link-danger text-link-danger"
 				hidden={knownIssues.length === 0}
 				tooltip={
 					<ul className="text-left pl-4 mb-0">
@@ -52,7 +52,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 				<ToolbarItem
 					href={REPO_RELEASES_URL}
 					icon="gauge-high"
-					className="downbin link-danger"
+					className="downbin link-danger text-link-danger"
 					tooltip="Newer version of simulator available for download"
 				/>
 			)}

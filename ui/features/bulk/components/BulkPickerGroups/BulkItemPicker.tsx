@@ -76,7 +76,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 						<>
 							<button
 								type="button"
-								className="btn btn-link link-danger item-picker-actions-btn"
+								className="btn btn-link link-danger text-link-danger item-picker-actions-btn"
 								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />
