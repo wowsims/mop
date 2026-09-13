@@ -29,7 +29,7 @@ export const ExporterCategoryPickers = ({ categories, onChange }: ExporterCatego
 	);
 
 	return (
-		<div className="exporter-category-pickers">
+		<div className="grid grid-cols-4 max-md:grid-cols-3 gap-y-1 gap-x-5">
 			{configs.map(config => (
 				<BooleanPicker key={config.id} modObject={categories} config={config} />
 			))}

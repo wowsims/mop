@@ -19,6 +19,8 @@
 @import '../features/results/components/CombatReplay/CombatReplay.css';
 @import '../features/results/components/Timeline/Timeline.css';
 @import '../features/results/components/LogRunner/LogRunner.css';
+@import '../features/stat-weights/components/EpWeightsDialog/EpWeightsDialog.css';
+@import '../features/reforge/components/ReforgePanel/ReforgePanel.css';
 
 @source '../app';
 @source '../features';

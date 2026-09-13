@@ -1,5 +1,3 @@
-import './Importer.scss';
-
 import { useSimHost } from '@sim/context/SimHostContext';
 import { kebabCase } from '@sim/utils/format';
 import i18n from '@i18n/config';
@@ -72,7 +70,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			}>
 			<div>
 				<div className="import-description">{children}</div>
-				<TextArea spellCheck={false} className="importer-textarea form-control" ref={textRef} />
+				<TextArea spellCheck={false} className="importer-textarea form-control w-full h-[40vh] resize-none" ref={textRef} />
 			</div>
 		</Dialog>
 	);

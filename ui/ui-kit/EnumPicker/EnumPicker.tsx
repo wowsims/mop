@@ -1,6 +1,7 @@
 import { Select } from '@ui-kit/FormControl';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
+import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { AnyEnumPickerConfig } from './types';
@@ -10,9 +11,10 @@ export interface EnumPickerProps<ModObject> {
 	config: AnyEnumPickerConfig<ModObject>;
 	/** For a select with no visible label. `config.label` renders one; this names it without adding markup. */
 	ariaLabel?: string;
+	selectClassName?: string;
 }
 
-export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPickerProps<ModObject>) => {
+export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel, selectClassName }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const [select, setSelect] = useState<HTMLSelectElement | null>(null);
 	const attachSelect = useCallback((element: HTMLElement | null) => setSelect(element instanceof HTMLSelectElement ? element : null), []);
@@ -28,7 +30,7 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPic
 			<Select
 				ref={attachSelect}
 				id={config.id}
-				className="enum-picker-selector form-select"
+				className={clsx('enum-picker-selector form-select', selectClassName)}
 				aria-label={ariaLabel}
 				disabled={disabled}
 				onChange={event => setValue(Number(event.currentTarget.value))}>

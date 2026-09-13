@@ -26,7 +26,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 	if (!useSoftCapBreakpoints) return null;
 
 	return (
-		<table className="reforge-optimizer-stat-cap-table mb-2">
+		<table className="ui-reforge-cap-table mb-2">
 			<thead>
 				<tr>
 					<th colSpan={3} className="pb-4">
@@ -49,11 +49,11 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 						if (!unitStat.hasRootStat() || !INCLUDED_STATS.includes(unitStat.getRootStat())) return null;
 						const statName = unitStat.getShortName(player.getClass());
 						return (
-							<tr key={unitStat.getKey()} className="reforge-optimizer-stat-cap-item">
-								<td>
-									<div className="reforge-optimizer-stat-cap-item-label whitespace-nowrap">{statName}</div>
+							<tr key={unitStat.getKey()}>
+								<td className="ui-reforge-cap-label-cell">
+									<div className="whitespace-nowrap">{statName}</div>
 								</td>
-								<td colSpan={2}>
+								<td colSpan={2} className="ui-reforge-cap-value-cell">
 									<EnumPicker
 										modObject={player}
 										config={{
@@ -75,6 +75,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 											setValue: (_player, newValue) =>
 												settings.setBreakpointLimits(settings.breakpointLimits.withUnitStat(unitStat, newValue)),
 										}}
+										selectClassName="w-full"
 									/>
 								</td>
 							</tr>

@@ -3,6 +3,7 @@ import { Input } from '@ui-kit/FormControl';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
+import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { NumberPickerConfig } from './types';
@@ -10,6 +11,7 @@ import type { NumberPickerConfig } from './types';
 export interface NumberPickerProps<ModObject> {
 	modObject: ModObject;
 	config: NumberPickerConfig<ModObject>;
+	inputClassName?: string;
 }
 
 const formatSourceValue = (value: number, float: boolean, showZeroes: boolean, maxDecimalDigits: number): string => {
@@ -33,7 +35,7 @@ const updateSize = (input: HTMLInputElement | null) => {
 	if (input.size !== size) input.size = size;
 };
 
-export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProps<ModObject>) => {
+export const NumberPicker = <ModObject,>({ modObject, config, inputClassName }: NumberPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const [input, setInput] = useState<HTMLInputElement | null>(null);
 	const attachInput = useCallback((element: HTMLElement | null) => setInput(element instanceof HTMLInputElement ? element : null), []);
@@ -69,7 +71,7 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className="number-picker-input form-control"
+				className={clsx('number-picker-input form-control', inputClassName)}
 				disabled={disabled}
 				onInput={() => updateSize(input)}
 			/>

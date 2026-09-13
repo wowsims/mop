@@ -28,7 +28,7 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 	if (!useCustomEPValues) return null;
 
 	return (
-		<table className="reforge-optimizer-stat-cap-table mb-2">
+		<table className="ui-reforge-cap-table mb-2">
 			<thead>
 				<tr>
 					<th colSpan={4} className="pb-4">
@@ -50,11 +50,11 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 					</th>
 				</tr>
 				<tr>
-					<th>{i18n.t('sidebar.buttons.suggest_reforges.stat')}</th>
-					<th colSpan={3} className="text-right">
+					<th className="pr-2 pb-1">{i18n.t('sidebar.buttons.suggest_reforges.stat')}</th>
+					<th colSpan={3} className="text-right pl-0.5 pr-0.5 pb-1">
 						%
 					</th>
-					<th colSpan={1} className="text-left">
+					<th colSpan={1} className="text-left pl-0.5 pb-1">
 						Max?
 					</th>
 				</tr>

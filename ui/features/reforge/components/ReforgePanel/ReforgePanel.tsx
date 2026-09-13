@@ -1,5 +1,3 @@
-import './ReforgePanel.scss';
-
 import type { ReforgeOptimizerModel, ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import type { ItemSlot } from '@generated/proto/common';
 import { IndividualSimSettings } from '@generated/proto/ui';
@@ -76,7 +74,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 
 		if (!changedSlots.size) {
 			toastId.current = toastManager.add({
-				className: 'suggest-reforges-toast',
 				variant: 'success',
 				body: i18n.t('gear_tab.reforge_success.no_changes'),
 				autohide: true,
@@ -94,7 +91,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				settingsExport={settingsExport}
 				onCopied={hideToast}
 			/>,
-			{ className: 'suggest-reforges-toast', variant: 'success', autohide: false, delay: 3000 },
+			{ variant: 'success', autohide: false, delay: 3000 },
 		);
 	}, [host, model, player, showToast, hideToast]);
 

@@ -46,9 +46,9 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 
 	return (
 		<>
-			<tr className="reforge-optimizer-stat-cap-item">
-				<td>
-					<div className="reforge-optimizer-stat-cap-item-label whitespace-nowrap">
+			<tr>
+				<td className="ui-reforge-cap-label-cell">
+					<div className="whitespace-nowrap">
 						{statName}{' '}
 						{!!tooltip && (
 							<>
@@ -60,7 +60,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						)}
 					</div>
 				</td>
-				<td colSpan={3}>
+				<td colSpan={3} className="w-[75px] pl-0.5 pr-0.5 pb-1">
 					<NumberPicker
 						modObject={player}
 						config={{
@@ -75,9 +75,10 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 							getValue,
 							setValue,
 						}}
+						inputClassName="pl-2 pr-2 text-right"
 					/>
 				</td>
-				<td colSpan={1} className="text-right">
+				<td colSpan={1} className="text-right w-[60px] pl-0.5 pb-1">
 					<BooleanPicker
 						modObject={player}
 						config={{
@@ -95,8 +96,8 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 			</tr>
 			{presetValues && (
 				<tr>
-					<td />
-					<td colSpan={3}>
+					<td className="pr-2 pb-1" />
+					<td colSpan={3} className="ui-reforge-cap-value-cell">
 						<EnumPicker
 							modObject={player}
 							config={{
@@ -109,6 +110,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 								getValue,
 								setValue,
 							}}
+							selectClassName="w-full"
 						/>
 					</td>
 				</tr>
