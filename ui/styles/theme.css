@@ -35,6 +35,9 @@
 	--spacing-page: 0.5rem;
 	--spacing-section: 2rem;
 
+	--grid-template-columns-wide-narrow: 3fr 2fr;
+	--grid-template-columns-halves-wide: 1fr 1fr 2fr;
+
 	--color-black: #000;
 	--color-white: #fff;
 	--color-off-white: #f0f0f0;

@@ -65,7 +65,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 
 	return (
 		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
-			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-[1fr_1fr_2fr]">
+			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-halves-wide">
 				<SearchBar
 					id="bulkGearSearch"
 					label={i18n.t('common.name')}
