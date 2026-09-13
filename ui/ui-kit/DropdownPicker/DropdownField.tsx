@@ -1,5 +1,3 @@
-import './DropdownPicker.scss';
-
 import type { DropdownOption } from '@ui-kit/DropdownPicker';
 import { useInput } from '@ui-kit/hooks/useInput';
 import type { InputConfig } from '@ui-kit/input';

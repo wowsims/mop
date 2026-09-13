@@ -1,5 +1,3 @@
-import './DropdownPicker.scss';
-
 import clsx from 'clsx';
 
 import { DropdownMenu } from './DropdownMenu';

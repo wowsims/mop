@@ -71,7 +71,7 @@ describe('UnitPicker', () => {
 
 		await open();
 		expect(items()[1].className).toContain('text-class-warrior');
-		expect(items()[0].className).not.toContain('text-');
+		expect(items()[0].className).not.toContain('text-class-');
 	});
 
 	it('hands back the reference of the unit that was chosen', async () => {

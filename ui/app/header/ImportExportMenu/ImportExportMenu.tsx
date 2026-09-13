@@ -1,9 +1,7 @@
-import './ImportExportMenu.scss';
-
-import { Menu } from '@base-ui/react/menu';
 import { childProps } from '@ui-kit/child_props';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName, IconStyle } from '@ui-kit/Icon/types';
+import { Menu, MenuItem } from '@ui-kit/Menu';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { type ReactNode, useId, useState } from 'react';
@@ -28,31 +26,38 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 
 	return (
 		<div className={clsx('dropdown sim-dropdown-menu', `${kind}-dropdown`)} data-testid="sim-dropdown-menu">
-			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
-				<Menu.Trigger openOnHover delay={0} className={`${kind}-link`} data-testid={`${kind}-link`}>
-					<Icon name={icon} style={iconStyle} /> {title}
-				</Menu.Trigger>
-				<Menu.Portal>
-					<Menu.Positioner align="start" sideOffset={-1} className="sim-dropdown-positioner" data-testid="sim-dropdown-positioner">
-						<Menu.Popup className="sim-dropdown-popup" data-testid="sim-dropdown-popup">
-							{entries.map(entry => (
-								<Menu.Item
-									key={entry.label}
-									className="sim-dropdown-item"
-									data-testid="sim-dropdown-item"
-									disabled={entry.isUnsupported}
-									{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}
-									onClick={() => {
-										if (!entry.isUnsupported) setOpenDialog(entry.label);
-									}}>
-									{entry.label}
-								</Menu.Item>
-							))}
-						</Menu.Popup>
-					</Menu.Positioner>
-				</Menu.Portal>
-			</Menu.Root>
-			{/* Outside `Menu.Root`, not inside its popup: clicking an item closes the menu, which unmounts the popup, and a dialog rendered in there would go with it. */}
+			<Menu
+				surface="menu"
+				open={open}
+				onOpenChange={setOpen}
+				trigger={
+					<>
+						<Icon name={icon} style={iconStyle} /> {title}
+					</>
+				}
+				triggerProps={{ openOnHover: true, delay: 0, className: `${kind}-link`, 'data-testid': `${kind}-link` }}
+				align="start"
+				sideOffset={-1}
+				positionerClassName="sim-dropdown-positioner"
+				positionerProps={{ 'data-testid': 'sim-dropdown-positioner' }}
+				className="sim-dropdown-popup"
+				popupProps={{ 'data-testid': 'sim-dropdown-popup' }}>
+				{entries.map(entry => (
+					<MenuItem
+						key={entry.label}
+						layout="block"
+						className="sim-dropdown-item"
+						data-testid="sim-dropdown-item"
+						disabled={entry.isUnsupported}
+						{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}
+						onClick={() => {
+							if (!entry.isUnsupported) setOpenDialog(entry.label);
+						}}>
+						{entry.label}
+					</MenuItem>
+				))}
+			</Menu>
+			{/* Outside `Menu`, not inside its popup: clicking an item closes the menu, which unmounts the popup, and a dialog rendered in there would go with it. */}
 			{entries.map(entry => (
 				<entry.dialog key={entry.label} open={openDialog === entry.label} onOpenChange={next => setOpenDialog(next ? entry.label : null)} />
 			))}

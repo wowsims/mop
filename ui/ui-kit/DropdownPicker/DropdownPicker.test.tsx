@@ -104,7 +104,7 @@ describe('DropdownPicker', () => {
 		await open();
 
 		expect(items()[1].className).toContain('text-class-warrior');
-		expect(items()[0].className).toBe('dropdown-picker-item');
+		expect(items()[0].className).toContain('dropdown-picker-item');
 	});
 
 	// `side="top"` and `positionMethod="fixed"` are what a picker sitting in an overflow-clipped

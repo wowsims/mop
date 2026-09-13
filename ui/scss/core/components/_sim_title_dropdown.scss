@@ -34,3 +34,20 @@
 		}
 	}
 }
+
+// Relocated from `SimTitleDropdown.scss` (deleted): `.sim-link-content`'s own padding is set here
+// because `SimLinkContent` takes no className prop for its root.
+.sim-title-popup .sim-link-content {
+	padding-left: var(--spacing-gutter);
+	padding-right: var(--spacing-gutter);
+}
+
+// Relocated from `SimTitleDropdown.scss` (deleted). Base UI's `markOthers` sets
+// `data-base-ui-inert` on elements outside an open modal; kept as-is, not proven equivalent to a
+// utility form within this unit's time-box.
+.sim-title-positioner {
+	&[data-base-ui-inert],
+	&[data-base-ui-inert] * {
+		pointer-events: auto !important;
+	}
+}
