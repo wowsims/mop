@@ -3,7 +3,7 @@
 }
 
 .ui-fab-root {
-	@apply group sticky bottom-0 flex items-center mt-3 border-0 border-border box-border z-4 -mb-page;
+	@apply sticky bottom-0 flex items-center mt-3 border-0 border-border box-border z-4 -mb-page;
 	@apply data-[stuck]:border data-[stuck]:p-2 data-[stuck]:bg-background;
 }
 

@@ -60,7 +60,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 		<div
 			ref={rootRef}
 			data-testid="log-floating-action-bar-root"
-			className="ui-fab-root"
+			className="group ui-fab-root"
 			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={event => {

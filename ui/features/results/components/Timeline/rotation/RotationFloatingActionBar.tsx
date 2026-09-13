@@ -94,7 +94,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 	return (
 		<div
 			ref={rootRef}
-			className="rotation-floating-action-bar-root ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
+			className="group rotation-floating-action-bar-root ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={onKeyDown}>
