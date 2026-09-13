@@ -30,7 +30,7 @@ export const RotationRowLabel = ({ text, icon, onHide, className, header, measur
 				iconOnly
 				aria-label={`Hide ${text}`}
 				title="Hide row"
-				className="rotation-row-hide fas fa-eye-slash flex-none p-0 hover:text-link-danger"
+				className="rotation-row-hide fas fa-eye-slash flex-none p-0 text-white hover:text-link-danger"
 				onClick={onHide}
 			/>
 		)}

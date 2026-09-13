@@ -10,7 +10,7 @@ export const TooltipAuras = ({ log }: TooltipAurasProps) => {
 	if (log.activeAuras.length === 0) return null;
 
 	return (
-		<div className="timeline-tooltip-auras border-t border-solid border-white">
+		<div className="timeline-tooltip-auras border-t border-white">
 			<div className="ui-timeline-tooltip-body-row timeline-tooltip-body-row">
 				<span className="font-bold">{i18n.t('results_tab.details.timeline.tooltips.active_auras')}</span>
 			</div>

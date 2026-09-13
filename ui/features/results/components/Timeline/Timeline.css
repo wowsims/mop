@@ -3,7 +3,7 @@
 }
 
 .ui-timeline-item-slice {
-	@apply flex h-full w-[calc(var(--pps)*var(--dur))] items-center overflow-x-hidden border-x border-solid border-gray-600 font-bold;
+	@apply flex h-full w-[calc(var(--pps)*var(--dur))] items-center overflow-x-hidden border-x border-gray-600 font-bold;
 }
 
 .ui-timeline-row-icon {
@@ -15,7 +15,7 @@
 }
 
 .ui-timeline-row {
-	@apply m-0 box-border flex h-[calc(var(--row-h)*1px)] items-stretch border-b border-solid border-gray-700 bg-background [contain:layout_style];
+	@apply m-0 box-border flex h-[calc(var(--row-h)*1px)] items-stretch border-b border-gray-700 bg-background [contain:layout_style];
 }
 
 .ui-timeline-label-col {
@@ -41,7 +41,7 @@
 }
 
 .ui-timeline-tooltip-header {
-	@apply border-b border-solid border-white;
+	@apply border-b border-white;
 }
 
 .ui-timeline-tooltip-body {

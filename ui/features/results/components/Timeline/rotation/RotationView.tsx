@@ -394,8 +394,13 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	return (
 		<div
 			ref={rootRef}
-			className="rotation-pane relative flex min-h-0 flex-col text-white [--pps:100px] [--rotation-fab-h:calc(2.75rem+2*var(--spacer-2)+2*1px)] [--rotation-item-h:24px]"
-			style={cssVars({ '--label-w': labelWidthCss, '--duration': String(model?.duration ?? 0), '--rotation-sticky-top': `${stickyTop}px` })}>
+			className="rotation-pane relative flex min-h-0 flex-col text-white [--rotation-fab-h:calc(2.75rem+2*--spacing(2)+2*1px)] [--rotation-item-h:24px]"
+			style={cssVars({
+				'--pps': `${DEFAULT_PPS}px`,
+				'--label-w': labelWidthCss,
+				'--duration': String(model?.duration ?? 0),
+				'--rotation-sticky-top': `${stickyTop}px`,
+			})}>
 			<div className="rotation-header sticky top-(--rotation-sticky-top,0px) z-5 flex basis-[30px] grow-0 shrink-0 h-[30px] -mr-(--spacing-page) bg-background">
 				<RotationToolbar
 					ref={cornerRef}
@@ -406,7 +411,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				/>
 				<div
 					ref={rulerViewportRef}
-					className="rotation-ruler relative box-border min-w-0 grow shrink basis-0 overflow-hidden border-b border-solid border-white text-white text-[12px] font-bold">
+					className="rotation-ruler relative box-border min-w-0 grow shrink basis-0 overflow-hidden border-b border-white text-white text-[12px] font-bold">
 					<div
 						ref={rulerTrackRef}
 						className="rotation-ruler-track absolute top-0 left-0 h-full w-[calc(var(--pps)*var(--duration))] [transform:translateX(calc(var(--pan,0)*-1px))]"
