@@ -103,6 +103,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 								className="bulk-result-item"
 								slot={idx}
 								item={itemChanged && spec.id !== 0 ? host.sim.db.lookupItemSpec(spec) : null}
+								nameDescriptionFlush
 							/>
 						);
 					})}

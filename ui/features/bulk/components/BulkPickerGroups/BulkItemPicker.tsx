@@ -62,6 +62,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 		<ItemDetailCell
 			slot={slot}
 			item={item}
+			nameDescriptionFlush
 			className={clsx(
 				'bulk-item-picker',
 				state.isFrozen && 'bulk-item-picker-frozen',

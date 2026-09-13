@@ -35,6 +35,7 @@ export interface ItemDetailCellProps {
 	socketTooltipId?: (gemIdx: number) => string;
 	/** Rendered after the enchant, tinker and reforge labels. */
 	extraLabels?: ReactNode;
+	nameDescriptionFlush?: boolean;
 }
 
 /**
@@ -44,7 +45,17 @@ export interface ItemDetailCellProps {
  * Parameterises the item, the slot, what activating a part does and what hangs off the labels and
  * the sockets; fixes the `item-picker-*` markup and the nesting order.
  */
-export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantTooltipId, socketTooltipId, extraLabels }: ItemDetailCellProps) => {
+export const ItemDetailCell = ({
+	slot,
+	item,
+	className,
+	onOpen,
+	action,
+	enchantTooltipId,
+	socketTooltipId,
+	extraLabels,
+	nameDescriptionFlush,
+}: ItemDetailCellProps) => {
 	const player = usePlayer();
 
 	const isBlacksmithing = useIsBlacksmithing();
@@ -109,7 +120,11 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 									{!!item.randomSuffix && ` ${translateProtoStatName(item.randomSuffix.name)}`}
 								</span>
 								{!!item.item.nameDescription && (
-									<NameDescriptionLabel nameDescription={item.item.nameDescription} className="tracking-normal" />
+									<NameDescriptionLabel
+										nameDescription={item.item.nameDescription}
+										className="tracking-normal"
+										flush={nameDescriptionFlush}
+									/>
 								)}
 							</>
 						) : (
