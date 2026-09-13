@@ -25,10 +25,6 @@
 		max-width: 100%;
 	}
 
-	& .heroic-label {
-		margin-left: 0;
-	}
-
 	& .item-picker-name {
 		max-width: 100%;
 		white-space: nowrap;
@@ -48,8 +44,4 @@
 	padding: --spacing(2);
 	border: 1px solid var(--color-border);
 	white-space: normal;
-
-	& .heroic-label {
-		margin-left: 0;
-	}
 }
