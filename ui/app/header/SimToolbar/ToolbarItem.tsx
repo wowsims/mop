@@ -44,7 +44,7 @@ export const ToolbarItem = ({
 	const testId = className?.split(' ')[0];
 	return (
 		<div
-			className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-(--tab-padding-y) [&_button]:my-(--tab-padding-y)"
+			className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-4 [&_button]:my-4"
 			data-testid="sim-toolbar-item">
 			{!hidden &&
 				(href ? (

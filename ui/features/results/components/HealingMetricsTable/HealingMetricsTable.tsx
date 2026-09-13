@@ -208,13 +208,13 @@ export const HealingMetricsTable = () => {
 			<Tooltip id={TOOLTIP.avgHitHeader} />
 			<Tooltip
 				id={TOOLTIP.healing}
-				className="metrics-table-tooltip text-[12px]"
+				className="metrics-table-tooltip text-xs"
 				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => <MetricsCombinedTooltip groups={[healingGroup(metric)]} />)}
 			/>
 			<Tooltip
 				id={TOOLTIP.avgCast}
-				className="metrics-table-tooltip text-[12px]"
+				className="metrics-table-tooltip text-xs"
 				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => (metric.avgCastHealing ? threatTooltip(metric, metric.avgCastThreat, showThreatMetrics) : null))
@@ -222,7 +222,7 @@ export const HealingMetricsTable = () => {
 			/>
 			<Tooltip
 				id={TOOLTIP.hits}
-				className="metrics-table-tooltip text-[12px]"
+				className="metrics-table-tooltip text-xs"
 				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric =>
@@ -232,7 +232,7 @@ export const HealingMetricsTable = () => {
 			/>
 			<Tooltip
 				id={TOOLTIP.avgHit}
-				className="metrics-table-tooltip text-[12px]"
+				className="metrics-table-tooltip text-xs"
 				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => (metric.avgHitHealing ? threatTooltip(metric, metric.avgHitThreat, showThreatMetrics) : null))
@@ -240,7 +240,7 @@ export const HealingMetricsTable = () => {
 			/>
 			<Tooltip
 				id={TOOLTIP.hps}
-				className="metrics-table-tooltip text-[12px]"
+				className="metrics-table-tooltip text-xs"
 				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => threatTooltip(metric, metric.tps, showThreatMetrics))}
 			/>

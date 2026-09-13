@@ -37,7 +37,7 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 				triggerProps={{
 					openOnHover: true,
 					delay: 0,
-					className: 'py-(--tab-padding-y) px-(--tab-padding-x) text-(length:--tab-font-size) data-[popup-open]:text-(--color-white)',
+					className: 'py-4 px-4 text-sm data-[popup-open]:text-white',
 					'data-testid': `${kind}-link`,
 				}}
 				align="start"

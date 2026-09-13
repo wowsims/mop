@@ -39,7 +39,7 @@ export const ProgressTrackerBar = ({ running, ref }: ProgressTrackerBarProps) =>
 					/>
 				</Progress.Track>
 			</Progress.Root>
-			{measured && <div className="text-right text-metrics text-border" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
+			{measured && <div className="text-right text-xs text-border" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
 		</div>
 	);
 };
