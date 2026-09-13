@@ -1,4 +1,5 @@
 import { useActionId } from '@ui-kit/hooks/useActionId';
+import { WowheadIcon } from '@ui-kit/WowheadIcon';
 import clsx from 'clsx';
 import { memo } from 'react';
 
@@ -29,7 +30,7 @@ export const RotationRow = memo(({ row, items, onHide }: RotationRowProps) => {
 				text={row.label}
 				icon={
 					row.kind === 'resource' ? (
-						<a className="rotation-row-icon" style={{ backgroundImage: `url('${row.icon}')` }} />
+						<WowheadIcon className="rotation-row-icon" iconUrl={row.icon} />
 					) : (
 						<RotationRowIcon actionId={row.actionId} tooltip={row.kind === 'aura' ? 'buffAura' : 'spell'} />
 					)

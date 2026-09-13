@@ -8,6 +8,7 @@ import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { FACTION_TEXT } from '@ui-kit/utils/colors';
 import { itemQualityClassName } from '@ui-kit/utils/css';
+import { WowheadIcon } from '@ui-kit/WowheadIcon';
 
 import { baseIlvl } from '../../model/search';
 
@@ -34,7 +35,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 				}}>
 				<div className="bulk-item-search-item-icon-wrapper">
 					<span className="item-picker-ilvl">{baseIlvl(item)}</span>
-					<div className="bulk-item-search-item-icon" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} />
+					<WowheadIcon as="div" className="bulk-item-search-item-icon" iconUrl={iconUrl} />
 				</div>
 				<div className="flex flex-col gap-1 pl-2">
 					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">

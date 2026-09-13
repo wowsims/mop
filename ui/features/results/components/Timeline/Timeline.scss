@@ -464,7 +464,6 @@
 }
 
 .rotation-row-icon {
-	@include wowhead-background-icon;
 	flex: 0 0 auto;
 	width: 24px;
 	height: 24px;
@@ -548,7 +547,6 @@
 }
 
 .rotation-item-icon {
-	@include wowhead-background-icon;
 	flex: 0 0 auto;
 	width: var(--rotation-item-h);
 	height: var(--rotation-item-h);

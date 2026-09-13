@@ -1,8 +1,6 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
-import { useRef } from 'react';
+import { WowheadIcon } from '@ui-kit/WowheadIcon';
 
 export interface RotationRowIconProps {
 	actionId: ActionId;
@@ -12,17 +10,14 @@ export interface RotationRowIconProps {
 
 export const RotationRowIcon = ({ actionId, tooltip }: RotationRowIconProps) => {
 	const { iconUrl, href } = useActionId(actionId);
-	const anchorRef = useRef<HTMLAnchorElement>(null);
-
-	useActionIdWowheadDataset(anchorRef, tooltip ? actionId : null, tooltip === 'buffAura');
 
 	return (
-		<a
-			ref={anchorRef}
+		<WowheadIcon
 			className="rotation-row-icon"
 			href={href || undefined}
-			rel={externalRel(href, undefined)}
-			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
+			iconUrl={iconUrl}
+			actionId={tooltip ? actionId : null}
+			useBuffAura={tooltip === 'buffAura'}
 		/>
 	);
 };

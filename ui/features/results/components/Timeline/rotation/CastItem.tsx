@@ -1,3 +1,4 @@
+import { WowheadIcon } from '@ui-kit/WowheadIcon';
 import clsx from 'clsx';
 
 import type { CastItem as CastItemModel } from '../../../model/timeline/rotation';
@@ -20,6 +21,6 @@ export const CastItem = ({ item, index, iconUrl }: CastItemProps) => (
 			hidden={item.travelStart == null}
 			style={item.travelStart == null ? undefined : spanStyle(item.travelStart, item.travelDuration ?? 0)}
 		/>
-		<a className="rotation-item-icon" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} />
+		<WowheadIcon className="rotation-item-icon" iconUrl={iconUrl} />
 	</div>
 );

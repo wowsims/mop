@@ -1,10 +1,8 @@
-import { externalRel } from '@sim/utils/links';
 import type { ActionId } from '@sim/proto/action_id';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
-import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
-import { useRef } from 'react';
+import { WowheadIcon } from '@ui-kit/WowheadIcon';
 
 export interface MetricsActionCellProps {
 	name: string;
@@ -17,19 +15,16 @@ export interface MetricsActionCellProps {
 
 export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, expanded, onToggle }: MetricsActionCellProps) => {
 	const { iconUrl, href } = useActionId(actionId);
-	const iconRef = useRef<HTMLAnchorElement>(null);
-
-	useActionIdWowheadDataset(iconRef, actionId, useBuffAura);
 
 	return (
 		<div className="metrics-action">
-			<a
-				ref={iconRef}
+			<WowheadIcon
 				className="metrics-action-icon"
-				aria-label={name}
+				label={name}
 				href={href || undefined}
-				rel={externalRel(href, undefined)}
-				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
+				iconUrl={iconUrl}
+				actionId={actionId}
+				useBuffAura={useBuffAura}
 			/>
 			<span className="metrics-action-name truncate">{name}</span>
 			{expandable && (
