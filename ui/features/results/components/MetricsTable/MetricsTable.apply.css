@@ -9,12 +9,12 @@
 
 .ui-metrics-table th:first-child,
 .ui-metrics-table td:first-child {
-	@apply border-l-0;
+	@apply border-l-0 border-l-current;
 }
 
 .ui-metrics-table th:last-child,
 .ui-metrics-table td:last-child {
-	@apply border-r-0;
+	@apply border-r-0 border-r-current;
 }
 
 .ui-metrics-table tbody td:first-child {
