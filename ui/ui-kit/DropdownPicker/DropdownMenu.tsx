@@ -13,7 +13,7 @@ const BOOTSTRAP_DROPDOWN_OFFSET = 2;
 
 export const TRIGGER_BASE =
 	'flex items-center border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
-export const TRIGGER_DEFAULT_PADDING = 'px-3 py-2';
+export const TRIGGER_DEFAULT_PADDING = 'py-4 px-0';
 
 export interface DropdownMenuProps<V> {
 	id?: string;
