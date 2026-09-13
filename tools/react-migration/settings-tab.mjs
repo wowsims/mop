@@ -568,9 +568,9 @@ const requireWrite = (result, what) => {
 // A boolean.
 const boolean = pick('boolean-picker-root');
 if (boolean) {
-	let after = requireWrite(await step(`click #${boolean.controlId}`, () => page.click(`#${boolean.controlId}`)), `clicking #${boolean.controlId}`);
+	let after = requireWrite(await step(`click label[for=${boolean.controlId}]`, () => page.click(`label[for="${boolean.controlId}"]`)), `clicking #${boolean.controlId}`);
 	say(`  ${' '.repeat(28)} dom:  ${valueOf(after, boolean.key)}`);
-	after = requireWrite(await step('click it back', () => page.click(`#${boolean.controlId}`)), `clicking #${boolean.controlId} back`);
+	after = requireWrite(await step('click it back', () => page.click(`label[for="${boolean.controlId}"]`)), `clicking #${boolean.controlId} back`);
 	say(`  ${' '.repeat(28)} dom:  ${valueOf(after, boolean.key)}`);
 	if (valueOf(after, boolean.key) !== boolean.value) problems.push(`clicking #${boolean.controlId} twice did not restore it`);
 } else {

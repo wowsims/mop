@@ -17,7 +17,7 @@
 //    a real `DataTransfer` are what both stacks actually listen for.
 //  - A synthetic reorder leaves the *vanilla* list inert to the next popover, so delete first and
 //    drag last.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/protection';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -74,7 +74,7 @@ const structure = () => {
 
 /** Vanilla opens the per-item menu on `mouseover`, and Playwright's own hover never lands on it. */
 const openItemMenu = async (page, index) => {
-	const button = page.locator(ITEM).nth(index).locator(':scope > .list-picker-item-header > .list-picker-item-actions');
+	const button = page.locator(ITEM).nth(index).locator(`:scope > ${q('list-picker-item-header')} > ${q('list-picker-item-actions')}`);
 	await button.scrollIntoViewIfNeeded();
 	const box = await button.boundingBox();
 	if (!box) return false;
@@ -203,7 +203,7 @@ try {
 		if (!(await trigger.count())) return 'NO CONDITION PICKER';
 		await trigger.click({ timeout: 10000 });
 		await page.waitForTimeout(500);
-		const options = await page.evaluate(() => document.querySelectorAll('.dropdown-picker-item, .dropdown-picker-list li').length);
+		const options = await page.evaluate(() => document.querySelectorAll(':is([data-testid="dropdown-picker-item"], .dropdown-picker-item), :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li').length);
 		await page.keyboard.press('Escape');
 		return `${options > 0 ? 'menu opened' : 'MENU EMPTY'}`;
 	});
@@ -264,7 +264,7 @@ try {
 	);
 	await page.waitForTimeout(400);
 	await step('pick the first type', async () => {
-		const option = page.locator('.dropdown-picker-list li, .dropdown-picker-item').locator('visible=true').first();
+		const option = page.locator(`${q('dropdown-picker-list')} li, ${q('dropdown-picker-item')}`).locator('visible=true').first();
 		if (!(await option.count())) return 'NO TYPE MENU';
 		await option.click({ timeout: 10000 });
 		return 'clicked';

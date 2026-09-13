@@ -101,6 +101,21 @@ removes class names must not insert, delete, or reorder elements, and vice versa
 position-keyed, so it can only catch a regression if that rule holds; a mismatch means either a real
 structural change or a moved value a global rule still reads by name.
 
+A commit that changes the tree on purpose (BooleanPicker → Base UI Checkbox inserted a hidden
+native input and an indicator) cannot pass the position-keyed diff, so it is proved differently:
+`CONFINE='<selector>'` adds a path-keyed comparison written to `confine.txt` next to `report.txt`.
+Every differing path must sit at or under an element matching the selector on either port
+("confined"); a path whose computed styles are equal but whose rect moved is listed as a shift with
+its delta, so the reader can check that later siblings moved by exactly the subtree's height change
+and nothing else. A pass is `sections with unconfined diffs: 0` and a shift list the commit message
+explains. After such a commit the baseline is re-taken to a **new** directory
+(`/tmp/claude-1000/tailwind-baseline-dist-2`, built from the Checkbox commit's tree); the
+`ea0f92e69` copy in `/tmp/claude-1000/tailwind-baseline-dist` stays for the Phase 0/1 record.
+
+```bash
+REACT_PORT=3406 TW_PORT=3404 CONFINE='[data-testid="boolean-picker-root"]' node tools/react-migration/tw-probe.mjs
+```
+
 `css-vars.mjs` retired at C-1b: its floor was the `--bs-modal-*` family, and A-S1 removed Bootstrap
 `modal` along with every `var(--bs-modal-*)` read, so after that commit the gate could no longer find
 anything to assert against — a check that always passes proves nothing.

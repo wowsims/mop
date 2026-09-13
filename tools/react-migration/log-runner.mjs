@@ -165,7 +165,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click('.log-search-add-field .dropdown-picker-button');
 	await page.waitForTimeout(500);
 	out.addFieldMenu = await page.evaluate(() => {
-		const menu = document.querySelector('.log-search-add-field .dropdown-picker-list');
+		const menu = document.querySelector('.log-search-add-field :is([data-testid="dropdown-picker-list"], .dropdown-picker-list)');
 		if (!menu) return 'NO MENU';
 		const trigger = document.querySelector('.log-search-add-field .dropdown-picker-button').getBoundingClientRect();
 		const box = menu.getBoundingClientRect();
@@ -183,7 +183,7 @@ const collect = async (browser, port, spec, seeded) => {
 	// Outcome, because its values come from a fixed list rather than from the run. Vanilla puts a
 	// `<button>` inside each `<li>` and hangs the handler on it; React's `<li>` *is* the menu item.
 	await page.evaluate(() => {
-		const item = [...document.querySelectorAll('.log-search-add-field .dropdown-picker-list li')].find(li => li.textContent.trim() === 'Outcome');
+		const item = [...document.querySelectorAll('.log-search-add-field :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')].find(li => li.textContent.trim() === 'Outcome');
 		(item.querySelector('button') ?? item).click();
 	});
 	await page.waitForTimeout(500);
@@ -199,12 +199,12 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(500);
 	out.valueMenu = await page.evaluate(
 		() =>
-			[...document.querySelectorAll('.log-search-group-items .dropdown-picker-list li')]
+			[...document.querySelectorAll('.log-search-group-items :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')]
 				.map(item => item.textContent.trim())
 				.join(',') || 'NO MENU',
 	);
 	await page.evaluate(() => {
-		const item = [...document.querySelectorAll('.log-search-group-items .dropdown-picker-list li')].find(li => li.textContent.trim() === 'Crit');
+		const item = [...document.querySelectorAll('.log-search-group-items :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')].find(li => li.textContent.trim() === 'Crit');
 		(item.querySelector('button') ?? item).click();
 	});
 	await page.waitForTimeout(700);

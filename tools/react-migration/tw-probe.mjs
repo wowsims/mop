@@ -21,6 +21,13 @@ const SPECS = (process.env.SPECS ?? 'warrior/arms,mage/fire,warrior/protection')
 // — React's tab strip is a Base UI `<button role="tab">` with no href, and the batch tab's visible
 // text is "Batch" plus a badge, so text/href matching (vanilla's scheme) cannot find it.
 const TABS = ['gear-tab', 'settings-tab', 'talents-tab', 'rotation-tab', 'detailed-results-tab-tab', 'bulk-tab'];
+// A tree-changing commit (an element inserted or removed) shifts every later line of the
+// position-keyed snapshot, so the plain diff cannot say where the change is. With
+// `CONFINE='<selector>'` a second, path-keyed comparison is written to confine.txt: every
+// differing path must lie under an element matching the selector on either port ("confined"), or
+// be a pure geometry shift with identical computed styles (reported with its delta so the reader
+// can check it is exactly the subtree's height change). Default behaviour is unchanged.
+const CONFINE = process.env.CONFINE ?? '';
 
 const PROPS = [
 	'display','position','top','right','bottom','left','float','clear',
@@ -60,6 +67,19 @@ const SNAP = props => {
 	return out;
 };
 
+// Paths (in SNAP's scheme: body is '', its children '/0', '/1', …) of every element matching the
+// CONFINE selector — the subtrees a tree-changing commit is allowed to touch.
+const ROOTS = selector => {
+	const pathOf = el => {
+		const parts = [];
+		for (let node = el; node && node !== document.body; node = node.parentElement) {
+			parts.unshift(Array.prototype.indexOf.call(node.parentElement.children, node));
+		}
+		return `/${parts.join('/')}`;
+	};
+	return [...document.querySelectorAll(selector)].map(pathOf);
+};
+
 const settle = (page, ms) => page.waitForTimeout(ms);
 
 const openTab = async (page, id) => {
@@ -85,16 +105,20 @@ const capture = async (browser, port, url, width, { tabs = false } = {}) => {
 	await page.waitForSelector(tabs ? q('sim-ui') : 'body', { timeout: 60000 });
 	await settle(page, 2500);
 	const shots = {};
+	const roots = {};
+	const rootsOf = async () => (CONFINE ? page.evaluate(ROOTS, CONFINE) : []);
 	if (!tabs) {
 		shots.default = await page.evaluate(SNAP, PROPS);
+		roots.default = await rootsOf();
 		const png = await page.screenshot({ fullPage: false });
 		await page.close();
-		return { shots, png: { default: png } };
+		return { shots, roots, png: { default: png } };
 	}
 	const pngs = {};
 	for (const t of TABS) {
 		const found = await openTab(page, t);
 		shots[t] = found ? await page.evaluate(SNAP, PROPS) : [`TAB-NOT-FOUND ${t}`];
+		roots[t] = found ? await rootsOf() : [];
 		pngs[t] = await page.screenshot({ fullPage: false });
 	}
 	// Results-stuck: the results pane scrolled 400px down, with the sticky toolbar caught mid-stick —
@@ -104,9 +128,10 @@ const capture = async (browser, port, url, width, { tabs = false } = {}) => {
 	await page.evaluate(sel => document.querySelector(sel)?.scrollTo({ top: 400 }), q('sim-ui'));
 	await settle(page, 700);
 	shots['results-stuck'] = await page.evaluate(SNAP, PROPS);
+	roots['results-stuck'] = await rootsOf();
 	pngs['results-stuck'] = await page.screenshot({ fullPage: false });
 	await page.close();
-	return { shots, png: pngs };
+	return { shots, roots, png: pngs };
 };
 
 // Three differences are known, recorded in TAILWIND-DIVERGENCE.md, and verified to render
@@ -137,13 +162,62 @@ const diff = (a, b) => {
 	return out;
 };
 
+// Path-keyed comparison for CONFINE mode. Lines are `path tag [x,y,w,h] vals`; a path present on
+// both ports with equal tag and computed values but a different rect is a "shift"; everything
+// else is a change, confined when its path is at or below a CONFINE root on either port.
+const parse = lines => {
+	const map = new Map();
+	for (const line of lines) {
+		const m = line.match(/^(\S*) (\S+) \[([^\]]*)\] (.*)$/);
+		if (m) map.set(m[1], { tag: m[2], rect: m[3], vals: normalise(m[4]) });
+	}
+	return map;
+};
+const under = (path, roots) => roots.some(root => path === root || path.startsWith(`${root}/`));
+const confine = (a, b, rootsA, rootsB) => {
+	const A = parse(a);
+	const B = parse(b);
+	const roots = [...new Set([...rootsA, ...rootsB])];
+	const out = { confined: 0, shifts: new Map(), unconfined: [] };
+	const shift = (x, y) => {
+		const [ax, ay, aw, ah] = x.rect.split(',').map(Number);
+		const [bx, by, bw, bh] = y.rect.split(',').map(Number);
+		const key = `dx=${bx - ax} dy=${by - ay} dw=${bw - aw} dh=${bh - ah}`;
+		out.shifts.set(key, (out.shifts.get(key) ?? 0) + 1);
+	};
+	for (const [path, x] of A) {
+		const y = B.get(path);
+		if (!y) {
+			if (under(path, roots)) out.confined++;
+			else out.unconfined.push(`  react-only: ${path} ${x.tag} [${x.rect}]`);
+			continue;
+		}
+		if (x.tag === y.tag && x.vals === y.vals) {
+			if (x.rect === y.rect) continue;
+			if (under(path, roots)) out.confined++;
+			else shift(x, y);
+			continue;
+		}
+		if (under(path, roots)) out.confined++;
+		else out.unconfined.push(`  react: ${path} ${x.tag} [${x.rect}] ${x.vals}\n  tw   : ${path} ${y.tag} [${y.rect}] ${y.vals}`);
+	}
+	for (const [path, y] of B) {
+		if (A.has(path)) continue;
+		if (under(path, roots)) out.confined++;
+		else out.unconfined.push(`  tw-only: ${path} ${y.tag} [${y.rect}]`);
+	}
+	return out;
+};
+
 const main = async () => {
 	mkdirSync(OUT, { recursive: true });
 	const browser = await launch();
 	const pages = [['landing', 'http://localhost:PORT/mop/', false], ...SPECS.map(s => [s, `http://localhost:PORT/mop/${s}/`, true])];
 	let elements = 0;
 	let problems = 0;
+	let unconfined = 0;
 	const report = [];
+	const confined = [];
 	for (const [name, url, tabs] of pages) {
 		for (const width of WIDTHS) {
 			const r = await capture(browser, PORTS.react, url, width, { tabs });
@@ -160,6 +234,15 @@ const main = async () => {
 				} else {
 					report.push(`OK   ${tag}  ${a.length} elements identical`);
 				}
+				if (CONFINE) {
+					const c = confine(a, b, r.roots[key] ?? [], t.roots[key] ?? []);
+					const shifts = [...c.shifts].map(([delta, n]) => `${delta} ×${n}`).join('; ') || 'none';
+					const bad = c.unconfined.length;
+					if (bad) unconfined++;
+					confined.push(
+						`${bad ? 'BAD ' : 'OK  '} ${tag}  roots=${(r.roots[key] ?? []).length}/${(t.roots[key] ?? []).length} confined=${c.confined} unconfined=${bad} shifts: ${shifts}${bad ? `\n${c.unconfined.slice(0, 15).join('\n')}` : ''}`,
+					);
+				}
 				const slug = `${name.replace('/', '-')}-${width}-${key}`;
 				writeFileSync(`${OUT}/${slug}.react.png`, r.png[key]);
 				writeFileSync(`${OUT}/${slug}.tw.png`, t.png[key]);
@@ -169,6 +252,12 @@ const main = async () => {
 	await browser.close();
 	const text = `elements compared: ${elements}\nsections with a diff: ${problems}\n${report.join('\n')}\n`;
 	writeFileSync(`${OUT}/report.txt`, text);
+	if (CONFINE) {
+		const confineText = `confine selector: ${CONFINE}\nsections with unconfined diffs: ${unconfined}\n${confined.join('\n')}\n`;
+		writeFileSync(`${OUT}/confine.txt`, confineText);
+		console.log(confineText.slice(0, 20000));
+		return;
+	}
 	console.log(text.slice(0, 20000));
 };
 
