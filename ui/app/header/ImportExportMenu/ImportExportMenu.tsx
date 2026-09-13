@@ -27,18 +27,19 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill.
 
 	return (
-		<div className={clsx('dropdown sim-dropdown-menu', `${kind}-dropdown`)}>
+		<div className={clsx('dropdown sim-dropdown-menu', `${kind}-dropdown`)} data-testid="sim-dropdown-menu">
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
-				<Menu.Trigger openOnHover delay={0} className={`${kind}-link`}>
+				<Menu.Trigger openOnHover delay={0} className={`${kind}-link`} data-testid={`${kind}-link`}>
 					<Icon name={icon} style={iconStyle} /> {title}
 				</Menu.Trigger>
 				<Menu.Portal>
-					<Menu.Positioner align="start" sideOffset={-1} className="sim-dropdown-positioner">
-						<Menu.Popup className="sim-dropdown-popup">
+					<Menu.Positioner align="start" sideOffset={-1} className="sim-dropdown-positioner" data-testid="sim-dropdown-positioner">
+						<Menu.Popup className="sim-dropdown-popup" data-testid="sim-dropdown-popup">
 							{entries.map(entry => (
 								<Menu.Item
 									key={entry.label}
 									className="sim-dropdown-item"
+									data-testid="sim-dropdown-item"
 									disabled={entry.isUnsupported}
 									{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}
 									onClick={() => {

@@ -62,14 +62,14 @@ const press = (key: string) =>
 	});
 
 const tabs = () => [...strip.querySelectorAll<HTMLElement>('[role="tab"]')];
-const tab = (id: string) => strip.querySelector<HTMLElement>(`.${id}`)!;
+const tab = (id: string) => strip.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
 const panels = () => [...panes.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
 /** The pane inside the one panel that is not hidden. */
 const openId = () => panels().find(panel => !panel.hasAttribute('hidden'))?.firstElementChild?.id ?? null;
 const selectedIds = () =>
 	tabs()
 		.filter(el => el.hasAttribute('data-active'))
-		.map(el => el.className.split(' ').pop()!);
+		.map(el => el.getAttribute('data-testid')!);
 
 describe('SimTabs', () => {
 	it('renders one tab and one panel per declared tab, in declaration order', () => {
@@ -117,7 +117,7 @@ describe('SimTabs', () => {
 		const stops = () =>
 			tabs()
 				.filter(el => el.tabIndex !== -1)
-				.map(el => el.className.split(' ').pop());
+				.map(el => el.getAttribute('data-testid'));
 		expect(stops()).toEqual(['gear-tab']);
 
 		await activate('talents-tab');

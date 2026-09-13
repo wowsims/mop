@@ -40,9 +40,9 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 
 			<ToolbarItem className="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
-			<div className="sim-toolbar-socials">
+			<div className="sim-toolbar-socials" data-testid="sim-toolbar-socials">
 				{SOCIALS.map(social => (
-					<div key={social.key} className="sim-toolbar-item">
+					<div key={social.key} className="sim-toolbar-item" data-testid="sim-toolbar-item">
 						<SocialLink social={social} />
 					</div>
 				))}

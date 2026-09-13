@@ -5,23 +5,27 @@
 // the DOM up front. Base UI renders a popup only while it is open and portals it to `<body>`, so the
 // tree comparison drops the menus and this is what covers them instead. The links are the part that
 // matters: they are how every other sim is reached.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 // Bootstrap keeps its menus in place and marks the open one `.show`; Base UI portals one popup per
 // open level. Reading "every open menu, outermost first" is the shape both can answer.
-const MENUS = () => [...document.querySelectorAll('.sim-title .dropdown-menu.show, .sim-title-popup')];
+const MENUS = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	return [...document.querySelectorAll(`:is(${q('sim-title')}) .dropdown-menu.show, ${q('sim-title-popup')}`)];
+};
 
 const ROWS = level => {
-	const menus = [...document.querySelectorAll('.sim-title .dropdown-menu.show, .sim-title-popup')];
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const menus = [...document.querySelectorAll(`:is(${q('sim-title')}) .dropdown-menu.show, ${q('sim-title-popup')}`)];
 	const menu = menus[level];
 	if (!menu) return null;
 	// Only this menu's own rows. Bootstrap nests each class's submenu inside the root `<ul>`, so a
 	// deep query returns all 45 links at level 0; Base UI portals each level separately and would
 	// return 11. Scoping to direct rows is what makes the two comparable.
-	const rows = menu.querySelectorAll(':scope > li > .sim-link-dropdown > .sim-link, :scope > li > .sim-link, :scope > .sim-link');
+	const rows = menu.querySelectorAll(`:scope > li > .sim-link-dropdown > :is(${q('sim-link')}), :scope > li > :is(${q('sim-link')}), :scope > :is(${q('sim-link')})`);
 	return [...rows].map(link => ({
 		tag: link.tagName.toLowerCase(),
 		// The class-colour token, which is what makes each row readable at a glance.
@@ -35,12 +39,13 @@ const ROWS = level => {
 };
 
 const browser = await launch();
-const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-title' });
+const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: q('sim-title') });
 console.log(`${SPEC} on :${PORT}\n`);
 
 console.log('trigger');
 const trigger = await page.evaluate(() => {
-	const link = document.querySelector('.sim-title .sim-link');
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const link = document.querySelector(`:is(${q('sim-title')}) :is(${q('sim-link')})`);
 	return {
 		tag: link?.tagName.toLowerCase(),
 		colour: [...(link?.classList ?? [])].find(name => name.startsWith('text-')) ?? null,
@@ -54,7 +59,7 @@ console.log(`  ${JSON.stringify(trigger)}`);
 // Click, not hover: the root carried `data-bs-trigger="click"`, which kept the global hover override
 // off it. Nothing else in this menu opens on click.
 console.log('\nclasses (click to open)');
-await page.click('.sim-title .sim-link');
+await page.click(`:is(${q('sim-title')}) :is(${q('sim-link')})`);
 await page.waitForTimeout(700);
 console.log(`  menus open   ${(await page.evaluate(MENUS)).length}`);
 const classes = await page.evaluate(ROWS, 0);
@@ -68,7 +73,7 @@ for (const row of classes ?? []) console.log(`    ${row.tag.padEnd(6)} ${String(
 // comparison with them, and all 34 spec links were in there. This is where they are covered now.
 const normalise = href => String(href).replace(`localhost:${PORT}`, 'localhost:<port>');
 console.log('\nspecs (hover each class)');
-const rowSelector = '.sim-title .dropdown-menu.show > li > .sim-link-dropdown > .sim-link, .sim-title-popup > .sim-link';
+const rowSelector = `:is(${q('sim-title')}) .dropdown-menu.show > li > .sim-link-dropdown > :is(${q('sim-link')}), ${q('sim-title-popup')} > :is(${q('sim-link')})`;
 let total = 0;
 for (const [index, klass] of (classes ?? []).entries()) {
 	await page.locator(rowSelector).nth(index).hover();

@@ -17,7 +17,7 @@ const INVARIANTS = () => {
 
 	// Exactly one top-level strip, and it is the tablist. Not `[role=tablist]` document-wide: the
 	// bulk, rotation and detailed-results panes each host a Bootstrap strip of their own.
-	const strips = [...document.querySelectorAll('.sim-tabs')];
+	const strips = [...document.querySelectorAll(':is([data-testid="sim-tabs"], .sim-tabs)')];
 	if (strips.length !== 1) problems.push(`${strips.length} .sim-tabs elements, expected 1`);
 	else {
 		const role = strips[0].getAttribute('role');
@@ -84,7 +84,7 @@ const KEYS = ['ArrowRight', 'ArrowRight', 'ArrowLeft', 'Home', 'End', 'ArrowRigh
 
 // Starts from the first tab by position rather than by class, so one script drives both shapes.
 const keyboard = async page => {
-	await page.locator('.sim-tabs [role=tab]').first().click();
+	await page.locator(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').first().click();
 	const seq = [];
 	for (const key of KEYS) {
 		await page.keyboard.press(key);
@@ -99,7 +99,7 @@ let failures = 0;
 for (const spec of specsFromArgv()) {
 	const out = {};
 	for (const [side, port] of Object.entries(PORTS)) {
-		const { page } = await openSpec(browser, port, spec, { selector: '.sim-tabs [role=tab]' });
+		const { page } = await openSpec(browser, port, spec, { selector: ':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]' });
 		out[side] = { problems: await page.evaluate(INVARIANTS), keys: await keyboard(page) };
 		await page.close();
 	}

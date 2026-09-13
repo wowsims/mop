@@ -83,7 +83,7 @@ const collect = async (browser, port, spec, seeded) => {
 	const { page, errors } = await openSpec(browser, port, spec);
 	await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), seeded);
 	await page.reload({ waitUntil: 'load', timeout: 60000 });
-	await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 });
+	await page.waitForSelector(':is([data-testid="sim-ui"], .sim-ui)', { timeout: 60000 });
 	await page.waitForTimeout(2500);
 
 	const runOnce = async iterations => {

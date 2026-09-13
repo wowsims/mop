@@ -41,15 +41,16 @@ export const ToolbarItem = ({
 			{children}
 		</>
 	);
+	const testId = className?.split(' ')[0];
 	return (
-		<div className="sim-toolbar-item">
+		<div className="sim-toolbar-item" data-testid="sim-toolbar-item">
 			{!hidden &&
 				(href ? (
-					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} {...anchor}>
+					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} data-testid={testId} {...anchor}>
 						{content}
 					</Button>
 				) : (
-					<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} {...anchor}>
+					<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} data-testid={testId} {...anchor}>
 						{content}
 					</Button>
 				))}

@@ -103,7 +103,7 @@ describe('SimApp', () => {
 	it('constructs the shell once', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
 		expect(constructions).toHaveLength(1);
-		expect(container.querySelectorAll('.sim-ui')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="sim-ui"]')).toHaveLength(1);
 	});
 
 	it('still constructs once under StrictMode, whose effects run twice', () => {
@@ -116,17 +116,17 @@ describe('SimApp', () => {
 			</StrictMode>,
 		);
 		expect(constructions).toHaveLength(1);
-		expect(container.querySelectorAll('.sim-ui')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="sim-ui"]')).toHaveLength(1);
 	});
 
 	it('renders the sidebar stats into the container the shell built', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
-		expect(container.querySelectorAll('.sim-sidebar-stats .character-stats-root')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="sim-sidebar-stats"] .character-stats-root')).toHaveLength(1);
 	});
 
 	it('renders the results panel into the container the shell built', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
-		expect(container.querySelectorAll('.sim-sidebar-results .results-viewer')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="sim-sidebar-results"] .results-viewer')).toHaveLength(1);
 	});
 
 	it('renders each registered pane into the pane container the shell built', () => {
@@ -154,7 +154,7 @@ describe('SimApp', () => {
 		dom.sidebarActions.appendChild(marker);
 
 		// `setSimUI` has already re-rendered by now; the nodes must have survived it.
-		expect(container.querySelector('.sim-ui')).toBe(dom.root);
+		expect(container.querySelector('[data-testid="sim-ui"]')).toBe(dom.root);
 		expect(dom.sidebarActions.isConnected).toBe(true);
 		expect(dom.sidebarActions.querySelector('.built-imperatively')).toBe(marker);
 	});
@@ -163,7 +163,7 @@ describe('SimApp', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
 		// The shell is handed a DOM bundle rather than a parent, so what ties it to the mount is the
 		// bundle's root being a child of it.
-		expect(constructions[0].root).toBe(container.querySelector('.sim-ui'));
+		expect(constructions[0].root).toBe(container.querySelector('[data-testid="sim-ui"]'));
 		expect(constructions[0].root.parentElement).toBe(container);
 	});
 });

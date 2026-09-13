@@ -18,7 +18,7 @@ const READ = () => ({
 const browser = await launch();
 let fails = 0;
 for (const spec of specsFromArgv()) {
-	const { page, errors } = await openSpec(browser, PORTS.react, spec, { selector: '.sim-tabs [role=tab]' });
+	const { page, errors } = await openSpec(browser, PORTS.react, spec, { selector: ':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]' });
 	const ids = await page.evaluate(() => window.simTabsProbe.ids());
 	const problems = [];
 	if (!ids.length || ids.some(id => !id)) problems.push(`tab identifiers unresolved: [${ids}]`);
@@ -29,7 +29,7 @@ for (const spec of specsFromArgv()) {
 
 	// Clicked by position: one selector for the Bootstrap strip and the Base UI one.
 	for (const [index, id] of ids.entries()) {
-		await page.locator('.sim-tabs [role=tab]').nth(index).click();
+		await page.locator(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').nth(index).click();
 		await page.waitForTimeout(250);
 		const r = await page.evaluate(READ);
 		if (r.openPanes.length !== 1) problems.push(`${id}: ${r.openPanes.length} open panes [${r.openPanes}]`);
@@ -41,9 +41,9 @@ for (const spec of specsFromArgv()) {
 
 	// Returning to the gear tab, the way the bulk results renderer does. This clicks the tab;
 	// SimHeader.activateTab's registry.activate path is covered by tabs-a11y.mjs and a unit test.
-	await page.locator('.sim-tabs [role=tab]').nth(ids.indexOf('settings-tab')).click();
+	await page.locator(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').nth(ids.indexOf('settings-tab')).click();
 	await page.waitForTimeout(200);
-	await page.locator('.sim-tabs [role=tab]').nth(ids.indexOf('gear-tab')).click();
+	await page.locator(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').nth(ids.indexOf('gear-tab')).click();
 	await page.waitForTimeout(250);
 	const back = (await page.evaluate(() => window.simTabsProbe.openIds()))[0];
 	if (back !== 'gear-tab') problems.push(`returning to the gear tab left ${back} open`);

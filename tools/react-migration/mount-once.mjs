@@ -10,14 +10,14 @@
 import { launch, openSpec, PORTS, specsFromArgv } from './browser.mjs';
 
 const READ = () => ({
-	simUi: document.querySelectorAll('[data-testid="sim-ui"], .sim-ui').length,
+	simUi: document.querySelectorAll(':is([data-testid="sim-ui"], .sim-ui)').length,
 	// The shell's root is the mount's only child; there is no wrapper between them.
 	rootChildren: document.getElementById('root')?.children.length,
-	sidebarActions: document.querySelectorAll('.sim-sidebar-actions .sim-sidebar-action-button').length,
-	tabs: document.querySelectorAll('.sim-tabs [role=tab]').length,
+	sidebarActions: document.querySelectorAll(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .sim-sidebar-action-button').length,
+	tabs: document.querySelectorAll(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').length,
 	// Portalled, not constructed: a target built by the shell's constructor is the one place a
 	// second React pass could mount twice without the construct-once ref noticing.
-	stats: document.querySelectorAll('.sim-sidebar-stats .character-stats-root').length,
+	stats: document.querySelectorAll(':is([data-testid="sim-sidebar-stats"], .sim-sidebar-stats) .character-stats-root').length,
 });
 
 const browser = await launch();

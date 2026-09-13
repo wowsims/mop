@@ -41,7 +41,7 @@ const browser = await launch();
 let fails = 0;
 for (const spec of specsFromArgv()) {
 	const sides = {};
-	for (const [side, port] of Object.entries(PORTS)) sides[side] = await openSpec(browser, port, spec, { selector: '.sim-tabs [role=tab]' });
+	for (const [side, port] of Object.entries(PORTS)) sides[side] = await openSpec(browser, port, spec, { selector: ':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]' });
 
 	const ids = await sides.react.page.evaluate(() => window.simTabsProbe.ids());
 	const baseIds = await sides.base.page.evaluate(() => window.simTabsProbe.ids());
@@ -65,7 +65,7 @@ for (const spec of specsFromArgv()) {
 			const swap = {};
 			const replayScenes = {};
 			for (const side of Object.keys(PORTS)) {
-				await sides[side].page.locator('.sim-tabs [role=tab]').nth(index).click();
+				await sides[side].page.locator(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').nth(index).click();
 				await sides[side].page.waitForTimeout(SETTLE);
 				const open = await sides[side].page.evaluate(() => window.simTabsProbe.openIds());
 				if (open.join() !== id) problems.push(`${side} ${id}: clicking it left [${open}] open`);

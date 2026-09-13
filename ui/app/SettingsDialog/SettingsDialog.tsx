@@ -193,31 +193,33 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 				</>
 			}>
 			<div>
-				<div className="picker-group">
-					<div className="fixed-rng-seed-container">
-						<div className="fixed-rng-seed">
+				<div className="picker-group" data-testid="picker-group">
+					<div className="fixed-rng-seed-container" data-testid="fixed-rng-seed-container">
+						<div className="fixed-rng-seed" data-testid="fixed-rng-seed">
 							<NumberPicker modObject={sim} config={fixedRngSeedConfig} />
 						</div>
 						<HelpText as="div" className="form-text">
 							<span>{i18n.t('info.options.fixed_rng_seed.last_used')}</span>&nbsp;
-							<span className="last-used-rng-seed">{lastUsedRngSeed}</span>
+							<span className="last-used-rng-seed" data-testid="last-used-rng-seed">
+								{lastUsedRngSeed}
+							</span>
 						</HelpText>
 					</div>
-					<div className="language-picker">
+					<div className="language-picker" data-testid="language-picker">
 						<EnumPicker modObject={sim} config={languageConfig} />
 					</div>
 				</div>
-				<div className="show-threat-metrics-picker w-1/2 pr-2">
+				<div className="show-threat-metrics-picker w-1/2 pr-2" data-testid="show-threat-metrics-picker">
 					<BooleanPicker modObject={sim} config={showThreatMetricsConfig} />
 				</div>
-				<div className="show-experimental-picker w-1/2 pr-2">
+				<div className="show-experimental-picker w-1/2 pr-2" data-testid="show-experimental-picker">
 					<BooleanPicker modObject={sim} config={showExperimentalConfig} />
 				</div>
-				<div className="show-quick-swap-picker w-1/2 pr-2">
+				<div className="show-quick-swap-picker w-1/2 pr-2" data-testid="show-quick-swap-picker">
 					<BooleanPicker modObject={sim} config={showQuickSwapConfig} />
 				</div>
-				<div className="use-concurrency-container w-1/2 pr-2" hidden={!isWasm}>
-					<div className="use-concurrent-workers-picker">
+				<div className="use-concurrency-container w-1/2 pr-2" data-testid="use-concurrency-container" hidden={!isWasm}>
+					<div className="use-concurrent-workers-picker" data-testid="use-concurrent-workers-picker">
 						<EnumPicker modObject={sim} config={concurrencyConfig} />
 					</div>
 					<HelpText as="div" className="form-text" hidden={!firefox}>

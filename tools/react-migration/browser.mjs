@@ -68,7 +68,7 @@ export const SERIALIZE = selector => {
 export const compareKey = line => line.replace(/\..*$/, '');
 
 /** A selector matching the class on the parent branch and the `data-testid` on this one. */
-export const q = name => `[data-testid="${name}"], .${name}`;
+export const q = name => `:is([data-testid="${name}"], .${name})`;
 
 /**
  * `tag.token1.token2…` matchers for a line that must carry every one of `tokens`, in any order and
@@ -181,9 +181,9 @@ export const dropRootClasses = dom => {
  */
 const PROBE = () => {
 	// Page-context copy: `q` from module scope does not survive `addInitScript`'s serialisation.
-	const q = name => `[data-testid="${name}"], .${name}`;
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 
-	const tabsOf = () => [...document.querySelectorAll('.sim-tabs [role=tab]')];
+	const tabsOf = () => [...document.querySelectorAll(`:is(${q('sim-tabs')}) [role=tab]`)];
 
 	// The identifier is a class on the <li> before the swap and on the <button> after it. It is also
 	// an element's DOM id somewhere inside `.sim-main`, so requiring the token to resolve there picks
@@ -194,13 +194,13 @@ const PROBE = () => {
 	// resolves to a real, in-`.sim-main` element that is the *wrong* one. `aria-controls` still matters
 	// as the fallback for a pane that carries no such token at all.
 	const idOf = el => {
-		const tab = el?.closest?.('.sim-tabs [role=tab]');
+		const tab = el?.closest?.(`:is(${q('sim-tabs')}) [role=tab]`);
 		if (!tab) return null;
 		const tokens = [...tab.classList, ...(tab.closest('li')?.classList ?? [])];
-		const byToken = tokens.find(token => document.getElementById(token)?.closest('.sim-main'));
+		const byToken = tokens.find(token => document.getElementById(token)?.closest(q('sim-main')));
 		if (byToken) return byToken;
 		const controls = tab.getAttribute('aria-controls') ?? tab.closest('li')?.getAttribute('aria-controls');
-		return controls && document.getElementById(controls)?.closest('.sim-main') ? controls : null;
+		return controls && document.getElementById(controls)?.closest(q('sim-main')) ? controls : null;
 	};
 
 	// Every element from the pane's id-carrying root up to `.sim-main`. Before the swap that is just
@@ -208,7 +208,7 @@ const PROBE = () => {
 	// "the wrapper is shown but the pane inside it kept `.fade`" from reading as open.
 	const paneChain = id => {
 		const root = document.getElementById(id);
-		const main = document.querySelector('.sim-main');
+		const main = document.querySelector(q('sim-main'));
 		if (!root || !main || !main.contains(root)) return [];
 		const out = [];
 		for (let el = root; el !== main; el = el.parentElement) out.push(el);
@@ -228,7 +228,7 @@ const PROBE = () => {
 		tabs: tabsOf,
 		// Direct children only. The bulk, rotation and detailed-results panes each contain a Bootstrap
 		// strip of their own, so `.sim-main [role=tabpanel]` matches 21 elements where this matches 6.
-		panes: () => [...document.querySelectorAll('.sim-main > [role=tabpanel]')],
+		panes: () => [...document.querySelectorAll(`:is(${q('sim-main')}) > [role=tabpanel]`)],
 		ids: () => tabsOf().map(idOf),
 		idOf,
 		paneChain,

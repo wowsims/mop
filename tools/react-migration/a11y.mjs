@@ -8,7 +8,7 @@
 // Runs against the React build by default and exits non-zero if a check fails there. Point it at
 // `PORT=3401` to read the baseline instead, where failing is the expected answer — that output is
 // the list of findings the port is fixing.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
@@ -19,10 +19,10 @@ const IS_BASE = PORT === PORTS.base;
 // part of porting a block. A hard assertion on a half-ported region would be red from the day it was
 // added, which gates nothing.
 const REGIONS = [
-	{ selector: '.sim-header .sim-toolbar' },
-	{ selector: '.sim-header .import-export' },
-	{ selector: '.sim-sidebar-socials' },
-	{ selector: '.sim-sidebar-stats' },
+	{ selector: `${q('sim-header')} ${q('sim-toolbar')}` },
+	{ selector: `${q('sim-header')} ${q('import-export')}` },
+	{ selector: q('sim-sidebar-socials') },
+	{ selector: q('sim-sidebar-stats') },
 	// Measured on this file's default spec, `warrior/arms`, which is what the other three are
 	// calibrated against too. `unnamed` was 161 and the React pane measures 155; the player port did
 	// not move it — every control that block renders is a `<select>` or an anchor that existed already,
@@ -135,7 +135,7 @@ page.on('console', m => {
 	if (m.type() === 'error' && !ENVIRONMENTAL.test(m.text())) errors.push('console: ' + m.text());
 });
 await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-await page.waitForSelector('.sim-sidebar', { timeout: 60000 });
+await page.waitForSelector(q('sim-sidebar'), { timeout: 60000 });
 await page.waitForTimeout(2000);
 
 console.log(`${SPEC} on :${PORT}${IS_BASE ? '  (baseline — failures here are the findings)' : ''}\n`);

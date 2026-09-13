@@ -1,14 +1,14 @@
 import './SimTitleDropdown.scss';
 
 import { Menu } from '@base-ui/react/menu';
-import type { PlayerClass } from '@sim/player/player_class';
-import { PlayerClasses } from '@sim/player/classes/index';
-import type { PlayerSpec } from '@sim/player/player_spec';
-import { PlayerSpecs } from '@sim/player/specs/index';
-import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18n/localization';
+import { PlayerClasses } from '@sim/player/classes/index';
+import type { PlayerClass } from '@sim/player/player_class';
+import type { PlayerSpec } from '@sim/player/player_spec';
+import { PlayerSpecs } from '@sim/player/specs/index';
+import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
 import { SimLinkContent } from '@ui-kit/SimLinkContent';
 import clsx from 'clsx';
 
@@ -22,17 +22,21 @@ const launchLabel = (launch: { phase: number; status: number }) =>
 const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 	<Menu.SubmenuRoot>
 		{/* A real `<button>`: `SubmenuTrigger` renders a `<div>` by default, and this row is a control. */}
-		<Menu.SubmenuTrigger render={<button type="button" />} className={clsx('sim-link', textClassNameForClass(playerClass))}>
+		<Menu.SubmenuTrigger
+			render={<button type="button" />}
+			className={clsx('sim-link', textClassNameForClass(playerClass))}
+			data-testid="sim-link">
 			<SimLinkContent iconPath={playerClass.getIcon('large')} title={translatePlayerClass(playerClass)} />
 		</Menu.SubmenuTrigger>
 		<Menu.Portal>
-			<Menu.Positioner side="right" align="start" sideOffset={0} className="sim-title-positioner">
-				<Menu.Popup className="sim-title-popup sim-title-popup--specs">
+			<Menu.Positioner side="right" align="start" sideOffset={0} className="sim-title-positioner" data-testid="sim-title-positioner">
+				<Menu.Popup className="sim-title-popup sim-title-popup--specs" data-testid="sim-title-popup">
 					{Object.values(playerClass.specs).map(spec => (
 						<Menu.LinkItem
 							key={spec.simLink}
 							href={new URL(spec.simLink, window.location.href).toString()}
-							className={clsx('sim-link', textClassNameForSpec(spec))}>
+							className={clsx('sim-link', textClassNameForSpec(spec))}
+							data-testid="sim-link">
 							<SimLinkContent
 								iconPath={spec.getIcon('large')}
 								label={translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}
@@ -48,10 +52,10 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 );
 
 export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
-	<div className="sim-title-dropdown-root">
+	<div className="sim-title-dropdown-root" data-testid="sim-title-dropdown-root">
 		<div className="dropdown sim-link-dropdown">
 			<Menu.Root modal={false}>
-				<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))}>
+				<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))} data-testid="sim-link">
 					<SimLinkContent
 						iconPath={currentSpec.getIcon('large')}
 						label={i18n.t('sidebar.header.title')}
@@ -61,8 +65,8 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
 					/>
 				</Menu.Trigger>
 				<Menu.Portal>
-					<Menu.Positioner align="start" sideOffset={0} className="sim-title-positioner">
-						<Menu.Popup className="sim-title-popup">
+					<Menu.Positioner align="start" sideOffset={0} className="sim-title-positioner" data-testid="sim-title-positioner">
+						<Menu.Popup className="sim-title-popup" data-testid="sim-title-popup">
 							{PlayerClasses.naturalOrder.map(playerClass => (
 								<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />
 							))}

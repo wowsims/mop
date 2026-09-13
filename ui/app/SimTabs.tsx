@@ -32,9 +32,9 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 					setActiveId(id);
 					trackPageView(tabs.find(tab => tab.id === id)?.title ?? id, id);
 				}}>
-				<Tabs.List className="sim-tabs m-0 flex list-none flex-nowrap items-end p-0" activateOnFocus>
+				<Tabs.List className="sim-tabs m-0 flex list-none flex-nowrap items-end p-0" data-testid="sim-tabs" activateOnFocus>
 					{tabs.map(tab => (
-						<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id)}>
+						<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id)} data-testid={tab.id}>
 							{tab.title}
 							<TabBadge label={tab.badge} />
 						</Tabs.Tab>
@@ -45,7 +45,7 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 					<>
 						{tabs.map(tab => (
 							// `keepMounted`: every pane is built once and three of them read the live document, so none may be unmounted.
-							<Tabs.Panel key={tab.id} value={tab.id} keepMounted className="sim-tab-panel">
+							<Tabs.Panel key={tab.id} value={tab.id} keepMounted className="sim-tab-panel" data-testid="sim-tab-panel">
 								{tab.children}
 							</Tabs.Panel>
 						))}

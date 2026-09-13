@@ -20,7 +20,7 @@
 // `PORT` picks a build. The baseline is **expected to fail**: nothing on it ever adds the class, so
 // the button is simply absent for the whole window and the loading assertions have nothing to read.
 // That output is the behaviour this change adds, and only the React run exits non-zero.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
@@ -31,7 +31,8 @@ const DB = '**/assets/database/db.*';
 // rather than a class that only looks like it: a control that still takes focus is still reachable
 // by keyboard, whatever it is painted like.
 const READ = () => {
-	const button = document.querySelector('.sim-sidebar-actions .ep-weights-action');
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const button = document.querySelector(`:is(${q('sim-sidebar-actions')}) .ep-weights-action`);
 	if (!button) return { present: false };
 	const icon = button.querySelector('.sim-sidebar-action-button-loading-icon');
 	return {
@@ -73,7 +74,7 @@ const open = async (browser, handle) => {
 	await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 	// The shell has to have rendered for any of this to mean anything, and that is not the thing
 	// under test — so it is waited for, while the button itself is not.
-	await page.waitForSelector('.sim-sidebar-actions', { timeout: 30000 });
+	await page.waitForSelector(q('sim-sidebar-actions'), { timeout: 30000 });
 	return { page, errors };
 };
 
@@ -106,7 +107,7 @@ check('the spinner is hidden from assistive tech', during.spinnerHidden === true
 check('it cannot take focus', during.focusable === false);
 
 release();
-await slow.page.waitForSelector('.sim-sidebar-actions .ep-weights-action:not(.loading)', { timeout: 60000 }).catch(() => {});
+await slow.page.waitForSelector(`:is(${q('sim-sidebar-actions')}) .ep-weights-action:not(.loading)`, { timeout: 60000 }).catch(() => {});
 await slow.page.waitForTimeout(500);
 const after = await slow.page.evaluate(READ);
 console.log(`\nonce the sim is ready\n  ${JSON.stringify(after)}`);

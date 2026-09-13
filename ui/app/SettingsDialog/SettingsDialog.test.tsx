@@ -80,7 +80,7 @@ const mount = (sim: FakeSim, applyDefaults = vi.fn()) => {
 	return { ...rendered, applyDefaults };
 };
 
-const container = () => document.querySelector('.use-concurrency-container') as HTMLElement;
+const container = () => document.querySelector('[data-testid="use-concurrency-container"]') as HTMLElement;
 
 describe('SettingsDialog', () => {
 	it('renders every picker under the id the vanilla menu used', () => {
@@ -130,11 +130,11 @@ describe('SettingsDialog', () => {
 		const sim = new FakeSim();
 		mount(sim);
 
-		expect(document.querySelector('.last-used-rng-seed')!.textContent).toBe('0');
+		expect(document.querySelector('[data-testid="last-used-rng-seed"]')!.textContent).toBe('0');
 		act(() => {
 			sim.recordLastUsedRngSeed(1234);
 		});
-		await waitFor(() => expect(document.querySelector('.last-used-rng-seed')!.textContent).toBe('1234'));
+		await waitFor(() => expect(document.querySelector('[data-testid="last-used-rng-seed"]')!.textContent).toBe('1234'));
 	});
 
 	it('restores defaults, reports it and toasts', () => {
