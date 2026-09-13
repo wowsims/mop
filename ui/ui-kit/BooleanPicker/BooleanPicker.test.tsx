@@ -32,24 +32,25 @@ const configFor = (extra: Partial<BooleanPickerConfig<Settings>> = {}): BooleanP
 	...extra,
 });
 
-const checkbox = () => screen.getByRole('checkbox') as HTMLInputElement;
+const checkbox = () => screen.getByRole('checkbox') as HTMLButtonElement;
+const isChecked = (el: HTMLElement) => el.getAttribute('aria-checked') === 'true';
 
 describe('BooleanPicker', () => {
 	it('shows the source value and writes back through setValue', () => {
 		const settings = new Settings(true);
 		render(<BooleanPicker modObject={settings} config={configFor()} />);
-		expect(checkbox().checked).toBe(true);
+		expect(isChecked(checkbox())).toBe(true);
 
 		fireEvent.click(checkbox());
 		expect(settings.flag).toBe(false);
-		expect(checkbox().checked).toBe(false);
+		expect(isChecked(checkbox())).toBe(false);
 	});
 
 	it('re-renders when the source changes underneath it', () => {
 		const settings = new Settings(false);
 		render(<BooleanPicker modObject={settings} config={configFor()} />);
 		act(() => settings.set(true));
-		expect(checkbox().checked).toBe(true);
+		expect(isChecked(checkbox())).toBe(true);
 	});
 
 	it('subscribes once and unsubscribes on unmount', () => {
@@ -69,17 +70,17 @@ describe('BooleanPicker', () => {
 	it('disables the input and marks the root when enableWhen is false', () => {
 		const settings = new Settings();
 		render(<BooleanPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
-		expect(checkbox().disabled).toBe(true);
+		expect(checkbox().getAttribute('aria-disabled')).toBe('true');
 		expect(checkbox().closest('[data-testid="boolean-picker-root"]')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {
 		const settings = new Settings(false);
 		render(<BooleanPicker modObject={settings} config={configFor({ defaultValue: true })} />);
-		expect(checkbox().checked).toBe(true);
+		expect(isChecked(checkbox())).toBe(true);
 
 		act(() => settings.set(false));
-		expect(checkbox().checked).toBe(false);
+		expect(isChecked(checkbox())).toBe(false);
 	});
 
 	it('renders the same shape as the vanilla picker', () => {
@@ -87,7 +88,7 @@ describe('BooleanPicker', () => {
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'boolean-picker-root', 'form-check']));
-		expect([...root.children].map(el => el.tagName)).toEqual(['INPUT', 'LABEL', 'DIV']);
+		expect([...root.children].map(el => el.tagName)).toEqual(['SPAN', 'INPUT', 'LABEL', 'DIV']);
 		expect(root.querySelector('label')!.className).toBe('form-label');
 	});
 
@@ -96,7 +97,14 @@ describe('BooleanPicker', () => {
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ reverse: true, description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
 		expect(root.classList.contains('form-check-reverse')).toBe(true);
-		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
+		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SPAN', 'INPUT']);
+	});
+
+	it('toggles the value when the label is clicked', () => {
+		const settings = new Settings(false);
+		render(<BooleanPicker modObject={settings} config={configFor()} />);
+		fireEvent.click(screen.getByText('Enable Item Swap'));
+		expect(settings.flag).toBe(true);
 	});
 
 	// InputConfig types both of these as string | Element. The reforge panel was the last caller to

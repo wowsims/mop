@@ -1,4 +1,5 @@
-import { Input } from '@base-ui/react/input';
+import { Checkbox } from '@base-ui/react/checkbox';
+import { Icon } from '@ui-kit/Icon';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
 
@@ -13,14 +14,17 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	const { value, setValue, hidden, disabled } = useInput(modObject, config);
 
 	const input = (
-		<Input
-			type="checkbox"
+		<Checkbox.Root
 			id={config.id}
-			className="boolean-picker-input form-check-input"
+			className="boolean-picker-input form-check-input inline-flex items-center justify-center p-0"
+			data-testid="boolean-picker-input"
 			checked={value}
 			disabled={disabled}
-			onChange={event => setValue((event.target as HTMLInputElement).checked)}
-		/>
+			onCheckedChange={checked => setValue(checked)}>
+			<Checkbox.Indicator>
+				<Icon name="check" className="text-primary-foreground" />
+			</Checkbox.Indicator>
+		</Checkbox.Root>
 	);
 
 	return (

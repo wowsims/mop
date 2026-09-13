@@ -64,6 +64,11 @@
 		background-image: var(--form-check-box-bg-image);
 	}
 
+	&[data-checked] {
+		background-color: var(--color-primary);
+		border-color: var(--color-primary);
+	}
+
 	&:checked[type='radio'] {
 		background-color: var(--color-primary);
 		background-image: var(--form-check-radio-bg-image);
