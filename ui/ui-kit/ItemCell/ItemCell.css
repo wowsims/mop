@@ -9,7 +9,7 @@
 }
 
 .ui-item-picker-ilvl {
-	@apply absolute pl-px bg-[rgb(0_0_0/0.75)] text-ui z-1 pointer-events-none;
+	@apply absolute pl-px bg-black-75 text-ui z-1 pointer-events-none;
 }
 
 .ui-item-picker-sockets-container {

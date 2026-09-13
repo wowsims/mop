@@ -75,7 +75,7 @@ export const RotationTabBody = () => {
 							<div>
 								<RotationTypePicker />
 							</div>
-							<div className="grid grid-cols-[1fr_1fr] max-xl:grid-cols-1 gap-page">
+							<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
 								<ContentBlock className="rotation-settings" config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 									<SimpleRotationInputs />
 								</ContentBlock>

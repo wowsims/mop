@@ -39,7 +39,7 @@ const MenuSection = ({ name, className, children }: { name: string; className?: 
 		<div className="menu-section-header flex-1">
 			<h6 className="menu-section-title">{name}</h6>
 		</div>
-		<div className={clsx('menu-section-content flex flex-col flex-3', className ?? 'gap-(--spacing-stack)')}>{children}</div>
+		<div className={clsx('menu-section-content flex flex-col flex-3', className ?? 'gap-3')}>{children}</div>
 	</div>
 );
 
@@ -293,7 +293,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 			bodyGap="gap-3"
 			title={i18n.t('gear_tab.gear_picker.filters.title')}>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.general')}>
-				<div className="ilvl-filters grid grid-cols-[1fr_0_1fr] gap-x-(--modal-padding)">
+				<div className="ilvl-filters grid grid-cols-split gap-x-(--modal-padding)">
 					<NumberPicker<Sim>
 						modObject={sim}
 						config={{

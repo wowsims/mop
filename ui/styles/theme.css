@@ -38,6 +38,7 @@
 	--grid-template-columns-wide-narrow: 3fr 2fr;
 	--grid-template-columns-halves-wide: 1fr 1fr 2fr;
 	--grid-template-columns-label-value: 10ch 1fr;
+	--grid-template-columns-split: 1fr 0 1fr;
 
 	--color-black: #000;
 	--color-white: #fff;
@@ -169,10 +170,6 @@
 	--color-talent-full: #ffd100;
 	--color-talent-partial: #40bf40;
 
-	--color-white-5: rgb(255 255 255 / 0.05);
-	--color-white-20: rgb(255 255 255 / 0.2);
-	--color-white-80: rgb(255 255 255 / 0.8);
-
 	--animate-shimmer: loading-shimmer 6s linear infinite;
 	--animate-skeleton: character-stats-skeleton-shimmer 1.2s ease-in-out infinite;
 
@@ -245,6 +242,7 @@
 	--color-white-80: rgb(255 255 255 / 0.8);
 	--color-black-55: rgb(0 0 0 / 0.55);
 	--color-black-70: rgb(0 0 0 / 0.7);
+	--color-black-75: rgb(0 0 0 / 0.75);
 	--color-black-80: rgb(0 0 0 / 0.8);
 	--color-black-92: rgb(0 0 0 / 0.92);
 
