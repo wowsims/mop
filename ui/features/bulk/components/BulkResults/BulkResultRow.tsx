@@ -108,7 +108,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 						);
 					})}
 			</div>
-			<div className="bulk-results-actions">
+			<div className="bulk-results-actions flex justify-end flex-1">
 				<Button
 					className={clsx('bulk-equip-btn', isBaseResult && 'hidden')}
 					onClick={() => {
