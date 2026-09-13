@@ -199,7 +199,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						/>
 					</div>
 				)}
-				<Button variant="danger" className="selector-modal-remove-button" onClick={onRemove}>
+				<Button variant="danger" className="selector-modal-remove-button -mt-2 mr-4 -mb-2 ml-auto" onClick={onRemove}>
 					{removeButtonLabel(label, key => i18n.t(key))}
 				</Button>
 			</div>

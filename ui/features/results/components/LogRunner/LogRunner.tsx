@@ -244,8 +244,12 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					setGroups(next);
 					scrollListToTop();
 				}}>
-				<Button onClick={() => setExportOpen(true)}>{i18n.t('results_tab.details.logs.export_button')}</Button>
-				<Button onClick={scrollListToTop}>{i18n.t('results_tab.details.logs.top_button')}</Button>
+				<Button className="whitespace-nowrap" onClick={() => setExportOpen(true)}>
+					{i18n.t('results_tab.details.logs.export_button')}
+				</Button>
+				<Button className="whitespace-nowrap" onClick={scrollListToTop}>
+					{i18n.t('results_tab.details.logs.top_button')}
+				</Button>
 				<BooleanPicker modObject={showDebugHolder} config={showDebugConfig} />
 			</LogFloatingActionBar>
 			<Exporter

@@ -13,7 +13,7 @@ export interface ChartViewPickerProps {
 }
 
 const FLAT_PRIMARY_OUTLINE_CLASSES =
-	'border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground peer-checked:bg-primary peer-checked:border-primary peer-checked:text-primary-foreground';
+	'border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground peer-checked:bg-primary peer-checked:border-primary peer-checked:text-primary-foreground peer-focus-visible:shadow-[0_0_0_0.25rem_color-mix(in_srgb,var(--color-primary)_50%,transparent)]';
 
 /** Rotation or the DPS/resources chart. The two are alternatives, and the rotation is the default. */
 export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (

@@ -48,15 +48,6 @@
 				@include media-breakpoint-down(md) {
 					flex-direction: column-reverse;
 				}
-
-				.btn-group {
-					gap: calc(var(--apl-spacer) / 2);
-
-					.btn {
-						padding: calc(var(--apl-spacer) / 2);
-						font-size: 0.875rem;
-					}
-				}
 			}
 
 			& > .list-picker-item {

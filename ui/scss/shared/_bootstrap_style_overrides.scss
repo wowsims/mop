@@ -5,23 +5,6 @@
 	--bs-body-line-height: 1.25;
 }
 
-.btn-reset {
-	@include button-variant(
-		$background: transparent,
-		$border: transparent,
-		$color: map-get($link-colors, 'link-danger'),
-		$hover-background: transparent,
-		$hover-border: transparent,
-		$hover-color: $body-color,
-		$active-background: transparent,
-		$active-border: transparent,
-		$active-color: map-get($link-colors, 'link-danger'),
-		$disabled-background: transparent,
-		$disabled-border: transparent,
-		$disabled-color: rgba($body-color, 0.6)
-	);
-}
-
 .container {
 	height: 100%;
 	display: flex;
@@ -137,31 +120,3 @@
 	}
 }
 
-.sim-ui .btn-primary {
-	--bs-btn-bg: var(--color-primary);
-	--bs-btn-border-color: var(--color-primary);
-	--bs-btn-color: var(--color-primary-foreground);
-	--bs-btn-hover-bg: var(--color-primary-hover);
-	--bs-btn-hover-border-color: var(--color-primary-hover);
-	--bs-btn-hover-color: var(--color-primary-foreground);
-	--bs-btn-active-bg: var(--color-primary-active);
-	--bs-btn-active-border-color: var(--color-primary-active);
-	--bs-btn-active-color: var(--color-primary-foreground);
-	--bs-btn-disabled-bg: var(--color-primary-disabled);
-	--bs-btn-disabled-border-color: var(--color-primary-disabled);
-	--bs-btn-disabled-color: var(--color-primary-foreground);
-}
-
-.sim-ui .btn-outline-primary {
-	--bs-btn-border-color: var(--color-primary);
-	--bs-btn-color: var(--color-primary);
-	--bs-btn-hover-bg: var(--color-primary-hover);
-	--bs-btn-hover-border-color: var(--color-primary-hover);
-	--bs-btn-hover-color: var(--color-primary-foreground);
-	--bs-btn-active-bg: var(--color-primary-active);
-	--bs-btn-active-border-color: var(--color-primary-active);
-	--bs-btn-active-color: var(--color-primary-foreground);
-	--bs-btn-disabled-bg: var(--color-primary-disabled);
-	--bs-btn-disabled-border-color: var(--color-primary-disabled);
-	--bs-btn-disabled-color: var(--color-primary-foreground);
-}
