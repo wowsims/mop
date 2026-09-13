@@ -58,9 +58,9 @@ const rows = () => Array.from(document.querySelectorAll('.apl-group-variable-pic
 const labels = () => rows().map(row => row.querySelector('label')!.textContent);
 
 const clickItemAction = (index: number, action: string) => {
-	const item = document.querySelectorAll('.list-picker-item-container')[index];
+	const item = document.querySelectorAll('[data-testid="list-picker-item-container"]')[index];
 	act(() => {
-		fireEvent.click(item.querySelector('.list-picker-item-actions')!);
+		fireEvent.click(item.querySelector('[data-testid="list-picker-item-actions"]')!);
 	});
 	act(() => {
 		fireEvent.click(item.querySelector(action)!);
@@ -118,7 +118,7 @@ describe('GroupVariablesField', () => {
 		setup({ groupName: 'g1', placeholders: ['a', 'b'], existingVariables: [existingA] });
 		mount();
 
-		clickItemAction(0, '.list-picker-item-delete');
+		clickItemAction(0, '[data-testid="list-picker-item-delete"]');
 
 		expect(labels()).toEqual(['a:', 'b:']);
 		expect(parentValue.variables.map(entry => entry.name)).toEqual(['a', 'b']);
@@ -131,13 +131,13 @@ describe('GroupVariablesField', () => {
 		setup({ groupName: 'g1', placeholders: ['a', 'b'] });
 		mount();
 
-		const item = document.querySelectorAll('.list-picker-item-container')[0];
+		const item = document.querySelectorAll('[data-testid="list-picker-item-container"]')[0];
 		act(() => {
-			fireEvent.click(item.querySelector('.list-picker-item-actions')!);
+			fireEvent.click(item.querySelector('[data-testid="list-picker-item-actions"]')!);
 		});
 
 		// Delete is asserted present so a popover that never opened fails here rather than passing.
-		expect(item.querySelector('.list-picker-item-delete')).not.toBeNull();
+		expect(item.querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
 		expect(item.querySelector('.list-picker-item-copy')).toBeNull();
 	});
 
@@ -146,11 +146,11 @@ describe('GroupVariablesField', () => {
 		const touched = vi.spyOn(player, 'touchRotation');
 		mount();
 
-		const trigger = rows()[0].querySelector('.dropdown-picker-button') as HTMLButtonElement;
+		const trigger = rows()[0].querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
 		act(() => {
 			fireEvent.click(trigger);
 		});
-		const items = Array.from(document.querySelectorAll('.dropdown-picker-item'));
+		const items = Array.from(document.querySelectorAll('[data-testid="dropdown-picker-item"]'));
 		expect(items.map(el => el.textContent)).toEqual(['x', 'y']);
 		act(() => {
 			fireEvent.click(items[1]);
@@ -165,7 +165,7 @@ describe('GroupVariablesField', () => {
 		mount();
 
 		const label = rows()[0].querySelector('label') as HTMLLabelElement;
-		const trigger = rows()[0].querySelector('.dropdown-picker-button') as HTMLButtonElement;
+		const trigger = rows()[0].querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
 		expect(label.getAttribute('for')).toBe(trigger.id);
 		expect(label.getAttribute('for')).toBeTruthy();
 	});

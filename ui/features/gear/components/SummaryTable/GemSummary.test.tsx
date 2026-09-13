@@ -45,7 +45,7 @@ describe('GemSummary', () => {
 
 		expect(container.querySelector('.summary-table-root')).toBeNull();
 		expect(container.querySelector('.summary-table-reset-button')).toBeNull();
-		expect(container.querySelector('.content-block-body')).toBeNull();
+		expect(container.querySelector('[data-testid="content-block-body"]')).toBeNull();
 	});
 
 	it('strips the gems from the gear when reset is clicked', () => {

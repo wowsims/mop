@@ -63,8 +63,8 @@ const mount = (encounter: FakeEncounter) => render(<TargetsPicker encounter={enc
 
 const root = () => document.querySelector('.list-picker-root') as HTMLElement;
 const targetRoots = () => [...document.querySelectorAll<HTMLElement>('.target-picker-root')];
-const containers = () => [...root().querySelectorAll<HTMLElement>('.list-picker-item-container')];
-const actionsButton = (index: number) => containers()[index].querySelector('.list-picker-item-actions') as HTMLButtonElement;
+const containers = () => [...root().querySelectorAll<HTMLElement>('[data-testid="list-picker-item-container"]')];
+const actionsButton = (index: number) => containers()[index].querySelector('[data-testid="list-picker-item-actions"]') as HTMLButtonElement;
 const idsIn = (element: Element) => [...element.querySelectorAll('[id]')].map(node => node.id);
 
 beforeEach(() => {
@@ -99,10 +99,10 @@ describe('TargetsPicker', () => {
 		mount(encounter);
 
 		fireEvent.click(actionsButton(0));
-		expect(containers()[0].querySelector('.list-picker-item-popover')).not.toBeNull();
-		expect(containers()[0].querySelector('.list-picker-item-delete')).toBeNull();
+		expect(containers()[0].querySelector('[data-testid="list-picker-item-popover"]')).not.toBeNull();
+		expect(containers()[0].querySelector('[data-testid="list-picker-item-delete"]')).toBeNull();
 		fireEvent.click(actionsButton(1));
-		expect(containers()[1].querySelector('.list-picker-item-delete')).not.toBeNull();
+		expect(containers()[1].querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
 	});
 
 	it('removes a target through the menu and reports it as a remove-target event', () => {
@@ -110,7 +110,7 @@ describe('TargetsPicker', () => {
 		mount(encounter);
 
 		fireEvent.click(actionsButton(1));
-		act(() => void fireEvent.click(containers()[1].querySelector('.list-picker-item-delete')!));
+		act(() => void fireEvent.click(containers()[1].querySelector('[data-testid="list-picker-item-delete"]')!));
 
 		expect(encounter.targets).toHaveLength(1);
 		expect(trackEvent).toHaveBeenCalledWith(expect.objectContaining({ label: 'remove-target' }));
@@ -148,7 +148,7 @@ describe('TargetsPicker', () => {
 	it('disables the dual-wield miss penalty until dual wield is on', () => {
 		const encounter = new FakeEncounter([TargetProto.create({ dualWield: false })]);
 		mount(encounter);
-		const penalty = () => document.querySelector('#target-0-picker-dw-miss-penalty')!.closest('.input-root')!;
+		const penalty = () => document.querySelector('#target-0-picker-dw-miss-penalty')!.closest('[data-testid="boolean-picker-root"]')!;
 		expect(penalty().hasAttribute('data-disabled')).toBe(true);
 
 		act(() => encounter.modifyTarget(0, target => (target.dualWield = true)));
@@ -218,8 +218,8 @@ describe('TargetsPicker', () => {
 			const list = document.querySelector('.list-picker-compact')!;
 
 			expect(list.querySelector('.list-picker-new-button')).toBeNull();
-			expect(list.querySelector('.list-picker-item-actions')).toBeNull();
-			expect([...list.querySelectorAll('.list-picker-item-container')].every(item => !item.hasAttribute('data-draggable'))).toBe(true);
+			expect(list.querySelector('[data-testid="list-picker-item-actions"]')).toBeNull();
+			expect([...list.querySelectorAll('[data-testid="list-picker-item-container"]')].every(item => !item.hasAttribute('data-draggable'))).toBe(true);
 		});
 
 		it('writes a number input back to its own index', () => {

@@ -76,8 +76,8 @@ describe('FiltersMenu', () => {
 
 	it('portals into the sim root so the popup keeps the spec theme', () => {
 		setup();
-		expect(rootElem.querySelector('.sim-dialog-popup.filters-menu')).not.toBeNull();
-		expect(document.body.querySelector(':scope > .sim-dialog-popup')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="sim-dialog-popup"].filters-menu')).not.toBeNull();
+		expect(document.body.querySelector(':scope > [data-testid="sim-dialog-popup"]')).toBeNull();
 	});
 
 	it('renders nothing while closed', () => {
@@ -186,7 +186,7 @@ describe('FiltersMenu', () => {
 	it('closes on its own close button', () => {
 		const { onOpenChange } = setup();
 
-		fireEvent.click(rootElem.querySelector<HTMLButtonElement>('.filters-menu .sim-dialog-close')!);
+		fireEvent.click(rootElem.querySelector<HTMLButtonElement>('.filters-menu [data-testid="sim-dialog-close"]')!);
 		expect(onOpenChange).toHaveBeenCalledWith(false);
 	});
 });

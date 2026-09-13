@@ -88,8 +88,8 @@ const renderPanel = async () => {
 
 const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
 const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
-const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
+const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
@@ -116,7 +116,7 @@ describe('SavedSettings', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(Race.RaceOrc) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(savedSettingsModel.applySavedSettings).toHaveBeenCalledTimes(1);
 			expect(savedSettingsModel.applySavedSettings.mock.calls[0]![1].race).toBe(Race.RaceOrc);
@@ -127,7 +127,9 @@ describe('SavedSettings', () => {
 			presets = [{ name: 'Council', race: Race.RaceOrc, tooltip: 'For the council fight' }];
 			await renderPanel();
 
-			expect(chipNamed('Council').querySelector('.saved-data-set-name')!.getAttribute('data-tooltip-content')).toBe('For the council fight');
+			expect(chipNamed('Council').querySelector('[data-testid="saved-data-set-name"]')!.getAttribute('data-tooltip-content')).toBe(
+				'For the council fight',
+			);
 		});
 
 		// The item-swap preset bakes in a snapshot of load-time settings via `readSavedSettings(host)`,
@@ -170,7 +172,7 @@ describe('SavedSettings', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(Race.RaceOrc), Other: storedJson(Race.RaceHuman) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 			const [, confirm] = popoverButtons();
 			fireEvent.click(confirm);
 

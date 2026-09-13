@@ -89,8 +89,8 @@ const renderManager = async () => {
 
 const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
 const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
-const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
+const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverText = () => popover()?.querySelector('.sim-confirm-popover-message')?.textContent ?? '';
@@ -151,7 +151,7 @@ describe('SavedEpWeights', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			await renderManager();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(player.setEpWeights).toHaveBeenCalledTimes(1);
 			expect(player.getEpWeights().equals(weights(4))).toBe(true);
@@ -163,7 +163,7 @@ describe('SavedEpWeights', () => {
 			presets = [{ name: 'Default', epWeights: weights(3), onLoad }];
 			await renderManager();
 
-			fireEvent.click(chipNamed('Default').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Default').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(onLoad).toHaveBeenCalledWith(player);
 		});
@@ -173,7 +173,7 @@ describe('SavedEpWeights', () => {
 			presets = [{ name: 'Default', epWeights: weights(3) }];
 			await renderManager();
 
-			fireEvent.click(chipNamed('Mine').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Mine').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(nameInput().value).toBe('Mine');
 		});
@@ -220,7 +220,7 @@ describe('SavedEpWeights', () => {
 			await renderManager();
 
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Raiding']);
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 			expect(player.getEpWeights().equals(MIXED)).toBe(true);
 		});
 
@@ -239,7 +239,7 @@ describe('SavedEpWeights', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4), Other: storedJson(2) }));
 			await renderManager();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 			const [, confirm] = popoverButtons();
 			fireEvent.click(confirm);
 
@@ -252,7 +252,7 @@ describe('SavedEpWeights', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			await renderManager();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 			expect(popoverText()).not.toBe('');
 			const [cancel] = popoverButtons();
 			fireEvent.click(cancel);
@@ -266,7 +266,7 @@ describe('SavedEpWeights', () => {
 			presets = [{ name: 'Default', epWeights: weights(3) }];
 			await renderManager();
 
-			expect(chipNamed('Default').querySelector('.saved-data-set-delete')).toBeNull();
+			expect(chipNamed('Default').querySelector('[data-testid="saved-data-set-delete"]')).toBeNull();
 		});
 	});
 

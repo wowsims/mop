@@ -112,8 +112,8 @@ const renderPanel = async () => {
 
 const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
 const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
-const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
+const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
@@ -150,7 +150,7 @@ describe('SavedGear', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(player.setGear).toHaveBeenCalledTimes(1);
 			expect(player.setBonusStats).toHaveBeenCalledTimes(1);
@@ -173,7 +173,7 @@ describe('SavedGear', () => {
 				() => notified++,
 			);
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(notified).toBe(1);
 			unsub();
@@ -190,7 +190,7 @@ describe('SavedGear', () => {
 			expect(chipNamed('On').hasAttribute('data-disabled')).toBe(false);
 			expect(chipNamed('Off').hasAttribute('data-disabled')).toBe(true);
 
-			fireEvent.click(chipNamed('On').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('On').querySelector('[data-testid="saved-data-set-name"]')!);
 			expect(onLoad).toHaveBeenCalledWith(player);
 		});
 
@@ -198,7 +198,7 @@ describe('SavedGear', () => {
 			presets = [{ name: 'On', gear: gearWith(1), tooltip: 'Best in slot' }];
 			await renderPanel();
 
-			expect(chipNamed('On').querySelector('.saved-data-set-name')!.getAttribute('data-tooltip-content')).toBe('Best in slot');
+			expect(chipNamed('On').querySelector('[data-testid="saved-data-set-name"]')!.getAttribute('data-tooltip-content')).toBe('Best in slot');
 		});
 
 		it('holds the presets back until the sim is ready', () => {
@@ -224,7 +224,7 @@ describe('SavedGear', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4), Other: storedJson(2) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 			const [, confirm] = popoverButtons();
 			fireEvent.click(confirm);
 
@@ -237,7 +237,7 @@ describe('SavedGear', () => {
 			presets = [{ name: 'Default', gear: gearWith(1) }];
 			await renderPanel();
 
-			expect(chipNamed('Default').querySelector('.saved-data-set-delete')).toBeNull();
+			expect(chipNamed('Default').querySelector('[data-testid="saved-data-set-delete"]')).toBeNull();
 		});
 	});
 });

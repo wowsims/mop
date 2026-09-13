@@ -475,7 +475,7 @@ describe('EpWeightsDialog', () => {
 				expect.any(Function),
 			);
 
-			const progress = rootElem.querySelector('.progress-tracker-dialog')!;
+			const progress = rootElem.querySelector('[data-testid="progress-tracker-dialog"]')!;
 			expect(progress.hasAttribute('hidden')).toBe(false);
 			expect(popup().hasAttribute('hidden')).toBe(false);
 			// Read off the *outer* popup: Base UI counts the dialogs nested inside it, and it only counts
@@ -484,8 +484,8 @@ describe('EpWeightsDialog', () => {
 			expect((popup() as HTMLElement).style.getPropertyValue('--nested-dialogs')).toBe('1');
 
 			act(() => report!({ completedSims: 2, totalSims: 8, completedIterations: 250, totalIterations: 1000 }));
-			expect(progress.querySelector('.progress-tracker-modal-progress-text')!.textContent).toBe('250/1000');
-			expect(progress.querySelector('.progress-tracker-modal-progress-title')!.textContent).toContain('2 / 8');
+			expect(progress.querySelector('[data-testid="progress-tracker-modal-progress-text"]')!.textContent).toBe('250/1000');
+			expect(progress.querySelector('[data-testid="progress-tracker-modal-progress-title"]')!.textContent).toContain('2 / 8');
 
 			await act(async () =>
 				finish!(
@@ -496,7 +496,7 @@ describe('EpWeightsDialog', () => {
 				),
 			);
 
-			expect(rootElem.querySelector('.progress-tracker-dialog')).toBeNull();
+			expect(rootElem.querySelector('[data-testid="progress-tracker-dialog"]')).toBeNull();
 			const strength = rowFor('Strength');
 			expect(strength.querySelector('.type-weight .results-avg')!.textContent).toBe('2.00');
 			expect(strength.querySelector('.type-ep .results-avg')!.textContent).toBe('1.00');
@@ -564,7 +564,7 @@ describe('EpWeightsDialog', () => {
 			abortType.mockClear();
 
 			await act(async () => {
-				fireEvent.click(rootElem.querySelector('button.progress-tracker-modal-cancel-btn')!);
+				fireEvent.click(rootElem.querySelector('button[data-testid="progress-tracker-modal-cancel-btn"]')!);
 			});
 
 			expect(abortType).toHaveBeenCalledTimes(1);
@@ -614,7 +614,7 @@ describe('EpWeightsDialog', () => {
 			expect(calculate().disabled).toBe(true);
 			// The pre-run abort has already fired; this counts only the one the close triggers.
 			abortType.mockClear();
-			const closeButton = popup().querySelector<HTMLButtonElement>('button.sim-dialog-close')!;
+			const closeButton = popup().querySelector<HTMLButtonElement>('button[data-testid="sim-dialog-close"]')!;
 
 			await act(async () => {
 				fireEvent.click(closeButton);
@@ -635,7 +635,7 @@ describe('EpWeightsDialog', () => {
 			});
 			expect(toasts).toEqual([{ variant: 'error', body: 'sim exploded' }]);
 			expect(calculate().disabled).toBe(false);
-			expect(rootElem.querySelector('.progress-tracker-dialog')).toBeNull();
+			expect(rootElem.querySelector('[data-testid="progress-tracker-dialog"]')).toBeNull();
 		});
 	});
 
@@ -645,7 +645,7 @@ describe('EpWeightsDialog', () => {
 		abortType.mockClear();
 
 		await act(async () => {
-			fireEvent.click(popup().querySelector('button.sim-dialog-close')!);
+			fireEvent.click(popup().querySelector('button[data-testid="sim-dialog-close"]')!);
 		});
 		expect(openChanges).toEqual([false]);
 		expect(abortType).not.toHaveBeenCalled();

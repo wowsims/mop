@@ -104,7 +104,7 @@ describe('SelectorModal', () => {
 
 	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.selector-modal-tabs .nav-link'));
 	const openPanes = () => Array.from(document.querySelectorAll<HTMLElement>('.selector-modal-tab-pane.active [data-pane]')).map(pane => pane.dataset.pane);
-	const popup = () => document.querySelector('.sim-dialog-popup.selector-modal')!;
+	const popup = () => document.querySelector('[data-testid="sim-dialog-popup"].selector-modal')!;
 
 	beforeEach(() => {
 		openSpy.mockClear();

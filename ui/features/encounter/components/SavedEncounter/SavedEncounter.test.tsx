@@ -84,8 +84,8 @@ const renderPanel = async () => {
 
 const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
 const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
-const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
+const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
@@ -112,7 +112,7 @@ describe('SavedEncounter', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Council: storedJson(400) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Council').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Council').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(encounter.fromProto).toHaveBeenCalledTimes(1);
 			expect(encounter.fromProto.mock.calls[0]![0].duration).toBe(400);
@@ -123,7 +123,7 @@ describe('SavedEncounter', () => {
 			presets = [{ name: 'Council', encounter: encounterWith(400), tooltip: 'Tank swaps at 3s' }];
 			await renderPanel();
 
-			expect(chipNamed('Council').querySelector('.saved-data-set-name')!.getAttribute('data-tooltip-content')).toBe('Tank swaps at 3s');
+			expect(chipNamed('Council').querySelector('[data-testid="saved-data-set-name"]')!.getAttribute('data-tooltip-content')).toBe('Tank swaps at 3s');
 		});
 
 		// Encounter presets carry only `tooltip`, never `enableWhen`/`onLoad`. Adding either back here
@@ -158,7 +158,7 @@ describe('SavedEncounter', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Council: storedJson(400), Other: storedJson(200) }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Council').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Council').querySelector('[data-testid="saved-data-set-delete"]')!);
 			const [, confirm] = popoverButtons();
 			fireEvent.click(confirm);
 

@@ -65,7 +65,7 @@ describe('ReforgePanel', () => {
 	it('mounts no progress dialog until a run starts', () => {
 		renderPanel();
 
-		expect(document.querySelector('.progress-tracker-dialog')).toBeNull();
+		expect(document.querySelector('[data-testid="progress-tracker-dialog"]')).toBeNull();
 	});
 
 	it('builds the body and tracks the page view when the trigger opens the popover', async () => {

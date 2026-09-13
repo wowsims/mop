@@ -95,7 +95,7 @@ describe('LogRunner', () => {
 		const { container } = mount();
 
 		expect(container.querySelector('.log-runner-root')).not.toBeNull();
-		expect(container.querySelector('.log-runner-sticky > .log-search > .search-bar-root')).not.toBeNull();
+		expect(container.querySelector('.log-runner-sticky > .log-search > [data-testid="search-bar-root"]')).not.toBeNull();
 		expect([...container.querySelectorAll('.log-runner-header > div')].map(cell => cell.textContent)).toEqual([
 			'results_tab.details.logs.time_column',
 			'results_tab.details.logs.event_column',

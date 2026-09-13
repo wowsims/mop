@@ -24,7 +24,9 @@ vi.mock('@sim/state/subscriptions', async () => {
 
 // Both take a live player and are covered by their own suites.
 vi.mock('@ui-kit/IconPicker', () => ({
-	IconPicker: ({ config }: { config: { inline?: boolean } }) => <div className="icon-picker-root" data-inline={String(!!config.inline)} />,
+	IconPicker: ({ config }: { config: { inline?: boolean } }) => (
+		<div className="icon-picker-root" data-testid="icon-picker-root" data-inline={String(!!config.inline)} />
+	),
 }));
 vi.mock('../InputPicker', () => ({
 	InputPicker: ({ config }: { config: { id: string; inline?: boolean } }) => (
@@ -43,7 +45,7 @@ const mount = (section: Partial<CustomSectionConfig<any>>) => {
 			<CustomSection section={{ id: 'totems', title: 'Totems', ...section } as CustomSectionConfig<any>} />
 		</SimHostProvider>,
 	);
-	return container.querySelector('.content-block') as HTMLElement;
+	return container.querySelector('[data-testid="content-block"]') as HTMLElement;
 };
 
 describe('CustomSection', () => {
@@ -62,7 +64,7 @@ describe('CustomSection', () => {
 	});
 
 	it('renders the title into the block header', () => {
-		expect(mount({}).querySelector('.content-block-title')!.textContent).toBe('Totems');
+		expect(mount({}).querySelector('[data-testid="content-block-title"]')!.textContent).toBe('Totems');
 	});
 
 	it('renders its icons and inputs into the block body, both forced inline', () => {
@@ -71,9 +73,9 @@ describe('CustomSection', () => {
 			inputs: [{ id: 'disable-immolate', type: 'boolean' }] as never,
 			iconGroupClassName: 'totem-dropdowns-container',
 		});
-		const body = block.querySelector('.content-block-body')!;
+		const body = block.querySelector('[data-testid="content-block-body"]')!;
 		expect(body.querySelector('.picker-group.totem-dropdowns-container.icon-group')).not.toBeNull();
-		expect(body.querySelector('.icon-picker-root')!.getAttribute('data-inline')).toBe('true');
+		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-inline')).toBe('true');
 		expect(body.querySelector('.input-picker-stub')!.getAttribute('data-inline')).toBe('true');
 	});
 
@@ -88,7 +90,7 @@ describe('CustomSection', () => {
 	});
 
 	it('unmounts and remounts the block as the player changes', () => {
-		const block = () => document.querySelector('.content-block');
+		const block = () => document.querySelector('[data-testid="content-block"]');
 		mount({ when: ((subject: typeof player) => subject.shown) as unknown as CustomSectionConfig<any>['when'] });
 		expect(block()).toBeTruthy();
 

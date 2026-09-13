@@ -1,6 +1,6 @@
-import { SimHostProvider } from '@sim/context/SimHostContext';
 import { Glyphs } from '@generated/proto/common';
 import { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { createSimStore, patchKeyed, PLAYER_FIELDS, type PlayerSlice, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import { act, fireEvent, render } from '@testing-library/react';
@@ -101,8 +101,8 @@ const renderPanel = async () => {
 
 const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
 const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} .saved-data-set-chip`)];
-const chipNamed = (name: string) => [...document.querySelectorAll('.saved-data-set-chip')].find(chip => chip.textContent?.startsWith(name))!;
+const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverText = () => popover()?.querySelector('.sim-confirm-popover-message')?.textContent ?? '';
@@ -140,7 +140,7 @@ describe('SavedTalents', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson('111') }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(player.setTalentsString).toHaveBeenCalledWith('111');
 			expect(player.setGlyphs).toHaveBeenCalledTimes(1);
@@ -159,7 +159,7 @@ describe('SavedTalents', () => {
 				() => notified++,
 			);
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-name"]')!);
 
 			expect(notified).toBe(1);
 			unsub();
@@ -170,16 +170,16 @@ describe('SavedTalents', () => {
 			presets = [{ name: 'Default', data: talentsWith('222'), onLoad }];
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Default').querySelector('.saved-data-set-name')!);
+			fireEvent.click(chipNamed('Default').querySelector('[data-testid="saved-data-set-name"]')!);
 			expect(onLoad).toHaveBeenCalledWith(player);
-			expect(chipNamed('Default').querySelector('.saved-data-set-delete')).toBeNull();
+			expect(chipNamed('Default').querySelector('[data-testid="saved-data-set-delete"]')).toBeNull();
 		});
 
 		it('substitutes {{name}} in the delete-confirm message', async () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson('111') }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 
 			expect(popoverText()).toBe("Delete saved talents 'Raiding'?");
 		});
@@ -207,7 +207,7 @@ describe('SavedTalents', () => {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson('111'), Other: storedJson('222') }));
 			await renderPanel();
 
-			fireEvent.click(chipNamed('Raiding').querySelector('.saved-data-set-delete')!);
+			fireEvent.click(chipNamed('Raiding').querySelector('[data-testid="saved-data-set-delete"]')!);
 			const [, confirm] = popoverButtons();
 			fireEvent.click(confirm);
 

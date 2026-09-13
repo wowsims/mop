@@ -57,9 +57,9 @@ const mount = (player: FakePlayer) => {
 	return render(<RotationTypePicker />);
 };
 
-const root = () => document.querySelector('.dropdown-picker-root') as HTMLElement;
-const trigger = () => root().querySelector('.dropdown-picker-button') as HTMLButtonElement;
-const items = () => [...root().querySelectorAll<HTMLElement>('.dropdown-picker-item')];
+const root = () => document.querySelector('[data-testid="dropdown-picker-root"]') as HTMLElement;
+const trigger = () => root().querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
+const items = () => [...root().querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')];
 const open = () => act(() => void fireEvent.click(trigger()));
 
 beforeEach(() => source.listeners.clear());

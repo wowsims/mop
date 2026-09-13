@@ -129,7 +129,7 @@ describe('Importer', () => {
 
 	it('puts the description above the textarea, inside .import-description', () => {
 		renderImporter();
-		const body = rootElem.querySelector('.sim-dialog-body > div')!;
+		const body = rootElem.querySelector('[data-testid="sim-dialog-body"] > div')!;
 		expect(Array.from(body.children).map(el => el.className)).toEqual(['import-description', 'importer-textarea form-control']);
 		expect(body.querySelector('.import-description')!.textContent).toBe('how to');
 	});

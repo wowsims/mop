@@ -43,7 +43,8 @@ const mount = (initial: Partial<Glyphs> = {}) => {
 	);
 };
 
-const slots = (kind: 'major' | 'minor') => Array.from(document.querySelectorAll<HTMLElement>(`.${kind}-glyphs .content-block-body .glyph-picker-root`));
+const slots = (kind: 'major' | 'minor') =>
+	Array.from(document.querySelectorAll<HTMLElement>(`.${kind}-glyphs [data-testid="content-block-body"] .glyph-picker-root`));
 const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('.glyph-link')!;
 const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('.selector-modal-list .selector-modal-list-item'));
 const searchBox = () => document.querySelector<HTMLInputElement>('.selector-modal-search')!;

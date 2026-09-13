@@ -47,7 +47,10 @@ const configForRoot = () => ({
 });
 
 const roots = () => Array.from(document.querySelectorAll('.apl-value-picker-root'));
-const kindTriggers = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.apl-value-picker-root > .dropdown-picker-root .dropdown-picker-button'));
+const kindTriggers = () =>
+	Array.from(
+		document.querySelectorAll<HTMLButtonElement>('.apl-value-picker-root > [data-testid="dropdown-picker-root"] [data-testid="dropdown-picker-button"]'),
+	);
 
 beforeEach(() => {
 	document.body.innerHTML = '';

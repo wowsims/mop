@@ -19,9 +19,9 @@ const resultWith = (...targets: Array<{ index: number; iconUrl?: string; classCo
 
 const mount = (target: number, onTargetChange = vi.fn()) => render(<ResultsFilter target={target} onTargetChange={onTargetChange} />);
 
-const picker = () => document.querySelector('.results-filter-root > .unit-picker-root') as HTMLElement;
-const trigger = () => picker().querySelector('.dropdown-picker-button') as HTMLButtonElement;
-const items = () => [...picker().querySelectorAll<HTMLElement>('.dropdown-picker-item')];
+const picker = () => document.querySelector('.results-filter-root > [data-testid="unit-picker-root"]') as HTMLElement;
+const trigger = () => picker().querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
+const items = () => [...picker().querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')];
 const open = () => act(() => void fireEvent.click(trigger()));
 
 beforeEach(() => {
@@ -56,10 +56,10 @@ describe('ResultsFilter', () => {
 		mount(ALL_UNITS);
 		await open();
 
-		expect(items()[1].querySelector('img.unit-picker-item-icon')!.getAttribute('src')).toBe('boss.jpg');
+		expect(items()[1].querySelector('img[data-testid="unit-picker-item-icon"]')!.getAttribute('src')).toBe('boss.jpg');
 		expect(items()[1].className).toContain('text-class-warrior');
 		// All Targets carries an empty icon url on purpose, so it draws nothing.
-		expect(items()[0].querySelector('.unit-picker-item-icon')).toBeNull();
+		expect(items()[0].querySelector('[data-testid="unit-picker-item-icon"]')).toBeNull();
 	});
 
 	it('reports the encounter index of the chosen target, and ALL_UNITS for all targets', async () => {

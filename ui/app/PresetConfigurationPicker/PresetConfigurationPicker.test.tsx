@@ -26,7 +26,7 @@ const setup = (builds: Array<Record<string, unknown>>, categories = ['gear']) =>
 	);
 };
 
-const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('.saved-data-set-chip')];
+const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('[data-testid="saved-data-set-chip"]')];
 
 beforeEach(() => {
 	applyBuild.mockClear();
@@ -42,8 +42,8 @@ describe('PresetConfigurationPicker', () => {
 		]);
 
 		expect(chips(container)).toHaveLength(2);
-		expect(chips(container).map(chip => chip.querySelector('.saved-data-set-name')?.textContent)).toEqual(['P1', 'P2']);
-		expect(chips(container)[0].querySelector('.saved-data-set-name')?.getAttribute('role')).toBe('button');
+		expect(chips(container).map(chip => chip.querySelector('[data-testid="saved-data-set-name"]')?.textContent)).toEqual(['P1', 'P2']);
+		expect(chips(container)[0].querySelector('[data-testid="saved-data-set-name"]')?.getAttribute('role')).toBe('button');
 	});
 
 	// The picker is mounted in four places with different category lists, and each shows only the
@@ -76,7 +76,7 @@ describe('PresetConfigurationPicker', () => {
 			{ name: 'P2', gear: {} },
 		]);
 
-		fireEvent.click(chips(container)[1].querySelector('.saved-data-set-name')!);
+		fireEvent.click(chips(container)[1].querySelector('[data-testid="saved-data-set-name"]')!);
 
 		expect(applyBuild).toHaveBeenCalledTimes(1);
 		expect((applyBuild.mock.calls[0][0] as { name: string }).name).toBe('P2');
@@ -87,7 +87,7 @@ describe('PresetConfigurationPicker', () => {
 		const { container } = setup([]);
 
 		expect(container.querySelector('.preset-configuration-picker-root')).toBeNull();
-		expect(container.querySelector('.content-block')).toBeNull();
+		expect(container.querySelector('[data-testid="content-block"]')).toBeNull();
 	});
 
 	// Before the sim is ready, the block exists but is empty.
@@ -95,7 +95,7 @@ describe('PresetConfigurationPicker', () => {
 		ready = false;
 		const { container } = setup([{ name: 'P1', gear: {} }]);
 
-		expect(container.querySelector('.content-block')).not.toBeNull();
+		expect(container.querySelector('[data-testid="content-block"]')).not.toBeNull();
 		expect(chips(container)).toHaveLength(0);
 	});
 });

@@ -75,7 +75,9 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 	return { view, equipItem, openTab };
 };
 
-const icons = (container: Element) => [...container.querySelectorAll<HTMLAnchorElement>('.icon-picker-root > a.icon-picker-button')];
+const icons = (container: Element) => [
+	...container.querySelectorAll<HTMLAnchorElement>('[data-testid="icon-picker-root"] > a[data-testid="icon-picker-button"]'),
+];
 
 beforeEach(() => {
 	released.length = 0;
@@ -86,7 +88,7 @@ describe('ItemSwapIcon', () => {
 	it('renders one picker root per swap slot, unfilled and carrying the slot placeholder', () => {
 		const { view } = setup();
 
-		expect(view.container.querySelectorAll('.icon-picker-root.icon-picker')).toHaveLength(SLOTS.length);
+		expect(view.container.querySelectorAll('[data-testid="icon-picker-root"].icon-picker')).toHaveLength(SLOTS.length);
 		expect(icons(view.container).map(icon => icon.hasAttribute('data-active'))).toEqual([false, false, false, false]);
 		expect(icons(view.container)[0].style.backgroundImage).toContain('/mop/assets/item_slots/mainhand.jpg');
 	});
@@ -113,13 +115,12 @@ describe('ItemSwapIcon', () => {
 	it('hangs the sockets off the picker root rather than inside the icon anchor', () => {
 		const { view } = setup(new Map([[ItemSlot.ItemSlotMainHand, equippedItem(1234, [GemColor.GemColorRed, GemColor.GemColorBlue])]]));
 
-		const root = view.container.querySelector('.icon-picker-root')!;
-		expect([...root.children].map(child => `${child.tagName.toLowerCase()}.${[...child.classList].sort().join('.')}`)).toEqual([
-			'a.active.icon-picker-button',
-			'div.item-picker-sockets-container',
-		]);
+		const root = view.container.querySelector('[data-testid="icon-picker-root"]')!;
+		expect([...root.children].map(child => child.tagName.toLowerCase())).toEqual(['a', 'div']);
+		expect(root.querySelector('[data-testid="icon-picker-button"][data-active]')).toBe(root.children[0]);
+		expect(root.children[1].classList.contains('item-picker-sockets-container')).toBe(true);
 		expect(root.querySelectorAll('.item-picker-sockets-container .gem-socket-container')).toHaveLength(2);
-		expect(root.querySelector('.icon-picker-button a')).toBeNull();
+		expect(root.querySelector('[data-testid="icon-picker-button"] a')).toBeNull();
 	});
 
 	it('keeps the sockets container on an empty slot, so both builds serialise the same element', () => {

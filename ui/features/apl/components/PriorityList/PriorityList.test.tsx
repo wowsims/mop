@@ -47,7 +47,7 @@ const mount = () =>
 	);
 
 const listRoot = () => document.querySelector('.list-picker-root') as HTMLElement;
-const rowContainers = () => Array.from(document.querySelectorAll('.list-picker-item-container'));
+const rowContainers = () => Array.from(document.querySelectorAll('[data-testid="list-picker-item-container"]'));
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -74,7 +74,7 @@ describe('PriorityList', () => {
 		mount();
 
 		const row = rowContainers()[0];
-		const header = row.querySelector('.list-picker-item-header') as HTMLElement;
+		const header = row.querySelector('[data-testid="list-picker-item-header"]') as HTMLElement;
 		const headerExtras = Array.from(header.querySelectorAll('.apl-validations, .hide-picker-root'));
 		expect(headerExtras.map(el => el.className.split(' ')[1])).toEqual(['apl-validations', 'hide-picker-root']);
 
@@ -125,10 +125,10 @@ describe('PriorityList', () => {
 		mount();
 
 		act(() => {
-			fireEvent.click(rowContainers()[0].querySelector(':scope > .list-picker-item-header > .list-picker-item-actions')!);
+			fireEvent.click(rowContainers()[0].querySelector(':scope > [data-testid="list-picker-item-header"] > [data-testid="list-picker-item-actions"]')!);
 		});
 		act(() => {
-			fireEvent.click(rowContainers()[0].querySelector('.list-picker-item-delete')!);
+			fireEvent.click(rowContainers()[0].querySelector('[data-testid="list-picker-item-delete"]')!);
 		});
 
 		expect(player.aplRotation.priorityList).toHaveLength(1);

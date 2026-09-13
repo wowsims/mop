@@ -92,9 +92,9 @@ const becomeReady = async () => {
 };
 
 const blocks = (container: HTMLElement, column: string) =>
-	[...container.querySelectorAll(`.${column} > .content-block`)].map(block => [...block.classList].find(name => name !== 'content-block'));
+	[...container.querySelectorAll(`.${column} > [data-testid="content-block"]`)].map(block => [...block.classList].find(name => name !== 'content-block'));
 
-const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > .content-block-body`);
+const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > [data-testid="content-block-body"]`);
 
 describe('SettingsTabBody', () => {
 	beforeEach(() => {
@@ -107,7 +107,7 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('.settings-tab-right.tab-panel-right')).not.toBeNull();
 		expect(container.querySelectorAll('.tab-panel-col')).toHaveLength(3);
 		// A block that rendered early would read the database before it loads.
-		expect(container.querySelectorAll('.content-block')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-testid="content-block"]')).toHaveLength(0);
 	});
 
 	it('fills each column in the order the vanilla builder appended', async () => {
@@ -159,7 +159,7 @@ describe('SettingsTabBody', () => {
 		lists.value = { buffs: [{}], debuffs: [{}], externalDamage: [], externalDefensive: [{}] };
 		const container = mount();
 		await becomeReady();
-		expect(container.querySelectorAll('.settings-left-col-3 > .content-block')).toHaveLength(3);
+		expect(container.querySelectorAll('.settings-left-col-3 > [data-testid="content-block"]')).toHaveLength(3);
 		// The one that survived is still the defensive block, so the guards are not interchangeable.
 		expect(container.querySelectorAll('.stat-option-icons-root')).toHaveLength(2);
 	});
