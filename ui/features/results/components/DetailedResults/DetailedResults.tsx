@@ -197,7 +197,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} />
 				</div>
 				<div className="tab-content">
-					<div id="noResultsTab" className="tab-pane dr-tab-content fade active show">
+					<div id="noResultsTab" className="tab-pane dr-tab-content fade active show transition-[opacity] duration-150 ease-linear opacity-100">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
 					<DetailedResultsPane id="damageTab" className="damage-content" contentClassName="damage-metrics" topline histogram>

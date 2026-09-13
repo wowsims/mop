@@ -13,6 +13,7 @@ import { mod } from '@sim/utils/math';
 import { Dialog } from '@ui-kit/Dialog';
 import { HelpText } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
+import { TabNav } from '@ui-kit/TabNav';
 import clsx from 'clsx';
 import { type KeyboardEvent, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
@@ -122,31 +123,23 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 						{rail && <SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />}
 						<div>
 							<h6 className="selector-modal-title">{slot !== null ? (translateSlotName(slot) ?? '') : ''}</h6>
-							<Tabs.List className="nav nav-tabs selector-modal-tabs" activateOnFocus render={<ul />}>
-								{tabs.map(tab => (
-									<li key={tab.label} className="nav-item" role="presentation">
-										{/* Base UI's own `aria-controls` would point at nothing: `Tabs.Panel` registers a generated id rather than the one it renders. */}
-										<Tabs.Tab
-											value={tab.label}
-											id={tabId(tab.label)}
-											aria-controls={paneId(tab.label)}
-											data-label={tab.label}
-											className={tabState =>
-												clsx(
-													'nav-link selector-modal-item-tab',
-													tabState.active && 'active',
-													tab.socketIdx !== undefined && 'selector-modal-tab-gem',
-												)
-											}>
-											{tab.socketIdx === undefined ? (
-												getTranslatedTabLabel(tab.label)
-											) : (
-												<TabGemIcon socketColor={tab.socketColor} gem={equippedItem?.gems[tab.socketIdx] ?? null} />
-											)}
-										</Tabs.Tab>
-									</li>
-								))}
-							</Tabs.List>
+							<TabNav
+								bordered={false}
+								className="selector-modal-tabs"
+								tabs={tabs.map(tab => ({
+									id: tab.label,
+									label:
+										tab.socketIdx === undefined ? (
+											getTranslatedTabLabel(tab.label)
+										) : (
+											<TabGemIcon socketColor={tab.socketColor} gem={equippedItem?.gems[tab.socketIdx] ?? null} />
+										),
+									tabId: tabId(tab.label),
+									ariaControls: paneId(tab.label),
+									dataLabel: tab.label,
+									buttonClassName: clsx('selector-modal-item-tab', tab.socketIdx !== undefined && 'selector-modal-tab-gem'),
+								}))}
+							/>
 						</div>
 					</>
 				}>
@@ -162,7 +155,10 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								value={tab.label}
 								id={paneId(tab.label)}
 								keepMounted
-								className={clsx('selector-modal-tab-pane tab-pane fade', tab.label === activeTab?.label && 'active show')}>
+								className={clsx(
+									'selector-modal-tab-pane tab-pane fade fade-in-out',
+									tab.label === activeTab?.label ? 'active show' : 'opacity-0',
+								)}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />
 							</Tabs.Panel>
 						))}

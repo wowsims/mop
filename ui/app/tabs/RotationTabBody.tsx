@@ -14,7 +14,7 @@ import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { tabPaneClass } from '@ui-kit/tab_pane_class';
+import { TabPanel } from '@ui-kit/TabNav';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -102,9 +102,9 @@ export const RotationTabBody = () => {
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
-							<Tabs.Panel key={pane.id} value={pane.id} id={pane.id} keepMounted className={tabPaneClass}>
+							<TabPanel key={pane.id} value={pane.id}>
 								<Body />
-							</Tabs.Panel>
+							</TabPanel>
 						);
 					})}
 				</div>

@@ -15,9 +15,8 @@ import { REPO_RELEASES_URL } from '@sim/constants/other';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Icon } from '@ui-kit/Icon';
-import { tabPaneClass } from '@ui-kit/tab_pane_class';
+import { TabNav, TabPanel } from '@ui-kit/TabNav';
 import { LocaleHtml } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
 const PANES = [
@@ -43,18 +42,9 @@ export const BulkTabBody = () => {
 		<OpenSelectorModalContext value={selector.openTab}>
 			<div className="bulk-tab-left tab-panel-left">
 				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
-					<Tabs.List className="nav nav-tabs" activateOnFocus render={<ul />}>
-						{PANES.map(pane => (
-							<li key={pane.id} className="nav-item" role="presentation">
-								{/* Base UI's own `aria-controls` would point at nothing: `Tabs.Panel` registers a generated id rather than the one it renders. */}
-								<Tabs.Tab value={pane.id} aria-controls={pane.id} className={state => clsx('nav-link', state.active && 'active')}>
-									{i18n.t(pane.labelKey)}
-								</Tabs.Tab>
-							</li>
-						))}
-					</Tabs.List>
+					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
 					<div className="tab-content">
-						<Tabs.Panel value="bulkSetupTab" id="bulkSetupTab" keepMounted className={tabPaneClass}>
+						<TabPanel value="bulkSetupTab">
 							<p className="mb-0">
 								<LocaleHtml html={i18n.t('bulk_tab.description')} />
 							</p>
@@ -90,10 +80,10 @@ export const BulkTabBody = () => {
 							</div>
 							<BulkItemSearch ready={ready} />
 							<BulkPickerGroups />
-						</Tabs.Panel>
-						<Tabs.Panel value="bulkResultsTab" id="bulkResultsTab" keepMounted className={tabPaneClass}>
+						</TabPanel>
+						<TabPanel value="bulkResultsTab">
 							<BulkResults />
-						</Tabs.Panel>
+						</TabPanel>
 					</div>
 				</Tabs.Root>
 			</div>

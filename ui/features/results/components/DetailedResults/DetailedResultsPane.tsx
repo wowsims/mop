@@ -1,6 +1,6 @@
-import { Tabs } from '@base-ui/react/tabs';
-import { tabPaneClass } from '@ui-kit/tab_pane_class';
+import { TabPanel } from '@ui-kit/TabNav';
 import type { ClassValue } from 'clsx';
+import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
 import { DpsHistogram } from '../DpsHistogram';
@@ -16,7 +16,7 @@ export interface DetailedResultsPaneProps {
 }
 
 export const DetailedResultsPane = ({ id, className, contentClassName, topline, histogram, children }: DetailedResultsPaneProps) => (
-	<Tabs.Panel value={id} id={id} keepMounted className={state => tabPaneClass(state, 'dr-tab-content', className)}>
+	<TabPanel value={id} className={clsx('dr-tab-content', className)}>
 		{topline && (
 			<div className="dr-row topline-results">
 				<ToplineResults />
@@ -30,5 +30,5 @@ export const DetailedResultsPane = ({ id, className, contentClassName, topline, 
 				<DpsHistogram />
 			</div>
 		)}
-	</Tabs.Panel>
+	</TabPanel>
 );

@@ -137,38 +137,6 @@
 	}
 }
 
-.nav-tabs {
-	.nav-item {
-		display: flex;
-		align-items: center;
-
-		.nav-link {
-			height: 100%;
-			margin-bottom: 0;
-			border: 0;
-			display: flex;
-			align-items: center;
-			font-weight: bold;
-			white-space: nowrap;
-			cursor: pointer;
-
-			&.active {
-				position: relative;
-
-				&::after {
-					content: '';
-					position: absolute;
-					height: 2px;
-					background: $nav-tabs-link-active-color;
-					bottom: 0;
-					left: 0;
-					right: 0;
-				}
-			}
-		}
-	}
-}
-
 .sim-ui .btn-primary {
 	--bs-btn-bg: var(--color-primary);
 	--bs-btn-border-color: var(--color-primary);

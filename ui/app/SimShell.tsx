@@ -108,7 +108,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									data-testid="sim-header"
 									data-stuck={stuck ? '' : undefined}>
 									<div className="sim-header-container" data-testid="sim-header-container">
-										<div className="sim-tabs-mount" data-testid="sim-tabs-mount">
+										<div className="sim-tabs-mount contents" data-testid="sim-tabs-mount">
 											{host && <SimTabsSection host={host} />}
 										</div>
 										<div className="import-export nav" data-testid="import-export">

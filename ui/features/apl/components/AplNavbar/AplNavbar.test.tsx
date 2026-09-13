@@ -51,7 +51,7 @@ describe('AplNavbar', () => {
 	it('puts the rotation-type picker ahead of the strip, in one sticky row', () => {
 		const { container } = mount();
 		const root = container.querySelector('.apl-rotation-navbar')!;
-		expect([...root.children].map(child => child.className)).toEqual(['rotation-type-container', 'nav nav-tabs']);
+		expect([...root.children].map(child => child.className.split(' '))).toEqual([['rotation-type-container'], expect.arrayContaining(['nav', 'nav-tabs'])]);
 		expect(root.querySelector('.rotation-type-container > .rotation-type-picker-stub')).not.toBeNull();
 	});
 
@@ -59,11 +59,19 @@ describe('AplNavbar', () => {
 		const { container } = mount('apl-action-groups');
 		expect(container.querySelector('.nav-tabs')!.getAttribute('role')).toBe('tablist');
 		expect([...container.querySelectorAll('.nav-item')].map(item => item.getAttribute('role'))).toEqual(['presentation', 'presentation', 'presentation']);
-		expect(tabs(container).map(tab => [tab.getAttribute('aria-controls'), tab.className, tab.getAttribute('aria-selected'), tab.tabIndex])).toEqual([
-			['apl-priority-list', 'nav-link', 'false', -1],
-			['apl-action-groups', 'nav-link active', 'true', 0],
-			['apl-variables', 'nav-link', 'false', -1],
+		expect(
+			tabs(container).map(tab => [
+				tab.getAttribute('aria-controls'),
+				tab.className.split(' ').includes('active'),
+				tab.getAttribute('aria-selected'),
+				tab.tabIndex,
+			]),
+		).toEqual([
+			['apl-priority-list', false, 'false', -1],
+			['apl-action-groups', true, 'true', 0],
+			['apl-variables', false, 'false', -1],
 		]);
+		expect(tabs(container).every(tab => tab.className.split(' ').includes('nav-link'))).toBe(true);
 		expect(tabs(container).every(tab => tab.getAttribute('type') === 'button')).toBe(true);
 	});
 
