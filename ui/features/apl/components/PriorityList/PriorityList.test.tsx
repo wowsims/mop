@@ -90,7 +90,7 @@ describe('PriorityList', () => {
 		const { container } = mount();
 
 		expect(player.aplRotation.priorityList).toHaveLength(0);
-		const newButton = container.querySelectorAll('.apl-floating-action-bar-root button')[0] as HTMLButtonElement;
+		const newButton = container.querySelectorAll('[data-testid="apl-floating-action-bar-root"] button')[0] as HTMLButtonElement;
 		act(() => {
 			fireEvent.click(newButton);
 		});

@@ -26,6 +26,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 // and length the saved rotation reports back.
 const LIST = '#apl-priority-list .apl-priority-list-picker-root';
 const ITEM = `${LIST} > .list-picker-root > .list-picker-items > .list-picker-item-container`;
+const NAVBAR = q('apl-rotation-navbar');
 
 /** The saved rotation, as the shape an edit has to move. */
 const readRotation = () => {
@@ -57,7 +58,7 @@ const readRotation = () => {
 	return null;
 };
 
-const structure = () => {
+const structure = actionBarSelector => {
 	const pane = document.getElementById('apl-priority-list');
 	const count = selector => pane.querySelectorAll(selector).length;
 	return {
@@ -68,7 +69,7 @@ const structure = () => {
 		hideButtons: count('.hide-picker-button'),
 		validations: count('.apl-validations'),
 		dropdownTriggers: count('.dropdown-picker-button'),
-		actionBars: count('.apl-floating-action-bar-root'),
+		actionBars: count(actionBarSelector),
 	};
 };
 
@@ -125,7 +126,7 @@ try {
 
 	console.log(`${SPEC} on :${PORT}\n`);
 	console.log('structure');
-	for (const [key, value] of Object.entries(await page.evaluate(structure))) console.log(`  ${key.padEnd(18)} ${value}`);
+	for (const [key, value] of Object.entries(await page.evaluate(structure, q('apl-floating-action-bar-root')))) console.log(`  ${key.padEnd(18)} ${value}`);
 
 	// One failing step must not hide the rest: the output is the comparison, and a missing line reads
 	// as a difference between the two stacks rather than as a broken probe.
@@ -154,7 +155,7 @@ try {
 	console.log(`kinds                    ${before?.kinds}`);
 
 	// 1. add — the floating action bar's own button, not the list's.
-	await step('add action', () => page.locator(`${LIST} .apl-floating-action-bar-root .btn-primary`).first().click());
+	await step('add action', () => page.locator(`${LIST} ${q('apl-floating-action-bar-root')} .btn-primary`).first().click());
 
 	// 2. edit — the first numeric or text field in the pane, committed on `change` as both stacks require.
 	await step('edit a value', () =>
@@ -214,16 +215,16 @@ try {
 	await step('walk the sub-tabs', async () => {
 		const seen = [];
 		for (const id of ['apl-action-groups', 'apl-variables', 'apl-priority-list']) {
-			await page.click(`.apl-rotation-navbar [aria-controls="${id}"]`, { timeout: 10000 });
+			await page.click(`${NAVBAR} [aria-controls="${id}"]`, { timeout: 10000 });
 			await page.waitForTimeout(400);
 			seen.push(
-				await page.evaluate(() => {
+				await page.evaluate(navbar => {
 					const ids = selector => [...document.querySelectorAll(`.rotation-tab-apl ${selector}`)].map(pane => pane.id.replace('apl-', '')).join('+');
-					const selected = [...document.querySelectorAll('.apl-rotation-navbar [role=tab][aria-selected="true"]')]
+					const selected = [...document.querySelectorAll(`${navbar} [role=tab][aria-selected="true"]`)]
 						.map(tab => tab.getAttribute('aria-controls').replace('apl-', ''))
 						.join('+');
 					return `${ids('.tab-pane.active')}/${ids('.tab-pane.show')}/${selected}`;
-				}),
+				}, NAVBAR),
 			);
 		}
 		return seen.join(' ');
@@ -234,21 +235,21 @@ try {
 	// composite's key events. Each entry reads `key:selected`, and names the pane or the focus
 	// separately only when one of them has failed to follow the selection.
 	await step('walk the sub-tabs by key', async () => {
-		await page.evaluate(() => document.querySelector('.apl-rotation-navbar [role=tab][aria-selected="true"]')?.focus());
+		await page.evaluate(navbar => document.querySelector(`${navbar} [role=tab][aria-selected="true"]`)?.focus(), NAVBAR);
 		const seen = [];
 		for (const key of ['ArrowRight', 'ArrowRight', 'ArrowRight', 'End', 'Home', 'ArrowLeft']) {
 			await page.keyboard.press(key);
 			await page.waitForTimeout(400);
 			seen.push(
 				await page.evaluate(
-					pressed => {
+					({ pressed, navbar }) => {
 						const short = value => (value ?? '-').replace('apl-', '');
-						const selected = short(document.querySelector('.apl-rotation-navbar [role=tab][aria-selected="true"]')?.getAttribute('aria-controls'));
+						const selected = short(document.querySelector(`${navbar} [role=tab][aria-selected="true"]`)?.getAttribute('aria-controls'));
 						const active = [...document.querySelectorAll('.rotation-tab-apl .tab-pane.active')].map(pane => short(pane.id)).join('+');
 						const focused = short(document.activeElement?.getAttribute?.('aria-controls'));
 						return `${pressed}:${selected}${active === selected ? '' : `/PANE=${active}`}${focused === selected ? '' : `/FOCUS=${focused}`}`;
 					},
-					key,
+					{ pressed: key, navbar: NAVBAR },
 				),
 			);
 		}
@@ -257,10 +258,10 @@ try {
 
 	// 7. rotation type — away from APL and back, which rebuilds the whole pane on both stacks.
 	await step('type -> Auto', () =>
-		page.evaluate(() => {
-			const picker = document.querySelector('.apl-rotation-navbar .rotation-type-container .dropdown-picker-button');
+		page.evaluate(navbar => {
+			const picker = document.querySelector(`${navbar} .rotation-type-container .dropdown-picker-button`);
 			picker?.click();
-		}),
+		}, NAVBAR),
 	);
 	await page.waitForTimeout(400);
 	await step('pick the first type', async () => {

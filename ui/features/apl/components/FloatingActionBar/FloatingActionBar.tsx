@@ -2,8 +2,9 @@ import { AplNameDialog } from '@features/apl/components/AplNameDialog';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { Button } from '@ui-kit/Button';
+import { useStickyBottom } from '@ui-kit/hooks/useStickyBottom';
 import { Icon } from '@ui-kit/Icon';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 export interface FloatingActionBarProps {
 	/** Names the thing the button creates, e.g. "Action" or "Variable". */
@@ -30,22 +31,15 @@ export interface FloatingActionBarProps {
 export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingActionBarProps) => {
 	const host = useSimHost();
 	const newLabel = i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName });
-	const rootRef = useRef<HTMLDivElement>(null);
-	const [stuck, setStuck] = useState(false);
+	const { ref: rootRef, stuck } = useStickyBottom<HTMLDivElement>();
 	const [naming, setNaming] = useState(false);
 
-	useEffect(() => {
-		const root = rootRef.current;
-		const scrollRoot = root?.parentElement;
-		if (!root || !scrollRoot) return;
-		// One delivery can carry several records, oldest first; the last is the current state.
-		const observer = new IntersectionObserver(() => setStuck(previous => !previous), { root: scrollRoot, rootMargin: '-100% 0px 0px 0px' });
-		observer.observe(root);
-		return () => observer.disconnect();
-	}, []);
-
 	return (
-		<div ref={rootRef} className={stuck ? 'apl-floating-action-bar-root stuck' : 'apl-floating-action-bar-root'} data-stuck={stuck ? '' : undefined}>
+		<div
+			ref={rootRef}
+			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-[stuck]:p-2 data-[stuck]:border data-[stuck]:bg-background"
+			data-testid="apl-floating-action-bar-root"
+			data-stuck={stuck ? '' : undefined}>
 			<Button variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>
 				<Icon name="plus" className="mr-2" />
 				{newLabel}
