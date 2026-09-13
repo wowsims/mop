@@ -1,6 +1,7 @@
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { Icon } from '@ui-kit/Icon';
+import { IconButton } from '@ui-kit/IconButton';
 import clsx from 'clsx';
 import type { KeyboardEventHandler, ReactNode } from 'react';
 
@@ -141,15 +142,20 @@ export const Dialog = ({
 								{headerChildren}
 								{!preventClose && (
 									<BaseDialog.Close
-										className={clsx(
-											'flex items-center justify-center box-content w-[1em] h-[1em]',
-											'mt-[calc(-0.5*var(--modal-header-padding-y))] mb-[calc(-0.5*var(--modal-header-padding-y))] -mr-1 ml-auto',
-											'py-[calc(0.5*var(--modal-header-padding-y))] px-[calc(0.5*var(--modal-header-padding-x))]',
-											'border-0 bg-transparent text-(--modal-close-color)',
-											'cursor-pointer transition-(--link-transition)',
-											'z-[1000] hover:text-white focus-visible:outline-0 focus-visible:shadow-(--focus-ring)',
-											closeClassName,
-										)}
+										render={
+											<IconButton
+												label="Close"
+												className={clsx(
+													'flex items-center justify-center box-content w-[1em] h-[1em]',
+													'mt-[calc(-0.5*var(--modal-header-padding-y))] mb-[calc(-0.5*var(--modal-header-padding-y))] -mr-1 ml-auto',
+													'py-[calc(0.5*var(--modal-header-padding-y))] px-[calc(0.5*var(--modal-header-padding-x))]',
+													'text-(--modal-close-color)',
+													'transition-(--link-transition)',
+													'z-[1000] hover:text-white focus-visible:outline-0 focus-visible:shadow-(--focus-ring)',
+													closeClassName,
+												)}
+											/>
+										}
 										data-testid="sim-dialog-close"
 										aria-label="Close">
 										<Icon name="times" size="2xl" />

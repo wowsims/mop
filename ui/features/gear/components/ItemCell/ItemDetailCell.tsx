@@ -6,6 +6,7 @@ import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
+import { ItemCell } from '@ui-kit/ItemCell';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
@@ -17,7 +18,6 @@ import { SelectorModalTabs } from '../../types';
 import { EnchantLabel } from '../GearPicker/EnchantLabel';
 import { ItemNoticeIcon } from '../GearPicker/ItemNoticeIcon';
 import { GemSocket } from './GemSocket';
-import { ItemCell } from './ItemCell';
 import { ItemCellAnchor } from './ItemCellAnchor';
 import { NameDescriptionLabel } from './NameDescriptionLabel';
 

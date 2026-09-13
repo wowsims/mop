@@ -18,7 +18,7 @@ export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonEle
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(({ label, tone = 'inherit', className, render, children, ...props }, ref) => {
-	const classes = clsx('inline-block border-0 bg-transparent cursor-pointer', TONE[tone], className);
+	const classes = clsx('border-0 bg-transparent cursor-pointer', TONE[tone], className);
 
 	if (render) {
 		return cloneElement(render, { ...props, ref, 'aria-label': label, className: clsx(classes, render.props.className) } as never);

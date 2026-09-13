@@ -69,6 +69,8 @@ describe('Dialog', () => {
 		const close = screen.getByRole('button', { name: 'Close' });
 		// The tree has several <button>s inside forms with no type, so this one needs `type="button"` set explicitly.
 		expect(close.getAttribute('type')).toBe('button');
+		expect(close.tagName).toBe('BUTTON');
+		expect(close.getAttribute('aria-label')).toBe('Close');
 
 		fireEvent.click(close);
 		expect(onOpenChange).toHaveBeenCalledWith(false);

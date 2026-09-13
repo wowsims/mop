@@ -1,6 +1,7 @@
 import { Toast as BaseToast } from '@base-ui/react/toast';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName } from '@ui-kit/Icon/types';
+import { IconButton } from '@ui-kit/IconButton';
 import clsx from 'clsx';
 
 import type { ToastData, ToastVariant } from './types';
@@ -52,7 +53,12 @@ export const Toast = ({ toast, inline = false }: ToastProps) => {
 				{/* `aria-hidden={false}`: Base UI hides the close button from assistive tech until the viewport is hovered or focused, because its own layout keeps toasts in a collapsed pile. This one is a flat column, so the button is on screen from the start. */}
 				{canClose && (
 					<BaseToast.Close
-						className="flex items-center justify-center -mr-2 ml-4 p-[0.25em] border-0 bg-transparent text-white opacity-50 cursor-pointer transition-(--transition-fade) hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-(--focus-ring)"
+						render={
+							<IconButton
+								label="Close"
+								className="flex items-center justify-center -mr-2 ml-4 p-[0.25em] text-white opacity-50 transition-(--transition-fade) hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-(--focus-ring)"
+							/>
+						}
 						data-testid="sim-toast-close"
 						aria-label="Close"
 						aria-hidden={false}>

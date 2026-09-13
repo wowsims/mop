@@ -8,12 +8,12 @@ import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { Icon } from '@ui-kit/Icon';
+import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { reforgeTotals } from '../../model/summary_totals';
 import { SummaryTable } from './SummaryTable';
-import { SummaryTableRow } from './SummaryTableRow';
 
 export const ReforgeSummary = () => {
 	const host = useSimHost();

@@ -1,16 +1,16 @@
-import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Faction } from '@generated/proto/common';
 import i18n from '@i18n/config';
-import { Button } from '@ui-kit/Button';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
+import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { itemsWithUpgradeOptions, upgradeCostTotals, type UpgradeSummaryTotal } from '../../model/summary_totals';
 import { SummaryTable } from './SummaryTable';
-import { SummaryTableRow } from './SummaryTableRow';
 
 const currencyIconUrl = (key: string, faction: Faction) => {
 	if (key === 'justicePoints') return 'https://wow.zamimg.com/images/wow/icons/small/pvecurrency-justice.jpg';

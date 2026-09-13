@@ -115,6 +115,8 @@ describe('Toast', () => {
 		});
 		const close = screen.getByRole('button', { name: 'Close' });
 		expect(close.getAttribute('type')).toBe('button');
+		expect(close.tagName).toBe('BUTTON');
+		expect(close.getAttribute('aria-label')).toBe('Close');
 
 		fireEvent.click(close);
 		await waitFor(() => expect(screen.queryByText('closable')).toBeNull());

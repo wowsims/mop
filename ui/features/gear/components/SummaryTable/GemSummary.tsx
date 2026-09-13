@@ -1,20 +1,20 @@
-import { usePlayer } from '@sim/context/SimHostContext';
-import { externalRel } from '@sim/utils/links';
-import { ActionId } from '@sim/proto/action_id';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
-import { itemQualityClassName } from '@ui-kit/utils/css';
-import { useActionId } from '@ui-kit/hooks/useActionId';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { ActionId } from '@sim/proto/action_id';
+import { subscribePlayerField } from '@sim/state/subscriptions';
+import { externalRel } from '@sim/utils/links';
+import { useActionId } from '@ui-kit/hooks/useActionId';
+import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
+import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { gemSummaryRows } from '../../model/summary_totals';
 import { SummaryTable } from './SummaryTable';
-import { SummaryTableRow } from './SummaryTableRow';
 
 const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 	const actionId = ActionId.fromItemId(gem.id);
