@@ -15,6 +15,7 @@
 @import '../features/gear/components/SelectorModal/SelectorModal.css';
 @import '../features/gear/components/SummaryTable/SummaryTable.css';
 @import '../features/apl/apl.css';
+@import '../features/results/components/CombatReplay/CombatReplay.css';
 
 @source '../app';
 @source '../features';

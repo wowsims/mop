@@ -22,15 +22,25 @@ export interface ReplayEnemyCardProps {
 	layout: ReplayCardLayout;
 }
 
+const CARD_CLASSES =
+	'cr-enemy-card absolute top-1/2 bottom-0 z-(--cr-card-z,1) flex max-h-full flex-col items-center gap-[10px] pointer-events-auto origin-bottom left-(--cr-card-x) w-(--cr-card-w) [transform:translate(-50%,-50%)_scale(var(--cr-card-scale,1))] [filter:brightness(var(--cr-card-brightness,1))]';
+
 export const ReplayEnemyCard = ({ enemy, layout }: ReplayEnemyCardProps) => (
-	<div className="cr-enemy-card" data-idx={enemy.index} style={cardVars(layout)}>
-		<div className="cr-nameplate">
-			<div className="cr-enemy-name">{enemy.name}</div>
+	<div className={CARD_CLASSES} data-idx={enemy.index} style={cardVars(layout)}>
+		<div className="cr-nameplate relative z-2 w-full rounded-[6px] bg-black-55 px-[6px] py-[4px]">
+			<div className="cr-enemy-name mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs font-semibold text-danger">
+				{enemy.name}
+			</div>
 			<ReplayEnemyHealth enemy={enemy} />
-			<ReplayAuraIcons className="cr-debuff-row" auras={enemy.auras} />
+			<ReplayAuraIcons className="cr-debuff-row flex flex-wrap gap-[4px] mt-[3px] min-h-0" auras={enemy.auras} />
 		</div>
-		<div className="cr-silhouette">
-			<img src={BOSS_IMAGE_URL} alt={enemy.name} draggable={false} />
+		<div className="cr-silhouette relative flex w-full shrink items-end justify-center">
+			<img
+				src={BOSS_IMAGE_URL}
+				alt={enemy.name}
+				draggable={false}
+				className="block h-auto w-full max-h-[min(260px,45vh)] select-none object-contain object-bottom drop-shadow-cr-silhouette"
+			/>
 			<ReplayHitLayer enemy={enemy} />
 		</div>
 	</div>

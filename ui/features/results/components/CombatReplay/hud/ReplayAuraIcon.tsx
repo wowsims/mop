@@ -19,14 +19,16 @@ export const ReplayAuraIcon = ({ aura }: ReplayAuraIconProps) => {
 		const frame = auraFrame(aura, time);
 		if (remaining.current) remaining.current.textContent = frame.remaining;
 		if (stacks.current) stacks.current.textContent = frame.stacks;
-		anchor.current?.classList.toggle('cr-aura-icon-active', frame.fresh);
 		anchor.current?.toggleAttribute('data-active', frame.fresh);
 	});
 
 	return (
-		<ReplayIcon actionId={aura.actionId} className="cr-aura-icon" tooltip="buffAura" anchorRef={anchor}>
-			<span ref={stacks} className="cr-aura-stack-badge" />
-			<span ref={remaining} className="cr-aura-time-badge" />
+		<ReplayIcon actionId={aura.actionId} className="cr-aura-icon ui-combat-replay-icon shrink-0" tooltip="buffAura" anchorRef={anchor}>
+			<span
+				ref={stacks}
+				className="cr-aura-stack-badge absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-white [text-shadow:0_0_3px_var(--color-black),0_0_3px_var(--color-black)]"
+			/>
+			<span ref={remaining} className="cr-aura-time-badge ui-combat-replay-badge" />
 		</ReplayIcon>
 	);
 };

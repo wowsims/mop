@@ -1,5 +1,3 @@
-import clsx from 'clsx';
-
 import type { ReplayAction } from '../../../model/replay';
 import { tickerDamageLabel } from '../../../model/replay';
 import { ReplayIcon } from '../ReplayIcon';
@@ -11,9 +9,12 @@ export interface ReplayTickerIconProps {
 	opacity: number;
 }
 
+const STRIP_ICON_CLASSES =
+	'cr-strip-icon ui-combat-replay-icon shadow-[inset_0_0_0_2px_var(--color-white-15)] data-active:shadow-[inset_0_0_0_2px_var(--color-white-70),0_0_10px_var(--color-white-30)]';
+
 export const ReplayTickerIcon = ({ action, latest, opacity }: ReplayTickerIconProps) => (
-	<ReplayIcon actionId={action.actionId} className={clsx('cr-strip-icon', latest && 'cr-strip-icon-active')} tooltip="spell" style={{ opacity }}>
-		{action.isCrit && <span className="cr-crit-badge">!</span>}
-		{action.dmg != null && action.dmg > 0 && <span className="cr-dmg-badge">{tickerDamageLabel(action.dmg)}</span>}
+	<ReplayIcon actionId={action.actionId} className={STRIP_ICON_CLASSES} tooltip="spell" style={{ opacity }} active={latest}>
+		{action.isCrit && <span className="cr-crit-badge absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-damage-crit">!</span>}
+		{action.dmg != null && action.dmg > 0 && <span className="cr-dmg-badge ui-combat-replay-badge">{tickerDamageLabel(action.dmg)}</span>}
 	</ReplayIcon>
 );

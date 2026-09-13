@@ -218,6 +218,40 @@
 	--z-index-sticky: 1020;
 	--z-index-menu: 1500;
 	--z-index-toast: 9999;
+
+	--color-white-5: rgb(255 255 255 / 0.05);
+	--color-white-6: rgb(255 255 255 / 0.06);
+	--color-white-7: rgb(255 255 255 / 0.07);
+	--color-white-8: rgb(255 255 255 / 0.08);
+	--color-white-10: rgb(255 255 255 / 0.1);
+	--color-white-12: rgb(255 255 255 / 0.12);
+	--color-white-15: rgb(255 255 255 / 0.15);
+	--color-white-20: rgb(255 255 255 / 0.2);
+	--color-white-30: rgb(255 255 255 / 0.3);
+	--color-white-50: rgb(255 255 255 / 0.5);
+	--color-white-60: rgb(255 255 255 / 0.6);
+	--color-white-70: rgb(255 255 255 / 0.7);
+	--color-white-75: rgb(255 255 255 / 0.75);
+	--color-white-80: rgb(255 255 255 / 0.8);
+	--color-black-55: rgb(0 0 0 / 0.55);
+	--color-black-70: rgb(0 0 0 / 0.7);
+	--color-black-80: rgb(0 0 0 / 0.8);
+	--color-black-92: rgb(0 0 0 / 0.92);
+
+	--color-cr-scene-glow: color-mix(in srgb, var(--color-background) 65%, var(--color-warning) 35%);
+	--color-cr-dmg-num: color-mix(in srgb, var(--color-warning) 80%, var(--color-white));
+	--color-cr-hp-fill-end: color-mix(in srgb, var(--color-success) 70%, var(--color-white));
+	--color-cr-hit-flash-mid: color-mix(in srgb, var(--color-warning) 60%, transparent);
+	--color-cr-hit-glow: color-mix(in srgb, var(--color-damage-crit) 40%, transparent);
+
+	--background-image-cr-scene: radial-gradient(ellipse at 50% 80%, var(--color-cr-scene-glow) 0%, var(--color-background) 70%);
+	--background-image-cr-vignette: radial-gradient(ellipse at 50% 50%, transparent 40%, var(--color-black-70) 100%);
+	--background-image-cr-hp-fill: linear-gradient(90deg, var(--color-success), var(--color-cr-hp-fill-end));
+	--background-image-cr-hit-flash: radial-gradient(circle, var(--color-white) 0%, var(--color-cr-hit-flash-mid) 50%, transparent 100%);
+
+	--drop-shadow-cr-silhouette: 0 0 14px var(--color-cr-hit-glow);
+
+	--spacing-cr-icon: 42px;
 }
 
 :root {
@@ -321,6 +355,8 @@
 		color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 75%,
 		var(--color-success) 100%
 	);
+	--color-cr-cast-fill-end: color-mix(in srgb, var(--color-primary) 78%, var(--color-white));
+	--background-image-cr-cast-fill: linear-gradient(90deg, var(--color-primary), var(--color-cr-cast-fill-end));
 }
 
 @keyframes loading-shimmer {

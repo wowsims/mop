@@ -19,5 +19,5 @@ export const ReplayHitLayer = ({ enemy }: ReplayHitLayerProps) => {
 		if (layer.current) paintHitLayer(layer.current, cache, activeHits(enemy, time), time);
 	});
 
-	return <div ref={layer} className="cr-hit-layer" />;
+	return <div ref={layer} className="cr-hit-layer absolute inset-0 z-1 pointer-events-none" />;
 };
