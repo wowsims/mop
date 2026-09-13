@@ -166,7 +166,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		<>
 			<Button
 				size="none"
-				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] mr-[calc(var(--settings-button-width)*-1)]"
+				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] -mr-(--settings-button-width)"
 				disabled={isRunning}
 				onClick={onOptimize}
 				{...tooltipAnchorProps(softCapsTooltipId)}>
@@ -188,7 +188,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				side="right"
 				align="start"
 				className="reforge-optimiser-popover min-w-[300px]"
-				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-var(--spacer-3)*2))]"
+				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-(--spacing(4))*2))]"
 				triggerClassName={[
 					'sim-sidebar-action-button',
 					BUTTON_BASE,

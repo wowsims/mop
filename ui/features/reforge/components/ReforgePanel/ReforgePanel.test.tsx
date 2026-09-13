@@ -49,7 +49,7 @@ describe('ReforgePanel', () => {
 				'grow',
 				'py-2',
 				'px-[calc(--spacing(3)+var(--settings-button-width))]',
-				'mr-[calc(var(--settings-button-width)*-1)]',
+				'-mr-(--settings-button-width)',
 				'sim-sidebar-action-button',
 				'suggest-reforges-action-button',
 			].sort(),
