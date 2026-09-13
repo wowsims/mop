@@ -285,7 +285,14 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 	const sim = player.sim;
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange} className="filters-menu" size="md" elevated title={i18n.t('gear_tab.gear_picker.filters.title')}>
+		<Dialog
+			open={open}
+			onOpenChange={onOpenChange}
+			className="filters-menu"
+			size="md"
+			elevated
+			bodyGap="gap-block"
+			title={i18n.t('gear_tab.gear_picker.filters.title')}>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.general')}>
 				<div className="ilvl-filters">
 					<NumberPicker<Sim>

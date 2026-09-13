@@ -1,5 +1,3 @@
-import './ProgressTrackerDialog.scss';
-
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
@@ -42,14 +40,20 @@ export const ProgressTrackerDialog = ({
 		className={clsx('progress-tracker-dialog', className)}
 		container={container}
 		size="md"
+		verticalAlign="center"
 		title={title}
 		preventClose
 		keepMounted
 		elevated
 		testId={testId}>
-		<div className="progress-tracker-modal-content" data-testid="progress-tracker-modal-content" data-stage={state.stage}>
+		<div
+			className="progress-tracker-modal-content flex flex-col items-center gap-4 text-center"
+			data-testid="progress-tracker-modal-content"
+			data-stage={state.stage}>
 			{warning && (
-				<div className="progress-tracker-modal-warning" data-testid="progress-tracker-modal-warning">
+				<div
+					className="progress-tracker-modal-warning border border-warning p-4 text-(length:--btn-font-size)"
+					data-testid="progress-tracker-modal-warning">
 					{warning}
 				</div>
 			)}

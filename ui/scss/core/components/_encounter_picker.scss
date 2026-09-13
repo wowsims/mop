@@ -25,11 +25,6 @@
 }
 
 .advanced-encounter-picker-modal {
-	.sim-dialog-body {
-		overflow: auto;
-		gap: var(--spacing-block);
-	}
-
 	.encounter-header {
 		display: flex;
 		flex-direction: column;

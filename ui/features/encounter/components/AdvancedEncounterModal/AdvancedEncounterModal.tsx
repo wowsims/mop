@@ -46,6 +46,8 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			open={open}
 			onOpenChange={onOpenChange}
 			className="advanced-encounter-picker-modal"
+			bodyClassName="overflow-auto"
+			bodyGap="gap-block"
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
 			<div className="encounter-header">
 				<div className="picker-group">

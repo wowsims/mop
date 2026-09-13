@@ -3,40 +3,34 @@
 		margin-bottom: 0;
 	}
 
-	.sim-dialog-header {
-		padding-bottom: 0;
+	.selector-modal-tabs {
+		border-bottom: 0;
 
-		.selector-modal-tabs {
-			border-bottom: 0;
+		.selector-modal-tab-gem {
+			height: 100%;
+			padding: 0;
+			padding: calc(var(--tab-padding-y) / 2) calc(var(--tab-padding-x) / 2);
+			margin-left: calc(var(--tab-padding-x) / 2);
+			margin-right: calc(var(--tab-padding-x) / -2);
+			display: flex;
+			align-items: center;
+			opacity: 0.7;
+			transition: opacity 0.15s ease-in-out;
 
-			.selector-modal-tab-gem {
-				height: 100%;
-				padding: 0;
-				padding: calc(var(--tab-padding-y) / 2) calc(var(--tab-padding-x) / 2);
-				margin-left: calc(var(--tab-padding-x) / 2);
-				margin-right: calc(var(--tab-padding-x) / -2);
-				display: flex;
-				align-items: center;
-				opacity: 0.7;
-				transition: opacity 0.15s ease-in-out;
+			&:hover,
+			&.active {
+				opacity: 1;
+			}
 
-				&:hover,
-				&.active {
-					opacity: 1;
-				}
-
-				.gem-socket-container {
-					--gem-width: 2rem;
-				}
+			.gem-socket-container {
+				--gem-width: 2rem;
 			}
 		}
+	}
 
+	.sim-dialog-header {
 		.btn-danger {
 			margin: calc(-0.5 * var(--modal-header-padding-y)) var(--spacer-3) calc(-0.5 * var(--modal-header-padding-y)) auto;
-
-			& + .sim-dialog-close {
-				margin-left: 0;
-			}
 		}
 	}
 }

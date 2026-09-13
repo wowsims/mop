@@ -1,8 +1,5 @@
-import './Toast.scss';
-
 import { Toast as BaseToast } from '@base-ui/react/toast';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
-import clsx from 'clsx';
 
 import { DEFAULT_TOAST_DELAY, DEFAULT_TOAST_LIMIT, type ToastManager } from './manager';
 import { ToastViewport } from './ToastViewport';
@@ -22,8 +19,8 @@ export const ToastArea = ({ manager, container, inline = false, className, limit
 	return (
 		<BaseToast.Provider toastManager={manager.base} timeout={DEFAULT_TOAST_DELAY} limit={limit}>
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BaseToast.Portal className="sim-toast-portal" data-testid="sim-toast-portal" container={container ?? portalContainer ?? undefined}>
-				<ToastViewport className={clsx(inline && 'sim-toast-viewport--inline', className)} />
+			<BaseToast.Portal className="sim-toast-portal contents" data-testid="sim-toast-portal" container={container ?? portalContainer ?? undefined}>
+				<ToastViewport inline={inline} className={className} />
 			</BaseToast.Portal>
 		</BaseToast.Provider>
 	);

@@ -63,13 +63,13 @@ export const Exporter = ({
 			title={title}
 			footer={
 				<>
-					<Button className="copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+					<Button className="copy-button w-48" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
 						<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('export.json.copy_button')}
 					</Button>
 					{allowDownload && (
 						<Button
-							className="exporter-button download-button ml-2"
+							className="exporter-button download-button ml-2 w-48"
 							onClick={() => downloadString(dataRef.current, downloadFileName, downloadMimeType)}>
 							<Icon name="download" style="base" className="mr-1" />
 							{i18n.t('export.json.download_button')}

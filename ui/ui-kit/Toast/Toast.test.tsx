@@ -19,7 +19,8 @@ describe('Toast', () => {
 		});
 
 		const toast = within(standardViewport()).getByTestId('sim-toast');
-		expect(Array.from(toast.classList)).toEqual(['sim-toast', 'sim-toast--success']);
+		expect(toast.classList.contains('sim-toast')).toBe(true);
+		expect(toast.classList.contains('sim-toast--success')).toBe(true);
 		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('WowSims');
 		expect(within(toast).getByTestId('sim-toast-body').textContent).toBe('Import successful!');
 		expect(toast.getAttribute('aria-describedby')).toBe(within(toast).getByTestId('sim-toast-body').id);
@@ -32,7 +33,9 @@ describe('Toast', () => {
 		});
 
 		const toast = within(standardViewport()).getByTestId('sim-toast');
-		expect(Array.from(toast.classList)).toEqual(['sim-toast', 'sim-toast--warning', 'toast-notice-native-download']);
+		expect(toast.classList.contains('sim-toast')).toBe(true);
+		expect(toast.classList.contains('sim-toast--warning')).toBe(true);
+		expect(toast.classList.contains('toast-notice-native-download')).toBe(true);
 		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('Native sim');
 	});
 
@@ -128,7 +131,11 @@ describe('Toast', () => {
 
 		const icon = screen.getByRole('button', { name: 'Close' }).querySelector('i')!;
 		expect(Array.from(icon.classList)).toEqual(['fas', 'fa-times', 'fa-lg']);
-		expect(within(standardViewport()).getByTestId('sim-toast-icon').className).toBe('fas fa-circle-exclamation fa-2xl sim-toast-icon');
+		const icon2xl = within(standardViewport()).getByTestId('sim-toast-icon');
+		expect(icon2xl.classList.contains('fas')).toBe(true);
+		expect(icon2xl.classList.contains('fa-circle-exclamation')).toBe(true);
+		expect(icon2xl.classList.contains('fa-2xl')).toBe(true);
+		expect(icon2xl.classList.contains('sim-toast-icon')).toBe(true);
 	});
 
 	// The negative half is the control: without it the positive half passes even if no timer ever runs.

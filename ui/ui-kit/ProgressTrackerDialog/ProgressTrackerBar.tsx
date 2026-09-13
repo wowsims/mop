@@ -25,18 +25,25 @@ export const ProgressTrackerBar = ({ running, ref }: ProgressTrackerBarProps) =>
 	const rounded = measured ? Math.ceil(current) : null;
 
 	return (
-		<div className="progress-tracker-modal-progress-container">
+		<div className="progress-tracker-modal-progress-container relative flex w-full max-w-[250px] flex-col gap-1 self-center">
 			{title && (
 				<div className="progress-tracker-modal-progress-title mb-2" data-testid="progress-tracker-modal-progress-title">
 					{title}
 				</div>
 			)}
 			<Progress.Root value={rounded} max={total}>
-				<Progress.Track className="progress-tracker-bar-track">
-					<Progress.Indicator className="progress-tracker-bar-indicator" data-testid="progress-tracker-bar-indicator" />
+				<Progress.Track className="progress-tracker-bar-track flex h-[12px] w-full overflow-hidden rounded-[4px] bg-(--modal-border-color)">
+					<Progress.Indicator
+						className="progress-tracker-bar-indicator animate-shimmer bg-[linear-gradient(90deg,var(--color-success)_0%,color-mix(in_srgb,var(--color-success)_85%,var(--color-black))_25%,var(--color-success)_50%,color-mix(in_srgb,var(--color-success)_85%,var(--color-black))_75%,var(--color-success)_100%)] bg-[length:200%_100%] motion-reduce:animate-none data-[indeterminate]:hidden"
+						data-testid="progress-tracker-bar-indicator"
+					/>
 				</Progress.Track>
 			</Progress.Root>
-			{measured && <div className="progress-tracker-modal-progress-text" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
+			{measured && (
+				<div
+					className="progress-tracker-modal-progress-text text-right text-[12px] text-border"
+					data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>
+			)}
 		</div>
 	);
 };

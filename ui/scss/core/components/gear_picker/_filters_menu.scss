@@ -1,10 +1,6 @@
 // The tokens below are the `:root` `--modal-*` family rather than `--bs-modal-*`, which Bootstrap
 // emits inside `.modal` only — same values, and the portaled popup is not inside a `.modal`.
 .filters-menu {
-	.sim-dialog-body {
-		gap: var(--spacing-block);
-	}
-
 	.menu-section {
 		display: flex;
 

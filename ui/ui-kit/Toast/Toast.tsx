@@ -12,11 +12,24 @@ const VARIANT_ICON = {
 	warning: 'triangle-exclamation',
 } as const satisfies Record<ToastVariant, IconName>;
 
+const VARIANT_ICON_COLOR = {
+	info: '[--icon-color:var(--color-warning)]',
+	warning: '[--icon-color:var(--color-warning)]',
+	success: '[--icon-color:var(--color-success)]',
+	error: '[--icon-color:var(--color-danger)]',
+} as const satisfies Record<ToastVariant, string>;
+
 export interface ToastProps {
 	toast: BaseToast.Root.ToastObject<ToastData>;
+	inline?: boolean;
 }
 
-export const Toast = ({ toast }: ToastProps) => {
+const TOAST_WIDTH = {
+	inline: 'w-full max-w-full',
+	floating: 'w-full max-w-full md:w-[350px]',
+};
+
+export const Toast = ({ toast, inline = false }: ToastProps) => {
 	const variant = (toast.type ?? 'info') as ToastVariant;
 	const canClose = toast.data?.canClose ?? true;
 
@@ -25,20 +38,36 @@ export const Toast = ({ toast }: ToastProps) => {
 			toast={toast}
 			// An empty array is how Base UI spells "no swipe": `swipeEnabled` is `swipeDirections.length > 0`.
 			swipeDirection={canClose ? undefined : []}
-			className={clsx('sim-toast', `sim-toast--${variant}`, toast.data?.className)}
+			className={clsx(
+				'sim-toast',
+				`sim-toast--${variant}`,
+				VARIANT_ICON_COLOR[variant],
+				inline ? TOAST_WIDTH.inline : TOAST_WIDTH.floating,
+				'border border-surface-border rounded-none bg-overlay bg-clip-padding text-white text-sm shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] fade-in-out pointer-events-auto data-[limited]:hidden motion-reduce:transition-none',
+				toast.data?.className,
+			)}
 			data-testid="sim-toast">
-			<div className="sim-toast-header">
-				<Icon name={VARIANT_ICON[variant]} size="2xl" className="sim-toast-icon" data-testid="sim-toast-icon" />
-				<BaseToast.Title className="sim-toast-title" data-testid="sim-toast-title" />
+			<div className="sim-toast-header flex items-center bg-overlay bg-clip-padding px-4 pt-4 pb-0 text-white">
+				<Icon
+					name={VARIANT_ICON[variant]}
+					size="2xl"
+					className="sim-toast-icon mr-2 block leading-none text-(--icon-color)"
+					data-testid="sim-toast-icon"
+				/>
+				<BaseToast.Title className="sim-toast-title m-0 mr-auto text-[length:inherit] leading-[inherit] font-bold" data-testid="sim-toast-title" />
 				{/* `aria-hidden={false}`: Base UI hides the close button from assistive tech until the viewport is hovered or focused, because its own layout keeps toasts in a collapsed pile. This one is a flat column, so the button is on screen from the start. */}
 				{canClose && (
-					<BaseToast.Close className="sim-toast-close" data-testid="sim-toast-close" aria-label="Close" aria-hidden={false}>
+					<BaseToast.Close
+						className="sim-toast-close flex items-center justify-center -mr-2 ml-4 p-[0.25em] border-0 bg-transparent text-white opacity-50 cursor-pointer transition-(--transition-fade) hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-(--focus-ring)"
+						data-testid="sim-toast-close"
+						aria-label="Close"
+						aria-hidden={false}>
 						<Icon name="times" size="lg" />
 					</BaseToast.Close>
 				)}
 			</div>
 			{/* Base UI's `Description` is a `<p>`, and the bodies here are block content — a `<div>` inside a `<p>` gets reparented by a real parser. */}
-			<BaseToast.Description render={<div />} className="sim-toast-body" data-testid="sim-toast-body" />
+			<BaseToast.Description render={<div />} className="sim-toast-body p-4 [overflow-wrap:break-word]" data-testid="sim-toast-body" />
 		</BaseToast.Root>
 	);
 };

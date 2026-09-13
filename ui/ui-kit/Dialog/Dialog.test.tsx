@@ -18,8 +18,10 @@ describe('Dialog', () => {
 		);
 
 		const popup = screen.getByRole('dialog');
-		expect(Array.from(popup.classList).sort()).toEqual(['advanced-encounter-picker-modal', 'sim-dialog-popup', 'sim-dialog-popup--xl']);
-		expect(Array.from(popup.children).map(el => el.className)).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);
+		expect(popup.classList.contains('advanced-encounter-picker-modal')).toBe(true);
+		expect(popup.classList.contains('sim-dialog-popup')).toBe(true);
+		expect(popup.classList.contains('sim-dialog-popup--xl')).toBe(true);
+		expect(Array.from(popup.children).map(el => el.getAttribute('data-testid'))).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);
 		expect(within(popup).getByTestId('sim-dialog-body').textContent).toBe('contents');
 	});
 
@@ -97,7 +99,7 @@ describe('Dialog', () => {
 				body
 			</Dialog>,
 		);
-		expect(within(screen.getByRole('dialog')).getByTestId('sim-dialog-header').className).toBe('sim-dialog-header sim-dialog-header--bare');
+		expect(within(screen.getByRole('dialog')).getByTestId('sim-dialog-header').classList.contains('sim-dialog-header--bare')).toBe(true);
 
 		rerender(
 			<Dialog open onOpenChange={() => {}} header={false} preventClose>

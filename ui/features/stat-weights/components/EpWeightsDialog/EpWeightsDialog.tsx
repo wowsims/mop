@@ -66,6 +66,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 	});
 
 	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
+	const isTank = Boolean(player.playerSpec?.isTankSpec) && !player.playerSpec?.isHealingSpec;
 	const refStats = useStoreSubscribe(subscribePlayerField(player, 'epRefStat'), () => ({
 		dps: player.getRefStat('dpsRefStat'),
 		heal: player.getRefStat('healRefStat'),
@@ -162,10 +163,12 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			scrollContents
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
-				<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
-					<Icon name="calculator" className="mr-1" />
-					{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
-				</Button>
+				isTank ? undefined : (
+					<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
+						<Icon name="calculator" className="mr-1" />
+						{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
+					</Button>
+				)
 			}>
 			<div className="flex flex-col lg:flex-row lg:items-start gap-4">
 				<div className="ep-weights-content order-1 lg:order-0">
@@ -201,6 +204,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 					ref={progressRef}
 					open
 					className="ep-weights-progress"
+					testId="progress-tracker-dialog"
 					title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 					state={progress}
 					hasProgressBar

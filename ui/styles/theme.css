@@ -155,6 +155,8 @@
 
 	--color-talent-full: #ffd100;
 	--color-talent-partial: #40bf40;
+
+	--animate-shimmer: loading-shimmer 6s linear infinite;
 }
 
 :root {
@@ -240,6 +242,16 @@
 	--table-row-even-bg: #18191e;
 	--table-row-even-bg-hsl: 230deg, 11.1111111111%, 10.5882352941%;
 	--table-row-odd-bg: #222328;
+}
+
+@keyframes loading-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+
+	to {
+		background-position: -200% 0;
+	}
 }
 
 @media (width >= 992px) {
