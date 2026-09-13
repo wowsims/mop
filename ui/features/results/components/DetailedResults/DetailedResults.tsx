@@ -8,7 +8,7 @@ import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
-import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { STICKY_TOOLBAR_CLASSES, useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -183,7 +183,10 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 				</button>
 			</div>
 			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
-				<div ref={toolbarRef} className={clsx('dr-toolbar sticky-toolbar-root', stuck && 'stuck')} data-stuck={stuck ? '' : undefined}>
+				<div
+					ref={toolbarRef}
+					className={clsx('dr-toolbar sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+					data-stuck={stuck ? '' : undefined}>
 					<div className="results-filter flex items-center">
 						<ResultsFilter
 							target={target}

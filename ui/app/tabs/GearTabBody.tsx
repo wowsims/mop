@@ -5,6 +5,7 @@ import { GemSummary, ReforgeSummary, UpgradeCostsSummary } from '@features/gear/
 import { OpenSelectorModalContext, useSelectorModalState } from '@features/gear/hooks/useSelectorModal';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimReady } from '@sim/hooks/useSimReady';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 
 import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
 
@@ -16,18 +17,18 @@ export const GearTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<div className="gear-tab-left tab-panel-left">
+			<TabPanelColumns.Left className="gear-tab-left" variant="auto-columns">
 				<GearPicker ready={ready} />
 				<div className="summary-tables-container">
 					<GemSummary />
 					<ReforgeSummary />
 					<UpgradeCostsSummary />
 				</div>
-			</div>
-			<div className="gear-tab-right tab-panel-right">
+			</TabPanelColumns.Left>
+			<TabPanelColumns.Right className="gear-tab-right">
 				<PresetConfigurationPicker categories={GEAR_PRESETS} />
 				<SavedGear />
-			</div>
+			</TabPanelColumns.Right>
 			<SelectorModal state={selector} />
 		</OpenSelectorModalContext>
 	);

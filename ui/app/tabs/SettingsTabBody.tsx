@@ -10,6 +10,7 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { ContentBlock } from '@ui-kit/ContentBlock';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useMemo } from 'react';
 
 import { PresetConfigurationPicker } from '../PresetConfigurationPicker';
@@ -40,8 +41,8 @@ export const SettingsTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<div className="settings-tab-left tab-panel-left">
-				<div className="tab-panel-col settings-left-col-1">
+			<TabPanelColumns.Left className="settings-tab-left" variant="settings-columns">
+				<TabPanelColumns.Col className="settings-left-col-1">
 					{ready && (
 						<>
 							<ContentBlock className="encounter-settings" config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
@@ -52,8 +53,8 @@ export const SettingsTabBody = () => {
 							</ContentBlock>
 						</>
 					)}
-				</div>
-				<div className="tab-panel-col settings-left-col-2">
+				</TabPanelColumns.Col>
+				<TabPanelColumns.Col className="settings-left-col-2">
 					{ready && (
 						<>
 							{config.sections?.map(section => (
@@ -74,8 +75,8 @@ export const SettingsTabBody = () => {
 							)}
 						</>
 					)}
-				</div>
-				<div className="tab-panel-col settings-left-col-3">
+				</TabPanelColumns.Col>
+				<TabPanelColumns.Col className="settings-left-col-3">
 					{ready && (
 						<>
 							<ContentBlock
@@ -121,13 +122,13 @@ export const SettingsTabBody = () => {
 							</ContentBlock>
 						</>
 					)}
-				</div>
-			</div>
-			<div className="settings-tab-right tab-panel-right">
+				</TabPanelColumns.Col>
+			</TabPanelColumns.Left>
+			<TabPanelColumns.Right className="settings-tab-right">
 				<PresetConfigurationPicker categories={SETTINGS_PRESETS} />
 				<SavedEncounter />
 				<SavedSettings />
-			</div>
+			</TabPanelColumns.Right>
 			<SelectorModal state={selector} id="item-swap-selector-modal" rail={false} />
 		</OpenSelectorModalContext>
 	);

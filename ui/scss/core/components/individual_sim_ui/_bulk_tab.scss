@@ -1,13 +1,6 @@
 #bulk-tab {
 	padding: 0;
 
-	.tab-pane-content-container {
-		.bulk-tab-left {
-			padding-top: calc(var(--spacing-gutter) - $nav-link-padding-y);
-			grid-template-columns: auto;
-		}
-	}
-
 	.bulk-settings-outer-container {
 		position: sticky;
 		top: var(--sim-header-height);

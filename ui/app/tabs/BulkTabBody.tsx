@@ -16,6 +16,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Icon } from '@ui-kit/Icon';
 import { TabNav, TabPanel } from '@ui-kit/TabNav';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { LocaleHtml } from '@ui-kit/Tooltip';
 import { useEffect, useState } from 'react';
 
@@ -40,7 +41,7 @@ export const BulkTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<div className="bulk-tab-left tab-panel-left">
+			<TabPanelColumns.Left className="bulk-tab-left pt-2" variant="auto-columns">
 				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
 					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
 					<div className="tab-content">
@@ -86,7 +87,7 @@ export const BulkTabBody = () => {
 						</TabPanel>
 					</div>
 				</Tabs.Root>
-			</div>
+			</TabPanelColumns.Left>
 			<BulkSettings />
 			{importOpen && <BulkGearImporterDialog open onOpenChange={setImportOpen} />}
 			<SelectorModal state={selector} id="bulk-selector-modal" rail={false} />

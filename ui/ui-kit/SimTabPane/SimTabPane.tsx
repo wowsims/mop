@@ -1,3 +1,4 @@
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
@@ -9,6 +10,6 @@ export interface SimTabPaneProps {
 
 export const SimTabPane = ({ id, className, children }: SimTabPaneProps) => (
 	<div id={id} className={clsx('sim-tab', id, className)}>
-		<div className="tab-pane-content-container">{children}</div>
+		<TabPanelColumns.Root className="tab-pane-content-container">{children}</TabPanelColumns.Root>
 	</div>
 );

@@ -1,21 +1,8 @@
+// Deferred (W1): `.sim-title .sim-link` background/hover interacts with the shared `.sim-link`
+// base rule in `_sim_links.scss` and with `SIM_LINK_CLASSES`'s own `bg-background` /
+// `hover:bg-surface-hover` utilities already on these elements (unlayered, `!important`) — not
+// confirmed which wins without deeper cross-file verification than this unit's time-box allows.
 .sim-title {
-	height: calc(var(--sim-header-height) + 1px);
-	border-bottom: var(--border-default);
-	z-index: calc(var(--z-sidebar) + 1);
-
-	@include media-breakpoint-down(lg) {
-		position: sticky;
-		top: -1px;
-	}
-
-	.sim-title-dropdown-root {
-		height: calc(var(--sim-header-height) - 1px);
-
-		.sim-link-dropdown {
-			height: 100%;
-		}
-	}
-
 	.sim-link {
 		background: var(--color-background);
 		height: 100%;

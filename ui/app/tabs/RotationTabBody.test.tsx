@@ -83,10 +83,10 @@ describe('RotationTabBody', () => {
 	it('renders the navbar ahead of both columns, which is what the layout depends on', () => {
 		const { container } = render(<RotationTabBody />);
 		const pane = container.querySelector('.rotation-tab-apl')!;
-		expect([...pane.children].map(child => child.className)).toEqual([
-			'apl-rotation-navbar sticky-toolbar-root',
-			'rotation-tab-col tab-panel-left tab-content',
-			'rotation-tab-col tab-panel-right',
-		]);
+		const [navbar, left, right] = [...pane.children];
+		expect(navbar.classList.contains('apl-rotation-navbar')).toBe(true);
+		expect(navbar.classList.contains('sticky-toolbar-root')).toBe(true);
+		expect(left.classList.contains('tab-panel-left')).toBe(true);
+		expect(right.classList.contains('tab-panel-right')).toBe(true);
 	});
 });

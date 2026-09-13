@@ -1,9 +1,6 @@
 // Import Sim UI and system-wide styles
 @import '../sim_ui/index';
 
-// Import Individual Sim UI Styles
-@import './shared';
-
 // Import component styles
 @import '../components/boolean_picker';
 @import '../components/detailed_results';

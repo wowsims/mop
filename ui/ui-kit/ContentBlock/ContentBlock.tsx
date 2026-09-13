@@ -25,18 +25,19 @@ export interface ContentBlockProps {
 	headerChildren?: ReactNode;
 	bodyRef?: Ref<HTMLDivElement>;
 	headerRef?: Ref<HTMLDivElement>;
+	flush?: boolean;
 }
 
-export const ContentBlock = ({ className, config, children, headerChildren, bodyRef, headerRef }: ContentBlockProps) => {
+export const ContentBlock = ({ className, config, children, headerChildren, bodyRef, headerRef, flush }: ContentBlockProps) => {
 	const header = config.header;
 	const hasHeader = !!header && Object.keys(header).length > 0;
 	const TitleTag = (header?.titleTag || 'h6') as ElementType;
 
 	return (
-		<div className={clsx('content-block', className)} data-testid="content-block">
+		<div className={clsx('content-block', className, flush && 'mb-0', 'flex flex-col')} data-testid="content-block">
 			{hasHeader && header && (
-				<div ref={headerRef} className={clsx('content-block-header', header.className)} data-testid="content-block-header">
-					<TitleTag className="content-block-title" data-testid="content-block-title">
+				<div ref={headerRef} className={clsx('content-block-header flex items-baseline gap-2', header.className)} data-testid="content-block-header">
+					<TitleTag className="content-block-title flex items-center font-bold mb-0" data-testid="content-block-title">
 						{header.title}
 						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ml-2" />}
 					</TitleTag>
@@ -44,7 +45,7 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 				</div>
 			)}
 			{!config.withoutBody && (
-				<div ref={bodyRef} className={clsx('content-block-body', config.bodyClassName)} data-testid="content-block-body">
+				<div ref={bodyRef} className={clsx('content-block-body flex-col', config.bodyClassName)} data-testid="content-block-body">
 					{children}
 				</div>
 			)}

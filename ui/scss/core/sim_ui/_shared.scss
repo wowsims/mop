@@ -11,89 +11,10 @@ th {
 	padding: auto;
 }
 
-.sim-ui {
-	// Allow for styled scrolling
-	max-height: 100vh;
-	overflow-y: auto;
-	scrollbar-color: var(--color-primary) var(--color-background);
-	scrollbar-width: thin;
-
-	&::-webkit-scrollbar {
-		width: 0.2rem;
-	}
-
-	&::-webkit-scrollbar-track {
-		background-color: var(--color-background);
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background-color: var(--color-primary);
-	}
-
-	.sim-root {
-		height: 100%;
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-
-		.sim-bg {
-			@include media-breakpoint-down(lg) {
-				left: 0;
-			}
-		}
-
-		.sim-container {
-			display: flex;
-			flex: 1;
-
-			@include media-breakpoint-down(lg) {
-				flex-direction: column;
-			}
-		}
-
-		.sim-sidebar,
-		.sim-content {
-			@include media-breakpoint-down(lg) {
-				width: 100%;
-				min-height: unset;
-			}
-		}
-
-		.sim-content {
-			padding: 0 var(--spacing-page) var(--spacing-page) var(--spacing-page);
-			flex: 4;
-			z-index: 1;
-		}
-	}
-}
-
-.sim-ui-unlaunched-container {
-	max-width: 400px;
-
-	i {
-		color: var(--color-danger);
-	}
-}
-
-.sim-bg {
-	position: fixed;
-	// These allow the background to fill the page and not be adjusted by browser scrollbars
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-image:
-		linear-gradient(
-			color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent),
-			color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent)
-		),
-		var(--theme-background-image);
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: -1;
-}
-
 // TODO: Move these to an organized partial
+// Deferred (W1): no carrier under this unit's ownership. Each metric class lives on a feature
+// component owned by another unit (results tables, tabs, encounter picker, EP weights dialog,
+// rotation timeline tooltips) — converts with that unit.
 .hide-damage-metrics {
 	.damage-metrics-tab,
 	.damage-metrics {

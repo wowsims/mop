@@ -6,6 +6,7 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useEffect } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -84,7 +85,7 @@ export const BulkSettings = () => {
 	});
 
 	return (
-		<div className="bulk-tab-right tab-panel-right">
+		<TabPanelColumns.Right className="bulk-tab-right">
 			<div className="bulk-settings-outer-container">
 				<div className="bulk-settings-container">
 					<CombinationsCount />
@@ -160,6 +161,6 @@ export const BulkSettings = () => {
 					)}
 				</div>
 			</div>
-		</div>
+		</TabPanelColumns.Right>
 	);
 };

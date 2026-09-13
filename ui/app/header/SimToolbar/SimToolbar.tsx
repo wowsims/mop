@@ -40,9 +40,14 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 
 			<ToolbarItem className="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
-			<div className="sim-toolbar-socials" data-testid="sim-toolbar-socials">
+			<div
+				className="sim-toolbar-socials ml-4 flex mt-[calc(var(--tab-padding-y)/2)] mb-[calc(var(--tab-padding-y)/2)] border-l border-l-(--color-border) [&_a]:my-[calc(var(--tab-padding-y)/2)] [&_button]:my-[calc(var(--tab-padding-y)/2)]"
+				data-testid="sim-toolbar-socials">
 				{SOCIALS.map(social => (
-					<div key={social.key} className="sim-toolbar-item" data-testid="sim-toolbar-item">
+					<div
+						key={social.key}
+						className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-(--tab-padding-y) [&_button]:my-(--tab-padding-y)"
+						data-testid="sim-toolbar-item">
 						<SocialLink social={social} />
 					</div>
 				))}

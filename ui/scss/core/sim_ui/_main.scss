@@ -1,15 +1,4 @@
-.sim-content {
-	min-width: calc(275px + 1vw);
-	display: flex;
-	flex-flow: column;
-
-	.sim-main {
-		height: 80%;
-		display: flex;
-		flex-grow: 1;
-	}
-}
-
+// Deferred (W1): carrier is CrashReportDialog.tsx, not in this unit's file list.
 .sim-crash-report {
 	.sim-crash-report-header {
 		font-size: 1rem;

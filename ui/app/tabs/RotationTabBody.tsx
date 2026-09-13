@@ -15,6 +15,7 @@ import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { TabPanel } from '@ui-kit/TabNav';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -55,22 +56,22 @@ export const RotationTabBody = () => {
 
 	return (
 		<>
-			<div className="rotation-tab rotation-tab-auto">
-				<div className="rotation-tab-col tab-panel-left">
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay>
+				<TabPanelColumns.Left className="rotation-tab-col" variant="stacked">
 					<div className="rotation-type-container">
 						<RotationTypePicker />
 					</div>
 					<p>{i18n.t('rotation_tab.auto.description')}</p>
-				</div>
-				<div className="rotation-tab-col tab-panel-right">
+				</TabPanelColumns.Left>
+				<TabPanelColumns.Right className="rotation-tab-col">
 					<RotationSidebar />
-				</div>
-			</div>
+				</TabPanelColumns.Right>
+			</TabPanelColumns.Root>
 
-			<div className="rotation-tab rotation-tab-simple">
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay>
 				{hasSimple && (
 					<>
-						<div className="rotation-tab-col tab-panel-left tab-content">
+						<TabPanelColumns.Left className="rotation-tab-col tab-content" variant="stacked">
 							<div className="rotation-type-container">
 								<RotationTypePicker />
 							</div>
@@ -88,17 +89,24 @@ export const RotationTabBody = () => {
 									</ContentBlock>
 								)}
 							</div>
-						</div>
-						<div className="rotation-tab-col tab-panel-right">
+						</TabPanelColumns.Left>
+						<TabPanelColumns.Right className="rotation-tab-col">
 							<RotationSidebar />
-						</div>
+						</TabPanelColumns.Right>
 					</>
 				)}
-			</div>
+			</TabPanelColumns.Root>
 
-			<Tabs.Root className="rotation-tab rotation-tab-apl" value={activeId} onValueChange={next => setActiveId(next as AplPaneId)}>
+			<TabPanelColumns.Root
+				as={Tabs.Root}
+				className="rotation-tab rotation-tab-apl"
+				gap="apl"
+				fullWidth
+				externalDisplay
+				value={activeId}
+				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 				<AplNavbar />
-				<div className="rotation-tab-col tab-panel-left tab-content">
+				<TabPanelColumns.Left className="rotation-tab-col tab-content">
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
@@ -107,11 +115,11 @@ export const RotationTabBody = () => {
 							</TabPanel>
 						);
 					})}
-				</div>
-				<div className="rotation-tab-col tab-panel-right">
+				</TabPanelColumns.Left>
+				<TabPanelColumns.Right className="rotation-tab-col">
 					<RotationSidebar />
-				</div>
-			</Tabs.Root>
+				</TabPanelColumns.Right>
+			</TabPanelColumns.Root>
 		</>
 	);
 };

@@ -56,7 +56,9 @@ describe('CustomSection', () => {
 	});
 
 	it('is a content block named by className, and carries custom-section', () => {
-		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(['content-block', 'custom-section', 'totems-settings']);
+		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(
+			['content-block', 'custom-section', 'flex', 'flex-col', 'totems-settings'].sort(),
+		);
 	});
 
 	it('falls back to the section id when it declares no className', () => {

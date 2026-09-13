@@ -25,24 +25,10 @@
 	}
 
 	.rotation-tab {
-		@extend .tab-pane-content-container;
-
-		width: 100%;
-	}
-
-	.rotation-tab-auto {
-		.tab-panel-left {
-			display: flex;
-			flex-direction: column;
-		}
+		display: flex;
 	}
 
 	.rotation-tab-simple {
-		.rotation-tab-col {
-			display: flex;
-			flex-direction: column;
-		}
-
 		.simple-rotation-container {
 			--columns: 1fr 1fr;
 			display: grid;
@@ -56,8 +42,6 @@
 	}
 
 	.rotation-tab-apl {
-		gap: var(--spacing-gutter) var(--spacing-page);
-
 		.apl-rotation-navbar {
 			flex: 1 0 100%;
 			gap: var(--spacer-1);

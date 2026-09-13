@@ -6,6 +6,7 @@ import { SavedTalents } from '@features/talents/components/SavedTalents';
 import { TalentsPicker } from '@features/talents/components/TalentsPicker';
 import { Class } from '@generated/proto/common';
 import { PetSpecPicker } from '@ui-kit/PetSpecPicker';
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../tracking/analytics';
@@ -32,14 +33,14 @@ export const TalentsTabBody = () => {
 
 	return (
 		<>
-			<div className="talents-tab-left tab-panel-left">
+			<TabPanelColumns.Left className="talents-tab-left">
 				<TalentsPicker config={talentsConfig} />
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
-			</div>
-			<div className="talents-tab-right tab-panel-right">
+			</TabPanelColumns.Left>
+			<TabPanelColumns.Right className="talents-tab-right">
 				<PresetConfigurationPicker categories={TALENT_PRESETS} />
 				<SavedTalents />
-			</div>
+			</TabPanelColumns.Right>
 		</>
 	);
 };

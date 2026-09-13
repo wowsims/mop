@@ -39,7 +39,7 @@ describe('ContentBlock', () => {
 	it('renders headerChildren after the title, inside the header', () => {
 		render(<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="text-sm">Describes it</p>} />);
 		const header = screen.getByTestId('content-block-header');
-		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title', 'text-sm']);
+		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title flex items-center font-bold mb-0', 'text-sm']);
 	});
 
 	it('puts the tooltip button inside the title element, not the header', () => {
@@ -93,8 +93,16 @@ describe('ContentBlock', () => {
 			/>,
 		);
 		const root = container.firstElementChild!;
-		expect(Array.from(root.classList).sort()).toEqual(['blk-extra', 'content-block', 'my-block'].sort());
+		expect(Array.from(root.classList).sort()).toEqual(['blk-extra', 'content-block', 'flex', 'flex-col', 'my-block'].sort());
 		expect(screen.getByTestId('content-block-header').classList.contains('header-extra')).toBe(true);
 		expect(screen.getByTestId('content-block-body').classList.contains('body-extra')).toBe(true);
+	});
+
+	it('adds mb-0 to the root when flush is set, and omits it otherwise', () => {
+		const { rerender, container } = render(<ContentBlock className="my-block" config={{}} />);
+		expect(container.firstElementChild!.classList.contains('mb-0')).toBe(false);
+
+		rerender(<ContentBlock className="my-block" config={{}} flush />);
+		expect(container.firstElementChild!.classList.contains('mb-0')).toBe(true);
 	});
 });

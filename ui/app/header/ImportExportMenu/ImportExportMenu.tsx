@@ -25,7 +25,7 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill.
 
 	return (
-		<div className={clsx('dropdown sim-dropdown-menu', `${kind}-dropdown`)} data-testid="sim-dropdown-menu">
+		<div className={clsx('dropdown sim-dropdown-menu flex static', `${kind}-dropdown`)} data-testid="sim-dropdown-menu">
 			<Menu
 				surface="menu"
 				open={open}
@@ -35,7 +35,12 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 						<Icon name={icon} style={iconStyle} /> {title}
 					</>
 				}
-				triggerProps={{ openOnHover: true, delay: 0, className: `${kind}-link`, 'data-testid': `${kind}-link` }}
+				triggerProps={{
+					openOnHover: true,
+					delay: 0,
+					className: `${kind}-link py-(--tab-padding-y) px-(--tab-padding-x) text-(length:--tab-font-size) data-[popup-open]:text-(--color-white)`,
+					'data-testid': `${kind}-link`,
+				}}
 				align="start"
 				sideOffset={-1}
 				positionerClassName="sim-dropdown-positioner"

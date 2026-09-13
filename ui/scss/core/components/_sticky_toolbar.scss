@@ -1,38 +1,4 @@
 .sticky-toolbar-root {
-	position: sticky;
-	top: var(--sim-header-height);
-	padding-left: var(--spacing-page);
-	padding-right: var(--spacing-page);
-	margin-left: calc(-1 * var(--spacing-page));
-	margin-right: calc(-1 * var(--spacing-page));
-	width: calc(100% + var(--spacing-page) * 2);
-	display: flex;
-	transition: background-color 0.15s ease-in-out;
-	// This needs to be less than var(--header-z-index) otherwise the toolbar overlaps the import/export dropdowns
-	z-index: calc(var(--z-header) - 1);
-
-	&::after {
-		content: ' ';
-		position: absolute;
-		bottom: -1px;
-		left: 0;
-		right: 0;
-		width: calc(100% - 2 * var(--spacing-page));
-		height: 1px;
-		margin-left: auto;
-		margin-right: auto;
-		background-color: var(--color-border);
-		transition: width 0.15s ease-in-out;
-	}
-
-	&.stuck {
-		background: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
-
-		&::after {
-			width: 100%;
-		}
-	}
-
 	.dropdown-picker-button {
 		padding: var(--spacer-3) 0;
 	}

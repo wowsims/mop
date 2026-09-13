@@ -1,12 +1,6 @@
 @use 'sass:map';
 
 .settings-tab {
-	.tab-pane-content-container {
-		.tab-panel-left {
-			grid-template-columns: 2fr 2fr 3fr;
-		}
-	}
-
 	.rotation-settings,
 	.other-settings {
 		.input-root {

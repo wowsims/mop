@@ -67,7 +67,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 	}, []);
 
 	return (
-		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title') } }}>
+		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title') } }} flush>
 			<div className="bulk-gear-search-container">
 				<SearchBar
 					id="bulkGearSearch"

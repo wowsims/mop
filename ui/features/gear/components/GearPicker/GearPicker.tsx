@@ -1,5 +1,7 @@
 import './GearPicker.scss';
 
+import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
+
 import { LEFT_ITEM_SLOTS, RIGHT_ITEM_SLOTS } from '../../model/gear_data';
 import { ItemPickerCell } from './ItemPickerCell';
 
@@ -9,15 +11,15 @@ export interface GearPickerProps {
 
 export const GearPicker = ({ ready }: GearPickerProps) => (
 	<div className="gear-picker-root">
-		<div className="gear-picker-left tab-panel-col">
+		<TabPanelColumns.Col className="gear-picker-left" externalGap>
 			{LEFT_ITEM_SLOTS.map(slot => (
 				<ItemPickerCell key={slot} slot={slot} ready={ready} />
 			))}
-		</div>
-		<div className="gear-picker-right tab-panel-col">
+		</TabPanelColumns.Col>
+		<TabPanelColumns.Col className="gear-picker-right" externalGap>
 			{RIGHT_ITEM_SLOTS.map(slot => (
 				<ItemPickerCell key={slot} slot={slot} ready={ready} />
 			))}
-		</div>
+		</TabPanelColumns.Col>
 	</div>
 );

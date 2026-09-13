@@ -43,7 +43,9 @@ export const ToolbarItem = ({
 	);
 	const testId = className?.split(' ')[0];
 	return (
-		<div className="sim-toolbar-item" data-testid="sim-toolbar-item">
+		<div
+			className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-(--tab-padding-y) [&_button]:my-(--tab-padding-y)"
+			data-testid="sim-toolbar-item">
 			{!hidden &&
 				(href ? (
 					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} data-testid={testId} {...anchor}>

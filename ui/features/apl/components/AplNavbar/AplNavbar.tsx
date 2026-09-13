@@ -1,7 +1,7 @@
 import { RotationTypePicker } from '@features/apl/components/RotationTypePicker';
 import { APL_PANES } from '@features/apl/model/apl_panes';
 import i18n from '@i18n/config';
-import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { STICKY_TOOLBAR_CLASSES, useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import { TabNav } from '@ui-kit/TabNav';
 import clsx from 'clsx';
 
@@ -10,7 +10,10 @@ export const AplNavbar = () => {
 	const { ref, stuck } = useStickyToolbar<HTMLDivElement>();
 
 	return (
-		<div ref={ref} className={clsx('apl-rotation-navbar sticky-toolbar-root', stuck && 'stuck')} data-stuck={stuck ? '' : undefined}>
+		<div
+			ref={ref}
+			className={clsx('apl-rotation-navbar sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+			data-stuck={stuck ? '' : undefined}>
 			<div className="rotation-type-container">
 				<RotationTypePicker />
 			</div>

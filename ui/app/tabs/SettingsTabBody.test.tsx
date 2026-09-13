@@ -92,7 +92,7 @@ const becomeReady = async () => {
 };
 
 const blocks = (container: HTMLElement, column: string) =>
-	[...container.querySelectorAll(`.${column} > [data-testid="content-block"]`)].map(block => [...block.classList].find(name => name !== 'content-block'));
+	[...container.querySelectorAll(`.${column} > [data-testid="content-block"]`)].map(block => [...block.classList].find(name => /-settings$/.test(name)));
 
 const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > [data-testid="content-block-body"]`);
 

@@ -1,111 +1,22 @@
 @import '../components/sim_title_dropdown';
 
-.sim-sidebar {
-	position: sticky;
-	top: -1px;
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	background: var(--color-background);
-	height: 100dvh;
-	z-index: var(--z-sidebar);
+// Deferred (W1): carrier is IterationsPicker.tsx, not in this unit's file list.
+.sim-sidebar-actions {
+	.iterations-picker {
+		width: 100%;
+		flex-flow: column;
 
-	@include media-breakpoint-down(lg) {
-		position: relative;
-		top: 0;
-		height: auto;
-	}
-
-	.sim-sidebar-content {
-		padding: var(--spacing-gutter);
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		overflow-y: auto;
-		scrollbar-color: var(--color-primary) var(--color-background);
-		scrollbar-width: thin;
-
-		&::-webkit-scrollbar {
-			width: 0.2rem;
-		}
-
-		&::-webkit-scrollbar-track {
-			background-color: var(--color-background);
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-primary);
-		}
-
-		@include media-breakpoint-down(xxl) {
-			padding-left: calc(var(--spacing-gutter-sm) * 2);
-			padding-right: calc(var(--spacing-gutter-sm) * 2);
-		}
-
-		@include media-breakpoint-down(lg) {
-			padding: calc(var(--spacing-gutter-sm) * 2) var(--spacing-gutter-sm);
-			min-height: 0;
-		}
-
-		& > *:not(:last-child) {
-			margin-bottom: var(--spacer-4);
-		}
-
-		.sim-sidebar-actions {
-			padding-left: var(--spacing-page);
-			padding-right: var(--spacing-page);
-			margin-left: calc(var(--spacing-gutter) * -1);
-			margin-right: calc(var(--spacing-gutter) * -1);
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: var(--spacing-stack);
-
-			@include media-breakpoint-down(xxl) {
-				padding: 0;
-				margin-left: 0;
-				margin-right: 0;
-			}
-
-			& > * {
-				margin-bottom: 0;
-			}
-
-			.iterations-picker {
-				width: 100%;
-				flex-flow: column;
-
-				.number-picker-input {
-					width: 100%;
-					margin: 0;
-				}
-			}
-		}
-
-		.sim-sidebar-results {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-
-		.sim-sidebar-stats {
-			margin-top: auto;
-
-			@include media-breakpoint-down(lg) {
-				margin-top: 0;
-			}
-		}
-
-		.sim-sidebar-socials {
-			display: flex;
-			justify-content: center;
-			// Identical spacing for three items in a row, and immune to a react-tooltip node appearing among the children: it renders in place rather than portaling, so it would otherwise take `:last-child` off the last link and give it a trailing margin the moment you hovered.
-			gap: var(--spacer-3);
+		.number-picker-input {
+			width: 100%;
+			margin: 0;
 		}
 	}
 }
 
+// Deferred (W1): ReforgePanel.tsx (ui/features/reforge/components/ReforgePanel) copies this
+// markup/class list by hand, and ui/specs/mage/fire/calculate_combustion_thresholds.test.tsx
+// (frozen) asserts the button's exact class list — it must not gain `relative`. Converts with its
+// owning unit.
 .sim-sidebar-action-button {
 	position: relative;
 
