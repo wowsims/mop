@@ -208,6 +208,10 @@
 
 	--spacing-sim-header: 4.5rem;
 
+	--grid-template-columns-auto-fit-220: repeat(auto-fit, minmax(220px, 1fr));
+	--grid-template-columns-single: auto;
+	--grid-template-columns-settings: 2fr 2fr 3fr;
+
 	--background-image-skeleton: linear-gradient(90deg, rgb(255 255 255 / 8%) 25%, rgb(255 255 255 / 18%) 50%, rgb(255 255 255 / 8%) 75%);
 	--background-image-select-chevron: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 

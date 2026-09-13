@@ -7,19 +7,19 @@
 }
 
 .ui-columns-left {
-	@apply grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] max-lg:flex max-lg:flex-col;
+	@apply grid grid-cols-auto-fit-220 max-lg:flex max-lg:flex-col;
 }
 
 .ui-columns-left-auto {
-	@apply grid grid-cols-[auto] max-lg:flex max-lg:flex-col;
+	@apply grid grid-cols-single max-lg:flex max-lg:flex-col;
 }
 
 .ui-columns-left-settings {
-	@apply grid grid-cols-[2fr_2fr_3fr] max-lg:flex max-lg:flex-col;
+	@apply grid grid-cols-settings max-lg:flex max-lg:flex-col;
 }
 
 .ui-columns-left-stacked {
-	@apply flex flex-col grid-cols-[repeat(auto-fit,minmax(220px,1fr))];
+	@apply flex flex-col grid-cols-auto-fit-220;
 }
 
 .ui-columns-right {

@@ -2,7 +2,7 @@
 	@apply sticky top-sim-header -mx-page w-[calc(100%+var(--spacing-page)*2)] flex px-page z-toolbar transition-colors duration-150 ease-in-out;
 
 	&::after {
-		content: '_';
+		content: ' ';
 		width: calc(100% - 2 * var(--spacing-page));
 
 		@apply absolute -bottom-px inset-x-0 mx-auto h-px bg-border transition-[width] duration-150 ease-in-out;

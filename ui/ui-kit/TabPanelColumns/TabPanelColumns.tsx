@@ -40,7 +40,7 @@ const LEFT_VARIANT_CLASSES: Record<TabPanelColumnsLeftVariant, string> = {
 };
 
 const Left = ({ className, variant = 'default', children }: TabPanelColumnsLeftProps) => (
-	<div className={clsx('tab-panel-left w-full flex-[4] gap-section', LEFT_VARIANT_CLASSES[variant], className)}>{children}</div>
+	<div className={clsx('tab-panel-left w-full flex-4 gap-section', LEFT_VARIANT_CLASSES[variant], className)}>{children}</div>
 );
 
 export interface TabPanelColumnsRightProps {

@@ -1,5 +1,5 @@
 .ui-spinner {
-	@apply rounded-full border-spinner-track border-t-spinner animate-spin;
+	@apply border-spinner-track border-t-spinner animate-spin;
 	@apply w-(--loader-width,120px) h-(--loader-height,120px) border-[calc(var(--loader-width,120px)/7.5)];
 }
 

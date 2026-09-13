@@ -51,7 +51,13 @@ export const Chip = ({
 
 	return (
 		<Root
-			className={clsx('saved-data-set-chip ui-chip', active && 'active', disabled && 'disabled', className)}
+			className={clsx(
+				'saved-data-set-chip ui-chip',
+				'data-[active]:[&_.saved-data-set-name]:text-primary-foreground',
+				active && 'active',
+				disabled && 'disabled',
+				className,
+			)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}
 			data-disabled={disabled ? '' : undefined}

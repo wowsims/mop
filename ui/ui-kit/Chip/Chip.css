@@ -1,5 +1,5 @@
 .ui-chip {
-	@apply rounded-full flex p-0 border border-primary text-ui font-normal whitespace-nowrap text-center leading-none select-none cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out;
+	@apply rounded-full flex p-0 border border-primary text-white text-ui font-normal whitespace-nowrap text-center leading-none select-none cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out;
 
 	&:hover:not([data-active]) {
 		@apply bg-primary-dampened;
@@ -7,10 +7,6 @@
 
 	&[data-active] {
 		@apply bg-primary;
-
-		& .saved-data-set-name {
-			@apply text-primary-foreground;
-		}
 
 		& .saved-data-set-delete {
 			@apply text-primary-foreground;
