@@ -62,8 +62,8 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 			if (isJC && !o.hasJC) ||
 				// Force non-tank specs to use exclusively primary-stat JC gems to speed up calculations.
 				(isJC && !o.isTankSpec && !gemHasAnyStat(gem, stats.Strength, stats.Agility, stats.Intellect)) ||
-				// Hybrid casters use Spirit instead of hit gems.
-				(o.isHybridCaster && gemStatValue(gem, stats.HitRating) != 0) ||
+				// Specs that get hit from Spirit use Spirit instead of hit gems.
+				(o.spiritHitShare > 0 && gemStatValue(gem, stats.HitRating) != 0) ||
 				strings.Contains(gem.GetName(), "Perfect") ||
 				!core.GemMatchesSocket(gem.GetColor(), socketColor) {
 				continue
@@ -201,11 +201,14 @@ func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat prot
 		}
 	}
 
-	// Spirit->SpellHit (hybrid casters) and Expertise->SpellHit conversions.
+	// Spirit->SpellHit (at the spec's share) and Expertise->SpellHit conversions.
 	spellHitPseudo := proto.PseudoStat_PseudoStatSpellHitPercent
-	if getUnitStat(preCapEPs, stats.UnitStatFromPseudoStat(spellHitPseudo)) != 0 &&
-		((stat == proto.Stat_StatSpirit && o.isHybridCaster) || stat == proto.Stat_StatExpertiseRating) {
-		setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
+	if getUnitStat(preCapEPs, stats.UnitStatFromPseudoStat(spellHitPseudo)) != 0 {
+		if stat == proto.Stat_StatSpirit && o.spiritHitShare > 0 {
+			setPseudoStatCoefficient(coeffs, spellHitPseudo, amount*o.spiritHitShare/core.SpellHitRatingPerHitPercent)
+		} else if stat == proto.Stat_StatExpertiseRating {
+			setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
+		}
 	}
 
 	if o.relativeCap != nil {
