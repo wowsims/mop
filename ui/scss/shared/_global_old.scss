@@ -45,11 +45,13 @@
 	opacity: 0.7;
 }
 
-.safe {
+.safe,
+.positive {
 	color: var(--color-success) !important;
 }
 
-.danger {
+.danger,
+.negative {
 	color: var(--color-danger) !important;
 }
 
