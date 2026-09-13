@@ -1,13 +1,17 @@
 .ui-tab {
 	@apply flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link [font-family:inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out;
 	@apply hover:text-link-hover;
+
 	&:focus-visible {
 		@apply outline-0 focus-ring;
 	}
+
 	&[data-active] {
 		@apply relative text-white;
+
 		&::after {
 			content: '';
+
 			@apply absolute inset-x-0 bottom-0 h-[2px] bg-white;
 		}
 	}

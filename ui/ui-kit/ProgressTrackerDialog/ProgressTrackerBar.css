@@ -8,6 +8,7 @@
 
 .ui-progress-indicator {
 	@apply animate-shimmer bg-progress bg-[length:200%_100%] motion-reduce:animate-none;
+
 	&[data-indeterminate] {
 		@apply hidden;
 	}

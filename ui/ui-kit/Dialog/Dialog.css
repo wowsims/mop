@@ -1,5 +1,6 @@
 .ui-dialog-backdrop {
 	@apply fixed inset-0 bg-black opacity-50 z-modal-backdrop fade-in-out motion-reduce:transition-none;
+
 	&[data-elevated='true'] {
 		@apply z-modal-elevated-backdrop;
 	}
@@ -7,6 +8,7 @@
 
 .ui-dialog-viewport {
 	@apply fixed inset-0 overflow-x-hidden overflow-y-auto z-modal fade-in-out motion-reduce:transition-none;
+
 	&[data-elevated='true'] {
 		@apply z-modal-elevated;
 	}
@@ -14,15 +16,19 @@
 
 .ui-dialog {
 	@apply flex relative flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none;
+
 	&[data-size='sm'] {
 		@apply max-w-modal-sm max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
 	}
+
 	&[data-size='md'] {
 		@apply max-w-modal-md max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
 	}
+
 	&[data-size='lg'] {
 		@apply max-w-modal-lg max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
 	}
+
 	&[data-size='xl'] {
 		@apply max-w-modal-xl max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
 	}
@@ -39,6 +45,7 @@
 .ui-dialog-close {
 	@apply flex items-center justify-center box-content w-[1em] h-[1em] -mt-2 -mb-2 -mr-1 ml-auto py-2 px-2 text-link transition-colors duration-150 ease-in-out z-modal-close;
 	@apply hover:text-white;
+
 	&:focus-visible {
 		@apply outline-0 shadow-focus-ring;
 	}
