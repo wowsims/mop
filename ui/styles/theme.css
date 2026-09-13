@@ -30,14 +30,8 @@
 
 	--text-ui: 0.75rem;
 
-	--spacing-icon-sm: 1rem;
-	--spacing-icon-md: 2.5rem;
-	--spacing-stack: 0.75rem;
-	--spacing-gutter: 1.5rem;
-	--spacing-gutter-sm: 0.5rem;
 	--spacing-page: 0.5rem;
 	--spacing-section: 2rem;
-	--spacing-cell: 0.5rem;
 
 	--color-black: #000;
 	--color-white: #fff;
@@ -176,9 +170,60 @@
 	--shadow-focus-outline-primary: 0 0 0 0.25rem rgb(13 110 253 / 0.5);
 	--shadow-focus-outline-light: 0 0 0 0.25rem rgb(248 249 250 / 0.5);
 	--shadow-focus-outline-cancel: 0 0 0 0.25rem rgb(230 128 102 / 0.5);
+
+	--color-input-disabled: color-mix(in srgb, #15171e, #fff 20%);
+	--color-scrim: rgb(0 0 0 / 0.5);
+	--color-spinner: #3498db;
+	--color-spinner-track: #f3f3f3;
+
+	--text-metrics: 12px;
+	--text-2xs: 0.625rem;
+	--text-results-filter-icon: 20px;
+
+	--radius-xs: 3px;
+	--radius-sm: 4px;
+
+	--shadow-focus-ring: 0 0 0 0.25rem rgb(13 110 253 / 0.25);
+	--shadow-toast: 0 0.5rem 1rem rgb(0 0 0 / 0.15);
+
+	--container-modal-sm: 300px;
+	--container-modal-md: 500px;
+	--container-modal-lg: 800px;
+	--container-modal-xl: 1140px;
+	--container-tooltip-sm: 75vw;
+	--container-tooltip: 15vw;
+	--container-tooltip-lg: 25vw;
+	--container-metrics-tooltip: 300px;
+
+	--spacing-sim-header: 4.5rem;
+
+	--background-image-skeleton: linear-gradient(90deg, rgb(255 255 255 / 8%) 25%, rgb(255 255 255 / 18%) 50%, rgb(255 255 255 / 8%) 75%);
+	--background-image-select-chevron: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+
+	--z-index-toolbar: 99;
+	--z-index-header: 100;
+	--z-index-sidebar: 200;
+	--z-index-sim-title: 201;
+	--z-index-dropdown: 1000;
+	--z-index-modal-close: 1000;
+	--z-index-modal-backdrop: 1050;
+	--z-index-modal: 1055;
+	--z-index-modal-elevated-backdrop: 1060;
+	--z-index-modal-elevated: 1065;
+	--z-index-tooltip: 1080;
+	--z-index-sticky: 1020;
+	--z-index-menu: 1500;
+	--z-index-toast: 9999;
 }
 
 :root {
+	--spacing-icon-sm: 1rem;
+	--spacing-icon-md: 2.5rem;
+	--spacing-stack: 0.75rem;
+	--spacing-gutter: 1.5rem;
+	--spacing-gutter-sm: 0.5rem;
+	--spacing-cell: 0.5rem;
+
 	--spacer-1: 0.25rem;
 	--spacer-2: 0.5rem;
 	--spacer-3: 1rem;
@@ -187,10 +232,6 @@
 	--border-default: 1px solid var(--color-border);
 	--dr-filling-pane-min-height: 70vh;
 	--h6-font-size: 1rem;
-	--z-header: 100;
-	--z-sidebar: 200;
-	--z-tooltip: 1080;
-	--z-toast: 9999;
 	--link-transition: color 0.15s ease-in-out;
 	--btn-padding-y: 0.5rem;
 	--btn-padding-x: 0.75rem;
@@ -204,14 +245,12 @@
 	--dropdown-link-hover-color: #fff;
 	--dropdown-link-hover-bg: color-mix(in srgb, #15171e, #000 30%);
 	--dropdown-padding-y: 0;
-	--z-dropdown: 1000;
 	--dropdown-min-width: 10rem;
 	--dropdown-border-color: #373d57;
 	--dropdown-font-size: 1rem;
 	--dropdown-item-padding-y: 0.25rem;
 	--dropdown-item-padding-x: 1rem;
 	--dropdown-item-transition: all 0.2s ease-in-out;
-	--z-modal: 1055;
 	--modal-margin: 1.75rem;
 	--modal-width-sm: 300px;
 	--modal-width-md: 500px;
@@ -233,9 +272,6 @@
 	--modal-close-color: #a5b1d6;
 	--modal-footer-border-width: 1px;
 	--modal-footer-border-color: var(--color-border);
-	--z-modal-backdrop: 1050;
-	--z-modal-elevated-backdrop: 1060;
-	--z-modal-elevated: 1065;
 	--modal-backdrop-bg: #000;
 	--modal-backdrop-opacity: 0.5;
 	--tooltip-bg: color-mix(in srgb, #15171e, #fff 5%);
@@ -265,6 +301,22 @@
 
 @theme static inline {
 	--shadow-focus-theme: 0 0 0 0.25rem color-mix(in srgb, var(--color-primary) 50%, transparent);
+	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, #000);
+	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, #000);
+	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, #000);
+	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
+	--color-danger: #dc3545;
+	--text-shadow-glow-danger: 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger);
+	--color-sim-backdrop: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
+	--background-image-sim: linear-gradient(var(--color-sim-backdrop), var(--color-sim-backdrop)), var(--theme-background-image);
+	--background-image-progress: linear-gradient(
+		90deg,
+		var(--color-success) 0%,
+		color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 25%,
+		var(--color-success) 50%,
+		color-mix(in srgb, var(--color-success) 85%, var(--color-black)) 75%,
+		var(--color-success) 100%
+	);
 }
 
 @keyframes loading-shimmer {
@@ -301,13 +353,15 @@
 	}
 }
 
+@media (width < 992px) {
+	:root {
+		--spacing-sim-header: 65px;
+	}
+}
+
 .sim-ui {
 	--color-primary: var(--theme-color, #0d6efd);
 	--color-primary-foreground: var(--theme-color-foreground, #fff);
-	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, #000);
-	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, #000);
-	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, #000);
-	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
 	--color-primary-disabled-foreground: var(--color-primary-foreground);
 	--theme-background-color: color-mix(in srgb, var(--color-primary) 10%, #000);
 	--theme-background-opacity: 0.95;

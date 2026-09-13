@@ -89,20 +89,20 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 						) : null}
 						<div className="flex flex-1 max-lg:flex-col" data-testid="sim-container">
 							<aside
-								className="sticky top-[-1px] flex-1 flex flex-col items-stretch bg-(--color-background) h-dvh z-(--z-sidebar) max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-[unset]"
+								className="sticky top-[-1px] flex-1 flex flex-col items-stretch bg-(--color-background) h-dvh z-sidebar max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-[unset]"
 								data-testid="sim-sidebar">
 								<div
-									className="sim-title h-[calc(var(--sim-header-height)+1px)] border-b border-b-(--color-border) z-[calc(var(--z-sidebar)+1)] max-lg:sticky max-lg:top-[-1px]"
+									className="sim-title h-[calc(var(--sim-header-height)+1px)] border-b border-b-(--color-border) z-sim-title max-lg:sticky max-lg:top-[-1px]"
 									data-testid="sim-title">
 									<SimTitleDropdown currentSpec={spec} />
 								</div>
 								<div
-									className="sim-sidebar-content p-(--spacing-gutter) flex flex-1 flex-col overflow-y-auto [scrollbar-color:var(--color-primary)_var(--color-background)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-(--color-background) [&::-webkit-scrollbar-thumb]:bg-(--color-primary) max-xxl:px-[calc(var(--spacing-gutter-sm)*2)] max-lg:py-[calc(var(--spacing-gutter-sm)*2)] max-lg:px-(--spacing-gutter-sm) max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
+									className="sim-sidebar-content p-6 flex flex-1 flex-col overflow-y-auto [scrollbar-color:var(--color-primary)_var(--color-background)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-(--color-background) [&::-webkit-scrollbar-thumb]:bg-(--color-primary) max-xxl:px-4 max-lg:py-4 max-lg:px-2 max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
 									data-testid="sim-sidebar-content">
 									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 									<div
 										ref={sidebarActions}
-										className="sim-sidebar-actions px-(--spacing-page) -mx-(--spacing-gutter) flex flex-col items-center gap-(--spacing-stack) max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
+										className="sim-sidebar-actions px-(--spacing-page) -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
 										data-testid="sim-sidebar-actions">
 										<IterationsPicker sim={sim} />
 										{host && <SimSidebarActions host={host} />}
@@ -126,7 +126,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								<header
 									ref={header}
 									className={clsx(
-										'sticky top-[-1px] h-(--sim-header-height) pt-(--spacing-gutter) pr-(--spacing-page) pl-(--spacing-page) -mx-(--spacing-page) whitespace-nowrap transition-colors duration-150 ease-in-out z-(--z-header) max-lg:pt-(--spacing-gutter-sm)',
+										'sticky top-[-1px] h-(--sim-header-height) pt-6 pr-(--spacing-page) pl-(--spacing-page) -mx-(--spacing-page) whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
 										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-(--color-border) after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:after:w-full",
 										stuck && 'stuck data-[stuck]:bg-(--color-background)',
 									)}

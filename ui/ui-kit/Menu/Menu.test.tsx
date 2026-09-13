@@ -37,7 +37,7 @@ describe('Menu', () => {
 			</Menu>,
 		);
 		fireEvent.click(getByTestId('trigger'));
-		expect(getByTestId('positioner').className).toContain('z-(--z-dropdown)');
+		expect(getByTestId('positioner').className).toContain('z-dropdown');
 	});
 });
 

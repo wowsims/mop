@@ -15,7 +15,7 @@ export interface TabPanelColumnsRootProps {
 
 const ROOT_GAP_CLASSES: Record<TabPanelColumnsGap, string> = {
 	default: 'gap-(--spacing-page) max-lg:gap-(--spacing-section)',
-	apl: 'gap-y-(--spacing-gutter) gap-x-(--spacing-page)',
+	apl: 'gap-y-6 gap-x-(--spacing-page)',
 };
 
 const Root = ({ as: Component = 'div', gap = 'default', fullWidth, externalDisplay, className, children, ...rest }: TabPanelColumnsRootProps) => (

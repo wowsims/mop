@@ -4,7 +4,7 @@ export const menuSurfaceClasses = {
 } as const;
 
 export const menuPositionerZClasses = {
-	menu: 'z-(--z-dropdown)',
+	menu: 'z-dropdown',
 	plain: 'z-[1500]',
 } as const;
 

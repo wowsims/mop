@@ -90,7 +90,7 @@ export const Dialog = ({
 				<BaseDialog.Backdrop
 					className={clsx(
 						'fixed inset-0 bg-(--modal-backdrop-bg) opacity-(--modal-backdrop-opacity) fade-in-out motion-reduce:transition-none',
-						elevated ? 'z-(--z-modal-elevated-backdrop)' : 'z-(--z-modal-backdrop)',
+						elevated ? 'z-modal-elevated-backdrop' : 'z-modal-backdrop',
 					)}
 					data-testid="sim-dialog-backdrop"
 					data-elevated={elevated}
@@ -99,7 +99,7 @@ export const Dialog = ({
 				<BaseDialog.Viewport
 					className={clsx(
 						'fixed inset-0 overflow-x-hidden overflow-y-auto fade-in-out motion-reduce:transition-none',
-						elevated ? 'z-(--z-modal-elevated)' : 'z-(--z-modal)',
+						elevated ? 'z-modal-elevated' : 'z-modal',
 					)}
 					data-testid="sim-dialog-viewport"
 					data-elevated={elevated}>
@@ -151,7 +151,7 @@ export const Dialog = ({
 													'py-[calc(0.5*var(--modal-header-padding-y))] px-[calc(0.5*var(--modal-header-padding-x))]',
 													'text-(--modal-close-color)',
 													'transition-(--link-transition)',
-													'z-[1000] hover:text-white focus-visible:outline-0 focus-visible:shadow-(--focus-ring)',
+													'z-modal-close hover:text-white focus-visible:outline-0 focus-visible:shadow-(--focus-ring)',
 													closeClassName,
 												)}
 											/>

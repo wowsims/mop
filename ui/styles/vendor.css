@@ -1,5 +1,5 @@
 .sim-tooltip {
-	z-index: var(--z-tooltip);
+	z-index: var(--z-index-tooltip);
 	--rt-opacity: 1;
 }
 

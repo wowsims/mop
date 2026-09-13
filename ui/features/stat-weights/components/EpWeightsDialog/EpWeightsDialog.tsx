@@ -196,7 +196,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						onComputeEp={onComputeEp}
 					/>
 				</div>
-				<div className="ep-weights-sidebar lg:sticky lg:top-0 lg:z-[1020] order-0 lg:order-1">
+				<div className="ep-weights-sidebar lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>

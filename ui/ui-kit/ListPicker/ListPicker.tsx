@@ -134,7 +134,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 			disabled={disabled}>
 			{config.title !== undefined && (
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
-				<span className="list-picker-title form-label flex w-full mb-(--spacing-stack) text-[length:var(--text-base)]" data-testid="list-picker-title">
+				<span className="list-picker-title form-label flex w-full mb-3 text-[length:var(--text-base)]" data-testid="list-picker-title">
 					{config.title}
 					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ml-2" />}
 				</span>
