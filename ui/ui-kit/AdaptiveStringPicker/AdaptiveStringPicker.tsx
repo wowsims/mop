@@ -1,9 +1,7 @@
-import { Input } from '@base-ui/react/input';
-import { INPUT_CLASSES } from '@ui-kit/FormControl';
+import { Input } from '@ui-kit/FormControl';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { StringPickerConfig } from './types';
@@ -34,14 +32,7 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 
 	return (
 		<PickerShell config={config} className="adaptive-string-picker-root" testId="adaptive-string-picker-root" hidden={hidden} disabled={disabled}>
-			<Input
-				type="text"
-				ref={attachInput}
-				id={config.id}
-				className={clsx(INPUT_CLASSES, 'form-control')}
-				disabled={disabled}
-				onInput={() => updateSize(input)}
-			/>
+			<Input type="text" ref={attachInput} id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(input)} />
 		</PickerShell>
 	);
 };

@@ -1,10 +1,8 @@
-import { Input } from '@base-ui/react/input';
 import { arrayEquals } from '@sim/utils/collections';
-import { INPUT_CLASSES } from '@ui-kit/FormControl';
+import { Input } from '@ui-kit/FormControl';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { NumberListPickerConfig } from './types';
@@ -47,7 +45,7 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className={clsx(INPUT_CLASSES, 'number-list-picker-input form-control')}
+				className="number-list-picker-input form-control"
 				placeholder={config.placeholder || ''}
 				disabled={disabled}
 			/>

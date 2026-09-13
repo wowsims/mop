@@ -2,7 +2,7 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { ConfirmPopover } from '@ui-kit/ConfirmPopover';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { FieldLabel, INPUT_CLASSES } from '@ui-kit/FormControl';
+import { FieldLabel, Input } from '@ui-kit/FormControl';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
@@ -145,9 +145,9 @@ export const SavedDataPanel = <T,>({
 				{!loadOnly && (
 					<div ref={createRef} className="saved-data-create-container" data-testid="saved-data-create-container">
 						<FieldLabel htmlFor={nameInputId}>{nameLabel ?? label}</FieldLabel>
-						<input
+						<Input
 							id={nameInputId}
-							className={clsx(INPUT_CLASSES, 'saved-data-save-input form-control')}
+							className="saved-data-save-input form-control"
 							data-testid="saved-data-save-input"
 							type="text"
 							placeholder={i18n.t('common.name')}

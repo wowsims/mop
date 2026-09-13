@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { FieldLabel, HelpText, INPUT_CLASSES, TextArea } from './index';
+import { FieldLabel, HelpText, Input, Select, TextArea } from './index';
 
 describe('FieldLabel', () => {
 	it('renders a label by default with htmlFor', () => {
@@ -47,12 +47,48 @@ describe('HelpText', () => {
 });
 
 describe('TextArea', () => {
-	it('forwards ref and attributes and applies INPUT_CLASSES', () => {
+	it('forwards ref and attributes and applies the shared input base classes', () => {
 		const ref = createRef<HTMLTextAreaElement>();
 		render(<TextArea ref={ref} spellCheck={false} data-testid="textarea" />);
 		const textarea = screen.getByTestId('textarea');
 		expect(ref.current).toBe(textarea);
 		expect(textarea.getAttribute('spellcheck')).toBe('false');
-		INPUT_CLASSES.split(' ').forEach(cls => expect(textarea.className).toContain(cls));
+		expect(textarea.className).toContain('bg-surface');
+		expect(textarea.className).toContain('border-surface-border');
+	});
+
+	it('keeps className additive', () => {
+		render(<TextArea className="extra" data-testid="textarea" />);
+		const textarea = screen.getByTestId('textarea');
+		expect(textarea.className).toContain('extra');
+		expect(textarea.className).toContain('bg-surface');
+	});
+});
+
+describe('Input', () => {
+	it('renders a native input, forwards ref and attributes, and applies the shared base classes', () => {
+		const ref = createRef<HTMLElement>();
+		render(<Input ref={ref} type="text" className="extra" data-testid="input" />);
+		const input = screen.getByTestId('input');
+		expect(input.tagName).toBe('INPUT');
+		expect(ref.current).toBe(input);
+		expect(input.className).toContain('extra');
+		expect(input.className).toContain('bg-surface');
+	});
+});
+
+describe('Select', () => {
+	it('renders a native select, forwards ref and attributes, and applies the shared base classes', () => {
+		const ref = createRef<HTMLElement>();
+		render(
+			<Select ref={ref} className="extra" data-testid="select">
+				<option value="1">one</option>
+			</Select>,
+		);
+		const select = screen.getByTestId('select');
+		expect(select.tagName).toBe('SELECT');
+		expect(ref.current).toBe(select);
+		expect(select.className).toContain('extra');
+		expect(select.className).toContain('bg-surface');
 	});
 });

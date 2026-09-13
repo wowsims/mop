@@ -1,10 +1,8 @@
-import { Input } from '@base-ui/react/input';
 import { formatToNumber } from '@sim/utils/format';
-import { INPUT_CLASSES } from '@ui-kit/FormControl';
+import { Input } from '@ui-kit/FormControl';
 import { useCommitChange } from '@ui-kit/hooks/useCommitChange';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
-import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { NumberPickerConfig } from './types';
@@ -67,7 +65,7 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className={clsx(INPUT_CLASSES, 'number-picker-input form-control')}
+				className="number-picker-input form-control"
 				disabled={disabled}
 				onInput={() => updateSize(input)}
 			/>
