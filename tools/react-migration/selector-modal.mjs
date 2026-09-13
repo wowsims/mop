@@ -24,7 +24,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const INSTALL = () => {
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
-	const modalRoot = () => document.querySelector('.modal.show .selector-modal, .sim-dialog-popup.selector-modal[data-open]');
+	const modalRoot = () => document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
 
 	window.selectorProbe = {
 		open: () => !!modalRoot(),
@@ -147,7 +147,7 @@ const problems = [];
 const say = line => console.log(line);
 // Two roots, so a descendant selector has to be spelled out under each — a bare comma between them
 // binds looser than the combinator and matches the modal root itself.
-const ROOTS = ['.modal.show .selector-modal', '.sim-dialog-popup.selector-modal[data-open]'];
+const ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
 const modalRoot = ROOTS.join(', ');
 const sel = suffix => ROOTS.map(root => `${root} ${suffix}`).join(', ');
 const pane = () => page.locator(sel('.selector-modal-tab-pane.active')).first();
@@ -473,7 +473,7 @@ await settle(600);
 // OUTER one and reads "open" whether or not this menu is. Under the descendant form this file
 // recorded the baseline's close button as broken; it is not, and neither was the menu open before
 // Filters was ever clicked.
-const FILTERS_ROOT = '.modal.show > .filters-menu, .sim-dialog-popup.filters-menu[data-open]';
+const FILTERS_ROOT = '.modal.show > .filters-menu, [data-testid="sim-dialog-popup"].filters-menu[data-open]';
 
 say('\nthe filters menu, opened over the modal');
 await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
@@ -505,7 +505,7 @@ say(`  typing      modalStillOpen=${await page.evaluate(() => window.selectorPro
 // Both builds close on their own close button — `BaseModal`'s `btn-close` calls `Modal.hide()`,
 // `Dialog`'s is a controlled `onOpenChange(false)`.
 const menuClosed = await page.evaluate(root => {
-	document.querySelector(root)?.querySelector('.btn-close, .sim-dialog-close')?.click();
+	document.querySelector(root)?.querySelector('.btn-close, [data-testid="sim-dialog-close"]')?.click();
 	return new Promise(resolve => setTimeout(() => resolve(!document.querySelector(root)), 700));
 }, FILTERS_ROOT);
 say(`  close       closed=${menuClosed}`);

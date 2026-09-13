@@ -162,7 +162,7 @@ describe('ProgressTrackerDialog', () => {
 		screen.getByRole('dialog').remove();
 		renderDialog({ open: false });
 		const popup = screen.getByRole('dialog', { hidden: true });
-		expect(popup.classList.contains('sim-dialog-popup--md')).toBe(true);
+		expect(popup.getAttribute('data-size')).toBe('md');
 		expect(popup.hasAttribute('hidden')).toBe(true);
 	});
 });

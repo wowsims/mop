@@ -26,7 +26,7 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 // Both sides: tippy's themed box on master, `Popover`'s popup on this branch.
-const POPOVER_PARTS = [".tippy-box[data-theme='reforge-optimiser-popover']", '.sim-popover-popup.reforge-optimiser-popover'];
+const POPOVER_PARTS = [".tippy-box[data-theme='reforge-optimiser-popover']", '[data-testid="sim-popover-popup"].reforge-optimiser-popover'];
 const POPOVER = POPOVER_PARTS.join(', ');
 // A selector list does not distribute over a descendant combinator, so each part gets its own.
 const inside = suffix => POPOVER_PARTS.map(part => `${part} ${suffix}`).join(', ');
@@ -34,7 +34,7 @@ const TRIGGER = '.suggest-reforges-button-settings';
 const GROUP = '.suggest-reforges-settings-group';
 const RUN = '.suggest-reforges-action-button';
 const TOAST = '.suggest-reforges-toast';
-const PROGRESS = '.progress-tracker-modal, .progress-tracker-dialog';
+const PROGRESS = '.progress-tracker-modal, .progress-tracker-dialog, [data-testid="progress-tracker-dialog"]';
 const HIT_CAP = '#reforge-optimizer-Melee\\ Hit-percentage';
 const CUSTOM_EP = '#reforge-optimizer-enable-custom-ep-weights';
 const FREEZE = '#reforge-optimizer-freeze-item-slots';

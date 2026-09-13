@@ -314,7 +314,7 @@ const PROBE = () => {
 		// first, which is never the one a gate has just opened. Only one dialog is ever up at a time,
 		// so "any backdrop is shown" is the question that was being asked when there was only one.
 		backdrop: () =>
-			[...document.querySelectorAll('.modal-backdrop, .sim-dialog-backdrop')].some(
+			[...document.querySelectorAll(`.modal-backdrop, ${q('sim-dialog-backdrop')}`)].some(
 				backdrop => backdrop.classList.contains('modal-backdrop') || backdrop.hasAttribute('data-open'),
 			),
 		bodyLocked: () => document.body.classList.contains('modal-open') || document.body.style.overflow === 'hidden',

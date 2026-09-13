@@ -55,7 +55,7 @@ describe('Popover', () => {
 
 		expect(onOpenChange).toHaveBeenCalledWith(true);
 		const popup = screen.getByRole('dialog');
-		expect(popup.classList.contains('sim-popover-popup')).toBe(true);
+		expect(popup.getAttribute('data-testid')).toBe('sim-popover-popup');
 		expect(screen.getByRole('button', { name: 'Reset' })).toBeTruthy();
 		const portal = document.body.querySelector('[data-base-ui-portal]');
 		expect(portal?.contains(popup)).toBe(true);
@@ -95,7 +95,7 @@ describe('Popover', () => {
 	it('puts the caller class on the popup and the trigger class on the trigger', () => {
 		const { trigger } = openPopover({ className: ['reforge-settings', 'w-full'], triggerClassName: 'suggest-reforges-button-settings' });
 
-		expect(Array.from(screen.getByRole('dialog').classList)).toEqual(expect.arrayContaining(['reforge-settings', 'sim-popover-popup', 'w-full']));
+		expect(Array.from(screen.getByRole('dialog').classList)).toEqual(expect.arrayContaining(['reforge-settings', 'w-full']));
 		expect(trigger.classList.contains('suggest-reforges-button-settings')).toBe(true);
 	});
 

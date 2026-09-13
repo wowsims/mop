@@ -62,13 +62,13 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className={clsx('input-root search-bar-root', grow === false && 'flex-none')} data-testid="search-bar-root">
+		<Field.Root className={clsx('input-root', grow === false && 'flex-none')} data-testid="search-bar-root">
 			{label && (
 				<Field.Label htmlFor={id} className="form-label">
 					{label}
 				</Field.Label>
 			)}
-			<div className={clsx('search-bar-input-group relative flex items-center', grow === false && 'flex-none')}>
+			<div className={clsx('relative flex items-center', grow === false && 'flex-none')}>
 				<Input
 					id={id}
 					type="text"
@@ -82,7 +82,7 @@ export const SearchBar = ({
 				{clearable && draft.length > 0 && (
 					<button
 						type="button"
-						className={clsx('search-bar-clear-btn absolute right-0 px-2 py-0 btn btn-link', clearClassName)}
+						className={clsx('absolute right-0 px-2 py-0 btn btn-link', clearClassName)}
 						data-testid="search-bar-clear-btn"
 						aria-label={clearLabel}
 						onClick={handleClear}>

@@ -26,11 +26,13 @@ const DIALOG = () => {
 	if (!dialog) return { present: false };
 	const table = dialog.querySelector('.results-ep-table');
 	const ratioIds = [...dialog.querySelectorAll('.ep-ratios input')].map(input => input.id);
-	const size = [...dialog.classList].find(name => /^(modal-|sim-dialog-popup--)(sm|md|lg|xl)$/.test(name)) ?? 'default';
+	// `data-size` on the port's popup, the `modal-*` class on the baseline's Bootstrap dialog.
+	const modalSizeClass = [...dialog.classList].find(name => /^modal-(sm|md|lg|xl)$/.test(name));
+	const size = dialog.dataset.size ?? modalSizeClass?.replace(/^modal-/, '') ?? 'default';
 	return {
 		present: true,
 		open: dialog.closest('.modal') ? dialog.closest('.modal').classList.contains('show') : dialog.hasAttribute('data-open'),
-		size: size.replace(/^(modal-|sim-dialog-popup--)/, ''),
+		size,
 		columns: [...table.querySelectorAll('thead tr:first-child th')].map(th => th.className || '-'),
 		rows: [...table.querySelectorAll('tbody tr')].map(row => row.firstElementChild.textContent),
 		ratioIds,
@@ -49,7 +51,7 @@ const DIALOG = () => {
 		})(),
 		optionsWithValue: [...dialog.querySelectorAll('.ref-stat-select option, select.ref-stat-select option')].filter(option => option.hasAttribute('value'))
 			.length,
-		footerDisplay: getComputedStyle(dialog.querySelector('.sim-dialog-footer, .modal-footer')).display,
+		footerDisplay: getComputedStyle(dialog.querySelector('[data-testid="sim-dialog-footer"], .modal-footer')).display,
 		ratiosDisplay: getComputedStyle(dialog.querySelector('.ep-ratios')).display,
 		referenceDisplay: getComputedStyle(dialog.querySelector('.ep-reference-options')).display,
 	};
@@ -88,16 +90,19 @@ const STICKY = () => {
 // progress modal at load, it shares every `.progress-tracker-modal-*` class name, and it is earlier
 // in the document, so an unscoped `querySelector` answers for it and reports an empty bar forever.
 const PROGRESS = () => {
-	const progress = document.querySelector('.progress-tracker-dialog, .results-pending-overlay');
+	// The baseline still carries `.progress-tracker-dialog`/`.progress-tracker-modal-*` classes on
+	// both the popup and its children; the port carries the matching `data-testid`s on both instead.
+	const progress = document.querySelector('.progress-tracker-dialog, [data-testid="progress-tracker-dialog"], .results-pending-overlay');
 	const dialog = document.querySelector('.ep-weights-menu');
-	const within = selector => document.querySelector(`.progress-tracker-dialog ${selector}`)?.textContent ?? null;
+	const within = (classSuffix, testIdSuffix) =>
+		document.querySelector(`.progress-tracker-dialog ${classSuffix}, [data-testid="progress-tracker-dialog"] ${testIdSuffix}`)?.textContent ?? null;
 	return {
 		shown: !!progress && !progress.hasAttribute('hidden'),
-		caption: within('.progress-tracker-modal-progress-title'),
-		text: within('.progress-tracker-modal-progress-text'),
+		caption: within('.progress-tracker-modal-progress-title', '[data-testid="progress-tracker-modal-progress-title"]'),
+		text: within('.progress-tracker-modal-progress-text', '[data-testid="progress-tracker-modal-progress-text"]'),
 		// The baseline writes both counters into one `.results-sim` block in the sibling overlay.
 		vanillaText: document.querySelector('.results-pending-overlay .results-sim')?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
-		elapsed: within('.time-elapsed'),
+		elapsed: within('.time-elapsed', '[data-testid="time-elapsed"]'),
 		blurredRoot: !!document.querySelector('.sim-ui.blurred'),
 		epDialogOpen: !!dialog && (dialog.closest('.modal') ? dialog.closest('.modal').classList.contains('show') : dialog.hasAttribute('data-open')),
 	};
@@ -319,7 +324,11 @@ await page.click('.ep-weights-menu .calc-weights');
 await page
 	.waitForFunction(
 		() =>
-			[...document.querySelectorAll('.progress-tracker-dialog .progress-tracker-modal-progress-text, .results-pending-overlay .results-sim')].some(el =>
+			[
+					...document.querySelectorAll(
+						'.progress-tracker-dialog .progress-tracker-modal-progress-text, [data-testid="progress-tracker-dialog"] [data-testid="progress-tracker-modal-progress-text"], .results-pending-overlay .results-sim',
+					),
+				].some(el =>
 				el.textContent.trim(),
 			),
 		null,
@@ -335,7 +344,7 @@ check('the EP dialog stays open behind it', during.epDialogOpen);
 // whether that landed. Skipped on the baseline, which has no popup to centre.
 if (!IS_BASE) {
 	const centred = await page.evaluate(() => {
-		const popup = document.querySelector('.progress-tracker-dialog');
+		const popup = document.querySelector('[data-testid="progress-tracker-dialog"]');
 		if (!popup) return { error: 'no progress popup' };
 		const box = popup.getBoundingClientRect();
 		return { offset: Math.round(box.top + box.height / 2 - window.innerHeight / 2), width: Math.round(box.width), height: Math.round(box.height) };
@@ -343,7 +352,9 @@ if (!IS_BASE) {
 	check('the progress popup is vertically centred', Math.abs(centred.offset ?? 999) <= 50, JSON.stringify(centred));
 }
 
-const cancel = page.locator('.progress-tracker-dialog .progress-tracker-modal-cancel-btn, .results-pending-overlay button');
+const cancel = page.locator(
+	'.progress-tracker-dialog .progress-tracker-modal-cancel-btn, [data-testid="progress-tracker-dialog"] .progress-tracker-modal-cancel-btn, .results-pending-overlay button',
+);
 if (await cancel.count()) {
 	await cancel.first().click();
 	// The abort unwinds through the worker, so how long it takes is load-dependent: a fixed wait
@@ -352,7 +363,7 @@ if (await cancel.count()) {
 	await page
 		.waitForFunction(
 			() => {
-				const running = document.querySelector('.progress-tracker-dialog, .results-pending-overlay');
+				const running = document.querySelector('.progress-tracker-dialog, [data-testid="progress-tracker-dialog"], .results-pending-overlay');
 				return !running || running.hasAttribute('hidden');
 			},
 			null,
@@ -369,7 +380,11 @@ check('cancelling ends the run', !cancelled.shown);
 check('cancelling leaves the EP dialog open', cancelled.epDialogOpen);
 
 await page.click('.ep-weights-menu .calc-weights');
-await page.waitForFunction(() => !document.querySelector('.progress-tracker-dialog') && !document.querySelector('.sim-ui.blurred'), null, { timeout: 180000 });
+await page.waitForFunction(
+	() => !document.querySelector('.progress-tracker-dialog, [data-testid="progress-tracker-dialog"]') && !document.querySelector('.sim-ui.blurred'),
+	null,
+	{ timeout: 180000 },
+);
 await page.waitForTimeout(800);
 const values = await page.evaluate(EP_VALUES);
 console.log(`  completed ${JSON.stringify(values)}`);

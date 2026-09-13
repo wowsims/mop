@@ -66,17 +66,10 @@ export const Popover = ({
 				</BasePopover.Trigger>
 			)}
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BasePopover.Portal className="sim-popover-portal contents" data-testid="sim-popover-portal" container={container ?? portalContainer ?? undefined}>
-				<BasePopover.Positioner
-					className="sim-popover-positioner"
-					data-testid="sim-popover-positioner"
-					anchor={anchor}
-					side={side}
-					align={align}
-					sideOffset={sideOffset}>
+			<BasePopover.Portal className="contents" data-testid="sim-popover-portal" container={container ?? portalContainer ?? undefined}>
+				<BasePopover.Positioner data-testid="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
 					<BasePopover.Popup
 						className={clsx(
-							'sim-popover-popup',
 							maxWidth ?? 'max-w-(--available-width)',
 							'max-h-(--available-height) overflow-y-auto',
 							TOOLTIP_SURFACE,

@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createToastManager, DEFAULT_TOAST_DELAY, toastManager } from './manager';
 import { ToastArea } from './ToastArea';
 
-const standardViewport = () => screen.getAllByTestId('sim-toast-viewport').find(el => !el.classList.contains('sim-toast-viewport--inline'))!;
+const standardViewport = () => screen.getAllByTestId('sim-toast-viewport').find(el => el.getAttribute('data-inline') !== 'true')!;
 
 afterEach(() => {
 	vi.useRealTimers();
@@ -19,8 +19,7 @@ describe('Toast', () => {
 		});
 
 		const toast = within(standardViewport()).getByTestId('sim-toast');
-		expect(toast.classList.contains('sim-toast')).toBe(true);
-		expect(toast.classList.contains('sim-toast--success')).toBe(true);
+		expect(toast.getAttribute('data-variant')).toBe('success');
 		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('WowSims');
 		expect(within(toast).getByTestId('sim-toast-body').textContent).toBe('Import successful!');
 		expect(toast.getAttribute('aria-describedby')).toBe(within(toast).getByTestId('sim-toast-body').id);
@@ -33,8 +32,7 @@ describe('Toast', () => {
 		});
 
 		const toast = within(standardViewport()).getByTestId('sim-toast');
-		expect(toast.classList.contains('sim-toast')).toBe(true);
-		expect(toast.classList.contains('sim-toast--warning')).toBe(true);
+		expect(toast.getAttribute('data-variant')).toBe('warning');
 		expect(toast.classList.contains('toast-notice-native-download')).toBe(true);
 		expect(within(toast).getByTestId('sim-toast-title').textContent).toBe('Native sim');
 	});
@@ -135,7 +133,6 @@ describe('Toast', () => {
 		expect(icon2xl.classList.contains('fas')).toBe(true);
 		expect(icon2xl.classList.contains('fa-circle-exclamation')).toBe(true);
 		expect(icon2xl.classList.contains('fa-2xl')).toBe(true);
-		expect(icon2xl.classList.contains('sim-toast-icon')).toBe(true);
 	});
 
 	// The negative half is the control: without it the positive half passes even if no timer ever runs.

@@ -20,7 +20,7 @@ describe('Dialog', () => {
 		const popup = screen.getByRole('dialog');
 		expect(popup.classList.contains('advanced-encounter-picker-modal')).toBe(true);
 		expect(popup.classList.contains('sim-dialog-popup')).toBe(true);
-		expect(popup.classList.contains('sim-dialog-popup--xl')).toBe(true);
+		expect(popup.getAttribute('data-size')).toBe('xl');
 		expect(Array.from(popup.children).map(el => el.getAttribute('data-testid'))).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);
 		expect(within(popup).getByTestId('sim-dialog-body').textContent).toBe('contents');
 	});
@@ -99,7 +99,7 @@ describe('Dialog', () => {
 				body
 			</Dialog>,
 		);
-		expect(within(screen.getByRole('dialog')).getByTestId('sim-dialog-header').classList.contains('sim-dialog-header--bare')).toBe(true);
+		expect(within(screen.getByRole('dialog')).getByTestId('sim-dialog-header').getAttribute('data-bare')).toBe('true');
 
 		rerender(
 			<Dialog open onOpenChange={() => {}} header={false} preventClose>
@@ -167,8 +167,8 @@ describe('Dialog', () => {
 			</Dialog>,
 		);
 
-		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.classList.contains('sim-dialog-backdrop--elevated'))).toHaveLength(1);
-		expect(screen.getAllByTestId('sim-dialog-viewport').filter(el => el.classList.contains('sim-dialog-viewport--elevated'))).toHaveLength(1);
+		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.getAttribute('data-elevated') === 'true')).toHaveLength(1);
+		expect(screen.getAllByTestId('sim-dialog-viewport').filter(el => el.getAttribute('data-elevated') === 'true')).toHaveLength(1);
 	});
 
 	it('leaves a nested dialog without one when it is not elevated', () => {
@@ -180,6 +180,6 @@ describe('Dialog', () => {
 			</Dialog>,
 		);
 
-		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.classList.contains('sim-dialog-backdrop--elevated'))).toHaveLength(0);
+		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.getAttribute('data-elevated') === 'true')).toHaveLength(0);
 	});
 });

@@ -2,7 +2,6 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { Icon } from '@ui-kit/Icon';
-import clsx from 'clsx';
 import type { ReactNode, Ref } from 'react';
 
 import { ElapsedTime } from './ElapsedTime';
@@ -37,7 +36,7 @@ export const ProgressTrackerDialog = ({
 	<Dialog
 		open={open}
 		onOpenChange={() => {}}
-		className={clsx('progress-tracker-dialog', className)}
+		className={className}
 		container={container}
 		size="md"
 		verticalAlign="center"
@@ -45,24 +44,19 @@ export const ProgressTrackerDialog = ({
 		preventClose
 		keepMounted
 		elevated
-		testId={testId}>
-		<div
-			className="progress-tracker-modal-content flex flex-col items-center gap-4 text-center"
-			data-testid="progress-tracker-modal-content"
-			data-stage={state.stage}>
+		testId={testId ?? 'progress-tracker-dialog'}>
+		<div className="flex flex-col items-center gap-4 text-center" data-testid="progress-tracker-modal-content" data-stage={state.stage}>
 			{warning && (
-				<div
-					className="progress-tracker-modal-warning border border-warning p-4 text-(length:--btn-font-size)"
-					data-testid="progress-tracker-modal-warning">
+				<div className="border border-warning p-4 text-(length:--btn-font-size)" data-testid="progress-tracker-modal-warning">
 					{warning}
 				</div>
 			)}
 			{hasProgressBar && <ProgressTrackerBar running={open} ref={ref} />}
-			<div className="progress-tracker-modal-time-display" data-testid="progress-tracker-modal-time-display">
+			<div data-testid="progress-tracker-modal-time-display">
 				<strong>{i18n.t('common.elapsed_time')}:</strong> <ElapsedTime running={open} />
 			</div>
 			<div
-				className={clsx('progress-tracker-modal-message', !state.message && 'hidden')}
+				className={!state.message ? 'hidden' : undefined}
 				data-testid="progress-tracker-modal-message"
 				data-stage={state.stage}
 				hidden={!state.message}>

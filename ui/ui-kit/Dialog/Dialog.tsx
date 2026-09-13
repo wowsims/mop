@@ -84,35 +84,27 @@ export const Dialog = ({
 				onOpenChange(nextOpen);
 			}}>
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
-			<BaseDialog.Portal
-				className="sim-dialog-portal"
-				data-testid="sim-dialog-portal"
-				container={container ?? portalContainer ?? undefined}
-				keepMounted={keepMounted}>
+			<BaseDialog.Portal data-testid="sim-dialog-portal" container={container ?? portalContainer ?? undefined} keepMounted={keepMounted}>
 				{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
 				<BaseDialog.Backdrop
 					className={clsx(
-						'sim-dialog-backdrop',
-						elevated && 'sim-dialog-backdrop--elevated',
 						'fixed inset-0 bg-(--modal-backdrop-bg) opacity-(--modal-backdrop-opacity) fade-in-out motion-reduce:transition-none',
 						elevated ? 'z-(--z-modal-elevated-backdrop)' : 'z-(--z-modal-backdrop)',
 					)}
 					data-testid="sim-dialog-backdrop"
+					data-elevated={elevated}
 					forceRender={elevated}
 				/>
 				<BaseDialog.Viewport
 					className={clsx(
-						'sim-dialog-viewport',
-						elevated && 'sim-dialog-viewport--elevated',
 						'fixed inset-0 overflow-x-hidden overflow-y-auto fade-in-out motion-reduce:transition-none',
 						elevated ? 'z-(--z-modal-elevated)' : 'z-(--z-modal)',
 					)}
-					data-testid="sim-dialog-viewport">
+					data-testid="sim-dialog-viewport"
+					data-elevated={elevated}>
 					<BaseDialog.Popup
 						className={clsx(
 							'sim-dialog-popup',
-							`sim-dialog-popup--${size}`,
-							scrollContents && 'sim-dialog-popup--scroll',
 							'flex relative flex-col border border-(--modal-border-color) bg-(--modal-bg) bg-clip-padding outline-0 transition-(--modal-transition) motion-reduce:transition-none',
 							maxWidth ?? SIZE_MAX_WIDTH[size],
 							scrollContents && 'max-h-[calc(100vh-2*var(--modal-margin))]',
@@ -125,22 +117,23 @@ export const Dialog = ({
 							className,
 						)}
 						data-testid={testId ?? 'sim-dialog-popup'}
+						data-size={size}
 						onKeyDown={onKeyDown}>
 						{(title != null || headerChildren != null || !preventClose) && (
 							<div
 								className={clsx(
 									'sim-dialog-header',
-									headerBare && 'sim-dialog-header--bare',
 									'flex shrink-0 items-start',
 									!headerBare && [
 										'mx-(--modal-header-padding) border-b border-(--modal-header-border-color)',
 										headerFlush ? 'pt-(--modal-header-padding) pb-0' : 'py-(--modal-header-padding)',
 									],
 								)}
-								data-testid="sim-dialog-header">
+								data-testid="sim-dialog-header"
+								data-bare={headerBare}>
 								{title != null && (
 									<BaseDialog.Title
-										className="sim-dialog-title mb-0 text-(length:--modal-title-font-size) leading-(--modal-title-line-height)"
+										className="mb-0 text-(length:--modal-title-font-size) leading-(--modal-title-line-height)"
 										data-testid="sim-dialog-title">
 										{title}
 									</BaseDialog.Title>
@@ -149,7 +142,6 @@ export const Dialog = ({
 								{!preventClose && (
 									<BaseDialog.Close
 										className={clsx(
-											'sim-dialog-close',
 											'flex items-center justify-center box-content w-[1em] h-[1em]',
 											'mt-[calc(-0.5*var(--modal-header-padding-y))] mb-[calc(-0.5*var(--modal-header-padding-y))] -mr-1 ml-auto',
 											'py-[calc(0.5*var(--modal-header-padding-y))] px-[calc(0.5*var(--modal-header-padding-x))]',
@@ -167,7 +159,6 @@ export const Dialog = ({
 						)}
 						<div
 							className={clsx(
-								'sim-dialog-body',
 								'flex relative flex-1 flex-col p-(--modal-padding)',
 								bodyGap ?? 'gap-(--modal-padding)',
 								scrollContents && 'overflow-auto',
@@ -178,7 +169,7 @@ export const Dialog = ({
 						</div>
 						{footer != null && (
 							<div
-								className="sim-dialog-footer flex shrink-0 flex-wrap items-center justify-end mx-(--modal-header-padding) py-(--modal-padding) border-t border-border"
+								className="flex shrink-0 flex-wrap items-center justify-end mx-(--modal-header-padding) py-(--modal-padding) border-t border-border"
 								data-testid="sim-dialog-footer">
 								{footer}
 							</div>

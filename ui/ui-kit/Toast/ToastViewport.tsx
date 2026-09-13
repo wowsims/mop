@@ -16,9 +16,7 @@ export const ToastViewport = ({ inline = false, className }: ToastViewportProps)
 	const { toasts } = BaseToast.useToastManager<ToastData>();
 
 	return (
-		<BaseToast.Viewport
-			className={clsx('sim-toast-viewport', inline && 'sim-toast-viewport--inline', inline ? VIEWPORT_CLASS_INLINE : VIEWPORT_CLASS, className)}
-			data-testid="sim-toast-viewport">
+		<BaseToast.Viewport className={clsx(inline ? VIEWPORT_CLASS_INLINE : VIEWPORT_CLASS, className)} data-testid="sim-toast-viewport" data-inline={inline}>
 			{toasts.map(toast => (
 				<Toast key={toast.id} toast={toast} inline={inline} />
 			))}

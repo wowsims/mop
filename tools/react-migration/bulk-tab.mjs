@@ -173,7 +173,7 @@ const INSTALL = () => {
 		// Bulk builds its own `SelectorModal`, so its tab panes are the ones prefixed
 		// `bulk-selector-modal-`. That is how this tells it apart from the gear tab's instance.
 		modal: () => {
-			const modal = document.querySelector('.modal.show .selector-modal, .sim-dialog-popup.selector-modal[data-open]');
+			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
 			if (!modal) return { open: false };
 			return {
 				open: true,
@@ -198,7 +198,7 @@ const INSTALL = () => {
 			const dialog = window.simModalProbe.find('bulk-sim-progress-tracker');
 			// Bootstrap's bar on the baseline, Base UI's `Progress` on the port: different markup for
 			// the same thing, so the question is whether a bar is drawn at all.
-			return { open: window.simModalProbe.isOpen(dialog), bar: !!dialog?.querySelector('.progress-bar, .progress-tracker-bar-track') };
+			return { open: window.simModalProbe.isOpen(dialog), bar: !!dialog?.querySelector('.progress-bar, [data-testid="progress-tracker-bar-indicator"]') };
 		},
 		// One line per result row plus the tie groups that wrap them. `bulk-result-item` is one cell
 		// per equipment slot, most of them empty — an unchanged slot renders nothing — so the filled

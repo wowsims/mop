@@ -63,7 +63,7 @@ const INSTALL = () => {
 		modal: () => {
 			// Two shapes: on Bootstrap `.selector-modal` is the `.modal-dialog` and `.show` lands on the
 			// `.modal` root above it; on Base UI it is the popup itself, marked `data-open`.
-			const modal = document.querySelector('.modal.show .selector-modal, .sim-dialog-popup.selector-modal[data-open]');
+			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
 			if (!modal) return { open: false };
 			return {
 				open: true,
@@ -145,7 +145,7 @@ const INSTALL = () => {
 
 // A descendant selector has to be spelled out under each root — a bare comma between them binds
 // looser than the combinator and would match the modal root itself.
-const MODAL_ROOTS = ['.modal.show .selector-modal', '.sim-dialog-popup.selector-modal[data-open]'];
+const MODAL_ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
 const MODAL_OPEN = MODAL_ROOTS.join(', ');
 const inModal = suffix => MODAL_ROOTS.map(root => `${root} ${suffix}`).join(', ');
 

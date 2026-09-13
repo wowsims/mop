@@ -399,13 +399,13 @@ describe('EpWeightsDialog', () => {
 	// DEFECT FIXED. `getModalConfig` read `getShowThreatMetrics()` once, at construction.
 	it('follows the threat-metrics toggle in the dialog size', () => {
 		renderDialog();
-		expect(popup().classList.contains('sim-dialog-popup--lg')).toBe(true);
+		expect(popup().getAttribute('data-size')).toBe('lg');
 
 		act(() => {
 			host.sim.showThreatMetrics = true;
 			source.notify('ui:showThreatMetrics');
 		});
-		expect(popup().classList.contains('sim-dialog-popup--xl')).toBe(true);
+		expect(popup().getAttribute('data-size')).toBe('xl');
 	});
 
 	it('copies a column into the current EP weights, leaving excluded stats alone', () => {
