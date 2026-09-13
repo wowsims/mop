@@ -1,5 +1,5 @@
 export const BASE =
-	'inline-block px-3 py-2 border border-transparent rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
+	'inline-block border rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
 
 export const LINK_BASE =
 	'p-0 border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
@@ -7,6 +7,7 @@ export const LINK_BASE =
 export const ICON_BASE = 'border-0 bg-transparent cursor-pointer';
 
 export const SIZE = {
+	default: 'px-3 py-2',
 	sm: 'px-2 py-1',
 	inline: 'px-2 py-0',
 } as const;
