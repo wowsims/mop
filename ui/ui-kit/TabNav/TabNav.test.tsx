@@ -18,9 +18,9 @@ describe('TabNav', () => {
 			</Tabs.Root>,
 		);
 		const list = getByTestId('tabs');
-		expect(list.className.split(' ')).toEqual(expect.arrayContaining(['nav', 'nav-tabs']));
+		expect(list.className.split(' ')).toEqual(expect.arrayContaining(['nav', 'ui-tabs']));
 		const tabA = getByText('A');
-		expect(tabA.className.split(' ')).toEqual(expect.arrayContaining(['nav-link', 'active']));
+		expect(tabA.className.split(' ')).toEqual(expect.arrayContaining(['ui-tab', 'active']));
 		const tabB = getByText('B');
 		expect(tabB.className.split(' ')).not.toContain('active');
 	});

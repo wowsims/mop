@@ -8,8 +8,7 @@ describe('Skeleton', () => {
 		const { container } = render(<Skeleton />);
 		const el = container.firstElementChild as HTMLElement;
 		expect(el.tagName).toBe('SPAN');
-		expect(el.className).toContain('animate-skeleton');
-		expect(el.className).toContain('motion-reduce:animate-none');
+		expect(el.className).toContain('ui-skeleton');
 	});
 
 	it('applies additive className', () => {

@@ -51,14 +51,14 @@ describe('AplNavbar', () => {
 	it('puts the rotation-type picker ahead of the strip, in one sticky row', () => {
 		const { container } = mount();
 		const root = container.querySelector('[data-testid="apl-rotation-navbar"]')!;
-		expect([...root.children].map(child => child.className.split(' '))).toEqual([['rotation-type-container'], expect.arrayContaining(['nav', 'nav-tabs'])]);
+		expect([...root.children].map(child => child.className.split(' '))).toEqual([['rotation-type-container'], expect.arrayContaining(['nav'])]);
 		expect(root.querySelector('.rotation-type-container > .rotation-type-picker-stub')).not.toBeNull();
 	});
 
 	it('renders the three sub-tabs with the active one selected and the only Tab stop', () => {
 		const { container } = mount('apl-action-groups');
-		expect(container.querySelector('.nav-tabs')!.getAttribute('role')).toBe('tablist');
-		expect([...container.querySelectorAll('.nav-item')].map(item => item.getAttribute('role'))).toEqual(['presentation', 'presentation', 'presentation']);
+		expect(container.querySelector('[role=tablist]')).not.toBeNull();
+		expect([...container.querySelectorAll('[role=presentation]')]).toHaveLength(3);
 		expect(
 			tabs(container).map(tab => [
 				tab.getAttribute('aria-controls'),
@@ -71,7 +71,6 @@ describe('AplNavbar', () => {
 			['apl-action-groups', true, 'true', 0],
 			['apl-variables', false, 'false', -1],
 		]);
-		expect(tabs(container).every(tab => tab.className.split(' ').includes('nav-link'))).toBe(true);
 		expect(tabs(container).every(tab => tab.getAttribute('type') === 'button')).toBe(true);
 	});
 
@@ -99,7 +98,7 @@ describe('AplNavbar', () => {
 
 	it('leaves a key it does not own to the page', () => {
 		const { container, onSelect } = mount();
-		const handled = fireEvent.keyDown(container.querySelector('.nav-tabs')!, { key: 'Enter' });
+		const handled = fireEvent.keyDown(container.querySelector('[role=tablist]')!, { key: 'Enter' });
 		expect(onSelect).not.toHaveBeenCalled();
 		expect(handled).toBe(true);
 	});

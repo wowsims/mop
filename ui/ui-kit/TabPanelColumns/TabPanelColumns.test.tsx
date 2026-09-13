@@ -31,15 +31,14 @@ describe('TabPanelColumns', () => {
 		const { container } = render(<TabPanelColumns.Left className="gear-tab-left" />);
 		const left = container.firstElementChild!;
 		expect(left.classList.contains('gear-tab-left')).toBe(true);
-		expect(left.classList.contains('grid')).toBe(true);
+		expect(left.classList.contains('ui-columns-left')).toBe(true);
 	});
 
 	it('renders Left with the stacked variant used by the rotation auto/simple panes', () => {
 		const { container } = render(<TabPanelColumns.Left variant="stacked" />);
 		const left = container.firstElementChild!;
-		expect(left.classList.contains('flex')).toBe(true);
-		expect(left.classList.contains('flex-col')).toBe(true);
-		expect(left.classList.contains('grid')).toBe(false);
+		expect(left.classList.contains('ui-columns-left-stacked')).toBe(true);
+		expect(left.classList.contains('ui-columns-left')).toBe(false);
 	});
 
 	it('renders Right and Col with their base layout classes', () => {

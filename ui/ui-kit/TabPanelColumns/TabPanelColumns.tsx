@@ -14,8 +14,8 @@ export interface TabPanelColumnsRootProps {
 }
 
 const ROOT_GAP_CLASSES: Record<TabPanelColumnsGap, string> = {
-	default: 'gap-page max-lg:gap-section',
-	apl: 'gap-y-6 gap-x-page',
+	default: 'ui-columns',
+	apl: 'ui-columns-apl',
 };
 
 const Root = ({ as: Component = 'div', gap = 'default', fullWidth, externalDisplay, className, children, ...rest }: TabPanelColumnsRootProps) => (
@@ -33,10 +33,10 @@ export interface TabPanelColumnsLeftProps {
 }
 
 const LEFT_VARIANT_CLASSES: Record<TabPanelColumnsLeftVariant, string> = {
-	default: 'grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] max-lg:flex max-lg:flex-col',
-	'auto-columns': 'grid grid-cols-[auto] max-lg:flex max-lg:flex-col',
-	'settings-columns': 'grid grid-cols-[2fr_2fr_3fr] max-lg:flex max-lg:flex-col',
-	stacked: 'flex flex-col grid-cols-[repeat(auto-fit,minmax(220px,1fr))]',
+	default: 'ui-columns-left',
+	'auto-columns': 'ui-columns-left-auto',
+	'settings-columns': 'ui-columns-left-settings',
+	stacked: 'ui-columns-left-stacked',
 };
 
 const Left = ({ className, variant = 'default', children }: TabPanelColumnsLeftProps) => (
@@ -48,9 +48,7 @@ export interface TabPanelColumnsRightProps {
 	children?: ReactNode;
 }
 
-const Right = ({ className, children }: TabPanelColumnsRightProps) => (
-	<div className={clsx('tab-panel-right w-full min-w-[200px] flex flex-col gap-section flex-[1.25]', className)}>{children}</div>
-);
+const Right = ({ className, children }: TabPanelColumnsRightProps) => <div className={clsx('tab-panel-right ui-columns-right', className)}>{children}</div>;
 
 export interface TabPanelColumnsColProps {
 	className?: string;
@@ -59,7 +57,7 @@ export interface TabPanelColumnsColProps {
 }
 
 const Col = ({ className, externalGap, children }: TabPanelColumnsColProps) => (
-	<div className={clsx('tab-panel-col flex flex-col', !externalGap && 'gap-section', className)}>{children}</div>
+	<div className={clsx('tab-panel-col ui-columns-col', !externalGap && 'gap-section', className)}>{children}</div>
 );
 
 export const TabPanelColumns = { Root, Left, Right, Col };

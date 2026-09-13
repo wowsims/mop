@@ -102,7 +102,7 @@ describe('SelectorModal', () => {
 		return result;
 	};
 
-	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.selector-modal-tabs .nav-link'));
+	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.selector-modal-tabs [role="tab"]'));
 	const openPanes = () => Array.from(document.querySelectorAll<HTMLElement>('.selector-modal-tab-pane.active [data-pane]')).map(pane => pane.dataset.pane);
 	const popup = () => document.querySelector('[data-testid="sim-dialog-popup"].selector-modal')!;
 

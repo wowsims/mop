@@ -94,7 +94,7 @@ const renderPane = () =>
 
 const filterButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.results-filter-root')!;
 
-const tabButton = (container: HTMLElement, tabId: string) => container.querySelector<HTMLButtonElement>(`.dr-toolbar .nav-link[aria-controls=${tabId}]`)!;
+const tabButton = (container: HTMLElement, tabId: string) => container.querySelector<HTMLButtonElement>(`.dr-toolbar [role="tab"][aria-controls=${tabId}]`)!;
 
 beforeEach(() => {
 	panes.log.length = 0;
@@ -113,7 +113,7 @@ beforeEach(() => {
 describe('DetailedResults', () => {
 	it('renders the ten tabs with the damage tab selected', () => {
 		const { container } = renderPane();
-		const buttons = [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar .nav-link')];
+		const buttons = [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar [role="tab"]')];
 		expect(buttons).toHaveLength(10);
 		expect(buttons.map(button => button.getAttribute('aria-controls'))).toEqual([
 			'damageTab',
@@ -199,7 +199,7 @@ describe('DetailedResults', () => {
 	// tabindex the walk moves along - exactly one stop, and it follows the selection.
 	it('leaves one tab stop on the strip and moves it with the selection', () => {
 		const { container } = renderPane();
-		const stops = () => [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar .nav-link')].filter(button => button.tabIndex === 0);
+		const stops = () => [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar [role="tab"]')].filter(button => button.tabIndex === 0);
 		expect(stops()).toEqual([tabButton(container, 'damageTab')]);
 		fireEvent.click(tabButton(container, 'logTab'));
 		expect(stops()).toEqual([tabButton(container, 'logTab')]);

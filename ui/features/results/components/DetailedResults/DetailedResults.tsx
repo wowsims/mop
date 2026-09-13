@@ -9,7 +9,7 @@ import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
-import { STICKY_TOOLBAR_CLASSES, useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -48,7 +48,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const [target, setTarget] = useState(ALL_UNITS);
 	const hasResults = useSimResult() !== null;
 
-	const { ref: toolbarRef, stuck } = useStickyToolbar<HTMLDivElement>();
+	const { ref: toolbarRef, stuck, className: stickyToolbarClassName } = useStickyToolbar<HTMLDivElement>();
 	// `updateResults` is bound to the emitter, not to the filter, so the selection it reads is a ref.
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.
@@ -185,7 +185,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
 				<div
 					ref={toolbarRef}
-					className={clsx('dr-toolbar sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+					className={clsx('dr-toolbar sticky-toolbar-root', stickyToolbarClassName, stuck && 'stuck')}
 					data-stuck={stuck ? '' : undefined}>
 					<div className="results-filter flex items-center">
 						<ResultsFilter

@@ -1,0 +1,3 @@
+.ui-unit-icon {
+	@apply flex justify-center items-center size-4 mr-1;
+}

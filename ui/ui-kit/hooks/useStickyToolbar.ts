@@ -3,9 +3,6 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 /** The header a `useStickyToolbar` bar sticks below. Null until the shell has laid its own out. */
 export const StickyHeaderContext = createContext<HTMLElement | null>(null);
 
-export const STICKY_TOOLBAR_CLASSES =
-	"sticky top-sim-header -mx-page w-[calc(100%+var(--spacing-page)*2)] flex px-page z-toolbar transition-colors duration-150 ease-in-out after:content-['_'] after:absolute after:-bottom-px after:inset-x-0 after:w-[calc(100%-2*var(--spacing-page))] after:h-px after:mx-auto after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:bg-sim-backdrop data-[stuck]:after:w-full";
-
 /**
  * A `position: sticky` toolbar that reports whether it is currently pinned, as `.stuck`.
  *
@@ -29,5 +26,5 @@ export const useStickyToolbar = <T extends HTMLElement>() => {
 		return () => observer.disconnect();
 	}, [header]);
 
-	return { ref, stuck };
+	return { ref, stuck, className: 'ui-sticky-toolbar' };
 };

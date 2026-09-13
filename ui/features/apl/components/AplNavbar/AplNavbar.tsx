@@ -1,18 +1,18 @@
 import { RotationTypePicker } from '@features/apl/components/RotationTypePicker';
 import { APL_PANES } from '@features/apl/model/apl_panes';
 import i18n from '@i18n/config';
-import { STICKY_TOOLBAR_CLASSES, useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import { TabNav } from '@ui-kit/TabNav';
 import clsx from 'clsx';
 
 /** The APL pane's header: the rotation-type picker, then the sub-tab strip, in one sticky row. */
 export const AplNavbar = () => {
-	const { ref, stuck } = useStickyToolbar<HTMLDivElement>();
+	const { ref, stuck, className } = useStickyToolbar<HTMLDivElement>();
 
 	return (
 		<div
 			ref={ref}
-			className={clsx('flex-[1_0_100%] gap-1 sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+			className={clsx('flex-[1_0_100%] gap-1 sticky-toolbar-root', className, stuck && 'stuck')}
 			data-testid="apl-rotation-navbar"
 			data-stuck={stuck ? '' : undefined}>
 			<div className="rotation-type-container">
