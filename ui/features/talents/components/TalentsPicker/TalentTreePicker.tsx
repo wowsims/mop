@@ -50,7 +50,7 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />
 			</div>
 			<div
-				className="talent-tree-background absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-[length:100%_100%] shadow-[inset_0_0_3.5rem_1rem_var(--color-black)] z-0"
+				className="talent-tree-background absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-[length:100%_100%] shadow-talent-tree z-0"
 				style={{ backgroundImage: `url('${config.backgroundUrl}')` }}
 			/>
 			<div className="talent-tree-main my-(--spacing-stack) mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10">
