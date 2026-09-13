@@ -5,6 +5,8 @@
 @import 'tailwindcss/utilities.css' important;
 
 @import './theme.css';
+@import '../features/results/components/MetricsTable/MetricsTable.apply.css';
+@import '../features/character-stats/components/CharacterStats/CharacterStats.apply.css';
 
 @source '../app';
 @source '../features';

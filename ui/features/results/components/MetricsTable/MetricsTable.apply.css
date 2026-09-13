@@ -1,0 +1,54 @@
+.ui-metrics-table {
+	@apply w-full;
+}
+
+.ui-metrics-table th,
+.ui-metrics-table td {
+	@apply border-x border-solid border-white-20;
+}
+
+.ui-metrics-table th:first-child,
+.ui-metrics-table td:first-child {
+	@apply border-l-0;
+}
+
+.ui-metrics-table th:last-child,
+.ui-metrics-table td:last-child {
+	@apply border-r-0;
+}
+
+.ui-metrics-table tbody td:first-child {
+	@apply text-left;
+}
+
+.ui-metrics-table tbody td:not(:first-child) {
+	@apply text-right;
+}
+
+.ui-metrics-header-row {
+	@apply border-b-2 border-solid border-white-80;
+}
+
+.ui-metrics-header-cell {
+	@apply py-1 px-2 cursor-pointer text-center;
+}
+
+.ui-metrics-row {
+	@apply border-b border-solid border-white-20;
+}
+
+.ui-metrics-row:nth-child(even) {
+	@apply bg-white-5;
+}
+
+.ui-metrics-row:hover {
+	@apply bg-scrim;
+}
+
+.ui-metrics-cell {
+	@apply py-1 px-2;
+}
+
+.ui-metrics-tooltip th {
+	@apply pt-0;
+}

@@ -158,6 +158,10 @@
 	--color-talent-full: #ffd100;
 	--color-talent-partial: #40bf40;
 
+	--color-white-5: rgb(255 255 255 / 0.05);
+	--color-white-20: rgb(255 255 255 / 0.2);
+	--color-white-80: rgb(255 255 255 / 0.8);
+
 	--animate-shimmer: loading-shimmer 6s linear infinite;
 	--animate-skeleton: character-stats-skeleton-shimmer 1.2s ease-in-out infinite;
 
