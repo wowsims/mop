@@ -48,6 +48,7 @@ export const UnitField = ({ player, config, unitSet }: UnitFieldProps) => {
 			equals={sameUnit}
 			defaultLabel="Unit"
 			hideLabelWhenDefault={unit => !unit.value}
+			triggerClassName="p-0"
 		/>
 	);
 };

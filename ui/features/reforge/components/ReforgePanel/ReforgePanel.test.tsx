@@ -1,7 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
-import { BASE, VARIANT } from '@ui-kit/Button/classes';
+import { BASE, SIZE, VARIANT } from '@ui-kit/Button/classes';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -43,10 +43,26 @@ describe('ReforgePanel', () => {
 		const [run, settings] = [...container.querySelectorAll('button')];
 
 		expect([...run.classList].sort()).toEqual(
-			[...BASE.split(' '), ...VARIANT.primary.split(' '), 'grow', 'sim-sidebar-action-button', 'suggest-reforges-action-button'].sort(),
+			[
+				...BASE.split(' '),
+				...VARIANT.primary.split(' '),
+				...SIZE.default.split(' '),
+				'grow',
+				'px-12',
+				'sim-sidebar-action-button',
+				'suggest-reforges-action-button',
+			].sort(),
 		);
 		expect([...settings.classList].sort()).toEqual(
-			[...BASE.split(' '), ...VARIANT.primary.split(' '), 'sim-sidebar-action-button', 'suggest-reforges-button-settings'].sort(),
+			[
+				...BASE.split(' '),
+				...SIZE.default.split(' '),
+				...VARIANT.primary.split(' '),
+				'bg-transparent',
+				'border-transparent',
+				'sim-sidebar-action-button',
+				'suggest-reforges-button-settings',
+			].sort(),
 		);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
 		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);

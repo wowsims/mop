@@ -12,7 +12,7 @@ describe('ButtonGroup', () => {
 			</ButtonGroup>,
 		);
 		const group = screen.getByRole('group');
-		expect(Array.from(group.classList).sort()).toEqual(['align-middle', 'chart-view-picker', 'inline-flex']);
+		expect(Array.from(group.classList).sort()).toEqual(['chart-view-picker']);
 	});
 
 	it('accepts a size hint as a data attribute, with no CSS of its own to reproduce', () => {

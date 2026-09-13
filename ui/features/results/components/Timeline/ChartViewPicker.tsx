@@ -22,7 +22,7 @@ export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (
 			<Fragment key={view}>
 				<input
 					type="radio"
-					className={`peer sr-only ${view}-option`}
+					className={`peer absolute [clip:rect(0,0,0,0)] pointer-events-none ${view}-option`}
 					name="timeline-chart-view"
 					id={`timeline-chart-view-${view}`}
 					value={view}

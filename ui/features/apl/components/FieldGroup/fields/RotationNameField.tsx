@@ -37,5 +37,13 @@ export const RotationNameField = ({ player, config, source }: RotationNameFieldP
 		[names, source],
 	);
 
-	return <DropdownField<Player<any>, string> modObject={player} config={config} options={options} defaultLabel={i18n.t(LABELS[source].defaultLabel)} />;
+	return (
+		<DropdownField<Player<any>, string>
+			modObject={player}
+			config={config}
+			options={options}
+			defaultLabel={i18n.t(LABELS[source].defaultLabel)}
+			triggerClassName="p-0"
+		/>
+	);
 };

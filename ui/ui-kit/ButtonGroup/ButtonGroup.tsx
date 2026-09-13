@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 
-const BASE = 'inline-flex align-middle';
+const BASE = '';
 
 export interface ButtonGroupProps extends ComponentPropsWithoutRef<'div'> {
 	size?: 'sm';

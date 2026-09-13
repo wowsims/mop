@@ -48,6 +48,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 					onChange={addField}
 					equals={(a, b) => a === b}
 					defaultLabel={i18n.t('results_tab.details.logs.search_add_filter')}
+					triggerClassName="p-0"
 					{...DROPUP}
 				/>
 			</div>

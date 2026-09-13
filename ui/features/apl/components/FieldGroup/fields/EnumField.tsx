@@ -11,5 +11,5 @@ export interface EnumFieldProps {
 
 /** A field whose values are a fixed proto enum. The lists themselves are data, in `model/field_specs.ts`. */
 export const EnumField = ({ player, config, table }: EnumFieldProps) => (
-	<DropdownField<Player<any>, number> modObject={player} config={config} options={table.options} defaultLabel={table.defaultLabel} />
+	<DropdownField<Player<any>, number> modObject={player} config={config} options={table.options} defaultLabel={table.defaultLabel} triggerClassName="p-0" />
 );

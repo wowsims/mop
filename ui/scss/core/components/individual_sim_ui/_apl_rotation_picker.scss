@@ -143,11 +143,6 @@
 		flex-direction: row;
 	}
 
-	.dropdown-picker-button {
-		padding: 0;
-		border: 0;
-	}
-
 	.dropdown-menu {
 		background-color: var(--color-table-odd);
 	}
@@ -207,13 +202,6 @@
 				order: 1;
 				line-height: var(--spacer-4);
 			}
-		}
-	}
-
-	.dropdown-picker-root {
-		.dropdown-picker-button {
-			display: flex;
-			align-items: center;
 		}
 	}
 }

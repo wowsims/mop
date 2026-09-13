@@ -119,6 +119,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 							onChange={addValue}
 							equals={(a, b) => a === b}
 							defaultLabel={i18n.t('results_tab.details.logs.search_add_value')}
+							triggerClassName="p-0"
 							{...DROPUP}
 						/>
 					)}
