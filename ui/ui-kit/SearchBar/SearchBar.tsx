@@ -1,5 +1,3 @@
-import './SearchBar.scss';
-
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Icon } from '@ui-kit/Icon';
@@ -21,6 +19,7 @@ export interface SearchBarProps {
 	autoFocus?: boolean;
 	autoComplete?: 'on' | 'off';
 	className?: string;
+	grow?: boolean;
 	/** Rendered after the input group, inside the field — for a results list positioned against the same box. */
 	children?: ReactNode;
 }
@@ -38,6 +37,7 @@ export const SearchBar = ({
 	autoFocus,
 	autoComplete,
 	className,
+	grow = true,
 	children,
 }: SearchBarProps) => {
 	const [draft, setDraft] = useState(value);
@@ -62,13 +62,13 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className="input-root search-bar-root" data-testid="search-bar-root">
+		<Field.Root className={clsx('input-root search-bar-root', grow === false && 'flex-none')} data-testid="search-bar-root">
 			{label && (
 				<Field.Label htmlFor={id} className="form-label">
 					{label}
 				</Field.Label>
 			)}
-			<div className="search-bar-input-group relative flex items-center">
+			<div className={clsx('search-bar-input-group relative flex items-center', grow === false && 'flex-none')}>
 				<Input
 					id={id}
 					type="text"
@@ -82,7 +82,7 @@ export const SearchBar = ({
 				{clearable && draft.length > 0 && (
 					<button
 						type="button"
-						className={clsx('search-bar-clear-btn btn btn-link', clearClassName)}
+						className={clsx('search-bar-clear-btn absolute right-0 px-2 py-0 btn btn-link', clearClassName)}
 						data-testid="search-bar-clear-btn"
 						aria-label={clearLabel}
 						onClick={handleClear}>

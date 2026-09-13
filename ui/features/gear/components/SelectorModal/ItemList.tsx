@@ -92,7 +92,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 	return (
 		<>
 			<div className="selector-modal-filters">
-				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search max-w-48" />
+				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search max-w-48" grow={false} />
 				{label === SelectorModalTabs.Items && (
 					<>
 						<button type="button" className="selector-modal-filters-button btn btn-primary" onClick={() => setFiltersOpen(true)}>

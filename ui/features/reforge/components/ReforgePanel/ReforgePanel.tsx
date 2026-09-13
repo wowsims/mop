@@ -188,7 +188,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				container={container}
 				side="right"
 				align="start"
-				className="reforge-optimiser-popover"
+				className="reforge-optimiser-popover min-w-[300px]"
+				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-var(--spacer-3)*2))]"
 				triggerClassName="sim-sidebar-action-button btn btn-primary suggest-reforges-button-settings"
 				triggerProps={tooltipAnchorProps(settingsTooltipId)}
 				trigger={
@@ -207,6 +208,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				place="bottom"
 				clickable
 				className="suggest-reforges-softcaps"
+				maxWidth="max-w-[310px]"
 				// The limits are read per open.
 				render={() => {
 					const softCaps = model.softCapsConfigWithLimits;

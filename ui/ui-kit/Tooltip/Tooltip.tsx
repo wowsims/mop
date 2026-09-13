@@ -1,11 +1,14 @@
 import 'react-tooltip/dist/react-tooltip.css';
-import './Tooltip.scss';
 
 import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 import { type ITooltip, Tooltip as ReactTooltip, type TooltipRefProps } from 'react-tooltip';
 
+import { TOOLTIP_SURFACE } from './classes';
+
 export type TooltipPlace = 'top' | 'right' | 'bottom' | 'left';
+
+const DEFAULT_MAX_WIDTH = 'max-w-[15vw] max-xl:max-w-[25vw] max-md:max-w-[75vw]';
 
 export interface TooltipProps {
 	/** Anchors opt in with `data-tooltip-id={id}`; one Tooltip can serve many of them. */
@@ -22,6 +25,10 @@ export interface TooltipProps {
 	hidden?: boolean;
 	/** Fires after the open and close transitions, not at the request — see `BonusStatsLink`. */
 	onOpenChange?: (open: boolean) => void;
+	width?: string;
+	maxWidth?: 'default' | 'none' | string;
+	align?: 'start' | 'center';
+	padded?: boolean;
 	className?: string;
 }
 
@@ -32,7 +39,8 @@ const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
 
 /** Content is `children`, which react-tooltip does not render until the tooltip first opens — so a picker built inside one costs nothing until it is shown. */
 export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
-	({ id, content, render, place = 'top', clickable, openOnClick, hidden, onOpenChange, className }, ref) => {
+	({ id, content, render, place = 'top', clickable, openOnClick, hidden, onOpenChange, width, maxWidth = 'default', align, padded, className }, ref) => {
+		const maxWidthClassName = maxWidth === 'default' ? DEFAULT_MAX_WIDTH : maxWidth === 'none' ? 'max-w-none' : maxWidth;
 		return (
 			<ReactTooltip
 				ref={ref}
@@ -46,7 +54,15 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				hidden={hidden}
 				afterShow={onOpenChange && (() => onOpenChange(true))}
 				afterHide={onOpenChange && (() => onOpenChange(false))}
-				className={clsx('sim-tooltip', className)}
+				className={clsx(
+					'sim-tooltip',
+					TOOLTIP_SURFACE,
+					maxWidthClassName,
+					width,
+					align === 'start' && 'text-left',
+					padded === false && 'sim-tooltip--unpadded',
+					className,
+				)}
 				noArrow
 				disableStyleInjection="core">
 				{content}

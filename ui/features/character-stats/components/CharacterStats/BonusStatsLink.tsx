@@ -30,6 +30,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 				ref={popover}
 				id={`${id}-popover`}
 				className="bonus-stats-popover"
+				align="start"
 				place="right"
 				openOnClick
 				clickable

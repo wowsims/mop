@@ -48,10 +48,3 @@
 		background-color: var(--dropdown-link-active-bg);
 	}
 }
-
-// `Tooltip.scss` caps every tooltip at 192px; without `max-width: none` an option's description
-// would wrap to a column.
-.sim-tooltip.dropdown-tooltip {
-	max-width: 35vw;
-	text-align: left;
-}

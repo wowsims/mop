@@ -1,5 +1,3 @@
-import './ConfirmPopover.scss';
-
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import type { PopoverProps } from '@ui-kit/Popover';
@@ -49,11 +47,12 @@ export const ConfirmPopover = ({
 		container={container}
 		side={side}
 		testId={testId}
-		className="sim-confirm-popover">
-		<p className="sim-confirm-popover-message" data-testid="sim-confirm-popover-message">
+		className="sim-confirm-popover"
+		maxWidth="max-w-[220px]">
+		<p className="sim-confirm-popover-message mb-(--spacing-block)" data-testid="sim-confirm-popover-message">
 			{children}
 		</p>
-		<div className="sim-confirm-popover-actions" data-testid="sim-confirm-popover-actions">
+		<div className="sim-confirm-popover-actions flex justify-end gap-2" data-testid="sim-confirm-popover-actions">
 			{onConfirm ? (
 				<>
 					<Button variant="outline-cancel" size="sm" onClick={() => onOpenChange(false)}>

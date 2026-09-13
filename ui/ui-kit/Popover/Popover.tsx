@@ -1,7 +1,6 @@
-import './Popover.scss';
-
 import { Popover as BasePopover } from '@base-ui/react/popover';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
+import { TOOLTIP_SURFACE } from '@ui-kit/Tooltip/classes';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
@@ -22,6 +21,7 @@ export interface PopoverProps {
 	onOpenChange?: (open: boolean) => void;
 	/** On the popup, which is the box a consumer sizes. */
 	className?: ClassValue;
+	maxWidth?: string;
 	/** Base UI's default is `<body>`, and that is outside `.sim-ui` — where the spec theme lives. See `Dialog`. */
 	container?: HTMLElement | null;
 	side?: PopoverSide;
@@ -46,6 +46,7 @@ export const Popover = ({
 	open,
 	onOpenChange,
 	className,
+	maxWidth,
 	container,
 	side = 'bottom',
 	align = 'center',
@@ -73,7 +74,17 @@ export const Popover = ({
 					side={side}
 					align={align}
 					sideOffset={sideOffset}>
-					<BasePopover.Popup className={clsx('sim-popover-popup', className)} data-testid={testId ?? 'sim-popover-popup'} initialFocus={initialFocus}>
+					<BasePopover.Popup
+						className={clsx(
+							'sim-popover-popup',
+							maxWidth ?? 'max-w-(--available-width)',
+							'max-h-(--available-height) overflow-y-auto',
+							TOOLTIP_SURFACE,
+							'px-2 py-2 text-left opacity-100 fade-in-out motion-reduce:transition-none',
+							className,
+						)}
+						data-testid={testId ?? 'sim-popover-popup'}
+						initialFocus={initialFocus}>
 						{children}
 					</BasePopover.Popup>
 				</BasePopover.Positioner>

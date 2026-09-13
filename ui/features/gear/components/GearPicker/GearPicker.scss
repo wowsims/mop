@@ -14,16 +14,7 @@
 	}
 }
 
-.sim-tooltip.tooltip-quick-swap {
-	max-width: none;
-	width: 220px;
-	text-align: start;
-	cursor: default;
-
-	[class*='styles-module_content'] {
-		padding: 0;
-	}
-
+.tooltip-quick-swap {
 	ul {
 		padding-left: 0;
 		list-style: none;

@@ -2,11 +2,6 @@
 	margin: auto;
 }
 
-// react-tooltip renders in place, so `.sim-tooltip` is the tooltip box itself, not a wrapper around it.
-.warning-zone .sim-tooltip {
-	width: 100%;
-}
-
 // `shared/_global.scss` clears `outline` on every button, so a focusable control needs its own indicator.
 .warning-zone .warning,
 .sim-abort-button {

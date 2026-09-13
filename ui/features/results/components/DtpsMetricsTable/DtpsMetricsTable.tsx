@@ -129,14 +129,16 @@ export const DtpsMetricsTable = () => {
 			<Tooltip id={TOOLTIP.missPercentHeader} />
 			<Tooltip
 				id={TOOLTIP.damageTaken}
-				className="metrics-table-tooltip"
+				className="metrics-table-tooltip text-[12px]"
+				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => <MetricsCombinedTooltip headerValues={amountHeader()} groups={[damageBreakdownGroup(metric)]} />)
 				}
 			/>
 			<Tooltip
 				id={TOOLTIP.casts}
-				className="metrics-table-tooltip"
+				className="metrics-table-tooltip text-[12px]"
+				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric =>
 						(!metric.landedHits && !metric.totalMisses) || metric.isPassiveAction ? null : <MetricsCombinedTooltip groups={[castsGroup(metric)]} />,
@@ -145,7 +147,8 @@ export const DtpsMetricsTable = () => {
 			/>
 			<Tooltip
 				id={TOOLTIP.hits}
-				className="metrics-table-tooltip"
+				className="metrics-table-tooltip text-[12px]"
+				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric =>
 						!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={hitGroups(metric)} />,
@@ -154,7 +157,8 @@ export const DtpsMetricsTable = () => {
 			/>
 			<Tooltip
 				id={TOOLTIP.missPercent}
-				className="metrics-table-tooltip"
+				className="metrics-table-tooltip text-[12px]"
+				maxWidth="max-w-none max-sm:max-w-[300px]"
 				render={({ activeAnchor }) =>
 					forAnchor(activeAnchor, metric => (metric.totalMissesPercent ? <MetricsCombinedTooltip groups={[missGroup(metric)]} /> : null))
 				}
