@@ -7,6 +7,27 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 
 ## Where the chain is
 
+- **LIVE STATE — main session orchestrates directly, one worktree per unit** (read this bullet first).
+  Tip moves as units land — A-U-icon landed `b8cae69bc` (probe 0, a11y/tabs/settings-tab clean); C-U3.2 `249309630` ( before it `33d01a51d` handoff, `47012afa4` A-U-shell).
+  Unit worktrees `/home/lutz/personal/wowsims-mop-tw-<unit>` on `wt/tw-<unit>`, created by
+  `/tmp/claude-1000/tw/mkunit.sh <unit>` (node_modules = per-entry symlinks, never a symlink; copies
+  `ui/generated/`, `*_auto_gen.ts`, `tools/state-snapshots/` — the tailwind branch's vitest still needs
+  `tools/state-snapshots/stub-i18n.js`), removed by `rmunit.sh <unit>` (kills 3401–3406 too). Workers
+  edit + cheap gates + **commit on their own branch**; main reviews, rebases onto the tip, a Sonnet
+  verifier runs `/tmp/claude-1000/tw/VERIFIER.md` on that worktree (serial — one at a time, ports
+  shared), then `git merge --ff-only wt/tw-<unit>` on `wt/tailwind`. Single-writer files stay with main:
+  `ui/styles/{theme,tailwind,vendor}.css`, `ui/scss/index.scss` (Bootstrap partial imports are
+  deleted by main at integration once the worker reports no readers), probe `.mjs`, this file.
+  In flight: **A-U-list** (`wt/tw-list`, verifying `c817dba2d`, runs test:snapshots as the Phase 2
+  close) → **A-U-icon** (`wt/tw-icon`, `e1382aa91`, queued) → Phase 2 done. Phase 3 started early in
+  parallel: **B-U5 buttons part 1** (`wt/tw-buttons`: Button variant strings, ButtonGroup, `as="label"`,
+  DropdownMenu/SearchBar bypasses; part 2 = the 31 raw sites incl. SearchBar/LogSearchGroup/Importer/
+  AplNameDialog wholesale; part 3 = Bootstrap `buttons` import, `.btn-reset`, the two theme
+  residual rules) and **B-forms** (`wt/tw-forms`, excludes those four files). Before merging
+  `feature/ui-react` after Phase 3: copy `node_modules/react-chartjs-2` from the react worktree into
+  this worktree (not installed here). Known test smell for C-8: `SettingsTabBody.test.tsx` locates
+  columns by `.tab-panel-left/-right/-col` (TabPanelColumns' structural classes).
+
 - Worktree `/home/lutz/personal/wowsims-mop-tailwind`, branch `wt/tailwind`.
 - **Phase 0 complete** (steps 1–8): `08f053b0f` A-S1 · `0548bbbc4` A-S2a · `6b24a7a68` A-S2b ·
   `2b85a156d` C-1a · `b5e3f601f` C-1b · `9eb4dd186` A-S3 · `50e98f544` B0/A-U0 · C-2 `3ff190f77`
@@ -135,6 +156,51 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   `tab_pane_class.ts`, Menu/MenuItem, TabPanelColumns; `core/sim_ui/*`, `_sim_tab` + five tab files,
   `_content_block` + `flush`, `_sticky_toolbar`, `_sim_title_dropdown`; Bootstrap nav/transitions/
   dropdown die) → C-U3.2 → A-U-icon (before the two ladders) → A-U-list.
+
+## Lessons from Phase 2 (main-session orchestration)
+
+- **A media-query or variant-scoped override is a reader too.** A-U-list's `gap-(--spacing-stack)` on
+  `.list-picker-root` was clean at 1600/2200 and red only at 700: a narrow-width rule on the encounter
+  picker's `list-picker-compact` list gave it 7px, and the important utility now beat it. The per-rule
+  override check must include `@media`/`@include media-breakpoint-*` blocks and modifier classes
+  (`.x-compact`, `.horizontal`) that set the same property — grep the property name, not just the class.
+- **A utility on a kit component must land on the element the class is on.** `ListPicker`'s root is
+  PickerShell's `Field.Root`, which takes `className` as a prop — the utility went nowhere at first,
+  and the SCSS it replaced had already been deleted (`row-gap: normal`).
+- **A Bootstrap class left on an element keeps its state rules alive, and those are readers.** B-forms
+  put important `bg-surface border-surface-border` on inputs that still carry `form-control`, so
+  Bootstrap's non-important `.form-control:focus { border-color }` and `:disabled { background-color }`
+  silently lost. The probe captures elements at rest only: hover/focus/active/disabled regressions are
+  invisible to it. Either reproduce every state as a variant (same literal or `color-mix(in srgb, …)`
+  expression the SCSS emits) or leave the property out of the base; the unit's tests must assert the
+  variant strings, since they are the only guard.
+- **Input `gap` below 768px** comes from `_input.scss:14-18` (`.input-root:not(.input-inline):not(.icon-picker)`
+  under `media-breakpoint-down(md)`) — it contests `.list-picker-root`'s gap; owner: the unit that
+  converts the rest of `_input.scss` (not U5 as the A-U-list commit says).
+- **Tailwind's filter utilities never compute `none`.** `grayscale-0` goes through the composed
+  `--tw-*` filter chain and serialises `grayscale(0)` where the SCSS said `filter: none` — 63 probe
+  sections on A-U-icon. Write filters as arbitrary properties (`[filter:none]`, `[filter:grayscale(1)]`,
+  `[filter:opacity(0.7)]`) so they serialise exactly as the SCSS did.
+- **`item-swap.mjs` fails identically on the baseline build** (`page.click` timeout on
+  `#enable-item-swap`, "outside of the viewport") — a pre-existing harness issue, not a regression.
+- **Frozen sidebar action button (parked #2) and the Bootstrap `buttons` import:** `SidebarActionButton`
+  keeps rendering the baseline class list (`btn btn-primary` + site classes, no variant utilities) so
+  the frozen mage/fire class-list assertion stays green. When B-U5 part 3 deletes the `buttons` import,
+  the `.btn`/`.btn-primary` declarations that element computes get copied into `_sidebar.scss` under
+  its own class; `btn`/`btn-primary` stay on it as inert markers.
+- **A variant keyed on a state attribute can match more than the selector it replaces.**
+  `.list-picker-root .list-picker-items .list-picker-item-container.inline { display: flex }` → the
+  flat `data-[layout=inline]:flex` also hit 20 zero-size item containers (protection gear tab @2200)
+  that the nested selector never reached, because C-2 emits `data-layout` more widely than the old
+  scope. Before replacing a nested SCSS selector with an attribute variant, confirm the attribute's
+  carriers are exactly the old selector's matches; otherwise keep the rule in SCSS.
+- **Measure a state on the baseline before reproducing it; never derive it from Bootstrap's source.**
+  Reasoning from `_forms.scss` said `.form-control:focus` changes border-color and adds a box-shadow;
+  the baseline build, measured, shows neither (a project rule neutralises it). Reproducing the source
+  added a visible focus ring that was never there. For hover/focus/active/disabled/placeholder, have
+  the verifier read the computed value on 3406 (baseline) and 3404 in the same state, and match 3406.
+- **`bg-black/50` is not `rgba(0,0,0,.5)`** to the probe (oklab `color-mix`); static alphas are
+  literal `bg-[rgb(0_0_0/0.5)]`.
 
 ## Lessons from wave A (Phase 2)
 
