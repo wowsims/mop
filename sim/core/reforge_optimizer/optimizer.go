@@ -28,10 +28,15 @@ type reforgeOptimizer struct {
 	includeGems     bool
 	isBlacksmithing bool
 	isGuardianDruid bool
-	isHybridCaster  bool
 	isTrueCaster    bool
 	isTankSpec      bool
 	hasJC           bool
+
+	// spiritHitShare is the hit rating one point of Spirit grants through the player's
+	// stat-dependency graph, isolated from Spirit's own multipliers: 1 for Balance, Shadow and
+	// Elemental, 0.5 for Mistweaver and Holy Paladin, 0 for everyone else. Non-zero also means
+	// hit gems are skipped, since Spirit already covers hit.
+	spiritHitShare float64
 
 	ampModifier float64
 	// bearFormMult scales a Guardian Druid's crit and haste (1.0 otherwise). Kept as a field
@@ -212,6 +217,7 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	// Amplification Trinket multiplier (which the graph also folds into Spirit but the model re-applies
 	// separately). 1.0 when there is no such racial.
 	spiritSelfMult := resolveStatMultiplier(stats.Spirit) / ampModifier
+	spiritHitShare := baseSDM.ApplyStatDependenciesToDelta(stats.Stats{stats.Spirit: 1})[stats.HitRating] / resolveStatMultiplier(stats.Spirit)
 	bearFormMult := 1.0
 	guardianAgilityMult := 1.0
 	if isGuardian {
@@ -244,10 +250,10 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 		includeGems:       settings.GetIncludeGems(),
 		isBlacksmithing:   playerHasProfession(player, proto.Profession_Blacksmithing),
 		isGuardianDruid:   isGuardian,
-		isHybridCaster:    playerIsHybridCaster(player),
 		isTrueCaster:      playerIsTrueCaster(player),
 		isTankSpec:        playerIsTankSpec(player),
 		hasJC:             playerHasProfession(player, proto.Profession_Jewelcrafting),
+		spiritHitShare:    spiritHitShare,
 		ampModifier:       ampModifier,
 		bearFormMult:      bearFormMult,
 		statRules:         statRules,

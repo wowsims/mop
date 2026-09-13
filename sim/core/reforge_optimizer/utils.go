@@ -6,21 +6,6 @@ import (
 
 // Player spec/profession predicates used by the optimizer.
 
-// playerIsHybridCaster: Boomkin, Shadow, Elemental, Mistweaver route Spirit -> SpellHit and
-// exclude hit-rating gems (Spirit already covers hit).
-func playerIsHybridCaster(player *proto.Player) bool {
-	switch player.GetSpec().(type) {
-	case *proto.Player_BalanceDruid,
-		*proto.Player_ShadowPriest,
-		*proto.Player_ElementalShaman,
-		*proto.Player_MistweaverMonk,
-		*proto.Player_HolyPaladin:
-		return true
-	default:
-		return false
-	}
-}
-
 // playerIsTrueCaster: every spellcaster spec. These have zero Expertise EP, so an Expertise
 // reforge is only ever a spell-hit proxy — strictly dominated by a Hit reforge from the same
 // source stat (see the prefer-Hit pruning in buildYalpsVariables).
