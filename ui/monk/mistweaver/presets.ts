@@ -13,17 +13,24 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-// Preset options for EP weights
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Monk/MistweaverMonkClassic.js
+// QE Live has no hit weight: its profile takes hit from Spirit alone. Hit rating only matters for the
+// Eminence healing a fistweaver gets from landing attacks, so it sits below crit and below twice
+// Spirit's own weight, which keeps a Spirit reforge ahead of a Hit reforge on the way to the 15% cap.
+// QE weights haste at 0.3 and reforges to a Renewing Mist tick breakpoint separately. Haste sits
+// just above crit here so the reforge optimizer reaches that breakpoint too; past the threshold it
+// falls back to QE's 0.3 (see the haste threshold in sim.ts).
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
+	'QE Live',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 0.9,
-		[Stat.StatSpellPower]: 0.79,
-		[Stat.StatHitRating]: 0.9,
-		[Stat.StatCritRating]: 0.42,
-		[Stat.StatHasteRating]: 1.0,
-		[Stat.StatMasteryRating]: 0.13,
+		[Stat.StatIntellect]: 1.245,
+		[Stat.StatSpirit]: 0.371,
+		[Stat.StatSpellPower]: 1,
+		[Stat.StatHitRating]: 0.6,
+		[Stat.StatCritRating]: 0.795,
+		[Stat.StatHasteRating]: 0.8,
+		[Stat.StatMasteryRating]: 0.428,
 	}),
 );
 
@@ -57,6 +64,8 @@ export const OtherDefaults = {
 	profession2: Profession.Leatherworking,
 	distanceFromTarget: 5,
 };
+
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.3;
 
 export const MISTWEAVER_BREAKPOINTS: UnitStatPresets[] = [
 	{

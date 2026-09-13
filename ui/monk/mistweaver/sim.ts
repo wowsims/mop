@@ -32,7 +32,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 		Stat.StatExpertiseRating,
 	],
 	// Reference stat against which to calculate EP.
-	epReferenceStat: Stat.StatIntellect,
+	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[
@@ -59,19 +59,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
-		// Stat caps for reforge optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
-		// Default soft caps for the Reforge optimizer
-		softCapBreakpoints: (() => {
-			const spellHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHitPercent, {
-				breakpoints: [15],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [(Presets.DEFAULT_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.02) * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT],
-			});
-
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+		// Spell hit is a hard cap: hit rating past 15% is worth nothing, and Spirit fills the cap first.
+		statCaps: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15),
+		// Default soft caps for the Reforge optimizer: reach a Renewing Mist tick breakpoint, then
+		// value haste at QE Live's weight.
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [
 					hasteBreakpoints.get('10-tick - ReM')!,
 					hasteBreakpoints.get('11-tick - ReM')!,
@@ -80,11 +73,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 					hasteBreakpoints.get('14-tick - ReM')!,
 				],
 				capType: StatCapType.TypeThreshold,
-				postCapEPs: [(Presets.DEFAULT_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.01) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
-			});
-
-			return [hasteSoftCapConfig, spellHitSoftCapConfig];
-		})(),
+				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			}),
+		],
 		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('11-tick - ReM')!),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.

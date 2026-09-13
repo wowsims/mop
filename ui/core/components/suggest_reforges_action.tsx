@@ -146,7 +146,9 @@ export class ReforgeOptimizer {
 		this.simUI = simUI;
 		this.player = simUI.player;
 		this.playerClass = this.player.getClass();
-		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk].includes(this.player.getSpec());
+		// Specs whose Spirit has no value beyond the hit it converts to. Mistweaver also turns Spirit into
+		// hit, but only half of it, and Spirit carries its own healing value, so it keeps its EP weight.
+		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman].includes(this.player.getSpec());
 		this.isTankSpec = this.player.getPlayerSpec().isTankSpec;
 		this.sim = simUI.sim;
 		this.defaults = simUI.individualConfig.defaults;
