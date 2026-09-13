@@ -10,15 +10,14 @@ export interface ReplayActionIconProps {
 	actions: ReadonlyArray<ReplayAction>;
 }
 
-/** Lights up while its spell is one of the last few cast — a class toggle, not a re-render. */
+/** Lights up while its spell is one of the last few cast — an attribute toggle, not a re-render. */
 export const ReplayActionIcon = ({ action, actions }: ReplayActionIconProps) => {
 	const anchor = useRef<HTMLAnchorElement>(null);
 
 	useReplayFrame(time => {
 		const recent = isActionRecent(actions, action.name, time);
-		anchor.current?.classList.toggle('cr-action-icon-active', recent);
 		anchor.current?.toggleAttribute('data-active', recent);
 	});
 
-	return <ReplayIcon actionId={action.actionId} className="cr-action-icon" tooltip="spell" anchorRef={anchor} />;
+	return <ReplayIcon actionId={action.actionId} className="cr-action-icon ui-combat-replay-icon shrink-0" tooltip="spell" anchorRef={anchor} />;
 };

@@ -11,7 +11,7 @@ export interface ReplayResourceBarsProps {
  * appearing or disappearing can never make the HUD jump in height.
  */
 export const ReplayResourceBars = ({ rows }: ReplayResourceBarsProps) => (
-	<div className="cr-resource-bars">
+	<div className="cr-resource-bars flex min-h-[1px] shrink-0 flex-col gap-[4px]">
 		{rows.map(row => (row.segmented ? <ReplayResourcePips key={row.type} row={row} /> : <ReplayResourceBar key={row.type} row={row} />))}
 	</div>
 );

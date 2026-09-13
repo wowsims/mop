@@ -9,7 +9,7 @@ export interface ReplayActionGridProps {
 }
 
 export const ReplayActionGrid = ({ actions, uniqueActions }: ReplayActionGridProps) => (
-	<div className="cr-action-grid">
+	<div className="cr-action-grid mt-[2px] flex flex-wrap gap-[4px]">
 		{uniqueActions.map(action => (
 			<ReplayActionIcon key={action.name} action={action} actions={actions} />
 		))}
