@@ -39,14 +39,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPriest, {
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default soft caps for the Reforge optimizer: reach a Renew tick breakpoint, then value
 		// haste at QE Live's weight (zero).
-		softCapBreakpoints: (() => {
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [hasteBreakpoints.get('5-tick - Renew')!, hasteBreakpoints.get('6-tick - Renew')!],
 				capType: StatCapType.TypeThreshold,
 				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
-			});
-			return [hasteSoftCapConfig];
-		})(),
+			}),
+		],
 		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('5-tick - Renew')!),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.

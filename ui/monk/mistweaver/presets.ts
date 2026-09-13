@@ -56,7 +56,6 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Leatherworking,
 	distanceFromTarget: 5,
-	iterationCount: 25000,
 };
 
 export const MISTWEAVER_BREAKPOINTS: UnitStatPresets[] = [

@@ -38,14 +38,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationDruid, {
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default soft caps for the Reforge optimizer: reach a Rejuvenation tick breakpoint, then
 		// value haste at QE Live's weight.
-		softCapBreakpoints: (() => {
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [hasteBreakpoints.get('5-tick - Rejuv')!, hasteBreakpoints.get('6-tick - Rejuv')!],
 				capType: StatCapType.TypeThreshold,
 				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
-			});
-			return [hasteSoftCapConfig];
-		})(),
+			}),
+		],
 		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('5-tick - Rejuv')!),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
