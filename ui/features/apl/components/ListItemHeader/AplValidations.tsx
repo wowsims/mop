@@ -24,9 +24,9 @@ const DISPLAY = new Map<LogLevel, { icon: string; header: string }>([
 /** Written out rather than derived: `LogLevel` is a numeric enum, so iterating it yields the reverse mappings too. */
 const LEVEL_CLASS = new Map<LogLevel, string>([
 	[LogLevel.Undefined, 'apl-validation-undefined'],
-	[LogLevel.Information, 'apl-validation-information text-off-white text-shadow-[0_0_--spacing(2)_var(--color-link)]'],
-	[LogLevel.Warning, 'apl-validation-warning text-link-warning text-shadow-glow-danger'],
-	[LogLevel.Error, 'apl-validation-error text-danger text-shadow-[0_0_--spacing(2)_var(--color-off-white)]'],
+	[LogLevel.Information, 'apl-validation-information text-off-white [text-shadow:0_0_var(--spacer-2)_var(--color-link)]'],
+	[LogLevel.Warning, 'apl-validation-warning text-link-warning [text-shadow:var(--text-shadow-glow-danger)]'],
+	[LogLevel.Error, 'apl-validation-error text-danger [text-shadow:0_0_var(--spacer-2)_var(--color-off-white)]'],
 ]);
 
 const sameValidations = (a: Array<APLValidation>, b: Array<APLValidation>) =>
