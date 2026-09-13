@@ -168,7 +168,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 	return (
 		<>
 			<Button
-				className="sim-sidebar-action-button suggest-reforges-action-button grow px-12"
+				size="none"
+				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))]"
 				disabled={isRunning}
 				onClick={onOptimize}
 				{...tooltipAnchorProps(softCapsTooltipId)}>

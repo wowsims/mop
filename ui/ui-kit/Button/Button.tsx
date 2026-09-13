@@ -21,7 +21,7 @@ export type ButtonVariant =
 interface ButtonBaseProps {
 	/** `null` emits the bare base bundle — no colour of its own. */
 	variant?: ButtonVariant | null;
-	size?: 'sm' | 'inline';
+	size?: 'sm' | 'inline' | 'none';
 	/** Chromeless: no padding, border or background of its own — an icon-sized hit target. */
 	iconOnly?: boolean;
 	className?: string;

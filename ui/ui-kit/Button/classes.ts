@@ -10,6 +10,7 @@ export const SIZE = {
 	default: 'px-3 py-2',
 	sm: 'px-2 py-1',
 	inline: 'px-2 py-0',
+	none: '',
 } as const;
 
 export const VARIANT = {

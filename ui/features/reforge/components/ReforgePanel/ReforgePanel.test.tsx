@@ -46,9 +46,9 @@ describe('ReforgePanel', () => {
 			[
 				...BASE.split(' '),
 				...VARIANT.primary.split(' '),
-				...SIZE.default.split(' '),
 				'grow',
-				'px-12',
+				'py-2',
+				'px-[calc(--spacing(3)+var(--settings-button-width))]',
 				'sim-sidebar-action-button',
 				'suggest-reforges-action-button',
 			].sort(),

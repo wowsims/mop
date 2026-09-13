@@ -46,6 +46,15 @@ describe('Button', () => {
 		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.sm} reforge-action`);
 	});
 
+	it('applies no padding for size="none", leaving the caller to supply its own', () => {
+		render(
+			<Button variant="outline-primary" size="none" className="reforge-action">
+				Optimize
+			</Button>,
+		);
+		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} reforge-action`);
+	});
+
 	it('adds rel to a cross-origin link without being asked', () => {
 		render(
 			<Button as="a" href="https://www.wowhead.com/mop-classic/item=1" target="_blank">
