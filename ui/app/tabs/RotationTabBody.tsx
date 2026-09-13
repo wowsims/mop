@@ -76,13 +76,7 @@ export const RotationTabBody = () => {
 								<RotationTypePicker />
 							</div>
 							<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
-								<ContentBlock
-									className="rotation-settings"
-									config={{
-										header: { title: i18n.t('rotation_tab.simple.title') },
-										bodyClassName:
-											'[&_.input-root_label]:w-3/5 [&_.input-root_label]:pr-2 [&_.input-root_input:not(.form-check-input)]:min-w-2/5 [&_.input-root_select]:min-w-2/5 [&_.input-root_.picker-group]:min-w-2/5',
-									}}>
+								<ContentBlock className="rotation-settings" config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 									<SimpleRotationInputs />
 								</ContentBlock>
 								{hasCooldowns && (

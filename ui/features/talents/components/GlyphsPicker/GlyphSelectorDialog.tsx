@@ -42,7 +42,11 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 								onSelect(entry.id);
 							}}>
 							<img className="selector-modal-list-item-icon ui-selector-modal-list-item-icon" src={entry.iconUrl} alt="" />
-							<span className={clsx('selector-modal-list-item-name ui-selector-modal-list-item-name flex-[2]', itemQualityClassName(entry.quality))}>
+							<span
+								className={clsx(
+									'selector-modal-list-item-name ui-selector-modal-list-item-name flex-[2]',
+									itemQualityClassName(entry.quality),
+								)}>
 								{entry.name}
 							</span>
 							<span className="selector-modal-list-item-description ml-4 tracking-normal text-quality-junk flex-[3]">{entry.description}</span>

@@ -26,7 +26,6 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 				/>
 			)}
 			<img className="socket-icon absolute inline-block size-full inset-0 bg-no-repeat bg-cover bg-center cursor-pointer" src={emptyIconUrl} alt="" />
-
 		</span>
 	);
 };
