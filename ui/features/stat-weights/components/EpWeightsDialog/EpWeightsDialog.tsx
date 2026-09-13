@@ -195,7 +195,6 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						epStatSet={epStatSet}
 						epReferenceStat={epReferenceStat}
 						onComputeEp={onComputeEp}
-						showThreatMetrics={showThreatMetrics}
 						isTank={isTank}
 					/>
 				</div>

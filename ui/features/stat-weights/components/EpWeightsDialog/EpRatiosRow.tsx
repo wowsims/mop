@@ -14,11 +14,10 @@ export interface EpRatiosRowProps {
 	columns: EpColumn[];
 	player: Player<any>;
 	onComputeEp: () => void;
-	showThreatMetrics: boolean;
 }
 
-export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }: EpRatiosRowProps) => {
-	const cellClassName = showThreatMetrics ? 'ui-ep-weights-compact-table-cell' : 'ui-ep-weights-table-cell';
+export const EpRatiosRow = ({ columns, player, onComputeEp }: EpRatiosRowProps) => {
+	const cellClassName = 'ui-ep-weights-compact-table-cell';
 
 	return (
 		<tr className="ep-ratios bg-(--table-row-even-bg)">
@@ -50,7 +49,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 									subject.setEpRatios(epRatios);
 								},
 							}}
-							inputClassName={clsx('max-w-[100px] ui-ep-weights-input-align-right', showThreatMetrics && 'ui-ep-weights-compact-input')}
+							inputClassName="max-w-[100px] ui-ep-weights-input-align-right ui-ep-weights-compact-input"
 						/>
 					</td>
 				))}
@@ -60,7 +59,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 					onClick={onComputeEp}
 					{...tooltipAnchorProps(EP_TOOLTIP_ID, i18n.t('sidebar.buttons.stat_weights.modal.tooltips.compute_weighted_ep'))}>
 					<Icon name="calculator" className="inline align-middle" />
-					<span data-testid="not-tiny" className={clsx('not-tiny', showThreatMetrics && 'max-lg:hidden')}>
+					<span data-testid="not-tiny" className="not-tiny max-lg:hidden">
 						{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update_ep_button')}
 					</span>
 				</Button>

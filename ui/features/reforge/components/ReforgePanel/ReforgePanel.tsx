@@ -166,7 +166,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		<>
 			<Button
 				size="none"
-				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))]"
+				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] mr-[calc(var(--settings-button-width)*-1)]"
 				disabled={isRunning}
 				onClick={onOptimize}
 				{...tooltipAnchorProps(softCapsTooltipId)}>
@@ -196,6 +196,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					BUTTON_VARIANT.primary,
 					'bg-transparent',
 					'border-transparent',
+					'w-(--settings-button-width)',
 					'suggest-reforges-button-settings',
 				]}
 				triggerProps={tooltipAnchorProps(settingsTooltipId)}

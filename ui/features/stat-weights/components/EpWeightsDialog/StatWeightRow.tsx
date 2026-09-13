@@ -19,27 +19,14 @@ export interface StatWeightRowProps {
 	player: Player<any>;
 	epReferenceStat: Stat;
 	includable: boolean;
-	showThreatMetrics: boolean;
 	isTank: boolean;
 }
 
-export const StatWeightRow = ({
-	stat,
-	result,
-	iterations,
-	epRatios,
-	epWeights,
-	settings,
-	player,
-	epReferenceStat,
-	includable,
-	showThreatMetrics,
-	isTank,
-}: StatWeightRowProps) => {
+export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, settings, player, epReferenceStat, includable, isTank }: StatWeightRowProps) => {
 	const rowResult = settings.isUnitStatExcludedFromCalc(stat) ? null : result;
 	const epDelta = scaledEpValue(stat, epRatios, rowResult) - epWeights.getUnitStat(stat);
 	const fullName = stat.getFullName(player.getClass());
-	const cellClassName = showThreatMetrics ? 'ui-ep-weights-compact-table-cell' : 'ui-ep-weights-table-cell';
+	const cellClassName = 'ui-ep-weights-compact-table-cell';
 	const metrics = [
 		{ statWeights: rowResult?.dps, metricClass: 'damage-metrics' },
 		{ statWeights: rowResult?.hps, metricClass: 'healing-metrics' },
@@ -93,7 +80,7 @@ export const StatWeightRow = ({
 						setValue: (subject, newValue) => subject.setEpWeights(subject.getEpWeights().withUnitStat(stat, newValue)),
 						extraClassNames: ['mb-0'],
 					}}
-					inputClassName={showThreatMetrics ? 'ui-ep-weights-compact-input' : undefined}
+					inputClassName="ui-ep-weights-compact-input"
 				/>
 			</td>
 		</tr>
