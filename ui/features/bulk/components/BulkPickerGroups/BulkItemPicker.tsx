@@ -68,7 +68,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				state.isFrozen && 'bulk-item-picker-frozen',
 				!state.isFrozen && !state.isEditable && 'bulk-item-picker-equipped',
 				'ui-bulk-item-cell p-2 mb-0',
-				state.isFrozen ? '[border:3px_solid_red]' : !state.isEditable ? 'border border-brand' : 'border border-border',
+				state.isFrozen ? 'border-3 border-frozen' : !state.isEditable ? 'border border-brand' : 'border border-border',
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
 				if (!state.isEditable) return;
