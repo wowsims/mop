@@ -48,7 +48,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 
 	return (
 		<div className="bulk-sim-result-root flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6">
-			<div className="results-sim flex-[3]">
+			<div className="results-sim flex-3">
 				<div className="results-sim-dps damage-metrics grid grid-cols-wide-narrow text-left [line-height:1] gap-2">
 					<span className="topline-result-avg mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
 					{plusMinusDps > 0 && (
@@ -73,7 +73,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					</div>
 				</div>
 			</div>
-			<div className="bulk-gear-combo flex flex-wrap gap-1 flex-[5]">
+			<div className="bulk-gear-combo flex flex-wrap gap-1 flex-5">
 				{!isBaseResult &&
 					resultAsSpec.items.map((spec, idx) => {
 						const swappableItemSlotPair = getSwappableItemSlotPair(idx, canDualWield);

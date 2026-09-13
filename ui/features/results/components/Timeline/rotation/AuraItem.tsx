@@ -12,7 +12,7 @@ export interface AuraItemProps {
 export const AuraItem = ({ item, index }: AuraItemProps) => (
 	<div
 		className={clsx(
-			'ui-timeline-item rotation-item-aura top-(--rotation-item-top) min-w-[calc(var(--pps)*var(--dur))] h-(--rotation-item-h) bg-[rgb(0_0_255/0.52)] opacity-50',
+			'ui-timeline-item rotation-item-aura top-(--rotation-item-top) min-w-[calc(var(--pps)*var(--dur))] h-(--rotation-item-h) bg-timeline-aura opacity-50',
 			item.sharesRowWithCast && 'shares-row',
 		)}
 		data-item-index={index}

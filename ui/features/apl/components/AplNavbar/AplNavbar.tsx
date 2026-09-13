@@ -12,7 +12,7 @@ export const AplNavbar = () => {
 	return (
 		<div
 			ref={ref}
-			className={clsx('flex-[1_0_100%] gap-1 sticky-toolbar-root', className, stuck && 'stuck')}
+			className={clsx('grow shrink-0 basis-full gap-1 sticky-toolbar-root', className, stuck && 'stuck')}
 			data-testid="apl-rotation-navbar"
 			data-stuck={stuck ? '' : undefined}>
 			<div className="rotation-type-container">

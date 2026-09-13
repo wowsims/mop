@@ -12,12 +12,12 @@ export interface CastItemProps {
 
 export const CastItem = ({ item, index, iconUrl }: CastItemProps) => (
 	<div
-		className="ui-timeline-item rotation-item-cast group/cast top-(--rotation-item-top) z-1 flex h-(--rotation-item-h) min-w-[calc(var(--pps)*var(--dur))] items-center bg-[rgb(229_204_128/0.7)] data-[outcome=cancelled]:bg-[rgb(230_128_102/0.7)] group-data-[density=coarse]/scroller:min-w-[max(2px,calc(var(--pps)*var(--dur)))] group-data-[density=coarse]/scroller:bg-gray-700 group-data-[density=coarse]/scroller:data-[outcome=hit]:bg-damage-hit group-data-[density=coarse]/scroller:data-[outcome=crit]:bg-damage-crit group-data-[density=coarse]/scroller:data-[outcome=miss]:bg-damage-miss group-data-[density=coarse]/scroller:data-[outcome=partial]:bg-damage-partial group-data-[density=coarse]/scroller:data-[outcome=cancelled]:bg-cancel"
+		className="ui-timeline-item rotation-item-cast group/cast top-(--rotation-item-top) z-1 flex h-(--rotation-item-h) min-w-[calc(var(--pps)*var(--dur))] items-center bg-timeline-cast data-[outcome=cancelled]:bg-timeline-cast-cancelled group-data-[density=coarse]/scroller:min-w-[max(2px,calc(var(--pps)*var(--dur)))] group-data-[density=coarse]/scroller:bg-gray-700 group-data-[density=coarse]/scroller:data-[outcome=hit]:bg-damage-hit group-data-[density=coarse]/scroller:data-[outcome=crit]:bg-damage-crit group-data-[density=coarse]/scroller:data-[outcome=miss]:bg-damage-miss group-data-[density=coarse]/scroller:data-[outcome=partial]:bg-damage-partial group-data-[density=coarse]/scroller:data-[outcome=cancelled]:bg-cancel"
 		data-item-index={index}
 		data-outcome={item.cancelled ? 'cancelled' : item.outcome}
 		style={spanStyle(item.start, item.end - item.start)}>
 		<div
-			className="rotation-item-travel absolute top-0 left-[calc(var(--pps)*var(--t))] h-(--rotation-item-h) min-w-[calc(var(--pps)*var(--dur))] bg-[rgb(249_192_255/0.6)]"
+			className="rotation-item-travel absolute top-0 left-[calc(var(--pps)*var(--t))] h-(--rotation-item-h) min-w-[calc(var(--pps)*var(--dur))] bg-timeline-travel"
 			hidden={item.travelStart == null}
 			style={item.travelStart == null ? undefined : spanStyle(item.travelStart, item.travelDuration ?? 0)}
 		/>
