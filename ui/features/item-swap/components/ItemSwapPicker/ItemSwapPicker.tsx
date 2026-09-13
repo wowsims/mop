@@ -1,5 +1,3 @@
-import './ItemSwapPicker.scss';
-
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
@@ -47,10 +45,10 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	);
 
 	return (
-		<div className="item-swap-picker-root">
+		<div className="item-swap-picker-root grid gap-(--spacing-stack)">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
-				<div className="input-root input-inline input-item-swap-container">
+				<div className="input-root input-inline input-item-swap-container flex-wrap gap-(--spacing-stack)">
 					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>

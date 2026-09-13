@@ -35,9 +35,12 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
-		<div className="icon-picker-root icon-picker" data-testid="icon-picker-root">
+		<div className="icon-picker-root icon-picker relative" data-testid="icon-picker-root">
 			<ItemCellAnchor
-				className={clsx('icon-picker-button', item ? 'active filter-none' : 'grayscale')}
+				className={clsx(
+					'icon-picker-button size-(--item-swap-picker-size) focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1',
+					item ? 'active filter-none' : 'grayscale',
+				)}
 				data-testid="icon-picker-button"
 				data-active={item ? '' : undefined}
 				role="button"
@@ -55,6 +58,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 						socketColor={socketColor}
 						gem={item.gems[gemIdx] ?? null}
 						hidden={gemIdx === item.numPossibleSockets - 1 && item.couldHaveExtraSocket() && !isBlacksmithing}
+						className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
 					/>
 				))}
 			</div>

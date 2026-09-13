@@ -1,13 +1,6 @@
 .item-swap-picker-root {
 	--item-swap-picker-size: 4rem;
 	--column-count: 4;
-	display: grid;
-	gap: var(--spacing-stack);
-
-	.input-item-swap-container {
-		flex-wrap: wrap;
-		gap: var(--spacing-stack);
-	}
 
 	.picker-group {
 		&:has(> div:last-child:nth-child(1)) {
@@ -30,18 +23,5 @@
 		grid-auto-flow: row;
 		align-items: center;
 		justify-content: flex-end;
-	}
-
-	.item-picker-sockets-container {
-		@include vertical-bottom;
-		@include horizontal-center;
-		width: 100%;
-		display: flex;
-		justify-content: center;
-	}
-
-	.icon-picker-button {
-		width: var(--item-swap-picker-size);
-		height: var(--item-swap-picker-size);
 	}
 }
