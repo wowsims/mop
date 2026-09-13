@@ -101,7 +101,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 							<Input
 								type="text"
 								data-testid="log-search-group-input"
-								className="form-control w-32 relative [flex:1_1_auto] min-w-0 focus:z-5"
+								className="form-control w-32 relative flex-auto min-w-0 focus:z-5"
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}

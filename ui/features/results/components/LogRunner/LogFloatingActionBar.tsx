@@ -104,7 +104,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 					variant="link-danger"
 					size="sm"
 					data-testid="log-fab-clear"
-					className={clsx('ml-auto', labels.length === 0 && 'hidden')}
+					className={clsx(labels.length === 0 && 'hidden')}
 					hidden={labels.length === 0}
 					onClick={() => onChange([])}>
 					<Icon name="times" className="mr-1" />

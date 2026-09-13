@@ -178,7 +178,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const showDebugConfig = useMemo<BooleanPickerConfig<{ current: boolean }>>(
 		() => ({
 			id: 'log-runner-show-debug',
-			extraClassNames: ['w-auto', 'mb-0', '[&_label]:ml-1'],
+			extraClassNames: ['w-auto', 'mb-0'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
 			inline: true,
 			reverse: true,
