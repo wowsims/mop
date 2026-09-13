@@ -59,7 +59,8 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 	return (
 		<div
 			ref={rootRef}
-			className={clsx('log-floating-action-bar-root', stuck && 'stuck')}
+			data-testid="log-floating-action-bar-root"
+			className="ui-fab-root"
 			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={event => {
@@ -68,44 +69,50 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 				toggleRef.current?.focus();
 				event.preventDefault();
 			}}>
-			<div className="log-fab-clip">
-				<div className="log-fab-panel">
+			<div className="ui-fab-clip">
+				<div className="ui-fab-panel group-data-[expanded=true]:[transform:none]">
 					{/* The clip wrapper only hides the collapsed panel; inert is what takes it out of the tab order. */}
-					<div className="log-fab-panel-inner min-h-0 overflow-hidden" inert={!expanded}>
-						<div className="log-fab-filters">
+					<div data-testid="log-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
+						<div data-testid="log-fab-filters" className="ui-fab-drawer">
 							<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
 						</div>
 					</div>
 				</div>
 			</div>
-			<div className="log-fab-actions">
+			<div
+				data-testid="log-fab-actions"
+				className="relative flex flex-1 min-w-0 gap-2 flex-col md:items-center md:flex-row group-data-[stuck]:bg-background">
 				<Button
 					ref={toggleRef}
 					variant="unstyled"
-					className={clsx(BASE.replace('inline-block', 'flex items-center gap-2'), VARIANT.primary, SIZE.default, 'log-fab-toggle')}
+					data-testid="log-fab-toggle"
+					className={clsx(BASE.replace('inline-block', 'flex items-center gap-2'), VARIANT.primary, SIZE.default, 'ui-fab-toggle')}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
 					onClick={() => setExpanded(current => !current)}>
 					<Icon name="filter" />
-					<span className="log-fab-summary">
+					<span data-testid="log-fab-summary">
 						{labels.length
 							? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
 							: i18n.t('results_tab.details.logs.floatingActionBar.none')}
 					</span>
-					<span className="log-fab-preview truncate opacity-75">
+					<span data-testid="log-fab-preview" className="truncate opacity-75">
 						{labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
 					</span>
 				</Button>
 				<Button
 					variant="link-danger"
 					size="sm"
-					className={clsx('log-fab-clear', labels.length === 0 && 'hidden')}
+					data-testid="log-fab-clear"
+					className={clsx('ml-auto', labels.length === 0 && 'hidden')}
 					hidden={labels.length === 0}
 					onClick={() => onChange([])}>
 					<Icon name="times" className="mr-1" />
 					{i18n.t('results_tab.details.logs.floatingActionBar.clear')}
 				</Button>
-				<div className="log-fab-controls">{children}</div>
+				<div data-testid="log-fab-controls" className="flex items-center gap-2 md:ml-auto">
+					{children}
+				</div>
 			</div>
 		</div>
 	);

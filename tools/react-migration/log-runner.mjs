@@ -18,7 +18,7 @@
 // rows with a transform where the vanilla list uses spacers, and the two window different numbers of
 // rows around the same viewport. What has to match is the *content* — which lines, in which order,
 // with which timestamps — and that is what is compared.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms'];
 const SEED = '1337';
@@ -31,30 +31,55 @@ const NO_MATCH = 'zzzz-no-such-line';
 
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
+// `.log-runner-logs` stays a plain class on both builds: `VirtualList` has no prop to carry a
+// second, distinguishing `data-testid`, so the class itself is the cross-build hook here.
+const SEL = {
+	sticky: q('log-runner-sticky'),
+	row: q('log-runner-row'),
+	timestamp: q('log-timestamp'),
+	event: q('log-event'),
+	list: q('log-runner-list'),
+	fab: q('log-floating-action-bar-root'),
+	fabToggle: q('log-fab-toggle'),
+	fabPanelInner: q('log-fab-panel-inner'),
+	fabFilters: q('log-fab-filters'),
+	searchBar: q('log-search-bar'),
+	addField: q('log-search-add-field'),
+	group: q('log-search-group'),
+	groupField: q('log-search-group-field'),
+	groupJoin: q('log-search-group-join'),
+	groupItems: q('log-search-group-items'),
+	chip: q('log-search-chip'),
+	fabSummary: q('log-fab-summary'),
+	fabPreview: q('log-fab-preview'),
+	fabClear: q('log-fab-clear'),
+	empty: q('log-runner-empty'),
+};
+
 /**
  * The lines the reader can actually see, top-down. Sorted by position rather than taken in document
  * order, because a React row sits inside a transformed wrapper; and cut at the sticky header's bottom
  * edge, because the *rendered* window starts above it and the two builds keep a different number of
  * overscan rows up there. What both builds owe is the same first visible line, not the same overscan.
  */
-const ROWS = () => {
-	const top = document.querySelector('.log-runner-sticky')?.getBoundingClientRect().bottom ?? 0;
-	return [...document.querySelectorAll('.log-runner-logs .log-runner-row')]
+const ROWS = sel => {
+	const top = document.querySelector(sel.sticky)?.getBoundingClientRect().bottom ?? 0;
+	return [...document.querySelectorAll(`.log-runner-logs ${sel.row}`)]
 		.map(row => ({ row, box: row.getBoundingClientRect() }))
 		.filter(entry => entry.box.top >= top - 1)
 		.sort((a, b) => a.box.top - b.box.top)
 		.map(({ row }) => {
-			const time = row.querySelector('.log-timestamp')?.textContent ?? '';
-			const event = (row.querySelector('.log-event')?.textContent ?? '').replace(/\s+/g, ' ').trim();
+			const time = row.querySelector(sel.timestamp)?.textContent ?? '';
+			const event = (row.querySelector(sel.event)?.textContent ?? '').replace(/\s+/g, ' ').trim();
 			return `${time} | ${event}`;
 		});
 };
 
-const STATE = () => {
-	const list = document.querySelector('.log-runner-list');
+const STATE = sel => {
+	const list = document.querySelector(sel.list);
 	const logs = document.querySelector('.log-runner-logs');
 	const scroller = document.querySelector('[data-testid="sim-ui"], .sim-ui');
-	const row = document.querySelector('.log-runner-row');
+	const row = document.querySelector(sel.row);
 	const rowHeight = row ? Math.round(row.getBoundingClientRect().height * 2) / 2 : 0;
 	const contentHeight = logs ? Math.round(logs.getBoundingClientRect().height) : 0;
 	return {
@@ -62,10 +87,10 @@ const STATE = () => {
 		// implies is the one number that says both builds hold the same list.
 		lines: rowHeight ? Math.round(contentHeight / rowHeight) : 0,
 		rowHeight,
-		rendered: document.querySelectorAll('.log-runner-row').length,
+		rendered: document.querySelectorAll(sel.row).length,
 		listWidth: list?.style.getPropertyValue('--log-runner-list-width') || 'unset',
 		scrollTop: Math.round(scroller?.scrollTop ?? -1),
-		fab: document.querySelector('.log-floating-action-bar-root')?.className ?? 'MISSING',
+		fab: document.querySelector(sel.fab)?.className ?? 'MISSING',
 	};
 };
 
@@ -132,44 +157,44 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(800);
 
 	const out = {};
-	out.restState = await page.evaluate(STATE);
-	out.restRows = (await page.evaluate(ROWS)).slice(0, COMPARE_ROWS);
+	out.restState = await page.evaluate(STATE, SEL);
+	out.restRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
 	out.restStripes = await page.evaluate(STRIPES);
 
 	// The scroller is `.sim-ui`, the one element above the pane with `overflow-y: auto`; the log
 	// shares it with the whole tab rather than scrolling itself.
 	await page.evaluate(by => document.querySelector('[data-testid="sim-ui"], .sim-ui').scrollBy({ top: by }), SCROLL_BY);
 	await page.waitForTimeout(600);
-	out.deepState = await page.evaluate(STATE);
-	out.deepRows = (await page.evaluate(ROWS)).slice(0, COMPARE_ROWS);
+	out.deepState = await page.evaluate(STATE, SEL);
+	out.deepRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
 	out.deepStripes = await page.evaluate(STRIPES);
 	await page.evaluate(() => document.querySelector('[data-testid="sim-ui"], .sim-ui').scrollTo({ top: 0 }));
 	await page.waitForTimeout(400);
 
 	await search(page, 'Mortal Strike');
-	out.searchState = await page.evaluate(STATE);
-	out.searchRows = (await page.evaluate(ROWS)).slice(0, COMPARE_ROWS);
+	out.searchState = await page.evaluate(STATE, SEL);
+	out.searchRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
 	await search(page, '');
-	out.clearedSearch = (await page.evaluate(STATE)).lines;
+	out.clearedSearch = (await page.evaluate(STATE, SEL)).lines;
 
 	// The drawer, and where its menu lands: it is inside an overflow-clipped panel, so a menu that is
 	// not taken out of flow is cut off at the panel's edge instead of opening past it.
-	await page.click('.log-fab-toggle');
+	await page.click(SEL.fabToggle);
 	await page.waitForTimeout(400);
-	out.expanded = await page.evaluate(() => {
-		const root = document.querySelector('.log-floating-action-bar-root');
-		const panel = document.querySelector('.log-fab-panel-inner');
-		return `expanded=${root?.dataset.expanded} inert=${panel?.hasAttribute('inert')} filters=${!!document.querySelector('.log-fab-filters .log-search-bar')}`;
-	});
+	out.expanded = await page.evaluate(sel => {
+		const root = document.querySelector(sel.fab);
+		const panel = document.querySelector(sel.fabPanelInner);
+		return `expanded=${root?.dataset.expanded} inert=${panel?.hasAttribute('inert')} filters=${!!document.querySelector(`${sel.fabFilters} ${sel.searchBar}`)}`;
+	}, SEL);
 
-	await page.click('.log-search-add-field .dropdown-picker-button');
+	await page.click(`${SEL.addField} .dropdown-picker-button`);
 	await page.waitForTimeout(500);
-	out.addFieldMenu = await page.evaluate(() => {
-		const menu = document.querySelector('.log-search-add-field :is([data-testid="dropdown-picker-list"], .dropdown-picker-list)');
+	out.addFieldMenu = await page.evaluate(sel => {
+		const menu = document.querySelector(`${sel.addField} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list)`);
 		if (!menu) return 'NO MENU';
-		const trigger = document.querySelector('.log-search-add-field .dropdown-picker-button').getBoundingClientRect();
+		const trigger = document.querySelector(`${sel.addField} .dropdown-picker-button`).getBoundingClientRect();
 		const box = menu.getBoundingClientRect();
-		const clip = document.querySelector('.log-fab-filters').getBoundingClientRect();
+		const clip = document.querySelector(sel.fabFilters).getBoundingClientRect();
 		const positioned = menu.closest('[style*="position"]') ?? menu;
 		return [
 			`items=${[...menu.querySelectorAll('li')].map(item => item.textContent.trim()).join(',')}`,
@@ -178,42 +203,48 @@ const collect = async (browser, port, spec, seeded) => {
 			`inViewport=${box.top >= 0 && box.bottom <= window.innerHeight + 1}`,
 			`strategy=${getComputedStyle(positioned).position}`,
 		].join(' ');
-	});
+	}, SEL);
 
 	// Outcome, because its values come from a fixed list rather than from the run. Vanilla puts a
 	// `<button>` inside each `<li>` and hangs the handler on it; React's `<li>` *is* the menu item.
-	await page.evaluate(() => {
-		const item = [...document.querySelectorAll('.log-search-add-field :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')].find(li => li.textContent.trim() === 'Outcome');
+	await page.evaluate(sel => {
+		const item = [...document.querySelectorAll(`${sel.addField} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)].find(
+			li => li.textContent.trim() === 'Outcome',
+		);
 		(item.querySelector('button') ?? item).click();
-	});
+	}, SEL);
 	await page.waitForTimeout(500);
-	out.group = await page.evaluate(() => {
-		const group = document.querySelector('.log-search-group');
+	out.group = await page.evaluate(sel => {
+		const group = document.querySelector(sel.group);
 		if (!group) return 'NO GROUP';
-		return `field=${group.querySelector('.log-search-group-field')?.textContent} joins=${[...group.querySelectorAll('.log-search-group-join .btn')]
+		return `field=${group.querySelector(sel.groupField)?.textContent} joins=${[...group.querySelectorAll(`${sel.groupJoin} .btn`)]
 			.map(button => `${button.textContent}:${button.getAttribute('aria-pressed')}`)
 			.join(',')}`;
-	});
+	}, SEL);
 
-	await page.click('.log-search-group-items .dropdown-picker-button');
+	await page.click(`${SEL.groupItems} .dropdown-picker-button`);
 	await page.waitForTimeout(500);
 	out.valueMenu = await page.evaluate(
-		() =>
-			[...document.querySelectorAll('.log-search-group-items :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')]
+		sel =>
+			[...document.querySelectorAll(`${sel.groupItems} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)]
 				.map(item => item.textContent.trim())
 				.join(',') || 'NO MENU',
+		SEL,
 	);
-	await page.evaluate(() => {
-		const item = [...document.querySelectorAll('.log-search-group-items :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li')].find(li => li.textContent.trim() === 'Crit');
+	await page.evaluate(sel => {
+		const item = [...document.querySelectorAll(`${sel.groupItems} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)].find(
+			li => li.textContent.trim() === 'Crit',
+		);
 		(item.querySelector('button') ?? item).click();
-	});
+	}, SEL);
 	await page.waitForTimeout(700);
-	out.filteredState = await page.evaluate(STATE);
-	out.filteredRows = (await page.evaluate(ROWS)).slice(0, COMPARE_ROWS);
-	out.chips = await page.evaluate(() => [...document.querySelectorAll('.log-search-chip .saved-data-set-name')].map(chip => chip.textContent).join(','));
+	out.filteredState = await page.evaluate(STATE, SEL);
+	out.filteredRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
+	out.chips = await page.evaluate(sel => [...document.querySelectorAll(`${sel.chip} .saved-data-set-name`)].map(chip => chip.textContent).join(','), SEL);
 	out.summary = await page.evaluate(
-		() =>
-			`${document.querySelector('.log-fab-summary')?.textContent} / ${document.querySelector('.log-fab-preview')?.textContent} / clearHidden=${document.querySelector('.log-fab-clear')?.hidden}`,
+		sel =>
+			`${document.querySelector(sel.fabSummary)?.textContent} / ${document.querySelector(sel.fabPreview)?.textContent} / clearHidden=${document.querySelector(sel.fabClear)?.hidden}`,
+		SEL,
 	);
 
 	// The filter that matches nothing, on top of the outcome group so the chips — and with them the
@@ -229,28 +260,28 @@ const collect = async (browser, port, spec, seeded) => {
 	await search(page, NO_MATCH);
 	await page.evaluate(() => document.querySelector('[data-testid="sim-ui"], .sim-ui').scrollTo({ top: 0 }));
 	await page.waitForTimeout(600);
-	out.noMatch = await page.evaluate(() => {
-		const fab = document.querySelector('.log-floating-action-bar-root');
-		const clear = document.querySelector('.log-fab-clear');
+	out.noMatch = await page.evaluate(sel => {
+		const fab = document.querySelector(sel.fab);
+		const clear = document.querySelector(sel.fabClear);
 		const box = clear?.getBoundingClientRect();
 		// Hit-tested rather than measured: a control can be on screen and still be under something.
 		const hit = box?.width ? document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) : null;
 		return {
-			rows: document.querySelectorAll('.log-runner-logs .log-runner-row').length,
+			rows: document.querySelectorAll(`.log-runner-logs ${sel.row}`).length,
 			// The bar's bottom edge to the bottom of the viewport. Zero is where the reader expects the
 			// bar; the collapse reads here as several hundred pixels of dead space under it.
 			barGap: fab ? Math.round(window.innerHeight - fab.getBoundingClientRect().bottom) : null,
 			clearReachable: !!hit && clear.contains(hit),
-			empty: document.querySelector('.log-runner-empty')?.textContent.trim() || 'MISSING',
+			empty: document.querySelector(sel.empty)?.textContent.trim() || 'MISSING',
 		};
-	});
+	}, SEL);
 	await search(page, '');
 
-	await page.click('.log-fab-clear');
+	await page.click(SEL.fabClear);
 	await page.waitForTimeout(700);
-	out.clearedState = await page.evaluate(STATE);
-	out.clearedRows = (await page.evaluate(ROWS)).slice(0, COMPARE_ROWS);
-	out.clearedGroups = await page.evaluate(() => document.querySelectorAll('.log-search-group').length);
+	out.clearedState = await page.evaluate(STATE, SEL);
+	out.clearedRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
+	out.clearedGroups = await page.evaluate(sel => document.querySelectorAll(sel.group).length, SEL);
 
 	await page.close();
 	return { out, errors };

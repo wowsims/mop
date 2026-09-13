@@ -18,9 +18,9 @@ export const ActionLink = ({ actionId, isAura }: ActionLinkProps) => {
 	const wowheadProps = useActionIdWowheadDataset(actionId, isAura);
 
 	return (
-		<a className="log-action" target="_blank" href={href || undefined} rel={externalRel(href, undefined)} {...wowheadProps}>
+		<a data-testid="log-action" className="text-brand" target="_blank" href={href || undefined} rel={externalRel(href, undefined)} {...wowheadProps}>
 			<span>
-				<span className="icon icon-sm" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} /> {name}
+				<span className="icon icon-sm align-middle" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} /> {name}
 			</span>
 		</a>
 	);

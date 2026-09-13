@@ -1,0 +1,30 @@
+.ui-log-row {
+	@apply grid grid-cols-[10ch_1fr] gap-x-2 border-b border-border;
+}
+
+.ui-fab-root {
+	@apply group sticky bottom-0 flex items-center mt-3 border-0 border-border box-border z-4 -mb-page;
+	@apply data-[stuck]:border data-[stuck]:p-2 data-[stuck]:bg-background;
+}
+
+.ui-fab-clip {
+	@apply absolute inset-x-0 bottom-[calc(100%-1px)] overflow-hidden;
+	@apply group-data-[expanded=false]:pointer-events-none;
+}
+
+.ui-fab-toggle {
+	@apply relative min-w-0 z-1;
+}
+
+.ui-fab-panel {
+	@apply [transform:translate3d(0,100%,0)] border border-border bg-background;
+	@apply [transition:transform_150ms_ease] motion-reduce:transition-none;
+}
+
+.ui-fab-drawer {
+	@apply max-h-[min(45vh,26rem)] p-2 overflow-y-auto;
+}
+
+.ui-log-inline-picker {
+	@apply [&_.dropdown-picker-button]:p-0 [&_.dropdown-picker-button]:border-0;
+}

@@ -22,7 +22,7 @@ const actionId = (extra: Record<string, unknown> = {}) =>
 		...extra,
 	}) as unknown as ActionId;
 
-const anchor = (container: HTMLElement) => container.querySelector('a.log-action') as HTMLAnchorElement;
+const anchor = (container: HTMLElement) => container.querySelector('a[data-testid="log-action"]') as HTMLAnchorElement;
 
 describe('ActionLink', () => {
 	it('renders the icon and the name inside one anchor', () => {

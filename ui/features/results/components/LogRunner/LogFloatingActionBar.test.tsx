@@ -41,10 +41,10 @@ const mount = (groups: Array<IdentifiedSearchGroup>, onChange = vi.fn()) => ({
 	),
 });
 
-const root = (container: HTMLElement) => container.querySelector<HTMLElement>('.log-floating-action-bar-root')!;
-const toggle = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.log-fab-toggle')!;
-const clear = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.log-fab-clear')!;
-const panel = (container: HTMLElement) => container.querySelector<HTMLElement>('.log-fab-panel-inner')!;
+const root = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-testid="log-floating-action-bar-root"]')!;
+const toggle = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="log-fab-toggle"]')!;
+const clear = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="log-fab-clear"]')!;
+const panel = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-testid="log-fab-panel-inner"]')!;
 
 describe('LogFloatingActionBar', () => {
 	it('starts collapsed, with the drawer out of the tab order', () => {
@@ -89,21 +89,21 @@ describe('LogFloatingActionBar', () => {
 	it('counts and previews only the groups that carry a value', () => {
 		const { container } = mount([group('outcome', ['crit']), group('spell', [], 1)]);
 
-		expect(container.querySelector('.log-fab-summary')!.textContent).toBe('results_tab.details.logs.floatingActionBar.active');
-		expect(container.querySelector('.log-fab-preview')!.textContent).toBe('Outcome: Crit');
+		expect(container.querySelector('[data-testid="log-fab-summary"]')!.textContent).toBe('results_tab.details.logs.floatingActionBar.active');
+		expect(container.querySelector('[data-testid="log-fab-preview"]')!.textContent).toBe('Outcome: Crit');
 	});
 
 	it('elides the preview past three filters', () => {
 		const { container } = mount([0, 1, 2, 3].map(index => group('outcome', ['crit'], index)));
 
-		expect(container.querySelector('.log-fab-preview')!.textContent).toBe('Outcome: Crit, Outcome: Crit, Outcome: Crit, …');
+		expect(container.querySelector('[data-testid="log-fab-preview"]')!.textContent).toBe('Outcome: Crit, Outcome: Crit, Outcome: Crit, …');
 	});
 
 	it('says there are no filters and hides Clear while nothing is picked', () => {
 		const { container } = mount([group('spell', [])]);
 
-		expect(container.querySelector('.log-fab-summary')!.textContent).toBe('results_tab.details.logs.floatingActionBar.none');
-		expect(container.querySelector('.log-fab-preview')!.textContent).toBe('');
+		expect(container.querySelector('[data-testid="log-fab-summary"]')!.textContent).toBe('results_tab.details.logs.floatingActionBar.none');
+		expect(container.querySelector('[data-testid="log-fab-preview"]')!.textContent).toBe('');
 		expect(clear(container).hidden).toBe(true);
 	});
 
@@ -119,7 +119,7 @@ describe('LogFloatingActionBar', () => {
 	it('renders its controls into the actions row', () => {
 		const { container } = mount([]);
 
-		expect(container.querySelector('.log-fab-actions > .log-fab-controls > .log-export')).not.toBeNull();
+		expect(container.querySelector('[data-testid="log-fab-actions"] > [data-testid="log-fab-controls"] > .log-export')).not.toBeNull();
 	});
 
 	// Built inside a hidden tab, the ratio goes 0 -> pinned without ever passing through 1, so a

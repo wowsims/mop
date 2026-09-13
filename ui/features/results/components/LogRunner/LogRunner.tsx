@@ -1,5 +1,3 @@
-import './LogRunner.scss';
-
 import { Exporter } from '@features/import-export';
 import i18n from '@i18n/config';
 import type { CombatLog } from '@sim/proto/combat_log';
@@ -180,7 +178,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const showDebugConfig = useMemo<BooleanPickerConfig<{ current: boolean }>>(
 		() => ({
 			id: 'log-runner-show-debug',
-			extraClassNames: ['show-debug-picker'],
+			extraClassNames: ['w-auto', 'mb-0', '[&_label]:ml-1'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
 			inline: true,
 			reverse: true,
@@ -196,9 +194,9 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	);
 
 	return (
-		<div ref={rootRef} className="log-runner-root">
-			<div ref={stickyRef} className="log-runner-sticky">
-				<div className="log-search">
+		<div ref={rootRef} data-testid="log-runner-root" className="flex flex-col min-h-[calc(100dvh-var(--log-sticky-top,0px)-var(--spacing-page))]">
+			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 pt-2 bg-background">
+				<div data-testid="log-search" className="w-full lg:max-w-[50%]">
 					<SearchBar
 						value={searchText}
 						onChange={next => {
@@ -211,15 +209,16 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 						className="log-search-input"
 					/>
 				</div>
-				<div className="log-runner-header">
-					<div>{i18n.t('results_tab.details.logs.time_column')}</div>
-					<div>{i18n.t('results_tab.details.logs.event_column')}</div>
+				<div data-testid="log-runner-header" className="ui-log-row font-bold">
+					<div className="p-2 text-right">{i18n.t('results_tab.details.logs.time_column')}</div>
+					<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
 				</div>
 			</div>
-			<div className="log-runner-scroll">
+			<div data-testid="log-runner-scroll" className="relative flex-[1_0_auto] overflow-x-auto overflow-y-hidden">
 				<div
 					ref={listRef}
-					className="log-runner-list"
+					data-testid="log-runner-list"
+					className="min-w-full w-(--log-runner-list-width,max-content)"
 					style={listWidth ? { ['--log-runner-list-width' as string]: `${Math.ceil(listWidth)}px` } : undefined}>
 					<VirtualList
 						className="log-runner-logs"
@@ -230,12 +229,16 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 						renderRow={position => <LogRow log={logs[visibleIndexes[position]]} onWidth={growToFit} />}
 					/>
 					{needsMeasure && (
-						<div ref={measureRow} className="log-runner-measurer pointer-events-none invisible absolute top-0 left-0 w-max">
+						<div ref={measureRow} className="pointer-events-none invisible absolute top-0 left-0 w-max">
 							<LogRow log={longestOf(logs)} />
 						</div>
 					)}
 				</div>
-				{logs.length > 0 && visibleIndexes.length === 0 && <div className="log-runner-empty">{i18n.t('results_tab.details.logs.no_matches')}</div>}
+				{logs.length > 0 && visibleIndexes.length === 0 && (
+					<div data-testid="log-runner-empty" className="py-6 px-2 text-muted">
+						{i18n.t('results_tab.details.logs.no_matches')}
+					</div>
+				)}
 			</div>
 			<LogFloatingActionBar
 				groups={groups}

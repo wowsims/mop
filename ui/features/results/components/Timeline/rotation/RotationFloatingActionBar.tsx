@@ -94,15 +94,15 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 	return (
 		<div
 			ref={rootRef}
-			className={clsx('rotation-floating-action-bar-root', stuck && 'stuck')}
+			className="rotation-floating-action-bar-root ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={onKeyDown}>
-			<div className="rotation-fab-clip">
-				<div className="rotation-fab-panel">
+			<div className="ui-fab-clip">
+				<div className="ui-fab-panel group-data-[expanded=true]:[transform:translate3d(0,0,0)]">
 					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}
 					<div className="rotation-fab-panel-inner min-h-0 overflow-hidden" inert={!expanded}>
-						<div className="rotation-fab-groups">
+						<div className="ui-fab-drawer flex flex-col gap-4">
 							{groups.map(group => (
 								<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
 							))}
@@ -110,11 +110,16 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 					</div>
 				</div>
 			</div>
-			<div className="rotation-fab-actions">
+			<div className="relative flex flex-1 items-center min-w-0 group-data-[stuck]:bg-background">
 				<Button
 					ref={toggleRef}
 					variant="unstyled"
-					className={clsx(BASE.replace('inline-block', 'flex items-center gap-2'), VARIANT.primary, SIZE.default, 'rotation-fab-toggle')}
+					className={clsx(
+						BASE.replace('inline-block', 'flex items-center gap-2'),
+						VARIANT.primary,
+						SIZE.default,
+						'rotation-fab-toggle ui-fab-toggle',
+					)}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
 					onClick={() => open(!expanded)}>

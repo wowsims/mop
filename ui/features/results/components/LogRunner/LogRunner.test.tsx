@@ -75,7 +75,7 @@ const LOGS = [
 
 // Scoped to the list: the hidden width measurer renders a row of its own, and in a DOM that reports
 // every box as 0x0 it never gets its answer and so never unmounts.
-const rows = (container: HTMLElement) => [...container.querySelectorAll('.virtual-list-row .log-event')].map(row => row.textContent);
+const rows = (container: HTMLElement) => [...container.querySelectorAll('.virtual-list-row [data-testid="log-event"]')].map(row => row.textContent);
 
 // The export dialog reads the host for its portal container.
 const host = { rootElem: document.body } as never;
@@ -94,13 +94,15 @@ describe('LogRunner', () => {
 	it('renders the sticky chrome, the list and the bar even before the first run', () => {
 		const { container } = mount();
 
-		expect(container.querySelector('.log-runner-root')).not.toBeNull();
-		expect(container.querySelector('.log-runner-sticky > .log-search > [data-testid="search-bar-root"]')).not.toBeNull();
-		expect([...container.querySelectorAll('.log-runner-header > div')].map(cell => cell.textContent)).toEqual([
+		expect(container.querySelector('[data-testid="log-runner-root"]')).not.toBeNull();
+		expect(container.querySelector('[data-testid="log-runner-sticky"] > [data-testid="log-search"] > [data-testid="search-bar-root"]')).not.toBeNull();
+		expect([...container.querySelectorAll('[data-testid="log-runner-header"] > div')].map(cell => cell.textContent)).toEqual([
 			'results_tab.details.logs.time_column',
 			'results_tab.details.logs.event_column',
 		]);
-		expect(container.querySelector('.log-runner-scroll > .log-runner-list > .virtual-list')!.className).toContain('log-runner-logs');
+		expect(container.querySelector('[data-testid="log-runner-scroll"] > [data-testid="log-runner-list"] > .virtual-list')!.className).toContain(
+			'log-runner-logs',
+		);
 		expect(rows(container)).toEqual([]);
 	});
 
@@ -146,7 +148,7 @@ describe('LogRunner', () => {
 	it('says why the list is empty when a search matches nothing, and only once a run has landed', async () => {
 		vi.useFakeTimers({ shouldAdvanceTime: true });
 		const { container, rerender } = mount();
-		expect(container.querySelector('.log-runner-empty')).toBeNull();
+		expect(container.querySelector('[data-testid="log-runner-empty"]')).toBeNull();
 
 		result = resultWith(LOGS);
 		rerender(<LogRunner active />);
@@ -154,7 +156,9 @@ describe('LogRunner', () => {
 		await act(async () => void vi.advanceTimersByTime(200));
 
 		expect(rows(container)).toEqual([]);
-		expect(container.querySelector('.log-runner-scroll > .log-runner-empty')!.textContent).toBe('results_tab.details.logs.no_matches');
+		expect(container.querySelector('[data-testid="log-runner-scroll"] > [data-testid="log-runner-empty"]')!.textContent).toBe(
+			'results_tab.details.logs.no_matches',
+		);
 	});
 
 	it('keeps a quoted phrase whole when it filters', async () => {
@@ -182,7 +186,7 @@ describe('LogRunner', () => {
 		result = resultWith(LOGS);
 		const { container } = mount();
 
-		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls button')][0]);
+		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][0]);
 
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
 		// The cast-completed line is gone from both — that filter is on `logs`.
@@ -213,7 +217,10 @@ describe('LogRunner', () => {
 	it('gives both bar buttons an explicit type, so neither submits a form', () => {
 		const { container } = mount();
 
-		expect([...container.querySelectorAll('.log-fab-controls button')].map(button => button.getAttribute('type'))).toEqual(['button', 'button']);
+		expect([...container.querySelectorAll('[data-testid="log-fab-controls"] button')].map(button => button.getAttribute('type'))).toEqual([
+			'button',
+			'button',
+		]);
 	});
 
 	// The debounced search box fires `onChange('')` once on mount. Scrolling the page then would move
@@ -224,7 +231,7 @@ describe('LogRunner', () => {
 		// happy-dom leaves every box at 0x0 and every `offsetParent` null, which is also what a closed
 		// tab looks like — so an open one has to be described on the element itself.
 		const placeList = (container: HTMLElement, top: number, offsetParent: HTMLElement | null) => {
-			const list = container.querySelector<HTMLElement>('.log-runner-list')!;
+			const list = container.querySelector<HTMLElement>('[data-testid="log-runner-list"]')!;
 			Object.defineProperty(list, 'offsetParent', { value: offsetParent, configurable: true });
 			list.getBoundingClientRect = () => ({ top, height: 0, bottom: top }) as DOMRect;
 		};
@@ -233,7 +240,8 @@ describe('LogRunner', () => {
 		// Scrolled well past the header, so only the closed-tab guard can be what stops the scroll.
 		const hidePane = (container: HTMLElement) => placeList(container, -240, null);
 
-		const backToTop = (container: HTMLElement) => fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls button')][1]);
+		const backToTop = (container: HTMLElement) =>
+			fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][1]);
 
 		beforeEach(() => {
 			scrollBy.mockClear();

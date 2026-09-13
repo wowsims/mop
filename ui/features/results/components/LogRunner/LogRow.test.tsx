@@ -18,9 +18,9 @@ describe('LogRow', () => {
 	it('lays the timestamp and the event out as the two columns the grid declares', () => {
 		const { container } = render(<LogRow log={log} />);
 
-		expect(container.querySelector('.log-runner-row')!.children).toHaveLength(2);
-		expect(container.querySelector('.log-timestamp')!.textContent).toBe('01:05:250');
-		expect(container.querySelector('.log-event')!.textContent).toBe('a line');
+		expect(container.querySelector('[data-testid="log-runner-row"]')!.children).toHaveLength(2);
+		expect(container.querySelector('[data-testid="log-timestamp"]')!.textContent).toBe('01:05:250');
+		expect(container.querySelector('[data-testid="log-event"]')!.textContent).toBe('a line');
 	});
 
 	// This is the width-repair mechanism, so it has to fire.

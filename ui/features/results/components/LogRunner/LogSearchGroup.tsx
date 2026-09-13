@@ -14,13 +14,13 @@ import { labelOf, sentenceCase, TYPED_FIELDS, valueCandidates } from './utils';
 
 // The group sits in the bottom bar's drawer, which clips its overflow; an out-of-flow menu is the one
 // that still opens past its edge, and up is the direction that has room down there. Both only hold
-// while `.log-fab-panel` drops its transform when expanded — see the stylesheet.
+// while the drawer panel (`ui-fab-panel`) drops its transform when expanded — see LogRunner.css.
 const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 
 // Nameless to a screen reader: giving it one needs a translation key the locale files do not have,
 // and inventing untranslated English here is the worse trade. Flagged.
-const DeleteButton = ({ onClick }: { onClick: () => void }) => (
-	<button type="button" className="saved-data-set-delete" data-testid="saved-data-set-delete" onClick={onClick}>
+const DeleteButton = ({ onClick, className }: { onClick: () => void; className?: string }) => (
+	<button type="button" className={className} data-testid="saved-data-set-delete" onClick={onClick}>
 		<Icon name="times" style="base" size="lg" />
 	</button>
 );
@@ -61,10 +61,14 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 	const placeholder = TYPED_FIELDS[group.field];
 
 	return (
-		<div className="log-search-group">
-			<div className="log-search-group-head">
-				<span className="log-search-group-field">{sentenceCase(group.field)}</span>
-				<ButtonGroup className="log-search-group-join ml-auto" size="sm">
+		<div
+			data-testid="log-search-group"
+			className="max-w-[250px] flex flex-col gap-2 p-2 border border-border-muted rounded-none bg-panel [transition:all_0.2s_ease] hover:bg-panel-hover hover:border-border">
+			<div data-testid="log-search-group-head" className="flex items-center gap-2">
+				<span data-testid="log-search-group-field" className="text-(length:--btn-font-size) leading-normal">
+					{sentenceCase(group.field)}
+				</span>
+				<ButtonGroup data-testid="log-search-group-join" className="ml-auto" size="sm">
 					{(['and', 'or'] as const).map(join => (
 						<Button
 							key={join}
@@ -79,24 +83,25 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						</Button>
 					))}
 				</ButtonGroup>
-				<DeleteButton onClick={onRemove} />
+				<DeleteButton onClick={onRemove} className="py-2 text-white" />
 			</div>
-			<div className="log-search-group-items flex flex-wrap items-center gap-1">
+			<div data-testid="log-search-group-items" className="ui-log-inline-picker flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (
 					<Chip
 						key={value}
-						className="log-search-chip"
+						testId="log-search-chip"
 						nameAs="span"
 						label={labelOf(group.field, value)}
 						deleteSlot={<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />}
 					/>
 				))}
-				<div className="input-group">
+				<div data-testid="input-group" className="relative flex flex-wrap items-stretch w-full">
 					{placeholder ? (
 						<>
 							<Input
 								type="text"
-								className="form-control log-search-group-input w-32"
+								data-testid="log-search-group-input"
+								className="form-control w-32 relative [flex:1_1_auto] min-w-0 focus:z-5"
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}

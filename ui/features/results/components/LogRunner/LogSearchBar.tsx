@@ -27,8 +27,8 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 	const addField = (field: ClauseField) => onChange([...groups, { id: nextId.current++, field, join: 'or', values: [] }]);
 
 	return (
-		<div className="log-search-bar">
-			<div className="log-search-groups flex flex-wrap items-start gap-y-1 gap-x-2">
+		<div data-testid="log-search-bar" className="flex flex-col gap-2">
+			<div data-testid="log-search-groups" className="flex flex-wrap items-start gap-y-1 gap-x-2">
 				{groups.map((group, index) => (
 					<LogSearchGroup
 						key={group.id}
@@ -39,10 +39,9 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 					/>
 				))}
 			</div>
-			<div className="log-search-add-field">
+			<div data-testid="log-search-add-field" className="ui-log-inline-picker">
 				<DropdownPicker
 					id="log-search-add-filter"
-					className="log-search-add-picker"
 					options={FIELD_OPTIONS}
 					value={undefined}
 					onChange={addField}

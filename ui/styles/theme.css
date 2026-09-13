@@ -58,7 +58,10 @@
 	--color-surface-raised: color-mix(in srgb, #15171e, #fff 5%);
 	--color-surface-hover: color-mix(in srgb, #15171e, #000 30%);
 	--color-overlay: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
+	--color-panel: color-mix(in srgb, var(--color-background) 80%, transparent);
+	--color-panel-hover: color-mix(in srgb, var(--color-background) 85%, transparent);
 	--color-border: #6c757d;
+	--color-border-muted: color-mix(in srgb, var(--color-border) 50%, transparent);
 	--color-table-even: #18191e;
 	--color-table-odd: #222328;
 

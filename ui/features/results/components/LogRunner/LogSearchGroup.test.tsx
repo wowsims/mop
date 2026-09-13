@@ -15,23 +15,24 @@ const mount = (current: IdentifiedSearchGroup, onChange = vi.fn(), onRemove = vi
 	...render(<LogSearchGroup group={current} suggestions={suggestions} onChange={onChange} onRemove={onRemove} />),
 });
 
-const valueInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('.log-search-group-input')!;
-const submit = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.input-group button')!;
-const chips = (container: HTMLElement) => [...container.querySelectorAll('.log-search-chip [data-testid="saved-data-set-name"]')].map(chip => chip.textContent);
+const valueInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('[data-testid="log-search-group-input"]')!;
+const submit = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="input-group"] button')!;
+const chips = (container: HTMLElement) =>
+	[...container.querySelectorAll('[data-testid="log-search-chip"] [data-testid="saved-data-set-name"]')].map(chip => chip.textContent);
 
 describe('LogSearchGroup', () => {
 	it('names the field and marks the join in force', () => {
 		const { container } = mount(group({ join: 'and' }));
 
-		expect(container.querySelector('.log-search-group-field')!.textContent).toBe('Outcome');
-		const joins = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join button')];
+		expect(container.querySelector('[data-testid="log-search-group-field"]')!.textContent).toBe('Outcome');
+		const joins = [...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-search-group-join"] button')];
 		expect(joins.map(button => button.textContent)).toEqual(['AND', 'OR']);
 		expect(joins.map(button => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
 	});
 
 	it('switches the join, and stays quiet when the pressed one is already in force', () => {
 		const { container, onChange } = mount(group({ join: 'or' }));
-		const [and, or] = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join button')];
+		const [and, or] = [...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-search-group-join"] button')];
 
 		fireEvent.click(or);
 		expect(onChange).not.toHaveBeenCalled();
@@ -48,7 +49,7 @@ describe('LogSearchGroup', () => {
 	it('drops the chip that was deleted and keeps the rest', () => {
 		const { container, onChange } = mount(group({ values: ['crit', 'hit', 'miss'] }));
 
-		fireEvent.click(container.querySelectorAll<HTMLButtonElement>('.log-search-chip [data-testid="saved-data-set-delete"]')[1]);
+		fireEvent.click(container.querySelectorAll<HTMLButtonElement>('[data-testid="log-search-chip"] [data-testid="saved-data-set-delete"]')[1]);
 
 		expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ values: ['crit', 'miss'] }));
 	});
@@ -56,7 +57,7 @@ describe('LogSearchGroup', () => {
 	it('removes the whole group from its head', () => {
 		const { container, onRemove } = mount(group());
 
-		fireEvent.click(container.querySelector<HTMLButtonElement>('.log-search-group-head [data-testid="saved-data-set-delete"]')!);
+		fireEvent.click(container.querySelector<HTMLButtonElement>('[data-testid="log-search-group-head"] [data-testid="saved-data-set-delete"]')!);
 
 		expect(onRemove).toHaveBeenCalledTimes(1);
 	});
@@ -64,10 +65,10 @@ describe('LogSearchGroup', () => {
 	// A picked field offers a menu; a numeric one offers a box, and never both.
 	it('offers a picker for a picked field and a typed box for a numeric one', () => {
 		expect(mount(group({ field: 'spell' })).container.querySelector('[data-testid="dropdown-picker-button"]')).not.toBeNull();
-		expect(mount(group({ field: 'spell' })).container.querySelector('.log-search-group-input')).toBeNull();
+		expect(mount(group({ field: 'spell' })).container.querySelector('[data-testid="log-search-group-input"]')).toBeNull();
 		expect(
 			mount(group({ field: 'time' }))
-				.container.querySelector('.log-search-group-input')!
+				.container.querySelector('[data-testid="log-search-group-input"]')!
 				.getAttribute('placeholder'),
 		).toBe('10-30');
 		expect(mount(group({ field: 'amount' })).container.querySelector('[data-testid="dropdown-picker-button"]')).toBeNull();

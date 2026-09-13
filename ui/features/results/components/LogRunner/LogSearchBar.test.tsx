@@ -16,7 +16,7 @@ vi.mock('./LogSearchGroup', () => ({
 		onChange: (next: IdentifiedSearchGroup) => void;
 		onRemove: () => void;
 	}) => (
-		<div className="log-search-group" data-field={group.field} data-id={group.id}>
+		<div data-testid="log-search-group" data-field={group.field} data-id={group.id}>
 			<button type="button" data-edit={group.field} onClick={() => onChange({ ...group, join: 'and' })} />
 			<button type="button" data-remove={group.field} onClick={onRemove} />
 		</div>
@@ -31,18 +31,17 @@ const mount = (groups: Array<IdentifiedSearchGroup>, onChange = vi.fn()) => ({
 const group = (id: number, field: IdentifiedSearchGroup['field']): IdentifiedSearchGroup => ({ id, field, join: 'or', values: [] });
 
 const openAddField = async (container: HTMLElement) =>
-	act(() => void fireEvent.click(container.querySelector<HTMLButtonElement>('.log-search-add-field [data-testid="dropdown-picker-button"]')!));
+	act(() => void fireEvent.click(container.querySelector<HTMLButtonElement>('[data-testid="log-search-add-field"] [data-testid="dropdown-picker-button"]')!));
 
 describe('LogSearchBar', () => {
 	it('renders a card per group and the add-filter picker after them', () => {
 		const { container } = mount([group(0, 'source'), group(1, 'spell')]);
 
-		expect([...container.querySelectorAll('.log-search-groups .log-search-group')].map(card => card.getAttribute('data-field'))).toEqual([
-			'source',
-			'spell',
-		]);
+		expect(
+			[...container.querySelectorAll('[data-testid="log-search-groups"] [data-testid="log-search-group"]')].map(card => card.getAttribute('data-field')),
+		).toEqual(['source', 'spell']);
 		// i18n has no bundle loaded under vitest, so a key that resolves to itself is the label landing.
-		expect(container.querySelector('.log-search-add-field [data-testid="dropdown-picker-button"]')!.textContent).toBe(
+		expect(container.querySelector('[data-testid="log-search-add-field"] [data-testid="dropdown-picker-button"]')!.textContent).toBe(
 			'results_tab.details.logs.search_add_filter',
 		);
 	});

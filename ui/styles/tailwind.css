@@ -18,6 +18,7 @@
 @import '../features/apl/apl.css';
 @import '../features/results/components/CombatReplay/CombatReplay.css';
 @import '../features/results/components/Timeline/Timeline.css';
+@import '../features/results/components/LogRunner/LogRunner.css';
 
 @source '../app';
 @source '../features';

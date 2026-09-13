@@ -28,8 +28,8 @@ export const RotationFabGroup = ({ title, rows, hidden, onToggle }: RotationFabG
 
 	return (
 		<div className="rotation-fab-group">
-			<div className="rotation-fab-group-title">{title}</div>
-			<div className="rotation-fab-group-chips" onKeyDown={onKeyDown}>
+			<div className="rotation-fab-group-title mb-1 font-bold">{title}</div>
+			<div className="flex flex-wrap gap-1" onKeyDown={onKeyDown}>
 				{rows.map(row => (
 					<RotationFabChip
 						key={row.key}
