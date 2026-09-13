@@ -16,10 +16,9 @@ export interface DropdownMenuItemsProps<V> {
 /**
  * The menu's rows, one level at a time.
  *
- * A submenu is a real nested popup, and `.dropdown-submenu` rides along so `_dropdown_picker.scss`
- * still reaches it. A submenu carrying a `trigger` keeps that option selectable — the owner of a
- * pet both opens the submenu and can be chosen. That trigger is not a radio item, so it reports no
- * `aria-checked`.
+ * A submenu is a real nested popup. A submenu carrying a `trigger` keeps that option selectable —
+ * the owner of a pet both opens the submenu and can be chosen. That trigger is not a radio item,
+ * so it reports no `aria-checked`.
  */
 export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: DropdownMenuItemsProps<V>) => (
 	<>
@@ -41,7 +40,13 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					<li className={clsx('dropdown-picker-item', menuItemBaseClasses, menuItemLayoutClasses.row)} data-testid="dropdown-picker-item">
 						<div className="dropend">
 							<Menu.SubmenuTrigger
-								render={<button type="button" className={clsx('dropdown-item', entry.trigger?.option.className)} data-testid="dropdown-item" />}
+								render={
+									<button
+										type="button"
+										className={clsx('dropdown-item', 'flex', 'items-center', entry.trigger?.option.className)}
+										data-testid="dropdown-item"
+									/>
+								}
 								onClick={entry.trigger ? () => onSelect(entry.trigger!.index) : undefined}
 								{...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip)}>
 								{entry.trigger ? (

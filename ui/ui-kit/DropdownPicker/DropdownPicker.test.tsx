@@ -40,7 +40,7 @@ describe('DropdownPicker', () => {
 		mount(undefined);
 
 		expect(root().className).toBe('dropdown-picker-root dropdown custom-root-class');
-		expect(trigger().className).toBe('dropdown-picker-button btn dropdown-toggle');
+		expect(trigger().className).toBe('dropdown-picker-button btn dropdown-toggle hover:text-white/80');
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
 	});

@@ -86,7 +86,7 @@ describe('ListPicker', () => {
 			mount(rowsOf('a', 'b'));
 
 			expect(root().className.split(' ').sort()).toEqual(['data-[disabled]:[filter:opacity(0.5)]', 'input-root', 'list-picker-root']);
-			expect(itemsBox().className).toBe('list-picker-items');
+			expect(itemsBox().className).toBe('list-picker-items flex flex-col');
 			expect(containers()).toHaveLength(2);
 			expect(bodies()).toEqual(['a', 'b']);
 		});

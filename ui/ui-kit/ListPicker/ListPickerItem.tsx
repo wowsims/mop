@@ -263,6 +263,7 @@ export const ListPickerItem = ({
 			ref={containerRef}
 			className={clsx(
 				'list-picker-item-container',
+				'relative',
 				inlineMenuBar && 'inline',
 				canMove && 'draggable',
 				canMove && itemLabel && listItemClassName(itemLabel),

@@ -51,7 +51,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
 				<Menu.Trigger
 					id={id}
-					className={clsx('dropdown-picker-button', 'btn', 'dropdown-toggle', selected?.className)}
+					className={clsx('dropdown-picker-button', 'btn', 'dropdown-toggle', 'hover:text-white/80', selected?.className)}
 					data-testid="dropdown-picker-button">
 					{selected ? (
 						<>
