@@ -1,3 +1,27 @@
+.ui-timeline-item {
+	@apply absolute left-[calc(var(--pps)*var(--t))];
+}
+
+.ui-timeline-item-slice {
+	@apply flex h-full w-[calc(var(--pps)*var(--dur))] items-center overflow-x-hidden border-x border-solid border-gray-600 font-bold;
+}
+
+.ui-timeline-row-icon {
+	@apply h-[24px] w-[24px] flex-none;
+}
+
+.ui-timeline-row-track {
+	@apply relative box-border min-w-0 grow shrink-0 basis-[calc(var(--pps)*var(--duration))];
+}
+
+.ui-timeline-row {
+	@apply m-0 box-border flex h-[calc(var(--row-h)*1px)] items-stretch border-b border-solid border-gray-700 bg-background [contain:layout_style];
+}
+
+.ui-timeline-label-col {
+	@apply box-border flex shrink-0 grow-0 basis-(--label-w) w-(--label-w) items-center gap-1 pr-2;
+}
+
 .ui-timeline-hover-tooltip {
 	@apply pointer-events-none fixed z-1000 max-h-[80vh] max-w-[min(94vw,68rem)] overflow-hidden border border-solid border-(color:--tooltip-border) bg-(color:--tooltip-bg) py-(--tooltip-body-padding-y) px-(--tooltip-body-padding-x) text-(color:--tooltip-body-color);
 	left: calc(var(--tooltip-x, 0) * 1px);

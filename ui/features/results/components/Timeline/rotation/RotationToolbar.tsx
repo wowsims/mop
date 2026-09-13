@@ -25,7 +25,7 @@ export const RotationToolbar = forwardRef<HTMLDivElement, RotationToolbarProps>(
 	];
 
 	return (
-		<div ref={ref} className="rotation-corner">
+		<div ref={ref} className="ui-timeline-label-col rotation-corner">
 			{buttons.map(button => {
 				const label = i18n.t(`results_tab.details.timeline.chart_options.${button.key}`);
 				return (
@@ -33,7 +33,7 @@ export const RotationToolbar = forwardRef<HTMLDivElement, RotationToolbarProps>(
 						key={button.key}
 						iconOnly
 						aria-label={label}
-						className="rotation-zoom-button py-0 px-1 leading-none"
+						className="rotation-zoom-button py-0 px-1 leading-none hover:text-brand"
 						onClick={button.run}
 						{...tooltipAnchorProps(tooltipId, label)}>
 						<i className={button.icon} />

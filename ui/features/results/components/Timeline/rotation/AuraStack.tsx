@@ -1,12 +1,20 @@
+import clsx from 'clsx';
+
 import type { AuraStackSegment } from '../../../model/timeline/rotation';
 import { spanStyle } from './utils';
 
 export interface AuraStackProps {
 	segment: AuraStackSegment;
+	indent?: boolean;
 }
 
-export const AuraStack = ({ segment }: AuraStackProps) => (
-	<div className="rotation-item rotation-item-stacks" style={spanStyle(segment.offset, segment.duration)}>
+export const AuraStack = ({ segment, indent }: AuraStackProps) => (
+	<div
+		className={clsx(
+			'ui-timeline-item ui-timeline-item-slice top-0 rotation-item-stacks group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden',
+			indent && 'indent-[30px]',
+		)}
+		style={spanStyle(segment.offset, segment.duration)}>
 		{segment.stacks}
 	</div>
 );

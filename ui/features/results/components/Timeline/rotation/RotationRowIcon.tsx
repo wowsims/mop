@@ -13,7 +13,7 @@ export const RotationRowIcon = ({ actionId, tooltip }: RotationRowIconProps) => 
 
 	return (
 		<WowheadIcon
-			className="rotation-row-icon"
+			className="ui-timeline-row-icon rotation-row-icon"
 			href={href || undefined}
 			iconUrl={iconUrl}
 			actionId={tooltip ? actionId : null}

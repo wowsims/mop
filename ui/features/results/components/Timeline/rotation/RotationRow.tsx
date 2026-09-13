@@ -25,19 +25,19 @@ export const RotationRow = memo(({ row, items, onHide }: RotationRowProps) => {
 	const { iconUrl } = useActionId(row.kind === 'resource' ? undefined : row.actionId);
 
 	return (
-		<div className={clsx('rotation-row', `rotation-row-${row.kind}`)} style={rowStyle(row)} data-row-key={row.key}>
+		<div className={clsx('ui-timeline-row rotation-row', `rotation-row-${row.kind}`)} style={rowStyle(row)} data-row-key={row.key}>
 			<RotationRowLabel
 				text={row.label}
 				icon={
 					row.kind === 'resource' ? (
-						<WowheadIcon className="rotation-row-icon" iconUrl={row.icon} />
+						<WowheadIcon className="ui-timeline-row-icon rotation-row-icon" iconUrl={row.icon} />
 					) : (
 						<RotationRowIcon actionId={row.actionId} tooltip={row.kind === 'aura' ? 'buffAura' : 'spell'} />
 					)
 				}
 				onHide={() => onHide(row.key)}
 			/>
-			<div className="rotation-row-track">
+			<div className="ui-timeline-row-track rotation-row-track">
 				{items.map(index => (
 					<RowItemView key={index} item={row.items[index]} index={index} iconUrl={iconUrl} cssName={row.kind === 'resource' ? row.cssName : ''} />
 				))}

@@ -371,7 +371,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	// One delegated handler rather than a listener per item: the track holds hundreds of them, and
 	// which one the pointer is over is a question the DOM can already answer.
 	const onItemOver = (event: ReactMouseEvent<HTMLDivElement>) => {
-		const element = (event.target as Element).closest<HTMLElement>('.rotation-item[data-item-index]');
+		const element = (event.target as Element).closest<HTMLElement>('[data-item-index]');
 		const rowKey = element?.closest<HTMLElement>('.rotation-row')?.dataset.rowKey;
 		if (!element || !rowKey) {
 			hideTip();
@@ -394,9 +394,9 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	return (
 		<div
 			ref={rootRef}
-			className="rotation-pane"
+			className="rotation-pane relative flex min-h-0 flex-col text-white [--pps:100px] [--rotation-fab-h:calc(2.75rem+2*var(--spacer-2)+2*1px)] [--rotation-item-h:24px]"
 			style={cssVars({ '--label-w': labelWidthCss, '--duration': String(model?.duration ?? 0), '--rotation-sticky-top': `${stickyTop}px` })}>
-			<div className="rotation-header">
+			<div className="rotation-header sticky top-(--rotation-sticky-top,0px) z-5 flex basis-[30px] grow-0 shrink-0 h-[30px] -mr-(--spacing-page) bg-background">
 				<RotationToolbar
 					ref={cornerRef}
 					onZoomOut={() => zoomRef.current?.stepOut()}
@@ -404,13 +404,21 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					onFit={() => zoomRef.current?.fitToWidth()}
 					onReset={() => zoomRef.current?.reset()}
 				/>
-				<div ref={rulerViewportRef} className="rotation-ruler">
-					<div ref={rulerTrackRef} className="rotation-ruler-track" />
+				<div
+					ref={rulerViewportRef}
+					className="rotation-ruler relative box-border min-w-0 grow shrink basis-0 overflow-hidden border-b border-solid border-white text-white text-[12px] font-bold">
+					<div
+						ref={rulerTrackRef}
+						className="rotation-ruler-track absolute top-0 left-0 h-full w-[calc(var(--pps)*var(--duration))] [transform:translateX(calc(var(--pan,0)*-1px))]"
+					/>
 				</div>
 			</div>
 			<div
 				ref={scrollerRef}
-				className={clsx('rotation-scroller', panning && 'is-panning')}
+				className={clsx(
+					'rotation-scroller group/scroller relative shrink-0 grow-0 basis-auto min-h-0 -mr-(--spacing-page) overflow-x-auto overflow-y-hidden outline-none cursor-grab data-[density=coarse]:[--rotation-item-h:20px]',
+					panning && 'cursor-grabbing select-none',
+				)}
 				tabIndex={0}
 				onKeyDown={event => zoomRef.current?.onKeyDown(event)}
 				onPointerDown={onPointerDown}
@@ -421,26 +429,26 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				onMouseOver={onItemOver}
 				onMouseMove={onItemMove}
 				onMouseLeave={hideTip}>
-				<div ref={contentRef} className="rotation-content">
-					<div className="rotation-vspacer" style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })} />
+				<div ref={contentRef} className="rotation-content min-w-full w-[calc(var(--label-w)+var(--pps)*var(--duration))]">
+					<div className="rotation-vspacer h-[calc(var(--vspacer-h,0)*1px)]" style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })} />
 					{order.slice(frame.window.first, frame.window.last + 1).map(key => {
 						const row = rowFor(key);
 						if (row.kind === 'separator') return <RotationSeparatorRow key={key} row={row} />;
 						if (row.kind === 'header') return <RotationHeaderRow key={key} row={row} />;
 						return <RotationRow key={key} row={row as ContentRow} items={frame.items.get(key) ?? NO_ITEMS} onHide={onHide} />;
 					})}
-					<div className="rotation-vspacer" style={cssVars({ '--vspacer-h': String(frame.window.bottomSpacer) })} />
+					<div className="rotation-vspacer h-[calc(var(--vspacer-h,0)*1px)]" style={cssVars({ '--vspacer-h': String(frame.window.bottomSpacer) })} />
 				</div>
 			</div>
 			{measureFor !== null && (
-				<div ref={measurerRef} className="rotation-measurer" aria-hidden="true">
-					<RotationRowLabel text={longestLabel} icon={<a className="rotation-row-icon" />} onHide={() => undefined} />
+				<div ref={measurerRef} className="rotation-measurer absolute top-0 left-0 w-max invisible pointer-events-none" aria-hidden="true">
+					<RotationRowLabel text={longestLabel} icon={<a className="ui-timeline-row-icon rotation-row-icon" />} onHide={() => undefined} measuring />
 				</div>
 			)}
 			{/* Rendered inline, not portaled: `.hide-threat-metrics` (scss/core/sim_ui/_shared.scss:131) is an
 			 * ancestor rule on `.sim-ui`, so a tooltip moved to `document.body` stops obeying the setting. */}
 			{hoveredItem && (
-				<div ref={tooltipRef} className="timeline-hover-tooltip">
+				<div ref={tooltipRef} className="ui-timeline-hover-tooltip timeline-hover-tooltip">
 					<RowItemTooltip item={hoveredItem} />
 				</div>
 			)}

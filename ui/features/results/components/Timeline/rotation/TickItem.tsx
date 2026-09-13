@@ -8,5 +8,9 @@ export interface TickItemProps {
 }
 
 export const TickItem = ({ item, index }: TickItemProps) => (
-	<div className="rotation-item rotation-item-tick" data-item-index={index} style={cssVars({ '--t': String(item.start) })} />
+	<div
+		className="ui-timeline-item rotation-item-tick top-(--rotation-item-top) z-2 h-(--rotation-item-h) w-[5px] bg-[maroon]"
+		data-item-index={index}
+		style={cssVars({ '--t': String(item.start) })}
+	/>
 );
