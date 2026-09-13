@@ -1,5 +1,5 @@
 .ui-log-row {
-	@apply grid grid-cols-[10ch_1fr] gap-x-2 border-b border-b-border;
+	@apply grid grid-cols-label-value gap-x-2 border-b border-b-border;
 }
 
 .ui-fab-root {

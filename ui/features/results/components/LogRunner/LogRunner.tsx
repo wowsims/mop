@@ -214,7 +214,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
 				</div>
 			</div>
-			<div data-testid="log-runner-scroll" className="relative flex-[1_0_auto] overflow-x-auto overflow-y-hidden">
+			<div data-testid="log-runner-scroll" className="relative grow shrink-0 basis-auto overflow-x-auto overflow-y-hidden">
 				<div
 					ref={listRef}
 					data-testid="log-runner-list"

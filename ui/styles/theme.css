@@ -37,6 +37,7 @@
 
 	--grid-template-columns-wide-narrow: 3fr 2fr;
 	--grid-template-columns-halves-wide: 1fr 1fr 2fr;
+	--grid-template-columns-label-value: 10ch 1fr;
 
 	--color-black: #000;
 	--color-white: #fff;
