@@ -538,6 +538,12 @@ func (parentAura *Aura) AttachSpellMod(spellModConfig SpellModConfig) *Aura {
 // Attaches a StatDependency to a parent Aura
 // Returns parent aura for chaining
 func (parentAura *Aura) AttachStatDependency(statDep *stats.StatDependency) *Aura {
+	// Rating multipliers from gear (the Amplification trinkets) are applied
+	// and rounded before class multipliers on the same rating.
+	if parentAura.BuildPhase == CharacterBuildPhaseGear {
+		statDep.MarkFromEquipment()
+	}
+
 	parentAura.ApplyOnGain(func(_ *Aura, sim *Simulation) {
 		parentAura.Unit.EnableBuildPhaseStatDep(sim, statDep)
 	})

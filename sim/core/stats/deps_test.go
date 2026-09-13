@@ -124,9 +124,17 @@ func TestRatingFromStatDependencyTruncates(t *testing.T) {
 		}
 	}
 
-	// Deltas stay linear: no offset, no truncation.
+	// Spirit below the class base grants nothing rather than taking hit away.
+	if got := sdm.ApplyStatDependencies(Stats{Spirit: 100})[HitRating]; got != 0 {
+		t.Errorf("Spirit 100 below base: hit %v, expected 0", got)
+	}
+
+	// Deltas stay linear: no offset, no truncation, no rounding of the source.
 	if got := sdm.ApplyStatDependenciesToDelta(Stats{Spirit: 3})[HitRating]; got != 1.5 {
 		t.Errorf("delta hit %v, expected 1.5", got)
+	}
+	if got := sdm.ApplyStatDependenciesToDelta(Stats{Spirit: 0.5})[HitRating]; got != 0.25 {
+		t.Errorf("fractional delta hit %v, expected 0.25", got)
 	}
 }
 
@@ -139,7 +147,7 @@ func TestRatingMultipliersRoundInOrder(t *testing.T) {
 	sdm := NewStatDependencyManager()
 	classDep := sdm.NewDynamicMultiplyStat(HasteRating, 1.5)
 	ampDep := sdm.NewDynamicMultiplyStat(HasteRating, 1.0632055)
-	ampDep.fromEquipment = true
+	ampDep.MarkFromEquipment()
 	sdm.FinalizeStatDeps()
 
 	sdm.EnableDynamicStatDep(classDep)
@@ -159,7 +167,8 @@ func TestRatingMultipliersRoundInOrder(t *testing.T) {
 
 	sdm2 := NewStatDependencyManager()
 	classDep2 := sdm2.NewDynamicMultiplyStat(HasteRating, 1.5)
-	ampDep2 := sdm2.NewDynamicMultiplyStatFromEquipment(HasteRating, 1.0900854)
+	ampDep2 := sdm2.NewDynamicMultiplyStat(HasteRating, 1.0900854)
+	ampDep2.MarkFromEquipment()
 	sdm2.FinalizeStatDeps()
 	sdm2.EnableDynamicStatDep(classDep2)
 	sdm2.EnableDynamicStatDep(ampDep2)
