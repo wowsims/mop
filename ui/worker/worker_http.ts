@@ -1,3 +1,5 @@
+import { BinaryReader } from '@protobuf-ts/runtime';
+
 import { ASYNC_SIM_REQUESTS, SimRequest } from './types';
 import { noop, sleep } from './utils';
 import { HandlerFunction, WorkerInterface } from './worker_interface';
@@ -7,6 +9,22 @@ const defaultRequestOptions = {
 	headers: {
 		'Content-Type': 'application/x-protobuf',
 	},
+};
+
+// ProgressMetrics final_* field numbers (proto/api.proto), mirroring WorkerPool.isFinalProgress. Scanning tags avoids
+// bundling every proto type into this worker; a field missed here only costs one extra poll.
+const FINAL_PROGRESS_FIELDS = new Set([6, 7, 10, 11]);
+
+const isFinalProgress = (progressMetrics: Uint8Array) => {
+	const reader = new BinaryReader(progressMetrics);
+	while (reader.pos < reader.len) {
+		const [fieldNo, wireType] = reader.tag();
+		if (FINAL_PROGRESS_FIELDS.has(fieldNo)) {
+			return true;
+		}
+		reader.skip(wireType);
+	}
+	return false;
 };
 
 export const setupHttpWorker = (baseURL: string) => {
@@ -44,7 +62,10 @@ export const setupHttpWorker = (baseURL: string) => {
 
 			outputData = await readHttpApiResponse(progressResponse, 'asyncProgress');
 			progress(outputData);
-			await sleep(500);
+			if (isFinalProgress(outputData)) {
+				break;
+			}
+			await sleep(50);
 		}
 		return outputData;
 	};
