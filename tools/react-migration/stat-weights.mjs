@@ -52,16 +52,20 @@ const DIALOG = () => {
 		})(),
 		optionsWithValue: [...dialog.querySelectorAll('.ref-stat-select option, select.ref-stat-select option')].filter(option => option.hasAttribute('value'))
 			.length,
-		footerDisplay: getComputedStyle(dialog.querySelector('[data-testid="sim-dialog-footer"], .modal-footer')).display,
-		ratiosDisplay: getComputedStyle(dialog.querySelector('.ep-ratios')).display,
-		referenceDisplay: getComputedStyle(dialog.querySelector(q('ep-reference-options'))).display,
+		// The tank layout unmounts these instead of hiding them with CSS, so a missing element counts
+		// as `none` rather than throwing on `getComputedStyle(null)`.
+		footerDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector('[data-testid="sim-dialog-footer"], .modal-footer')),
+		ratiosDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector('.ep-ratios')),
+		referenceDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector(q('ep-reference-options'))),
 	};
 };
 
 // A `position: sticky` computed style says nothing about whether the right element scrolls. Scroll
 // the container the rule names and watch the header stay where it is.
 const STICKY = () => {
-	const container = document.querySelector('.ep-weights-menu .results-ep-table-container');
+	const container = document.querySelector(
+		'.ep-weights-menu :is([data-testid="results-ep-table-container"], .results-ep-table-container)',
+	);
 	if (!container) return { error: 'no container' };
 	const th = container.querySelector('thead th');
 	// Whichever ancestor actually scrolls. `.modal-scroll-table` set `overflow-y: auto` on the
@@ -178,7 +182,9 @@ check('no include-toggle id carries a space', !dialog.toggleIds.some(id => /\s/.
 check('every button the dialog renders declares a type', dialog.untypedButtons.length === 0, JSON.stringify(dialog.untypedButtons));
 check('every reference select has an accessible name', dialog.unnamedRefSelects === 0, `${dialog.unnamedRefSelects} unnamed`);
 check('the EP/Weights type select has an accessible name', dialog.unnamedTypeSelect === 0, String(dialog.unnamedTypeSelect));
-check('every reference option carries a value', dialog.optionsWithValue > 0, `${dialog.optionsWithValue} with a value`);
+// The tank layout does not render the reference-options block at all, so there is nothing to check.
+if (dialog.referenceDisplay === 'none') console.log('  ----  no reference options on this spec (tank layout)');
+else check('every reference option carries a value', dialog.optionsWithValue > 0, `${dialog.optionsWithValue} with a value`);
 
 // `.modal .modal-scroll-table` had exactly one consumer and dies with the Bootstrap markup, so the
 // re-keyed rule has to put the same two declarations on the same element. It does not put the header
@@ -244,17 +250,23 @@ await page.setViewportSize({ width: 900, height: 800 });
 await page.waitForTimeout(400);
 const compact = await page.evaluate(() => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
+	// The tank layout does not render the compute-EP button at all, so there is nothing to check.
+	const notTiny = document.querySelector(`.ep-weights-menu .compute-ep ${q('not-tiny')}`);
 	return {
 		rootHidesThreat: !!document.querySelector('.sim-ui.hide-threat-metrics'),
-		notTiny: getComputedStyle(document.querySelector(`.ep-weights-menu .compute-ep ${q('not-tiny')}`)).display,
+		notTiny: notTiny ? getComputedStyle(notTiny).display : 'missing',
 	};
 });
 console.log('\ncompact layout at 900px');
-check(
-	'the compact block follows the sim root, not the dialog',
-	compact.rootHidesThreat ? compact.notTiny === 'inline' : compact.notTiny === 'none',
-	JSON.stringify(compact),
-);
+if (compact.notTiny === 'missing') {
+	console.log('  ----  no compute-EP button on this spec (tank layout)');
+} else {
+	check(
+		'the compact block follows the sim root, not the dialog',
+		compact.rootHidesThreat ? compact.notTiny === 'inline' : compact.notTiny === 'none',
+		JSON.stringify(compact),
+	);
+}
 await page.setViewportSize({ width: 1280, height: 900 });
 await page.waitForTimeout(400);
 
@@ -264,8 +276,15 @@ await closeDialog();
 await page.click('.sim-toolbar button.sim-options');
 await page.waitForTimeout(700);
 const toggle = page.locator('#simui-show-threat-metrics');
+const toggleLabel = page.locator('label[for="simui-show-threat-metrics"]');
 const hadThreat = await toggle.isChecked();
-await toggle.setChecked(!hadThreat);
+// The checkbox itself is visually hidden (a 1x1 box) behind its styled label, so Playwright refuses
+// to click it (`force` only skips the visibility wait, not the "point is inside the viewport" check,
+// and the box sits at a negative offset). Its label toggles it instead, same as a real click would.
+const setThreatMetrics = async desired => {
+	if ((await toggle.isChecked()) !== desired) await toggleLabel.click();
+};
+await setThreatMetrics(!hadThreat);
 await page.waitForTimeout(400);
 await page.keyboard.press('Escape');
 await page.waitForTimeout(700);
@@ -276,7 +295,7 @@ check('the dialog size follows the threat-metrics toggle', toggled.size !== dial
 await closeDialog();
 await page.click('.sim-toolbar button.sim-options');
 await page.waitForTimeout(700);
-await page.locator('#simui-show-threat-metrics').setChecked(hadThreat);
+await setThreatMetrics(hadThreat);
 await page.keyboard.press('Escape');
 await page.waitForTimeout(700);
 
@@ -292,7 +311,9 @@ if (await cog.count()) {
 	// Both popup shapes: tippy's root on the baseline, Base UI's popup on the React side, which is what
 	// the reforge panel's `Popover` renders. The selector was tippy-only, so this check had been quietly
 	// skipping itself on React ever since that panel ported.
-	const edit = page.locator('[data-tippy-root] button.btn-outline-primary, .sim-popover-popup button.btn-outline-primary');
+	const edit = page.locator(
+		'[data-tippy-root] button.btn-outline-primary, [data-testid="sim-popover-popup"] [data-testid="reforge-edit-weights"]',
+	);
 	if (await edit.count()) {
 		await edit.first().click();
 		await page.waitForTimeout(900);

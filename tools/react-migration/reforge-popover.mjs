@@ -152,8 +152,10 @@ const openPopover = async page => {
 };
 
 // A checkbox's own label is what a user clicks; both stacks put the input first and the label after.
+// The input itself is a visually hidden 1x1 box behind the styled label, so clicking it directly is
+// what a user cannot do — and Base UI's popup content intercepts the pointer event at that point.
 const toggle = async (page, selector) => {
-	await page.click(selector);
+	await page.click(`label[for="${selector.replace(/^#/, '')}"]`);
 	await page.waitForTimeout(300);
 };
 
