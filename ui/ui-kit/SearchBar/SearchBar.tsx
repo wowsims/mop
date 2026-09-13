@@ -1,5 +1,6 @@
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -80,14 +81,15 @@ export const SearchBar = ({
 					onChange={event => handleInput(event.target.value)}
 				/>
 				{clearable && draft.length > 0 && (
-					<button
-						type="button"
-						className={clsx('absolute right-0 px-2 py-0 btn btn-link', clearClassName)}
+					<Button
+						variant="link"
+						size="inline"
+						className={clsx('absolute right-0', clearClassName)}
 						data-testid="search-bar-clear-btn"
 						aria-label={clearLabel}
 						onClick={handleClear}>
 						<Icon name="times" />
-					</button>
+					</Button>
 				)}
 			</div>
 			{children}

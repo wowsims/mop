@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Button } from './Button';
+import { BASE, LINK_BASE, SIZE, VARIANT } from './classes';
 
 describe('Button', () => {
 	it('is a non-submitting button by default', () => {
@@ -9,7 +10,7 @@ describe('Button', () => {
 		const button = screen.getByRole('button', { name: 'Simulate' });
 		// The tree has several <button>s inside forms with no type, which submit on click.
 		expect(button.getAttribute('type')).toBe('button');
-		expect(button.className).toBe('btn btn-primary');
+		expect(button.className).toBe(`${BASE} ${VARIANT.primary}`);
 	});
 
 	it('renders an anchor when asked, keeping the button classes', () => {
@@ -20,8 +21,20 @@ describe('Button', () => {
 		);
 		const link = screen.getByRole('link', { name: 'Item' });
 		expect(link.getAttribute('href')).toBe('https://wowhead.com/mop-classic/item=1');
-		expect(link.className).toBe('btn btn-link');
+		expect(link.className).toBe(`${LINK_BASE} ${VARIANT.link}`);
 		expect(link.getAttribute('type')).toBeNull();
+	});
+
+	it('renders a label when asked, for a peer-checked radio', () => {
+		render(
+			<Button as="label" htmlFor="chart-view-rotation" variant="outline-primary">
+				Rotation
+			</Button>,
+		);
+		const label = screen.getByText('Rotation');
+		expect(label.tagName).toBe('LABEL');
+		expect(label.getAttribute('for')).toBe('chart-view-rotation');
+		expect(label.className).toBe(`${BASE} ${VARIANT['outline-primary']}`);
 	});
 
 	it('adds the size and caller classes without dropping the variant', () => {
@@ -30,7 +43,7 @@ describe('Button', () => {
 				Optimize
 			</Button>,
 		);
-		expect(screen.getByRole('button').className).toBe('btn btn-outline-primary btn-sm reforge-action');
+		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.sm} reforge-action`);
 	});
 
 	it('adds rel to a cross-origin link without being asked', () => {
@@ -72,13 +85,37 @@ describe('Button', () => {
 		screen.getAllByRole('link').forEach(link => expect(link.getAttribute('rel')).toBeNull());
 	});
 
-	// The talents tree's reset is `btn link-danger` — a bare btn with no variant.
-	it('emits a bare btn when variant is null', () => {
+	it('emits the bare base bundle when variant is null, with no colour of its own', () => {
 		render(
-			<Button variant={null} className="talent-tree-reset link-danger">
+			<Button variant={null} className="talent-tree-reset link-danger text-link-danger">
 				Reset
 			</Button>,
 		);
-		expect(Array.from(screen.getByRole('button').classList).sort()).toEqual(['btn', 'link-danger', 'talent-tree-reset']);
+		expect(Array.from(screen.getByRole('button').classList).sort()).toEqual(
+			[...BASE.split(' '), 'talent-tree-reset', 'link-danger', 'text-link-danger'].sort(),
+		);
+	});
+
+	it('emits nothing of its own for the unstyled variant', () => {
+		render(
+			<Button variant="unstyled" className="delete-cooldown link-danger">
+				Delete
+			</Button>,
+		);
+		expect(screen.getByRole('button').className).toBe('delete-cooldown link-danger');
+	});
+
+	it('emits the .btn-reset look for link-danger', () => {
+		render(<Button variant="link-danger">Reset</Button>);
+		expect(screen.getByRole('button').className).toBe(`${LINK_BASE} ${VARIANT['link-danger']}`);
+	});
+
+	it('ignores size for a link variant: the legacy [class*=btn-link] rule always zeroed its padding', () => {
+		render(
+			<Button variant="link-danger" size="sm">
+				Reset
+			</Button>,
+		);
+		expect(screen.getByRole('button').className).toBe(`${LINK_BASE} ${VARIANT['link-danger']}`);
 	});
 });

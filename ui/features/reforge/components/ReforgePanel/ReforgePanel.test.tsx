@@ -1,6 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { BASE, VARIANT } from '@ui-kit/Button/classes';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -41,7 +42,10 @@ describe('ReforgePanel', () => {
 		const { container } = renderPanel();
 		const [run, settings] = [...container.querySelectorAll('button')];
 
-		expect([...run.classList].sort()).toEqual(['btn', 'btn-primary', 'grow', 'sim-sidebar-action-button', 'suggest-reforges-action-button']);
+		expect([...run.classList].sort()).toEqual(
+			[...BASE.split(' '), ...VARIANT.primary.split(' '), 'grow', 'sim-sidebar-action-button', 'suggest-reforges-action-button'].sort(),
+		);
+		// This trigger's classes are a raw literal on `Popover`'s `triggerClassName`, not `Button` — untouched in this unit.
 		expect([...settings.classList].sort()).toEqual(['btn', 'btn-primary', 'sim-sidebar-action-button', 'suggest-reforges-button-settings']);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
 		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);

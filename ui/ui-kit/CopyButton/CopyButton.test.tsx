@@ -1,4 +1,5 @@
 import { act, fireEvent, render } from '@testing-library/react';
+import { BASE } from '@ui-kit/Button/classes';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CopyButton } from './CopyButton';
@@ -29,10 +30,10 @@ afterEach(() => {
 const button = (container: HTMLElement) => container.querySelector('button')!;
 
 describe('CopyButton', () => {
-	it('wears `btn`, `copy-button` and the caller class list, with no variant of its own', () => {
-		const { container } = render(<CopyButton getContent={() => 'x'} className={['btn-outline-primary', 'mt-2']} />);
+	it('wears the base bundle, `copy-button` and the caller class list, with no variant of its own', () => {
+		const { container } = render(<CopyButton getContent={() => 'x'} className={['text-link-danger', 'mt-2']} />);
 
-		expect([...button(container).classList].sort()).toEqual(['btn', 'btn-outline-primary', 'copy-button', 'mt-2']);
+		expect([...button(container).classList].sort()).toEqual([...BASE.split(' '), 'text-link-danger', 'copy-button', 'mt-2'].sort());
 		expect(button(container).getAttribute('type')).toBe('button');
 	});
 

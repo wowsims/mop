@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { VARIANT } from '@ui-kit/Button/classes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const STRINGS: Record<string, string> = {
@@ -90,8 +91,8 @@ describe('SavedDataPanel', () => {
 
 		const [cancel, confirm] = popoverButtons();
 		expect([cancel.textContent, confirm.textContent]).toEqual(['Cancel', 'Delete']);
-		expect(cancel.className).toContain('btn-outline-cancel');
-		expect(confirm.className).toContain('btn-cancel');
+		expect(cancel.className).toContain(VARIANT['outline-cancel']);
+		expect(confirm.className).toContain(VARIANT.cancel);
 
 		fireEvent.click(cancel);
 		expect(onDelete).not.toHaveBeenCalled();

@@ -1,4 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
+import { BASE as BUTTON_BASE } from '@ui-kit/Button/classes';
 import { menuPositionerZClasses, menuSurfaceClasses } from '@ui-kit/Menu/classes';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
@@ -51,7 +52,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
 				<Menu.Trigger
 					id={id}
-					className={clsx('dropdown-picker-button', 'btn', 'dropdown-toggle', 'hover:text-white/80', selected?.className)}
+					className={clsx('dropdown-picker-button', BUTTON_BASE, 'text-foreground', 'hover:text-white/80', 'dropdown-toggle', selected?.className)}
 					data-testid="dropdown-picker-button">
 					{selected ? (
 						<>

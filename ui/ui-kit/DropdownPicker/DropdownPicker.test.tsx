@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { BASE as BUTTON_BASE } from '@ui-kit/Button/classes';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DropdownPicker } from './DropdownPicker';
@@ -40,7 +41,7 @@ describe('DropdownPicker', () => {
 		mount(undefined);
 
 		expect(root().className).toBe('dropdown-picker-root dropdown custom-root-class');
-		expect(trigger().className).toBe('dropdown-picker-button btn dropdown-toggle hover:text-white/80');
+		expect(trigger().className).toBe(`dropdown-picker-button ${BUTTON_BASE} text-foreground hover:text-white/80 dropdown-toggle`);
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
 	});

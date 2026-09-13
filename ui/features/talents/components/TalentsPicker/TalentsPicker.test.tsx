@@ -3,6 +3,7 @@ import type { Player } from '@sim/player/player';
 import type { TalentsConfig } from '@sim/talents/config';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { BASE, SIZE, VARIANT } from '@ui-kit/Button/classes';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../GlyphsPicker', () => ({ GlyphsPicker: () => null }));
@@ -55,7 +56,9 @@ describe('TalentsPicker copy button', () => {
 	it('keeps the class vocabulary the gates and the stylesheet select on', () => {
 		mount();
 
-		expect(button().className.split(' ').sort()).toEqual(['btn', 'btn-outline-primary', 'btn-sm', 'copy-button', 'copy-talents']);
+		expect(button().className.split(' ').sort()).toEqual(
+			[...BASE.split(' '), ...VARIANT['outline-primary'].split(' '), ...SIZE.sm.split(' '), 'copy-button', 'copy-talents'].sort(),
+		);
 		expect(button().getAttribute('type')).toBe('button');
 		// The closed `Tooltip` renders nothing, so the button stays the actions div's only child.
 		expect(document.querySelector('.talents-picker-actions')!.children).toHaveLength(1);

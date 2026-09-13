@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { LINK_BASE, VARIANT } from '@ui-kit/Button/classes';
 import { describe, expect, it } from 'vitest';
 
 import { TooltipButton } from './TooltipButton';
@@ -7,7 +8,9 @@ describe('TooltipButton', () => {
 	it('renders the vanilla button, with the extra classes the callers pass', () => {
 		render(<TooltipButton tooltip="What this does" className="ml-2" />);
 		const button = screen.getByRole('button');
-		expect(Array.from(button.classList).sort()).toEqual(['btn', 'btn-link', 'inline-flex', 'items-center', 'justify-center', 'ml-2', 'tooltip-button']);
+		expect(Array.from(button.classList).sort()).toEqual(
+			[...LINK_BASE.split(' '), ...VARIANT.link.split(' '), 'inline-flex', 'items-center', 'justify-center', 'ml-2', 'tooltip-button'].sort(),
+		);
 		expect(button.getAttribute('type')).toBe('button');
 		// `Icon` normalises the FA5 spelling `question-circle` into its FA6 name.
 		expect(button.querySelector('i')!.className).toContain('far fa-circle-question');

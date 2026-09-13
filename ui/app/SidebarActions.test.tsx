@@ -30,8 +30,9 @@ describe('SidebarActions', () => {
 		registry.add({ id: 'custom', render: () => <div className="custom-entry" /> });
 		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', className: 'ep-weights-action', onClick: () => {} });
 
-		// Class *sets*, sorted: `Button` composes `btn btn-primary` ahead of the caller's classes, and
-		// the parity gates sort class lists for the same reason — order carries no meaning.
+		// Class *sets*, sorted: `SidebarActionButton` still composes `btn btn-primary` ahead of the
+		// caller's classes (parked #2 — it stays on Bootstrap until part 3), and the parity gates sort
+		// class lists for the same reason — order carries no meaning.
 		const classSets = () => [...container.children].map(child => [...child.classList].sort().join(' '));
 
 		expect(classSets()).toEqual([]);

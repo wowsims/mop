@@ -1,27 +1,55 @@
 import { Button as BaseButton } from '@base-ui/react/button';
 import { externalRel } from '@sim/utils/links';
 import clsx from 'clsx';
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, LabelHTMLAttributes, ReactNode, Ref } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'cancel' | 'link' | 'outline-primary' | 'outline-light' | 'outline-cancel' | 'unstyled';
+import { BASE, LINK_BASE, SIZE, VARIANT } from './classes';
+
+export type ButtonVariant =
+	| 'primary'
+	| 'secondary'
+	| 'danger'
+	| 'cancel'
+	| 'link'
+	| 'link-danger'
+	| 'outline-primary'
+	| 'outline-light'
+	| 'outline-cancel'
+	| 'unstyled';
 
 interface ButtonBaseProps {
-	/** `null` emits a bare `btn` — the talents tree's reset is `btn link-danger`. */
+	/** `null` emits the bare base bundle — no colour of its own. */
 	variant?: ButtonVariant | null;
-	size?: 'sm';
+	size?: 'sm' | 'inline';
 	className?: string;
 	children?: ReactNode;
 }
 
-type ButtonAsButton = ButtonBaseProps & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> & { as?: 'button' };
+type ButtonAsButton = ButtonBaseProps &
+	Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> & { as?: 'button'; ref?: Ref<HTMLButtonElement> };
 
 type ButtonAsAnchor = ButtonBaseProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children'> & { as: 'a'; href: string };
 
-export type ButtonProps = ButtonAsButton | ButtonAsAnchor;
+type ButtonAsLabel = ButtonBaseProps & Omit<LabelHTMLAttributes<HTMLLabelElement>, 'className' | 'children'> & { as: 'label'; htmlFor: string };
+
+export type ButtonProps = ButtonAsButton | ButtonAsAnchor | ButtonAsLabel;
 
 export const Button = (props: ButtonProps) => {
 	const variant = props.variant === undefined ? 'primary' : props.variant;
-	const classes = variant === 'unstyled' ? props.className : clsx('btn', variant && `btn-${variant}`, props.size && `btn-${props.size}`, props.className);
+	const isLink = variant === 'link' || variant === 'link-danger';
+	const classes =
+		variant === 'unstyled'
+			? props.className
+			: clsx(isLink ? LINK_BASE : BASE, variant && VARIANT[variant], !isLink && props.size && SIZE[props.size], props.className);
+
+	if (props.as === 'label') {
+		const { as: _as, variant: _variant, size: _size, className: _className, children, ...labelProps } = props;
+		return (
+			<label className={classes} {...labelProps}>
+				{children}
+			</label>
+		);
+	}
 
 	// A plain anchor, deliberately not `Base.Button`.
 	if (props.as === 'a') {
