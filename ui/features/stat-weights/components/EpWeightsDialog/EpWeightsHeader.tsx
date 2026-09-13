@@ -21,11 +21,7 @@ export const EpWeightsHeader = ({ columns }: EpWeightsHeaderProps) => (
 			return (
 				<th key={column.id} className={clsx(column.metric && metricsClassName(column.metric), isAction ? 'text-center' : `type-${column.type}`)}>
 					<span {...tooltipAnchorProps(EP_TOOLTIP_ID, column.labelTooltip)}>{column.label}</span>
-					<Button
-						variant="unstyled"
-						className="col-action text-center align-middle"
-						onClick={column.onCopy}
-						{...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
+					<Button variant="unstyled" className="col-action" onClick={column.onCopy} {...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
 						<Icon name={isAction ? 'arrows-rotate' : 'copy'} />
 					</Button>
 				</th>

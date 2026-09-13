@@ -172,13 +172,7 @@ describe('ListPicker', () => {
 		it('renders the create button as an icon action when asked', () => {
 			mount(rowsOf('a'), { actions: { create: { useIcon: true } } });
 
-			expect(newButton()!.className.split(' ').sort()).toEqual([
-				'align-middle',
-				'link-success',
-				'list-picker-item-action',
-				'list-picker-new-button',
-				'text-center',
-			]);
+			expect(newButton()!.className.split(' ').sort()).toEqual(['link-success', 'list-picker-item-action', 'list-picker-new-button']);
 			expect(newButton()!.querySelector('i')!.className).toBe('fa fa-xl fa-plus');
 		});
 

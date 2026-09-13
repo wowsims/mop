@@ -20,10 +20,7 @@ export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 			<td className="character-stats-table-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
 			<td className="character-stats-table-value">
 				<div className="stat-value-link-container">
-					<Button
-						variant="unstyled"
-						className={clsx('stat-value-link text-center align-middle', critCapClass(info.playerCritCapDelta))}
-						{...tooltipAnchorProps(id)}>
+					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} {...tooltipAnchorProps(id)}>
 						{`${text} `}
 					</Button>
 				</div>

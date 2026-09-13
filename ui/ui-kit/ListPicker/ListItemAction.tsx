@@ -26,7 +26,7 @@ const testIdFor = (className: ClassValue | undefined): string => {
 export const ListItemAction = ({ icon, className, tooltip, tooltipId, hidden, onClick }: ListItemActionProps) => (
 	<Button
 		variant="unstyled"
-		className={clsx('list-picker-item-action', className, 'text-center align-middle')}
+		className={clsx('list-picker-item-action', className)}
 		data-testid={testIdFor(className)}
 		style={hidden === undefined ? undefined : { display: hidden ? 'none' : undefined }}
 		onClick={onClick}

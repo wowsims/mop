@@ -56,7 +56,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					</FieldLabel>
 					<Button
 						variant="unstyled"
-						className="gear-swap-icon text-center align-middle"
+						className="gear-swap-icon"
 						aria-label={swapTooltip}
 						{...tooltipAnchorProps(swapId)}
 						onClick={() => swapWithGear(player, itemSlots)}>
