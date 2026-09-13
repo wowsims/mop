@@ -10,11 +10,11 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 - **LIVE STATE — main session orchestrates directly, one worktree per unit** (read this bullet first).
   **Phase 2 COMPLETE** — A-U-list landed `42142c5d1` (probe 0 after three fixes: missing root gap, `_input.scss` narrow-width gap contest, over-broad `data-[layout=inline]` variant; `test:snapshots` 34/34 on it as the Phase-2 close). A-U-icon landed `b8cae69bc` (probe 0, a11y/tabs/settings-tab clean); C-U3.2 `249309630` ( before it `33d01a51d` handoff, `47012afa4` A-U-shell).
   Unit worktrees `/home/lutz/personal/wowsims-mop-tw-<unit>` on `wt/tw-<unit>`, created by
-  `/tmp/claude-1000/tw/mkunit.sh <unit>` (node_modules = per-entry symlinks, never a symlink; copies
+  `/home/lutz/personal/.tw-stage4/mkunit.sh <unit>` (node_modules = per-entry symlinks, never a symlink; copies
   `ui/generated/`, `*_auto_gen.ts`, `tools/state-snapshots/` — the tailwind branch's vitest still needs
   `tools/state-snapshots/stub-i18n.js`), removed by `rmunit.sh <unit>` (kills 3401–3406 too). Workers
   edit + cheap gates + **commit on their own branch**; main reviews, rebases onto the tip, a Sonnet
-  verifier runs `/tmp/claude-1000/tw/VERIFIER.md` on that worktree (serial — one at a time, ports
+  verifier runs `/home/lutz/personal/.tw-stage4/VERIFIER.md` on that worktree (serial — one at a time, ports
   shared), then `git merge --ff-only wt/tw-<unit>` on `wt/tailwind`. Single-writer files stay with main:
   `ui/styles/{theme,tailwind,vendor}.css`, `ui/scss/index.scss` (Bootstrap partial imports are
   deleted by main at integration once the worker reports no readers), probe `.mjs`, this file.
@@ -204,7 +204,127 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   `ui/ui-kit/FormControl/` own them (unit `wt/tw-inputs`). Every later unit uses the components —
   never imports a `*_CLASSES` constant. The three buttons-unit files that still use `INPUT_CLASSES`
   (`LogSearchGroup`, `Importer`, `AplNameDialog`) move to `<Input>` right after buttons lands.
-- **Tailwind rules digest:** `/tmp/claude-1000/tw/TAILWIND-DOCS.md` (docs + 4.3.3 source, applied to this repo).
+- **Tailwind rules digest:** `/home/lutz/personal/.tw-stage4/TAILWIND-DOCS.md` (docs + 4.3.3 source, applied to this repo).
+- **In flight (Phase 3 close):** buttons unit `wt/tw-buttons` @ `ad3f4d568` (6 commits: Button variants, 31 raw sites,
+  Bootstrap `buttons` partial deleted, IconButton → `Button iconOnly`, two inputs → `<Input>`, `--shadow-focus-*`
+  tokens + `@theme static inline` `--shadow-focus-theme`) — in verification. Unit `wt/tw-merge-react` cut at
+  `ad3f4d568`, merged `feature/ui-react` `a215eead5` as `59c40e52d` + `31d280c53` (9 conflicts toward the Tailwind form; WowheadIcon onto
+  the spreadable dataset props; Base UI checkbox tests assert `aria-checked`; vitest 1757/1757) — reviewed, awaiting verification
+  against a `/home/lutz/personal/.tw-stage4/baseline-dist-3-pre` copy of the buttons build; if buttons
+  needs a fix, merge the fixed `wt/tailwind` into it before landing. Tokens T1 (`wt/tw-tokens`) also cut at `ad3f4d568` (theme.css + renames + ui-kit sweep; rebases onto the merged tip before
+  verification). Then: baseline-3 rebuild (merged tip), T1 verify + land, T2 (app/features), Phase 4 wave 1 (U4a, U5, U6, U7, kit-tail).
+- **Two lock lanes (2026-09-13):** cheap gates run under `/tmp/claude-1000/gates.lock`; builds, servers and probes under `/tmp/claude-1000/e2e.lock`.
+- **Next-step briefs in `/home/lutz/personal/.tw-stage4/`:** `BRIEF-merge-catchup.md`, `BRIEF-t1-rebase.md`, `BRIEF-unit-rebase.md`
+  (per-unit notes: apl `size-4`; statweights duplicate `--text-2xs`, the Suggest Reforges rules, the `showThreatMetrics` gate; gear stripe-vs-hover),
+  `VERIFY-units.md` (per-unit state checks), `KIT-CLASSES.md`, and `PHASE4.md` (U6 part 2, forms-tail after kit-classes (a), the ledger). Probe summariser:
+  `probe-summarize.py`.
+- **LANDED 2026-09-13 ~18:30: `wt/tailwind` fast-forwarded `dec10c7cf` → `cc09e785c`.** That brings buttons (16 commits through `2f35ceed4`), the `feature/ui-react`
+  merge (`59c40e52d`, `31d280c53`), the catch-up `5a638c030`, and T1 (`d6da50953`, `7b6360126`, `7912a5da1`, `01032a29c`, `94e87321f`, `cc09e785c`). The final buttons
+  verifier (on the buttons worktree) is still running; the tip-verify → `baseline-dist-3` step is next. Then lintcss, then the unit rebases.
+- **Merge catch-up `5a638c030`** (an amended `b600e8b16` with an identical tree): merges buttons `2f35ceed4` into merge-react. No conflicts; collision scan 0; vitest 1758;
+  lint 249. **Landing order:** ff `wt/tailwind` to `2f35ceed4` (after the final verifier), then to `5a638c030`, then to T1's final tip (rebased onto `5a638c030`), then tip-verify
+  (`BRIEF-tip-verify.md`, which creates `baseline-dist-3`), then lintcss, then the units.
+- **Buttons fix rounds 4–5 reached probe 0** at `2f35ceed4` (after the self-probe): `e08c5d55a` centring split per site, `f9ff51d33` the FAB toggles
+  back to default size, `6e7883f86` outline active uses the plain colour, `2f35ceed4` the trigger default `py-4 px-0`, ChartViewPicker labels become unstyled, and
+  the NameDisplay rename line-height. A final fresh verifier is running. The merge catch-up already merged `wt/tw-buttons` (`b600e8b16`).
+- **T1 toolbar fix `a5f783904`** (on `46f756085`): the socials wrapper no longer carries `[&_a]:my-4`. probe-t1-2 against the merge build shows **only the accepted
+  rows** (the ResultsFilter icon font-size and line-height; the `50%`/`9999px` radius). **T1 is verified.** Its second rebase onto the landed buttons plus the catch-up is mechanical.
+- **Stack verification (2026-09-13):** baseline `/home/lutz/personal/.tw-stage4/baseline-dist-ad3f4d568`.
+  - **merge-react `31d280c53` vs `ad3f4d568`: 0 diffs over 68 sections.** Gates green (1757 tests, lint 248, snapshots 34/34). **The merge is verified.**
+  - **T1 `46f756085` vs the merge: 819 rows.** The ResultsFilter icon going 20px → `text-lg` (review list), a harmless `50%`/`9999px` radius, and **one regression**: the sim-toolbar social-link margin doubles because `[&_a]:my-2` and `[&_a]:my-4` collide. The fix is specified in `BRIEF-t1-rebase.md`. **Review list:** that ResultsFilter icon rule came from my generalisation of the user's metrics answer.
+- **lintcss** `e444b10b8` (on `46f756085`): `lint:css` = `stylelint "./ui/**/*.scss" "./ui/**/*.css"`, with a CSS override for the Tailwind at-rules and functions.
+  It lands right after T1. The `vite-plugin-stylelint` include is still `ui/**/*.scss`; retarget it in Phase 5 (S6).
+- **kit-classes (b) `dc8bf35aa` and (c) `72c3d2224`** on `wt/tw-kit`: the overlays, Chip, TabNav, TabPanelColumns, Spinner, Skeleton, UnitIcon and the sticky toolbar are
+  now co-located `ui-*` `@apply` classes; `badge` has no emitters left; the nav-* classes are dropped. (a) and (d) come after buttons lands. **Gap:** `lint:css` doesn't lint
+  `.css` files yet.
+- **Probe-reader cross-check (2026-09-13):** `timeline.mjs` (`.rotation-item`, `.rotation-scroller`) and `stat-weights.mjs` (`.ep-reference-options`,
+  `.not-tiny`) still read hooks their units dropped; follow-up workers on `wt/tw-timeline` and `wt/tw-statweights` are fixing them. specs,
+  bulk and apl are clean. `WORKER.md` now requires a grep of `tools/react-migration/*.mjs` before dropping any hook.
+- **U8b timeline** `998438b40` (cherry-pick), `715d97d1e`, `da3120d16`, `5cf6ef241`: `Timeline.scss` 82–670 deleted; `ui-timeline-*` classes; `data-outcome`,
+  `data-density` (`group/scroller`), `data-first`; the `rotation-item`, `outcome-*` and `is-first` hooks were dropped. `timeline.mjs` still read `.rotation-item`, so a follow-up worker is fixing the probe readers. **All nine
+  feature units have finished their first pass.**
+- **U8d replay** `c2350b014`, `b621a0fba`, `a253e337c`, `bf6ea3852`: all of `CombatReplay.scss` converted except `.replay-content.dr-tab-content`
+  (→ U8a part 2); `ui-combat-replay-*`; the perf toggles are attribute-only; a white/black alpha token scale (dedupe with U8a at rebase).
+- **U8c logrunner** `7c379a14d` (cherry-pick), `f1b3b57f2`, `9871ff10c`: `LogRunner.scss` deleted; `Timeline.scss` lines 3–77 removed; `ui-log-row`,
+  `ui-fab-*` (shared Log/Rotation FAB), `ui-log-inline-picker`; hooks become test ids; `log-runner.mjs` uses `q()`. The rebase needs a token-policy sweep
+  (`--spacer-*`, arbitrary values). **kit-classes (b)+(c) started early** on `46f756085` (`wt/tw-kit`); (a) and (d) come after buttons lands.
+- **U5 settings** `85e720d9c`..`e713bb333` (8 commits): 8 SCSS files deleted incl. `_talents_picker`; `.link-danger`/`.link-warning` overrides removed;
+  hooks kept with companion utilities (the Phase 6 sweep drops them). **U5 part 2** (with forms-tail): PickerGroup, picker-group `:has()`, WowheadIcon
+  sites, PetSpecPicker inversion. **Stack verification started** (ports 3401/3402): merge-react `31d280c53` vs a new `baseline-dist-ad3f4d568`,
+  and T1 `46f756085` vs merge-react; only the accepted font diffs are expected for T1.
+- **U4b bulk** `c07b8fcbb` (`--radius-md`), `49b5f3b7d`: all 4 bulk SCSS files deleted; the bulk dropdown is **off Bootstrap `dropdown`** (via `data-open`);
+  `ui-bulk-*` classes. Rebase after gear; the literal red becomes a token. **U8d replay** started on `46f756085`.
+- **U8a results** `f34123a75` (tree change: a single caret; verify or revert), `e49852fdf`, `37ce88110`, `2c95df5c8`. Six SCSS files deleted;
+  `ui-metrics-table-*` and `ui-character-stats-*` composition classes; `--color-white-5/20/80`. About half the scope is left for **U8a part 2**
+  (PHASE4.md). **U8b timeline** started on `46f756085` plus a cherry-pick of `a69e067be`.
+- **U4a gear** `d372a0d8c`: all 9 gear SCSS files deleted; `ui-*` classes in `ItemCell.css`, `FiltersMenu.css`, `SlotRail.css`, `GearChangeIcon.css`,
+  `SelectorModal.css` and `SummaryTable.css`; new tokens `--text-md` and `--text-ep-delta`; a `NameDescriptionLabel` `flush` prop. **Deferred item resolved:**
+  the equipped-item icon sites keep `ItemCellAnchor` (its keyboard activation) instead of `<WowheadIcon>`. To verify: the stripe-versus-hover
+  variant order. **U4b bulk** started on `d372a0d8c`.
+- **U7 statweights** `1f852dc77`, `66bfdc251`, `5d854402e` (the tank block becomes `isTank`), `c34b2e135` (**Bootstrap `grid` import deleted**). Deleted
+  `Importer.scss`, `ReforgePanel.scss` and `_exporters.scss`. Added `NumberPicker.inputClassName`/`EnumPicker.selectClassName`. **Review-list deviation**
+  from "pickers get no className". Open at rebase (BRIEF-unit-rebase): the duplicate `--text-2xs`, the Suggest Reforges rules, and verifying the
+  `showThreatMetrics` gate against the baseline. **U8c logrunner** started on `46f756085` plus a cherry-pick of U6's `a69e067be`.
+- **U6 apl** `a69e067be` (`useStickyBottom` + FloatingActionBar), `4c9277c27` (partial conversion: 3 partials deleted, `ui-apl-editor-row`
+  `@apply` class, 10 hooks dropped). The ListPicker/DropdownPicker/PickerShell-internal rules are left for **U6 part 2 after kit-classes**
+  (PHASE4.md). Bug to fix in its rebase: `ActionIdIcon.tsx:22` `size-icon-sm` → `size-4` (a retired token emits nothing). **U8a results**
+  started on `46f756085` (`wt/tw-results`).
+- **Buttons fix round 3** (after the reboot): `dd89ddd46` centring on ICON_BASE plus 17 unstyled sites, `edf60e21c` trigger/TooltipButton `flex`,
+  `747941179` floating-bar toggles `py-4`, `01d162ee1` ChartViewPicker named peers, `5b5a69d64` ListItemAction class order. Collision scan 0,
+  lint 252 (at the cap), vitest 1660. In verification against the rebuilt `baseline-dist-2`.
+- **specs unit** `23164bb27` (on `3d4b27f4a`): the combustion table and `positive`/`negative` become utilities; the totem SCSS is deleted (inert);
+  `table-responsive` and `combustion-threshold-results` are dropped. **Deferred:** `mage_fire.scss` keeps only
+  `.fire-mage-sim-ui .number-picker-input[id^='combust'] { width: 7rem; text-align: right }`. NumberPicker takes no
+  className, so it needs a kit decision (an `inputClassName` config prop, or an `@apply` rule) before Phase 5 deletes the last SCSS. Also,
+  `.safe`/`.danger` stay in `_global_old.scss` until U-base.
+- **T1 integration landed on its branch:** `wt/tw-tokens` = `6dd1f44f8`, `bd733e75b`, `00986bc5f`, `46f756085` on merge-react `31d280c53`.
+  The rebase had zero conflicts; the re-sweep covered 35 uses; the metrics font is now `text-xs`; the fixed-px font tokens are removed. **Open: lint:js exited 1**
+  (the worker called it warnings-only; the cap is 252). Check the count before T1 is verified. It is the base for U4a/U5/U8 (U4a started: `wt/tw-gear`).
+- **Subagents launch by role (user):** `sonnet-worker` (Bash/Read/Edit/Write/WebFetch), `sonnet-verifier` (Bash/Read/Write, report-only), `sonnet-research` (Bash/Read/Grep/Glob, read-only), all Sonnet at effort high in `~/.claude/agents/`; `sonnet-high` (all tools) only as a fallback.
+  **They load only on a Claude Code restart.** They were created mid-session, and `Agent` rejected `sonnet-worker`. Until a restart at a
+  quiet point with no agents running, launch `general-purpose` + `model: sonnet`. After the restart, switch every launch to the role types.
+- **Composition rule (user, 2026-09-13):** `@apply` is for *shared, reusable compositions* (e.g. the Dialog sizes). Prop maps
+  and bundles at 2+ JSX sites become co-located `ui-<component>-<part>` classes; single-site styling stays utilities.
+  **Parallel run (user):** up to 4 workers plus 1 verifier. T2 is folded into the units; kit-tail is folded into kit-classes. Specs, U6 and U7
+  started early off `3d4b27f4a`; the T1 integration rebases onto merge-react `31d280c53` as the base for U4a, U5 and U8.
+  The user wants no go-aheads: work autonomously, and ask only when fully stuck.
+- **Reboot 2026-09-13 15:17 wiped `/tmp`.** All orchestration files now live in **`/home/lutz/personal/.tw-stage4/`**:
+  the contracts, digest, briefs, `mkunit.sh`/`rmunit.sh`, baselines (`baseline-dist-2`, rebuilt from `44074d539`) and probe
+  output (`OUT=/home/lutz/personal/.tw-stage4/probe-<unit>`). The docs were recovered by replaying their writes from the
+  session transcript. Lost for good: the buttons probe reports, the annotated diff map, and the collision-scan script (to be
+  rewritten). Commits now carry the trailer `Claude-Session: https://claude.ai/code/session_01KrgvxekDT75BMsWuAqYP4Z`.
+- **User decision (2026-09-13): kit style bundles become `@apply` component classes.** Co-located
+  `ui/ui-kit/<C>/<C>.css`, `ui-` prefix, `@import`ed from `tailwind.css`, **unlayered** until Phase 5, then
+  `@layer components`. Call-site utilities override (important vs non-important `@apply`, verified by compile).
+  Source order in the file is base → variant → size. A **kit-classes** unit runs after T1 lands. Brief: `/home/lutz/personal/.tw-stage4/KIT-CLASSES.md` (19 components,
+  18 CSS files, commits a–d). Census risks to handle: (1) legacy SCSS and react-tooltip CSS win specificity ties against
+  unlayered `.ui-*`; (2) call-site `!important` utilities now beat `.ui-*` **state** rules, which needs a state-shadow scan;
+  (3) Menu, the DropdownMenuItems submenu and SimTitleDropdown portal to `<body>`, outside `.sim-ui`, so they lose the spec
+  primary. A fallback gets its own commit. Kit tests may assert their own `ui-*` class, which the C-8 lint must exempt;
+  feature tests may not.
+  Buttons lands first with its TS maps, and kit-classes converts it with probe 0 expected.
+- **User answers (2026-09-13, interactive):**
+  1. **Metrics font:** `text-[12px]` → `text-xs`, accepting 1.5px smaller below 1921px. Generalised: a px font size maps
+     to the rem step equal to it at the 16px root (12px → `text-xs`, 20px → `text-lg`). Drop T1's `--text-metrics`
+     and `--text-results-filter-icon`.
+  2. **Landing +10 KB** from the shared spec-theme chunk: accepted. Closed.
+  3. **Frozen sidebar-button assertion** (`calculate_combustion_thresholds.test.tsx:55`): relax it to role or test id.
+     `SidebarActionButton` becomes a normal `<Button>`, and `_sidebar.scss`'s copied `.btn` declarations are deleted.
+     Handled in the buttons fix round.
+  4. **className-only edits in `ui/specs/**` are allowed.** `table-responsive`, `positive`/`negative`, the `combustion-*`
+     hooks and the totem inputs become utilities, and `mage_fire.scss` and `_totem_inputs.scss` are deleted. **No `specs.css`.**
+     A small `specs` unit does this after T1 lands. Logic and tests stay frozen except the one sanctioned assertion.
+- **User directive (2026-09-13): the Bootstrap-name shim goes.** `.d-flex/.flex-column/.align-items-end/
+  .justify-content-end/.w-100/.gap-3` in `tailwind.css` are replaced by built-ins. The user sanctioned editing
+  the three className strings in the frozen `ui/specs/mage/fire/calculate_combustion_thresholds.tsx:373,374,399`,
+  className strings only. Bootstrap `gap-3` (1rem) becomes `gap-4`. Assigned to tokens T1.
+- **Buttons verification RED (ad3f4d568):** (1) the `--shadow-focus-*` tokens landed in `:root`, not `@theme`, so no utility is
+  generated and the focus rings are gone. The brief said "near `--focus-ring`", which lives in `:root`; my error. (2) BASE `border-transparent`
+  collides with VARIANT border colours: two utilities for one property resolve by stylesheet order. (3) SCSS
+  overriders of `.btn` now lose to important BASE: Suggest Reforges padding 48px→12px, dropdown trigger
+  padding/border. Fix worker on `wt/tw-buttons`; the full probe report is `/home/lutz/personal/.tw-stage4/buttons-probe-report-full.txt`.
+  **Lesson:** a component's bundles must never set the same property twice for one state. Prove it with a
+  compile-and-check script, not by eye.
 - **Landed `ca7a28e63` inputs (Phase 3):** `<Input>` (Base UI Input) + `<Select>` (`Field.Control render=<select/>`)
   in `@ui-kit/FormControl`; `INPUT_CLASSES`/`SELECT_CLASSES` module-private (only `Input`/`Select`/`TextArea`
   import them). Verifier: probe 0 (197,373 elements), vitest 1731/1731, snapshots 34/34, a11y + tabs PASS,
@@ -219,8 +339,8 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   land and before Phase 4 fans out. `IconButton` is folded into `Button` (`iconOnly`) — user-approved.
 - **Parked (user):** metrics tables use `text-[12px]` ×17 (fixed px). Default taken: a fixed `--text-metrics: 12px`
   token (parity). Alternative: `text-xs` (0.75rem — equal at ≥1921px, 1.5px smaller below). Tokens unit brief:
-  `/tmp/claude-1000/tw/TOKENS-UNIT.md`; census traps (`.gap-3` shim, bare `rounded` no-op, three broken
-  `transition-(--x)`) in `/tmp/claude-1000/tw/TAILWIND-DOCS.md` "Repo traps".
+  `/home/lutz/personal/.tw-stage4/TOKENS-UNIT.md`; census traps (`.gap-3` shim, bare `rounded` no-op, three broken
+  `transition-(--x)`) in `/home/lutz/personal/.tw-stage4/TAILWIND-DOCS.md` "Repo traps".
 - **`-[var(--x)]` is never written (user).** Tailwind v4's `-(--x)` is the shorthand for `-[var(--x)]`
   (`text-(length:--x)`, `w-(--x,60px)`). A `@theme` token gets its named utility instead; `var()` stays
   only inside real `calc()`/`min()`/gradient expressions and `[prop:…]` arbitrary properties.
@@ -251,6 +371,12 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   and kill strays; the empty `ss` line is the report's last line or the report is rejected; probes
   must run in the foreground with a 600 s Bash timeout (two verifiers paused on a backgrounded
   probe). Servers are the verifier's own if `ss` shows them mid-run.
+
+- **Bootstrap tail drift (audit 2026-09-13):** `nav`, `transitions`, `dropdown` and `badge` are still imported
+  (`index.scss:50-54`) although steps 10/12 said they die. TSX still emits `nav-link` (TabNav), `dropdown-*`
+  (DropdownPicker, BulkItemSearch) and `badge` (Chip). Owners are in the ledger at the end of
+  `/home/lutz/personal/.tw-stage4/PHASE4.md`: a **kit-tail** unit in Phase 4 wave 1, U4b, forms-tail, U7 (grid) and
+  Phase 5 landing (nav/dropdown/navbar/containers/alert). Phase 4 briefs are in the same file.
 
 ## Deferred between units (not user questions)
 
@@ -291,10 +417,7 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 
 ## Parked for the user
 
-Count: **2** — (1) landing page +10 KB shared chunk since A-S4 (default: plan as written); (2) may the
-frozen mage/fire spec test's exact class-list assertion on the sidebar action button be relaxed so
-the button can carry utilities (default: its three rules stay in `_sidebar.scss`). Full text under
-`## Parked for the user` in `tools/react-migration/TAILWIND-DIVERGENCE.md` (uncommitted edit).
+Count: **0** — all four answered 2026-09-13 (see \"User answers\" above).
 
 ## Latest verifier numbers (wave A close, tree at 37f4d469c)
 
@@ -319,9 +442,9 @@ home `index-*.style.css` **99,352 B** (start 115,972) · shared Tailwind/theme c
 
 ## Environment facts
 
-- **Two probe baselines.** `/tmp/claude-1000/tailwind-baseline-dist` = `dist/` at `ea0f92e69`,
+- **Two probe baselines.** `baseline-dist` (lost in the 15:17 reboot; superseded by `/home/lutz/personal/.tw-stage4/baseline-dist-2`) = `dist/` at `ea0f92e69`,
   used by every Phase 0–1 gate up to and including the Checkbox CONFINE run; never delete it.
-  `/tmp/claude-1000/tailwind-baseline-dist-2` = `dist/` built from the tree of `44074d539`
+  `/home/lutz/personal/.tw-stage4/baseline-dist-2` = `dist/` built from the tree of `44074d539`
   (Checkbox + C-U2.2 + tooling, the Phase-1 close verifier's build), **used from Phase 2 on** —
   serve it on 3406 (`REACT_PORT=3406`). A tree-changing commit is proved with
   `CONFINE='<selector>'` (see README) and re-takes the baseline to a new numbered directory,
@@ -335,7 +458,7 @@ home `index-*.style.css` **99,352 B** (start 115,972) · shared Tailwind/theme c
   `flock -o -w 3000 /tmp/claude-1000/e2e.lock npx vite build` → start the servers **outside any
   lock, with the lock fd closed**: `setsid nohup npx http-server dist -p 3404 -s 3>&- < /dev/null
   > /tmp/claude-1000/srv3404.log 2>&1 &` and the same for
-  `/tmp/claude-1000/tailwind-baseline-dist -p 3406` → confirm `ss -ltnp | grep -E ':340[46] '` and
+  `/home/lutz/personal/.tw-stage4/baseline-dist-2 -p 3406` → confirm `ss -ltnp | grep -E ':340[46] '` and
   `fuser /tmp/claude-1000/e2e.lock` empty → `flock -o -w 3000 /tmp/claude-1000/e2e.lock env
   REACT_PORT=3406 TW_PORT=3404 node tools/react-migration/tw-probe.mjs` → `kill -9` the PIDs
   `ss -ltnp` shows → `ss -ltnp | grep -E ':340[1-6] '` empty. A server started from a shell holding
