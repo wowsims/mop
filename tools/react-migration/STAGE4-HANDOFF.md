@@ -43,10 +43,82 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   MultiIconPicker, BulkItemSearch, the `dropdown-toggle` caret, both landing menus). The two
   landing menus stay on Bootstrap until A-U-landing. Probe: **0 diffs vs baseline-2, no tree
   change, no re-baseline** (TabBadge renders nothing without a label).
-- **Wave B in progress:** A-U-shell as three disjoint Sonnet workers, one commit: W1 shell core
-  (`core/sim_ui/*`, `_sim_title_dropdown`, SimShell/header/sidebar carriers), W2 `TabPanelColumns`
-  (`_sim_tab` + the four tab files' `.tab-pane-content-container` blocks, `SimTabPane`, tab bodies),
-  W3 `ContentBlock flush` + `_sticky_toolbar` + `individual_sim_ui/_shared`.
+- **Wave B = A-U-shell, landed as `47012afa4`** (committed by the main session, which now orchestrates directly; the handoff commit that preceded it was re-split so the two stylesheet deletions land with wave B).
+  Orchestration moved to the main session at this point; the tree below is the state to pick up.
+  Three disjoint Sonnet workers produced it, meant to land as ONE commit after a green verifier:
+  - **W1 shell core** — `ui/scss/core/sim_ui/{_shared,_sidebar,_header,_main,index}.scss`,
+    `ui/scss/core/components/_sim_title_dropdown.scss`, `ui/app/SimShell.tsx`,
+    `ui/app/header/{ImportExportMenu/ImportExportMenu,SimTitleDropdown/SimTitleDropdown,
+    SimToolbar/SimToolbar,SimToolbar/ToolbarItem}.tsx`,
+    `ui/features/results/components/SimResultsPanel/UnlaunchedNotice.tsx`. (`SidebarActionButton.tsx`
+    was converted then reverted to HEAD — see the frozen-test steer below.)
+  - **W2 TabPanelColumns** — new `ui/ui-kit/TabPanelColumns/` (untracked: `TabPanelColumns.tsx`,
+    `index.ts`, `TabPanelColumns.test.tsx`), `ui/ui-kit/SimTabPane/SimTabPane.tsx`,
+    `ui/app/tabs/{Gear,Settings,Rotation,Bulk,Talents}TabBody.tsx`,
+    `ui/app/tabs/{RotationTabBody,SettingsTabBody}.test.tsx`,
+    `ui/features/bulk/components/BulkSettings/BulkSettings.tsx`,
+    `ui/features/gear/components/GearPicker/GearPicker.tsx`, `_sim_tab.scss` (deleted, staged) and
+    `individual_sim_ui/_gear_tab.scss` (deleted, staged) with their `@import` lines dropped by the
+    orchestrator from `core/sim_ui/index.scss` and `components/individual_sim_ui/index.scss`,
+    `individual_sim_ui/{_bulk_tab,_rotation_tab,_settings_tab}.scss` (their
+    `.tab-pane-content-container` blocks only).
+  - **W3 ContentBlock flush + sticky toolbar + `_shared`** — `ui/ui-kit/ContentBlock/{ContentBlock,
+    ContentBlock.test}.tsx`, `ui/scss/core/components/{_content_block,_sticky_toolbar}.scss` (both
+    shrunk to contested residue), `ui/ui-kit/hooks/useStickyToolbar.ts` (exports
+    `STICKY_TOOLBAR_CLASSES`), `ui/features/apl/components/AplNavbar/AplNavbar.tsx`,
+    `ui/features/results/components/DetailedResults/DetailedResults.tsx`,
+    `ui/features/bulk/components/BulkItemSearch/{BulkItemSearch.tsx,BulkItemSearch.scss}`,
+    `ui/features/bulk/components/BulkPickerGroups/{BulkItemPickerGroup.tsx,BulkPickerGroups.scss}`,
+    `ui/features/settings/components/ConsumesPicker/ConsumesPicker.tsx`,
+    `ui/features/settings/components/CustomSection/CustomSection.test.tsx`,
+    `ui/scss/core/individual_sim_ui/_shared.scss` (deleted) + its import in
+    `ui/scss/core/individual_sim_ui/index.scss`.
+  - Orchestrator-only: `tools/react-migration/TAILWIND-DIVERGENCE.md` (the A-U-shell entry and the
+    second parked question are already written and uncommitted).
+  **Verifier history for wave B** (all on the dirty tree):
+  - Round 1: type-check 0 · vitest 1723/1728 (3 files red: `RotationTabBody.test` exact-string on the
+    navbar, `SettingsTabBody.test` `blocks()` positional class, the frozen
+    `ui/specs/mage/fire/calculate_combustion_thresholds.test.tsx` seeing `relative` on the sidebar
+    action button) · lint 0/252 · css clean · locales 8/8 · build OK · **tw-probe 63/63 spec
+    sections** (landing clean): 126 buttons `relative→static` + 126 spans `none→inline`,
+    `absolute→static`, `top/left 50%→auto` (the `.sim-sidebar-action-button`/`-loading-icon` rules
+    deleted while `ReforgePanel.tsx:170-198` still copies that markup), icon buttons 39→60 px tall as
+    a consequence; ContentBlock `gap` groups (3.5→10.5, 10.5→28, 0→10.5, 4→12, 12→32, 0→12 px —
+    `gap-stack` beating `GlyphsPicker.scss:17` and `SummaryTable.scss:26`); rotation-tab
+    `min-width/min-height 0→auto` on 34 hidden divs (a `Root` `flex` utility beating the
+    `#rotation-tab.rotation-type-X .rotation-tab-Y { display: none }` toggles), columns losing
+    `gap`/`grid-template-columns` · a11y 2× clean · tabs-behaviour 6/6 · header-toolbar +
+    sidebar-loading pass · sidebar-reference/tabs-a11y blocked (master `dist` from Jul 5) ·
+    mount-once PASS. Bundles spec 191,885 · home 98,973 · shared 67,815.
+  - Fixes applied after round 1: `SidebarActionButton.tsx` reverted + both `_sidebar.scss` blocks
+    restored verbatim (W1); ContentBlock `gap` back into `_content_block.scss` on root and body,
+    class order `content-block, <site>, mb-0?, flex flex-col` (W3); `Root externalDisplay` +
+    `.rotation-tab { display: flex }` restored in `_rotation_tab.scss`, `Left` gains
+    `gap-(--spacing-section)`, `stacked` carries the inert grid template, the two tests rewritten
+    (W2).
+  - Round 2: vitest **1728/1728** · lint 0/252 · css clean · locales 8/8 · build OK · master built
+    (build only) · **tw-probe 63/63** but a single property: two always-hidden divs per page `gap
+    10.5→28 px` (12→32 at 2200) = `GearPicker.tsx`'s two `Col`s where `_gear_picker.scss:16-21`
+    sets `gap: var(--spacing-stack)` · a11y 2× clean · tabs-behaviour 6/6 · header-toolbar +
+    sidebar-loading pass · **sidebar-reference exit 1** (`TypeError … getAttribute` of null in
+    `page.evaluate`, side not attributed) · tabs-a11y 6/6 · **mount-once FAIL** (module-MIME error:
+    the vite dev server was started from the wrong checkout — start it from the worktree). Bundles
+    spec 192,378 · home 98,973 · shared 67,579.
+  - Fix after round 2: `Col externalGap` on GearPicker's two columns, SCSS override kept (W2).
+  - **Round 3 (this tree, 10:28): GREEN.** type-check 0 · vitest **1728 / 215** · lint:js 0/252 ·
+    lint:css clean · locales 8/8 · build OK · **tw-probe 0 diffs** vs baseline-2 (no tree change) ·
+    a11y warrior/arms + mage/fire PASS · tabs-behaviour 6/6 · tabs-a11y vs master 6/6 · mount-once
+    PASS (dev server started from the worktree) · header-toolbar + sidebar-loading pass ·
+    sidebar-reference exit 1 on **both** the Phase-1 baseline build (3406) and ours (3404), crashing
+    on the *base* (master, 3401) side before any output — pre-existing, not wave B's. Bundles: spec
+    **192,378 B** · home **98,973 B** · shared **67,579 B**. The tree is ready to commit as one
+    A-U-shell commit (`git add -A -- <the paths above>` + `git add -f tools/react-migration/
+    TAILWIND-DIVERGENCE.md`); `test:snapshots` is still due once this phase (not run since wave A).
+  **Frozen-test steer (user, via main):** never edit `ui/specs/**` to make a test pass; a frozen
+  exact-class-list assertion is a *reader* under the per-rule override check, so the sidebar action
+  button keeps its declarations in SCSS and the question is parked (parked count now **2**).
+  **Master `dist`:** rebuilt today under the lock, build only — never clean that `dist/`, it is the
+  user's main checkout; `tabs-a11y.mjs`/`sidebar-reference.mjs` need it on 3401.
 - **Phase 2 partition (orchestrator's, disjoint file sets):** wave A = **B-U3a**
   `TabNav`/`TabPanel` (SimTabs, AplNavbar, DetailedResultsTabs, SelectorModal, BulkTabBody,
   DetailedResultsPane; deletes `tab_pane_class.ts`, `SimTabs.scss`,
@@ -128,8 +200,10 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 
 ## Parked for the user
 
-Count: **1** — landing page +10 KB shared chunk since A-S4 (full text under `## Parked for the
-user` in `tools/react-migration/TAILWIND-DIVERGENCE.md`; default taken: plan as written).
+Count: **2** — (1) landing page +10 KB shared chunk since A-S4 (default: plan as written); (2) may the
+frozen mage/fire spec test's exact class-list assertion on the sidebar action button be relaxed so
+the button can carry utilities (default: its three rules stay in `_sidebar.scss`). Full text under
+`## Parked for the user` in `tools/react-migration/TAILWIND-DIVERGENCE.md` (uncommitted edit).
 
 ## Latest verifier numbers (wave A close, tree at 37f4d469c)
 
