@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
+import { BASE, VARIANT } from '@ui-kit/Button/classes';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
@@ -80,12 +81,13 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 			<div className="log-fab-actions">
 				<Button
 					ref={toggleRef}
-					className="log-fab-toggle"
+					variant="unstyled"
+					className={clsx(BASE.replace('inline-block', 'flex items-center gap-2'), VARIANT.primary, 'py-4', 'log-fab-toggle')}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
 					onClick={() => setExpanded(current => !current)}>
-					<Icon name="filter" className="mr-2" />
-					<span className="log-fab-summary mr-2">
+					<Icon name="filter" />
+					<span className="log-fab-summary">
 						{labels.length
 							? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
 							: i18n.t('results_tab.details.logs.floatingActionBar.none')}
