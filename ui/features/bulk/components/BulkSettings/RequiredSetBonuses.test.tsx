@@ -28,11 +28,12 @@ const mount = () => {
 			<RequiredSetBonuses />
 		</SimHostProvider>,
 	);
-	const box = (suffix: string) => container.querySelectorAll<HTMLInputElement>('.boolean-picker-input')[suffix === '2p' ? 0 : 1];
+	const box = (suffix: string) => container.querySelectorAll<HTMLElement>('.boolean-picker-input')[suffix === '2p' ? 0 : 1];
 	return { player, box };
 };
 
 const requiredPieces = (player: Player<any>) => bulkState(player).requiredSetBonuses.get(SET_ID)?.pieces;
+const isChecked = (el: HTMLElement) => el.getAttribute('aria-checked') === 'true';
 
 describe('RequiredSetBonuses', () => {
 	it('shows the 2P box as ticked after one click', () => {
@@ -42,7 +43,7 @@ describe('RequiredSetBonuses', () => {
 		fireEvent.click(twoPiece);
 
 		expect(requiredPieces(player)).toBe(2);
-		expect(twoPiece.checked).toBe(true);
+		expect(isChecked(twoPiece)).toBe(true);
 	});
 
 	it('shows the 4P box as ticked after one click', () => {
@@ -52,6 +53,6 @@ describe('RequiredSetBonuses', () => {
 		fireEvent.click(fourPiece);
 
 		expect(requiredPieces(player)).toBe(4);
-		expect(fourPiece.checked).toBe(true);
+		expect(isChecked(fourPiece)).toBe(true);
 	});
 });

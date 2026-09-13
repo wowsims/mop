@@ -133,7 +133,7 @@ describe('BooleanPicker controlled', () => {
 		const settings = new Settings();
 		render(<BooleanPicker modObject={settings} config={{ id: 'controlled', label: 'Controlled', value: true, onChange }} />);
 
-		expect(checkbox().checked).toBe(true);
+		expect(isChecked(checkbox())).toBe(true);
 		expect(settings.listenerCount).toBe(0);
 
 		fireEvent.click(checkbox());
@@ -150,7 +150,7 @@ describe('BooleanPicker controlled', () => {
 		act(() => {
 			checkbox().click();
 		});
-		expect(checkbox().checked).toBe(true);
+		expect(isChecked(checkbox())).toBe(true);
 	});
 });
 
