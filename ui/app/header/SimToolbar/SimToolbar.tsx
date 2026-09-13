@@ -36,7 +36,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 
 			<ToolbarItem href={REPO_CHOOSE_NEW_ISSUE_URL} icon="bug" tooltip={i18n.t('info.bug_report')} />
 
-			{!isNative() && <ToolbarItem href={REPO_RELEASES_URL} icon="gauge-high" className="downbin" tooltip="Download simulator for faster simulating" />}
+			{!isNative() && <ToolbarItem href={REPO_RELEASES_URL} icon="gauge-high" tooltip="Download simulator for faster simulating" />}
 
 			<ToolbarItem className="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
@@ -57,7 +57,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 				<ToolbarItem
 					href={REPO_RELEASES_URL}
 					icon="gauge-high"
-					className="downbin link-danger text-link-danger"
+					className="link-danger text-link-danger"
 					tooltip="Newer version of simulator available for download"
 				/>
 			)}

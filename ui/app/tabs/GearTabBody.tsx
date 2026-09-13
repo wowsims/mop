@@ -17,7 +17,7 @@ export const GearTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<TabPanelColumns.Left className="gear-tab-left" variant="auto-columns">
+			<TabPanelColumns.Left variant="auto-columns">
 				<GearPicker ready={ready} />
 				<div className="summary-tables-container">
 					<GemSummary />
@@ -25,7 +25,7 @@ export const GearTabBody = () => {
 					<UpgradeCostsSummary />
 				</div>
 			</TabPanelColumns.Left>
-			<TabPanelColumns.Right className="gear-tab-right">
+			<TabPanelColumns.Right>
 				<PresetConfigurationPicker categories={GEAR_PRESETS} />
 				<SavedGear />
 			</TabPanelColumns.Right>

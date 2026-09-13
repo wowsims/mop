@@ -3,7 +3,6 @@ import { Icon } from '@ui-kit/Icon';
 import type { IconName, IconStyle } from '@ui-kit/Icon/types';
 import { Menu, MenuItem } from '@ui-kit/Menu';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { type ReactNode, useId, useState } from 'react';
 
 import type { ImportExportKind } from '../import_export';
@@ -25,7 +24,7 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill.
 
 	return (
-		<div className={clsx('dropdown sim-dropdown-menu flex static', `${kind}-dropdown`)} data-testid="sim-dropdown-menu">
+		<div className="dropdown flex static" data-testid="sim-dropdown-menu">
 			<Menu
 				surface="menu"
 				open={open}
@@ -38,20 +37,17 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 				triggerProps={{
 					openOnHover: true,
 					delay: 0,
-					className: `${kind}-link py-(--tab-padding-y) px-(--tab-padding-x) text-(length:--tab-font-size) data-[popup-open]:text-(--color-white)`,
+					className: 'py-(--tab-padding-y) px-(--tab-padding-x) text-(length:--tab-font-size) data-[popup-open]:text-(--color-white)',
 					'data-testid': `${kind}-link`,
 				}}
 				align="start"
 				sideOffset={-1}
-				positionerClassName="sim-dropdown-positioner"
 				positionerProps={{ 'data-testid': 'sim-dropdown-positioner' }}
-				className="sim-dropdown-popup"
 				popupProps={{ 'data-testid': 'sim-dropdown-popup' }}>
 				{entries.map(entry => (
 					<MenuItem
 						key={entry.label}
 						layout="block"
-						className="sim-dropdown-item"
 						data-testid="sim-dropdown-item"
 						disabled={entry.isUnsupported}
 						{...(entry.isUnsupported ? tooltipAnchorProps(unsupportedId) : {})}

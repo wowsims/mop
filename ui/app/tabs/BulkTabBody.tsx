@@ -41,7 +41,7 @@ export const BulkTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<TabPanelColumns.Left className="bulk-tab-left pt-2" variant="auto-columns">
+			<TabPanelColumns.Left className="pt-2" variant="auto-columns">
 				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
 					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
 					<div className="tab-content">

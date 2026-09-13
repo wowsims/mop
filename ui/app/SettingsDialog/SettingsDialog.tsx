@@ -182,11 +182,10 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			className="settings-menu"
 			title={i18n.t('info.options.title')}
 			footer={
 				<>
-					<Button variant="primary" className="restore-defaults-button" {...tooltipAnchorProps(restoreTooltipId)} onClick={restoreDefaults}>
+					<Button variant="primary" {...tooltipAnchorProps(restoreTooltipId)} onClick={restoreDefaults}>
 						{i18n.t('info.options.restore_defaults.button')}
 					</Button>
 					<Tooltip id={restoreTooltipId} content={i18n.t('info.options.restore_defaults.tooltip')} />
@@ -194,32 +193,30 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			}>
 			<div>
 				<div className="picker-group" data-testid="picker-group">
-					<div className="fixed-rng-seed-container" data-testid="fixed-rng-seed-container">
-						<div className="fixed-rng-seed" data-testid="fixed-rng-seed">
+					<div data-testid="fixed-rng-seed-container">
+						<div data-testid="fixed-rng-seed">
 							<NumberPicker modObject={sim} config={fixedRngSeedConfig} />
 						</div>
 						<HelpText as="div" className="form-text">
 							<span>{i18n.t('info.options.fixed_rng_seed.last_used')}</span>&nbsp;
-							<span className="last-used-rng-seed" data-testid="last-used-rng-seed">
-								{lastUsedRngSeed}
-							</span>
+							<span data-testid="last-used-rng-seed">{lastUsedRngSeed}</span>
 						</HelpText>
 					</div>
-					<div className="language-picker" data-testid="language-picker">
+					<div data-testid="language-picker">
 						<EnumPicker modObject={sim} config={languageConfig} />
 					</div>
 				</div>
-				<div className="show-threat-metrics-picker w-1/2 pr-2" data-testid="show-threat-metrics-picker">
+				<div className="w-1/2 pr-2" data-testid="show-threat-metrics-picker">
 					<BooleanPicker modObject={sim} config={showThreatMetricsConfig} />
 				</div>
-				<div className="show-experimental-picker w-1/2 pr-2" data-testid="show-experimental-picker">
+				<div className="w-1/2 pr-2" data-testid="show-experimental-picker">
 					<BooleanPicker modObject={sim} config={showExperimentalConfig} />
 				</div>
-				<div className="show-quick-swap-picker w-1/2 pr-2" data-testid="show-quick-swap-picker">
+				<div className="w-1/2 pr-2" data-testid="show-quick-swap-picker">
 					<BooleanPicker modObject={sim} config={showQuickSwapConfig} />
 				</div>
-				<div className="use-concurrency-container w-1/2 pr-2" data-testid="use-concurrency-container" hidden={!isWasm}>
-					<div className="use-concurrent-workers-picker" data-testid="use-concurrent-workers-picker">
+				<div className="w-1/2 pr-2" data-testid="use-concurrency-container" hidden={!isWasm}>
+					<div data-testid="use-concurrent-workers-picker">
 						<EnumPicker modObject={sim} config={concurrencyConfig} />
 					</div>
 					<HelpText as="div" className="form-text" hidden={!firefox}>

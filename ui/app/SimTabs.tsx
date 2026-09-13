@@ -22,7 +22,7 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 	return (
 		<TabActivationContext value={setActiveId}>
 			<Tabs.Root
-				className="sim-tabs-root contents"
+				className="contents"
 				value={value}
 				onValueChange={next => {
 					const id = String(next);
@@ -39,7 +39,7 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 								key={tab.id}
 								value={tab.id}
 								keepMounted
-								className="sim-tab-panel max-w-full grow pt-(--spacing-gutter) opacity-100 [transition:var(--transition-fade)] data-[starting-style]:opacity-0 max-lg:pt-[calc(var(--spacing-gutter-sm)*2)]"
+								className="max-w-full grow pt-(--spacing-gutter) opacity-100 [transition:var(--transition-fade)] data-[starting-style]:opacity-0 max-lg:pt-[calc(var(--spacing-gutter-sm)*2)]"
 								data-testid="sim-tab-panel">
 								{tab.children}
 							</Tabs.Panel>

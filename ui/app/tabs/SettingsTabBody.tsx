@@ -41,8 +41,8 @@ export const SettingsTabBody = () => {
 
 	return (
 		<OpenSelectorModalContext value={selector.openTab}>
-			<TabPanelColumns.Left className="settings-tab-left" variant="settings-columns">
-				<TabPanelColumns.Col className="settings-left-col-1">
+			<TabPanelColumns.Left variant="settings-columns">
+				<TabPanelColumns.Col>
 					{ready && (
 						<>
 							<ContentBlock className="encounter-settings" config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
@@ -54,7 +54,7 @@ export const SettingsTabBody = () => {
 						</>
 					)}
 				</TabPanelColumns.Col>
-				<TabPanelColumns.Col className="settings-left-col-2">
+				<TabPanelColumns.Col>
 					{ready && (
 						<>
 							{config.sections?.map(section => (
@@ -76,7 +76,7 @@ export const SettingsTabBody = () => {
 						</>
 					)}
 				</TabPanelColumns.Col>
-				<TabPanelColumns.Col className="settings-left-col-3">
+				<TabPanelColumns.Col>
 					{ready && (
 						<>
 							<ContentBlock
@@ -124,7 +124,7 @@ export const SettingsTabBody = () => {
 					)}
 				</TabPanelColumns.Col>
 			</TabPanelColumns.Left>
-			<TabPanelColumns.Right className="settings-tab-right">
+			<TabPanelColumns.Right>
 				<PresetConfigurationPicker categories={SETTINGS_PRESETS} />
 				<SavedEncounter />
 				<SavedSettings />

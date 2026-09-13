@@ -57,13 +57,13 @@ export const RotationTabBody = () => {
 	return (
 		<>
 			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay>
-				<TabPanelColumns.Left className="rotation-tab-col" variant="stacked">
-					<div className="rotation-type-container">
+				<TabPanelColumns.Left variant="stacked">
+					<div>
 						<RotationTypePicker />
 					</div>
 					<p>{i18n.t('rotation_tab.auto.description')}</p>
 				</TabPanelColumns.Left>
-				<TabPanelColumns.Right className="rotation-tab-col">
+				<TabPanelColumns.Right>
 					<RotationSidebar />
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
@@ -71,8 +71,8 @@ export const RotationTabBody = () => {
 			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay>
 				{hasSimple && (
 					<>
-						<TabPanelColumns.Left className="rotation-tab-col tab-content" variant="stacked">
-							<div className="rotation-type-container">
+						<TabPanelColumns.Left className="tab-content" variant="stacked">
+							<div>
 								<RotationTypePicker />
 							</div>
 							<div className="simple-rotation-container">
@@ -90,7 +90,7 @@ export const RotationTabBody = () => {
 								)}
 							</div>
 						</TabPanelColumns.Left>
-						<TabPanelColumns.Right className="rotation-tab-col">
+						<TabPanelColumns.Right>
 							<RotationSidebar />
 						</TabPanelColumns.Right>
 					</>
@@ -106,7 +106,7 @@ export const RotationTabBody = () => {
 				value={activeId}
 				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 				<AplNavbar />
-				<TabPanelColumns.Left className="rotation-tab-col tab-content">
+				<TabPanelColumns.Left className="tab-content">
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
@@ -116,7 +116,7 @@ export const RotationTabBody = () => {
 						);
 					})}
 				</TabPanelColumns.Left>
-				<TabPanelColumns.Right className="rotation-tab-col">
+				<TabPanelColumns.Right>
 					<RotationSidebar />
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>

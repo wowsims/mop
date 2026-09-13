@@ -37,9 +37,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 				sideOffset={0}
 				className={clsx('sim-title-positioner', menuPositionerZClasses.plain)}
 				data-testid="sim-title-positioner">
-				<Menu.Popup
-					className={clsx('sim-title-popup sim-title-popup--specs', menuSurfaceClasses.plain, 'w-auto min-w-[300px]')}
-					data-testid="sim-title-popup">
+				<Menu.Popup className={clsx('sim-title-popup', menuSurfaceClasses.plain, 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
 					{Object.values(playerClass.specs).map(spec => (
 						<Menu.LinkItem
 							key={spec.simLink}
@@ -61,7 +59,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 );
 
 export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
-	<div className="sim-title-dropdown-root h-[calc(var(--sim-header-height)-1px)]" data-testid="sim-title-dropdown-root">
+	<div className="h-[calc(var(--sim-header-height)-1px)]" data-testid="sim-title-dropdown-root">
 		<div className="dropdown sim-link-dropdown h-full">
 			<Menu.Root modal={false}>
 				<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))} data-testid="sim-link">

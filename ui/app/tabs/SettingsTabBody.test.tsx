@@ -91,8 +91,12 @@ const becomeReady = async () => {
 	});
 };
 
-const blocks = (container: HTMLElement, column: string) =>
-	[...container.querySelectorAll(`.${column} > [data-testid="content-block"]`)].map(block => [...block.classList].find(name => /-settings$/.test(name)));
+const cols = (container: HTMLElement) => [...container.querySelectorAll('.tab-panel-col')];
+
+const blocks = (container: HTMLElement, colIndex: number) =>
+	[...cols(container)[colIndex].querySelectorAll(':scope > [data-testid="content-block"]')].map(block =>
+		[...block.classList].find(name => /-settings$/.test(name)),
+	);
 
 const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > [data-testid="content-block-body"]`);
 
@@ -103,8 +107,8 @@ describe('SettingsTabBody', () => {
 
 	it('renders the panels and the three columns before the sim is ready, and nothing in them', () => {
 		const container = mount();
-		expect(container.querySelector('.settings-tab-left.tab-panel-left')).not.toBeNull();
-		expect(container.querySelector('.settings-tab-right.tab-panel-right')).not.toBeNull();
+		expect(container.querySelector('.tab-panel-left')).not.toBeNull();
+		expect(container.querySelector('.tab-panel-right')).not.toBeNull();
 		expect(container.querySelectorAll('.tab-panel-col')).toHaveLength(3);
 		// A block that rendered early would read the database before it loads.
 		expect(container.querySelectorAll('[data-testid="content-block"]')).toHaveLength(0);
@@ -113,12 +117,12 @@ describe('SettingsTabBody', () => {
 	it('fills each column in the order the vanilla builder appended', async () => {
 		const container = mount({ sections: [{ id: 'totems' }] });
 		await becomeReady();
-		expect(blocks(container, 'settings-left-col-1')).toEqual(['encounter-settings', 'player-settings']);
-		expect(blocks(container, 'settings-left-col-2')).toEqual(['consumes-settings', 'other-settings']);
-		expect(blocks(container, 'settings-left-col-3')).toEqual(['buffs-settings', 'buffs-settings', 'buffs-settings', 'debuffs-settings']);
+		expect(blocks(container, 0)).toEqual(['encounter-settings', 'player-settings']);
+		expect(blocks(container, 1)).toEqual(['consumes-settings', 'other-settings']);
+		expect(blocks(container, 2)).toEqual(['buffs-settings', 'buffs-settings', 'buffs-settings', 'debuffs-settings']);
 		// The custom section owns its own block, so it is not a `.content-block` child of the column.
-		expect(container.querySelector('.settings-left-col-2 > .custom-section-stub')).not.toBeNull();
-		const firstChild = container.querySelector('.settings-left-col-2')!.firstElementChild!;
+		expect(cols(container)[1].querySelector(':scope > .custom-section-stub')).not.toBeNull();
+		const firstChild = cols(container)[1].firstElementChild!;
 		expect(firstChild.classList.contains('custom-section-stub')).toBe(true);
 		expect(firstChild.classList.contains('content-block')).toBe(false);
 	});
@@ -127,7 +131,7 @@ describe('SettingsTabBody', () => {
 	// saved-data panels.
 	it('renders the preset picker ahead of the two saved-data panels, with nothing wrapping them', () => {
 		const container = mount();
-		const right = container.querySelector('.settings-tab-right')!;
+		const right = container.querySelector('.tab-panel-right')!;
 
 		expect([...right.children].map(child => child.className)).toEqual([
 			'preset-configuration-picker-root saved-data-manager-root',
@@ -146,20 +150,20 @@ describe('SettingsTabBody', () => {
 	it('omits the other-settings block when the spec declares neither inputs nor swap slots', async () => {
 		const container = mount({ otherInputs: { inputs: [] } });
 		await becomeReady();
-		expect(blocks(container, 'settings-left-col-2')).toEqual(['consumes-settings']);
+		expect(blocks(container, 1)).toEqual(['consumes-settings']);
 	});
 
 	it('keeps the other-settings block for a spec with swap slots and no inputs', async () => {
 		const container = mount({ otherInputs: { inputs: [] }, itemSwapSlots: [1] });
 		await becomeReady();
-		expect(blocks(container, 'settings-left-col-2')).toEqual(['consumes-settings', 'other-settings']);
+		expect(blocks(container, 1)).toEqual(['consumes-settings', 'other-settings']);
 	});
 
 	it('omits an external-cooldown block whose option list filters to nothing', async () => {
 		lists.value = { buffs: [{}], debuffs: [{}], externalDamage: [], externalDefensive: [{}] };
 		const container = mount();
 		await becomeReady();
-		expect(container.querySelectorAll('.settings-left-col-3 > [data-testid="content-block"]')).toHaveLength(3);
+		expect(cols(container)[2].querySelectorAll(':scope > [data-testid="content-block"]')).toHaveLength(3);
 		// The one that survived is still the defensive block, so the guards are not interchangeable.
 		expect(container.querySelectorAll('.stat-option-icons-root')).toHaveLength(2);
 	});
