@@ -332,7 +332,8 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			ItemNotice.registerSetBonusNotices(this.sim.db);
 			this.loadSettings();
 
-			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {
+			// Gear-planner specs never simulate, so the healing-sim disclaimer does not apply to them.
+			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode() && !this.simDisabled) {
 				alert(i18n.t('sim.healing_sim_disclaimer'));
 			}
 		});
@@ -384,6 +385,11 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 				console.warn('Failed to parse link settings: ' + e);
 			}
 			window.location.hash = '';
+
+			// Gear planners hide the encounter settings; keep the default target in the background so
+			// stats and the reforge optimizer always have a full environment to build, whatever the
+			// saved settings or the link carried.
+			if (this.simDisabled) this.sim.encounter.applyDefaults(initEventID);
 
 			this.player.setName(initEventID, 'Player');
 
@@ -455,6 +461,9 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private addDetailedResultsTab() {
+		// Nothing to show without a simulation.
+		if (this.simDisabled) return;
+
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
 		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
 

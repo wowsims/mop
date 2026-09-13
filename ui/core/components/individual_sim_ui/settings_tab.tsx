@@ -55,16 +55,21 @@ export class SettingsTab extends SimTab {
 	}
 
 	protected buildTabContent() {
-		this.buildEncounterSettings();
+		// Gear planners never run an encounter, so only the sections that change the character's stats are shown.
+		const gearPlanner = this.simUI.simDisabled;
+
+		if (!gearPlanner) this.buildEncounterSettings();
 		this.buildPlayerSettings();
 		this.buildCustomSettingsSections();
 		this.buildConsumesSection();
 		this.buildOtherSettings();
 
 		this.buildBuffsSettings();
-		this.raidExternalDamageCooldowns();
-		this.raidExternalDefensiveCooldowns();
-		this.buildDebuffsSettings();
+		if (!gearPlanner) {
+			this.raidExternalDamageCooldowns();
+			this.raidExternalDefensiveCooldowns();
+			this.buildDebuffsSettings();
+		}
 		this.buildPresetConfigurationPicker();
 		this.buildSavedDataPickers();
 	}
@@ -270,10 +275,18 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings]);
+		const categories = this.simUI.simDisabled
+			? [PresetConfigurationCategory.Settings]
+			: [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings];
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, categories);
 	}
 
 	private buildSavedDataPickers() {
+		if (!this.simUI.simDisabled) this.buildSavedEncounterPicker();
+		this.buildSavedSettingsPicker();
+	}
+
+	private buildSavedEncounterPicker() {
 		const savedEncounterManager = new SavedDataManager<Encounter, SavedEncounter>(this.rightPanel, this.simUI.sim.encounter, {
 			label: i18n.t('settings_tab.saved_encounters.encounter'),
 			header: { title: i18n.t('settings_tab.saved_encounters.title') },
@@ -287,6 +300,22 @@ export class SettingsTab extends SimTab {
 			fromJson: (obj: any) => SavedEncounter.fromJson(obj),
 		});
 
+		this.simUI.sim.waitForInit().then(() => {
+			savedEncounterManager.loadUserData();
+			this.simUI.individualConfig.presets.encounters?.forEach(encounter => {
+				savedEncounterManager.addSavedData({
+					name: encounter.name,
+					tooltip: encounter.tooltip,
+					isPreset: true,
+					data: SavedEncounter.create({
+						encounter: encounter.encounter,
+					}),
+				});
+			});
+		});
+	}
+
+	private buildSavedSettingsPicker() {
 		const savedSettingsManager = new SavedDataManager<IndividualSimUI<any>, SavedSettings>(this.rightPanel, this.simUI, {
 			label: i18n.t('settings_tab.saved_settings.settings'),
 			header: { title: i18n.t('settings_tab.saved_settings.title') },
@@ -343,17 +372,6 @@ export class SettingsTab extends SimTab {
 		});
 
 		this.simUI.sim.waitForInit().then(() => {
-			savedEncounterManager.loadUserData();
-			this.simUI.individualConfig.presets.encounters?.forEach(encounter => {
-				savedEncounterManager.addSavedData({
-					name: encounter.name,
-					tooltip: encounter.tooltip,
-					isPreset: true,
-					data: SavedEncounter.create({
-						encounter: encounter.encounter,
-					}),
-				});
-			});
 			savedSettingsManager.loadUserData();
 			this.simUI.individualConfig.presets.settings?.forEach(settings => {
 				savedSettingsManager.addSavedData({

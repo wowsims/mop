@@ -601,9 +601,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 432178.67871
-  tps: 338985.3445
-  hps: 2153.33396
+  dps: 431465.84299
+  tps: 338498.07463
+  hps: 2154.81953
  }
 }
 dps_results: {
@@ -1545,9 +1545,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 410928.42664
-  tps: 322910.4023
-  hps: 2227.61246
+  dps: 411396.69438
+  tps: 323564.64512
+  hps: 2230.58361
  }
 }
 dps_results: {
@@ -2049,9 +2049,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 410928.42664
-  tps: 322910.4023
-  hps: 2227.61246
+  dps: 411396.69438
+  tps: 323564.64512
+  hps: 2230.58361
  }
 }
 dps_results: {

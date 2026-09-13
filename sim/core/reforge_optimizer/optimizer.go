@@ -28,10 +28,15 @@ type reforgeOptimizer struct {
 	includeGems     bool
 	isBlacksmithing bool
 	isGuardianDruid bool
-	isHybridCaster  bool
 	isTrueCaster    bool
 	isTankSpec      bool
 	hasJC           bool
+
+	// spiritHitShare is the hit rating one point of Spirit grants through the player's
+	// stat-dependency graph, isolated from Spirit's own multipliers: 1 for Balance, Shadow and
+	// Elemental, 0.5 for Mistweaver and Holy Paladin, 0 for everyone else. Non-zero also means
+	// hit gems are skipped, since Spirit already covers hit.
+	spiritHitShare float64
 
 	ampModifier float64
 	// bearFormMult scales a Guardian Druid's crit and haste (1.0 otherwise). Kept as a field
@@ -200,17 +205,21 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	// constants. resolveStatMultiplier returns the self-multiplier the dependency graph applies to
 	// one unit of a stat (e.g. Bear Form's CritRating×1.5, Mark-of-the-Wild×Heart-of-the-Wild
 	// Agility×1.113). baseSDM (from ComputeStatsAndDeps above) already has the build-phase auras
-	// re-activated, so these multiplicative deps are live in the manager.
+	// re-activated, so these multiplicative deps are live in the manager. The delta path keeps
+	// the probe linear; the total path would round a rating's x1.5 on one unit up to 2.
 	resolveStatMultiplier := func(s stats.Stat) float64 {
 		in := stats.Stats{}
 		in[s] = 1
-		return baseSDM.ApplyStatDependencies(in)[s]
+		return baseSDM.ApplyStatDependenciesToDelta(in)[s]
 	}
 	ampModifier := amplificationStatModifier(baseStrippedGear)
 	// The Spirit self-multiplier (the Human racial is the only source in practice), isolated from the
 	// Amplification Trinket multiplier (which the graph also folds into Spirit but the model re-applies
 	// separately). 1.0 when there is no such racial.
-	spiritSelfMult := resolveStatMultiplier(stats.Spirit) / ampModifier
+	spiritProbe := baseSDM.ApplyStatDependenciesToDelta(stats.Stats{stats.Spirit: 1})
+	spiritSelfMult := spiritProbe[stats.Spirit] / ampModifier
+	// The hit one unit of Spirit grants, with Spirit's own multipliers divided back out.
+	spiritHitShare := spiritProbe[stats.HitRating] / spiritProbe[stats.Spirit]
 	bearFormMult := 1.0
 	guardianAgilityMult := 1.0
 	if isGuardian {
@@ -243,10 +252,10 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 		includeGems:       settings.GetIncludeGems(),
 		isBlacksmithing:   playerHasProfession(player, proto.Profession_Blacksmithing),
 		isGuardianDruid:   isGuardian,
-		isHybridCaster:    playerIsHybridCaster(player),
 		isTrueCaster:      playerIsTrueCaster(player),
 		isTankSpec:        playerIsTankSpec(player),
 		hasJC:             playerHasProfession(player, proto.Profession_Jewelcrafting),
+		spiritHitShare:    spiritHitShare,
 		ampModifier:       ampModifier,
 		bearFormMult:      bearFormMult,
 		statRules:         statRules,

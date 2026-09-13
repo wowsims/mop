@@ -93,8 +93,14 @@ func (monk *Monk) registerStanceOfTheWiseSerpent(stanceCD *core.Timer) {
 	actionID := core.ActionID{SpellID: 117895}
 	chiMetrics := monk.NewChiMetrics(actionID)
 
-	hitDep := monk.NewDynamicStatDependency(stats.Spirit, stats.HitRating, 0.5)
-	expDep := monk.NewDynamicStatDependency(stats.Spirit, stats.ExpertiseRating, 0.5)
+	// Hit and expertise equal to 50% of Spirit gained from items or effects.
+	// Base Spirit is excluded and the share is truncated: a logged Pandaren
+	// with 13703 Spirit (base 192) has 6755 hit, not 6756.
+	baseSpirit := monk.GetBaseStats()[stats.Spirit]
+	hitDep := monk.NewDynamicRatingFromStatDependency(stats.Spirit, stats.HitRating, 0.5, baseSpirit)
+	expDep := monk.NewDynamicRatingFromStatDependency(stats.Spirit, stats.ExpertiseRating, 0.5, baseSpirit)
+	// Haste rating x1.5, rounded to an integer after the Amplification
+	// trinket's multiplier has been applied and rounded on its own.
 	hasteDep := monk.NewDynamicMultiplyStat(stats.HasteRating, 1.5)
 
 	dmgDone := 0.0

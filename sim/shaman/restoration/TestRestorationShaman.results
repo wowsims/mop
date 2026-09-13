@@ -1,0 +1,64 @@
+character_stats_results: {
+ key: "TestRestorationShaman-p5"
+ value: {
+  final_stats: 234
+  final_stats: 176
+  final_stats: 42881
+  final_stats: 31487
+  final_stats: 8554
+  final_stats: 0
+  final_stats: 2273
+  final_stats: 14005
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 19780
+  final_stats: 809.6
+  final_stats: 0
+  final_stats: 51477.8
+  final_stats: 0
+  final_stats: 0
+  final_stats: 30814
+  final_stats: 0
+  final_stats: 746737
+  final_stats: 300000
+  final_stats: 5138
+  final_stats: 0
+  final_stats: 0
+  final_stats: 11.84807
+  final_stats: 23.41594
+  final_stats: 0
+ }
+}
+character_stats_results: {
+ key: "TestRestorationShaman-preraid"
+ value: {
+  final_stats: 234
+  final_stats: 176
+  final_stats: 31054
+  final_stats: 23678
+  final_stats: 7183
+  final_stats: 0
+  final_stats: 1800
+  final_stats: 9236
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 15248
+  final_stats: 809.6
+  final_stats: 0
+  final_stats: 37863.1
+  final_stats: 0
+  final_stats: 0
+  final_stats: 27949
+  final_stats: 0
+  final_stats: 581159
+  final_stats: 300000
+  final_stats: 5138
+  final_stats: 0
+  final_stats: 0
+  final_stats: 11.05974
+  final_stats: 19.54547
+  final_stats: 0
+ }
+}

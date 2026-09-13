@@ -544,8 +544,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 263606.29465
-  tps: 254114.18746
+  dps: 264157.91756
+  tps: 254658.63708
  }
 }
 dps_results: {

@@ -36,6 +36,10 @@ func NewHolyPriest(character *core.Character, options *proto.Player) *HolyPriest
 		Priest: basePriest,
 	}
 
+	// Meditation (95861): 50% of mana regeneration from Spirit continues in combat.
+	// Healing spells are not implemented; this spec is a gear planner only.
+	holyPriest.NewSpecPassiveAura("Meditation", 95861).AttachAdditivePseudoStatBuff(&holyPriest.PseudoStats.SpiritRegenRateCombat, 0.5)
+
 	return holyPriest
 }
 
