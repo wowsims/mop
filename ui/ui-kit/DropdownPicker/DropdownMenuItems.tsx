@@ -42,10 +42,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 								render={
 									<button
 										type="button"
-										className={clsx(
-											'flex items-center w-full py-1 px-4 border-0 bg-transparent text-white text-left whitespace-nowrap font-normal cursor-pointer transition-colors duration-200 ease-in-out data-[highlighted]:bg-surface-hover',
-											entry.trigger?.option.className,
-										)}
+										className={clsx('ui-menu-item', 'ui-menu-item-row', entry.trigger?.option.className)}
 										data-testid="dropdown-item"
 									/>
 								}
