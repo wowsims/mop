@@ -32,7 +32,22 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   non-SCSS reader; `pet-spec-picker-root` never existed) · `44074d539` gate tooling (tw-probe
   `CONFINE` mode, settings-tab clicks `label[for]`, apl-tab/log-runner readers through `q()`).
   `test:snapshots` 34/34 at the close.
-- **Phase 2 next (orchestrator's partition, disjoint file sets):** wave A = **B-U3a**
+- **Phase 2 wave A landed:** `bdc84d932` B-U3a TabNav/TabPanel (`tab_pane_class.ts`, `SimTabs.scss`,
+  the `.nav-tabs` overrides block deleted; five list + three panel sites) · `37f4d469c` B-U3b
+  Menu/MenuItem (`DropdownPicker.scss`, `ImportExportMenu.scss`, `SimTitleDropdown.scss` deleted;
+  `ui/ui-kit/Menu/classes.ts` exports the strings for DropdownMenu's radio/submenu trees and
+  SimTitleDropdown). Four probe rounds; the lessons are under "Lessons from wave A" below.
+  **Bootstrap `nav`, `transitions`, `dropdown` are still imported** — each dies with its last reader
+  (nav: SimShell's two toolbar divs → A-U-shell, landing header → A-U-landing; transitions: no
+  reader left once `nav` goes, delete together; dropdown: DropdownPicker roots, IconEnumPicker/
+  MultiIconPicker, BulkItemSearch, the `dropdown-toggle` caret, both landing menus). The two
+  landing menus stay on Bootstrap until A-U-landing. Probe: **0 diffs vs baseline-2, no tree
+  change, no re-baseline** (TabBadge renders nothing without a label).
+- **Wave B in progress:** A-U-shell as three disjoint Sonnet workers, one commit: W1 shell core
+  (`core/sim_ui/*`, `_sim_title_dropdown`, SimShell/header/sidebar carriers), W2 `TabPanelColumns`
+  (`_sim_tab` + the four tab files' `.tab-pane-content-container` blocks, `SimTabPane`, tab bodies),
+  W3 `ContentBlock flush` + `_sticky_toolbar` + `individual_sim_ui/_shared`.
+- **Phase 2 partition (orchestrator's, disjoint file sets):** wave A = **B-U3a**
   `TabNav`/`TabPanel` (SimTabs, AplNavbar, DetailedResultsTabs, SelectorModal, BulkTabBody,
   DetailedResultsPane; deletes `tab_pane_class.ts`, `SimTabs.scss`,
   `_bootstrap_style_overrides.scss:198-228`; `SimShell.tsx:100-101` `.nav` → `flex flex-wrap`;
@@ -48,6 +63,31 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   `tab_pane_class.ts`, Menu/MenuItem, TabPanelColumns; `core/sim_ui/*`, `_sim_tab` + five tab files,
   `_content_block` + `flush`, `_sticky_toolbar`, `_sim_title_dropdown`; Bootstrap nav/transitions/
   dropdown die) → C-U3.2 → A-U-icon (before the two ladders) → A-U-list.
+
+## Lessons from wave A (Phase 2)
+
+- **A `border: 0` shorthand resets the colour to `currentColor`; `border-0` sets only widths.** Add
+  `border-current` when the SCSS used the shorthand and a surviving rule (Bootstrap `.nav-tabs
+  .nav-link { border: 1px solid transparent }`) would otherwise colour the edges.
+- **`border-border` colours all four sides; `border-b-border` only the bottom.** Bootstrap's
+  `.nav-tabs` set only `border-bottom`, so top/left computed `currentColor`.
+- **`text-base`/`text-sm` emit a line-height too**; SCSS that set only `font-size` becomes
+  `text-[length:var(--x)]`.
+- **`fade-in-out` is enter+exit.** Where the SCSS was enter-only (`SimTabs.scss`, deliberately —
+  `keepMounted` uses a real `hidden`) write `[transition:var(--transition-fade)]
+  data-[starting-style]:opacity-0`; the exit fade kept the outgoing pane laid out 150 ms and a
+  sticky observer inside it computed `stuck` (one section at 700px, reproducible).
+- **A Bootstrap partial import dies only with its last reader**, and the census must include TSX
+  outside the unit (landing) and `_bootstrap_style_overrides.scss` blocks. The plan's "dies in U3"
+  rows are targets, not orders.
+- **A prop that "adds a class when true" is not a whole-string variant**: `bordered={false}` must
+  emit `border-b-0`, not nothing, or the surviving partial's declaration shows through.
+- `ui/scss/index.scss` is a single-writer file (orchestrator only).
+- `a11y.mjs` takes **one spec** as `argv[2]` (a comma list 404s → sidebar timeout) and reads
+  `PORT`/`REACT_PORT`; run it once per spec. Verifier briefs: step 0 `ss -ltnp | grep ':340[1-6] '`
+  and kill strays; the empty `ss` line is the report's last line or the report is rejected; probes
+  must run in the foreground with a 600 s Bash timeout (two verifiers paused on a backgrounded
+  probe). Servers are the verifier's own if `ss` shows them mid-run.
 
 ## Deferred between units (not user questions)
 
@@ -91,7 +131,15 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 Count: **1** — landing page +10 KB shared chunk since A-S4 (full text under `## Parked for the
 user` in `tools/react-migration/TAILWIND-DIVERGENCE.md`; default taken: plan as written).
 
-## Latest verifier numbers (Phase 1 close, tree at 44074d539)
+## Latest verifier numbers (wave A close, tree at 37f4d469c)
+
+type-check clean · vitest **1720 / 214** · lint:js **0 errors, 252 warnings** · lint:css clean ·
+test:locales 8/8 · build OK · tw-probe **0 diffs** vs baseline-2 (197,373 elements) · a11y
+warrior/arms + mage/fire 39 PASS each · tabs-behaviour 6/6 · tabs-a11y vs master 6/6 · mount-once
+PASS · test:snapshots not yet run this phase (due at the phase close). Bundles: spec **202,230 B** ·
+home **98,973 B** · shared **58,349 B**.
+
+## Verifier numbers at the Phase 1 close (tree at 44074d539)
 
 type-check clean · vitest **1710 / 211** · lint:js **0 errors, 252 warnings** (ceiling 280) ·
 lint:css clean · test:locales 8/8 · test:snapshots **34/34** (Phase-1 close; per phase, and per
