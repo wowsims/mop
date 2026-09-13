@@ -17,9 +17,9 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (
-		<div className="metrics-action">
+		<div className="metrics-action flex items-center gap-2 whitespace-normal">
 			<WowheadIcon
-				className="metrics-action-icon"
+				className="metrics-action-icon h-[24px] w-[24px] align-middle mr-[4px]"
 				label={name}
 				href={href || undefined}
 				iconUrl={iconUrl}
@@ -30,15 +30,14 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 			{expandable && (
 				<Button
 					variant="unstyled"
-					className="expand-toggle"
+					className="expand-toggle p-0 border-0 bg-transparent text-inherit ml-auto focus-visible:focus-ring"
 					aria-expanded={expanded}
 					aria-label={name}
 					onClick={event => {
 						event.stopPropagation();
 						onToggle();
 					}}>
-					<Icon name="caret-right" style="base" />
-					<Icon name="caret-down" style="base" />
+					<Icon name={expanded ? 'caret-down' : 'caret-right'} style="base" />
 				</Button>
 			)}
 		</div>
