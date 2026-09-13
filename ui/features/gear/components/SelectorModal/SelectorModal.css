@@ -2,6 +2,19 @@
 	@apply bg-no-repeat bg-cover bg-center relative cursor-pointer inline-block w-12 h-12 border border-border;
 }
 
+.ui-selector-modal-list-item {
+	@apply relative p-2 flex items-center bg-gray-900 gap-4 hover:bg-gray-800
+		[&.active_.selector-modal-list-item-icon]:outline-2 [&.active_.selector-modal-list-item-icon]:outline-success;
+}
+
+.ui-selector-modal-list-item-link {
+	@apply flex items-center min-w-[10vw] relative after:content-[''] after:absolute after:inset-0;
+}
+
+.ui-selector-modal-list-item-name {
+	@apply text-md ml-2 tracking-normal font-normal cursor-pointer;
+}
+
 .ui-selector-modal-filters {
 	& input,
 	& select {

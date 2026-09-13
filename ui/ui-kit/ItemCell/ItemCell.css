@@ -13,7 +13,7 @@
 }
 
 .ui-item-picker-sockets-container {
-	@apply absolute inset-x-0 bottom-0 w-full flex justify-center;
+	@apply absolute left-auto right-auto bottom-0 w-full flex justify-center;
 }
 
 .ui-item-picker-labels-container {

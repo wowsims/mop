@@ -96,7 +96,7 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			name={
 				<>
 					<ItemCellAnchor
-						className={clsx('item-picker-name-container ui-item-picker-name-container tracking-normal', itemQualityClassName(item?.item.quality))}
+						className={clsx('item-picker-name-container ui-item-picker-name-container', itemQualityClassName(item?.item.quality))}
 						role="button"
 						href={href || undefined}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
@@ -104,11 +104,13 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 						{...wowheadProps}>
 						{item ? (
 							<>
-								<span className="item-picker-name">
+								<span className="item-picker-name tracking-normal">
 									{item.item.name}
 									{!!item.randomSuffix && ` ${translateProtoStatName(item.randomSuffix.name)}`}
 								</span>
-								{!!item.item.nameDescription && <NameDescriptionLabel nameDescription={item.item.nameDescription} />}
+								{!!item.item.nameDescription && (
+									<NameDescriptionLabel nameDescription={item.item.nameDescription} className="tracking-normal" />
+								)}
 							</>
 						) : (
 							translateSlotName(slot)

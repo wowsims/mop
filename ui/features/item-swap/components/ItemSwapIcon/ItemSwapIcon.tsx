@@ -48,7 +48,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 				style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
 				{...wowheadProps}
 			/>
-			<div className="item-picker-sockets-container">
+			<div className="item-picker-sockets-container ui-item-picker-sockets-container">
 				{item?.allSocketColors().map((socketColor, gemIdx) => (
 					<GemSocket
 						key={gemIdx}

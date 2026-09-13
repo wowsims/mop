@@ -1,5 +1,5 @@
 .ui-summary-table-gem-icon {
 	--gem-width: 2rem;
 
-	@apply [position:unset] mr-1 rounded-none border border-border;
+	@apply mr-1 border border-border;
 }

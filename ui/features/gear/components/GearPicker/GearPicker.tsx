@@ -19,6 +19,7 @@ export const GearPicker = ({ ready }: GearPickerProps) => (
 			className={clsx(
 				'gear-picker-right gap-(--spacing-stack) *:flex-row-reverse max-md:*:flex-row',
 				'[&_.item-picker-labels-container]:items-end max-md:[&_.item-picker-labels-container]:items-start',
+				'[&_.item-picker-labels-container]:text-right',
 				'[&_.item-picker-name-row]:text-right max-md:[&_.item-picker-name-row]:text-left',
 				'[&_.item-picker-reforge]:text-right max-md:[&_.item-picker-reforge]:text-left',
 				'[&_.item-picker-enchant]:text-right max-md:[&_.item-picker-enchant]:text-left',

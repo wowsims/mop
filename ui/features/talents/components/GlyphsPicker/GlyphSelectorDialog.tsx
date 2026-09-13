@@ -27,18 +27,24 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 				{entries.map(entry => (
 					<li
 						key={entry.id}
-						className={clsx('selector-modal-list-item', entry.id === activeId && 'active', !matchesGlyphSearch(entry.name, search) && 'hidden')}
+						className={clsx(
+							'selector-modal-list-item ui-selector-modal-list-item',
+							entry.id === activeId && 'active',
+							!matchesGlyphSearch(entry.name, search) && 'hidden',
+						)}
 						data-active={entry.id === activeId ? '' : undefined}
 						hidden={!matchesGlyphSearch(entry.name, search)}>
 						<a
-							className="selector-modal-list-item-link"
+							className="selector-modal-list-item-link ui-selector-modal-list-item-link"
 							href={glyphUrl(entry)}
 							onClick={event => {
 								event.preventDefault();
 								onSelect(entry.id);
 							}}>
-							<img className="selector-modal-list-item-icon" src={entry.iconUrl} alt="" />
-							<span className={clsx('selector-modal-list-item-name', itemQualityClassName(entry.quality))}>{entry.name}</span>
+							<img className="selector-modal-list-item-icon ui-selector-modal-list-item-icon" src={entry.iconUrl} alt="" />
+							<span className={clsx('selector-modal-list-item-name ui-selector-modal-list-item-name', itemQualityClassName(entry.quality))}>
+								{entry.name}
+							</span>
 							<span className="selector-modal-list-item-description">{entry.description}</span>
 						</a>
 					</li>
