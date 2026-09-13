@@ -297,6 +297,20 @@ func MakeStackingAura(character *Character, config StackingStatAura) *StatBuffAu
 	}
 }
 
+// Registers an always-on spec passive (a mana pool multiplier, a Spirit
+// share, an in-combat regen rate). Call it from the spec's constructor: the
+// Base build phase is measured first, so every measured stat phase includes
+// the passive, and ComputeStatsAndDeps re-applies Base (with Gear and Buffs)
+// so its stat dependencies stay active in the manager the reforge optimizer
+// receives. An aura registered from Initialize is measured by no phase.
+func (character *Character) NewSpecPassiveAura(label string, spellID int32) *Aura {
+	return MakePermanent(character.RegisterAura(Aura{
+		Label:      label + character.Label,
+		ActionID:   ActionID{SpellID: spellID},
+		BuildPhase: CharacterBuildPhaseBase,
+	}))
+}
+
 // Returns the same Aura for chaining.
 func MakePermanent(aura *Aura) *Aura {
 	aura.Duration = NeverExpires

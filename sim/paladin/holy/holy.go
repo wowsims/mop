@@ -54,21 +54,11 @@ func (holy *HolyPaladin) Initialize() {
 	holy.Paladin.Initialize()
 }
 
-// Spec passives are always on. They are registered from the constructor
-// with the Base build phase, like the Mistweaver stance, so every measured
-// stat phase includes them and they stay active in the dependency manager
-// the reforge optimizer receives (ComputeStatsAndDeps re-applies Base, Gear
-// and Buffs only; anything registered from Initialize is measured by none).
-
 // Holy Insight (112859), the stat-affecting parts only. The healing
 // multipliers on the same spell are not implemented; this spec is a gear
 // planner only.
 func (holy *HolyPaladin) registerHolyInsight() {
-	core.MakePermanent(holy.RegisterAura(core.Aura{
-		Label:      "Holy Insight" + holy.Label,
-		ActionID:   core.ActionID{SpellID: 112859},
-		BuildPhase: core.CharacterBuildPhaseBase,
-	})).AttachStatDependency(
+	holy.NewSpecPassiveAura("Holy Insight", 112859).AttachStatDependency(
 		// Increases mana pool by 400%.
 		holy.NewDynamicMultiplyStat(stats.Mana, 5),
 	).AttachAdditivePseudoStatBuff(

@@ -17,53 +17,39 @@ func init() {
 // rotation and the fake prepull (no SkipRotation) make it exercise a full environment reset, the
 // path the UI's stats request takes.
 func TestDisciplinePriest(t *testing.T) {
-	var generators []core.TestGenerator
-	for _, gearSet := range []string{"preraid", "p5"} {
-		player := core.WithSpec(
+	newPlayer := func(gearSetDir string, gearSet string) *proto.Player {
+		return core.WithSpec(
 			&proto.Player{
 				Class:         proto.Class_ClassPriest,
 				Race:          proto.Race_RaceUndead,
-				Equipment:     core.GetGearSet("../../../ui/priest/discipline/gear_sets", gearSet).GearSet,
+				Equipment:     core.GetGearSet(gearSetDir, gearSet).GearSet,
 				Consumables:   FullConsumes,
 				Buffs:         core.FullIndividualBuffs,
 				TalentsString: StandardTalents,
 				Glyphs:        StandardGlyphs,
 				Profession1:   proto.Profession_Engineering,
-				Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
 				Profession2:   proto.Profession_Leatherworking,
+				Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
 			},
 			PlayerOptions,
 		)
-		generators = append(generators, &core.SingleCharacterStatsTestGenerator{
-			Name: gearSet,
+	}
+	statsTest := func(name string, player *proto.Player) core.TestGenerator {
+		return &core.SingleCharacterStatsTestGenerator{
+			Name: name,
 			Request: &proto.ComputeStatsRequest{
 				Raid: core.SinglePlayerRaidProto(player, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
 			},
-		})
+		}
 	}
-	// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
-	// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
-	shadowTier := core.WithSpec(
-		&proto.Player{
-			Class:         proto.Class_ClassPriest,
-			Race:          proto.Race_RaceUndead,
-			Equipment:     core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p5").GearSet,
-			Consumables:   FullConsumes,
-			Buffs:         core.FullIndividualBuffs,
-			TalentsString: StandardTalents,
-			Glyphs:        StandardGlyphs,
-			Profession1:   proto.Profession_Engineering,
-			Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
-			Profession2:   proto.Profession_Leatherworking,
-		},
-		PlayerOptions,
-	)
-	generators = append(generators, &core.SingleCharacterStatsTestGenerator{
-		Name: "p5-shadow-tier",
-		Request: &proto.ComputeStatsRequest{
-			Raid: core.SinglePlayerRaidProto(shadowTier, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
-		},
-	})
+
+	generators := []core.TestGenerator{
+		statsTest("preraid", newPlayer("../../../ui/priest/discipline/gear_sets", "preraid")),
+		statsTest("p5", newPlayer("../../../ui/priest/discipline/gear_sets", "p5")),
+		// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
+		// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
+		statsTest("p5-shadow-tier", newPlayer("../../../ui/priest/shadow/gear_sets", "p5")),
+	}
 	core.RunTestSuite(t, t.Name(), generators)
 }
 

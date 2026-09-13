@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/wowsims/mop/sim"
+	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
 )
@@ -33,26 +34,12 @@ func TestSpiritHitShare(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			player := &proto.Player{
+			player := core.WithSpec(&proto.Player{
 				Class:       c.class,
 				Race:        c.race,
 				Equipment:   &proto.EquipmentSpec{},
 				Consumables: &proto.ConsumesSpec{},
-			}
-			switch spec := c.spec.(type) {
-			case *proto.Player_BalanceDruid:
-				player.Spec = spec
-			case *proto.Player_ShadowPriest:
-				player.Spec = spec
-			case *proto.Player_ElementalShaman:
-				player.Spec = spec
-			case *proto.Player_MistweaverMonk:
-				player.Spec = spec
-			case *proto.Player_HolyPaladin:
-				player.Spec = spec
-			case *proto.Player_ArcaneMage:
-				player.Spec = spec
-			}
+			}, c.spec)
 			request := &proto.ReforgeOptimizeRequest{
 				Raid: &proto.Raid{Parties: []*proto.Party{{Players: []*proto.Player{player}}}},
 			}

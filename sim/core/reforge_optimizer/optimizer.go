@@ -216,8 +216,10 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	// The Spirit self-multiplier (the Human racial is the only source in practice), isolated from the
 	// Amplification Trinket multiplier (which the graph also folds into Spirit but the model re-applies
 	// separately). 1.0 when there is no such racial.
-	spiritSelfMult := resolveStatMultiplier(stats.Spirit) / ampModifier
-	spiritHitShare := baseSDM.ApplyStatDependenciesToDelta(stats.Stats{stats.Spirit: 1})[stats.HitRating] / resolveStatMultiplier(stats.Spirit)
+	spiritProbe := baseSDM.ApplyStatDependenciesToDelta(stats.Stats{stats.Spirit: 1})
+	spiritSelfMult := spiritProbe[stats.Spirit] / ampModifier
+	// The hit one unit of Spirit grants, with Spirit's own multipliers divided back out.
+	spiritHitShare := spiritProbe[stats.HitRating] / spiritProbe[stats.Spirit]
 	bearFormMult := 1.0
 	guardianAgilityMult := 1.0
 	if isGuardian {
