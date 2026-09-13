@@ -12,22 +12,8 @@ export const UnitIcon = ({ iconUrl }: UnitIconProps) => {
 	const { iconUrl: resolved } = useActionId(iconUrl instanceof ActionId ? iconUrl : undefined);
 
 	if (iconUrl instanceof ActionId)
-		return (
-			<img
-				className="flex justify-center items-center size-icon-sm mr-1 unit-picker-item-icon"
-				data-testid="unit-picker-item-icon"
-				src={resolved || undefined}
-				alt=""
-			/>
-		);
+		return <img className="flex justify-center items-center size-icon-sm mr-1" data-testid="unit-picker-item-icon" src={resolved || undefined} alt="" />;
 	if (iconUrl.startsWith('fa-'))
-		return (
-			<i
-				className={clsx('fa', iconUrl, 'flex justify-center items-center size-icon-sm mr-1 unit-picker-item-icon')}
-				data-testid="unit-picker-item-icon"
-			/>
-		);
-	return (
-		<img className="flex justify-center items-center size-icon-sm mr-1 unit-picker-item-icon" data-testid="unit-picker-item-icon" src={iconUrl} alt="" />
-	);
+		return <i className={clsx('fa', iconUrl, 'flex justify-center items-center size-icon-sm mr-1')} data-testid="unit-picker-item-icon" />;
+	return <img className="flex justify-center items-center size-icon-sm mr-1" data-testid="unit-picker-item-icon" src={iconUrl} alt="" />;
 };

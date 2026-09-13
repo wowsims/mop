@@ -156,11 +156,7 @@ describe('ListPicker', () => {
 			);
 
 			const header = within(root()).getByTestId('list-picker-item-header');
-			expect([...header.children].map(child => child.className)).toEqual([
-				'list-picker-item-title',
-				'hide-picker',
-				'list-picker-item-action list-picker-item-actions',
-			]);
+			expect([...header.children].map(child => child.className)).toEqual(['list-picker-item-title', 'hide-picker', 'list-picker-item-action']);
 		});
 	});
 

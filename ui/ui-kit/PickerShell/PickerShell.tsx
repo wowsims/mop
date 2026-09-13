@@ -11,7 +11,7 @@ const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join
 
 export interface PickerShellProps<ModObject, T, V> {
 	config: InputConfig<ModObject, T, V> & { id: string };
-	className: string;
+	className?: string;
 	hidden: boolean;
 	disabled: boolean;
 	leading?: ReactNode;
@@ -61,14 +61,9 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			{tooltipNode}
 			{config.description &&
 				(isNode(config.description) ? (
-					<Field.Description
-						render={<div />}
-						className={clsx('input-description', INPUT_DESCRIPTION)}
-						data-testid="input-description"
-						ref={adoptNode(config.description)}
-					/>
+					<Field.Description render={<div />} className={INPUT_DESCRIPTION} data-testid="input-description" ref={adoptNode(config.description)} />
 				) : (
-					<Field.Description render={<div />} className={clsx('input-description', INPUT_DESCRIPTION)} data-testid="input-description">
+					<Field.Description render={<div />} className={INPUT_DESCRIPTION} data-testid="input-description">
 						{config.description}
 					</Field.Description>
 				))}

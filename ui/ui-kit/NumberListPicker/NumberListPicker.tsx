@@ -40,7 +40,7 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 	});
 
 	return (
-		<PickerShell config={config} className="number-list-picker-root" testId="number-list-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} testId="number-list-picker-root" hidden={hidden} disabled={disabled}>
 			<Input
 				type="text"
 				ref={attachInput}

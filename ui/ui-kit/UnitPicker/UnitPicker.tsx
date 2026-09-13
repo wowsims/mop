@@ -16,7 +16,7 @@ export interface UnitPickerProps {
 	 * pickers all set it.
 	 */
 	hideLabelWhenDefault?: boolean;
-	/** On the root, beside `unit-picker-root`. */
+	/** On the root. */
 	className?: ClassValue;
 }
 
@@ -29,7 +29,7 @@ export interface UnitPickerProps {
 export const UnitPicker = ({ id, options, value, onChange, hideLabelWhenDefault, className }: UnitPickerProps) => (
 	<DropdownPicker<UnitValue>
 		id={id}
-		className={['unit-picker-root', className]}
+		className={className}
 		testId="unit-picker-root"
 		options={options.map(unit => unitOption(unit))}
 		value={{ value }}

@@ -11,7 +11,7 @@ interface Unit {
 
 const units: Array<DropdownOption<Unit>> = [
 	{ value: { id: 0, name: 'All' }, label: 'All Targets' },
-	{ value: { id: 1, name: 'One' }, label: 'Target 1', icon: <img className="unit-picker-item-icon" alt="" />, className: 'text-class-warrior' },
+	{ value: { id: 1, name: 'One' }, label: 'Target 1', icon: <img className="custom-icon-class" alt="" />, className: 'text-class-warrior' },
 	{ value: { id: 2, name: 'Two' }, label: 'Target 2' },
 ];
 
@@ -26,7 +26,7 @@ const mount = (value: Unit | undefined, onChange = vi.fn(), options = units, equ
 			onChange={onChange}
 			equals={equals}
 			defaultLabel="Unit"
-			className="unit-picker-root"
+			className="custom-root-class"
 		/>,
 	);
 
@@ -39,7 +39,7 @@ describe('DropdownPicker', () => {
 	it('renders the root and trigger the stylesheets select on', () => {
 		mount(undefined);
 
-		expect(root().className).toBe('dropdown-picker-root dropdown unit-picker-root');
+		expect(root().className).toBe('dropdown-picker-root dropdown custom-root-class');
 		expect(trigger().className).toBe('dropdown-picker-button btn dropdown-toggle');
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
@@ -55,7 +55,7 @@ describe('DropdownPicker', () => {
 		mount({ id: 1, name: 'One' });
 
 		expect(trigger().textContent).toBe('Target 1');
-		expect(trigger().querySelectorAll('img.unit-picker-item-icon')).toHaveLength(1);
+		expect(trigger().querySelectorAll('img.custom-icon-class')).toHaveLength(1);
 		expect(trigger().className).toContain('text-class-warrior');
 	});
 
@@ -260,7 +260,7 @@ describe('DropdownPicker', () => {
 			);
 
 			expect(trigger().textContent).toBe('Target 1');
-			expect(trigger().querySelectorAll('img.unit-picker-item-icon')).toHaveLength(1);
+			expect(trigger().querySelectorAll('img.custom-icon-class')).toHaveLength(1);
 		});
 	});
 });

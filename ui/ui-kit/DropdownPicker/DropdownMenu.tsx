@@ -74,7 +74,7 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 						<Menu.Popup className="dropdown-picker-menu" data-testid="dropdown-picker-menu">
 							<Menu.RadioGroup
 								render={<ul />}
-								className="dropdown-picker-list m-0 list-none p-0"
+								className="m-0 list-none p-0"
 								data-testid="dropdown-picker-list"
 								value={selectedIndex}
 								onValueChange={(index: number) => onChange(options[index].value)}>
