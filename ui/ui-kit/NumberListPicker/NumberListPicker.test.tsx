@@ -72,7 +72,7 @@ describe('NumberListPicker', () => {
 	it('renders nothing when showWhen is false', () => {
 		const settings = new Settings();
 		const { container } = render(<NumberListPicker modObject={settings} config={configFor({ showWhen: () => false })} />);
-		expect(container.querySelector('.input-root')).toBeNull();
+		expect(container.querySelector('[data-testid="number-list-picker-root"]')).toBeNull();
 		expect(screen.queryByRole('textbox')).toBeNull();
 	});
 
@@ -80,7 +80,7 @@ describe('NumberListPicker', () => {
 		const settings = new Settings();
 		render(<NumberListPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(input().disabled).toBe(true);
-		expect(input().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
+		expect(input().closest('[data-testid="number-list-picker-root"]')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('renders the same shape as the vanilla picker: label, description, then the input', () => {

@@ -30,16 +30,17 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					value={entry.index}
 					closeOnClick
 					className={clsx('dropdown-picker-item', entry.option.className, entry.option.itemClassName)}
+					data-testid="dropdown-picker-item"
 					{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
 					{entry.option.icon}
 					{entry.option.label}
 				</Menu.RadioItem>
 			) : (
 				<Menu.SubmenuRoot key={`submenu-${entry.key}-${position}`}>
-					<li className="dropdown-picker-item">
+					<li className="dropdown-picker-item" data-testid="dropdown-picker-item">
 						<div className="dropend">
 							<Menu.SubmenuTrigger
-								render={<button type="button" className={clsx('dropdown-item', entry.trigger?.option.className)} />}
+								render={<button type="button" className={clsx('dropdown-item', entry.trigger?.option.className)} data-testid="dropdown-item" />}
 								onClick={entry.trigger ? () => onSelect(entry.trigger!.index) : undefined}
 								{...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip)}>
 								{entry.trigger ? (
@@ -53,7 +54,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 							</Menu.SubmenuTrigger>
 							<Menu.Portal>
 								<Menu.Positioner align="start" side="right" className="dropdown-picker-positioner">
-									<Menu.Popup render={<ul />} className="dropdown-submenu dropdown-picker-menu">
+									<Menu.Popup render={<ul />} className="dropdown-submenu dropdown-picker-menu" data-testid="dropdown-submenu">
 										<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
 									</Menu.Popup>
 								</Menu.Positioner>

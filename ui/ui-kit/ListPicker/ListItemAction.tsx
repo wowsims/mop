@@ -17,10 +17,17 @@ export interface ListItemActionProps {
  * One round action button: the class list, the icon and the `type="button"` live in one place and
  * the tooltip rides on the anchor.
  */
+const testIdFor = (className: ClassValue | undefined): string => {
+	const classes = Array.isArray(className) ? className : className ? [className] : [];
+	const specific = classes.map(String).find(name => name.startsWith('list-picker') && name !== 'list-picker-item-action');
+	return specific ?? 'list-picker-item-action';
+};
+
 export const ListItemAction = ({ icon, className, tooltip, tooltipId, hidden, onClick }: ListItemActionProps) => (
 	<Button
 		variant="unstyled"
 		className={clsx('list-picker-item-action', className)}
+		data-testid={testIdFor(className)}
 		style={hidden === undefined ? undefined : { display: hidden ? 'none' : undefined }}
 		onClick={onClick}
 		{...tooltipAnchorProps(tooltipId, tooltip)}>

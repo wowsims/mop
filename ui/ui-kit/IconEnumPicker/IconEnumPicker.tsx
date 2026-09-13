@@ -70,6 +70,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 		<PickerShell
 			config={config as typeof config & { id: string }}
 			className={clsx('icon-enum-picker-root', 'icon-picker', horizontal ? 'dropend' : 'dropdown')}
+			testId="icon-enum-picker-root"
 			hidden={hidden}
 			disabled={disabled}>
 			<Menu.Root modal={false}>
@@ -80,24 +81,27 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					openOnHover
 					delay={0}
 					className={clsx('icon-picker-button', active && 'active')}
+					data-testid="icon-enum-picker-button"
 					data-active={active ? '' : undefined}
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}
 					data-whtticon="false"
 					data-disable-wowhead-touch-tooltip="true"
 					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
 				/>
-				<div className="icon-enum-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="icon-enum-picker-portal">
+				<div className="icon-enum-picker-slot" data-testid="icon-enum-picker-slot" ref={setSlot} />
+				<Menu.Portal container={slot} className="icon-enum-picker-portal" data-testid="icon-enum-picker-portal">
 					{/* `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against the `position: relative` picker root this portal sits inside. The popup lands a screenful away for one frame, and the focus Base UI moves into it scrolls the pane after it. */}
 					<Menu.Positioner
 						side={horizontal ? 'right' : 'bottom'}
 						align="start"
 						sideOffset={-1}
 						positionMethod="fixed"
-						className="icon-enum-picker-positioner">
+						className="icon-enum-picker-positioner"
+						data-testid="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}
 							className="icon-enum-picker-menu"
+							data-testid="icon-enum-picker-menu"
 							style={{
 								gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,
 								gridAutoFlow: horizontal ? 'column' : undefined,
@@ -118,7 +122,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					</Menu.Positioner>
 				</Menu.Portal>
 			</Menu.Root>
-			<label className="form-label" style={{ display: selected?.text === undefined ? 'none' : 'block' }}>
+			<label className="form-label" data-testid="form-label" style={{ display: selected?.text === undefined ? 'none' : 'block' }}>
 				{selected?.text}
 			</label>
 			{tooltips && <Tooltip id={tooltipId} />}

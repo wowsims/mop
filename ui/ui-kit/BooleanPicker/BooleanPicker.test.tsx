@@ -63,14 +63,14 @@ describe('BooleanPicker', () => {
 	it('renders nothing when showWhen is false', () => {
 		const settings = new Settings();
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ showWhen: () => false })} />);
-		expect(container.querySelector('.input-root')).toBeNull();
+		expect(container.querySelector('[data-testid="boolean-picker-root"]')).toBeNull();
 	});
 
 	it('disables the input and marks the root when enableWhen is false', () => {
 		const settings = new Settings();
 		render(<BooleanPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(checkbox().disabled).toBe(true);
-		expect(checkbox().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
+		expect(checkbox().closest('[data-testid="boolean-picker-root"]')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {

@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DropdownPicker } from './DropdownPicker';
@@ -30,9 +30,9 @@ const mount = (value: Unit | undefined, onChange = vi.fn(), options = units, equ
 		/>,
 	);
 
-const root = () => document.querySelector('.dropdown-picker-root') as HTMLElement;
-const trigger = () => root().querySelector('.dropdown-picker-button') as HTMLButtonElement;
-const items = () => [...root().querySelectorAll<HTMLElement>('.dropdown-picker-item')];
+const root = () => screen.getByTestId('dropdown-picker-root');
+const trigger = () => within(root()).getByTestId('dropdown-picker-button') as HTMLButtonElement;
+const items = () => within(root()).queryAllByTestId('dropdown-picker-item');
 const open = () => act(() => void fireEvent.click(trigger()));
 
 describe('DropdownPicker', () => {
@@ -66,7 +66,7 @@ describe('DropdownPicker', () => {
 		await open();
 		expect(items().map(item => item.textContent)).toEqual(['All Targets', 'Target 1', 'Target 2']);
 
-		await act(() => void fireEvent.keyDown(root().querySelector('[role=menu]')!, { key: 'Escape' }));
+		await act(() => void fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' }));
 		expect(items()).toHaveLength(0);
 	});
 
@@ -110,7 +110,7 @@ describe('DropdownPicker', () => {
 	// `side="top"` and `positionMethod="fixed"` are what a picker sitting in an overflow-clipped
 	// drawer at the bottom of the page needs.
 	describe('side and positionMethod', () => {
-		const positioner = () => root().querySelector('.dropdown-picker-positioner') as HTMLElement;
+		const positioner = () => within(root()).getByTestId('dropdown-picker-positioner');
 
 		it('opens below the trigger, positioned in flow, by default', async () => {
 			mount({ id: 0, name: 'All' });
@@ -158,32 +158,36 @@ describe('DropdownPicker', () => {
 			mountKinds();
 			await open();
 
-			const rows = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > *')];
+			const rows = [...within(root()).getByTestId('dropdown-picker-list').children] as Array<HTMLElement>;
 			expect(rows.map(row => row.textContent)).toEqual(['None', 'logic »', 'resources »']);
 			// Only the root-level option is a radio item; a trigger is a button in a `.dropend`.
 			expect(rows[0].getAttribute('role')).toBe('menuitemradio');
-			expect(rows[1].querySelector('.dropend > button.dropdown-item')).not.toBeNull();
+			expect(within(rows[1]).queryByTestId('dropdown-item')).not.toBeNull();
 		});
 
 		it('renders the submenu contents once it is opened', async () => {
 			mountKinds();
 			await open();
-			const trigger = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > * button.dropdown-item')][0];
+			const trigger = within(root()).getAllByTestId('dropdown-item')[0];
 
 			await act(() => void fireEvent.click(trigger));
 
-			const popup = document.querySelector('.dropdown-submenu')!;
-			expect([...popup.querySelectorAll('.dropdown-picker-item')].map(item => item.textContent)).toEqual(['And', 'Or']);
+			const popup = screen.getByTestId('dropdown-submenu');
+			expect(
+				within(popup)
+					.queryAllByTestId('dropdown-picker-item')
+					.map(item => item.textContent),
+			).toEqual(['And', 'Or']);
 			expect(popup.tagName).toBe('UL');
 		});
 
 		it('nests a two-segment path', async () => {
 			mountKinds();
 			await open();
-			const resources = [...root().querySelectorAll<HTMLElement>('.dropdown-picker-list > * button.dropdown-item')][1];
+			const resources = within(root()).getAllByTestId('dropdown-item')[1];
 
 			await act(() => void fireEvent.click(resources));
-			const inner = [...document.querySelectorAll('.dropdown-submenu button.dropdown-item')];
+			const inner = within(screen.getByTestId('dropdown-submenu')).queryAllByTestId('dropdown-item');
 			expect(inner.map(node => node.textContent)).toEqual(['chi »']);
 		});
 
@@ -194,7 +198,7 @@ describe('DropdownPicker', () => {
 			render(<DropdownPicker options={[self, pet]} value={undefined} onChange={onChange} equals={sameKind} defaultLabel="Unit" />);
 			await open();
 
-			const trigger = root().querySelector('.dropend > button.dropdown-item')!;
+			const trigger = within(root()).getByTestId('dropdown-item');
 			expect(trigger.textContent).toBe('Self');
 			await act(() => void fireEvent.click(trigger));
 
@@ -210,7 +214,7 @@ describe('DropdownPicker', () => {
 
 		it('renders no tooltip at all when no option carries one', async () => {
 			mount({ id: 0, name: 'All' });
-			expect(root().querySelector('.sim-tooltip')).toBeNull();
+			expect(screen.queryByTestId('sim-tooltip')).toBeNull();
 			await open();
 			expect(items().every(item => !item.hasAttribute('data-tooltip-id'))).toBe(true);
 		});

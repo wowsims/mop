@@ -45,9 +45,14 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 									key={build.name}
 									variant="unstyled"
 									className={clsx('saved-data-set-chip badge rounded-full', active?.[index] && 'active')}
+									data-testid="saved-data-set-chip"
 									data-active={active?.[index] ? '' : undefined}
 									{...tooltipAnchorProps(tooltipId, build.name)}>
-									<span className="saved-data-set-name" role="button" onClick={() => applyBuild(build, host)}>
+									<span
+										className="saved-data-set-name"
+										data-testid="saved-data-set-name"
+										role="button"
+										onClick={() => applyBuild(build, host)}>
 										{build.name}
 									</span>
 								</Button>

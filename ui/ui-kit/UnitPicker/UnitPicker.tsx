@@ -30,6 +30,7 @@ export const UnitPicker = ({ id, options, value, onChange, hideLabelWhenDefault,
 	<DropdownPicker<UnitValue>
 		id={id}
 		className={['unit-picker-root', className]}
+		testId="unit-picker-root"
 		options={options.map(unit => unitOption(unit))}
 		value={{ value }}
 		onChange={unit => onChange(unit.value)}

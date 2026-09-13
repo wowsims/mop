@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { InputConfig } from '@ui-kit/input';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -21,7 +21,7 @@ const shell = (config: InputConfig<Mod, string> & { id: string }, props: { hidde
 		</PickerShell>,
 	);
 
-const root = () => document.querySelector('.input-root')!;
+const root = () => screen.getByTestId('input-root');
 
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
@@ -31,7 +31,7 @@ describe('PickerShell', () => {
 
 	it('renders nothing at all when hidden', () => {
 		const { container } = shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
-		expect(container.querySelector('.input-root')).toBeNull();
+		expect(container.querySelector('[data-testid="input-root"]')).toBeNull();
 		expect(container.querySelector('input')).toBeNull();
 	});
 
@@ -42,7 +42,7 @@ describe('PickerShell', () => {
 
 	it('links the label to the input and titles it', () => {
 		shell(configFor());
-		const label = root().querySelector('label')!;
+		const label = within(root()).getByTestId('form-label');
 		expect(label.className).toBe('form-label');
 		expect(label.getAttribute('for')).toBe('cast-delay');
 		expect(label.getAttribute('title')).toBe('Cast Delay');
@@ -50,20 +50,20 @@ describe('PickerShell', () => {
 
 	it('renders no label at all when the config has none', () => {
 		shell(configFor({ label: undefined }));
-		expect(root().querySelector('label')).toBeNull();
+		expect(within(root()).queryByTestId('form-label')).toBeNull();
 	});
 
 	it('puts a string description in .input-description, before the input', () => {
 		shell(configFor({ description: 'Delay before the first cast' }));
 		expect([...root().children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
-		expect(root().querySelector('.input-description')!.textContent).toBe('Delay before the first cast');
+		expect(within(root()).getByTestId('input-description').textContent).toBe('Delay before the first cast');
 	});
 
 	it('renders an Element description rather than stringifying it', () => {
 		const description = document.createElement('span');
 		description.textContent = 'Built elsewhere';
 		shell(configFor({ description }));
-		expect(root().querySelector('.input-description')!.firstElementChild).toBe(description);
+		expect(within(root()).getByTestId('input-description').firstElementChild).toBe(description);
 		expect(document.body.textContent).not.toContain('[object');
 	});
 
@@ -79,7 +79,7 @@ describe('PickerShell', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		shell(configFor({ labelTooltip: (() => 'from a function') as unknown as string }));
 		expect(warn).toHaveBeenCalledOnce();
-		expect(root().querySelector('label')!.getAttribute('data-tooltip-id')).toBeNull();
+		expect(within(root()).getByTestId('form-label').getAttribute('data-tooltip-id')).toBeNull();
 	});
 
 	// Base UI merges a forwarded ref with its own, so this pins that the merge honours a cleanup the

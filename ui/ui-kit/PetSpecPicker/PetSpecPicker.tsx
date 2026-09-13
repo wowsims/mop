@@ -1,8 +1,8 @@
+import { PetSpec } from '@generated/proto/hunter';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
 import type { HunterSpecs } from '@sim/proto/spec_types';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import { PetSpec } from '@generated/proto/hunter';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -32,7 +32,7 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 	};
 
 	return (
-		<div className="pet-spec-picker">
+		<div className="pet-spec-picker" data-testid="pet-spec-picker">
 			<div className="talent-tree-header">
 				<span className="talent-tree-title">Pet Spec</span>
 			</div>
@@ -41,6 +41,7 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 					<div
 						key={spec}
 						className={clsx('talent-picker-root pet-spec-item', spec === active && 'selected')}
+						data-testid="pet-spec-item"
 						data-selected={spec === active ? '' : undefined}
 						{...tooltipAnchorProps(`${id}-${spec}`)}
 						onClick={() => select(spec)}>

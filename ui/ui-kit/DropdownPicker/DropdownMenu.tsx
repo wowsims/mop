@@ -48,7 +48,10 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 	return (
 		<>
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
-				<Menu.Trigger id={id} className={clsx('dropdown-picker-button', 'btn', 'dropdown-toggle', selected?.className)}>
+				<Menu.Trigger
+					id={id}
+					className={clsx('dropdown-picker-button', 'btn', 'dropdown-toggle', selected?.className)}
+					data-testid="dropdown-picker-button">
 					{selected ? (
 						<>
 							{selected.icon}
@@ -59,18 +62,20 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 					)}
 				</Menu.Trigger>
 				{/* This slot holds the place after the button that a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
-				<div className="dropdown-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="dropdown-picker-portal">
+				<div className="dropdown-picker-slot" data-testid="dropdown-picker-slot" ref={setSlot} />
+				<Menu.Portal container={slot} className="dropdown-picker-portal" data-testid="dropdown-picker-portal">
 					<Menu.Positioner
 						align="start"
 						side={side}
 						positionMethod={positionMethod}
 						sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
-						className="dropdown-picker-positioner">
-						<Menu.Popup className="dropdown-picker-menu">
+						className="dropdown-picker-positioner"
+						data-testid="dropdown-picker-positioner">
+						<Menu.Popup className="dropdown-picker-menu" data-testid="dropdown-picker-menu">
 							<Menu.RadioGroup
 								render={<ul />}
 								className="dropdown-picker-list m-0 list-none p-0"
+								data-testid="dropdown-picker-list"
 								value={selectedIndex}
 								onValueChange={(index: number) => onChange(options[index].value)}>
 								{/* Built on open and dropped on close. */}
@@ -90,6 +95,8 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 				<Tooltip
 					id={tooltipId}
 					className="dropdown-tooltip"
+					maxWidth="max-w-[35vw]"
+					align="start"
 					render={({ activeAnchor }) => {
 						const content = activeAnchor?.getAttribute('data-tooltip-content');
 						return content ? <LocaleHtml html={content} /> : null;

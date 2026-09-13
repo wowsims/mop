@@ -129,24 +129,33 @@ export const SavedDataPanel = <T,>({
 	return (
 		<div className={clsx('saved-data-manager-root', className)}>
 			<ContentBlock className="saved-data" config={{ header: { title } }}>
-				<div className="saved-data-container">
-					{presets.length > 0 && <div className="saved-data-presets">{presets.map(renderChip)}</div>}
-					{userData.length > 0 && <div className="saved-data-custom">{userData.map(renderChip)}</div>}
+				<div className="saved-data-container" data-testid="saved-data-container">
+					{presets.length > 0 && (
+						<div className="saved-data-presets" data-testid="saved-data-presets">
+							{presets.map(renderChip)}
+						</div>
+					)}
+					{userData.length > 0 && (
+						<div className="saved-data-custom" data-testid="saved-data-custom">
+							{userData.map(renderChip)}
+						</div>
+					)}
 				</div>
 				{!loadOnly && (
-					<div ref={createRef} className="saved-data-create-container">
+					<div ref={createRef} className="saved-data-create-container" data-testid="saved-data-create-container">
 						<label className="form-label" htmlFor={nameInputId}>
 							{nameLabel ?? label}
 						</label>
 						<input
 							id={nameInputId}
 							className="saved-data-save-input form-control"
+							data-testid="saved-data-save-input"
 							type="text"
 							placeholder={i18n.t('common.name')}
 							value={name}
 							onChange={event => setName(event.target.value)}
 						/>
-						<Button className="saved-data-save-button" onClick={handleSave}>
+						<Button className="saved-data-save-button" data-testid="saved-data-save-button" onClick={handleSave}>
 							{saveButtonText ?? `Save ${label}`}
 						</Button>
 					</div>

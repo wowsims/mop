@@ -125,7 +125,7 @@ export const ListPickerItem = ({
 		if (!container) return;
 		const target = event.target as HTMLElement;
 		// A mousedown inside a nested list arms that list's item, not this one.
-		if (target.closest('.list-picker-item-container') !== container) return;
+		if (target.closest('[data-list-item]') !== container) return;
 		if (isInteractiveTarget(target, container)) return;
 		setArmed(true);
 	};
@@ -239,16 +239,24 @@ export const ListPickerItem = ({
 		</ListItemPopover>
 	);
 
-	const heading = title !== undefined && <h6 className="list-picker-item-title">{title}</h6>;
+	const heading = title !== undefined && (
+		<h6 className="list-picker-item-title" data-testid="list-picker-item-title">
+			{title}
+		</h6>
+	);
 
 	const itemHeader = (
-		<div ref={setHeaderElem} className="list-picker-item-header">
+		<div ref={setHeaderElem} className="list-picker-item-header" data-testid="list-picker-item-header">
 			{heading}
 			{header}
 			{menu}
 		</div>
 	);
-	const itemBody = <div className="list-picker-item">{children}</div>;
+	const itemBody = (
+		<div className="list-picker-item" data-testid="list-picker-item">
+			{children}
+		</div>
+	);
 
 	return (
 		<div
@@ -261,6 +269,8 @@ export const ListPickerItem = ({
 				dragging && 'dragfrom',
 				dragOver && 'dragto',
 			)}
+			data-testid="list-picker-item-container"
+			data-list-item=""
 			data-layout={inlineMenuBar ? 'inline' : undefined}
 			data-draggable={canMove ? '' : undefined}
 			data-drag={dragging ? 'from' : dragOver ? 'to' : undefined}

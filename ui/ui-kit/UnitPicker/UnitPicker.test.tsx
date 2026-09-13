@@ -1,6 +1,6 @@
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import { ActionId } from '@sim/proto/action_id';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UnitValue } from './types';
@@ -23,9 +23,9 @@ const options: Array<UnitValue> = [
 const mount = (value: UnitReference | undefined, onChange = vi.fn(), values = options) =>
 	render(<UnitPicker id="results-filter-target-filter" options={values} value={value} onChange={onChange} className="target-filter-root" />);
 
-const root = () => document.querySelector('.unit-picker-root') as HTMLElement;
-const trigger = () => root().querySelector('.dropdown-picker-button') as HTMLButtonElement;
-const items = () => [...root().querySelectorAll<HTMLElement>('.dropdown-picker-item')];
+const root = () => screen.getByTestId('unit-picker-root');
+const trigger = () => within(root()).getByTestId('dropdown-picker-button') as HTMLButtonElement;
+const items = () => within(root()).queryAllByTestId('dropdown-picker-item');
 const open = () => act(() => void fireEvent.click(trigger()));
 
 beforeEach(() => {
@@ -59,10 +59,10 @@ describe('UnitPicker', () => {
 		mount(allTargets);
 		await open();
 
-		expect(items()[0].querySelector('.unit-picker-item-icon')).toBeNull();
-		expect(items()[1].querySelector('img.unit-picker-item-icon')!.getAttribute('src')).toBe('boss.jpg');
-		expect(items()[2].querySelector('i.unit-picker-item-icon')!.className).toBe('fa fa-users unit-picker-item-icon');
-		expect(items()[3].querySelector('img.unit-picker-item-icon')!.getAttribute('src')).toBe('spell.jpg');
+		expect(within(items()[0]).queryByTestId('unit-picker-item-icon')).toBeNull();
+		expect(within(items()[1]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('boss.jpg');
+		expect(within(items()[2]).getByTestId('unit-picker-item-icon').className).toBe('fa fa-users unit-picker-item-icon');
+		expect(within(items()[3]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('spell.jpg');
 	});
 
 	it('puts a unit colour on the option and on the trigger that shows it', async () => {
@@ -97,7 +97,7 @@ describe('UnitPicker', () => {
 	it('hides the text but keeps the icon on the trigger for the default unit, when asked', () => {
 		const { rerender } = render(<UnitPicker options={withDefault} value={undefined} onChange={vi.fn()} hideLabelWhenDefault />);
 		expect(trigger().textContent).toBe('');
-		expect(trigger().querySelector('.unit-picker-item-icon')).not.toBeNull();
+		expect(within(trigger()).queryByTestId('unit-picker-item-icon')).not.toBeNull();
 
 		rerender(<UnitPicker options={withDefault} value={targetRef(0)} onChange={vi.fn()} hideLabelWhenDefault />);
 		expect(trigger().textContent).not.toBe('');

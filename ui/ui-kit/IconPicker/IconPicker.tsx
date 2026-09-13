@@ -94,6 +94,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					!useImprovedIcons && config.states > 2 && 'use-counter',
 					currentValue > 0 && 'active',
 				)}
+				data-testid="icon-picker-button"
 				data-active={currentValue > 0 ? '' : undefined}
 				{...wowheadAnchorProps()}
 				// The glyph is a background image and the counter is a sibling now, so without this the
@@ -106,7 +107,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				{...disabledAttribute}
 				{...stateEvents}
 			/>
-			<div className="icon-input-level-container" {...stateEvents}>
+			<div className="icon-input-level-container" data-testid="icon-input-level-container" {...stateEvents}>
 				<ImprovedAnchor
 					actionId={fillImproved1 ? config.improvedId : undefined}
 					className="icon-input-improved1"
@@ -120,7 +121,10 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					hidden={fillImproved2 && !(currentValue > 2)}
 				/>
 				{config.states > 2 && (
-					<span className={clsx('icon-picker-label', currentValue > 0 && 'active')} data-active={currentValue > 0 ? '' : undefined}>
+					<span
+						className={clsx('icon-picker-label', currentValue > 0 && 'active')}
+						data-testid="icon-picker-label"
+						data-active={currentValue > 0 ? '' : undefined}>
 						{showCounterText ? String(currentValue) : null}
 					</span>
 				)}
@@ -132,6 +136,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 		<PickerShell
 			config={config as typeof config & { id: string }}
 			className="icon-picker-root icon-picker"
+			testId="icon-picker-root"
 			hidden={hidden}
 			disabled={disabled}
 			leading={main}

@@ -1,6 +1,6 @@
 import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
@@ -157,7 +157,7 @@ describe('IconPicker', () => {
 		const settings = new Settings(1);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
 		expect(mainAnchor().hasAttribute('data-active')).toBe(true);
-		expect(document.querySelector('.icon-picker-label')!.hasAttribute('data-active')).toBe(true);
+		expect(screen.getByTestId('icon-picker-label').hasAttribute('data-active')).toBe(true);
 	});
 
 	it('does not mark the main anchor active at zero', () => {
@@ -270,7 +270,7 @@ describe('IconPicker', () => {
 	it('renders no counter label at states 2 and renders one above', () => {
 		const settings = new Settings(0);
 		const { rerender } = render(<IconPicker modObject={settings} config={configFor()} />);
-		const label = () => document.querySelector('.icon-picker-label');
+		const label = () => screen.queryByTestId('icon-picker-label');
 		expect(label()).toBeNull();
 
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
@@ -281,15 +281,14 @@ describe('IconPicker', () => {
 		const settings = new Settings(0);
 		render(<IconPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(mainAnchor().hasAttribute('disabled')).toBe(true);
-		expect(document.querySelector('.icon-picker-root')!.hasAttribute('data-disabled')).toBe(true);
+		expect(screen.getByTestId('icon-picker-root').hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it("renders the level container as the anchor's next sibling, so no anchor sits inside another", () => {
 		const settings = new Settings(0);
 		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
-		const root = document.querySelector('.icon-picker-root')!;
-		const anchor = root.querySelector(':scope > a.icon-picker-button')!;
-		const container = root.querySelector('.icon-input-level-container')!;
+		const anchor = screen.getByTestId('icon-picker-button');
+		const container = screen.getByTestId('icon-input-level-container');
 
 		expect(anchor.nextElementSibling).toBe(container);
 		expect(anchor.contains(container)).toBe(false);
@@ -300,7 +299,7 @@ describe('IconPicker', () => {
 	it('keeps the improved anchors and the counter inside the container, with their href and hidden intact', () => {
 		const settings = new Settings(3);
 		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
-		const container = document.querySelector('.icon-input-level-container')!;
+		const container = screen.getByTestId('icon-input-level-container');
 		const [improved1, improved2] = Array.from(container.querySelectorAll('a'));
 
 		expect(container.children).toHaveLength(3);
@@ -308,7 +307,7 @@ describe('IconPicker', () => {
 		expect(improved2.getAttribute('href')).toBe(ActionId.makeSpellUrl(3));
 		expect(improved1.hidden).toBe(true);
 		expect(improved2.hidden).toBe(false);
-		expect(container.querySelector('.icon-picker-label')).toBeTruthy();
+		expect(within(container).getByTestId('icon-picker-label')).toBeTruthy();
 	});
 
 	// The container overlays the anchor rather than living inside it, so the handler has to be carried
@@ -317,8 +316,8 @@ describe('IconPicker', () => {
 	it('left-clicks, right-clicks and suppresses the context menu from the container as well', () => {
 		const settings = new Settings(1);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		const improved = document.querySelector('.icon-input-improved1')!;
-		const container = document.querySelector('.icon-input-level-container')!;
+		const improved = screen.getByTestId('icon-input-improved1');
+		const container = screen.getByTestId('icon-input-level-container');
 
 		fireEvent.click(improved);
 		expect(settings.level).toBe(2);

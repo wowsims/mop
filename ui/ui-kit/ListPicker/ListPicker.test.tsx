@@ -1,5 +1,5 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { endDrag, getDrag } from './drag_state';
@@ -48,18 +48,20 @@ const mount = (rows: Rows, extra: Partial<ListPickerConfig<Rows, Row>> = {}, ren
 		/>,
 	);
 
-const root = () => document.querySelector('.list-picker-root') as HTMLElement;
-const itemsBox = () => root().querySelector('.list-picker-items') as HTMLElement;
-const containers = () => [...root().querySelectorAll<HTMLElement>('.list-picker-item-container')];
-const bodies = () => [...root().querySelectorAll<HTMLElement>('.list-picker-item .leaf')].map(node => node.textContent);
-const newButton = () => root().querySelector('.list-picker-new-button') as HTMLButtonElement;
-const actionsButton = (index: number) => containers()[index].querySelector('.list-picker-item-actions') as HTMLButtonElement;
+const root = () => screen.getByTestId('list-picker-root');
+const itemsBox = () => within(root()).getByTestId('list-picker-items');
+const containers = () => within(root()).queryAllByTestId('list-picker-item-container');
+const bodies = () =>
+	within(root())
+		.queryAllByTestId('list-picker-item')
+		.map(node => node.querySelector('.leaf')?.textContent);
+const newButton = () => within(root()).queryByTestId('list-picker-new-button') as HTMLButtonElement | null;
+const actionsButton = (index: number) => within(containers()[index]).getByTestId('list-picker-item-actions') as HTMLButtonElement;
 const openMenu = (index: number) => fireEvent.click(actionsButton(index));
 const popoverButtons = (index: number) => {
 	openMenu(index);
-	return [...containers()[index].querySelectorAll<HTMLElement>('.list-picker-item-popover .list-picker-item-action')].map(
-		button => button.className.split(' ')[1],
-	);
+	const popover = within(containers()[index]).getByTestId('list-picker-item-popover');
+	return [...within(popover).queryAllByTestId(/^list-picker-item-/)].map(button => button.className.split(' ')[1]);
 };
 
 // happy-dom has no drag data transfer; the handlers only ever read these three members.
@@ -92,7 +94,7 @@ describe('ListPicker', () => {
 		it('renders no items box while the list is empty, and renders one when an item arrives', () => {
 			const rows = rowsOf();
 			mount(rows);
-			expect(root().querySelector('.list-picker-items')).toBeNull();
+			expect(within(root()).queryByTestId('list-picker-items')).toBeNull();
 
 			act(() => rows.set([{ name: 'a' }]));
 			expect(itemsBox()).toBeTruthy();
@@ -103,7 +105,7 @@ describe('ListPicker', () => {
 
 			const children = [...containers()[0].children].map(child => child.className);
 			expect(children).toEqual(['list-picker-item-header', 'list-picker-item']);
-			expect(containers()[0].querySelector('.list-picker-item-title')!.textContent).toBe('Target 1');
+			expect(within(containers()[0]).getByTestId('list-picker-item-title').textContent).toBe('Target 1');
 		});
 
 		it('puts the body first and drops the title when the menu bar is inline', () => {
@@ -111,7 +113,7 @@ describe('ListPicker', () => {
 
 			const children = [...containers()[0].children].map(child => child.className);
 			expect(children).toEqual(['list-picker-item', 'list-picker-item-header']);
-			expect(containers()[0].querySelector('.list-picker-item-title')).toBeNull();
+			expect(within(containers()[0]).queryByTestId('list-picker-item-title')).toBeNull();
 			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
 		});
 
@@ -137,7 +139,7 @@ describe('ListPicker', () => {
 		it('renders the title as a span, not a label, and hangs the tooltip button inside it', () => {
 			mount(rowsOf('a'), { title: 'Targets', titleTooltip: 'One row per target' });
 
-			const title = root().querySelector('.list-picker-title')!;
+			const title = within(root()).getByTestId('list-picker-title');
 			expect(title.tagName).toBe('SPAN');
 			expect(title.textContent).toBe('Targets');
 			expect(title.querySelector('button.tooltip-button.ml-2')).not.toBeNull();
@@ -153,7 +155,7 @@ describe('ListPicker', () => {
 				/>,
 			);
 
-			const header = root().querySelector('.list-picker-item-header')!;
+			const header = within(root()).getByTestId('list-picker-item-header');
 			expect([...header.children].map(child => child.className)).toEqual([
 				'list-picker-item-title',
 				'hide-picker',
@@ -167,15 +169,15 @@ describe('ListPicker', () => {
 			const rows = rowsOf('a');
 			mount(rows);
 
-			fireEvent.click(newButton());
+			fireEvent.click(newButton()!);
 			expect(rows.value.map(row => row.name)).toEqual(['a', 'new']);
 		});
 
 		it('renders the create button as an icon action when asked', () => {
 			mount(rowsOf('a'), { actions: { create: { useIcon: true } } });
 
-			expect(newButton().className.split(' ').sort()).toEqual(['link-success', 'list-picker-item-action', 'list-picker-new-button']);
-			expect(newButton().querySelector('i')!.className).toBe('fa fa-xl fa-plus');
+			expect(newButton()!.className.split(' ').sort()).toEqual(['link-success', 'list-picker-item-action', 'list-picker-new-button']);
+			expect(newButton()!.querySelector('i')!.className).toBe('fa fa-xl fa-plus');
 		});
 
 		it('deletes the item at its index', () => {
@@ -183,7 +185,7 @@ describe('ListPicker', () => {
 			mount(rows);
 
 			openMenu(1);
-			fireEvent.click(containers()[1].querySelector('.list-picker-item-delete')!);
+			fireEvent.click(within(containers()[1]).getByTestId('list-picker-item-delete'));
 			expect(rows.value.map(row => row.name)).toEqual(['a', 'c']);
 		});
 
@@ -192,7 +194,7 @@ describe('ListPicker', () => {
 			mount(rows);
 
 			openMenu(1);
-			fireEvent.click(containers()[1].querySelector('.list-picker-item-copy')!);
+			fireEvent.click(within(containers()[1]).getByTestId('list-picker-item-copy'));
 			expect(rows.value.map(row => row.name)).toEqual(['a', 'b', 'b']);
 		});
 
@@ -202,7 +204,7 @@ describe('ListPicker', () => {
 			mount(rows, { copyItem: undefined, onCopyItem } as Partial<ListPickerConfig<Rows, Row>>);
 
 			openMenu(0);
-			fireEvent.click(containers()[0].querySelector('.list-picker-item-copy')!);
+			fireEvent.click(within(containers()[0]).getByTestId('list-picker-item-copy'));
 			expect(onCopyItem).toHaveBeenCalledWith(0);
 			expect(rows.writes).toBe(0);
 		});
@@ -217,7 +219,7 @@ describe('ListPicker', () => {
 		it('honours allowedActions: no actions means no menu, no create button and no drag', () => {
 			mount(rowsOf('a'), { allowedActions: [] });
 
-			expect(root().querySelector('.list-picker-item-actions')).toBeNull();
+			expect(within(root()).queryByTestId('list-picker-item-actions')).toBeNull();
 			expect(newButton()).toBeNull();
 			expect(containers()[0].hasAttribute('data-draggable')).toBe(false);
 		});
@@ -229,7 +231,7 @@ describe('ListPicker', () => {
 			});
 
 			expect(popoverButtons(0)).toEqual(['list-picker-item-delete', 'list-picker-item-extract-variable', 'list-picker-item-copy']);
-			fireEvent.click(containers()[0].querySelector('.list-picker-item-extract-variable')!);
+			fireEvent.click(within(containers()[0]).getByTestId('list-picker-item-extract-variable'));
 			expect(onClick).toHaveBeenCalledWith(0);
 		});
 
@@ -246,13 +248,13 @@ describe('ListPicker', () => {
 
 		it('opens the menu on hover over the actions button, and closes it once an action is taken', () => {
 			mount(rowsOf('a'));
-			const popover = () => containers()[0].querySelector('.list-picker-item-popover');
+			const popover = () => within(containers()[0]).queryByTestId('list-picker-item-popover');
 			expect(popover()).toBeNull();
 
 			fireEvent.mouseEnter(actionsButton(0));
 			expect(popover()?.hasAttribute('data-open')).toBe(true);
 
-			fireEvent.click(containers()[0].querySelector('.list-picker-item-copy')!);
+			fireEvent.click(within(containers()[0]).getByTestId('list-picker-item-copy'));
 			expect(popover()?.hasAttribute('data-open') ?? false).toBe(false);
 		});
 
@@ -260,8 +262,8 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'));
 			openMenu(0);
 
-			const header = containers()[0].querySelector('.list-picker-item-header')!;
-			expect(header.contains(containers()[0].querySelector('.list-picker-item-popover'))).toBe(true);
+			const header = within(containers()[0]).getByTestId('list-picker-item-header');
+			expect(header.contains(within(containers()[0]).getByTestId('list-picker-item-popover'))).toBe(true);
 		});
 	});
 
@@ -376,7 +378,7 @@ describe('ListPicker', () => {
 				</>,
 			);
 
-		const boxes = (side: string) => [...document.querySelectorAll<HTMLElement>(`#${side} .list-picker-item-container`)];
+		const boxes = (side: string) => within(document.getElementById(side)!).queryAllByTestId('list-picker-item-container');
 
 		it('moves an item from one list into another of the same kind', () => {
 			const left = rowsOf('a', 'b');
@@ -438,8 +440,8 @@ describe('ListPicker', () => {
 		it('unmounts the whole list when showWhen says no', () => {
 			mount(rowsOf('a'), { showWhen: () => false });
 
-			expect(document.querySelector('.list-picker-root')).toBeNull();
-			expect(document.querySelectorAll('.list-picker-item-container')).toHaveLength(0);
+			expect(screen.queryByTestId('list-picker-root')).toBeNull();
+			expect(screen.queryAllByTestId('list-picker-item-container')).toHaveLength(0);
 		});
 
 		it('adds disabled when enableWhen says no', () => {
@@ -461,6 +463,6 @@ describe('ListPicker', () => {
 	it('types the create button', () => {
 		mount(rowsOf('a'));
 
-		expect(document.querySelector('.list-picker-new-button')!.getAttribute('type')).toBe('button');
+		expect(screen.getByTestId('list-picker-new-button').getAttribute('type')).toBe('button');
 	});
 });

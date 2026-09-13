@@ -18,7 +18,7 @@ const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 // Nameless to a screen reader: giving it one needs a translation key the locale files do not have,
 // and inventing untranslated English here is the worse trade. Flagged.
 const DeleteButton = ({ onClick }: { onClick: () => void }) => (
-	<button type="button" className="saved-data-set-delete" onClick={onClick}>
+	<button type="button" className="saved-data-set-delete" data-testid="saved-data-set-delete" onClick={onClick}>
 		<Icon name="times" style="base" size="lg" />
 	</button>
 );
@@ -82,7 +82,9 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 			<div className="log-search-group-items flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (
 					<div key={value} className="log-search-chip saved-data-set-chip badge rounded-full">
-						<span className="saved-data-set-name">{labelOf(group.field, value)}</span>
+						<span className="saved-data-set-name" data-testid="saved-data-set-name">
+							{labelOf(group.field, value)}
+						</span>
 						<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />
 					</div>
 				))}

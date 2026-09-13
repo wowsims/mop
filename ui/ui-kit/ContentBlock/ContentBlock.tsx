@@ -33,10 +33,10 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 	const TitleTag = (header?.titleTag || 'h6') as ElementType;
 
 	return (
-		<div className={clsx('content-block', className)}>
+		<div className={clsx('content-block', className)} data-testid="content-block">
 			{hasHeader && header && (
-				<div ref={headerRef} className={clsx('content-block-header', header.className)}>
-					<TitleTag className="content-block-title">
+				<div ref={headerRef} className={clsx('content-block-header', header.className)} data-testid="content-block-header">
+					<TitleTag className="content-block-title" data-testid="content-block-title">
 						{header.title}
 						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ml-2" />}
 					</TitleTag>
@@ -44,7 +44,7 @@ export const ContentBlock = ({ className, config, children, headerChildren, body
 				</div>
 			)}
 			{!config.withoutBody && (
-				<div ref={bodyRef} className={clsx('content-block-body', config.bodyClassName)}>
+				<div ref={bodyRef} className={clsx('content-block-body', config.bodyClassName)} data-testid="content-block-body">
 					{children}
 				</div>
 			)}

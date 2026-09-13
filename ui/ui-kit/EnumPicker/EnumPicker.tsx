@@ -24,7 +24,7 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPic
 	}, [value, revision, select]);
 
 	return (
-		<PickerShell config={config} className="enum-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="enum-picker-root" testId="enum-picker-root" hidden={hidden} disabled={disabled}>
 			<Field.Control
 				render={<select />}
 				ref={attachSelect}

@@ -1,6 +1,6 @@
 import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import type { IconPickerConfig } from '@ui-kit/IconPicker/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -57,10 +57,10 @@ const configFor = (extra: Partial<MultiIconPickerConfig<Buffs>> = {}): MultiIcon
 const mount = (buffs: Buffs, config: MultiIconPickerConfig<Buffs> = configFor(), onClear = () => {}) =>
 	render(<MultiIconPicker modObject={buffs} config={config} subscribe={buffs.subscribe} onClear={onClear} />);
 
-const root = () => document.querySelector('.multi-icon-picker-root') as HTMLElement;
-const trigger = () => root().querySelector(':scope > .dropend > .icon-picker-button') as HTMLAnchorElement;
-const menu = () => root().querySelector('ul') as HTMLUListElement;
-const blankOption = () => root().querySelector('a.icon-dropdown-option') as HTMLAnchorElement;
+const root = () => screen.getByTestId('multi-icon-picker-root');
+const trigger = () => within(root()).getByTestId('multi-icon-picker-button') as HTMLAnchorElement;
+const menu = () => within(root()).queryByTestId('multi-icon-picker-menu') as HTMLUListElement;
+const blankOption = () => within(root()).getByTestId('icon-dropdown-option') as HTMLAnchorElement;
 // The menu mounts when it opens, so every test that reads an option has to open it first.
 const open = () =>
 	act(() => {
@@ -97,19 +97,19 @@ describe('MultiIconPicker', () => {
 			'icon-picker-option dropdown-option',
 			'icon-picker-option dropdown-option',
 		]);
-		expect(options.slice(1).every(option => option.querySelector('.icon-picker-root'))).toBe(true);
+		expect(options.slice(1).every(option => within(option as HTMLElement).queryByTestId('icon-picker-root'))).toBe(true);
 	});
 
 	it('positions the menu against the viewport, not against the dropend it portals into', async () => {
 		mount(new Buffs());
 		await open();
-		expect((root().querySelector('.multi-icon-picker-positioner') as HTMLElement).style.position).toBe('fixed');
+		expect(within(root()).getByTestId('multi-icon-picker-positioner').style.position).toBe('fixed');
 	});
 
 	it('renders the label only when the config names one, and names the group with it', () => {
 		const withLabel = mount(new Buffs());
 		// A <span>, not a <label>: it names the icon group, which is not a form control.
-		const caption = root().querySelector('span.multi-icon-picker-label.form-label');
+		const caption = within(root()).queryByTestId('multi-icon-picker-label');
 		expect(caption?.textContent).toBe('Stats');
 		expect(root().getAttribute('role')).toBe('group');
 		expect(root().getAttribute('aria-labelledby')).toBe(caption!.id);
@@ -171,13 +171,13 @@ describe('MultiIconPicker', () => {
 	it('unmounts when showWhen goes false and mounts again when it comes back', () => {
 		const buffs = new Buffs();
 		mount(buffs, configFor({ showWhen: (player: any) => (player as Buffs).visible }));
-		expect(document.querySelector('.multi-icon-picker-root')).toBeTruthy();
+		expect(screen.queryByTestId('multi-icon-picker-root')).toBeTruthy();
 
 		act(() => buffs.setVisible(false));
-		expect(document.querySelector('.multi-icon-picker-root')).toBeNull();
+		expect(screen.queryByTestId('multi-icon-picker-root')).toBeNull();
 
 		act(() => buffs.setVisible(true));
-		expect(document.querySelector('.multi-icon-picker-root')).toBeTruthy();
+		expect(screen.queryByTestId('multi-icon-picker-root')).toBeTruthy();
 	});
 
 	it('clears from a right-click on the button and from the blank option, and not from a left-click', () => {

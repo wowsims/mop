@@ -3,7 +3,7 @@ import { ConfirmPopover } from '@ui-kit/ConfirmPopover';
 import { Icon } from '@ui-kit/Icon';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
-import { type ReactNode, useState } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useState } from 'react';
 
 import type { SavedDataPanelEntry } from './types';
 
@@ -39,11 +39,13 @@ export const SavedDataChip = <T,>({
 	return (
 		<div
 			className={clsx('saved-data-set-chip badge rounded-full', active && 'active', disabled && 'disabled')}
+			data-testid="saved-data-set-chip"
 			data-active={active ? '' : undefined}
 			data-disabled={disabled ? '' : undefined}>
 			<Button
 				variant="unstyled"
 				className="saved-data-set-name"
+				data-testid="saved-data-set-name"
 				onClick={() => onLoad(entry)}
 				{...tooltipAnchorProps(entry.tooltip ? chipTooltipId : undefined, entry.tooltip)}>
 				{entry.name}
@@ -55,7 +57,13 @@ export const SavedDataChip = <T,>({
 					container={container}
 					trigger={<Icon name="times" style="base" size="lg" />}
 					triggerClassName="saved-data-set-delete"
-					triggerProps={{ 'aria-label': deleteLabel, ...tooltipAnchorProps(deleteTooltipId) }}
+					triggerProps={
+						{
+							'aria-label': deleteLabel,
+							'data-testid': 'saved-data-set-delete',
+							...tooltipAnchorProps(deleteTooltipId),
+						} as ComponentPropsWithoutRef<'button'>
+					}
 					confirmLabel={deleteConfirmLabel}
 					onConfirm={() => onDelete(entry)}>
 					{deleteMessage}

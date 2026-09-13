@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const STRINGS: Record<string, string> = {
@@ -40,9 +40,9 @@ const mount = (extra: Partial<React.ComponentProps<typeof SavedDataPanel<string>
 const popover = () => document.querySelector('.sim-confirm-popover');
 const popoverText = () => popover()?.querySelector('.sim-confirm-popover-message')?.textContent ?? '';
 const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
-const saveButton = () => document.querySelector('.saved-data-save-button') as HTMLButtonElement;
-const nameInput = () => document.querySelector('.saved-data-save-input') as HTMLInputElement;
-const deleteChip = () => document.querySelector('.saved-data-custom .saved-data-set-delete') as HTMLButtonElement;
+const saveButton = () => screen.getByTestId('saved-data-save-button') as HTMLButtonElement;
+const nameInput = () => screen.getByTestId('saved-data-save-input') as HTMLInputElement;
+const deleteChip = () => within(screen.getByTestId('saved-data-custom')).getByTestId('saved-data-set-delete') as HTMLButtonElement;
 
 beforeEach(() => {
 	onSave.mockClear();
@@ -117,7 +117,7 @@ describe('SavedDataPanel', () => {
 	it('offers no delete on a preset', () => {
 		mount();
 
-		expect(document.querySelector('.saved-data-presets .saved-data-set-delete')).toBeNull();
+		expect(within(screen.getByTestId('saved-data-presets')).queryByTestId('saved-data-set-delete')).toBeNull();
 	});
 
 	it('mounts its popovers in the container it is given', () => {

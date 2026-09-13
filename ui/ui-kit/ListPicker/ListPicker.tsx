@@ -125,16 +125,21 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	];
 
 	return (
-		<PickerShell config={{ ...config, extraClassNames, id: config.id ?? listId }} className="list-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell
+			config={{ ...config, extraClassNames, id: config.id ?? listId }}
+			className="list-picker-root"
+			testId="list-picker-root"
+			hidden={hidden}
+			disabled={disabled}>
 			{config.title !== undefined && (
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
-				<span className="list-picker-title form-label">
+				<span className="list-picker-title form-label" data-testid="list-picker-title">
 					{config.title}
 					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ml-2" />}
 				</span>
 			)}
 			{value.length > 0 && (
-				<div className="list-picker-items">
+				<div className="list-picker-items" data-testid="list-picker-items">
 					{value.map((_item, index) => (
 						<ListPickerItem
 							key={index}
@@ -172,7 +177,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 						onClick={onCreate}
 					/>
 				) : (
-					<Button variant="primary" className="list-picker-new-button" onClick={onCreate}>
+					<Button variant="primary" className="list-picker-new-button" data-testid="list-picker-new-button" onClick={onCreate}>
 						<i className="fa fa-plus mr-2" />
 						{newLabel}
 					</Button>

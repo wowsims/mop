@@ -1,6 +1,6 @@
 import { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
@@ -63,18 +63,18 @@ const configFor = (extra: Partial<IconEnumPickerConfig<Options, number>> = {}): 
 
 const mount = (options: Options, config: IconEnumPickerConfig<Options, number> = configFor()) => render(<IconEnumPicker modObject={options} config={config} />);
 
-const root = () => document.querySelector('.icon-enum-picker-root') as HTMLElement;
-const button = () => root().querySelector(':scope > a.icon-picker-button') as HTMLAnchorElement;
-const menu = () => root().querySelector('ul.icon-enum-picker-menu') as HTMLUListElement;
-const items = () => Array.from(menu().children) as HTMLLIElement[];
-const optionAnchor = (index: number) => items()[index].querySelector('a') as HTMLAnchorElement;
+const root = () => screen.getByTestId('icon-enum-picker-root');
+const button = () => within(root()).getByTestId('icon-enum-picker-button') as HTMLAnchorElement;
+const menu = () => (within(root()).queryByTestId('icon-enum-picker-menu') ?? null) as HTMLUListElement | null;
+const items = () => Array.from(menu()!.children) as HTMLLIElement[];
+const optionAnchor = (index: number) => within(items()[index]).getByTestId('icon-picker-button') as HTMLAnchorElement;
 // The menu mounts when it opens, so every test that reads an option has to open it first.
 const open = (trigger: HTMLElement = button()) =>
 	act(() => {
 		fireEvent.mouseEnter(trigger);
 		fireEvent.mouseMove(trigger);
 	});
-const caption = () => root().querySelector(':scope > label.form-label') as HTMLLabelElement;
+const caption = () => within(root()).getByTestId('form-label') as HTMLLabelElement;
 // happy-dom re-quotes the CSSOM value, so icons are compared by name rather than by literal.
 const iconOf = (element: HTMLElement) => element.style.backgroundImage.replace(/^url\(['"]?|['"]?\)$/g, '');
 
@@ -107,17 +107,17 @@ describe('IconEnumPicker', () => {
 		open();
 		// By class and from the menu upwards, not by index: an open menu hangs Base UI's focus guards
 		// off the root and around the `<ul>` as well.
-		const slot = root().querySelector('.icon-enum-picker-slot') as HTMLElement;
+		const slot = within(root()).getByTestId('icon-enum-picker-slot');
 		expect(slot.children[0].className).toBe('icon-enum-picker-portal');
 		expect(slot.children[0].children[0].className).toBe('icon-enum-picker-positioner');
-		expect(menu().parentElement).toBe(slot.children[0].children[0]);
+		expect(menu()!.parentElement).toBe(slot.children[0].children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
 			'li.icon-dropdown-option dropdown-option',
 			'li.icon-dropdown-option dropdown-option',
 			'li.icon-dropdown-option dropdown-option',
 		]);
-		expect(items().every(item => item.querySelector(':scope > a.icon-picker-button'))).toBe(true);
+		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});
 
 	it('mounts the options when the menu opens and leaves the slot empty until then', () => {
@@ -130,7 +130,7 @@ describe('IconEnumPicker', () => {
 		expect(menu()).toBeNull();
 
 		open();
-		expect(menu().hasAttribute('hidden')).toBe(false);
+		expect(menu()!.hasAttribute('hidden')).toBe(false);
 		expect(items()).toHaveLength(3);
 	});
 
@@ -280,23 +280,23 @@ describe('IconEnumPicker', () => {
 		const options = new Options();
 		// The override on showWhen(): a list of colour-only values names nothing to show.
 		mount(options, configFor({ values: [{ value: 0, color: 'grey' }] }));
-		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
+		expect(screen.queryByTestId('icon-enum-picker-root')).toBeNull();
 	});
 
 	it('unmounts on its own showWhen, and puts the value aside across it', () => {
 		const options = new Options();
 		options.armor = 2;
 		mount(options, configFor({ showWhen: (obj: Options) => obj.visible }));
-		expect(document.querySelector('.icon-enum-picker-root')).toBeTruthy();
+		expect(screen.queryByTestId('icon-enum-picker-root')).toBeTruthy();
 
 		// storeValue(): zeroed while away, and nothing is left in the tree.
 		act(() => options.setVisible(false));
-		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
+		expect(screen.queryByTestId('icon-enum-picker-root')).toBeNull();
 		expect(options.armor).toBe(0);
 
 		// restoreValue(): the source was still zero, so what was put aside comes back.
 		act(() => options.setVisible(true));
-		expect(document.querySelector('.icon-enum-picker-root')).toBeTruthy();
+		expect(screen.queryByTestId('icon-enum-picker-root')).toBeTruthy();
 		expect(options.armor).toBe(2);
 	});
 
@@ -322,7 +322,7 @@ describe('IconEnumPicker', () => {
 		expect(options.armor).toBe(0);
 		// The menu went with the picker, so there is no option to click — a write to the source is the
 		// only thing that can still beat what was put aside, which the test above covers.
-		expect(document.querySelector('ul.icon-enum-picker-menu')).toBeNull();
+		expect(screen.queryByTestId('icon-enum-picker-menu')).toBeNull();
 	});
 
 	it('writes disabled on the anchor as well as the class on the root', () => {
@@ -346,21 +346,21 @@ describe('IconEnumPicker', () => {
 	it('lays the menu out from numColumns, and turns it sideways for a horizontal picker', () => {
 		mount(new Options(), configFor({ numColumns: 5 }));
 		open();
-		expect(menu().style.gridTemplateColumns).toBe('repeat(5, 1fr)');
-		expect(menu().style.gridAutoFlow).toBe('');
+		expect(menu()!.style.gridTemplateColumns).toBe('repeat(5, 1fr)');
+		expect(menu()!.style.gridAutoFlow).toBe('');
 		expect(root().classList.contains('dropdown')).toBe(true);
 
 		render(<IconEnumPicker modObject={new Options()} config={configFor({ direction: IconEnumPickerDirection.Horizontal })} />);
-		const horizontal = document.querySelectorAll('.icon-enum-picker-root')[1];
+		const horizontal = screen.getAllByTestId('icon-enum-picker-root')[1];
 		expect(horizontal.classList.contains('dropend')).toBe(true);
-		open(horizontal.querySelector(':scope > a.icon-picker-button') as HTMLElement);
-		expect((horizontal.querySelector('ul.icon-enum-picker-menu') as HTMLElement).style.gridAutoFlow).toBe('column');
+		open(within(horizontal).getByTestId('icon-enum-picker-button'));
+		expect(within(horizontal).getByTestId('icon-enum-picker-menu').style.gridAutoFlow).toBe('column');
 	});
 
 	it('positions the menu against the viewport, not against the picker root it portals into', async () => {
 		mount(new Options());
 		await open();
-		expect((root().querySelector('.icon-enum-picker-positioner') as HTMLElement).style.position).toBe('fixed');
+		expect(within(root()).getByTestId('icon-enum-picker-positioner').style.position).toBe('fixed');
 	});
 
 	it('carries every tooltip on its anchor, and renders none until one is asked for', () => {
@@ -398,7 +398,7 @@ describe('IconEnumPicker', () => {
 				<IconEnumPicker modObject={options} config={configFor({ showWhen: (obj: Options) => obj.visible })} />
 			</StrictMode>,
 		);
-		expect(document.querySelector('.icon-enum-picker-root')).toBeNull();
+		expect(screen.queryByTestId('icon-enum-picker-root')).toBeNull();
 		expect(options.armor).toBe(2);
 
 		// And nothing was put aside, so coming back is a no-op rather than a restore.

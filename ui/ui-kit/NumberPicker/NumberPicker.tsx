@@ -60,7 +60,7 @@ export const NumberPicker = <ModObject,>({ modObject, config }: NumberPickerProp
 	});
 
 	return (
-		<PickerShell config={config} className="number-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="number-picker-root" testId="number-picker-root" hidden={hidden} disabled={disabled}>
 			<Input
 				type="text"
 				ref={attachInput}

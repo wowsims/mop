@@ -36,10 +36,11 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	useEquippedItemWowheadDataset(iconRef, player, item, isBlacksmithing);
 
 	return (
-		<div className="icon-picker-root icon-picker">
+		<div className="icon-picker-root icon-picker" data-testid="icon-picker-root">
 			<ItemCellAnchor
 				ref={iconRef}
 				className={clsx('icon-picker-button', item && 'active')}
+				data-testid="icon-picker-button"
 				data-active={item ? '' : undefined}
 				role="button"
 				aria-label={name || translateSlotName(slot) || undefined}

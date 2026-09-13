@@ -87,14 +87,14 @@ describe('NumberPicker', () => {
 	it('renders nothing when showWhen is false', () => {
 		const settings = new Settings();
 		const { container } = render(<NumberPicker modObject={settings} config={configFor({ showWhen: () => false })} />);
-		expect(container.querySelector('.input-root')).toBeNull();
+		expect(container.querySelector('[data-testid="number-picker-root"]')).toBeNull();
 	});
 
 	it('disables the input and marks the root when enableWhen is false', () => {
 		const settings = new Settings();
 		render(<NumberPicker modObject={settings} config={configFor({ enableWhen: () => false })} />);
 		expect(input().disabled).toBe(true);
-		expect(input().closest('.input-root')!.hasAttribute('data-disabled')).toBe(true);
+		expect(input().closest('[data-testid="number-picker-root"]')!.hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('seeds from defaultValue, then hands over to the source on its first change', () => {

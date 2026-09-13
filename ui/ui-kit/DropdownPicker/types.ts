@@ -51,6 +51,7 @@ export interface DropdownPickerProps<V> {
 	positionMethod?: Menu.Positioner.Props['positionMethod'];
 	/** On the root. */
 	className?: ClassValue;
+	testId?: string;
 }
 
 /** The option shape the APL model still speaks; `DropdownOption` is what the component takes. */
