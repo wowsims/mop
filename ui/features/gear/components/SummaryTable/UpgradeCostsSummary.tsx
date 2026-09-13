@@ -44,7 +44,7 @@ export const UpgradeCostsSummary = () => {
 					<div key={key}>
 						<SummaryTableRow>
 							<div className="flex items-center">
-								<img className="gem-icon" src={currencyIconUrl(key, faction)} alt="" />
+								<img className="gem-icon ui-summary-table-gem-icon cursor-default" src={currencyIconUrl(key, faction)} alt="" />
 								<div>{i18n.t(`common.currency.${key}`)}</div>
 							</div>
 							<div>{points}</div>

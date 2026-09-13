@@ -20,7 +20,7 @@ export const GemSocket = ({ socketColor, gem, hidden, className, ...rest }: GemS
 	if (hidden) return null;
 
 	return (
-		<ItemCellAnchor {...rest} className={clsx('gem-socket-container', className)} href={href}>
+		<ItemCellAnchor {...rest} className={clsx('gem-socket-container ui-gem-socket-focus-scope', className)} href={href}>
 			{gem && <img className="gem-icon" src={iconUrl || undefined} alt="" />}
 			<img className="socket-icon" src={emptyIconUrl} alt="" />
 		</ItemCellAnchor>

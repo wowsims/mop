@@ -1,0 +1,10 @@
+.ui-selector-modal-list-item-icon {
+	@apply bg-no-repeat bg-cover bg-center relative cursor-pointer inline-block w-12 h-12 border border-border;
+}
+
+.ui-selector-modal-filters {
+	& input,
+	& select {
+		@apply py-(--btn-padding-y) text-(length:--btn-font-size);
+	}
+}

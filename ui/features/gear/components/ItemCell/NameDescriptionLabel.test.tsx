@@ -8,13 +8,13 @@ describe('NameDescriptionLabel', () => {
 	for (const nameDescription of ['Heroic', 'Raid Finder', 'Heroic Thunderforged', '']) {
 		it(`wraps "${nameDescription}" in parentheses`, () => {
 			const { container } = render(<NameDescriptionLabel nameDescription={nameDescription} />);
-			expect(container.firstElementChild!.outerHTML).toBe(`<small class="heroic-label">(${nameDescription})</small>`);
+			expect(container.firstElementChild!.outerHTML).toBe(`<small class="heroic-label text-quality-uncommon text-ui ml-1">(${nameDescription})</small>`);
 		});
 	}
 
 	it('appends className after the base class', () => {
 		const className: ClassValue = ['extra-a', { 'extra-b': true, 'extra-c': false }];
 		const { container } = render(<NameDescriptionLabel nameDescription="Heroic" className={className} />);
-		expect(container.firstElementChild!.getAttribute('class')).toBe('heroic-label extra-a extra-b');
+		expect(container.firstElementChild!.getAttribute('class')).toBe('heroic-label text-quality-uncommon text-ui ml-1 extra-a extra-b');
 	});
 });

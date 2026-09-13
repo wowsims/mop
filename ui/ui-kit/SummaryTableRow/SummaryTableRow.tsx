@@ -7,5 +7,5 @@ export interface SummaryTableRowProps {
 }
 
 export const SummaryTableRow = ({ children, className }: SummaryTableRowProps) => (
-	<div className={clsx('summary-table-row flex items-center', className)}>{children}</div>
+	<div className={clsx('summary-table-row flex items-center [&>*:last-child]:ml-auto', className)}>{children}</div>
 );

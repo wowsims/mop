@@ -92,7 +92,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 
 	return (
 		<>
-			<div className="selector-modal-filters">
+			<div className="selector-modal-filters ui-selector-modal-filters mb-(--modal-padding) flex items-center [&>*:not(:last-child)]:mr-2">
 				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search max-w-48" grow={false} />
 				{label === SelectorModalTabs.Items && (
 					<>
@@ -103,12 +103,12 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						<FiltersMenu slot={slot} open={filtersOpen} onOpenChange={setFiltersOpen} />
 					</>
 				)}
-				<div className="selector-modal-phase-selector">
+				<div className="selector-modal-phase-selector min-w-28">
 					<EnumPicker
 						modObject={sim}
 						config={{
 							id: 'phase-selector',
-							extraClassNames: ['phase-selector'],
+							extraClassNames: ['phase-selector', 'mb-0'],
 							values: [
 								{ name: i18n.t('common.phases.1'), value: 1 },
 								{ name: i18n.t('common.phases.2'), value: 2 },
@@ -202,30 +202,44 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					{removeButtonLabel(label, key => i18n.t(key))}
 				</Button>
 			</div>
-			<div className="selector-modal-list-labels">
+			<div className="selector-modal-list-labels flex pr-2 mr-4 text-md justify-between gap-4 max-xl:mr-0">
 				{(label === SelectorModalTabs.Items || label === SelectorModalTabs.Upgrades) && (
-					<h6 className="ilvl-label interactive" onClick={() => sort(ItemListSortBy.ILVL)}>
+					<h6 className="ilvl-label interactive w-12" onClick={() => sort(ItemListSortBy.ILVL)}>
 						{i18n.t('gear_tab.gear_picker.table_headers.ilvl')}
 					</h6>
 				)}
-				<h6 className="item-label">{columnHeaderLabel(label, getTranslatedTabLabel)}</h6>
-				{label === SelectorModalTabs.Items && <h6 className="source-label">{i18n.t('gear_tab.gear_picker.table_headers.source')}</h6>}
-				<h6 className="ep-label interactive" style={{ display: showEPValues ? undefined : 'none' }} onClick={() => sort(ItemListSortBy.EP)}>
+				<h6 className="item-label flex-1 mr-2">{columnHeaderLabel(label, getTranslatedTabLabel)}</h6>
+				{label === SelectorModalTabs.Items && <h6 className="source-label w-64">{i18n.t('gear_tab.gear_picker.table_headers.source')}</h6>}
+				<h6
+					className="ep-label interactive w-24 flex items-center float-right"
+					style={{ display: showEPValues ? undefined : 'none' }}
+					onClick={() => sort(ItemListSortBy.EP)}>
 					<span>EP</span>
 					<Icon name="plus-minus" size="2xs" />
 					<Button iconOnly aria-label={i18n.t('gear_tab.gear_picker.ep_tooltip')} className="ml-1" data-tooltip-id={`${tooltipId}-ep`}>
 						<Icon name="question-circle" style="regular" size="lg" />
 					</Button>
 				</h6>
-				<h6 className="favorite-label" />
-				{label === SelectorModalTabs.Items && <h6 className="compare-label" />}
+				<h6 className="favorite-label w-8" />
+				{label === SelectorModalTabs.Items && <h6 className="compare-label w-8" />}
 			</div>
-			<div ref={listRef} className={clsx('selector-modal-list', !showEPValues && 'hide-ep')} data-hide-ep={!showEPValues ? '' : undefined} tabIndex={0}>
+			<div
+				ref={listRef}
+				className={clsx('selector-modal-list w-full max-h-[60vh] overflow-y-scroll overflow-x-hidden p-0 mb-0', !showEPValues && 'hide-ep')}
+				data-hide-ep={!showEPValues ? '' : undefined}
+				tabIndex={0}>
 				<VirtualList
 					count={itemsToDisplay.length}
 					rowHeight={ROW_HEIGHT}
 					getScrollElement={() => listRef.current}
-					rowClassName={index => clsx('selector-modal-list-item', itemData[itemsToDisplay[index]].id === equippedId && 'active')}
+					rowClassName={index =>
+						clsx(
+							'selector-modal-list-item relative p-2 flex items-center bg-gray-900 gap-4',
+							'data-[stripe=even]:bg-table-odd data-[stripe=odd]:bg-table-even hover:bg-gray-800',
+							'[&.active_.selector-modal-list-item-icon]:outline-2 [&.active_.selector-modal-list-item-icon]:outline-success',
+							itemData[itemsToDisplay[index]].id === equippedId && 'active',
+						)
+					}
 					renderRow={index => {
 						const row = itemData[itemsToDisplay[index]];
 						return (

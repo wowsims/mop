@@ -1,5 +1,3 @@
-import './SelectorModal.scss';
-
 import { Tabs } from '@base-ui/react/tabs';
 import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -107,7 +105,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 		// `Tabs.Root` has to be a React ancestor of both the strip and the panes, and the dialog takes
 		// them as two separate props. `display: contents` keeps the element it renders out of the layout.
 		<Tabs.Root
-			className="selector-modal-tabs-root"
+			className="selector-modal-tabs-root contents"
 			value={activeTab?.label ?? null}
 			onValueChange={next => request && setSelected({ sequence: request.sequence, tab: next as SelectorModalTabs })}>
 			<Dialog
@@ -122,7 +120,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 					<>
 						{rail && <SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />}
 						<div>
-							<h6 className="selector-modal-title">{slot !== null ? (translateSlotName(slot) ?? '') : ''}</h6>
+							<h6 className="selector-modal-title mb-0">{slot !== null ? (translateSlotName(slot) ?? '') : ''}</h6>
 							<TabNav
 								bordered={false}
 								className="selector-modal-tabs"
@@ -137,7 +135,11 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 									tabId: tabId(tab.label),
 									ariaControls: paneId(tab.label),
 									dataLabel: tab.label,
-									buttonClassName: clsx('selector-modal-item-tab', tab.socketIdx !== undefined && 'selector-modal-tab-gem'),
+									buttonClassName: clsx(
+										'selector-modal-item-tab',
+										tab.socketIdx !== undefined &&
+											'selector-modal-tab-gem p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 [&.active]:opacity-100',
+									),
 								}))}
 							/>
 						</div>
@@ -156,7 +158,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								id={paneId(tab.label)}
 								keepMounted
 								className={clsx(
-									'selector-modal-tab-pane tab-pane fade fade-in-out',
+									'selector-modal-tab-pane tab-pane fade fade-in-out p-0',
 									tab.label === activeTab?.label ? 'active show' : 'opacity-0',
 								)}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />

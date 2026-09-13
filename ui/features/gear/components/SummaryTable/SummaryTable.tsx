@@ -1,5 +1,3 @@
-import './SummaryTable.scss';
-
 import { Button } from '@ui-kit/Button';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { Icon } from '@ui-kit/Icon';
@@ -17,12 +15,12 @@ export interface SummaryTableProps {
 
 export const SummaryTable = ({ title, className, headerClassName, empty, reset, children }: SummaryTableProps) =>
 	empty ? null : (
-		<div className="summary-table-root">
+		<div className="summary-table-root max-md:w-full">
 			<ContentBlock
 				className={['summary-table-container', className]}
-				config={{ header: { title, className: headerClassName } }}
+				config={{ header: { title, className: headerClassName }, bodyClassName: 'gap-1' }}
 				headerChildren={
-					<Button variant="link-danger" size="sm" className="summary-table-reset-button" onClick={reset.onReset}>
+					<Button variant="link-danger" size="sm" className="summary-table-reset-button ml-auto shrink-0" onClick={reset.onReset}>
 						<Icon name="times" className="mr-1" />
 						{reset.label}
 					</Button>

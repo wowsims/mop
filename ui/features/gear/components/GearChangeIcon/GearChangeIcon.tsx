@@ -1,5 +1,3 @@
-import './GearChangeIcon.scss';
-
 import type { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';
@@ -44,23 +42,31 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 	const sockets = useMemo(() => gearChangeSockets(item, previousItem), [item, previousItem]);
 
 	return (
-		<div className="item-picker-root gear-change-icon">
-			<div className="gear-change-icon-frame">
-				<div className="item-picker-icon-wrapper" style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }} />
-				<a className="gear-change-icon-link" href={item ? href || undefined : undefined} data-whtticon={item ? 'false' : undefined} {...wowheadProps} />
+		<div className="item-picker-root ui-item-picker-root gear-change-icon">
+			<div className="gear-change-icon-frame relative w-fit">
 				<div
-					className={clsx('gear-change-icon-reforge interactive', !showReforge && 'hidden')}
+					className="item-picker-icon-wrapper ui-item-picker-icon-wrapper"
+					style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
+				/>
+				<a
+					className="gear-change-icon-link absolute inset-0"
+					href={item ? href || undefined : undefined}
+					data-whtticon={item ? 'false' : undefined}
+					{...wowheadProps}
+				/>
+				<div
+					className={clsx('gear-change-icon-reforge ui-gear-change-icon-reforge interactive', !showReforge && 'hidden')}
 					hidden={!showReforge}
 					{...(showReforge ? tooltipAnchorProps(`${tooltipId}-reforge`) : {})}
 				/>
-				<div className="item-picker-sockets-container">
+				<div className="item-picker-sockets-container ui-item-picker-sockets-container">
 					{sockets.map(({ socketColor, gemName, changed }, gemIdx) => (
 						<div
 							key={gemIdx}
-							className={clsx('gem-socket-container', changed && 'interactive')}
+							className={clsx('gem-socket-container ui-gear-change-icon-gem-socket', changed && 'interactive')}
 							style={{ backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})` }}
 							{...(changed && gemName ? tooltipAnchorProps(`${tooltipId}-socket-${gemIdx}`) : {})}>
-							{changed && <i className="block fas fa-exclamation-circle" />}
+							{changed && <i className="block fas fa-exclamation-circle ui-gear-change-icon-gem-marker" />}
 						</div>
 					))}
 				</div>

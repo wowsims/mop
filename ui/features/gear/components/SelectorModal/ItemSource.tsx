@@ -19,7 +19,7 @@ const FactionIcon = ({ restriction }: { restriction: UIItem_FactionRestriction }
 };
 
 const SourceLink = ({ href, children }: { href: string; children: ReactNode }) => (
-	<a href={href} target="_blank" rel={externalRel(href, undefined)} data-whtticon="false">
+	<a href={href} target="_blank" rel={externalRel(href, undefined)} data-whtticon="false" className="relative z-1">
 		<small>{children}</small>
 	</a>
 );

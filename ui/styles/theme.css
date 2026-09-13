@@ -21,6 +21,7 @@
 	--text-xs: 0.75rem;
 	--text-sm: 0.875rem;
 	--text-base: 1rem;
+	--text-md: 1.125rem;
 	--text-lg: 1.25rem;
 	--text-xl: 1.5rem;
 	--text-2xl: 1.75rem;
@@ -29,6 +30,7 @@
 	--text-5xl: 5rem;
 
 	--text-ui: 0.75rem;
+	--text-ep-delta: 0.8rem;
 
 	--spacing-page: 0.5rem;
 	--spacing-section: 2rem;

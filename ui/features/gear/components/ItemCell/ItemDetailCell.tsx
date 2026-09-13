@@ -70,7 +70,7 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			}
 			icon={
 				<ItemCellAnchor
-					className="item-picker-icon"
+					className="item-picker-icon ui-item-picker-icon"
 					role="button"
 					href={href || undefined}
 					onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
@@ -96,7 +96,7 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			name={
 				<>
 					<ItemCellAnchor
-						className={clsx('item-picker-name-container', itemQualityClassName(item?.item.quality))}
+						className={clsx('item-picker-name-container ui-item-picker-name-container tracking-normal', itemQualityClassName(item?.item.quality))}
 						role="button"
 						href={href || undefined}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
@@ -125,14 +125,21 @@ export const ItemDetailCell = ({ slot, item, className, onOpen, action, enchantT
 			labels={
 				<>
 					<EnchantLabel
-						className="item-picker-enchant"
+						className="item-picker-enchant ui-item-picker-label-muted tracking-normal"
 						enchant={item?.enchant}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Enchants))}
 						tooltipId={enchantTooltipId}
 					/>
-					<EnchantLabel className="item-picker-tinker" enchant={item?.tinker} onActivate={onOpen && (() => onOpen(SelectorModalTabs.Tinkers))} />
+					<EnchantLabel
+						className="item-picker-tinker ui-item-picker-label-muted tracking-normal"
+						enchant={item?.tinker}
+						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Tinkers))}
+					/>
 					{reforgeData && (
-						<ItemCellAnchor className="item-picker-reforge" role="button" onActivate={onOpen && (() => onOpen(SelectorModalTabs.Reforging))}>
+						<ItemCellAnchor
+							className="item-picker-reforge ui-item-picker-label-muted tracking-normal"
+							role="button"
+							onActivate={onOpen && (() => onOpen(SelectorModalTabs.Reforging))}>
 							{i18n.t('gear_tab.gear_picker.reforge_text', {
 								fromAmount: Math.abs(reforgeData.fromAmount),
 								fromStat: translateStat(reforgeData.reforge?.fromStat),

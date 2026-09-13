@@ -1,0 +1,40 @@
+.ui-item-picker-root {
+	@apply flex;
+}
+
+.ui-item-picker-icon-wrapper {
+	--icon-size: 4rem;
+	@apply relative w-(--icon-size) h-(--icon-size) border border-border max-lg:[--icon-size:3rem];
+}
+
+.ui-item-picker-ilvl {
+	@apply absolute pl-px bg-[rgb(0_0_0/0.75)] text-ui z-1 pointer-events-none;
+}
+
+.ui-item-picker-sockets-container {
+	@apply absolute inset-x-0 bottom-0 w-full flex justify-center;
+}
+
+.ui-item-picker-labels-container {
+	@apply p-2 pb-0 flex-1 flex flex-col items-start;
+}
+
+.ui-item-picker-name-container {
+	@apply text-white text-(length:--h6-font-size) [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1
+		[.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+}
+
+.ui-item-picker-label-muted {
+	@apply text-quality-uncommon text-ui [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1
+		[.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+}
+
+.ui-item-picker-icon {
+	@apply bg-no-repeat bg-cover bg-center relative cursor-pointer inline-block h-full w-full [.gear-picker-root_&]:focus-visible:outline
+		[.gear-picker-root_&]:focus-visible:outline-1 [.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+}
+
+.ui-gem-socket-focus-scope {
+	@apply [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1 [.gear-picker-root_&]:focus-visible:outline-link
+		[.gear-picker-root_&]:focus-visible:outline-offset-1;
+}

@@ -34,18 +34,17 @@ export interface FiltersMenuProps {
 	onOpenChange: (open: boolean) => void;
 }
 
-/** `${kebabCase(name)}-section`: the class is derived from the *translated* name, so `.general-section` exists in English only. */
 const MenuSection = ({ name, className, children }: { name: string; className?: ClassValue; children: ReactNode }) => (
-	<div className={clsx('menu-section', `${kebabCase(name)}-section`)}>
-		<div className="menu-section-header">
+	<div className={clsx('menu-section flex max-sm:block', `${kebabCase(name)}-section`)}>
+		<div className="menu-section-header flex-1">
 			<h6 className="menu-section-title">{name}</h6>
 		</div>
-		<div className={clsx('menu-section-content', className)}>{children}</div>
+		<div className={clsx('menu-section-content flex flex-col flex-[3]', className ?? 'gap-(--spacing-stack)')}>{children}</div>
 	</div>
 );
 
 const SourceSection = ({ sim }: { sim: Sim }) => (
-	<MenuSection name={i18n.t('gear_tab.gear_picker.filters.source')} className="filters-menu-section-bool-list">
+	<MenuSection name={i18n.t('gear_tab.gear_picker.filters.source')} className="ui-filters-menu-section-bool-list">
 		{SOURCES.map(source => {
 			const label = translateSourceFilter(source);
 			if (!label) return null;
@@ -80,7 +79,7 @@ const ArmorTypeSection = ({ player }: { player: Player<any> }) => {
 	if (armorTypes.length <= 1) return null;
 
 	return (
-		<MenuSection name={i18n.t('gear_tab.gear_picker.armor_type')} className="filters-menu-section-bool-list">
+		<MenuSection name={i18n.t('gear_tab.gear_picker.armor_type')} className="ui-filters-menu-section-bool-list">
 			{armorTypes.map(armorType => (
 				<BooleanPicker<Sim>
 					key={armorType}
@@ -113,7 +112,7 @@ const WeaponSections = ({ player }: { player: Player<any> }) => {
 
 	return (
 		<>
-			<MenuSection name={i18n.t('gear_tab.gear_picker.weapon_type')} className="filters-menu-section-bool-list">
+			<MenuSection name={i18n.t('gear_tab.gear_picker.weapon_type')} className="ui-filters-menu-section-bool-list">
 				{weaponTypes.map(weaponType => (
 					<BooleanPicker<Sim>
 						key={weaponType}
@@ -137,7 +136,7 @@ const WeaponSections = ({ player }: { player: Player<any> }) => {
 					/>
 				))}
 			</MenuSection>
-			<MenuSection name={i18n.t('gear_tab.gear_picker.weapon_speed')} className="filters-menu-section-number-list">
+			<MenuSection name={i18n.t('gear_tab.gear_picker.weapon_speed')} className="ui-filters-menu-section-number-list">
 				<NumberPicker<Sim>
 					modObject={player.sim}
 					config={{
@@ -217,7 +216,7 @@ const RangedWeaponSections = ({ player }: { player: Player<any> }) => {
 
 	return (
 		<>
-			<MenuSection name={i18n.t('gear_tab.gear_picker.ranged_weapon_type')} className="filters-menu-section-bool-list">
+			<MenuSection name={i18n.t('gear_tab.gear_picker.ranged_weapon_type')} className="ui-filters-menu-section-bool-list">
 				{rangedWeaponTypes.map(rangedWeaponType => (
 					<BooleanPicker<Sim>
 						key={rangedWeaponType}
@@ -241,7 +240,7 @@ const RangedWeaponSections = ({ player }: { player: Player<any> }) => {
 					/>
 				))}
 			</MenuSection>
-			<MenuSection name={i18n.t('gear_tab.gear_picker.ranged_weapon_speed')} className="filters-menu-section-number-list">
+			<MenuSection name={i18n.t('gear_tab.gear_picker.ranged_weapon_speed')} className="ui-filters-menu-section-number-list">
 				<NumberPicker<Sim>
 					modObject={player.sim}
 					config={{
@@ -294,7 +293,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 			bodyGap="gap-3"
 			title={i18n.t('gear_tab.gear_picker.filters.title')}>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.general')}>
-				<div className="ilvl-filters">
+				<div className="ilvl-filters grid grid-cols-[1fr_0_1fr] gap-x-(--modal-padding)">
 					<NumberPicker<Sim>
 						modObject={sim}
 						config={{
@@ -310,7 +309,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 							},
 						}}
 					/>
-					<span className="ilvl-filters-separator">-</span>
+					<span className="ilvl-filters-separator flex justify-center self-end py-1.5">-</span>
 					<NumberPicker<Sim>
 						modObject={sim}
 						config={{
@@ -346,7 +345,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 				/>
 			</MenuSection>
 			<SourceSection sim={sim} />
-			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.raids')} className="filters-menu-section-bool-list">
+			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.raids')} className="ui-filters-menu-section-bool-list">
 				{Sim.ALL_RAIDS.map(raid => (
 					<BooleanPicker<Sim>
 						key={raid}

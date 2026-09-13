@@ -106,10 +106,10 @@ describe('ItemListRow', () => {
 	it('renders the six list cells in order on the items tab', () => {
 		const { wrapper } = renderRow();
 		expect(Array.from(wrapper.children).map(child => child.className)).toEqual([
-			'selector-modal-list-item-ilvl-container',
-			'selector-modal-list-label-cell gap-1',
-			'selector-modal-list-item-source-container',
-			'selector-modal-list-item-ep',
+			'selector-modal-list-item-ilvl-container w-12 text-center',
+			'selector-modal-list-label-cell gap-1 flex-1 flex items-center',
+			'selector-modal-list-item-source-container w-64',
+			'selector-modal-list-item-ep w-24 flex items-center [[data-hide-ep]_&]:hidden',
 			'selector-modal-list-item-favorite-container',
 			'selector-modal-list-item-compare-container',
 		]);

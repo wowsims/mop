@@ -21,14 +21,14 @@ describe('ItemCell', () => {
 		);
 
 		expect(shape(container.firstElementChild!)).toEqual([
-			'div.item-picker-root',
-			'  div.item-picker-icon-wrapper',
-			'    span.item-picker-ilvl',
+			'div.item-picker-root.ui-item-picker-root',
+			'  div.item-picker-icon-wrapper.ui-item-picker-icon-wrapper',
+			'    span.item-picker-ilvl.ui-item-picker-ilvl',
 			'    a.item-picker-icon',
-			'    div.item-picker-sockets-container',
+			'    div.item-picker-sockets-container.ui-item-picker-sockets-container',
 			'      a.gem-socket-container',
-			'  div.item-picker-labels-container',
-			'    div.flex.gap-1.item-picker-name-row',
+			'  div.item-picker-labels-container.ui-item-picker-labels-container',
+			'    div.flex.gap-1.item-picker-name-row.tracking-normal',
 			'      a.item-picker-name-container',
 			'    a.item-picker-enchant',
 		]);

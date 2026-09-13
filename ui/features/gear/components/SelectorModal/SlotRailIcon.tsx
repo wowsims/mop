@@ -27,9 +27,9 @@ export const SlotRailIcon = ({ slot, item, isBlacksmithing, active, tooltipId, o
 	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
-		<div className={clsx('item-picker-icon-wrapper', active && 'active')} data-active={active ? '' : undefined} data-slot={slot}>
+		<div className={clsx('item-picker-icon-wrapper ui-slot-rail-icon-wrapper', active && 'active')} data-active={active ? '' : undefined} data-slot={slot}>
 			<ItemCellAnchor
-				className="item-picker-icon"
+				className="item-picker-icon ui-item-picker-icon"
 				role="button"
 				href={href || undefined}
 				onActivate={onOpen}
