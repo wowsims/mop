@@ -52,7 +52,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						{statName}{' '}
 						{!!tooltip && (
 							<>
-								<Button variant="unstyled" className="inline" {...tooltipAnchorProps(tooltipId)}>
+								<Button variant="unstyled" className="inline text-center align-middle" {...tooltipAnchorProps(tooltipId)}>
 									<Icon name="circle-question" style="regular" />
 								</Button>
 								<Tooltip id={tooltipId} content={tooltip} />

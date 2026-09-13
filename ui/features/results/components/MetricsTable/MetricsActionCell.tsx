@@ -30,7 +30,7 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 			{expandable && (
 				<Button
 					variant="unstyled"
-					className="expand-toggle"
+					className="expand-toggle text-center align-middle"
 					aria-expanded={expanded}
 					aria-label={name}
 					onClick={event => {

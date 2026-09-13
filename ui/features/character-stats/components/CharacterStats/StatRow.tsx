@@ -44,7 +44,10 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 				) : (
 					<>
 						<div className="stat-value-link-container">
-							<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} {...tooltipAnchorProps(id)}>
+							<Button
+								variant="unstyled"
+								className={clsx('stat-value-link text-center align-middle', contextualClass)}
+								{...tooltipAnchorProps(id)}>
 								{`${show(attribution.final, unitStat, true)} `}
 							</Button>
 							{isMastery &&
@@ -54,7 +57,7 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 										variant="unstyled"
 										key={index}
 										href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
-										className={clsx('stat-value-link-mastery', contextualClass)}
+										className={clsx('stat-value-link-mastery text-center align-middle', contextualClass)}
 										target="_blank">
 										{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
 									</Button>

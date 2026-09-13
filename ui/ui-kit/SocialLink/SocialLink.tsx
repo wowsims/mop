@@ -3,6 +3,7 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import clsx from 'clsx';
 import { useId } from 'react';
 
 export interface SocialLinkProps {
@@ -14,7 +15,14 @@ export const SocialLink = ({ social }: SocialLinkProps) => {
 	const tooltip = i18n.t(social.tooltip);
 	return (
 		<>
-			<Button as="a" variant="unstyled" href={social.href} target="_blank" className={social.className} aria-label={tooltip} {...tooltipAnchorProps(id)}>
+			<Button
+				as="a"
+				variant="unstyled"
+				href={social.href}
+				target="_blank"
+				className={clsx('text-center align-middle', social.className)}
+				aria-label={tooltip}
+				{...tooltipAnchorProps(id)}>
 				<Icon name={social.icon} style="brands" size="lg" />
 				{'label' in social && social.label}
 			</Button>

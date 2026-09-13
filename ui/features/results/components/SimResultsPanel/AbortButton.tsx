@@ -13,7 +13,7 @@ export const AbortButton = ({ onAbort }: AbortButtonProps) => {
 	return (
 		<Button
 			variant="unstyled"
-			className="sim-abort-button"
+			className="sim-abort-button text-center align-middle"
 			disabled={stopping}
 			onClick={event => {
 				// Synchronous: the run action reads the button back in the click's own task.

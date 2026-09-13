@@ -14,7 +14,7 @@ export const UnlaunchedNotice = ({ isHealingSpec }: UnlaunchedNoticeProps) => (
 			{i18n.t('sim.unlaunched.contribute_message')}
 			<br />
 			{i18n.t('sim.unlaunched.discord_message')}{' '}
-			<Button as="a" variant="unstyled" href="https://discord.gg/p3DgvmnDCS" target="_blank">
+			<Button as="a" variant="unstyled" href="https://discord.gg/p3DgvmnDCS" target="_blank" className="text-center align-middle">
 				Discord
 			</Button>
 			!
@@ -24,7 +24,7 @@ export const UnlaunchedNotice = ({ isHealingSpec }: UnlaunchedNoticeProps) => (
 				{i18n.t('sim.unlaunched.healing_message')}
 				<br />
 				{i18n.t('sim.unlaunched.qe_live_message')}{' '}
-				<Button as="a" variant="unstyled" href="https://questionablyepic.com/live/">
+				<Button as="a" variant="unstyled" href="https://questionablyepic.com/live/" className="text-center align-middle">
 					QE Live
 				</Button>
 				!

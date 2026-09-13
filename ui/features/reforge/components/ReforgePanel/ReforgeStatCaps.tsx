@@ -34,12 +34,12 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 					<th colSpan={4} className="pb-4">
 						<div className="flex">
 							<h6 className="content-block-title mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
-							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(capsTooltipId)}>
+							<Button variant="unstyled" className="inline text-center align-middle" {...tooltipAnchorProps(capsTooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>
 							<Button
 								variant="unstyled"
-								className="inline ml-auto"
+								className="inline ml-auto text-center align-middle"
 								{...tooltipAnchorProps(resetTooltipId)}
 								onClick={() => settings.setStatCaps(model.defaults.statCaps || new Stats())}>
 								<Icon name="arrow-rotate-left" />

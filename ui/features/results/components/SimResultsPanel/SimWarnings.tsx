@@ -25,7 +25,7 @@ export const SimWarnings = ({ warnings, ready }: SimWarningsProps) => {
 				<div className="sim-toolbar-item">
 					<Button
 						variant="unstyled"
-						className="warning link-warning text-link-warning"
+						className="warning link-warning text-link-warning text-center align-middle"
 						aria-label={i18n.t('sidebar.warnings.label')}
 						{...tooltipAnchorProps(id)}>
 						<Icon name="exclamation-triangle" size="3x" />

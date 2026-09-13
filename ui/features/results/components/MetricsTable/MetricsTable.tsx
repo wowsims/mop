@@ -45,7 +45,7 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 									aria-sort={ariaSort(header.column.getIsSorted())}
 									onClick={header.column.getToggleSortingHandler()}
 									{...tooltipAnchorProps(header.column.columnDef.meta?.headerTooltipId, header.column.columnDef.meta?.headerTooltip)}>
-									<Button variant="unstyled" className="metrics-table-sort">
+									<Button variant="unstyled" className="metrics-table-sort text-center align-middle">
 										<span>
 											<table.FlexRender header={header} />
 										</span>

@@ -32,7 +32,7 @@ export const ToolbarItem = ({
 }: ToolbarItemProps) => {
 	const id = useId();
 	const anchor = tooltip ? tooltipAnchorProps(id) : {};
-	const classes = clsx(className);
+	const classes = clsx('text-center align-middle', className);
 	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the tooltip is a `data-` attribute no assistive tech reads.
 	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (

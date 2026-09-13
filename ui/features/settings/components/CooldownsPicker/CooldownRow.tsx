@@ -36,7 +36,7 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
 				variant="unstyled"
-				className="delete-cooldown link-danger"
+				className="delete-cooldown link-danger text-center align-middle"
 				onClick={() => deleteCooldown(player, index)}
 				{...tooltipAnchorProps(deleteTooltipId)}>
 				<Icon name="times" style="base" size="xl" />

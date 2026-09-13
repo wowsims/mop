@@ -4,7 +4,7 @@ export const BASE =
 export const LINK_BASE =
 	'p-0 border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
 
-export const ICON_BASE = 'border-0 bg-transparent cursor-pointer';
+export const ICON_BASE = 'border-0 bg-transparent cursor-pointer text-center align-middle';
 
 export const SIZE = {
 	default: 'px-3 py-2',
