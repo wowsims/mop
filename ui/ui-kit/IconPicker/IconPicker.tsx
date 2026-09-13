@@ -92,7 +92,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 					useImprovedIcons && 'use-improved-icons',
 					config.improvedId2 && 'use-improved-icons2',
 					!useImprovedIcons && config.states > 2 && 'use-counter',
-					currentValue > 0 && 'active',
+					currentValue > 0 ? 'active [filter:none]' : '[filter:grayscale(1)]',
 				)}
 				data-testid="icon-picker-button"
 				data-active={currentValue > 0 ? '' : undefined}
@@ -107,7 +107,10 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				{...disabledAttribute}
 				{...stateEvents}
 			/>
-			<div className="icon-input-level-container" data-testid="icon-input-level-container" {...stateEvents}>
+			<div
+				className={clsx('icon-input-level-container', currentValue > 0 ? '[filter:none]' : '[filter:grayscale(1)]')}
+				data-testid="icon-input-level-container"
+				{...stateEvents}>
 				<ImprovedAnchor
 					actionId={fillImproved1 ? config.improvedId : undefined}
 					className="icon-input-improved1"
@@ -122,7 +125,11 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				/>
 				{config.states > 2 && (
 					<span
-						className={clsx('icon-picker-label', currentValue > 0 && 'active')}
+						className={clsx(
+							'icon-picker-label',
+							'absolute inset-x-0 bottom-0 text-center bg-[rgb(0_0_0/0.5)] text-success text-[length:0.625rem] font-bold whitespace-nowrap',
+							currentValue > 0 && 'active',
+						)}
 						data-testid="icon-picker-label"
 						data-active={currentValue > 0 ? '' : undefined}>
 						{showCounterText ? String(currentValue) : null}

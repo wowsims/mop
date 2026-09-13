@@ -39,7 +39,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 		<div className="icon-picker-root icon-picker" data-testid="icon-picker-root">
 			<ItemCellAnchor
 				ref={iconRef}
-				className={clsx('icon-picker-button', item && 'active')}
+				className={clsx('icon-picker-button', item ? 'active [filter:none]' : '[filter:grayscale(1)]')}
 				data-testid="icon-picker-button"
 				data-active={item ? '' : undefined}
 				role="button"

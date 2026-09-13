@@ -22,14 +22,14 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 	return (
 		<Menu.Item
 			render={<li />}
-			className={clsx('icon-dropdown-option', 'dropdown-option')}
+			className={clsx('icon-dropdown-option', 'dropdown-option', 'p-0 [filter:opacity(0.7)] hover:[filter:none]')}
 			data-testid="icon-dropdown-option"
 			onClick={event => {
 				event.preventDefault();
 				onSelect();
 			}}>
 			<a
-				className="icon-picker-button"
+				className="icon-picker-button -m-px"
 				data-testid="icon-picker-button"
 				{...wowheadAnchorProps()}
 				href={href || undefined}

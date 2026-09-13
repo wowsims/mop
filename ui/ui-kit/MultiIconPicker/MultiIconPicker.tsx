@@ -50,14 +50,14 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 
 	return (
 		<div className={clsx('multi-icon-picker-root', 'icon-picker')} data-testid="multi-icon-picker-root" {...groupProps}>
-			<div className="dropend" ref={setDropend}>
+			<div className="relative" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger
 						nativeButton={false}
 						render={<a />}
 						openOnHover
 						delay={0}
-						className={clsx('icon-picker-button', actionId && 'active')}
+						className={clsx('icon-picker-button', actionId ? 'active [filter:none]' : '[filter:grayscale(1)]')}
 						data-testid="multi-icon-picker-button"
 						data-active={actionId ? '' : undefined}
 						// The trigger is a bare anchor carrying a background image, so it announced nothing — and Base UI points the popup's `aria-labelledby` at it, which would have made the group nameless too.
@@ -80,7 +80,11 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							{/* `role="group"`, not the `menu` Base UI would give it. A menu's children must be menuitems, and these are icon toggles — `Menu.Item` would close the popup on every click, and toggling several buffs in one visit is the whole point of this control. */}
 							<Menu.Popup render={<ul />} role="group" className="multi-icon-picker-menu" data-testid="multi-icon-picker-menu">
 								<li>
-									<a className="icon-dropdown-option dropdown-option" data-testid="icon-dropdown-option" onClick={onClear} />
+									<a
+										className="icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:[filter:none]"
+										data-testid="icon-dropdown-option"
+										onClick={onClear}
+									/>
 								</li>
 								{config.inputs.map((input, index) => (
 									<li key={index} className="icon-picker-option dropdown-option">

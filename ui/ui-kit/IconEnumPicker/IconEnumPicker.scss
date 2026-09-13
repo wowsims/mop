@@ -18,17 +18,3 @@
 	background-color: grey;
 	list-style: none;
 }
-
-// `.icon-picker .icon-dropdown-option` already sizes and borders the `<li>`; what came from `.icon-picker .dropdown-menu .icon-dropdown-option` is the dimming, which has to out-specify that rule's `filter: grayscale(1)`, and the 1px pull that laps the anchor over the `<li>`'s border.
-.icon-picker .icon-enum-picker-menu .icon-dropdown-option {
-	padding: 0;
-	filter: opacity(0.7);
-
-	&:hover {
-		filter: none;
-	}
-
-	.icon-picker-button {
-		margin: -1px;
-	}
-}

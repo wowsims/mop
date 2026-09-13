@@ -33,29 +33,14 @@
 		position: relative;
 		display: block;
 		background-color: grey;
-		filter: grayscale(1);
 
 		&.active {
 			border-color: $success;
-			filter: none;
 		}
 	}
 
 	.icon-picker-button {
 		cursor: pointer;
-	}
-
-	.icon-picker-label {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		text-align: center;
-		background: rgb(0 0 0 / 0.5);
-		color: var(--color-success);
-		font-size: 0.625rem;
-		font-weight: bold;
-		white-space: nowrap;
 	}
 
 	.icon-input-level-container {
@@ -71,10 +56,6 @@
 			min-width: 1.25rem;
 			width: 1.25rem;
 			height: 1.25rem;
-
-			&:not([href]) {
-				display: none;
-			}
 		}
 	}
 
@@ -93,15 +74,10 @@
 		// Outside the anchor, the container would swallow every hover and click over what it covers,
 		// and the counter would stay green while the anchor is grey.
 		pointer-events: none;
-		filter: grayscale(1);
 
 		.icon-input-improved {
 			pointer-events: auto;
 		}
-	}
-
-	.icon-picker-button.active + .icon-input-level-container {
-		filter: none;
 	}
 
 	label {
@@ -109,28 +85,8 @@
 		margin-bottom: 0;
 	}
 
-	.dropdown-menu {
-		min-width: unset;
-		background: grey;
-		border: none;
-
-		&.show {
-			display: grid;
-		}
-
-		.icon-dropdown-option {
-			padding: 0;
-			filter: opacity(0.7);
-
-			&:hover {
-				filter: none;
-			}
-
-			.icon-picker-button {
-				margin: -1px;
-			}
-		}
-	}
+	// `.dropdown-menu` had zero JSX carriers left in this family (IconEnumPicker/MultiIconPicker
+	// render their own `.icon-enum-picker-menu`/`.multi-icon-picker-menu`); dead, removed.
 }
 
 .picker-group.icon-group {

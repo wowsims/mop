@@ -89,9 +89,7 @@ describe('IconEnumPicker', () => {
 	it('builds the root, the button, the menu and the caption in vanilla’s order', () => {
 		mount(new Options());
 
-		// `input-root` and `icon-picker` come from the shell and from the picker; `dropdown` is added
-		// for the default (vertical) direction.
-		expect(['dropdown', 'icon-enum-picker-root', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
+		expect(['relative', 'icon-enum-picker-root', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
 
 		// The order is the whole reason the slot exists: Base UI appends its portal element to the
 		// container in a later commit than React places the root's own children, so a portal aimed
@@ -113,9 +111,9 @@ describe('IconEnumPicker', () => {
 		expect(menu()!.parentElement).toBe(slot.children[0].children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
-			'li.icon-dropdown-option dropdown-option',
-			'li.icon-dropdown-option dropdown-option',
-			'li.icon-dropdown-option dropdown-option',
+			'li.icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:[filter:none]',
+			'li.icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:[filter:none]',
+			'li.icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:[filter:none]',
 		]);
 		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});
@@ -348,11 +346,11 @@ describe('IconEnumPicker', () => {
 		open();
 		expect(menu()!.style.gridTemplateColumns).toBe('repeat(5, 1fr)');
 		expect(menu()!.style.gridAutoFlow).toBe('');
-		expect(root().classList.contains('dropdown')).toBe(true);
+		expect(root().classList.contains('relative')).toBe(true);
 
 		render(<IconEnumPicker modObject={new Options()} config={configFor({ direction: IconEnumPickerDirection.Horizontal })} />);
 		const horizontal = screen.getAllByTestId('icon-enum-picker-root')[1];
-		expect(horizontal.classList.contains('dropend')).toBe(true);
+		expect(horizontal.classList.contains('relative')).toBe(true);
 		open(within(horizontal).getByTestId('icon-enum-picker-button'));
 		expect(within(horizontal).getByTestId('icon-enum-picker-menu').style.gridAutoFlow).toBe('column');
 	});

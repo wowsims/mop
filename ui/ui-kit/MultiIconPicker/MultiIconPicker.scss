@@ -12,13 +12,3 @@
 	background-color: grey;
 	list-style: none;
 }
-
-// `.icon-picker .icon-dropdown-option` already sizes and borders this anchor; what came from `.icon-picker .dropdown-menu .icon-dropdown-option` is the dimming, which has to out-specify that rule's `filter: grayscale(1)`.
-.icon-picker .multi-icon-picker-menu .icon-dropdown-option {
-	padding: 0;
-	filter: opacity(0.7);
-
-	&:hover {
-		filter: none;
-	}
-}
