@@ -1,11 +1,11 @@
 export const menuSurfaceClasses = {
-	menu: 'min-w-(--dropdown-min-width) py-0 border border-surface-border bg-surface-raised text-white text-[length:var(--dropdown-font-size)]',
+	menu: 'min-w-40 py-0 border border-surface-border bg-surface-raised text-white text-base',
 	plain: 'border-0 bg-background',
 } as const;
 
 export const menuPositionerZClasses = {
 	menu: 'z-dropdown',
-	plain: 'z-[1500]',
+	plain: 'z-menu',
 } as const;
 
 export const menuWidthClasses = {

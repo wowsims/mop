@@ -14,8 +14,8 @@ export interface TabPanelColumnsRootProps {
 }
 
 const ROOT_GAP_CLASSES: Record<TabPanelColumnsGap, string> = {
-	default: 'gap-(--spacing-page) max-lg:gap-(--spacing-section)',
-	apl: 'gap-y-6 gap-x-(--spacing-page)',
+	default: 'gap-page max-lg:gap-section',
+	apl: 'gap-y-6 gap-x-page',
 };
 
 const Root = ({ as: Component = 'div', gap = 'default', fullWidth, externalDisplay, className, children, ...rest }: TabPanelColumnsRootProps) => (
@@ -40,7 +40,7 @@ const LEFT_VARIANT_CLASSES: Record<TabPanelColumnsLeftVariant, string> = {
 };
 
 const Left = ({ className, variant = 'default', children }: TabPanelColumnsLeftProps) => (
-	<div className={clsx('tab-panel-left w-full flex-[4] gap-(--spacing-section)', LEFT_VARIANT_CLASSES[variant], className)}>{children}</div>
+	<div className={clsx('tab-panel-left w-full flex-[4] gap-section', LEFT_VARIANT_CLASSES[variant], className)}>{children}</div>
 );
 
 export interface TabPanelColumnsRightProps {
@@ -49,7 +49,7 @@ export interface TabPanelColumnsRightProps {
 }
 
 const Right = ({ className, children }: TabPanelColumnsRightProps) => (
-	<div className={clsx('tab-panel-right w-full min-w-[200px] flex flex-col gap-(--spacing-section) flex-[1.25]', className)}>{children}</div>
+	<div className={clsx('tab-panel-right w-full min-w-[200px] flex flex-col gap-section flex-[1.25]', className)}>{children}</div>
 );
 
 export interface TabPanelColumnsColProps {
@@ -59,7 +59,7 @@ export interface TabPanelColumnsColProps {
 }
 
 const Col = ({ className, externalGap, children }: TabPanelColumnsColProps) => (
-	<div className={clsx('tab-panel-col flex flex-col', !externalGap && 'gap-(--spacing-section)', className)}>{children}</div>
+	<div className={clsx('tab-panel-col flex flex-col', !externalGap && 'gap-section', className)}>{children}</div>
 );
 
 export const TabPanelColumns = { Root, Left, Right, Col };

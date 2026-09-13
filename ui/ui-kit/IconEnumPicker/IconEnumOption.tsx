@@ -22,7 +22,7 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 	return (
 		<Menu.Item
 			render={<li />}
-			className={clsx('icon-dropdown-option', 'dropdown-option', 'p-0 [filter:opacity(0.7)] hover:[filter:none]')}
+			className={clsx('icon-dropdown-option', 'dropdown-option', 'p-0 [filter:opacity(0.7)] hover:filter-none')}
 			data-testid="icon-dropdown-option"
 			onClick={event => {
 				event.preventDefault();

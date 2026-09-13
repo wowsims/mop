@@ -127,7 +127,6 @@ export const itemQualityClassName = (quality: ItemQuality | null | undefined): s
 
 export const DANGER_TEXT: Record<'safe' | 'warning' | 'danger', string> = {
 	safe: 'text-success',
-	warning:
-		'text-damage-partial [text-shadow:0_0_var(--spacer-2)_var(--color-danger),0_0_var(--spacer-2)_var(--color-danger),0_0_var(--spacer-2)_var(--color-danger)]',
+	warning: 'text-damage-partial text-shadow-glow-danger',
 	danger: 'text-danger',
 };

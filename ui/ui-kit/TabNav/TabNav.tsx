@@ -25,9 +25,9 @@ export interface TabNavProps {
 }
 
 const TAB_CLASS =
-	"flex items-center m-0 border-0 py-(--tab-padding-y) px-(--tab-padding-x) bg-transparent text-(--tab-color) [font-family:inherit] text-[length:var(--tab-font-size)] font-bold whitespace-nowrap no-underline cursor-pointer [transition:var(--tab-transition)] hover:text-(--tab-color-hover) focus-visible:outline-0 focus-visible:focus-ring data-[active]:relative data-[active]:text-(--tab-color-active) data-[active]:after:content-[''] data-[active]:after:absolute data-[active]:after:inset-x-0 data-[active]:after:bottom-0 data-[active]:after:h-[2px] data-[active]:after:bg-(--tab-color-active)";
+	"flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link [font-family:inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out hover:text-link-hover focus-visible:outline-0 focus-visible:focus-ring data-[active]:relative data-[active]:text-white data-[active]:after:content-[''] data-[active]:after:absolute data-[active]:after:inset-x-0 data-[active]:after:bottom-0 data-[active]:after:h-[2px] data-[active]:after:bg-white";
 
-const NAV_TABS_TAB_CLASS = clsx(TAB_CLASS, 'h-full border-current focus:text-(--tab-color-hover)');
+const NAV_TABS_TAB_CLASS = clsx(TAB_CLASS, 'h-full border-current focus:text-link-hover');
 
 export const TabNav = ({ tabs, className, variant = 'nav-tabs', tabItemClassName, bordered = true, wrap = true, testId }: TabNavProps) => {
 	if (variant === 'sim') {

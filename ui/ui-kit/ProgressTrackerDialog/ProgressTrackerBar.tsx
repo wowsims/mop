@@ -32,14 +32,14 @@ export const ProgressTrackerBar = ({ running, ref }: ProgressTrackerBarProps) =>
 				</div>
 			)}
 			<Progress.Root value={rounded} max={total}>
-				<Progress.Track className="flex h-[12px] w-full overflow-hidden rounded-[4px] bg-(--modal-border-color)">
+				<Progress.Track className="flex h-[12px] w-full overflow-hidden rounded-sm bg-surface-border">
 					<Progress.Indicator
-						className="animate-shimmer bg-[linear-gradient(90deg,var(--color-success)_0%,color-mix(in_srgb,var(--color-success)_85%,var(--color-black))_25%,var(--color-success)_50%,color-mix(in_srgb,var(--color-success)_85%,var(--color-black))_75%,var(--color-success)_100%)] bg-[length:200%_100%] motion-reduce:animate-none data-[indeterminate]:hidden"
+						className="animate-shimmer bg-progress bg-[length:200%_100%] motion-reduce:animate-none data-[indeterminate]:hidden"
 						data-testid="progress-tracker-bar-indicator"
 					/>
 				</Progress.Track>
 			</Progress.Root>
-			{measured && <div className="text-right text-[12px] text-border" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
+			{measured && <div className="text-right text-metrics text-border" data-testid="progress-tracker-modal-progress-text">{`${rounded}/${total}`}</div>}
 		</div>
 	);
 };

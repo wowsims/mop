@@ -8,10 +8,10 @@ import type { KeyboardEventHandler, ReactNode } from 'react';
 export type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const SIZE_MAX_WIDTH: Record<DialogSize, string> = {
-	sm: 'max-w-(--modal-width-sm) max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
-	md: 'max-w-(--modal-width-md) max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
-	lg: 'max-w-(--modal-width-lg) max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
-	xl: 'max-w-(--modal-width-xl) max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
+	sm: 'max-w-modal-sm max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
+	md: 'max-w-modal-md max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
+	lg: 'max-w-modal-lg max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
+	xl: 'max-w-modal-xl max-lg:max-w-[calc(100vw-2*var(--modal-margin))]',
 };
 
 export interface DialogProps {
@@ -89,7 +89,7 @@ export const Dialog = ({
 				{/* Base UI renders no backdrop for a nested dialog (`enabled: forceRender || !nested`), so an elevated one has to ask for its own. */}
 				<BaseDialog.Backdrop
 					className={clsx(
-						'fixed inset-0 bg-(--modal-backdrop-bg) opacity-(--modal-backdrop-opacity) fade-in-out motion-reduce:transition-none',
+						'fixed inset-0 bg-black opacity-50 fade-in-out motion-reduce:transition-none',
 						elevated ? 'z-modal-elevated-backdrop' : 'z-modal-backdrop',
 					)}
 					data-testid="sim-dialog-backdrop"
@@ -106,14 +106,14 @@ export const Dialog = ({
 					<BaseDialog.Popup
 						className={clsx(
 							'sim-dialog-popup',
-							'flex relative flex-col border border-(--modal-border-color) bg-(--modal-bg) bg-clip-padding outline-0 transition-(--modal-transition) motion-reduce:transition-none',
+							'flex relative flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none',
 							maxWidth ?? SIZE_MAX_WIDTH[size],
 							scrollContents && 'max-h-[calc(100vh-2*var(--modal-margin))]',
 							verticalAlign === 'center'
 								? 'm-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
 								: [
-										'my-(--modal-margin) mx-auto',
-										'data-[starting-style]:[transform:var(--modal-fade-transform)] data-[ending-style]:[transform:var(--modal-fade-transform)]',
+										'my-7 mx-auto',
+										'data-[starting-style]:transform-(--modal-fade-transform) data-[ending-style]:transform-(--modal-fade-transform)',
 									],
 							className,
 						)}
@@ -125,17 +125,12 @@ export const Dialog = ({
 								className={clsx(
 									'sim-dialog-header',
 									'flex shrink-0 items-start',
-									!headerBare && [
-										'mx-(--modal-header-padding) border-b border-(--modal-header-border-color)',
-										headerFlush ? 'pt-(--modal-header-padding) pb-0' : 'py-(--modal-header-padding)',
-									],
+									!headerBare && ['mx-5 border-b border-border', headerFlush ? 'pt-5 pb-0' : 'py-5'],
 								)}
 								data-testid="sim-dialog-header"
 								data-bare={headerBare}>
 								{title != null && (
-									<BaseDialog.Title
-										className="mb-0 text-(length:--modal-title-font-size) leading-(--modal-title-line-height)"
-										data-testid="sim-dialog-title">
+									<BaseDialog.Title className="mb-0 text-lg leading-normal" data-testid="sim-dialog-title">
 										{title}
 									</BaseDialog.Title>
 								)}
@@ -147,11 +142,11 @@ export const Dialog = ({
 												iconOnly
 												className={clsx(
 													'flex items-center justify-center box-content w-[1em] h-[1em]',
-													'mt-[calc(-0.5*var(--modal-header-padding-y))] mb-[calc(-0.5*var(--modal-header-padding-y))] -mr-1 ml-auto',
-													'py-[calc(0.5*var(--modal-header-padding-y))] px-[calc(0.5*var(--modal-header-padding-x))]',
-													'text-(--modal-close-color)',
-													'transition-(--link-transition)',
-													'z-modal-close hover:text-white focus-visible:outline-0 focus-visible:shadow-(--focus-ring)',
+													'-mt-2 -mb-2 -mr-1 ml-auto',
+													'py-2 px-2',
+													'text-link',
+													'transition-colors duration-150 ease-in-out',
+													'z-modal-close hover:text-white focus-visible:outline-0 focus-visible:shadow-focus-ring',
 													closeClassName,
 												)}
 											/>
@@ -164,19 +159,12 @@ export const Dialog = ({
 							</div>
 						)}
 						<div
-							className={clsx(
-								'flex relative flex-1 flex-col p-(--modal-padding)',
-								bodyGap ?? 'gap-(--modal-padding)',
-								scrollContents && 'overflow-auto',
-								bodyClassName,
-							)}
+							className={clsx('flex relative flex-1 flex-col p-5', bodyGap ?? 'gap-5', scrollContents && 'overflow-auto', bodyClassName)}
 							data-testid="sim-dialog-body">
 							{children}
 						</div>
 						{footer != null && (
-							<div
-								className="flex shrink-0 flex-wrap items-center justify-end mx-(--modal-header-padding) py-(--modal-padding) border-t border-border"
-								data-testid="sim-dialog-footer">
+							<div className="flex shrink-0 flex-wrap items-center justify-end mx-5 py-5 border-t border-border" data-testid="sim-dialog-footer">
 								{footer}
 							</div>
 						)}

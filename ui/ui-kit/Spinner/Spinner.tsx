@@ -6,10 +6,10 @@ export interface SpinnerProps {
 }
 
 const SIZE = {
-	md: 'w-[var(--loader-width,120px)] h-[var(--loader-height,120px)] border-[calc(var(--loader-width,120px)/7.5)]',
-	sm: 'w-[var(--loader-width,60px)] h-[var(--loader-height,60px)] border-[calc(var(--loader-width,60px)/7.5)]',
+	md: 'w-(--loader-width,120px) h-(--loader-height,120px) border-[calc(var(--loader-width,120px)/7.5)]',
+	sm: 'w-(--loader-width,60px) h-(--loader-height,60px) border-[calc(var(--loader-width,60px)/7.5)]',
 } as const;
 
 export const Spinner = ({ size = 'md', className }: SpinnerProps) => (
-	<div data-testid="loader" className={clsx('loader', 'rounded-[50%] border-[#f3f3f3] border-t-[#3498db] animate-spin', SIZE[size], className)} />
+	<div data-testid="loader" className={clsx('loader', 'rounded-full border-spinner-track border-t-spinner animate-spin', SIZE[size], className)} />
 );

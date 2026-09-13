@@ -11,12 +11,12 @@ describe('Spinner', () => {
 		expect(el.getAttribute('data-testid')).toBe('loader');
 		expect(el.className).toContain('loader');
 		expect(el.className).toContain('animate-spin');
-		expect(el.className).toContain('w-[var(--loader-width,120px)]');
+		expect(el.className).toContain('w-(--loader-width,120px)');
 	});
 
 	it('applies the sm fallback size', () => {
 		const { container } = render(<Spinner size="sm" />);
-		expect((container.firstElementChild as HTMLElement).className).toContain('w-[var(--loader-width,60px)]');
+		expect((container.firstElementChild as HTMLElement).className).toContain('w-(--loader-width,60px)');
 	});
 
 	it('applies additive className', () => {

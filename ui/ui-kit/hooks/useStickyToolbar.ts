@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 export const StickyHeaderContext = createContext<HTMLElement | null>(null);
 
 export const STICKY_TOOLBAR_CLASSES =
-	"sticky top-(--sim-header-height) -mx-(--spacing-page) w-[calc(100%+var(--spacing-page)*2)] flex px-(--spacing-page) z-toolbar transition-[background-color] duration-150 ease-in-out after:content-['_'] after:absolute after:-bottom-px after:inset-x-0 after:w-[calc(100%-2*var(--spacing-page))] after:h-px after:mx-auto after:bg-(--color-border) after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:bg-[color-mix(in_srgb,var(--theme-background-color)_calc(var(--theme-background-opacity)*100%),transparent)] data-[stuck]:after:w-full";
+	"sticky top-sim-header -mx-page w-[calc(100%+var(--spacing-page)*2)] flex px-page z-toolbar transition-colors duration-150 ease-in-out after:content-['_'] after:absolute after:-bottom-px after:inset-x-0 after:w-[calc(100%-2*var(--spacing-page))] after:h-px after:mx-auto after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:bg-sim-backdrop data-[stuck]:after:w-full";
 
 /**
  * A `position: sticky` toolbar that reports whether it is currently pinned, as `.stuck`.

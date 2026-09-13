@@ -91,7 +91,7 @@ describe('MultiIconPicker', () => {
 		open();
 		const options = Array.from(menu().children);
 		expect(options).toHaveLength(4);
-		expect(options[0].querySelector('a')?.className).toBe('icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:[filter:none]');
+		expect(options[0].querySelector('a')?.className).toBe('icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:filter-none');
 		expect(options.slice(1).map(option => option.className)).toEqual([
 			'icon-picker-option dropdown-option',
 			'icon-picker-option dropdown-option',

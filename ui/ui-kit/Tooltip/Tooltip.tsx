@@ -8,7 +8,7 @@ import { TOOLTIP_SURFACE } from './classes';
 
 export type TooltipPlace = 'top' | 'right' | 'bottom' | 'left';
 
-const DEFAULT_MAX_WIDTH = 'max-w-[15vw] max-xl:max-w-[25vw] max-md:max-w-[75vw]';
+const DEFAULT_MAX_WIDTH = 'max-w-tooltip max-xl:max-w-tooltip-lg max-md:max-w-tooltip-sm';
 
 export interface TooltipProps {
 	/** Anchors opt in with `data-tooltip-id={id}`; one Tooltip can serve many of them. */
