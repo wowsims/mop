@@ -24,7 +24,7 @@ export const ReplayScrubber = ({ duration, onScrubStart, onSeek }: ReplayScrubbe
 		<input
 			ref={input}
 			type="range"
-			className="cr-scrubber"
+			className="cr-scrubber w-full cursor-pointer accent-secondary"
 			min="0"
 			max="1000"
 			step="1"
