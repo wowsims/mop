@@ -1,4 +1,5 @@
 import i18n from '@i18n/config';
+import { Chip } from '@ui-kit/Chip';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
@@ -81,12 +82,13 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 			</div>
 			<div className="log-search-group-items flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (
-					<div key={value} className="log-search-chip saved-data-set-chip badge rounded-full">
-						<span className="saved-data-set-name" data-testid="saved-data-set-name">
-							{labelOf(group.field, value)}
-						</span>
-						<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />
-					</div>
+					<Chip
+						key={value}
+						className="log-search-chip"
+						nameAs="span"
+						label={labelOf(group.field, value)}
+						deleteSlot={<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />}
+					/>
 				))}
 				<div className="input-group">
 					{placeholder ? (

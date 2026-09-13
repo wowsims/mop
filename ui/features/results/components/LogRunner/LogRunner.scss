@@ -241,9 +241,3 @@
 		border: 0;
 	}
 }
-
-.log-search-chip {
-	// Everything else - the outline, the pill, the hover, the delete button - is
-	// .saved-data-set-chip's, so that a query chip and a saved-data pill are the same control.
-	white-space: nowrap;
-}

@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { Chip } from '@ui-kit/Chip';
 
 export interface RotationFabChipProps {
 	label: string;
@@ -10,18 +10,19 @@ export interface RotationFabChipProps {
 }
 
 export const RotationFabChip = ({ label, shown, focused, onToggle, onFocus }: RotationFabChipProps) => (
-	<button
-		type="button"
-		className={clsx('rotation-fab-chip saved-data-set-chip badge rounded-full', shown && 'active')}
-		data-testid="saved-data-set-chip"
-		data-active={shown ? '' : undefined}
-		role="switch"
-		aria-checked={shown}
-		tabIndex={focused ? 0 : -1}
-		onClick={onToggle}
-		onFocus={onFocus}>
-		<span className="saved-data-set-name" data-testid="saved-data-set-name">
-			{label}
-		</span>
-	</button>
+	<Chip
+		as="button"
+		nameAs="span"
+		className="rotation-fab-chip"
+		label={label}
+		active={shown}
+		rootProps={{
+			type: 'button',
+			role: 'switch',
+			'aria-checked': shown,
+			tabIndex: focused ? 0 : -1,
+			onClick: onToggle,
+			onFocus,
+		}}
+	/>
 );

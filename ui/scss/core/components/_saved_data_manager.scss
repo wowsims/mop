@@ -4,13 +4,13 @@
 	.saved-data-container {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-block);
+		gap: var(--spacing-stack);
 
 		.saved-data-presets,
 		.saved-data-custom {
 			display: flex;
 			flex-wrap: wrap;
-			gap: var(--spacing-block);
+			gap: var(--spacing-stack);
 		}
 	}
 
@@ -24,47 +24,8 @@
 		}
 
 		.saved-data-save-input {
-			margin-bottom: var(--spacing-block);
+			margin-bottom: var(--spacing-stack);
 		}
-	}
-}
-
-.saved-data-set-chip {
-	@extend .btn;
-
-	padding: 0;
-	border: 1px solid var(--color-primary) !important;
-	display: flex;
-	font-size: var(--text-ui);
-	font-weight: normal;
-	transition: $btn-transition;
-
-	&.active {
-		background-color: var(--color-primary);
-
-		.saved-data-set-name,
-		.saved-data-set-delete {
-			color: var(--color-primary-foreground);
-		}
-	}
-
-	&:hover:not(.active) {
-		background: var(--color-primary-dampened);
-	}
-
-	&.disabled {
-		display: none;
-	}
-
-	.saved-data-set-name {
-		padding: var(--spacer-2);
-		color: $body-color;
-	}
-
-	.saved-data-set-delete {
-		padding: var(--spacer-2) 0;
-		margin-right: var(--spacer-2);
-		color: $body-color;
 	}
 }
 
