@@ -49,17 +49,17 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 	return (
 		<div className="bulk-sim-result-root flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6">
 			<div className="results-sim flex-[3]">
-				<div className="results-sim-dps damage-metrics grid grid-cols-5 text-left [line-height:1] gap-2">
-					<span className="topline-result-avg mr-1 col-span-3">{formatToNumber(result.dpsMetrics.avg)}</span>
+				<div className="results-sim-dps damage-metrics grid grid-cols-[3fr_2fr] text-left [line-height:1] gap-2">
+					<span className="topline-result-avg mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
 					{plusMinusDps > 0 && (
 						<>
-							<span className="text-muted small col-span-2" {...tooltipAnchorProps(marginTooltipId)}>
+							<span className="text-muted small" {...tooltipAnchorProps(marginTooltipId)}>
 								{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
 							</span>
 							<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
 						</>
 					)}
-					<div className={clsx('results-reference mb-0 flex items-end', plusMinusDps > 0 ? 'col-span-3' : 'col-span-2')}>
+					<div className="results-reference mb-0 flex items-end">
 						{isBaseResult ? (
 							<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
 						) : (

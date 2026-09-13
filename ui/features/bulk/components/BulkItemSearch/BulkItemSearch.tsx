@@ -65,7 +65,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 
 	return (
 		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
-			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-4">
+			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-[1fr_1fr_2fr]">
 				<SearchBar
 					id="bulkGearSearch"
 					label={i18n.t('common.name')}
@@ -76,7 +76,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
 					clearClassName="cancel-bulk-gear-search-btn z-2 -ml-px py-1.5 px-3 flex items-center bg-surface border border-surface-border">
 					<ul
-						className="bulk-gear-search-results absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full min-w-40 p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-md shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
+						className="bulk-gear-search-results absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full min-w-40 p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-none shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
 						data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (
 							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
