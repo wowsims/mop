@@ -73,8 +73,8 @@ describe('PickerShell', () => {
 		expect(await screen.findByText('Seconds of human reaction time')).toBeTruthy();
 	});
 
-	// `labelTooltip` is typed `string | Element`, so the guard is only reachable from an untyped
-	// caller — which is what the cast stands in for.
+	// `labelTooltip` is typed `string | Element | ReactElement`, so the guard is only reachable from
+	// an untyped caller — which is what the cast stands in for.
 	it('warns instead of silently dropping a tooltip it cannot render', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		shell(configFor({ labelTooltip: (() => 'from a function') as unknown as string }));
@@ -123,5 +123,24 @@ describe('PickerShell', () => {
 		const classes = Array.from(container.firstElementChild!.classList);
 		expect(classes.filter(name => name === 'input-inline')).toHaveLength(1);
 		expect(container.firstElementChild!.className.split(' ')).toEqual(classes);
+	});
+
+	// The only markup-bearing labelTooltip in the tree is Item Swap's, and every markup string goes
+	// through LocaleHtml, which hands PickerShell a React element rather than a string.
+	it('renders an element labelTooltip as markup instead of literal tags', async () => {
+		shell(
+			configFor({
+				labelTooltip: (
+					<span>
+						Used with the <b>Item Swap</b> action.
+					</span>
+				),
+			}),
+		);
+		fireEvent.mouseEnter(screen.getByText('Cast Delay'));
+
+		const tooltip = await screen.findByText('Item Swap');
+		expect(tooltip.tagName).toBe('B');
+		expect(document.body.textContent).not.toContain('<b>');
 	});
 });

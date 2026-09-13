@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { WowheadIcon } from './WowheadIcon';
 
 const tooltipData = vi.hoisted(() => vi.fn(() => Promise.resolve('spell=1')));
-vi.mock('@sim/proto/action_id/dom', () => ({ actionIdWowheadTooltipData: tooltipData }));
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: tooltipData }));
 
 const actionId = () => Object.assign(Object.create(ActionId.prototype), { spellId: 1, itemId: 0 }) as ActionId;
 

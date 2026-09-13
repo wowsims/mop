@@ -337,9 +337,11 @@ export const runBulkBatch = async (host: IndividualSimHost<any>) => {
 		rankedResults.push(originalGearResults);
 		rankedResults.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 
+		const resultIterations = Math.max(1, sim.getIterations());
 		results = {
-			chains: buildTieChains(rankedResults, originalGearResults, Math.max(1, sim.getIterations())),
+			chains: buildTieChains(rankedResults, originalGearResults, resultIterations),
 			originalGearResults,
+			iterations: resultIterations,
 		};
 	} catch (error) {
 		runError = error;

@@ -28,6 +28,8 @@ export interface BulkPickerEntry {
 export interface BulkResults {
 	chains: TopGearResult[][];
 	originalGearResults: TopGearResult;
+	/** Frozen at run end: the tie brackets were built with it, so the per-row margins have to agree. */
+	iterations: number;
 }
 
 export interface BulkSimRoundConfig {

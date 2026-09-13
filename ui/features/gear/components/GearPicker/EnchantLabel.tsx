@@ -2,7 +2,7 @@ import { ActionId } from '@sim/proto/action_id';
 import { getEnchantDescription } from '@sim/proto/enchants';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { ItemCellAnchor } from '../ItemCell';
 
@@ -14,7 +14,6 @@ export interface EnchantLabelProps {
 }
 
 export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: EnchantLabelProps) => {
-	const anchorRef = useRef<HTMLAnchorElement>(null);
 	const [description, setDescription] = useState('');
 
 	const actionId = useMemo(
@@ -40,7 +39,7 @@ export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: Ench
 		};
 	}, [enchant]);
 
-	useActionIdWowheadDataset(anchorRef, actionId);
+	const wowheadProps = useActionIdWowheadDataset(actionId);
 
 	const href = actionId ? (actionId.spellId ? ActionId.makeSpellUrl(actionId.spellId) : ActionId.makeItemUrl(actionId.itemId)) : undefined;
 
@@ -48,13 +47,13 @@ export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: Ench
 
 	return (
 		<ItemCellAnchor
-			ref={anchorRef}
 			className={className}
 			role="button"
 			href={href}
 			onActivate={onActivate}
 			data-whtticon="false"
-			data-tooltip-id={tooltipId}>
+			data-tooltip-id={tooltipId}
+			{...wowheadProps}>
 			{description}
 		</ItemCellAnchor>
 	);

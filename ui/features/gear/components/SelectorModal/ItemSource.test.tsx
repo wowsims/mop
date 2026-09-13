@@ -189,4 +189,11 @@ describe('ItemSource', () => {
 		expect(getByRole('link').getAttribute('target')).toBe('_blank');
 		expect(getByRole('link').getAttribute('rel')).toBeTruthy();
 	});
+
+	it('opts every source anchor out of the wowhead link icon', () => {
+		const item = Item.create({ id: 100, sources: [], randomSuffixOptions: [1] });
+		const { getByRole } = mount(item);
+
+		expect(getByRole('link').getAttribute('data-whtticon')).toBe('false');
+	});
 });

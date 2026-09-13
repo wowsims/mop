@@ -6,7 +6,7 @@ import type { TimelineChartSpec, TimelineDataset } from '../../../model/timeline
 import { TimelineChart } from './TimelineChart';
 
 interface FakeChart {
-	config: { data: { datasets: Array<TimelineDataset> }; options: Record<string, never>; plugins: Array<unknown> };
+	config: { data: { datasets: Array<TimelineDataset> }; options: { scales: unknown }; plugins: Array<unknown> };
 	data: { datasets: Array<TimelineDataset> };
 	canvas: HTMLCanvasElement;
 	updates: number;
@@ -18,16 +18,29 @@ interface FakeChart {
 const charts = vi.hoisted(() => [] as Array<FakeChart>);
 
 vi.mock('chart.js', () => ({
+	BarController: class {},
+	BubbleController: class {},
+	DoughnutController: class {},
+	LineController: class {},
+	PieController: class {},
+	PolarAreaController: class {},
+	RadarController: class {},
+	ScatterController: class {},
 	Chart: class {
+		static register() {}
 		data: unknown;
 		updates = 0;
 		destroyed = false;
 		constructor(
 			public canvas: HTMLCanvasElement,
-			public config: { data: unknown },
+			public config: { data: unknown; options: unknown },
 		) {
 			this.data = config.data;
 			charts.push(this as never);
+		}
+		// chart.js resolves `options` through a proxy whose set trap writes back to `config.options`.
+		get options() {
+			return this.config.options;
 		}
 		update() {
 			this.updates++;
@@ -58,11 +71,22 @@ beforeEach(() => {
 });
 
 describe('TimelineChart', () => {
-	it('stands empty before the first spec, saying nothing about whether there is data', () => {
+	it('shows the waiting state with no spec at all, rather than a blank canvas', () => {
 		const { container } = render(<TimelineChart spec={null} />);
-		expect(container.querySelector('.timeline-chart-empty')).toBeNull();
-		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
+		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
+		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
 		expect(charts).toHaveLength(0);
+	});
+
+	it('goes back to the waiting state when a result with data is replaced by no spec', () => {
+		const { container, rerender } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
+		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
+
+		rerender(<TimelineChart spec={null} />);
+
+		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
+		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
+		expect(charts[0].destroyed).toBe(true);
 	});
 
 	it('shows the waiting state for a spec that carries no series, and still builds no chart', () => {
@@ -91,20 +115,23 @@ describe('TimelineChart', () => {
 		expect(charts[0].data.datasets[1].hidden).toBe(false);
 		expect(charts[0].updates).toBe(1);
 
-		// A rebuild that reorders the series must still bring threat back visible.
+		// A result that reorders the series must still bring threat back visible.
 		rerender(<TimelineChart spec={spec(dataset('threat', 'Threat'), dataset('dps', 'DPS'))} />);
-		expect(charts[1].config.data.datasets.map(entry => entry.hidden)).toEqual([false, false]);
+		expect(charts[0].config.data.datasets.map(entry => entry.hidden)).toEqual([false, false]);
 	});
 
-	it('destroys the previous chart when the result changes, and its own on unmount', () => {
+	it('updates the one chart when the result changes, and destroys it on unmount', () => {
 		const { rerender, unmount } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
-		rerender(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
-		expect(charts).toHaveLength(2);
-		expect(charts[0].destroyed).toBe(true);
-		expect(charts[1].destroyed).toBe(false);
+		const next = { ...spec(dataset('threat', 'Threat')), scales: { x: { max: 90 } } };
+		rerender(<TimelineChart spec={next} />);
+		expect(charts).toHaveLength(1);
+		expect(charts[0].destroyed).toBe(false);
+		expect(charts[0].updates).toBe(1);
+		expect(charts[0].config.data.datasets.map(entry => entry.label)).toEqual(['Threat']);
+		expect(charts[0].config.options.scales).toEqual({ x: { max: 90 } });
 
 		unmount();
-		expect(charts[1].destroyed).toBe(true);
+		expect(charts[0].destroyed).toBe(true);
 	});
 
 	// StrictMode replays the effect over the same options object the first chart was built from —

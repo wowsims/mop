@@ -29,7 +29,7 @@ vi.mock('@ui-kit/hooks/useActionId', () => ({
 }));
 
 const tooltip = { settles: [] as Array<(url: string) => void> };
-vi.mock('@sim/proto/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
 }));
 

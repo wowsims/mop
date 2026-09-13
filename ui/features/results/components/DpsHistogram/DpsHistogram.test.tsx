@@ -13,6 +13,7 @@ const charts: Array<{
 vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 vi.mock('chart.js', () => ({
 	Chart: class {
+		static register() {}
 		destroyed = false;
 		constructor(
 			_ctx: unknown,
@@ -20,10 +21,19 @@ vi.mock('chart.js', () => ({
 		) {
 			charts.push(this as never);
 		}
+		update() {}
 		destroy() {
 			this.destroyed = true;
 		}
 	},
+	BarController: class {},
+	BubbleController: class {},
+	DoughnutController: class {},
+	LineController: class {},
+	PieController: class {},
+	PolarAreaController: class {},
+	RadarController: class {},
+	ScatterController: class {},
 }));
 
 const resultWith = (hist: Record<number, number>, avg: number, stdev: number) =>
@@ -57,6 +67,18 @@ describe('DpsHistogram', () => {
 		render(<DpsHistogram />);
 
 		expect(charts[0].config.data.datasets[0].backgroundColor).toEqual(['#FF6961', '#1E87F0', '#FF6961']);
+	});
+
+	it('carries a second result through the one chart rather than rebuilding it', () => {
+		result = resultWith({ 100: 1, 200: 5, 300: 2 }, 200, 50);
+		const { rerender } = render(<DpsHistogram />);
+		result = resultWith({ 400: 3, 500: 7 }, 450, 60);
+		rerender(<DpsHistogram />);
+
+		expect(charts).toHaveLength(1);
+		expect(charts[0].destroyed).toBe(false);
+		expect(charts[0].config.data.labels).toEqual(['400', '500']);
+		expect(charts[0].config.data.datasets[0].data).toEqual([3, 7]);
 	});
 
 	it('destroys the chart and drops the canvas when the result goes away', () => {

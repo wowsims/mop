@@ -7,7 +7,7 @@ import { ReplayIcon } from './ReplayIcon';
 import { actionId } from './testing';
 
 const tooltipData = vi.hoisted(() => vi.fn(() => Promise.resolve('spell=1')));
-vi.mock('@sim/proto/action_id/dom', () => ({ actionIdWowheadTooltipData: tooltipData }));
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: tooltipData }));
 
 const mount = (element: ReactElement) => render(element).container.querySelector<HTMLAnchorElement>('a')!;
 

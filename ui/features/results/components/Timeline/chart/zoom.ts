@@ -25,12 +25,15 @@ export class ChartZoom {
 
 	constructor(
 		private readonly getChart: () => Chart | null,
-		// The raw x-scale options the chart was configured with. chart.js rebuilds
-		// `config.options.scales` on every update, so the range has to be written into the
-		// object the owner keeps, never into the resolved `chart.options` proxy.
-		private readonly getXOptions: () => XRange | undefined,
 		private readonly onDragStateChange: (dragging: boolean) => void,
 	) {}
+
+	// chart.js rebuilds `config.options.scales` on every update, and `chart.options` is a resolver
+	// proxy, so the range has to be read back off the config each time and written there — never into
+	// the scales object the chart was configured with, which it reads exactly once.
+	private xOptions(): XRange | undefined {
+		return this.getChart()?.config.options?.scales?.x as XRange | undefined;
+	}
 
 	setDuration(duration: number) {
 		this.duration = Math.max(duration, MIN_RANGE);
@@ -38,9 +41,8 @@ export class ChartZoom {
 		this.max = this.duration;
 	}
 
-	// Writes the owned range without updating, for callers that are about to update anyway.
-	write() {
-		const scale = this.getXOptions();
+	private write() {
+		const scale = this.xOptions();
 		if (!scale) return;
 		scale.min = this.min;
 		scale.max = this.max;

@@ -3,11 +3,11 @@ import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
-import type { EnumPickerConfig } from './types';
+import type { AnyEnumPickerConfig } from './types';
 
 export interface EnumPickerProps<ModObject> {
 	modObject: ModObject;
-	config: EnumPickerConfig<ModObject>;
+	config: AnyEnumPickerConfig<ModObject>;
 	/** For a select with no visible label. `config.label` renders one; this names it without adding markup. */
 	ariaLabel?: string;
 }

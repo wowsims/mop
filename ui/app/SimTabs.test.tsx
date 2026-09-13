@@ -1,10 +1,13 @@
 import { act, render } from '@testing-library/react';
 import { useActivateTab } from '@ui-kit/tab_activation';
 import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SimTabDef } from './SimTabDef';
 import { SimTabs } from './SimTabs';
+
+const trackPageView = vi.hoisted(() => vi.fn());
+vi.mock('../tracking/analytics', () => ({ trackPageView }));
 
 // How the bulk results renderer returns to the gear tab: a button inside one pane opening another.
 const Activators = ({ ids }: { ids: string[] }) => {
@@ -49,6 +52,7 @@ const activate = (id: string) =>
 	});
 
 beforeEach(() => {
+	trackPageView.mockClear();
 	document.body.innerHTML = '';
 	strip = document.createElement('div');
 	panes = document.createElement('main');
@@ -156,6 +160,19 @@ describe('SimTabs', () => {
 		renderTabs(['gear-tab', 'settings-tab']);
 		await activate('nope');
 		expect(openId()).toBe('gear-tab');
+	});
+
+	it('reports a page view for a programmatic activation, not only for a click on the strip', async () => {
+		renderTabs(['gear-tab', 'settings-tab']);
+
+		await act(async () => {
+			tab('settings-tab').click();
+		});
+		expect(trackPageView).toHaveBeenLastCalledWith('settings-tab', 'settings-tab');
+
+		await activate('gear-tab');
+		expect(trackPageView).toHaveBeenLastCalledWith('gear-tab', 'gear-tab');
+		expect(trackPageView).toHaveBeenCalledTimes(2);
 	});
 
 	it('reads declarations out of a conditional group, so an entry list can be gated', () => {

@@ -13,7 +13,7 @@ const useWowheadDataset = vi.hoisted(() => vi.fn());
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId }));
 vi.mock('@ui-kit/hooks/useWowheadDataset', () => ({ useWowheadDataset }));
-vi.mock('@sim/proto/action_id/dom', () => ({
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({
 	equippedItemWowheadTooltipData: () => Promise.resolve(''),
 }));
 
@@ -85,10 +85,10 @@ describe('SlotRailIcon', () => {
 
 	it('only asks for a wowhead tooltip resolver when a slot is filled', () => {
 		setup({ item: equippedItem(1) });
-		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.anything(), expect.any(Function));
+		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.any(Function));
 
 		useWowheadDataset.mockClear();
 		setup({ item: null });
-		expect(useWowheadDataset).toHaveBeenLastCalledWith(expect.anything(), null);
+		expect(useWowheadDataset).toHaveBeenLastCalledWith(null);
 	});
 });

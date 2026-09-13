@@ -91,7 +91,7 @@ wasm: $(OUT_DIR)/lib.wasm.gz
 # Builds the generic .wasm, with all items included.
 # Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
 # The main thread decompresses and compiles it once (see getSharedWasmModule in
-# ui/sim/worker_pool.ts) and shares the compiled module with every worker.
+# ui/sim/workers/worker_pool.ts) and shares the compiled module with every worker.
 WASM_FEATURES := --enable-sign-ext --enable-nontrapping-float-to-int --enable-mutable-globals --enable-bulk-memory
 $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."

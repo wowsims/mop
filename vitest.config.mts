@@ -11,7 +11,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
 	resolve: {
 		alias: {
-			'virtual:i18next-loader': path.resolve(here, 'tools/state-snapshots/stub-i18n.js'),
+			'virtual:i18next-loader': path.resolve(here, 'tools/vite/stub-i18n.js'),
 			...UI_ALIASES,
 		},
 	},
@@ -24,5 +24,8 @@ export default defineConfig({
 		setupFiles: [path.resolve(here, 'vitest.setup.ts')],
 		include: ['ui/**/*.test.ts', 'ui/**/*.test.tsx'],
 		restoreMocks: true,
+		// An externalised dependency imports chart.js natively, past `vi.mock('chart.js')`, and the
+		// real one cannot build its scales under happy-dom.
+		server: { deps: { inline: ['react-chartjs-2'] } },
 	},
 });

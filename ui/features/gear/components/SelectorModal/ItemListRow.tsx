@@ -2,15 +2,14 @@ import { addBulkItem, hasBulkItem, removeBulkItem } from '@features/bulk/model/i
 import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { isIndividualSimHost } from '@sim/sim_host';
-import { subscribeBulkField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
+import { useStore } from 'zustand';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import type { ItemData, ItemListType } from '../../types';
@@ -59,8 +58,10 @@ export const ItemListRow = ({
 	const isItemsTab = label === SelectorModalTabs.Items;
 
 	const batchPlayer = isIndividualSimHost(host) ? host.player : null;
-	const bulkSubscribe = useMemo(() => (batchPlayer ? subscribeBulkField(batchPlayer, 'items') : () => () => undefined), [batchPlayer]);
-	const inBatch = useStoreSubscribe(bulkSubscribe, () => !!batchPlayer && hasBulkItem(batchPlayer, ItemSpec.create({ id: itemData.id })));
+	const batchSpec = useMemo(() => ItemSpec.create({ id: itemData.id }), [itemData.id]);
+	// Read through zustand rather than `useStoreSubscribe`: the answer is keyed by a prop, and that
+	// hook re-reads on a notification only, so a recycled row would keep the previous item's flag.
+	const inBatch = useStore(host.sim.store, () => !!batchPlayer && hasBulkItem(batchPlayer, batchSpec));
 
 	const delta = equippedEP !== null && equippedEP !== itemEP ? formatDelta(equippedEP, itemEP) : null;
 
@@ -113,8 +114,9 @@ export const ItemListRow = ({
 						data-tooltip-id={compareTooltipId}
 						data-in-batch={String(inBatch)}
 						onClick={() => {
-							if (batchPlayer) (inBatch ? removeBulkItem : addBulkItem)(batchPlayer, ItemSpec.create({ id: itemData.id }));
-							trackEvent({ action: 'click', category: 'batch', label: inBatch ? 'remove-item' : 'add-item' });
+							const present = !!batchPlayer && hasBulkItem(batchPlayer, batchSpec);
+							if (batchPlayer) (present ? removeBulkItem : addBulkItem)(batchPlayer, batchSpec);
+							trackEvent({ action: 'click', category: 'batch', label: present ? 'remove-item' : 'add-item' });
 						}}>
 						<Icon name="arrow-right-arrow-left" size="xl" />
 					</Button>
