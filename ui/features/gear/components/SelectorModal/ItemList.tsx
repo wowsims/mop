@@ -7,8 +7,10 @@ import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
+import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
+import { IconButton } from '@ui-kit/IconButton';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { VirtualList } from '@ui-kit/VirtualList';
@@ -95,9 +97,9 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search max-w-48" grow={false} />
 				{label === SelectorModalTabs.Items && (
 					<>
-						<button type="button" className="selector-modal-filters-button btn btn-primary" onClick={() => setFiltersOpen(true)}>
+						<Button className="selector-modal-filters-button" onClick={() => setFiltersOpen(true)}>
 							{i18n.t('gear_tab.gear_picker.filters_button')}
-						</button>
+						</Button>
 						{/* Rendered inside the dialog's own React tree, which is how Base UI knows the two are nested: a press in this one is not an outside press for the selector modal underneath it. */}
 						<FiltersMenu slot={slot} open={filtersOpen} onOpenChange={setFiltersOpen} />
 					</>
@@ -197,9 +199,9 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						/>
 					</div>
 				)}
-				<button type="button" className="selector-modal-remove-button btn btn-danger" onClick={onRemove}>
+				<Button variant="danger" className="selector-modal-remove-button" onClick={onRemove}>
 					{removeButtonLabel(label, key => i18n.t(key))}
-				</button>
+				</Button>
 			</div>
 			<div className="selector-modal-list-labels">
 				{(label === SelectorModalTabs.Items || label === SelectorModalTabs.Upgrades) && (
@@ -212,9 +214,9 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 				<h6 className="ep-label interactive" style={{ display: showEPValues ? undefined : 'none' }} onClick={() => sort(ItemListSortBy.EP)}>
 					<span>EP</span>
 					<Icon name="plus-minus" size="2xs" />
-					<button type="button" className="btn btn-link p-0 ml-1" data-tooltip-id={`${tooltipId}-ep`}>
+					<IconButton label={i18n.t('gear_tab.gear_picker.ep_tooltip')} className="ml-1" data-tooltip-id={`${tooltipId}-ep`}>
 						<Icon name="question-circle" style="regular" size="lg" />
-					</button>
+					</IconButton>
 				</h6>
 				<h6 className="favorite-label" />
 				{label === SelectorModalTabs.Items && <h6 className="compare-label" />}

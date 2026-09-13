@@ -3,6 +3,7 @@ import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '@sim/constants/other';
 import { useSim } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { isDevMode } from '@sim/utils/env';
+import { Button } from '@ui-kit/Button';
 import { useTypedLocalStorage } from '@ui-kit/hooks/useTypedLocalStorage';
 import { createToastManager, ToastArea } from '@ui-kit/Toast';
 import { useEffect, useMemo, useState } from 'react';
@@ -41,9 +42,9 @@ export const NoticeNativeSim = ({ container }: NoticeNativeSimProps) => {
 			body: (
 				<div>
 					<p>{i18n.t('sim.notice_native_download.message')}</p>
-					<a href={REPO_RELEASES_URL} className="btn btn-outline-light" target="_blank" onClick={() => setHasSeen(true)}>
+					<Button as="a" variant="outline-light" href={REPO_RELEASES_URL} target="_blank" onClick={() => setHasSeen(true)}>
 						{i18n.t('sim.notice_native_download.download_button')}
-					</a>
+					</Button>
 				</div>
 			),
 		});

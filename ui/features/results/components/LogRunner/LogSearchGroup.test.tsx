@@ -16,7 +16,7 @@ const mount = (current: IdentifiedSearchGroup, onChange = vi.fn(), onRemove = vi
 });
 
 const valueInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('.log-search-group-input')!;
-const submit = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.input-group .btn-primary')!;
+const submit = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.input-group button')!;
 const chips = (container: HTMLElement) => [...container.querySelectorAll('.log-search-chip [data-testid="saved-data-set-name"]')].map(chip => chip.textContent);
 
 describe('LogSearchGroup', () => {
@@ -24,14 +24,14 @@ describe('LogSearchGroup', () => {
 		const { container } = mount(group({ join: 'and' }));
 
 		expect(container.querySelector('.log-search-group-field')!.textContent).toBe('Outcome');
-		const joins = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join .btn')];
+		const joins = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join button')];
 		expect(joins.map(button => button.textContent)).toEqual(['AND', 'OR']);
 		expect(joins.map(button => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
 	});
 
 	it('switches the join, and stays quiet when the pressed one is already in force', () => {
 		const { container, onChange } = mount(group({ join: 'or' }));
-		const [and, or] = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join .btn')];
+		const [and, or] = [...container.querySelectorAll<HTMLButtonElement>('.log-search-group-join button')];
 
 		fireEvent.click(or);
 		expect(onChange).not.toHaveBeenCalled();

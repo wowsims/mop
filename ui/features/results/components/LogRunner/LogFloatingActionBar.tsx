@@ -1,4 +1,5 @@
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
@@ -77,15 +78,14 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 				</div>
 			</div>
 			<div className="log-fab-actions">
-				<button
+				<Button
 					ref={toggleRef}
-					type="button"
-					className="btn btn-primary log-fab-toggle"
+					className="log-fab-toggle"
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
 					onClick={() => setExpanded(current => !current)}>
-					<Icon name="filter" />
-					<span className="log-fab-summary">
+					<Icon name="filter" className="mr-2" />
+					<span className="log-fab-summary mr-2">
 						{labels.length
 							? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
 							: i18n.t('results_tab.details.logs.floatingActionBar.none')}
@@ -93,11 +93,16 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 					<span className="log-fab-preview truncate opacity-75">
 						{labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
 					</span>
-				</button>
-				<button type="button" className="btn btn-sm btn-link btn-reset log-fab-clear" hidden={labels.length === 0} onClick={() => onChange([])}>
+				</Button>
+				<Button
+					variant="link-danger"
+					size="sm"
+					className={clsx('log-fab-clear', labels.length === 0 && 'hidden')}
+					hidden={labels.length === 0}
+					onClick={() => onChange([])}>
 					<Icon name="times" className="mr-1" />
 					{i18n.t('results_tab.details.logs.floatingActionBar.clear')}
-				</button>
+				</Button>
 				<div className="log-fab-controls">{children}</div>
 			</div>
 		</div>

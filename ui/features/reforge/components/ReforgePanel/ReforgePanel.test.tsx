@@ -45,8 +45,9 @@ describe('ReforgePanel', () => {
 		expect([...run.classList].sort()).toEqual(
 			[...BASE.split(' '), ...VARIANT.primary.split(' '), 'grow', 'sim-sidebar-action-button', 'suggest-reforges-action-button'].sort(),
 		);
-		// This trigger's classes are a raw literal on `Popover`'s `triggerClassName`, not `Button` — untouched in this unit.
-		expect([...settings.classList].sort()).toEqual(['btn', 'btn-primary', 'sim-sidebar-action-button', 'suggest-reforges-button-settings']);
+		expect([...settings.classList].sort()).toEqual(
+			[...BASE.split(' '), ...VARIANT.primary.split(' '), 'sim-sidebar-action-button', 'suggest-reforges-button-settings'].sort(),
+		);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
 		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);
 	});

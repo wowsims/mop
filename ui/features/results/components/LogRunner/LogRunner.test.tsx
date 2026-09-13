@@ -182,7 +182,7 @@ describe('LogRunner', () => {
 		result = resultWith(LOGS);
 		const { container } = mount();
 
-		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls .btn-primary')][0]);
+		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls button')][0]);
 
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
 		// The cast-completed line is gone from both — that filter is on `logs`.
@@ -213,7 +213,7 @@ describe('LogRunner', () => {
 	it('gives both bar buttons an explicit type, so neither submits a form', () => {
 		const { container } = mount();
 
-		expect([...container.querySelectorAll('.log-fab-controls .btn-primary')].map(button => button.getAttribute('type'))).toEqual(['button', 'button']);
+		expect([...container.querySelectorAll('.log-fab-controls button')].map(button => button.getAttribute('type'))).toEqual(['button', 'button']);
 	});
 
 	// The debounced search box fires `onChange('')` once on mount. Scrolling the page then would move
@@ -233,7 +233,7 @@ describe('LogRunner', () => {
 		// Scrolled well past the header, so only the closed-tab guard can be what stops the scroll.
 		const hidePane = (container: HTMLElement) => placeList(container, -240, null);
 
-		const backToTop = (container: HTMLElement) => fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls .btn-primary')][1]);
+		const backToTop = (container: HTMLElement) => fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('.log-fab-controls button')][1]);
 
 		beforeEach(() => {
 			scrollBy.mockClear();

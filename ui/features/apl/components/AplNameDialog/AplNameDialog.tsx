@@ -1,7 +1,7 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
-import { FieldLabel } from '@ui-kit/FormControl';
+import { FieldLabel, INPUT_CLASSES } from '@ui-kit/FormControl';
 import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -85,7 +85,7 @@ export const AplNameDialog = ({
 					id={inputId}
 					ref={inputRef}
 					type="text"
-					className={clsx('form-control', conflict && 'is-invalid')}
+					className={clsx(INPUT_CLASSES, 'form-control', conflict && 'is-invalid')}
 					aria-invalid={conflict}
 					placeholder={placeholder || ''}
 					value={name}

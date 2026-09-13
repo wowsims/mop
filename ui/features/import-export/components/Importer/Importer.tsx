@@ -48,10 +48,10 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			footer={
 				<div className="flex gap-2">
 					{allowFileUpload && (
-						<label htmlFor={uploadInputId} className="importer-button btn btn-primary upload-button w-48">
+						<Button as="label" htmlFor={uploadInputId} className="importer-button upload-button w-48">
 							<Icon name="file-arrow-up" className="mr-1" />
 							{i18n.t('import.json.upload_button')}
-						</label>
+						</Button>
 					)}
 					<input
 						type="file"

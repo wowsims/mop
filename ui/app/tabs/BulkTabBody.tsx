@@ -14,6 +14,7 @@ import i18n from '@i18n/config';
 import { REPO_RELEASES_URL } from '@sim/constants/other';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { TabNav, TabPanel } from '@ui-kit/TabNav';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
@@ -60,12 +61,11 @@ export const BulkTabBody = () => {
 								)}
 							</div>
 							<div className="bulk-gear-actions">
-								<button type="button" className="btn btn-secondary" onClick={() => setImportOpen(true)}>
+								<Button variant="secondary" onClick={() => setImportOpen(true)}>
 									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_bags')}
-								</button>
-								<button
-									type="button"
-									className="btn btn-secondary"
+								</Button>
+								<Button
+									variant="secondary"
 									onClick={() =>
 										addBulkItems(
 											host.player,
@@ -73,11 +73,11 @@ export const BulkTabBody = () => {
 										)
 									}>
 									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_favorites')}
-								</button>
-								<button type="button" className="btn btn-danger ml-auto" onClick={() => clearBulkItems(host.player)}>
+								</Button>
+								<Button variant="danger" className="ml-auto" onClick={() => clearBulkItems(host.player)}>
 									<Icon name="times" className="mr-1" />
 									{i18n.t('bulk_tab.actions.clear_items')}
-								</button>
+								</Button>
 							</div>
 							<BulkItemSearch ready={ready} />
 							<BulkPickerGroups />

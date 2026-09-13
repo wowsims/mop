@@ -22,7 +22,7 @@ export const SummaryTable = ({ title, className, headerClassName, empty, reset, 
 				className={['summary-table-container', className]}
 				config={{ header: { title, className: headerClassName } }}
 				headerChildren={
-					<Button variant="link" size="sm" className="btn-reset summary-table-reset-button" onClick={reset.onReset}>
+					<Button variant="link-danger" size="sm" className="summary-table-reset-button" onClick={reset.onReset}>
 						<Icon name="times" className="mr-1" />
 						{reset.label}
 					</Button>

@@ -8,6 +8,7 @@ import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
+import { Button } from '@ui-kit/Button';
 import { STICKY_TOOLBAR_CLASSES, useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -168,19 +169,18 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 			data-hide-healing={!showHealing ? '' : undefined}
 			data-hide-experimental={!showExperimental ? '' : undefined}>
 			<div className="detailed-results-controls-div">
-				<button
-					className="detailed-results-1-iteration-button btn btn-primary"
-					type="button"
+				<Button
+					className="detailed-results-1-iteration-button"
 					disabled={host.disabled}
 					onClick={() => {
 						trackEvent({ action: 'sim', category: 'simulate', label: 'once' });
 						void host.runSingleIteration();
 					}}>
 					{i18n.t('results_tab.details.sim_1_iteration')}
-				</button>
-				<button className="detailed-results-death-iteration-button btn btn-primary" type="button" disabled={deathDisabled} onClick={onSimulateDeath}>
+				</Button>
+				<Button className="detailed-results-death-iteration-button" disabled={deathDisabled} onClick={onSimulateDeath}>
 					{i18n.t('results_tab.details.sim_1_death')}
-				</button>
+				</Button>
 			</div>
 			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
 				<div

@@ -50,7 +50,7 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 				<Icon name="plus" className="mr-2" />
 				{newLabel}
 			</Button>
-			<Button variant="link" size="sm" className="btn-reset ml-auto" onClick={() => host.applyEmptyAplRotation()}>
+			<Button variant="link-danger" size="sm" className="ml-auto" onClick={() => host.applyEmptyAplRotation()}>
 				<Icon name="times" className="mr-1" />
 				{i18n.t('rotation_tab.apl.floatingActionBar.reset')}
 			</Button>

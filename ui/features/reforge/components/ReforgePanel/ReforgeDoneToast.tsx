@@ -28,7 +28,7 @@ export const ReforgeDoneToast = ({ itemSlots, changedSlots, previousGear, settin
 		<div>
 			{!!settingsExport && (
 				<CopyButton
-					className="btn-outline-primary"
+					variant="outline-primary"
 					getContent={() => JSON.stringify(settingsExport)}
 					text={i18n.t('gear_tab.reforge_success.copy_to_reforge_lite')}
 					onCopied={onCopied}

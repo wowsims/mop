@@ -7,6 +7,7 @@ import { isIndividualSimHost } from '@sim/sim_host';
 import { subscribeBulkField } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
+import { IconButton } from '@ui-kit/IconButton';
 import { itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
@@ -90,9 +91,9 @@ export const ItemListRow = ({
 				</div>
 			)}
 			<div className="selector-modal-list-item-favorite-container">
-				<button
-					type="button"
-					className={clsx('selector-modal-list-item-favorite btn btn-link p-0', favourited && 'text-brand')}
+				<IconButton
+					label="Favorite"
+					className={clsx('selector-modal-list-item-favorite', favourited && 'text-brand')}
 					data-tooltip-id={favouriteTooltipId}
 					data-favourited={String(favourited)}
 					onClick={event => {
@@ -100,13 +101,13 @@ export const ItemListRow = ({
 						onToggleFavourite();
 					}}>
 					<Icon name="star" style={favourited ? 'solid' : 'regular'} size="xl" />
-				</button>
+				</IconButton>
 			</div>
 			{isItemsTab && (
 				<div className="selector-modal-list-item-compare-container">
-					<button
-						type="button"
-						className={clsx('selector-modal-list-item-compare btn btn-link p-0', inBatch && 'text-brand')}
+					<IconButton
+						label="Compare"
+						className={clsx('selector-modal-list-item-compare', inBatch && 'text-brand')}
 						data-tooltip-id={compareTooltipId}
 						data-in-batch={String(inBatch)}
 						onClick={() => {
@@ -114,7 +115,7 @@ export const ItemListRow = ({
 							trackEvent({ action: 'click', category: 'batch', label: inBatch ? 'remove-item' : 'add-item' });
 						}}>
 						<Icon name="arrow-right-arrow-left" size="xl" />
-					</button>
+					</IconButton>
 				</div>
 			)}
 		</>

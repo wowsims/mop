@@ -10,6 +10,7 @@ import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEligibleItemSlots } from '@sim/proto/items';
 import { bulkState } from '@sim/settings/bulk_settings';
 import { subscribeAll, subscribeBulkChange, subscribePlayerField } from '@sim/state/subscriptions';
+import { IconButton } from '@ui-kit/IconButton';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -74,13 +75,14 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				<div className="item-picker-actions-container">
 					{index >= 0 && state.isEditable && (
 						<>
-							<button
-								type="button"
-								className="btn btn-link link-danger text-link-danger item-picker-actions-btn"
+							<IconButton
+								label={i18n.t('bulk_tab.picker.remove_tooltip')}
+								tone="danger"
+								className="item-picker-actions-btn"
 								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />
-							</button>
+							</IconButton>
 							<Tooltip id={tooltipId} content={i18n.t('bulk_tab.picker.remove_tooltip')} />
 						</>
 					)}

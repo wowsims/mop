@@ -6,6 +6,7 @@ import type { CombatLog } from '@sim/proto/combat_log';
 import { isCastCompleted } from '@sim/proto/combat_log';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
+import { Button } from '@ui-kit/Button';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { findScrollParent } from '@ui-kit/utils/dom';
 import { VirtualList } from '@ui-kit/VirtualList';
@@ -243,12 +244,8 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					setGroups(next);
 					scrollListToTop();
 				}}>
-				<button type="button" className="btn btn-primary" onClick={() => setExportOpen(true)}>
-					{i18n.t('results_tab.details.logs.export_button')}
-				</button>
-				<button type="button" className="btn btn-primary" onClick={scrollListToTop}>
-					{i18n.t('results_tab.details.logs.top_button')}
-				</button>
+				<Button onClick={() => setExportOpen(true)}>{i18n.t('results_tab.details.logs.export_button')}</Button>
+				<Button onClick={scrollListToTop}>{i18n.t('results_tab.details.logs.top_button')}</Button>
 				<BooleanPicker modObject={showDebugHolder} config={showDebugConfig} />
 			</LogFloatingActionBar>
 			<Exporter

@@ -7,6 +7,7 @@ import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulk
 import { useSimHost } from '@sim/context/SimHostContext';
 import { formatDeltaText, formatSignificance, formatToNumber } from '@sim/utils/format';
 import { stDevToConf95, zTest } from '@sim/utils/math';
+import { Button } from '@ui-kit/Button';
 import { useActivateTab } from '@ui-kit/tab_activation';
 import { toastManager } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -107,17 +108,15 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					})}
 			</div>
 			<div className="bulk-results-actions">
-				<button
-					type="button"
-					className={clsx('btn btn-primary bulk-equip-btn', isBaseResult && 'hidden')}
-					hidden={isBaseResult}
+				<Button
+					className={clsx('bulk-equip-btn', isBaseResult && 'hidden')}
 					onClick={() => {
 						host.player.setGear(result.gear);
 						activateTab('gear-tab');
 						toastManager.add({ variant: 'success', body: i18n.t('bulk_tab.results.gear_equipped') });
 					}}>
 					{i18n.t('bulk_tab.results.equip_button')}
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

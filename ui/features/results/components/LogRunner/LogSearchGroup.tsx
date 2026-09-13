@@ -1,9 +1,10 @@
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
+import { ButtonGroup } from '@ui-kit/ButtonGroup';
 import { Chip } from '@ui-kit/Chip';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
+import { INPUT_CLASSES } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
-import clsx from 'clsx';
-import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 
 import type { SuggestionSource } from '../../model/log/search/indexes';
@@ -63,21 +64,21 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 		<div className="log-search-group">
 			<div className="log-search-group-head">
 				<span className="log-search-group-field">{sentenceCase(group.field)}</span>
-				<div className="log-search-group-join btn-group btn-group-sm ml-auto" role="group">
+				<ButtonGroup className="log-search-group-join ml-auto" size="sm">
 					{(['and', 'or'] as const).map(join => (
-						<button
+						<Button
 							key={join}
-							type="button"
-							className={clsx('btn', 'btn-sm', group.join === join ? 'btn-primary' : 'btn-outline-primary')}
+							size="sm"
+							variant={group.join === join ? 'primary' : 'outline-primary'}
 							aria-pressed={group.join === join}
 							onClick={() => {
 								if (group.join === join) return;
 								onChange({ ...group, join });
 							}}>
 							{join.toUpperCase()}
-						</button>
+						</Button>
 					))}
-				</div>
+				</ButtonGroup>
 				<DeleteButton onClick={onRemove} />
 			</div>
 			<div className="log-search-group-items flex flex-wrap items-center gap-1">
@@ -95,7 +96,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						<>
 							<input
 								type="text"
-								className="form-control form-control-sm log-search-group-input w-32"
+								className={`${INPUT_CLASSES} form-control log-search-group-input w-32`}
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}
@@ -106,13 +107,9 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 									commitDraft();
 								}}
 							/>
-							<button
-								type="button"
-								className="btn btn-sm btn-primary"
-								aria-label={i18n.t('results_tab.details.logs.search_add_value')}
-								onClick={commitDraft}>
+							<Button size="sm" aria-label={i18n.t('results_tab.details.logs.search_add_value')} onClick={commitDraft}>
 								<Icon name="check" style="base" />
-							</button>
+							</Button>
 						</>
 					) : (
 						<DropdownPicker

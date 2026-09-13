@@ -10,6 +10,7 @@ import type { EquippedItem } from '@sim/proto/equipped_item';
 import { SimRunKind } from '@sim/state/sim_store';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
+import { BASE as BUTTON_BASE, VARIANT as BUTTON_VARIANT } from '@ui-kit/Button/classes';
 import { Icon } from '@ui-kit/Icon';
 import { Popover } from '@ui-kit/Popover';
 import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
@@ -190,7 +191,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				align="start"
 				className="reforge-optimiser-popover min-w-[300px]"
 				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-var(--spacer-3)*2))]"
-				triggerClassName="sim-sidebar-action-button btn btn-primary suggest-reforges-button-settings"
+				triggerClassName={['sim-sidebar-action-button', BUTTON_BASE, BUTTON_VARIANT.primary, 'suggest-reforges-button-settings']}
 				triggerProps={tooltipAnchorProps(settingsTooltipId)}
 				trigger={
 					<>

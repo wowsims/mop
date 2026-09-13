@@ -1,4 +1,6 @@
 import i18n from '@i18n/config';
+import { Button } from '@ui-kit/Button';
+import { ButtonGroup } from '@ui-kit/ButtonGroup';
 
 export interface ChartToolbarProps {
 	onReset: () => void;
@@ -18,15 +20,15 @@ export const ChartToolbar = ({ onReset, onZoomIn, onZoomOut, onPanLeft, onPanRig
 	];
 
 	return (
-		<div className="timeline-chart-toolbar btn-group btn-group-sm ml-auto w-auto shrink-0 self-start" role="group">
+		<ButtonGroup className="timeline-chart-toolbar ml-auto w-auto shrink-0 self-start" size="sm">
 			{buttons.map(button => {
 				const label = i18n.t(`results_tab.details.timeline.chart_options.${button.key}`);
 				return (
-					<button key={button.key} type="button" className="btn btn-sm btn-outline-primary" title={label} aria-label={label} onClick={button.run}>
+					<Button key={button.key} size="sm" variant="outline-primary" title={label} aria-label={label} onClick={button.run}>
 						<i className={`fas ${button.icon}`} aria-hidden="true" />
-					</button>
+					</Button>
 				);
 			})}
-		</div>
+		</ButtonGroup>
 	);
 };

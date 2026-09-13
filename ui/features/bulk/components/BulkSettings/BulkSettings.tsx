@@ -5,6 +5,7 @@ import { subscribePlayerField } from '@sim/state/subscriptions';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
+import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useEffect } from 'react';
@@ -89,9 +90,9 @@ export const BulkSettings = () => {
 			<div className="bulk-settings-outer-container">
 				<div className="bulk-settings-container">
 					<CombinationsCount />
-					<button type="button" className="btn btn-primary bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
+					<Button className="bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
 						{i18n.t('bulk_tab.actions.simulate_batch')}
-					</button>
+					</Button>
 					<div className="use-legacy-bulk-sim-container">
 						<BooleanPicker
 							modObject={player}
