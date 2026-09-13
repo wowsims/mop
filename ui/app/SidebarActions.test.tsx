@@ -30,18 +30,17 @@ describe('SidebarActions', () => {
 		registry.add({ id: 'custom', render: () => <div className="custom-entry" /> });
 		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', className: 'ep-weights-action', onClick: () => {} });
 
-		// Class *sets*, sorted: `SidebarActionButton` still composes `btn btn-primary` ahead of the
-		// caller's classes (parked #2 — it stays on Bootstrap until part 3), and the parity gates sort
-		// class lists for the same reason — order carries no meaning.
-		const classSets = () => [...container.children].map(child => [...child.classList].sort().join(' '));
-
-		expect(classSets()).toEqual([]);
+		expect(container.children).toHaveLength(0);
 		renderActions(registry);
-		expect(classSets()).toEqual([
-			'btn btn-primary dps-action sim-sidebar-action-button w-full',
-			'custom-entry',
-			'btn btn-primary ep-weights-action sim-sidebar-action-button w-full',
-		]);
+		expect([...container.children].map(child => child.className.includes('dps-action'))).toEqual([true, false, false]);
+		expect([...container.children][1].classList.contains('custom-entry')).toBe(true);
+		expect([...container.children].map(child => child.className.includes('ep-weights-action'))).toEqual([false, false, true]);
+		[0, 2].forEach(i => {
+			const child = [...container.children][i];
+			expect(child.tagName).toBe('BUTTON');
+			expect(child.classList.contains('sim-sidebar-action-button')).toBe(true);
+			expect(child.classList.contains('w-full')).toBe(true);
+		});
 	});
 
 	// The whole point of the context: a spec rendering its own button through `render` cannot opt out

@@ -13,61 +13,8 @@
 	}
 }
 
-// ui/specs/mage/fire/calculate_combustion_thresholds.test.tsx (frozen) asserts this button's exact
-// class list, so `btn`/`btn-primary` stay on it (SidebarActionButton.tsx, variant="unstyled") as
-// inert markers even though the Bootstrap `buttons` partial is gone — this rule reproduces what
-// `.btn`/`.btn-primary` computed for it, resolving the old `--bs-btn-*` indirection straight to the
-// `--color-primary*` tokens the residual `.sim-ui .btn-primary` block used to feed them.
 .sim-sidebar-action-button {
 	position: relative;
-	display: inline-block;
-	padding: 0.5rem 0.75rem;
-	font-size: 0.875rem;
-	font-weight: 400;
-	line-height: 1.5;
-	color: var(--color-primary-foreground);
-	text-align: center;
-	text-decoration: none;
-	vertical-align: middle;
-	cursor: pointer;
-	user-select: none;
-	border: 1px solid var(--color-primary);
-	border-radius: 0;
-	background-color: var(--color-primary);
-	transition:
-		color 0.15s ease-in-out,
-		background-color 0.15s ease-in-out,
-		border-color 0.15s ease-in-out,
-		box-shadow 0.15s ease-in-out;
-
-	&:hover {
-		color: var(--color-primary-foreground);
-		background-color: var(--color-primary-hover);
-		border-color: var(--color-primary-hover);
-	}
-
-	&:focus-visible {
-		color: var(--color-primary-foreground);
-		background-color: var(--color-primary-hover);
-		border-color: var(--color-primary-hover);
-		outline: 0;
-		box-shadow: 0 0 0 0.25rem rgba(49, 132, 253, 0.5);
-	}
-
-	&:active {
-		color: var(--color-primary-foreground);
-		background-color: var(--color-primary-active);
-		border-color: var(--color-primary-active);
-	}
-
-	&:disabled,
-	&.disabled {
-		color: var(--color-primary-foreground);
-		pointer-events: none;
-		background-color: var(--color-primary-disabled);
-		border-color: var(--color-primary-disabled);
-		opacity: 0.65;
-	}
 
 	&.loading {
 		transition: none;
