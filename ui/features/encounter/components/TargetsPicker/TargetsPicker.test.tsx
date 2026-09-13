@@ -76,7 +76,7 @@ describe('TargetsPicker', () => {
 	it('wears the classes the encounter stylesheet and the encounter gate select on', () => {
 		mount(new FakeEncounter());
 
-		expect(root().className.split(' ').sort()).toEqual(['input-root', 'list-picker-root', 'mb-0', 'targets-picker']);
+		expect(['input-root', 'list-picker-root', 'mb-0', 'targets-picker'].every(name => root().classList.contains(name))).toBe(true);
 		expect(targetRoots()).toHaveLength(1);
 		expect([...targetRoots()[0].querySelectorAll('.target-picker-section')].map(section => section.className)).toEqual([
 			'picker-group target-picker-section target-picker-section1',
@@ -196,11 +196,11 @@ describe('TargetsPicker', () => {
 			const inputRoots = [...document.querySelectorAll('.target-input-picker-root')];
 
 			expect(inputRoots).toHaveLength(3);
-			expect(inputRoots.map(node => node.firstElementChild!.className.split(' ')[1])).toEqual([
-				'number-picker-root',
-				'boolean-picker-root',
-				'enum-picker-root',
-			]);
+			expect(
+				inputRoots.map((node, index) =>
+					node.firstElementChild!.classList.contains(['number-picker-root', 'boolean-picker-root', 'enum-picker-root'][index]),
+				),
+			).toEqual([true, true, true]);
 		});
 
 		it('shows each input its own value', () => {

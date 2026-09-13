@@ -26,7 +26,7 @@ const root = () => screen.getByTestId('input-root');
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
 		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { disabled: true });
-		expect(root().getAttribute('class')).toBe('input-root number-picker-root input-inline apl-picker disabled');
+		expect(root().getAttribute('class')).toBe('data-[disabled]:[filter:opacity(0.5)] input-root number-picker-root input-inline apl-picker disabled');
 	});
 
 	it('renders nothing at all when hidden', () => {
@@ -37,7 +37,7 @@ describe('PickerShell', () => {
 
 	it('omits the state classes when neither applies', () => {
 		shell(configFor());
-		expect(root().getAttribute('class')).toBe('input-root number-picker-root');
+		expect(root().getAttribute('class')).toBe('data-[disabled]:[filter:opacity(0.5)] input-root number-picker-root');
 	});
 
 	it('links the label to the input and titles it', () => {

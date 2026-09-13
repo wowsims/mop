@@ -1783,3 +1783,288 @@ Sites changed (`var(--spacing-block)` → `var(--spacing-stack)`, `gap-block` �
 ### Stage 4 — B-U2 correction 2 (padding/line-height are per-site)
 
 Second probe: `rotation-zoom-button`'s built rule is `padding: 0 var(--spacer-1); line-height: 1` — horizontal padding only, not `padding: 0`. `IconButton`'s base had `p-0 leading-none`, wiping the toolbar buttons' horizontal padding (`--spacer-1` = Tailwind's `1` = `0.25rem`, so `px-1` reproduces it exactly) and adding a `line-height:1` the row-hide button's rule (`padding: 0` only, no line-height) never had. Fixed: removed `p-0`/`leading-none` from the component base (padding and line-height are per-site, not component properties) — base is now `inline-block border-0 bg-transparent cursor-pointer`. `RotationRowLabel.tsx` gets `p-0` at the call site (its rule is `padding: 0`); `RotationToolbar.tsx` gets `py-0 px-1 leading-none` (its rule is `padding: 0 var(--spacer-1); line-height: 1`). Both untouched `Timeline.scss` rules still supply colour/hover/`background`/`border`/`flex` unchanged.
+
+## Stage 4 — B-U2 follow-ups: IconButton close slots; ItemCell/SummaryTableRow to ui-kit
+
+`IconButton`'s base bundle dropped `inline-block` (now `border-0 bg-transparent cursor-pointer`). Both call sites (`RotationRowLabel`, `RotationToolbar`) still compute `display: inline-block` regardless — that comes from the plain `<button>` UA default, not from a `button{}` rule in the built stylesheet (`/usr/bin/grep -oE 'button\{[^}]*\}'` on the bundle shows no `display` declaration at all) — so removing the utility changes nothing there, and it frees `Dialog`'s and `Toast`'s close buttons to ask for `flex` instead.
+
+`Dialog.tsx`'s and `Toast.tsx`'s `BaseDialog.Close`/`BaseToast.Close` now render an `IconButton` via the `render` prop (`render={<IconButton label="Close" className="…" />}`) instead of rendering their own `<button>`-equivalent directly, with `border-0`/`bg-transparent`/`cursor-pointer` dropped from each `className` string since `IconButton`'s base now supplies them; `data-testid`, `aria-label="Close"` (kept on the Base UI part so Base UI still merges it onto the rendered element) and the icon children are unchanged, and Base UI clones its own props onto the `IconButton` element so the final DOM is still one `<button type="button" aria-label="Close">` carrying the same class list and `data-testid` as before.
+
+`ItemCell.tsx` (+ test) and `SummaryTableRow.tsx` moved to `ui/ui-kit/ItemCell/` and `ui/ui-kit/SummaryTableRow/` via `git mv` — neither imported anything feature-specific (`GemSocket`, `ItemCellAnchor`, `ItemDetailCell`, `GemSummary`, `ReforgeSummary`, `UpgradeCostsSummary` stay in `ui/features/gear/components/`). New `index.ts` added in each ui-kit dir. The gear `ItemCell/index.ts` and `SummaryTable/index.ts` re-export `ItemCell`/`SummaryTableRow` from `@ui-kit/ItemCell`/`@ui-kit/SummaryTableRow` respectively, so every existing importer (`ui/features/bulk/**`, `ui/app/tabs/GearTabBody.tsx`, and the gear siblings) keeps compiling unchanged.
+
+## Stage 4 — A-U-input part 1: picker shells as utilities
+
+Converted the shell-level rules in `_input.scss`, `_boolean_picker.scss`, `_enum_picker.scss`,
+`_number_list_picker.scss` and `_unit_picker.scss` to utilities on `PickerShell` and its picker
+callers. No element added/removed/reordered; every legacy class (`input-root`, `input-inline`,
+`input-description`, `boolean-picker-root`, `enum-picker-root`, `unit-picker-item-icon`, …) kept.
+
+**`PickerShell.tsx` root** — `Field.Root` className, picked once per `config.inline`:
+- not inline: `flex flex-col items-start` (was `.input-root { display:flex; flex-direction:column; align-items:flex-start }`)
+- inline: `flex flex-row justify-between items-center` (was `.input-inline { flex-direction:row; justify-content:space-between; align-items:center }`)
+- always: `data-[disabled]:[filter:opacity(0.5)]` (was `.input-root.disabled { filter:opacity(.5) }`; `PickerShell` already emits `data-disabled` when `disabled`)
+- `config.description && 'flex-wrap'` (was `.input-root:has(.input-description) { flex-wrap:wrap }`)
+- `!config.inline && !isIconPicker && 'max-md:gap-2'` (was the `md`-down branch of `.input-root:not(.input-inline):not(.icon-picker)`; the root is already `flex-col items-start` so only `gap` changed at that breakpoint). `isIconPicker` is `className.split(' ').includes('icon-picker')` — `icon-picker` is a plain className token IconPicker/IconEnumPicker pass in, not a config flag, so PickerShell reads it off its own `className` prop.
+
+**Label (`Field.Label`)**:
+- `config.inline && 'mr-2 mb-0'` (was `.input-inline label { margin-right: var(--spacer-2); margin-bottom:0 }`)
+- `!config.inline && !isIconPicker && 'whitespace-nowrap overflow-hidden text-ellipsis max-w-full'` (was `.input-root:not(.input-inline):not(.icon-picker) label {...}`)
+
+**`!important` fights, both resolved by making the utility conditional (never kept an `!important`)**:
+- `.input-root.input-inline label, .input-root.icon-picker label { overflow:unset!important; text-overflow:unset!important }` — checked the compiled bundle (`spec_entry-*.style.css`) for every other selector touching `.form-label`/label `overflow`/`text-overflow` (`_settings_tab.scss`, `_bootstrap_style_overrides.scss`, `_apl_rotation_picker.scss`, `.icon-picker` rules in `_icon_picker.scss`): none of them set `overflow`/`text-overflow`. The `:not(.input-inline):not(.icon-picker)` selector this `!important` was defending against is mutually exclusive with `.input-inline`/`.icon-picker` by construction, so no genuine collision exists in the built cascade — the `!important` was vestigial. Converting to "the truncation utilities only apply when not inline and not icon-picker" reproduces the cascade exactly with no `!important` needed.
+- `.input-root:not(.input-inline):not(.icon-picker) { @include media-breakpoint-down(md) { flex-direction:column!important; align-items:flex-start!important; ... } }` — same reasoning: `.input-inline` (`flex-direction:row`, unconditional) can never match an element this selector also matches, so there is no real fight in-scope. `flex-direction`/`align-items` are already the non-inline base value (`flex-col`/`items-start`), so only `max-md:gap-2` needed carrying over.
+
+**`.input-description`** → `mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0` on both `Field.Description` branches in `PickerShell.tsx`. `$input-bg: #1e2633` matches `--color-surface: #1e2633` in `theme.css` exactly → `bg-surface`.
+
+**`.boolean-picker-root`** (`_boolean_picker.scss`, deleted) → `BooleanPicker.tsx` prepends `max-xl:flex-row max-xl:justify-between` to the className string it already builds (`--breakpoint-xl: 1200px` matches the SCSS `media-breakpoint-down(xl)`).
+
+**`.enum-picker-selector`** (`_enum_picker.scss`, deleted) → `EnumPicker.tsx`'s `<select>` gets `max-w-full` always, plus `config.inline ? 'w-20' : 'w-auto'`.
+- **Collision found and resolved**: `.enum-picker-selector { width:auto }` (specificity 0,1,0) loses to `.input-inline select { width:5rem }` (0,1,1) whenever both would apply (an inline enum picker) — the compiled bundle confirms `width:5rem` wins there. The utility reproduces the tie by never applying `w-auto` and `w-20` at once: `w-auto` only when not inline, `w-20` only when inline.
+
+**`.input-inline input:not(.form-check-input), select { width:5rem }`** → `w-20` (5rem = 20 × the default 0.25rem `--spacing` unit), applied conditionally on `config.inline` to the rendered `<input>`/`<select>` in `NumberPicker.tsx`, `NumberListPicker.tsx`, `AdaptiveStringPicker.tsx` and (see above) `EnumPicker.tsx`. `BooleanPicker.tsx`'s checkbox (`.form-check-input`) is untouched, matching the `:not(.form-check-input)` exclusion. `DropdownField`/`DropdownPicker` render neither `<input>` nor `<select>`, so nothing to carry there. No `StringPicker.tsx` exists (empty in scope — only `AdaptiveStringPicker` does).
+
+**`.picker-group`** (18 hand-rolled feature sites) — left as the only rule remaining in `_input.scss`, unchanged, for U5's `PickerGroup` component to finish.
+
+**`.number-list-picker-root {}` and its `@import './input'`** (`_number_list_picker.scss`) — file deleted (the rule was empty); `_input.scss` is now imported directly from `ui/scss/core/individual_sim_ui/index.scss` (added `@import '../components/input';`, since it was previously only reached transitively through `number_list_picker`) so the surviving `.picker-group` rule keeps compiling. The four now-empty imports (`boolean_picker`, `enum_picker`, `number_list_picker`, `unit_picker`) were removed from that same `index.scss`.
+
+**`.unit-picker-item-icon`** (`_unit_picker.scss`, deleted) → `flex justify-center items-center size-icon-sm mr-1` on all three branches of `UnitIcon.tsx` (`--spacing-icon-sm: 1rem` is a named entry in the `--spacing-*` namespace, confirmed elsewhere in this file (§2, `--spacing-icon-sm`/`--spacing-icon-md`) to generate real `size-*`/`w-*`/`h-*` utilities, so `size-icon-sm` compiles to `width/height: var(--spacing-icon-sm)`).
+
+**Out-of-scope collateral break, not fixed here (scope forbids touching `ui/features/**`)**: `ui/features/encounter/components/TargetsPicker/TargetsPicker.test.tsx` asserts the exact literal class list on `PickerShell`-rendered roots (`root().className.split(' ').sort()` against `['input-root', 'list-picker-root', 'mb-0', 'targets-picker']`, and a per-child `className.split(' ')` against `['number-picker-root', ...]`). Both now fail because the shared shell legitimately carries the new utility classes. These two tests need updating by whoever owns `ui/features/encounter` (or a later stage) to either use `arrayContaining`/substring checks or list the new utility tokens, the same way the in-scope `ui/ui-kit` tests here were updated.
+
+## Stage 4 — C-U3.1: app shell located by role and test-id
+
+Additive `data-testid="<class>"` on every app-shell wrapper element a test or probe locates by class; no element added/removed/reordered, no class removed, no styling change.
+
+**`SimShell.tsx`** — root: `sim-ui`; `sim-root`, `sim-bg`, `notices-banner`, `sim-container`, `sim-sidebar`, `sim-title`, `sim-sidebar-content`, `sim-sidebar-actions`, `sim-sidebar-results`, `sim-sidebar-stats`, `sim-sidebar-socials`, `sim-content`, `sim-header`, `sim-header-container`, `sim-tabs-mount`, `import-export`, `sim-toolbar`, `sim-main`.
+
+**`SimTabs.tsx`** — `Tabs.List` (`role=tablist` unchanged): `sim-tabs`; each `Tabs.Tab`: `data-testid={tab.id}` (the identifying token tests and probes already read off `className={clsx('sim-tab-link', tab.id)}`); `Tabs.Panel`: `sim-tab-panel`.
+
+**Header** — `ToolbarItem.tsx`: wrapper `sim-toolbar-item`; the inner `Button` gets `data-testid={className?.split(' ')[0]}` so `known-issues`/`downbin`/`sim-options` resolve without a new prop. `SimToolbar.tsx`: `sim-toolbar-socials`, per-social `sim-toolbar-item`. `ImportExportMenu.tsx`: `sim-dropdown-menu`, `${kind}-link` (i.e. `import-link`/`export-link`), `sim-dropdown-positioner`, `sim-dropdown-popup`, `sim-dropdown-item`. `SimTitleDropdown.tsx`: `sim-title-dropdown-root`, `sim-link` (trigger, submenu trigger, and each `Menu.LinkItem`), `sim-title-positioner`, `sim-title-popup`.
+
+**`SettingsDialog.tsx`** — `picker-group`, `fixed-rng-seed-container`, `fixed-rng-seed`, `last-used-rng-seed`, `language-picker`, `show-threat-metrics-picker`, `show-experimental-picker`, `show-quick-swap-picker`, `use-concurrency-container`, `use-concurrent-workers-picker`. **Not done**: the two `.form-text` `HelpText` notes — `HelpText` (`ui/ui-kit/FormControl/HelpText.tsx`) destructures only `as`/`hidden`/`className`/`children` and drops any other prop, so a `data-testid` passed to it never reaches the DOM; adding one needs a `ui-kit` change, out of scope this wave. `SettingsDialog.test.tsx`'s `.form-text` lookup stays class-based for that reason.
+
+**Not done (out of scope / no path this wave)**: `NoticeNativeSim.tsx`'s `toast-notice-native-download` — `ToastArea`'s `className` only reaches `ToastViewport`, which has no test-id passthrough either; same `ui-kit` constraint as `HelpText` above. `ui/app/tabs/*` wrapper classes (`tab-panel-left/right/col`, `settings-left-col-N`, `gear-tab-*`, `bulk-*`) and `PresetConfigurationPicker` — not reached this pass; `SettingsTabBody.test.tsx` and `RotationTabBody.test.tsx` still locate by class there.
+
+**Tests rewritten**: `SimShell.test.tsx` (`container.querySelector('.sim-sidebar-actions')` → `getByTestId('sim-sidebar-actions')`, both cases). `SimApp.test.tsx` (`.sim-ui` → `[data-testid="sim-ui"]`, `.sim-sidebar-stats .character-stats-root` / `.sim-sidebar-results .results-viewer` → testid-scoped, 5 call sites). `SimTabs.test.tsx` (`tab(id)` now matches `[data-testid="${id}"]`; `selectedIds()`/roving-tabindex `stops()` read `data-testid` instead of splitting `className`). `SettingsDialog.test.tsx` (`container()`, `last-used-rng-seed` reads switched to `[data-testid=...]`; `.form-text` left as class, see above).
+
+**Probe rewrites** (class selector → tolerant `[data-testid], .class` form, `q()` from `browser.mjs` where the call site is in Node scope, a local page-context `q` copy where it runs inside `page.evaluate`):
+- `browser.mjs:186,197,200,203,211,231` (`PROBE`'s `tabsOf`/`idOf`/`paneChain`/`panes`) — `.sim-tabs [role=tab]` → `` `:is(${q('sim-tabs')}) [role=tab]` ``, `.sim-main` → `q('sim-main')`, `.sim-main > [role=tabpanel]` → `` `:is(${q('sim-main')}) > [role=tabpanel]` ``.
+- `header-toolbar.mjs:37-89` (`structure`, local `q` added) — `.sim-header`, `.sim-header-container`, `.sim-tabs` (`matches`), `.sim-toolbar`, `.sim-toolbar-socials` (`matches` + descendant with `.sim-toolbar-item`), `.known-issues`. `:103` `selector: '.sim-header'` → `q('sim-header')`. `:125-126` `.import-link`/`.export-link` → `q('import-link')`/`q('export-link')`. `:159` `.sim-toolbar .sim-toolbar-item` locator → tolerant `:is()` pair. `:179` `stuck()` inline bracket form for `.sim-header`.
+- `sim-title.mjs` — imports `q`; `MENUS`/`ROWS` get a local page-context `q` copy for `.sim-title`/`.sim-title-popup`/`.sim-link`; `openSpec` selector, the trigger-read `evaluate`, `page.click`, and `rowSelector` all converted.
+- `sidebar-loading.mjs` — imports `q`; `READ`'s `.sim-sidebar-actions` (local `q`), the two `waitForSelector` calls (module `q`).
+- `sidebar-popover.mjs:68` — `.sim-sidebar-content` → inline bracket form (single use, `geometry` runs via `page.evaluate`).
+- `sim-progress.mjs` — `.sim-sidebar-actions .dps-action` (9 sites) and `.warning-zone .sim-toolbar-item` (2 sites) → inline `:is([data-testid=...], .class)` form (mixed Node/browser contexts, so no `q` import needed).
+- `tabs-a11y.mjs`, `tabs-behaviour.mjs`, `mount-once.mjs`, `panes-parity.mjs` — every `.sim-tabs [role=tab]` / bare `'.sim-tabs'` → inline tolerant form; `mount-once.mjs` additionally for `.sim-sidebar-actions .sim-sidebar-action-button` and `.sim-sidebar-stats .character-stats-root`.
+- `a11y.mjs` — `REGIONS`' four selectors and the `.sim-sidebar` `waitForSelector` converted; the tab-body selectors (`.settings-tab`, `#gear-tab`, `#bulk-tab`) left alone — out of this wave's scope.
+- `parity.mjs` — **no change**: its class-anchored regexes (`SOCIALS`, `IMPORT_EXPORT`, `SIM_TITLE`, `SIDEBAR_ACTIONS`, `SIM_UI_ROOT`, …) already tolerate a test-id because `SERIALIZE` (`browser.mjs`) unions each element's class list with its `data-testid` before matching, and every class this wave touched was kept, never removed.
+
+**Remaining class locators in `ui/app/**/*.test.tsx`** (grep: `querySelector(All)?\('.` / `closest\('.`):
+- `SimApp.test.tsx:134,143,159` — `.gear-tab-left`, `.character-stats-root`, `.built-imperatively`: all test-authored mock class names (the real components are `vi.mock`ed), not shell locators.
+- `SimTabs.test.tsx:85` — `.sim-tab`: the test's own fixture markup (`<div id={id} className="sim-tab">`), not `SimTabsSection`'s real pane.
+- `ui/app/tabs/SettingsTabBody.test.tsx`, `ui/app/tabs/RotationTabBody.test.tsx`, `ui/app/PresetConfigurationPicker/PresetConfigurationPicker.test.tsx` — tab-body wrapper classes (`tab-panel-left/right/col`, `settings-left-col-N`, `rotation-tab-apl`, `preset-configuration-picker-root`, …): not reached this pass, see "Not done" above.
+
+## Cheap gates (C-U3.1)
+`npm run type-check` clean. `npx oxlint ./ui` → 251 warnings (was 255), 0 errors (ran `--fix` on the files this wave touched to settle import order). `npx vitest run ui/app` → 12 files / 76 tests, all green. `node --check` on every touched `.mjs` (`browser`, `header-toolbar`, `sim-title`, `sidebar-loading`, `sidebar-popover`, `sim-progress`, `tabs-a11y`, `tabs-behaviour`, `mount-once`, `a11y`) → OK. `sidebar-reference.mjs` and `panes-parity.mjs`'s already-tolerant `sim-tabs`/`sim-ui` lines needed no `node --check` beyond the syntax check above.
+
+**Follow-up (structural fix)**: the hazard was in `q()` itself (`browser.mjs`) — a bare `[data-testid="x"], .x` comma list binds a later-appended descendant/attribute suffix (`` `${q(x)} …` ``) to its last alternative only, matching the region root as a false positive. `q()` and every page-context copy of it (`browser.mjs`'s `PROBE`, `header-toolbar.mjs`, `sidebar-loading.mjs`, `sim-title.mjs`) now return `` `:is([data-testid="${name}"], .${name})` ``; `a11y.mjs`'s `REGIONS` were simplified to call `q()` directly, and the remaining hand-written bare-comma literals within this wave's scoped files (`header-toolbar.mjs`, `sidebar-popover.mjs`, `sidebar-reference.mjs`, `mount-once.mjs`) were wrapped in `:is(...)` for consistency, even where not currently compounded. Bare `[data-testid="sim-ui"], .sim-ui` literals remain in several `.mjs` files outside this wave's scope (`apl-tab.mjs`, `combat-replay.mjs`, `log-runner.mjs`, `reforge-popover.mjs`, `results-filter.mjs`, `rotation-row-toggle.mjs`, `stat-weights.mjs`, `talents.mjs`, `timeline.mjs`, `topline-metrics.mjs`, `tw-bold.mjs`, `tw-elixir.mjs`) — none currently compound a selector onto them, so they are not hazardous today, but they were not touched here and should be swept the same way if a future wave appends to them.
+
+### Follow-up — non-`PickerShell` `.input-root` emitters and the `!important` utility layer
+
+`ui/styles/tailwind.css:5` imports `tailwindcss/utilities.css` with the `important` keyword, so **every**
+Tailwind utility in this app compiles `!important`. That means any plain (non-`!important`) SCSS rule
+anywhere that still touches an `.input-root`/`.input-inline`/`.form-label` carrier now unconditionally
+loses to a utility landed on the same element, regardless of specificity or source order — the earlier
+`!important` analysis in this stage's section only checked whether two *SCSS* rules collided; it did not
+need to check plain-vs-utility because the utilities in scope were all made conditional. This follow-up
+found the carriers that are **not** conditional, and the carriers PickerShell doesn't reach at all.
+
+**New shared module**: `ui/ui-kit/PickerShell/classes.ts` — `INPUT_ROOT`, `INPUT_ROOT_INLINE`,
+`INPUT_ROOT_MAX_MD_GAP`, `INPUT_ROOT_DISABLED_FILTER`, `INPUT_LABEL`, `INPUT_LABEL_INLINE`,
+`INPUT_DESCRIPTION` — re-exported from `ui/ui-kit/PickerShell/index.ts`. `PickerShell.tsx` now sources
+its own literals from it.
+
+**Fixed, in `ui-kit` (in scope)**:
+- `ui/ui-kit/SearchBar/SearchBar.tsx` — its root only ever carried bare `input-root` (never `.input-inline`
+  or `.icon-picker`), so it gets `INPUT_ROOT` + `INPUT_ROOT_MAX_MD_GAP` on the root and `INPUT_LABEL` on
+  its label — the same bundle `PickerShell` gives a non-inline, non-icon-picker instance.
+- `ui/ui-kit/ListPicker/ListPicker.tsx` — `_list_picker.scss:121` `.list-picker-compact:not(:has(.list-picker-items > *)) { display: none }`
+  (plain, not `!important`) used to win over `.input-root`'s plain `display:flex` by specificity; it now
+  loses to the shell's `!important` `flex`. `ListPicker` already knows both `config.isCompact` and
+  `value.length`, so `extraClassNames` gains a `'hidden'` class exactly when both hold — the same
+  established idiom the file already used for `config.hideUi`, and `[hidden]{display:none!important}`
+  (Tailwind's own reset, confirmed in the built bundle) beats the shell's `!important` `flex`.
+
+**Enumerated, not fixed — out of this unit's scope (`ui/features/**`, forbidden by the A-U-input brief;
+also risks colliding with other workers' concurrent edits in those directories)**:
+- `ui/features/settings/components/ConsumesPicker/ConsumeRow.tsx:31` — hand-written `<div className="consumes-row input-root input-inline">`, needs `INPUT_ROOT_INLINE`/`INPUT_ROOT_DISABLED_FILTER` on the root and `INPUT_LABEL_INLINE` on its `FieldLabel`. Checked for the `!important display:block` rule the probe reported on that row's label span: not found in `_consumes_picker.scss`, `_settings_tab.scss` (individual_sim_ui), `_bootstrap_style_overrides.scss`, or `shared/_global.scss` (none of them set `display` on `.form-label`/`label`/`span`) — `FieldLabel` already carries its own `inline-block` Tailwind class, so the source of a `block` baseline is still unaccounted for and needs a wider search (possibly Bootstrap's own un-overridden `.form-label` base, or a rule outside `ui/scss`) by whoever owns this file.
+- `ui/features/apl/components/FieldGroup/utils.ts:12` — only contributes an `'input-inline'` string into an `extraClassNames`-style array consumed by a `PickerShell` picker, so it is not a raw emitter and needs no fix.
+- `ui/features/encounter/components/TargetsPicker/TargetInputPicker.tsx:29` and `TargetPicker.tsx:52` — both hand-written `<div className="input-root ...">`, non-inline, need `INPUT_ROOT` (+ `INPUT_ROOT_MAX_MD_GAP` unless they're always icon-picker-like) and `INPUT_LABEL` on any label inside.
+- `ui/features/encounter/components/TargetsPicker/utils/configs.ts:339` — `extraClassNames: ['input-inline']` feeds a `PickerShell` picker; not a raw emitter, no fix needed.
+- `ui/features/item-swap/components/ItemSwapPicker/ItemSwapPicker.tsx:41,53` — `extraClassNames: ['input-inline']` (feeds a shell picker, fine) alongside a second hand-written `<div className="input-root input-inline input-item-swap-container">` at line 53, which does need `INPUT_ROOT_INLINE`/`INPUT_ROOT_DISABLED_FILTER` and its label needs `INPUT_LABEL_INLINE`.
+- `ui/features/gear/components/SelectorModal/ItemList.tsx:170,190` — both `extraClassNames` feeding `PickerShell` pickers; not raw emitters, no fix needed.
+- `_settings_tab.scss` (`ui/scss/core/individual_sim_ui/_settings_tab.scss:12-13,49`) is explicitly out of scope for this unit (reserved for a later one) but is a genuine, now-real collision: `.settings-tab .rotation-settings/.other-settings .input-root label { width:60%; padding-right:.5rem }` and `... input:not(.form-check-input), select, .picker-group { min-width:40% }` are both plain rules that used to win inside the settings tab and now lose to the shell's `!important` label-truncation utilities and to `EnumPicker`'s `!important` `w-auto`/`w-20`/`max-w-full` on its `<select>`. Whoever picks up `_settings_tab.scss` needs to either drop those SCSS declarations in favour of Tailwind utilities passed down through `extraClassNames`, or make the shell's utilities conditionally absent for that carrier.
+
+**Gates after this follow-up**: `type-check` clean; `lint:css` clean; `oxlint ./ui` → 0 errors, 251 warnings (≤280); `npx vitest run ui/ui-kit ui/features ui/app` → 198 files / 1627 tests, all passing.
+
+### Follow-up 2 — descendant selectors reproduced via `group/input` + data attributes
+
+The remaining diffs traced to old rules being **descendant selectors keyed on ancestor class**
+(`.input-inline label`, `.input-root:not(.input-inline):not(.icon-picker) label`), which per-element
+`config.inline` conditionals cannot reproduce — a nested picker's own label needs to react to an
+*ancestor's* inline/truncate state, not its own. Reworked around Tailwind's named `group` variant,
+which (like the old plain-CSS descendant combinator) matches **any** ancestor carrying the marker, not
+just the nearest one — so the old cascade's "bleed-through" through nested non-inline/non-icon roots is
+reproduced automatically without extra code.
+
+**`classes.ts` (updated)**:
+```
+INPUT_ROOT = 'flex flex-col items-start'
+INPUT_ROOT_INLINE = 'flex flex-row justify-between items-center'
+INPUT_ROOT_MAX_MD_GAP = 'max-md:gap-2'
+INPUT_ROOT_DISABLED_FILTER = 'data-[disabled]:[filter:opacity(0.5)]'
+INPUT_ROOT_GROUP = 'group/input'
+INPUT_ROOT_INLINE_WIDTH = 'group-data-[layout=inline]/input:w-20'
+INPUT_LABEL_INLINE = 'group-data-[layout=inline]/input:mr-2 group-data-[layout=inline]/input:mb-0'
+INPUT_LABEL_TRUNCATE = 'group-data-[truncate]/input:whitespace-nowrap group-data-[truncate]/input:overflow-hidden group-data-[truncate]/input:text-ellipsis group-data-[truncate]/input:max-w-full'
+INPUT_DESCRIPTION = 'mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0'
+isInputInline(classes) = /\binput-inline\b/.test(classes)
+```
+
+**`PickerShell.tsx`**: `isInline = !!config.inline || isInputInline(clsx(className, config.extraClassNames))`
+(class-based detection, per item 1 — a caller shipping `input-inline` only in `extraClassNames`, e.g.
+`FieldGroup/utils.ts`, now sets `data-layout="inline"` correctly even though `config.inline` is false).
+`isIconPicker` is the same `className`-token check as before. `truncate = !isInline && !isIconPicker`.
+Root now carries `INPUT_ROOT_GROUP`, `data-layout={isInline ? 'inline' : undefined}`,
+`data-picker={isIconPicker ? 'icon' : undefined}`, `data-truncate={truncate ? '' : undefined}`. The
+label's className is now **unconditional**: `clsx('form-label', INPUT_LABEL_INLINE, INPUT_LABEL_TRUNCATE)`
+on every instance — the group-data variants decide applicability at the CSS layer, not JS.
+
+**Inputs** (`NumberPicker`, `NumberListPicker`, `AdaptiveStringPicker`): the input's `w-20` is now the
+static `INPUT_ROOT_INLINE_WIDTH` (`group-data-[layout=inline]/input:w-20`), not `config.inline && 'w-20'`.
+
+**`EnumPicker`**: reverted to always `enum-picker-selector form-select max-w-full w-auto` — its own
+`.enum-picker-root .enum-picker-selector { width: auto }` was at (0,2,0) and always beat
+`.input-inline select` at (0,1,1), so the select was never actually `w-20` even when inline; the earlier
+per-instance conditional was wrong and is now removed entirely (dropped the now-unused `clsx` import).
+
+**`IconEnumPicker.tsx`**: its hand-rendered `<label className="form-label">{selected?.text}</label>`
+(bypasses `PickerShell`'s own `Field.Label`) now also carries `INPUT_LABEL_INLINE`, since old
+`.input-inline label` matched it too whenever an `IconEnumPicker` is nested inside an inline ancestor
+(e.g. `ConsumeRow`'s consumable rows) — this is the concrete case the probe's evidence (b) pointed at.
+Did not add `INPUT_LABEL_TRUNCATE` there: this root always carries `icon-picker`/`data-picker="icon"`,
+so its own `data-truncate` is never set; a truncate bleed-through from some *further-out* non-inline
+ancestor is a theoretical residual gap, not evidenced by the probe, left unaddressed.
+
+**`SearchBar.tsx`**: never carries `input-inline` and is never nested (it isn't reachable as a
+descendant of another `.input-root`), so its truncate condition is statically always true — kept as a
+plain, unconditional `whitespace-nowrap overflow-hidden text-ellipsis max-w-full` on its label rather
+than wiring up the group machinery for a condition that never varies.
+
+**Reverted** (item 2's tag-only correction): `FieldLabel`'s `margin` prop (added in the prior follow-up)
+is removed again — `ConsumeRow.tsx`/`ItemSwapPicker.tsx`'s `<FieldLabel as="span">` labels never matched
+`.input-inline label` (`label` is a tag selector, spans were never in scope), so both revert to plain
+`className="form-label"` with `FieldLabel`'s own default margin. Both rows' outer `input-inline`
+container still gets `INPUT_ROOT_GROUP` + a hardcoded `data-layout="inline"` (they are unconditionally
+inline, not driven by a `config.inline` flag), so their *nested* pickers' labels correctly pick up
+`INPUT_LABEL_INLINE` through the ancestor-matching group variant — item (b)'s exact scenario.
+`TargetPicker.tsx`/`TargetInputPicker.tsx` are never inline, so `data-layout` stays absent on them
+(no change needed there this round).
+
+**Gates**: `type-check` clean; `lint:css` clean; `oxlint ./ui` → 0 errors, 251 warnings (≤280);
+`npx vitest run ui/ui-kit ui/features ui/app` → 198 test files, 1627 tests, all passing.
+
+### A-U-input part 1 — cascade bridges (2026-09-13)
+
+Course-corrected mid-task: no `!important` and no bridge rules. Every contested property (one where
+some SCSS rule outside `ui/specs/**` targets the same property on a picker root, its label, or its
+inline input/select) was moved back to SCSS verbatim, and the corresponding utility was deleted from
+`PickerShell`/`classes.ts`/the picker components — the plain, non-important SCSS then wins the cascade
+exactly as it did before Wave 3, since nothing utility-side contests it anymore.
+
+- `ui/scss/core/components/_input.scss` (restored `.input-root` flex-direction/align-items, the
+  `.input-root:not(.input-inline):not(.icon-picker)` md-breakpoint block + label truncation, the
+  `&.input-inline, &.icon-picker label { overflow: unset !important; ... }` cancel, and the whole
+  `.input-inline` block incl. `input:not(.form-check-input), select { width: 5rem }`) — overrides
+  `PickerShell.tsx`'s removed `flex-col/flex-row/justify-between/items-center`, the removed
+  `INPUT_ROOT_MAX_MD_GAP` gap, and the removed `INPUT_LABEL_INLINE`/`INPUT_LABEL_TRUNCATE`/
+  `INPUT_ROOT_INLINE_WIDTH` utilities used by `NumberPicker.tsx`, `NumberListPicker.tsx`,
+  `AdaptiveStringPicker.tsx`, `IconEnumPicker.tsx`, `SearchBar.tsx`. Retiring unit: whichever unit next
+  ports `_input.scss`'s picker rules — not scheduled in this pass.
+- `ui/scss/core/components/_boolean_picker.scss` (restored in full: `.boolean-picker-root` max-xl
+  `flex-direction: row; justify-content: space-between`) — overrides `BooleanPicker.tsx`'s removed
+  `max-xl:flex-row max-xl:justify-between`. Re-added its `@import` to
+  `ui/scss/core/individual_sim_ui/index.scss`.
+- `ui/scss/core/components/_enum_picker.scss` (restored in full: `.enum-picker-root .enum-picker-selector
+  { width: auto; max-width: 100% }`) — found via audit, not in the known-contested list:
+  `ui/scss/core/components/_suggest_reforges_action.scss:83` sets `.enum-picker-selector { width: 100% }`
+  under `.reforge-optimizer-stat-cap-table`, a plain (non-important) SCSS rule that the removed
+  `max-w-full w-auto` utility on `EnumPicker.tsx`'s select would have permanently beaten regardless of
+  specificity. Re-added its `@import` to `index.scss`.
+- `ui/scss/core/talents/_talents_picker.scss:10` (`.talents-picker-root { flex-direction: row }`,
+  >=1921px) and the APL/list-picker family (`_apl_rotation_picker.scss`, `_list_picker.scss`) needed no
+  direct edits — restoring `.input-root`'s plain flex-direction/align-items/gap in `_input.scss` and
+  removing the utilities that fought them was sufficient; the cascade among plain SCSS rules is
+  unchanged from pre-Wave-3 baseline (talents → U5, APL/list pickers → U6 own these files going
+  forward for any further picker-root work).
+- `ui/scss/sims/mage_fire.scss:3` (`.fire-mage-sim-ui .number-picker-input[id^='combust'] { width: 7rem
+  }`) needed no edit either — its selector specificity (0,3,0) already beats the restored
+  `.input-inline input:not(.form-check-input)` (0,2,1) on plain SCSS terms, same as baseline. Later
+  `specs.css` step owns this file if it ever needs to move.
+- `ui/scss/core/components/_unit_picker.scss` and `_number_list_picker.scss` were audited and left
+  deleted: no other SCSS file sets `width`/`height`/`margin-right`/`display`/`justify-content`/
+  `align-items` on `.unit-picker-item-icon`, and `_number_list_picker.scss` carried no properties of its
+  own (just an `@import` and an empty selector) — both conversions are uncontested.
+- `ui/ui-kit/ListPicker/ListPicker.tsx`'s `hidden` class (added when `config.isCompact && value.length
+  === 0`) reproduces the baseline `.list-picker-root.list-picker-compact:not(:has(.list-picker-items >
+  *)) { display: none }` exactly: `.list-picker-items` is only rendered at all when `value.length > 0`,
+  so "no items box, or an items box with no children" and "value is empty" are the same condition here.
+  No bridge needed.
+
+**Gates**: `type-check` clean; `lint:js` 0 errors (pre-existing warnings elsewhere untouched);
+`lint:css` clean; `npx vitest run ui/ui-kit` → 47 files, 444 tests, all passing.
+`git diff -- ui | grep -c '^+.*!important'` = 0.
+
+### A-U-input part 2 — display deferred (2026-09-13)
+
+`display: flex` on the picker root turned out contested too, just outside the rest-state probe's
+reach (it never opens the advanced encounter dialog): `ui/scss/core/components/_encounter_picker.scss:46`
+`.target-picker-root { display: grid }` and `:73`
+`.hide-threat-metrics .advanced-encounter-picker-modal .target-picker-section3.threat-metrics .input-root
+{ display: none }` would both have lost to the removed `flex` utility. Restored `display: flex;` as the
+first declaration in `.input-root` in `_input.scss` (verbatim position), deleted `INPUT_ROOT`,
+`INPUT_ROOT_INLINE`, `INPUT_ROOT_MAX_MD_GAP` from `classes.ts`/`index.ts`, and dropped the `layout`
+utility from `PickerShell.tsx`'s root className. `ConsumeRow.tsx`, `ItemSwapPicker.tsx`,
+`TargetPicker.tsx`, `TargetInputPicker.tsx` reverted to HEAD (they only imported the now-empty
+constants and added `data-layout`). Deferred to U5 (encounter) for whenever `_encounter_picker.scss`'s
+`display` rules move.
+
+### A-U-input part 1 — final state (2026-09-13, orchestrator)
+
+The entries above record the attempts; this is what ships. Rule applied (coordinator's steer):
+a declaration converts only if nothing in the SCSS tree overrides it, checked per rule; no
+`!important` is added or kept, and a contested property stays in SCSS verbatim until the unit that
+owns its overrider converts both sides together.
+
+Converted (uncontested): `.input-root.disabled { filter }` → `data-[disabled]:[filter:opacity(0.5)]`
+on `PickerShell`'s root; `.input-root:has(.input-description) { flex-wrap }` → `flex-wrap` when
+`config.description` is set; the `.input-description` block →
+`mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0`; `_unit_picker.scss` →
+`flex justify-center items-center size-icon-sm mr-1` on `UnitIcon`; `_number_list_picker.scss`
+(an empty rule plus `@import './input'`) deleted with `_input.scss` imported directly in the same
+slot of `individual_sim_ui/index.scss` (source order matters: `.input-root { align-items }` must
+still follow `.list-picker-root { align-items }`); `ListPicker` emits `hidden` for an empty compact
+list, which equals the old `:not(:has(.list-picker-items > *))` condition because the items box only
+renders when the value is non-empty.
+
+Left in SCSS, with the unit that converts each: root `display` (U5 — `_encounter_picker.scss:46`
+`.target-picker-root { display: grid }`, `:73` `display: none` under `.hide-threat-metrics`);
+root `flex-direction`/`align-items`/`justify-content` (U5 `_talents_picker.scss:10`, U6
+`_apl_rotation_picker.scss` + `_list_picker.scss`, U7 `EpWeightsDialog.scss:62`); the
+`:not(.input-inline):not(.icon-picker)` md `gap` (U6 `_apl_rotation_picker.scss:16`); every label
+rule incl. the inline/icon `overflow: unset !important` cancel (U6, APL `label { margin: 0 }`);
+`.input-inline input, select { width: 5rem }` (the late `specs.css` step — `sims/mage_fire.scss:3`
+sets 7rem on the combust pickers of a frozen spec); `.boolean-picker-root` max-xl block (with the
+Checkbox commit); `.enum-picker-selector` (U7 — `_suggest_reforges_action.scss:83` sets
+`width: 100%`); `.picker-group` (U5). Wave-3 tests that asserted exact class arrays were loosened
+to membership checks. `group/input`, `data-truncate`, `data-picker` were removed again: no CSS
+reads them.

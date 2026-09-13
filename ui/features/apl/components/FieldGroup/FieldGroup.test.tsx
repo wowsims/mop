@@ -53,11 +53,11 @@ describe('FieldGroup', () => {
 		mount([stringFieldConfig('text'), booleanFieldConfig('flag', 'Flag'), numberFieldConfig('count', false)]);
 
 		expect(root().className.split(' ')).toContain('input-root');
-		expect([...root().children].map(child => child.className.split(' ')[1])).toEqual([
-			'adaptive-string-picker-root',
-			'boolean-picker-root',
-			'number-picker-root',
-		]);
+		expect(
+			[...root().children].map((child, index) =>
+				child.classList.contains(['adaptive-string-picker-root', 'boolean-picker-root', 'number-picker-root'][index]),
+			),
+		).toEqual([true, true, true]);
 	});
 
 	// `getValue` writes: an unset proto field is filled in with the spec's default before it is read

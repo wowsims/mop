@@ -80,7 +80,7 @@ describe('GlyphsPicker', () => {
 		await waitFor(() => expect(slots('major')).toHaveLength(3));
 
 		const slot = slots('major')[0];
-		expect(slot.className.split(' ')).toEqual(['input-root', 'glyph-picker-root', 'input-inline', 'item-picker-root']);
+		expect(['input-root', 'glyph-picker-root', 'input-inline', 'item-picker-root'].every(name => slot.classList.contains(name))).toBe(true);
 		expect(slot.querySelector('.glyph-link > img.item-picker-icon')).not.toBeNull();
 		expect(slot.querySelector('.item-picker-labels-container > .item-picker-name-container')).not.toBeNull();
 	});

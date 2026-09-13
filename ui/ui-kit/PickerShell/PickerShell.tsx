@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { type ReactNode, type Ref, useMemo } from 'react';
 
 import { adoptNode, isNode } from '../utils/dom';
+import { INPUT_DESCRIPTION, INPUT_ROOT_DISABLED_FILTER } from './classes';
 
 const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join(' ');
 
@@ -39,7 +40,17 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			data-disabled={disabled ? '' : undefined}
 			data-layout={config.inline ? 'inline' : undefined}
 			data-testid={testId ?? 'input-root'}
-			className={dedupe(clsx('input-root', className, config.inline && 'input-inline', config.extraClassNames, disabled && 'disabled'))}>
+			className={dedupe(
+				clsx(
+					config.description && 'flex-wrap',
+					INPUT_ROOT_DISABLED_FILTER,
+					'input-root',
+					className,
+					config.inline && 'input-inline',
+					config.extraClassNames,
+					disabled && 'disabled',
+				),
+			)}>
 			{leading}
 			{config.label && (
 				// `htmlFor` explicitly rather than letting Field derive it.
@@ -50,9 +61,14 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			{tooltipNode}
 			{config.description &&
 				(isNode(config.description) ? (
-					<Field.Description render={<div />} className="input-description" data-testid="input-description" ref={adoptNode(config.description)} />
+					<Field.Description
+						render={<div />}
+						className={clsx('input-description', INPUT_DESCRIPTION)}
+						data-testid="input-description"
+						ref={adoptNode(config.description)}
+					/>
 				) : (
-					<Field.Description render={<div />} className="input-description" data-testid="input-description">
+					<Field.Description render={<div />} className={clsx('input-description', INPUT_DESCRIPTION)} data-testid="input-description">
 						{config.description}
 					</Field.Description>
 				))}

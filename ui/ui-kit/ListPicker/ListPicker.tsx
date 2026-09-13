@@ -120,6 +120,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	const extraClassNames = [
 		...(config.extraClassNames || []),
 		...(config.isCompact ? ['list-picker-compact'] : []),
+		...(config.isCompact && value.length === 0 ? ['hidden'] : []),
 		...(config.hideUi ? ['hidden'] : []),
 		...(horizontal ? ['horizontal'] : []),
 	];

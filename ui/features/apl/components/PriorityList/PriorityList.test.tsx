@@ -76,7 +76,10 @@ describe('PriorityList', () => {
 		const row = rowContainers()[0];
 		const header = row.querySelector('[data-testid="list-picker-item-header"]') as HTMLElement;
 		const headerExtras = Array.from(header.querySelectorAll('.apl-validations, .hide-picker-root'));
-		expect(headerExtras.map(el => el.className.split(' ')[1])).toEqual(['apl-validations', 'hide-picker-root']);
+		expect(headerExtras.map(el => ['apl-validations', 'hide-picker-root'].find(name => el.classList.contains(name)))).toEqual([
+			'apl-validations',
+			'hide-picker-root',
+		]);
 
 		const body = row.querySelector('.list-picker-item') as HTMLElement;
 		expect(body.querySelector('.apl-action-picker-root')).not.toBeNull();

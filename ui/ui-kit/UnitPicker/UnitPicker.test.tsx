@@ -61,7 +61,9 @@ describe('UnitPicker', () => {
 
 		expect(within(items()[0]).queryByTestId('unit-picker-item-icon')).toBeNull();
 		expect(within(items()[1]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('boss.jpg');
-		expect(within(items()[2]).getByTestId('unit-picker-item-icon').className).toBe('fa fa-users unit-picker-item-icon');
+		expect(within(items()[2]).getByTestId('unit-picker-item-icon').className).toBe(
+			'fa fa-users flex justify-center items-center size-icon-sm mr-1 unit-picker-item-icon',
+		);
 		expect(within(items()[3]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('spell.jpg');
 	});
 
