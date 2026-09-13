@@ -8,7 +8,7 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 ## Where the chain is
 
 - **LIVE STATE — main session orchestrates directly, one worktree per unit** (read this bullet first).
-  Tip moves as units land — A-U-icon landed `b8cae69bc` (probe 0, a11y/tabs/settings-tab clean); C-U3.2 `249309630` ( before it `33d01a51d` handoff, `47012afa4` A-U-shell).
+  **Phase 2 COMPLETE** — A-U-list landed `42142c5d1` (probe 0 after three fixes: missing root gap, `_input.scss` narrow-width gap contest, over-broad `data-[layout=inline]` variant; `test:snapshots` 34/34 on it as the Phase-2 close). A-U-icon landed `b8cae69bc` (probe 0, a11y/tabs/settings-tab clean); C-U3.2 `249309630` ( before it `33d01a51d` handoff, `47012afa4` A-U-shell).
   Unit worktrees `/home/lutz/personal/wowsims-mop-tw-<unit>` on `wt/tw-<unit>`, created by
   `/tmp/claude-1000/tw/mkunit.sh <unit>` (node_modules = per-entry symlinks, never a symlink; copies
   `ui/generated/`, `*_auto_gen.ts`, `tools/state-snapshots/` — the tailwind branch's vitest still needs
