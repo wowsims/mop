@@ -23,44 +23,4 @@
 	#rotation-tab-rotation-type {
 		padding: var(--spacer-3) 0;
 	}
-
-	.rotation-tab {
-		display: flex;
-	}
-
-	.rotation-tab-simple {
-		.simple-rotation-container {
-			--columns: 1fr 1fr;
-			display: grid;
-			grid-template-columns: var(--columns);
-			gap: var(--spacing-page);
-
-			@include media-breakpoint-down(xl) {
-				--columns: 1fr;
-			}
-		}
-	}
-
-	.rotation-tab-apl {
-		.apl-rotation-navbar {
-			flex: 1 0 100%;
-			gap: var(--spacer-1);
-
-			.nav-tabs {
-				margin-left: auto;
-				overflow: auto;
-				flex-shrink: 1;
-			}
-		}
-
-		.tab-pane {
-			padding-top: 0;
-			gap: var(--spacing-section);
-
-			&.active {
-				display: flex;
-				flex-direction: column;
-			}
-		}
-	}
 }

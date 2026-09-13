@@ -14,6 +14,7 @@
 @import '../features/gear/components/SelectorModal/SlotRail.css';
 @import '../features/gear/components/SelectorModal/SelectorModal.css';
 @import '../features/gear/components/SummaryTable/SummaryTable.css';
+@import '../features/apl/apl.css';
 
 @source '../app';
 @source '../features';

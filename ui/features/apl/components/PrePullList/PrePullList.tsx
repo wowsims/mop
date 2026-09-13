@@ -49,7 +49,7 @@ export const PrePullList = () => {
 									config={{
 										label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 										labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
-										extraClassNames: ['apl-prepull-actions-doat'],
+										extraClassNames: ['w-[unset]', 'm-0'],
 										inline: true,
 										getValue: () => itemConfig.getValue(player)?.doAtValue,
 										setValue: (subject: Player<any>, newValue: APLValue | undefined) => {

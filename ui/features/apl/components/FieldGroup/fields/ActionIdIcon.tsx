@@ -16,7 +16,7 @@ export const ActionIdIcon = ({ actionId, useBuffAura }: ActionIdIconProps) => {
 
 	return (
 		<a
-			className="apl-actionid-item-icon"
+			className="inline-block size-4 mr-1 bg-cover"
 			data-whtticon="false"
 			href={href || undefined}
 			rel={externalRel(href, undefined)}

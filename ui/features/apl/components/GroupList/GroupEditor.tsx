@@ -61,11 +61,14 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 
 	return (
 		<PickerShell
-			config={{ ...shellConfig, extraClassNames: [...(config.extraClassNames || []), 'apl-list-item-picker-root'] }}
+			config={{
+				...shellConfig,
+				extraClassNames: [...(config.extraClassNames || []), 'apl-list-item-picker-root', 'flex', 'flex-row', 'items-center', 'm-0', 'gap-2'],
+			}}
 			className="apl-group-editor-root"
 			hidden={hidden}
 			disabled={disabled}>
-			<div className="apl-action-picker-root">
+			<div className="ui-apl-editor-row">
 				<NameDisplay name={group?.name || ''} onRename={() => setRenaming(true)} />
 				<div className="apl-group-actions-container">
 					<ListPicker<Player<any>, APLListItem>

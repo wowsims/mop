@@ -35,8 +35,8 @@ export const PlaceholderNameField = ({ player, config, getParentValue }: Placeho
 	const existingNames = open ? placeholderNames(group).filter(name => isNew || name !== value) : [];
 
 	return (
-		<PickerShell config={config} className="apl-placeholder-name-picker-root" hidden={hidden} disabled={disabled}>
-			<NameDisplay name={value} onRename={() => setOpen(true)} />
+		<PickerShell config={config} hidden={hidden} disabled={disabled}>
+			<NameDisplay name={value} onRename={() => setOpen(true)} compact />
 			<AplNameDialog
 				open={open}
 				title={

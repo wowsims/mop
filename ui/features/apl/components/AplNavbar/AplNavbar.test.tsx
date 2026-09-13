@@ -50,7 +50,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe('AplNavbar', () => {
 	it('puts the rotation-type picker ahead of the strip, in one sticky row', () => {
 		const { container } = mount();
-		const root = container.querySelector('.apl-rotation-navbar')!;
+		const root = container.querySelector('[data-testid="apl-rotation-navbar"]')!;
 		expect([...root.children].map(child => child.className.split(' '))).toEqual([['rotation-type-container'], expect.arrayContaining(['nav', 'nav-tabs'])]);
 		expect(root.querySelector('.rotation-type-container > .rotation-type-picker-stub')).not.toBeNull();
 	});
@@ -106,7 +106,7 @@ describe('AplNavbar', () => {
 
 	it('carries stuck while the row no longer fits below the header', () => {
 		const { container } = mount();
-		const root = container.querySelector('.apl-rotation-navbar')!;
+		const root = container.querySelector('[data-testid="apl-rotation-navbar"]')!;
 		Object.defineProperty(root, 'clientHeight', { value: 40 });
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0.5));
 		expect(root.hasAttribute('data-stuck')).toBe(true);
@@ -116,7 +116,7 @@ describe('AplNavbar', () => {
 
 	it('reads the last record of a delivery, not the first', () => {
 		const { container } = mount();
-		const root = container.querySelector('.apl-rotation-navbar')!;
+		const root = container.querySelector('[data-testid="apl-rotation-navbar"]')!;
 		Object.defineProperty(root, 'clientHeight', { value: 40 });
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(1, 0.5));
 		expect(root.hasAttribute('data-stuck')).toBe(true);
@@ -127,7 +127,7 @@ describe('AplNavbar', () => {
 	it('stays unstuck while the row is not laid out, whatever the ratio says', () => {
 		const { container } = mount();
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0));
-		expect(container.querySelector('.apl-rotation-navbar')!.hasAttribute('data-stuck')).toBe(false);
+		expect(container.querySelector('[data-testid="apl-rotation-navbar"]')!.hasAttribute('data-stuck')).toBe(false);
 	});
 
 	it('disconnects the observer on unmount', () => {

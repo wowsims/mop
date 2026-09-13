@@ -84,7 +84,7 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 	return (
 		<PickerShell config={shellConfig} className="apl-action-picker-root" hidden={hidden} disabled={disabled}>
 			<ValuePicker player={player} config={conditionConfig} />
-			<div className="apl-action-picker-action">
+			<div className="flex flex-row gap-2 max-md:flex-wrap">
 				<DropdownField<Player<any>, ValidAPLActionKind>
 					modObject={player}
 					config={kindConfig}

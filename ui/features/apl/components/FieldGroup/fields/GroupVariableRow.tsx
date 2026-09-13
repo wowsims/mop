@@ -52,7 +52,7 @@ export const GroupVariableRow = ({ player, config, name, groupSelected }: GroupV
 			className="apl-group-variable-picker-root"
 			hidden={false}
 			disabled={false}>
-			<label className="group-variable-label font-bold block" htmlFor={valueId}>
+			<label className="font-bold block text-sm" htmlFor={valueId}>
 				{name}:
 			</label>
 			<DropdownField<Player<any>, string>

@@ -12,12 +12,18 @@ export const AplNavbar = () => {
 	return (
 		<div
 			ref={ref}
-			className={clsx('apl-rotation-navbar sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+			className={clsx('flex-[1_0_100%] gap-1 sticky-toolbar-root', STICKY_TOOLBAR_CLASSES, stuck && 'stuck')}
+			data-testid="apl-rotation-navbar"
 			data-stuck={stuck ? '' : undefined}>
 			<div className="rotation-type-container">
 				<RotationTypePicker />
 			</div>
-			<TabNav bordered={false} wrap={false} tabs={APL_PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
+			<TabNav
+				bordered={false}
+				wrap={false}
+				className="ml-auto overflow-auto shrink"
+				tabs={APL_PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))}
+			/>
 		</div>
 	);
 };

@@ -56,7 +56,7 @@ export const RotationTabBody = () => {
 
 	return (
 		<>
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="flex rotation-tab-auto" fullWidth externalDisplay>
 				<TabPanelColumns.Left variant="stacked">
 					<div>
 						<RotationTypePicker />
@@ -68,14 +68,14 @@ export const RotationTabBody = () => {
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
 
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="flex rotation-tab-simple" fullWidth externalDisplay>
 				{hasSimple && (
 					<>
 						<TabPanelColumns.Left className="tab-content" variant="stacked">
 							<div>
 								<RotationTypePicker />
 							</div>
-							<div className="simple-rotation-container">
+							<div className="grid grid-cols-[1fr_1fr] max-xl:grid-cols-1 gap-page">
 								<ContentBlock className="rotation-settings" config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 									<SimpleRotationInputs />
 								</ContentBlock>
@@ -99,7 +99,7 @@ export const RotationTabBody = () => {
 
 			<TabPanelColumns.Root
 				as={Tabs.Root}
-				className="rotation-tab rotation-tab-apl"
+				className="flex rotation-tab-apl"
 				gap="apl"
 				fullWidth
 				externalDisplay
@@ -110,7 +110,7 @@ export const RotationTabBody = () => {
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
-							<TabPanel key={pane.id} value={pane.id}>
+							<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section [&.active]:flex [&.active]:flex-col">
 								<Body />
 							</TabPanel>
 						);
