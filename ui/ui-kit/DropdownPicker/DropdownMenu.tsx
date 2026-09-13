@@ -1,5 +1,4 @@
 import { Menu } from '@base-ui/react/menu';
-import { menuPositionerZClasses, menuSurfaceClasses } from '@ui-kit/Menu/classes';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useState } from 'react';
@@ -94,9 +93,9 @@ export const DropdownMenu = <V,>({
 						side={side}
 						positionMethod={positionMethod}
 						sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
-						className={clsx('dropdown-picker-positioner', menuPositionerZClasses.menu)}
+						className={clsx('dropdown-picker-positioner', 'ui-menu-positioner')}
 						data-testid="dropdown-picker-positioner">
-						<Menu.Popup className={clsx('dropdown-picker-menu', menuSurfaceClasses.menu)} data-testid="dropdown-picker-menu">
+						<Menu.Popup className={clsx('dropdown-picker-menu', 'ui-menu')} data-testid="dropdown-picker-menu">
 							<Menu.RadioGroup
 								render={<ul />}
 								className="m-0 list-none p-0"

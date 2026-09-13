@@ -13,8 +13,7 @@ describe('Menu', () => {
 		);
 		fireEvent.click(getByTestId('trigger'));
 		const popup = getByTestId('popup');
-		expect(popup.className).toContain('bg-surface-raised');
-		expect(popup.className).toContain('border-surface-border');
+		expect(popup.className).toContain('ui-menu');
 		expect(getByText('Item')).toBeTruthy();
 	});
 
@@ -26,8 +25,7 @@ describe('Menu', () => {
 		);
 		fireEvent.click(getByTestId('trigger'));
 		const popup = getByTestId('popup');
-		expect(popup.className).toContain('bg-background');
-		expect(popup.className).toContain('border-0');
+		expect(popup.className).toContain('ui-menu-plain');
 	});
 
 	it('forwards a testid onto the positioner', () => {
@@ -37,7 +35,7 @@ describe('Menu', () => {
 			</Menu>,
 		);
 		fireEvent.click(getByTestId('trigger'));
-		expect(getByTestId('positioner').className).toContain('z-dropdown');
+		expect(getByTestId('positioner').className).toContain('ui-menu-positioner');
 	});
 });
 
@@ -49,7 +47,7 @@ describe('MenuItem', () => {
 			</Menu>,
 		);
 		fireEvent.click(getByText('Open'));
-		expect(getByText('Row item').className).toContain('flex');
+		expect(getByText('Row item').className).toContain('ui-menu-item-row');
 	});
 
 	it('applies the block layout classes', () => {
@@ -59,6 +57,6 @@ describe('MenuItem', () => {
 			</Menu>,
 		);
 		fireEvent.click(getByText('Open'));
-		expect(getByText('Block item').className).toContain('block');
+		expect(getByText('Block item').className).toContain('ui-menu-item');
 	});
 });

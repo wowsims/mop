@@ -7,7 +7,6 @@ import type { PlayerClass } from '@sim/player/player_class';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import { PlayerSpecs } from '@sim/player/specs/index';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
-import { menuPositionerZClasses, menuSurfaceClasses, menuWidthClasses } from '@ui-kit/Menu/classes';
 import { SimLinkContent } from '@ui-kit/SimLinkContent';
 import clsx from 'clsx';
 
@@ -35,9 +34,9 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
 				side="right"
 				align="start"
 				sideOffset={0}
-				className={clsx('sim-title-positioner', menuPositionerZClasses.plain)}
+				className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
 				data-testid="sim-title-positioner">
-				<Menu.Popup className={clsx('sim-title-popup', menuSurfaceClasses.plain, 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
+				<Menu.Popup className={clsx('sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
 					{Object.values(playerClass.specs).map(spec => (
 						<Menu.LinkItem
 							key={spec.simLink}
@@ -75,9 +74,9 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
 					<Menu.Positioner
 						align="start"
 						sideOffset={0}
-						className={clsx('sim-title-positioner', menuPositionerZClasses.plain)}
+						className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
 						data-testid="sim-title-positioner">
-						<Menu.Popup className={clsx('sim-title-popup', menuSurfaceClasses.plain, menuWidthClasses.anchor)} data-testid="sim-title-popup">
+						<Menu.Popup className={clsx('sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')} data-testid="sim-title-popup">
 							{PlayerClasses.naturalOrder.map(playerClass => (
 								<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />
 							))}

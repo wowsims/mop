@@ -1,5 +1,4 @@
 import { Menu } from '@base-ui/react/menu';
-import { menuItemBaseClasses, menuItemLayoutClasses, menuPositionerZClasses, menuSurfaceClasses } from '@ui-kit/Menu/classes';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
@@ -29,7 +28,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					render={<li />}
 					value={entry.index}
 					closeOnClick
-					className={clsx('dropdown-picker-item', menuItemBaseClasses, menuItemLayoutClasses.row, entry.option.className, entry.option.itemClassName)}
+					className={clsx('dropdown-picker-item', 'ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}
 					data-testid="dropdown-picker-item"
 					{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
 					{entry.option.icon}
@@ -37,13 +36,16 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 				</Menu.RadioItem>
 			) : (
 				<Menu.SubmenuRoot key={`submenu-${entry.key}-${position}`}>
-					<li className={clsx('dropdown-picker-item', menuItemBaseClasses, menuItemLayoutClasses.row)} data-testid="dropdown-picker-item">
+					<li className={clsx('dropdown-picker-item', 'ui-menu-item', 'ui-menu-item-row')} data-testid="dropdown-picker-item">
 						<div className="dropend">
 							<Menu.SubmenuTrigger
 								render={
 									<button
 										type="button"
-										className={clsx('dropdown-item', 'flex', 'items-center', entry.trigger?.option.className)}
+										className={clsx(
+											'flex items-center w-full border-0 bg-transparent text-left whitespace-nowrap font-normal data-[highlighted]:bg-surface-hover',
+											entry.trigger?.option.className,
+										)}
 										data-testid="dropdown-item"
 									/>
 								}
@@ -59,10 +61,10 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 								)}
 							</Menu.SubmenuTrigger>
 							<Menu.Portal>
-								<Menu.Positioner align="start" side="right" className={clsx('dropdown-picker-positioner', menuPositionerZClasses.menu)}>
+								<Menu.Positioner align="start" side="right" className={clsx('dropdown-picker-positioner', 'ui-menu-positioner')}>
 									<Menu.Popup
 										render={<ul />}
-										className={clsx('dropdown-submenu', 'dropdown-picker-menu', menuSurfaceClasses.menu)}
+										className={clsx('dropdown-submenu', 'dropdown-picker-menu', 'ui-menu')}
 										data-testid="dropdown-submenu">
 										<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
 									</Menu.Popup>

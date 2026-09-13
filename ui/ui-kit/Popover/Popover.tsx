@@ -1,6 +1,5 @@
 import { Popover as BasePopover } from '@base-ui/react/popover';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
-import { TOOLTIP_SURFACE } from '@ui-kit/Tooltip/classes';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
@@ -69,13 +68,7 @@ export const Popover = ({
 			<BasePopover.Portal className="contents" data-testid="sim-popover-portal" container={container ?? portalContainer ?? undefined}>
 				<BasePopover.Positioner data-testid="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
 					<BasePopover.Popup
-						className={clsx(
-							maxWidth ?? 'max-w-(--available-width)',
-							'max-h-(--available-height) overflow-y-auto',
-							TOOLTIP_SURFACE,
-							'px-2 py-2 text-left opacity-100 fade-in-out motion-reduce:transition-none',
-							className,
-						)}
+						className={clsx(maxWidth ?? 'max-w-(--available-width)', 'ui-popover', className)}
 						data-testid={testId ?? 'sim-popover-popup'}
 						initialFocus={initialFocus}>
 						{children}

@@ -2,7 +2,20 @@ import { Menu as BaseMenu } from '@base-ui/react/menu';
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 
-import { menuPositionerZClasses, menuSurfaceClasses, menuWidthClasses } from './classes';
+const POSITIONER_Z_CLASSES = {
+	menu: 'ui-menu-positioner',
+	plain: 'ui-menu-positioner-plain',
+} as const;
+
+const SURFACE_CLASSES = {
+	menu: 'ui-menu',
+	plain: 'ui-menu-plain',
+} as const;
+
+const WIDTH_CLASSES = {
+	content: '',
+	anchor: 'ui-menu-anchor-width',
+} as const;
 
 export interface MenuProps {
 	trigger: ReactNode;
@@ -60,9 +73,9 @@ export const Menu = ({
 				sideOffset={sideOffset}
 				collisionPadding={collisionPadding}
 				positionMethod={positionMethod}
-				className={clsx(menuPositionerZClasses[surface], positionerClassName)}
+				className={clsx(POSITIONER_Z_CLASSES[surface], positionerClassName)}
 				{...positionerProps}>
-				<BaseMenu.Popup className={clsx(menuSurfaceClasses[surface], menuWidthClasses[width], className)} {...popupProps}>
+				<BaseMenu.Popup className={clsx(SURFACE_CLASSES[surface], WIDTH_CLASSES[width], className)} {...popupProps}>
 					{children}
 				</BaseMenu.Popup>
 			</BaseMenu.Positioner>

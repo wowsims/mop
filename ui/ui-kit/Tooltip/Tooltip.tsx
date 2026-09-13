@@ -4,8 +4,6 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 import { type ITooltip, Tooltip as ReactTooltip, type TooltipRefProps } from 'react-tooltip';
 
-import { TOOLTIP_SURFACE } from './classes';
-
 export type TooltipPlace = 'top' | 'right' | 'bottom' | 'left';
 
 const DEFAULT_MAX_WIDTH = 'max-w-tooltip max-xl:max-w-tooltip-lg max-md:max-w-tooltip-sm';
@@ -56,7 +54,8 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				afterHide={onOpenChange && (() => onOpenChange(false))}
 				className={clsx(
 					'sim-tooltip',
-					TOOLTIP_SURFACE,
+					'ui-tooltip',
+					'rounded-none bg-overlay text-white text-sm',
 					maxWidthClassName,
 					width,
 					align === 'start' && 'text-left',

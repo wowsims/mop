@@ -2,7 +2,10 @@ import { Menu as BaseMenu } from '@base-ui/react/menu';
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 
-import { menuItemBaseClasses, menuItemLayoutClasses } from './classes';
+const LAYOUT_CLASSES = {
+	block: '',
+	row: 'ui-menu-item-row',
+} as const;
 
 export interface MenuItemProps {
 	layout: 'block' | 'row';
@@ -15,12 +18,7 @@ export interface MenuItemProps {
 }
 
 export const MenuItem = ({ layout, disabled, onClick, render, className, children, ...rest }: MenuItemProps) => (
-	<BaseMenu.Item
-		render={render}
-		disabled={disabled}
-		onClick={onClick}
-		className={clsx(menuItemBaseClasses, menuItemLayoutClasses[layout], className)}
-		{...rest}>
+	<BaseMenu.Item render={render} disabled={disabled} onClick={onClick} className={clsx('ui-menu-item', LAYOUT_CLASSES[layout], className)} {...rest}>
 		{children}
 	</BaseMenu.Item>
 );
