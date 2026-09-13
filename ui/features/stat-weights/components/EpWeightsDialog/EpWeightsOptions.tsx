@@ -14,8 +14,8 @@ const STATS_TYPES: StatsType[] = [StatsType.Ep, StatsType.Weight];
 
 /** Both values are UI-local and read back off `options`, which the dialog owns because this body unmounts on close: `useInput` re-reads its source synchronously on its own write, which is before a `useState` has committed. */
 export const EpWeightsOptions = ({ options, onStatsTypeChange, onShowAllStatsChange }: EpWeightsOptionsProps) => (
-	<div className="ep-weights-options row">
-		<div className="col col-sm-3">
+	<div className="flex flex-wrap -mx-3 mb-3">
+		<div className="w-full px-3 sm:w-1/4">
 			<EnumPicker
 				modObject={options}
 				ariaLabel={i18n.t('sidebar.buttons.stat_weights.modal.stats_type')}
@@ -34,7 +34,7 @@ export const EpWeightsOptions = ({ options, onStatsTypeChange, onShowAllStatsCha
 				}}
 			/>
 		</div>
-		<div className="show-all-stats-container col col-sm-3">
+		<div className="w-full px-3 sm:w-1/4">
 			<BooleanPicker
 				modObject={options}
 				config={{

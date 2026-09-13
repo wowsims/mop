@@ -19,12 +19,25 @@ export interface StatWeightRowProps {
 	player: Player<any>;
 	epReferenceStat: Stat;
 	includable: boolean;
+	showThreatMetrics: boolean;
 }
 
-export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, settings, player, epReferenceStat, includable }: StatWeightRowProps) => {
+export const StatWeightRow = ({
+	stat,
+	result,
+	iterations,
+	epRatios,
+	epWeights,
+	settings,
+	player,
+	epReferenceStat,
+	includable,
+	showThreatMetrics,
+}: StatWeightRowProps) => {
 	const rowResult = settings.isUnitStatExcludedFromCalc(stat) ? null : result;
 	const epDelta = scaledEpValue(stat, epRatios, rowResult) - epWeights.getUnitStat(stat);
 	const fullName = stat.getFullName(player.getClass());
+	const cellClassName = showThreatMetrics ? 'ui-ep-weights-compact-table-cell' : 'ui-ep-weights-table-cell';
 	const metrics = [
 		{ statWeights: rowResult?.dps, metricClass: 'damage-metrics' },
 		{ statWeights: rowResult?.hps, metricClass: 'healing-metrics' },
@@ -35,9 +48,9 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 	];
 
 	return (
-		<tr>
-			<td>{fullName}</td>
-			<td className="swcalc-include-toggle">
+		<tr className="odd:bg-(--table-row-odd-bg) even:bg-(--table-row-even-bg)">
+			<td className={cellClassName}>{fullName}</td>
+			<td className={`swcalc-include-toggle ${cellClassName}`}>
 				{includable && (
 					<BooleanPicker
 						modObject={settings}
@@ -47,6 +60,7 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 							setValue: (subject, newValue) => subject.setStatExcluded(stat, !newValue),
 							storeField: 'statWeights:settings',
 							enableWhen: () => !stat.isStat() || epReferenceStat !== stat.getStat(),
+							extraClassNames: ['mb-0'],
 						}}
 					/>
 				)}
@@ -60,9 +74,10 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 					iterations={iterations}
 					epRatio={epRatios[index]}
 					epDelta={epDelta}
+					cellClassName={cellClassName}
 				/>
 			))}
-			<td className="current-ep">
+			<td className={`current-ep ${cellClassName}`}>
 				<NumberPicker
 					modObject={player}
 					config={{
@@ -71,7 +86,9 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 						storeField: 'epWeights',
 						getValue: subject => subject.getEpWeights().getUnitStat(stat),
 						setValue: (subject, newValue) => subject.setEpWeights(subject.getEpWeights().withUnitStat(stat, newValue)),
+						extraClassNames: ['mb-0'],
 					}}
+					inputClassName={showThreatMetrics ? 'ui-ep-weights-compact-input' : undefined}
 				/>
 			</td>
 		</tr>

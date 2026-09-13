@@ -173,7 +173,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 				)
 			}>
 			<div className="flex flex-col lg:flex-row lg:items-start gap-4">
-				<div className="ep-weights-content order-1 lg:order-0">
+				<div className="w-full order-1 lg:order-0">
 					<EpWeightsOptions options={options.current} onStatsTypeChange={setStatsType} onShowAllStatsChange={setShowAllStats} />
 					<EpReferenceOptions epStats={epStats} epReferenceStat={epReferenceStat} />
 					<p>
@@ -194,9 +194,10 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						epStatSet={epStatSet}
 						epReferenceStat={epReferenceStat}
 						onComputeEp={onComputeEp}
+						showThreatMetrics={showThreatMetrics}
 					/>
 				</div>
-				<div className="ep-weights-sidebar lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
+				<div className="ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>

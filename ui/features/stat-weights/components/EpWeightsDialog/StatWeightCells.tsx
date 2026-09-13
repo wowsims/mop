@@ -12,18 +12,23 @@ export interface StatWeightCellsProps {
 	iterations: number;
 	epRatio: number;
 	epDelta: number;
+	cellClassName: string;
 }
 
-const NotApplicable = () => <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
+const NotApplicable = () => (
+	<span className="results-avg notapplicable pr-[25px] font-bold">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>
+);
 
-export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, epRatio, epDelta }: StatWeightCellsProps) => {
+export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, epRatio, epDelta, cellClassName }: StatWeightCellsProps) => {
 	const unused = !!statWeights && epRatio === 0;
 	const rounded = epDelta.toFixed(2);
 	const delta = !statWeights || unused || rounded === '0.00' ? undefined : epDelta > 0 ? 'positive' : 'negative';
 
 	return (
 		<>
-			<td className={clsx('stdev-cell', 'type-weight', unused && 'unused-ep', metricClass)} data-unused={unused ? '' : undefined}>
+			<td
+				className={clsx('stdev-cell type-weight text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500', metricClass)}
+				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
 						value={stat.getProtoValue(statWeights.weights!)}
@@ -34,7 +39,9 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 					<NotApplicable />
 				)}
 			</td>
-			<td className={clsx('stdev-cell', 'type-ep', unused && 'unused-ep', metricClass)} data-unused={unused ? '' : undefined}>
+			<td
+				className={clsx('stdev-cell type-ep text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500', metricClass)}
+				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
 						value={stat.getProtoValue(statWeights.epValues!)}

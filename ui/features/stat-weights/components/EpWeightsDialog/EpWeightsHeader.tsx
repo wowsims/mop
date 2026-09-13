@@ -10,18 +10,37 @@ import { EP_TOOLTIP_ID } from './utils';
 
 export interface EpWeightsHeaderProps {
 	columns: EpColumn[];
+	showThreatMetrics: boolean;
 }
 
-export const EpWeightsHeader = ({ columns }: EpWeightsHeaderProps) => (
+export const EpWeightsHeader = ({ columns, showThreatMetrics }: EpWeightsHeaderProps) => (
 	<tr>
-		<th>{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.stat')}</th>
-		<th>{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update')}</th>
+		<th className={clsx('ui-ep-weights-table-header-cell', showThreatMetrics && 'lg:max-xl:pr-0')}>
+			{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.stat')}
+		</th>
+		<th className={clsx('ui-ep-weights-table-header-cell', showThreatMetrics && 'lg:max-xl:pr-0')}>
+			{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update')}
+		</th>
 		{columns.map(column => {
 			const isAction = column.type === 'action';
 			return (
-				<th key={column.id} className={clsx(column.metric && metricsClassName(column.metric), isAction ? 'text-center' : `type-${column.type}`)}>
+				<th
+					key={column.id}
+					className={clsx(
+						'ui-ep-weights-table-header-cell',
+						showThreatMetrics && 'lg:max-xl:pr-0',
+						column.metric && metricsClassName(column.metric),
+						isAction
+							? 'text-center'
+							: [
+									`type-${column.type}`,
+									'text-right',
+									column.type === 'weight' ? 'in-data-[stats-type=ep]:hidden' : 'in-data-[stats-type=weight]:hidden',
+									showThreatMetrics && 'max-lg:text-center',
+								],
+					)}>
 					<span {...tooltipAnchorProps(EP_TOOLTIP_ID, column.labelTooltip)}>{column.label}</span>
-					<Button variant="unstyled" className="col-action" onClick={column.onCopy} {...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
+					<Button variant="unstyled" className="col-action ml-1" onClick={column.onCopy} {...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
 						<Icon name={isAction ? 'arrows-rotate' : 'copy'} />
 					</Button>
 				</th>

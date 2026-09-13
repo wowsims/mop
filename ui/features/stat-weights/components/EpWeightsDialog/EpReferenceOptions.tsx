@@ -56,9 +56,9 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 	const values = useMemo(() => epStats.map(stat => ({ name: statName(stat), value: stat })), [epStats]);
 
 	return (
-		<div className="ep-reference-options row">
+		<div className="flex flex-wrap -mx-3 mb-3 [&_.form-label]:font-bold">
 			{references.map(reference => (
-				<div key={reference.id} className={clsx('col col-sm-4', metricsClassName(reference.metric))}>
+				<div key={reference.id} className={clsx('w-full px-3 sm:w-1/3', metricsClassName(reference.metric))}>
 					<EnumPicker
 						modObject={player}
 						config={{
@@ -73,7 +73,7 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 					/>
 				</div>
 			))}
-			<p>{i18n.t('sidebar.buttons.stat_weights.modal.reference_description')}</p>
+			<p className="mt-3">{i18n.t('sidebar.buttons.stat_weights.modal.reference_description')}</p>
 		</div>
 	);
 };
