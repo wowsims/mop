@@ -14,11 +14,7 @@ func (holy *HolyPaladin) registerHotfixPassive() {
 	// https://wago.tools/db2/SpellEffect?build=5.5.0.61496&filter%5BSpellID%5D=137029&page=1
 	baseSpirit := holy.GetBaseStats()[stats.Spirit]
 
-	core.MakePermanent(holy.RegisterAura(core.Aura{
-		Label:      "Hotfix Passive" + holy.Label,
-		ActionID:   core.ActionID{SpellID: 137029},
-		BuildPhase: core.CharacterBuildPhaseBase, // see registerHolyInsight
-	})).AttachStatDependency(
+	holy.NewSpecPassiveAura("Hotfix Passive", 137029).AttachStatDependency(
 		holy.NewDynamicRatingFromStatDependency(stats.Spirit, stats.HitRating, 0.5, baseSpirit),
 	).AttachStatDependency(
 		holy.NewDynamicRatingFromStatDependency(stats.Spirit, stats.ExpertiseRating, 0.5, baseSpirit),

@@ -61,35 +61,17 @@ func (resto *RestorationDruid) ApplyTalents() {
 
 // Stat-affecting Restoration passives. Healing spells are not implemented;
 // this spec is a gear planner only.
-//
-// Spec passives are always on. They are registered from the constructor
-// with the Base build phase, like the Mistweaver stance, so every measured
-// stat phase includes them and they stay active in the dependency manager
-// the reforge optimizer receives (ComputeStatsAndDeps re-applies Base, Gear
-// and Buffs only; anything registered from Initialize is measured by none).
 func (resto *RestorationDruid) registerPassives() {
 	// Natural Insight (112857): increases mana pool by 400%.
-	core.MakePermanent(resto.RegisterAura(core.Aura{
-		Label:      "Natural Insight" + resto.Label,
-		ActionID:   core.ActionID{SpellID: 112857},
-		BuildPhase: core.CharacterBuildPhaseBase,
-	})).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
+	resto.NewSpecPassiveAura("Natural Insight", 112857).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
 
 	// Meditation (85101): 50% of mana regeneration from Spirit continues in combat.
-	core.MakePermanent(resto.RegisterAura(core.Aura{
-		Label:      "Meditation" + resto.Label,
-		ActionID:   core.ActionID{SpellID: 85101},
-		BuildPhase: core.CharacterBuildPhaseBase,
-	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
+	resto.NewSpecPassiveAura("Meditation", 85101).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
 
 	// Restoration Hotfix Passive (137012): mana regeneration from Spirit in
 	// combat increased by 5%, so Meditation keeps 55% instead of 50%.
 	// https://www.wowhead.com/mop-classic/spell=137012/hotfix-passive
-	core.MakePermanent(resto.RegisterAura(core.Aura{
-		Label:      "Hotfix Passive" + resto.Label,
-		ActionID:   core.ActionID{SpellID: 137012},
-		BuildPhase: core.CharacterBuildPhaseBase,
-	})).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.05)
+	resto.NewSpecPassiveAura("Hotfix Passive", 137012).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.05)
 }
 
 func (resto *RestorationDruid) Reset(sim *core.Simulation) {
