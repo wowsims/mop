@@ -62,7 +62,8 @@ export const OtherDefaults = {
 };
 
 // HoT tick breakpoints as total spell haste percent (raid buff included):
-// (ticks - 0.5) / baseTicks - 1. Rejuvenation 12s/3s, Wild Growth 7s/1s, Regrowth 6s/2s.
+// (ticks - 0.5) / baseTicks - 1. Rejuvenation 12s/3s, Wild Growth 7s/1s. Regrowth has no
+// breakpoints: the default Glyph of Regrowth removes its HoT.
 export const QE_HASTE_EP_PAST_BREAKPOINT = 0.7;
 
 export const RESTORATION_BREAKPOINTS: UnitStatPresets[] = [
@@ -71,7 +72,6 @@ export const RESTORATION_BREAKPOINTS: UnitStatPresets[] = [
 		presets: new Map([
 			['8-tick - WG', 7.14286],
 			['5-tick - Rejuv', 12.5],
-			['4-tick - Regrowth', 16.66667],
 			['9-tick - WG', 21.42858],
 			['10-tick - WG', 35.71429],
 			['6-tick - Rejuv', 37.5],

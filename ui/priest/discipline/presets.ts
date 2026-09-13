@@ -14,6 +14,9 @@ export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
 // Stat weights from QE Live's MoP Classic model, spell power = 1:
 // https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Priest/DisciplinePriestClassic.js
+// QE Live weights haste at 0 for Discipline and has no haste breakpoint for it either, so unlike
+// Holy there is no haste soft cap in sim.ts and Suggest Reforges moves every point of haste into
+// the other secondaries.
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'QE Live',
 	Stats.fromMap({
