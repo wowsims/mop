@@ -8,6 +8,7 @@
 @import '../features/results/components/MetricsTable/MetricsTable.apply.css';
 @import '../features/character-stats/components/CharacterStats/CharacterStats.apply.css';
 
+@import '../features/bulk/components/BulkPickerGroups/BulkItemCell.css';
 @import '../ui-kit/ItemCell/ItemCell.css';
 @import '../features/gear/components/FiltersMenu/FiltersMenu.css';
 @import '../features/gear/components/GearChangeIcon/GearChangeIcon.css';

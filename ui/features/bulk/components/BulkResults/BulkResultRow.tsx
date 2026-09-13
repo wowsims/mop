@@ -47,10 +47,10 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 	const originalEquipmentSpec = baseResult.gear.asSpec();
 
 	return (
-		<div className="bulk-sim-result-root">
-			<div className="results-sim">
-				<div className="results-sim-dps damage-metrics">
-					<span className="topline-result-avg">{formatToNumber(result.dpsMetrics.avg)}</span>
+		<div className="bulk-sim-result-root flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6">
+			<div className="results-sim flex-[3]">
+				<div className="results-sim-dps damage-metrics grid grid-cols-[3fr_2fr] text-left [line-height:1] gap-2">
+					<span className="topline-result-avg mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
 					{plusMinusDps > 0 && (
 						<>
 							<span className="text-muted small" {...tooltipAnchorProps(marginTooltipId)}>
@@ -59,7 +59,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 							<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
 						</>
 					)}
-					<div className="results-reference">
+					<div className="results-reference mb-0 flex items-end">
 						{isBaseResult ? (
 							<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
 						) : (
@@ -73,7 +73,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					</div>
 				</div>
 			</div>
-			<div className="bulk-gear-combo">
+			<div className="bulk-gear-combo flex flex-wrap gap-1 flex-[5]">
 				{!isBaseResult &&
 					resultAsSpec.items.map((spec, idx) => {
 						const swappableItemSlotPair = getSwappableItemSlotPair(idx, canDualWield);
@@ -87,7 +87,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 						// 3. New - The item appearing at all already says the slot changed.
 						if (itemChanged && spec.id !== 0 && spec.id === originalEquipmentSpec.items[idx]?.id) {
 							return (
-								<div key={idx} className="bulk-result-item">
+								<div key={idx} className="bulk-result-item ui-bulk-result-item">
 									<GearChangeIcon
 										slot={idx}
 										item={host.sim.db.lookupItemSpec(spec) ?? undefined}
@@ -100,7 +100,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 						return (
 							<ItemDetailCell
 								key={idx}
-								className="bulk-result-item"
+								className="bulk-result-item ui-bulk-result-item ui-bulk-item-cell p-0 mb-0 [&_.item-picker-labels-container]:hidden"
 								slot={idx}
 								item={itemChanged && spec.id !== 0 ? host.sim.db.lookupItemSpec(spec) : null}
 								nameDescriptionFlush

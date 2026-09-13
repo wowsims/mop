@@ -1,5 +1,3 @@
-import './BulkResults.scss';
-
 import i18n from '@i18n/config';
 
 import { useBulkState } from '../../hooks/useBulkState';
@@ -19,7 +17,9 @@ export const BulkResults = () => {
 		<>
 			{results.chains.map((chain, chainIdx) =>
 				chain.length > 1 ? (
-					<div key={chainIdx} className="bulk-results-tie-group">
+					<div
+						key={chainIdx}
+						className="bulk-results-tie-group flex flex-col border border-border border-l-[3px] border-l-warning rounded-md py-2 px-4 mb-6">
 						<span className="mb-6">{i18n.t('bulk_tab.results.tied_group')}</span>
 						{chain.map((result, idx) => (
 							<BulkResultRow key={idx} result={result} baseResult={results.originalGearResults} iterations={iterations} />

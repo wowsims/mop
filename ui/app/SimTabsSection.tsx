@@ -47,7 +47,7 @@ export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
 			</div>
 		</SimTabDef>
 		<SimTabDef id="bulk-tab" title={i18n.t('bulk_tab.title')} badge={i18n.t('bulk_tab.title_badge')}>
-			<SimTabPane id="bulk-tab">
+			<SimTabPane id="bulk-tab" className="p-0">
 				<BulkTabBody />
 			</SimTabPane>
 		</SimTabDef>

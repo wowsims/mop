@@ -46,7 +46,7 @@ export const BulkTabBody = () => {
 				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
 					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
 					<div className="tab-content">
-						<TabPanel value="bulkSetupTab">
+						<TabPanel value="bulkSetupTab" className="gap-6 [&.active]:grid">
 							<p className="mb-0">
 								<LocaleHtml html={i18n.t('bulk_tab.description')} />
 							</p>
@@ -60,7 +60,7 @@ export const BulkTabBody = () => {
 									</p>
 								)}
 							</div>
-							<div className="bulk-gear-actions">
+							<div className="bulk-gear-actions flex gap-3 [grid-auto-flow:column]">
 								<Button variant="secondary" onClick={() => setImportOpen(true)}>
 									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_bags')}
 								</Button>

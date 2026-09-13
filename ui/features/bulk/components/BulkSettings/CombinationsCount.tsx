@@ -19,8 +19,8 @@ export const CombinationsCount = () => {
 
 	if (pending) {
 		return (
-			<div className="bulk-combinations-count h4">
-				<Spinner />
+			<div className="bulk-combinations-count h4 mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap">
+				<Spinner size="sm" />
 			</div>
 		);
 	}
@@ -28,19 +28,19 @@ export const CombinationsCount = () => {
 	const iterationsLimit = bulkIterationsLimit(sim.isNative);
 	const showWarning = iterations > iterationsLimit;
 	return (
-		<div className="bulk-combinations-count h4">
+		<div className="bulk-combinations-count h4 mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap">
 			<span className={clsx(showWarning && 'text-danger')}>
 				{combinations === 1
 					? i18n.t('bulk_tab.settings.combination_singular')
 					: i18n.t('bulk_tab.settings.combinations_count', { amount: formatToNumber(combinations) })}
 				<br />
-				<small>
+				<small className="text-base">
 					{formatToNumber(iterations)} {i18n.t('bulk_tab.settings.iterations')}
 				</small>
 			</span>
 			{showWarning && (
 				<>
-					<button type="button" className="warning link-warning" {...tooltipAnchorProps(tooltipId)}>
+					<button type="button" className="warning link-warning xl:max-xxl:order-[-1]" {...tooltipAnchorProps(tooltipId)}>
 						<Icon name="exclamation-triangle" size="2x" />
 					</button>
 					<Tooltip id={tooltipId} place="left" content={i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(iterationsLimit) })} />

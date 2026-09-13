@@ -67,20 +67,22 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				'bulk-item-picker',
 				state.isFrozen && 'bulk-item-picker-frozen',
 				!state.isFrozen && !state.isEditable && 'bulk-item-picker-equipped',
+				'ui-bulk-item-cell p-2 mb-0',
+				state.isFrozen ? '[border:3px_solid_red]' : !state.isEditable ? 'border border-brand' : 'border border-border',
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
 				if (!state.isEditable) return;
 				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
-				<div className="item-picker-actions-container">
+				<div className="item-picker-actions-container ml-2 gap-1 grid [grid-auto-flow:column] items-start">
 					{index >= 0 && state.isEditable && (
 						<>
 							<Button
 								iconOnly
 								aria-label={i18n.t('bulk_tab.picker.remove_tooltip')}
 								variant="link-danger"
-								className="item-picker-actions-btn"
+								className="item-picker-actions-btn leading-none"
 								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />

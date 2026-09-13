@@ -18,7 +18,7 @@ export const BulkItemPickerGroup = ({ bulkSlot, entries }: BulkItemPickerGroupPr
 	return (
 		<ContentBlock
 			className={['bulk-item-picker-group-root', `gear-group-${slotKey.replace(/_/g, '-')}`]}
-			config={{ header: { title: translateBulkSlotName(bulkSlot) } }}
+			config={{ header: { title: translateBulkSlotName(bulkSlot), className: 'border-b-0 mb-0 pb-0' }, bodyClassName: 'gap-3' }}
 			flush>
 			{entries.length ? (
 				entries.map(entry => <BulkItemPicker key={entry.index} bulkSlot={bulkSlot} index={entry.index} item={entry.item} />)

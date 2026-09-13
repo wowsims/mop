@@ -24,7 +24,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 	return (
 		<li>
 			<a
-				className="dropdown-item bulk-item-search-item"
+				className="ui-bulk-item-search-item text-left [text-decoration:none] [clear:both] font-normal text-white rounded-none bg-transparent hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-raised"
 				data-item-id={item.id}
 				href={href || undefined}
 				target="_blank"
@@ -33,9 +33,9 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					event.preventDefault();
 					onAdd();
 				}}>
-				<div className="bulk-item-search-item-icon-wrapper">
+				<div className="bulk-item-search-item-icon-wrapper flex-shrink-0 size-10 border border-border">
 					<span className="item-picker-ilvl ui-item-picker-ilvl">{baseIlvl(item)}</span>
-					<WowheadIcon as="div" className="bulk-item-search-item-icon" iconUrl={iconUrl} />
+					<WowheadIcon as="div" className="bulk-item-search-item-icon size-full" iconUrl={iconUrl} />
 				</div>
 				<div className="flex flex-col gap-1 pl-2">
 					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">

@@ -1,5 +1,3 @@
-import './BulkItemSearch.scss';
-
 import { ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
@@ -9,7 +7,6 @@ import { ContentBlock } from '@ui-kit/ContentBlock';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
 import { SearchBar } from '@ui-kit/SearchBar';
-import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addBulkItem } from '../../model/items';
@@ -67,34 +64,39 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 	}, []);
 
 	return (
-		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title') } }} flush>
-			<div className="bulk-gear-search-container">
+		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
+			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-[1fr_1fr_2fr]">
 				<SearchBar
 					id="bulkGearSearch"
+					className="max-w-[25%]"
 					label={i18n.t('common.name')}
 					placeholder={i18n.t('common.search')}
 					value={query}
 					onChange={setQuery}
 					clearable
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
-					clearClassName="cancel-bulk-gear-search-btn">
-					<ul className={clsx('bulk-gear-search-results dropdown-menu no-hover', open && 'show')} data-open={open ? '' : undefined}>
+					clearClassName="cancel-bulk-gear-search-btn z-2 -ml-px py-1.5 px-3 flex items-center bg-surface border border-surface-border">
+					<ul
+						className="bulk-gear-search-results absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-md shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
+						data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (
 							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
 						))}
 						{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
-							<li className="bulk-item-search-item bulk-item-search-results-note">
+							<li className="ui-bulk-item-search-item bulk-item-search-results-note border-none col-span-full justify-center">
 								{i18n.t('bulk_tab.search.showing_results', { max: MAX_SEARCH_RESULTS, total: shown.matchCount })}
 							</li>
 						)}
 						{shown?.matchCount === 0 && (
-							<li className="bulk-item-search-item bulk-item-search-results-note">{i18n.t('bulk_tab.search.no_results')}</li>
+							<li className="ui-bulk-item-search-item bulk-item-search-results-note border-none col-span-full justify-center">
+								{i18n.t('bulk_tab.search.no_results')}
+							</li>
 						)}
 					</ul>
 				</SearchBar>
-				<div className="bulk-gear-search-ilvl-filters">
+				<div className="bulk-gear-search-ilvl-filters flex items-center [&_.number-picker-root]:mb-0">
 					<NumberPicker modObject={player} config={ilvlConfigs.min} />
-					<span className="ilvl-filters-separator">-</span>
+					<span className="ilvl-filters-separator mx-3 mt-3">-</span>
 					<NumberPicker modObject={player} config={ilvlConfigs.max} />
 				</div>
 			</div>
