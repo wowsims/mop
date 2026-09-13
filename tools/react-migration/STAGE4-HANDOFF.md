@@ -15,26 +15,46 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   C-U2.1a, `d73f3be88` C-U2.1b, `e8a06a13b` B-U1a · wave 2 `d0233d67e` C-U1.2, `12cee47fc` Chip,
   `0dc5a2f3e` IconButton, `542a321ac` WowheadIcon (first slice), `e1b0f40f4` FieldLabel/HelpText/
   TextArea + Spinner/Skeleton + the `--spacing-block → --spacing-stack` rename.
-- **Wave 3 running now (uncommitted):** **A-U-input part 1** (`_input.scss`, `_boolean_picker`,
-  `_enum_picker`, `_number_list_picker`, `_unit_picker` → utilities on PickerShell and the picker
-  roots; no tree change; `_consumes_picker.scss` does not exist — plan correction; `_settings_tab.scss`
-  stays with U5), **W2** (IconButton on the Dialog/Toast `Close` slots via `render`; `ItemCell.tsx` +
-  `SummaryTableRow.tsx` → `ui/ui-kit/` with re-exports from the gear `index.ts` files — only the two
-  model-free files move), **C-U3.1** (app-shell test-ids: `data-testid="sim-ui"`, SimTabs, SimApp,
-  SidebarActions, SettingsDialog, tab bodies; probes header-toolbar/sim-title/sidebar-*/sim-progress/
-  tabs-a11y/tabs-behaviour/mount-once/a11y REGIONS through test-ids; sole `.mjs` writer).
-- Next after wave 3: verifier → per-unit commits → **A-U-input part 2: BooleanPicker → Base UI
-  Checkbox** (own commit; a tree change, so verify everything except probe zero-diff, confirm the
-  probe diffs are confined to the checkbox subtrees, then **re-take the probe baseline** — copy `dist/`
-  to `/tmp/claude-1000/tailwind-baseline-dist` after that commit and record the SHA here) → **C-U2.2**
-  (drop picker/panel class hooks) → Phase 2: **A-U-shell + B-U3** (TabNav/TabPanel replacing
+- **Wave 3 landed:** `1a0b30dab` C-U3.1 (app-shell test-ids, probe rewrites through `q()`) ·
+  `14f7a684f` W2 (IconButton on the Dialog/Toast `Close` slots; `ItemCell`/`SummaryTableRow` →
+  `ui/ui-kit/` with re-exports) · `b03885473` A-U-input part 1 — **shipped small**: only the
+  uncontested picker rules converted (disabled filter, description block, flex-wrap, UnitIcon,
+  ListPicker `hidden`); the first attempt (all of `_input.scss` + four picker files as utilities,
+  label rules via named-group variants) produced 49 probe diff sections and was reverted under the
+  coordinator's rule: **a declaration converts only if nothing overrides it, per rule; never bridge
+  with `!important`; a contested property stays in SCSS until its overrider's unit converts both
+  sides** (list under "Deferred"). `_consumes_picker.scss` does not exist (plan correction);
+  `_settings_tab.scss` stays with U5.
+- Next: **A-U-input part 2: BooleanPicker → Base UI Checkbox** (own commit; a tree change, so
+  verify everything except probe zero-diff, confirm the probe diffs are confined to the
+  `boolean-picker-root` subtrees plus later siblings shifting by exactly the height delta, screenshot
+  pair of a settings tab, then **re-take the probe baseline to a NEW path**
+  `/tmp/claude-1000/tailwind-baseline-dist-2` — keep the old one — and record here which commit each
+  baseline was built from and which steps use which) → **C-U2.2** (drop only the class hooks with
+  zero SCSS readers, see "Deferred") → Phase 2: **A-U-shell + B-U3** (TabNav/TabPanel replacing
   `tab_pane_class.ts`, Menu/MenuItem, TabPanelColumns; `core/sim_ui/*`, `_sim_tab` + five tab files,
   `_content_block` + `flush`, `_sticky_toolbar`, `_sim_title_dropdown`; Bootstrap nav/transitions/
   dropdown die) → C-U3.2 → A-U-icon (before the two ladders) → A-U-list.
 
 ## Deferred between units (not user questions)
 
-- `ResultsFilter.tsx` `hidden` via `UnitPicker`'s `className` array → A-U-input part 1.
+- `ResultsFilter.tsx` `hidden` via `UnitPicker`'s `className` array → still open (A-U-input part 1
+  shipped small; take it with U8a).
+- **Picker SCSS left unconverted by A-U-input part 1** (rule: a declaration converts only if no
+  SCSS rule overrides it, checked per rule; never bridge with `!important`; the contested property
+  converts in the same commit as its overrider): root `display` → U5 (`_encounter_picker.scss:46,73`);
+  root `flex-direction`/`align-items`/`justify-content` → U5 (`_talents_picker.scss:10`), U6
+  (`_apl_rotation_picker.scss`, `_list_picker.scss`), U7 (`EpWeightsDialog.scss:62`); the md `gap`
+  → U6; every label rule incl. the inline/icon `overflow: unset !important` cancel → U6; inline
+  `input, select { width: 5rem }` → the `specs.css` step (`sims/mage_fire.scss:3`);
+  `.boolean-picker-root` max-xl block → the Checkbox commit; `.enum-picker-selector` → U7
+  (`_suggest_reforges_action.scss:83`); `.picker-group` → U5. `_input.scss`, `_boolean_picker.scss`,
+  `_enum_picker.scss` therefore still exist; `_input.scss` must stay imported AFTER `list_picker`
+  (`.input-root { align-items }` wins over `.list-picker-root` by source order).
+- C-U2.2 can drop only classes with zero SCSS readers now (`input-description`,
+  `number-list-picker-root`, `list-picker-item-actions`, `dropdown-picker-list`, `unit-picker-root`,
+  `unit-picker-item-icon`, `saved-data-set-name`, `pet-spec-picker-root`); the rest drop with the
+  unit that deletes their SCSS.
 - Feature wrappers `picker-group`/`icon-group` keep class locators until `PickerGroup` (U5); ui-kit
   classes outside the C-U2.1 contract keep class locators until C-U2.2.
 - `ItemListRow` gained a required `active` prop — keep.
@@ -58,16 +78,16 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 Count: **1** — landing page +10 KB shared chunk since A-S4 (full text under `## Parked for the
 user` in `tools/react-migration/TAILWIND-DIVERGENCE.md`; default taken: plan as written).
 
-## Latest verifier numbers (wave 2, tree at e1b0f40f4)
+## Latest verifier numbers (wave 3, tree at b03885473)
 
-type-check clean · vitest **1709 / 211** · lint:js **0 errors, 255 warnings** (ceiling 280) ·
+type-check clean · vitest **1709 / 211** · lint:js **0 errors, 251 warnings** (ceiling 280) ·
 lint:css clean · test:locales 8/8 · test:snapshots 34/34 (Phase-0 close; per phase, and per commit
 when `ui/sim/**` or `ui/features/*/model/**` changes) · vite build OK · tw-probe **193,572
 elements, zero diffs** · a11y.mjs clean (warrior/arms, mage/fire) · tabs-a11y PASS vs master
 (C-2 run).
-Bundles (files the built HTML links): spec `spec_entry-*.style.css` **206,317 B** (start 383,069) ·
+Bundles (files the built HTML links): spec `spec_entry-*.style.css` **205,856 B** (start 383,069) ·
 home `index-*.style.css` **99,248 B** (start 115,972) · shared Tailwind/theme chunk
-(`colors-*.style.css`) **53,681 B**. `dist/` is never cleaned — grep
+(`colors-*.style.css`) **53,960 B**. `dist/` is never cleaned — grep
 `bundle/[A-Za-z0-9_.-]+\.css` in `dist/mop/index.html` and `dist/mop/mage/frost/index.html`.
 
 ## Environment facts
