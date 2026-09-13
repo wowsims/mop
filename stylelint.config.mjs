@@ -37,4 +37,25 @@ export default {
 		'scss/dollar-variable-pattern': kebabCasePattern,
 		'scss/at-if-closing-brace-newline-after': 'always-last-in-chain',
 	},
+	overrides: [
+		{
+			files: ['**/*.css'],
+			customSyntax: 'postcss',
+			rules: {
+				'at-rule-no-unknown': [
+					true,
+					{
+						ignoreAtRules: ['theme', 'utility', 'apply', 'custom-variant', 'variant', 'source', 'reference'],
+					},
+				],
+				'scss/at-rule-no-unknown': null,
+				'function-no-unknown': [
+					true,
+					{
+						ignoreFunctions: ['--spacing', '--alpha', '--theme', 'theme'],
+					},
+				],
+			},
+		},
+	],
 };
