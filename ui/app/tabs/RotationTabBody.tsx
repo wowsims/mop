@@ -56,7 +56,7 @@ export const RotationTabBody = () => {
 
 	return (
 		<>
-			<TabPanelColumns.Root className="flex rotation-tab-auto" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay>
 				<TabPanelColumns.Left variant="stacked">
 					<div>
 						<RotationTypePicker />
@@ -68,7 +68,7 @@ export const RotationTabBody = () => {
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
 
-			<TabPanelColumns.Root className="flex rotation-tab-simple" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay>
 				{hasSimple && (
 					<>
 						<TabPanelColumns.Left className="tab-content" variant="stacked">
@@ -99,7 +99,7 @@ export const RotationTabBody = () => {
 
 			<TabPanelColumns.Root
 				as={Tabs.Root}
-				className="flex rotation-tab-apl"
+				className="rotation-tab rotation-tab-apl"
 				gap="apl"
 				fullWidth
 				externalDisplay

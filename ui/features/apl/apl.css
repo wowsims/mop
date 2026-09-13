@@ -1,3 +1,3 @@
 .ui-apl-editor-row {
-	@apply flex flex-row w-full m-0 gap-2;
+	@apply flex flex-col w-full m-0 gap-2;
 }
