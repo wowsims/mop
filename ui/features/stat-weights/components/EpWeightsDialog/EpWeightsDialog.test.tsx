@@ -324,7 +324,7 @@ describe('EpWeightsDialog', () => {
 			fireEvent.click(getByTestId('toggle-open'));
 		});
 
-		expect(table().className).toBe('results-ep-table w-full max-lg:pr-0 stats-type-weight');
+		expect(table().className).toBe('results-ep-table w-full stats-type-weight');
 		expect(select().value).toBe('1');
 		expect(showAll().checked).toBe(true);
 	});

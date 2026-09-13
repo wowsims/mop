@@ -191,6 +191,7 @@ export const ReforgeSettingsPanel = ({ model, options, onClose }: ReforgeSetting
 			<Button
 				variant="outline-primary"
 				className="mt-2"
+				data-testid="reforge-edit-weights"
 				onClick={() => {
 					openEpWeights();
 					onClose();

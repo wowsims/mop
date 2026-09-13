@@ -10,6 +10,6 @@
 	@apply max-lg:text-center max-lg:pl-0 max-lg:pr-[3px];
 }
 
-.ui-ep-weights-compact-table-cell {
-	@apply pt-2 pr-2 pb-2 pl-2 max-lg:pl-0;
+.ui-ep-weights-table-cell {
+	@apply pt-2 pr-2 pb-2 pl-2;
 }

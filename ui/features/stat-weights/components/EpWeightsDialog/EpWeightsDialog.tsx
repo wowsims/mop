@@ -196,6 +196,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						epReferenceStat={epReferenceStat}
 						onComputeEp={onComputeEp}
 						isTank={isTank}
+						showThreatMetrics={showThreatMetrics}
 					/>
 				</div>
 				<div className="ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">

@@ -6,6 +6,7 @@ import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
+import clsx from 'clsx';
 
 import { StatWeightCells } from './StatWeightCells';
 
@@ -20,13 +21,26 @@ export interface StatWeightRowProps {
 	epReferenceStat: Stat;
 	includable: boolean;
 	isTank: boolean;
+	showThreatMetrics: boolean;
 }
 
-export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, settings, player, epReferenceStat, includable, isTank }: StatWeightRowProps) => {
+export const StatWeightRow = ({
+	stat,
+	result,
+	iterations,
+	epRatios,
+	epWeights,
+	settings,
+	player,
+	epReferenceStat,
+	includable,
+	isTank,
+	showThreatMetrics,
+}: StatWeightRowProps) => {
 	const rowResult = settings.isUnitStatExcludedFromCalc(stat) ? null : result;
 	const epDelta = scaledEpValue(stat, epRatios, rowResult) - epWeights.getUnitStat(stat);
 	const fullName = stat.getFullName(player.getClass());
-	const cellClassName = 'ui-ep-weights-compact-table-cell';
+	const cellClassName = clsx('ui-ep-weights-table-cell', showThreatMetrics && 'max-lg:pl-0');
 	const metrics = [
 		{ statWeights: rowResult?.dps, metricClass: 'damage-metrics' },
 		{ statWeights: rowResult?.hps, metricClass: 'healing-metrics' },
@@ -80,7 +94,7 @@ export const StatWeightRow = ({ stat, result, iterations, epRatios, epWeights, s
 						setValue: (subject, newValue) => subject.setEpWeights(subject.getEpWeights().withUnitStat(stat, newValue)),
 						extraClassNames: ['mb-0'],
 					}}
-					inputClassName="ui-ep-weights-compact-input"
+					inputClassName={showThreatMetrics ? 'ui-ep-weights-compact-input' : undefined}
 				/>
 			</td>
 		</tr>

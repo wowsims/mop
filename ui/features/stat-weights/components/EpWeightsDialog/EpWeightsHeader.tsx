@@ -11,19 +11,27 @@ import { EP_TOOLTIP_ID } from './utils';
 export interface EpWeightsHeaderProps {
 	columns: EpColumn[];
 	isTank: boolean;
+	showThreatMetrics: boolean;
 }
 
-export const EpWeightsHeader = ({ columns, isTank }: EpWeightsHeaderProps) => (
+export const EpWeightsHeader = ({ columns, isTank, showThreatMetrics }: EpWeightsHeaderProps) => (
 	<tr>
-		<th className="ui-ep-weights-table-header-cell lg:max-xl:pr-0">{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.stat')}</th>
-		{!isTank && <th className="ui-ep-weights-table-header-cell lg:max-xl:pr-0">{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update')}</th>}
+		<th className={clsx('ui-ep-weights-table-header-cell', showThreatMetrics && 'lg:max-xl:pr-0')}>
+			{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.stat')}
+		</th>
+		{!isTank && (
+			<th className={clsx('ui-ep-weights-table-header-cell', showThreatMetrics && 'lg:max-xl:pr-0')}>
+				{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update')}
+			</th>
+		)}
 		{columns.map(column => {
 			const isAction = column.type === 'action';
 			return (
 				<th
 					key={column.id}
 					className={clsx(
-						'ui-ep-weights-table-header-cell lg:max-xl:pr-0',
+						'ui-ep-weights-table-header-cell',
+						showThreatMetrics && 'lg:max-xl:pr-0',
 						column.metric && metricsClassName(column.metric),
 						isAction
 							? 'text-center'
@@ -31,7 +39,7 @@ export const EpWeightsHeader = ({ columns, isTank }: EpWeightsHeaderProps) => (
 									`type-${column.type}`,
 									'text-right',
 									column.type === 'weight' ? 'in-data-[stats-type=ep]:hidden' : 'in-data-[stats-type=weight]:hidden',
-									'max-lg:text-center',
+									showThreatMetrics && 'max-lg:text-center',
 								],
 					)}>
 					<span {...tooltipAnchorProps(EP_TOOLTIP_ID, column.labelTooltip)}>{column.label}</span>
