@@ -82,14 +82,22 @@ home `index-*.style.css` **99,248 B** (start 115,972) · shared Tailwind/theme c
   `report.txt` under the scratchpad `tw/probe/` (the path the script prints). The probe's property
   string is `display|position|top|right|bottom|left|…` — read diffs by that order.
 - `tools/react-migration/` is tracked but matched by an ignore rule: stage with `git add -f`.
-- **No standing servers.** Per gate run: `npx vite build` → `nohup npx http-server dist -p 3404 -s`
-  + `nohup npx http-server /tmp/claude-1000/tailwind-baseline-dist -p 3406 -s` →
-  `REACT_PORT=3406 TW_PORT=3404 node tools/react-migration/tw-probe.mjs` → `kill -9` the PIDs
+- **No standing servers, and servers never hold the lock.** Per gate run:
+  `flock -o -w 3000 /tmp/claude-1000/e2e.lock npx vite build` → start the servers **outside any
+  lock, with the lock fd closed**: `setsid nohup npx http-server dist -p 3404 -s 3>&- < /dev/null
+  > /tmp/claude-1000/hs3404.log 2>&1 &` and the same for
+  `/tmp/claude-1000/tailwind-baseline-dist -p 3406` → confirm `ss -ltnp | grep -E ':340[46] '` and
+  that `fuser /tmp/claude-1000/e2e.lock` lists nothing → `flock -o -w 3000 /tmp/claude-1000/e2e.lock
+  env REACT_PORT=3406 TW_PORT=3404 node tools/react-migration/tw-probe.mjs` → `kill -9` the PIDs
   `ss -ltnp` shows (the npx wrapper PID does not stop the listener) → `ss -ltnp | grep -E
-  ':340[1-6] '` empty. Master (`/home/lutz/personal/wowsims-mop`, `npx vite build` there first) on
-  3401 only for `tabs-a11y.mjs`, `parity.mjs`, `panes-parity.mjs`. `a11y.mjs` reads `REACT_PORT`;
-  `tabs-a11y.mjs` reads `BASE_PORT`/`REACT_PORT`.
-- Every heavy command under `flock -o -w 3000 /tmp/claude-1000/e2e.lock`; one browser, one build.
+  ':340[1-6] '` empty. A server started from a shell that holds the lock inherits fd 3 and keeps the
+  lock after the command returns — the next `flock` then deadlocks against its own servers (this
+  happened once; the main session had to unblock it by hand). Master (`/home/lutz/personal/
+  wowsims-mop`, `npx vite build` there first) on 3401 only for `tabs-a11y.mjs`, `parity.mjs`,
+  `panes-parity.mjs`. `a11y.mjs` reads `REACT_PORT`; `tabs-a11y.mjs` reads `BASE_PORT`/`REACT_PORT`.
+- Only the build, vitest/snapshots, and probe/test runs go under `flock -o -w 3000
+  /tmp/claude-1000/e2e.lock` (`-o` so the locked command's children never inherit the fd); one
+  browser, one build.
 - Constraints: `RTK_DISABLED=1` on every command · `/usr/bin/grep` · graphify stale, never use ·
   never `npm install`/`npm ci` · never `git stash` · never touch fixtures/goldens/`ui/specs/**` ·
   never `rm -rf dist` · no comments added in `ui/` `.ts`/`.tsx`/`.css`, no pre-existing comment
