@@ -1,6 +1,8 @@
 import { Field } from '@base-ui/react/field';
+import { SELECT_CLASSES } from '@ui-kit/FormControl';
 import { useInput } from '@ui-kit/hooks/useInput';
 import { PickerShell } from '@ui-kit/PickerShell';
+import clsx from 'clsx';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
 import type { EnumPickerConfig } from './types';
@@ -29,7 +31,7 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel }: EnumPic
 				render={<select />}
 				ref={attachSelect}
 				id={config.id}
-				className="enum-picker-selector form-select"
+				className={clsx(SELECT_CLASSES, 'enum-picker-selector form-select')}
 				aria-label={ariaLabel}
 				disabled={disabled}
 				onChange={event => setValue(Number(event.currentTarget.value))}>

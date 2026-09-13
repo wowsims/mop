@@ -51,7 +51,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
 				<div className="input-root input-inline input-item-swap-container">
-					<FieldLabel as="span" className="form-label" id={labelId}>
+					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>
 					<Button
@@ -70,11 +70,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 					</div>
 				</div>
 			)}
-			{note && enabled && (
-				<HelpText as="p" className="form-text">
-					{note}
-				</HelpText>
-			)}
+			{note && enabled && <HelpText as="p">{note}</HelpText>}
 		</div>
 	);
 };

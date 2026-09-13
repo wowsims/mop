@@ -3,6 +3,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import { INPUT_CLASSES } from '@ui-kit/FormControl';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -130,10 +131,7 @@ describe('Importer', () => {
 	it('puts the description above the textarea, inside .import-description', () => {
 		renderImporter();
 		const body = rootElem.querySelector('[data-testid="sim-dialog-body"] > div')!;
-		expect(Array.from(body.children).map(el => el.className)).toEqual([
-			'import-description',
-			'block w-full px-3 py-1.5 text-ui leading-normal text-foreground bg-surface border border-surface-border importer-textarea form-control',
-		]);
+		expect(Array.from(body.children).map(el => el.className)).toEqual(['import-description', `${INPUT_CLASSES} importer-textarea form-control`]);
 		expect(body.querySelector('.import-description')!.textContent).toBe('how to');
 	});
 });

@@ -59,14 +59,14 @@ describe('ConsumeRow', () => {
 		expect(['consumes-row', 'input-inline', 'input-root'].every(name => element.classList.contains(name))).toBe(true);
 		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
-			'span.inline-block mb-1 text-ui font-normal form-label',
+			'span.inline-block mb-1 text-ui font-normal',
 			'div.picker-group icon-group consumes-row-inputs consumes-engi',
 		]);
 	});
 
 	it('names the row group with its caption', () => {
 		const element = row(new Options(), [configFor(() => true)]);
-		const caption = element.querySelector('span.form-label')!;
+		const caption = element.querySelector('span.inline-block')!;
 
 		expect(element.getAttribute('role')).toBe('group');
 		expect(element.getAttribute('aria-labelledby')).toBe(caption.id);

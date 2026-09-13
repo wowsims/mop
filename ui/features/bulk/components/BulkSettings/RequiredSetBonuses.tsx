@@ -25,7 +25,7 @@ export const RequiredSetBonuses = () => {
 			{!!setBonuses.length && <h6>{i18n.t('bulk_tab.settings.required_set_bonuses.label')}</h6>}
 			{setBonuses.map(setBonus => (
 				<div key={setBonus.setId} className="bulk-required-set-bonus flex flex-col gap-1">
-					<FieldLabel as="div" className="form-label">
+					<FieldLabel as="div">
 						{setBonus.setName} {i18n.t('bulk_tab.settings.required_set_bonuses.available_pieces', { count: setBonus.totalPieces })}
 					</FieldLabel>
 					{setBonus.totalPieces >= 2 && (

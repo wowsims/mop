@@ -111,7 +111,7 @@ describe('SettingsDialog', () => {
 	it('keeps the worker note mounted and hidden off firefox', () => {
 		mount(new FakeSim());
 
-		const note = container().querySelector('.form-text') as HTMLElement;
+		const note = container().querySelector('.mt-1') as HTMLElement;
 		expect(note.hidden).toBe(true);
 		expect(note.textContent).toBe('');
 	});

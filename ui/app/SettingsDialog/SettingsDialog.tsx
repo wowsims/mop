@@ -197,7 +197,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 						<div data-testid="fixed-rng-seed">
 							<NumberPicker modObject={sim} config={fixedRngSeedConfig} />
 						</div>
-						<HelpText as="div" className="form-text">
+						<HelpText as="div">
 							<span>{i18n.t('info.options.fixed_rng_seed.last_used')}</span>&nbsp;
 							<span data-testid="last-used-rng-seed">{lastUsedRngSeed}</span>
 						</HelpText>
@@ -219,7 +219,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 					<div data-testid="use-concurrent-workers-picker">
 						<EnumPicker modObject={sim} config={concurrencyConfig} />
 					</div>
-					<HelpText as="div" className="form-text" hidden={!firefox}>
+					<HelpText as="div" hidden={!firefox}>
 						{firefox ? FIREFOX_WORKER_NOTE : ''}
 					</HelpText>
 				</div>

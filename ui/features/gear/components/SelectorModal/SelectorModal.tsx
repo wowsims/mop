@@ -163,7 +163,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 							</Tabs.Panel>
 						))}
 				</div>
-				<HelpText as="div" className="flex items-center form-text">
+				<HelpText as="div" className="flex items-center">
 					<Icon name="circle-exclamation" size="xl" className="mr-2" />
 					<span>
 						{i18n.t('gear_tab.gear_picker.missing_gear_message.title')}

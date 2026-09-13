@@ -1,5 +1,6 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { SELECT_CLASSES } from '@ui-kit/FormControl';
 import { describe, expect, it } from 'vitest';
 
 import { EnumPicker } from './EnumPicker';
@@ -148,7 +149,7 @@ describe('EnumPicker', () => {
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'enum-picker-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SELECT']);
 		expect(root.querySelector('label')!.className).toBe('form-label');
-		expect(root.querySelector('select')!.className).toBe('enum-picker-selector form-select');
+		expect(root.querySelector('select')!.className).toBe(`${SELECT_CLASSES} enum-picker-selector form-select`);
 	});
 
 	// InputConfig types both of these as string | Element. The reforge panel was the last caller to

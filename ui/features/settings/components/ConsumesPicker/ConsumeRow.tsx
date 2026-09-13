@@ -29,7 +29,7 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 
 	return (
 		<div className={clsx('consumes-row', 'input-root', 'input-inline')} role="group" aria-labelledby={labelId}>
-			<FieldLabel as="span" className="form-label" id={labelId}>
+			<FieldLabel as="span" id={labelId}>
 				{i18n.t(`settings_tab.consumables.${name}.title`)}
 			</FieldLabel>
 			{children}

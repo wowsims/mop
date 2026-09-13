@@ -1,5 +1,6 @@
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { INPUT_CLASSES } from '@ui-kit/FormControl';
 import { describe, expect, it } from 'vitest';
 
 import { NumberListPicker } from './NumberListPicker';
@@ -90,7 +91,7 @@ describe('NumberListPicker', () => {
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
 		expect(root.querySelector('label')!.className).toBe('form-label');
-		expect(input().className).toBe('number-list-picker-input form-control');
+		expect(input().className).toBe(`${INPUT_CLASSES} number-list-picker-input form-control`);
 		expect(input().type).toBe('text');
 	});
 
