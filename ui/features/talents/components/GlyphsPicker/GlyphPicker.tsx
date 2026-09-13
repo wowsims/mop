@@ -34,9 +34,12 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 					onOpen(field);
 				}}
 				{...wowheadProps}>
-				<img className="item-picker-icon size-12 border border-border" src={shown.iconUrl} />
-				<div className="item-picker-labels-container p-0 justify-center">
-					<span className="item-picker-name-container">{shown.name}</span>
+				<img
+					className="item-picker-icon relative inline-block cursor-pointer bg-no-repeat bg-cover bg-center size-12 border border-border"
+					src={shown.iconUrl}
+				/>
+				<div className="item-picker-labels-container flex flex-1 flex-col items-start p-0 justify-center">
+					<span className="item-picker-name-container text-white text-(length:--h6-font-size)">{shown.name}</span>
 				</div>
 			</a>
 		</PickerShell>
