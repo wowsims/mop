@@ -25,13 +25,26 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   with `!important`; a contested property stays in SCSS until its overrider's unit converts both
   sides** (list under "Deferred"). `_consumes_picker.scss` does not exist (plan correction);
   `_settings_tab.scss` stays with U5.
-- Next: **A-U-input part 2: BooleanPicker → Base UI Checkbox** (own commit; a tree change, so
-  verify everything except probe zero-diff, confirm the probe diffs are confined to the
-  `boolean-picker-root` subtrees plus later siblings shifting by exactly the height delta, screenshot
-  pair of a settings tab, then **re-take the probe baseline to a NEW path**
-  `/tmp/claude-1000/tailwind-baseline-dist-2` — keep the old one — and record here which commit each
-  baseline was built from and which steps use which) → **C-U2.2** (drop only the class hooks with
-  zero SCSS readers, see "Deferred") → Phase 2: **A-U-shell + B-U3** (TabNav/TabPanel replacing
+- **Phase 1 complete:** `d03b60798` A-U-input part 2 (BooleanPicker → Base UI `Checkbox`: a
+  `<span role="checkbox">` + hidden native input carrying the picker `id` + `<Icon name="check">`
+  indicator; CONFINE probe run 0 unconfined sections, no shifts) · `c30cdfb0d` C-U2.2 (six classes
+  dropped; `saved-data-set-name` stays — `Chip.tsx:55` styles it through an arbitrary variant, a
+  non-SCSS reader; `pet-spec-picker-root` never existed) · `44074d539` gate tooling (tw-probe
+  `CONFINE` mode, settings-tab clicks `label[for]`, apl-tab/log-runner readers through `q()`).
+  `test:snapshots` 34/34 at the close.
+- **Phase 2 next (orchestrator's partition, disjoint file sets):** wave A = **B-U3a**
+  `TabNav`/`TabPanel` (SimTabs, AplNavbar, DetailedResultsTabs, SelectorModal, BulkTabBody,
+  DetailedResultsPane; deletes `tab_pane_class.ts`, `SimTabs.scss`,
+  `_bootstrap_style_overrides.scss:198-228`; `SimShell.tsx:100-101` `.nav` → `flex flex-wrap`;
+  Bootstrap `nav`+`transitions` die) · **B-U3b** `Menu`/`MenuItem` (DropdownMenu/DropdownMenuItems,
+  ImportExportMenu + .scss, SimTitleDropdown + .scss + `_sim_title_dropdown.scss`, the two landing
+  menus, `DropdownPicker.scss`; Bootstrap `dropdown` dies; NOT IconEnumPicker/MultiIconPicker/
+  BulkItemSearch) — both must run the per-rule override check before converting any declaration;
+  then wave B = **A-U-shell** alone (`core/sim_ui/{_shared,_sidebar,_header,_main}`, `_sim_tab` + the
+  five tab files incl. `_rotation_tab.scss:28 @extend`, `_content_block` + `flush` prop,
+  `_sticky_toolbar`, `individual_sim_ui/_shared`; SimTabPane layout prop = the plan's
+  `TabPanelColumns`) → **C-U3.2** → A-U-icon → A-U-list. Phase 2 → 3 → merge `feature/ui-react`
+  `a215eead5` → 4 → 5 → 6; end only after Phase 6 is gated. Then Phase 2: **A-U-shell + B-U3** (TabNav/TabPanel replacing
   `tab_pane_class.ts`, Menu/MenuItem, TabPanelColumns; `core/sim_ui/*`, `_sim_tab` + five tab files,
   `_content_block` + `flush`, `_sticky_toolbar`, `_sim_title_dropdown`; Bootstrap nav/transitions/
   dropdown die) → C-U3.2 → A-U-icon (before the two ladders) → A-U-list.
@@ -78,23 +91,28 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 Count: **1** — landing page +10 KB shared chunk since A-S4 (full text under `## Parked for the
 user` in `tools/react-migration/TAILWIND-DIVERGENCE.md`; default taken: plan as written).
 
-## Latest verifier numbers (wave 3, tree at b03885473)
+## Latest verifier numbers (Phase 1 close, tree at 44074d539)
 
-type-check clean · vitest **1709 / 211** · lint:js **0 errors, 251 warnings** (ceiling 280) ·
-lint:css clean · test:locales 8/8 · test:snapshots 34/34 (Phase-0 close; per phase, and per commit
-when `ui/sim/**` or `ui/features/*/model/**` changes) · vite build OK · tw-probe **193,572
-elements, zero diffs** · a11y.mjs clean (warrior/arms, mage/fire) · tabs-a11y PASS vs master
-(C-2 run).
-Bundles (files the built HTML links): spec `spec_entry-*.style.css` **205,856 B** (start 383,069) ·
-home `index-*.style.css` **99,248 B** (start 115,972) · shared Tailwind/theme chunk
-(`colors-*.style.css`) **53,960 B**. `dist/` is never cleaned — grep
+type-check clean · vitest **1710 / 211** · lint:js **0 errors, 252 warnings** (ceiling 280) ·
+lint:css clean · test:locales 8/8 · test:snapshots **34/34** (Phase-1 close; per phase, and per
+commit when `ui/sim/**` or `ui/features/*/model/**` changes) · vite build OK · tw-probe CONFINE run
+**0 unconfined sections, no shifts** (counts arms 1823→1850, fire 1957→1966, protection 5382→5527
+for 25/7/75 checkbox roots; landing 390 identical) · a11y.mjs clean (warrior/arms, mage/fire) ·
+mount-once, tabs-behaviour PASS · settings-tab.mjs identical on both builds (warrior/protection).
+Bundles (files the built HTML links): spec `spec_entry-*.style.css` **205,960 B** (start 383,069) ·
+home `index-*.style.css` **99,352 B** (start 115,972) · shared Tailwind/theme chunk
+(`colors-*.style.css`) **54,033 B**. `dist/` is never cleaned — grep
 `bundle/[A-Za-z0-9_.-]+\.css` in `dist/mop/index.html` and `dist/mop/mage/frost/index.html`.
 
 ## Environment facts
 
-- Probe baseline: `/tmp/claude-1000/tailwind-baseline-dist` (a `dist/` copy at `ea0f92e69`; to be
-  re-taken after the first tree-changing commit, BooleanPicker → Checkbox). Never use the
-  `wowsims-mop-react` worktree as baseline. `tw-probe.mjs` normalises `color(srgb …)` to
+- **Two probe baselines.** `/tmp/claude-1000/tailwind-baseline-dist` = `dist/` at `ea0f92e69`,
+  used by every Phase 0–1 gate up to and including the Checkbox CONFINE run; never delete it.
+  `/tmp/claude-1000/tailwind-baseline-dist-2` = `dist/` built from the tree of `44074d539`
+  (Checkbox + C-U2.2 + tooling, the Phase-1 close verifier's build), **used from Phase 2 on** —
+  serve it on 3406 (`REACT_PORT=3406`). A tree-changing commit is proved with
+  `CONFINE='<selector>'` (see README) and re-takes the baseline to a new numbered directory,
+  recorded here. Never use the `wowsims-mop-react` worktree as baseline. `tw-probe.mjs` normalises `color(srgb …)` to
   `rgb()`/`rgba()` with a 1e-4 channel epsilon. Its stdout truncates when piped; read its own
   `report.txt` under the scratchpad `tw/probe/` (the path the script prints) and check its mtime —
   a stale report from the previous run looks like a pass. The probe's property string is
@@ -142,6 +160,16 @@ home `index-*.style.css` **99,248 B** (start 115,972) · shared Tailwind/theme c
 - Before U8b (Timeline): merge `feature/ui-react` (`a215eead5`) into `wt/tailwind` at the end of
   Phase 3, resolve toward this branch's Tailwind form keeping `feature/ui-react` behaviour, full
   gates, report the merge to `main` as its own message.
+- **Per-rule override check before any conversion** (the A-U-input lesson, ~3 h): for every
+  declaration about to become a utility, grep every SCSS selector outside `ui/specs/**` that sets
+  the same property on that element or its descendants (feature files override kit roots by
+  specificity), plus TSX arbitrary variants (`[&_.x]`); if any exists, leave the declaration in
+  SCSS and log the unit that converts both sides; never add `!important`, never bridge. Equal
+  specificity resolves by source order — moving an `@import` is itself a cascade change (the
+  `_input`/`_list_picker` `align-items` flip). Base UI `Checkbox.Root` is a `<span role="checkbox">`
+  and puts the `id` on its hidden native input (label `for` works; probes click the label).
+  Verifier briefs end with "kill servers and paste the empty `ss` output before reporting" and say
+  "foreground only, never background" — one verifier paused itself waiting on a backgrounded probe.
 - Measured facts a worker must not re-derive: Chrome computes `color-mix()` to `color(srgb …)` and
   `rgb(r g b / a)` to `rgba()`; Base UI treats explicit `container={null}` as "wait" — portal
   defaults are `container ?? ctx ?? undefined`; `host.rootElem` ≡ `SimShell.rootEl`;
