@@ -32,7 +32,7 @@ const READ_ROTATION = () => {
 		`spacers ${spacers.map(spacer => spacer.style.getPropertyValue('--vspacer-h')).join('/')}`,
 		`ruler ticks=${pane.querySelectorAll('.rotation-ruler-tick').length} labels=${ruler.map(label => label.textContent).join(',')}`,
 		...rows.map(row => {
-			const items = [...row.querySelectorAll('.rotation-row-track > .rotation-item')];
+			const items = [...row.querySelectorAll('.rotation-row-track > [data-item-index]')];
 			return [
 				`row ${row.dataset.rowKey}`,
 				cls(row),
@@ -119,7 +119,7 @@ const hoverText = async (page, hover, argument) => {
 const REACHABLE_ITEM = index => {
 	let seen = 0;
 	for (const row of document.querySelectorAll('.rotation-pane .rotation-row')) {
-		for (const item of row.querySelectorAll('.rotation-row-track > .rotation-item')) {
+		for (const item of row.querySelectorAll('.rotation-row-track > [data-item-index]')) {
 			const box = item.getBoundingClientRect();
 			if (box.width < 2 || box.right > window.innerWidth || box.bottom > window.innerHeight) continue;
 			const x = Math.round(box.left + box.width / 2);
@@ -174,7 +174,7 @@ const zoom = async (page, selector, times) => {
 	}
 	return page.evaluate(() => {
 		const pane = document.querySelector('.rotation-pane');
-		return `pps=${getComputedStyle(pane).getPropertyValue('--pps').trim()} density=${document.querySelector('.rotation-scroller').dataset.density} items=${pane.querySelectorAll('.rotation-item').length}`;
+		return `pps=${getComputedStyle(pane).getPropertyValue('--pps').trim()} density=${document.querySelector('.rotation-scroller').dataset.density} items=${pane.querySelectorAll('[data-item-index]').length}`;
 	});
 };
 
