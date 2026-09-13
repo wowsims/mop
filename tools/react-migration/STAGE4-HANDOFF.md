@@ -199,6 +199,31 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   the baseline build, measured, shows neither (a project rule neutralises it). Reproducing the source
   added a visible focus ring that was never there. For hover/focus/active/disabled/placeholder, have
   the verifier read the computed value on 3406 (baseline) and 3404 in the same state, and match 3406.
+- **User direction: shared style bundles are private to their component.** `INPUT_CLASSES`/`SELECT_CLASSES`
+  are not exported; `<Input>`/`<Select>` (Base UI Field; native `<select>`) and `<TextArea>` in
+  `ui/ui-kit/FormControl/` own them (unit `wt/tw-inputs`). Every later unit uses the components —
+  never imports a `*_CLASSES` constant. The three buttons-unit files that still use `INPUT_CLASSES`
+  (`LogSearchGroup`, `Importer`, `AplNameDialog`) move to `<Input>` right after buttons lands.
+- **Tailwind rules digest:** `/tmp/claude-1000/tw/TAILWIND-DOCS.md` (docs + 4.3.3 source, applied to this repo).
+- **Landed `ca7a28e63` inputs (Phase 3):** `<Input>` (Base UI Input) + `<Select>` (`Field.Control render=<select/>`)
+  in `@ui-kit/FormControl`; `INPUT_CLASSES`/`SELECT_CLASSES` module-private (only `Input`/`Select`/`TextArea`
+  import them). Verifier: probe 0 (197,373 elements), vitest 1731/1731, snapshots 34/34, a11y + tabs PASS,
+  state check equal. CSS: shared 68,366 B, home 98,973 B, spec entry 190,773 B.
+- **User token policy (2026-09-13).** `@theme` in `ui/styles/theme.css` is the Tailwind config and must be
+  complete: every colour, overlay, font size (a v4 `text-X` emits `line-height` only if a `--text-X--line-height`
+  companion exists — we define none, so plain `text-sm` is exact and `[length:…]` is never needed), shadow, z-index and spacing extension is a named token; the spec themes re-declare
+  tokens under `.sim-ui`. **TSX uses named utilities only** — no arbitrary colour/size values, no
+  `(--var)` for a value that should be a token. **Spacing = Tailwind's default scale** (`gap-3`,
+  `p-2`); named spacing only where a value is responsive (`--spacing-page`, `--spacing-section`) or
+  off the scale. A dedicated tokens unit sweeps the existing arbitrary values after buttons + inputs
+  land and before Phase 4 fans out. `IconButton` is folded into `Button` (`iconOnly`) — user-approved.
+- **Parked (user):** metrics tables use `text-[12px]` ×17 (fixed px). Default taken: a fixed `--text-metrics: 12px`
+  token (parity). Alternative: `text-xs` (0.75rem — equal at ≥1921px, 1.5px smaller below). Tokens unit brief:
+  `/tmp/claude-1000/tw/TOKENS-UNIT.md`; census traps (`.gap-3` shim, bare `rounded` no-op, three broken
+  `transition-(--x)`) in `/tmp/claude-1000/tw/TAILWIND-DOCS.md` "Repo traps".
+- **`-[var(--x)]` is never written (user).** Tailwind v4's `-(--x)` is the shorthand for `-[var(--x)]`
+  (`text-(length:--x)`, `w-(--x,60px)`). A `@theme` token gets its named utility instead; `var()` stays
+  only inside real `calc()`/`min()`/gradient expressions and `[prop:…]` arbitrary properties.
 - **`bg-black/50` is not `rgba(0,0,0,.5)`** to the probe (oklab `color-mix`); static alphas are
   literal `bg-[rgb(0_0_0/0.5)]`.
 
