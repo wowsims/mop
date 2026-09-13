@@ -157,6 +157,7 @@ describe('TalentTreePicker', () => {
 				'link-danger',
 				'talent-tree-reset',
 				'text-link-danger',
+				'-mr-(--btn-padding-x)',
 			].sort(),
 		);
 	});

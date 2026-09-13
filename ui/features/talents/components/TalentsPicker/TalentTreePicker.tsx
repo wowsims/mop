@@ -31,17 +31,17 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 	const rows = useMemo(() => buildTalentRows(config.talents), [config.talents]);
 
 	return (
-		<div className="talent-tree-picker-root">
-			<div className="talent-tree-header">
-				<img src={spec.getIcon('medium')} className="talent-tree-icon" />
-				<span className="talent-tree-title">{translatePlayerSpec(spec)}</span>
+		<div className="talent-tree-picker-root relative border border-border flex flex-col flex-1 not-first:-ml-px">
+			<div className="talent-tree-header p-3 flex items-center text-white bg-black text-base z-1">
+				<img src={spec.getIcon('medium')} className="talent-tree-icon size-8 mr-3 rounded-full" />
+				<span className="talent-tree-title mr-3 flex-1 font-bold whitespace-nowrap">{translatePlayerSpec(spec)}</span>
 				<Button
 					variant="unstyled"
 					className={clsx(
 						BASE.replace('leading-normal', 'leading-none'),
 						SIZE.default,
 						'border-transparent',
-						'talent-tree-reset link-danger text-link-danger',
+						'talent-tree-reset link-danger text-link-danger -mr-(--btn-padding-x)',
 					)}
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
@@ -49,11 +49,16 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				</Button>
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />
 			</div>
-			<div className="talent-tree-background" style={{ backgroundImage: `url('${config.backgroundUrl}')` }} />
-			<div className="talent-tree-main">
+			<div
+				className="talent-tree-background absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-[length:100%_100%] shadow-[inset_0_0_3.5rem_1rem_var(--color-black)] z-0"
+				style={{ backgroundImage: `url('${config.backgroundUrl}')` }}
+			/>
+			<div className="talent-tree-main my-(--spacing-stack) mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10">
 				{rows.map((row, rowIdx) => (
-					<div className="talent-tree-row grid grid-cols-[4rem_repeat(3,1fr)]" key={rowIdx}>
-						<div className="talent-tree-level">{(rowIdx + 1) * LEVELS_PER_ROW}</div>
+					<div
+						className="talent-tree-row grid grid-cols-[4rem_repeat(3,1fr)] has-[[data-selected='true']]:[&>a:not([data-selected='true'])]:grayscale"
+						key={rowIdx}>
+						<div className="talent-tree-level p-2 content-center justify-self-center">{(rowIdx + 1) * LEVELS_PER_ROW}</div>
 						{row.map(talent => (
 							<TalentPicker
 								key={`${talent.location.rowIdx}-${talent.location.colIdx}`}

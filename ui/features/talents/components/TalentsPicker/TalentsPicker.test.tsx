@@ -57,7 +57,7 @@ describe('TalentsPicker copy button', () => {
 		mount();
 
 		expect(button().className.split(' ').sort()).toEqual(
-			[...BASE.split(' '), ...VARIANT['outline-primary'].split(' '), ...SIZE.sm.split(' '), 'copy-button', 'copy-talents'].sort(),
+			[...BASE.split(' '), ...VARIANT['outline-primary'].split(' '), ...SIZE.sm.split(' '), 'copy-button', 'copy-talents', 'w-24'].sort(),
 		);
 		expect(button().getAttribute('type')).toBe('button');
 		// The closed `Tooltip` renders nothing, so the button stays the actions div's only child.

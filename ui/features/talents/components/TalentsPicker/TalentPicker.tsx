@@ -73,7 +73,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 	return (
 		<a
 			ref={rootRef}
-			className="talent-picker-root"
+			className="talent-picker-root flex items-center gap-2 p-2 border-2 border-transparent [--talent-border-color:var(--color-gray-600)] data-[selected=true]:[--talent-border-color:color-mix(in_srgb,var(--color-talent-full)_40%,transparent)] data-[selected=true]:border-(--talent-border-color)"
 			href={href || undefined}
 			rel={externalRel(href, undefined)}
 			data-selected={String(selected)}
@@ -81,8 +81,11 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 			onClick={event => event.preventDefault()}
 			onContextMenu={event => event.preventDefault()}
 			onMouseDown={event => (isRightClick(event.nativeEvent) ? handlers.current.clear() : handlers.current.select())}>
-			<div className="talent-picker-icon" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} />
-			<div className="talent-picker-label" data-whtticon="false">
+			<div
+				className="talent-picker-icon relative inline-block size-10 rounded-sm border border-(--talent-border-color) bg-no-repeat bg-cover bg-center cursor-pointer"
+				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
+			/>
+			<div className="talent-picker-label text-(length:--btn-font-size) text-white" data-whtticon="false">
 				{label}
 			</div>
 		</a>

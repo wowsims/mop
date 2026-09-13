@@ -31,18 +31,27 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 	const { copy, copied } = useCopyToClipboard(() => player.getTalentsString());
 
 	return (
-		<PickerShell config={{ ...config, id: config.id ?? fallbackId }} className="talents-picker-root" hidden={hidden} disabled={disabled}>
-			<div className="talents-picker-inner">
-				<div className="talents-picker-header">
-					<div className="talents-picker-actions">
-						<Button variant="outline-primary" size="sm" className="copy-talents copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+		<PickerShell
+			config={{ ...config, id: config.id ?? fallbackId }}
+			className="talents-picker-root col-span-full w-fit flex flex-row gap-section max-1080p:flex-col max-xl:m-auto max-md:w-full"
+			hidden={hidden}
+			disabled={disabled}>
+			<div className="talents-picker-inner flex flex-col max-lg:w-full">
+				<div className="talents-picker-header w-full mb-1 flex items-center">
+					<div className="talents-picker-actions ml-auto">
+						<Button
+							variant="outline-primary"
+							size="sm"
+							className="copy-talents copy-button w-24"
+							onClick={copy}
+							{...tooltipAnchorProps(copyTooltipId)}>
 							<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 							{copied ? i18n.t('common.copy_button.copied') : i18n.t('talents_tab.copy_button.label')}
 						</Button>
 						<Tooltip id={copyTooltipId} content={i18n.t('talents_tab.copy_button.tooltip')} />
 					</div>
 				</div>
-				<div id="talents" className="talents-picker-list">
+				<div id="talents" className="talents-picker-list flex-1 max-lg:flex max-lg:justify-center max-lg:overflow-x-hidden max-lg:-mx-page">
 					<TalentTreePicker config={config.tree} talentsString={value} onChange={setValue} />
 				</div>
 			</div>

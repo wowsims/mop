@@ -16,7 +16,12 @@ export const ImprovedAnchor = ({ actionId, className, active, hidden }: Improved
 	const { iconUrl, href } = useActionId(actionId);
 	return (
 		<a
-			className={clsx('icon-picker-button icon-input-improved', className, active ? 'active filter-none' : 'grayscale', !href && 'hidden')}
+			className={clsx(
+				'icon-picker-button icon-input-improved',
+				className,
+				active ? 'active filter-none' : 'grayscale border-gray-600',
+				!href && 'hidden',
+			)}
 			data-testid={className}
 			data-active={active ? '' : undefined}
 			{...wowheadAnchorProps()}
