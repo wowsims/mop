@@ -3,7 +3,7 @@ import { Button } from '@ui-kit/Button';
 import { ButtonGroup } from '@ui-kit/ButtonGroup';
 import { Chip } from '@ui-kit/Chip';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
-import { INPUT_CLASSES } from '@ui-kit/FormControl';
+import { Input } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
 import { useMemo, useState } from 'react';
 
@@ -94,9 +94,9 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 				<div className="input-group">
 					{placeholder ? (
 						<>
-							<input
+							<Input
 								type="text"
-								className={`${INPUT_CLASSES} form-control log-search-group-input w-32`}
+								className="form-control log-search-group-input w-32"
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}
