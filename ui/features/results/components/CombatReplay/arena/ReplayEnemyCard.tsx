@@ -23,7 +23,7 @@ export interface ReplayEnemyCardProps {
 }
 
 const CARD_CLASSES =
-	'cr-enemy-card absolute top-1/2 bottom-0 z-(--cr-card-z,1) flex max-h-full flex-col items-center gap-[10px] pointer-events-auto origin-bottom left-(--cr-card-x) w-(--cr-card-w) [transform:translate(-50%,-50%)_scale(var(--cr-card-scale,1))] [filter:brightness(var(--cr-card-brightness,1))]';
+	'cr-enemy-card absolute top-1/2 bottom-0 z-(--cr-card-z,1) flex max-h-full flex-col items-center gap-[10px] pointer-events-auto origin-bottom left-(--cr-card-x) w-(--cr-card-w) [transform:translate(-50%,-50%)_scale(var(--cr-card-scale,1))] brightness-(--cr-card-brightness,1)';
 
 export const ReplayEnemyCard = ({ enemy, layout }: ReplayEnemyCardProps) => (
 	<div className={CARD_CLASSES} data-idx={enemy.index} style={cardVars(layout)}>

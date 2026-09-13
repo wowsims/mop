@@ -10,7 +10,7 @@ export interface ReplayTickerIconProps {
 }
 
 const STRIP_ICON_CLASSES =
-	'cr-strip-icon ui-combat-replay-icon shadow-[inset_0_0_0_2px_var(--color-white-15)] data-active:shadow-[inset_0_0_0_2px_var(--color-white-70),0_0_10px_var(--color-white-30)]';
+	'cr-strip-icon ui-combat-replay-icon inset-ring-2 inset-ring-white-15 data-active:inset-ring-white-70 data-active:shadow-glow-white-30';
 
 export const ReplayTickerIcon = ({ action, latest, opacity }: ReplayTickerIconProps) => (
 	<ReplayIcon actionId={action.actionId} className={STRIP_ICON_CLASSES} tooltip="spell" style={{ opacity }} active={latest}>

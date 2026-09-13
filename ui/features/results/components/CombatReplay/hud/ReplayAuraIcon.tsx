@@ -26,7 +26,7 @@ export const ReplayAuraIcon = ({ aura }: ReplayAuraIconProps) => {
 		<ReplayIcon actionId={aura.actionId} className="cr-aura-icon ui-combat-replay-icon shrink-0" tooltip="buffAura" anchorRef={anchor}>
 			<span
 				ref={stacks}
-				className="cr-aura-stack-badge absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-white [text-shadow:0_0_3px_var(--color-black),0_0_3px_var(--color-black)]"
+				className="cr-aura-stack-badge absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-white text-shadow-outline-soft"
 			/>
 			<span ref={remaining} className="cr-aura-time-badge ui-combat-replay-badge" />
 		</ReplayIcon>

@@ -22,10 +22,7 @@ export const ReplayEnemyHealth = ({ enemy }: ReplayEnemyHealthProps) => {
 	return (
 		<div className="cr-hp-bar relative h-[8px] overflow-hidden rounded-sm bg-white-10">
 			<div ref={fill} className="cr-hp-fill h-full rounded-sm bg-cr-hp-fill transition-[width] duration-[50ms] ease-linear" />
-			<span
-				ref={text}
-				className="cr-hp-text absolute inset-0 flex items-center justify-center text-[7px] font-bold text-white [text-shadow:1px_1px_3px_var(--color-black)]"
-			/>
+			<span ref={text} className="cr-hp-text absolute inset-0 flex items-center justify-center text-[7px] font-bold text-white text-shadow-outline-sm" />
 		</div>
 	);
 };

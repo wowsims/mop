@@ -355,6 +355,17 @@
 	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
 	--color-danger: #dc3545;
 	--text-shadow-glow-danger: 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger);
+	--text-shadow-glow-link: 0 0 0.5rem var(--color-link);
+	--text-shadow-glow-offwhite: 0 0 0.5rem var(--color-off-white);
+	--text-shadow-outline-sm: 1px 1px 3px var(--color-black);
+	--text-shadow-outline-md: 1px 1px 4px var(--color-black);
+	--text-shadow-outline-strong: 0 0 6px var(--color-black), 0 0 6px var(--color-black), 0 2px 4px var(--color-black-80);
+	--text-shadow-outline-soft: 0 0 3px var(--color-black), 0 0 3px var(--color-black);
+	--text-shadow-outline-glow: 0 0 4px var(--color-black), 0 0 4px var(--color-black);
+	--text-shadow-glow-crit: 0 0 8px var(--color-danger), 0 0 8px var(--color-danger);
+	--shadow-glow-8: 0 0 8px;
+	--shadow-glow-10: 0 0 10px;
+	--shadow-glow-white-30: 0 0 10px var(--color-white-30);
 	--color-sim-backdrop: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
 	--background-image-sim: linear-gradient(var(--color-sim-backdrop), var(--color-sim-backdrop)), var(--theme-background-image);
 	--background-image-progress: linear-gradient(

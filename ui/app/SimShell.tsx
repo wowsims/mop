@@ -73,7 +73,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 					ref={root}
 					className={clsx(
 						simUiClasses({ className, spec, metrics }),
-						'max-h-screen overflow-y-auto [scrollbar-color:var(--color-primary)_var(--color-background)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary',
+						'max-h-screen overflow-y-auto scrollbar-thumb-primary scrollbar-track-background scrollbar-thin [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary',
 					)}
 					data-testid="sim-ui"
 					{...simUiAttributes({ spec, metrics })}>
@@ -94,7 +94,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									<SimTitleDropdown currentSpec={spec} />
 								</div>
 								<div
-									className="sim-sidebar-content p-6 flex flex-1 flex-col overflow-y-auto [scrollbar-color:var(--color-primary)_var(--color-background)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary max-xxl:px-4 max-lg:py-4 max-lg:px-2 max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
+									className="sim-sidebar-content p-6 flex flex-1 flex-col overflow-y-auto scrollbar-thumb-primary scrollbar-track-background scrollbar-thin [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary max-xxl:px-4 max-lg:py-4 max-lg:px-2 max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
 									data-testid="sim-sidebar-content">
 									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 									<div

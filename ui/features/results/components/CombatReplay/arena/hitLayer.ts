@@ -26,9 +26,9 @@ const RING_CRIT_CLASSES =
 const RING_SECONDARY_CLASSES =
 	'cr-hit-ring cr-hit-outcome-crit-secondary absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-warning text-warning';
 const DMG_NUM_CLASSES =
-	'cr-dmg-num absolute left-1/2 top-1/2 whitespace-nowrap text-base font-extrabold text-cr-dmg-num [text-shadow:0_0_6px_var(--color-black),0_0_6px_var(--color-black),0_2px_4px_var(--color-black-80)] pointer-events-none';
+	'cr-dmg-num absolute left-1/2 top-1/2 whitespace-nowrap text-base font-extrabold text-cr-dmg-num text-shadow-outline-strong pointer-events-none';
 const DMG_NUM_CRIT_CLASSES =
-	'cr-dmg-num cr-dmg-crit absolute left-1/2 top-1/2 whitespace-nowrap text-[1.3rem] font-extrabold text-damage-crit [text-shadow:0_0_8px_var(--color-danger),0_0_8px_var(--color-danger)] pointer-events-none';
+	'cr-dmg-num cr-dmg-crit absolute left-1/2 top-1/2 whitespace-nowrap text-[1.3rem] font-extrabold text-damage-crit text-shadow-glow-crit pointer-events-none';
 
 const createHitNodes = (hit: ReplayHit): HitNodes => {
 	const root = div(ROOT_CLASSES);

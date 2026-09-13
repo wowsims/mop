@@ -27,7 +27,7 @@ export const ReplayCastBar = ({ actions, duration }: ReplayCastBarProps) => {
 			<div ref={fill} className="cr-cast-bar-fill h-full w-0 rounded-sm bg-cr-cast-fill transition-[width] duration-[50ms] ease-linear" />
 			<div
 				ref={label}
-				className="cr-cast-bar-label absolute inset-0 flex items-center justify-center text-[0.7rem] font-semibold text-white [text-shadow:1px_1px_4px_var(--color-black)] pointer-events-none"
+				className="cr-cast-bar-label absolute inset-0 flex items-center justify-center text-[0.7rem] font-semibold text-white text-shadow-outline-md pointer-events-none"
 			/>
 			<div ref={remaining} className="cr-cast-bar-time absolute right-[6px] top-1/2 -translate-y-1/2 text-[0.65rem] text-white-75 pointer-events-none" />
 		</div>

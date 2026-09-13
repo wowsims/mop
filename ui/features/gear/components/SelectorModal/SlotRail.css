@@ -2,7 +2,7 @@
 	@apply relative w-(--spacing-icon-md) h-(--spacing-icon-md) border border-(color:--modal-border-color);
 
 	&.active {
-		@apply border-2 border-r-0 w-[calc(var(--spacing-icon-md)+var(--spacer-2))] h-[calc(var(--spacing-icon-md)+var(--spacer-2))];
+		@apply border-2 border-r-0 w-[calc(var(--spacing-icon-md)+--spacing(2))] h-[calc(var(--spacing-icon-md)+--spacing(2))];
 	}
 
 	&:nth-child(6),

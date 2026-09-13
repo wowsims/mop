@@ -40,7 +40,7 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 				{Array.from({ length: total }, (_, index) => (
 					<div
 						key={index}
-						className="cr-segment h-full min-w-0 flex-1 rounded-[3px] bg-white-7 data-filled:bg-[linear-gradient(180deg,var(--cr-segment-from),var(--cr-segment-to))] data-filled:shadow-[0_0_8px_var(--cr-segment-glow)]"
+						className="cr-segment h-full min-w-0 flex-1 rounded-[3px] bg-white-7 data-filled:bg-[linear-gradient(180deg,var(--cr-segment-from),var(--cr-segment-to))] data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
 					/>
 				))}
 			</div>
