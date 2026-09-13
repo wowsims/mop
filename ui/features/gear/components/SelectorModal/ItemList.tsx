@@ -235,7 +235,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					rowClassName={index =>
 						clsx(
 							'selector-modal-list-item relative p-2 flex items-center bg-gray-900 gap-4',
-							'data-[stripe=even]:bg-table-odd data-[stripe=odd]:bg-table-even hover:bg-gray-800',
+							'data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even hover:bg-gray-800',
 							'[&.active_.selector-modal-list-item-icon]:outline-2 [&.active_.selector-modal-list-item-icon]:outline-success',
 							itemData[itemsToDisplay[index]].id === equippedId && 'active',
 						)
