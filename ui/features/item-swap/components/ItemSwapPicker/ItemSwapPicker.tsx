@@ -45,10 +45,10 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	);
 
 	return (
-		<div className="item-swap-picker-root grid gap-(--spacing-stack)">
+		<div className="item-swap-picker-root grid gap-3">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
-				<div className="input-root input-inline input-item-swap-container flex-wrap gap-(--spacing-stack)">
+				<div className="input-root input-inline input-item-swap-container flex-wrap gap-3">
 					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>

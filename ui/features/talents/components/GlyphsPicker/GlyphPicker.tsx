@@ -25,7 +25,7 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 	return (
 		<PickerShell config={config} className="glyph-picker-root mb-0 flex-row flex-1" hidden={hidden} disabled={disabled}>
 			<a
-				className="glyph-link flex gap-(--spacing-stack) focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+				className="glyph-link flex gap-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
 				role="button"
 				href={selected ? glyphUrl(selected) : undefined}
 				data-whtticon="false"

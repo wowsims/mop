@@ -27,7 +27,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 	);
 
 	return (
-		<div className="consumes-picker-root grid gap-(--spacing-stack) max-lg:grid-cols-3 max-md:grid-cols-1">
+		<div className="consumes-picker-root grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
 			<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
 				<div className="picker-group icon-group consumes-row-inputs consumes-potions justify-end">
 					<IconEnumPicker modObject={player} config={configs.prepot} />
@@ -40,9 +40,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<div className="consumes-flasks">
 						<IconEnumPicker modObject={player} config={configs.flask} />
 					</div>
-					<span className="elixir-space w-(--spacing-icon-md) flex items-center justify-center">
-						{i18n.t('settings_tab.consumables.elixirs.separator')}
-					</span>
+					<span className="elixir-space w-10 flex items-center justify-center">{i18n.t('settings_tab.consumables.elixirs.separator')}</span>
 					<div className="consumes-battle-elixirs empty:hidden">
 						<IconEnumPicker modObject={player} config={configs.battleElixir} />
 					</div>

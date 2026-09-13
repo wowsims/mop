@@ -31,10 +31,7 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 
 	return (
 		<div
-			className={clsx(
-				'cooldown-picker flex items-center justify-between mb-(--spacing-stack) [&>*:not(:last-child)]:mr-2',
-				isAdd && 'add-cooldown-picker',
-			)}
+			className={clsx('cooldown-picker flex items-center justify-between mb-3 [&>*:not(:last-child)]:mr-2', isAdd && 'add-cooldown-picker')}
 			data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
 			<FieldLabel className="cooldown-picker-label min-w-[30%] overflow-hidden text-ellipsis">{name}</FieldLabel>

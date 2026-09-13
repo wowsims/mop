@@ -49,7 +49,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);
 
 	return (
-		<div className="input-root target-picker-root grid gap-(--spacing-stack) grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
+		<div className="input-root target-picker-root grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
 			<div className="picker-group target-picker-section target-picker-section1">
 				<EnumPicker modObject={null} config={npc} />
 				<EnumPicker modObject={null} config={ai} />

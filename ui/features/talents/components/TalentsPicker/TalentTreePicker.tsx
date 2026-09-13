@@ -53,10 +53,10 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				className="talent-tree-background absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-[length:100%_100%] shadow-talent-tree z-0"
 				style={{ backgroundImage: `url('${config.backgroundUrl}')` }}
 			/>
-			<div className="talent-tree-main my-(--spacing-stack) mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10">
+			<div className="talent-tree-main my-3 mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10">
 				{rows.map((row, rowIdx) => (
 					<div
-						className="talent-tree-row grid grid-cols-[4rem_repeat(3,1fr)] has-[[data-selected='true']]:[&>a:not([data-selected='true'])]:grayscale"
+						className="talent-tree-row grid grid-cols-icon-triple has-[[data-selected='true']]:[&>a:not([data-selected='true'])]:grayscale"
 						key={rowIdx}>
 						<div className="talent-tree-level p-2 content-center justify-self-center">{(rowIdx + 1) * LEVELS_PER_ROW}</div>
 						{row.map(talent => (

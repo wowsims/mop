@@ -49,7 +49,7 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			bodyClassName="overflow-auto"
 			bodyGap="gap-3"
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
-			<div className="encounter-header flex flex-col gap-(--spacing-stack)">
+			<div className="encounter-header flex flex-col gap-3">
 				<div className="picker-group">
 					{duration.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />

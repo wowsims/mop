@@ -36,12 +36,12 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 			<div className="talent-tree-header p-3 flex items-center text-white bg-transparent text-base z-1 border-b border-b-border">
 				<span className="talent-tree-title mr-3 flex-1 font-bold whitespace-nowrap">Pet Spec</span>
 			</div>
-			<div className="talent-tree-main pet-spec-list flex flex-wrap gap-1 my-(--spacing-stack) mx-0 z-1 max-md:flex-col md:flex-row">
+			<div className="talent-tree-main pet-spec-list flex flex-wrap gap-1 my-3 mx-0 z-1 max-md:flex-col md:flex-row">
 				{SPECS.map(({ spec, label, iconKey }) => (
 					<div
 						key={spec}
 						className={clsx(
-							'talent-picker-root pet-spec-item flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 [transition-timing-function:ease] hover:bg-[rgb(255_255_255/0.05)]',
+							'talent-picker-root pet-spec-item flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 [transition-timing-function:ease] hover:bg-white-5',
 							spec === active ? 'selected border-talent-full bg-[rgb(0_0_0/0.2)]' : 'border-transparent',
 						)}
 						data-testid="pet-spec-item"

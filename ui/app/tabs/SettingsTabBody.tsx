@@ -94,7 +94,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.buffs.length === 0,
-									bodyClassName: 'grid grid-cols-3 gap-(--spacing-stack) max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
+									bodyClassName: 'grid grid-cols-3 gap-3 max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
 								}}
 								headerChildren={<p className="text-sm">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
@@ -108,8 +108,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_damage_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName:
-											'grid grid-cols-3 gap-(--spacing-stack) max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
+										bodyClassName: 'grid grid-cols-3 gap-3 max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
 									}}>
 									<StatOptionIcons options={options.externalDamageCooldowns} />
 								</ContentBlock>
@@ -123,8 +122,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_defensive_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName:
-											'grid grid-cols-3 gap-(--spacing-stack) max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
+										bodyClassName: 'grid grid-cols-3 gap-3 max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
 									}}>
 									<StatOptionIcons options={options.externalDefensiveCooldowns} />
 								</ContentBlock>
@@ -138,7 +136,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.debuffs.length === 0,
-									bodyClassName: 'grid grid-cols-3 gap-(--spacing-stack) max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
+									bodyClassName: 'grid grid-cols-3 gap-3 max-md:grid-cols-2 [&>.icon-picker_.form-label]:whitespace-normal',
 								}}>
 								<StatOptionIcons options={options.debuffs} />
 							</ContentBlock>
