@@ -26,7 +26,9 @@ export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
 			</SimTabPane>
 		</SimTabDef>
 		<SimTabDef id="settings-tab" title={i18n.t('settings_tab.title')}>
-			<SimTabPane id="settings-tab">
+			<SimTabPane
+				id="settings-tab"
+				className="[&>.tab-pane-content-container]:max-xxl:flex-col [&_.tab-panel-left]:max-xl:flex-wrap [&_.tab-panel-left>.tab-panel-col]:max-xl:basis-full">
 				<SettingsTabBody />
 			</SimTabPane>
 		</SimTabDef>
