@@ -1,6 +1,8 @@
 .ui-bulk-item-cell {
 	& .item-picker-icon-wrapper {
 		--icon-size: 3.5rem;
+		min-width: 3.5rem;
+		min-height: 3.5rem;
 	}
 
 	& .gem-socket-container {
