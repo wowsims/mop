@@ -49,7 +49,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);
 
 	return (
-		<div className="input-root target-picker-root">
+		<div className="input-root target-picker-root grid gap-(--spacing-stack) grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
 			<div className="picker-group target-picker-section target-picker-section1">
 				<EnumPicker modObject={null} config={npc} />
 				<EnumPicker modObject={null} config={ai} />
@@ -63,7 +63,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
 			</div>
-			<div className="picker-group target-picker-section target-picker-section3 threat-metrics">
+			<div className="picker-group target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden">
 				{numbers.map(config => (
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}

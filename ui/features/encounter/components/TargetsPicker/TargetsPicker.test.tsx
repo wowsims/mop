@@ -81,7 +81,7 @@ describe('TargetsPicker', () => {
 		expect([...targetRoots()[0].querySelectorAll('.target-picker-section')].map(section => section.className)).toEqual([
 			'picker-group target-picker-section target-picker-section1',
 			'picker-group target-picker-section target-picker-section2',
-			'picker-group target-picker-section target-picker-section3 threat-metrics',
+			'picker-group target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden',
 		]);
 	});
 

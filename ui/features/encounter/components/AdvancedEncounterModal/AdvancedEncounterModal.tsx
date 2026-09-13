@@ -25,7 +25,7 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 		return {
 			id: 'aem-encounter-picker',
 			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-			extraClassNames: ['encounter-picker', 'mb-0', 'pr-2', 'order-first'],
+			extraClassNames: ['encounter-picker', 'mb-0', 'pr-2', 'order-first', 'w-1/3', 'max-sm:w-1/2'],
 			values: [{ name: 'Custom', value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
 			storeField: 'encounter:*',
 			getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),
@@ -49,13 +49,13 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			bodyClassName="overflow-auto"
 			bodyGap="gap-3"
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
-			<div className="encounter-header">
+			<div className="encounter-header flex flex-col gap-(--spacing-stack)">
 				<div className="picker-group">
 					{duration.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
 				</div>
-				<div className="picker-group execute-group">
+				<div className="picker-group execute-group flex-row">
 					{execute.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
