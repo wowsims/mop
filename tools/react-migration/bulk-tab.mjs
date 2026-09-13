@@ -133,7 +133,7 @@ const INSTALL = () => {
 			const list = pane().querySelector('.bulk-gear-search-results');
 			const rows = [...(list?.querySelectorAll('li') ?? [])];
 			return {
-				open: !!list?.classList.contains('show'),
+				open: !!list?.classList.contains('show') || !!list?.hasAttribute('data-open'),
 				// Present *and* unhidden: the port unmounts the clear button where master left it in the
 				// tree carrying `hide`, and a plain `!contains('hide')` reads a missing button as shown.
 				cancelShown: (() => {

@@ -5,7 +5,7 @@
 .ui-item-picker-icon-wrapper {
 	--icon-size: 4rem;
 
-	@apply relative w-(--icon-size) h-(--icon-size) border border-border max-lg:[--icon-size:3rem];
+	@apply relative w-(--icon-size) h-(--icon-size) min-w-(--icon-size) min-h-(--icon-size) border border-border max-lg:[--icon-size:3rem];
 }
 
 .ui-item-picker-ilvl {

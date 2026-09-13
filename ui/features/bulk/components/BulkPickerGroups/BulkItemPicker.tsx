@@ -75,7 +75,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
-				<div className="item-picker-actions-container ml-2 gap-1 grid [grid-auto-flow:column] items-start">
+				<div className="item-picker-actions-container ml-2 gap-1 grid [grid-auto-flow:column] [align-items:start]">
 					{index >= 0 && state.isEditable && (
 						<>
 							<Button
