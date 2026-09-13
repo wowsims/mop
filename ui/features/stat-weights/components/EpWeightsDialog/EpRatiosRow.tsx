@@ -60,7 +60,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 					onClick={onComputeEp}
 					{...tooltipAnchorProps(EP_TOOLTIP_ID, i18n.t('sidebar.buttons.stat_weights.modal.tooltips.compute_weighted_ep'))}>
 					<Icon name="calculator" className="inline align-middle" />
-					<span className={clsx('not-tiny', showThreatMetrics && 'max-lg:hidden')}>
+					<span data-testid="not-tiny" className={clsx('not-tiny', showThreatMetrics && 'max-lg:hidden')}>
 						{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update_ep_button')}
 					</span>
 				</Button>

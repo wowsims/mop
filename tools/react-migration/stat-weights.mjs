@@ -22,6 +22,7 @@ const ITERATIONS = '5000';
 // `.ep-weights-menu` is on the Bootstrap `.modal-dialog` on one side and on the Base UI popup on the
 // other, so everything below keys on that class and asks the DOM rather than the shape.
 const DIALOG = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const dialog = document.querySelector('.ep-weights-menu');
 	if (!dialog) return { present: false };
 	const table = dialog.querySelector('.results-ep-table');
@@ -53,7 +54,7 @@ const DIALOG = () => {
 			.length,
 		footerDisplay: getComputedStyle(dialog.querySelector('[data-testid="sim-dialog-footer"], .modal-footer')).display,
 		ratiosDisplay: getComputedStyle(dialog.querySelector('.ep-ratios')).display,
-		referenceDisplay: getComputedStyle(dialog.querySelector('.ep-reference-options')).display,
+		referenceDisplay: getComputedStyle(dialog.querySelector(q('ep-reference-options'))).display,
 	};
 };
 
@@ -241,10 +242,13 @@ if (!IS_BASE) {
 // Invisible at the 1280px default viewport, so this narrows it first.
 await page.setViewportSize({ width: 900, height: 800 });
 await page.waitForTimeout(400);
-const compact = await page.evaluate(() => ({
-	rootHidesThreat: !!document.querySelector('.sim-ui.hide-threat-metrics'),
-	notTiny: getComputedStyle(document.querySelector('.ep-weights-menu .compute-ep .not-tiny')).display,
-}));
+const compact = await page.evaluate(() => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	return {
+		rootHidesThreat: !!document.querySelector('.sim-ui.hide-threat-metrics'),
+		notTiny: getComputedStyle(document.querySelector(`.ep-weights-menu .compute-ep ${q('not-tiny')}`)).display,
+	};
+});
 console.log('\ncompact layout at 900px');
 check(
 	'the compact block follows the sim root, not the dialog',
