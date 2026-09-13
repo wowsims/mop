@@ -43,7 +43,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 				}}>
 				<img
 					alt={entry.item.name}
-					className="tooltip-quick-swap__icon gem-icon shrink-0 static mr-1 rounded-none"
+					className="tooltip-quick-swap__icon gem-icon shrink-0 static mr-1 rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
 					style={{ '--gem-width': '2.5rem' } as CSSProperties}
 					src={iconUrl || undefined}
 				/>

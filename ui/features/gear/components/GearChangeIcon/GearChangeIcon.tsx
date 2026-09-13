@@ -63,7 +63,10 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 					{sockets.map(({ socketColor, gemName, changed }, gemIdx) => (
 						<div
 							key={gemIdx}
-							className={clsx('gem-socket-container ui-gear-change-icon-gem-socket', changed && 'interactive')}
+							className={clsx(
+								'gem-socket-container ui-gear-change-icon-gem-socket relative size-(--gem-width) shrink-0 not-last:mr-px',
+								changed && 'interactive',
+							)}
 							style={{ backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})` }}
 							{...(changed && gemName ? tooltipAnchorProps(`${tooltipId}-socket-${gemIdx}`) : {})}>
 							{changed && <i className="block fas fa-exclamation-circle ui-gear-change-icon-gem-marker" />}

@@ -20,9 +20,19 @@ export const GemSocket = ({ socketColor, gem, hidden, className, ...rest }: GemS
 	if (hidden) return null;
 
 	return (
-		<ItemCellAnchor {...rest} className={clsx('gem-socket-container ui-gem-socket-focus-scope', className)} href={href}>
-			{gem && <img className="gem-icon" src={iconUrl || undefined} alt="" />}
-			<img className="socket-icon" src={emptyIconUrl} alt="" />
+		<ItemCellAnchor
+			{...rest}
+			className={clsx('gem-socket-container ui-gem-socket-focus-scope relative size-(--gem-width) shrink-0 not-last:mr-px', className)}
+			href={href}>
+			{gem && (
+				<img
+					className="gem-icon absolute inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					src={iconUrl || undefined}
+					alt=""
+				/>
+			)}
+			<img className="socket-icon absolute inline-block size-full inset-0 bg-no-repeat bg-cover bg-center cursor-pointer" src={emptyIconUrl} alt="" />
+
 		</ItemCellAnchor>
 	);
 };
