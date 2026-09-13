@@ -16,6 +16,7 @@
 @import '../features/gear/components/SummaryTable/SummaryTable.css';
 @import '../features/apl/apl.css';
 @import '../features/results/components/CombatReplay/CombatReplay.css';
+@import '../features/results/components/Timeline/Timeline.css';
 
 @source '../app';
 @source '../features';

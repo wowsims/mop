@@ -2,6 +2,8 @@ import i18n from '@i18n/config';
 import type { ResourceGroupLog, ResourceLog } from '@sim/proto/combat_log';
 import { resourceNames } from '@sim/proto/names';
 import { kebabCase } from '@sim/utils/format';
+import { TIMELINE_SERIES_TEXT } from '@ui-kit/utils/colors';
+import clsx from 'clsx';
 
 import { percentageResources } from '../../../model/timeline/constants';
 import { TooltipAuras } from './TooltipAuras';
@@ -19,32 +21,31 @@ const delta = (log: ResourceLog): string => {
 };
 
 export const ResourceTooltip = ({ log, maxValue, includeAuras }: ResourceTooltipProps) => {
-	// The class is the resource's own name, not `resourceClassName`'s `resource-` prefix: the
-	// `.mana .series-color` rules colour the tooltip's numbers, not a resource swatch.
 	const resourceName = resourceNames.get(log.resourceType)!;
+	const seriesColorClass = TIMELINE_SERIES_TEXT[kebabCase(resourceName)];
 	const asPercent = percentageResources.includes(log.resourceType);
 	const display = (value: number) => (asPercent ? `${value.toFixed(1)} (${((value / maxValue) * 100).toFixed(0)}%)` : `${value.toFixed(1)}`);
 
 	return (
-		<div className={`timeline-tooltip ${kebabCase(resourceName)}`}>
-			<div className="timeline-tooltip-header">
+		<div className={`ui-timeline-tooltip timeline-tooltip ${kebabCase(resourceName)}`}>
+			<div className="ui-timeline-tooltip-header timeline-tooltip-header">
 				<span className="font-bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
-			<div className="timeline-tooltip-body">
-				<div className="timeline-tooltip-body-row">
-					<span className="series-color">
+			<div className="ui-timeline-tooltip-body timeline-tooltip-body">
+				<div className="ui-timeline-tooltip-body-row timeline-tooltip-body-row">
+					<span className={clsx('series-color font-bold', seriesColorClass)}>
 						{i18n.t('results_tab.details.timeline.tooltips.before')}: {display(log.valueBefore)}
 					</span>
 				</div>
 				<ul className="timeline-mana-events">
 					{log.logs.map((resourceLog, index) => (
-						<TooltipLogItem key={index} log={resourceLog}>
+						<TooltipLogItem key={index} log={resourceLog} seriesColorClass={seriesColorClass}>
 							{delta(resourceLog)}
 						</TooltipLogItem>
 					))}
 				</ul>
-				<div className="timeline-tooltip-body-row">
-					<span className="series-color">
+				<div className="ui-timeline-tooltip-body-row timeline-tooltip-body-row">
+					<span className={clsx('series-color font-bold', seriesColorClass)}>
 						{i18n.t('results_tab.details.timeline.tooltips.after')}: {display(log.valueAfter)}
 					</span>
 				</div>

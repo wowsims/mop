@@ -12,7 +12,7 @@ export const CastTooltip = ({ log }: CastTooltipProps) => {
 	const totalDamage = log.damageDealtLogs.reduce((total, ddl) => total + ddl.amount, 0);
 
 	return (
-		<div className="timeline-tooltip">
+		<div className="ui-timeline-tooltip timeline-tooltip">
 			<span>
 				{log.actionId!.name} from {log.timestamp.toFixed(2)}s to{' '}
 				{(log.castCancelledLog ? log.castCancelledLog.timestamp : log.timestamp + log.castTime).toFixed(2)}s

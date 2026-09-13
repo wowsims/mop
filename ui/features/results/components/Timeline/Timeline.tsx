@@ -61,24 +61,24 @@ export const Timeline = ({ active }: TimelineProps) => {
 
 	return (
 		<div className="timeline-root flex h-full flex-col">
-			<div className="timeline-disclaimer">
-				<div className="timeline-disclaimer-text flex flex-col">
+			<div className="timeline-disclaimer flex flex-wrap items-start gap-2">
+				<div className="timeline-disclaimer-text flex max-lg:flex-[1_1_100%] flex-col">
 					<p>
 						<i className="warning fa fa-exclamation-triangle fa-xl mr-2" />
 						{i18n.t('results_tab.details.timeline.disclaimer')}
 					</p>
 					<p>{i18n.t('results_tab.details.timeline.note')}</p>
 				</div>
-				<ChartViewPicker value={view} onChange={setView} />
+				<ChartViewPicker value={view} onChange={setView} className="ml-auto w-auto shrink-0 self-start" />
 			</div>
 			<div className="timeline-plots-container grow">
 				{chartVisible ? (
-					<div className="timeline-plot dps-resources-plot">
+					<div className="timeline-plot dps-resources-plot h-[32rem]">
 						<TimelineChart spec={spec} />
 					</div>
 				) : (
 					<div className="timeline-plot rotation-plot">
-						<div className="rotation-next">
+						<div className="rotation-next m-auto">
 							<RotationView model={model} />
 						</div>
 					</div>

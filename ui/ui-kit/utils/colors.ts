@@ -29,6 +29,24 @@ export const SECONDARY_RESOURCE_TEXT: Partial<Record<SecondaryResourceType, stri
 	[SecondaryResourceType.SecondaryResourceTypeHolyPower]: 'text-resource-holy-power',
 };
 
+export const TIMELINE_SERIES_TEXT: Record<string, string> = {
+	threat: 'text-damage-threat',
+	health: 'text-resource-health',
+	mana: 'text-resource-mana',
+	energy: 'text-resource-energy',
+	rage: 'text-resource-rage',
+	focus: 'text-resource-focus',
+	'combo-points': 'text-resource-combo-points',
+	'solar-energy': 'text-resource-solar-energy',
+	'lunar-energy': 'text-resource-lunar-energy',
+	'arcane-charges': 'text-resource-arcane-charges',
+	'shadow-orbs': 'text-resource-shadow-orbs',
+	'demonic-fury': 'text-resource-demonic-fury',
+	'burning-embers': 'text-resource-burning-embers',
+	'soul-shards': 'text-resource-soul-shards',
+	'holy-power': 'text-resource-holy-power',
+};
+
 export const resourceTextClass = (resourceType: ResourceType, secondaryResourceType?: SecondaryResourceType): string | undefined => {
 	if (secondaryResourceType !== undefined) return SECONDARY_RESOURCE_TEXT[secondaryResourceType];
 	return RESOURCE_TEXT[resourceType];

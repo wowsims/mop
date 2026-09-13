@@ -191,7 +191,7 @@ export function buildRotationModel({ player, targets, duration, secondaryResourc
 		if (resourceType == ResourceType.ResourceTypeGenericResource && !!secondaryResource) {
 			label = secondaryResource.name ?? '';
 			icon = secondaryResource.icon || '';
-			if (label) cssName = `secondary-resource secondary-resource--${kebabCase(label)}`;
+			if (label) cssName = kebabCase(label);
 		}
 
 		const items: Array<RowItem> = resourceItems(resourceType, resourceLogs, duration);

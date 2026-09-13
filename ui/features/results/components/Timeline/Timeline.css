@@ -1,0 +1,29 @@
+.ui-timeline-hover-tooltip {
+	@apply pointer-events-none fixed z-1000 max-h-[80vh] max-w-[min(94vw,68rem)] overflow-hidden border border-solid border-(color:--tooltip-border) bg-(color:--tooltip-bg) py-(--tooltip-body-padding-y) px-(--tooltip-body-padding-x) text-(color:--tooltip-body-color);
+	left: calc(var(--tooltip-x, 0) * 1px);
+	top: calc(var(--tooltip-y, 0) * 1px);
+}
+
+.ui-timeline-tooltip {
+	@apply flex max-h-[75vh] max-w-[min(92vw,64rem)] flex-col gap-4 overflow-auto;
+
+	& ul {
+		@apply mb-0 flex list-none flex-col gap-1 pl-0;
+	}
+
+	& li {
+		@apply flex flex-wrap items-center gap-2;
+	}
+}
+
+.ui-timeline-tooltip-header {
+	@apply border-b border-solid border-white;
+}
+
+.ui-timeline-tooltip-body {
+	@apply flex flex-col gap-4;
+}
+
+.ui-timeline-tooltip-body-row {
+	@apply flex items-center;
+}

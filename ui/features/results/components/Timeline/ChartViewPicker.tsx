@@ -11,6 +11,7 @@ import { CHART_VIEWS } from './utils';
 export interface ChartViewPickerProps {
 	value: ChartView;
 	onChange: (next: ChartView) => void;
+	className?: string;
 }
 
 const OUTLINE_BASE = `${BASE} ${SIZE.sm} border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground`;
@@ -26,8 +27,8 @@ const PEER_LABEL_CLASSES: Record<ChartView, string> = {
 };
 
 /** Rotation or the DPS/resources chart. The two are alternatives, and the rotation is the default. */
-export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (
-	<ButtonGroup className="timeline-chart-picker" size="sm">
+export const ChartViewPicker = ({ value, onChange, className }: ChartViewPickerProps) => (
+	<ButtonGroup className={clsx('timeline-chart-picker', className)} size="sm">
 		{CHART_VIEWS.map(view => (
 			<Fragment key={view}>
 				<input

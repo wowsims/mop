@@ -124,7 +124,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 	}, [spec]);
 
 	return (
-		<div className="timeline-chart">
+		<div className="timeline-chart m-auto flex h-full flex-col gap-2">
 			<ChartToolbar
 				onReset={() => zoom.current.reset()}
 				onZoomIn={() => zoom.current.zoomBy(ZOOM_STEP)}
@@ -159,7 +159,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				</div>
 			)}
 			{tip && (
-				<div ref={tooltipRef} className="timeline-hover-tooltip">
+				<div ref={tooltipRef} className="ui-timeline-hover-tooltip timeline-hover-tooltip">
 					<ChartSeriesTooltip spec={tip.spec} log={tip.log} />
 				</div>
 			)}

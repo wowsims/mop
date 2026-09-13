@@ -5,7 +5,7 @@ export interface AuraTooltipProps {
 }
 
 export const AuraTooltip = ({ log }: AuraTooltipProps) => (
-	<div className="timeline-tooltip">
+	<div className="ui-timeline-tooltip timeline-tooltip">
 		<span>
 			{log.actionId!.name}: {log.gainedAt.toFixed(2)}s - {log.fadedAt.toFixed(2)}s
 		</span>
