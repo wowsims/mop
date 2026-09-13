@@ -24,7 +24,7 @@ export const VARIANT = {
 	'link-danger':
 		'text-link-danger hover:text-foreground focus-visible:text-foreground focus-visible:shadow-focus-link-danger disabled:text-foreground-disabled',
 	'outline-primary':
-		'border-primary text-primary hover:bg-primary-hover hover:border-primary-hover hover:text-primary-foreground active:bg-primary-active active:border-primary-active active:text-primary-foreground focus-visible:bg-primary-hover focus-visible:border-primary-hover focus-visible:text-primary-foreground focus-visible:shadow-focus-outline-primary disabled:text-primary disabled:border-primary',
+		'border-primary text-primary hover:bg-primary-hover hover:border-primary-hover hover:text-primary-foreground active:bg-primary active:border-primary active:text-primary-foreground focus-visible:bg-primary-hover focus-visible:border-primary-hover focus-visible:text-primary-foreground focus-visible:shadow-focus-outline-primary disabled:text-primary disabled:border-primary',
 	'outline-light':
 		'border-light text-light hover:bg-light hover:border-light hover:text-black active:bg-light active:border-light active:text-black focus-visible:bg-light focus-visible:border-light focus-visible:text-black focus-visible:shadow-focus-outline-light',
 	'outline-cancel':
