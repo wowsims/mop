@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Button } from './Button';
-import { BASE, LINK_BASE, SIZE, VARIANT } from './classes';
+import { BASE, ICON_BASE, LINK_BASE, SIZE, VARIANT } from './classes';
 
 describe('Button', () => {
 	it('is a non-submitting button by default', () => {
@@ -117,5 +117,24 @@ describe('Button', () => {
 			</Button>,
 		);
 		expect(screen.getByRole('button').className).toBe(`${LINK_BASE} ${VARIANT['link-danger']}`);
+	});
+
+	it('is chromeless for iconOnly, with no variant of its own', () => {
+		render(
+			<Button iconOnly aria-label="Close">
+				×
+			</Button>,
+		);
+		const button = screen.getByRole('button', { name: 'Close' });
+		expect(button.className).toBe(ICON_BASE);
+	});
+
+	it('applies a colour variant to an iconOnly button, still chromeless', () => {
+		render(
+			<Button iconOnly variant="link-danger" aria-label="Delete">
+				×
+			</Button>,
+		);
+		expect(screen.getByRole('button', { name: 'Delete' }).className).toBe(`${ICON_BASE} ${VARIANT['link-danger']}`);
 	});
 });

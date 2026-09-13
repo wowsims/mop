@@ -1,7 +1,7 @@
 import { Toast as BaseToast } from '@base-ui/react/toast';
+import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName } from '@ui-kit/Icon/types';
-import { IconButton } from '@ui-kit/IconButton';
 import clsx from 'clsx';
 
 import type { ToastData, ToastVariant } from './types';
@@ -54,8 +54,8 @@ export const Toast = ({ toast, inline = false }: ToastProps) => {
 				{canClose && (
 					<BaseToast.Close
 						render={
-							<IconButton
-								label="Close"
+							<Button
+								iconOnly
 								className="flex items-center justify-center -mr-2 ml-4 p-[0.25em] text-white opacity-50 transition-(--transition-fade) hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-(--focus-ring)"
 							/>
 						}

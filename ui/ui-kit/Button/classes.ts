@@ -4,6 +4,8 @@ export const BASE =
 export const LINK_BASE =
 	'p-0 border-0 rounded-none text-[length:var(--text-sm)] leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
 
+export const ICON_BASE = 'border-0 bg-transparent cursor-pointer';
+
 export const SIZE = {
 	sm: 'px-2 py-1',
 	inline: 'px-2 py-0',
@@ -25,4 +27,5 @@ export const VARIANT = {
 		'border-light text-light hover:bg-light hover:border-light hover:text-black active:bg-light active:border-light active:text-black focus-visible:bg-light focus-visible:border-light focus-visible:text-black focus-visible:shadow-[0_0_0_0.25rem_rgba(248,249,250,0.5)]',
 	'outline-cancel':
 		'border-cancel text-cancel hover:bg-cancel hover:border-cancel hover:text-black active:bg-cancel active:border-cancel active:text-black focus-visible:bg-cancel focus-visible:border-cancel focus-visible:text-black focus-visible:shadow-[0_0_0_0.25rem_rgba(230,128,102,0.5)]',
+	warning: 'text-link-warning',
 } as const;

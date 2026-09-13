@@ -3,7 +3,7 @@ import { externalRel } from '@sim/utils/links';
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, LabelHTMLAttributes, ReactNode, Ref } from 'react';
 
-import { BASE, LINK_BASE, SIZE, VARIANT } from './classes';
+import { BASE, ICON_BASE, LINK_BASE, SIZE, VARIANT } from './classes';
 
 export type ButtonVariant =
 	| 'primary'
@@ -15,12 +15,15 @@ export type ButtonVariant =
 	| 'outline-primary'
 	| 'outline-light'
 	| 'outline-cancel'
+	| 'warning'
 	| 'unstyled';
 
 interface ButtonBaseProps {
 	/** `null` emits the bare base bundle — no colour of its own. */
 	variant?: ButtonVariant | null;
 	size?: 'sm' | 'inline';
+	/** Chromeless: no padding, border or background of its own — an icon-sized hit target. */
+	iconOnly?: boolean;
 	className?: string;
 	children?: ReactNode;
 }
@@ -35,15 +38,16 @@ type ButtonAsLabel = ButtonBaseProps & Omit<LabelHTMLAttributes<HTMLLabelElement
 export type ButtonProps = ButtonAsButton | ButtonAsAnchor | ButtonAsLabel;
 
 export const Button = (props: ButtonProps) => {
-	const variant = props.variant === undefined ? 'primary' : props.variant;
-	const isLink = variant === 'link' || variant === 'link-danger';
+	const variant = props.variant === undefined ? (props.iconOnly ? null : 'primary') : props.variant;
+	const isLink = variant === 'link' || variant === 'link-danger' || variant === 'warning';
+	const base = props.iconOnly ? ICON_BASE : isLink ? LINK_BASE : BASE;
 	const classes =
 		variant === 'unstyled'
 			? props.className
-			: clsx(isLink ? LINK_BASE : BASE, variant && VARIANT[variant], !isLink && props.size && SIZE[props.size], props.className);
+			: clsx(base, variant && VARIANT[variant], !isLink && !props.iconOnly && props.size && SIZE[props.size], props.className);
 
 	if (props.as === 'label') {
-		const { as: _as, variant: _variant, size: _size, className: _className, children, ...labelProps } = props;
+		const { as: _as, variant: _variant, size: _size, iconOnly: _iconOnly, className: _className, children, ...labelProps } = props;
 		return (
 			<label className={classes} {...labelProps}>
 				{children}
@@ -53,7 +57,7 @@ export const Button = (props: ButtonProps) => {
 
 	// A plain anchor, deliberately not `Base.Button`.
 	if (props.as === 'a') {
-		const { as: _as, variant: _variant, size: _size, className: _className, children, ...anchorProps } = props;
+		const { as: _as, variant: _variant, size: _size, iconOnly: _iconOnly, className: _className, children, ...anchorProps } = props;
 		return (
 			<a className={classes} {...anchorProps} rel={externalRel(anchorProps.href, anchorProps.rel)}>
 				{children}
@@ -62,7 +66,7 @@ export const Button = (props: ButtonProps) => {
 	}
 
 	// `type` is defaulted here rather than by Base UI, which does not do it: a <button> inside a form submits it otherwise, and several in this tree are inside forms.
-	const { as: _as, variant: _variant, size: _size, className: _className, children, type = 'button', ...buttonProps } = props;
+	const { as: _as, variant: _variant, size: _size, iconOnly: _iconOnly, className: _className, children, type = 'button', ...buttonProps } = props;
 	return (
 		<BaseButton className={classes} type={type} {...buttonProps}>
 			{children}

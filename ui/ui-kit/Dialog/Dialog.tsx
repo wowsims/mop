@@ -1,7 +1,7 @@
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
+import { Button } from '@ui-kit/Button';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { Icon } from '@ui-kit/Icon';
-import { IconButton } from '@ui-kit/IconButton';
 import clsx from 'clsx';
 import type { KeyboardEventHandler, ReactNode } from 'react';
 
@@ -143,8 +143,8 @@ export const Dialog = ({
 								{!preventClose && (
 									<BaseDialog.Close
 										render={
-											<IconButton
-												label="Close"
+											<Button
+												iconOnly
 												className={clsx(
 													'flex items-center justify-center box-content w-[1em] h-[1em]',
 													'mt-[calc(-0.5*var(--modal-header-padding-y))] mb-[calc(-0.5*var(--modal-header-padding-y))] -mr-1 ml-auto',

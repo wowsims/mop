@@ -10,7 +10,6 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { Icon } from '@ui-kit/Icon';
-import { IconButton } from '@ui-kit/IconButton';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { VirtualList } from '@ui-kit/VirtualList';
@@ -214,9 +213,9 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 				<h6 className="ep-label interactive" style={{ display: showEPValues ? undefined : 'none' }} onClick={() => sort(ItemListSortBy.EP)}>
 					<span>EP</span>
 					<Icon name="plus-minus" size="2xs" />
-					<IconButton label={i18n.t('gear_tab.gear_picker.ep_tooltip')} className="ml-1" data-tooltip-id={`${tooltipId}-ep`}>
+					<Button iconOnly aria-label={i18n.t('gear_tab.gear_picker.ep_tooltip')} className="ml-1" data-tooltip-id={`${tooltipId}-ep`}>
 						<Icon name="question-circle" style="regular" size="lg" />
-					</IconButton>
+					</Button>
 				</h6>
 				<h6 className="favorite-label" />
 				{label === SelectorModalTabs.Items && <h6 className="compare-label" />}
