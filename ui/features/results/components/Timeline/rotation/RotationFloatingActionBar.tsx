@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
+import { BASE, SIZE, VARIANT } from '@ui-kit/Button/classes';
 import clsx from 'clsx';
 import type { KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -112,12 +113,13 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 			<div className="rotation-fab-actions">
 				<Button
 					ref={toggleRef}
-					className="rotation-fab-toggle"
+					variant="unstyled"
+					className={clsx(BASE.replace('inline-block', 'flex items-center gap-2'), VARIANT.primary, SIZE.default, 'rotation-fab-toggle')}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
 					onClick={() => open(!expanded)}>
-					<i className="fas fa-eye-slash mr-2" />
-					<span className="rotation-fab-summary mr-2">
+					<i className="fas fa-eye-slash" />
+					<span className="rotation-fab-summary">
 						{hiddenKeys.length
 							? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
 							: i18n.t('results_tab.details.timeline.floatingActionBar.allShown')}

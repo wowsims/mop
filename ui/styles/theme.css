@@ -166,6 +166,16 @@
 
 	--animate-shimmer: loading-shimmer 6s linear infinite;
 	--animate-skeleton: character-stats-skeleton-shimmer 1.2s ease-in-out infinite;
+
+	--shadow-focus-primary: 0 0 0 0.25rem rgb(49 132 253 / 0.5);
+	--shadow-focus-secondary: 0 0 0 0.25rem rgb(130 138 144 / 0.5);
+	--shadow-focus-danger: 0 0 0 0.25rem rgb(225 83 97 / 0.5);
+	--shadow-focus-cancel: 0 0 0 0.25rem rgb(196 109 87 / 0.5);
+	--shadow-focus-link: 0 0 0 0.25rem rgb(165 177 214 / 0.5);
+	--shadow-focus-link-danger: 0 0 0 0.25rem rgb(239 158 170 / 0.5);
+	--shadow-focus-outline-primary: 0 0 0 0.25rem rgb(13 110 253 / 0.5);
+	--shadow-focus-outline-light: 0 0 0 0.25rem rgb(248 249 250 / 0.5);
+	--shadow-focus-outline-cancel: 0 0 0 0.25rem rgb(230 128 102 / 0.5);
 }
 
 :root {
@@ -237,15 +247,6 @@
 	--tooltip-body-padding-x: var(--spacer-2);
 	--tooltip-body-padding-y: var(--spacer-2);
 	--focus-ring: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-	--shadow-focus-primary: 0 0 0 0.25rem rgb(49 132 253 / 0.5);
-	--shadow-focus-secondary: 0 0 0 0.25rem rgb(130 138 144 / 0.5);
-	--shadow-focus-danger: 0 0 0 0.25rem rgb(225 83 97 / 0.5);
-	--shadow-focus-cancel: 0 0 0 0.25rem rgb(196 109 87 / 0.5);
-	--shadow-focus-link: 0 0 0 0.25rem rgb(165 177 214 / 0.5);
-	--shadow-focus-link-danger: 0 0 0 0.25rem rgb(239 158 170 / 0.5);
-	--shadow-focus-outline-primary: 0 0 0 0.25rem rgb(13 110 253 / 0.5);
-	--shadow-focus-outline-light: 0 0 0 0.25rem rgb(248 249 250 / 0.5);
-	--shadow-focus-outline-cancel: 0 0 0 0.25rem rgb(230 128 102 / 0.5);
 	--transition-fade: opacity 0.15s linear;
 	--tab-padding-y: var(--spacer-3);
 	--tab-padding-x: 1rem;

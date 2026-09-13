@@ -20,6 +20,7 @@ export interface DropdownFieldProps<ModObject, T, V = T> {
 	equals?: (a: V | undefined, b: V | undefined) => boolean;
 	defaultLabel: ReactNode;
 	hideLabelWhenDefault?: (value: V) => boolean;
+	triggerClassName?: string;
 }
 
 const identical = <V,>(a: V | undefined, b: V | undefined) => a === b;
@@ -39,6 +40,7 @@ export const DropdownField = <ModObject, T, V = T>({
 	equals = identical,
 	defaultLabel,
 	hideLabelWhenDefault,
+	triggerClassName,
 }: DropdownFieldProps<ModObject, T, V>) => {
 	const { value, setValue, hidden, disabled } = useInput<ModObject, T, V>(modObject, config);
 
@@ -52,6 +54,7 @@ export const DropdownField = <ModObject, T, V = T>({
 				equals={equals}
 				defaultLabel={defaultLabel}
 				hideLabelWhenDefault={hideLabelWhenDefault}
+				triggerClassName={triggerClassName}
 			/>
 		</PickerShell>
 	);

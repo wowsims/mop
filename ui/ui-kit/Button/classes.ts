@@ -1,5 +1,5 @@
 export const BASE =
-	'inline-block px-3 py-2 border border-transparent rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
+	'inline-block border rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
 
 export const LINK_BASE =
 	'p-0 border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
@@ -7,8 +7,10 @@ export const LINK_BASE =
 export const ICON_BASE = 'border-0 bg-transparent cursor-pointer';
 
 export const SIZE = {
+	default: 'px-3 py-2',
 	sm: 'px-2 py-1',
 	inline: 'px-2 py-0',
+	none: '',
 } as const;
 
 export const VARIANT = {
@@ -22,7 +24,7 @@ export const VARIANT = {
 	'link-danger':
 		'text-link-danger hover:text-foreground focus-visible:text-foreground focus-visible:shadow-focus-link-danger disabled:text-foreground-disabled',
 	'outline-primary':
-		'border-primary text-primary hover:bg-primary-hover hover:border-primary-hover hover:text-primary-foreground active:bg-primary-active active:border-primary-active active:text-primary-foreground focus-visible:bg-primary-hover focus-visible:border-primary-hover focus-visible:text-primary-foreground focus-visible:shadow-focus-outline-primary disabled:text-primary disabled:border-primary',
+		'border-primary text-primary hover:bg-primary-hover hover:border-primary-hover hover:text-primary-foreground active:bg-primary active:border-primary active:text-primary-foreground focus-visible:bg-primary-hover focus-visible:border-primary-hover focus-visible:text-primary-foreground focus-visible:shadow-focus-outline-primary disabled:text-primary disabled:border-primary',
 	'outline-light':
 		'border-light text-light hover:bg-light hover:border-light hover:text-black active:bg-light active:border-light active:text-black focus-visible:bg-light focus-visible:border-light focus-visible:text-black focus-visible:shadow-focus-outline-light',
 	'outline-cancel':

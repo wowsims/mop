@@ -119,6 +119,7 @@ export const ActionIdField = ({ player, config, actionIdSet, unitRefField, defau
 			options={options}
 			equals={sameActionId}
 			defaultLabel={set.defaultLabel}
+			triggerClassName="p-0"
 		/>
 	);
 };

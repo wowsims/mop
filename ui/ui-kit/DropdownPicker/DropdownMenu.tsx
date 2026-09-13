@@ -1,5 +1,4 @@
 import { Menu } from '@base-ui/react/menu';
-import { BASE as BUTTON_BASE } from '@ui-kit/Button/classes';
 import { menuPositionerZClasses, menuSurfaceClasses } from '@ui-kit/Menu/classes';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
@@ -12,6 +11,10 @@ import { buildMenuTree } from './utils';
 // Offsets the menu 2px from the toggle.
 const BOOTSTRAP_DROPDOWN_OFFSET = 2;
 
+export const TRIGGER_BASE =
+	'flex items-center border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
+export const TRIGGER_DEFAULT_PADDING = 'py-4 px-0';
+
 export interface DropdownMenuProps<V> {
 	id?: string;
 	options: Array<DropdownOption<V>>;
@@ -22,6 +25,7 @@ export interface DropdownMenuProps<V> {
 	hideLabelWhenDefault?: (value: V) => boolean;
 	side?: Menu.Positioner.Props['side'];
 	positionMethod?: Menu.Positioner.Props['positionMethod'];
+	triggerClassName?: string;
 }
 
 /**
@@ -32,7 +36,18 @@ export interface DropdownMenuProps<V> {
  * so that binding a dropdown adds no element. Forking the menu instead would have put a wrapper
  * div inside every bound picker.
  */
-export const DropdownMenu = <V,>({ id, options, value, onChange, equals, defaultLabel, hideLabelWhenDefault, side, positionMethod }: DropdownMenuProps<V>) => {
+export const DropdownMenu = <V,>({
+	id,
+	options,
+	value,
+	onChange,
+	equals,
+	defaultLabel,
+	hideLabelWhenDefault,
+	side,
+	positionMethod,
+	triggerClassName,
+}: DropdownMenuProps<V>) => {
 	// null is Base UI's "not resolved yet"; anything else falls back to <body>, which is outside `.sim-ui` and its theme.
 	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
 	const [open, setOpen] = useState(false);
@@ -52,7 +67,15 @@ export const DropdownMenu = <V,>({ id, options, value, onChange, equals, default
 			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
 				<Menu.Trigger
 					id={id}
-					className={clsx('dropdown-picker-button', BUTTON_BASE, 'text-foreground', 'hover:text-white/80', 'dropdown-toggle', selected?.className)}
+					className={clsx(
+						'dropdown-picker-button',
+						TRIGGER_BASE,
+						triggerClassName ?? TRIGGER_DEFAULT_PADDING,
+						'text-foreground',
+						'hover:text-white/80',
+						'dropdown-toggle',
+						selected?.className,
+					)}
 					data-testid="dropdown-picker-button">
 					{selected ? (
 						<>

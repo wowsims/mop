@@ -225,12 +225,3 @@
 	line-height: 1.5;
 }
 
-// The same override the APL applies inside its picker root: the button is sitting inline in a
-// row of tags, not standing on its own, so it drops the button chrome and keeps only its label.
-.log-search-add-field,
-.log-search-group-items {
-	.dropdown-picker-button {
-		padding: 0;
-		border: 0;
-	}
-}

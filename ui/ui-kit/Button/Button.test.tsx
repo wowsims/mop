@@ -10,7 +10,7 @@ describe('Button', () => {
 		const button = screen.getByRole('button', { name: 'Simulate' });
 		// The tree has several <button>s inside forms with no type, which submit on click.
 		expect(button.getAttribute('type')).toBe('button');
-		expect(button.className).toBe(`${BASE} ${VARIANT.primary}`);
+		expect(button.className).toBe(`${BASE} ${VARIANT.primary} ${SIZE.default}`);
 	});
 
 	it('renders an anchor when asked, keeping the button classes', () => {
@@ -34,7 +34,7 @@ describe('Button', () => {
 		const label = screen.getByText('Rotation');
 		expect(label.tagName).toBe('LABEL');
 		expect(label.getAttribute('for')).toBe('chart-view-rotation');
-		expect(label.className).toBe(`${BASE} ${VARIANT['outline-primary']}`);
+		expect(label.className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.default}`);
 	});
 
 	it('adds the size and caller classes without dropping the variant', () => {
@@ -44,6 +44,15 @@ describe('Button', () => {
 			</Button>,
 		);
 		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.sm} reforge-action`);
+	});
+
+	it('applies no padding for size="none", leaving the caller to supply its own', () => {
+		render(
+			<Button variant="outline-primary" size="none" className="reforge-action">
+				Optimize
+			</Button>,
+		);
+		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} reforge-action`);
 	});
 
 	it('adds rel to a cross-origin link without being asked', () => {
@@ -92,7 +101,7 @@ describe('Button', () => {
 			</Button>,
 		);
 		expect(Array.from(screen.getByRole('button').classList).sort()).toEqual(
-			[...BASE.split(' '), 'talent-tree-reset', 'link-danger', 'text-link-danger'].sort(),
+			[...BASE.split(' '), ...SIZE.default.split(' '), 'border-transparent', 'talent-tree-reset', 'link-danger', 'text-link-danger'].sort(),
 		);
 	});
 

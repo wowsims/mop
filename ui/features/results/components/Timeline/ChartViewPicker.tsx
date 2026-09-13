@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
+import { BASE, SIZE } from '@ui-kit/Button/classes';
 import { ButtonGroup } from '@ui-kit/ButtonGroup';
 import clsx from 'clsx';
 import { Fragment } from 'react';
@@ -12,8 +13,17 @@ export interface ChartViewPickerProps {
 	onChange: (next: ChartView) => void;
 }
 
-const FLAT_PRIMARY_OUTLINE_CLASSES =
-	'border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground peer-checked:bg-primary peer-checked:border-primary peer-checked:text-primary-foreground peer-focus-visible:shadow-focus-theme';
+const OUTLINE_BASE = `${BASE} ${SIZE.sm} border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground`;
+
+const PEER_INPUT_CLASSES: Record<ChartView, string> = {
+	rotation: 'peer/rotation',
+	dps: 'peer/dps',
+};
+const PEER_LABEL_CLASSES: Record<ChartView, string> = {
+	rotation:
+		'peer-checked/rotation:bg-primary peer-checked/rotation:border-primary peer-checked/rotation:text-primary-foreground peer-focus-visible/rotation:shadow-focus-theme',
+	dps: 'peer-checked/dps:bg-primary peer-checked/dps:border-primary peer-checked/dps:text-primary-foreground peer-focus-visible/dps:shadow-focus-theme',
+};
 
 /** Rotation or the DPS/resources chart. The two are alternatives, and the rotation is the default. */
 export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (
@@ -22,7 +32,7 @@ export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (
 			<Fragment key={view}>
 				<input
 					type="radio"
-					className={`peer sr-only ${view}-option`}
+					className={clsx(PEER_INPUT_CLASSES[view], 'absolute [clip:rect(0,0,0,0)] pointer-events-none', `${view}-option`)}
 					name="timeline-chart-view"
 					id={`timeline-chart-view-${view}`}
 					value={view}
@@ -32,10 +42,9 @@ export const ChartViewPicker = ({ value, onChange }: ChartViewPickerProps) => (
 				/>
 				<Button
 					as="label"
-					variant={null}
-					size="sm"
+					variant="unstyled"
 					htmlFor={`timeline-chart-view-${view}`}
-					className={clsx(FLAT_PRIMARY_OUTLINE_CLASSES, `${view}-option`)}>
+					className={clsx(OUTLINE_BASE, PEER_LABEL_CLASSES[view], `${view}-option`)}>
 					{i18n.t(`results_tab.details.timeline.chart_types.${view}`)}
 				</Button>
 			</Fragment>

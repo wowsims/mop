@@ -1,6 +1,6 @@
 import type { Spec } from '@generated/proto/common';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const toast = vi.fn();
@@ -48,15 +48,12 @@ beforeEach(() => {
 describe('CombustionThresholds', () => {
 	it('renders one sidebar action button carrying the spec hook and the shared action classes', () => {
 		const { container } = renderFeature();
-		const button = actionButton(container);
+		const button = within(container).getByRole<HTMLButtonElement>('button');
 
-		expect([...button.classList].sort()).toEqual([
-			'btn',
-			'btn-primary',
-			'mage-calculate-combustion-threshold-group',
-			'sim-sidebar-action-button',
-			'w-full',
-		]);
+		expect(button).toBe(actionButton(container));
+		expect(button.classList.contains('mage-calculate-combustion-threshold-group')).toBe(true);
+		expect(button.classList.contains('sim-sidebar-action-button')).toBe(true);
+		expect(button.classList.contains('w-full')).toBe(true);
 		expect(button.disabled).toBe(false);
 		expect(container.querySelector('.sim-sidebar-action-button-loading-icon')).not.toBeNull();
 	});

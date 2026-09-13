@@ -16,8 +16,8 @@ import type { DropdownPickerProps } from './types';
  * The APL action-id pickers replace their list on every unit-metadata change, which is a prop
  * update here rather than a rebuild-and-compare.
  */
-export const DropdownPicker = <V,>({ className, testId, ...menu }: DropdownPickerProps<V>) => (
+export const DropdownPicker = <V,>({ className, testId, triggerClassName, ...menu }: DropdownPickerProps<V>) => (
 	<div className={clsx('dropdown-picker-root', 'dropdown', className)} data-testid={testId ?? 'dropdown-picker-root'}>
-		<DropdownMenu<V> {...menu} />
+		<DropdownMenu<V> {...menu} triggerClassName={triggerClassName} />
 	</div>
 );

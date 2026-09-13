@@ -52,6 +52,7 @@ export interface DropdownPickerProps<V> {
 	/** On the root. */
 	className?: ClassValue;
 	testId?: string;
+	triggerClassName?: string;
 }
 
 /** The option shape the APL model still speaks; `DropdownOption` is what the component takes. */

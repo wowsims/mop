@@ -21,7 +21,7 @@ export type ButtonVariant =
 interface ButtonBaseProps {
 	/** `null` emits the bare base bundle — no colour of its own. */
 	variant?: ButtonVariant | null;
-	size?: 'sm' | 'inline';
+	size?: 'sm' | 'inline' | 'none';
 	/** Chromeless: no padding, border or background of its own — an icon-sized hit target. */
 	iconOnly?: boolean;
 	className?: string;
@@ -44,7 +44,13 @@ export const Button = (props: ButtonProps) => {
 	const classes =
 		variant === 'unstyled'
 			? props.className
-			: clsx(base, variant && VARIANT[variant], !isLink && !props.iconOnly && props.size && SIZE[props.size], props.className);
+			: clsx(
+					base,
+					variant === null && !props.iconOnly && 'border-transparent',
+					variant && VARIANT[variant],
+					!isLink && !props.iconOnly && SIZE[props.size ?? 'default'],
+					props.className,
+				);
 
 	if (props.as === 'label') {
 		const { as: _as, variant: _variant, size: _size, iconOnly: _iconOnly, className: _className, children, ...labelProps } = props;

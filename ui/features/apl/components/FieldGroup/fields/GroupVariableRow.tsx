@@ -60,6 +60,7 @@ export const GroupVariableRow = ({ player, config, name, groupSelected }: GroupV
 				config={valueConfig}
 				options={options}
 				defaultLabel={i18n.t('rotation_tab.apl.helpers.select_variable')}
+				triggerClassName="p-0"
 			/>
 		</PickerShell>
 	);

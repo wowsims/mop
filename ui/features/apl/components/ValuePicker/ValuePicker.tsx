@@ -86,6 +86,7 @@ export const ValuePicker = memo(({ player, config }: ValuePickerProps) => {
 				config={kindConfig}
 				options={options}
 				defaultLabel={i18n.t('rotation_tab.apl.values.no_condition')}
+				triggerClassName="p-0"
 			/>
 			{kind && <FieldGroup key={kind} player={player} config={implConfig(kind)} fields={valueKinds[kind].fields} />}
 		</PickerShell>

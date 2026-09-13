@@ -90,6 +90,7 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 					config={kindConfig}
 					options={options}
 					defaultLabel={i18n.t('rotation_tab.apl.priority_list.item_label')}
+					triggerClassName="p-0"
 				/>
 				{kind && <FieldGroup key={kind} player={player} config={implConfig(kind)} fields={actionKinds[kind].fields} />}
 			</div>
