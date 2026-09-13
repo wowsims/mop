@@ -8,18 +8,3 @@
 		max-width: 200px;
 	}
 }
-
-// Hide all tank EP weights/actions due to inaccurate reforge results causing confusion. `.modal-footer` was the Calculate button's row; the Dialog renders `.sim-dialog-footer`.
-.sim-type--tank {
-	.ep-weights-menu {
-		.results-ep-table thead th:nth-child(2),
-		.results-ep-table tbody td:nth-child(2),
-		.ep-ratios,
-		.ep-reference-options,
-		.damage-metrics,
-		.healing-metrics,
-		.threat-metrics {
-			display: none !important;
-		}
-	}
-}

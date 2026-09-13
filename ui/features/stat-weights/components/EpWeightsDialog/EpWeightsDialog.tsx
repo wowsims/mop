@@ -101,6 +101,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			),
 		[prevSimResult, individualConfig, refStats, epReferenceStat, applyWeights],
 	);
+	const visibleColumns = useMemo(() => (isTank ? columns.filter(column => !column.metric) : columns), [columns, isTank]);
 
 	const onComputeEp = useCallback(() => {
 		const combine = statsType === StatsType.Ep ? combineScaledEpValues : combineScaledWeights;
@@ -175,14 +176,14 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			<div className="flex flex-col lg:flex-row lg:items-start gap-4">
 				<div className="w-full order-1 lg:order-0">
 					<EpWeightsOptions options={options.current} onStatsTypeChange={setStatsType} onShowAllStatsChange={setShowAllStats} />
-					<EpReferenceOptions epStats={epStats} epReferenceStat={epReferenceStat} />
+					{!isTank && <EpReferenceOptions epStats={epStats} epReferenceStat={epReferenceStat} />}
 					<p>
 						{i18n.t('sidebar.buttons.stat_weights.modal.current_ep_description')}
 						<br />
 						{i18n.t('sidebar.buttons.stat_weights.modal.copy_icon_description')}
 					</p>
 					<EpWeightsTable
-						columns={columns}
+						columns={visibleColumns}
 						stats={stats}
 						statsType={statsType}
 						result={result}
@@ -195,6 +196,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						epReferenceStat={epReferenceStat}
 						onComputeEp={onComputeEp}
 						showThreatMetrics={showThreatMetrics}
+						isTank={isTank}
 					/>
 				</div>
 				<div className="ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">

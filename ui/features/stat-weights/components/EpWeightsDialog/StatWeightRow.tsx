@@ -20,6 +20,7 @@ export interface StatWeightRowProps {
 	epReferenceStat: Stat;
 	includable: boolean;
 	showThreatMetrics: boolean;
+	isTank: boolean;
 }
 
 export const StatWeightRow = ({
@@ -33,6 +34,7 @@ export const StatWeightRow = ({
 	epReferenceStat,
 	includable,
 	showThreatMetrics,
+	isTank,
 }: StatWeightRowProps) => {
 	const rowResult = settings.isUnitStatExcludedFromCalc(stat) ? null : result;
 	const epDelta = scaledEpValue(stat, epRatios, rowResult) - epWeights.getUnitStat(stat);
@@ -50,33 +52,36 @@ export const StatWeightRow = ({
 	return (
 		<tr className="odd:bg-(--table-row-odd-bg) even:bg-(--table-row-even-bg)">
 			<td className={cellClassName}>{fullName}</td>
-			<td className={`swcalc-include-toggle ${cellClassName}`}>
-				{includable && (
-					<BooleanPicker
-						modObject={settings}
-						config={{
-							id: `sw-stat-toggle-${sanitizeId(fullName)}`,
-							getValue: () => !settings.isUnitStatExcludedFromCalc(stat),
-							setValue: (subject, newValue) => subject.setStatExcluded(stat, !newValue),
-							storeField: 'statWeights:settings',
-							enableWhen: () => !stat.isStat() || epReferenceStat !== stat.getStat(),
-							extraClassNames: ['mb-0'],
-						}}
+			{!isTank && (
+				<td className={`swcalc-include-toggle ${cellClassName}`}>
+					{includable && (
+						<BooleanPicker
+							modObject={settings}
+							config={{
+								id: `sw-stat-toggle-${sanitizeId(fullName)}`,
+								getValue: () => !settings.isUnitStatExcludedFromCalc(stat),
+								setValue: (subject, newValue) => subject.setStatExcluded(stat, !newValue),
+								storeField: 'statWeights:settings',
+								enableWhen: () => !stat.isStat() || epReferenceStat !== stat.getStat(),
+								extraClassNames: ['mb-0'],
+							}}
+						/>
+					)}
+				</td>
+			)}
+			{!isTank &&
+				metrics.map(({ statWeights, metricClass }, index) => (
+					<StatWeightCells
+						key={index}
+						stat={stat}
+						statWeights={statWeights}
+						metricClass={metricClass}
+						iterations={iterations}
+						epRatio={epRatios[index]}
+						epDelta={epDelta}
+						cellClassName={cellClassName}
 					/>
-				)}
-			</td>
-			{metrics.map(({ statWeights, metricClass }, index) => (
-				<StatWeightCells
-					key={index}
-					stat={stat}
-					statWeights={statWeights}
-					metricClass={metricClass}
-					iterations={iterations}
-					epRatio={epRatios[index]}
-					epDelta={epDelta}
-					cellClassName={cellClassName}
-				/>
-			))}
+				))}
 			<td className={`current-ep ${cellClassName}`}>
 				<NumberPicker
 					modObject={player}
