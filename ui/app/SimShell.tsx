@@ -78,10 +78,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 					data-testid="sim-ui"
 					{...simUiAttributes({ spec, metrics })}>
 					<div className="h-full min-h-screen flex flex-col" data-testid="sim-root">
-						<div
-							className="fixed top-0 left-0 w-screen h-screen bg-no-repeat bg-cover -z-1 bg-sim"
-							data-testid="sim-bg"
-						/>
+						<div className="fixed top-0 left-0 w-screen h-screen bg-no-repeat bg-cover -z-1 bg-sim" data-testid="sim-bg" />
 						{noticeText ? (
 							<div className="notices-banner alert border-b border-border mb-0 text-center" data-testid="notices-banner">
 								{noticeText}
@@ -89,10 +86,10 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 						) : null}
 						<div className="flex flex-1 max-lg:flex-col" data-testid="sim-container">
 							<aside
-								className="sticky top-[-1px] flex-1 flex flex-col items-stretch bg-background h-dvh z-sidebar max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-auto"
+								className="sticky -top-px flex-1 flex flex-col items-stretch bg-background h-dvh z-sidebar max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-auto"
 								data-testid="sim-sidebar">
 								<div
-									className="sim-title h-[calc(var(--sim-header-height)+1px)] border-b border-b-border z-sim-title max-lg:sticky max-lg:top-[-1px]"
+									className="sim-title h-[calc(var(--sim-header-height)+1px)] border-b border-b-border z-sim-title max-lg:sticky max-lg:-top-px"
 									data-testid="sim-title">
 									<SimTitleDropdown currentSpec={spec} />
 								</div>
@@ -126,7 +123,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								<header
 									ref={header}
 									className={clsx(
-										'sticky top-[-1px] h-sim-header pt-6 pr-page pl-page -mx-page whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
+										'sticky -top-px h-sim-header pt-6 pr-page pl-page -mx-page whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
 										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:after:w-full",
 										stuck && 'stuck data-[stuck]:bg-background',
 									)}
@@ -148,7 +145,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 										</div>
 									</div>
 								</header>
-								<main ref={main} className="h-[80%] flex flex-grow" data-testid="sim-main" />
+								<main ref={main} className="h-4/5 flex flex-grow" data-testid="sim-main" />
 							</div>
 						</div>
 					</div>

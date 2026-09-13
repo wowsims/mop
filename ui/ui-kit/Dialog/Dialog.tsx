@@ -145,7 +145,7 @@ export const Dialog = ({
 													'-mt-2 -mb-2 -mr-1 ml-auto',
 													'py-2 px-2',
 													'text-link',
-													'transition-colors duration-150 ease-in-out',
+													'transition-[color,background-color,border-color] duration-150 ease-in-out',
 													'z-modal-close hover:text-white focus-visible:outline-0 focus-visible:shadow-focus-ring',
 													closeClassName,
 												)}

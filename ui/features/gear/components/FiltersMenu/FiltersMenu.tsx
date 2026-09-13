@@ -291,7 +291,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 			className="filters-menu"
 			size="md"
 			elevated
-			bodyGap="gap-stack"
+			bodyGap="gap-3"
 			title={i18n.t('gear_tab.gear_picker.filters.title')}>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.filters.general')}>
 				<div className="ilvl-filters">

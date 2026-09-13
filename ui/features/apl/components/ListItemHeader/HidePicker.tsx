@@ -19,7 +19,7 @@ export const HidePicker = ({ player, config }: HidePickerProps) => {
 	const { value, setValue, hidden, disabled, shellConfig } = useAplInput(player, config);
 
 	return (
-		<PickerShell config={shellConfig} className="hide-picker-root m-0 w-[unset]" hidden={hidden} disabled={disabled}>
+		<PickerShell config={shellConfig} className="hide-picker-root m-0 w-auto" hidden={hidden} disabled={disabled}>
 			<ListItemAction icon={value ? 'fa-eye-slash' : 'fa-eye'} className="hide-picker-button" onClick={() => setValue(!value)} />
 		</PickerShell>
 	);

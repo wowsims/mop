@@ -60,7 +60,7 @@ export const Toast = ({ toast, inline = false }: ToastProps) => {
 						render={
 							<Button
 								iconOnly
-								className="flex items-center justify-center -mr-2 ml-4 p-[0.25em] text-white opacity-50 transition-opacity duration-150 ease-linear hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-focus-ring"
+								className="flex items-center justify-center -mr-2 ml-4 p-[0.25em] text-white opacity-50 transition-[opacity] duration-150 ease-linear hover:opacity-100 focus-visible:outline-0 focus-visible:opacity-100 focus-visible:shadow-focus-ring"
 							/>
 						}
 						data-testid="sim-toast-close"
