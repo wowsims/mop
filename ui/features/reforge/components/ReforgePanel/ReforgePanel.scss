@@ -1,0 +1,19 @@
+@import 'shared/tokens';
+
+.sim-popover-popup.reforge-optimiser-popover {
+	min-width: 300px;
+	max-width: 350px;
+
+	// `--settings-button-width` is declared on `.suggest-reforges-settings-group`, which the popup is portalled out of, so it never resolves there either. The fallback is that same 36px.
+	@include media-breakpoint-down(lg) {
+		max-width: min(350px, calc(100dvw - var(--settings-button-width, 36px) - var(--spacer-3) * 2));
+	}
+
+	.saved-data-manager-root {
+		margin-bottom: 0;
+	}
+}
+
+.sim-tooltip.suggest-reforges-softcaps {
+	max-width: 310px;
+}

@@ -1,0 +1,14 @@
+{
+	"name": "HotW Wrath-Weave",
+	"stats": {
+		"StatStrength": 0.34,
+		"StatAgility": 1.0,
+		"StatAttackPower": 0.32,
+		"StatHitRating": 0.37,
+		"StatExpertiseRating": 0.37,
+		"StatCritRating": 0.36,
+		"StatHasteRating": 0.25,
+		"StatMasteryRating": 0.37
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.72 }
+}

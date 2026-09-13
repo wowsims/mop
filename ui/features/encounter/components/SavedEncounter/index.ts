@@ -1,0 +1,1 @@
+export { SavedEncounter } from './SavedEncounter';

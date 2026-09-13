@@ -62,10 +62,6 @@
 		font-weight: bold;
 	}
 
-	.sim-tabs {
-		border-bottom: 0;
-	}
-
 	.import-export {
 		.import-link,
 		.export-link {
@@ -73,17 +69,8 @@
 			font-size: var(--bs-nav-link-font-size);
 			transition: var(--nav-link-transition);
 
-			&.show {
+			&[data-popup-open] {
 				color: var(--bs-white);
-			}
-		}
-
-		.dropdown-item {
-			&.disabled {
-				pointer-events: auto;
-				cursor: not-allowed;
-				color: var(--bs-dropdown-link-color);
-				opacity: 0.5;
 			}
 		}
 	}
@@ -123,11 +110,6 @@
 
 	.sim-dropdown-menu {
 		display: flex;
-		// Needed so that dropdowns don't clip the header with overflow-x set
 		position: unset;
-
-		.dropdown-menu {
-			top: -2px;
-		}
 	}
 }

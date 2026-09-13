@@ -1,0 +1,721 @@
+@import 'shared/tokens';
+
+.rotation-floating-action-bar-root {
+	@include bottom-floating-action-bar(var(--spacer-2));
+	z-index: 4;
+	box-sizing: border-box;
+	margin-bottom: calc(-1 * var(--container-padding));
+	min-height: var(--rotation-fab-h);
+	transition:
+		padding 0.15s ease-in-out,
+		border-width 0.15s ease-in-out;
+}
+
+.rotation-fab-preview {
+	overflow: hidden;
+	opacity: 0.75;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rotation-fab-toggle {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	gap: var(--spacer-2);
+	z-index: 1;
+}
+
+.rotation-fab-actions {
+	position: relative;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	min-width: 0;
+
+	.stuck & {
+		background: var(--bs-body-bg);
+	}
+}
+
+.rotation-fab-clip {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% - 1px);
+	left: 0;
+	overflow: hidden;
+
+	.rotation-floating-action-bar-root[data-expanded='false'] & {
+		pointer-events: none;
+	}
+}
+
+.rotation-fab-panel {
+	transform: translate3d(0, 100%, 0);
+	border: var(--bs-border-width) solid var(--bs-border-color);
+	background: var(--bs-body-bg);
+	transition: transform 150ms ease;
+
+	.rotation-floating-action-bar-root[data-expanded='true'] & {
+		transform: translate3d(0, 0, 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+.rotation-fab-panel-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.rotation-fab-groups {
+	display: flex;
+	flex-direction: column;
+	max-height: min(45vh, 26rem);
+	padding: var(--spacer-2);
+	overflow-y: auto;
+	gap: var(--spacer-3);
+}
+
+.rotation-fab-group-title {
+	margin-bottom: var(--spacer-1);
+	font-weight: bold;
+}
+
+.rotation-fab-group-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacer-1);
+}
+
+// Written out rather than generated from $secondary-resource-colors: the BEM plugin cannot
+// parse an interpolated selector. Every spec's secondary resource is the same ResourceType,
+// so the timeline classes the row by name.
+.secondary-resource--arcane-charges .series-color,
+.secondary-resource--arcane-charges.series-color {
+	color: var(--bs-arcane-charges);
+}
+
+.secondary-resource--shadow-orbs .series-color,
+.secondary-resource--shadow-orbs.series-color {
+	color: var(--bs-shadow-orbs);
+}
+
+.secondary-resource--demonic-fury .series-color,
+.secondary-resource--demonic-fury.series-color {
+	color: var(--bs-demonic-fury);
+}
+
+.secondary-resource--burning-embers .series-color,
+.secondary-resource--burning-embers.series-color {
+	color: var(--bs-burning-embers);
+}
+
+.secondary-resource--soul-shards .series-color,
+.secondary-resource--soul-shards.series-color {
+	color: var(--bs-soul-shards);
+}
+
+.secondary-resource--holy-power .series-color,
+.secondary-resource--holy-power.series-color {
+	color: var(--bs-holy-power);
+}
+
+.threat .series-color,
+.threat.series-color {
+	color: var(--bs-threat);
+}
+
+.health .series-color,
+.health.series-color {
+	color: var(--bs-health);
+}
+
+.mana .series-color,
+.mana.series-color {
+	color: var(--bs-mana);
+}
+
+.energy .series-color,
+.energy.series-color {
+	color: var(--bs-energy);
+}
+
+.rage .series-color,
+.rage.series-color {
+	color: var(--bs-rage);
+}
+
+.focus .series-color,
+.focus.series-color {
+	color: var(--bs-focus);
+}
+
+.combo-points .series-color,
+.combo-points.series-color {
+	color: var(--bs-combo-points);
+}
+
+.solar-energy .series-color,
+.solar-energy.series-color {
+	color: var(--bs-solar-energy);
+}
+
+.lunar-energy .series-color,
+.lunar-energy.series-color {
+	color: var(--bs-lunar-energy);
+}
+
+.timeline-root {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+
+.timeline-disclaimer {
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: var(--spacer-2);
+
+	@include media-breakpoint-down(lg) {
+		.timeline-disclaimer-text {
+			flex: 1 1 100%;
+		}
+	}
+
+	.timeline-chart-picker {
+		width: auto;
+		margin-left: auto;
+		flex-shrink: 0;
+		align-self: flex-start;
+
+		.btn-outline-primary {
+			--bs-btn-hover-bg: var(--bs-primary);
+			--bs-btn-hover-border-color: var(--bs-primary);
+			--bs-btn-active-bg: var(--bs-primary);
+			--bs-btn-active-border-color: var(--bs-primary);
+		}
+
+		.btn-check:focus + .btn {
+			box-shadow: none;
+		}
+
+		.btn-check:focus-visible + .btn {
+			box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
+		}
+	}
+}
+
+.timeline-plots-container {
+	flex-grow: 1;
+}
+
+.timeline-plot > div {
+	margin: auto;
+}
+
+.timeline-content {
+	.dr-row {
+		padding: 0;
+	}
+}
+
+.timeline-plot {
+	&.dps-resources-plot {
+		height: 32rem;
+	}
+}
+
+.timeline-tooltip {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-3);
+	max-height: 75vh;
+	max-width: min(92vw, 64rem);
+	overflow: auto;
+
+	ul {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacer-1);
+		padding-left: 0;
+		list-style: none;
+		margin-bottom: 0;
+	}
+
+	li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--spacer-2);
+	}
+}
+
+.timeline-tooltip .timeline-active-auras {
+	display: block;
+	max-height: 56vh;
+	column-count: 2;
+	column-gap: var(--spacer-3);
+
+	li {
+		break-inside: avoid;
+		margin-bottom: var(--spacer-1);
+	}
+}
+
+.timeline-tooltip .timeline-dps-events {
+	max-height: 40vh;
+	overflow-y: auto;
+}
+
+.timeline-tooltip-header {
+	border-bottom: 1px solid var(--bs-white);
+}
+
+.timeline-tooltip-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-3);
+}
+
+.timeline-tooltip-body-row {
+	display: flex;
+	align-items: center;
+}
+
+.timeline-tooltip-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.series-color {
+	font-weight: bold;
+}
+
+.timeline-tooltip-auras {
+	border-top: 1px solid var(--bs-white);
+}
+
+.timeline-chart {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: var(--spacer-2);
+}
+
+.timeline-chart-toolbar {
+	width: auto;
+	margin-left: auto;
+	flex-shrink: 0;
+	align-self: flex-start;
+}
+
+.timeline-chart-canvas {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+}
+
+.timeline-chart-empty {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+}
+
+// Shared by the chart and the rotation: both anchor a hover tooltip to a point in the viewport
+// rather than to an element, so neither can be clipped by the scroller it is drawn over.
+.timeline-hover-tooltip {
+	position: fixed;
+	left: calc(var(--tooltip-x, 0) * 1px);
+	top: calc(var(--tooltip-y, 0) * 1px);
+	z-index: 1000;
+	pointer-events: none;
+	background-color: var(--bs-tooltip-bg);
+	border: var(--bs-tooltip-border) 1px solid;
+	color: var(--bs-tooltip-body-color);
+	padding: var(--bs-tooltip-body-padding-y) var(--bs-tooltip-body-padding-x);
+	max-width: min(94vw, 68rem);
+	max-height: 80vh;
+	overflow: hidden;
+}
+
+.rotation-pane {
+	--pps: 100px;
+	--duration: 0;
+	--label-w: clamp(8rem, 14rem, 20rem);
+	--rotation-fab-h: calc(2.75rem + 2 * var(--spacer-2) + 2 * var(--bs-border-width));
+	--rotation-item-h: 24px;
+	--rotation-row-bg: var(--bs-body-bg);
+	--rotation-cast-bg: rgba(229, 204, 128, 0.7);
+	--rotation-cast-cancel-bg: rgba(var(--bs-cancel-rgb), 0.7);
+	--rotation-aura-bg: rgba(0, 0, 255, 0.52);
+	--rotation-travel-bg: rgba(249, 192, 255, 0.6);
+	--rotation-tick-bg: maroon;
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	color: var(--bs-white);
+
+	@include media-breakpoint-down(lg) {
+		.rotation-label-text {
+			display: none;
+		}
+	}
+}
+
+.rotation-header {
+	position: sticky;
+	top: var(--rotation-sticky-top, 0px);
+	z-index: 5;
+	display: flex;
+	flex: 0 0 30px;
+	height: 30px;
+	margin-right: calc(-1 * var(--container-padding));
+	background: var(--bs-body-bg);
+}
+
+.rotation-corner,
+.rotation-row-label {
+	display: flex;
+	flex: 0 0 var(--label-w);
+	align-items: center;
+	box-sizing: border-box;
+	width: var(--label-w);
+	padding-right: var(--spacer-2);
+	gap: var(--spacer-1);
+}
+
+.rotation-zoom-button {
+	padding: 0 var(--spacer-1);
+	border: 0;
+	background: transparent;
+	color: var(--bs-white);
+	line-height: 1;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bs-brand);
+	}
+}
+
+.rotation-ruler {
+	position: relative;
+	flex: 1 1 0;
+	box-sizing: border-box;
+	min-width: 0;
+	overflow: hidden;
+	border-bottom: 1px solid var(--bs-white);
+	color: var(--bs-white);
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.rotation-ruler-track {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(var(--pps) * var(--duration));
+	height: 100%;
+	transform: translateX(calc(var(--pan, 0) * -1px));
+}
+
+.rotation-ruler-tick {
+	position: absolute;
+	bottom: 0;
+	left: calc(var(--pps) * var(--t));
+	width: 3px;
+	height: 5px;
+	margin-left: -1px;
+	background-image: linear-gradient(to right, transparent 1px, currentcolor 1px, currentcolor 2px, transparent 2px);
+
+	&.is-major {
+		height: 12px;
+	}
+}
+
+.rotation-ruler-label {
+	position: absolute;
+	top: 2px;
+	left: calc(var(--pps) * var(--t));
+	transform: translateX(-50%);
+	white-space: nowrap;
+
+	&.is-first {
+		transform: none;
+	}
+}
+
+.rotation-scroller {
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 0;
+	margin-right: calc(-1 * var(--container-padding));
+	overflow-x: auto;
+	overflow-y: hidden;
+	outline: none;
+	cursor: grab;
+
+	&.is-panning {
+		cursor: grabbing;
+		user-select: none;
+	}
+}
+
+.rotation-content {
+	min-width: 100%;
+	width: calc(var(--label-w) + var(--pps) * var(--duration));
+}
+
+.rotation-vspacer {
+	height: calc(var(--vspacer-h, 0) * 1px);
+}
+
+.rotation-row {
+	--rotation-item-top: calc((var(--row-h) * 1px - var(--rotation-item-h)) / 2);
+
+	display: flex;
+	align-items: stretch;
+	box-sizing: border-box;
+	height: calc(var(--row-h) * 1px);
+	margin: 0;
+	border-bottom: 1px solid var(--bs-gray-700);
+	contain: layout style;
+	background-color: var(--rotation-row-bg);
+}
+
+// The rest of this column - width, padding, gap - is shared with .rotation-corner above:
+// the ruler only lines up with the tracks while the two stay identical.
+.rotation-row-label {
+	position: sticky;
+	left: 0;
+	z-index: 3;
+	overflow: hidden;
+	background: var(--rotation-row-bg);
+	font-size: 13px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.rotation-row-track {
+	position: relative;
+	flex: 1 0 calc(var(--pps) * var(--duration));
+	box-sizing: border-box;
+	min-width: 0;
+}
+
+.rotation-row-icon {
+	@include wowhead-background-icon;
+	flex: 0 0 auto;
+	width: 24px;
+	height: 24px;
+}
+
+.rotation-row-hide {
+	flex: 0 0 auto;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--bs-white);
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bs-link-danger);
+	}
+}
+
+.rotation-label-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.rotation-row-header .rotation-row-label {
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+.rotation-row-separator {
+	border-bottom-color: var(--bs-white);
+}
+
+.rotation-measurer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: max-content;
+	visibility: hidden;
+	pointer-events: none;
+
+	.rotation-row-label {
+		position: static;
+		flex: 0 0 auto;
+		width: max-content;
+	}
+}
+
+.rotation-item {
+	position: absolute;
+	top: 0;
+	left: calc(var(--pps) * var(--t));
+}
+
+.rotation-item-cast {
+	z-index: 1;
+	display: flex;
+	top: var(--rotation-item-top);
+	align-items: center;
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-cast-bg);
+
+	&.cast-cancelled {
+		background-color: var(--rotation-cast-cancel-bg);
+
+		.rotation-item-icon {
+			border-color: var(--bs-cancel);
+		}
+	}
+
+	&.outcome-miss .rotation-item-icon {
+		border-color: var(--bs-miss);
+	}
+
+	&.outcome-partial .rotation-item-icon {
+		border-color: var(--bs-partial);
+	}
+
+	&.outcome-hit .rotation-item-icon {
+		border-color: var(--bs-hit);
+	}
+
+	&.outcome-crit .rotation-item-icon {
+		border-color: var(--bs-crit);
+	}
+}
+
+.rotation-item-icon {
+	@include wowhead-background-icon;
+	flex: 0 0 auto;
+	width: var(--rotation-item-h);
+	height: var(--rotation-item-h);
+	border-bottom: 3px solid var(--bs-gray);
+}
+
+// Sits inside the cast bar, so top: 0 already puts it in the same band.
+.rotation-item-travel {
+	position: absolute;
+	top: 0;
+	left: calc(var(--pps) * var(--t));
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-travel-bg);
+}
+
+.rotation-item-tick {
+	z-index: 2;
+	top: var(--rotation-item-top);
+	width: 5px;
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-tick-bg);
+}
+
+.rotation-item-aura {
+	top: var(--rotation-item-top);
+	min-width: calc(var(--pps) * var(--dur));
+	height: var(--rotation-item-h);
+	background-color: var(--rotation-aura-bg);
+	opacity: 0.5;
+
+	&.shares-row .rotation-item-stacks {
+		text-indent: 30px;
+	}
+}
+
+// Both are a full-height slice of their parent bordered on each side; .rotation-item
+// carries the positioning.
+.rotation-item-stacks,
+.rotation-item-resource {
+	display: flex;
+	align-items: center;
+	width: calc(var(--pps) * var(--dur));
+	height: 100%;
+	overflow-x: hidden;
+	border-left: 1px solid var(--bs-gray);
+	border-right: 1px solid var(--bs-gray);
+	font-weight: bold;
+}
+
+.rotation-item-resource-fill {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 10px;
+	height: calc(var(--fill) * 1%);
+
+	&.focus {
+		background-color: var(--bs-orange);
+	}
+
+	&.energy {
+		background-color: var(--bs-partial);
+	}
+
+	&.lunar-energy {
+		width: 24px;
+		background-color: var(--bs-lunar-energy);
+	}
+
+	&.solar-energy {
+		top: 0;
+		width: 24px;
+		background-color: var(--bs-solar-energy);
+	}
+}
+
+.rotation-scroller[data-density='medium'] {
+	.rotation-item-stacks,
+	.rotation-item-resource-text {
+		display: none;
+	}
+}
+
+.rotation-scroller[data-density='coarse'] {
+	--rotation-item-h: 20px;
+
+	.rotation-item-icon,
+	.rotation-item-stacks,
+	.rotation-item-resource-text {
+		display: none;
+	}
+
+	.rotation-item-cast {
+		min-width: max(2px, calc(var(--pps) * var(--dur)));
+		background-color: var(--bs-gray-700);
+
+		&.outcome-hit {
+			background-color: var(--bs-hit);
+		}
+
+		&.outcome-crit {
+			background-color: var(--bs-crit);
+		}
+
+		&.outcome-miss {
+			background-color: var(--bs-miss);
+		}
+
+		&.outcome-partial {
+			background-color: var(--bs-partial);
+		}
+
+		&.cast-cancelled {
+			background-color: var(--bs-cancel);
+		}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "P1",
+	"stats": {
+		"StatIntellect": 0.11,
+		"StatSpirit": 0.47,
+		"StatSpellPower": 1,
+		"StatHitRating": 0.87,
+		"StatCritRating": 0.74,
+		"StatHasteRating": 1.65,
+		"StatMP5": 0.0
+	}
+}

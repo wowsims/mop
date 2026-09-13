@@ -1,0 +1,73 @@
+@import 'shared/tokens';
+
+.sim-tabs-mount,
+.sim-tabs-root {
+	display: contents;
+}
+
+.sim-tabs {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-end;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sim-tab-link {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	border: 0;
+	padding: var(--tab-padding-y) var(--tab-padding-x);
+	background: none;
+	color: var(--tab-color);
+	font-family: inherit;
+	font-size: var(--tab-font-size);
+	font-weight: bold;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition: var(--tab-transition);
+
+	&:hover {
+		color: var(--tab-color-hover);
+	}
+
+	&[data-active] {
+		position: relative;
+		color: var(--tab-color-active);
+
+		&::after {
+			content: '';
+			position: absolute;
+			height: 2px;
+			background: var(--tab-color-active);
+			bottom: 0;
+			left: 0;
+			right: 0;
+		}
+	}
+
+	&:focus-visible {
+		outline: 0;
+		box-shadow: var(--focus-ring);
+	}
+}
+
+// The pane fade is enter-only: `keepMounted` uses a real `hidden` attribute for the outgoing pane, which the reboot already styles `display: none !important`.
+.sim-tab-panel {
+	max-width: 100%;
+	flex-grow: 1;
+	padding-top: var(--gap-width);
+	opacity: 1;
+	transition: var(--transition-fade);
+
+	&[data-starting-style] {
+		opacity: 0;
+	}
+
+	@include media-breakpoint-down(lg) {
+		padding-top: calc(var(--gap-width-sm) * 2);
+	}
+}

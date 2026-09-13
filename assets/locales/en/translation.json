@@ -24,6 +24,16 @@
 		"search": "Search",
 		"filter": "Filter",
 		"elapsed_time": "Elapsed Time",
+		"ok": "OK",
+		"cancel": "Cancel",
+		"confirm": "Confirm",
+		"delete": "Delete",
+		"saved_data": {
+			"delete_title": "Delete saved {{label}}",
+			"delete_confirm": "Delete saved {{label}} '{{name}}'?",
+			"choose_name": "Choose a label for your saved {{label}}!",
+			"name_exists": "{{label}} with name {{name}} already exists."
+		},
 		"phases": {
 			"1": "Phase 1 (5.0 - T14)",
 			"2": "Phase 2 (5.1)",
@@ -417,10 +427,6 @@
 		"debuffs": {
 			"title": "Debuffs",
 			"tooltip": "Debuffs applied by <strong>other</strong> raid members.",
-			"misc": {
-				"label": "Misc",
-				"tooltip": "Miscellaneous debuffs"
-			},
 			"armor_reduction": "Armor Reduction",
 			"phys_dmg_reduction": "Phys Dmg Reduction",
 			"cast_speed": "Cast Speed",
@@ -568,7 +574,8 @@
 				"combat": "Combat Potion"
 			},
 			"elixirs": {
-				"title": "Elixirs"
+				"title": "Elixirs",
+				"separator": "or"
 			},
 			"food": {
 				"title": "Food"
@@ -762,8 +769,9 @@
 		}
 	},
 	"bulk_tab": {
-		"title": "Batch (<span class=\"text-success\">New</span>)",
-		"description": "<span className=\"bold\">Batch Simming</span> is a new feature akin to the <span className=\"bold\">Top Gear</span> sim on <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> that allows you to select multiple items and sim them find the best combinations.<br />This is an <span className=\"text-brand\">Alpha</span> feature, so if you have feedback or find a bug, please report it!",
+		"title": "Batch",
+		"title_badge": "New",
+		"description": "<span className=\"bold\">Batch Simming</span> is a new feature akin to the <span className=\"bold\">Top Gear</span> sim on <a href=\"https://raidbots.com\" target=\"_blank\" rel=\"noopener noreferrer\">Raidbots.com</a> that allows you to select multiple items and sim them find the best combinations.<br />This is an <span className=\"text-brand\">Alpha</span> feature, so if you have feedback or find a bug, please report it!",
 		"download_native": "Download the local sim for faster results.",
 		"tabs": {
 			"setup": "Setup",
@@ -2027,6 +2035,7 @@
 				"search_placeholder": "Search logs…",
 				"search_add_filter": "Add filter",
 				"search_add_value": "Add value",
+				"no_matches": "No log lines match the current search or filters.",
 				"floatingActionBar": {
 					"toggle": "Toggle filters",
 					"none": "No filters",
@@ -2286,6 +2295,7 @@
 	"sidebar": {
 		"iterations": "Iterations",
 		"warnings": {
+			"label": "Warnings",
 			"profession_requirement": "{{itemName}} requires {{professionName}}, but it is not selected.",
 			"too_many_jc_gems": "Only 2 Jewelcrafting Gems are allowed, but {{count}} are equipped.",
 			"unspent_talent_points": "Missing required talent selections in row {{rowNumbers}}.",
@@ -2301,6 +2311,7 @@
 					"title": "Calculate Stat Weights",
 					"ep": "EP",
 					"weights": "Weights",
+				"stats_type": "Stat display type",
 					"show_all_stats": "Show All Stats",
 					"dps_tps_reference": "DPS/TPS reference:",
 					"healing_reference": "Healing reference:",
@@ -2429,6 +2440,8 @@
 			"phase": "{{phase}} - {{status}}"
 		},
 		"results": {
+			"stop": "Stop",
+			"stopping": "Stopping...",
 			"progress": {
 				"presim_running": "presimulations running",
 				"iterations_complete": "iterations complete"
@@ -2523,6 +2536,7 @@
 				"under_by": "Under by"
 			},
 			"bonus_prefix": "Bonus",
+			"bonus_action": "Add bonus {{stat}}",
 			"points_suffix": "Points",
 			"percent_suffix": "%"
 		}
@@ -2533,7 +2547,8 @@
 		"default_player": "Player",
 		"training_dummy": "Training Dummy",
 		"seek_back": "Rewind {{time}}s",
-		"seek_fwd": "Forward {{time}}s"
+		"seek_fwd": "Forward {{time}}s",
+		"play_pause": "Play / Pause"
 	},
 	"fire_mage": {
 		"combustion_thresholds": {

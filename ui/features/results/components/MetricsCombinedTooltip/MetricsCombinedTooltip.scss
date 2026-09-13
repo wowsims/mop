@@ -1,0 +1,15 @@
+@import 'shared/tokens';
+
+.sim-tooltip.metrics-table-tooltip {
+	max-width: none;
+	font-size: 12px;
+
+	@include media-breakpoint-down(sm) {
+		max-width: 300px;
+	}
+
+	thead th {
+		padding-top: 0;
+		text-align: center;
+	}
+}

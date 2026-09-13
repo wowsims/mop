@@ -17,17 +17,6 @@
 			}
 		}
 	}
-
-	.modal-scroll-table {
-		flex: 1;
-		overflow-y: auto;
-
-		th {
-			position: sticky;
-			top: 0;
-			background: var(--bs-body-bg);
-		}
-	}
 }
 
 .modal-body {

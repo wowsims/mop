@@ -4,19 +4,39 @@ import fs from 'fs';
 import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ConfigEnv, defineConfig, PluginOption, UserConfigExport } from 'vite';
+import react from '@vitejs/plugin-react';
+import { ConfigEnv, type CSSOptions, defineConfig, PluginOption, UserConfigExport } from 'vite';
 import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import stylelint from 'vite-plugin-stylelint';
 
-import { specPages } from './tools/vite/spec_pages.mjs';
+import { SPEC_PAGE_TEMPLATE, specPages } from './tools/vite/spec_pages.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const BASE_PATH = path.resolve(__dirname, 'ui');
 export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
+
+// The ui/ path aliases. Mirrored by `compilerOptions.paths` in tsconfig.json and by the
+// layering rules in .oxlintrc.json; shared with vite.harness.mts from here so the two vite
+// configs cannot drift.
+export const SCSS_OPTIONS: NonNullable<NonNullable<CSSOptions['preprocessorOptions']>['scss']> = {
+	loadPaths: [path.resolve(BASE_PATH, 'scss')],
+	silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
+};
+
+export const UI_ALIASES: Record<string, string> = {
+	'@sim': path.resolve(BASE_PATH, 'sim'),
+	'@generated': path.resolve(BASE_PATH, 'generated'),
+	'@worker': path.resolve(BASE_PATH, 'worker'),
+	'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
+	'@features': path.resolve(BASE_PATH, 'features'),
+	'@app': path.resolve(BASE_PATH, 'app'),
+	'@specs': path.resolve(BASE_PATH, 'specs'),
+	'@i18n': path.resolve(BASE_PATH, 'i18n'),
+};
 
 function serveExternalAssets() {
 	const simWorker = process.env.WASM_WORKER ? '/mop/sim_worker.js' : '/mop/local_worker.js';
@@ -101,6 +121,9 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 	({
 		base: '/mop/',
 		root: BASE_PATH,
+		resolve: {
+			alias: { ...UI_ALIASES },
+		},
 		build: {
 			outDir: OUT_DIR,
 			minify: mode === 'development' ? false : 'oxc',
@@ -121,14 +144,13 @@ export default defineConfig(({ command, mode }) => {
 	return {
 		...baseConfig,
 		css: {
-			preprocessorOptions: {
-				scss: {
-					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
-				},
-			},
+			preprocessorOptions: { scss: SCSS_OPTIONS },
 		},
 		plugins: [
-			specPages(BASE_PATH),
+			// Fast Refresh only: on vite 8 this plugin carries no transform of its own, it turns on
+			// `oxc.jsx.refresh` for `serve` and lets rolldown's native refresh wrapper instrument the
+			// modules. The `oxc` block below still states the transform for both commands.
+			react(),
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			watchAndRun([
 				{
@@ -141,6 +163,7 @@ export default defineConfig(({ command, mode }) => {
 				},
 			]),
 			serveExternalAssets(),
+			specPages(BASE_PATH),
 			checker({
 				root: BASE_PATH,
 				typescript: { root: __dirname, tsconfigPath: 'tsconfig.json' },
@@ -156,11 +179,9 @@ export default defineConfig(({ command, mode }) => {
 		],
 		oxc: {
 			jsx: {
-				runtime: 'classic',
-				pragma: 'element',
-				pragmaFrag: 'fragment',
+				runtime: 'automatic',
+				importSource: 'react',
 			},
-			jsxInject: "import { element, fragment } from 'tsx-vanilla';",
 		},
 		build: {
 			...baseConfig.build,
@@ -168,6 +189,10 @@ export default defineConfig(({ command, mode }) => {
 				// The per-spec pages are added by the specPages plugin.
 				input: {
 					'ui/index.html': path.resolve(BASE_PATH, 'index.html'),
+					// The single spec page. `specPages` copies the processed result to
+					// `<class>/<spec>/index.html` and drops this path from the bundle; the key only
+					// names the page's js/css ([name] in the *FileNames below), not its html output.
+					spec_entry: path.resolve(BASE_PATH, SPEC_PAGE_TEMPLATE),
 				},
 				output: {
 					assetFileNames: () => 'bundle/[name]-[hash].style.css',

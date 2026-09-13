@@ -1,0 +1,61 @@
+@import 'shared/tokens';
+
+button.metrics-table-sort {
+	color: inherit;
+	font: inherit;
+
+	// `shared/_global.scss` clears `outline` on every button, so a focusable control needs its own
+	// indicator or it is reachable with no way to see where you are.
+	&:focus-visible {
+		outline: 1px solid var(--bs-link-color);
+		outline-offset: 1px;
+	}
+}
+
+button.expand-toggle {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+
+	&:focus-visible {
+		outline: 1px solid var(--bs-link-color);
+		outline-offset: 1px;
+	}
+}
+
+.metrics-action {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-2);
+	white-space: initial;
+
+	.expand-toggle {
+		margin-left: auto;
+	}
+}
+
+.metrics-action-icon {
+	@include wowhead-background-icon;
+	height: 24px;
+	width: 24px;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+.parent-metric {
+	cursor: pointer;
+}
+
+.child-metric > *:first-child {
+	padding-left: 20px;
+}
+
+tr:not(.parent-metric) .expand-toggle {
+	display: none;
+}
+
+.parent-metric.expand .fa-caret-right,
+.parent-metric:not(.expand) .fa-caret-down {
+	display: none;
+}

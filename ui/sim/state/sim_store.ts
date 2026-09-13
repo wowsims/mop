@@ -1,0 +1,383 @@
+// The per-page Zustand store that is becoming the single source of truth for
+// sim state. One Sim = one store; facade classes (Sim/Raid/Encounter/Player)
+// write it via store.setState(...); consumers subscribe through the helpers in
+// subscriptions.ts (batched by batch.ts) — there is no separate event system.
+//
+// Slices are added here as each facade is converted; a slice absent from this
+// file still lives in its class.
+import type { BulkRequiredSetBonus, PlayerStats } from '@generated/proto/api';
+import {
+	ConsumesSpec,
+	Debuffs,
+	Faction,
+	Glyphs,
+	HealingModel,
+	IndividualBuffs,
+	type ItemSlot,
+	type ItemSpec,
+	PartyBuffs,
+	RaidBuffs,
+	Target as TargetProto,
+	UnitReference,
+	type WeaponType,
+} from '@generated/proto/common';
+import { DatabaseFilters } from '@generated/proto/ui';
+import { subscribeWithSelector } from 'zustand/middleware';
+import { createStore } from 'zustand/vanilla';
+
+import type { BulkSimItemSlot } from '../bulk/constants_auto_gen';
+import type { BulkPickerEntry, BulkResults } from '../bulk/types';
+import { ENCOUNTER_DEFAULTS } from '../constants/encounter';
+import { CURRENT_PHASE } from '../constants/other';
+import type { EquippedItem } from '../proto/equipped_item';
+import type { Gear, ItemSwapGear } from '../proto/gear';
+import type { StatCap, Stats } from '../proto/stats';
+
+// Presentation flags (owned by UISettings).
+export interface UISlice {
+	showDamageMetrics: boolean;
+	showThreatMetrics: boolean;
+	showHealingMetrics: boolean;
+	showExperimental: boolean;
+	wasmConcurrency: number;
+	showQuickSwap: boolean;
+	showEPValues: boolean;
+	language: string;
+}
+
+// Encounter settings (owned by Encounter). `targets` is replace-on-write:
+// Encounter.modifyTarget/setTargets store a new array, and the pickers copy
+// before mutating, so subscribers can use reference equality.
+export interface EncounterSlice {
+	duration: number;
+	durationVariation: number;
+	executeProportion20: number;
+	executeProportion25: number;
+	executeProportion35: number;
+	executeProportion45: number;
+	executeProportion90: number;
+	useHealth: boolean;
+	targets: Array<TargetProto>;
+}
+
+// Raid-wide settings (owned by Raid; partyBuffs entries owned by each Party).
+// Protos are replace-on-write (setters store clones), so subscribers use
+// reference equality.
+export interface RaidSlice {
+	buffs: RaidBuffs;
+	debuffs: Debuffs;
+	tanks: Array<UnitReference>;
+	targetDummies: number;
+	numActiveParties: number;
+	// One entry per party; length equals MAX_NUM_PARTIES (5).
+	partyBuffs: Array<PartyBuffs>;
+	// Player storeKeys per party slot (5×5), null = empty. Replace-on-write
+	// (outer and inner arrays) so party/raid composition selectors can use
+	// reference equality. The Party↔Player object graph stays class-side.
+	composition: Array<Array<number | null>>;
+}
+
+// Domain-level sim settings (owned by Sim).
+export interface SimSettingsSlice {
+	iterations: number;
+	phase: number;
+	faction: Faction;
+	fixedRngSeed: number;
+	filters: DatabaseFilters;
+	// Seed of the last sim run; written unconditionally per run, so
+	// subscribers watch the version counter, not the value.
+	lastUsedRngSeed: number;
+	lastUsedRngSeedVersion: number;
+	// Bumped when any unit's metadata (spells/auras) changed after a
+	// compute-stats round trip; drives subscribeUnitMetadata().
+	metadataVersion: number;
+}
+
+// Per-player settings. Values are the source of truth; the parallel `v`
+// version counters are what subscribers watch: a setter bumps a field's
+// version exactly when it counts as a change, so notification semantics
+// survive reference-identity quirks (unconditional setters, forceUpdate,
+// withChallengeMode returning `this`).
+export interface PlayerSlice {
+	name: string;
+	race: number;
+	profession1: number;
+	profession2: number;
+	buffs: IndividualBuffs;
+	consumables: ConsumesSpec;
+	bonusStats: Stats;
+	gear: Gear;
+	talentsString: string;
+	glyphs: Glyphs;
+	// Per-spec proto; the generic is only known on Player<SpecType>.
+	specOptions: unknown;
+	reactionTime: number;
+	channelClipDelay: number;
+	inFrontOfTarget: boolean;
+	distanceFromTarget: number;
+	healingModel: HealingModel;
+	challengeModeEnabled: boolean;
+	epWeights: Stats;
+	epRatios: Array<number>;
+	currentStats: PlayerStats;
+	// Item-swap settings (facade: ItemSwapSettings).
+	itemSwapEnabled: boolean;
+	itemSwapGear: ItemSwapGear;
+	itemSwapBonusStats: Stats;
+	// Stat-weight reference stats (persisted in the settings envelope).
+	dpsRefStat: number | undefined;
+	healRefStat: number | undefined;
+	tankRefStat: number | undefined;
+	v: Record<PlayerField, number>;
+}
+
+export const PLAYER_FIELDS = [
+	'name',
+	'race',
+	'profession1',
+	'profession2',
+	'buffs',
+	'consumables',
+	'bonusStats',
+	'gear',
+	'talentsString',
+	'glyphs',
+	'specOptions',
+	'reactionTime',
+	'channelClipDelay',
+	'inFrontOfTarget',
+	'distanceFromTarget',
+	'healingModel',
+	'challengeModeEnabled',
+	'epWeights',
+	'epRatios',
+	'currentStats',
+	// Counter-only fields: the value stays class-side (aplRotation) or is
+	// spread over several fields (itemSwap*, *RefStat); the counter is what
+	// subscribers watch.
+	'rotation',
+	'itemSwap',
+	'epRefStat',
+] as const;
+export type PlayerField = (typeof PLAYER_FIELDS)[number];
+
+// Reforge-optimizer settings, one slice per player (keyed by storeKey).
+// Values are the source of truth; `v` counters are what subscribers watch
+// (bumped exactly where a change counts). The derived RelativeStatCap object
+// stays on the ReforgeSettings facade.
+export const REFORGE_FIELDS = [
+	'includeGems',
+	'includeEOTBPGemSocket',
+	'statCaps',
+	'useCustomEPValues',
+	'useSoftCapBreakpoints',
+	'softCapBreakpoints',
+	'breakpointLimits',
+	'freezeItemSlots',
+	'relativeStatCapStat',
+	'relativeStatCapPrecision',
+] as const;
+export type ReforgeField = (typeof REFORGE_FIELDS)[number];
+
+export interface ReforgeSlice {
+	statCaps: Stats;
+	breakpointLimits: Stats;
+	useCustomEPValues: boolean;
+	useSoftCapBreakpoints: boolean;
+	softCapBreakpoints: Array<StatCap>;
+	includeGems: boolean;
+	includeEOTBPGemSocket: boolean;
+	freezeItemSlots: boolean;
+	frozenItemSlots: Array<number>;
+	// Written silently by the optimizer (no counter, like the old bare field).
+	undershootCaps: Stats;
+	relativeStatCapStat: number;
+	relativeStatCapPrecision: number;
+	v: Record<ReforgeField, number>;
+}
+
+// Stat-weight modal settings, one slice per player (keyed by storeKey).
+export interface StatWeightsSlice {
+	excludedStats: Array<number>;
+	excludedPseudoStats: Array<number>;
+	v: { settings: number };
+}
+
+// Bulk (batch) sim tab, one slice per player. The autosave and the combination
+// count react to the `v` counters, never to the entry: the run fields are
+// written without a bump because the combination count writes them itself.
+export interface BulkSlice {
+	// A removed item leaves a null, so the picker entries' indexes never shift.
+	items: ReadonlyArray<ItemSpec | null>;
+	pickerGroups: ReadonlyMap<BulkSimItemSlot, readonly BulkPickerEntry[]>;
+	inheritUpgrades: boolean;
+	useLegacyBulkSim: boolean;
+	requiredSetBonuses: ReadonlyMap<number, BulkRequiredSetBonus>;
+	frozenItems: ReadonlyMap<BulkSimItemSlot, EquippedItem | null>;
+	frozenWeaponSlot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand | undefined;
+	weaponTypeFilters: ReadonlyMap<ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand, WeaponType[]>;
+	combinations: number;
+	iterations: number;
+	combinationsPending: boolean;
+	isRunning: boolean;
+	started: boolean;
+	results: BulkResults | null;
+	// The gear the last batch started from. The set-bonus feasibility check judges against it, not
+	// against the candidate gear a run swaps in and out of the player.
+	runGear: Gear | null;
+	v: { settings: number; items: number };
+}
+
+// One user-visible operation, not one worker request: the combustion calculator
+// issues ten requests under one bar and one stop button. The values are in-memory store keys only,
+// so they are free to change; they read as they do to stay legible in a devtools store dump.
+export enum SimRunKind {
+	IndividualSim = 'individual-sim',
+	BulkSim = 'bulk-sim',
+	StatWeights = 'stat-weights',
+	ReforgeOptimize = 'reforge-optimize',
+}
+
+export const SIM_RUN_KINDS: ReadonlyArray<SimRunKind> = Object.values(SimRunKind);
+
+export interface RunSlice {
+	isRunning: boolean;
+	isAborting: boolean;
+}
+
+export interface SimState {
+	runs: Record<SimRunKind, RunSlice>;
+	reforge: { [storeKey: number]: ReforgeSlice };
+	statWeights: { [storeKey: number]: StatWeightsSlice };
+	bulk: { [storeKey: number]: BulkSlice };
+	sim: SimSettingsSlice;
+	ui: UISlice;
+	encounter: EncounterSlice;
+	raid: RaidSlice;
+	players: { [storeKey: number]: PlayerSlice };
+}
+
+const initialState = (): SimState => ({
+	runs: Object.fromEntries(SIM_RUN_KINDS.map(kind => [kind, { isRunning: false, isAborting: false }])) as Record<SimRunKind, RunSlice>,
+	sim: {
+		iterations: 12500,
+		phase: CURRENT_PHASE,
+		faction: Faction.Alliance,
+		fixedRngSeed: 0,
+		filters: DatabaseFilters.create({ oneHandedWeapons: true, twoHandedWeapons: true }),
+		lastUsedRngSeed: 0,
+		lastUsedRngSeedVersion: 0,
+		metadataVersion: 0,
+	},
+	ui: {
+		showDamageMetrics: true,
+		showThreatMetrics: false,
+		showHealingMetrics: false,
+		showExperimental: false,
+		wasmConcurrency: 0,
+		showQuickSwap: true,
+		showEPValues: false,
+		language: '',
+	},
+	raid: {
+		buffs: RaidBuffs.create(),
+		debuffs: Debuffs.create(),
+		tanks: [],
+		targetDummies: 0,
+		numActiveParties: 5,
+		// 5 = MAX_NUM_PARTIES (raid.ts); not imported to avoid a module cycle.
+		partyBuffs: Array.from({ length: 5 }, () => PartyBuffs.create()),
+		composition: Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => null)),
+	},
+	// Targets are seeded empty to avoid importing encounter.ts (cycle); the
+	// Encounter constructor writes the default target on construction.
+	encounter: {
+		...ENCOUNTER_DEFAULTS,
+		useHealth: false,
+		targets: [],
+	},
+	players: {},
+	reforge: {},
+	statWeights: {},
+	bulk: {},
+});
+
+export type SimStore = ReturnType<typeof createSimStore>;
+
+export function createSimStore() {
+	return createStore<SimState>()(subscribeWithSelector(() => initialState()));
+}
+
+// ---------------------------------------------------------------------------
+// Write helpers shared by the facades. Every logical change is ONE setState so
+// subscribers see it once.
+
+// A one-slice state update. Computed keys widen to `{ [x: string]: ... }`, so the
+// cast back to Partial<SimState> is unavoidable; it lives here once instead of at
+// every call site.
+function sliceUpdate<N extends keyof SimState>(slice: N, value: SimState[N]): Partial<SimState> {
+	return { [slice]: value } as Partial<SimState>;
+}
+
+export function patchRun(store: SimStore, kind: SimRunKind, patch: Partial<RunSlice>) {
+	store.setState(s => ({ runs: { ...s.runs, [kind]: { ...s.runs[kind], ...patch } } }));
+}
+
+type UnkeyedSlice = 'sim' | 'ui' | 'encounter' | 'raid';
+export function patchSlice<N extends UnkeyedSlice>(store: SimStore, slice: N, patch: Partial<SimState[N]>) {
+	store.setState(s => sliceUpdate(slice, { ...s[slice], ...patch }));
+}
+
+// The slices keyed by a player's storeKey. Single source of truth: `KeyedSlice`
+// is derived from it, and deleteKeyed iterates it, so adding a keyed slice
+// cannot leave the disposal path behind.
+export const KEYED_SLICES = ['players', 'reforge', 'statWeights', 'bulk'] as const;
+type KeyedSlice = (typeof KEYED_SLICES)[number];
+type KeyedEntry<N extends KeyedSlice> = SimState[N][number];
+type Versions<N extends KeyedSlice> = KeyedEntry<N>['v'];
+
+export function zeroVersions<F extends string>(fields: ReadonlyArray<F>): Record<F, number> {
+	return Object.fromEntries(fields.map(f => [f, 0])) as Record<F, number>;
+}
+
+// A copy of `v` with each named counter incremented.
+function bumpVersions<N extends KeyedSlice>(v: Versions<N>, bumps: ReadonlyArray<keyof Versions<N>>): Versions<N> {
+	const next = { ...v } as Record<string, number>;
+	for (const f of bumps) next[f as string] = (next[f as string] ?? 0) + 1;
+	return next as Versions<N>;
+}
+
+// Seeds store[slice][key] (initialization, not a change).
+export function seedKeyed<N extends KeyedSlice>(store: SimStore, slice: N, key: number, entry: KeyedEntry<N>) {
+	store.setState(s => sliceUpdate(slice, { ...s[slice], [key]: entry }));
+}
+
+// Writes `patch` into store[slice][key] and bumps the given version counters.
+// A bump with an empty patch is the old bare emit; a patch with no bumps is
+// the old silent field write.
+export function patchKeyed<N extends KeyedSlice>(
+	store: SimStore,
+	slice: N,
+	key: number,
+	patch: Partial<Omit<KeyedEntry<N>, 'v'>>,
+	bumps: ReadonlyArray<keyof Versions<N>> = [],
+) {
+	store.setState(s => {
+		const cur = s[slice][key] as KeyedEntry<N> | undefined;
+		// The entry is gone (deleteKeyed ran for a disposed player). A late write from an
+		// in-flight callback must be a no-op, not a TypeError. Returning the current state
+		// object unchanged makes Zustand skip the notification entirely.
+		if (!cur) return s;
+		return sliceUpdate(slice, { ...s[slice], [key]: { ...cur, ...patch, v: bumpVersions<N>(cur.v, bumps) } });
+	});
+}
+
+// Removes a player's entries from every keyed slice (Player.dispose).
+export function deleteKeyed(store: SimStore, key: number) {
+	store.setState(s =>
+		KEYED_SLICES.reduce<Partial<SimState>>((out, slice) => {
+			const { [key]: _removed, ...rest } = s[slice];
+			return Object.assign(out, sliceUpdate(slice, rest));
+		}, {}),
+	);
+}

@@ -13,20 +13,6 @@
 
 		.sim-link-dropdown {
 			height: 100%;
-
-			& > .dropdown-menu {
-				width: 100%;
-			}
-		}
-	}
-
-	.dropdown-menu {
-		background: var(--bs-body-bg);
-		border: none;
-		z-index: 1500;
-
-		.dropdown-menu {
-			min-width: 300px;
 		}
 	}
 
@@ -38,7 +24,7 @@
 		&:hover,
 		&:focus,
 		&.active,
-		&.show {
+		&[data-popup-open] {
 			background: var(--dropdown-link-hover-bg);
 		}
 

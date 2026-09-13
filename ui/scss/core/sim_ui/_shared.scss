@@ -88,20 +88,6 @@ th {
 	}
 }
 
-.sim-toast-container {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	z-index: var(--toast-z-index);
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacer-2);
-	align-items: flex-end;
-	pointer-events: none;
-	max-width: 100%;
-	width: 100%;
-}
-
 .sim-bg {
 	position: fixed;
 	// These allow the background to fill the page and not be adjusted by browser scrollbars
@@ -154,20 +140,3 @@ th {
 	}
 }
 // END TODO
-
-// Hide all tank EP weights/actions
-// due to inaccurate reforge results causing confusion
-.sim-type--tank {
-	.ep-weights-menu {
-		.results-ep-table thead th:nth-child(2), // Update checkbox
-		.results-ep-table tbody td:nth-child(2), // Update checkbox
-		.modal-footer,
-		.ep-ratios,
-		.ep-reference-options,
-		.damage-metrics,
-		.healing-metrics,
-		.threat-metrics {
-			display: none !important;
-		}
-	}
-}

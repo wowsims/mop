@@ -1,0 +1,18 @@
+{
+	"name": "P3 & P4 - Survival",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 1.38,
+		"StatHitRating": 1.5,
+		"StatCritRating": 0.65,
+		"StatHasteRating": 0.83,
+		"StatExpertiseRating": 1.18,
+		"StatDodgeRating": 0.95,
+		"StatParryRating": 0.97,
+		"StatMasteryRating": 1.35,
+		"StatAttackPower": 0.17,
+		"StatArmor": 0.77,
+		"StatBonusArmor": 0.77
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 1.84 }
+}

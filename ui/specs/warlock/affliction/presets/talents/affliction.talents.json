@@ -1,0 +1,10 @@
+{
+	"name": "Affliction",
+	"talentsString": "231211",
+	"glyphs": {
+		"major1": "GlyphOfUnstableAffliction",
+		"major2": "GlyphOfSiphonLife",
+		"major3": "GlyphOfEternalResolve",
+		"minor3": "GlyphOfUnendingBreath"
+	}
+}

@@ -1,0 +1,284 @@
+# ui/ layout
+
+Target tree:
+
+```
+ui/
+  worker/            NOT MOVED (Go package, go:embed highs.wasm). alias @worker
+  generated/         proto/*, *_auto_gen.ts — tool output only. alias @generated
+                     (*_auto_gen.ts still sit beside their consumers)
+  sim/               DOM-free, node-runnable model, grouped by subject: sim.ts + sim_host.ts +
+                     sim_runs.ts + sim_signal_manager.ts + spec_config.ts at the root, then
+                     player/ (player, player_class, player_spec, classes/, specs/),
+                     raid/ (raid, party, encounter), settings/ (bulk, item_swap, reforge,
+                     stat_weight), utils/ (collections, math, format, json, misc),
+                     workers/, cache/, state/, proto/, talents data + trees, bulk/,
+                     wasm/, constants/, presets/, hooks/, context/. alias @sim
+  ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
+                     base_modal, content_block, copy_button, tooltip_button, tab_pane_class,
+                     saved_data_manager, input_helpers, icon_inputs,
+                     utils/ (css, dom, env, links, wowhead), pickers/, vendor/. alias @ui-kit
+  features/<name>/   one folder per capability: model/ (DOM-free, lint-enforced) +
+                     components/ (React, one folder per component) + hooks/ + utils/ (feature
+                     helpers that are neither a component nor DOM-free). The twelve are
+                     apl, bulk, character-stats, encounter, gear, import-export, item-swap,
+                     reforge, results, settings, stat-weights, talents. alias @features
+  features/hooks/    React hooks several features share and none owns (useSavedPanel), one
+                     per file, beside the twelve capability folders
+  app/               shells + chrome that compose features, and the only place allowed to
+                     import react-dom/client (spec_entry.tsx). SimApp/SimShell/SimTabs,
+                     tabs/ (a React <X>TabBody per tab), header/, SettingsDialog/,
+                     PresetConfigurationPicker/, the sidebar and import/export pieces,
+                     shell_classes, browser_env, known_issues, preset_utils, and
+                     individual_sim_ui.tsx — the host object the React tree reaches through
+                     useSimHost(). types/ holds app-level type modules. alias @app
+  i18n/              LEAF: framework-agnostic i18next config + localization tables
+                     (config.ts, entity_mapping.ts, locale_service.ts, localization.ts), at
+                     the top level rather than under app/. alias @i18n
+  specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
+                     ui/index_template.html is served (dev) and emitted (build) at every
+                     /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
+  scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
+                     replace the 34 per-spec specs/<class>/<spec>/{index,_sim}.scss (PR 8a)
+  index.html          the landing page, a React tree mounted by app/landing_entry.tsx on #root.
+                     Its components are in app/landing/
+  index_template.html, shared/, types/, tracking/   root, unchanged
+```
+
+## JSX
+
+Every `.tsx` file is React (`tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both
+vite configs use the automatic runtime). There is no second dialect and no per-file pragma.
+
+Shared React components get a folder of their own,
+`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}`. Hooks live one per file named after
+the hook: the store's React binding and everything built on it in `sim/hooks/`
+(`useStoreSubscribe.ts`, `useSimRun.ts`), the sim-agnostic ones in `ui-kit/hooks/` (`useInput.ts`,
+`useActionId.ts`). There is no `ui-kit/react/`: every component here is React, so the qualifier
+distinguished nothing. See `.github/skills/wowsims-react/` for the component registry.
+
+## Placement rules
+
+- `domain/`: if it needs `window`/`document`, it doesn't belong here — inject an `Env` adapter instead.
+- `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
+- `features/<x>/model/`: DOM-free logic of one capability, and framework-free — no React, not even as a type. `features/<x>/components/`: its React components, and beside them the imperative helpers that
+  touch the DOM without being components — the timeline's chart builders, zoom controllers and
+  ruler sit in `results/components/Timeline/{chart,rotation}/`. The two may share a name:
+  `results/model/timeline/` and `results/components/Timeline/`.
+- `app/`: composes features; the only place that knows the tab layout.
+- `specs/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
+
+## Dependency direction
+
+```
+generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
+```
+
+`domain` and `i18n` are peers: both are leaves everything above them may depend on, and each
+may depend on the other (i18n's entity/status label maps name domain enums; domain in turn calls
+into i18n for label lookups). Each layer may only import from layers to its left. `.oxlintrc.json` enforces this with
+`no-restricted-imports` on the alias forms (see overrides for `ui/sim/**`, `ui/ui-kit/**`,
+`ui/features/**`, `ui/app/**`), plus `no-restricted-globals` (window/document/localStorage/
+location/navigator) on `ui/sim/**` and `ui/features/*/model/**`.
+
+The `no-restricted-imports` groups use `**` (not `*`): oxlint matches these patterns one
+path segment at a time, so `@features/*` would not catch `@features/reforge/model/reforge_optimizer`.
+`ui/features/**` may not import the store writers (`patchSlice` / `patchKeyed` / `seedKeyed` /
+`deleteKeyed`) — go through a facade.
+
+Features, ui-kit and domain must not name the app host (`SimHostObject`) even as a
+type: `import type` is erased at runtime but the lint bans the specifier either way. They use
+narrow host interfaces instead — all of them in `@sim/sim_host`: `SimUIHost` and `SimHeaderHost`
+(the slice ui-kit widgets reach for), then `SimHost`, `IndividualSimHost<Spec>`, `SimWarning`,
+plus the `isIndividualSimHost()` predicate that replaces `instanceof SimHostObject`). The
+host declares `implements IndividualSimHost` so the interfaces stay honest. The per-spec config schema lives in `@sim/spec_config` (`IndividualSimUIConfig`,
+`InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
+cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
+It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
+`CustomSection`, `defineSpec` — see "How to author a spec"); `app/individual_sim_ui.tsx` re-exports all of it as a
+convenience. The preset shapes
+(`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.ts`
+holds the `make*` builders and re-exports the types.
+
+Proto-serialisable preset data lives as JSON, never as a TS literal: gear (`gear_sets/*.gear.json`),
+APLs (`apls/*.apl.json`), builds (`builds/*.build.json`), EP weights (`presets/ep/*.ep.json`) and
+talents (`presets/talents/*.talents.json`) under `ui/specs/<class>/<spec>/`. EP/talent JSON stores enum
+fields by name (e.g. `"StatCritRating"`, `"GlyphOfBullRush"`) rather than numeric value, so the
+file stays stable across proto regenerations; `PresetUtils.makePresetEpWeightsFromJSON` /
+`makePresetTalentsFromJSON` resolve the names back through the enum (`Stat`/`PseudoStat`, and the
+per-class glyph enums passed in as `{ major, minor }`) and build the preset the same way the old
+literal call did. Anything that references a TS symbol or a callback (a computed EP preset built
+from another via `.withStat()`, an `onLoad` handler, talents that spread another preset's glyphs)
+stays a TS literal instead.
+
+`@i18n/*` resolves into `ui/i18n/*`, a top-level leaf (not owned by `app/`) — domain, ui-kit and
+features reach it through that alias. `ui/i18n/**/*.{ts,tsx}` has its own `no-restricted-imports`
+override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
+
+## Aliases
+
+| Alias          | Resolves to      |
+| -------------- | ---------------- |
+| `@sim/*`       | `ui/sim/*`       |
+| `@generated/*` | `ui/generated/*` |
+| `@worker/*`    | `ui/worker/*`    |
+| `@ui-kit/*`    | `ui/ui-kit/*`    |
+| `@features/*`  | `ui/features/*`  |
+| `@app/*`       | `ui/app/*`       |
+| `@specs/*`     | `ui/specs/*`     |
+| `@i18n/*`      | `ui/i18n/*`      |
+
+Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts`
+(`getBaseConfig`, inherited by worker builds) and `vite.harness.mts`. Node's `package.json`
+`imports` field was tried first but rejected: `tsc` under `moduleResolution: "bundler"` does not
+resolve `#foo/*` subpaths (it only works under `node16`/`nodenext`, and even then requires an
+explicit extension on every specifier).
+
+## How to author a spec
+
+A spec is data. `ui/specs/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
+the only code file the spec owns (besides `presets.ts` / `inputs.ts`):
+
+```ts
+import { defineSpec } from '@sim/spec_config';
+
+export default defineSpec<Spec.SpecArmsWarrior>({
+    spec: Spec.SpecArmsWarrior,          // identity
+    className, cssScheme, epStats, displayStats, …,  // everything IndividualSimUIConfig declares
+    defaults: { … },
+    presets: { … },
+    reforge: { getEPDefaults, updateSoftCaps },      // optional — wires ReforgeOptimizer
+    enableHealing: false,                            // optional — overrides the tank/healer default
+    derivedSettings: [{ subscribe, apply }],         // optional — settings derived from others
+    features: [registerThing],                       // optional — spec-local escape hatch
+});
+```
+
+`SpecDefinition` is `IndividualSimUIConfig` plus `spec` plus the optional `SpecBehaviors`
+(`reforge`, `enableHealing`, `derivedSettings`, `features`) — the four things spec constructors
+used to do by hand. `defineSpec` is an identity function; it exists only so the object is
+checked without an annotation that would widen the literal spec type. Pass the spec as an
+explicit type argument so `Player<Spec.SpecX>` callbacks keep their narrow type.
+
+### Custom settings sections
+
+A custom section is data, never DOM. A spec that needs an extra block on the settings tab
+declares it as a `CustomSection` in `sections`, and `app/tabs/SettingsTabBody.tsx` renders each
+one through `<CustomSection>` (`@features/settings`) -- the same `ContentBlock` + picker path the
+standard sections use:
+
+```ts
+sections: [{
+    id: 'totems',                                    // ContentBlock css class when className is unset
+    title: 'Totems',
+    tooltip: '…',                                    // optional — header tooltip button
+    className: 'totems-settings',                    // what the stylesheet hooks on
+    iconGroupClassName: 'totem-dropdowns-container', // layout hook for the icon row
+    iconInputs: [ … ],                               // same configs as `playerIconInputs`
+    inputs: [ … ],                                   // same configs as `otherInputs.inputs`
+    when: player => …,                               // optional — hides the section, like `showWhen`
+}],
+```
+
+`iconInputs` land in a `picker-group icon-group` container above `inputs`, and every
+`.input-root` in the body then gets `input-inline` — exactly what the Other Settings block does.
+`when` is re-evaluated on `subscribePlayerChange`. `sections` is the only shape; the older
+`customSections` (an array of functions returning a `ContentBlock`) has been deleted.
+
+`reforge` may also be a function of the sim host, for options that need to call back into it.
+The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` where
+`ctx = { player, reforger, defaults }` — that is how a spec reads `ctx.reforger.preCapEPs` or
+`ctx.defaults` without a `this`.
+
+### The entry flow
+
+`ui/app/spec_entry.tsx` is the single page entry for every spec, referenced from
+`ui/index_template.html`. It derives the module key from `location.pathname`
+(`/mop/<class>/<spec>/` → `../specs/<class>/<spec>/spec`), loads it from a lazy
+`import.meta.glob('../specs/*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
+tooltips need real JSX — so each spec ships its own chunk and only the visited one is fetched
+— then:
+
+```
+registerSpecConfig(def.spec, def)  →  new Sim  →  new Player  →  (enableHealing)  →
+sim.raid.setPlayer  →  new SimHostObject(shellDom, player, def)
+```
+
+**Ordering constraint:** `registerSpecConfig` must run _before_ `new Player()`, which resolves
+the spec's config out of the registry in its own constructor. This is the only place that
+ordering matters, and `spec_entry.ts` is the only place it is expressed.
+
+`SimHostObject` is concrete — a spec does not subclass it. Its constructor takes a
+`SpecDefinition<S>`, and runs the behaviour slots (features → reforge → derivedSettings) as its
+last statements, exactly where a subclass constructor body used to run. `derivedSettings` runs
+`apply` once there (before defaults load, mirroring the old constructor timing) and then again
+whenever `subscribe`'s source fires — including when the defaults land.
+
+All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
+`SimHostObject` subclass anywhere. Adding a spec is:
+
+1. `ui/specs/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
+   `presets.ts` / `inputs.ts`.
+2. An entry in `ui/sim/player/specs/index.ts`, i.e. a `PlayerSpec` class (in
+   `ui/sim/player/specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
+   single source of truth for launch status, read by the sim dropdown and the landing page
+   (`ui/app/landing/` renders the landing page's sim links from `PlayerSpecs`, no hand-written
+   list; a class row's badge is the roll-up of its specs', in `landing_classes.ts`).
+3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class color, background
+   image), which the spec page links unconditionally.
+
+The page itself is not one of the steps: there is no per-spec `index.html`, in the source tree or
+anywhere else. `ui/index_template.html` is the _one_ spec page, and `tools/vite/spec_pages.mts`
+(the `spec-pages` vite plugin) puts it at all 34 URLs — `configureServer` answers
+`/mop/<class>/<spec>/` and `.../index.html` with it through `transformIndexHtml` in dev, and a
+`post` `generateBundle` takes the page vite already processed, drops its own output path from the
+bundle, and re-emits it as `<class>/<spec>/index.html` for every spec. Both halves discover the
+spec list from `ui/specs/*/*/spec.ts(x)` (`discoverSpecPages`) — the same glob `PAGE_INDECES` used
+before the makefile stopped generating pages — and `spec_entry.ts`'s `import.meta.glob` then picks
+the spec module up from the URL. A new spec's page therefore appears with no build-config edit.
+
+Copying one page 34× is only sound because the page is constant: `ui/index_template.html` carries
+no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
+`/app/spec_entry.tsx`, `/i18n/localization.ts`), so vite rewrites them all to
+`/mop/...` and nothing in the built page depends on where it is served from. It is also the reason
+the 34 pages share one entry chunk (`bundle/spec_entry-<hash>.entry.js`, from the `spec_entry` key
+in `rollupOptions.input`) instead of the 34 near-identical ones the old per-page inputs produced.
+`ui/i18n/localization.ts`'s `extractClassAndSpecFromDataAttributes`
+derives class/spec from `location.pathname` the same way `specModuleKey` does above, falling back
+to `data-class`/`data-spec` attributes only if present. It is the spec page's path only: the landing
+page translates through `i18n.t` as it renders and calls `updateLandingPageMetadata` for its title
+and `<meta name="description">`.
+
+Rules shared by several specs of the same class live in `ui/specs/<class>/shared/` (e.g.
+`rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
+A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` is invariant in
+`S`, so a rule typed against a spec union is not assignable into any one spec's
+`derivedSettings`; annotate the callback parameters to keep the bodies checked.
+
+Every class now has fixed-name class-level shared files: `<class>/shared/{inputs,presets}.ts`
+(plus `derived.ts` and, for monk, `settings.ts`/`derived.ts` where a class-level helper only had
+one caller) hold what used to sit at `<class>/inputs.ts`, `<class>/shared.ts`, or
+`<class>/presets.ts`. `presets.ts` holds encounter presets, EP-breakpoint tables, and a class's
+`DefaultRaidBuffs` where all (or a class-consistent subset of) that class's specs share one
+raid-buff default. Cross-spec constants used by more than one class (the melee hit/expertise and
+spell-hit `statCaps` builders, the single-target and Malkorok encounter protos) live in
+`ui/sim/presets/{stat_caps,encounters}.ts` instead — `domain/` can't import `@app`, so these
+export raw protos/`Stats` for a class's `shared/presets.ts` to wrap with `PresetUtils`.
+
+## How to move a file
+
+Use the move tool — it does the `git mv` (or a plain rename for a gitignored generated file)
+and then repairs every import specifier across `ui/` and `tools/`, emitting alias form where
+the importer and the target end up in different top-level `ui/` directories and a relative
+specifier otherwise:
+
+```
+node tools/restructure/move.mjs <moves-file> [--dry-run] [--verbose]
+```
+
+`<moves-file>` is a list of `from -> to` pairs, one per line (`#` comments allowed) or the JSON
+equivalent; either side may be a file or a whole directory. Always `--dry-run` first.
+
+Then run the gates: `npx tsc --noEmit -p .`, `npx oxlint -c .oxlintrc.json ui tools`
+(`--fix` sorts the imports the rewrite disturbed), `npx vite build`,
+`npx tsx vite.build-workers.mts`, `npm run test:snapshots`.

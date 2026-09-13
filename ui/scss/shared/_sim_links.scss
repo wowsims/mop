@@ -2,7 +2,7 @@
 	display: flex;
 
 	&:hover,
-	&.show {
+	&[data-popup-open] {
 		background-color: var(--bs-black-alpha-50);
 	}
 
@@ -31,18 +31,6 @@
 			font-size: 1.25rem;
 			font-weight: bold;
 			white-space: nowrap;
-		}
-	}
-}
-
-.sim-link-dropdown {
-	.dropdown-menu {
-		background: var(--bs-black-alpha-50);
-
-		@include media-breakpoint-down(lg) {
-			position: relative !important;
-			inset: 0 !important;
-			transform: none !important;
 		}
 	}
 }

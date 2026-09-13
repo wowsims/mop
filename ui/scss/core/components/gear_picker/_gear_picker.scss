@@ -166,7 +166,7 @@
 	.item-picker-icon-wrapper {
 		width: var(--icon-size-md);
 		height: var(--icon-size-md);
-		border-color: var(--bs-modal-border-color);
+		border-color: var(--modal-border-color);
 
 		&.active {
 			width: calc(var(--icon-size-md) + var(--spacer-2));

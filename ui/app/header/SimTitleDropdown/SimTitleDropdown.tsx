@@ -1,0 +1,75 @@
+import './SimTitleDropdown.scss';
+
+import { Menu } from '@base-ui/react/menu';
+import type { PlayerClass } from '@sim/player/player_class';
+import { PlayerClasses } from '@sim/player/classes/index';
+import type { PlayerSpec } from '@sim/player/player_spec';
+import { PlayerSpecs } from '@sim/player/specs/index';
+import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
+import type { Class } from '@generated/proto/common';
+import i18n from '@i18n/config';
+import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18n/localization';
+import { SimLinkContent } from '@ui-kit/SimLinkContent';
+import clsx from 'clsx';
+
+export interface SimTitleDropdownProps {
+	currentSpec: PlayerSpec<any>;
+}
+
+const launchLabel = (launch: { phase: number; status: number }) =>
+	i18n.t('sidebar.header.phase', { phase: i18n.t(`common.phases.${launch.phase}`), status: translateStatus(launch.status) });
+
+const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => (
+	<Menu.SubmenuRoot>
+		{/* A real `<button>`: `SubmenuTrigger` renders a `<div>` by default, and this row is a control. */}
+		<Menu.SubmenuTrigger render={<button type="button" />} className={clsx('sim-link', textClassNameForClass(playerClass))}>
+			<SimLinkContent iconPath={playerClass.getIcon('large')} title={translatePlayerClass(playerClass)} />
+		</Menu.SubmenuTrigger>
+		<Menu.Portal>
+			<Menu.Positioner side="right" align="start" sideOffset={0} className="sim-title-positioner">
+				<Menu.Popup className="sim-title-popup sim-title-popup--specs">
+					{Object.values(playerClass.specs).map(spec => (
+						<Menu.LinkItem
+							key={spec.simLink}
+							href={new URL(spec.simLink, window.location.href).toString()}
+							className={clsx('sim-link', textClassNameForSpec(spec))}>
+							<SimLinkContent
+								iconPath={spec.getIcon('large')}
+								label={translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}
+								title={translatePlayerSpec(spec)}
+								status={launchLabel(spec.launch)}
+							/>
+						</Menu.LinkItem>
+					))}
+				</Menu.Popup>
+			</Menu.Positioner>
+		</Menu.Portal>
+	</Menu.SubmenuRoot>
+);
+
+export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => (
+	<div className="sim-title-dropdown-root">
+		<div className="dropdown sim-link-dropdown">
+			<Menu.Root modal={false}>
+				<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))}>
+					<SimLinkContent
+						iconPath={currentSpec.getIcon('large')}
+						label={i18n.t('sidebar.header.title')}
+						labelClassName="text-white"
+						title={PlayerSpecs.getFullSpecName(currentSpec)}
+						status={launchLabel(currentSpec.launch)}
+					/>
+				</Menu.Trigger>
+				<Menu.Portal>
+					<Menu.Positioner align="start" sideOffset={0} className="sim-title-positioner">
+						<Menu.Popup className="sim-title-popup">
+							{PlayerClasses.naturalOrder.map(playerClass => (
+								<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />
+							))}
+						</Menu.Popup>
+					</Menu.Positioner>
+				</Menu.Portal>
+			</Menu.Root>
+		</div>
+	</div>
+);

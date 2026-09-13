@@ -1,0 +1,37 @@
+.metrics-total {
+	--total-percentage-width: 7ch;
+	--total-amount-width: 7ch;
+	--total-bar-min-width: 50px;
+	min-width: calc(var(--total-percentage-width) + var(--total-amount-width) + var(--total-bar-min-width));
+}
+
+.metrics-total-percentage {
+	flex-shrink: 0;
+}
+
+.metrics-total-percentage {
+	width: var(--total-percentage-width);
+}
+
+.metrics-total-amount {
+	width: var(--total-amount-width);
+}
+
+.metrics-total-bar {
+	position: absolute;
+	left: var(--total-percentage-width);
+	right: var(--total-amount-width);
+	height: 100%;
+	flex-shrink: 1;
+	flex-grow: 1;
+	background-color: color-mix(in srgb, var(--bs-white) 5%, transparent);
+}
+
+.metrics-total-bar-fill {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: var(--percentage);
+	height: 100%;
+	background-color: currentColor;
+}

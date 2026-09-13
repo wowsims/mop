@@ -1,0 +1,43 @@
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player/player';
+import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
+import { type StoreSubscribe, subscribePlayerChange } from '@sim/state/subscriptions';
+import type { Spec } from '@generated/proto/common';
+import { ContentBlock } from '@ui-kit/ContentBlock';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { IconPicker } from '@ui-kit/IconPicker';
+import clsx from 'clsx';
+
+import { InputPicker } from '../InputPicker';
+
+export interface CustomSectionProps {
+	section: CustomSectionConfig<any>;
+}
+
+const NEVER: StoreSubscribe = () => () => {};
+
+export const CustomSection = ({ section }: CustomSectionProps) => {
+	const player = usePlayer() as Player<Spec>;
+	const when = section.when;
+	const subscribe = when ? subscribePlayerChange(player) : NEVER;
+	const visible = useStoreSubscribe(subscribe, () => !when || when(player));
+
+	if (!visible) return null;
+
+	return (
+		<ContentBlock className={[section.className || section.id, 'custom-section']} config={{ header: { title: section.title, tooltip: section.tooltip } }}>
+			{!!section.iconInputs?.length && (
+				<div className={clsx('picker-group', section.iconGroupClassName, 'icon-group')}>
+					{section.iconInputs.map((config, index) => {
+						if (config.type !== 'icon')
+							throw new Error(`custom section ${section.id}: ${config.type} inputs need a React picker that does not exist yet`);
+						return <IconPicker key={index} modObject={player} config={{ ...config, inline: true }} />;
+					})}
+				</div>
+			)}
+			{section.inputs?.map(config => (
+				<InputPicker key={config.id} config={{ ...config, inline: true }} />
+			))}
+		</ContentBlock>
+	);
+};

@@ -1,0 +1,15 @@
+{
+	"name": "Combat",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatCritRating": 0.42,
+		"StatHitRating": 1.26,
+		"StatHasteRating": 0.51,
+		"StatMasteryRating": 0.46,
+		"StatExpertiseRating": 1.07
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.43,
+		"PseudoStatOffHandDps": 0.39
+	}
+}

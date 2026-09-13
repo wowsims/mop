@@ -1,0 +1,39 @@
+@import 'shared/tokens';
+
+// The `.progress-tracker-modal-*` rules this file's markup uses still live in scss/core/components/_progress_tracker_modal.scss.
+.sim-dialog-popup.progress-tracker-dialog {
+	top: 50%;
+	transform: translateY(-50%);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		transform: translateY(-50%) var(--modal-fade-transform);
+	}
+}
+
+.progress-tracker-bar-track {
+	display: flex;
+	width: 100%;
+	height: 12px;
+	overflow: hidden;
+	background-color: var(--modal-border-color);
+	border-radius: 4px;
+}
+
+.progress-tracker-bar-indicator {
+	background: linear-gradient(
+		90deg,
+		var(--bs-success) 0%,
+		color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 25%,
+		var(--bs-success) 50%,
+		color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 75%,
+		var(--bs-success) 100%
+	);
+	background-size: 200% 100%;
+	// `loading-shimmer` is declared next to the shared rules in scss/core/components/_progress_tracker_modal.scss.
+	animation: loading-shimmer 6s linear infinite;
+
+	&[data-indeterminate] {
+		display: none;
+	}
+}

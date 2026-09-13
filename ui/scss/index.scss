@@ -28,7 +28,6 @@
 @import 'bootstrap/scss/close';
 @import 'bootstrap/scss/progress';
 @import 'bootstrap/scss/modal';
-@import 'bootstrap/scss/toasts';
 @import 'bootstrap/scss/carousel';
 
 @import 'bootstrap/scss/helpers';
@@ -44,7 +43,3 @@
 
 // Custom Bootstrap style overrides
 @import 'shared/bootstrap_style_overrides';
-
-// Import other plugin styles
-@import 'tippy.js/dist/tippy';
-@import 'shared/tippy_style_overrides';

@@ -1,0 +1,63 @@
+// `.dropdown-menu` re-expressed, the same trade `IconEnumPicker.scss` and `ImportExportMenu.scss`
+// record: that class is `display: none` until `.show` is added. `_dropdown_picker.scss` keeps the
+// rules for the root and the button, which this markup still wears.
+
+// Base UI's portal and the slot it renders into are plumbing, not boxes.
+.dropdown-picker-slot,
+.dropdown-picker-portal {
+	display: contents;
+}
+
+.dropdown-picker-positioner {
+	z-index: var(--dropdown-zindex);
+}
+
+.dropdown-picker-menu {
+	min-width: var(--dropdown-min-width);
+	padding: var(--dropdown-padding-y) 0;
+	border: var(--dropdown-border-width) solid var(--dropdown-border-color);
+	background-color: var(--dropdown-bg);
+	color: var(--dropdown-link-color);
+	font-size: var(--dropdown-font-size);
+}
+
+.dropdown-picker-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dropdown-picker-item {
+	// `.dropdown-picker-item .dropdown-item` in `_dropdown_picker.scss` is what laid the icon beside
+	// the label; the option is one element here, so it carries the flex row itself.
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: var(--dropdown-item-padding-y) var(--dropdown-item-padding-x);
+	border: 0;
+	background-color: transparent;
+	color: var(--dropdown-link-color);
+	font-weight: 400;
+	text-align: left;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: var(--dropdown-item-transition);
+
+	// Base UI drives the pointer and the keyboard through one state, so `[data-highlighted]` is also
+	// the arrow-key highlight.
+	&[data-highlighted] {
+		background-color: var(--dropdown-link-hover-bg);
+		color: var(--dropdown-link-hover-color);
+	}
+
+	&[data-checked] {
+		background-color: var(--dropdown-link-active-bg);
+	}
+}
+
+// `Tooltip.scss` caps every tooltip at 192px; without `max-width: none` an option's description
+// would wrap to a column.
+.sim-tooltip.dropdown-tooltip {
+	max-width: 35vw;
+	text-align: left;
+}
