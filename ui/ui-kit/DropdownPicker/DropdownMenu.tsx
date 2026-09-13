@@ -12,7 +12,7 @@ import { buildMenuTree } from './utils';
 const BOOTSTRAP_DROPDOWN_OFFSET = 2;
 
 export const TRIGGER_BASE =
-	'inline-flex items-center border-0 rounded-none text-sm leading-normal font-normal no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
+	'flex items-center border-0 rounded-none text-sm leading-normal font-normal no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-65';
 export const TRIGGER_DEFAULT_PADDING = 'px-3 py-2';
 
 export interface DropdownMenuProps<V> {

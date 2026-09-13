@@ -9,7 +9,7 @@ describe('TooltipButton', () => {
 		render(<TooltipButton tooltip="What this does" className="ml-2" />);
 		const button = screen.getByRole('button');
 		expect(Array.from(button.classList).sort()).toEqual(
-			[...LINK_BASE.split(' '), ...VARIANT.link.split(' '), 'inline-flex', 'items-center', 'justify-center', 'ml-2', 'tooltip-button'].sort(),
+			[...LINK_BASE.split(' '), ...VARIANT.link.split(' '), 'flex', 'items-center', 'justify-center', 'ml-2', 'tooltip-button'].sort(),
 		);
 		expect(button.getAttribute('type')).toBe('button');
 		// `Icon` normalises the FA5 spelling `question-circle` into its FA6 name.
