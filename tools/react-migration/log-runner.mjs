@@ -90,7 +90,17 @@ const STATE = sel => {
 		rendered: document.querySelectorAll(sel.row).length,
 		listWidth: list?.style.getPropertyValue('--log-runner-list-width') || 'unset',
 		scrollTop: Math.round(scroller?.scrollTop ?? -1),
-		fab: document.querySelector(sel.fab)?.className ?? 'MISSING',
+		// Class strings differ between builds (`log-floating-action-bar-root stuck` vs `group
+		// ui-fab-root` plus `data-stuck`), so this reads the semantics the class used to carry: whether
+		// it is pinned, and the box and paint that make the pin visible.
+		fab: (() => {
+			const el = document.querySelector(sel.fab);
+			if (!el) return 'MISSING';
+			const box = el.getBoundingClientRect();
+			const style = getComputedStyle(el);
+			const stuck = el.classList.contains('stuck') || el.hasAttribute('data-stuck');
+			return `stuck=${stuck} w=${Math.round(box.width)} h=${Math.round(box.height)} padding=${style.padding} position=${style.position} bg=${style.backgroundColor}`;
+		})(),
 	};
 };
 
