@@ -211,7 +211,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					</div>
 					<DetailedResultsPane
 						id="damageTab"
-						className="damage-content [&_.metrics-table]:text-[12px]"
+						className="damage-content [&_.metrics-table]:text-xs"
 						contentClassName="damage-metrics"
 						topline
 						histogram>
@@ -219,7 +219,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					</DetailedResultsPane>
 					<DetailedResultsPane
 						id="healingTab"
-						className="healing-content [&_.metrics-table]:text-[12px]"
+						className="healing-content [&_.metrics-table]:text-xs"
 						contentClassName="healing-spell-metrics"
 						topline>
 						<HealingMetricsTable />
