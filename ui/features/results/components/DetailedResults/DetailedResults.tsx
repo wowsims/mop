@@ -206,7 +206,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 				<div className="tab-content pt-6">
 					<div
 						id="noResultsTab"
-						className="tab-pane dr-tab-content fade active show transition-[opacity] duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
+						className="tab-pane dr-tab-content active transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
 					<DetailedResultsPane

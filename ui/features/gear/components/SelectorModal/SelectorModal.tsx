@@ -157,10 +157,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								value={tab.label}
 								id={paneId(tab.label)}
 								keepMounted
-								className={clsx(
-									'selector-modal-tab-pane tab-pane fade fade-in-out p-0',
-									tab.label === activeTab?.label ? 'active show' : 'opacity-0',
-								)}>
+								className={clsx('selector-modal-tab-pane tab-pane fade-in-out p-0', tab.label === activeTab?.label ? 'active' : 'opacity-0')}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />
 							</Tabs.Panel>
 						))}
