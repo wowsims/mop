@@ -22,21 +22,33 @@
 //   - `<meta name="description">`. Empty on master: its `[data-i18n]` walk assigned `textContent`,
 //     which a `<meta>` does not display. The branch already fixed that before this port.
 //   - `data-lang` on the language links: see `LANGS`.
-//   - `.navbar-toggler` contents: see `TOGGLERS`.
-import { launch, PORTS, ENVIRONMENTAL } from './browser.mjs';
+//   - the navbar togglers' contents: see `TOGGLERS`.
+import { launch, PORTS, ENVIRONMENTAL, q } from './browser.mjs';
 
-const READ = () => {
+// Selectors, resolved once in Node so both `q('name')` (unit build: `data-testid`) and the baseline's
+// bare class still match. `#sim-links` is a plain id carried by both builds, not a class hook.
+const SEL = {
+	simLinkDropdown: q('sim-link-dropdown'),
+	simLink: q('sim-link'),
+	navbarNav: q('navbar-nav'),
+	navbarToggler: q('navbar-toggler'),
+	dropdownItem: q('dropdown-item'),
+	wowsimsTitle: q('wowsims-title'),
+	expansionTitle: q('expansion-title'),
+};
+
+const READ = sel => {
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
-	const all = (sel, fn) => [...document.querySelectorAll(sel)].map(fn);
-	const classRow = '.sim-links > .sim-link-dropdown > .sim-link';
-	const specRow = '.sim-links a[href*="/mop/"]';
+	const all = (selector, fn) => [...document.querySelectorAll(selector)].map(fn);
+	const classRow = `#sim-links > ${sel.simLinkDropdown} > ${sel.simLink}`;
+	const specRow = '#sim-links a[href*="/mop/"]';
 	return {
 		title: document.title,
 		htmlLang: document.documentElement.lang,
-		brand: all('.wowsims-title, .expansion-title', text),
+		brand: all(`${sel.wowsimsTitle}, ${sel.expansionTitle}`, text),
 		description: text(document.querySelector('#description')),
-		supportDevs: text(document.querySelector('.nav-link[href*="patreon"] span')),
-		socials: all('.navbar-nav a[href^="http"]', a => a.getAttribute('href')).sort(),
+		supportDevs: text(document.querySelector(`${sel.navbarNav} a[href*="patreon"] span`)),
+		socials: all(`${sel.navbarNav} a[href^="http"]`, a => a.getAttribute('href')).sort(),
 		classTitles: all(`${classRow} .sim-link-title`, text),
 		// `ui-*` is the Tailwind stage-4 kit-styling class (A-U-landing); stripped because this check
 		// pins the per-class border colour (`border-class-*`), not the styling-class churn.
@@ -46,14 +58,14 @@ const READ = () => {
 		specLinks: all(specRow, a => new URL(a.href).pathname).sort(),
 		specNames: all(specRow, a => `${text(a.querySelector('.sim-link-label'))} / ${text(a.querySelector('.sim-link-title'))}`).sort(),
 		specIcons: all(`${specRow} .sim-link-icon`, i => i.getAttribute('src')).sort(),
-		languages: all('.dropdown-item', text),
+		languages: all(sel.dropdownItem, text),
 
 		metaDescription: document.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
 		langCodes: all('[data-lang]', el => el.getAttribute('data-lang')),
-		togglers: all('.navbar-toggler', b => ({ label: b.getAttribute('aria-label') ?? '', icon: !!b.querySelector('i[class*="fa-"]') })),
-		rollup: [...document.querySelectorAll('.sim-links > .sim-link-dropdown')].map(row => ({
-			name: text(row.querySelector(':scope > .sim-link .sim-link-title')),
-			status: text(row.querySelector(':scope > .sim-link .launch-status-label')),
+		togglers: all(sel.navbarToggler, b => ({ label: b.getAttribute('aria-label') ?? '', icon: !!b.querySelector('i[class*="fa-"]') })),
+		rollup: [...document.querySelectorAll(`#sim-links > ${sel.simLinkDropdown}`)].map(row => ({
+			name: text(row.querySelector(`:scope > ${sel.simLink} .sim-link-title`)),
+			status: text(row.querySelector(`:scope > ${sel.simLink} .launch-status-label`)),
 			specs: [...row.querySelectorAll('a[href*="/mop/"] .launch-status-label')].map(text),
 		})),
 	};
@@ -63,25 +75,31 @@ const READ = () => {
 // a capturing `mouseover`, and this branch asks Base UI for it with `openOnHover`. Read as shape, not
 // as markup: the two builds draw different elements, and the point is that a hover still produces a
 // menu of the right size beside the row it belongs to.
-const HOVER = async page => {
-	const trigger = page.locator('.sim-links > .sim-link-dropdown > .sim-link').first();
+const HOVER = async (page, sel) => {
+	const dropdownSel = `#sim-links > ${sel.simLinkDropdown}`;
+	const rowLinkSel = sel.simLink;
+	const trigger = page.locator(`${dropdownSel} > ${rowLinkSel}`).first();
 	await trigger.hover();
 	await page.waitForTimeout(600);
-	return page.evaluate(() => {
-		const row = document.querySelector('.sim-links > .sim-link-dropdown');
-		const t = row.querySelector(':scope > .sim-link').getBoundingClientRect();
-		const links = [...row.querySelectorAll('a[href*="/mop/"]')];
-		const visible = links.filter(a => {
-			const r = a.getBoundingClientRect();
-			return r.width > 0 && r.height > 0 && a.checkVisibility?.() !== false;
-		});
-		const box = visible[0]?.getBoundingClientRect();
-		return {
-			visibleLinks: visible.length,
-			rightOfTrigger: box ? box.left >= t.right - 2 : null,
-			alignedTop: box ? Math.abs(box.top - t.top) < 24 : null,
-		};
-	});
+	// Node's `q()` result is passed in as an argument: inside `page.evaluate`'s closure it does not exist.
+	return page.evaluate(
+		({ dropdownSel, rowLinkSel }) => {
+			const row = document.querySelector(dropdownSel);
+			const t = row.querySelector(`:scope > ${rowLinkSel}`).getBoundingClientRect();
+			const links = [...row.querySelectorAll('a[href*="/mop/"]')];
+			const visible = links.filter(a => {
+				const r = a.getBoundingClientRect();
+				return r.width > 0 && r.height > 0 && a.checkVisibility?.() !== false;
+			});
+			const box = visible[0]?.getBoundingClientRect();
+			return {
+				visibleLinks: visible.length,
+				rightOfTrigger: box ? box.left >= t.right - 2 : null,
+				alignedTop: box ? Math.abs(box.top - t.top) < 24 : null,
+			};
+		},
+		{ dropdownSel, rowLinkSel },
+	);
 };
 
 const browser = await launch();
@@ -95,7 +113,7 @@ for (const [side, port] of Object.entries(PORTS)) {
 	});
 	await page.goto(`http://localhost:${port}/mop/`, { waitUntil: 'load', timeout: 60000 });
 	await page.waitForTimeout(2000);
-	results[side] = { ...(await page.evaluate(READ)), hover: await HOVER(page), errors };
+	results[side] = { ...(await page.evaluate(READ, SEL)), hover: await HOVER(page, SEL), errors };
 	await page.close();
 }
 await browser.close();

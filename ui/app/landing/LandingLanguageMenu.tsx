@@ -15,7 +15,7 @@ export const LandingLanguageMenu = () => {
 			<Menu.Root modal={false}>
 				<Menu.Trigger
 					id="languageDropdown"
-					className="nav-link flex items-center text-sm py-4 px-0 md:px-2 max-md:pt-2 whitespace-nowrap text-white-55 ui-landing-language-caret"
+					className="flex items-center text-sm py-4 px-0 md:px-2 max-md:pt-2 whitespace-nowrap text-white-55 ui-landing-language-caret"
 					aria-label={supportedLanguages[currentLang]}>
 					<Icon name="globe" size="2x" />
 				</Menu.Trigger>
@@ -26,9 +26,10 @@ export const LandingLanguageMenu = () => {
 								<Menu.Item
 									key={code}
 									render={<button type="button" />}
-									className="dropdown-item block w-full font-normal [text-align:start] whitespace-nowrap bg-transparent border-0 rounded-none no-underline clear-both text-white"
+									className="block w-full font-normal [text-align:start] whitespace-nowrap bg-transparent border-0 rounded-none no-underline clear-both text-white"
 									data-active={code === currentLang ? '' : undefined}
 									data-lang={code}
+									data-testid="dropdown-item"
 									onClick={() => selectLang(code)}>
 									{name}
 								</Menu.Item>

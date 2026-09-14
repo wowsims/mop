@@ -27,9 +27,9 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 	const className = translatePlayerClass(playerClass);
 
 	return (
-		<div className="sim-link-dropdown ui-landing-sim-link-dropdown" ref={setContainer}>
+		<div className="ui-landing-sim-link-dropdown" ref={setContainer} data-testid="sim-link-dropdown">
 			<Menu.Root modal={false}>
-				<Menu.Trigger openOnHover delay={0} className={clsx('sim-link ui-landing-sim-link-cell', textClassNameForClass(playerClass))}>
+				<Menu.Trigger openOnHover delay={0} className={clsx('ui-landing-sim-link-cell', textClassNameForClass(playerClass))} data-testid="sim-link">
 					<SimLinkContent
 						iconPath={playerClass.getIcon('large')}
 						iconClassName={CLASS_BORDER[PlayerClasses.getCssScheme(playerClass)]}
@@ -45,7 +45,8 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 								<Menu.LinkItem
 									key={spec.simLink}
 									href={spec.simLink}
-									className={clsx('sim-link ui-landing-sim-link-cell', textClassNameForSpec(spec))}>
+									className={clsx('ui-landing-sim-link-cell', textClassNameForSpec(spec))}
+									data-testid="sim-link">
 									<SimLinkContent
 										iconPath={spec.getIcon('large')}
 										label={className}

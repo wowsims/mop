@@ -13,12 +13,12 @@ export const LandingPage = () => (
 			<main>
 				<div className="w-full max-w-full px-3 lg:max-w-[960px] lg:mx-auto xl:max-w-[1140px] xxl:max-w-[1320px] h-full flex flex-col pt-page pb-page max-md:mb-4">
 					<div className="mb-page flex flex-col max-md:mb-4">
-						<p id="description" className="wowsims-info text-fluid-xl w-3/4 m-0 max-lg:w-full">
+						<p id="description" className="text-fluid-xl w-3/4 m-0 max-lg:w-full">
 							{i18n.t('landing.home.welcomeDescription')}
 						</p>
 					</div>
 					<div className="flex flex-col max-lg:-mx-4">
-						<div className="sim-links flex flex-wrap" id="sim-links">
+						<div className="flex flex-wrap" id="sim-links">
 							{LANDING_CLASS_ORDER.map(classId => (
 								<LandingClassMenu key={classId} playerClass={PlayerClasses.fromProto(classId)} />
 							))}
