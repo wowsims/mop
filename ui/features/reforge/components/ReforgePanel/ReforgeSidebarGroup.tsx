@@ -10,7 +10,7 @@ export interface ReforgeSidebarGroupProps {
 
 export const ReforgeSidebarGroup = ({ model, options }: ReforgeSidebarGroupProps) => (
 	<ButtonGroup
-		className="ui-reforge-sidebar-actions order-20 grid w-full grid-cols-(--reforge-cols) [--reforge-cols:auto_var(--settings-button-width)] [--settings-button-width:36px]"
+		className="ui-reforge-sidebar-actions order-20 grid w-full grid-cols-reforge [--settings-button-width:36px]"
 		data-testid="suggest-reforges-settings-group">
 		<ReforgePanel model={model} options={options} />
 	</ButtonGroup>
