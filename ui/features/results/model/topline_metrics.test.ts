@@ -2,6 +2,7 @@ import { PlayerSpecs } from '@sim/player/specs/index';
 import { DANGER_TEXT } from '@ui-kit/utils/colors';
 import { describe, expect, it, vi } from 'vitest';
 
+import { resultMetricCategories } from './sim_results';
 import { showsOutOfMana, toplineResultMetrics } from './topline_metrics';
 
 vi.mock('@sim/proto/sim_result', async importOriginal => {
@@ -54,17 +55,13 @@ describe('toplineResultMetrics', () => {
 		expect(keys(simResult([player({ spec: PlayerSpecs.ProtectionWarrior })]))).toEqual(['dps', 'tps', 'dtps', 'hps', 'tmi', 'cod']);
 	});
 
-	it('carries the metric class and its category class', () => {
+	it('carries the metric and its category', () => {
 		const metrics = toplineResultMetrics(simResult([player()]));
 
-		expect(metrics[0]).toMatchObject({
-			metric: 'dps',
-			name: 'sidebar.results.metrics.dps.label',
-			average: 1000,
-			stdev: 10,
-			classes: 'results-sim-dps damage-metrics',
-		});
-		expect(metrics.find(metric => metric.metric === 'tmi')).toMatchObject({ classes: 'results-sim-tmi threat-metrics', unit: 'percentage' });
+		expect(metrics[0]).toMatchObject({ metric: 'dps', name: 'sidebar.results.metrics.dps.label', average: 1000, stdev: 10 });
+		expect(resultMetricCategories.dps).toBe('damage');
+		expect(metrics.find(metric => metric.metric === 'tmi')).toMatchObject({ unit: 'percentage' });
+		expect(resultMetricCategories.tmi).toBe('threat');
 	});
 
 	it('merges the filtered actions when a target is selected', () => {
@@ -96,11 +93,7 @@ describe('toplineResultMetrics', () => {
 		const metrics = toplineResultMetrics(simResult([player({ secondsOomAvg })]), undefined, { showOutOfMana: true });
 		const dangerClass = DANGER_TEXT[danger];
 
-		expect(metrics.at(-1)).toMatchObject({
-			metric: 'oom',
-			classes: dangerClass ? `results-sim-oom ${dangerClass}` : 'results-sim-oom',
-			unit: 'seconds',
-		});
+		expect(metrics.at(-1)).toMatchObject({ metric: 'oom', extraClass: dangerClass, unit: 'seconds' });
 	});
 
 	it('leaves out-of-mana out unless it is asked for', () => {

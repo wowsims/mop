@@ -37,7 +37,33 @@ const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 // question here is which classes are on, not in what order they were written.
 const READ = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
+	// `results-sim-*` and the `*-metrics` category markers are hooks this unit dropped outright
+	// (`data-metric`/`data-metric-category` replace them), so they are stripped from the class-list
+	// comparison rather than compared: the baseline still carries them as plain classes.
+	const DROPPED_HOOKS = new Set([
+		'results-sim-cod',
+		'results-sim-dps',
+		'results-sim-dtps',
+		'results-sim-tmi',
+		'results-sim-dur',
+		'results-sim-hps',
+		'results-sim-tps',
+		'results-sim-tto',
+		'results-sim-oom',
+		'damage-metrics',
+		'threat-metrics',
+		'healing-metrics',
+		'demo-metrics',
+	]);
+	const cls = el => {
+		const tokens = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean);
+		const testId = el.getAttribute('data-testid');
+		if (testId) tokens.push(testId);
+		return [...new Set(tokens)]
+			.filter(token => !DROPPED_HOOKS.has(token))
+			.sort()
+			.join('.');
+	};
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : null);
 	const bar = document.querySelector(`${T('results-content')} ${T('results-sim-reference')}`);
 	if (!bar) return ['NO results-content results-sim-reference'];
@@ -57,8 +83,8 @@ const READ = () => {
 		`swap ${button(T('results-sim-reference-swap'))}`,
 		`delete ${button(T('results-sim-reference-delete'))}`,
 		...[...document.querySelectorAll(`${T('results-content')} ${T('results-metric')}`)].map(metric => {
-			const slot = metric.querySelector('.results-reference');
-			const diff = metric.querySelector('.results-reference-diff');
+			const slot = metric.querySelector(T('results-reference'));
+			const diff = metric.querySelector(T('results-reference-diff'));
 			return `${cls(metric)} slot=${slot ? cls(slot) : 'MISSING'} diff=${diff ? cls(diff) : 'MISSING'} text=${text(diff) ?? ''}`;
 		}),
 	];
@@ -98,7 +124,7 @@ const collect = async (browser, port, spec, seeded) => {
 		const before = await page.evaluate(
 			() =>
 				document.querySelector(
-					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) .topline-result-avg',
+					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) :is([data-testid="topline-result-avg"], .topline-result-avg)',
 				)?.textContent ?? '',
 		);
 		await page.click('.dps-action');
@@ -107,7 +133,7 @@ const collect = async (browser, port, spec, seeded) => {
 		await page.waitForFunction(
 			previous => {
 				const avg = document.querySelector(
-					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) .topline-result-avg',
+					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) :is([data-testid="topline-result-avg"], .topline-result-avg)',
 				);
 				return !!avg && avg.textContent !== previous;
 			},

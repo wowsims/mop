@@ -7,7 +7,6 @@ import { ResultMetricList } from './ResultMetricList';
 const metric = (overrides: Partial<ResultMetric> & Pick<ResultMetric, 'metric'>): ResultMetric => ({
 	name: overrides.metric.toUpperCase(),
 	average: 1234.5,
-	classes: `results-sim-${overrides.metric}`,
 	...overrides,
 });
 
@@ -15,7 +14,7 @@ const METRICS: Array<ResultMetric> = [
 	metric({ metric: 'dps', average: 1234.5, stdev: 12.34 }),
 	metric({ metric: 'tmi', average: 2.5, stdev: 0.25, unit: 'percentage' }),
 	metric({ metric: 'tto', average: 30, unit: 'seconds' }),
-	metric({ metric: 'oom', average: 5, unit: 'seconds', classes: 'results-sim-oom danger' }),
+	metric({ metric: 'oom', average: 5, unit: 'seconds', extraClass: 'danger' }),
 ];
 
 const cells = (container: HTMLElement, selector: string) => [...container.querySelectorAll(selector)].map(cell => cell.textContent);
@@ -25,24 +24,25 @@ describe('ResultMetricList row layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
 		expect([...container.querySelectorAll('th')].map(cell => cell.className)).toEqual([
-			'ui-metrics-header-cell font-bold results-sim-dps',
-			'ui-metrics-header-cell font-bold results-sim-tmi',
-			'ui-metrics-header-cell font-bold results-sim-tto',
-			'ui-metrics-header-cell font-bold results-sim-oom danger',
+			'ui-metrics-header-cell font-bold',
+			'ui-metrics-header-cell font-bold',
+			'ui-metrics-header-cell font-bold',
+			'ui-metrics-header-cell font-bold danger',
 		]);
+		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric-category'))).toEqual(['damage', 'threat', 'healing', null]);
 		expect(cells(container, 'th')).toEqual(['DPS', 'TMI', 'TTO', 'OOM']);
 		expect([...container.querySelectorAll('td')].map(cell => cell.className)).toEqual([
-			'text-center align-top ui-metrics-cell font-bold results-sim-dps',
-			'text-center align-top ui-metrics-cell font-bold results-sim-tmi',
-			'text-center align-top ui-metrics-cell font-bold results-sim-tto',
-			'text-center align-top ui-metrics-cell font-bold results-sim-oom danger',
+			'text-center align-top ui-metrics-cell font-bold',
+			'text-center align-top ui-metrics-cell font-bold',
+			'text-center align-top ui-metrics-cell font-bold',
+			'text-center align-top ui-metrics-cell font-bold danger',
 		]);
 	});
 
 	it('formats each unit the way the metric asks for', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
-		expect(cells(container, '.topline-result-avg')).toEqual(['1,234.5', '2.5%', '30s', '5s']);
+		expect(cells(container, '[data-testid="topline-result-avg"]')).toEqual(['1,234.5', '2.5%', '30s', '5s']);
 	});
 
 	it('shows an error bar only for a metric that has one, at the unit precision', () => {
@@ -63,7 +63,7 @@ describe('ResultMetricList row layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
 		expect(container.querySelectorAll('td')).toHaveLength(4);
-		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-testid="results-reference"]')).toHaveLength(0);
 	});
 });
 
@@ -72,13 +72,12 @@ describe('ResultMetricList list layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="list" />);
 
 		expect([...container.querySelectorAll('[data-testid="results-metric"]')].map(row => row.className)).toEqual([
-			'text-left font-bold results-sim-dps',
-			'text-left font-bold results-sim-tmi',
-			'text-left font-bold results-sim-tto',
-			'text-left font-bold results-sim-oom danger',
+			'text-left font-bold',
+			'text-left font-bold',
+			'text-left font-bold',
+			'text-left font-bold danger',
 		]);
-		// One space before every label, TMI and CoD included.
-		expect(cells(container, '.topline-result-avg')).toEqual(['1234.50 DPS', '2.50 TMI', '30.00 TTO', '5.00 OOM']);
+		expect(cells(container, '[data-testid="topline-result-avg"]')).toEqual(['1234.50 DPS', '2.50 TMI', '30.00 TTO', '5.00 OOM']);
 	});
 
 	it('rounds the error bar to whole numbers unless the metric is a percentage', () => {

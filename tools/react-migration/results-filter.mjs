@@ -68,14 +68,20 @@ const READ_TABLES = () => {
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : 'MISSING');
 	const topline = [...document.querySelectorAll('#damageTab :is([data-testid="topline-results-root"], .topline-results-root) tbody td')].map(
 		(cell, index) =>
-			`${index} ${text(cell.querySelector('.topline-result-avg'))} ± ${text(cell.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'))}`,
+			`${index} ${text(cell.querySelector(':is([data-testid="topline-result-avg"], .topline-result-avg)'))} ± ${text(cell.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'))}`,
 	);
 	// Inlined rather than calling `q` — this function runs inside the page, where the module-scope
 	// helper does not exist.
+	// A threat-only row (no hit attempts, no dps) that threat metrics have turned off is filtered
+	// out of the tree entirely on the port; the baseline still renders it with `hidden`, so that row
+	// is skipped on both sides rather than compared.
+	const visible = row => !row.classList.contains('hidden');
 	const rows = [...document.querySelectorAll('#damageTab :is([data-testid="damage-metrics-root"], .damage-metrics-root) tbody tr')]
+		.filter(visible)
 		.slice(0, 8)
 		.map((row, index) => `${index} ${[...row.querySelectorAll('td')].map(text).join(' | ')}`);
 	const taken = [...document.querySelectorAll('#damageTakenTab :is([data-testid="dtps-metrics-root"], .dtps-metrics-root) tbody tr')]
+		.filter(visible)
 		.slice(0, 8)
 		.map((row, index) => `${index} ${[...row.querySelectorAll('td')].map(text).join(' | ')}`);
 	return { topline, rows, taken };

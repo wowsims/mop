@@ -71,14 +71,14 @@ const FR = JSON.parse(readFileSync(new URL('../../assets/locales/fr/translation.
 // the `hidden` attribute, and a gate that read the mechanism would fail the port for the right change.
 const ZONES = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const viewer = document.querySelector('.results-viewer');
+	const viewer = document.querySelector(T('results-viewer'));
 	if (!viewer) return { missing: true };
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
 	const item = viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)`);
-	const sim = viewer.querySelector('.results-sim');
+	const sim = viewer.querySelector(T('results-sim'));
 	// A testid on the react build, the marker class on the baseline: either way this is the zone's name.
 	const ZONE_NAMES = ['results-pending', 'results-content', 'button-zone', 'warning-zone'];
 	const identify = el => el.getAttribute('data-testid') || [...el.classList].find(c => ZONE_NAMES.includes(c)) || '?';
@@ -105,7 +105,7 @@ const START = () => {
 	const button = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	if (!button) return { missing: true };
 	button.click();
-	const viewer = document.querySelector('.results-viewer');
+	const viewer = document.querySelector(T('results-viewer'));
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
@@ -123,8 +123,8 @@ const START = () => {
 
 const RUNNING = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const viewer = document.querySelector('.results-viewer');
-	const sim = viewer?.querySelector('.results-sim');
+	const viewer = document.querySelector(T('results-viewer'));
+	const sim = viewer?.querySelector(T('results-sim'));
 	if (!sim) return { present: false };
 	const text = selector => sim.querySelector(selector)?.textContent?.trim() ?? null;
 	const stop = viewer.querySelector(`${T('button-zone')} button`);
@@ -136,8 +136,8 @@ const RUNNING = () => {
 		present: true,
 		visible: sim.offsetParent !== null,
 		parent: [...sim.parentElement.classList].sort().join('.'),
-		dps: text('.results-sim-dps.damage-metrics .topline-result-avg'),
-		hps: text(`${T('results-sim-hps')} .topline-result-avg`),
+		dps: text(`${T('results-sim-dps')} ${T('topline-result-avg')}`),
+		hps: text(`${T('results-sim-hps')} ${T('topline-result-avg')}`),
 		// The third child: either the presim string or `completed / total`, then the localised
 		// "iterations complete".
 		counter: sim.lastElementChild?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
@@ -150,7 +150,7 @@ const RUNNING = () => {
 
 const STOPPED = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const viewer = document.querySelector('.results-viewer');
+	const viewer = document.querySelector(T('results-viewer'));
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
@@ -167,7 +167,7 @@ const STOPPED = () => {
 
 const FINISHED = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const viewer = document.querySelector('.results-viewer');
+	const viewer = document.querySelector(T('results-viewer'));
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
@@ -185,7 +185,7 @@ const FINISHED = () => {
 
 const WARNINGS = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const viewer = document.querySelector('.results-viewer');
+	const viewer = document.querySelector(T('results-viewer'));
 	const item = viewer?.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)`);
 	const trigger = viewer?.querySelector(`${T('warning-zone')} button`);
 	return {
@@ -239,7 +239,7 @@ try {
 
 	console.log('the panel at load');
 	console.log(
-		(await page.evaluate(SERIALIZE, '.results-viewer'))
+		(await page.evaluate(SERIALIZE, q('results-viewer')))
 			.split('\n')
 			.map(line => `  ${line}`)
 			.join('\n'),
@@ -284,9 +284,16 @@ try {
 	// worker count, so a fixed sleep either reads before the first tick or after the run has ended.
 	console.log('\nrunning');
 	await page
-		.waitForFunction(() => document.querySelector('.results-viewer .results-sim .results-sim-dps .topline-result-avg')?.textContent.trim(), null, {
-			timeout: 90000,
-		})
+		.waitForFunction(
+			() => {
+				const T = name => `:is([data-testid="${name}"], .${name})`;
+				return document
+					.querySelector(`${T('results-viewer')} ${T('results-sim')} ${T('results-sim-dps')} ${T('topline-result-avg')}`)
+					?.textContent.trim();
+			},
+			null,
+			{ timeout: 90000 },
+		)
 		.catch(() => problems.push('no progress arrived within 90s'));
 	const running = await page.evaluate(RUNNING);
 	console.log(`  ----  ${JSON.stringify(running)}`);
@@ -296,8 +303,8 @@ try {
 	// leaving it at "0.00", so `running.hps` is `null` on a spec whose default settings hide healing.
 	if (running.hps !== null) check('it carries an hps number', Number.isFinite(parseFloat(running.hps)), String(running.hps));
 	else console.log('  SKIP  it carries an hps number  healing metric toggled off, block not rendered');
-	// `damage-metrics` is what `_shared.scss`'s `.hide-damage-metrics` rules key on, so the dps row
-	// following the sim's metric toggles depends on the class surviving; the hps row is read by testid.
+	// The dps row and the hps row are both read by testid now; a metrics toggle off drops either block
+	// from the tree entirely rather than leaving it at "0.00", same as the hps case above.
 	// The `<br/>` between the two halves contributes no whitespace to `textContent`, so the separator is
 	// optional rather than asserted: it is a line break, not a space, on either build.
 	check(
@@ -308,7 +315,7 @@ try {
 	check('the Stop button is still up while running', running.buttons === true && running.stopLabel === 'Stop' && running.stopDisabled === false);
 
 	console.log('\nstopping');
-	await page.click(`.results-viewer ${q('button-zone')} button`);
+	await page.click(`${q('results-viewer')} ${q('button-zone')} button`);
 	const stopping = await page.evaluate(() => {
 		const stop = document.querySelector(':is([data-testid="button-zone"], .button-zone) button');
 		return stop ? { label: stop.textContent.trim(), disabled: stop.disabled } : { missing: true };
@@ -330,7 +337,7 @@ try {
 		.waitForFunction(
 			() => {
 				const T = name => `:is([data-testid="${name}"], .${name})`;
-				const viewer = document.querySelector('.results-viewer');
+				const viewer = document.querySelector(T('results-viewer'));
 				const hidden = selector => getComputedStyle(viewer.querySelector(selector)).display === 'none';
 				return (
 					hidden(T('results-pending')) &&
@@ -359,7 +366,7 @@ try {
 		.waitForFunction(
 			() =>
 				document.querySelectorAll(
-					'.results-viewer :is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)',
+					':is([data-testid="results-viewer"], .results-viewer) :is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)',
 				).length > 0,
 			null,
 			{ timeout: 120000 },
@@ -407,7 +414,7 @@ try {
 		JSON.stringify(raised),
 	);
 
-	await page.locator(`.results-viewer ${q('warning-zone')} button`).hover({ timeout: 5000 });
+	await page.locator(`${q('results-viewer')} ${q('warning-zone')} button`).hover({ timeout: 5000 });
 	await page.waitForTimeout(700);
 	const open = await page.evaluate(WARNINGS);
 	console.log(`  ----  open ${JSON.stringify(open)}`);
@@ -452,7 +459,7 @@ try {
 	// writes its label before calling the abort, so both clicks and the read are same-task.
 	await fr.evaluate(() => document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').click());
 	const frLabel = await fr.evaluate(() => {
-		const stop = document.querySelector('.results-viewer :is([data-testid="button-zone"], .button-zone) button');
+		const stop = document.querySelector(':is([data-testid="results-viewer"], .results-viewer) :is([data-testid="button-zone"], .button-zone) button');
 		if (!stop) return null;
 		stop.click();
 		return stop.textContent.trim();

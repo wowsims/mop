@@ -11,17 +11,16 @@ import { PlayerSpecs } from '@sim/player/specs/index';
 import { ActionMetrics, type SimResult, type SimResultFilter } from '@sim/proto/sim_result';
 import { DANGER_TEXT } from '@ui-kit/utils/colors';
 
-import { metricsClasses, resultMetricCategories, resultMetricClasses, type ResultMetrics } from './sim_results';
+import { resultMetricCategories, type ResultMetrics } from './sim_results';
 
 export type ResultMetricUnit = 'percentage' | 'number' | 'seconds' | undefined;
 
 export type ResultMetric = {
-	/** Which metric this is, for a renderer that needs the label or tooltip key rather than the rendered text. */
 	metric: keyof ResultMetrics;
 	name: string;
 	average: number;
 	stdev?: number;
-	classes?: string;
+	extraClass?: string;
 	unit?: ResultMetricUnit;
 };
 
@@ -42,13 +41,6 @@ const TANK_SPECS_WITH_HPS = [
 	Spec.SpecProtectionWarrior,
 ];
 
-const lineClasses = (metric: keyof ResultMetrics): string => {
-	const classes = [resultMetricClasses[metric]];
-	if (resultMetricCategories[metric]) classes.push(metricsClasses[resultMetricCategories[metric]]);
-
-	return classes.join(' ');
-};
-
 const column = (
 	metric: keyof ResultMetrics,
 	average: number,
@@ -58,7 +50,7 @@ const column = (
 	name: i18n.t(`sidebar.results.metrics.${metric}.label`),
 	average,
 	stdev: options.stdev,
-	classes: options.extraClass ? `${lineClasses(metric)} ${options.extraClass}` : lineClasses(metric),
+	extraClass: options.extraClass,
 	unit: options.unit,
 });
 

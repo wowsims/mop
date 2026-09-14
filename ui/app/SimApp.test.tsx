@@ -55,7 +55,7 @@ vi.mock('@features/stat-weights/components/StatWeightsAction', () => ({ StatWeig
 
 // The real one needs a Player with a live store; what is under test here is the portal, not it.
 vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div className="character-stats-root" /> }));
-vi.mock('@features/results/components/SimResultsPanel', () => ({ SimResultsPanel: () => <div className="results-viewer" /> }));
+vi.mock('@features/results/components/SimResultsPanel', () => ({ SimResultsPanel: () => <div data-testid="results-viewer" /> }));
 vi.mock('@features/stat-weights/components/EpWeightsDialog', () => ({ EpWeightsDialog: () => <div className="ep-weights-dialog-root" /> }));
 // Six pickers over a real Sim and a Base UI portal into `host.rootElem`; SettingsDialog.test.tsx is where those are asserted.
 vi.mock('./SettingsDialog', () => ({ SettingsDialog: () => <div className="settings-menu-root" /> }));
@@ -126,7 +126,7 @@ describe('SimApp', () => {
 
 	it('renders the results panel into the container the shell built', () => {
 		const { container } = render(<SimApp player={player} def={def} />);
-		expect(container.querySelectorAll('[data-testid="sim-sidebar-results"] .results-viewer')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="sim-sidebar-results"] [data-testid="results-viewer"]')).toHaveLength(1);
 	});
 
 	it('renders each registered pane into the pane container the shell built', () => {

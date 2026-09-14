@@ -74,7 +74,7 @@ describe('SimResultsPanel', () => {
 
 	it('renders the four zones in order, with every run zone hidden at construction', () => {
 		const { view } = mount(panel, warnings);
-		const viewer = zone(view, '.results-viewer');
+		const viewer = zone(view, '[data-testid="results-viewer"]');
 
 		expect([...viewer.children].map(el => el.getAttribute('data-testid'))).toEqual(['results-pending', 'results-content', 'button-zone', 'warning-zone']);
 		expect(zones(view)).toEqual({ pending: false, content: false, buttons: false });
@@ -94,7 +94,7 @@ describe('SimResultsPanel', () => {
 
 		act(() => panel.setProgress(progress(1, 2, 3, 4)));
 		expect(zones(view)).toEqual({ pending: true, content: false, buttons: true });
-		expect(view.container.querySelector('[data-testid="results-pending"] .results-sim')).not.toBeNull();
+		expect(view.container.querySelector('[data-testid="results-pending"] [data-testid="results-sim"]')).not.toBeNull();
 		expect(view.container.querySelector('[data-testid="results-pending"] [data-testid="loader"]')).toBeNull();
 
 		act(() => panel.showResult());
@@ -124,9 +124,9 @@ describe('SimResultsPanel', () => {
 		// delivers. Mutation check: drop `SimProgress`'s `latestProgress` read and this reads empty.
 		act(() => panel.setProgress(progress(1234.5678, 22.5, 10, 1000)));
 
-		expect(zone(view, '.results-sim-dps .topline-result-avg').textContent).toBe('1234.57');
-		expect(zone(view, '[data-testid="results-sim-hps"] .topline-result-avg').textContent).toBe('22.50');
-		expect(zone(view, '.results-sim').lastElementChild!.textContent).toBe(`10 / 1000${ITERATIONS}`);
+		expect(zone(view, '[data-testid="results-sim-dps"] [data-testid="topline-result-avg"]').textContent).toBe('1234.57');
+		expect(zone(view, '[data-testid="results-sim-hps"] [data-testid="topline-result-avg"]').textContent).toBe('22.50');
+		expect(zone(view, '[data-testid="results-sim"]').lastElementChild!.textContent).toBe(`10 / 1000${ITERATIONS}`);
 	});
 
 	it('writes later ticks without rendering', () => {
@@ -137,9 +137,9 @@ describe('SimResultsPanel', () => {
 
 		for (let i = 2; i <= 100; i++) act(() => panel.setProgress(progress(i, i * 2, i, 100)));
 
-		expect(zone(view, '.results-sim-dps .topline-result-avg').textContent).toBe('100.00');
-		expect(zone(view, '[data-testid="results-sim-hps"] .topline-result-avg').textContent).toBe('200.00');
-		expect(zone(view, '.results-sim').lastElementChild!.textContent).toBe(`100 / 100${ITERATIONS}`);
+		expect(zone(view, '[data-testid="results-sim-dps"] [data-testid="topline-result-avg"]').textContent).toBe('100.00');
+		expect(zone(view, '[data-testid="results-sim-hps"] [data-testid="topline-result-avg"]').textContent).toBe('200.00');
+		expect(zone(view, '[data-testid="results-sim"]').lastElementChild!.textContent).toBe(`100 / 100${ITERATIONS}`);
 		expect(commits.mock.calls.length).toBe(afterMount);
 
 		// And a stage change is still exactly one commit.
@@ -152,7 +152,7 @@ describe('SimResultsPanel', () => {
 		act(() => panel.setPending());
 		act(() => panel.setProgress(progress(0, 0, 0, 0, true)));
 
-		expect(zone(view, '.results-sim').lastElementChild!.textContent).toBe(`sidebar.results.progress.presim_running${ITERATIONS}`);
+		expect(zone(view, '[data-testid="results-sim"]').lastElementChild!.textContent).toBe(`sidebar.results.progress.presim_running${ITERATIONS}`);
 	});
 
 	it('commits the stage before the caller returns, so a same-task read sees it', () => {
@@ -228,7 +228,7 @@ describe('SimResultsPanel', () => {
 		launched.view.unmount();
 
 		const { view } = mount(new ResultsPanelStore(), new WarningsRegistry(), true, true);
-		const viewer = zone(view, '.results-viewer');
+		const viewer = zone(view, '[data-testid="results-viewer"]');
 		expect(viewer.lastElementChild!.getAttribute('data-testid')).toBe('sim-ui-unlaunched-container');
 		expect(viewer.querySelectorAll('[data-testid="sim-ui-unlaunched-container"] p').length).toBe(2);
 	});

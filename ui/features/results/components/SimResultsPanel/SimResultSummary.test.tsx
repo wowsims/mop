@@ -61,7 +61,7 @@ const mount = (results: SimResultsManager) =>
 		</SimHostProvider>,
 	);
 
-const diffs = (container: HTMLElement) => [...container.querySelectorAll('.results-reference > .results-reference-diff')];
+const diffs = (container: HTMLElement) => [...container.querySelectorAll('[data-testid="results-reference"] > [data-testid="results-reference-diff"]')];
 
 let results: SimResultsManager;
 
@@ -100,7 +100,7 @@ describe('SimResultSummary', () => {
 		const { container } = mount(results);
 
 		expect(diffs(container)).toEqual([]);
-		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-testid="results-reference"]')).toHaveLength(0);
 		expect(container.querySelectorAll('[data-testid="results-metric"]')).toHaveLength(7);
 	});
 
@@ -123,7 +123,7 @@ describe('SimResultSummary', () => {
 		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-set-reference"]')!));
 		act(() => results.setSimResult(result(1100)));
 
-		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
+		const dps = container.querySelector('[data-metric="dps"] [data-testid="results-reference-diff"]')!;
 		expect(dps.textContent).toBe('+100.00 (10.00%)');
 		expect(dps.getAttribute('data-sign')).toBe('positive');
 		expect(dps.getAttribute('data-tooltip-content')).toMatch(/^Difference is significantly different \(Z = \d+\.\d{3}\)\.$/);
@@ -147,7 +147,7 @@ describe('SimResultSummary', () => {
 
 		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-reference-swap"]')!));
 
-		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
+		const dps = container.querySelector('[data-metric="dps"] [data-testid="results-reference-diff"]')!;
 		expect(dps.textContent).toBe('-100.00 (10.00%)');
 		expect(dps.getAttribute('data-sign')).toBe('negative');
 	});

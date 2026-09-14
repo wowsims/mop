@@ -261,10 +261,15 @@ const collect = async (browser, port, spec, seeded) => {
 	// A second result over a chart that is already drawn: the port destroys the chart and builds a new
 	// one on the same canvas from the same options object, which nothing else in the gate set reaches
 	// because every other swap happens with the rotation showing.
-	const beforeRebuild = await page.textContent('.results-sim-dps .topline-result-avg');
+	const beforeRebuild = await page.textContent(`[data-metric="dps"] ${q('topline-result-avg')}`);
 	await page.click(q('detailed-results-1-iteration-button'));
 	await page
-		.waitForFunction(previous => document.querySelector('.results-sim-dps .topline-result-avg')?.textContent !== previous, beforeRebuild, { timeout: 120000 })
+		.waitForFunction(
+			previous =>
+				document.querySelector('[data-metric="dps"] :is([data-testid="topline-result-avg"], .topline-result-avg)')?.textContent !== previous,
+			beforeRebuild,
+			{ timeout: 120000 },
+		)
 		.catch(() => {});
 	await page.waitForTimeout(2000);
 	const rebuilt = [...(await page.evaluate(READ_CHART)), `tooltip ${await hoverText(page, CHART_POINT, 0.5)}`];

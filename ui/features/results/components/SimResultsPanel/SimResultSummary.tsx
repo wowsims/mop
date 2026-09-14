@@ -26,7 +26,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 	if (!current) return null;
 
 	return (
-		<div className="results-sim text-center">
+		<div data-testid="results-sim" className="text-center">
 			<ResultMetricList
 				metrics={toplineResultMetrics(current.simResult, undefined, { displayMetrics })}
 				layout="list"

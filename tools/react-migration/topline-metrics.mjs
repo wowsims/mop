@@ -33,12 +33,34 @@ const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 const READ = panes => {
 	// Unions `data-testid` into the same token set as SERIALIZE does in `browser.mjs`, so a class hook
 	// this unit turned into a testid still compares equal against the baseline, which still carries it
-	// as a class.
+	// as a class. The metric and category markers (`results-sim-*`, `damage-metrics`, `threat-metrics`,
+	// `healing-metrics`, `demo-metrics`) this unit dropped outright — `data-metric`/`data-metric-category`
+	// replace them — are stripped from both sides rather than compared, since the baseline still carries
+	// them as plain classes and nothing renders from them any more.
+	const DROPPED_HOOKS = new Set([
+		'results-sim',
+		'results-sim-cod',
+		'results-sim-dps',
+		'results-sim-dtps',
+		'results-sim-tmi',
+		'results-sim-dur',
+		'results-sim-hps',
+		'results-sim-tps',
+		'results-sim-tto',
+		'results-sim-oom',
+		'damage-metrics',
+		'threat-metrics',
+		'healing-metrics',
+		'demo-metrics',
+	]);
 	const cls = el => {
 		const tokens = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean);
 		const testId = el.getAttribute('data-testid');
 		if (testId) tokens.push(testId);
-		return [...new Set(tokens)].sort().join('.');
+		return [...new Set(tokens)]
+			.filter(token => !DROPPED_HOOKS.has(token))
+			.sort()
+			.join('.');
 	};
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : null);
 
@@ -54,7 +76,7 @@ const READ = panes => {
 		return [
 			`root ${cls(root)} pad=${style(root, 'paddingBottom')}`,
 			`table ${cls(root.querySelector('table'))} layout=${style(root.querySelector('table'), 'tableLayout')} avg-size=${style(
-				root.querySelector('.topline-result-avg'),
+				root.querySelector(':is([data-testid="topline-result-avg"], .topline-result-avg)'),
 				'fontSize',
 			)}`,
 			...headers.map((header, index) => {
@@ -63,11 +85,11 @@ const READ = panes => {
 					`${index} label=${text(header)}`,
 					`th=${cls(header)}`,
 					`td=${cell ? cls(cell) : 'MISSING'}`,
-					`avg=${text(cell?.querySelector('.topline-result-avg'))}`,
+					`avg=${text(cell?.querySelector(':is([data-testid="topline-result-avg"], .topline-result-avg)'))}`,
 					`stdev=${text(cell?.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'))}`,
 					// Shown, not present: master renders the slot for every layout and hides it until a
 					// reference is saved, and the port renders none until then. Neither is on screen here.
-					`ref=${!!cell?.querySelector('.results-reference:not(.hide) > .results-reference-diff')}`,
+					`ref=${!!cell?.querySelector(':is([data-testid="results-reference"], .results-reference):not(.hide) > :is([data-testid="results-reference-diff"], .results-reference-diff)')}`,
 				].join(' ');
 			}),
 		];
@@ -75,9 +97,9 @@ const READ = panes => {
 
 	const sidebar = [...document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)')].map(
 		(metric, index) =>
-			`${index} ${cls(metric)} avg=${text(metric.querySelector('.topline-result-avg'))} stdev=${text(
+			`${index} ${cls(metric)} avg=${text(metric.querySelector(':is([data-testid="topline-result-avg"], .topline-result-avg)'))} stdev=${text(
 				metric.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'),
-			)} ref=${!!metric.querySelector('.results-reference:not(.hide) > .results-reference-diff')}`,
+			)} ref=${!!metric.querySelector(':is([data-testid="results-reference"], .results-reference):not(.hide) > :is([data-testid="results-reference-diff"], .results-reference-diff)')}`,
 	);
 
 	const histogram = document.querySelector('#damageTab :is([data-testid="dps-histogram-root"], .dps-histogram-root)');
