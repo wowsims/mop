@@ -65,9 +65,9 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 	const portalContainer = usePortalContainer();
 	return (
 		<div className="h-[calc(var(--sim-header-height)-1px)]" data-testid="sim-title-dropdown-root">
-			<div className="dropdown sim-link-dropdown h-full">
+			<div className="relative sim-link-dropdown h-full">
 				<Menu.Root modal={false}>
-					<Menu.Trigger className={clsx('sim-link', textClassNameForSpec(currentSpec))} data-testid="sim-link">
+					<Menu.Trigger className={clsx('sim-link flex', textClassNameForSpec(currentSpec))} data-testid="sim-link">
 						<SimLinkContent
 							iconPath={currentSpec.getIcon('large')}
 							label={i18n.t('sidebar.header.title')}

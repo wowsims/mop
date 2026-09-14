@@ -41,6 +41,8 @@
 @import '../ui-kit/Skeleton/Skeleton.css';
 @import '../ui-kit/UnitPicker/UnitIcon.css';
 @import '../ui-kit/hooks/useStickyToolbar.css';
+@import '../ui-kit/SimLinkContent/SimLinkContent.css';
+@import '../app/landing/Landing.css';
 
 @source '../app';
 @source '../features';
@@ -54,36 +56,19 @@
 
 @source '../../assets/locales/**/*.json';
 
-@utility container {
-	--bs-gutter-x: 1.5rem;
-	--bs-gutter-y: 0;
-	width: 100%;
-	max-width: 100%;
-	padding-right: calc(var(--bs-gutter-x) * 0.5);
-	padding-left: calc(var(--bs-gutter-x) * 0.5);
-	margin-left: 0;
-	margin-right: 0;
-
-	@media (width >= 992px) {
-		max-width: 960px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	@media (width >= 1200px) {
-		max-width: 1140px;
-	}
-
-	@media (width >= 1400px) {
-		max-width: 1320px;
-	}
-}
-
 @utility text-fluid-xl {
 	font-size: calc(1.275rem + 0.3vw);
 
 	@media (width >= 1200px) {
 		font-size: 1.5rem;
+	}
+}
+
+@utility text-fluid-5xl {
+	font-size: calc(1.625rem + 4.5vw);
+
+	@media (width >= 1200px) {
+		font-size: 5rem;
 	}
 }
 

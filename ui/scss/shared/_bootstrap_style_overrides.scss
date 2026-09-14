@@ -5,18 +5,6 @@
 	--bs-body-line-height: 1.25;
 }
 
-.container {
-	height: 100%;
-	display: flex;
-
-	@include media-breakpoint-down(lg) {
-		width: 100%;
-		max-width: 100%;
-		margin-left: 0;
-		margin-right: 0;
-	}
-}
-
 .form-check {
 	justify-content: flex-start !important;
 
@@ -60,55 +48,5 @@
 
 .link-success {
 	color: var(--color-success) !important;
-}
-
-.navbar {
-	.navbar-toggler {
-		border: 0;
-		box-shadow: none;
-		color: var(--color-white);
-
-		@include media-breakpoint-down(md) {
-			position: absolute;
-			top: 0;
-			right: 0;
-		}
-	}
-
-	.nav-link {
-		display: flex;
-		align-items: center;
-		white-space: nowrap;
-
-		@include media-breakpoint-down(md) {
-			padding-bottom: var(--spacer-3);
-		}
-
-		&:first-of-type {
-			@include media-breakpoint-down(md) {
-				padding-top: var(--spacer-2);
-			}
-		}
-	}
-
-	.navbar-nav {
-		@include media-breakpoint-down(md) {
-			position: relative;
-			align-items: flex-start;
-		}
-	}
-
-	.navbar-collapse {
-		@include media-breakpoint-down(md) {
-			position: fixed;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			padding: 1rem;
-			background: rgba(0, 0, 0, 0.9);
-			z-index: 1000;
-		}
-	}
 }
 

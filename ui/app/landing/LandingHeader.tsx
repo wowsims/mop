@@ -13,7 +13,7 @@ export const LandingHeader = () => {
 
 	const toggler = (icon: 'bars' | 'times') => (
 		<button
-			className="navbar-toggler"
+			className="navbar-toggler border-0 text-white py-1 px-3 leading-none text-lg md:hidden max-md:absolute max-md:top-0 max-md:right-0"
 			type="button"
 			aria-controls={COLLAPSE_ID}
 			aria-expanded={open}
@@ -24,35 +24,52 @@ export const LandingHeader = () => {
 	);
 
 	return (
-		<header className="homepage-header">
-			<div className="container homepage-header-container">
-				<nav className="navbar navbar-dark navbar-expand-md flex-wrap items-end w-full">
-					<div className="navbar-brand-container order-0">
-						<a href="#" className="navbar-brand flex items-center p-0 m-0">
-							<img className="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png" alt="" />
+		<header>
+			<div className="w-full max-w-full px-3 lg:max-w-[960px] lg:mx-auto xl:max-w-[1140px] xxl:max-w-[1320px] h-full flex pt-section max-md:pb-4">
+				<nav className="flex flex-wrap items-end w-full relative justify-between md:justify-start py-2">
+					<div className="flex order-0 max-md:w-full max-md:justify-between max-md:items-end">
+						<a href="#" className="flex items-center p-0 m-0 whitespace-nowrap text-lg text-white">
+							<img className="w-24 mr-4 max-md:w-[48px]" src="/mop/assets/img/WoW-Simulator-Icon.png" alt="" />
 							<div className="flex flex-col">
-								<h2 className="wowsims-title">{i18n.t('landing.header.wowsims')}</h2>
-								<h3 className="expansion-title w-full">{i18n.t('landing.header.expansion')}</h3>
+								<h2 className="wowsims-title text-fluid-5xl font-bold text-brand m-0 leading-none">{i18n.t('landing.header.wowsims')}</h2>
+								<h3 className="expansion-title w-full text-expansion m-0">{i18n.t('landing.header.expansion')}</h3>
 							</div>
 						</a>
 						{toggler('bars')}
 					</div>
-					<div id={COLLAPSE_ID} className={clsx('navbar-collapse homepage-header-collapse order-2 md:order-1', !open && 'hidden')} hidden={!open}>
-						<div className="navbar-nav">
+					<div
+						id={COLLAPSE_ID}
+						className={clsx(
+							'order-2 md:order-1 grow basis-full items-end justify-end pt-4 pb-4 md:flex md:basis-auto max-md:fixed max-md:inset-0 max-md:p-4 max-md:bg-black-90 max-md:z-dropdown',
+							!open && 'hidden',
+						)}>
+						<div className="navbar-nav flex flex-col md:flex-row max-md:relative max-md:items-start">
 							{toggler('times')}
-							<a href="https://discord.gg/p3DgvmnDCS" target="_blank" rel="noreferrer" className="nav-link link-alt">
+							<a
+								href="https://discord.gg/p3DgvmnDCS"
+								target="_blank"
+								rel="noreferrer"
+								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2 max-md:pt-2">
 								<p className="m-0">
 									<Icon name="discord" style="brands" size="2x" className="discord-link" />
 									&nbsp;
 								</p>
 							</a>
-							<a href="https://github.com/wowsims/mop" target="_blank" rel="noreferrer" className="nav-link link-alt">
+							<a
+								href="https://github.com/wowsims/mop"
+								target="_blank"
+								rel="noreferrer"
+								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
 								<p className="m-0">
 									<Icon name="github" style="brands" size="2x" className="github-link" />
 									&nbsp;
 								</p>
 							</a>
-							<a href="https://patreon.com/wowsims" target="_blank" rel="noreferrer" className="nav-link link-alt">
+							<a
+								href="https://patreon.com/wowsims"
+								target="_blank"
+								rel="noreferrer"
+								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
 								<Icon name="patreon" style="brands" size="2x" className="patreon-link mr-2" />
 								<span className="text-fluid-xl md:hidden lg:block">{i18n.t('landing.header.supportDevs')}</span>
 							</a>

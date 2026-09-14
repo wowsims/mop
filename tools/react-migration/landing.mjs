@@ -38,7 +38,9 @@ const READ = () => {
 		supportDevs: text(document.querySelector('.nav-link[href*="patreon"] span')),
 		socials: all('.navbar-nav a[href^="http"]', a => a.getAttribute('href')).sort(),
 		classTitles: all(`${classRow} .sim-link-title`, text),
-		classIcons: all(`${classRow} .sim-link-icon`, i => `${i.getAttribute('src')}|${i.className}`).sort(),
+		// `ui-*` is the Tailwind stage-4 kit-styling class (A-U-landing); stripped because this check
+		// pins the per-class border colour (`border-class-*`), not the styling-class churn.
+		classIcons: all(`${classRow} .sim-link-icon`, i => `${i.getAttribute('src')}|${i.className.replace(/\bui-\S+\s*/g, '').trim()}`).sort(),
 		// Sorted: both builds emit the rows in the same order today, but that order is the class
 		// list's and not something this check should pin.
 		specLinks: all(specRow, a => new URL(a.href).pathname).sort(),

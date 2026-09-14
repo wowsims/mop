@@ -223,6 +223,7 @@
 
 	--background-image-skeleton: linear-gradient(90deg, rgb(255 255 255 / 8%) 25%, rgb(255 255 255 / 18%) 50%, rgb(255 255 255 / 8%) 75%);
 	--background-image-select-chevron: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+	--background-image-landing: url('/mop/assets/img/mop.jpg');
 
 	--z-index-toolbar: 99;
 	--z-index-header: 100;
@@ -249,15 +250,18 @@
 	--color-white-20: rgb(255 255 255 / 0.2);
 	--color-white-30: rgb(255 255 255 / 0.3);
 	--color-white-50: rgb(255 255 255 / 0.5);
+	--color-white-55: rgb(255 255 255 / 0.55);
 	--color-white-60: rgb(255 255 255 / 0.6);
 	--color-white-70: rgb(255 255 255 / 0.7);
 	--color-white-75: rgb(255 255 255 / 0.75);
 	--color-white-80: rgb(255 255 255 / 0.8);
 	--color-black-20: rgb(0 0 0 / 0.2);
+	--color-black-50: rgb(0 0 0 / 0.5);
 	--color-black-55: rgb(0 0 0 / 0.55);
 	--color-black-70: rgb(0 0 0 / 0.7);
 	--color-black-75: rgb(0 0 0 / 0.75);
 	--color-black-80: rgb(0 0 0 / 0.8);
+	--color-black-90: rgb(0 0 0 / 0.9);
 	--color-black-92: rgb(0 0 0 / 0.92);
 
 	--color-cr-scene-glow: color-mix(in srgb, var(--color-background) 65%, var(--color-warning) 35%);

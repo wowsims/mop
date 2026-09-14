@@ -80,7 +80,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 					<div className="h-full min-h-screen flex flex-col" data-testid="sim-root">
 						<div className="fixed top-0 left-0 w-screen h-screen bg-no-repeat bg-cover -z-1 bg-sim" data-testid="sim-bg" />
 						{noticeText ? (
-							<div className="notices-banner alert border-b border-border mb-0 text-center" data-testid="notices-banner">
+							<div className="notices-banner relative p-4 border border-transparent mb-0 text-center" data-testid="notices-banner">
 								{noticeText}
 							</div>
 						) : null}
@@ -118,7 +118,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								</div>
 							</aside>
 							<div
-								className="container-fluid flex flex-col min-w-[calc(275px+1vw)] pt-0 pr-page pb-page pl-page flex-4 z-1 max-lg:w-full max-lg:min-h-auto"
+								className="w-full mx-auto flex flex-col min-w-[calc(275px+1vw)] pt-0 pr-page pb-page pl-page flex-4 z-1 max-lg:min-h-auto"
 								data-testid="sim-content">
 								<header
 									ref={header}

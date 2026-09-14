@@ -27,9 +27,9 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 	const className = translatePlayerClass(playerClass);
 
 	return (
-		<div className="dropend sim-link-dropdown" ref={setContainer}>
+		<div className="sim-link-dropdown ui-landing-sim-link-dropdown" ref={setContainer}>
 			<Menu.Root modal={false}>
-				<Menu.Trigger openOnHover delay={0} className={clsx('sim-link', textClassNameForClass(playerClass))}>
+				<Menu.Trigger openOnHover delay={0} className={clsx('sim-link ui-landing-sim-link-cell', textClassNameForClass(playerClass))}>
 					<SimLinkContent
 						iconPath={playerClass.getIcon('large')}
 						iconClassName={CLASS_BORDER[PlayerClasses.getCssScheme(playerClass)]}
@@ -39,15 +39,13 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 				</Menu.Trigger>
 				{/* `keepMounted`: the 34 spec links are the landing page's only content for a crawler, and an unmounted popup has none of them in the document. */}
 				<Menu.Portal container={container} keepMounted>
-					<Menu.Positioner
-						side={stacked ? 'bottom' : 'right'}
-						align="start"
-						sideOffset={0}
-						collisionPadding={4}
-						className="landing-sim-link-positioner">
-						<Menu.Popup className="landing-sim-link-popup">
+					<Menu.Positioner side={stacked ? 'bottom' : 'right'} align="start" sideOffset={0} collisionPadding={4} className="z-dropdown">
+						<Menu.Popup className="ui-landing-sim-link-popup">
 							{Object.values(playerClass.specs).map(spec => (
-								<Menu.LinkItem key={spec.simLink} href={spec.simLink} className={clsx('sim-link', textClassNameForSpec(spec))}>
+								<Menu.LinkItem
+									key={spec.simLink}
+									href={spec.simLink}
+									className={clsx('sim-link ui-landing-sim-link-cell', textClassNameForSpec(spec))}>
 									<SimLinkContent
 										iconPath={spec.getIcon('large')}
 										label={className}

@@ -15,29 +15,13 @@
 @import 'bootstrap/scss/root';
 @import 'bootstrap/scss/reboot';
 @import 'bootstrap/scss/type';
-@import 'bootstrap/scss/containers';
 @import 'bootstrap/scss/forms';
 
-// `alert` is the one remaining component that loops `$theme-colors` to emit one rule set per
-// colour, and this project merges twelve of its own maps into that variable — 72 keys, against
-// Bootstrap's 8. `buttons` used to be narrowed the same way; `ui-kit/Button/Button.tsx` no longer
-// emits any `btn-*` class at all (its `classes.ts` lookups are Tailwind utilities), so that
-// narrowing and the `bootstrap/scss/buttons` import are gone.
-$all-theme-colors: $theme-colors;
-
+// `nav`, `navbar`, `dropdown`, `badge` and `containers` are gone: A-U-landing converted the two
+// landing menus and the `.container`/`.container-fluid` call sites to utilities and `ui-*`
+// composition classes, and no other element in the tree emits their classes. `alert` is gone too:
+// `SimShell`'s notices banner (the one element that carried it) is utilities now.
 @import 'bootstrap/scss/transitions';
-@import 'bootstrap/scss/dropdown';
-@import 'bootstrap/scss/nav';
-@import 'bootstrap/scss/navbar';
-@import 'bootstrap/scss/badge';
-
-// `.alert` is on one element (`SimShell`'s notices banner) and no `.alert-<colour>` is anywhere.
-$theme-colors: (
-	'primary': map-get($all-theme-colors, 'primary'),
-) !global;
-
-@import 'bootstrap/scss/alert';
-$theme-colors: $all-theme-colors !global;
 
 // `bootstrap/scss/close` and `bootstrap/scss/modal` are both gone: no TSX, TS or HTML in the tree
 // emits `.btn-close`, `.btn-close-white` or any `.modal*` class (the `modal` strings in the tree are
