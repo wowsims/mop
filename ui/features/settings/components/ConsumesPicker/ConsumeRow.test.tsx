@@ -56,7 +56,8 @@ describe('ConsumeRow', () => {
 	it('builds vanilla’s row: the caption first, then whatever it was given', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
-		expect(['consumes-row', 'input-inline', 'input-root'].every(name => element.classList.contains(name))).toBe(true);
+		expect(['consumes-row', 'input-root'].every(name => element.classList.contains(name))).toBe(true);
+		expect(element.getAttribute('data-layout')).toBe('inline');
 		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
 			'span.ui-field-label',

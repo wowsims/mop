@@ -96,7 +96,7 @@ describe('FieldGroup', () => {
 		setup({ text: 'a' });
 		mount([stringFieldConfig('text')]);
 
-		expect(root().firstElementChild!.className.split(' ')).toContain('input-inline');
+		expect(root().firstElementChild!.getAttribute('data-layout')).toBe('inline');
 	});
 
 	it('marks a list field ui-apl-picker-builder-multi', () => {

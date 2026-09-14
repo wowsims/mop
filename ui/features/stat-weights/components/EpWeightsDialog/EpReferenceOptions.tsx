@@ -63,12 +63,12 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat, displayMetrics }:
 						config={{
 							id: reference.id,
 							label: reference.label,
-							extraClassNames: ['ref-stat-select'],
 							values,
 							storeField: 'epRefStat',
 							getValue: reference.getValue,
 							setValue: reference.setValue,
 						}}
+						testId="ref-stat-select"
 					/>
 				</div>
 			))}

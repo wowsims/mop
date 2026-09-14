@@ -40,7 +40,7 @@ const DIALOG = () => {
 		duplicateRatioIds: ratioIds.length - new Set(ratioIds).size,
 		toggleIds: [...dialog.querySelectorAll(`${q('swcalc-include-toggle')} input`)].map(input => input.id),
 		untypedButtons: [...dialog.querySelectorAll('button')].filter(button => !button.getAttribute('type')).map(button => button.className || '(no class)'),
-		unnamedRefSelects: [...dialog.querySelectorAll('.ref-stat-select select, select.ref-stat-select')].filter(select => {
+		unnamedRefSelects: [...dialog.querySelectorAll(`${q('ref-stat-select')} select, select${q('ref-stat-select')}`)].filter(select => {
 			const label = select.id && dialog.querySelector(`label[for="${CSS.escape(select.id)}"]`);
 			return !(select.getAttribute('aria-label') || (label && label.textContent.trim()));
 		}).length,
@@ -50,7 +50,7 @@ const DIALOG = () => {
 			const label = dialog.querySelector('label[for="ep-type-select"]');
 			return select.getAttribute('aria-label') || label?.textContent.trim() ? 0 : 1;
 		})(),
-		optionsWithValue: [...dialog.querySelectorAll('.ref-stat-select option, select.ref-stat-select option')].filter(option => option.hasAttribute('value'))
+		optionsWithValue: [...dialog.querySelectorAll(`${q('ref-stat-select')} option, select${q('ref-stat-select')} option`)].filter(option => option.hasAttribute('value'))
 			.length,
 		// The tank layout unmounts these instead of hiding them with CSS, so a missing element counts
 		// as `none` rather than throwing on `getComputedStyle(null)`.

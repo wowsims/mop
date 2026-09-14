@@ -178,7 +178,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-matching-gems-selector',
-								extraClassNames: ['show-matching-gems-selector', 'input-inline', 'mb-0'],
+								extraClassNames: ['show-matching-gems-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_matching_gems.label'),
 								inline: true,
 								storeField: 'sim:filters',
@@ -198,7 +198,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-ep-values-selector',
-								extraClassNames: ['show-ep-values-selector', 'input-inline', 'mb-0'],
+								extraClassNames: ['show-ep-values-selector', 'mb-0'],
 								label: i18n.t('settings_tab.other.show_ep_values.label'),
 								inline: true,
 								storeField: 'ui:showEPValues',

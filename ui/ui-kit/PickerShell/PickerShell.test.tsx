@@ -110,20 +110,19 @@ describe('PickerShell', () => {
 		expect(detach).toHaveBeenCalledOnce();
 	});
 
-	// `classList.add` drops a repeat and clsx does not. The gear selector modal's matching-gems and
-	// show-EP configs (`SelectorModal/ItemList.tsx`) ship `input-inline` in `extraClassNames` while
-	// also setting `inline` — so a duplicate would reach the DOM and the parity harness.
+	// `classList.add` drops a repeat and clsx does not. `className` and `extraClassNames` can both
+	// carry the same name — so a duplicate would reach the DOM and the parity harness.
 	it('emits a class once when a config supplies it twice', () => {
 		const { container } = render(
 			<PickerShell
-				config={{ id: 'x', inline: true, extraClassNames: ['input-inline', 'mb-0'], getValue: () => 0, setValue: () => {} }}
+				config={{ id: 'x', extraClassNames: ['number-picker-root', 'mb-0'], getValue: () => 0, setValue: () => {} }}
 				className="number-picker-root"
 				hidden={false}
 				disabled={false}
 			/>,
 		);
 		const classes = Array.from(container.firstElementChild!.classList);
-		expect(classes.filter(name => name === 'input-inline')).toHaveLength(1);
+		expect(classes.filter(name => name === 'number-picker-root')).toHaveLength(1);
 		expect(container.firstElementChild!.className.split(' ')).toEqual(classes);
 	});
 
