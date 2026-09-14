@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Button } from './Button';
-import { BASE, ICON_BASE, LINK_BASE, SIZE, VARIANT } from './classes';
 
 describe('Button', () => {
 	it('is a non-submitting button by default', () => {
@@ -10,7 +9,7 @@ describe('Button', () => {
 		const button = screen.getByRole('button', { name: 'Simulate' });
 		// The tree has several <button>s inside forms with no type, which submit on click.
 		expect(button.getAttribute('type')).toBe('button');
-		expect(button.className).toBe(`${BASE} ${VARIANT.primary} ${SIZE.default}`);
+		expect(button.className).toBe('ui-button ui-button-primary ui-button-md');
 	});
 
 	it('renders an anchor when asked, keeping the button classes', () => {
@@ -21,7 +20,7 @@ describe('Button', () => {
 		);
 		const link = screen.getByRole('link', { name: 'Item' });
 		expect(link.getAttribute('href')).toBe('https://wowhead.com/mop-classic/item=1');
-		expect(link.className).toBe(`${LINK_BASE} ${VARIANT.link}`);
+		expect(link.className).toBe('ui-button-link');
 		expect(link.getAttribute('type')).toBeNull();
 	});
 
@@ -34,7 +33,7 @@ describe('Button', () => {
 		const label = screen.getByText('Rotation');
 		expect(label.tagName).toBe('LABEL');
 		expect(label.getAttribute('for')).toBe('chart-view-rotation');
-		expect(label.className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.default}`);
+		expect(label.className).toBe('ui-button ui-button-outline-primary ui-button-md');
 	});
 
 	it('adds the size and caller classes without dropping the variant', () => {
@@ -43,7 +42,7 @@ describe('Button', () => {
 				Optimize
 			</Button>,
 		);
-		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} ${SIZE.sm} reforge-action`);
+		expect(screen.getByRole('button').className).toBe('ui-button ui-button-outline-primary ui-button-sm reforge-action');
 	});
 
 	it('applies no padding for size="none", leaving the caller to supply its own', () => {
@@ -52,7 +51,7 @@ describe('Button', () => {
 				Optimize
 			</Button>,
 		);
-		expect(screen.getByRole('button').className).toBe(`${BASE} ${VARIANT['outline-primary']} reforge-action`);
+		expect(screen.getByRole('button').className).toBe('ui-button ui-button-outline-primary reforge-action');
 	});
 
 	it('adds rel to a cross-origin link without being asked', () => {
@@ -101,7 +100,7 @@ describe('Button', () => {
 			</Button>,
 		);
 		expect(Array.from(screen.getByRole('button').classList).sort()).toEqual(
-			[...BASE.split(' '), ...SIZE.default.split(' '), 'border-transparent', 'talent-tree-reset', 'link-danger', 'text-link-danger'].sort(),
+			['ui-button', 'ui-button-md', 'talent-tree-reset', 'link-danger', 'text-link-danger'].sort(),
 		);
 	});
 
@@ -116,7 +115,7 @@ describe('Button', () => {
 
 	it('emits the .btn-reset look for link-danger', () => {
 		render(<Button variant="link-danger">Reset</Button>);
-		expect(screen.getByRole('button').className).toBe(`${LINK_BASE} ${VARIANT['link-danger']}`);
+		expect(screen.getByRole('button').className).toBe('ui-button-link ui-button-link-danger');
 	});
 
 	it('ignores size for a link variant: the legacy [class*=btn-link] rule always zeroed its padding', () => {
@@ -125,7 +124,7 @@ describe('Button', () => {
 				Reset
 			</Button>,
 		);
-		expect(screen.getByRole('button').className).toBe(`${LINK_BASE} ${VARIANT['link-danger']}`);
+		expect(screen.getByRole('button').className).toBe('ui-button-link ui-button-link-danger');
 	});
 
 	it('is chromeless for iconOnly, with no variant of its own', () => {
@@ -135,7 +134,7 @@ describe('Button', () => {
 			</Button>,
 		);
 		const button = screen.getByRole('button', { name: 'Close' });
-		expect(button.className).toBe(ICON_BASE);
+		expect(button.className).toBe('ui-button-icon');
 	});
 
 	it('applies a colour variant to an iconOnly button, still chromeless', () => {
@@ -144,6 +143,6 @@ describe('Button', () => {
 				×
 			</Button>,
 		);
-		expect(screen.getByRole('button', { name: 'Delete' }).className).toBe(`${ICON_BASE} ${VARIANT['link-danger']}`);
+		expect(screen.getByRole('button', { name: 'Delete' }).className).toBe('ui-button-icon ui-button-link-danger');
 	});
 });

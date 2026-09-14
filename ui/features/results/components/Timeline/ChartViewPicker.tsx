@@ -1,6 +1,5 @@
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
-import { BASE, SIZE } from '@ui-kit/Button/classes';
 import { ButtonGroup } from '@ui-kit/ButtonGroup';
 import clsx from 'clsx';
 import { Fragment } from 'react';
@@ -14,7 +13,7 @@ export interface ChartViewPickerProps {
 	className?: string;
 }
 
-const OUTLINE_BASE = `${BASE} ${SIZE.sm} border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground`;
+const OUTLINE_BASE = 'border-primary text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground';
 
 const PEER_INPUT_CLASSES: Record<ChartView, string> = {
 	rotation: 'peer/rotation',
@@ -43,7 +42,8 @@ export const ChartViewPicker = ({ value, onChange, className }: ChartViewPickerP
 				/>
 				<Button
 					as="label"
-					variant="unstyled"
+					variant={null}
+					size="sm"
 					htmlFor={`timeline-chart-view-${view}`}
 					className={clsx(OUTLINE_BASE, PEER_LABEL_CLASSES[view], `${view}-option`)}>
 					{i18n.t(`results_tab.details.timeline.chart_types.${view}`)}

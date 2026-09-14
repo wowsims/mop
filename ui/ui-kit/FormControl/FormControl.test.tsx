@@ -10,7 +10,7 @@ describe('FieldLabel', () => {
 		const label = screen.getByText('Name');
 		expect(label.tagName).toBe('LABEL');
 		expect(label.getAttribute('for')).toBe('thing');
-		expect(label.className).toContain('text-ui');
+		expect(label.className).toContain('ui-field-label');
 	});
 
 	it('renders as a span or div without htmlFor', () => {
@@ -31,7 +31,7 @@ describe('HelpText', () => {
 		render(<HelpText>Help</HelpText>);
 		const el = screen.getByText('Help');
 		expect(el.tagName).toBe('DIV');
-		expect(el.className).toContain('text-gray-600');
+		expect(el.className).toContain('ui-help-text');
 	});
 
 	it('renders as a p and forwards hidden', () => {
@@ -53,15 +53,14 @@ describe('TextArea', () => {
 		const textarea = screen.getByTestId('textarea');
 		expect(ref.current).toBe(textarea);
 		expect(textarea.getAttribute('spellcheck')).toBe('false');
-		expect(textarea.className).toContain('bg-surface');
-		expect(textarea.className).toContain('border-surface-border');
+		expect(textarea.className).toContain('ui-input');
 	});
 
 	it('keeps className additive', () => {
 		render(<TextArea className="extra" data-testid="textarea" />);
 		const textarea = screen.getByTestId('textarea');
 		expect(textarea.className).toContain('extra');
-		expect(textarea.className).toContain('bg-surface');
+		expect(textarea.className).toContain('ui-input');
 	});
 });
 
@@ -73,7 +72,7 @@ describe('Input', () => {
 		expect(input.tagName).toBe('INPUT');
 		expect(ref.current).toBe(input);
 		expect(input.className).toContain('extra');
-		expect(input.className).toContain('bg-surface');
+		expect(input.className).toContain('ui-input');
 	});
 });
 
@@ -89,6 +88,6 @@ describe('Select', () => {
 		expect(select.tagName).toBe('SELECT');
 		expect(ref.current).toBe(select);
 		expect(select.className).toContain('extra');
-		expect(select.className).toContain('bg-surface');
+		expect(select.className).toContain('ui-select');
 	});
 });

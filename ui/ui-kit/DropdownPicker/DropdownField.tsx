@@ -45,7 +45,7 @@ export const DropdownField = <ModObject, T, V = T>({
 	const { value, setValue, hidden, disabled } = useInput<ModObject, T, V>(modObject, config);
 
 	return (
-		<PickerShell config={config} className="dropdown-picker-root dropdown" testId="dropdown-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="dropdown-picker-root relative" testId="dropdown-picker-root" hidden={hidden} disabled={disabled}>
 			<DropdownMenu<V>
 				id={config.id}
 				options={options}

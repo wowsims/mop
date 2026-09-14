@@ -2,7 +2,6 @@ import { Class, Spec } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { TalentTreeConfig } from '@sim/talents/config';
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
-import { BASE, SIZE } from '@ui-kit/Button/classes';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TalentTreePicker } from './TalentTreePicker';
@@ -150,15 +149,7 @@ describe('TalentTreePicker', () => {
 	it('keeps the reset button on the bare base bundle, as the stylesheet expects', () => {
 		tree('000000');
 		expect(screen.getByRole('button').className.split(' ').sort()).toEqual(
-			[
-				...BASE.replace('leading-normal', 'leading-none').split(' '),
-				...SIZE.default.split(' '),
-				'border-transparent',
-				'link-danger',
-				'talent-tree-reset',
-				'text-link-danger',
-				'-mr-(--btn-padding-x)',
-			].sort(),
+			['ui-button', 'ui-button-md', 'leading-none', 'link-danger', 'talent-tree-reset', 'text-link-danger', '-mr-3'].sort(),
 		);
 	});
 });

@@ -11,7 +11,7 @@ export interface HelpTextProps {
 export const HelpText = ({ as = 'div', hidden, className, children }: HelpTextProps) => {
 	const Tag = as as ElementType;
 	return (
-		<Tag hidden={hidden} className={clsx('mt-1 text-ui text-gray-600', className)}>
+		<Tag hidden={hidden} className={clsx('ui-help-text', className)}>
 			{children}
 		</Tag>
 	);

@@ -3,7 +3,6 @@ import type { Player } from '@sim/player/player';
 import type { TalentsConfig } from '@sim/talents/config';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
-import { BASE, SIZE, VARIANT } from '@ui-kit/Button/classes';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../GlyphsPicker', () => ({ GlyphsPicker: () => null }));
@@ -57,7 +56,7 @@ describe('TalentsPicker copy button', () => {
 		mount();
 
 		expect(button().className.split(' ').sort()).toEqual(
-			[...BASE.split(' '), ...VARIANT['outline-primary'].split(' '), ...SIZE.sm.split(' '), 'copy-button', 'copy-talents', 'w-24'].sort(),
+			['ui-button', 'ui-button-outline-primary', 'ui-button-sm', 'copy-button', 'copy-talents', 'w-24'].sort(),
 		);
 		expect(button().getAttribute('type')).toBe('button');
 		// The closed `Tooltip` renders nothing, so the button stays the actions div's only child.

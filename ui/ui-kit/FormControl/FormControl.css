@@ -1,0 +1,27 @@
+.ui-input {
+	@apply block text-ui leading-normal text-foreground bg-surface border border-surface-border;
+
+	&::placeholder {
+		@apply text-secondary;
+	}
+
+	&:disabled {
+		@apply bg-input-disabled opacity-100;
+	}
+}
+
+.ui-select {
+	@apply block text-ui leading-normal text-foreground bg-surface border border-surface-border appearance-none pr-9 bg-no-repeat bg-[position:right_.75rem_center] bg-[size:16px_12px] bg-select-chevron;
+
+	&:disabled {
+		@apply bg-input-disabled opacity-100;
+	}
+}
+
+.ui-field-label {
+	@apply inline-block mb-1 text-ui font-normal;
+}
+
+.ui-help-text {
+	@apply mt-1 text-ui text-gray-600;
+}

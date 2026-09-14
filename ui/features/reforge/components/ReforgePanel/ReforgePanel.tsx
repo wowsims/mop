@@ -8,7 +8,6 @@ import type { EquippedItem } from '@sim/proto/equipped_item';
 import { SimRunKind } from '@sim/state/sim_store';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
-import { BASE as BUTTON_BASE, SIZE as BUTTON_SIZE, VARIANT as BUTTON_VARIANT } from '@ui-kit/Button/classes';
 import { Icon } from '@ui-kit/Icon';
 import { Popover } from '@ui-kit/Popover';
 import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
@@ -191,11 +190,19 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-(--spacing(4))*2))]"
 				triggerClassName={[
 					'sim-sidebar-action-button',
-					BUTTON_BASE,
-					BUTTON_SIZE.default,
-					BUTTON_VARIANT.primary,
+					'ui-button',
+					'ui-button-md',
+					'ui-button-primary',
 					'bg-transparent',
 					'border-transparent',
+					'hover:bg-primary-hover',
+					'hover:border-primary-hover',
+					'focus-visible:bg-primary-hover',
+					'focus-visible:border-primary-hover',
+					'active:bg-primary-active',
+					'active:border-primary-active',
+					'data-[popup-open]:bg-primary-active',
+					'data-[popup-open]:border-primary-active',
 					'w-(--settings-button-width)',
 					'suggest-reforges-button-settings',
 				]}

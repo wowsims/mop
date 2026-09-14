@@ -1,0 +1,211 @@
+.ui-button {
+	@apply inline-block border border-transparent rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out;
+
+	&:focus-visible {
+		@apply outline-none;
+	}
+
+	&:disabled {
+		@apply pointer-events-none opacity-65;
+	}
+}
+
+.ui-button-link {
+	@apply p-0 border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out;
+
+	&:focus-visible {
+		@apply outline-none;
+	}
+
+	&:disabled {
+		@apply pointer-events-none opacity-65;
+	}
+}
+
+.ui-button-icon {
+	@apply border-0 bg-transparent cursor-pointer;
+}
+
+.ui-button-primary {
+	@apply bg-primary border-primary text-primary-foreground;
+
+	&:hover {
+		@apply bg-primary-hover border-primary-hover;
+	}
+
+	&:focus-visible {
+		@apply bg-primary-hover border-primary-hover shadow-focus-primary;
+	}
+
+	&:active {
+		@apply bg-primary-active border-primary-active;
+	}
+
+	&[data-popup-open] {
+		@apply bg-primary-active border-primary-active;
+	}
+
+	&:disabled {
+		@apply bg-primary-disabled border-primary-disabled;
+	}
+}
+
+.ui-button-secondary {
+	@apply bg-secondary border-secondary text-white;
+
+	&:hover {
+		@apply bg-secondary-hover border-secondary-hover;
+	}
+
+	&:focus-visible {
+		@apply bg-secondary-hover border-secondary-hover shadow-focus-secondary;
+	}
+
+	&:active {
+		@apply bg-secondary-active border-secondary-active;
+	}
+}
+
+.ui-button-danger {
+	@apply bg-danger border-danger text-white;
+
+	&:hover {
+		@apply bg-danger-hover border-danger-hover;
+	}
+
+	&:focus-visible {
+		@apply bg-danger-hover border-danger-hover shadow-focus-danger;
+	}
+
+	&:active {
+		@apply bg-danger-active border-danger-active;
+	}
+}
+
+.ui-button-cancel {
+	@apply bg-cancel border-cancel text-black;
+
+	&:hover {
+		@apply bg-cancel-hover border-cancel-hover;
+	}
+
+	&:focus-visible {
+		@apply bg-cancel-hover border-cancel-hover shadow-focus-cancel;
+	}
+
+	&:active {
+		@apply bg-cancel-active border-cancel-active;
+	}
+}
+
+.ui-button-link {
+	@apply text-link;
+
+	&:hover {
+		@apply text-link-hover;
+	}
+
+	&:focus-visible {
+		@apply shadow-focus-link;
+	}
+
+	&:disabled {
+		@apply text-gray-600;
+	}
+}
+
+.ui-button-link-danger {
+	@apply text-link-danger;
+
+	&:hover {
+		@apply text-foreground;
+	}
+
+	&:focus-visible {
+		@apply text-foreground shadow-focus-link-danger;
+	}
+
+	&:disabled {
+		@apply text-foreground-disabled;
+	}
+}
+
+.ui-button-outline-primary {
+	@apply border-primary text-primary;
+
+	&:hover {
+		@apply bg-primary-hover border-primary-hover text-primary-foreground;
+	}
+
+	&:focus-visible {
+		@apply bg-primary-hover border-primary-hover text-primary-foreground shadow-focus-outline-primary;
+	}
+
+	&:active {
+		@apply bg-primary border-primary text-primary-foreground;
+	}
+
+	&:disabled {
+		@apply text-primary border-primary;
+	}
+}
+
+.ui-button-outline-light {
+	@apply border-light text-light;
+
+	&:hover {
+		@apply bg-light border-light text-black;
+	}
+
+	&:focus-visible {
+		@apply bg-light border-light text-black shadow-focus-outline-light;
+	}
+
+	&:active {
+		@apply bg-light border-light text-black;
+	}
+}
+
+.ui-button-outline-cancel {
+	@apply border-cancel text-cancel;
+
+	&:hover {
+		@apply bg-cancel border-cancel text-black;
+	}
+
+	&:focus-visible {
+		@apply bg-cancel border-cancel text-black shadow-focus-outline-cancel;
+	}
+
+	&:active {
+		@apply bg-cancel border-cancel text-black;
+	}
+}
+
+.ui-button-warning {
+	@apply text-link-warning;
+
+	&:hover {
+		@apply text-link-warning;
+	}
+
+	&:focus-visible {
+		@apply text-link-warning shadow-none;
+	}
+
+	&:disabled {
+		@apply text-link-warning;
+	}
+}
+
+.ui-button-md {
+	@apply px-3 py-2;
+}
+
+.ui-button-sm {
+	@apply px-2 py-1;
+}
+
+.ui-button-inline {
+	@apply px-2 py-0;
+}

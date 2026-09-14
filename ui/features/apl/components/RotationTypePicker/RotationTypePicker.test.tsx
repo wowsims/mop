@@ -68,7 +68,7 @@ describe('RotationTypePicker', () => {
 	it('is one element: the shell is the dropdown root, not a wrapper around it', () => {
 		mount(new FakePlayer(true));
 
-		expect(['dropdown', 'dropdown-picker-root', 'input-root'].every(name => root().classList.contains(name))).toBe(true);
+		expect(['dropdown-picker-root', 'input-root'].every(name => root().classList.contains(name))).toBe(true);
 		expect(trigger().id).toBe('rotation-tab-rotation-type');
 	});
 

@@ -4,7 +4,6 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import { PlayerSpecs } from '@sim/player/specs';
 import type { TalentTreeConfig } from '@sim/talents/config';
 import { Button } from '@ui-kit/Button';
-import { BASE, SIZE } from '@ui-kit/Button/classes';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
@@ -36,13 +35,8 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<img src={spec.getIcon('medium')} className="talent-tree-icon size-8 mr-3 rounded-full" />
 				<span className="talent-tree-title mr-3 flex-1 font-bold whitespace-nowrap">{translatePlayerSpec(spec)}</span>
 				<Button
-					variant="unstyled"
-					className={clsx(
-						BASE.replace('leading-normal', 'leading-none'),
-						SIZE.default,
-						'border-transparent',
-						'talent-tree-reset link-danger text-link-danger -mr-(--btn-padding-x)',
-					)}
+					variant={null}
+					className={clsx('leading-none', 'talent-tree-reset link-danger text-link-danger -mr-3')}
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
 					<Icon name="times" style="base" />

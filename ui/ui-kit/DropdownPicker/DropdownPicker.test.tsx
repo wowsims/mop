@@ -2,7 +2,6 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DropdownPicker } from './DropdownPicker';
-import { TRIGGER_BASE, TRIGGER_DEFAULT_PADDING } from './DropdownMenu';
 import type { DropdownOption } from './types';
 
 interface Unit {
@@ -40,10 +39,8 @@ describe('DropdownPicker', () => {
 	it('renders the root and trigger the stylesheets select on', () => {
 		mount(undefined);
 
-		expect(root().className).toBe('dropdown-picker-root dropdown custom-root-class');
-		expect(trigger().className).toBe(
-			`dropdown-picker-button ${TRIGGER_BASE} ${TRIGGER_DEFAULT_PADDING} text-foreground hover:text-white/80 dropdown-toggle`,
-		);
+		expect(root().className).toBe('dropdown-picker-root relative custom-root-class');
+		expect(trigger().className).toBe('dropdown-picker-button ui-dropdown-trigger text-foreground hover:text-white/80');
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
 	});

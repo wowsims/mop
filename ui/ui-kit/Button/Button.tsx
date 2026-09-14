@@ -3,7 +3,12 @@ import { externalRel } from '@sim/utils/links';
 import clsx from 'clsx';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, LabelHTMLAttributes, ReactNode, Ref } from 'react';
 
-import { BASE, ICON_BASE, LINK_BASE, SIZE, VARIANT } from './classes';
+const SIZE_CLASS = {
+	default: 'ui-button-md',
+	sm: 'ui-button-sm',
+	inline: 'ui-button-inline',
+	none: undefined,
+} as const;
 
 export type ButtonVariant =
 	| 'primary'
@@ -40,15 +45,14 @@ export type ButtonProps = ButtonAsButton | ButtonAsAnchor | ButtonAsLabel;
 export const Button = (props: ButtonProps) => {
 	const variant = props.variant === undefined ? (props.iconOnly ? null : 'primary') : props.variant;
 	const isLink = variant === 'link' || variant === 'link-danger' || variant === 'warning';
-	const base = props.iconOnly ? ICON_BASE : isLink ? LINK_BASE : BASE;
+	const base = props.iconOnly ? 'ui-button-icon' : isLink ? 'ui-button-link' : 'ui-button';
 	const classes =
 		variant === 'unstyled'
 			? props.className
 			: clsx(
 					base,
-					variant === null && !props.iconOnly && 'border-transparent',
-					variant && VARIANT[variant],
-					!isLink && !props.iconOnly && SIZE[props.size ?? 'default'],
+					variant && variant !== 'link' && `ui-button-${variant}`,
+					!isLink && !props.iconOnly && SIZE_CLASS[props.size ?? 'default'],
 					props.className,
 				);
 

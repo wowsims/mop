@@ -12,7 +12,7 @@ export interface FieldLabelProps {
 export const FieldLabel = ({ as = 'label', htmlFor, id, className, children }: FieldLabelProps) => {
 	const Tag = as as ElementType;
 	return (
-		<Tag htmlFor={as === 'label' ? htmlFor : undefined} id={id} className={clsx('inline-block mb-1 text-ui font-normal', className)}>
+		<Tag htmlFor={as === 'label' ? htmlFor : undefined} id={id} className={clsx('ui-field-label', className)}>
 			{children}
 		</Tag>
 	);

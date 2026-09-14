@@ -1,7 +1,6 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
-import { BASE, SIZE, VARIANT } from '@ui-kit/Button/classes';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -44,8 +43,8 @@ describe('ReforgePanel', () => {
 
 		expect([...run.classList].sort()).toEqual(
 			[
-				...BASE.split(' '),
-				...VARIANT.primary.split(' '),
+				'ui-button',
+				'ui-button-primary',
 				'grow',
 				'py-2',
 				'px-[calc(--spacing(3)+var(--settings-button-width))]',
@@ -56,11 +55,19 @@ describe('ReforgePanel', () => {
 		);
 		expect([...settings.classList].sort()).toEqual(
 			[
-				...BASE.split(' '),
-				...SIZE.default.split(' '),
-				...VARIANT.primary.split(' '),
+				'ui-button',
+				'ui-button-md',
+				'ui-button-primary',
 				'bg-transparent',
 				'border-transparent',
+				'hover:bg-primary-hover',
+				'hover:border-primary-hover',
+				'focus-visible:bg-primary-hover',
+				'focus-visible:border-primary-hover',
+				'active:bg-primary-active',
+				'active:border-primary-active',
+				'data-[popup-open]:bg-primary-active',
+				'data-[popup-open]:border-primary-active',
 				'w-(--settings-button-width)',
 				'sim-sidebar-action-button',
 				'suggest-reforges-button-settings',

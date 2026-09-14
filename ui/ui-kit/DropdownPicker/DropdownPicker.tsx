@@ -17,7 +17,7 @@ import type { DropdownPickerProps } from './types';
  * update here rather than a rebuild-and-compare.
  */
 export const DropdownPicker = <V,>({ className, testId, triggerClassName, ...menu }: DropdownPickerProps<V>) => (
-	<div className={clsx('dropdown-picker-root', 'dropdown', className)} data-testid={testId ?? 'dropdown-picker-root'}>
+	<div className={clsx('dropdown-picker-root', 'relative', className)} data-testid={testId ?? 'dropdown-picker-root'}>
 		<DropdownMenu<V> {...menu} triggerClassName={triggerClassName} />
 	</div>
 );

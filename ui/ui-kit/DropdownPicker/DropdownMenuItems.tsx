@@ -37,7 +37,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 			) : (
 				<Menu.SubmenuRoot key={`submenu-${entry.key}-${position}`}>
 					<li className={clsx('dropdown-picker-item', 'ui-menu-item', 'ui-menu-item-row')} data-testid="dropdown-picker-item">
-						<div className="dropend">
+						<div>
 							<Menu.SubmenuTrigger
 								render={
 									<button

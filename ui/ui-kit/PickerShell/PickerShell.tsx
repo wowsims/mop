@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import { isValidElement, type ReactNode, type Ref, useMemo } from 'react';
 
 import { adoptNode, isNode } from '../utils/dom';
-import { INPUT_DESCRIPTION, INPUT_ROOT_DISABLED_FILTER } from './classes';
 
 const dedupe = (classes: string) => Array.from(new Set(classes.split(' '))).join(' ');
 
@@ -44,7 +43,7 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			className={dedupe(
 				clsx(
 					config.description && 'flex-wrap',
-					INPUT_ROOT_DISABLED_FILTER,
+					'ui-field',
 					'input-root',
 					className,
 					config.inline && 'input-inline',
@@ -62,9 +61,9 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			{tooltipNode}
 			{config.description &&
 				(isNode(config.description) ? (
-					<Field.Description render={<div />} className={INPUT_DESCRIPTION} data-testid="input-description" ref={adoptNode(config.description)} />
+					<Field.Description render={<div />} className="ui-field-description" data-testid="input-description" ref={adoptNode(config.description)} />
 				) : (
-					<Field.Description render={<div />} className={INPUT_DESCRIPTION} data-testid="input-description">
+					<Field.Description render={<div />} className="ui-field-description" data-testid="input-description">
 						{config.description}
 					</Field.Description>
 				))}

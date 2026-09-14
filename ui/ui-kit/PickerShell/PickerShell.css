@@ -1,0 +1,9 @@
+.ui-field {
+	&[data-disabled] {
+		@apply [filter:opacity(0.5)];
+	}
+}
+
+.ui-field-description {
+	@apply mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0;
+}
