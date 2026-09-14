@@ -249,7 +249,10 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(700);
 	out.filteredState = await page.evaluate(STATE, SEL);
 	out.filteredRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
-	out.chips = await page.evaluate(sel => [...document.querySelectorAll(`${sel.chip} .saved-data-set-name`)].map(chip => chip.textContent).join(','), SEL);
+	out.chips = await page.evaluate(
+		sel => [...document.querySelectorAll(`${sel.chip} :is([data-testid="saved-data-set-name"], .saved-data-set-name)`)].map(chip => chip.textContent).join(','),
+		SEL,
+	);
 	out.summary = await page.evaluate(
 		sel =>
 			`${document.querySelector(sel.fabSummary)?.textContent} / ${document.querySelector(sel.fabPreview)?.textContent} / clearHidden=${document.querySelector(sel.fabClear)?.hidden}`,

@@ -51,13 +51,13 @@ export const Chip = ({
 
 	return (
 		<Root
-			className={clsx('saved-data-set-chip ui-chip', 'data-[active]:[&_.saved-data-set-name]:text-primary-foreground', className)}
+			className={clsx('ui-chip', 'data-[active]:[&_.ui-chip-name]:text-primary-foreground', className)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}
 			data-disabled={disabled ? '' : undefined}
 			{...rootProps}>
 			<Name
-				className="saved-data-set-name p-2 text-white"
+				className="ui-chip-name p-2 text-white"
 				data-testid="saved-data-set-name"
 				onClick={onSelect}
 				{...(Name === 'button' ? { type: 'button' } : {})}
