@@ -4,7 +4,7 @@ export interface TooltipRowProps {
 }
 
 export const TooltipRow = ({ label, value }: TooltipRowProps) => (
-	<div className="character-stats-tooltip-row flex justify-between">
+	<div data-testid="character-stats-tooltip-row" className="flex justify-between">
 		<span className="mr-2">{label}</span>
 		<span>{value}</span>
 	</div>

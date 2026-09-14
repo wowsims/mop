@@ -25,7 +25,7 @@
 	@apply font-bold text-right;
 }
 
-.ui-character-stats-value .stat-value-link-container {
+.ui-character-stats-value .ui-stat-value-link-container {
 	@apply inline-flex flex-col;
 }
 }

@@ -45,11 +45,9 @@ const renderImporter = (props: Partial<Parameters<typeof Importer>[0]> = {}) => 
 	return { onImport, onOpenChange };
 };
 
-// By class rather than by name: the i18n stub these tests run against returns the key, not the
-// English string.
 const clickImport = async () => {
 	await act(async () => {
-		fireEvent.click(rootElem.querySelector('button.import-button')!);
+		fireEvent.click(rootElem.querySelector('[data-testid="import-button"]')!);
 	});
 };
 
@@ -95,7 +93,7 @@ describe('Importer', () => {
 		const textarea = rootElem.querySelector('textarea')!;
 		textarea.value = 'typed by hand';
 
-		const upload = rootElem.querySelector<HTMLInputElement>('.importer-upload-input')!;
+		const upload = rootElem.querySelector<HTMLInputElement>('[data-testid="importer-upload-input"]')!;
 		await act(async () => {
 			fireEvent.change(upload, { target: { files: [{ text: () => Promise.resolve('from the file') }] } });
 		});
@@ -106,7 +104,7 @@ describe('Importer', () => {
 
 	it('ignores a cancelled file picker', async () => {
 		renderImporter();
-		const upload = rootElem.querySelector<HTMLInputElement>('.importer-upload-input')!;
+		const upload = rootElem.querySelector<HTMLInputElement>('[data-testid="importer-upload-input"]')!;
 		await act(async () => {
 			fireEvent.change(upload, { target: { files: [] } });
 		});
@@ -115,24 +113,25 @@ describe('Importer', () => {
 
 	it('labels the upload input, and shows the label only when uploading is allowed', () => {
 		renderImporter();
-		const upload = rootElem.querySelector<HTMLInputElement>('.importer-upload-input')!;
-		expect(rootElem.querySelector('label.upload-button')!.getAttribute('for')).toBe(upload.id);
+		const upload = rootElem.querySelector<HTMLInputElement>('[data-testid="importer-upload-input"]')!;
+		expect(rootElem.querySelector('[data-testid="upload-button"]')!.getAttribute('for')).toBe(upload.id);
 		// Derived from the title, because `keepMounted` puts every importer in the page at once.
 		expect(upload.id).toBe('upload-input-json-import');
 	});
 
 	it('renders the hidden file input even when uploading is not allowed, as vanilla did', () => {
 		renderImporter({ allowFileUpload: false });
-		expect(rootElem.querySelector('label.upload-button')).toBe(null);
-		expect(rootElem.querySelector('.importer-upload-input')).not.toBe(null);
+		expect(rootElem.querySelector('[data-testid="upload-button"]')).toBe(null);
+		expect(rootElem.querySelector('[data-testid="importer-upload-input"]')).not.toBe(null);
 	});
 
-	it('puts the description above the textarea, inside .import-description', () => {
+	it('puts the description above the textarea, inside the description block', () => {
 		renderImporter();
 		const body = rootElem.querySelector('[data-testid="sim-dialog-body"] > div')!;
-		const [descriptionClass, textareaClass] = Array.from(body.children).map(el => el.className);
-		expect(descriptionClass).toBe('import-description');
-		expect(textareaClass.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'importer-textarea']));
-		expect(body.querySelector('.import-description')!.textContent).toBe('how to');
+		const [description, textarea] = Array.from(body.children);
+		expect(description.getAttribute('data-testid')).toBe('import-description');
+		expect(textarea.getAttribute('data-testid')).toBe('importer-textarea');
+		expect(textarea.className.split(' ')).toEqual(expect.arrayContaining(['ui-input']));
+		expect(body.querySelector('[data-testid="import-description"]')!.textContent).toBe('how to');
 	});
 });

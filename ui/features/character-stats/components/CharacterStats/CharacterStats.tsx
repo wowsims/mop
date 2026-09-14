@@ -43,9 +43,11 @@ export const CharacterStats = () => {
 	const show = (deltaStats: Stats, unitStat: UnitStat, includeBase?: boolean) => statDisplayString(player, racial, deltaStats, unitStat, includeBase);
 
 	return (
-		<div className="character-stats-root w-full">
-			<h3 className="character-stats-label inline-block m-0 mb-2 text-base font-bold leading-tight">{i18n.t('sidebar.character_stats.title')}</h3>
-			<table className="character-stats-table w-full p-[10px]" aria-busy={pending || undefined}>
+		<div data-testid="character-stats-root" className="w-full">
+			<h3 data-testid="character-stats-label" className="inline-block m-0 mb-2 text-base font-bold leading-tight">
+				{i18n.t('sidebar.character_stats.title')}
+			</h3>
+			<table className="w-full p-[10px]" aria-busy={pending || undefined}>
 				{rows.map(group => (
 					<tbody key={group.key}>
 						{group.rows.map(row =>

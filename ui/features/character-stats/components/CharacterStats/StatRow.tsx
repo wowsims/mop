@@ -8,7 +8,6 @@ import { translateMasterySpellName } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
 import { Skeleton } from '@ui-kit/Skeleton';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId } from 'react';
 
 import { BonusStatsLink } from './BonusStatsLink';
@@ -33,18 +32,18 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 	const { modifiers, customBonus } = masteryScaling(player);
 
 	return (
-		<tr className="character-stats-table-row ui-character-stats-row">
-			<td className="character-stats-table-label ui-character-stats-label">
+		<tr data-testid="character-stats-table-row" className="ui-character-stats-row">
+			<td className="ui-character-stats-label">
 				{unitStat.getShortName(player.getClass())}
 				{isMastery && <div>{translateMasterySpellName(player.getSpec())}</div>}
 			</td>
-			<td className="character-stats-table-value ui-character-stats-value">
+			<td className="ui-character-stats-value">
 				{pending ? (
 					<Skeleton />
 				) : (
 					<>
-						<div className="stat-value-link-container">
-							<Button variant="unstyled" className={clsx('stat-value-link', contextualClass)} {...tooltipAnchorProps(id)}>
+						<div className="ui-stat-value-link-container">
+							<Button variant="unstyled" data-testid="stat-value-link" className={contextualClass} {...tooltipAnchorProps(id)}>
 								{`${show(attribution.final, unitStat, true)} `}
 							</Button>
 							{isMastery &&
@@ -54,7 +53,7 @@ export const StatRow = ({ unitStat, bonusStats, attribution, show, pending }: St
 										variant="unstyled"
 										key={index}
 										href={ActionId.makeSpellUrl(masterySpellIDs.get(player.getSpec()) || 0)}
-										className={clsx('stat-value-link-mastery', contextualClass)}
+										className={contextualClass}
 										target="_blank">
 										{`${(attribution.masteryPoints * modifier + customBonus[index]).toFixed(2)}%`}
 									</Button>

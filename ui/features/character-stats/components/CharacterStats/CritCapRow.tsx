@@ -2,7 +2,6 @@ import i18n from '@i18n/config';
 import type { MeleeCritCapInfo } from '@sim/player/player';
 import { Button } from '@ui-kit/Button';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useId } from 'react';
 
 import { TooltipRow } from './TooltipRow';
@@ -16,11 +15,11 @@ export interface CritCapRowProps {
 export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 	const id = useId();
 	return (
-		<tr className="character-stats-table-row ui-character-stats-row">
-			<td className="character-stats-table-label ui-character-stats-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
-			<td className="character-stats-table-value ui-character-stats-value">
-				<div className="stat-value-link-container">
-					<Button variant="unstyled" className={clsx('stat-value-link', critCapClass(info.playerCritCapDelta))} {...tooltipAnchorProps(id)}>
+		<tr data-testid="character-stats-table-row" className="ui-character-stats-row">
+			<td className="ui-character-stats-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
+			<td className="ui-character-stats-value">
+				<div className="ui-stat-value-link-container">
+					<Button variant="unstyled" data-testid="stat-value-link" className={critCapClass(info.playerCritCapDelta)} {...tooltipAnchorProps(id)}>
 						{`${text} `}
 					</Button>
 				</div>

@@ -41,12 +41,12 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			className="importer"
+			testId="importer"
 			title={title}
 			footer={
 				<div className="flex gap-2">
 					{allowFileUpload && (
-						<Button as="label" htmlFor={uploadInputId} className="importer-button upload-button w-48">
+						<Button as="label" htmlFor={uploadInputId} data-testid="upload-button" className="w-48">
 							<Icon name="file-arrow-up" className="mr-1" />
 							{i18n.t('import.json.upload_button')}
 						</Button>
@@ -54,7 +54,8 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 					<input
 						type="file"
 						id={uploadInputId}
-						className="importer-upload-input hidden"
+						data-testid="importer-upload-input"
+						className="hidden"
 						hidden
 						onChange={async event => {
 							const file = event.target.files?.[0];
@@ -62,15 +63,15 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 							textRef.current.value = await file.text();
 						}}
 					/>
-					<Button className="importer-button import-button w-48" onClick={runImport}>
+					<Button data-testid="import-button" className="w-48" onClick={runImport}>
 						<Icon name="download" style="base" className="mr-1" />
 						{i18n.t('import.json.import_button')}
 					</Button>
 				</div>
 			}>
 			<div>
-				<div className="import-description">{children}</div>
-				<TextArea spellCheck={false} className="importer-textarea w-full h-[40vh] resize-none" ref={textRef} />
+				<div data-testid="import-description">{children}</div>
+				<TextArea spellCheck={false} data-testid="importer-textarea" className="w-full h-[40vh] resize-none" ref={textRef} />
 			</div>
 		</Dialog>
 	);

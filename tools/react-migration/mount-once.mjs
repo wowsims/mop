@@ -17,7 +17,7 @@ const READ = () => ({
 	tabs: document.querySelectorAll(':is([data-testid="sim-tabs"], .sim-tabs) [role=tab]').length,
 	// Portalled, not constructed: a target built by the shell's constructor is the one place a
 	// second React pass could mount twice without the construct-once ref noticing.
-	stats: document.querySelectorAll(':is([data-testid="sim-sidebar-stats"], .sim-sidebar-stats) .character-stats-root').length,
+	stats: document.querySelectorAll(':is([data-testid="sim-sidebar-stats"], .sim-sidebar-stats) :is([data-testid="character-stats-root"], .character-stats-root)').length,
 });
 
 const browser = await launch();

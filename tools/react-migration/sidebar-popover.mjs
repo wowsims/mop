@@ -30,7 +30,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 // Both sides: tippy's box today, `Tooltip`'s `sim-tooltip` once a component ports.
 const ANY_TOOLTIP = '.tippy-box, .sim-tooltip';
 
-const STAT_ROW = '.character-stats-table-row';
+const STAT_ROW = ':is([data-testid="character-stats-table-row"], .character-stats-table-row)';
 // Both sides: tippy's themed box today, `Tooltip`'s `className` once the sidebar ports. Kept as
 // parts because a selector list does not distribute over a descendant combinator.
 const POPOVER_PARTS = [".tippy-box[data-theme='bonus-stats-popover']", '.sim-tooltip.bonus-stats-popover'];
@@ -88,11 +88,16 @@ const geometry = selector => {
 };
 
 // The first row that offers a bonus-stat button — whichever stat that is, both builds agree on it.
-const readFirstValue = () => document.querySelector('.character-stats-table-row .stat-value-link')?.textContent?.trim() ?? null;
+const readFirstValue = () =>
+	document
+		.querySelector(
+			':is([data-testid="character-stats-table-row"], .character-stats-table-row) :is([data-testid="stat-value-link"], .stat-value-link)',
+		)
+		?.textContent?.trim() ?? null;
 
 const CLOSERS = {
 	escape: page => page.keyboard.press('Escape'),
-	'outside-click': page => page.click('.character-stats-label'),
+	'outside-click': page => page.click(':is([data-testid="character-stats-label"], .character-stats-label)'),
 	enter: page => page.keyboard.press('Enter'),
 	tab: page => page.keyboard.press('Tab'),
 };
@@ -115,7 +120,7 @@ const run = async (browser, name) => {
 
 	const before = await page.evaluate(readBonusStats);
 	const valueBefore = await page.evaluate(readFirstValue);
-	await page.click(`${STAT_ROW} button.add-bonus-stats`);
+	await page.click(`${STAT_ROW} button:is([data-testid="add-bonus-stats"], .add-bonus-stats)`);
 	await page.waitForSelector(inside('.number-picker-input'), { state: 'visible', timeout: 5000 });
 	// After the fade, so the count below is not reading a transition mid-flight.
 	await page.waitForTimeout(600);
@@ -174,7 +179,7 @@ const hoverTooltips = async browser => {
 				return {
 					open: true,
 					opacity: getComputedStyle(box).opacity,
-					rows: Array.from(box.querySelectorAll('.character-stats-tooltip-row')).map(row =>
+					rows: Array.from(box.querySelectorAll(':is([data-testid="character-stats-tooltip-row"], .character-stats-tooltip-row)')).map(row =>
 						Array.from(row.children)
 							.map(cell => cell.textContent.trim())
 							.join(' = '),
@@ -189,9 +194,12 @@ const hoverTooltips = async browser => {
 		return shown;
 	};
 
-	const first = await read(`${STAT_ROW} .stat-value-link`, 0);
+	const first = await read(`${STAT_ROW} :is([data-testid="stat-value-link"], .stat-value-link)`, 0);
 	// The crit-cap row is the only one without a bonus-stat button, and it renders a different table.
-	const critCap = await read(`${STAT_ROW}:not(:has(button.add-bonus-stats)) .stat-value-link`, 0);
+	const critCap = await read(
+		`${STAT_ROW}:not(:has(button:is([data-testid="add-bonus-stats"], .add-bonus-stats))) :is([data-testid="stat-value-link"], .stat-value-link)`,
+		0,
+	);
 	await context.close();
 	return { first, critCap };
 };
