@@ -33,9 +33,11 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					event.preventDefault();
 					onAdd();
 				}}>
-				<div className="bulk-item-search-item-icon-wrapper flex-shrink-0 size-10 border border-border">
-					<span className="item-picker-ilvl ui-item-picker-ilvl">{baseIlvl(item)}</span>
-					<WowheadIcon as="div" className="bulk-item-search-item-icon size-full" iconUrl={iconUrl} />
+				<div className="flex-shrink-0 size-10 border border-border">
+					<span className="ui-item-picker-ilvl" data-testid="item-picker-ilvl">
+						{baseIlvl(item)}
+					</span>
+					<WowheadIcon as="div" className="size-full" data-testid="bulk-item-search-item-icon" iconUrl={iconUrl} />
 				</div>
 				<div className="flex flex-col gap-1 pl-2">
 					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">

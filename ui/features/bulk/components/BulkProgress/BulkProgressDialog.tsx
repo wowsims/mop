@@ -31,7 +31,7 @@ export const BulkProgressDialog = () => {
 	return (
 		<ProgressTrackerDialog
 			open
-			className="bulk-sim-progress-tracker"
+			testId="bulk-sim-progress-tracker"
 			title="Bulk Sim"
 			state={{ stage: state.stage, message: state.hasMessage ? MESSAGE : undefined }}
 			hasProgressBar

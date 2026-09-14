@@ -10,10 +10,12 @@ export interface ItemCellProps {
 	labels?: ReactNode;
 	action?: ReactNode;
 	className?: ClassValue;
+	testId?: string;
+	rootDataAttributes?: Record<string, string>;
 }
 
-export const ItemCell = ({ icon, ilvl, sockets, name, labels, action, className }: ItemCellProps) => (
-	<div className={clsx('ui-item-picker-root', className)} data-testid="item-picker-root">
+export const ItemCell = ({ icon, ilvl, sockets, name, labels, action, className, testId, rootDataAttributes }: ItemCellProps) => (
+	<div className={clsx('ui-item-picker-root', className)} data-testid={testId ?? 'item-picker-root'} {...rootDataAttributes}>
 		<div className="ui-item-picker-icon-wrapper" data-testid="item-picker-icon-wrapper">
 			{ilvl !== undefined && (
 				<span className="ui-item-picker-ilvl" data-testid="item-picker-ilvl">

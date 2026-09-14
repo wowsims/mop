@@ -64,8 +64,8 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 	}, []);
 
 	return (
-		<ContentBlock className="bulk-item-search-root" config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
-			<div className="bulk-gear-search-container relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-halves-wide">
+		<ContentBlock config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
+			<div className="relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-halves-wide">
 				<SearchBar
 					id="bulkGearSearch"
 					label={i18n.t('common.name')}
@@ -74,28 +74,29 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					onChange={setQuery}
 					clearable
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
-					clearClassName="cancel-bulk-gear-search-btn z-2 -ml-px py-1.5 px-3 flex items-center bg-surface border border-surface-border">
+					clearClassName="z-2 -ml-px py-1.5 px-3 flex items-center bg-surface border border-surface-border">
 					<ul
-						className="bulk-gear-search-results absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full min-w-40 p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-none shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
+						className="absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full min-w-40 p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-none shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
+						data-testid="bulk-gear-search-results"
 						data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (
 							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
 						))}
 						{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
-							<li className="ui-bulk-item-search-item bulk-item-search-results-note border-none col-span-full justify-center">
+							<li className="ui-bulk-item-search-item border-none col-span-full justify-center" data-testid="bulk-item-search-results-note">
 								{i18n.t('bulk_tab.search.showing_results', { max: MAX_SEARCH_RESULTS, total: shown.matchCount })}
 							</li>
 						)}
 						{shown?.matchCount === 0 && (
-							<li className="ui-bulk-item-search-item bulk-item-search-results-note border-none col-span-full justify-center">
+							<li className="ui-bulk-item-search-item border-none col-span-full justify-center" data-testid="bulk-item-search-results-note">
 								{i18n.t('bulk_tab.search.no_results')}
 							</li>
 						)}
 					</ul>
 				</SearchBar>
-				<div className="bulk-gear-search-ilvl-filters flex items-center [&_.number-picker-root]:mb-0">
+				<div className="flex items-center [&_.number-picker-root]:mb-0">
 					<NumberPicker modObject={player} config={ilvlConfigs.min} />
-					<span className="ilvl-filters-separator mx-3 mt-3">-</span>
+					<span className="mx-3 mt-3">-</span>
 					<NumberPicker modObject={player} config={ilvlConfigs.max} />
 				</div>
 			</div>

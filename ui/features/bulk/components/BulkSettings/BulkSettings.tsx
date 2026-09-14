@@ -85,14 +85,14 @@ export const BulkSettings = () => {
 	});
 
 	return (
-		<TabPanelColumns.Right className="bulk-tab-right">
-			<div className="bulk-settings-outer-container sticky top-sim-header pt-6">
-				<div className="bulk-settings-container p-4 border border-border grid gap-6 bg-background">
+		<TabPanelColumns.Right>
+			<div className="sticky top-sim-header pt-6">
+				<div className="p-4 border border-border grid gap-6 bg-background" data-testid="bulk-settings-container">
 					<CombinationsCount />
-					<Button className="bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
+					<Button data-testid="bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
 						{i18n.t('bulk_tab.actions.simulate_batch')}
 					</Button>
-					<div className="use-legacy-bulk-sim-container">
+					<div>
 						<BooleanPicker
 							modObject={player}
 							config={{
@@ -108,7 +108,7 @@ export const BulkSettings = () => {
 							}}
 						/>
 					</div>
-					<div className="inherit-upgrades-container">
+					<div>
 						<BooleanPicker
 							modObject={player}
 							config={{

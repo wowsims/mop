@@ -19,7 +19,7 @@ export const CombinationsCount = () => {
 
 	if (pending) {
 		return (
-			<div className="bulk-combinations-count text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap">
+			<div className="text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
 				<Spinner size="sm" />
 			</div>
 		);
@@ -28,7 +28,7 @@ export const CombinationsCount = () => {
 	const iterationsLimit = bulkIterationsLimit(sim.isNative);
 	const showWarning = iterations > iterationsLimit;
 	return (
-		<div className="bulk-combinations-count text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap">
+		<div className="text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
 			<span className={clsx(showWarning && 'text-danger')}>
 				{combinations === 1
 					? i18n.t('bulk_tab.settings.combination_singular')
@@ -40,7 +40,7 @@ export const CombinationsCount = () => {
 			</span>
 			{showWarning && (
 				<>
-					<button type="button" className="warning link-warning text-link-warning xl:max-xxl:-order-1" {...tooltipAnchorProps(tooltipId)}>
+					<button type="button" className="text-link-warning xl:max-xxl:-order-1" data-testid="warning" {...tooltipAnchorProps(tooltipId)}>
 						<Icon name="exclamation-triangle" size="2x" />
 					</button>
 					<Tooltip id={tooltipId} place="left" content={i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(iterationsLimit) })} />

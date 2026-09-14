@@ -36,6 +36,8 @@ export interface ItemDetailCellProps {
 	/** Rendered after the enchant, tinker and reforge labels. */
 	extraLabels?: ReactNode;
 	nameDescriptionFlush?: boolean;
+	testId?: string;
+	rootDataAttributes?: Record<string, string>;
 }
 
 /**
@@ -55,6 +57,8 @@ export const ItemDetailCell = ({
 	socketTooltipId,
 	extraLabels,
 	nameDescriptionFlush,
+	testId,
+	rootDataAttributes,
 }: ItemDetailCellProps) => {
 	const player = usePlayer();
 
@@ -69,6 +73,8 @@ export const ItemDetailCell = ({
 	return (
 		<ItemCell
 			className={className}
+			testId={testId}
+			rootDataAttributes={rootDataAttributes}
 			ilvl={
 				item ? (
 					<>

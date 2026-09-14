@@ -21,10 +21,10 @@ export const RequiredSetBonuses = () => {
 	const canSatisfy = useMemo(() => setBonusFeasibility(player, pickerGroups, requiredSetBonuses), [player, pickerGroups, requiredSetBonuses]);
 
 	return (
-		<div className="required-set-bonuses-container flex flex-col gap-2">
+		<div className="flex flex-col gap-2">
 			{!!setBonuses.length && <h6>{i18n.t('bulk_tab.settings.required_set_bonuses.label')}</h6>}
 			{setBonuses.map(setBonus => (
-				<div key={setBonus.setId} className="bulk-required-set-bonus flex flex-col gap-1">
+				<div key={setBonus.setId} className="flex flex-col gap-1">
 					<FieldLabel as="div">
 						{setBonus.setName} {i18n.t('bulk_tab.settings.required_set_bonuses.available_pieces', { count: setBonus.totalPieces })}
 					</FieldLabel>
@@ -51,7 +51,6 @@ export const RequiredSetBonuses = () => {
 								id: `${setBonusDomId(setBonus)}-4p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
 								inline: true,
-								extraClassNames: ['bulk-required-set-bonus'],
 								enableWhen: () => canEnableRequiredFourPiece(requiredSetBonuses, setBonus, canSatisfy),
 								value: requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
 								onChange: (newValue: boolean) => {

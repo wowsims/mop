@@ -86,22 +86,24 @@ const INSTALL = () => {
 		// One line per bulk slot group. `gear-group-*` is the group's own identity; the counts are
 		// what every add, remove and clear below is judged by.
 		groups: () =>
-			[...pane().querySelectorAll('.bulk-gear-combo .bulk-item-picker-group-root')].map(group => ({
-				slot: [...group.classList].find(name => name.startsWith('gear-group-')) ?? '?',
+			[...pane().querySelectorAll(`${q('bulk-gear-combo')} :is([data-gear-group], .bulk-item-picker-group-root)`)].map(group => ({
+				slot: group.dataset.gearGroup ?? [...group.classList].find(name => name.startsWith('gear-group-'))?.slice('gear-group-'.length) ?? '?',
 				title: text(group.querySelector('.content-block-title')),
-				pickers: group.querySelectorAll('.bulk-item-picker').length,
-				equipped: group.querySelectorAll('.bulk-item-picker-equipped').length,
-				frozen: group.querySelectorAll('.bulk-item-picker-frozen').length,
+				pickers: group.querySelectorAll(q('bulk-item-picker')).length,
+				equipped: group.querySelectorAll(':is([data-equipped], .bulk-item-picker-equipped)').length,
+				frozen: group.querySelectorAll(':is([data-frozen], .bulk-item-picker-frozen)').length,
 				// The removable ones: the button is built only for a user-added picker and hidden
 				// again whenever the same item is worn.
-				removable: [...group.querySelectorAll('.bulk-item-picker .item-picker-actions-btn')].filter(button => !button.classList.contains('hide')).length,
-				empty: !group.querySelector('.bulk-item-picker'),
+				removable: [...group.querySelectorAll(`${q('bulk-item-picker')} ${q('item-picker-actions-btn')}`)].filter(
+					button => !button.classList.contains('hide'),
+				).length,
+				empty: !group.querySelector(q('bulk-item-picker')),
 			})),
 		// Every settings control in document order, keyed on the id its picker was given. Walking the
 		// container rather than naming them is what makes a picker that stops rendering read as
 		// missing: a named lookup would just report the same `null` it reports for a wrong value.
 		settings: () =>
-			[...pane().querySelectorAll('.bulk-settings-container input[id], .bulk-settings-container select[id]')].map(input => {
+			[...pane().querySelectorAll(`${q('bulk-settings-container')} input[id], ${q('bulk-settings-container')} select[id]`)].map(input => {
 				const label = pane().querySelector(`label[for="${CSS.escape(input.id)}"]`);
 				const hidden = !!input.closest('.hide, .d-none');
 				const base = `#${input.id} ${input.tagName.toLowerCase()} label=${JSON.stringify(text(label))} disabled=${Number(input.disabled)} hidden=${Number(hidden)}`;
@@ -112,7 +114,7 @@ const INSTALL = () => {
 		// The freeze-weapon-type blocks, read as computed display on the container *and* its parent
 		// because the two carry the `hide` class at different times. See the header.
 		weaponTypeBlocks: () =>
-			[...pane().querySelectorAll('.bulk-gear-freeze-weapontypes')].map(block => ({
+			[...pane().querySelectorAll(q('bulk-gear-freeze-weapontypes'))].map(block => ({
 				title: text(block.querySelector('h6')),
 				shown: shown(block),
 				classes: cls(block),
@@ -121,46 +123,46 @@ const INSTALL = () => {
 				inputs: block.querySelectorAll('input[id]').length,
 			})),
 		combinations: () => {
-			const root = pane().querySelector('.bulk-combinations-count');
-			const button = pane().querySelector('.bulk-settings-btn');
+			const root = pane().querySelector(q('bulk-combinations-count'));
+			const button = pane().querySelector(q('bulk-settings-btn'));
 			return {
 				loading: !!root?.querySelector('.loader'),
 				text: text(root),
-				warning: !!root?.querySelector('.warning'),
+				warning: !!root?.querySelector(q('warning')),
 				simulate: text(button),
 				disabled: !!button?.disabled,
 			};
 		},
 		search: () => {
-			const list = pane().querySelector('.bulk-gear-search-results');
+			const list = pane().querySelector(q('bulk-gear-search-results'));
 			const rows = [...(list?.querySelectorAll('li') ?? [])];
 			return {
 				open: !!list?.classList.contains('show') || !!list?.hasAttribute('data-open'),
 				// Present *and* unhidden: the port unmounts the clear button where master left it in the
 				// tree carrying `hide`, and a plain `!contains('hide')` reads a missing button as shown.
 				cancelShown: (() => {
-					const cancel = list?.parentElement?.querySelector('.cancel-bulk-gear-search-btn');
+					const cancel = list?.parentElement?.querySelector('[data-testid="search-bar-clear-btn"]');
 					return !!cancel && !cancel.classList.contains('hide');
 				})(),
 				rows: rows.length,
 				items: rows.filter(row => row.querySelector('a[data-item-id]')).length,
-				note: text(rows.find(row => row.classList.contains('bulk-item-search-results-note'))) || null,
+				note: text(rows.find(row => row.matches(q('bulk-item-search-results-note')))) || null,
 				// Enough of a row to prove it rendered: the ilvl badge, the quality class the name
 				// carries and whether the icon and the wowhead link were filled in asynchronously.
 				first: (() => {
 					const anchor = list?.querySelector('a[data-item-id]');
 					if (!anchor) return null;
-					const icon = anchor.querySelector('.bulk-item-search-item-icon');
+					const icon = anchor.querySelector(q('bulk-item-search-item-icon'));
 					// Not a descendant selector: the whole search box sits inside a `.d-flex.flex-column`,
 					// and `Element.querySelector` matches the left-hand side of a combinator against
 					// ancestors *outside* the element it was called on — so anything shaped like that
 					// picks the ilvl badge instead of the name.
-					const name = [...anchor.querySelectorAll('span')].find(span => !span.classList.contains('item-picker-ilvl'));
+					const name = [...anchor.querySelectorAll('span')].find(span => !span.matches(q('item-picker-ilvl')));
 					return {
 						id: anchor.dataset.itemId,
 						name: text(name),
 						quality: [...(name?.classList ?? [])].find(entry => entry.startsWith('text-')) ?? null,
-						ilvl: text(anchor.querySelector('.item-picker-ilvl')),
+						ilvl: text(anchor.querySelector(q('item-picker-ilvl'))),
 						slot: text(anchor.querySelector('small')),
 						icon: (icon?.getAttribute('style') ?? '').includes('url(') ? 'set' : 'unset',
 						linked: !!anchor.getAttribute('href'),
@@ -171,7 +173,7 @@ const INSTALL = () => {
 		// The candidates a click may pick from: everything the list offers that is not already worn.
 		// `isDuplicateOfExisting` counts the equipped picker too, so clicking a worn item is rejected
 		// with a toast and adds nothing — which would read here as "the add path is broken".
-		searchIds: () => [...pane().querySelectorAll('.bulk-gear-search-results a[data-item-id]')].map(anchor => Number(anchor.dataset.itemId)),
+		searchIds: () => [...pane().querySelectorAll(`${q('bulk-gear-search-results')} a[data-item-id]`)].map(anchor => Number(anchor.dataset.itemId)),
 		// Bulk builds its own `SelectorModal`, so its tab panes are the ones prefixed
 		// `bulk-selector-modal-`. That is how this tells it apart from the gear tab's instance.
 		modal: () => {
@@ -208,22 +210,22 @@ const INSTALL = () => {
 		results: () => {
 			const tab = document.getElementById('bulkResultsTab');
 			return {
-				placeholder: text(tab?.querySelector(':scope > div:not(.bulk-sim-result-root):not(.bulk-results-tie-group)')) || null,
-				tieGroups: [...(tab?.querySelectorAll('.bulk-results-tie-group') ?? [])].map(group => ({
+				placeholder: text(tab?.querySelector(`:scope > div:not(${q('bulk-sim-result-root')}):not(${q('bulk-results-tie-group')})`)) || null,
+				tieGroups: [...(tab?.querySelectorAll(q('bulk-results-tie-group')) ?? [])].map(group => ({
 					label: text(group.querySelector('span')),
-					rows: group.querySelectorAll('.bulk-sim-result-root').length,
+					rows: group.querySelectorAll(q('bulk-sim-result-root')).length,
 				})),
-				rows: [...(tab?.querySelectorAll('.bulk-sim-result-root') ?? [])].map(row => {
-					const cells = [...row.querySelectorAll('.bulk-result-item')];
+				rows: [...(tab?.querySelectorAll(q('bulk-sim-result-root')) ?? [])].map(row => {
+					const cells = [...row.querySelectorAll(q('bulk-result-item'))];
 					return {
-						tied: !!row.closest('.bulk-results-tie-group'),
-						avg: text(row.querySelector('.topline-result-avg')),
-						margin: text(row.querySelector('.results-sim-dps .text-muted')) || null,
-						baseline: !!row.querySelector('.results-reference .fw-bold'),
-						delta: text(row.querySelector('.results-reference-diff')) || null,
-						deltaClasses: cls(row.querySelector('.results-reference-diff')),
-						equip: text(row.querySelector('.bulk-equip-btn')),
-						equipHidden: !!row.querySelector('.bulk-equip-btn.d-none'),
+						tied: !!row.closest(q('bulk-results-tie-group')),
+						avg: text(row.querySelector(q('topline-result-avg'))),
+						margin: text(row.querySelector(`${q('results-sim-dps')} .text-muted`)) || null,
+						baseline: !!row.querySelector(`${q('results-reference')} .fw-bold`),
+						delta: text(row.querySelector(q('results-reference-diff'))) || null,
+						deltaClasses: cls(row.querySelector(q('results-reference-diff'))),
+						equip: text(row.querySelector(q('bulk-equip-btn'))),
+						equipHidden: !!row.querySelector(`${q('bulk-equip-btn')}.d-none`),
 						cells: cells.length,
 						// An unchanged slot still gets an `ItemRenderer`, rendered with `null` — the element
 						// is always there and only its contents say whether the slot moved. The icon's
@@ -318,7 +320,7 @@ try {
 	);
 	// The equipped pickers and the search box's own input listener are both attached inside
 	// `sim.waitForInit().then(...)`. Typing before that lands silently does nothing at all.
-	await page.waitForSelector('#bulk-tab .bulk-item-picker-equipped', { timeout: 60000, state: 'attached' });
+	await page.waitForSelector(`#bulk-tab :is([data-equipped], .bulk-item-picker-equipped)`, { timeout: 60000, state: 'attached' });
 	await page.waitForFunction(() => !window.bulkProbe.combinations().loading, null, { timeout: 60000 });
 	await page.waitForTimeout(800);
 
@@ -395,7 +397,7 @@ try {
 			.filter(Boolean);
 	let previous = groupsAtRest;
 	for (const id of candidates) {
-		await click(`#bulk-tab .bulk-gear-search-results a[data-item-id="${id}"]`);
+		await click(`#bulk-tab ${q('bulk-gear-search-results')} a[data-item-id="${id}"]`);
 		await page.waitForTimeout(700);
 		const groups = await page.evaluate(() => window.bulkProbe.groups());
 		const moved = groupDelta(previous, groups);
@@ -414,7 +416,7 @@ try {
 	// The results list is an absolutely-positioned `.dropdown-menu` over the picker groups, so it has
 	// to come down before anything below it can be clicked at all. Clearing it is also the only thing
 	// that exercises the cancel button.
-	await click('#bulk-tab .cancel-bulk-gear-search-btn');
+	await click('#bulk-tab [data-testid="search-bar-clear-btn"]');
 	await page.waitForTimeout(500);
 	const dismissed = await page.evaluate(() => window.bulkProbe.search());
 	say(`  cleared     open=${Number(dismissed.open)} cancel=${Number(dismissed.cancelShown)} rows=${dismissed.rows}`);
@@ -425,7 +427,7 @@ try {
 	// -------------------------------------------------------------------------
 	// The editability gate, and the one place bulk still constructs the vanilla selector modal.
 	say('\nthe selector modal, opened from a picker');
-	await click(`#bulk-tab .bulk-item-picker:not(.bulk-item-picker-equipped) ${q('item-picker-icon')}`);
+	await click(`#bulk-tab ${q('bulk-item-picker')}:not([data-equipped]):not(.bulk-item-picker-equipped) ${q('item-picker-icon')}`);
 	await page.waitForTimeout(1200);
 	const modal = await page.evaluate(() => window.bulkProbe.modal());
 	say(`  added picker   open=${Number(modal.open)} bulkInstance=${Number(!!modal.bulk)} title=${JSON.stringify(modal.title ?? null)} rows=${modal.rows ?? 0}`);
@@ -437,7 +439,7 @@ try {
 		await page.waitForTimeout(700);
 	}
 	// An equipped picker reports what is worn rather than offering a choice, so its click is vetoed.
-	await click(`#bulk-tab .bulk-item-picker-equipped ${q('item-picker-icon')}`);
+	await click(`#bulk-tab :is([data-equipped], .bulk-item-picker-equipped) ${q('item-picker-icon')}`);
 	await page.waitForTimeout(900);
 	const vetoed = await page.evaluate(() => window.bulkProbe.modal());
 	say(`  equipped picker open=${Number(vetoed.open)}`);
@@ -465,7 +467,7 @@ try {
 
 	// -------------------------------------------------------------------------
 	say('\nremoving and clearing');
-	await click('#bulk-tab .bulk-item-picker:not(.bulk-item-picker-equipped) .item-picker-actions-btn');
+	await click(`#bulk-tab ${q('bulk-item-picker')}:not([data-equipped]):not(.bulk-item-picker-equipped) ${q('item-picker-actions-btn')}`);
 	await page.waitForTimeout(900);
 	const afterRemove = await page.evaluate(() => window.bulkProbe.groups());
 	say(`  remove one  pickers=${afterRemove.reduce((sum, group) => sum + group.pickers, 0)} moved=${JSON.stringify(groupDelta(previous, afterRemove))}`);
@@ -490,20 +492,24 @@ try {
 	await page.fill('#bulkGearSearch', 'a');
 	await page.waitForFunction(() => window.bulkProbe.search().open, null, { timeout: 20000 });
 	await page.waitForTimeout(800);
-	await click(`#bulk-tab .bulk-gear-search-results a[data-item-id="${candidates[0]}"]`);
-	await click('#bulk-tab .cancel-bulk-gear-search-btn');
+	await click(`#bulk-tab ${q('bulk-gear-search-results')} a[data-item-id="${candidates[0]}"]`);
+	await click('#bulk-tab [data-testid="search-bar-clear-btn"]');
 	await page.waitForFunction(() => !window.bulkProbe.combinations().loading, null, { timeout: 60000 });
 	const beforeRun = await page.evaluate(() => window.bulkProbe.combinations());
 	say(`  combinations ${JSON.stringify(beforeRun.text)} disabled=${Number(beforeRun.disabled)}`);
 	if (beforeRun.disabled) throw new Error('the Simulate button is disabled with one item in the batch — the run cannot be exercised');
 
 	const startedAt = Date.now();
-	await click('#bulk-tab .bulk-settings-btn');
+	await click(`#bulk-tab ${q('bulk-settings-btn')}`);
 	await page.waitForFunction(() => window.bulkProbe.progress().open, null, { timeout: 60000 });
 	const progress = await page.evaluate(() => window.bulkProbe.progress());
 	say(`  progress    open=${Number(progress.open)} bar=${Number(progress.bar)}`);
 	if (!progress.bar) problems.push('the bulk progress modal has no progress bar');
-	await page.waitForFunction(() => document.querySelectorAll('#bulkResultsTab .bulk-sim-result-root').length > 0, null, { timeout: RUN_TIMEOUT });
+	await page.waitForFunction(
+		() => document.querySelectorAll('#bulkResultsTab :is([data-testid="bulk-sim-result-root"], .bulk-sim-result-root)').length > 0,
+		null,
+		{ timeout: RUN_TIMEOUT },
+	);
 	await page.waitForFunction(() => !window.bulkProbe.progress().open, null, { timeout: 60000 });
 	await page.waitForTimeout(800);
 	// On stderr, so the two ports' stdout stays diffable: how long the batch took is the one number
@@ -541,7 +547,7 @@ try {
 	// Destructive, so last: equipping a result rewrites the gear and leaves the bulk tab.
 	say('\nequipping a result');
 	const gearBefore = await page.evaluate(() => window.bulkProbe.gear());
-	await click('#bulkResultsTab .bulk-sim-result-root .bulk-equip-btn:not(.d-none)');
+	await click(`#bulkResultsTab ${q('bulk-sim-result-root')} ${q('bulk-equip-btn')}:not(.d-none)`);
 	await page.waitForTimeout(1500);
 	const gearAfter = await page.evaluate(() => window.bulkProbe.gear());
 	const moved = gearAfter.map((entry, index) => (entry === gearBefore[index] ? null : index)).filter(index => index !== null);

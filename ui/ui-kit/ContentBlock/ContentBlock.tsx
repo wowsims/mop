@@ -26,15 +26,19 @@ export interface ContentBlockProps {
 	bodyRef?: Ref<HTMLDivElement>;
 	headerRef?: Ref<HTMLDivElement>;
 	flush?: boolean;
+	rootDataAttributes?: Record<string, string>;
 }
 
-export const ContentBlock = ({ className, config, children, headerChildren, bodyRef, headerRef, flush }: ContentBlockProps) => {
+export const ContentBlock = ({ className, config, children, headerChildren, bodyRef, headerRef, flush, rootDataAttributes }: ContentBlockProps) => {
 	const header = config.header;
 	const hasHeader = !!header && Object.keys(header).length > 0;
 	const TitleTag = (header?.titleTag || 'h6') as ElementType;
 
 	return (
-		<div className={clsx('content-block ui-content-block', className, flush && 'mb-0', 'flex flex-col')} data-testid="content-block">
+		<div
+			className={clsx('content-block ui-content-block', className, flush && 'mb-0', 'flex flex-col')}
+			data-testid="content-block"
+			{...rootDataAttributes}>
 			{hasHeader && header && (
 				<div
 					ref={headerRef}

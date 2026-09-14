@@ -19,7 +19,8 @@ export const BulkResults = () => {
 				chain.length > 1 ? (
 					<div
 						key={chainIdx}
-						className="bulk-results-tie-group flex flex-col border border-border border-l-[3px] border-l-warning rounded-md py-2 px-4 mb-6">
+						className="flex flex-col border border-border border-l-[3px] border-l-warning rounded-md py-2 px-4 mb-6"
+						data-testid="bulk-results-tie-group">
 						<span className="mb-6">{i18n.t('bulk_tab.results.tied_group')}</span>
 						{chain.map((result, idx) => (
 							<BulkResultRow key={idx} result={result} baseResult={results.originalGearResults} iterations={iterations} />

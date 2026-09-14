@@ -63,10 +63,12 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 			slot={slot}
 			item={item}
 			nameDescriptionFlush
+			testId="bulk-item-picker"
+			rootDataAttributes={{
+				...(state.isFrozen ? { 'data-frozen': '' } : {}),
+				...(!state.isFrozen && !state.isEditable ? { 'data-equipped': '' } : {}),
+			}}
 			className={clsx(
-				'bulk-item-picker',
-				state.isFrozen && 'bulk-item-picker-frozen',
-				!state.isFrozen && !state.isEditable && 'bulk-item-picker-equipped',
 				'ui-bulk-item-cell p-2 mb-0',
 				state.isFrozen ? 'border-3 border-frozen' : !state.isEditable ? 'border border-brand' : 'border border-border',
 			)}
@@ -75,14 +77,15 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
-				<div className="item-picker-actions-container ml-2 gap-1 grid grid-flow-col [align-items:start]">
+				<div className="ml-2 gap-1 grid grid-flow-col [align-items:start]">
 					{index >= 0 && state.isEditable && (
 						<>
 							<Button
 								iconOnly
 								aria-label={i18n.t('bulk_tab.picker.remove_tooltip')}
 								variant="link-danger"
-								className="item-picker-actions-btn leading-none"
+								className="leading-none"
+								data-testid="item-picker-actions-btn"
 								onClick={() => removeBulkItemByIndex(player, index)}
 								{...tooltipAnchorProps(tooltipId)}>
 								<i className="fas fa-times" />
