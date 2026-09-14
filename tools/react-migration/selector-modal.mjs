@@ -416,7 +416,8 @@ if (await gemTab.count()) {
 // baseline moves the tab on Left/Right/Home/End too and neither build may move the slot with them.
 say('\nthe keyboard, strip against rail');
 const isReact = PORT !== PORTS.base;
-const focusTab = () => page.evaluate(selector => document.querySelector(selector)?.focus(), sel(`${q('selector-modal-tabs')} ${tabLink}.active`));
+const focusTab = () =>
+	page.evaluate(selector => document.querySelector(selector)?.focus(), sel(`${q('selector-modal-tabs')} ${tabLink}:is(.active, [aria-selected="true"])`));
 const keyState = () =>
 	page.evaluate(
 		({ selector, tabsSelector, titleSelector, pane: panesel }) => {
@@ -424,7 +425,7 @@ const keyState = () =>
 			const tabs = [...modal.querySelectorAll(tabsSelector)];
 			return {
 				slot: (modal.querySelector(titleSelector)?.textContent ?? '').trim(),
-				tab: tabs.findIndex(tab => tab.classList.contains('active')),
+				tab: tabs.findIndex(tab => tab.classList.contains('active') || tab.getAttribute('aria-selected') === 'true'),
 				count: tabs.length,
 				pane: modal.querySelector(panesel)?.id ?? null,
 			};
