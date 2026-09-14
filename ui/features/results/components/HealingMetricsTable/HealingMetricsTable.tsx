@@ -92,7 +92,8 @@ const healingHitGroups = (metric: ActionMetrics): Array<MetricsCombinedTooltipGr
 	},
 ];
 
-const rowClassName = (metric: ActionMetrics) => (metric.hitAttempts == 0 && metric.hps == 0 ? 'threat-metrics' : undefined);
+const rowClassName = (showThreatMetrics: boolean) => (metric: ActionMetrics) =>
+	metric.hitAttempts == 0 && metric.hps == 0 ? (showThreatMetrics ? 'threat-metrics' : 'threat-metrics hidden') : undefined;
 
 export const HealingMetricsTable = () => {
 	const resultData = useSimResult();
@@ -201,7 +202,7 @@ export const HealingMetricsTable = () => {
 				rows={rows}
 				sortColumnId="hps"
 				hasResult={!!resultData}
-				rowClassName={rowClassName}
+				rowClassName={rowClassName(showThreatMetrics)}
 			/>
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip id={TOOLTIP.hitsHeader} />

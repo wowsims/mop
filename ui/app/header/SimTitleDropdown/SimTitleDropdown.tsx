@@ -85,7 +85,7 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 						<Menu.Positioner
 							align="start"
 							sideOffset={0}
-							className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
+							className={clsx('sim-title-positioner', 'ui-sim-title-positioner', 'ui-menu-positioner-plain')}
 							data-testid="sim-title-positioner">
 							<Menu.Popup
 								className={clsx('sim-title-popup ui-sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')}

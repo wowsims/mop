@@ -49,7 +49,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 	return (
 		<div className="bulk-sim-result-root flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6">
 			<div className="results-sim text-center flex-3">
-				<div className="results-sim-dps damage-metrics font-bold grid grid-cols-wide-narrow text-left leading-none gap-2">
+				<div className="results-sim-dps damage-metrics in-data-[hide-damage]:hidden font-bold grid grid-cols-wide-narrow text-left leading-none gap-2">
 					<span className="topline-result-avg text-2xl mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
 					{plusMinusDps > 0 && (
 						<>

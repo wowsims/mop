@@ -99,7 +99,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 									<div
 										ref={sidebarActions}
-										className="sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
+										className="sim-sidebar-actions ui-sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
 										data-testid="sim-sidebar-actions">
 										<IterationsPicker sim={sim} />
 										{host && <SimSidebarActions host={host} />}

@@ -450,8 +450,6 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					<RotationRowLabel text={longestLabel} icon={<a className="ui-timeline-row-icon rotation-row-icon" />} onHide={() => undefined} measuring />
 				</div>
 			)}
-			{/* Rendered inline, not portaled: `.hide-threat-metrics` (scss/core/sim_ui/_shared.scss:131) is an
-			 * ancestor rule on `.sim-ui`, so a tooltip moved to `document.body` stops obeying the setting. */}
 			{hoveredItem && (
 				<div ref={tooltipRef} className="ui-timeline-hover-tooltip timeline-hover-tooltip">
 					<RowItemTooltip item={hoveredItem} />

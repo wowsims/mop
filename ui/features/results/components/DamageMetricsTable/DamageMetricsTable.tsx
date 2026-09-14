@@ -61,7 +61,8 @@ const grouping: MetricGrouping<ActionMetrics> = {
 	shouldCollapse: metric => !metric.unit?.isPet,
 };
 
-const rowClassName = (metric: ActionMetrics) => (metric.hitAttempts == 0 && metric.dps == 0 ? 'threat-metrics' : undefined);
+const rowClassName = (showThreatMetrics: boolean) => (metric: ActionMetrics) =>
+	metric.hitAttempts == 0 && metric.dps == 0 ? (showThreatMetrics ? 'threat-metrics' : 'threat-metrics hidden') : undefined;
 
 export const DamageMetricsTable = () => {
 	const resultData = useSimResult();
@@ -154,7 +155,7 @@ export const DamageMetricsTable = () => {
 				rows={rows}
 				sortColumnId="dps"
 				hasResult={!!resultData}
-				rowClassName={rowClassName}
+				rowClassName={rowClassName(showThreatMetrics)}
 			/>
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip

@@ -12,10 +12,11 @@ export interface IterationsPickerProps {
 export const IterationsPicker = ({ sim }: IterationsPickerProps) => (
 	<NumberPicker
 		modObject={sim}
+		inputClassName="w-full m-0"
 		config={{
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
-			extraClassNames: ['iterations-picker'],
+			extraClassNames: ['iterations-picker', 'w-full'],
 			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (sim: Sim, newValue: number) => {

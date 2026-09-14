@@ -13,7 +13,7 @@ export const TickTooltip = ({ log }: TickTooltipProps) => (
 			{log.timestamp.toFixed(2)}s - {log.actionId!.name} <DamageResult log={log} />
 		</span>
 		{!log.source?.isTarget && (
-			<span className="threat-metrics">
+			<span className="threat-metrics in-data-[hide-threat]:hidden">
 				{' '}
 				({log.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
 			</span>

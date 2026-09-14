@@ -212,7 +212,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					<DetailedResultsPane
 						id="damageTab"
 						className="damage-content [&_.metrics-table]:text-xs"
-						contentClassName="damage-metrics"
+						contentClassName="damage-metrics in-data-[hide-damage]:hidden"
 						topline
 						histogram>
 						<DamageMetricsTable />

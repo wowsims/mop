@@ -20,6 +20,7 @@ export const SidebarActionButton = ({ children, className, onClick, disabled, lo
 		<Button
 			variant="primary"
 			className={clsx('sim-sidebar-action-button w-full', className, loading && 'loading')}
+			data-loading={loading ? '' : undefined}
 			onClick={onClick}
 			disabled={disabled || sidebarDisabled}
 			aria-busy={loading || undefined}>

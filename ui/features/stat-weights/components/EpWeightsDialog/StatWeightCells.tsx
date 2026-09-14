@@ -5,6 +5,12 @@ import clsx from 'clsx';
 
 import { StatWeightValue } from './StatWeightValue';
 
+const HIDE_VARIANT: Record<string, string> = {
+	'damage-metrics': 'in-data-[hide-damage]:hidden',
+	'healing-metrics': 'in-data-[hide-healing]:hidden',
+	'threat-metrics': 'in-data-[hide-threat]:hidden',
+};
+
 export interface StatWeightCellsProps {
 	stat: UnitStat;
 	statWeights?: StatWeightValues;
@@ -27,7 +33,7 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 	return (
 		<>
 			<td
-				className={clsx('stdev-cell type-weight text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500', metricClass)}
+				className={clsx('stdev-cell type-weight text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500', metricClass, HIDE_VARIANT[metricClass])}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
@@ -40,7 +46,7 @@ export const StatWeightCells = ({ stat, statWeights, metricClass, iterations, ep
 				)}
 			</td>
 			<td
-				className={clsx('stdev-cell type-ep text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500', metricClass)}
+				className={clsx('stdev-cell type-ep text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500', metricClass, HIDE_VARIANT[metricClass])}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
