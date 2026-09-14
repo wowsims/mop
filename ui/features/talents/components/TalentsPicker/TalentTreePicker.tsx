@@ -34,8 +34,8 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<img src={spec.getIcon('medium')} className="size-8 mr-3 rounded-full" />
 				<span className="mr-3 flex-1 font-bold whitespace-nowrap">{translatePlayerSpec(spec)}</span>
 				<Button
-					variant="link-danger"
-					className="leading-none -mr-3"
+					variant={null}
+					className="leading-none text-link-danger -mr-3"
 					data-testid="talent-tree-reset"
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>

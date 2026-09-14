@@ -153,8 +153,10 @@ describe('TalentTreePicker', () => {
 		expect(onChange).toHaveBeenCalledWith('000000');
 	});
 
-	it('renders the reset button on the link-danger variant', () => {
+	it('keeps the reset button on the bare base bundle, as the stylesheet expects', () => {
 		tree('000000');
-		expect(screen.getByRole('button').className.split(' ').sort()).toEqual(['ui-button-link', 'ui-button-link-danger', 'leading-none', '-mr-3'].sort());
+		expect(screen.getByRole('button').className.split(' ').sort()).toEqual(
+			['ui-button', 'ui-button-md', 'leading-none', 'text-link-danger', '-mr-3'].sort(),
+		);
 	});
 });
