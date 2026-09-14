@@ -104,6 +104,7 @@ const openTopTab = async (page, name) => {
 	return ok;
 };
 
+const BULK_TABS = q('bulk-tab-tabs');
 const DR_TOOLBAR = q('dr-toolbar');
 const DR_SUBTABS = ['damageTab', 'healingTab', 'damageTakenTab', 'buffsTab', 'debuffsTab', 'castsTab', 'resourcesTab', 'timelineTab', 'replayTab', 'logTab'];
 const clickDrSubTab = async (page, tabId) => {
@@ -242,12 +243,15 @@ const captureStates = async (browser, port, spec, width) => {
 	if (await openTopTab(page, 'bulk-tab')) {
 		await settle(page, 500);
 		for (const tabId of ['bulkSetupTab', 'bulkResultsTab']) {
-			const clicked = await page.evaluate(id => {
-				const btn = document.querySelector(`.bulk-tab-tabs [role=tab][aria-controls=${id}]`);
-				if (!btn) return false;
-				btn.click();
-				return true;
-			}, tabId);
+			const clicked = await page.evaluate(
+				({ toolbarSel, id }) => {
+					const btn = document.querySelector(`${toolbarSel} :is([role="tab"], .nav-link)[aria-controls=${id}]`);
+					if (!btn) return false;
+					btn.click();
+					return true;
+				},
+				{ toolbarSel: BULK_TABS, id: tabId },
+			);
 			if (!clicked) continue;
 			await settle(page, 500);
 			states[`bulk:${tabId}`] = await snap(page, `#${tabId}`);
@@ -266,13 +270,23 @@ const captureStates = async (browser, port, spec, width) => {
 			await page.waitForSelector(MODAL_SEL, { timeout: 20000 }).catch(() => {});
 			await settle(page, 600);
 			states['gear-modal:items'] = await snap(page, MODAL_SEL);
-			const gemTab = page.locator(`${MODAL_SEL} ${q('selector-modal-tabs')} [data-label^="Gem"]`).first();
+			// MODAL_SEL is a comma-separated selector list: appending a descendant to the string binds
+			// only to its LAST alternative, so a match on an earlier alternative (older markup) would be
+			// unconstrained by the suffix. Chain .locator() instead — it scopes the descendant lookup to
+			// every element any alternative matched.
+			const gemTab = page
+				.locator(MODAL_SEL)
+				.locator(`${q('selector-modal-tabs')} [data-label^="Gem"]`)
+				.first();
 			if (await gemTab.count()) {
 				await gemTab.click();
 				await settle(page, 600);
 				states['gear-modal:gems'] = await snap(page, MODAL_SEL);
 			}
-			const enchantsTab = page.locator(`${MODAL_SEL} ${q('selector-modal-tabs')} .nav-link`, { hasText: 'Enchants' }).first();
+			const enchantsTab = page
+				.locator(MODAL_SEL)
+				.locator(`${q('selector-modal-tabs')} .nav-link`, { hasText: 'Enchants' })
+				.first();
 			if (await enchantsTab.count()) {
 				await enchantsTab.click();
 				await settle(page, 600);
