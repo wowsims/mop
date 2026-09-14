@@ -17,10 +17,6 @@
 	--font-size-root: 14px;
 	font-size: var(--font-size-root);
 
-	@media (width >= 1921px) {
-		--font-size-root: 16px;
-	}
-
 	@media (prefers-reduced-motion: no-preference) {
 		scroll-behavior: smooth;
 	}
