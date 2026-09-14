@@ -28,7 +28,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 	);
 
 	return (
-		<div className="consumes-picker-root grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
+		<div className="grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
 			<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
 				<PickerGroup variant="icons" className="justify-end">
 					<IconEnumPicker modObject={player} config={configs.prepot} />

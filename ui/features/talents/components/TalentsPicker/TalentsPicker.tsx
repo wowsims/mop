@@ -39,7 +39,13 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 			<div className="flex flex-col max-lg:w-full">
 				<div className="w-full mb-1 flex items-center">
 					<div className="ml-auto" data-testid="talents-picker-actions">
-						<Button variant="outline-primary" size="sm" className="copy-button w-24" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+						<Button
+							variant="outline-primary"
+							size="sm"
+							className="w-24"
+							data-testid="copy-button"
+							onClick={copy}
+							{...tooltipAnchorProps(copyTooltipId)}>
 							<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 							{copied ? i18n.t('common.copy_button.copied') : i18n.t('talents_tab.copy_button.label')}
 						</Button>

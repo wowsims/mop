@@ -54,7 +54,8 @@ describe('TalentsPicker copy button', () => {
 	it('keeps the class vocabulary the gates select on', () => {
 		mount();
 
-		expect(button().className.split(' ').sort()).toEqual(['ui-button', 'ui-button-outline-primary', 'ui-button-sm', 'copy-button', 'w-24'].sort());
+		expect(button().className.split(' ').sort()).toEqual(['ui-button', 'ui-button-outline-primary', 'ui-button-sm', 'w-24'].sort());
+		expect(button().getAttribute('data-testid')).toBe('copy-button');
 		expect(button().getAttribute('type')).toBe('button');
 		// The closed `Tooltip` renders nothing, so the button stays the actions div's only child.
 		expect(document.querySelector('[data-testid="talents-picker-actions"]')!.children).toHaveLength(1);
