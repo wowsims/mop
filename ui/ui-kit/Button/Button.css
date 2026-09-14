@@ -142,7 +142,7 @@
 	}
 
 	&:active {
-		@apply bg-primary border-primary text-primary-foreground;
+		@apply bg-primary-active border-primary-active text-primary-foreground;
 	}
 
 	&:disabled {
