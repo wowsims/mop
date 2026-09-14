@@ -1,6 +1,5 @@
 import type { ReforgeOptimizerModel, ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import { ButtonGroup } from '@ui-kit/ButtonGroup';
-import { useState } from 'react';
 
 import { ReforgePanel } from './ReforgePanel';
 
@@ -9,15 +8,10 @@ export interface ReforgeSidebarGroupProps {
 	options?: ReforgeOptimizerOptions;
 }
 
-export const ReforgeSidebarGroup = ({ model, options }: ReforgeSidebarGroupProps) => {
-	const [group, setGroup] = useState<HTMLDivElement | null>(null);
-
-	return (
-		<ButtonGroup
-			ref={setGroup}
-			className="[--settings-button-width:36px] w-full grid grid-cols-(--reforge-cols) order-20 ui-reforge-sidebar-actions"
-			data-testid="suggest-reforges-settings-group">
-			{group && <ReforgePanel model={model} options={options} container={group} />}
-		</ButtonGroup>
-	);
-};
+export const ReforgeSidebarGroup = ({ model, options }: ReforgeSidebarGroupProps) => (
+	<ButtonGroup
+		className="ui-reforge-sidebar-actions order-20 grid w-full grid-cols-(--reforge-cols) [--reforge-cols:auto_var(--settings-button-width)] [--settings-button-width:36px]"
+		data-testid="suggest-reforges-settings-group">
+		<ReforgePanel model={model} options={options} />
+	</ButtonGroup>
+);

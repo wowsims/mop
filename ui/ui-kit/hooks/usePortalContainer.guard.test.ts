@@ -19,7 +19,8 @@ const relative = (file: string) => path.relative(path.resolve(here, '../../..'),
 
 const IMPORTS_HOOK = /usePortalContainer/;
 
-const LOCAL_SLOT_REASON = 'renders into a sibling slot right after its trigger, so Base UI does not reorder the tab sequence away from it';
+const LOCAL_SLOT_REASON =
+	'a Base UI Portal appends its element in a commit after React places the root/trigger row, so a shared-root container would move the popup out of the DOM order its own test asserts (IconEnumPicker.test.tsx: "builds the root, the button, the menu and the caption in vanilla’s order"; switching it to usePortalContainer() was tried and failed 9 of its tests, all `within(root())` lookups that can no longer find the menu)';
 
 const PORTAL_EXCEPTIONS: Record<string, string> = {
 	'ui-kit/MultiIconPicker/MultiIconPicker.tsx': LOCAL_SLOT_REASON,

@@ -23,8 +23,6 @@ import { ReforgeSoftCapsTooltip } from './ReforgeSoftCapsTooltip';
 export interface ReforgePanelProps {
 	model: ReforgeOptimizerModel;
 	options?: ReforgeOptimizerOptions;
-	/** Where the popover mounts: this same action group, whose containing block is the sticky `aside` — `--settings-button-width` resolves there. */
-	container?: HTMLElement | null;
 }
 
 /**
@@ -32,7 +30,7 @@ export interface ReforgePanelProps {
  * popover, the progress dialog and the run's outcome toasts. Everything below it is the model,
  * which `individual_sim_ui` owns and every un-ported caller still reads as `simUI.reforger`.
  */
-export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) => {
+export const ReforgePanel = ({ model, options }: ReforgePanelProps) => {
 	const host = useSimHost();
 	const player = host.player;
 	const sim = host.sim;
@@ -187,7 +185,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					settingsTooltipRef.current?.close();
 					trackPageView('Reforge Settings', 'reforge-settings');
 				}}
-				container={container}
 				side="right"
 				align="start"
 				className="min-w-popup-min-w"
