@@ -26,13 +26,13 @@ const log = (over: Partial<DpsLog> = {}) =>
 describe('DpsTooltip', () => {
 	it('heads with the timestamp and closes with the DPS at that point', () => {
 		const { container } = render(<DpsTooltip log={log()} />);
-		expect(container.querySelector('.timeline-tooltip-header')!.textContent).toBe('8.50s');
-		expect(container.querySelector('.timeline-tooltip-body-row')!.textContent).toContain('12345.68');
+		expect(container.querySelector('[data-testid="timeline-tooltip-header"]')!.textContent).toBe('8.50s');
+		expect(container.querySelector('[data-testid="timeline-tooltip-body-row"]')!.textContent).toContain('12345.68');
 	});
 
 	it('renders each damage event through the shared result renderer', () => {
 		const { container } = render(<DpsTooltip log={log()} />);
-		const events = [...container.querySelectorAll('.timeline-dps-events li')];
+		const events = [...container.querySelectorAll('[data-testid="timeline-dps-events"] li')];
 		expect(events[0].textContent).toContain('Crit [Target 1] for 4000.00 damage');
 		// An avoided outcome carries no amount.
 		expect(events[1].textContent).toContain('Miss [Target 1]');
@@ -40,8 +40,8 @@ describe('DpsTooltip', () => {
 	});
 
 	it('adds the aura section only when auras were up', () => {
-		expect(render(<DpsTooltip log={log()} />).container.querySelector('.timeline-tooltip-auras')).toBeNull();
+		expect(render(<DpsTooltip log={log()} />).container.querySelector('[data-testid="timeline-tooltip-auras"]')).toBeNull();
 		const withAuras = render(<DpsTooltip log={log({ activeAuras: [{ actionId: { name: 'Combustion', iconUrl: 'c.png' } }] as never })} />);
-		expect(withAuras.container.querySelector('.timeline-active-auras')!.textContent).toContain('Combustion');
+		expect(withAuras.container.querySelector('[data-testid="timeline-active-auras"]')!.textContent).toContain('Combustion');
 	});
 });

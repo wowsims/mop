@@ -58,9 +58,9 @@ export const Timeline = ({ active }: TimelineProps) => {
 	const spec = useMemo(() => (armed ? chartSpec(armed.player, armed.duration, secondaryResource) : null), [armed, secondaryResource]);
 
 	return (
-		<div className="timeline-root flex h-full flex-col">
-			<div className="timeline-disclaimer flex flex-wrap items-start gap-2">
-				<div className="timeline-disclaimer-text flex max-lg:grow max-lg:shrink max-lg:basis-full flex-col">
+		<div className="flex h-full flex-col">
+			<div className="flex flex-wrap items-start gap-2">
+				<div className="flex max-lg:grow max-lg:shrink max-lg:basis-full flex-col">
 					<p>
 						<i className="text-damage-partial text-shadow-glow-danger fa fa-exclamation-triangle fa-xl mr-2" />
 						{i18n.t('results_tab.details.timeline.disclaimer')}
@@ -69,14 +69,14 @@ export const Timeline = ({ active }: TimelineProps) => {
 				</div>
 				<ChartViewPicker value={view} onChange={setView} className="ml-auto w-auto shrink-0 self-start" />
 			</div>
-			<div className="timeline-plots-container grow">
+			<div className="grow">
 				{chartVisible ? (
-					<div className="timeline-plot dps-resources-plot h-[32rem]">
+					<div data-testid="dps-resources-plot" className="h-[32rem]">
 						<TimelineChart spec={spec} />
 					</div>
 				) : (
-					<div className="timeline-plot rotation-plot">
-						<div className="rotation-next m-auto">
+					<div data-testid="rotation-plot">
+						<div className="m-auto">
 							<RotationView model={model} />
 						</div>
 					</div>

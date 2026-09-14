@@ -20,7 +20,7 @@ export const ChartToolbar = ({ onReset, onZoomIn, onZoomOut, onPanLeft, onPanRig
 	];
 
 	return (
-		<ButtonGroup className="timeline-chart-toolbar ml-auto w-auto shrink-0 self-start" size="sm">
+		<ButtonGroup data-testid="timeline-chart-toolbar" className="ml-auto w-auto shrink-0 self-start" size="sm">
 			{buttons.map(button => {
 				const label = i18n.t(`results_tab.details.timeline.chart_options.${button.key}`);
 				return (

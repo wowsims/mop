@@ -30,13 +30,13 @@ vi.mock('./chart/build', () => ({
 vi.mock('./rotation/RotationView', () => ({
 	RotationView: ({ model }: { model: unknown }) => {
 		state.models.push(model);
-		return <div className="rotation-pane" />;
+		return <div data-testid="rotation-pane" />;
 	},
 }));
 vi.mock('./chart/TimelineChart', () => ({
 	TimelineChart: ({ spec }: { spec: unknown }) => {
 		state.specs.push(spec);
-		return <div className="timeline-chart" />;
+		return <div data-testid="timeline-chart" />;
 	},
 }));
 
@@ -143,13 +143,13 @@ describe('Timeline', () => {
 
 	it('mounts only the pane that is showing', () => {
 		const view = mount(true);
-		expect(view.container.querySelector('.dps-resources-plot')).toBeNull();
-		expect(view.container.querySelector('.rotation-plot')).toBeTruthy();
+		expect(view.container.querySelector('[data-testid="dps-resources-plot"]')).toBeNull();
+		expect(view.container.querySelector('[data-testid="rotation-plot"]')).toBeTruthy();
 
 		act(() => {
 			fireEvent.click(view.container.querySelector('#timeline-chart-view-dps')!);
 		});
-		expect(view.container.querySelector('.dps-resources-plot')).toBeTruthy();
-		expect(view.container.querySelector('.rotation-plot')).toBeNull();
+		expect(view.container.querySelector('[data-testid="dps-resources-plot"]')).toBeTruthy();
+		expect(view.container.querySelector('[data-testid="rotation-plot"]')).toBeNull();
 	});
 });

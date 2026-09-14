@@ -27,12 +27,12 @@ const PEER_LABEL_CLASSES: Record<ChartView, string> = {
 
 /** Rotation or the DPS/resources chart. The two are alternatives, and the rotation is the default. */
 export const ChartViewPicker = ({ value, onChange, className }: ChartViewPickerProps) => (
-	<ButtonGroup className={clsx('timeline-chart-picker', className)} size="sm">
+	<ButtonGroup className={className} size="sm">
 		{CHART_VIEWS.map(view => (
 			<Fragment key={view}>
 				<input
 					type="radio"
-					className={clsx(PEER_INPUT_CLASSES[view], 'absolute [clip:rect(0,0,0,0)] pointer-events-none', `${view}-option`)}
+					className={clsx(PEER_INPUT_CLASSES[view], 'absolute [clip:rect(0,0,0,0)] pointer-events-none')}
 					name="timeline-chart-view"
 					id={`timeline-chart-view-${view}`}
 					value={view}
@@ -40,12 +40,7 @@ export const ChartViewPicker = ({ value, onChange, className }: ChartViewPickerP
 					checked={value === view}
 					onChange={() => onChange(view)}
 				/>
-				<Button
-					as="label"
-					variant={null}
-					size="sm"
-					htmlFor={`timeline-chart-view-${view}`}
-					className={clsx(OUTLINE_BASE, PEER_LABEL_CLASSES[view], `${view}-option`)}>
+				<Button as="label" variant={null} size="sm" htmlFor={`timeline-chart-view-${view}`} className={clsx(OUTLINE_BASE, PEER_LABEL_CLASSES[view])}>
 					{i18n.t(`results_tab.details.timeline.chart_types.${view}`)}
 				</Button>
 			</Fragment>

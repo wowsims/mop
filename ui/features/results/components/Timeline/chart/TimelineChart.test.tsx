@@ -73,26 +73,26 @@ beforeEach(() => {
 describe('TimelineChart', () => {
 	it('shows the waiting state with no spec at all, rather than a blank canvas', () => {
 		const { container } = render(<TimelineChart spec={null} />);
-		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
-		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
+		expect(container.querySelector('[data-testid="timeline-chart-empty"]')).toBeTruthy();
+		expect(container.querySelector('[data-testid="timeline-chart-canvas"]')).toBeNull();
 		expect(charts).toHaveLength(0);
 	});
 
 	it('goes back to the waiting state when a result with data is replaced by no spec', () => {
 		const { container, rerender } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
-		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
+		expect(container.querySelector('[data-testid="timeline-chart-canvas"]')).toBeTruthy();
 
 		rerender(<TimelineChart spec={null} />);
 
-		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
-		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
+		expect(container.querySelector('[data-testid="timeline-chart-empty"]')).toBeTruthy();
+		expect(container.querySelector('[data-testid="timeline-chart-canvas"]')).toBeNull();
 		expect(charts[0].destroyed).toBe(true);
 	});
 
 	it('shows the waiting state for a spec that carries no series, and still builds no chart', () => {
 		const { container } = render(<TimelineChart spec={spec()} />);
-		expect(container.querySelector('.timeline-chart-empty')).toBeTruthy();
-		expect(container.querySelector('.timeline-chart-canvas')).toBeNull();
+		expect(container.querySelector('[data-testid="timeline-chart-empty"]')).toBeTruthy();
+		expect(container.querySelector('[data-testid="timeline-chart-canvas"]')).toBeNull();
 		expect(charts).toHaveLength(0);
 	});
 
@@ -100,8 +100,8 @@ describe('TimelineChart', () => {
 		const { container } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
 		expect(charts).toHaveLength(1);
 		expect(charts[0].config.data.datasets.map(entry => entry.label)).toEqual(['DPS']);
-		expect(container.querySelector('.timeline-chart-empty')).toBeNull();
-		expect(container.querySelector('.timeline-chart-canvas')).toBeTruthy();
+		expect(container.querySelector('[data-testid="timeline-chart-empty"]')).toBeNull();
+		expect(container.querySelector('[data-testid="timeline-chart-canvas"]')).toBeTruthy();
 	});
 
 	it('starts with threat off and every other series on', () => {
@@ -156,15 +156,15 @@ describe('TimelineChart', () => {
 		};
 
 		act(() => options(chart).plugins.tooltip.external(hover));
-		expect(container.querySelector('.timeline-hover-tooltip')!.textContent).toContain('1.00s');
+		expect(container.querySelector('[data-testid="timeline-hover-tooltip"]')!.textContent).toContain('1.00s');
 
 		act(() => options(chart).plugins.tooltip.external({ ...hover, tooltip: { ...hover.tooltip, opacity: 0 } }));
-		expect(container.querySelector('.timeline-hover-tooltip')).toBeNull();
+		expect(container.querySelector('[data-testid="timeline-hover-tooltip"]')).toBeNull();
 	});
 
 	it('drives the zoom from its toolbar', () => {
 		const { container } = render(<TimelineChart spec={spec(dataset('dps', 'DPS'))} />);
-		const buttons = container.querySelectorAll<HTMLButtonElement>('.timeline-chart-toolbar button');
+		const buttons = container.querySelectorAll<HTMLButtonElement>('[data-testid="timeline-chart-toolbar"] button');
 		expect(buttons).toHaveLength(5);
 
 		fireEvent.click(buttons[2]);

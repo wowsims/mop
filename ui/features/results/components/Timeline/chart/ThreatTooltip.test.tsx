@@ -15,9 +15,9 @@ const log = {
 describe('ThreatTooltip', () => {
 	it('brackets the events with the threat before and after them', () => {
 		const { container } = render(<ThreatTooltip log={log} />);
-		const rows = [...container.querySelectorAll('.timeline-tooltip-body-row')];
+		const rows = [...container.querySelectorAll('[data-testid="timeline-tooltip-body-row"]')];
 		expect(rows[0].textContent).toContain('1000.4');
 		expect(rows[1].textContent).toContain('2500.6');
-		expect(container.querySelector('.timeline-threat-events li')!.textContent).toContain('1500.2');
+		expect(container.querySelector('[data-testid="timeline-threat-events"] li')!.textContent).toContain('1500.2');
 	});
 });

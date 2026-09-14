@@ -124,7 +124,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 	}, [spec]);
 
 	return (
-		<div className="timeline-chart m-auto flex h-full flex-col gap-2">
+		<div data-testid="timeline-chart" className="m-auto flex h-full flex-col gap-2">
 			<ChartToolbar
 				onReset={() => zoom.current.reset()}
 				onZoomIn={() => zoom.current.zoomBy(ZOOM_STEP)}
@@ -133,7 +133,7 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				onPanRight={() => zoom.current.panBy(PAN_STEP_PX)}
 			/>
 			{hasData && (
-				<div className="timeline-chart-canvas relative flex-1 min-h-0">
+				<div data-testid="timeline-chart-canvas" className="relative flex-1 min-h-0">
 					<Chart
 						type="line"
 						ref={chartRef}
@@ -154,12 +154,12 @@ export const TimelineChart = ({ spec }: TimelineChartProps) => {
 				</div>
 			)}
 			{!hasData && (
-				<div className="timeline-chart-empty flex flex-1 items-center justify-center">
+				<div data-testid="timeline-chart-empty" className="flex flex-1 items-center justify-center">
 					{i18n.t('results_tab.details.timeline.chart_options.waiting_for_data')}
 				</div>
 			)}
 			{tip && (
-				<div ref={tooltipRef} className="ui-timeline-hover-tooltip timeline-hover-tooltip">
+				<div ref={tooltipRef} data-testid="timeline-hover-tooltip" className="ui-timeline-hover-tooltip">
 					<ChartSeriesTooltip spec={tip.spec} log={tip.log} />
 				</div>
 			)}
