@@ -90,7 +90,7 @@ describe('BooleanPicker', () => {
 		const root = container.firstElementChild!;
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'boolean-picker-root', 'form-check']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['SPAN', 'INPUT', 'LABEL', 'DIV']);
-		expect(root.querySelector('label')!.className).toBe('form-label');
+		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
 	});
 
 	it('puts the input last when reverse is set, after the description', () => {

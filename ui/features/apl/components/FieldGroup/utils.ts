@@ -9,7 +9,10 @@ const INLINE_KINDS: ReadonlySet<AplFieldSpec['kind']> = new Set(['boolean', 'num
 const MULTI_FIELDS: ReadonlySet<string> = new Set(['vals', 'actions']);
 
 const fieldClasses = (spec: AplFieldSpec): Array<string> | undefined => {
-	const classes = [...(INLINE_KINDS.has(spec.kind) ? ['input-inline'] : []), ...(MULTI_FIELDS.has(spec.field) ? ['apl-picker-builder-multi'] : [])];
+	const classes = [
+		...(INLINE_KINDS.has(spec.kind) ? ['input-inline'] : []),
+		...(MULTI_FIELDS.has(spec.field) ? ['apl-picker-builder-multi', 'ui-apl-picker-builder-multi'] : []),
+	];
 	return classes.length ? classes : undefined;
 };
 

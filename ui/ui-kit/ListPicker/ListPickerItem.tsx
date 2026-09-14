@@ -240,20 +240,20 @@ export const ListPickerItem = ({
 	);
 
 	const heading = title !== undefined && (
-		<h6 className="list-picker-item-title" data-testid="list-picker-item-title">
+		<h6 className="list-picker-item-title ui-list-picker-item-title" data-testid="list-picker-item-title">
 			{title}
 		</h6>
 	);
 
 	const itemHeader = (
-		<div ref={setHeaderElem} className="list-picker-item-header" data-testid="list-picker-item-header">
+		<div ref={setHeaderElem} className="list-picker-item-header ui-list-picker-item-header" data-testid="list-picker-item-header">
 			{heading}
 			{header}
 			{menu}
 		</div>
 	);
 	const itemBody = (
-		<div className="list-picker-item" data-testid="list-picker-item">
+		<div className="list-picker-item ui-list-picker-item" data-testid="list-picker-item">
 			{children}
 		</div>
 	);
@@ -263,6 +263,7 @@ export const ListPickerItem = ({
 			ref={containerRef}
 			className={clsx(
 				'list-picker-item-container',
+				'ui-list-picker-item-container',
 				'relative',
 				inlineMenuBar && 'inline',
 				canMove && 'draggable',

@@ -43,7 +43,7 @@ describe('PickerShell', () => {
 	it('links the label to the input and titles it', () => {
 		shell(configFor());
 		const label = within(root()).getByTestId('form-label');
-		expect(label.className).toBe('form-label');
+		expect(label.className).toBe('form-label ui-picker-label');
 		expect(label.getAttribute('for')).toBe('cast-delay');
 		expect(label.getAttribute('title')).toBe('Cast Delay');
 	});

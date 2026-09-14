@@ -49,7 +49,16 @@ export const VariableItem = ({ player, config }: VariableItemProps) => {
 		<PickerShell
 			config={{
 				...shellConfig,
-				extraClassNames: [...(config.extraClassNames || []), 'apl-list-item-picker-root', 'flex', 'flex-row', 'items-center', 'm-0', 'gap-2'],
+				extraClassNames: [
+					...(config.extraClassNames || []),
+					'apl-list-item-picker-root',
+					'ui-apl-list-item-picker-root',
+					'flex',
+					'flex-row',
+					'items-center',
+					'm-0',
+					'gap-2',
+				],
 			}}
 			className="apl-value-variable-picker-root"
 			hidden={hidden}

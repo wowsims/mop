@@ -13,7 +13,7 @@ const overlapTrigger = ({ anchor }: { anchor: { width: number } }) => -(anchor.w
 export const ListItemPopover = ({ open, onOpenChange, container, children }: ListItemPopoverProps) => (
 	<Popover
 		trigger={<i className="fa fa-xl fa-ellipsis" />}
-		triggerClassName="list-picker-item-action"
+		triggerClassName="list-picker-item-action ui-list-picker-item-action"
 		triggerProps={{ 'data-testid': 'list-picker-item-actions' } as ComponentPropsWithoutRef<'button'>}
 		openOnHover
 		delay={0}
@@ -22,7 +22,7 @@ export const ListItemPopover = ({ open, onOpenChange, container, children }: Lis
 		container={container}
 		side="left"
 		sideOffset={overlapTrigger}
-		className="list-picker-item-popover"
+		className="list-picker-item-popover ui-list-picker-item-popover"
 		testId="list-picker-item-popover">
 		{children}
 	</Popover>

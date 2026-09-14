@@ -85,7 +85,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 				labelTooltip: undefined,
 				extraClassNames: [...(config.extraClassNames || []), ...(variables.length ? [] : ['hidden'])],
 			}}
-			className="group-reference-variables-container"
+			className="group-reference-variables-container ui-apl-group-variables-container"
 			hidden={false}
 			disabled={false}>
 			<ListPicker<Player<any>, any>

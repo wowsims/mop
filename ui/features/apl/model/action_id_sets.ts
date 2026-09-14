@@ -116,9 +116,9 @@ export const actionIdSets: Record<
 						value: actionId.id,
 						submenu: ['spell'],
 						extraClassNames: actionId.data.prepullOnly
-							? ['apl-prepull-actions-only']
+							? ['apl-prepull-actions-only', 'ui-apl-prepull-actions-only']
 							: actionId.data.encounterOnly
-								? ['apl-priority-list-only']
+								? ['apl-priority-list-only', 'ui-apl-priority-list-only']
 								: [],
 					};
 				}),
@@ -134,9 +134,9 @@ export const actionIdSets: Record<
 						value: actionId.id,
 						submenu: ['cooldowns'],
 						extraClassNames: actionId.data.prepullOnly
-							? ['apl-prepull-actions-only']
+							? ['apl-prepull-actions-only', 'ui-apl-prepull-actions-only']
 							: actionId.data.encounterOnly
-								? ['apl-priority-list-only']
+								? ['apl-priority-list-only', 'ui-apl-priority-list-only']
 								: [],
 					};
 				}),
@@ -152,9 +152,9 @@ export const actionIdSets: Record<
 						value: actionId.id,
 						submenu: ['non_combat_potions'],
 						extraClassNames: actionId.data.prepullOnly
-							? ['apl-prepull-actions-only']
+							? ['apl-prepull-actions-only', 'ui-apl-prepull-actions-only']
 							: actionId.data.encounterOnly
-								? ['apl-priority-list-only']
+								? ['apl-priority-list-only', 'ui-apl-priority-list-only']
 								: [],
 					};
 				}),

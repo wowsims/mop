@@ -16,7 +16,7 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	const input = (
 		<Checkbox.Root
 			id={config.id}
-			className="boolean-picker-input form-check-input inline-flex items-center justify-center p-0"
+			className="boolean-picker-input ui-boolean-picker-input form-check-input inline-flex items-center justify-center p-0"
 			data-testid="boolean-picker-input"
 			checked={value}
 			disabled={disabled}

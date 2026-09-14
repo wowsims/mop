@@ -17,6 +17,7 @@ import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { TabPanel } from '@ui-kit/TabNav';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
+import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -61,7 +62,10 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 
 	return (
 		<>
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay hidden={rotationType !== APLRotationType.TypeAuto}>
+			<TabPanelColumns.Root
+				className={clsx('rotation-tab-auto', rotationType === APLRotationType.TypeAuto ? 'flex' : 'hidden')}
+				fullWidth
+				externalDisplay>
 				<TabPanelColumns.Left variant="stacked">
 					<div>
 						<RotationTypePicker />
@@ -73,7 +77,10 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
 
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay hidden={rotationType !== APLRotationType.TypeSimple}>
+			<TabPanelColumns.Root
+				className={clsx('rotation-tab-simple', rotationType === APLRotationType.TypeSimple ? 'flex' : 'hidden')}
+				fullWidth
+				externalDisplay>
 				{hasSimple && (
 					<>
 						<TabPanelColumns.Left className="tab-content" variant="stacked">
@@ -104,11 +111,10 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 
 			<TabPanelColumns.Root
 				as={Tabs.Root}
-				className="rotation-tab rotation-tab-apl"
+				className={clsx('rotation-tab-apl', rotationType === APLRotationType.TypeAPL ? 'flex' : 'hidden')}
 				gap="apl"
 				fullWidth
 				externalDisplay
-				hidden={rotationType !== APLRotationType.TypeAPL}
 				value={activeId}
 				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 				<AplNavbar />

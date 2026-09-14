@@ -47,7 +47,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 
 	const conditionConfig: InputConfig<Player<any>, APLValue | undefined> = {
 		label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-		extraClassNames: ['apl-action-condition', 'apl-priority-list-only'],
+		extraClassNames: ['apl-action-condition', 'apl-priority-list-only', 'ui-apl-action-condition', 'ui-apl-priority-list-only'],
 		getValue: () => config.getValue(player)?.condition,
 		setValue: (subject: Player<any>, newValue: APLValue | undefined) => {
 			const source = config.getValue(subject);
@@ -75,7 +75,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 	};
 
 	const implConfig = (implKind: ValidAPLActionKind): InputConfig<Player<any>, any> => ({
-		extraClassNames: [`apl-action-${implKind}`],
+		extraClassNames: [`apl-action-${implKind}`, `ui-apl-action-${implKind.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`],
 		getValue: () => (config.getValue(player)?.action as any)?.[implKind] || actionKinds[implKind].newValue(),
 		setValue: (subject: Player<any>, newValue: any) => {
 			const source = config.getValue(subject);
@@ -87,7 +87,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 	return (
 		<PickerShell
 			config={shellConfig}
-			className={clsx('apl-action-picker-root m-0 gap-2', stacked ? 'flex-col' : 'flex-row', fullWidth && 'w-full')}
+			className={clsx('apl-action-picker-root', 'ui-apl-action-picker-root', 'm-0 gap-2', stacked ? 'flex-col' : 'flex-row', fullWidth && 'w-full')}
 			hidden={hidden}
 			disabled={disabled}>
 			<ValuePicker player={player} config={conditionConfig} />

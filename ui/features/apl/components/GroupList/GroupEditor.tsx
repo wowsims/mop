@@ -37,7 +37,7 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 	);
 
 	const actionsConfig: ListPickerConfig<Player<any>, APLListItem> = {
-		extraClassNames: ['apl-list-item-picker'],
+		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker'],
 		title: i18n.t('rotation_tab.apl.actionGroups.attributes.actions'),
 		titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.actions'),
 		itemLabel: i18n.t('rotation_tab.apl.priorityList.name'),
@@ -63,9 +63,18 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 		<PickerShell
 			config={{
 				...shellConfig,
-				extraClassNames: [...(config.extraClassNames || []), 'apl-list-item-picker-root', 'flex', 'flex-row', 'items-center', 'm-0', 'gap-2'],
+				extraClassNames: [
+					...(config.extraClassNames || []),
+					'apl-list-item-picker-root',
+					'ui-apl-list-item-picker-root',
+					'flex',
+					'flex-row',
+					'items-center',
+					'm-0',
+					'gap-2',
+				],
 			}}
-			className="apl-group-editor-root"
+			className="apl-group-editor-root ui-apl-group-editor-root"
 			hidden={hidden}
 			disabled={disabled}>
 			<div className="ui-apl-editor-row">

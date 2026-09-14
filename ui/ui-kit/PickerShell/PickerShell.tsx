@@ -33,12 +33,14 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 
 	if (hidden) return null;
 
+	const inline = config.inline || !!config.extraClassNames?.includes('input-inline');
+
 	return (
 		<Field.Root
 			ref={ref}
 			disabled={disabled}
 			data-disabled={disabled ? '' : undefined}
-			data-layout={config.inline ? 'inline' : undefined}
+			data-layout={inline ? 'inline' : undefined}
 			data-testid={testId ?? 'input-root'}
 			className={dedupe(
 				clsx(
@@ -54,7 +56,12 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 			{leading}
 			{config.label && (
 				// `htmlFor` explicitly rather than letting Field derive it.
-				<Field.Label htmlFor={config.id} className="form-label" title={config.label} data-testid="form-label" {...tooltipAnchorProps(tooltipId)}>
+				<Field.Label
+					htmlFor={config.id}
+					className="form-label ui-picker-label"
+					title={config.label}
+					data-testid="form-label"
+					{...tooltipAnchorProps(tooltipId)}>
 					{config.label}
 				</Field.Label>
 			)}

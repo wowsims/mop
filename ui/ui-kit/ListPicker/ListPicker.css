@@ -1,7 +1,7 @@
 .ui-list-picker-root {
 	@apply flex-col items-center gap-3;
 
-	&.horizontal {
+	&.ui-list-picker-horizontal {
 		@apply flex-row items-center;
 
 		& .ui-list-picker-items {
@@ -9,13 +9,13 @@
 		}
 	}
 
-	&.list-picker-compact {
-		& .list-picker-item-container {
+	&.ui-list-picker-compact {
+		& .ui-list-picker-item-container {
 			border: 0;
 			padding: 0 !important;
 		}
 
-		& .list-picker-item-header {
+		& .ui-list-picker-item-header {
 			display: none !important;
 		}
 	}
@@ -26,23 +26,23 @@
 	--drag-background-spacing: 0;
 }
 
-.list-picker-item-container {
+.ui-list-picker-item-container {
 	border: var(--border-default);
 
 	& .ui-list-picker-items {
 		--drag-background-spacing: var(--apl-spacer);
 	}
 
-	&.dragfrom {
+	&[data-drag='from'] {
 		background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
 		filter: opacity(0.5);
 		cursor: move;
 	}
 
-	&.draggable {
+	&[data-draggable] {
 		cursor: grab;
 
-		&:hover:not(:has(.list-picker-item-container.draggable:hover)) {
+		&:hover:not(:has(.ui-list-picker-item-container[data-draggable]:hover)) {
 			&::after {
 				content: '';
 				position: absolute;
@@ -56,25 +56,25 @@
 		}
 	}
 
-	&.inline {
+	&[data-layout='inline'] {
 		display: flex;
 
-		& .list-picker-item-header {
+		& .ui-list-picker-item-header {
 			padding: 0;
 			border: 0;
 			margin: 0;
 		}
 	}
 
-	&:not(.inline) {
+	&:not([data-layout='inline']) {
 		padding: var(--spacer-3);
 
-		& .list-picker-item-header .list-picker-item-action:first-of-type {
+		& .ui-list-picker-item-header .ui-list-picker-item-action:first-of-type {
 			margin-left: auto;
 		}
 	}
 
-	& .list-picker-item-header {
+	& .ui-list-picker-item-header {
 		padding-bottom: var(--spacing-stack);
 		border-bottom: var(--border-default);
 		margin-bottom: var(--spacing-stack);
@@ -84,11 +84,11 @@
 		--list-picker-item-spacing: var(--spacer-2);
 		gap: var(--list-picker-item-spacing);
 
-		& .list-picker-item-title {
+		& .ui-list-picker-item-title {
 			margin-bottom: 0;
 		}
 
-		& .list-picker-item-popover {
+		& .ui-list-picker-item-popover {
 			font-size: inherit;
 			display: flex;
 			gap: var(--list-picker-item-spacing);
@@ -96,7 +96,7 @@
 	}
 }
 
-.list-picker-title {
+span.ui-list-picker-title {
 	border-bottom: var(--border-default);
 	font-weight: bold;
 }

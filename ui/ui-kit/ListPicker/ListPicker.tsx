@@ -119,10 +119,10 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	// they arrive here instead. SERIALIZE sorts class lists, so only the set has to match.
 	const extraClassNames = [
 		...(config.extraClassNames || []),
-		...(config.isCompact ? ['list-picker-compact'] : []),
+		...(config.isCompact ? ['list-picker-compact', 'ui-list-picker-compact'] : []),
 		...(config.isCompact && value.length === 0 ? ['hidden'] : []),
 		...(config.hideUi ? ['hidden'] : []),
-		...(horizontal ? ['horizontal'] : []),
+		...(horizontal ? ['horizontal', 'ui-list-picker-horizontal'] : []),
 	];
 
 	return (
@@ -134,7 +134,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 			disabled={disabled}>
 			{config.title !== undefined && (
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
-				<span className="list-picker-title form-label flex w-full mb-3 text-base" data-testid="list-picker-title">
+				<span className="list-picker-title ui-list-picker-title form-label flex w-full mb-3 text-base" data-testid="list-picker-title">
 					{config.title}
 					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ml-2" />}
 				</span>
@@ -172,13 +172,17 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				(config.actions?.create?.useIcon ? (
 					<ListItemAction
 						icon="fa-plus"
-						className={['link-success', 'list-picker-new-button']}
+						className={['link-success', 'list-picker-new-button', 'ui-list-picker-new-button']}
 						tooltip={newLabel}
 						tooltipId={tooltipId}
 						onClick={onCreate}
 					/>
 				) : (
-					<Button variant="primary" className="list-picker-new-button" data-testid="list-picker-new-button" onClick={onCreate}>
+					<Button
+						variant="primary"
+						className="list-picker-new-button ui-list-picker-new-button"
+						data-testid="list-picker-new-button"
+						onClick={onCreate}>
 						<i className="fa fa-plus mr-2" />
 						{newLabel}
 					</Button>

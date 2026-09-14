@@ -142,7 +142,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className="icon-picker-root icon-picker"
+			className="icon-picker-root icon-picker ui-icon-field"
 			testId="icon-picker-root"
 			hidden={hidden}
 			disabled={disabled}

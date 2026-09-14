@@ -104,7 +104,7 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'));
 
 			const children = [...containers()[0].children].map(child => child.className);
-			expect(children).toEqual(['list-picker-item-header', 'list-picker-item']);
+			expect(children).toEqual(['list-picker-item-header ui-list-picker-item-header', 'list-picker-item ui-list-picker-item']);
 			expect(within(containers()[0]).getByTestId('list-picker-item-title').textContent).toBe('Target 1');
 		});
 
@@ -112,7 +112,7 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'), { inlineMenuBar: true });
 
 			const children = [...containers()[0].children].map(child => child.className);
-			expect(children).toEqual(['list-picker-item', 'list-picker-item-header']);
+			expect(children).toEqual(['list-picker-item ui-list-picker-item', 'list-picker-item-header ui-list-picker-item-header']);
 			expect(within(containers()[0]).queryByTestId('list-picker-item-title')).toBeNull();
 			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
 		});
@@ -156,7 +156,11 @@ describe('ListPicker', () => {
 			);
 
 			const header = within(root()).getByTestId('list-picker-item-header');
-			expect([...header.children].map(child => child.className)).toEqual(['list-picker-item-title', 'hide-picker', 'list-picker-item-action']);
+			expect([...header.children].map(child => child.className)).toEqual([
+				'list-picker-item-title ui-list-picker-item-title',
+				'hide-picker',
+				'list-picker-item-action ui-list-picker-item-action',
+			]);
 		});
 	});
 
@@ -172,7 +176,13 @@ describe('ListPicker', () => {
 		it('renders the create button as an icon action when asked', () => {
 			mount(rowsOf('a'), { actions: { create: { useIcon: true } } });
 
-			expect(newButton()!.className.split(' ').sort()).toEqual(['link-success', 'list-picker-item-action', 'list-picker-new-button']);
+			expect(newButton()!.className.split(' ').sort()).toEqual([
+				'link-success',
+				'list-picker-item-action',
+				'list-picker-new-button',
+				'ui-list-picker-item-action',
+				'ui-list-picker-new-button',
+			]);
 			expect(newButton()!.querySelector('i')!.className).toBe('fa fa-xl fa-plus');
 		});
 
