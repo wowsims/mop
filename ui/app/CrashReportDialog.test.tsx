@@ -15,7 +15,7 @@ const mount = () => {
 	return opener;
 };
 
-const report = () => document.querySelector<HTMLTextAreaElement>('.sim-crash-report-text');
+const report = () => document.querySelector<HTMLTextAreaElement>('[data-testid="sim-crash-report-text"]');
 
 describe('CrashReportDialog', () => {
 	it('stays out of the document until the shell opens it', () => {

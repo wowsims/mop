@@ -14,11 +14,11 @@ export const CrashReportDialog = ({ opener }: CrashReportDialogProps) => {
 	const link = useSyncExternalStore(opener.subscribe, opener.getLink);
 
 	return (
-		<Dialog open={open} onOpenChange={opener.setOpen} className="crash" title={i18n.t('sim.crash_modal.title')}>
-			<div className="sim-crash-report">
-				<h3 className="sim-crash-report-header text-base">{i18n.t('sim.crash_modal.header')}</h3>
+		<Dialog open={open} onOpenChange={opener.setOpen} title={i18n.t('sim.crash_modal.title')}>
+			<div>
+				<h3 className="text-base">{i18n.t('sim.crash_modal.header')}</h3>
 				{/* Keyed so a second crash replaces the text: the field is uncontrolled. */}
-				<TextArea key={link} className="sim-crash-report-text h-[80vh] resize-none" defaultValue={link} />
+				<TextArea key={link} className="h-[80vh] resize-none" defaultValue={link} data-testid="sim-crash-report-text" />
 			</div>
 		</Dialog>
 	);
