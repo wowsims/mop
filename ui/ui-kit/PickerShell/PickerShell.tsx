@@ -63,20 +63,13 @@ export const PickerShell = <ModObject, T, V>({
 					'input-root',
 					!inline && !iconField && 'max-md:flex-col max-md:items-start',
 					className,
-					config.inline && 'input-inline',
 					config.extraClassNames,
-					disabled && 'disabled',
 				),
 			)}>
 			{leading}
 			{config.label && (
 				// `htmlFor` explicitly rather than letting Field derive it.
-				<Field.Label
-					htmlFor={config.id}
-					className="form-label ui-picker-label"
-					title={config.label}
-					data-testid="form-label"
-					{...tooltipAnchorProps(tooltipId)}>
+				<Field.Label htmlFor={config.id} className="ui-picker-label" title={config.label} data-testid="form-label" {...tooltipAnchorProps(tooltipId)}>
 					{config.label}
 				</Field.Label>
 			)}

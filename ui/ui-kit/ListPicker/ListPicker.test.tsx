@@ -44,7 +44,7 @@ const mount = (rows: Rows, extra: Partial<ListPickerConfig<Rows, Row>> = {}, ren
 		<ListPicker<Rows, Row>
 			modObject={rows}
 			config={configFor(extra)}
-			renderItem={renderItem ?? ((index, itemConfig) => <span className="leaf">{itemConfig.getValue(rows).name}</span>)}
+			renderItem={renderItem ?? ((index, itemConfig) => <span data-testid="leaf">{itemConfig.getValue(rows).name}</span>)}
 		/>,
 	);
 
@@ -54,14 +54,14 @@ const containers = () => within(root()).queryAllByTestId('list-picker-item-conta
 const bodies = () =>
 	within(root())
 		.queryAllByTestId('list-picker-item')
-		.map(node => node.querySelector('.leaf')?.textContent);
+		.map(node => node.querySelector('[data-testid="leaf"]')?.textContent);
 const newButton = () => within(root()).queryByTestId('list-picker-new-button') as HTMLButtonElement | null;
 const actionsButton = (index: number) => within(containers()[index]).getByTestId('list-picker-item-actions') as HTMLButtonElement;
 const openMenu = (index: number) => fireEvent.click(actionsButton(index));
 const popoverButtons = (index: number) => {
 	openMenu(index);
 	const popover = within(containers()[index]).getByTestId('list-picker-item-popover');
-	return [...within(popover).queryAllByTestId(/^list-picker-item-/)].map(button => button.className.split(' ')[1]);
+	return [...within(popover).queryAllByTestId(/^list-picker-item-/)].map(button => button.getAttribute('data-testid'));
 };
 
 // happy-dom has no drag data transfer; the handlers only ever read these three members.
@@ -85,15 +85,8 @@ describe('ListPicker', () => {
 		it('renders the root, the items box and one container per item', () => {
 			mount(rowsOf('a', 'b'));
 
-			expect(root().className.split(' ').sort()).toEqual([
-				'input-root',
-				'list-picker-root',
-				'max-md:flex-col',
-				'max-md:items-start',
-				'ui-field',
-				'ui-list-picker-root',
-			]);
-			expect(itemsBox().className).toBe('list-picker-items ui-list-picker-items flex flex-col');
+			expect(root().className.split(' ').sort()).toEqual(['input-root', 'max-md:flex-col', 'max-md:items-start', 'ui-field', 'ui-list-picker-root']);
+			expect(itemsBox().className).toBe('ui-list-picker-items flex flex-col');
 			expect(containers()).toHaveLength(2);
 			expect(bodies()).toEqual(['a', 'b']);
 		});
@@ -111,7 +104,7 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'));
 
 			const children = [...containers()[0].children].map(child => child.className);
-			expect(children).toEqual(['list-picker-item-header ui-list-picker-item-header', 'list-picker-item ui-list-picker-item']);
+			expect(children).toEqual(['ui-list-picker-item-header', 'ui-list-picker-item']);
 			expect(within(containers()[0]).getByTestId('list-picker-item-title').textContent).toBe('Target 1');
 		});
 
@@ -119,7 +112,7 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'), { inlineMenuBar: true });
 
 			const children = [...containers()[0].children].map(child => child.className);
-			expect(children).toEqual(['list-picker-item ui-list-picker-item', 'list-picker-item-header ui-list-picker-item-header']);
+			expect(children).toEqual(['ui-list-picker-item', 'ui-list-picker-item-header']);
 			expect(within(containers()[0]).queryByTestId('list-picker-item-title')).toBeNull();
 			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
 		});
@@ -135,9 +128,9 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'), { isCompact: true, hideUi: true, horizontalLayout: true, extraClassNames: ['targets-picker'] });
 
 			const classes = root().className.split(' ');
-			expect(classes).toContain('list-picker-compact');
+			expect(classes).toContain('ui-list-picker-compact');
 			expect(classes).toContain('hidden');
-			expect(classes).toContain('horizontal');
+			expect(classes).toContain('ui-list-picker-horizontal');
 			expect(classes).toContain('targets-picker');
 			// horizontalLayout forces the inline menu bar.
 			expect(containers()[0].getAttribute('data-layout')).toBe('inline');
@@ -157,16 +150,16 @@ describe('ListPicker', () => {
 				<ListPicker<Rows, Row>
 					modObject={rowsOf('a')}
 					config={configFor()}
-					renderItem={() => <span className="leaf" />}
-					renderItemHeader={index => <i className="hide-picker" data-index={index} />}
+					renderItem={() => <span data-testid="leaf" />}
+					renderItemHeader={index => <i data-testid="hide-picker" data-index={index} />}
 				/>,
 			);
 
 			const header = within(root()).getByTestId('list-picker-item-header');
-			expect([...header.children].map(child => child.className)).toEqual([
-				'list-picker-item-title ui-list-picker-item-title',
+			expect([...header.children].map(child => child.getAttribute('data-testid'))).toEqual([
+				'list-picker-item-title',
 				'hide-picker',
-				'list-picker-item-action ui-list-picker-item-action',
+				'list-picker-item-actions',
 			]);
 		});
 	});
@@ -183,13 +176,7 @@ describe('ListPicker', () => {
 		it('renders the create button as an icon action when asked', () => {
 			mount(rowsOf('a'), { actions: { create: { useIcon: true } } });
 
-			expect(newButton()!.className.split(' ').sort()).toEqual([
-				'list-picker-item-action',
-				'list-picker-new-button',
-				'text-success',
-				'ui-list-picker-item-action',
-				'ui-list-picker-new-button',
-			]);
+			expect(newButton()!.className.split(' ').sort()).toEqual(['text-success', 'ui-list-picker-item-action', 'ui-list-picker-new-button']);
 			expect(newButton()!.querySelector('i')!.className).toBe('fa fa-xl fa-plus');
 		});
 
@@ -288,7 +275,7 @@ describe('ListPicker', () => {
 					modObject={rows}
 					config={configFor()}
 					renderItem={(index, itemConfig) => (
-						<button className="leaf" onClick={() => itemConfig.setValue(rows, { name: `${index}!` })}>
+						<button data-testid="leaf" onClick={() => itemConfig.setValue(rows, { name: `${index}!` })}>
 							{itemConfig.getValue(rows).name}
 						</button>
 					)}
@@ -296,7 +283,7 @@ describe('ListPicker', () => {
 			);
 			expect(bodies()).toEqual(['a', 'b']);
 
-			fireEvent.click(root().querySelectorAll('.leaf')[1]);
+			fireEvent.click(root().querySelectorAll('[data-testid="leaf"]')[1]);
 			expect(rows.value.map(row => row.name)).toEqual(['a', '1!']);
 		});
 
@@ -319,7 +306,7 @@ describe('ListPicker', () => {
 		});
 
 		it('does not arm on a mousedown inside a text input', () => {
-			mount(rowsOf('a'), {}, () => <input className="leaf" />);
+			mount(rowsOf('a'), {}, () => <input data-testid="leaf" />);
 			const input = root().querySelector('input')!;
 
 			fireEvent.mouseDown(input);
@@ -378,14 +365,14 @@ describe('ListPicker', () => {
 						<ListPicker<Rows, Row>
 							modObject={left}
 							config={configFor(leftExtra)}
-							renderItem={(index, itemConfig) => <span className="leaf">{itemConfig.getValue(left).name}</span>}
+							renderItem={(index, itemConfig) => <span data-testid="leaf">{itemConfig.getValue(left).name}</span>}
 						/>
 					</div>
 					<div id="right">
 						<ListPicker<Rows, Row>
 							modObject={right}
 							config={configFor(rightExtra)}
-							renderItem={(index, itemConfig) => <span className="leaf">{itemConfig.getValue(right).name}</span>}
+							renderItem={(index, itemConfig) => <span data-testid="leaf">{itemConfig.getValue(right).name}</span>}
 						/>
 					</div>
 				</>,

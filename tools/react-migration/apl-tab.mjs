@@ -25,7 +25,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 // The pane holds two lists; every step names the priority one, because that is the list whose order
 // and length the saved rotation reports back.
 const LIST = '#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root)';
-const ITEM = `${LIST} > .list-picker-root > .list-picker-items > .list-picker-item-container`;
+const ITEM = `${LIST} > ${q('list-picker-root')} > ${q('list-picker-items')} > ${q('list-picker-item-container')}`;
 const NAVBAR = q('apl-rotation-navbar');
 
 /** The saved rotation, as the shape an edit has to move. */
@@ -62,8 +62,8 @@ const structure = actionBarSelector => {
 	const pane = document.getElementById('apl-priority-list');
 	const count = selector => pane.querySelectorAll(selector).length;
 	return {
-		lists: count('.list-picker-root'),
-		items: count('.apl-list-item-picker .list-picker-item-container'),
+		lists: count(':is([data-testid="list-picker-root"], .list-picker-root)'),
+		items: count('.apl-list-item-picker :is([data-testid="list-picker-item-container"], .list-picker-item-container)'),
 		actionPickers: count(':is([data-testid="apl-action-picker-root"], .apl-action-picker-root)'),
 		valuePickers: count(':is([data-testid="apl-value-picker-root"], .apl-value-picker-root)'),
 		hideButtons: count('.hide-picker-button'),
@@ -90,9 +90,9 @@ const openItemMenu = async (page, index) => {
  */
 const dragItem = ([from, to]) => {
 	const list = document.querySelector(
-		'#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root) > .list-picker-root > .list-picker-items',
+		'#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root) > :is([data-testid="list-picker-root"], .list-picker-root) > :is([data-testid="list-picker-items"], .list-picker-items)',
 	);
-	const items = [...(list?.children ?? [])].filter(child => child.classList.contains('list-picker-item-container'));
+	const items = [...(list?.children ?? [])].filter(child => child.matches(':is([data-testid="list-picker-item-container"], .list-picker-item-container)'));
 	const source = items[from];
 	const target = items[to];
 	if (!source || !target) return 'NO ITEMS';
@@ -141,10 +141,7 @@ try {
 		}
 		await page.waitForTimeout(1200);
 		const now = await page.evaluate(readRotation);
-		const live = await page.evaluate(
-			selector => document.querySelectorAll(selector).length,
-			`${LIST} > .list-picker-root > .list-picker-items > .list-picker-item-container`,
-		);
+		const live = await page.evaluate(selector => document.querySelectorAll(selector).length, ITEM);
 		console.log(
 			`${label.padEnd(24)} items=${now?.items ?? '-'} rendered=${live} head=[${now?.head ?? '-'}] type=${now?.type ?? '-'}${outcome === undefined ? '' : ` (${outcome})`}`,
 		);
@@ -189,7 +186,7 @@ try {
 			if (!button) return 'NO DELETE BUTTON';
 			button.click();
 			return 'clicked';
-		}, `${ITEM}:first-of-type > .list-picker-item-header .list-picker-item-popover > .list-picker-item-delete`);
+		}, `${ITEM}:first-of-type > ${q('list-picker-item-header')} ${q('list-picker-item-popover')} > ${q('list-picker-item-delete')}`);
 	});
 
 	// 4. reorder — first item to third position.

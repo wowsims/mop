@@ -135,7 +135,7 @@ describe('AdaptiveStringPicker', () => {
 		const root = container.firstElementChild!;
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'adaptive-string-picker-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
-		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
+		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input']));
 		expect(input().type).toBe('text');
 	});

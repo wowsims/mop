@@ -26,7 +26,9 @@ const root = () => screen.getByTestId('input-root');
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
 		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { disabled: true });
-		expect(root().getAttribute('class')).toBe('ui-field input-root number-picker-root input-inline apl-picker disabled');
+		expect(root().getAttribute('class')).toBe('ui-field input-root number-picker-root apl-picker');
+		expect(root().getAttribute('data-layout')).toBe('inline');
+		expect(root().hasAttribute('data-disabled')).toBe(true);
 	});
 
 	it('renders nothing at all when hidden', () => {
@@ -43,7 +45,7 @@ describe('PickerShell', () => {
 	it('links the label to the input and titles it', () => {
 		shell(configFor());
 		const label = within(root()).getByTestId('form-label');
-		expect(label.className).toBe('form-label ui-picker-label');
+		expect(label.className).toBe('ui-picker-label');
 		expect(label.getAttribute('for')).toBe('cast-delay');
 		expect(label.getAttribute('title')).toBe('Cast Delay');
 	});

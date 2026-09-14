@@ -6,6 +6,7 @@ export interface ListItemActionProps {
 	/** The Font Awesome glyph, e.g. `fa-times`. */
 	icon: string;
 	className?: ClassValue;
+	testId?: string;
 	/** Text for the list's one shared tooltip; the anchor carries it. */
 	tooltip?: string;
 	tooltipId?: string;
@@ -19,15 +20,15 @@ export interface ListItemActionProps {
  */
 const testIdFor = (className: ClassValue | undefined): string => {
 	const classes = Array.isArray(className) ? className : className ? [className] : [];
-	const specific = classes.map(String).find(name => name.startsWith('list-picker') && name !== 'list-picker-item-action');
+	const specific = classes.map(String).find(name => name.startsWith('list-picker'));
 	return specific ?? 'list-picker-item-action';
 };
 
-export const ListItemAction = ({ icon, className, tooltip, tooltipId, hidden, onClick }: ListItemActionProps) => (
+export const ListItemAction = ({ icon, className, testId, tooltip, tooltipId, hidden, onClick }: ListItemActionProps) => (
 	<Button
 		variant="unstyled"
-		className={clsx('list-picker-item-action', className, 'ui-list-picker-item-action')}
-		data-testid={testIdFor(className)}
+		className={clsx(className, 'ui-list-picker-item-action')}
+		data-testid={testId ?? testIdFor(className)}
 		style={hidden === undefined ? undefined : { display: hidden ? 'none' : undefined }}
 		onClick={onClick}
 		{...tooltipAnchorProps(tooltipId, tooltip)}>

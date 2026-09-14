@@ -24,7 +24,7 @@ import { actionEnabled, canDeleteAt, moveItem } from './utils';
  * The drag state is module-scoped in `drag_state.ts` and is **this stack's alone**; see the note
  * there for why two lists on two stacks cannot collide.
  */
-export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem, renderItemHeader }: ListPickerProps<ModObject, ItemType>) => {
+export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem, renderItemHeader, testId }: ListPickerProps<ModObject, ItemType>) => {
 	const configRef = useRef(config);
 	configRef.current = config;
 
@@ -119,28 +119,28 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	// they arrive here instead. SERIALIZE sorts class lists, so only the set has to match.
 	const extraClassNames = [
 		...(config.extraClassNames || []),
-		...(config.isCompact ? ['list-picker-compact', 'ui-list-picker-compact'] : []),
+		...(config.isCompact ? ['ui-list-picker-compact'] : []),
 		...(config.isCompact && value.length === 0 ? ['hidden'] : []),
 		...(config.hideUi ? ['hidden'] : []),
-		...(horizontal ? ['horizontal', 'ui-list-picker-horizontal'] : []),
+		...(horizontal ? ['ui-list-picker-horizontal'] : []),
 	];
 
 	return (
 		<PickerShell
 			config={{ ...config, extraClassNames, id: config.id ?? listId }}
-			className="list-picker-root ui-list-picker-root"
-			testId="list-picker-root"
+			className="ui-list-picker-root"
+			testId={testId ?? 'list-picker-root'}
 			hidden={hidden}
 			disabled={disabled}>
 			{config.title !== undefined && (
 				// A `<label>` naming no control is not a label — the standing rule for this tree.
-				<span className="list-picker-title ui-list-picker-title form-label flex w-full mb-3 text-base" data-testid="list-picker-title">
+				<span className="ui-list-picker-title flex w-full mb-3 text-base" data-testid="list-picker-title">
 					{config.title}
 					{config.titleTooltip && <TooltipButton tooltip={config.titleTooltip} className="ml-2" />}
 				</span>
 			)}
 			{value.length > 0 && (
-				<div className="list-picker-items ui-list-picker-items flex flex-col" data-testid="list-picker-items">
+				<div className="ui-list-picker-items flex flex-col" data-testid="list-picker-items">
 					{value.map((_item, index) => (
 						<ListPickerItem
 							key={index}
@@ -172,17 +172,14 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				(config.actions?.create?.useIcon ? (
 					<ListItemAction
 						icon="fa-plus"
-						className={['text-success', 'list-picker-new-button', 'ui-list-picker-new-button']}
+						className={['text-success', 'ui-list-picker-new-button']}
+						testId="list-picker-new-button"
 						tooltip={newLabel}
 						tooltipId={tooltipId}
 						onClick={onCreate}
 					/>
 				) : (
-					<Button
-						variant="primary"
-						className="list-picker-new-button ui-list-picker-new-button"
-						data-testid="list-picker-new-button"
-						onClick={onCreate}>
+					<Button variant="primary" className="ui-list-picker-new-button" data-testid="list-picker-new-button" onClick={onCreate}>
 						<i className="fa fa-plus mr-2" />
 						{newLabel}
 					</Button>

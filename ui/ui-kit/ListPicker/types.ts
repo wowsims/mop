@@ -62,4 +62,5 @@ export interface ListPickerProps<ModObject, ItemType> {
 	renderItem: (index: number, itemConfig: ListItemPickerConfig<ModObject, ItemType>) => ReactNode;
 	/** Extra content for the item's header row, beside the actions button. */
 	renderItemHeader?: (index: number) => ReactNode;
+	testId?: string;
 }

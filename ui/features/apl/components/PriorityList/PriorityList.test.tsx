@@ -46,7 +46,7 @@ const mount = () =>
 		</SimHostProvider>,
 	);
 
-const listRoot = () => document.querySelector('.list-picker-root') as HTMLElement;
+const listRoot = () => document.querySelector('[data-testid="list-picker-root"]') as HTMLElement;
 const rowContainers = () => Array.from(document.querySelectorAll('[data-testid="list-picker-item-container"]'));
 
 beforeEach(() => {
@@ -81,7 +81,7 @@ describe('PriorityList', () => {
 			'hide-picker-root',
 		]);
 
-		const body = row.querySelector('.list-picker-item') as HTMLElement;
+		const body = row.querySelector('[data-testid="list-picker-item"]') as HTMLElement;
 		expect(body.querySelector('[data-testid="apl-action-picker-root"]')).not.toBeNull();
 	});
 
@@ -119,7 +119,7 @@ describe('PriorityList', () => {
 			fireEvent.dragEnter(container);
 		});
 
-		expect(container.className.split(' ')).not.toContain('dragto');
+		expect(container.getAttribute('data-drag')).not.toBe('to');
 	});
 
 	it('splices priorityList when a row is deleted through its item popover', () => {

@@ -50,7 +50,7 @@ const INSTALL = () => {
 	// `MultiIconPicker` also spells `icon-dropdown-option` onto its "clear" anchor, so each multi
 	// picker contributes one extra row with an empty value. That is the class doing double duty in
 	// the app, not a miscount here.
-	const OWNERS = '.input-root, .multi-icon-picker-root, .icon-dropdown-option';
+	const OWNERS = '.input-root, .multi-icon-picker-root, [data-testid="icon-dropdown-option"], .icon-dropdown-option';
 
 	// The `<ul>` an icon picker keeps its options in. Vanilla builds `dropdown-menu` into the picker in
 	// its constructor and never takes it down; the port mounts Base UI's popup into the slot when the
@@ -74,7 +74,7 @@ const INSTALL = () => {
 	const kindOf = el =>
 		[...el.classList].find(name => name.endsWith('-picker-root')) ??
 		(el.classList.contains('consumes-row') ? 'consumes-row' : null) ??
-		(el.classList.contains('icon-dropdown-option') ? 'icon-dropdown-option' : null) ??
+		(el.matches(':is([data-testid="icon-dropdown-option"], .icon-dropdown-option)') ? 'icon-dropdown-option' : null) ??
 		'input-root';
 
 	// Stable across a port that rewrites the markup around it: the control's `id` first, because
@@ -129,7 +129,7 @@ const INSTALL = () => {
 		// branch (`INTENDED` in intended.mjs — a label naming an icon group rather than a
 		// control is not a label), and the tag is panes-parity's business. What is *this*
 		// gate's business is the text, which `SERIALIZE` excludes and nothing else compares.
-		const label = own(el, '.form-label');
+		const label = own(el, ':is([data-testid="form-label"], .form-label)');
 		// `Input.buildLabel` writes `htmlFor` from the same `config.id` the control uses, so the
 		// two must keep agreeing; nothing else in this repo checks that. `BROKEN` is reserved for
 		// a `for` that names something other than this row's own control — the port regression

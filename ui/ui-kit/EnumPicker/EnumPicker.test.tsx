@@ -149,7 +149,7 @@ describe('EnumPicker', () => {
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
 		expect(root.getAttribute('data-testid')).toBe('enum-picker-root');
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SELECT']);
-		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
+		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 		expect(root.querySelector('select')!.getAttribute('data-testid')).toBe('enum-picker-selector');
 	});
 

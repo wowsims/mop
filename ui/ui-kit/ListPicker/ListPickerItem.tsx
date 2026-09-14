@@ -200,7 +200,8 @@ export const ListPickerItem = ({
 			{canDelete && (
 				<ListItemAction
 					icon="fa-times"
-					className={['list-picker-item-delete', 'link-danger', 'text-link-danger']}
+					className={['link-danger', 'text-link-danger']}
+					testId="list-picker-item-delete"
 					tooltip={deleteTooltip}
 					tooltipId={tooltipId}
 					onClick={() => {
@@ -227,7 +228,7 @@ export const ListPickerItem = ({
 			{canCopy && (
 				<ListItemAction
 					icon="fa-copy"
-					className="list-picker-item-copy"
+					testId="list-picker-item-copy"
 					tooltip={copyTooltip}
 					tooltipId={tooltipId}
 					onClick={() => {
@@ -240,20 +241,20 @@ export const ListPickerItem = ({
 	);
 
 	const heading = title !== undefined && (
-		<h6 className="list-picker-item-title ui-list-picker-item-title" data-testid="list-picker-item-title">
+		<h6 className="ui-list-picker-item-title" data-testid="list-picker-item-title">
 			{title}
 		</h6>
 	);
 
 	const itemHeader = (
-		<div ref={setHeaderElem} className="list-picker-item-header ui-list-picker-item-header" data-testid="list-picker-item-header">
+		<div ref={setHeaderElem} className="ui-list-picker-item-header" data-testid="list-picker-item-header">
 			{heading}
 			{header}
 			{menu}
 		</div>
 	);
 	const itemBody = (
-		<div className="list-picker-item ui-list-picker-item" data-testid="list-picker-item">
+		<div className="ui-list-picker-item" data-testid="list-picker-item">
 			{children}
 		</div>
 	);
@@ -261,16 +262,7 @@ export const ListPickerItem = ({
 	return (
 		<div
 			ref={containerRef}
-			className={clsx(
-				'list-picker-item-container',
-				'ui-list-picker-item-container',
-				'relative',
-				inlineMenuBar && 'inline',
-				canMove && 'draggable',
-				canMove && itemLabel && listItemClassName(itemLabel),
-				dragging && 'dragfrom',
-				dragOver && 'dragto',
-			)}
+			className={clsx('ui-list-picker-item-container', 'relative', inlineMenuBar && 'inline', canMove && itemLabel && listItemClassName(itemLabel))}
 			data-testid="list-picker-item-container"
 			data-list-item=""
 			data-layout={inlineMenuBar ? 'inline' : undefined}

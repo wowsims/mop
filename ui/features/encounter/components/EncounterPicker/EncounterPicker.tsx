@@ -30,7 +30,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 	const [advancedOpen, setAdvancedOpen] = useState(false);
 
 	return (
-		<div className="encounter-picker-root flex flex-wrap gap-3 [&_.list-picker-compact_.input-root]:mb-0">
+		<div className="encounter-picker-root flex flex-wrap gap-3 [&_.ui-list-picker-compact_.input-root]:mb-0">
 			<PickerGroup>
 				{duration.map(config => (
 					<NumberPicker key={config.id} modObject={encounter} config={config} />

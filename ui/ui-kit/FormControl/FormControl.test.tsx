@@ -24,6 +24,16 @@ describe('FieldLabel', () => {
 		render(<FieldLabel className="extra">Name</FieldLabel>);
 		expect(screen.getByText('Name').className).toContain('extra');
 	});
+
+	it('sets data-testid from testId and forwards other native props', () => {
+		render(
+			<FieldLabel testId="cooldown-picker-label" title="Bloodlust">
+				Name
+			</FieldLabel>,
+		);
+		const label = screen.getByTestId('cooldown-picker-label');
+		expect(label.getAttribute('title')).toBe('Bloodlust');
+	});
 });
 
 describe('HelpText', () => {

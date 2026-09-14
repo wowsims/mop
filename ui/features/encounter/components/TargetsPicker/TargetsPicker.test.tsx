@@ -66,7 +66,7 @@ class FakeEncounter {
 
 const mount = (encounter: FakeEncounter) => render(<TargetsPicker encounter={encounter as unknown as Encounter} />);
 
-const root = () => document.querySelector('.list-picker-root') as HTMLElement;
+const root = () => document.querySelector('[data-testid="list-picker-root"]') as HTMLElement;
 const targetRoots = () => [...document.querySelectorAll<HTMLElement>('[data-testid="target-picker-root"]')];
 const containers = () => [...root().querySelectorAll<HTMLElement>('[data-testid="list-picker-item-container"]')];
 const actionsButton = (index: number) => containers()[index].querySelector('[data-testid="list-picker-item-actions"]') as HTMLButtonElement;
@@ -81,7 +81,8 @@ describe('TargetsPicker', () => {
 	it('wears the classes the encounter stylesheet and the encounter gate select on', () => {
 		mount(new FakeEncounter());
 
-		expect(['input-root', 'list-picker-root', 'mb-0', 'targets-picker'].every(name => root().classList.contains(name))).toBe(true);
+		expect(['input-root', 'mb-0', 'targets-picker'].every(name => root().classList.contains(name))).toBe(true);
+		expect(root().getAttribute('data-testid')).toBe('list-picker-root');
 		expect(targetRoots()).toHaveLength(1);
 		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];
 		expect(sections).toHaveLength(3);
@@ -220,9 +221,9 @@ describe('TargetsPicker', () => {
 
 		it('offers no add, delete, copy or drag on the inputs list, which the AI owns', () => {
 			mount(withInputs());
-			const list = document.querySelector('.list-picker-compact')!;
+			const list = document.querySelector('.ui-list-picker-compact')!;
 
-			expect(list.querySelector('.list-picker-new-button')).toBeNull();
+			expect(list.querySelector('[data-testid="list-picker-new-button"]')).toBeNull();
 			expect(list.querySelector('[data-testid="list-picker-item-actions"]')).toBeNull();
 			expect([...list.querySelectorAll('[data-testid="list-picker-item-container"]')].every(item => !item.hasAttribute('data-draggable'))).toBe(true);
 		});
