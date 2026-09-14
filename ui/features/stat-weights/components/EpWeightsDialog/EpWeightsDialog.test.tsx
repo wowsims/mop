@@ -115,6 +115,7 @@ class FakePlayer {
 	epRatios = [1, 0, 0, 0, 0, 0];
 	readonly refStats: { dpsRefStat?: Stat; healRefStat?: Stat; tankRefStat?: Stat } = {};
 	readonly playerClass = { classID: Class.ClassWarrior };
+	playerSpec: { isTankSpec: boolean; isHealingSpec: boolean } | undefined = undefined;
 	computeStatWeights = vi.fn<(...args: any[]) => Promise<StatWeightsResult>>();
 
 	getClass() {
@@ -280,6 +281,20 @@ describe('EpWeightsDialog', () => {
 			'sidebar.buttons.stat_weights.modal.death_ep.label',
 			'sidebar.buttons.stat_weights.modal.current_ep.label',
 		]);
+	});
+
+	it('shows only the stat and current-ep columns for tanks, matching what the sim-type--tank CSS used to hide', () => {
+		player.playerSpec = { isTankSpec: true, isHealingSpec: false };
+		host.sim.showThreatMetrics = true;
+		renderDialog();
+		const headerRows = [...table().querySelectorAll('thead tr')];
+		expect(headerRows).toHaveLength(1);
+		expect(headerRows[0].querySelectorAll('th').length).toBe(2);
+		expect([...headerRows[0].querySelectorAll('th')].map(th => th.textContent)).toEqual([
+			'sidebar.buttons.stat_weights.modal.column_headers.stat',
+			'sidebar.buttons.stat_weights.modal.current_ep.label',
+		]);
+		expect(popup().querySelector('[data-testid="ep-reference-options"]')).toBeNull();
 	});
 
 	it('shows the spec stats, and the rest only once Show all stats is on', () => {
