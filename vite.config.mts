@@ -6,11 +6,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { ConfigEnv, type CSSOptions, defineConfig, PluginOption, UserConfigExport } from 'vite';
+import { ConfigEnv, defineConfig, PluginOption, UserConfigExport } from 'vite';
 import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
-import stylelint from 'vite-plugin-stylelint';
 
 import { SPEC_PAGE_TEMPLATE, specPages } from './tools/vite/spec_pages.mjs';
 
@@ -23,11 +22,6 @@ export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
 // The ui/ path aliases. Mirrored by `compilerOptions.paths` in tsconfig.json and by the
 // layering rules in .oxlintrc.json; shared with vite.harness.mts from here so the two vite
 // configs cannot drift.
-export const SCSS_OPTIONS: NonNullable<NonNullable<CSSOptions['preprocessorOptions']>['scss']> = {
-	loadPaths: [path.resolve(BASE_PATH, 'scss')],
-	silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
-};
-
 export const UI_ALIASES: Record<string, string> = {
 	'@sim': path.resolve(BASE_PATH, 'sim'),
 	'@generated': path.resolve(BASE_PATH, 'generated'),
@@ -144,15 +138,11 @@ export default defineConfig(({ command, mode }) => {
 
 	return {
 		...baseConfig,
-		css: {
-			preprocessorOptions: { scss: SCSS_OPTIONS },
-		},
 		plugins: [
 			// Fast Refresh only: on vite 8 this plugin carries no transform of its own, it turns on
 			// `oxc.jsx.refresh` for `serve` and lets rolldown's native refresh wrapper instrument the
 			// modules. The `oxc` block below still states the transform for both commands.
 			react(),
-			// Only reaches `ui/styles/*.css`; the 104 SCSS files stay on sass-embedded.
 			tailwindcss(),
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			watchAndRun([
@@ -172,12 +162,6 @@ export default defineConfig(({ command, mode }) => {
 				typescript: { root: __dirname, tsconfigPath: 'tsconfig.json' },
 				// Type-checking during build is redundant: the makefile runs `tsc --noEmit` right before `vite build`.
 				enableBuild: false,
-			}),
-			stylelint({
-				build: true,
-				lintInWorker: process.env.NODE_ENV === 'production',
-				include: ['ui/**/*.scss'],
-				configFile: path.resolve(__dirname, 'stylelint.config.mjs'),
 			}),
 		],
 		oxc: {
