@@ -1,6 +1,6 @@
 @layer components {
 .ui-menu-item {
-	@apply block w-full py-1 px-4 border-0 bg-transparent text-white font-normal text-left whitespace-nowrap cursor-pointer transition-colors duration-200 ease-in-out;
+	@apply block w-full py-1 px-2 border-0 bg-transparent text-white font-normal text-left whitespace-nowrap cursor-pointer transition-colors duration-200 ease-in-out;
 
 	&[data-highlighted] {
 		@apply bg-surface-hover;
