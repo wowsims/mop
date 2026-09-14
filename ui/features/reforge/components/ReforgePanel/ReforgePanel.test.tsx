@@ -42,17 +42,10 @@ describe('ReforgePanel', () => {
 		const [run, settings] = [...container.querySelectorAll('button')];
 
 		expect([...run.classList].sort()).toEqual(
-			[
-				'ui-button',
-				'ui-button-primary',
-				'grow',
-				'py-2',
-				'px-[calc(--spacing(3)+var(--settings-button-width))]',
-				'-mr-(--settings-button-width)',
-				'sim-sidebar-action-button',
-			].sort(),
+			['ui-button', 'ui-button-primary', 'grow', 'py-2', 'px-[calc(--spacing(3)+var(--settings-button-width))]', '-mr-(--settings-button-width)'].sort(),
 		);
 		expect(run.getAttribute('data-testid')).toBe('suggest-reforges-action-button');
+		expect(run.hasAttribute('data-sidebar-action')).toBe(true);
 		expect([...settings.classList].sort()).toEqual(
 			[
 				'ui-button',
@@ -69,12 +62,16 @@ describe('ReforgePanel', () => {
 				'data-[popup-open]:bg-primary-active',
 				'data-[popup-open]:border-primary-active',
 				'w-(--settings-button-width)',
-				'sim-sidebar-action-button',
 			].sort(),
 		);
 		expect(settings.getAttribute('data-testid')).toBe('suggest-reforges-button-settings');
+		expect(settings.hasAttribute('data-sidebar-action')).toBe(true);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
-		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);
+		expect(
+			container.querySelectorAll(
+				'[data-testid="suggest-reforges-action-button-loading-icon"], [data-testid="suggest-reforges-button-settings-loading-icon"]',
+			),
+		).toHaveLength(2);
 	});
 
 	it('disables the run button while a reforge run is in flight', () => {

@@ -161,17 +161,20 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		toastManager.add({ variant: 'warning', body: i18n.t('sidebar.buttons.suggest_reforges.reforge_optimization_cancelled'), delay: 3000 });
 	};
 
+	const settingsTriggerProps = { ...tooltipAnchorProps(settingsTooltipId), 'data-sidebar-action': '' };
+
 	return (
 		<>
 			<Button
 				size="none"
-				className="sim-sidebar-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] -mr-(--settings-button-width)"
+				className="grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] -mr-(--settings-button-width)"
 				data-testid="suggest-reforges-action-button"
+				data-sidebar-action=""
 				disabled={isRunning}
 				onClick={onOptimize}
 				{...tooltipAnchorProps(softCapsTooltipId)}>
 				{i18n.t('sidebar.buttons.suggest_reforges.title')}
-				<span className="sim-sidebar-action-button-loading-icon">
+				<span data-testid="suggest-reforges-action-button-loading-icon">
 					<Icon name="spinner" spin />
 				</span>
 			</Button>
@@ -191,7 +194,6 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				testId="reforge-optimiser-popover"
 				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-(--spacing(4))*2))]"
 				triggerClassName={[
-					'sim-sidebar-action-button',
 					'ui-button',
 					'ui-button-md',
 					'ui-button-primary',
@@ -208,11 +210,11 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					'w-(--settings-button-width)',
 				]}
 				triggerTestId="suggest-reforges-button-settings"
-				triggerProps={tooltipAnchorProps(settingsTooltipId)}
+				triggerProps={settingsTriggerProps}
 				trigger={
 					<>
 						<Icon name="cog" />
-						<span className="sim-sidebar-action-button-loading-icon">
+						<span data-testid="suggest-reforges-button-settings-loading-icon">
 							<Icon name="spinner" spin />
 						</span>
 					</>
