@@ -61,71 +61,71 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 
 	return (
 		<>
-			<TabPanelColumns.Root className={rotationType === APLRotationType.TypeAuto ? 'flex' : 'hidden'} fullWidth externalDisplay>
-				<TabPanelColumns.Left variant="stacked">
-					<div>
-						<RotationTypePicker />
-					</div>
-					<p>{i18n.t('rotation_tab.auto.description')}</p>
-				</TabPanelColumns.Left>
-				<TabPanelColumns.Right>
-					<RotationSidebar />
-				</TabPanelColumns.Right>
-			</TabPanelColumns.Root>
+			{rotationType === APLRotationType.TypeAuto && (
+				<TabPanelColumns.Root fullWidth>
+					<TabPanelColumns.Left variant="stacked">
+						<div>
+							<RotationTypePicker />
+						</div>
+						<p>{i18n.t('rotation_tab.auto.description')}</p>
+					</TabPanelColumns.Left>
+					<TabPanelColumns.Right>
+						<RotationSidebar />
+					</TabPanelColumns.Right>
+				</TabPanelColumns.Root>
+			)}
 
-			<TabPanelColumns.Root className={rotationType === APLRotationType.TypeSimple ? 'flex' : 'hidden'} fullWidth externalDisplay>
-				{hasSimple && (
-					<>
-						<TabPanelColumns.Left variant="stacked">
-							<div>
-								<RotationTypePicker />
-							</div>
-							<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
-								<ContentBlock config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
-									<SimpleRotationInputs />
+			{rotationType === APLRotationType.TypeSimple && hasSimple && (
+				<TabPanelColumns.Root fullWidth>
+					<TabPanelColumns.Left variant="stacked">
+						<div>
+							<RotationTypePicker />
+						</div>
+						<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
+							<ContentBlock config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
+								<SimpleRotationInputs />
+							</ContentBlock>
+							{hasCooldowns && (
+								<ContentBlock
+									testId="cooldown-settings"
+									config={{
+										header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') },
+									}}>
+									<CooldownsPicker />
 								</ContentBlock>
-								{hasCooldowns && (
-									<ContentBlock
-										testId="cooldown-settings"
-										config={{
-											header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') },
-										}}>
-										<CooldownsPicker />
-									</ContentBlock>
-								)}
-							</div>
-						</TabPanelColumns.Left>
-						<TabPanelColumns.Right>
-							<RotationSidebar />
-						</TabPanelColumns.Right>
-					</>
-				)}
-			</TabPanelColumns.Root>
+							)}
+						</div>
+					</TabPanelColumns.Left>
+					<TabPanelColumns.Right>
+						<RotationSidebar />
+					</TabPanelColumns.Right>
+				</TabPanelColumns.Root>
+			)}
 
-			<TabPanelColumns.Root
-				as={Tabs.Root}
-				className={rotationType === APLRotationType.TypeAPL ? 'flex' : 'hidden'}
-				data-testid="rotation-tab-apl"
-				gap="apl"
-				fullWidth
-				externalDisplay
-				value={activeId}
-				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
-				<AplNavbar />
-				<TabPanelColumns.Left>
-					{APL_PANES.map(pane => {
-						const Body = PANE_BODIES[pane.id];
-						return (
-							<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section not-data-hidden:flex not-data-hidden:flex-col">
-								<Body />
-							</TabPanel>
-						);
-					})}
-				</TabPanelColumns.Left>
-				<TabPanelColumns.Right>
-					<RotationSidebar />
-				</TabPanelColumns.Right>
-			</TabPanelColumns.Root>
+			{rotationType === APLRotationType.TypeAPL && (
+				<TabPanelColumns.Root
+					as={Tabs.Root}
+					data-testid="rotation-tab-apl"
+					gap="apl"
+					fullWidth
+					value={activeId}
+					onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
+					<AplNavbar />
+					<TabPanelColumns.Left>
+						{APL_PANES.map(pane => {
+							const Body = PANE_BODIES[pane.id];
+							return (
+								<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section not-data-hidden:flex not-data-hidden:flex-col">
+									<Body />
+								</TabPanel>
+							);
+						})}
+					</TabPanelColumns.Left>
+					<TabPanelColumns.Right>
+						<RotationSidebar />
+					</TabPanelColumns.Right>
+				</TabPanelColumns.Root>
+			)}
 		</>
 	);
 };

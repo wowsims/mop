@@ -73,11 +73,11 @@ describe('RotationTabBody', () => {
 
 	it('renders no cooldown settings while the spec offers no major cooldowns', () => {
 		simple = true;
-		const { container, rerender } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
+		const { container, rerender } = render(<RotationTabBody rotationType={APLRotationType.TypeSimple} />);
 		expect(container.querySelector('[data-testid="cooldown-settings"]')).toBeNull();
 
 		available = [{}];
-		rerender(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
+		rerender(<RotationTabBody rotationType={APLRotationType.TypeSimple} />);
 		expect(container.querySelector('[data-testid="cooldown-settings"]')).not.toBeNull();
 	});
 
