@@ -25,4 +25,14 @@
 	.ui-fab-drawer {
 		@apply max-h-[min(45vh,26rem)] p-2 overflow-y-auto;
 	}
+
+	.ui-fab-drawer-popup {
+		@apply fixed z-dropdown border border-border bg-background outline-none;
+		@apply opacity-100 transform-[translate3d(0,0,0)] [transition:transform_150ms_ease,opacity_150ms_ease] motion-reduce:transition-none;
+
+		&[data-starting-style],
+		&[data-ending-style] {
+			@apply opacity-0 transform-[translate3d(0,100%,0)];
+		}
+	}
 }

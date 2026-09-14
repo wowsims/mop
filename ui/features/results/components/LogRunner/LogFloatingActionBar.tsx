@@ -1,9 +1,10 @@
 import i18n from '@i18n/config';
-import { Button } from '@ui-kit/Button';
+import { Drawer } from '@ui-kit/Drawer';
 import { Icon } from '@ui-kit/Icon';
+import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { SuggestionSource } from '../../model/log/search/indexes';
 import { LogSearchBar } from './LogSearchBar';
@@ -24,7 +25,15 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 	const [expanded, setExpanded] = useState(false);
 	const [stuck, setStuck] = useState(false);
 	const rootRef = useRef<HTMLDivElement>(null);
-	const toggleRef = useRef<HTMLButtonElement>(null);
+	const [anchorStyle, setAnchorStyle] = useState<CSSProperties>();
+
+	useLayoutEffect(() => {
+		if (!expanded) return;
+		const element = rootRef.current;
+		if (!element) return;
+		const rect = element.getBoundingClientRect();
+		setAnchorStyle({ left: rect.left, right: window.innerWidth - rect.right, bottom: window.innerHeight - rect.top + 1 });
+	}, [expanded]);
 
 	// Same observer as the rotation's bar, for the same reason: built inside the hidden Results tab,
 	// the ratio goes 0 -> pinned without passing through 1, so [1] alone never fires again.
@@ -56,62 +65,49 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 		.map(group => `${sentenceCase(group.field)}: ${group.values.map(value => labelOf(group.field, value)).join(', ')}`);
 
 	return (
-		<div
-			ref={rootRef}
-			data-testid="log-floating-action-bar-root"
-			className="group ui-fab-root"
-			data-stuck={stuck ? '' : undefined}
-			data-expanded={String(expanded)}
-			onKeyDown={event => {
-				if (event.key !== 'Escape' || !expanded) return;
-				setExpanded(false);
-				toggleRef.current?.focus();
-				event.preventDefault();
-			}}>
-			<div className="ui-fab-clip">
-				<div className="ui-fab-panel group-data-[expanded=true]:transform-none">
-					{/* The clip wrapper only hides the collapsed panel; inert is what takes it out of the tab order. */}
-					<div data-testid="log-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
-						<div data-testid="log-fab-filters" className="ui-fab-drawer">
-							<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
-						</div>
+		<div ref={rootRef} data-testid="log-floating-action-bar-root" className="group ui-fab-root" data-stuck={stuck ? '' : undefined}>
+			<Toolbar testId="log-fab-actions" className="relative min-w-0 flex-1 flex-col gap-2 group-data-stuck:bg-background md:flex-row md:items-center">
+				<Drawer
+					open={expanded}
+					onOpenChange={setExpanded}
+					modal={false}
+					className="ui-fab-drawer-popup"
+					style={anchorStyle}
+					testId="log-fab-panel-inner"
+					trigger={
+						<ToolbarButton
+							testId="log-fab-toggle"
+							className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
+							aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}>
+							<Icon name="filter" />
+							<span data-testid="log-fab-summary">
+								{labels.length
+									? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
+									: i18n.t('results_tab.details.logs.floatingActionBar.none')}
+							</span>
+							<span data-testid="log-fab-preview" className="truncate opacity-75">
+								{labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
+							</span>
+						</ToolbarButton>
+					}>
+					<div data-testid="log-fab-filters" className="ui-fab-drawer">
+						<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
 					</div>
-				</div>
-			</div>
-			<div
-				data-testid="log-fab-actions"
-				className="relative flex flex-1 min-w-0 gap-2 flex-col md:items-center md:flex-row group-data-stuck:bg-background">
-				<Button
-					ref={toggleRef}
-					data-testid="log-fab-toggle"
-					className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
-					aria-expanded={expanded}
-					aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
-					onClick={() => setExpanded(current => !current)}>
-					<Icon name="filter" />
-					<span data-testid="log-fab-summary">
-						{labels.length
-							? i18n.t('results_tab.details.logs.floatingActionBar.active', { count: labels.length })
-							: i18n.t('results_tab.details.logs.floatingActionBar.none')}
-					</span>
-					<span data-testid="log-fab-preview" className="truncate opacity-75">
-						{labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
-					</span>
-				</Button>
-				<Button
+				</Drawer>
+				<ToolbarButton
 					variant="link-danger"
 					size="sm"
-					data-testid="log-fab-clear"
+					testId="log-fab-clear"
 					className={clsx(labels.length === 0 && 'hidden')}
 					hidden={labels.length === 0}
 					onClick={() => onChange([])}>
 					<Icon name="times" className="mr-1" />
 					{i18n.t('results_tab.details.logs.floatingActionBar.clear')}
-				</Button>
+				</ToolbarButton>
 				<div data-testid="log-fab-controls" className="flex items-center gap-2 md:ml-auto">
 					{children}
 				</div>
-			</div>
+			</Toolbar>
 		</div>
 	);
 };

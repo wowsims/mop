@@ -1,9 +1,9 @@
 import { AplNameDialog } from '@features/apl/components/AplNameDialog';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { Button } from '@ui-kit/Button';
 import { useStickyBottom } from '@ui-kit/hooks/useStickyBottom';
 import { Icon } from '@ui-kit/Icon';
+import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import { useState } from 'react';
 
 export interface FloatingActionBarProps {
@@ -35,19 +35,19 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 	const [naming, setNaming] = useState(false);
 
 	return (
-		<div
+		<Toolbar
 			ref={rootRef}
-			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:p-2 data-stuck:border data-stuck:bg-background"
-			data-testid="apl-floating-action-bar-root"
+			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:border data-stuck:bg-background data-stuck:p-2"
+			testId="apl-floating-action-bar-root"
 			data-stuck={stuck ? '' : undefined}>
-			<Button variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>
+			<ToolbarButton variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>
 				<Icon name="plus" className="mr-2" />
 				{newLabel}
-			</Button>
-			<Button variant="link-danger" size="sm" className="ml-auto" onClick={() => host.applyEmptyAplRotation()}>
+			</ToolbarButton>
+			<ToolbarButton variant="link-danger" size="sm" className="ml-auto" onClick={() => host.applyEmptyAplRotation()}>
 				<Icon name="times" className="mr-1" />
 				{i18n.t('rotation_tab.apl.floatingActionBar.reset')}
-			</Button>
+			</ToolbarButton>
 			{nameDialog && (
 				<AplNameDialog
 					open={naming}
@@ -58,6 +58,6 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 					onClose={() => setNaming(false)}
 				/>
 			)}
-		</div>
+		</Toolbar>
 	);
 };

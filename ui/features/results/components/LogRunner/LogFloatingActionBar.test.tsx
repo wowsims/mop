@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EMPTY_SUGGESTIONS } from '../../model/log/search/indexes';
@@ -44,36 +44,35 @@ const mount = (groups: Array<IdentifiedSearchGroup>, onChange = vi.fn()) => ({
 const root = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-testid="log-floating-action-bar-root"]')!;
 const toggle = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="log-fab-toggle"]')!;
 const clear = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="log-fab-clear"]')!;
-const panel = (container: HTMLElement) => container.querySelector<HTMLElement>('[data-testid="log-fab-panel-inner"]')!;
+const panel = () => screen.queryByTestId('log-fab-panel-inner');
 
 describe('LogFloatingActionBar', () => {
 	it('starts collapsed, with the drawer out of the tab order', () => {
 		const { container } = mount([]);
 
-		expect(root(container).dataset.expanded).toBe('false');
 		expect(toggle(container).getAttribute('aria-expanded')).toBe('false');
-		expect(panel(container).hasAttribute('inert')).toBe(true);
+		expect(panel()).toBeNull();
 	});
 
 	it('opens and closes on the toggle, and lets the drawer back into the tab order', () => {
 		const { container } = mount([]);
 
 		fireEvent.click(toggle(container));
-		expect(root(container).dataset.expanded).toBe('true');
-		expect(panel(container).hasAttribute('inert')).toBe(false);
+		expect(toggle(container).getAttribute('aria-expanded')).toBe('true');
+		expect(panel()).not.toBeNull();
 
 		fireEvent.click(toggle(container));
-		expect(root(container).dataset.expanded).toBe('false');
+		expect(toggle(container).getAttribute('aria-expanded')).toBe('false');
 	});
 
-	it('closes on Escape and puts focus back on the toggle', () => {
+	it('closes on Escape and puts focus back on the toggle', async () => {
 		const { container } = mount([]);
 		fireEvent.click(toggle(container));
 
-		fireEvent.keyDown(root(container), { key: 'Escape' });
+		fireEvent.keyDown(panel()!, { key: 'Escape' });
 
-		expect(root(container).dataset.expanded).toBe('false');
-		expect(document.activeElement).toBe(toggle(container));
+		await waitFor(() => expect(document.activeElement).toBe(toggle(container)));
+		expect(toggle(container).getAttribute('aria-expanded')).toBe('false');
 	});
 
 	it('ignores Escape while it is already closed', () => {

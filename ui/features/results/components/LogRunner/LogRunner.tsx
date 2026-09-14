@@ -4,8 +4,8 @@ import type { CombatLog } from '@sim/proto/combat_log';
 import { isCastCompleted } from '@sim/proto/combat_log';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
-import { Button } from '@ui-kit/Button';
 import { SearchBar } from '@ui-kit/SearchBar';
+import { ToolbarButton } from '@ui-kit/Toolbar';
 import { findScrollParent } from '@ui-kit/utils/dom';
 import { VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -249,12 +249,12 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					setGroups(next);
 					scrollListToTop();
 				}}>
-				<Button className="whitespace-nowrap" onClick={() => setExportOpen(true)}>
+				<ToolbarButton className="whitespace-nowrap" onClick={() => setExportOpen(true)}>
 					{i18n.t('results_tab.details.logs.export_button')}
-				</Button>
-				<Button className="whitespace-nowrap" onClick={scrollListToTop}>
+				</ToolbarButton>
+				<ToolbarButton className="whitespace-nowrap" onClick={scrollListToTop}>
 					{i18n.t('results_tab.details.logs.top_button')}
-				</Button>
+				</ToolbarButton>
 				<BooleanPicker modObject={showDebugHolder} config={showDebugConfig} />
 			</LogFloatingActionBar>
 			<Exporter

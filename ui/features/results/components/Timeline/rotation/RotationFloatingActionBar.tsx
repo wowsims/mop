@@ -1,5 +1,5 @@
 import i18n from '@i18n/config';
-import { Button } from '@ui-kit/Button';
+import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import clsx from 'clsx';
 import type { KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -110,10 +110,10 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 					</div>
 				</div>
 			</div>
-			<div className="relative flex flex-1 items-center min-w-0 group-data-stuck:bg-background">
-				<Button
+			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 items-center group-data-stuck:bg-background">
+				<ToolbarButton
 					ref={toggleRef}
-					data-testid="rotation-fab-toggle"
+					testId="rotation-fab-toggle"
 					className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
@@ -127,18 +127,18 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 					<span data-testid="rotation-fab-preview" className="truncate opacity-75">
 						{preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
 					</span>
-				</Button>
-				<Button
+				</ToolbarButton>
+				<ToolbarButton
 					variant="link-danger"
 					size="sm"
-					data-testid="rotation-fab-show-all"
+					testId="rotation-fab-show-all"
 					className={clsx('ml-auto', hiddenKeys.length === 0 && 'hidden')}
 					hidden={hiddenKeys.length === 0}
 					onClick={onShowAll}>
 					<i className="fas fa-times mr-1" />
 					{i18n.t('results_tab.details.timeline.floatingActionBar.showAll')}
-				</Button>
-			</div>
+				</ToolbarButton>
+			</Toolbar>
 		</div>
 	);
 };

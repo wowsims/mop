@@ -191,9 +191,10 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click(SEL.fabToggle);
 	await page.waitForTimeout(400);
 	out.expanded = await page.evaluate(sel => {
-		const root = document.querySelector(sel.fab);
+		const toggle = document.querySelector(sel.fabToggle);
 		const panel = document.querySelector(sel.fabPanelInner);
-		return `expanded=${root?.dataset.expanded} inert=${panel?.hasAttribute('inert')} filters=${!!document.querySelector(`${sel.fabFilters} ${sel.searchBar}`)}`;
+		const expanded = toggle?.getAttribute('aria-expanded') ?? document.querySelector(sel.fab)?.dataset.expanded;
+		return `expanded=${expanded} present=${!!panel} inert=${panel?.hasAttribute('inert') ?? 'n/a'} filters=${!!document.querySelector(`${sel.fabFilters} ${sel.searchBar}`)}`;
 	}, SEL);
 
 	await page.click(`${SEL.addField} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
