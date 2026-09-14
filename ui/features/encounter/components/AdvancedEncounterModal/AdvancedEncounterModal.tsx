@@ -5,6 +5,7 @@ import { Dialog } from '@ui-kit/Dialog';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import type { EnumPickerConfig } from '@ui-kit/EnumPicker/types';
 import { NumberPicker } from '@ui-kit/NumberPicker';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -50,16 +51,16 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 			bodyGap="gap-3"
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
 			<div className="encounter-header flex flex-col gap-3">
-				<div className="picker-group">
+				<PickerGroup>
 					{duration.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
-				</div>
-				<div className="picker-group execute-group flex-row">
+				</PickerGroup>
+				<PickerGroup className="execute-group flex-row">
 					{execute.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
-				</div>
+				</PickerGroup>
 			</div>
 			<div className="encounter-targets">
 				<TargetsPicker encounter={encounter} />

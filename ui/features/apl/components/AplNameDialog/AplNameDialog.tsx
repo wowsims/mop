@@ -78,14 +78,12 @@ export const AplNameDialog = ({
 				</Button>
 			}>
 			<div className="apl-name-modal-body">
-				<FieldLabel className="form-label" htmlFor={inputId}>
-					{inputLabel}
-				</FieldLabel>
+				<FieldLabel htmlFor={inputId}>{inputLabel}</FieldLabel>
 				<Input
 					id={inputId}
 					ref={inputRef}
 					type="text"
-					className={clsx('form-control', conflict && 'is-invalid')}
+					className={clsx(conflict && 'is-invalid')}
 					aria-invalid={conflict}
 					placeholder={placeholder || ''}
 					value={name}

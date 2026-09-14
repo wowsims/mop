@@ -1,6 +1,36 @@
 .ui-field {
+	@apply flex flex-col items-start;
+
 	&[data-disabled] {
 		@apply [filter:opacity(0.5)];
+	}
+
+	&:not([data-layout]) label {
+		@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
+	}
+
+	@media (width < 768px) {
+		&:not([data-layout]) {
+			@apply flex-col items-start gap-2;
+		}
+	}
+
+	&[data-layout='inline'] {
+		@apply flex-row justify-between items-center;
+
+		label {
+			@apply mr-2 mb-0;
+		}
+
+		input,
+		select {
+			@apply w-20;
+		}
+	}
+
+	&[data-layout='inline'] label,
+	&[data-layout='icon'] label {
+		@apply overflow-visible text-clip;
 	}
 }
 

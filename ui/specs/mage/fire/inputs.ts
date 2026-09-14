@@ -16,6 +16,7 @@ export const MageRotationConfig = {
 			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustAlwaysSend,
 			positive: true,
+			inputClassName: 'w-28 text-right',
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecFireMage>({
 			fieldName: 'combustBloodlust',
@@ -24,6 +25,7 @@ export const MageRotationConfig = {
 			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustBloodlust,
 			positive: true,
+			inputClassName: 'w-28 text-right',
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecFireMage>({
 			fieldName: 'combustPostAlter',
@@ -32,6 +34,7 @@ export const MageRotationConfig = {
 			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustPostAlter,
 			positive: true,
+			inputClassName: 'w-28 text-right',
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecFireMage>({
 			fieldName: 'combustNoAlter',
@@ -40,6 +43,7 @@ export const MageRotationConfig = {
 			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustNoAlter,
 			positive: true,
+			inputClassName: 'w-28 text-right',
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecFireMage>({
 			fieldName: 'combustEndOfCombat',
@@ -48,6 +52,7 @@ export const MageRotationConfig = {
 			storeField: 'rotation',
 			getValue: player => player.getSimpleRotation().combustEndOfCombat,
 			positive: true,
+			inputClassName: 'w-28 text-right',
 		}),
 	],
 };

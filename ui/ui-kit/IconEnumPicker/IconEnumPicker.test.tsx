@@ -97,7 +97,7 @@ describe('IconEnumPicker', () => {
 		expect(Array.from(root().children).map(element => `${element.tagName.toLowerCase()}.${element.className}`)).toEqual([
 			'a.icon-picker-button',
 			'div.icon-enum-picker-slot',
-			'label.form-label',
+			'label.ui-field-label',
 		]);
 
 		// The two wrappers `normaliseBaseUiMenus` has no baseline counterpart for, in the slot, with

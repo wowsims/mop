@@ -45,7 +45,7 @@ export const NumberListPicker = <ModObject,>({ modObject, config }: NumberListPi
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className="number-list-picker-input form-control w-full"
+				className="number-list-picker-input w-full"
 				placeholder={config.placeholder || ''}
 				disabled={disabled}
 			/>

@@ -27,6 +27,8 @@
 @import '../ui-kit/FormControl/FormControl.css';
 @import '../ui-kit/PickerShell/PickerShell.css';
 @import '../ui-kit/ListPicker/ListPicker.css';
+@import '../ui-kit/BooleanPicker/BooleanPicker.css';
+@import '../ui-kit/PickerGroup/PickerGroup.css';
 @import '../ui-kit/DropdownPicker/DropdownMenu.css';
 @import '../ui-kit/Menu/Menu.css';
 @import '../ui-kit/Tooltip/Tooltip.css';

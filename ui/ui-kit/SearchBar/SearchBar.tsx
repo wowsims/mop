@@ -63,9 +63,9 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className={clsx('input-root', grow === false && 'flex-none')} data-testid="search-bar-root">
+		<Field.Root className={clsx('ui-field', 'input-root', grow === false && 'flex-none')} data-testid="search-bar-root">
 			{label && (
-				<Field.Label htmlFor={id} className="form-label">
+				<Field.Label htmlFor={id} className="ui-field-label">
 					{label}
 				</Field.Label>
 			)}
@@ -73,7 +73,7 @@ export const SearchBar = ({
 				<Input
 					id={id}
 					type="text"
-					className={clsx('search-bar-input form-control', className)}
+					className={clsx('search-bar-input ui-input', className)}
 					placeholder={placeholder}
 					autoFocus={autoFocus}
 					autoComplete={autoComplete}

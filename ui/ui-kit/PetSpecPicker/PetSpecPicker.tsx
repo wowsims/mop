@@ -17,7 +17,6 @@ const SPECS: ReadonlyArray<{ spec: PetSpec; label: string; iconKey: string }> = 
 	{ spec: PetSpec.Cunning, label: 'Cunning', iconKey: 'ability_eyeoftheowl' },
 ];
 
-/** It wears the talent tree's class names deliberately — `talent-tree-*` and `talent-picker-*` — because it piggybacks on that stylesheet rather than carrying one of its own. */
 export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecPickerProps<SpecType>) => {
 	const id = useId();
 	const subscribe = subscribePlayerField(player, 'specOptions');
@@ -33,15 +32,15 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 
 	return (
 		<div className="pet-spec-picker col-span-full w-full flex flex-col gap-1" data-testid="pet-spec-picker">
-			<div className="talent-tree-header p-3 flex items-center text-white bg-transparent text-base z-1 border-b border-b-border">
-				<span className="talent-tree-title mr-3 flex-1 font-bold whitespace-nowrap">Pet Spec</span>
+			<div className="pet-spec-header p-3 flex items-center text-white bg-transparent text-base z-1 border-b border-b-border">
+				<span className="pet-spec-title mr-3 flex-1 font-bold whitespace-nowrap">Pet Spec</span>
 			</div>
-			<div className="talent-tree-main pet-spec-list flex flex-wrap gap-1 my-3 mx-0 z-1 max-md:flex-col md:flex-row">
+			<div className="pet-spec-list flex flex-wrap gap-1 my-3 mx-0 z-1 max-md:flex-col md:flex-row">
 				{SPECS.map(({ spec, label, iconKey }) => (
 					<div
 						key={spec}
 						className={clsx(
-							'talent-picker-root pet-spec-item flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 [transition-timing-function:ease] hover:bg-white-5',
+							'pet-spec-item flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 [transition-timing-function:ease] hover:bg-white-5',
 							spec === active ? 'selected border-talent-full bg-black-20' : 'border-transparent',
 						)}
 						data-testid="pet-spec-item"
@@ -50,12 +49,12 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 						onClick={() => select(spec)}>
 						<div
 							className={clsx(
-								'talent-picker-icon relative inline-block size-10 rounded-sm bg-no-repeat bg-cover bg-center cursor-pointer border',
+								'pet-spec-icon relative inline-block size-10 rounded-sm bg-no-repeat bg-cover bg-center cursor-pointer border',
 								spec === active ? 'border-talent-full' : 'border-gray-600',
 							)}
 							style={{ backgroundImage: `url('https://wow.zamimg.com/images/wow/icons/large/${iconKey}.jpg')` }}
 						/>
-						<div className="talent-picker-label text-(length:--btn-font-size) text-white">{label}</div>
+						<div className="pet-spec-label text-(length:--btn-font-size) text-white">{label}</div>
 						<Tooltip id={`${id}-${spec}`} content={label} />
 					</div>
 				))}

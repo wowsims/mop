@@ -118,7 +118,7 @@ describe('NumberPicker', () => {
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'number-picker-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
 		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
-		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'number-picker-input', 'form-control']));
+		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'number-picker-input']));
 		expect(input().type).toBe('text');
 	});
 

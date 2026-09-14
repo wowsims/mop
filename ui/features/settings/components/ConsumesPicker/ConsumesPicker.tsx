@@ -7,6 +7,7 @@ import i18n from '@i18n/config';
 import type { IconInputConfig } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { IconPicker } from '@ui-kit/IconPicker';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo } from 'react';
 
 import { ConsumeRow } from './ConsumeRow';
@@ -29,14 +30,14 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 	return (
 		<div className="consumes-picker-root grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
 			<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
-				<div className="picker-group icon-group consumes-row-inputs consumes-potions justify-end">
+				<PickerGroup className="icon-group consumes-row-inputs consumes-potions justify-end">
 					<IconEnumPicker modObject={player} config={configs.prepot} />
 					<IconEnumPicker modObject={player} config={configs.potion} />
 					<IconEnumPicker modObject={player} config={configs.conjured} />
-				</div>
+				</PickerGroup>
 			</ConsumeRow>
 			<ConsumeRow name="elixirs">
-				<div className="picker-group icon-group consumes-row-inputs justify-end">
+				<PickerGroup className="icon-group consumes-row-inputs justify-end">
 					<div className="consumes-flasks">
 						<IconEnumPicker modObject={player} config={configs.flask} />
 					</div>
@@ -47,21 +48,21 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<div className="consumes-guardian-elixirs empty:hidden">
 						<IconEnumPicker modObject={player} config={configs.guardianElixir} />
 					</div>
-				</div>
+				</PickerGroup>
 			</ConsumeRow>
 			<ConsumeRow name="food">
-				<div className="picker-group icon-group consumes-row-inputs consumes-food justify-end">
+				<PickerGroup className="icon-group consumes-row-inputs consumes-food justify-end">
 					<IconEnumPicker modObject={player} config={configs.food} />
-				</div>
+				</PickerGroup>
 			</ConsumeRow>
 			<ConsumeRow name="engineering" configs={[configs.explosive]}>
-				<div className="picker-group icon-group consumes-row-inputs consumes-engi justify-end">
+				<PickerGroup className="icon-group consumes-row-inputs consumes-engi justify-end">
 					<IconEnumPicker modObject={player} config={configs.explosive} />
-				</div>
+				</PickerGroup>
 			</ConsumeRow>
 			{petInputs.length > 0 && (
 				<ConsumeRow name="pet">
-					<div className="picker-group icon-group consumes-row-inputs consumes-pet justify-end">
+					<PickerGroup className="icon-group consumes-row-inputs consumes-pet justify-end">
 						{petInputs.map((config, index) =>
 							config.type === 'icon' ? (
 								<IconPicker key={index} modObject={player} config={config} />
@@ -69,7 +70,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 								<IconEnumPicker key={index} modObject={player} config={config} />
 							),
 						)}
-					</div>
+					</PickerGroup>
 				</ConsumeRow>
 			)}
 		</div>

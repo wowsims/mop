@@ -70,7 +70,7 @@ export const Importer = ({ open, onOpenChange, title, allowFileUpload = false, o
 			}>
 			<div>
 				<div className="import-description">{children}</div>
-				<TextArea spellCheck={false} className="importer-textarea form-control w-full h-[40vh] resize-none" ref={textRef} />
+				<TextArea spellCheck={false} className="importer-textarea w-full h-[40vh] resize-none" ref={textRef} />
 			</div>
 		</Dialog>
 	);

@@ -396,6 +396,10 @@
 	);
 	--color-cr-cast-fill-end: color-mix(in srgb, var(--color-primary) 78%, var(--color-white));
 	--background-image-cr-cast-fill: linear-gradient(90deg, var(--color-primary), var(--color-cr-cast-fill-end));
+
+	--color-input-focus-border: color-mix(in srgb, var(--color-surface-border), var(--color-white) 20%);
+	--shadow-focus-input: 0 0 0.25rem var(--color-input-disabled);
+	--shadow-focus-checkbox: 0 0 0.25rem var(--color-primary);
 }
 
 @keyframes loading-shimmer {

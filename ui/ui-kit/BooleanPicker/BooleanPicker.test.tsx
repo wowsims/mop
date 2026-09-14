@@ -88,7 +88,7 @@ describe('BooleanPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'boolean-picker-root', 'form-check']));
+		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'boolean-picker-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['SPAN', 'INPUT', 'LABEL', 'DIV']);
 		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
 	});
@@ -97,7 +97,7 @@ describe('BooleanPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ reverse: true, description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
-		expect(root.classList.contains('form-check-reverse')).toBe(true);
+		expect(root.classList.contains('ui-boolean-picker-reverse')).toBe(true);
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SPAN', 'INPUT']);
 	});
 

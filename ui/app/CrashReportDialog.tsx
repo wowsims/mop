@@ -18,7 +18,7 @@ export const CrashReportDialog = ({ opener }: CrashReportDialogProps) => {
 			<div className="sim-crash-report">
 				<h3 className="sim-crash-report-header">{i18n.t('sim.crash_modal.header')}</h3>
 				{/* Keyed so a second crash replaces the text: the field is uncontrolled. */}
-				<TextArea key={link} className="sim-crash-report-text form-control" defaultValue={link} />
+				<TextArea key={link} className="sim-crash-report-text" defaultValue={link} />
 			</div>
 		</Dialog>
 	);

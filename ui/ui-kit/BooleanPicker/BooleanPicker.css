@@ -1,0 +1,35 @@
+.ui-boolean-picker.ui-field {
+	@apply min-h-6 pl-8 max-xl:flex-row justify-start;
+
+	> .ui-picker-label {
+		@apply ml-2 mb-0;
+	}
+}
+
+.ui-boolean-picker-reverse.ui-field {
+	@apply min-h-6 pr-8 pl-0 max-xl:flex-row justify-between text-right;
+
+	> .ui-picker-label {
+		@apply ml-0 mb-0 text-left;
+	}
+
+	> .ui-boolean-picker-input {
+		@apply float-right -mr-8 ml-0;
+	}
+}
+
+.ui-boolean-picker-input {
+	@apply appearance-none size-8 shrink-0 align-top rounded-none bg-surface border border-surface-border float-left -ml-8;
+
+	&:focus {
+		@apply border-input-focus-border shadow-focus-checkbox outline-none;
+	}
+
+	&[data-checked] {
+		@apply bg-primary border-primary;
+	}
+
+	&[data-disabled] {
+		@apply opacity-50 pointer-events-none;
+	}
+}

@@ -6,7 +6,7 @@ import type { Spec } from '@generated/proto/common';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
-import clsx from 'clsx';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 
 import { InputPicker } from '../InputPicker';
 
@@ -27,13 +27,13 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 	return (
 		<ContentBlock className={[section.className || section.id, 'custom-section']} config={{ header: { title: section.title, tooltip: section.tooltip } }}>
 			{!!section.iconInputs?.length && (
-				<div className={clsx('picker-group', section.iconGroupClassName, 'icon-group')}>
+				<PickerGroup className={[section.iconGroupClassName, 'icon-group']}>
 					{section.iconInputs.map((config, index) => {
 						if (config.type !== 'icon')
 							throw new Error(`custom section ${section.id}: ${config.type} inputs need a React picker that does not exist yet`);
 						return <IconPicker key={index} modObject={player} config={{ ...config, inline: true }} />;
 					})}
-				</div>
+				</PickerGroup>
 			)}
 			{section.inputs?.map(config => (
 				<InputPicker key={config.id} config={{ ...config, inline: true }} />

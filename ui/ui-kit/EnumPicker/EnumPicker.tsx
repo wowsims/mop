@@ -30,7 +30,7 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel, selectCla
 			<Select
 				ref={attachSelect}
 				id={config.id}
-				className={clsx('enum-picker-selector form-select', selectClassName)}
+				className={clsx('enum-picker-selector w-auto max-w-full', selectClassName)}
 				aria-label={ariaLabel}
 				disabled={disabled}
 				onChange={event => setValue(Number(event.currentTarget.value))}>

@@ -71,7 +71,7 @@ export const NumberPicker = <ModObject,>({ modObject, config, inputClassName }: 
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className={clsx('number-picker-input form-control', inputClassName)}
+				className={clsx('number-picker-input', config.inputClassName, inputClassName)}
 				disabled={disabled}
 				onInput={() => updateSize(input)}
 			/>

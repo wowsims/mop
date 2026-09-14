@@ -122,7 +122,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					</Menu.Positioner>
 				</Menu.Portal>
 			</Menu.Root>
-			<label className="form-label" data-testid="form-label" style={{ display: selected?.text === undefined ? 'none' : 'block' }}>
+			<label className="ui-field-label" data-testid="form-label" style={{ display: selected?.text === undefined ? 'none' : 'block' }}>
 				{selected?.text}
 			</label>
 			{tooltips && <Tooltip id={tooltipId} />}

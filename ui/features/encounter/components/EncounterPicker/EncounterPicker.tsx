@@ -3,6 +3,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo, useState } from 'react';
 
 import { AdvancedEncounterModal } from '../AdvancedEncounterModal';
@@ -28,17 +29,17 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 
 	return (
 		<div className="encounter-picker-root flex flex-wrap gap-3 [&_.list-picker-compact_.input-root]:mb-0">
-			<div className="picker-group">
+			<PickerGroup>
 				{duration.map(config => (
 					<NumberPicker key={config.id} modObject={encounter} config={config} />
 				))}
-			</div>
+			</PickerGroup>
 			{showExecuteProportion && (
-				<div className="picker-group execute-group w-full flex-col flex-nowrap">
+				<PickerGroup className="execute-group w-full flex-col flex-nowrap">
 					{execute.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
-				</div>
+				</PickerGroup>
 			)}
 			<EnumPicker modObject={encounter} config={preset} />
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}

@@ -132,7 +132,7 @@ describe('Importer', () => {
 		const body = rootElem.querySelector('[data-testid="sim-dialog-body"] > div')!;
 		const [descriptionClass, textareaClass] = Array.from(body.children).map(el => el.className);
 		expect(descriptionClass).toBe('import-description');
-		expect(textareaClass.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'importer-textarea', 'form-control']));
+		expect(textareaClass.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'importer-textarea']));
 		expect(body.querySelector('.import-description')!.textContent).toBe('how to');
 	});
 });

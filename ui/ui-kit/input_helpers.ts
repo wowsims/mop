@@ -192,7 +192,10 @@ const makeWrappedNumberInput = <SpecType extends Spec, ModObject>(
 export interface PlayerNumberInputConfig<SpecType extends Spec, Message>
 	extends
 		BasePlayerConfig<SpecType, number>,
-		Pick<NumberPickerConfig<Player<SpecType>>, 'labelTooltip' | 'description' | 'showZeroes' | 'maxDecimalDigits' | 'float' | 'positive'> {
+		Pick<
+			NumberPickerConfig<Player<SpecType>>,
+			'labelTooltip' | 'description' | 'showZeroes' | 'maxDecimalDigits' | 'float' | 'positive' | 'inputClassName'
+		> {
 	fieldName: keyof Message;
 	label: string;
 	percent?: boolean;
@@ -310,6 +313,7 @@ export const makeRotationNumberInput = <SpecType extends Spec>(
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraClassNames: config.extraClassNames,
+		inputClassName: config.inputClassName,
 	};
 	if (config.percent) {
 		const getValue = internalConfig.getValue;

@@ -1,8 +1,12 @@
 .ui-input {
-	@apply block text-ui leading-normal text-foreground bg-surface border border-surface-border;
+	@apply block w-full py-1.5 px-3 rounded-none text-ui leading-normal text-foreground bg-surface border border-surface-border transition-colors duration-150 ease-in-out;
 
 	&::placeholder {
 		@apply text-secondary;
+	}
+
+	&:focus {
+		@apply border-input-focus-border shadow-focus-input outline-none;
 	}
 
 	&:disabled {
@@ -11,14 +15,19 @@
 }
 
 .ui-select {
-	@apply block text-ui leading-normal text-foreground bg-surface border border-surface-border appearance-none pr-9 bg-no-repeat bg-[position:right_.75rem_center] bg-[size:16px_12px] bg-select-chevron;
+	@apply block w-full py-1.5 px-3 rounded-none text-ui leading-normal text-foreground bg-surface border border-surface-border appearance-none pr-9 bg-no-repeat bg-[position:right_.75rem_center] bg-[size:16px_12px] bg-select-chevron transition-colors duration-150 ease-in-out;
+
+	&:focus {
+		@apply border-input-focus-border shadow-focus-input outline-none;
+	}
 
 	&:disabled {
 		@apply bg-input-disabled opacity-100;
 	}
 }
 
-.ui-field-label {
+.ui-field-label,
+.ui-picker-label {
 	@apply inline-block mb-1 text-ui font-normal;
 }
 

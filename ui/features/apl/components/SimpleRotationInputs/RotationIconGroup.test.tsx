@@ -34,7 +34,7 @@ describe('RotationIconGroup', () => {
 	it('wears the three classes the vanilla group container had', () => {
 		render(<RotationIconGroup inputs={[]} />);
 
-		expect(group().className.split(' ').sort()).toEqual(['icon-group', 'picker-group', 'rotation-icon-group']);
+		expect(group().className.split(' ').sort()).toEqual(['icon-group', 'picker-group', 'rotation-icon-group', 'ui-picker-group']);
 	});
 
 	it('picks the picker each input type names, in order', () => {

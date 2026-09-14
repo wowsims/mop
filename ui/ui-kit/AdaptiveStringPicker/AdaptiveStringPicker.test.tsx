@@ -129,14 +129,14 @@ describe('AdaptiveStringPicker', () => {
 		expect(settings.value).toBe('  raw 123 text  ');
 	});
 
-	it('renders the same shape as the vanilla picker: label, description, then a bare form-control input', () => {
+	it('renders the same shape as the vanilla picker: label, description, then a bare input', () => {
 		const settings = new Settings();
 		const { container } = render(<AdaptiveStringPicker modObject={settings} config={configFor({ description: 'A custom name' })} />);
 		const root = container.firstElementChild!;
 		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'adaptive-string-picker-root']));
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
 		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
-		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'form-control']));
+		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input']));
 		expect(input().type).toBe('text');
 	});
 

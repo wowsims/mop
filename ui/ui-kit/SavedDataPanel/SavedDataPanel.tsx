@@ -147,7 +147,7 @@ export const SavedDataPanel = <T,>({
 						<FieldLabel htmlFor={nameInputId}>{nameLabel ?? label}</FieldLabel>
 						<Input
 							id={nameInputId}
-							className="saved-data-save-input form-control"
+							className="saved-data-save-input"
 							data-testid="saved-data-save-input"
 							type="text"
 							placeholder={i18n.t('common.name')}

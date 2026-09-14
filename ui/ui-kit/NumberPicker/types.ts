@@ -12,4 +12,5 @@ export interface NumberPickerConfig<ModObject> extends InputConfig<ModObject, nu
 	positive?: boolean;
 	// Whether to show values of zero within the input. Default `true`
 	showZeroes?: boolean;
+	inputClassName?: string;
 }

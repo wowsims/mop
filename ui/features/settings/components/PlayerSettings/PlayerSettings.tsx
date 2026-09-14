@@ -5,7 +5,7 @@ import { EnumPicker } from '@ui-kit/EnumPicker';
 import type { IconInputConfig } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { IconPicker } from '@ui-kit/IconPicker';
-import clsx from 'clsx';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo } from 'react';
 
 import { InputPicker } from '../InputPicker';
@@ -24,7 +24,7 @@ export const PlayerSettings = ({ iconInputs, inputs }: PlayerSettingsProps) => {
 	return (
 		<>
 			{iconInputs.length > 0 && (
-				<div className={clsx('picker-group', 'player-icon-group', 'icon-group')} style={{ gridTemplateColumns: iconGridColumns(iconInputs.length) }}>
+				<PickerGroup className="player-icon-group icon-group" style={{ gridTemplateColumns: iconGridColumns(iconInputs.length) }}>
 					{iconInputs.map((config, index) =>
 						config.type === 'icon' ? (
 							<IconPicker key={index} modObject={player} config={config} />
@@ -32,17 +32,17 @@ export const PlayerSettings = ({ iconInputs, inputs }: PlayerSettingsProps) => {
 							<IconEnumPicker key={index} modObject={player} config={config} />
 						),
 					)}
-				</div>
+				</PickerGroup>
 			)}
 			<EnumPicker modObject={player} config={race} />
 			{inputs.map(config => (
 				<InputPicker key={config.id} config={config} />
 			))}
-			<div className="picker-group">
+			<PickerGroup>
 				{professions.map(config => (
 					<EnumPicker key={config.id} modObject={player} config={config} />
 				))}
-			</div>
+			</PickerGroup>
 		</>
 	);
 };

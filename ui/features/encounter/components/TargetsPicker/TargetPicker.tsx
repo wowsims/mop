@@ -3,6 +3,7 @@ import type { Encounter } from '@sim/raid/encounter';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo } from 'react';
 
 import { TargetInputsPicker } from './TargetInputsPicker';
@@ -49,21 +50,21 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);
 
 	return (
-		<div className="input-root target-picker-root grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
-			<div className="picker-group target-picker-section target-picker-section1">
+		<div className="ui-field input-root target-picker-root grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
+			<PickerGroup className="target-picker-section target-picker-section1">
 				<EnumPicker modObject={null} config={npc} />
 				<EnumPicker modObject={null} config={ai} />
 				<EnumPicker modObject={null} config={level} />
 				<EnumPicker modObject={null} config={mobType} />
 				<EnumPicker modObject={null} config={tankIndex} />
 				<TargetInputsPicker encounter={encounter} targetIndex={targetIndex} />
-			</div>
-			<div className="picker-group target-picker-section target-picker-section2">
+			</PickerGroup>
+			<PickerGroup className="target-picker-section target-picker-section2">
 				{stats.map(config => (
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
-			</div>
-			<div className="picker-group target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden">
+			</PickerGroup>
+			<PickerGroup className="target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden">
 				{numbers.map(config => (
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
@@ -71,7 +72,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 					<BooleanPicker key={config.id} modObject={null} config={config} />
 				))}
 				<EnumPicker modObject={null} config={spellSchool} />
-			</div>
+			</PickerGroup>
 		</div>
 	);
 };

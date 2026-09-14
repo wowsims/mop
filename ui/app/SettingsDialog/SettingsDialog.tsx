@@ -12,6 +12,7 @@ import type { EnumPickerConfig, EnumValueConfig } from '@ui-kit/EnumPicker/types
 import { HelpText } from '@ui-kit/FormControl';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { toastManager } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useEffect, useId, useMemo, useState } from 'react';
@@ -192,7 +193,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 				</>
 			}>
 			<div>
-				<div className="picker-group" data-testid="picker-group">
+				<PickerGroup data-testid="picker-group">
 					<div data-testid="fixed-rng-seed-container">
 						<div data-testid="fixed-rng-seed">
 							<NumberPicker modObject={sim} config={fixedRngSeedConfig} />
@@ -205,7 +206,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 					<div data-testid="language-picker">
 						<EnumPicker modObject={sim} config={languageConfig} />
 					</div>
-				</div>
+				</PickerGroup>
 				<div className="w-1/2 pr-2" data-testid="show-threat-metrics-picker">
 					<BooleanPicker modObject={sim} config={showThreatMetricsConfig} />
 				</div>

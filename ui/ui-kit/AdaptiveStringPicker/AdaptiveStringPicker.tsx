@@ -37,7 +37,7 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 			testId="adaptive-string-picker-root"
 			hidden={hidden}
 			disabled={disabled}>
-			<Input type="text" ref={attachInput} id={config.id} className="form-control" disabled={disabled} onInput={() => updateSize(input)} />
+			<Input type="text" ref={attachInput} id={config.id} disabled={disabled} onInput={() => updateSize(input)} />
 		</PickerShell>
 	);
 };

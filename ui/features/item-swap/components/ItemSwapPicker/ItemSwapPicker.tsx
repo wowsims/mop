@@ -9,6 +9,7 @@ import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
 import { FieldLabel, HelpText } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
+import { PickerGroup } from '@ui-kit/PickerGroup';
 import { LocaleHtml, Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId, useMemo } from 'react';
 
@@ -48,7 +49,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 		<div className="item-swap-picker-root grid gap-3">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
-				<div className="input-root input-inline input-item-swap-container flex-wrap gap-3">
+				<div className="ui-field input-root input-inline input-item-swap-container flex-wrap gap-3" data-layout="inline">
 					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>
@@ -61,11 +62,11 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 						<Icon name="arrows-rotate" className="me-1" />
 					</Button>
 					<Tooltip id={swapId} content={swapTooltip} />
-					<div className="picker-group icon-group" role="group" aria-labelledby={labelId}>
+					<PickerGroup className="icon-group items-center justify-end" role="group" aria-labelledby={labelId}>
 						{itemSlots.map(itemSlot => (
 							<ItemSwapIcon key={itemSlot} slot={itemSlot} />
 						))}
-					</div>
+					</PickerGroup>
 				</div>
 			)}
 			{note && enabled && <HelpText as="p">{note}</HelpText>}
