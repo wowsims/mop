@@ -1,30 +1,12 @@
 import type { PlayerSpec } from '@sim/player/player_spec';
 import { describe, expect, it } from 'vitest';
 
-import { showsEpRatios, simTypeClasses, simUiAttributes, simUiClasses } from './shell_classes';
+import { showsEpRatios, simUiAttributes, simUiClasses } from './shell_classes';
 
 const spec = (parts: Partial<PlayerSpec<any>>) =>
 	({ isHealingSpec: false, isTankSpec: false, isMeleeDpsSpec: false, isRangedDpsSpec: false, ...parts }) as PlayerSpec<any>;
 
 const tokens = (classes: string) => classes.split(' ').filter(Boolean).sort();
-
-describe('simTypeClasses', () => {
-	it('emits one type, and a range only for dps', () => {
-		expect(tokens(simTypeClasses(spec({ isHealingSpec: true })))).toEqual(['sim-type--heal']);
-		expect(tokens(simTypeClasses(spec({ isTankSpec: true })))).toEqual(['sim-type--tank']);
-		expect(tokens(simTypeClasses(spec({ isMeleeDpsSpec: true })))).toEqual(['sim-type--dps', 'sim-type--melee']);
-		expect(tokens(simTypeClasses(spec({ isRangedDpsSpec: true })))).toEqual(['sim-type--dps', 'sim-type--ranged']);
-	});
-
-	it('prefers heal over tank over dps when a spec is more than one, as the original if/else-if chain did', () => {
-		expect(tokens(simTypeClasses(spec({ isHealingSpec: true, isTankSpec: true, isMeleeDpsSpec: true })))).toEqual(['sim-type--heal']);
-		expect(tokens(simTypeClasses(spec({ isTankSpec: true, isMeleeDpsSpec: true })))).toEqual(['sim-type--tank']);
-	});
-
-	it('emits nothing for a spec that is none of them', () => {
-		expect(simTypeClasses(spec({}))).toBe('');
-	});
-});
 
 describe('showsEpRatios', () => {
 	it('shows ep ratios whenever threat is on, whatever else is off', () => {
@@ -39,9 +21,9 @@ describe('showsEpRatios', () => {
 });
 
 describe('simUiClasses', () => {
-	it('always carries the two roots and the spec class', () => {
+	it('always carries the two roots and the class name', () => {
 		const classes = tokens(simUiClasses({ className: 'arms-warrior-sim-ui', spec: spec({ isMeleeDpsSpec: true }) }));
-		expect(classes).toEqual(['arms-warrior-sim-ui', 'group/sim', 'sim-type--dps', 'sim-type--melee', 'sim-ui']);
+		expect(classes).toEqual(['arms-warrior-sim-ui', 'group/sim', 'sim-ui']);
 	});
 });
 

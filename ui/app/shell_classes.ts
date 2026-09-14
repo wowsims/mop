@@ -4,21 +4,12 @@ import clsx from 'clsx';
 
 export { showsEpRatios };
 
-export const simTypeClasses = (spec: PlayerSpec<any>): string =>
-	clsx(
-		spec.isHealingSpec && 'sim-type--heal',
-		!spec.isHealingSpec && spec.isTankSpec && 'sim-type--tank',
-		!spec.isHealingSpec && !spec.isTankSpec && (spec.isMeleeDpsSpec || spec.isRangedDpsSpec) && 'sim-type--dps',
-		!spec.isHealingSpec && !spec.isTankSpec && spec.isMeleeDpsSpec && 'sim-type--melee',
-		!spec.isHealingSpec && !spec.isTankSpec && !spec.isMeleeDpsSpec && spec.isRangedDpsSpec && 'sim-type--ranged',
-	);
-
 export interface SimUiClassesArgs {
 	className: string;
 	spec: PlayerSpec<any>;
 }
 
-export const simUiClasses = ({ className, spec }: SimUiClassesArgs): string => clsx('sim-ui', 'group/sim', className, simTypeClasses(spec));
+export const simUiClasses = ({ className }: SimUiClassesArgs): string => clsx('sim-ui', 'group/sim', className);
 
 export interface SimUiAttributesArgs {
 	spec: PlayerSpec<any>;
