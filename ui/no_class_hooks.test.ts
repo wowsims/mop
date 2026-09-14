@@ -3,22 +3,20 @@ import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { findClassHooks, findTestidStyling } from '../tools/tailwind/class-hooks';
+import { findClassHooks, findRetiredClassNames, findTestidStyling } from '../tools/tailwind/class-hooks.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 let hooks: Awaited<ReturnType<typeof findClassHooks>>;
 let testidHits: ReturnType<typeof findTestidStyling>;
-let retiredHits: { file: string; line: number; token: string }[];
+let retiredHits: Awaited<ReturnType<typeof findRetiredClassNames>>;
 
 beforeAll(async () => {
 	hooks = await findClassHooks(ROOT);
 	testidHits = findTestidStyling(ROOT);
 
 	const retired: string[] = (await import('./retired_class_names.json', { with: { type: 'json' } })).default;
-	const retiredSet = new Set(retired);
-	const occurrences = (await import('../tools/tailwind/canonical-classes')).collectTokens(ROOT);
-	retiredHits = occurrences.filter(occ => retiredSet.has(occ.token)).map(occ => ({ file: occ.file, line: occ.line, token: occ.token }));
+	retiredHits = await findRetiredClassNames(ROOT, retired);
 }, 15000);
 
 function formatHooks(rows: { file: string; line: number; token: string }[]): string {

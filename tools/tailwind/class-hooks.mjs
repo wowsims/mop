@@ -58,6 +58,27 @@ export async function findClassHooks(root, opts = {}) {
 	return hooks;
 }
 
+export async function findRetiredClassNames(root, retired, opts = {}) {
+	const allowlist = opts.allowlist || loadAllowlist(root);
+	const cssPath = opts.css || findDefaultCss(root);
+	const css = fs.readFileSync(cssPath, 'utf8');
+	const designSystem = await __unstable__loadDesignSystem(css, { base: path.dirname(cssPath) });
+	const retiredSet = new Set(retired);
+
+	const occurrences = collectTokens(root).filter(occ => !isTestFile(occ.file));
+
+	const hits = [];
+	for (const occ of occurrences) {
+		const bare = stripVariants(occ.token);
+		if (!retiredSet.has(bare)) continue;
+		if (designSystem.candidatesToCss([occ.token])[0]) continue;
+		if (isAllowlisted(occ.token, allowlist) || isAllowlisted(bare, allowlist)) continue;
+		hits.push({ file: occ.file, line: occ.line, token: occ.token });
+	}
+	hits.sort((a, b) => (a.file === b.file ? a.line - b.line : a.file < b.file ? -1 : 1));
+	return hits;
+}
+
 const TESTID_VARIANT_RE = /\[[^[\]]*\[data-testid[^\]]*\][^[\]]*\]:/;
 
 function walk(dir, exts, skipDirs) {
