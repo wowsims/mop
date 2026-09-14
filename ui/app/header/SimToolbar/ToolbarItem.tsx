@@ -12,6 +12,7 @@ export interface ToolbarItemProps {
 	tooltip?: ReactNode;
 	place?: 'top' | 'bottom';
 	className?: string;
+	testId?: string;
 	href?: string;
 	onClick?: () => void;
 	hidden?: boolean;
@@ -25,6 +26,7 @@ export const ToolbarItem = ({
 	tooltip,
 	place = 'bottom',
 	className,
+	testId,
 	href,
 	onClick,
 	hidden,
@@ -41,11 +43,8 @@ export const ToolbarItem = ({
 			{children}
 		</>
 	);
-	const testId = className?.split(' ')[0];
 	return (
-		<div
-			className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-4 [&_button]:my-4"
-			data-testid="sim-toolbar-item">
+		<div className="ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-4 [&_button]:my-4" data-testid="sim-toolbar-item">
 			{!hidden &&
 				(href ? (
 					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} data-testid={testId} {...anchor}>

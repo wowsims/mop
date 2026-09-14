@@ -115,7 +115,7 @@ const openTooltips = selector =>
 const geometry = selector => {
 	const box = document.querySelector(selector);
 	const popper = box?.closest('[data-tippy-root]') ?? box;
-	const scroller = document.querySelector('.sim-sidebar-content');
+	const scroller = document.querySelector(':is([data-testid="sim-sidebar-content"], .sim-sidebar-content)');
 	if (!popper || !scroller) return { error: `popper=${!!popper} scroller=${!!scroller}` };
 	const b = popper.getBoundingClientRect();
 	const f = scroller.getBoundingClientRect();

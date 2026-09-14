@@ -20,7 +20,7 @@
 // (`offsetParent === null`), never `.hide`, because vanilla hides them with a class and a React
 // table will unmount them instead. `.expand` on the *parent* is still asserted — the stylesheet
 // picks which caret shows off it, so it is a contract either way.
-import { launch, openSpec, PORTS, SERIALIZE } from './browser.mjs';
+import { launch, openSpec, PORTS, q, SERIALIZE } from './browser.mjs';
 
 // Beast mastery, not arms, and not by accident: `shouldCollapse` keeps a parent row only for a pet,
 // so a spec with a permanent pet is what guarantees the grouped-row assertions have something to run
@@ -467,7 +467,7 @@ try {
 	check('a damage row carrying a threat tooltip is reachable', dpsRow >= 0, String(dpsRow));
 	if (dpsRow >= 0) {
 		const setThreat = async show => {
-			await page.click('.sim-toolbar button.sim-options');
+			await page.click(`:is(${q('sim-toolbar')}) button:is(${q('sim-options')})`);
 			await page.waitForTimeout(700);
 			const checkbox = page.locator('#simui-show-threat-metrics');
 			const label = page.locator('label[for="simui-show-threat-metrics"]');

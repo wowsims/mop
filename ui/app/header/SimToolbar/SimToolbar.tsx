@@ -22,7 +22,8 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 	return (
 		<>
 			<ToolbarItem
-				className="known-issues link-danger text-link-danger"
+				className="text-link-danger"
+				testId="known-issues"
 				hidden={knownIssues.length === 0}
 				tooltip={
 					<ul className="text-left pl-4 mb-0">
@@ -38,11 +39,11 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 
 			{!isNative() && <ToolbarItem href={REPO_RELEASES_URL} icon="gauge-high" tooltip="Download simulator for faster simulating" />}
 
-			<ToolbarItem className="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
+			<ToolbarItem testId="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
-			<div className="sim-toolbar-socials ml-4 flex mt-2 mb-2 border-l border-l-border [&_a]:my-2 [&_button]:my-2" data-testid="sim-toolbar-socials">
+			<div className="ml-4 flex mt-2 mb-2 border-l border-l-border [&_a]:my-2 [&_button]:my-2" data-testid="sim-toolbar-socials">
 				{SOCIALS.map(social => (
-					<div key={social.key} className="sim-toolbar-item ml-4 flex transition-colors duration-150 ease-in-out" data-testid="sim-toolbar-item">
+					<div key={social.key} className="ml-4 flex transition-colors duration-150 ease-in-out" data-testid="sim-toolbar-item">
 						<SocialLink social={social} />
 					</div>
 				))}
@@ -52,7 +53,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 				<ToolbarItem
 					href={REPO_RELEASES_URL}
 					icon="gauge-high"
-					className="link-danger text-link-danger"
+					className="text-link-danger"
 					tooltip="Newer version of simulator available for download"
 				/>
 			)}

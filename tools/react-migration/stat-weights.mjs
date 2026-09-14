@@ -12,7 +12,7 @@
 // `PORT` picks a build. On the baseline the three assertions above are expected to FAIL — that
 // output is the list of defects this port fixes — so a red baseline run is the point, and only the
 // React run exits non-zero.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
@@ -148,7 +148,7 @@ await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', ti
 // `loadSettings()`, which restores the stored iteration count from the same callback. On the
 // baseline nothing ever adds the class, so this waits on exactly what it waited on before.
 // `:enabled` would not do: an unlaunched spec's button is disabled for good.
-await page.waitForSelector('.sim-sidebar-actions .ep-weights-action:not(.loading)', { timeout: 60000 });
+await page.waitForSelector(`:is(${q('sim-sidebar-actions')}) :is(${q('ep-weights-action')}):not(.loading)`, { timeout: 60000 });
 await page.waitForTimeout(2500);
 
 console.log(`${SPEC} on :${PORT}${IS_BASE ? '  (baseline — the three defect assertions are expected to fail here)' : ''}\n`);
@@ -158,7 +158,7 @@ const setIterations = async value => {
 	await page.dispatchEvent('#simui-iterations', 'change');
 };
 const openDialog = async () => {
-	await page.click('.sim-sidebar-actions .ep-weights-action');
+	await page.click(`:is(${q('sim-sidebar-actions')}) :is(${q('ep-weights-action')})`);
 	await page.waitForTimeout(700);
 };
 const closeDialog = async () => {
@@ -277,7 +277,7 @@ await page.waitForTimeout(400);
 // `getModalConfig` read `getShowThreatMetrics()` once, at construction, and the modal is never
 // disposed — so on the baseline the size does not move even across a close and a reopen.
 await closeDialog();
-await page.click('.sim-toolbar button.sim-options');
+await page.click(`:is(${q('sim-toolbar')}) button:is(${q('sim-options')})`);
 await page.waitForTimeout(700);
 const toggle = page.locator('#simui-show-threat-metrics');
 const toggleLabel = page.locator('label[for="simui-show-threat-metrics"]');
@@ -297,7 +297,7 @@ const toggled = await page.evaluate(DIALOG);
 console.log('\nthreat-metrics toggle');
 check('the dialog size follows the threat-metrics toggle', toggled.size !== dialog.size, `${dialog.size} -> ${toggled.size}`);
 await closeDialog();
-await page.click('.sim-toolbar button.sim-options');
+await page.click(`:is(${q('sim-toolbar')}) button:is(${q('sim-options')})`);
 await page.waitForTimeout(700);
 await setThreatMetrics(hadThreat);
 await page.keyboard.press('Escape');
@@ -308,7 +308,7 @@ await page.waitForTimeout(700);
 // controller rather than a `BaseModal`.
 console.log('\nreforge opener');
 await closeDialog();
-const cog = page.locator('.sim-sidebar-actions .suggest-reforges-button-settings');
+const cog = page.locator(`:is(${q('sim-sidebar-actions')}) :is(${q('suggest-reforges-button-settings')})`);
 if (await cog.count()) {
 	await cog.click();
 	await page.waitForTimeout(900);

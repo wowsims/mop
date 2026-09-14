@@ -28,23 +28,18 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 			{/* A real `<button>`: `SubmenuTrigger` renders a `<div>` by default, and this row is a control. */}
 			<Menu.SubmenuTrigger
 				render={<button type="button" />}
-				className={clsx('sim-link', SIM_LINK_CLASSES, textClassNameForClass(playerClass))}
+				className={clsx(SIM_LINK_CLASSES, textClassNameForClass(playerClass))}
 				data-testid="sim-link">
 				<SimLinkContent iconPath={playerClass.getIcon('large')} title={translatePlayerClass(playerClass)} />
 			</Menu.SubmenuTrigger>
 			<Menu.Portal container={portalContainer ?? undefined}>
-				<Menu.Positioner
-					side="right"
-					align="start"
-					sideOffset={0}
-					className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
-					data-testid="sim-title-positioner">
-					<Menu.Popup className={clsx('sim-title-popup ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
+				<Menu.Positioner side="right" align="start" sideOffset={0} className={clsx('ui-menu-positioner-plain')} data-testid="sim-title-positioner">
+					<Menu.Popup className={clsx('ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
 						{Object.values(playerClass.specs).map(spec => (
 							<Menu.LinkItem
 								key={spec.simLink}
 								href={new URL(spec.simLink, window.location.href).toString()}
-								className={clsx('sim-link', SIM_LINK_CLASSES, textClassNameForSpec(spec))}
+								className={clsx(SIM_LINK_CLASSES, textClassNameForSpec(spec))}
 								data-testid="sim-link">
 								<SimLinkContent
 									iconPath={spec.getIcon('large')}
@@ -65,11 +60,11 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 	const portalContainer = usePortalContainer();
 	return (
 		<div className="h-[calc(var(--spacing-sim-header)-1px)]" data-testid="sim-title-dropdown-root">
-			<div className="relative sim-link-dropdown h-full">
+			<div className="relative h-full" data-testid="sim-link-dropdown">
 				<Menu.Root modal={false}>
 					<Menu.Trigger
 						className={clsx(
-							'sim-link ui-sim-title-trigger flex h-full w-full bg-background hover:bg-surface-hover focus:bg-surface-hover data-[popup-open]:bg-surface-hover',
+							'ui-sim-title-trigger flex h-full w-full bg-background hover:bg-surface-hover focus:bg-surface-hover data-[popup-open]:bg-surface-hover',
 							textClassNameForSpec(currentSpec),
 						)}
 						data-testid="sim-link">
@@ -85,11 +80,9 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 						<Menu.Positioner
 							align="start"
 							sideOffset={0}
-							className={clsx('sim-title-positioner', 'ui-sim-title-positioner', 'ui-menu-positioner-plain')}
+							className={clsx('ui-sim-title-positioner', 'ui-menu-positioner-plain')}
 							data-testid="sim-title-positioner">
-							<Menu.Popup
-								className={clsx('sim-title-popup ui-sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')}
-								data-testid="sim-title-popup">
+							<Menu.Popup className={clsx('ui-sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')} data-testid="sim-title-popup">
 								{PlayerClasses.naturalOrder.map(playerClass => (
 									<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />
 								))}
