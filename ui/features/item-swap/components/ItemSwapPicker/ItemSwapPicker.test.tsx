@@ -34,7 +34,7 @@ describe('ItemSwapPicker', () => {
 	it('puts one icon per swap slot directly in the icon group', () => {
 		const { container } = setup(true);
 
-		const group = container.querySelector('.picker-group.icon-group')!;
+		const group = container.querySelector('.picker-group.ui-picker-group-icons')!;
 		expect(group.children).toHaveLength(SLOTS.length);
 		expect([...group.children].every(child => child.classList.contains('icon-picker-root'))).toBe(true);
 	});
@@ -43,6 +43,6 @@ describe('ItemSwapPicker', () => {
 		const { container } = setup(false);
 
 		expect(container.querySelector('[data-testid="input-item-swap-container"]')).toBeNull();
-		expect(container.querySelector('.picker-group.icon-group')).toBeNull();
+		expect(container.querySelector('.picker-group.ui-picker-group-icons')).toBeNull();
 	});
 });
