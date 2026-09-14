@@ -6,17 +6,17 @@ import { ContentBlock, type ContentBlockHeaderProps } from './ContentBlock';
 
 describe('ContentBlock', () => {
 	it('renders no header when config.header is absent', () => {
-		render(<ContentBlock className="my-block" config={{}} />);
+		render(<ContentBlock className="mt-2" config={{}} />);
 		expect(screen.queryByTestId('content-block-header')).toBeNull();
 	});
 
 	it('renders no header when config.header is an empty object', () => {
-		render(<ContentBlock className="my-block" config={{ header: {} as ContentBlockHeaderProps }} />);
+		render(<ContentBlock className="mt-2" config={{ header: {} as ContentBlockHeaderProps }} />);
 		expect(screen.queryByTestId('content-block-header')).toBeNull();
 	});
 
 	it('renders the header with the title text when config.header has a title', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'My Title' } }} />);
 		const header = screen.queryByTestId('content-block-header');
 		expect(header).not.toBeNull();
 		const title = within(header!).getByTestId('content-block-title');
@@ -25,25 +25,25 @@ describe('ContentBlock', () => {
 	});
 
 	it('uses titleTag for the title element, defaulting to h6', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'My Title', titleTag: 'h3' } }} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'My Title', titleTag: 'h3' } }} />);
 		expect(screen.getByTestId('content-block-title').tagName).toBe('H3');
 	});
 
 	// Five of the eight shipped header tooltips are translation strings carrying <strong> or <br>.
 	it('renders a header tooltip as HTML, not as escaped text', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs', tooltip: 'Buffs by <strong>other</strong> members' } }} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'Raid Buffs', tooltip: 'Buffs by <strong>other</strong> members' } }} />);
 		fireEvent.mouseEnter(screen.getByRole('button'));
 		expect(screen.getByText('other').tagName).toBe('STRONG');
 	});
 
 	it('renders headerChildren after the title, inside the header', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="text-sm">Describes it</p>} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="text-sm">Describes it</p>} />);
 		const header = screen.getByTestId('content-block-header');
-		expect(Array.from(header.children).map(child => child.className)).toEqual(['content-block-title flex items-center font-bold mb-0', 'text-sm']);
+		expect(Array.from(header.children).map(child => child.className)).toEqual(['flex items-center font-bold mb-0', 'text-sm']);
 	});
 
 	it('puts the tooltip button inside the title element, not the header', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'My Title', tooltip: 'explains it' } }} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'My Title', tooltip: 'explains it' } }} />);
 		const title = screen.getByTestId('content-block-title');
 		const button = within(title).queryByRole('button');
 		expect(button).not.toBeNull();
@@ -54,27 +54,27 @@ describe('ContentBlock', () => {
 	});
 
 	it('renders no tooltip button when config.header.tooltip is absent', () => {
-		render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'My Title' } }} />);
 		expect(screen.queryByRole('button')).toBeNull();
 	});
 
 	it('points headerRef and bodyRef at the header and body elements', () => {
 		const headerRef = createRef<HTMLDivElement>();
 		const bodyRef = createRef<HTMLDivElement>();
-		render(<ContentBlock className="my-block" config={{ header: { title: 'My Title' } }} headerRef={headerRef} bodyRef={bodyRef} />);
+		render(<ContentBlock className="mt-2" config={{ header: { title: 'My Title' } }} headerRef={headerRef} bodyRef={bodyRef} />);
 		expect(headerRef.current).toBe(screen.getByTestId('content-block-header'));
 		expect(bodyRef.current).toBe(screen.getByTestId('content-block-body'));
 	});
 
 	it('leaves headerRef null when there is no header', () => {
 		const headerRef = createRef<HTMLDivElement>();
-		render(<ContentBlock className="my-block" config={{}} headerRef={headerRef} />);
+		render(<ContentBlock className="mt-2" config={{}} headerRef={headerRef} />);
 		expect(headerRef.current).toBeNull();
 	});
 
 	it('renders children inside the body', () => {
 		render(
-			<ContentBlock className="my-block" config={{}}>
+			<ContentBlock className="mt-2" config={{}}>
 				<span>child content</span>
 			</ContentBlock>,
 		);
@@ -85,24 +85,24 @@ describe('ContentBlock', () => {
 	it('applies className, bodyClassName and header.className', () => {
 		const { container } = render(
 			<ContentBlock
-				className={['my-block', 'blk-extra']}
+				className={['mt-2', 'pt-2']}
 				config={{
-					bodyClassName: ['body-extra'],
-					header: { title: 'My Title', className: 'header-extra' },
+					bodyClassName: ['pb-2'],
+					header: { title: 'My Title', className: 'pl-2' },
 				}}
 			/>,
 		);
 		const root = container.firstElementChild!;
-		expect(Array.from(root.classList).sort()).toEqual(['blk-extra', 'content-block', 'ui-content-block', 'flex', 'flex-col', 'my-block'].sort());
-		expect(screen.getByTestId('content-block-header').classList.contains('header-extra')).toBe(true);
-		expect(screen.getByTestId('content-block-body').classList.contains('body-extra')).toBe(true);
+		expect(Array.from(root.classList).sort()).toEqual(['pt-2', 'ui-content-block', 'flex', 'flex-col', 'mt-2'].sort());
+		expect(screen.getByTestId('content-block-header').classList.contains('pl-2')).toBe(true);
+		expect(screen.getByTestId('content-block-body').classList.contains('pb-2')).toBe(true);
 	});
 
 	it('adds mb-0 to the root when flush is set, and omits it otherwise', () => {
-		const { rerender, container } = render(<ContentBlock className="my-block" config={{}} />);
+		const { rerender, container } = render(<ContentBlock className="mt-2" config={{}} />);
 		expect(container.firstElementChild!.classList.contains('mb-0')).toBe(false);
 
-		rerender(<ContentBlock className="my-block" config={{}} flush />);
+		rerender(<ContentBlock className="mt-2" config={{}} flush />);
 		expect(container.firstElementChild!.classList.contains('mb-0')).toBe(true);
 	});
 });

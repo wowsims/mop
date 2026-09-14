@@ -35,6 +35,7 @@ const IS_BASE = PORT === PORTS.base;
 const INSTALL = () => {
 	const pane = () => document.getElementById('settings-tab');
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 
 	// Every element a picker owns, in document order. `.input-root` is the `Input` base class's own
 	// root, but two things that hide are not `Input`s and would otherwise take a whole class of
@@ -177,7 +178,7 @@ const INSTALL = () => {
 
 	const rows = () => {
 		const out = [];
-		for (const [index, block] of [...pane().querySelectorAll('.content-block')].entries()) {
+		for (const [index, block] of [...pane().querySelectorAll(q('content-block'))].entries()) {
 			const owners = ownersOf(block);
 			for (const [ordinal, el] of owners.entries()) out.push(rowOf(el, owners, ordinal, index));
 		}
@@ -186,18 +187,18 @@ const INSTALL = () => {
 
 	window.settingsProbe = {
 		blocks: () =>
-			[...pane().querySelectorAll('.content-block')].map(block => ({
+			[...pane().querySelectorAll(q('content-block'))].map(block => ({
 				// `buildColumn(n, 'settings-left-col')` names the three left columns; the right panel
 				// holds the preset picker and the two saved-data managers.
 				column:
 					[...(block.closest('.tab-panel-col, .tab-panel-right')?.classList ?? [])].find(
 						name => name.startsWith('settings-left-col-') || name === 'tab-panel-right',
 					) ?? '?',
-				name: [...block.classList].find(name => name !== 'content-block') ?? '?',
-				title: text(block.querySelector('.content-block-title')),
+				name: [...block.classList].find(name => name !== 'content-block' && name !== 'ui-content-block') ?? '?',
+				title: text(block.querySelector(q('content-block-title'))),
 				// Only the raid-buffs block appends one, and only through `headerElement`, which a port
 				// that renders the header from a title string alone would drop.
-				description: text(block.querySelector('.content-block-header p')),
+				description: text(block.querySelector(`${q('content-block-header')} p`)),
 				// Menu contents excluded, same as `ownersOf`: the baseline's multi-icon menus each hold
 				// their inputs' `IconPicker`s, which put this column 26 over on Raid Buffs and 10 over on
 				// Debuffs while this branch's menus were unbuilt.
@@ -215,7 +216,7 @@ const INSTALL = () => {
 		// shows up as a diff rather than as a quiet skip.
 		markMenus: () => {
 			const found = [];
-			for (const [index, block] of [...pane().querySelectorAll('.content-block')].entries()) {
+			for (const [index, block] of [...pane().querySelectorAll(q('content-block'))].entries()) {
 				const owners = ownersOf(block);
 				for (const [ordinal, el] of owners.entries()) {
 					if (!MENU_KINDS.includes(kindOf(el))) continue;

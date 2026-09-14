@@ -32,15 +32,16 @@ const INSTALL = () => {
 		// missing rather than as empty.
 		summaries: () =>
 			[...pane().querySelectorAll(q('summary-table-root'))].map(root => {
-				const baselineModifier = [...(root.querySelector('.content-block')?.classList ?? [])].find(name => name.startsWith('summary-table--'));
+				const block = root.querySelector(q('content-block'));
+				const baselineModifier = [...(block?.classList ?? [])].find(name => name.startsWith('summary-table--'));
 				const modifier = root.dataset.summary ?? baselineModifier ?? '?';
 				return {
 					modifier,
 					hidden: root.classList.contains('hide'),
-					title: text(root.querySelector('.content-block-title')),
+					title: text(root.querySelector(q('content-block-title'))),
 					reset: text(root.querySelector(q('summary-table-reset-button'))) || null,
 					rows: [...root.querySelectorAll('.summary-table-row')].map(row => text(row)),
-					footer: [...root.querySelectorAll('.content-block-body > div:not(.summary-table-row) button')].map(button => text(button)),
+					footer: [...root.querySelectorAll(`${q('content-block-body')} > div:not(.summary-table-row) button`)].map(button => text(button)),
 				};
 			}),
 		// One line per equipped-item cell. Everything here is text or an attribute, which is exactly

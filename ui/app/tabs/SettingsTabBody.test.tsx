@@ -120,11 +120,11 @@ describe('SettingsTabBody', () => {
 		expect(blocks(container, 0)).toEqual(['encounter-settings', 'player-settings']);
 		expect(blocks(container, 1)).toEqual(['consumes-settings', 'other-settings']);
 		expect(blocks(container, 2)).toEqual(['buffs-settings', 'buffs-settings', 'buffs-settings', 'debuffs-settings']);
-		// The custom section owns its own block, so it is not a `.content-block` child of the column.
+		// The custom section owns its own block, so it is not a content-block child of the column.
 		expect(cols(container)[1].querySelector(':scope > .custom-section-stub')).not.toBeNull();
 		const firstChild = cols(container)[1].firstElementChild!;
 		expect(firstChild.classList.contains('custom-section-stub')).toBe(true);
-		expect(firstChild.classList.contains('content-block')).toBe(false);
+		expect(firstChild.getAttribute('data-testid')).not.toBe('content-block');
 	});
 
 	// No wrapper element around any of the three: the preset picker has to keep leading the two
