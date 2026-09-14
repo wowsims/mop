@@ -26,7 +26,7 @@ export const LandingHeader = () => {
 
 	return (
 		<header>
-			<div className="w-full max-w-full px-3 lg:max-w-240 lg:mx-auto xl:max-w-modal-xl xxl:max-w-330 h-full flex pt-section max-md:pb-4">
+			<div className="w-full max-w-full px-3 lg:max-w-landing-lg lg:mx-auto xl:max-w-modal-xl xxl:max-w-landing-xxl h-full flex pt-section max-md:pb-4">
 				<nav className="flex flex-wrap items-end w-full relative justify-between md:justify-start py-2">
 					<div className="flex order-0 max-md:w-full max-md:justify-between max-md:items-end">
 						<a href="#" className="flex items-center p-0 m-0 whitespace-nowrap text-lg text-white">

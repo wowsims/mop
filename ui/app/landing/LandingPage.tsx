@@ -11,7 +11,7 @@ export const LandingPage = () => (
 		<div id="homepage" className="h-full flex flex-col">
 			<LandingHeader />
 			<main>
-				<div className="w-full max-w-full px-3 lg:max-w-240 lg:mx-auto xl:max-w-modal-xl xxl:max-w-330 h-full flex flex-col pt-page pb-page max-md:mb-4">
+				<div className="w-full max-w-full px-3 lg:max-w-landing-lg lg:mx-auto xl:max-w-modal-xl xxl:max-w-landing-xxl h-full flex flex-col pt-page pb-page max-md:mb-4">
 					<div className="mb-page flex flex-col max-md:mb-4">
 						<p id="description" className="text-fluid-xl w-3/4 m-0 max-lg:w-full">
 							{i18n.t('landing.home.welcomeDescription')}

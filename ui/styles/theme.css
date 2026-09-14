@@ -218,6 +218,8 @@
 	--container-tooltip: 15vw;
 	--container-tooltip-lg: 25vw;
 	--container-metrics-tooltip: 300px;
+	--container-landing-lg: 960px;
+	--container-landing-xxl: 1320px;
 
 	--spacing-sim-header: 4.5rem;
 
