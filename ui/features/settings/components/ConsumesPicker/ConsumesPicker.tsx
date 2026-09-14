@@ -30,7 +30,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 	return (
 		<div className="grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
 			<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
-				<PickerGroup variant="icons" className="justify-end">
+				<PickerGroup variant="icons" className="justify-end" data-testid="consumes-potions">
 					<IconEnumPicker modObject={player} config={configs.prepot} />
 					<IconEnumPicker modObject={player} config={configs.potion} />
 					<IconEnumPicker modObject={player} config={configs.conjured} />
@@ -51,7 +51,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 				</PickerGroup>
 			</ConsumeRow>
 			<ConsumeRow name="food">
-				<PickerGroup variant="icons" className="justify-end">
+				<PickerGroup variant="icons" className="justify-end" data-testid="consumes-food">
 					<IconEnumPicker modObject={player} config={configs.food} />
 				</PickerGroup>
 			</ConsumeRow>
