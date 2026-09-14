@@ -34,7 +34,7 @@ const MODAL = () => {
 		open: window.simModalProbe.isOpen(dialog),
 		backdrop: window.simModalProbe.backdrop(),
 		bodyLocked: window.simModalProbe.bodyLocked(),
-		targets: dialog.querySelectorAll('.targets-picker .list-picker-item').length,
+		targets: dialog.querySelectorAll('.targets-picker :is([data-testid="list-picker-item"], .list-picker-item)').length,
 		headerGroups: dialog.querySelectorAll(`${q('encounter-header')} .picker-group`).length,
 	};
 };

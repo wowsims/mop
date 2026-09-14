@@ -65,7 +65,9 @@ const structure = actionBarSelector => {
 		lists: count(':is([data-testid="list-picker-root"], .list-picker-root)'),
 		items: count('.apl-list-item-picker :is([data-testid="list-picker-item-container"], .list-picker-item-container)'),
 		actionPickers: count(':is([data-testid="apl-action-picker-root"], .apl-action-picker-root)'),
-		valuePickers: count(':is([data-testid="apl-value-picker-root"], .apl-value-picker-root)'),
+		// Condition value pickers override their testid to `apl-action-condition` (ActionPicker.tsx), so
+		// they no longer carry `apl-value-picker-root` at all — count both testids.
+		valuePickers: count(':is([data-testid="apl-value-picker-root"], [data-testid="apl-action-condition"], .apl-value-picker-root)'),
 		hideButtons: count('.hide-picker-button'),
 		validations: count('.apl-validations'),
 		dropdownTriggers: count(':is([data-testid="dropdown-picker-button"], .dropdown-picker-button)'),

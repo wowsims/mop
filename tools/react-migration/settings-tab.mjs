@@ -116,7 +116,7 @@ const INSTALL = () => {
 		if (control?.tagName === 'SELECT') return `${control.value} "${text(control.selectedOptions[0])}" of ${control.options.length}`;
 		if (control) return `"${control.value}" size=${control.size}`;
 		const anchor = own(el, 'a');
-		if (anchor) return anchor.classList.contains('active') ? 'active' : 'inactive';
+		if (anchor) return anchor.hasAttribute('data-active') || anchor.classList.contains('active') ? 'active' : 'inactive';
 		return '';
 	};
 
