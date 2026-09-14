@@ -12,6 +12,7 @@ export interface IterationsPickerProps {
 export const IterationsPicker = ({ sim }: IterationsPickerProps) => (
 	<NumberPicker
 		modObject={sim}
+		testId="iterations-picker"
 		inputClassName="w-full m-0"
 		config={{
 			id: 'simui-iterations',
