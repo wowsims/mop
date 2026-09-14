@@ -63,13 +63,15 @@ const structure = actionBarSelector => {
 	const count = selector => pane.querySelectorAll(selector).length;
 	return {
 		lists: count(':is([data-testid="list-picker-root"], .list-picker-root)'),
-		items: count('.apl-list-item-picker :is([data-testid="list-picker-item-container"], .list-picker-item-container)'),
+		// Scoped to the priority-list pane, so this already excludes any non-APL list picker; the
+		// old `.apl-list-item-picker` ancestor prefix is gone from the markup this round.
+		items: count(':is([data-testid="list-picker-item-container"], .list-picker-item-container)'),
 		actionPickers: count(':is([data-testid="apl-action-picker-root"], .apl-action-picker-root)'),
 		// Condition value pickers override their testid to `apl-action-condition` (ActionPicker.tsx), so
 		// they no longer carry `apl-value-picker-root` at all — count both testids.
 		valuePickers: count(':is([data-testid="apl-value-picker-root"], [data-testid="apl-action-condition"], .apl-value-picker-root)'),
-		hideButtons: count('.hide-picker-button'),
-		validations: count('.apl-validations'),
+		hideButtons: count(':is([data-testid="hide-picker-button"], .hide-picker-button)'),
+		validations: count(':is([data-testid="apl-validations"], .apl-validations)'),
 		dropdownTriggers: count(':is([data-testid="dropdown-picker-button"], .dropdown-picker-button)'),
 		actionBars: count(actionBarSelector),
 	};
