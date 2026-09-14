@@ -10,6 +10,7 @@ import { findScrollParent } from '@ui-kit/utils/dom';
 import { VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import { useDrToolbar } from '../DetailedResults/DrToolbarContext';
 import { useSimResult } from '../../hooks/useSimResult';
 import { EMPTY_SUGGESTIONS, LogIndex } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
@@ -36,6 +37,7 @@ export interface LogRunnerProps {
 
 export const LogRunner = ({ active }: LogRunnerProps) => {
 	const resultData = useSimResult();
+	const drToolbarContext = useDrToolbar();
 
 	const [seen, setSeen] = useState<SimResultData | null>(null);
 	const [searchText, setSearchText] = useState('');
@@ -89,14 +91,14 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	// a frame of its own.
 	const measureChrome = useCallback(() => {
 		const list = listRef.current;
-		const toolbar = rootRef.current?.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar') ?? null;
+		const toolbar = drToolbarContext?.current ?? null;
 		const stickyTop = toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0;
 		stickyTopRef.current = stickyTop;
 		rootRef.current?.style.setProperty('--log-sticky-top', `${stickyTop}px`);
 		// Scroll-independent on purpose: this is remeasured whenever the chrome above resizes, and a
 		// viewport-relative number would be whatever the scroll position happened to be at the time.
 		if (list) setScrollMargin(list.getBoundingClientRect().top - contentTop(scrollerRef.current));
-	}, []);
+	}, [drToolbarContext]);
 
 	useLayoutEffect(() => {
 		const sticky = stickyRef.current;
@@ -119,7 +121,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 		});
 		observer.observe(sticky);
 		observer.observe(list);
-		const toolbar = rootRef.current?.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar');
+		const toolbar = drToolbarContext?.current ?? null;
 		if (toolbar) observer.observe(toolbar);
 		measureChrome();
 
@@ -127,7 +129,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 			observer.disconnect();
 			if (frame !== null) cancelAnimationFrame(frame);
 		};
-	}, [measureChrome]);
+	}, [measureChrome, drToolbarContext]);
 
 	const needsMeasure = logs.length > 0 && measured.for !== result;
 	const listWidth = measured.for === result ? measured.width : 0;

@@ -12,7 +12,7 @@
 // Scaffolding, not contents: the two builds run their own unseeded iteration, so a populated table
 // or timeline differs by crit rolls rather than by markup — `results-tables.mjs` is what asserts the
 // populated state, as invariants on one build at a time. The serialisation is therefore cut at
-// `PANE_DEPTH`, which reaches each `.dr-row`, the metrics container inside it and the component root
+// `PANE_DEPTH`, which reaches each result row, the metrics container inside it and the component root
 // the island or table mounts as, and stops above the rows. A pane whose deferred component never
 // built still shows up, because its root is the line that goes missing.
 //
@@ -25,12 +25,18 @@
 // active at `window load` or has since been clicked, so arrow keys on the baseline work from the
 // damage tab and from nowhere else. The React strip owns one keydown handler on the `<ul>`, so it
 // answers from every tab. The recorded lines make that delta visible instead of silent.
-import { dropHiddenSubtrees, dropReplayState, launch, openSpec, overusedIntended, PORTS, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+import { dropHiddenSubtrees, dropReplayState, launch, openSpec, overusedIntended, PORTS, q, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
 import { INTENDED } from './intended.mjs';
 
 const SETTLE = 300;
 // Indents are two spaces per level, and the pane itself is level 0.
 const PANE_DEPTH = 4;
+
+const DR_ROOT = q('dr-root');
+const DR_TOOLBAR = q('dr-toolbar');
+// Retired class hooks: filtered out of the literal class-list comparison below so the check still
+// catches a real styling regression instead of flagging their own removal.
+const DROPPED_HOOKS = new Set(['dr-root', 'dr-toolbar', 'dr-no-results', 'sticky-toolbar-root', 'stuck']);
 
 const TAB_IDS = [
 	'damageTab',
@@ -45,18 +51,18 @@ const TAB_IDS = [
 	'logTab',
 ];
 
-const STATE = () => {
-	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
+const STATE = ({ drRootSel, toolbarSel, dropped }) => {
+	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(name => name && !dropped.includes(name)).sort().join('.');
 	const root = document.querySelector('.detailed-results-manager-root');
-	const drRoot = document.querySelector('.dr-root');
-	const toolbar = document.querySelector('.dr-toolbar');
-	const buttons = [...document.querySelectorAll('.dr-toolbar [role=tab]')];
+	const drRoot = document.querySelector(drRootSel);
+	const toolbar = document.querySelector(toolbarSel);
+	const buttons = [...document.querySelectorAll(`${toolbarSel} [role=tab]`)];
 	return {
 		root: root ? cls(root) : 'MISSING',
 		drRoot: drRoot ? cls(drRoot) : 'MISSING',
 		toolbar: toolbar ? cls(toolbar) : 'MISSING',
 		items: buttons.map(button => `${cls(button.closest('li'))}|${cls(button)}|sel=${button.getAttribute('aria-selected')}|tab=${button.tabIndex}`),
-		panes: [...document.querySelectorAll('.dr-root > .tab-content > [id]')].map(pane => {
+		panes: [...document.querySelectorAll(`${drRootSel} > .tab-content > [id]`)].map(pane => {
 			const style = getComputedStyle(pane);
 			return `#${pane.id} ${cls(pane)} display=${style.display} opacity=${style.opacity} role=${pane.getAttribute('role')}`;
 		}),
@@ -80,13 +86,16 @@ const openResultsTab = async page => {
 const runOneIteration = async page => {
 	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
 	await page.click('.detailed-results-1-iteration-button');
-	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 120000 });
+	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForFunction(() => document.querySelectorAll('.damage-metrics-root tbody tr').length > 0, null, { timeout: 60000 });
 	await page.waitForTimeout(500);
 };
 
 const clickSubTab = async (page, tabId) => {
-	await page.evaluate(id => document.querySelector(`.dr-toolbar [role=tab][aria-controls=${id}]`).click(), tabId);
+	await page.evaluate(
+		({ id, toolbarSel }) => document.querySelector(`${toolbarSel} [role=tab][aria-controls=${id}]`).click(),
+		{ id: tabId, toolbarSel: DR_TOOLBAR },
+	);
 	await page.waitForFunction(id => getComputedStyle(document.getElementById(id)).opacity === '1', tabId, { timeout: 5000 });
 };
 
@@ -99,15 +108,21 @@ const scaffolding = dom =>
 
 // Focus the strip's first tab and press an arrow, then repeat from a tab the run has never opened.
 const keyboard = async page => {
-	const selected = () => page.evaluate(() => document.querySelector('.dr-toolbar [aria-selected=true]')?.getAttribute('aria-controls') ?? null);
+	const selected = () =>
+		page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [aria-selected=true]`)?.getAttribute('aria-controls') ?? null, DR_TOOLBAR);
+	const focusTab = tabId =>
+		page.evaluate(({ toolbarSel, id }) => document.querySelector(`${toolbarSel} [role=tab][aria-controls=${id}]`).focus(), {
+			toolbarSel: DR_TOOLBAR,
+			id: tabId,
+		});
 	const out = [];
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=damageTab]').focus());
+	await focusTab('damageTab');
 	await clickSubTab(page, 'damageTab');
 	await page.waitForTimeout(SETTLE);
 	await page.keyboard.press('ArrowRight');
 	await page.waitForTimeout(SETTLE);
 	out.push(`from damageTab ArrowRight -> ${await selected()}`);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=buffsTab]').focus());
+	await focusTab('buffsTab');
 	await page.keyboard.press('ArrowRight');
 	await page.waitForTimeout(SETTLE);
 	out.push(`focus buffsTab (never clicked) ArrowRight -> ${await selected()}`);
@@ -122,7 +137,10 @@ const collect = async (browser, port, spec) => {
 	for (const tabId of TAB_IDS) {
 		await clickSubTab(page, tabId);
 		await page.waitForTimeout(SETTLE);
-		perTab[tabId] = { state: await page.evaluate(STATE), pane: await page.evaluate(SERIALIZE, `#${tabId}`) };
+		perTab[tabId] = {
+			state: await page.evaluate(STATE, { drRootSel: DR_ROOT, toolbarSel: DR_TOOLBAR, dropped: [...DROPPED_HOOKS] }),
+			pane: await page.evaluate(SERIALIZE, `#${tabId}`),
+		};
 	}
 	const keys = await keyboard(page);
 	await page.close();

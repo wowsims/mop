@@ -216,7 +216,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
 	const paneRow = `${q('rotation-pane')} ${q('rotation-row')}`;
 	await openResultsTab(page);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=timelineTab]`).click(), q('dr-toolbar'));
 	await page.waitForFunction(sel => document.querySelectorAll(sel).length > 0, paneRow, { timeout: 60000 });
 	await page.waitForTimeout(1500);
 

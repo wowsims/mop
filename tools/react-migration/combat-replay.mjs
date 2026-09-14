@@ -192,7 +192,7 @@ const collect = async (browser, port, spec, seeded) => {
 		{ empty: q('cr-empty'), scene: q('cr-scene'), card: q('cr-enemy-card') },
 	);
 
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=replayTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=replayTab]`).click(), q('dr-toolbar'));
 	await page.waitForFunction(sel => document.querySelectorAll(sel).length > 0, q('cr-enemy-card'), { timeout: 60000 });
 	await page.waitForTimeout(800);
 
@@ -248,9 +248,9 @@ const collect = async (browser, port, spec, seeded) => {
 	// Back to the tab it came from, then in again: the vanilla stopped playback on hide and held the
 	// next result until the tab was shown, and the port's `active` prop has to do the same.
 	await page.evaluate(SEEK, 500);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=timelineTab]`).click(), q('dr-toolbar'));
 	await page.waitForTimeout(400);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=replayTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=replayTab]`).click(), q('dr-toolbar'));
 	await page.waitForTimeout(600);
 	const reopened = [`time ${await timeDisplay(page)}`, `cards ${await page.evaluate(sel => document.querySelectorAll(sel).length, q('cr-enemy-card'))}`];
 

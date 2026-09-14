@@ -38,9 +38,9 @@ try {
 	await page.waitForTimeout(1200);
 	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
 	await page.click('.detailed-results-1-iteration-button');
-	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 120000 });
+	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForTimeout(800);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=timelineTab]`).click(), q('dr-toolbar'));
 	await page.waitForTimeout(1500);
 	await page.evaluate(sel => {
 		const toggle = document.querySelector(sel) || document.querySelector('.rotation-floating-action-bar button');

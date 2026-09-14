@@ -9,6 +9,7 @@ import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
+import type { RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -26,6 +27,7 @@ import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../Results
 import { Timeline } from '../Timeline';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
+import { DrToolbarContext } from './DrToolbarContext';
 import { DEFAULT_DETAILED_RESULTS_TAB, DETAILED_RESULTS_TABS } from './utils';
 
 export interface DetailedResultsProps {
@@ -180,80 +182,80 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					{i18n.t('results_tab.details.sim_1_death')}
 				</Button>
 			</div>
-			<Tabs.Root
-				className={clsx('group/dr dr-root flex flex-col', !hasResults && 'dr-no-results')}
-				data-no-results={!hasResults ? '' : undefined}
-				value={activeId}
-				onValueChange={next => setActiveId(String(next))}>
-				<div
-					ref={toolbarRef}
-					className={clsx('dr-toolbar sticky-toolbar-root', stickyToolbarClassName, stuck && 'stuck')}
-					data-stuck={stuck ? '' : undefined}>
-					<div className="results-filter flex items-center min-h-0">
-						<ResultsFilter
-							target={target}
-							onTargetChange={next => {
-								targetRef.current = next;
-								setTarget(next);
-							}}
-						/>
+			<DrToolbarContext.Provider value={toolbarRef as RefObject<HTMLElement | null>}>
+				<Tabs.Root
+					className="group/dr flex flex-col"
+					data-testid="dr-root"
+					data-no-results={!hasResults ? '' : undefined}
+					value={activeId}
+					onValueChange={next => setActiveId(String(next))}>
+					<div ref={toolbarRef} data-testid="dr-toolbar" className={stickyToolbarClassName} data-stuck={stuck ? '' : undefined}>
+						<div data-testid="results-filter" className="flex items-center min-h-0">
+							<ResultsFilter
+								target={target}
+								onTargetChange={next => {
+									targetRef.current = next;
+									setTarget(next);
+								}}
+							/>
+						</div>
+						<div className="tabs-filler grow min-h-0" />
+						<DetailedResultsTabs tabs={visibleTabs} />
 					</div>
-					<div className="tabs-filler grow min-h-0" />
-					<DetailedResultsTabs tabs={visibleTabs} />
-				</div>
-				<div className="tab-content pt-6">
-					<div
-						id="noResultsTab"
-						className="tab-pane dr-tab-content active transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
-						{i18n.t('results_tab.details.no_results')}
+					<div className="tab-content pt-6">
+						<div
+							id="noResultsTab"
+							className="tab-pane active transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
+							{i18n.t('results_tab.details.no_results')}
+						</div>
+						{showDamage && (
+							<DetailedResultsPane
+								id="damageTab"
+								className="damage-content [&_.metrics-table]:text-xs"
+								contentClassName="damage-metrics"
+								topline
+								histogram>
+								<DamageMetricsTable />
+							</DetailedResultsPane>
+						)}
+						{showHealing && (
+							<DetailedResultsPane
+								id="healingTab"
+								className="healing-content [&_.metrics-table]:text-xs"
+								contentClassName="healing-spell-metrics"
+								topline>
+								<HealingMetricsTable />
+							</DetailedResultsPane>
+						)}
+						{showThreat && (
+							<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
+								<DtpsMetricsTable />
+							</DetailedResultsPane>
+						)}
+						<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics">
+							<AuraMetricsTable useDebuffs={false} />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics">
+							<AuraMetricsTable useDebuffs={true} />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics">
+							<CastMetricsTable />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics">
+							<ResourceMetricsTable />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" filling>
+							<Timeline active={activeId === 'timelineTab'} />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="replayTab" className="replay-content p-0" contentClassName="combat-replay" filling>
+							<CombatReplay active={activeId === 'replayTab'} />
+						</DetailedResultsPane>
+						<DetailedResultsPane id="logTab" className="log-content" contentClassName="log">
+							<LogRunner active={activeId === 'logTab'} />
+						</DetailedResultsPane>
 					</div>
-					{showDamage && (
-						<DetailedResultsPane
-							id="damageTab"
-							className="damage-content [&_.metrics-table]:text-xs"
-							contentClassName="damage-metrics"
-							topline
-							histogram>
-							<DamageMetricsTable />
-						</DetailedResultsPane>
-					)}
-					{showHealing && (
-						<DetailedResultsPane
-							id="healingTab"
-							className="healing-content [&_.metrics-table]:text-xs"
-							contentClassName="healing-spell-metrics"
-							topline>
-							<HealingMetricsTable />
-						</DetailedResultsPane>
-					)}
-					{showThreat && (
-						<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
-							<DtpsMetricsTable />
-						</DetailedResultsPane>
-					)}
-					<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics">
-						<AuraMetricsTable useDebuffs={false} />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics">
-						<AuraMetricsTable useDebuffs={true} />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics">
-						<CastMetricsTable />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics">
-						<ResourceMetricsTable />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" filling>
-						<Timeline active={activeId === 'timelineTab'} />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="replayTab" className="replay-content p-0" contentClassName="combat-replay" filling>
-						<CombatReplay active={activeId === 'replayTab'} />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="logTab" className="log-content" contentClassName="log">
-						<LogRunner active={activeId === 'logTab'} />
-					</DetailedResultsPane>
-				</div>
-			</Tabs.Root>
+				</Tabs.Root>
+			</DrToolbarContext.Provider>
 		</div>
 	);
 };

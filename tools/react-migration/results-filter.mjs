@@ -13,7 +13,7 @@
 // The two stacks do not agree on the option element — vanilla builds `li > button.dropdown-item`,
 // Base UI puts the role on the `<li>` itself — so an option is read as "the button inside the item,
 // or the item", which is the only shape-independent way to ask what it says and what it draws.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms', 'mage/fire'];
 const SEED = '1337';
@@ -25,9 +25,9 @@ const PICKED = 2;
 
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
-const FILTER = '.dr-toolbar .target-filter-root';
-const TRIGGER = `${FILTER} .dropdown-picker-button`;
-const ITEM = `${FILTER} .dropdown-picker-item`;
+const FILTER = q('results-filter-root');
+const TRIGGER = `${FILTER} ${q('dropdown-picker-button')}`;
+const ITEM = `${FILTER} ${q('dropdown-picker-item')}`;
 
 const READ_TRIGGER = selector => {
 	const button = document.querySelector(selector);
@@ -44,7 +44,7 @@ const READ_TRIGGER = selector => {
 		`glyph=${glyph ? (glyph.getAttribute('class') || '').trim() : 'none'}`,
 		// The React root drops `input-root`, whose flex column used to size this button.
 		`box=${Math.round(box.width)}x${Math.round(box.height)}`,
-		`hidden=${button.closest('.target-filter-root').classList.contains('d-none')}`,
+		`hidden=${button.closest('[data-testid="unit-picker-root"]').classList.contains('hidden')}`,
 	];
 };
 
@@ -141,7 +141,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
 	await page.click('.dps-action');
 	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
-	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 60000 });
+	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 60000 });
 	await page.waitForTimeout(600);
 
 	const shown = await page.evaluate(READ_TRIGGER, TRIGGER);

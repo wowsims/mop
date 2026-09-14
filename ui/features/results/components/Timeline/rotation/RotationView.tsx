@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import { useDrToolbar } from '../../DetailedResults/DrToolbarContext';
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { ContentRow, RotationModel, Row } from '../../../model/timeline/rotation';
 import { computeOrder, rowAt } from '../../../model/timeline/rotation';
@@ -141,6 +142,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const outer = useRef<HTMLElement | null>(null);
 	const attached = useRef(false);
 	const drToolbar = useRef<HTMLElement | null>(null);
+	const drToolbarContext = useDrToolbar();
 
 	const schedule = useCallback(() => {
 		if (frameHandle.current != null) return;
@@ -183,10 +185,10 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		setScrollport(outer.current ?? window);
 		if (outer.current) resizeObserverRef.current?.observe(outer.current);
 		else window.addEventListener('resize', schedule, { passive: true });
-		drToolbar.current = root.closest('.dr-root')?.querySelector<HTMLElement>('.dr-toolbar') ?? null;
+		drToolbar.current = drToolbarContext?.current ?? null;
 		if (drToolbar.current) resizeObserverRef.current?.observe(drToolbar.current);
 		measureStickyTop();
-	}, [schedule, measureStickyTop]);
+	}, [schedule, measureStickyTop, drToolbarContext]);
 
 	runFrameRef.current = () => {
 		const scroller = scrollerRef.current;

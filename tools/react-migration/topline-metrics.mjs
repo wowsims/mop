@@ -163,7 +163,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click('.dps-action');
 	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
 	await openResultsTab(page);
-	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 60000 });
+	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 60000 });
 	await page.waitForTimeout(500);
 
 	const dom = await page.evaluate(READ, PANES);

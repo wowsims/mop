@@ -14,7 +14,7 @@ import type { SimResultData } from '../../model/result_data';
 vi.mock('../ResultsFilter', async importOriginal => ({
 	...(await importOriginal<typeof import('../ResultsFilter')>()),
 	ResultsFilter: ({ target, onTargetChange }: { target: number; onTargetChange: (target: number) => void }) => (
-		<button type="button" className="results-filter-root" data-target={target} onClick={() => onTargetChange(1)} />
+		<button type="button" data-testid="results-filter-root" data-target={target} onClick={() => onTargetChange(1)} />
 	),
 }));
 // `updateResults` builds one of these per run; the only thing read off it here is the target list
@@ -92,9 +92,10 @@ const renderPane = () =>
 		</SimHostProvider>,
 	);
 
-const filterButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('.results-filter-root')!;
+const filterButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="results-filter-root"]')!;
 
-const tabButton = (container: HTMLElement, tabId: string) => container.querySelector<HTMLButtonElement>(`.dr-toolbar [role="tab"][aria-controls=${tabId}]`)!;
+const tabButton = (container: HTMLElement, tabId: string) =>
+	container.querySelector<HTMLButtonElement>(`[data-testid="dr-toolbar"] [role="tab"][aria-controls=${tabId}]`)!;
 
 beforeEach(() => {
 	panes.log.length = 0;
@@ -113,7 +114,7 @@ beforeEach(() => {
 describe('DetailedResults', () => {
 	it('renders only the tabs whose metrics toggle is on, damage tab selected', () => {
 		const { container } = renderPane();
-		const buttons = [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar [role="tab"]')];
+		const buttons = [...container.querySelectorAll<HTMLButtonElement>('[data-testid="dr-toolbar"] [role="tab"]')];
 		expect(buttons).toHaveLength(8);
 		expect(buttons.map(button => button.getAttribute('aria-controls'))).toEqual([
 			'damageTab',
@@ -152,23 +153,23 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('#buffsTab .buff-aura-metrics > .buff-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#debuffsTab .debuff-aura-metrics > .debuff-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#resourcesTab .resource-metrics > .resource-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('.dr-row.topline-results > .topline-results-root')).toHaveLength(3);
-		expect(container.querySelectorAll('#damageTab .dr-row.dps-histogram > .dps-histogram-root')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="dr-row"].topline-results > .topline-results-root')).toHaveLength(3);
+		expect(container.querySelectorAll('#damageTab [data-testid="dr-row"].dps-histogram > .dps-histogram-root')).toHaveLength(1);
 	});
 
 	it('keeps each pane in the container its island was built into', () => {
 		const { container } = renderPane();
-		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#logTab .dr-row > .log > .log-runner-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#replayTab .dr-row > .combat-replay > [data-testid="combat-replay-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="dr-toolbar"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > .log > .log-runner-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > .timeline > .timeline-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#replayTab [data-testid="dr-row"] > .combat-replay > [data-testid="combat-replay-root"]')).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
 		const { container } = renderPane();
-		expect(container.querySelector('.dr-root')!.classList.contains('dr-no-results')).toBe(true);
+		expect(container.querySelector('[data-testid="dr-root"]')!.hasAttribute('data-no-results')).toBe(true);
 		act(() => resultChannel.emit({ result: {}, filter: {} } as SimResultData));
-		expect(container.querySelector('.dr-root')!.classList.contains('dr-no-results')).toBe(false);
+		expect(container.querySelector('[data-testid="dr-root"]')!.hasAttribute('data-no-results')).toBe(false);
 	});
 
 	it('moves active on the click and show a frame later', async () => {
@@ -199,7 +200,8 @@ describe('DetailedResults', () => {
 	// tabindex the walk moves along - exactly one stop, and it follows the selection.
 	it('leaves one tab stop on the strip and moves it with the selection', () => {
 		const { container } = renderPane();
-		const stops = () => [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar [role="tab"]')].filter(button => button.tabIndex === 0);
+		const stops = () =>
+			[...container.querySelectorAll<HTMLButtonElement>('[data-testid="dr-toolbar"] [role="tab"]')].filter(button => button.tabIndex === 0);
 		expect(stops()).toEqual([tabButton(container, 'damageTab')]);
 		fireEvent.click(tabButton(container, 'logTab'));
 		expect(stops()).toEqual([tabButton(container, 'logTab')]);

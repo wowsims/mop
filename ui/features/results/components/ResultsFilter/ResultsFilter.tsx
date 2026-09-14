@@ -20,10 +20,10 @@ export const ResultsFilter = ({ target, onTargetChange }: ResultsFilterProps) =>
 	const options = useMemo(() => (resultData ? unitOptions(resultData.result) : []), [resultData]);
 
 	return (
-		<div className="results-filter-root flex items-center text-lg">
+		<div data-testid="results-filter-root" className="flex items-center text-lg">
 			<UnitPicker
 				id="results-filter-target-filter"
-				className={['target-filter-root mb-0', !resultData && 'hidden']}
+				className={['mb-0', !resultData && 'hidden']}
 				options={options}
 				value={numToRef(target)}
 				onChange={ref => onTargetChange(refToNum(ref))}

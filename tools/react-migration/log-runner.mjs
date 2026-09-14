@@ -160,9 +160,9 @@ const collect = async (browser, port, spec, seeded) => {
 	await openResultsTab(page);
 	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
 	await page.click('.detailed-results-1-iteration-button');
-	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 120000 });
+	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForTimeout(500);
-	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=logTab]').click());
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=logTab]`).click(), q('dr-toolbar'));
 	await page.waitForFunction(() => getComputedStyle(document.getElementById('logTab')).opacity === '1', null, { timeout: 10000 });
 	await page.waitForTimeout(800);
 

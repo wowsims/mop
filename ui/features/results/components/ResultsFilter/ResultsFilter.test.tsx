@@ -19,7 +19,7 @@ const resultWith = (...targets: Array<{ index: number; iconUrl?: string; classCo
 
 const mount = (target: number, onTargetChange = vi.fn()) => render(<ResultsFilter target={target} onTargetChange={onTargetChange} />);
 
-const picker = () => document.querySelector('.results-filter-root > [data-testid="unit-picker-root"]') as HTMLElement;
+const picker = () => document.querySelector('[data-testid="results-filter-root"] > [data-testid="unit-picker-root"]') as HTMLElement;
 const trigger = () => picker().querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
 const items = () => [...picker().querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')];
 const open = () => act(() => void fireEvent.click(trigger()));

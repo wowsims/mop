@@ -4,8 +4,8 @@
 		group-not-data-[no-results]/dr:[&.active]:min-h-(--dr-filling-pane-min-height);
 }
 
-.group\/dr:not([data-no-results]) .ui-dr-filling-pane.active > .dr-row,
-.group\/dr:not([data-no-results]) .ui-dr-filling-pane.active > .dr-row > * {
+.group\/dr:not([data-no-results]) .ui-dr-filling-pane.active > .ui-dr-row,
+.group\/dr:not([data-no-results]) .ui-dr-filling-pane.active > .ui-dr-row > * {
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 auto;
