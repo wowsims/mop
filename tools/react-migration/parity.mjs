@@ -235,7 +235,7 @@ const SIM_TITLE_MENU_COUNT = 1;
 const SIDEBAR_ACTIONS = /\.sim-sidebar-actions(\.|$)/;
 const NATIVE_SIM_NOTICE = /\.toast-notice-native-download(\.|$)/;
 const NATIVE_SIM_NOTICE_COUNT = 1;
-const NATIVE_SIM_NOTICE_LINK = withTokens('a', 'btn', 'btn-outline-light');
+const NATIVE_SIM_NOTICE_LINK = withTokens('a', 'ui-button', 'ui-button-outline-light');
 
 // Base UI's toast portal renders a wrapper element of its own around each viewport, which the
 // baseline has no counterpart for — an insertion, so `INTENDED` cannot hold it. Collapsed on the

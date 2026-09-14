@@ -155,7 +155,7 @@ try {
 	console.log(`kinds                    ${before?.kinds}`);
 
 	// 1. add — the floating action bar's own button, not the list's.
-	await step('add action', () => page.locator(`${LIST} ${q('apl-floating-action-bar-root')} .btn-primary`).first().click());
+	await step('add action', () => page.locator(`${LIST} ${q('apl-floating-action-bar-root')} .ui-button-primary`).first().click());
 
 	// 2. edit — the first numeric or text field in the pane, committed on `change` as both stacks require.
 	await step('edit a value', () =>

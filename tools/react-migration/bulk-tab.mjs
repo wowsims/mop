@@ -470,7 +470,7 @@ try {
 	if (afterRemove.reduce((sum, group) => sum + group.pickers, 0) !== previous.reduce((sum, group) => sum + group.pickers, 0) - 1)
 		problems.push('the remove button did not take exactly one picker out of the list');
 
-	await click('#bulk-tab .bulk-gear-actions .btn-danger');
+	await click('#bulk-tab .bulk-gear-actions .ui-button-danger');
 	await page.waitForTimeout(900);
 	const cleared = await page.evaluate(() => window.bulkProbe.groups());
 	say(`  clear all   pickers=${cleared.reduce((sum, group) => sum + group.pickers, 0)} removable=${cleared.reduce((sum, group) => sum + group.removable, 0)}`);

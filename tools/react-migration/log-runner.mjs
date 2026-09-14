@@ -227,7 +227,7 @@ const collect = async (browser, port, spec, seeded) => {
 	out.group = await page.evaluate(sel => {
 		const group = document.querySelector(sel.group);
 		if (!group) return 'NO GROUP';
-		return `field=${group.querySelector(sel.groupField)?.textContent} joins=${[...group.querySelectorAll(`${sel.groupJoin} .btn`)]
+		return `field=${group.querySelector(sel.groupField)?.textContent} joins=${[...group.querySelectorAll(`${sel.groupJoin} .ui-button`)]
 			.map(button => `${button.textContent}:${button.getAttribute('aria-pressed')}`)
 			.join(',')}`;
 	}, SEL);
