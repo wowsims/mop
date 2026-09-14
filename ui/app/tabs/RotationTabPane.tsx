@@ -5,11 +5,10 @@ import { SimTabPane } from '@ui-kit/SimTabPane';
 
 import { RotationTabBody } from './RotationTabBody';
 
-// The three sub-tabs are all rendered; this class on the pane is what shows one of them.
-const ROTATION_TYPE_CLASSES: Record<number, string> = {
-	[APLRotationType.TypeAuto]: 'rotation-type-auto',
-	[APLRotationType.TypeSimple]: 'rotation-type-simple',
-	[APLRotationType.TypeAPL]: 'rotation-type-apl',
+const ROTATION_TYPE_ATTR: Record<number, string> = {
+	[APLRotationType.TypeAuto]: 'auto',
+	[APLRotationType.TypeSimple]: 'simple',
+	[APLRotationType.TypeAPL]: 'apl',
 };
 
 export const RotationTabPane = () => {
@@ -17,7 +16,7 @@ export const RotationTabPane = () => {
 	const rotationType = useAplRotation(() => player.getRotationType());
 
 	return (
-		<SimTabPane id="rotation-tab" className={ROTATION_TYPE_CLASSES[rotationType]}>
+		<SimTabPane id="rotation-tab" data-rotation-type={ROTATION_TYPE_ATTR[rotationType]}>
 			<RotationTabBody rotationType={rotationType} />
 		</SimTabPane>
 	);

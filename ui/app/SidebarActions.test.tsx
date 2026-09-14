@@ -26,15 +26,15 @@ beforeEach(() => {
 describe('SidebarActions', () => {
 	it('renders entries in the registry order, buttons and custom entries alike', () => {
 		const registry = new SidebarRegistry();
-		registry.add({ id: 'dps-action', label: 'Simulate', className: 'dps-action', onClick: () => {} });
+		registry.add({ id: 'dps-action', label: 'Simulate', testId: 'dps-action', onClick: () => {} });
 		registry.add({ id: 'custom', render: () => <div className="custom-entry" /> });
-		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', className: 'ep-weights-action', onClick: () => {} });
+		registry.add({ id: 'ep-weights-action', label: 'Stat Weights', testId: 'ep-weights-action', onClick: () => {} });
 
 		expect(container.children).toHaveLength(0);
 		renderActions(registry);
-		expect([...container.children].map(child => child.className.includes('dps-action'))).toEqual([true, false, false]);
+		expect([...container.children].map(child => child.getAttribute('data-testid') === 'dps-action')).toEqual([true, false, false]);
 		expect([...container.children][1].classList.contains('custom-entry')).toBe(true);
-		expect([...container.children].map(child => child.className.includes('ep-weights-action'))).toEqual([false, false, true]);
+		expect([...container.children].map(child => child.getAttribute('data-testid') === 'ep-weights-action')).toEqual([false, false, true]);
 		[0, 2].forEach(i => {
 			const child = [...container.children][i];
 			expect(child.tagName).toBe('BUTTON');

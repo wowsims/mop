@@ -12,8 +12,8 @@ vi.mock('./IterationsPicker', () => ({ IterationsPicker: () => <div data-testid=
 vi.mock('./SimSidebarActions', () => ({
 	SimSidebarActions: () => (
 		<>
-			<button className="dps-action" />
-			<button className="ep-weights-action" />
+			<button data-testid="dps-action" />
+			<button data-testid="ep-weights-action" />
 		</>
 	),
 }));

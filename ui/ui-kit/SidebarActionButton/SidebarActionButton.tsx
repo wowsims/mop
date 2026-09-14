@@ -11,15 +11,17 @@ export interface SidebarActionButtonProps {
 	onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 	disabled?: boolean;
 	loading?: boolean;
+	testId?: string;
 }
 
-export const SidebarActionButton = ({ children, className, onClick, disabled, loading }: SidebarActionButtonProps) => {
+export const SidebarActionButton = ({ children, className, onClick, disabled, loading, testId }: SidebarActionButtonProps) => {
 	const sidebarDisabled = useContext(SidebarDisabledContext);
 
 	return (
 		<Button
 			variant="primary"
 			className={clsx('sim-sidebar-action-button w-full', className)}
+			data-testid={testId}
 			data-loading={loading ? '' : undefined}
 			onClick={onClick}
 			disabled={disabled || sidebarDisabled}

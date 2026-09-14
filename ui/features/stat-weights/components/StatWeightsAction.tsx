@@ -15,6 +15,7 @@ export const StatWeightsAction = () => {
 	return (
 		<SidebarActionButton
 			className="ep-weights-action"
+			testId="ep-weights-action"
 			disabled={status !== 'ready'}
 			loading={status === 'loading'}
 			onClick={() => {

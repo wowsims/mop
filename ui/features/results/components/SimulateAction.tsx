@@ -53,7 +53,7 @@ export const SimulateAction = () => {
 	};
 
 	return (
-		<SidebarActionButton className="dps-action" disabled={disabled} onClick={() => void simulate()}>
+		<SidebarActionButton className="dps-action" testId="dps-action" disabled={disabled} onClick={() => void simulate()}>
 			{i18n.t('sidebar.buttons.simulate')}
 		</SidebarActionButton>
 	);

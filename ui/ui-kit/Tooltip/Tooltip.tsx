@@ -28,6 +28,7 @@ export interface TooltipProps {
 	align?: 'start' | 'center';
 	padded?: boolean;
 	className?: string;
+	testId?: string;
 }
 
 // react-tooltip splits click-close into an anchor half and a global half, and defaults the anchor half off (`closeEvents.click`), so without `HOVER_CLOSE` the bonus-stat icon's tooltip stayed open behind the popover its own button had just opened.
@@ -37,7 +38,10 @@ const HOVER_CLOSE = { mouseleave: true, blur: true, click: true };
 
 /** Content is `children`, which react-tooltip does not render until the tooltip first opens — so a picker built inside one costs nothing until it is shown. */
 export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
-	({ id, content, render, place = 'top', clickable, openOnClick, hidden, onOpenChange, width, maxWidth = 'default', align, padded, className }, ref) => {
+	(
+		{ id, content, render, place = 'top', clickable, openOnClick, hidden, onOpenChange, width, maxWidth = 'default', align, padded, className, testId },
+		ref,
+	) => {
 		const maxWidthClassName = maxWidth === 'default' ? DEFAULT_MAX_WIDTH : maxWidth === 'none' ? 'max-w-none' : maxWidth;
 		return (
 			<ReactTooltip
@@ -60,6 +64,7 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 					width,
 					align === 'start' && 'text-left',
 					padded === false && 'sim-tooltip--unpadded',
+					testId,
 					className,
 				)}
 				noArrow
