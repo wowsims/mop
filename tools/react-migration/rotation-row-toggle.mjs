@@ -39,7 +39,7 @@ try {
 	await page.click('.detailed-results-1-iteration-button');
 	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 120000 });
 	await page.waitForTimeout(800);
-	await page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [role=tab][aria-controls=timelineTab]').click());
+	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
 	await page.waitForTimeout(1500);
 	await page.evaluate(() => {
 		const toggle = document.querySelector('.rotation-fab-toggle') || document.querySelector('.rotation-floating-action-bar button');

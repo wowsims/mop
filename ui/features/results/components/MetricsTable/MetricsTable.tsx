@@ -1,5 +1,3 @@
-import './MetricsTable.scss';
-
 import type { SortDirection } from '@tanstack/react-table';
 import { Button } from '@ui-kit/Button';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -45,7 +43,7 @@ export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, h
 									aria-sort={ariaSort(header.column.getIsSorted())}
 									onClick={header.column.getToggleSortingHandler()}
 									{...tooltipAnchorProps(header.column.columnDef.meta?.headerTooltipId, header.column.columnDef.meta?.headerTooltip)}>
-									<Button variant="unstyled" className="metrics-table-sort">
+									<Button variant="unstyled" className="metrics-table-sort text-inherit [font:inherit] focus-visible:focus-ring">
 										<span>
 											<table.FlexRender header={header} />
 										</span>

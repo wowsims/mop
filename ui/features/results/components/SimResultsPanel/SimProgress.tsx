@@ -30,12 +30,12 @@ export const SimProgress = ({ panel }: SimProgressProps) => {
 	}, [panel]);
 
 	return (
-		<div className="results-sim">
-			<div className="results-sim-dps damage-metrics">
-				<span ref={dps} className="topline-result-avg" />
+		<div className="results-sim text-center">
+			<div className="results-sim-dps damage-metrics font-bold">
+				<span ref={dps} className="topline-result-avg text-2xl" />
 			</div>
-			<div className="results-sim-hps healing-metrics">
-				<span ref={hps} className="topline-result-avg" />
+			<div className="results-sim-hps healing-metrics font-bold">
+				<span ref={hps} className="topline-result-avg text-2xl" />
 			</div>
 			<div>
 				<span ref={counter} />

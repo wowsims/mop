@@ -10,7 +10,7 @@ export interface DetailedResultsTabsProps {
 export const DetailedResultsTabs = ({ tabs }: DetailedResultsTabsProps) => (
 	<TabNav
 		bordered={false}
-		className="ml-auto"
+		className="ml-auto min-h-0"
 		tabItemClassName="dr-tab-tab"
 		tabs={tabs.map(tab => ({ id: tab.id, label: i18n.t(tab.labelKey), className: tab.className, tabId: tabButtonId(tab.id) }))}
 	/>

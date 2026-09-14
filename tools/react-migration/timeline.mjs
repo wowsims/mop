@@ -189,7 +189,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click('.dps-action');
 	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
 	await openResultsTab(page);
-	await page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [role=tab][aria-controls=timelineTab]').click());
+	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
 	await page.waitForFunction(() => document.querySelectorAll('.rotation-pane .rotation-row').length > 0, null, { timeout: 60000 });
 	await page.waitForTimeout(1500);
 

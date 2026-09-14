@@ -182,12 +182,16 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					{i18n.t('results_tab.details.sim_1_death')}
 				</Button>
 			</div>
-			<Tabs.Root className={clsx('dr-root', !hasResults && 'dr-no-results')} value={activeId} onValueChange={next => setActiveId(String(next))}>
+			<Tabs.Root
+				className={clsx('group/dr dr-root flex flex-col', !hasResults && 'dr-no-results')}
+				data-no-results={!hasResults ? '' : undefined}
+				value={activeId}
+				onValueChange={next => setActiveId(String(next))}>
 				<div
 					ref={toolbarRef}
 					className={clsx('dr-toolbar sticky-toolbar-root', stickyToolbarClassName, stuck && 'stuck')}
 					data-stuck={stuck ? '' : undefined}>
-					<div className="results-filter flex items-center">
+					<div className="results-filter flex items-center min-h-0">
 						<ResultsFilter
 							target={target}
 							onTargetChange={next => {
@@ -196,17 +200,28 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 							}}
 						/>
 					</div>
-					<div className="tabs-filler grow" />
+					<div className="tabs-filler grow min-h-0" />
 					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} />
 				</div>
-				<div className="tab-content">
-					<div id="noResultsTab" className="tab-pane dr-tab-content fade active show transition-[opacity] duration-150 ease-linear opacity-100">
+				<div className="tab-content pt-6">
+					<div
+						id="noResultsTab"
+						className="tab-pane dr-tab-content fade active show transition-[opacity] duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
-					<DetailedResultsPane id="damageTab" className="damage-content" contentClassName="damage-metrics" topline histogram>
+					<DetailedResultsPane
+						id="damageTab"
+						className="damage-content [&_.metrics-table]:text-[12px]"
+						contentClassName="damage-metrics"
+						topline
+						histogram>
 						<DamageMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="healingTab" className="healing-content" contentClassName="healing-spell-metrics" topline>
+					<DetailedResultsPane
+						id="healingTab"
+						className="healing-content [&_.metrics-table]:text-[12px]"
+						contentClassName="healing-spell-metrics"
+						topline>
 						<HealingMetricsTable />
 					</DetailedResultsPane>
 					<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
@@ -224,10 +239,10 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics">
 						<ResourceMetricsTable />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline">
+					<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" filling>
 						<Timeline active={activeId === 'timelineTab'} />
 					</DetailedResultsPane>
-					<DetailedResultsPane id="replayTab" className="replay-content" contentClassName="combat-replay">
+					<DetailedResultsPane id="replayTab" className="replay-content p-0" contentClassName="combat-replay" filling>
 						<CombatReplay active={activeId === 'replayTab'} />
 					</DetailedResultsPane>
 					<DetailedResultsPane id="logTab" className="log-content" contentClassName="log">

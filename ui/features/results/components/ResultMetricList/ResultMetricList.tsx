@@ -26,7 +26,11 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 					<thead className="metrics-table-header">
 						<tr className="metrics-table-header-row ui-metrics-header-row">
 							{metrics.map(({ metric, name, classes }) => (
-								<th key={metric} className={clsx('metrics-table-header-cell ui-metrics-header-cell', classes)} data-metric={metric} {...anchorFor(metric)}>
+								<th
+									key={metric}
+									className={clsx('metrics-table-header-cell ui-metrics-header-cell font-bold', classes)}
+									data-metric={metric}
+									{...anchorFor(metric)}>
 									{name}
 								</th>
 							))}
@@ -35,10 +39,10 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 					<tbody className="metrics-table-body">
 						<tr className="ui-metrics-row">
 							{metrics.map(column => (
-								<td key={column.metric} className={clsx('text-center align-top ui-metrics-cell', column.classes)}>
-									<div className="topline-result-avg">{formatAverage(column, layout)}</div>
+								<td key={column.metric} className={clsx('text-center align-top ui-metrics-cell font-bold', column.classes)}>
+									<div className="topline-result-avg text-2xl">{formatAverage(column, layout)}</div>
 									{column.stdev ? (
-										<div className="topline-result-stdev">
+										<div className="topline-result-stdev text-ui font-normal">
 											<i className="fas fa-plus-minus fa-xs"></i> {formatStdev(column, layout)}
 										</div>
 									) : undefined}
@@ -50,13 +54,17 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 				</table>
 			) : (
 				metrics.map(column => (
-					<div key={column.metric} className={clsx('results-metric', column.classes)} data-metric={column.metric} {...anchorFor(column.metric)}>
-						<span className="topline-result-avg">
+					<div
+						key={column.metric}
+						className={clsx('results-metric text-left font-bold', column.classes)}
+						data-metric={column.metric}
+						{...anchorFor(column.metric)}>
+						<span className="topline-result-avg text-2xl">
 							{formatAverage(column, layout)}
-							<span className="metric-label"> {column.name}</span>
+							<span className="metric-label text-ui font-normal"> {column.name}</span>
 						</span>
 						{!!column.stdev && (
-							<span className="topline-result-stdev">
+							<span className="topline-result-stdev text-ui font-normal">
 								(<i className="fas fa-plus-minus fa-xs"></i>
 								{formatStdev(column, layout)})
 							</span>

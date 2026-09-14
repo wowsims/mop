@@ -25,17 +25,17 @@ describe('ResultMetricList row layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
 		expect([...container.querySelectorAll('th')].map(cell => cell.className)).toEqual([
-			'metrics-table-header-cell ui-metrics-header-cell results-sim-dps',
-			'metrics-table-header-cell ui-metrics-header-cell results-sim-tmi',
-			'metrics-table-header-cell ui-metrics-header-cell results-sim-tto',
-			'metrics-table-header-cell ui-metrics-header-cell results-sim-oom danger',
+			'metrics-table-header-cell ui-metrics-header-cell font-bold results-sim-dps',
+			'metrics-table-header-cell ui-metrics-header-cell font-bold results-sim-tmi',
+			'metrics-table-header-cell ui-metrics-header-cell font-bold results-sim-tto',
+			'metrics-table-header-cell ui-metrics-header-cell font-bold results-sim-oom danger',
 		]);
 		expect(cells(container, 'th')).toEqual(['DPS', 'TMI', 'TTO', 'OOM']);
 		expect([...container.querySelectorAll('td')].map(cell => cell.className)).toEqual([
-			'text-center align-top ui-metrics-cell results-sim-dps',
-			'text-center align-top ui-metrics-cell results-sim-tmi',
-			'text-center align-top ui-metrics-cell results-sim-tto',
-			'text-center align-top ui-metrics-cell results-sim-oom danger',
+			'text-center align-top ui-metrics-cell font-bold results-sim-dps',
+			'text-center align-top ui-metrics-cell font-bold results-sim-tmi',
+			'text-center align-top ui-metrics-cell font-bold results-sim-tto',
+			'text-center align-top ui-metrics-cell font-bold results-sim-oom danger',
 		]);
 	});
 
@@ -72,10 +72,10 @@ describe('ResultMetricList list layout', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="list" />);
 
 		expect([...container.querySelectorAll('.results-metric')].map(row => row.className)).toEqual([
-			'results-metric results-sim-dps',
-			'results-metric results-sim-tmi',
-			'results-metric results-sim-tto',
-			'results-metric results-sim-oom danger',
+			'results-metric text-left font-bold results-sim-dps',
+			'results-metric text-left font-bold results-sim-tmi',
+			'results-metric text-left font-bold results-sim-tto',
+			'results-metric text-left font-bold results-sim-oom danger',
 		]);
 		// One space before every label, TMI and CoD included.
 		expect(cells(container, '.topline-result-avg')).toEqual(['1234.50 DPS', '2.50 TMI', '30.00 TTO', '5.00 OOM']);

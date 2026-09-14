@@ -83,7 +83,7 @@ export const attackMetricsColumns = {
 		helper.accessor(row => total(row.metric), {
 			id,
 			header,
-			meta: { columnClass: 'metrics-table-cell--primary-metric', headerCellClass: 'text-center', tooltipId },
+			meta: { columnClass: 'metrics-table-cell--primary-metric w-[400px]', headerCellClass: 'text-center', tooltipId },
 			cell: info => {
 				const metric = info.row.original.metric;
 				return (
@@ -130,7 +130,7 @@ export const attackMetricsColumns = {
 		helper.accessor(row => value(row.metric), {
 			id,
 			header,
-			meta: { columnClass: 'text-success', tooltipId },
+			meta: { dataClass: 'text-success', tooltipId },
 			cell: info => formatToNumber(info.getValue(), { minimumFractionDigits: 2, fallbackString: '-' }),
 		}),
 };

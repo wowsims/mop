@@ -15,7 +15,7 @@ export const BulkProgressMessage = () => {
 	if (!progress.iterations) return remaining || null;
 
 	return (
-		<div className="results-sim">
+		<div className="results-sim text-center">
 			<div>
 				<Trans
 					i18n={i18n}

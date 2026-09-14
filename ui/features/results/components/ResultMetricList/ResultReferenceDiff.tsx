@@ -12,9 +12,9 @@ export interface ResultReferenceDiffProps {
 /** The delta against the saved reference run. Every layout renders the slot; only the sidebar, and only once a reference is set, fills it in. */
 export const ResultReferenceDiff = ({ diff, tooltipId }: ResultReferenceDiffProps) =>
 	diff ? (
-		<div className="results-reference">
+		<div className="results-reference mb-2 font-normal">
 			<span
-				className={clsx('results-reference-diff', diff.tone)}
+				className={clsx('results-reference-diff font-bold', diff.tone)}
 				data-sign={diff.tone ?? undefined}
 				{...tooltipAnchorProps(tooltipId, diff.significance)}>
 				{diff.text}

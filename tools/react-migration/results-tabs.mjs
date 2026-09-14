@@ -50,7 +50,7 @@ const STATE = () => {
 	const root = document.querySelector('.detailed-results-manager-root');
 	const drRoot = document.querySelector('.dr-root');
 	const toolbar = document.querySelector('.dr-toolbar');
-	const buttons = [...document.querySelectorAll('.dr-toolbar .nav-tabs [role=tab]')];
+	const buttons = [...document.querySelectorAll('.dr-toolbar [role=tab]')];
 	return {
 		root: root ? cls(root) : 'MISSING',
 		drRoot: drRoot ? cls(drRoot) : 'MISSING',
@@ -86,7 +86,7 @@ const runOneIteration = async page => {
 };
 
 const clickSubTab = async (page, tabId) => {
-	await page.evaluate(id => document.querySelector(`.dr-toolbar .nav-tabs [role=tab][aria-controls=${id}]`).click(), tabId);
+	await page.evaluate(id => document.querySelector(`.dr-toolbar [role=tab][aria-controls=${id}]`).click(), tabId);
 	await page.waitForFunction(id => getComputedStyle(document.getElementById(id)).opacity === '1', tabId, { timeout: 5000 });
 };
 
@@ -99,15 +99,15 @@ const scaffolding = dom =>
 
 // Focus the strip's first tab and press an arrow, then repeat from a tab the run has never opened.
 const keyboard = async page => {
-	const selected = () => page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [aria-selected=true]')?.getAttribute('aria-controls') ?? null);
+	const selected = () => page.evaluate(() => document.querySelector('.dr-toolbar [aria-selected=true]')?.getAttribute('aria-controls') ?? null);
 	const out = [];
-	await page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [role=tab][aria-controls=damageTab]').focus());
+	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=damageTab]').focus());
 	await clickSubTab(page, 'damageTab');
 	await page.waitForTimeout(SETTLE);
 	await page.keyboard.press('ArrowRight');
 	await page.waitForTimeout(SETTLE);
 	out.push(`from damageTab ArrowRight -> ${await selected()}`);
-	await page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [role=tab][aria-controls=buffsTab]').focus());
+	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=buffsTab]').focus());
 	await page.keyboard.press('ArrowRight');
 	await page.waitForTimeout(SETTLE);
 	out.push(`focus buffsTab (never clicked) ArrowRight -> ${await selected()}`);

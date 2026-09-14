@@ -1,5 +1,3 @@
-import './ToplineResults.scss';
-
 import { useMemo } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
@@ -16,5 +14,9 @@ export const ToplineResults = () => {
 		return toplineResultMetrics(result, filter, { showOutOfMana: showsOutOfMana(result, filter) });
 	}, [resultData]);
 
-	return <div className="topline-results-root results-sim pb-6">{metrics && <ResultMetricList metrics={metrics} layout="row" />}</div>;
+	return (
+		<div className="topline-results-root results-sim text-center pb-6 [&_.metrics-table]:w-full [&_.metrics-table]:max-w-full [&_.metrics-table]:table-fixed [&_.metrics-table-header-row]:border-b-0 [&_.metrics-table-body_tr]:border-b-0 [&_.metrics-table-body_tr:hover]:bg-transparent">
+			{metrics && <ResultMetricList metrics={metrics} layout="row" />}
+		</div>
+	);
 };

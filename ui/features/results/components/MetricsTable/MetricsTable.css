@@ -30,7 +30,7 @@
 }
 
 .ui-metrics-header-cell {
-	@apply py-1 px-2 cursor-pointer text-center;
+	@apply py-1 px-2 cursor-pointer text-center w-0 whitespace-nowrap;
 }
 
 .ui-metrics-row {
@@ -46,7 +46,7 @@
 }
 
 .ui-metrics-cell {
-	@apply py-1 px-2;
+	@apply py-1 px-2 w-0 1080p:whitespace-nowrap;
 }
 
 .ui-metrics-tooltip th {

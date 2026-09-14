@@ -30,7 +30,12 @@ export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<
 					// The model value, which the display string may round or abbreviate away.
 					<td
 						key={cell.id}
-						className={clsx('ui-metrics-cell', row.depth > 0 && index === 0 && 'pl-[20px]', cell.column.columnDef.meta?.columnClass)}
+						className={clsx(
+							'ui-metrics-cell',
+							row.depth > 0 && index === 0 && 'pl-[20px]',
+							cell.column.columnDef.meta?.columnClass,
+							cell.column.columnDef.meta?.dataClass,
+						)}
 						data-text={String(cell.getValue())}
 						{...tooltipAnchorProps(tooltipId)}
 						data-row-id={tooltipId ? row.id : undefined}>

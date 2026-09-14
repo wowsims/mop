@@ -24,22 +24,22 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 	if (!current) return null;
 
 	return (
-		<div className="results-sim">
+		<div className="results-sim text-center">
 			<ResultMetricList
 				metrics={toplineResultMetrics(current.simResult)}
 				layout="list"
 				referenceDiffs={reference ? referenceDiffs(current.simResult, reference.simResult) : undefined}
 			/>
-			<div className={clsx('results-sim-reference', reference && 'has-reference')} data-has-reference={reference ? '' : undefined}>
+			<div className={clsx('results-sim-reference mt-2 font-normal', reference && 'has-reference')} data-has-reference={reference ? '' : undefined}>
 				<button
 					type="button"
-					className="results-sim-set-reference"
+					className={clsx('results-sim-set-reference', reference && 'hidden')}
 					onClick={() => results.setReference()}
 					{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.use_as_reference'))}>
 					<i className={`fa fa-map-pin fa-lg ${textClassName(cssScheme)} mr-2`} />
 					{i18n.t('sidebar.results.reference.save_as_reference')}
 				</button>
-				<div className="results-sim-reference-bar">
+				<div className={clsx('results-sim-reference-bar', !reference && 'hidden')}>
 					<button
 						type="button"
 						className="results-sim-reference-swap mr-4"

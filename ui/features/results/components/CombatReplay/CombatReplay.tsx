@@ -1,5 +1,3 @@
-import './CombatReplay.scss';
-
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { useReplayClock } from '../../hooks/useReplayClock';

@@ -162,7 +162,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click('.detailed-results-1-iteration-button');
 	await page.waitForFunction(() => !document.querySelector('.dr-no-results'), null, { timeout: 120000 });
 	await page.waitForTimeout(500);
-	await page.evaluate(() => document.querySelector('.dr-toolbar .nav-tabs [role=tab][aria-controls=logTab]').click());
+	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=logTab]').click());
 	await page.waitForFunction(() => getComputedStyle(document.getElementById('logTab')).opacity === '1', null, { timeout: 10000 });
 	await page.waitForTimeout(800);
 

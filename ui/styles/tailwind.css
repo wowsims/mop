@@ -5,8 +5,8 @@
 @import 'tailwindcss/utilities.css' important;
 
 @import './theme.css';
-@import '../features/results/components/MetricsTable/MetricsTable.apply.css';
-@import '../features/character-stats/components/CharacterStats/CharacterStats.apply.css';
+@import '../features/results/components/MetricsTable/MetricsTable.css';
+@import '../features/character-stats/components/CharacterStats/CharacterStats.css';
 
 @import '../features/bulk/components/BulkPickerGroups/BulkItemCell.css';
 @import '../ui-kit/ItemCell/ItemCell.css';
@@ -16,6 +16,7 @@
 @import '../features/gear/components/SelectorModal/SelectorModal.css';
 @import '../features/gear/components/SummaryTable/SummaryTable.css';
 @import '../features/apl/apl.css';
+@import '../features/results/components/DetailedResults/DetailedResultsPane.css';
 @import '../features/results/components/CombatReplay/CombatReplay.css';
 @import '../features/results/components/Timeline/Timeline.css';
 @import '../features/results/components/LogRunner/LogRunner.css';
