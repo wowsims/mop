@@ -27,9 +27,10 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   Convert a source px value to its **exact** step (`gap-[4px]` → `gap-1`, `10px` → `p-2.5`, `5px` →
   `p-1.25`, `18px` → `w-4.5`) rather than writing `[Npx]` — see §7 for why a rounded/nearest
   conversion is not acceptable here. Keep a literal `[Npx]` only when no step lands on the value
-  exactly, and prefer a token over a repeated arbitrary value. `1rem` is 14px below 1921px and 16px
-  at/above it (`ui/styles/base.css`'s `--font-size-root`), so the same step renders a different
-  pixel size per breakpoint by design — that's expected, not a bug.
+  exactly, and prefer a token over a repeated arbitrary value. `1rem` is 14px at every width
+  (`ui/styles/base.css`'s `--font-size-root`), so a converted step follows the root everywhere — a
+  size the JavaScript relies on (the timeline, the log runner's virtual list, the combat replay) is
+  pinned to an exact px value with a named `@theme` token instead, so it never scales with the root.
 - **Canonical spelling only.** `node tools/tailwind/canonical-classes.mjs` runs Tailwind's own
   `designSystem.canonicalizeCandidates()` — the same function IntelliSense's "the class X can be
   written as Y" lint uses — over every `className`/`clsx`/`*ClassName` string and every `@apply` in
@@ -44,8 +45,8 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   has no utility form.
 
 Breakpoints are named tokens in `theme.css`: `sm md lg xl xxl xxxl fhd qhd uhd` (`576px` through
-`3841px`; `fhd` is the legacy `1080p` 1921px cutover where the root font-size itself changes). All
-breakpoints are px, so they don't depend on the 14/16px root the way spacing steps do.
+`3841px`; `fhd` is the legacy `1080p` 1921px cutover, kept as a layout breakpoint even though the
+root font-size no longer changes there). All breakpoints are px, so they never depend on the root.
 
 **Spec themes are CSS variables, not per-spec CSS.** `theme.css`'s `.sim-ui` block declares
 `--color-primary`/`--color-primary-foreground` from `--theme-color`/`--theme-color-foreground`, and
