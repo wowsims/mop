@@ -39,7 +39,7 @@ const structure = () => {
 		resetButtons: count(q('talent-tree-reset')),
 		glyphSlots: count(`${q('glyph-picker-root')} a, .glyph-anchor`),
 		savedDataManagers: count('.saved-data-manager-root'),
-		presetPickers: count('.preset-configuration-picker-root'),
+		presetPickers: count(q('preset-configuration-picker-root')),
 		leftPanelChildren: pane.querySelector('.talents-tab-left')?.children.length ?? 'NO LEFT PANEL',
 		rightPanelChildren: pane.querySelector('.talents-tab-right')?.children.length ?? 'NO RIGHT PANEL',
 	};

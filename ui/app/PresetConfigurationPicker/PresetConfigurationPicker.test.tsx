@@ -86,7 +86,7 @@ describe('PresetConfigurationPicker', () => {
 	it('renders nothing when there are no builds', () => {
 		const { container } = setup([]);
 
-		expect(container.querySelector('.preset-configuration-picker-root')).toBeNull();
+		expect(container.querySelector('[data-testid="preset-configuration-picker-root"]')).toBeNull();
 		expect(container.querySelector('[data-testid="content-block"]')).toBeNull();
 	});
 

@@ -32,7 +32,7 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 	if (!builds.length) return null;
 
 	return (
-		<div className="preset-configuration-picker-root saved-data-manager-root">
+		<div className="saved-data-manager-root" data-testid="preset-configuration-picker-root">
 			<ContentBlock
 				config={{ header: { title: i18n.t('gear_tab.preset_configurations.title'), tooltip: i18n.t('gear_tab.preset_configurations.tooltip') } }}>
 				{ready && (
