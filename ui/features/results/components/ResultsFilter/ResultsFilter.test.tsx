@@ -21,7 +21,7 @@ const mount = (target: number, onTargetChange = vi.fn()) => render(<ResultsFilte
 
 const picker = () => document.querySelector('[data-testid="results-filter-root"] > [data-testid="unit-picker-root"]') as HTMLElement;
 const trigger = () => picker().querySelector('[data-testid="dropdown-picker-button"]') as HTMLButtonElement;
-const items = () => [...picker().querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')];
+const items = () => [...document.querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')];
 const open = () => act(() => void fireEvent.click(trigger()));
 
 beforeEach(() => {

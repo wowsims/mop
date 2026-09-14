@@ -4,10 +4,11 @@ import type { Player } from '@sim/player/player';
 import type { ActionId } from '@sim/proto/action_id';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { useActionId } from '@ui-kit/hooks/useActionId';
+import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { IconPicker } from '@ui-kit/IconPicker';
 import { isRightClick } from '@ui-kit/utils/dom';
 import clsx from 'clsx';
-import { useId, useState } from 'react';
+import { useId } from 'react';
 
 import { wowheadAnchorProps } from '../utils/wowhead';
 import type { MultiIconPickerConfig } from './types';
@@ -31,8 +32,7 @@ const firstActiveActionId = <ModObject,>(config: MultiIconPickerConfig<ModObject
 };
 
 export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onClear }: MultiIconPickerProps<ModObject>) => {
-	// `null` is the "not resolved yet" value Base UI waits on; anything else falls back to `<body>`.
-	const [dropend, setDropend] = useState<HTMLDivElement | null>(null);
+	const portalContainer = usePortalContainer();
 
 	const { actionId, hidden } = useStoreSubscribe(subscribe, () => ({
 		actionId: firstActiveActionId(config, modObject),
@@ -48,7 +48,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 
 	return (
 		<div className="ui-icon-field" data-testid="multi-icon-picker-root" {...groupProps}>
-			<div className="relative" ref={setDropend}>
+			<div className="relative">
 				<Menu.Root modal={false}>
 					<Menu.Trigger
 						nativeButton={false}
@@ -67,7 +67,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							if (isRightClick(event.nativeEvent)) onClear();
 						}}
 					/>
-					<Menu.Portal container={dropend} data-testid="multi-icon-picker-portal">
+					<Menu.Portal container={portalContainer ?? undefined} data-testid="multi-icon-picker-portal">
 						<Menu.Positioner
 							side="right"
 							align="start"
@@ -79,7 +79,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							<Menu.Popup
 								render={<ul />}
 								role="group"
-								className="grid grid-flow-col m-0 p-0 border-0 bg-grey list-none"
+								className="m-0 grid list-none grid-flow-col border-0 bg-grey p-0"
 								data-testid="multi-icon-picker-menu">
 								<li>
 									<a

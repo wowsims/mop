@@ -19,29 +19,18 @@ const relative = (file: string) => path.relative(path.resolve(here, '../../..'),
 
 const IMPORTS_HOOK = /usePortalContainer/;
 
-const LOCAL_SLOT_REASON =
-	'a Base UI Portal appends its element in a commit after React places the root/trigger row, so a shared-root container would move the popup out of the DOM order its own test asserts (IconEnumPicker.test.tsx: "builds the root, the button, the menu and the caption in vanilla’s order"; switching it to usePortalContainer() was tried and failed 9 of its tests, all `within(root())` lookups that can no longer find the menu)';
-
-const PORTAL_EXCEPTIONS: Record<string, string> = {
-	'ui-kit/MultiIconPicker/MultiIconPicker.tsx': LOCAL_SLOT_REASON,
-	'ui-kit/DropdownPicker/DropdownMenu.tsx': LOCAL_SLOT_REASON,
-	'ui-kit/IconEnumPicker/IconEnumPicker.tsx': LOCAL_SLOT_REASON,
-	'app/landing/LandingClassMenu.tsx': LOCAL_SLOT_REASON,
-};
-
 const OVERLAY_PORTAL_EXCEPTIONS: Record<string, string> = {
 	'app/SimTabs.tsx': 'a layout slot for the tab panes, not an overlay',
 };
 
 describe('portal root guard', () => {
-	it('every Base UI .Portal in ui-kit and app goes through usePortalContainer, or is a documented exception', () => {
+	it('every Base UI .Portal in ui-kit and app goes through usePortalContainer', () => {
 		const offenders: Array<string> = [];
 		for (const file of [...walk(uiKitRoot), ...walk(appRoot)]) {
 			const contents = readFileSync(file, 'utf-8');
 			if (!/\.Portal\b/.test(contents)) continue;
 			const key = relative(file).replace(/^ui\//, '');
 			if (IMPORTS_HOOK.test(contents)) continue;
-			if (key in PORTAL_EXCEPTIONS) continue;
 			offenders.push(key);
 		}
 		expect(offenders).toEqual([]);

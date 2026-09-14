@@ -59,8 +59,8 @@ const mount = (buffs: Buffs, config: MultiIconPickerConfig<Buffs> = configFor(),
 
 const root = () => screen.getByTestId('multi-icon-picker-root');
 const trigger = () => within(root()).getByTestId('multi-icon-picker-button') as HTMLAnchorElement;
-const menu = () => within(root()).queryByTestId('multi-icon-picker-menu') as HTMLUListElement;
-const blankOption = () => within(root()).getByTestId('icon-dropdown-option') as HTMLAnchorElement;
+const menu = () => screen.queryByTestId('multi-icon-picker-menu') as HTMLUListElement;
+const blankOption = () => screen.getByTestId('icon-dropdown-option') as HTMLAnchorElement;
 // The menu mounts when it opens, so every test that reads an option has to open it first.
 const open = () =>
 	act(() => {
@@ -78,14 +78,13 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('MultiIconPicker', () => {
-	it('builds the root, the dropend and the option list vanilla built', () => {
+	it('builds the root and the option list vanilla built', () => {
 		mount(new Buffs());
 
 		expect(root().getAttribute('data-testid')).toBe('multi-icon-picker-root');
 		expect(root().children[0].className).toBe('relative');
 		expect(trigger()).toBeTruthy();
-		// No `keepMounted`: the trigger is all the dropend holds until somebody opens the menu.
-		expect(root().children[0].children).toHaveLength(1);
+		expect(menu()).toBeNull();
 
 		// The blank "clear" option first, then one option per input, each wrapping an IconPicker.
 		open();
@@ -101,10 +100,10 @@ describe('MultiIconPicker', () => {
 		expect(options.slice(1).every(option => within(option as HTMLElement).queryByTestId('icon-picker-root'))).toBe(true);
 	});
 
-	it('positions the menu against the viewport, not against the dropend it portals into', async () => {
+	it('positions the menu against the viewport', async () => {
 		mount(new Buffs());
 		await open();
-		expect(within(root()).getByTestId('multi-icon-picker-positioner').style.position).toBe('fixed');
+		expect(screen.getByTestId('multi-icon-picker-positioner').style.position).toBe('fixed');
 	});
 
 	it('renders the label only when the config names one, and names the group with it', () => {

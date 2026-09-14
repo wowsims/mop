@@ -65,7 +65,7 @@ const mount = (options: Options, config: IconEnumPickerConfig<Options, number> =
 
 const root = () => screen.getByTestId('icon-enum-picker-root');
 const button = () => within(root()).getByTestId('icon-enum-picker-button') as HTMLAnchorElement;
-const menu = () => (within(root()).queryByTestId('icon-enum-picker-menu') ?? null) as HTMLUListElement | null;
+const menu = () => (screen.queryByTestId('icon-enum-picker-menu') ?? null) as HTMLUListElement | null;
 const items = () => Array.from(menu()!.children) as HTMLLIElement[];
 const optionAnchor = (index: number) => within(items()[index]).getByTestId('icon-picker-button') as HTMLAnchorElement;
 // The menu mounts when it opens, so every test that reads an option has to open it first.
@@ -86,32 +86,23 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('IconEnumPicker', () => {
-	it('builds the root, the button, the menu and the caption in vanilla’s order', () => {
+	it('builds the root, the button and the caption in vanilla’s order', () => {
 		mount(new Options());
 
 		expect(root().classList.contains('relative')).toBe(true);
 		expect(root().hasAttribute('data-input-root')).toBe(true);
 
-		// The order is the whole reason the slot exists: Base UI appends its portal element to the
-		// container in a later commit than React places the root's own children, so a portal aimed
-		// straight at the root would land after the caption.
 		expect(Array.from(root().children).map(element => `${element.tagName.toLowerCase()}.${element.className}`)).toEqual([
 			'a.ui-icon-picker-swatch transition-none',
-			'div.contents',
 			'label.ui-field-label',
 		]);
 
-		// The two wrappers `normaliseBaseUiMenus` has no baseline counterpart for, in the slot, with
-		// the `<ul>` inside.
 		open();
-		// By class and from the menu upwards, not by index: an open menu hangs Base UI's focus guards
-		// off the root and around the `<ul>` as well.
-		const slot = within(root()).getByTestId('icon-enum-picker-slot');
-		expect(slot.children[0].className).toBe('contents');
-		expect(slot.children[0].getAttribute('data-testid')).toBe('icon-enum-picker-portal');
-		expect(slot.children[0].children[0].className).toBe('z-dropdown');
-		expect(slot.children[0].children[0].getAttribute('data-testid')).toBe('icon-enum-picker-positioner');
-		expect(menu()!.parentElement).toBe(slot.children[0].children[0]);
+		const portal = screen.getByTestId('icon-enum-picker-portal');
+		expect(portal.className).toBe('contents');
+		expect(portal.children[0].className).toBe('z-dropdown');
+		expect(portal.children[0].getAttribute('data-testid')).toBe('icon-enum-picker-positioner');
+		expect(menu()!.parentElement).toBe(portal.children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
 			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
@@ -121,14 +112,9 @@ describe('IconEnumPicker', () => {
 		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});
 
-	it('mounts the options when the menu opens and leaves the slot empty until then', () => {
+	it('mounts the options when the menu opens and renders none of them until then', () => {
 		mount(new Options());
-		// No `keepMounted`: the portal, the `<ul>` and every option are built on open, so a page that
-		// nobody has opened a picker on holds none of them.
-		const slot = root().children[1];
-		expect(slot.className).toBe('contents');
-		expect(slot.getAttribute('data-testid')).toBe('icon-enum-picker-slot');
-		expect(slot.children).toHaveLength(0);
+		expect(screen.queryByTestId('icon-enum-picker-portal')).toBeNull();
 		expect(menu()).toBeNull();
 
 		open();
@@ -355,14 +341,16 @@ describe('IconEnumPicker', () => {
 		render(<IconEnumPicker modObject={new Options()} config={configFor({ direction: IconEnumPickerDirection.Horizontal })} />);
 		const horizontal = screen.getAllByTestId('icon-enum-picker-root')[1];
 		expect(horizontal.classList.contains('relative')).toBe(true);
-		open(within(horizontal).getByTestId('icon-enum-picker-button'));
-		expect(within(horizontal).getByTestId('icon-enum-picker-menu').style.gridAutoFlow).toBe('column');
+		const horizontalButton = within(horizontal).getByTestId('icon-enum-picker-button');
+		open(horizontalButton);
+		const horizontalMenu = document.getElementById(horizontalButton.getAttribute('aria-controls')!) as HTMLUListElement;
+		expect(horizontalMenu.style.gridAutoFlow).toBe('column');
 	});
 
-	it('positions the menu against the viewport, not against the picker root it portals into', async () => {
+	it('positions the menu against the viewport', async () => {
 		mount(new Options());
 		await open();
-		expect(within(root()).getByTestId('icon-enum-picker-positioner').style.position).toBe('fixed');
+		expect(screen.getByTestId('icon-enum-picker-positioner').style.position).toBe('fixed');
 	});
 
 	it('carries every tooltip on its anchor, and renders none until one is asked for', () => {

@@ -25,7 +25,7 @@ const mount = (value: UnitReference | undefined, onChange = vi.fn(), values = op
 
 const root = () => screen.getByTestId('unit-picker-root');
 const trigger = () => within(root()).getByTestId('dropdown-picker-button') as HTMLButtonElement;
-const items = () => within(root()).queryAllByTestId('dropdown-picker-item');
+const items = () => screen.queryAllByTestId('dropdown-picker-item');
 const open = () => act(() => void fireEvent.click(trigger()));
 
 beforeEach(() => {

@@ -59,7 +59,7 @@ describe('LogSearchBar', () => {
 		const { container } = mount([]);
 		await openAddField(container);
 
-		expect([...container.querySelectorAll('[data-testid="dropdown-picker-item"]')].map(item => item.textContent)).toEqual([
+		expect([...document.querySelectorAll('[data-testid="dropdown-picker-item"]')].map(item => item.textContent)).toEqual([
 			'Source',
 			'Target',
 			'Spell',
@@ -74,7 +74,7 @@ describe('LogSearchBar', () => {
 	it('appends a new empty OR group for the field that was picked', async () => {
 		const { container, onChange } = mount([]);
 		await openAddField(container);
-		await act(() => void fireEvent.click([...container.querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')][2]));
+		await act(() => void fireEvent.click([...document.querySelectorAll<HTMLElement>('[data-testid="dropdown-picker-item"]')][2]));
 
 		expect(onChange).toHaveBeenCalledWith([expect.objectContaining({ field: 'spell', join: 'or', values: [] })]);
 	});
@@ -88,7 +88,7 @@ describe('LogSearchBar', () => {
 
 		for (let round = 0; round < 2; round++) {
 			await openAddField(container);
-			await act(() => void fireEvent.click(container.querySelector<HTMLElement>('[data-testid="dropdown-picker-item"]')!));
+			await act(() => void fireEvent.click(document.querySelector<HTMLElement>('[data-testid="dropdown-picker-item"]')!));
 			rerender(<LogSearchBar groups={groups} suggestions={EMPTY_SUGGESTIONS} onChange={onChange} />);
 		}
 

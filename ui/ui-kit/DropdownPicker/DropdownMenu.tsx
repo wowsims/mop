@@ -1,4 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
+import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useState } from 'react';
@@ -43,8 +44,7 @@ export const DropdownMenu = <V,>({
 	positionMethod,
 	triggerClassName,
 }: DropdownMenuProps<V>) => {
-	// null is Base UI's "not resolved yet"; anything else falls back to <body>, which is outside `.sim-ui` and its theme.
-	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
+	const portalContainer = usePortalContainer();
 	const [open, setOpen] = useState(false);
 	const tooltipId = `${useId()}-option`;
 
@@ -79,9 +79,7 @@ export const DropdownMenu = <V,>({
 						defaultLabel
 					)}
 				</Menu.Trigger>
-				{/* This slot holds the place after the button that a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
-				<div className="contents" data-testid="dropdown-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="contents" data-testid="dropdown-picker-portal">
+				<Menu.Portal container={portalContainer ?? undefined} className="contents" data-testid="dropdown-picker-portal">
 					<Menu.Positioner
 						align="start"
 						side={side}

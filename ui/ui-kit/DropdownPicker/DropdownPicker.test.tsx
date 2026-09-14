@@ -32,7 +32,7 @@ const mount = (value: Unit | undefined, onChange = vi.fn(), options = units, equ
 
 const root = () => screen.getByTestId('dropdown-picker-root');
 const trigger = () => within(root()).getByTestId('dropdown-picker-button') as HTMLButtonElement;
-const items = () => within(root()).queryAllByTestId('dropdown-picker-item');
+const items = () => screen.queryAllByTestId('dropdown-picker-item');
 const open = () => act(() => void fireEvent.click(trigger()));
 
 describe('DropdownPicker', () => {
@@ -109,7 +109,7 @@ describe('DropdownPicker', () => {
 	// `side="top"` and `positionMethod="fixed"` are what a picker sitting in an overflow-clipped
 	// drawer at the bottom of the page needs.
 	describe('side and positionMethod', () => {
-		const positioner = () => within(root()).getByTestId('dropdown-picker-positioner');
+		const positioner = () => screen.getByTestId('dropdown-picker-positioner');
 
 		it('opens below the trigger, positioned in flow, by default', async () => {
 			mount({ id: 0, name: 'All' });
@@ -157,7 +157,7 @@ describe('DropdownPicker', () => {
 			mountKinds();
 			await open();
 
-			const rows = [...within(root()).getByTestId('dropdown-picker-list').children] as Array<HTMLElement>;
+			const rows = [...screen.getByTestId('dropdown-picker-list').children] as Array<HTMLElement>;
 			expect(rows.map(row => row.textContent)).toEqual(['None', 'logic »', 'resources »']);
 			// Only the root-level option is a radio item; a trigger is a button in a `.dropend`.
 			expect(rows[0].getAttribute('role')).toBe('menuitemradio');
@@ -167,7 +167,7 @@ describe('DropdownPicker', () => {
 		it('renders the submenu contents once it is opened', async () => {
 			mountKinds();
 			await open();
-			const trigger = within(root()).getAllByTestId('dropdown-item')[0];
+			const trigger = screen.getAllByTestId('dropdown-item')[0];
 
 			await act(() => void fireEvent.click(trigger));
 
@@ -183,7 +183,7 @@ describe('DropdownPicker', () => {
 		it('nests a two-segment path', async () => {
 			mountKinds();
 			await open();
-			const resources = within(root()).getAllByTestId('dropdown-item')[1];
+			const resources = screen.getAllByTestId('dropdown-item')[1];
 
 			await act(() => void fireEvent.click(resources));
 			const inner = within(screen.getByTestId('dropdown-submenu')).queryAllByTestId('dropdown-item');
@@ -197,7 +197,7 @@ describe('DropdownPicker', () => {
 			render(<DropdownPicker options={[self, pet]} value={undefined} onChange={onChange} equals={sameKind} defaultLabel="Unit" />);
 			await open();
 
-			const trigger = within(root()).getByTestId('dropdown-item');
+			const trigger = screen.getByTestId('dropdown-item');
 			expect(trigger.textContent).toBe('Self');
 			await act(() => void fireEvent.click(trigger));
 
