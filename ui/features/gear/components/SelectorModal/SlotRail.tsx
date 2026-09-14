@@ -18,7 +18,9 @@ export const SlotRail = ({ gear, isBlacksmithing, currentSlot, onOpen }: SlotRai
 
 	return (
 		<>
-			<div className="gear-picker-modal-slots pointer-events-auto flex flex-col items-end -mr-px z-1 max-sm:hidden absolute -top-(--modal-border-width) right-full">
+			<div
+				className="pointer-events-auto flex flex-col items-end -mr-px z-1 max-sm:hidden absolute -top-(--modal-border-width) right-full"
+				data-testid="gear-picker-modal-slots">
 				{ALL_ITEM_SLOTS.map(slot => (
 					<SlotRailIcon
 						key={slot}

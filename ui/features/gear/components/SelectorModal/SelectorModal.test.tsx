@@ -36,7 +36,7 @@ vi.mock('./ItemList', () => ({
 	},
 }));
 
-vi.mock('./SlotRail', () => ({ SlotRail: () => <div className="gear-picker-modal-slots" /> }));
+vi.mock('./SlotRail', () => ({ SlotRail: () => <div data-testid="gear-picker-modal-slots" /> }));
 
 const { SelectorModal } = await import('./SelectorModal');
 

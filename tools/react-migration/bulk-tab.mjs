@@ -192,7 +192,7 @@ const INSTALL = () => {
 					const list = pane?.querySelector(q('selector-modal-list'));
 					if (!list) return 0;
 					const box = list.getBoundingClientRect();
-					return [...pane.querySelectorAll(q('selector-modal-list-item'))]
+					return [...pane.querySelectorAll(q('virtual-list-row'))]
 						.map(row => row.getBoundingClientRect())
 						.filter(rect => rect.height > 0 && rect.bottom > box.top + 1 && rect.top < box.bottom - 1).length;
 				})(),

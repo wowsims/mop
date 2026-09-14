@@ -44,8 +44,8 @@ const INSTALL = () => {
 				),
 				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} ${tabLink}.active, ${q('selector-modal-tabs')} ${tabLink}[data-active]`)),
 				gemTabs: modal.querySelectorAll(`${q('selector-modal-tabs')} [data-label^="Gem"]`).length,
-				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
-				railActive: modal.querySelector(`.gear-picker-modal-slots :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
+				railSlots: modal.querySelectorAll(`${q('gear-picker-modal-slots')} ${q('item-picker-icon-wrapper')}`).length,
+				railActive: modal.querySelector(`${q('gear-picker-modal-slots')} :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
 			};
 		},
 		// The controls in the active pane's filter row, by class rather than by position.
@@ -80,7 +80,7 @@ const INSTALL = () => {
 			const list = pane?.querySelector(q('selector-modal-list'));
 			if (!list) return null;
 			const box = list.getBoundingClientRect();
-			const rows = [...pane.querySelectorAll(q('selector-modal-list-item'))]
+			const rows = [...pane.querySelectorAll(q('virtual-list-row'))]
 				.map(row => ({ row, rect: row.getBoundingClientRect() }))
 				.filter(({ rect }) => rect.height > 0 && rect.bottom > box.top + 1 && rect.top < box.bottom - 1)
 				.sort((a, b) => a.rect.top - b.rect.top);
@@ -88,7 +88,7 @@ const INSTALL = () => {
 				scrollTop: Math.round(list.scrollTop),
 				scrollHeight: Math.round(list.scrollHeight),
 				clientHeight: Math.round(list.clientHeight),
-				rendered: pane.querySelectorAll(q('selector-modal-list-item')).length,
+				rendered: pane.querySelectorAll(q('virtual-list-row')).length,
 				names: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-name')))),
 				ilvls: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-ilvl-container'))) || '-'),
 				eps: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-ep-value'))) || '-'),
@@ -102,7 +102,7 @@ const INSTALL = () => {
 		stripes: () => {
 			const pane = modalRoot()?.querySelector(activePane);
 			if (!pane) return null;
-			const rows = [...pane.querySelectorAll(q('selector-modal-list-item'))]
+			const rows = [...pane.querySelectorAll(q('virtual-list-row'))]
 				.map(row => ({ row, rect: row.getBoundingClientRect() }))
 				.filter(({ rect }) => rect.height > 0)
 				.sort((a, b) => a.rect.top - b.rect.top)
@@ -160,7 +160,7 @@ const sel = suffix => ROOTS.map(root => `${root} ${suffix}`).join(', ');
 const tabLink = ':is(.nav-link, .ui-tab-nav)';
 const activePane = `:is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)`;
 const pane = () => page.locator(sel(activePane)).first();
-const rows = () => pane().locator(q('selector-modal-list-item'));
+const rows = () => pane().locator(q('virtual-list-row'));
 const settle = (ms = 700) => page.waitForTimeout(ms);
 const head = () => page.evaluate(() => window.selectorProbe.head());
 
@@ -216,7 +216,7 @@ const tabsForSlot = async slot => {
 	// slots are ~44px apart) until its hide debounce fires; move the mouse away and wait it out first.
 	await page.mouse.move(0, 0);
 	await page.waitForTimeout(250);
-	await page.locator(sel(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}[data-slot="${slot}"] ${q('item-picker-icon')}`)).first().click();
+	await page.locator(sel(`${q('gear-picker-modal-slots')} ${q('item-picker-icon-wrapper')}[data-slot="${slot}"] ${q('item-picker-icon')}`)).first().click();
 	await settle();
 	return page.evaluate(() => window.selectorProbe.head());
 };

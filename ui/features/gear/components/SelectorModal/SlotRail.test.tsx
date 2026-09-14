@@ -21,7 +21,7 @@ describe('SlotRail', () => {
 	it('renders one icon per slot, in slot order, inside the slots container', () => {
 		const { container } = render(<SlotRail gear={gear} isBlacksmithing={false} currentSlot={null} onOpen={vi.fn()} />);
 
-		const slotsContainer = container.querySelector('.gear-picker-modal-slots')!;
+		const slotsContainer = container.querySelector('[data-testid="gear-picker-modal-slots"]')!;
 		const buttons = slotsContainer.querySelectorAll<HTMLButtonElement>('button');
 		expect(buttons.length).toBe(ALL_ITEM_SLOTS.length);
 		expect(Array.from(buttons).map(button => Number(button.dataset.slot))).toEqual(ALL_ITEM_SLOTS);

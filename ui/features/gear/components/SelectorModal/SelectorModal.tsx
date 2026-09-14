@@ -147,7 +147,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 						</div>
 					</>
 				}>
-				<div className="tab-content">
+				<div>
 					{request &&
 						slot !== null &&
 						tabs.map(tab => (
@@ -159,7 +159,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								value={tab.label}
 								id={paneId(tab.label)}
 								keepMounted
-								className={clsx('tab-pane fade-in-out p-0', tab.label !== activeTab?.label && 'opacity-0')}
+								className={clsx('fade-in-out p-0', tab.label !== activeTab?.label && 'opacity-0')}
 								data-testid="selector-modal-tab-pane"
 								data-active={tab.label === activeTab?.label ? '' : undefined}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />

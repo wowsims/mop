@@ -27,7 +27,7 @@ import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils'
 
 const ROW_HEIGHT = 56;
 const ROW_CLASS = clsx(
-	'selector-modal-list-item relative p-2 flex items-center bg-gray-900 gap-4',
+	'relative p-2 flex items-center bg-gray-900 gap-4',
 	'data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even hover:bg-gray-800',
 	'[&_[data-active]_.ui-selector-modal-list-item-icon]:outline-2 [&_[data-active]_.ui-selector-modal-list-item-icon]:outline-success',
 );
@@ -118,7 +118,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						modObject={sim}
 						config={{
 							id: 'phase-selector',
-							extraClassNames: ['phase-selector', 'mb-0'],
+							extraClassNames: ['mb-0'],
 							values: [
 								{ name: i18n.t('common.phases.1'), value: 1 },
 								{ name: i18n.t('common.phases.2'), value: 2 },
@@ -138,7 +138,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-1h-weapons-selector',
-								extraClassNames: ['show-1h-weapons-selector', 'mb-0'],
+								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_1h_weapons.label'),
 								inline: true,
 								storeField: 'sim:filters',
@@ -158,7 +158,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-2h-weapons-selector',
-								extraClassNames: ['show-2h-weapons-selector', 'mb-0'],
+								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_2h_weapons.label'),
 								inline: true,
 								storeField: 'sim:filters',
@@ -178,7 +178,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-matching-gems-selector',
-								extraClassNames: ['show-matching-gems-selector', 'mb-0'],
+								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_matching_gems.label'),
 								inline: true,
 								storeField: 'sim:filters',
@@ -198,7 +198,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 							modObject={sim}
 							config={{
 								id: 'show-ep-values-selector',
-								extraClassNames: ['show-ep-values-selector', 'mb-0'],
+								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_ep_values.label'),
 								inline: true,
 								storeField: 'ui:showEPValues',

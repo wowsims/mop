@@ -73,9 +73,9 @@ const INSTALL = () => {
 				title: text(modal.querySelector(q('selector-modal-title'))),
 				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} .nav-link`)].map(tab => text(tab)),
 				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} .nav-link.active`)),
-				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
-				railActive: modal.querySelector(`.gear-picker-modal-slots :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
-				rows: modal.querySelectorAll(`${activePane} ${q('selector-modal-list-item')}`).length,
+				railSlots: modal.querySelectorAll(`${q('gear-picker-modal-slots')} ${q('item-picker-icon-wrapper')}`).length,
+				railActive: modal.querySelector(`${q('gear-picker-modal-slots')} :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
+				rows: modal.querySelectorAll(`${activePane} ${q('virtual-list-row')}`).length,
 			};
 		},
 		// The autosaved blob is the oracle, the same one settings-tab.mjs and talents.mjs read: what
@@ -260,7 +260,7 @@ if (wrapped.railActive !== '15') problems.push(`ArrowUp from the first slot left
 
 // Clicking a rail icon is the third reader of the entry, and the one a cell never triggers.
 await page
-	.locator(inModal(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}:nth-of-type(3) ${q('item-picker-icon')}`))
+	.locator(inModal(`${q('gear-picker-modal-slots')} ${q('item-picker-icon-wrapper')}:nth-of-type(3) ${q('item-picker-icon')}`))
 	.first()
 	.click();
 await page.waitForTimeout(700);
@@ -289,7 +289,7 @@ if (enchanted < 0) {
 	// The first row that is not the equipped one — `.active` marks that — so equipping the favourite
 	// afterwards is a change rather than a no-op. Favouriting the equipped enchant is how the first
 	// draft of this check passed while proving nothing.
-	const rows = page.locator(inModal(`${activePane} ${q('selector-modal-list-item')}`));
+	const rows = page.locator(inModal(`${activePane} ${q('virtual-list-row')}`));
 	const rowCount = await rows.count();
 	let target = -1;
 	for (let index = 0; index < rowCount; index++) {
