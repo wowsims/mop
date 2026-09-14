@@ -204,6 +204,27 @@ const captureStates = async (browser, port, spec, width) => {
 
 	// --- Rotation tab: APL sub-panes, then Auto rotation type ---
 	if (await openTopTab(page, 'rotation-tab')) {
+		// A spec whose default rotation type isn't APL never mounts the APL pane at all now that
+		// the type picks which of the three layouts renders, so switch to it first — a no-op on a
+		// baseline that still mounts all three and merely hides the inactive ones.
+		const currentType = await page.evaluate(() => document.getElementById('rotation-tab-rotation-type')?.textContent?.trim());
+		if (currentType && currentType !== 'APL') {
+			const opened = await page.evaluate(() => {
+				document.getElementById('rotation-tab-rotation-type')?.click();
+				return true;
+			});
+			if (opened) {
+				await settle(page, 300);
+				const picked = await page.evaluate(() => {
+					const opts = [...document.querySelectorAll(':is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li, :is([data-testid="dropdown-picker-item"], .dropdown-picker-item)')];
+					const apl = opts.find(o => /^APL$/i.test((o.textContent ?? '').trim()));
+					if (!apl) return false;
+					(apl.querySelector('button, a') ?? apl).click();
+					return true;
+				});
+				if (picked) await settle(page, 500);
+			}
+		}
 		await page.waitForSelector('#apl-priority-list', { state: 'visible', timeout: 15000 }).catch(() => {});
 		await settle(page, 400);
 		const NAVBAR = q('apl-rotation-navbar');
