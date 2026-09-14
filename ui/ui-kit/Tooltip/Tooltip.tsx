@@ -56,6 +56,8 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				hidden={hidden}
 				afterShow={onOpenChange && (() => onOpenChange(true))}
 				afterHide={onOpenChange && (() => onOpenChange(false))}
+				delayHide={0}
+				delayShow={0}
 				className={clsx(
 					'sim-tooltip',
 					'ui-tooltip',
