@@ -20,7 +20,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 	const cellClassName = clsx('ui-ep-weights-table-cell', showThreatMetrics && 'max-lg:pl-0');
 
 	return (
-		<tr className="ep-ratios bg-(--table-row-even-bg)">
+		<tr data-testid="ep-ratios" className="bg-(--table-row-even-bg)">
 			<td className={cellClassName}>{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.ep_ratio')}</td>
 			<td className={cellClassName} />
 			{columns
@@ -28,11 +28,11 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 				.map(column => (
 					<td
 						key={column.id}
+						data-column-type={column.type}
 						className={clsx(
 							cellClassName,
 							'text-right',
 							column.type === 'weight' ? 'in-data-[stats-type=ep]:hidden' : 'in-data-[stats-type=weight]:hidden',
-							`type-${column.type}`,
 						)}>
 						<NumberPicker
 							modObject={player}
@@ -54,11 +54,12 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 				))}
 			<td className={clsx(cellClassName, 'text-center align-middle')}>
 				<Button
-					className="compute-ep whitespace-nowrap"
+					data-testid="compute-ep"
+					className="whitespace-nowrap"
 					onClick={onComputeEp}
 					{...tooltipAnchorProps(EP_TOOLTIP_ID, i18n.t('sidebar.buttons.stat_weights.modal.tooltips.compute_weighted_ep'))}>
 					<Icon name="calculator" className="inline align-middle" />
-					<span data-testid="not-tiny" className={clsx('not-tiny', showThreatMetrics && 'max-lg:hidden')}>
+					<span data-testid="not-tiny" className={clsx(showThreatMetrics && 'max-lg:hidden')}>
 						{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.update_ep_button')}
 					</span>
 				</Button>

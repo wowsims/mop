@@ -252,10 +252,10 @@ const renderDialog = () => {
 	);
 };
 
-const popup = () => rootElem.querySelector('.ep-weights-menu')!;
-const table = () => popup().querySelector('table.results-ep-table')!;
+const popup = () => rootElem.querySelector('[data-testid="ep-weights-menu"]')!;
+const table = () => popup().querySelector('[data-testid="results-ep-table"]')!;
 const rowFor = (name: string) => [...table().querySelectorAll('tbody tr')].find(row => row.firstElementChild?.textContent === name)!;
-const calculate = () => popup().querySelector<HTMLButtonElement>('button.calc-weights')!;
+const calculate = () => popup().querySelector<HTMLButtonElement>('[data-testid="calc-weights"]')!;
 
 describe('EpWeightsDialog', () => {
 	beforeEach(setup);
@@ -335,12 +335,12 @@ describe('EpWeightsDialog', () => {
 		await act(async () => {
 			fireEvent.click(getByTestId('toggle-open'));
 		});
-		expect(rootElem.querySelector('.ep-weights-menu')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="ep-weights-menu"]')).toBeNull();
 		await act(async () => {
 			fireEvent.click(getByTestId('toggle-open'));
 		});
 
-		expect(table().className).toBe('results-ep-table w-full stats-type-weight');
+		expect(table().className.split(' ')).toEqual(expect.arrayContaining(['w-full', 'stats-type-weight']));
 		expect(select().value).toBe('1');
 		expect(showAll().checked).toBe(true);
 	});
@@ -350,7 +350,7 @@ describe('EpWeightsDialog', () => {
 	it('gives every EP-ratio picker a unique id', () => {
 		host.sim.showThreatMetrics = true;
 		renderDialog();
-		const ids = [...table().querySelectorAll('tr.ep-ratios input')].map(input => input.id);
+		const ids = [...table().querySelectorAll('[data-testid="ep-ratios"] input')].map(input => input.id);
 		expect(ids).toHaveLength(12);
 		expect(new Set(ids).size).toBe(12);
 		expect(ids.slice(0, 2)).toEqual(['ep-ratio-weight-0', 'ep-ratio-ep-0']);
@@ -371,14 +371,14 @@ describe('EpWeightsDialog', () => {
 	// below it in the same function already called `sanitizeId`.
 	it('sanitises the include-toggle id', () => {
 		renderDialog();
-		expect(rowFor('Spell Hit Percent').querySelector('.swcalc-include-toggle input')!.id).toBe('sw-stat-toggle-spellhitpercent');
-		expect(rowFor('Crit Rating').querySelector('.current-ep input')!.id).toBe('ep-weight-stat-crit');
+		expect(rowFor('Spell Hit Percent').querySelector('[data-testid="swcalc-include-toggle"] input')!.id).toBe('sw-stat-toggle-spellhitpercent');
+		expect(rowFor('Crit Rating').querySelector('[data-testid="current-ep"] input')!.id).toBe('ep-weight-stat-crit');
 	});
 
 	it('leaves the reference stat out of the calculation and disables its toggle', () => {
 		renderDialog();
-		expect(rowFor('Strength').querySelector<HTMLInputElement>('.swcalc-include-toggle input')!.disabled).toBe(true);
-		expect(rowFor('Agility').querySelector<HTMLInputElement>('.swcalc-include-toggle input')!.disabled).toBe(false);
+		expect(rowFor('Strength').querySelector<HTMLInputElement>('[data-testid="swcalc-include-toggle"] input')!.disabled).toBe(true);
+		expect(rowFor('Agility').querySelector<HTMLInputElement>('[data-testid="swcalc-include-toggle"] input')!.disabled).toBe(false);
 	});
 
 	it('renders no include toggle for a stat the spec does not weight', () => {
@@ -388,8 +388,8 @@ describe('EpWeightsDialog', () => {
 		});
 		const unweighted = UnitStat.fromStat(Stat.StatStamina).getFullName(Class.ClassWarrior);
 		expect(rowFor(unweighted)).toBeTruthy();
-		expect(rowFor(unweighted).querySelector('.swcalc-include-toggle input')).toBeNull();
-		expect(rowFor('Strength').querySelector('.swcalc-include-toggle input')).not.toBeNull();
+		expect(rowFor(unweighted).querySelector('[data-testid="swcalc-include-toggle"] input')).toBeNull();
+		expect(rowFor('Strength').querySelector('[data-testid="swcalc-include-toggle"] input')).not.toBeNull();
 	});
 
 	// DEFECT FIXED. Every `<button>` in the panel was written without one, so any inside a form would
@@ -463,7 +463,7 @@ describe('EpWeightsDialog', () => {
 		settings.setStatExcluded(AGILITY, true);
 
 		act(() => {
-			fireEvent.click(table().querySelectorAll('thead tr:first-child th')[14].querySelector('button.col-action')!);
+			fireEvent.click(table().querySelectorAll('thead tr:first-child th')[14].querySelector('[data-testid="col-action"]')!);
 		});
 
 		expect(player.epWeights.getStat(Stat.StatAgility)).toBe(3);
@@ -483,7 +483,7 @@ describe('EpWeightsDialog', () => {
 		player.setEpWeights(new Stats().withStat(Stat.StatStrength, 5));
 
 		act(() => {
-			fireEvent.click(table().querySelector('tr.ep-ratios button.compute-ep')!);
+			fireEvent.click(table().querySelector('[data-testid="ep-ratios"] [data-testid="compute-ep"]')!);
 		});
 		expect(player.epWeights.getStat(Stat.StatStrength)).toBe(1);
 		expect(player.epWeights.getStat(Stat.StatAgility)).toBe(0.5);
@@ -494,7 +494,7 @@ describe('EpWeightsDialog', () => {
 			fireEvent.change(select);
 		});
 		act(() => {
-			fireEvent.click(table().querySelector('tr.ep-ratios button.compute-ep')!);
+			fireEvent.click(table().querySelector('[data-testid="ep-ratios"] [data-testid="compute-ep"]')!);
 		});
 		expect(player.epWeights.getStat(Stat.StatStrength)).toBe(2);
 		expect(player.epWeights.getStat(Stat.StatAgility)).toBe(1);
@@ -547,9 +547,9 @@ describe('EpWeightsDialog', () => {
 
 			expect(rootElem.querySelector('[data-testid="progress-tracker-dialog"]')).toBeNull();
 			const strength = rowFor('Strength');
-			expect(strength.querySelector('.type-weight .results-avg')!.textContent).toBe('2.00');
-			expect(strength.querySelector('.type-ep .results-avg')!.textContent).toBe('1.00');
-			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.textContent).toBe('0.50');
+			expect(strength.querySelector('[data-column-type="weight"] [data-testid="results-avg"]')!.textContent).toBe('2.00');
+			expect(strength.querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.textContent).toBe('1.00');
+			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.textContent).toBe('0.50');
 		});
 
 		// DEFECT FIXED. The delta test was `if (…) epAvgElem;` — an expression statement that does
@@ -568,11 +568,11 @@ describe('EpWeightsDialog', () => {
 				fireEvent.click(calculate());
 			});
 
-			expect(rowFor('Strength').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBe('positive');
-			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBeNull();
+			expect(rowFor('Strength').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBe('positive');
+			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBeNull();
 
 			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
-			expect(rowFor('Agility').querySelector('.type-ep .results-avg')!.getAttribute('data-sign')).toBe('negative');
+			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBe('negative');
 		});
 
 		it('greys the columns whose EP ratio is zero', async () => {
@@ -582,7 +582,7 @@ describe('EpWeightsDialog', () => {
 				fireEvent.click(calculate());
 			});
 
-			const cells = [...rowFor('Strength').querySelectorAll('td.stdev-cell')];
+			const cells = [...rowFor('Strength').querySelectorAll('[data-testid="stdev-cell"]')];
 			expect(cells[0].hasAttribute('data-unused')).toBe(false);
 			expect(cells[2].hasAttribute('data-unused')).toBe(true);
 		});
@@ -601,7 +601,7 @@ describe('EpWeightsDialog', () => {
 				fireEvent.click(calculate());
 			});
 			expect(player.computeStatWeights.mock.calls[0][0]).toEqual([Stat.StatStrength, Stat.StatCritRating]);
-			expect(rowFor('Agility').querySelector('.type-ep .notapplicable')).not.toBeNull();
+			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-notapplicable]')).not.toBeNull();
 		});
 
 		it('aborts through the progress dialog and leaves the EP dialog open', async () => {
@@ -629,7 +629,7 @@ describe('EpWeightsDialog', () => {
 			});
 
 			expect(toasts).toEqual([{ variant: 'info', body: 'Statweight sim cancelled.' }]);
-			expect(rowFor('Strength').querySelector('.type-ep .notapplicable')).not.toBeNull();
+			expect(rowFor('Strength').querySelector('[data-column-type="ep"] [data-notapplicable]')).not.toBeNull();
 		});
 
 		// DEFECT FIXED. `isRunning` was set before the pre-run abort and the catch returned without

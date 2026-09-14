@@ -58,7 +58,7 @@ export const StatWeightRow = ({
 		<tr className="odd:bg-(--table-row-odd-bg) even:bg-(--table-row-even-bg)">
 			<td className={cellClassName}>{fullName}</td>
 			{!isTank && (
-				<td className={`swcalc-include-toggle ${cellClassName}`}>
+				<td data-testid="swcalc-include-toggle" className={cellClassName}>
 					{includable && (
 						<BooleanPicker
 							modObject={settings}
@@ -86,7 +86,7 @@ export const StatWeightRow = ({
 						cellClassName={cellClassName}
 					/>
 				))}
-			<td className={`current-ep ${cellClassName}`}>
+			<td data-testid="current-ep" className={cellClassName}>
 				<NumberPicker
 					modObject={player}
 					config={{

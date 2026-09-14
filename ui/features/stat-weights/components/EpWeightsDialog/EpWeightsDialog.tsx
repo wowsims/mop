@@ -169,13 +169,13 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 		<Dialog
 			open={open}
 			onOpenChange={handleOpenChange}
-			className="ep-weights-menu"
+			testId="ep-weights-menu"
 			size={showThreatMetrics ? 'xl' : 'lg'}
 			scrollContents
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
 				isTank ? undefined : (
-					<Button className="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
+					<Button data-testid="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
 						<Icon name="calculator" className="mr-1" />
 						{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}
 					</Button>
@@ -209,7 +209,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						displayMetrics={displayMetrics}
 					/>
 				</div>
-				<div className="ep-weights-sidebar ui-ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
+				<div className="ui-ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>
@@ -218,7 +218,6 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 				<ProgressTrackerDialog
 					ref={progressRef}
 					open
-					className="ep-weights-progress"
 					testId="progress-tracker-dialog"
 					title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 					state={progress}

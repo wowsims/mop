@@ -15,7 +15,9 @@ export interface StatWeightCellsProps {
 }
 
 const NotApplicable = () => (
-	<span className="results-avg notapplicable pr-[25px] font-bold">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>
+	<span data-testid="results-avg" data-notapplicable className="pr-[25px] font-bold">
+		{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}
+	</span>
 );
 
 export const StatWeightCells = ({ stat, statWeights, iterations, epRatio, epDelta, cellClassName }: StatWeightCellsProps) => {
@@ -26,7 +28,9 @@ export const StatWeightCells = ({ stat, statWeights, iterations, epRatio, epDelt
 	return (
 		<>
 			<td
-				className={clsx('stdev-cell type-weight text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500')}
+				data-testid="stdev-cell"
+				data-column-type="weight"
+				className={clsx('text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500')}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
@@ -39,7 +43,9 @@ export const StatWeightCells = ({ stat, statWeights, iterations, epRatio, epDelt
 				)}
 			</td>
 			<td
-				className={clsx('stdev-cell type-ep text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500')}
+				data-testid="stdev-cell"
+				data-column-type="ep"
+				className={clsx('text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500')}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue

@@ -12,10 +12,10 @@ export interface StatWeightValueProps {
 
 export const StatWeightValue = ({ value, stdev, iterations, className, sign }: StatWeightValueProps) => (
 	<>
-		<span className={clsx('results-avg', className)} data-sign={sign}>
+		<span data-testid="results-avg" className={className} data-sign={sign}>
 			{value.toFixed(2)}
 		</span>
-		<span className="results-stdev text-2xs">
+		<span className="text-2xs">
 			{'('}
 			<Icon name="plus-minus" size="xs" />
 			{stDevToConf90(stdev, iterations).toFixed(2)}

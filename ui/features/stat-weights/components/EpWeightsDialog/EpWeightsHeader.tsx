@@ -28,20 +28,25 @@ export const EpWeightsHeader = ({ columns, isTank, showThreatMetrics }: EpWeight
 			return (
 				<th
 					key={column.id}
+					data-column-type={isAction ? undefined : column.type}
 					className={clsx(
 						'ui-ep-weights-table-header-cell',
 						showThreatMetrics && 'lg:max-xl:pr-0',
 						isAction
 							? 'text-center'
 							: [
-									`type-${column.type}`,
 									'text-right',
 									column.type === 'weight' ? 'in-data-[stats-type=ep]:hidden' : 'in-data-[stats-type=weight]:hidden',
 									showThreatMetrics && 'max-lg:text-center',
 								],
 					)}>
 					<span {...tooltipAnchorProps(EP_TOOLTIP_ID, column.labelTooltip)}>{column.label}</span>
-					<Button variant="unstyled" className="col-action ml-1" onClick={column.onCopy} {...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
+					<Button
+						variant="unstyled"
+						data-testid="col-action"
+						className="ml-1"
+						onClick={column.onCopy}
+						{...tooltipAnchorProps(EP_TOOLTIP_ID, column.actionTooltip)}>
 						<Icon name={isAction ? 'arrows-rotate' : 'copy'} />
 					</Button>
 				</th>

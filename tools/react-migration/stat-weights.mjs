@@ -23,10 +23,10 @@ const ITERATIONS = '5000';
 // other, so everything below keys on that class and asks the DOM rather than the shape.
 const DIALOG = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
-	const dialog = document.querySelector('.ep-weights-menu');
+	const dialog = document.querySelector(q('ep-weights-menu'));
 	if (!dialog) return { present: false };
-	const table = dialog.querySelector('.results-ep-table');
-	const ratioIds = [...dialog.querySelectorAll('.ep-ratios input')].map(input => input.id);
+	const table = dialog.querySelector(q('results-ep-table'));
+	const ratioIds = [...dialog.querySelectorAll(`${q('ep-ratios')} input`)].map(input => input.id);
 	// `data-size` on the port's popup, the `modal-*` class on the baseline's Bootstrap dialog.
 	const modalSizeClass = [...dialog.classList].find(name => /^modal-(sm|md|lg|xl)$/.test(name));
 	const size = dialog.dataset.size ?? modalSizeClass?.replace(/^modal-/, '') ?? 'default';
@@ -38,7 +38,7 @@ const DIALOG = () => {
 		rows: [...table.querySelectorAll('tbody tr')].map(row => row.firstElementChild.textContent),
 		ratioIds,
 		duplicateRatioIds: ratioIds.length - new Set(ratioIds).size,
-		toggleIds: [...dialog.querySelectorAll('.swcalc-include-toggle input')].map(input => input.id),
+		toggleIds: [...dialog.querySelectorAll(`${q('swcalc-include-toggle')} input`)].map(input => input.id),
 		untypedButtons: [...dialog.querySelectorAll('button')].filter(button => !button.getAttribute('type')).map(button => button.className || '(no class)'),
 		unnamedRefSelects: [...dialog.querySelectorAll('.ref-stat-select select, select.ref-stat-select')].filter(select => {
 			const label = select.id && dialog.querySelector(`label[for="${CSS.escape(select.id)}"]`);
@@ -55,7 +55,7 @@ const DIALOG = () => {
 		// The tank layout unmounts these instead of hiding them with CSS, so a missing element counts
 		// as `none` rather than throwing on `getComputedStyle(null)`.
 		footerDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector('[data-testid="sim-dialog-footer"], .modal-footer')),
-		ratiosDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector('.ep-ratios')),
+		ratiosDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector(q('ep-ratios'))),
 		referenceDisplay: (el => (el ? getComputedStyle(el).display : 'none'))(dialog.querySelector(q('ep-reference-options'))),
 	};
 };
@@ -64,7 +64,7 @@ const DIALOG = () => {
 // the container the rule names and watch the header stay where it is.
 const STICKY = () => {
 	const container = document.querySelector(
-		'.ep-weights-menu :is([data-testid="results-ep-table-container"], .results-ep-table-container)',
+		':is([data-testid="ep-weights-menu"], .ep-weights-menu) :is([data-testid="results-ep-table-container"], .results-ep-table-container)',
 	);
 	if (!container) return { error: 'no container' };
 	const th = container.querySelector('thead th');
@@ -95,10 +95,11 @@ const STICKY = () => {
 // progress modal at load, it shares every `.progress-tracker-modal-*` class name, and it is earlier
 // in the document, so an unscoped `querySelector` answers for it and reports an empty bar forever.
 const PROGRESS = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	// The baseline still carries `.progress-tracker-dialog`/`.progress-tracker-modal-*` classes on
 	// both the popup and its children; the port carries the matching `data-testid`s on both instead.
 	const progress = document.querySelector('.progress-tracker-dialog, [data-testid="progress-tracker-dialog"], .results-pending-overlay');
-	const dialog = document.querySelector('.ep-weights-menu');
+	const dialog = document.querySelector(q('ep-weights-menu'));
 	const within = (classSuffix, testIdSuffix) =>
 		document.querySelector(`.progress-tracker-dialog ${classSuffix}, [data-testid="progress-tracker-dialog"] ${testIdSuffix}`)?.textContent ?? null;
 	return {
@@ -113,12 +114,14 @@ const PROGRESS = () => {
 	};
 };
 
-const EP_VALUES = () =>
-	[...document.querySelectorAll('.ep-weights-menu tbody tr')].slice(0, 4).map(row => ({
+const EP_VALUES = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	return [...document.querySelectorAll(`${q('ep-weights-menu')} tbody tr`)].slice(0, 4).map(row => ({
 		stat: row.firstElementChild.textContent,
-		weight: row.querySelector('.type-weight .results-avg')?.textContent ?? null,
-		ep: row.querySelector('.type-ep .results-avg')?.textContent ?? null,
+		weight: row.querySelector(`:is([data-column-type="weight"], .type-weight) ${q('results-avg')}`)?.textContent ?? null,
+		ep: row.querySelector(`:is([data-column-type="ep"], .type-ep) ${q('results-avg')}`)?.textContent ?? null,
 	}));
+};
 
 const problems = [];
 const check = (name, ok, detail) => {
@@ -210,7 +213,7 @@ check(
 // `<body>` and could never be clipped, so this is the one place the port can lose a tooltip.
 const TOOLTIP = async () => {
 	// `:visible` because `stats-type-ep` hides the weight columns, and their headers are first.
-	const anchor = page.locator('.ep-weights-menu thead th span[data-tooltip-content]:visible').first();
+	const anchor = page.locator(':is([data-testid="ep-weights-menu"], .ep-weights-menu) thead th span[data-tooltip-content]:visible').first();
 	if (!(await anchor.count())) return { error: 'no header tooltip anchor' };
 	const hovered = await anchor
 		.hover({ timeout: 5000 })
@@ -220,7 +223,7 @@ const TOOLTIP = async () => {
 	await page.waitForTimeout(600);
 	return page.evaluate(() => {
 		const tip = document.querySelector('.sim-tooltip[style*="opacity: 1"], .sim-tooltip.react-tooltip__show');
-		const popup = document.querySelector('.ep-weights-menu');
+		const popup = document.querySelector(':is([data-testid="ep-weights-menu"], .ep-weights-menu)');
 		if (!tip) return { error: 'no tooltip opened' };
 		const t = tip.getBoundingClientRect();
 		const p = popup.getBoundingClientRect();
@@ -252,7 +255,7 @@ await page.waitForTimeout(400);
 const compact = await page.evaluate(() => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
 	// The tank layout does not render the compute-EP button at all, so there is nothing to check.
-	const notTiny = document.querySelector(`.ep-weights-menu .compute-ep ${q('not-tiny')}`);
+	const notTiny = document.querySelector(`${q('ep-weights-menu')} ${q('compute-ep')} ${q('not-tiny')}`);
 	const dialog = document.querySelector('.ep-weights-menu');
 	const modalSizeClass = [...(dialog?.classList ?? [])].find(name => /^modal-(sm|md|lg|xl)$/.test(name));
 	const size = dialog?.dataset.size ?? modalSizeClass?.replace(/^modal-/, '') ?? 'default';
@@ -346,7 +349,7 @@ if ((await page.evaluate(DIALOG)).footerDisplay === 'none') {
 }
 
 console.log('\nrunning');
-await page.click('.ep-weights-menu .calc-weights');
+await page.click(':is([data-testid="ep-weights-menu"], .ep-weights-menu) :is([data-testid="calc-weights"], .calc-weights)');
 // Waited for rather than sampled: the Go sim reports at most once per 100 ms and the wasm pool
 // decimates by worker count, so the first tick is not instant — and a fixed sleep either reads
 // before it or after the run has finished.
@@ -408,7 +411,7 @@ console.log(`  cancelled ${JSON.stringify(cancelled)}`);
 check('cancelling ends the run', !cancelled.shown);
 check('cancelling leaves the EP dialog open', cancelled.epDialogOpen);
 
-await page.click('.ep-weights-menu .calc-weights');
+await page.click(':is([data-testid="ep-weights-menu"], .ep-weights-menu) :is([data-testid="calc-weights"], .calc-weights)');
 await page.waitForFunction(
 	() => !document.querySelector('.progress-tracker-dialog, [data-testid="progress-tracker-dialog"]') && !document.querySelector('.sim-ui.blurred'),
 	null,
@@ -421,7 +424,7 @@ check(
 	'a completed run fills the table',
 	values.some(row => row.weight && row.weight !== 'N/A' && row.weight !== '0.00'),
 );
-check('the Calculate button is usable again', await page.locator('.ep-weights-menu .calc-weights').isEnabled());
+check('the Calculate button is usable again', await page.locator(':is([data-testid="ep-weights-menu"], .ep-weights-menu) :is([data-testid="calc-weights"], .calc-weights)').isEnabled());
 
 check('the wasm worker logs no empty console.error', emptyErrors === 0, `${emptyErrors} empty`);
 

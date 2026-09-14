@@ -21,7 +21,6 @@ export const EpWeightsOptions = ({ options, onStatsTypeChange, onShowAllStatsCha
 				ariaLabel={i18n.t('sidebar.buttons.stat_weights.modal.stats_type')}
 				config={{
 					id: 'ep-type-select',
-					extraClassNames: ['ep-type-select'],
 					values: [
 						{ name: i18n.t('sidebar.buttons.stat_weights.modal.ep'), value: 0 },
 						{ name: i18n.t('sidebar.buttons.stat_weights.modal.weights'), value: 1 },
