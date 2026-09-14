@@ -24,15 +24,19 @@ export const MetricsTotalBar = ({ percentage, max, total, value, overlayValue, s
 	const fillBg =
 		(spellSchoolString && SPELL_SCHOOL_BG[spellSchoolString.toLowerCase()]) || (classColor && CLASS_BG[classColor.toLowerCase()]) || 'bg-current';
 	return (
-		<div className="metrics-total relative flex justify-between w-full min-w-[calc(7ch+7ch+50px)]">
-			<div className="metrics-total-percentage shrink-0 w-[7ch]">{formatToPercent(percentage || 0)}</div>
-			<div className="metrics-total-bar ml-1 mr-1 absolute left-[7ch] right-[7ch] h-full grow shrink bg-white-5">
-				<div className={clsx('metrics-total-bar-fill absolute top-0 left-0 h-full w-(--percentage)', fillBg)} style={fill(value, max)} />
+		<div className="relative flex justify-between w-full min-w-[calc(7ch+7ch+50px)]">
+			<div className="shrink-0 w-[7ch]">{formatToPercent(percentage || 0)}</div>
+			<div className="ml-1 mr-1 absolute left-[7ch] right-[7ch] h-full grow shrink bg-white-5">
+				<div data-testid="metrics-total-bar-fill" className={clsx('absolute top-0 left-0 h-full w-(--percentage)', fillBg)} style={fill(value, max)} />
 				{!!overlayValue && (
-					<div className="metrics-total-bar-fill absolute top-0 left-0 h-full w-(--percentage) bg-black/25" style={fill(overlayValue, max)} />
+					<div
+						data-testid="metrics-total-bar-fill"
+						className="absolute top-0 left-0 h-full w-(--percentage) bg-black/25"
+						style={fill(overlayValue, max)}
+					/>
 				)}
 			</div>
-			<div className="metrics-total-amount w-[7ch]">{formatToCompactNumber(total)}</div>
+			<div className="w-[7ch]">{formatToCompactNumber(total)}</div>
 		</div>
 	);
 };

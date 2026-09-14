@@ -110,14 +110,14 @@ describe('HealingMetricsTable', () => {
 		result = playerResult([metric('Healing Touch')]);
 		const { container } = render(<HealingMetricsTable />);
 
-		expect(container.querySelectorAll('td[data-primary-metric] .metrics-total-bar-fill')).toHaveLength(2);
+		expect(container.querySelectorAll('td[data-primary-metric] [data-testid="metrics-total-bar-fill"]')).toHaveLength(2);
 	});
 
 	it('drops the overlay bar when nothing is shielded', () => {
 		result = playerResult([metric('Healing Touch', { shielding: 0 })]);
 		const { container } = render(<HealingMetricsTable />);
 
-		expect(container.querySelectorAll('td[data-primary-metric] .metrics-total-bar-fill')).toHaveLength(1);
+		expect(container.querySelectorAll('td[data-primary-metric] [data-testid="metrics-total-bar-fill"]')).toHaveLength(1);
 	});
 
 	it('opens the healing breakdown with its average column from the primary-metric cell', async () => {
@@ -182,6 +182,6 @@ describe('HealingMetricsTable', () => {
 
 	it('renders no bar denominator at all before a result, rather than -Infinity', () => {
 		const { container } = render(<HealingMetricsTable />);
-		expect(container.querySelectorAll('.metrics-total-bar-fill')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-testid="metrics-total-bar-fill"]')).toHaveLength(0);
 	});
 });

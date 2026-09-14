@@ -85,6 +85,6 @@ describe('MetricsCombinedTooltip', () => {
 
 	it('renders a total bar per row unless bars are turned off', () => {
 		const { container } = render(<MetricsCombinedTooltip groups={[group(undefined, [{ name: 'Hit', value: 10, percentage: 10 }])]} />);
-		expect(container.querySelectorAll('.metrics-total-bar-fill')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="metrics-total-bar-fill"]')).toHaveLength(1);
 	});
 });

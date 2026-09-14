@@ -168,6 +168,6 @@ describe('DtpsMetricsTable', () => {
 
 	it('renders no bar denominator at all before a result, rather than -Infinity', () => {
 		const { container } = render(<DtpsMetricsTable />);
-		expect(container.querySelectorAll('.metrics-total-bar-fill')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-testid="metrics-total-bar-fill"]')).toHaveLength(0);
 	});
 });
