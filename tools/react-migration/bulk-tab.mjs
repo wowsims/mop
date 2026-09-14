@@ -64,7 +64,6 @@ const INSTALL = () => {
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 	const cls = el => (el?.getAttribute('class') ?? '').trim().split(/\s+/).filter(Boolean).sort().join('.');
 	const shown = el => (el ? getComputedStyle(el).display !== 'none' : null);
-	const q = name => `:is([data-testid="${name}"], .${name})`;
 
 	window.bulkProbe = {
 		// The inner strip, read the way `simTabsProbe` reads the outer one: the selected flag and the
