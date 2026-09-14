@@ -243,7 +243,8 @@ if (!IS_BASE) {
 }
 
 // `.ep-weights-menu:not(.hide-threat-metrics)` was always true: the class is on the sim root, so every
-// spec got the tank-mode compact layout below `lg`. The re-keyed selector reads the root, so the
+// spec got the tank-mode compact layout below `lg`. The dialog's own `data-size`/`modal-*` reflects
+// `showThreatMetrics` directly (xl only when threat is on), so it is read from there instead -- the
 // compact rules apply exactly when threat metrics are shown -- which is the whole point of the block.
 // Invisible at the 1280px default viewport, so this narrows it first.
 await page.setViewportSize({ width: 900, height: 800 });
@@ -252,8 +253,11 @@ const compact = await page.evaluate(() => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
 	// The tank layout does not render the compute-EP button at all, so there is nothing to check.
 	const notTiny = document.querySelector(`.ep-weights-menu .compute-ep ${q('not-tiny')}`);
+	const dialog = document.querySelector('.ep-weights-menu');
+	const modalSizeClass = [...(dialog?.classList ?? [])].find(name => /^modal-(sm|md|lg|xl)$/.test(name));
+	const size = dialog?.dataset.size ?? modalSizeClass?.replace(/^modal-/, '') ?? 'default';
 	return {
-		rootHidesThreat: !!document.querySelector('.sim-ui.hide-threat-metrics'),
+		rootHidesThreat: size !== 'xl',
 		notTiny: notTiny ? getComputedStyle(notTiny).display : 'missing',
 	};
 });

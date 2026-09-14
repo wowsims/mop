@@ -456,7 +456,7 @@ try {
 	const primary = await hover(page.locator('.damage-metrics-root tbody tr td.metrics-table-cell--primary-metric').first());
 	check('the primary-metric cell opens a tooltip holding a nested metrics table', primary.withTable > 0, JSON.stringify(primary));
 
-	// The threat veto: `onShow` returns false while `.hide-threat-metrics` is on the sim root, so the
+	// The threat veto: `onShow` returns false while threat metrics are off, so the
 	// same cell must open in one state and stay shut in the other. Both directions, because a gate
 	// that only saw the default state would pass on a veto that never fires.
 	const dpsRow = await page.evaluate(() =>
@@ -469,15 +469,18 @@ try {
 		const setThreat = async show => {
 			await page.click('.sim-toolbar button.sim-options');
 			await page.waitForTimeout(700);
-			await page.locator('#simui-show-threat-metrics').setChecked(show);
+			const checkbox = page.locator('#simui-show-threat-metrics');
+			const label = page.locator('label[for="simui-show-threat-metrics"]');
+			const previous = await checkbox.isChecked();
+			if (previous !== show) await label.click();
 			await page.waitForTimeout(400);
 			await page.keyboard.press('Escape');
 			await page.waitForTimeout(700);
+			return previous;
 		};
 		const dpsCell = page.locator('.damage-metrics-root tbody tr').nth(dpsRow).locator('td.text-success');
-		const showedThreat = await page.evaluate(() => !document.querySelector('.hide-threat-metrics'));
 
-		await setThreat(false);
+		const showedThreat = await setThreat(false);
 		const vetoed = await hover(dpsCell);
 		check('the threat tooltip stays shut while threat metrics are hidden', vetoed.open === 0, JSON.stringify(vetoed));
 

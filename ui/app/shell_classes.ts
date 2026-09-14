@@ -1,16 +1,8 @@
-import { hideMetricsClassName, showsEpRatios } from '@features/results/model/sim_results';
+import { showsEpRatios } from '@features/results/model/sim_results';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import clsx from 'clsx';
 
 export { showsEpRatios };
-
-export interface MetricVisibility {
-	damage: boolean;
-	threat: boolean;
-	healing: boolean;
-	epRatios: boolean;
-	experimental: boolean;
-}
 
 export const simTypeClasses = (spec: PlayerSpec<any>): string =>
 	clsx(
@@ -21,40 +13,23 @@ export const simTypeClasses = (spec: PlayerSpec<any>): string =>
 		!spec.isHealingSpec && !spec.isTankSpec && !spec.isMeleeDpsSpec && spec.isRangedDpsSpec && 'sim-type--ranged',
 	);
 
-export const metricVisibilityClasses = (metrics: MetricVisibility): string =>
-	clsx(
-		!metrics.damage && hideMetricsClassName('damage'),
-		!metrics.threat && hideMetricsClassName('threat'),
-		!metrics.healing && hideMetricsClassName('healing'),
-		!metrics.epRatios && 'hide-ep-ratios',
-		!metrics.experimental && 'hide-experimental',
-	);
-
 export interface SimUiClassesArgs {
 	className: string;
 	spec: PlayerSpec<any>;
-	metrics: MetricVisibility;
 }
 
-export const simUiClasses = ({ className, spec, metrics }: SimUiClassesArgs): string =>
-	clsx('sim-ui', 'group/sim', className, simTypeClasses(spec), metricVisibilityClasses(metrics));
+export const simUiClasses = ({ className, spec }: SimUiClassesArgs): string => clsx('sim-ui', 'group/sim', className, simTypeClasses(spec));
 
 export interface SimUiAttributesArgs {
 	spec: PlayerSpec<any>;
-	metrics: MetricVisibility;
 }
 
-export const simUiAttributes = ({ spec, metrics }: SimUiAttributesArgs): Record<string, string | undefined> => {
+export const simUiAttributes = ({ spec }: SimUiAttributesArgs): Record<string, string | undefined> => {
 	const simType = spec.isHealingSpec ? 'heal' : spec.isTankSpec ? 'tank' : spec.isMeleeDpsSpec || spec.isRangedDpsSpec ? 'dps' : undefined;
 	const simAttack = simType === 'dps' ? (spec.isMeleeDpsSpec ? 'melee' : 'ranged') : undefined;
 
 	return {
 		'data-sim-type': simType,
 		'data-sim-attack': simAttack,
-		'data-hide-damage': metrics.damage ? undefined : '',
-		'data-hide-threat': metrics.threat ? undefined : '',
-		'data-hide-healing': metrics.healing ? undefined : '',
-		'data-hide-ep-ratios': metrics.epRatios ? undefined : '',
-		'data-hide-experimental': metrics.experimental ? undefined : '',
 	};
 };

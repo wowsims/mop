@@ -20,7 +20,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 	const cellClassName = clsx('ui-ep-weights-table-cell', showThreatMetrics && 'max-lg:pl-0');
 
 	return (
-		<tr className="ep-ratios in-data-[hide-ep-ratios]:hidden bg-(--table-row-even-bg)">
+		<tr className="ep-ratios bg-(--table-row-even-bg)">
 			<td className={cellClassName}>{i18n.t('sidebar.buttons.stat_weights.modal.column_headers.ep_ratio')}</td>
 			<td className={cellClassName} />
 			{columns

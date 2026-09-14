@@ -1,8 +1,6 @@
 import { CharacterStats } from '@features/character-stats';
 import { SimResultsPanel } from '@features/results/components/SimResultsPanel';
 import { SOCIALS } from '@sim/constants/other';
-import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
-import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import type { Sim } from '@sim/sim';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
@@ -16,7 +14,7 @@ import { SimTitleDropdown } from './header/SimTitleDropdown';
 import { SimToolbar } from './header/SimToolbar';
 import type { SimHostObject } from './individual_sim_ui';
 import { IterationsPicker } from './IterationsPicker';
-import { showsEpRatios, simUiAttributes, simUiClasses } from './shell_classes';
+import { simUiAttributes, simUiClasses } from './shell_classes';
 import { SimImportExport } from './SimImportExport';
 import { SimSidebarActions } from './SimSidebarActions';
 import { SimTabsSection } from './SimTabsSection';
@@ -41,9 +39,6 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 	const header = useRef<HTMLElement>(null);
 	const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null);
 	const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
-
-	const display = useDisplayMetrics(sim);
-	const metrics = { ...display, epRatios: showsEpRatios(display), experimental: useShowExperimental(sim) };
 
 	const [stuck, setStuck] = useState(false);
 	useEffect(() => {
@@ -72,11 +67,11 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 				<div
 					ref={root}
 					className={clsx(
-						simUiClasses({ className, spec, metrics }),
+						simUiClasses({ className, spec }),
 						'max-h-screen overflow-y-auto scrollbar-thumb-primary scrollbar-track-background scrollbar-thin [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary',
 					)}
 					data-testid="sim-ui"
-					{...simUiAttributes({ spec, metrics })}>
+					{...simUiAttributes({ spec })}>
 					<div className="h-full min-h-screen flex flex-col" data-testid="sim-root">
 						<div className="fixed top-0 left-0 w-screen h-screen bg-no-repeat bg-cover -z-1 bg-sim" data-testid="sim-bg" />
 						{noticeText ? (

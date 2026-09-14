@@ -74,7 +74,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
 			</PickerGroup>
-			{showThreatMetrics && (
+			{showThreatMetrics ? (
 				<PickerGroup data-testid="target-picker-section">
 					{numbers.map(config => (
 						<NumberPicker key={config.id} modObject={null} config={config} />
@@ -84,6 +84,8 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 					))}
 					<EnumPicker modObject={null} config={spellSchool} />
 				</PickerGroup>
+			) : (
+				<div className="hidden xl:block" data-testid="target-picker-section-placeholder" aria-hidden="true" />
 			)}
 		</div>
 	);
