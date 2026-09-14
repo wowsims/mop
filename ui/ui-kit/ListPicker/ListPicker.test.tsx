@@ -184,9 +184,9 @@ describe('ListPicker', () => {
 			mount(rowsOf('a'), { actions: { create: { useIcon: true } } });
 
 			expect(newButton()!.className.split(' ').sort()).toEqual([
-				'link-success',
 				'list-picker-item-action',
 				'list-picker-new-button',
+				'text-success',
 				'ui-list-picker-item-action',
 				'ui-list-picker-new-button',
 			]);

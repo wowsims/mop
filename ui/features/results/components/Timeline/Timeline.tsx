@@ -62,7 +62,7 @@ export const Timeline = ({ active }: TimelineProps) => {
 			<div className="timeline-disclaimer flex flex-wrap items-start gap-2">
 				<div className="timeline-disclaimer-text flex max-lg:grow max-lg:shrink max-lg:basis-full flex-col">
 					<p>
-						<i className="warning fa fa-exclamation-triangle fa-xl mr-2" />
+						<i className="text-damage-partial text-shadow-glow-danger fa fa-exclamation-triangle fa-xl mr-2" />
 						{i18n.t('results_tab.details.timeline.disclaimer')}
 					</p>
 					<p>{i18n.t('results_tab.details.timeline.note')}</p>

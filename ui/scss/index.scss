@@ -11,9 +11,8 @@
 @import 'bootstrap/scss/mixins';
 @import 'bootstrap/scss/utilities';
 
-// Bootstrap layout & components
-@import 'bootstrap/scss/root';
-@import 'bootstrap/scss/reboot';
+// `root` and `reboot` are gone: `ui/styles/tailwind.css` imports `tailwindcss/preflight.css` plus
+// `ui/styles/base.css` in their place, and `base.css` restores exactly what they used to compute.
 
 // `nav`, `navbar`, `dropdown`, `badge` and `containers` are gone: A-U-landing converted the two
 // landing menus and the `.container`/`.container-fluid` call sites to utilities and `ui-*`
@@ -36,10 +35,8 @@
 // `bootstrap/scss/utilities` above is kept: it only builds the $utilities map, which
 // `maps` and `mixins` read. This drops the API that renders the map into CSS.
 
-// Custom shared styles
-@import 'shared/mixins';
-@import 'shared/global';
-@import 'shared/global_old';
-
-// Custom Bootstrap style overrides
-@import 'shared/bootstrap_style_overrides';
+// `shared/mixins`, `shared/global`, `shared/global_old` and `shared/bootstrap_style_overrides` are
+// gone: A-U-base folded their rules into `ui/styles/base.css`, and every non-`ui-*` class they
+// carried (`.notices-banner`, `.link-success`, `.positive`/`.negative`, `.loader`, `.dropdown-option`,
+// `.dragto`) was converted to utilities, `data-*` variants or a co-located `ui-*` class. `.safe`,
+// `.danger` and `.warning` had no emitters at all.

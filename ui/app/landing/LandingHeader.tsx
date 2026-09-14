@@ -49,7 +49,7 @@ export const LandingHeader = () => {
 								href="https://discord.gg/p3DgvmnDCS"
 								target="_blank"
 								rel="noreferrer"
-								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2 max-md:pt-2">
+								className="nav-link ui-landing-nav-link flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2 max-md:pt-2">
 								<p className="m-0">
 									<Icon name="discord" style="brands" size="2x" className="discord-link" />
 									&nbsp;
@@ -59,7 +59,7 @@ export const LandingHeader = () => {
 								href="https://github.com/wowsims/mop"
 								target="_blank"
 								rel="noreferrer"
-								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
+								className="nav-link ui-landing-nav-link flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
 								<p className="m-0">
 									<Icon name="github" style="brands" size="2x" className="github-link" />
 									&nbsp;
@@ -69,7 +69,7 @@ export const LandingHeader = () => {
 								href="https://patreon.com/wowsims"
 								target="_blank"
 								rel="noreferrer"
-								className="nav-link link-alt flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
+								className="nav-link ui-landing-nav-link flex items-center whitespace-nowrap text-sm py-4 px-0 md:px-2">
 								<Icon name="patreon" style="brands" size="2x" className="patreon-link mr-2" />
 								<span className="text-fluid-xl md:hidden lg:block">{i18n.t('landing.header.supportDevs')}</span>
 							</a>

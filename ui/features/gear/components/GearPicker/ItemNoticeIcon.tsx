@@ -22,7 +22,11 @@ export const ItemNoticeIcon = ({ itemId, additionalNotice }: ItemNoticeIconProps
 
 	return (
 		<div className="item-notice inline relative z-1">
-			<button type="button" className="warning fa fa-exclamation-triangle fa-xl mr-2" {...tooltipAnchorProps(tooltipId)} />
+			<button
+				type="button"
+				className="text-damage-partial text-shadow-glow-danger fa fa-exclamation-triangle fa-xl mr-2"
+				{...tooltipAnchorProps(tooltipId)}
+			/>
 			<Tooltip
 				id={tooltipId}
 				content={

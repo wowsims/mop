@@ -1,3 +1,4 @@
+@layer components {
 .ui-list-picker-root {
 	@apply flex-col items-start gap-3 max-md:gap-2;
 
@@ -39,6 +40,10 @@
 		cursor: move;
 	}
 
+	&[data-drag='to'] {
+		filter: brightness(0.5);
+	}
+
 	&[data-draggable] {
 		cursor: grab;
 
@@ -67,7 +72,7 @@
 	}
 
 	&:not([data-layout='inline']) {
-		padding: var(--spacer-3);
+		padding: --spacing(4);
 
 		& .ui-list-picker-item-header .ui-list-picker-item-action:first-of-type {
 			margin-left: auto;
@@ -75,13 +80,13 @@
 	}
 
 	& .ui-list-picker-item-header {
-		padding-bottom: var(--spacing-stack);
+		padding-bottom: --spacing(3);
 		border-bottom: var(--border-default);
-		margin-bottom: var(--spacing-stack);
+		margin-bottom: --spacing(3);
 		display: flex;
 		align-items: center;
 		flex: 1;
-		--list-picker-item-spacing: var(--spacer-2);
+		--list-picker-item-spacing: --spacing(2);
 		gap: var(--list-picker-item-spacing);
 
 		& .ui-list-picker-item-title {
@@ -99,4 +104,5 @@
 span.ui-list-picker-title {
 	border-bottom: var(--border-default);
 	font-weight: bold;
+}
 }

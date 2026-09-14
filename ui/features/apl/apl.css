@@ -1,6 +1,7 @@
+@layer components {
 :root {
 	--apl-border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
-	--apl-spacer: var(--spacer-2);
+	--apl-spacer: --spacing(2);
 }
 
 .ui-apl-editor-row {
@@ -150,7 +151,7 @@
 
 			& .ui-list-picker-item-header {
 				order: 1;
-				line-height: var(--spacer-4);
+				line-height: --spacing(6);
 			}
 		}
 	}
@@ -180,4 +181,5 @@
 
 .ui-apl-group-variables-container .ui-list-picker-root .ui-list-picker-items {
 	gap: calc(var(--apl-spacer) * 1.5) !important;
+}
 }

@@ -89,7 +89,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 									/>
 								</li>
 								{config.inputs.map((input, index) => (
-									<li key={index} className="icon-picker-option dropdown-option">
+									<li key={index} className="icon-picker-option dropdown-option opacity-70 hover:opacity-100">
 										<IconPicker modObject={modObject} config={input} />
 									</li>
 								))}

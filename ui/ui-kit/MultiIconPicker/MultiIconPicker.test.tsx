@@ -95,9 +95,9 @@ describe('MultiIconPicker', () => {
 			'icon-dropdown-option ui-icon-picker-swatch dropdown-option p-0 [filter:opacity(0.7)] hover:filter-none',
 		);
 		expect(options.slice(1).map(option => option.className)).toEqual([
-			'icon-picker-option dropdown-option',
-			'icon-picker-option dropdown-option',
-			'icon-picker-option dropdown-option',
+			'icon-picker-option dropdown-option opacity-70 hover:opacity-100',
+			'icon-picker-option dropdown-option opacity-70 hover:opacity-100',
+			'icon-picker-option dropdown-option opacity-70 hover:opacity-100',
 		]);
 		expect(options.slice(1).every(option => within(option as HTMLElement).queryByTestId('icon-picker-root'))).toBe(true);
 	});

@@ -52,7 +52,7 @@ export const ReforgeSummary = () => {
 				return (
 					<SummaryTableRow key={stat}>
 						<div>{translateStat(stat)}</div>
-						<div className={value > 0 ? 'positive' : 'negative'} data-sign={value > 0 ? 'positive' : 'negative'}>
+						<div className={value > 0 ? 'text-success' : 'text-danger'} data-sign={value > 0 ? 'positive' : 'negative'}>
 							{value}
 						</div>
 					</SummaryTableRow>
