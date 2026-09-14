@@ -114,9 +114,9 @@ describe('IconEnumPicker', () => {
 		expect(menu()!.parentElement).toBe(slot.children[0].children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
-			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
-			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
-			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
 		]);
 		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});

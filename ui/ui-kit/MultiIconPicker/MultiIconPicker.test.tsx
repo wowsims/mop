@@ -91,7 +91,7 @@ describe('MultiIconPicker', () => {
 		open();
 		const options = Array.from(menu().children);
 		expect(options).toHaveLength(4);
-		expect(options[0].querySelector('a')?.className).toBe('ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none');
+		expect(options[0].querySelector('a')?.className).toBe('ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none');
 		expect(options[0].querySelector('a')?.getAttribute('data-testid')).toBe('icon-dropdown-option');
 		expect(options.slice(1).map(option => option.className)).toEqual([
 			'opacity-70 hover:opacity-100',
