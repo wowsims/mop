@@ -24,6 +24,8 @@ const SEARCH_DEBOUNCE_MS = 150;
 /** Until a real row has been measured. The sticky chrome is covered by the list's own overscan. */
 const ESTIMATED_ROW_HEIGHT = 32;
 
+const TAB_FADE_SETTLE_MS = 200;
+
 type Measured = { for: object | null; width: number; rowHeight: number };
 
 const UNMEASURED: Measured = { for: null, width: 0, rowHeight: ESTIMATED_ROW_HEIGHT };
@@ -97,7 +99,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 		rootRef.current?.style.setProperty('--log-sticky-top', `${stickyTop}px`);
 		// Scroll-independent on purpose: this is remeasured whenever the chrome above resizes, and a
 		// viewport-relative number would be whatever the scroll position happened to be at the time.
-		if (list) setScrollMargin(list.getBoundingClientRect().top - contentTop(scrollerRef.current));
+		if (list && list.offsetParent !== null) setScrollMargin(list.getBoundingClientRect().top - contentTop(scrollerRef.current));
 	}, [drToolbarContext]);
 
 	useLayoutEffect(() => {
@@ -130,6 +132,12 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 			if (frame !== null) cancelAnimationFrame(frame);
 		};
 	}, [measureChrome, drToolbarContext]);
+
+	useEffect(() => {
+		if (!active) return;
+		const timer = window.setTimeout(measureChrome, TAB_FADE_SETTLE_MS);
+		return () => window.clearTimeout(timer);
+	}, [active, measureChrome]);
 
 	const needsMeasure = logs.length > 0 && measured.for !== result;
 	const listWidth = measured.for === result ? measured.width : 0;
@@ -196,8 +204,8 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	);
 
 	return (
-		<div ref={rootRef} data-testid="log-runner-root" className="flex flex-col min-h-[calc(100dvh-var(--log-sticky-top,0px)-var(--spacing-page))]">
-			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 pt-2 bg-background">
+		<div ref={rootRef} data-testid="log-runner-root" className="flex min-h-[calc(100dvh-var(--log-sticky-top,0px)-var(--spacing-page))] flex-col">
+			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 bg-background pt-2">
 				<div data-testid="log-search" className="w-full lg:max-w-[50%]">
 					<SearchBar
 						value={searchText}
@@ -216,11 +224,11 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
 				</div>
 			</div>
-			<div data-testid="log-runner-scroll" className="relative grow shrink-0 basis-auto overflow-x-auto overflow-y-hidden">
+			<div data-testid="log-runner-scroll" className="relative shrink-0 grow basis-auto overflow-x-auto overflow-y-hidden">
 				<div
 					ref={listRef}
 					data-testid="log-runner-list"
-					className="min-w-full w-(--log-runner-list-width,max-content)"
+					className="w-(--log-runner-list-width,max-content) min-w-full"
 					style={listWidth ? { ['--log-runner-list-width' as string]: `${Math.ceil(listWidth)}px` } : undefined}>
 					<VirtualList
 						testId="log-runner-logs"
@@ -237,7 +245,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					)}
 				</div>
 				{logs.length > 0 && visibleIndexes.length === 0 && (
-					<div data-testid="log-runner-empty" className="py-6 px-2 text-muted">
+					<div data-testid="log-runner-empty" className="px-2 py-6 text-muted">
 						{i18n.t('results_tab.details.logs.no_matches')}
 					</div>
 				)}
