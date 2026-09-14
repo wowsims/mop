@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { findNonCanonical, findVarInClass } from '../tools/tailwind/canonical-classes.mjs';
+import { findNonCanonical, findVarInClass } from '../tools/tailwind/canonical-classes';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
