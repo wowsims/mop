@@ -48,7 +48,7 @@ export const PriorityList = () => {
 	};
 
 	return (
-		<div className="apl-priority-list-picker-root">
+		<div data-testid="apl-priority-list-picker-root">
 			<ListPicker<Player<any>, APLListItem>
 				modObject={player}
 				config={config}

@@ -66,7 +66,7 @@ describe('PriorityList', () => {
 
 		expect(listRoot().className.split(' ')).toContain('apl-list-item-picker');
 		expect(rowContainers()).toHaveLength(2);
-		expect(document.querySelectorAll('.apl-list-item-picker-root')).toHaveLength(2);
+		expect(document.querySelectorAll('[data-testid="apl-list-item-picker-root"]')).toHaveLength(2);
 	});
 
 	it('orders each row’s header as validations then hide picker, and the body as an action picker', () => {
@@ -75,14 +75,14 @@ describe('PriorityList', () => {
 
 		const row = rowContainers()[0];
 		const header = row.querySelector('[data-testid="list-picker-item-header"]') as HTMLElement;
-		const headerExtras = Array.from(header.querySelectorAll('.apl-validations, .hide-picker-root'));
-		expect(headerExtras.map(el => ['apl-validations', 'hide-picker-root'].find(name => el.classList.contains(name)))).toEqual([
+		const headerExtras = Array.from(header.querySelectorAll('.apl-validations, [data-testid="hide-picker-root"]'));
+		expect(headerExtras.map(el => (el.classList.contains('apl-validations') ? 'apl-validations' : el.getAttribute('data-testid')))).toEqual([
 			'apl-validations',
 			'hide-picker-root',
 		]);
 
 		const body = row.querySelector('.list-picker-item') as HTMLElement;
-		expect(body.querySelector('.apl-action-picker-root')).not.toBeNull();
+		expect(body.querySelector('[data-testid="apl-action-picker-root"]')).not.toBeNull();
 	});
 
 	it('appends an APLListItem to priorityList through the floating action bar’s new button', () => {

@@ -19,7 +19,7 @@ export const PrePullList = () => {
 	const config: ListPickerConfig<Player<any>, APLPrepullAction> = {
 		title: i18n.t('rotation_tab.apl.prePullActions.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.prePullActions.tooltips.overview'),
-		extraClassNames: ['apl-list-item-picker', 'apl-prepull-action-picker', 'ui-apl-list-item-picker', 'ui-apl-prepull-action-picker'],
+		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker', 'ui-apl-prepull-action-picker'],
 		itemLabel: i18n.t('rotation_tab.apl.prePullActions.name'),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.prepullActions,
@@ -35,7 +35,7 @@ export const PrePullList = () => {
 
 	return (
 		<AplProvider isPrepull>
-			<div className="apl-pre-pull-list-picker-root">
+			<div>
 				<ListPicker<Player<any>, APLPrepullAction>
 					modObject={player}
 					config={config}

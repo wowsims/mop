@@ -45,10 +45,10 @@ describe('ListItemHeader', () => {
 	it('renders the validations button before the hide picker', () => {
 		const { container } = mount({ hide: false }, () => []);
 
-		const nodes = Array.from(container.querySelectorAll('.apl-validations, .hide-picker-root'));
+		const nodes = Array.from(container.querySelectorAll('.apl-validations, [data-testid="hide-picker-root"]'));
 		expect(nodes.length).toBe(2);
 		expect(nodes[0].classList.contains('apl-validations')).toBe(true);
-		expect(nodes[1].classList.contains('hide-picker-root')).toBe(true);
+		expect(nodes[1].getAttribute('data-testid')).toBe('hide-picker-root');
 	});
 
 	describe('hide picker', () => {

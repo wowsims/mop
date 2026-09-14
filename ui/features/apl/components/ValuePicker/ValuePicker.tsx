@@ -18,6 +18,7 @@ import { FieldGroup } from '../FieldGroup';
 export interface ValuePickerProps {
 	player: Player<any>;
 	config: InputConfig<Player<any>, APLValue | undefined>;
+	testId?: string;
 }
 
 /**
@@ -30,7 +31,7 @@ export interface ValuePickerProps {
  * Nothing here holds a copy of the value: each picker writes its own property of the live message,
  * and the rotation notification is what re-renders.
  */
-export const ValuePicker = memo(({ player, config }: ValuePickerProps) => {
+export const ValuePicker = memo(({ player, config, testId }: ValuePickerProps) => {
 	const kindId = useId();
 	const { isPrepull, isGroup, changeSource } = useApl();
 
@@ -80,7 +81,12 @@ export const ValuePicker = memo(({ player, config }: ValuePickerProps) => {
 	});
 
 	return (
-		<PickerShell config={shellConfig} className="apl-value-picker-root ui-apl-value-picker-root flex-row m-0 gap-2" hidden={hidden} disabled={disabled}>
+		<PickerShell
+			config={shellConfig}
+			className="ui-apl-value-picker-root flex-row m-0 gap-2"
+			testId={testId ?? 'apl-value-picker-root'}
+			hidden={hidden}
+			disabled={disabled}>
 			<DropdownField<Player<any>, APLValueKind>
 				modObject={player}
 				config={kindConfig}

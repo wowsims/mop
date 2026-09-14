@@ -2,7 +2,6 @@ import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { FieldLabel, Input } from '@ui-kit/FormControl';
-import clsx from 'clsx';
 import { useEffect, useId, useRef, useState } from 'react';
 
 export interface AplNameDialogProps {
@@ -26,7 +25,7 @@ export interface AplNameDialogProps {
  * placeholders, and behind extracting a value to a variable.
  *
  * The name is component state rather than an uncontrolled input read on submit: the confirm
- * button's disabled state, the `is-invalid` ring and the conflict message are all derived from it.
+ * button's disabled state, the `aria-invalid` ring and the conflict message are all derived from it.
  */
 export const AplNameDialog = ({
 	open,
@@ -69,7 +68,6 @@ export const AplNameDialog = ({
 				onCancel?.();
 				onClose();
 			}}
-			className="apl-name-modal"
 			size="sm"
 			title={title}
 			footer={
@@ -77,13 +75,12 @@ export const AplNameDialog = ({
 					{confirmLabel || i18n.t('rotation_tab.apl.nameModal.create')}
 				</Button>
 			}>
-			<div className="apl-name-modal-body">
+			<div>
 				<FieldLabel htmlFor={inputId}>{inputLabel}</FieldLabel>
 				<Input
 					id={inputId}
 					ref={inputRef}
 					type="text"
-					className={clsx(conflict && 'is-invalid')}
 					aria-invalid={conflict}
 					placeholder={placeholder || ''}
 					value={name}
@@ -92,7 +89,7 @@ export const AplNameDialog = ({
 						if (event.key === 'Enter') submit();
 					}}
 				/>
-				<div className="invalid-feedback">{conflict ? i18n.t('rotation_tab.apl.nameModal.nameConflict') : ''}</div>
+				<div>{conflict ? i18n.t('rotation_tab.apl.nameModal.nameConflict') : ''}</div>
 			</div>
 		</Dialog>
 	);

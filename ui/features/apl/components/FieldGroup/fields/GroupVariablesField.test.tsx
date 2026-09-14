@@ -53,8 +53,8 @@ const mount = () =>
 		/>,
 	);
 
-const container = () => document.querySelector('.group-reference-variables-container') as HTMLElement;
-const rows = () => Array.from(document.querySelectorAll('.apl-group-variable-picker-root'));
+const container = () => document.querySelector('[data-testid="group-reference-variables-container"]') as HTMLElement;
+const rows = () => Array.from(document.querySelectorAll('[data-testid="apl-group-variable-picker-root"]'));
 const labels = () => rows().map(row => row.querySelector('label')!.textContent);
 
 const clickItemAction = (index: number, action: string) => {

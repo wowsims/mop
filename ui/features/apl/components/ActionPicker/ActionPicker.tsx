@@ -47,7 +47,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 
 	const conditionConfig: InputConfig<Player<any>, APLValue | undefined> = {
 		label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-		extraClassNames: ['apl-action-condition', 'apl-priority-list-only', 'ui-apl-action-condition', 'ui-apl-priority-list-only'],
+		extraClassNames: ['ui-apl-action-condition', 'ui-apl-priority-list-only'],
 		getValue: () => config.getValue(player)?.condition,
 		setValue: (subject: Player<any>, newValue: APLValue | undefined) => {
 			const source = config.getValue(subject);
@@ -87,10 +87,11 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 	return (
 		<PickerShell
 			config={shellConfig}
-			className={clsx('apl-action-picker-root', 'ui-apl-action-picker-root', 'm-0 gap-2', stacked ? 'flex-col' : 'flex-row', fullWidth && 'w-full')}
+			className={clsx('ui-apl-action-picker-root', 'm-0 gap-2', stacked ? 'flex-col' : 'flex-row', fullWidth && 'w-full')}
+			testId="apl-action-picker-root"
 			hidden={hidden}
 			disabled={disabled}>
-			<ValuePicker player={player} config={conditionConfig} />
+			<ValuePicker player={player} config={conditionConfig} testId="apl-action-condition" />
 			<div className="flex flex-row gap-2 max-md:flex-wrap">
 				<DropdownField<Player<any>, ValidAPLActionKind>
 					modObject={player}

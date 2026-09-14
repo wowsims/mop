@@ -33,7 +33,7 @@ export const VariablesList = () => {
 	const config: ListPickerConfig<Player<any>, APLValueVariable> = {
 		title: i18n.t('rotation_tab.apl.variables.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.variables.tooltips.overview'),
-		extraClassNames: ['apl-list-item-picker', 'apl-value-variables-picker', 'ui-apl-list-item-picker'],
+		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker'],
 		itemLabel: variableName(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.valueVariables || [],
@@ -48,7 +48,7 @@ export const VariablesList = () => {
 	};
 
 	return (
-		<div className="apl-variables-list-picker-root">
+		<div>
 			<ListPicker<Player<any>, APLValueVariable>
 				modObject={player}
 				config={config}

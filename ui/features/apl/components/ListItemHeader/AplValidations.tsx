@@ -105,7 +105,6 @@ export const AplValidations = ({ getValidations }: AplValidationsProps) => {
 			/>
 			<Tooltip
 				id={tooltipId}
-				className="dropdown-tooltip"
 				// `render` wins over the anchor's own `data-tooltip-content`, which is what the fallback branch hands back.
 				render={({ content }) =>
 					formatted

@@ -51,7 +51,8 @@ export const AplListItem = <T extends HideableAction>({ player, config, leading,
 		<AplProvider changeSource={row.changeSource}>
 			<PickerShell
 				config={shellConfig}
-				className="apl-list-item-picker-root ui-apl-list-item-picker-root flex flex-row items-center m-0 gap-2"
+				className="ui-apl-list-item-picker-root flex flex-row items-center m-0 gap-2"
+				testId="apl-list-item-picker-root"
 				hidden={hidden}
 				disabled={disabled}>
 				{leading}

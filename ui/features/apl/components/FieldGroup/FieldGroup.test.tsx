@@ -40,7 +40,7 @@ const mount = (fields: Array<any>) =>
 		</SimHostProvider>,
 	);
 
-const root = () => document.querySelector('.apl-picker-builder-root') as HTMLElement;
+const root = () => document.querySelector('[data-testid="apl-picker-builder-root"]') as HTMLElement;
 const stringInput = () => root().querySelector('.adaptive-string-picker-root input') as HTMLInputElement;
 
 beforeEach(() => {

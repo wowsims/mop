@@ -40,7 +40,7 @@ import { ActionPicker } from './ActionPicker';
 
 // Statically imported for every test that is not about the module cycle: a dynamic import inside
 // a test body re-transforms the whole value/action graph and counts against that test's timeout.
-const roots = () => Array.from(document.querySelectorAll('.apl-action-picker-root'));
+const roots = () => Array.from(document.querySelectorAll('[data-testid="apl-action-picker-root"]'));
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -52,20 +52,18 @@ describe('ActionPicker', () => {
 		render(<ActionPicker player={player as never} config={configForRoot() as never} />);
 
 		const root = roots()[0];
-		expect(root.children[0].className).toContain('apl-value-picker-root');
-		expect(root.children[0].className).toContain('apl-action-condition');
-		expect(root.children[0].className).toContain('apl-priority-list-only');
+		expect(root.children[0].getAttribute('data-testid')).toBe('apl-action-condition');
 
 		const actionContainer = root.children[1];
 		expect(actionContainer.children[0].className).toContain('dropdown-picker-root');
-		expect(actionContainer.children[1].className).toContain('apl-picker-builder-root');
+		expect(actionContainer.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
 	});
 
 	it('carries apl-action-<kind> on the field group', () => {
 		setup(APLAction.create({ action: { oneofKind: 'resetSequence', resetSequence: { sequenceName: 'seq' } } }));
 		render(<ActionPicker player={player as never} config={configForRoot() as never} />);
 
-		expect(document.querySelector('.apl-picker-builder-root')!.className.split(' ')).toContain('apl-action-resetSequence');
+		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')!.className.split(' ')).toContain('apl-action-resetSequence');
 	});
 
 	it('renders no field group while the action has no kind', () => {
@@ -73,21 +71,21 @@ describe('ActionPicker', () => {
 		render(<ActionPicker player={player as never} config={configForRoot() as never} />);
 
 		expect(roots()).toHaveLength(1);
-		expect(document.querySelector('.apl-picker-builder-root')).toBeNull();
+		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')).toBeNull();
 	});
 
 	it('re-reads the action when the rotation notifies', () => {
 		setup(APLAction.create());
 		render(<ActionPicker player={player as never} config={configForRoot() as never} />);
 
-		expect(document.querySelector('.apl-picker-builder-root')).toBeNull();
+		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')).toBeNull();
 
 		act(() => {
 			player.aplRotation.priorityList[0].action!.action = { oneofKind: 'resetSequence', resetSequence: { sequenceName: 'seq' } };
 			source.notify();
 		});
 
-		expect(document.querySelector('.apl-picker-builder-root')).not.toBeNull();
+		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')).not.toBeNull();
 	});
 
 	// The action half of the value/action cycle: ActionPicker -> FieldGroup -> AplField ->

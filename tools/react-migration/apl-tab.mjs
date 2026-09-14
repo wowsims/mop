@@ -24,7 +24,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 
 // The pane holds two lists; every step names the priority one, because that is the list whose order
 // and length the saved rotation reports back.
-const LIST = '#apl-priority-list .apl-priority-list-picker-root';
+const LIST = '#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root)';
 const ITEM = `${LIST} > .list-picker-root > .list-picker-items > .list-picker-item-container`;
 const NAVBAR = q('apl-rotation-navbar');
 
@@ -64,8 +64,8 @@ const structure = actionBarSelector => {
 	return {
 		lists: count('.list-picker-root'),
 		items: count('.apl-list-item-picker .list-picker-item-container'),
-		actionPickers: count('.apl-action-picker-root'),
-		valuePickers: count('.apl-value-picker-root'),
+		actionPickers: count(':is([data-testid="apl-action-picker-root"], .apl-action-picker-root)'),
+		valuePickers: count(':is([data-testid="apl-value-picker-root"], .apl-value-picker-root)'),
 		hideButtons: count('.hide-picker-button'),
 		validations: count('.apl-validations'),
 		dropdownTriggers: count('.dropdown-picker-button'),
@@ -89,7 +89,9 @@ const openItemMenu = async (page, index) => {
  * ever producing a `dragstart`, so nothing reorders and it still reports success.
  */
 const dragItem = ([from, to]) => {
-	const list = document.querySelector('#apl-priority-list .apl-priority-list-picker-root > .list-picker-root > .list-picker-items');
+	const list = document.querySelector(
+		'#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root) > .list-picker-root > .list-picker-items',
+	);
 	const items = [...(list?.children ?? [])].filter(child => child.classList.contains('list-picker-item-container'));
 	const source = items[from];
 	const target = items[to];
@@ -160,7 +162,11 @@ try {
 	// 2. edit — the first numeric or text field in the pane, committed on `change` as both stacks require.
 	await step('edit a value', () =>
 		page.evaluate(() => {
-			const input = [...document.querySelectorAll('#apl-priority-list .apl-priority-list-picker-root input[type=text]')].find(
+			const input = [
+				...document.querySelectorAll(
+					'#apl-priority-list :is([data-testid="apl-priority-list-picker-root"], .apl-priority-list-picker-root) input[type=text]',
+				),
+			].find(
 				element => element.offsetParent && element.value !== '',
 			);
 			if (!input) return 'NO INPUT';
@@ -200,7 +206,7 @@ try {
 
 	// 5. a nested value picker — open the first item's condition kind menu and count what it offers.
 	await step('open a value menu', async () => {
-		const trigger = page.locator(`${LIST} .apl-action-condition .dropdown-picker-button`).locator('visible=true').first();
+		const trigger = page.locator(`${LIST} ${q('apl-action-condition')} .dropdown-picker-button`).locator('visible=true').first();
 		if (!(await trigger.count())) return 'NO CONDITION PICKER';
 		await trigger.click({ timeout: 10000 });
 		await page.waitForTimeout(500);
@@ -259,7 +265,7 @@ try {
 	// 7. rotation type — away from APL and back, which rebuilds the whole pane on both stacks.
 	await step('type -> Auto', () =>
 		page.evaluate(navbar => {
-			const picker = document.querySelector(`${navbar} .rotation-type-container .dropdown-picker-button`);
+			const picker = document.querySelector(`${navbar} :is([data-testid="rotation-type-container"], .rotation-type-container) .dropdown-picker-button`);
 			picker?.click();
 		}, NAVBAR),
 	);

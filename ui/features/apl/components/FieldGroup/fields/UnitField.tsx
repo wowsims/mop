@@ -35,7 +35,7 @@ export const UnitField = ({ player, config, unitSet }: UnitFieldProps) => {
 
 	const boundConfig = {
 		...config,
-		extraClassNames: ['apl-unit-picker', 'my-auto mr-2 ml-0', ...(config.extraClassNames || [])],
+		extraClassNames: ['my-auto mr-2 ml-0', ...(config.extraClassNames || [])],
 		sourceToValue: (source: UnitReference | undefined) => refToValue(source, player, targetUI),
 		valueToSource: (unit: UnitValue) => unit.value,
 	};

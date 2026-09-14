@@ -86,7 +86,6 @@ describe('RotationTabBody', () => {
 		const pane = container.querySelector('.rotation-tab-apl')!;
 		const [navbar, left, right] = [...pane.children];
 		expect(navbar.getAttribute('data-testid')).toBe('apl-rotation-navbar');
-		expect(navbar.classList.contains('sticky-toolbar-root')).toBe(true);
 		expect(left.classList.contains('tab-panel-left')).toBe(true);
 		expect(right.classList.contains('tab-panel-right')).toBe(true);
 	});

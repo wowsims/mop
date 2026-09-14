@@ -41,7 +41,7 @@ export const GroupList = () => {
 	const config: ListPickerConfig<Player<any>, APLGroup> = {
 		title: i18n.t('rotation_tab.apl.actionGroups.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.overview'),
-		extraClassNames: ['apl-list-item-picker', 'apl-groups-picker', 'ui-apl-list-item-picker'],
+		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker'],
 		itemLabel: groupName(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.groups || [],
@@ -62,7 +62,7 @@ export const GroupList = () => {
 
 	return (
 		<AplProvider isGroup>
-			<div className="apl-group-list-picker-root">
+			<div>
 				<ListPicker<Player<any>, APLGroup>
 					modObject={player}
 					config={config}

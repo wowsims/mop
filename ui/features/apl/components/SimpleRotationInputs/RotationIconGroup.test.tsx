@@ -29,12 +29,12 @@ describe('iconGridColumns', () => {
 });
 
 describe('RotationIconGroup', () => {
-	const group = () => document.querySelector('.rotation-icon-group') as HTMLElement;
+	const group = () => document.querySelector('[data-testid="rotation-icon-group"]') as HTMLElement;
 
-	it('wears the three classes the vanilla group container had', () => {
+	it('wears the classes the vanilla group container had', () => {
 		render(<RotationIconGroup inputs={[]} />);
 
-		expect(group().className.split(' ').sort()).toEqual(['icon-group', 'picker-group', 'rotation-icon-group', 'ui-picker-group', 'ui-picker-group-icons']);
+		expect(group().className.split(' ').sort()).toEqual(['icon-group', 'picker-group', 'ui-picker-group', 'ui-picker-group-icons']);
 	});
 
 	it('picks the picker each input type names, in order', () => {

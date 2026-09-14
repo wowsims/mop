@@ -46,10 +46,12 @@ const configForRoot = () => ({
 	},
 });
 
-const roots = () => Array.from(document.querySelectorAll('.apl-value-picker-root'));
+const roots = () => Array.from(document.querySelectorAll('[data-testid="apl-value-picker-root"]'));
 const kindTriggers = () =>
 	Array.from(
-		document.querySelectorAll<HTMLButtonElement>('.apl-value-picker-root > [data-testid="dropdown-picker-root"] [data-testid="dropdown-picker-button"]'),
+		document.querySelectorAll<HTMLButtonElement>(
+			'[data-testid="apl-value-picker-root"] > [data-testid="dropdown-picker-root"] [data-testid="dropdown-picker-button"]',
+		),
 	);
 
 beforeEach(() => {
@@ -63,7 +65,7 @@ describe('ValuePicker', () => {
 
 		const root = roots()[0];
 		expect(root.children[0].className).toContain('dropdown-picker-root');
-		expect(root.children[1].className).toContain('apl-picker-builder-root');
+		expect(root.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
 		expect(root.querySelector('.adaptive-string-picker-root input')).toHaveProperty('value', '5');
 	});
 
@@ -72,7 +74,7 @@ describe('ValuePicker', () => {
 		render(<ValuePicker player={player as never} config={configForRoot() as never} />);
 
 		expect(roots()).toHaveLength(1);
-		expect(document.querySelector('.apl-picker-builder-root')).toBeNull();
+		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')).toBeNull();
 	});
 
 	// The cycle: ValuePicker -> FieldGroup -> AplField -> ValuePicker. It is a real ES module cycle,
@@ -88,7 +90,7 @@ describe('ValuePicker', () => {
 
 		// Two levels: the `not`, and the `const` it holds.
 		expect(roots()).toHaveLength(2);
-		expect(roots()[1].closest('.apl-picker-builder-root')).toBe(roots()[0].querySelector('.apl-picker-builder-root'));
+		expect(roots()[1].closest('[data-testid="apl-picker-builder-root"]')).toBe(roots()[0].querySelector('[data-testid="apl-picker-builder-root"]'));
 	}, 30000);
 
 	it('resolves the same cycle when AplField is imported cold, first', async () => {

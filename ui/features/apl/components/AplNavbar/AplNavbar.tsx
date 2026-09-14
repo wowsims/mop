@@ -10,12 +10,8 @@ export const AplNavbar = () => {
 	const { ref, stuck, className } = useStickyToolbar<HTMLDivElement>();
 
 	return (
-		<div
-			ref={ref}
-			className={clsx('grow shrink-0 basis-full gap-1 sticky-toolbar-root', className, stuck && 'stuck')}
-			data-testid="apl-rotation-navbar"
-			data-stuck={stuck ? '' : undefined}>
-			<div className="rotation-type-container">
+		<div ref={ref} className={clsx('grow shrink-0 basis-full gap-1', className)} data-testid="apl-rotation-navbar" data-stuck={stuck ? '' : undefined}>
+			<div data-testid="rotation-type-container">
 				<RotationTypePicker />
 			</div>
 			<TabNav

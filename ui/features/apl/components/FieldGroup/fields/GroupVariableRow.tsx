@@ -49,7 +49,7 @@ export const GroupVariableRow = ({ player, config, name, groupSelected }: GroupV
 	return (
 		<PickerShell
 			config={{ id: rootId, getValue: () => undefined, setValue: () => {} }}
-			className="apl-group-variable-picker-root"
+			testId="apl-group-variable-picker-root"
 			hidden={false}
 			disabled={false}>
 			<label className="font-bold block text-sm" htmlFor={valueId}>
