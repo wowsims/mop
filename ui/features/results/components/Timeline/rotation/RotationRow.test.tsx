@@ -8,7 +8,7 @@ import { RotationSeparatorRow } from './RotationSeparatorRow';
 import { actionId, castItem, castRow } from './testing';
 
 vi.mock('./RotationRowIcon', () => ({
-	RotationRowIcon: ({ tooltip }: { tooltip?: string }) => <a className="rotation-row-icon" data-tooltip-kind={tooltip ?? 'none'} />,
+	RotationRowIcon: ({ tooltip }: { tooltip?: string }) => <a data-testid="rotation-row-icon" data-tooltip-kind={tooltip ?? 'none'} />,
 }));
 
 const ROW = castRow('cast:a', 'Fire Bolt', [castItem(0, 1), castItem(2, 3), castItem(4, 5)]);
@@ -21,21 +21,21 @@ const mount = (row: ContentRow = ROW, items: Array<number> = [0, 2]) => {
 describe('RotationRow', () => {
 	it('renders only the items it is handed, keyed by their index in the row', () => {
 		const { container } = mount();
-		const items = [...container.querySelectorAll<HTMLElement>('.rotation-item-cast')];
+		const items = [...container.querySelectorAll<HTMLElement>('[data-testid="rotation-item-cast"]')];
 		expect(items.map(item => item.dataset.itemIndex)).toEqual(['0', '2']);
 	});
 
 	it('carries the row key and height the window measured it at', () => {
 		const { container } = mount();
-		const row = container.querySelector<HTMLElement>('.rotation-row')!;
+		const row = container.querySelector<HTMLElement>('[data-testid="rotation-row"]')!;
 		expect(row.dataset.rowKey).toBe('cast:a');
-		expect(row.classList.contains('rotation-row-cast')).toBe(true);
+		expect(row.dataset.rowKind).toBe('cast');
 		expect(row.style.getPropertyValue('--row-h')).toBe('32');
 	});
 
 	it('asks to hide itself by key, and names the row in the button', () => {
 		const { container, onHide } = mount();
-		const hide = container.querySelector<HTMLButtonElement>('.rotation-row-hide')!;
+		const hide = container.querySelector<HTMLButtonElement>('[data-testid="rotation-row-hide"]')!;
 		expect(hide.getAttribute('aria-label')).toBe('Hide Fire Bolt');
 		fireEvent.click(hide);
 		expect(onHide).toHaveBeenCalledWith('cast:a');
@@ -43,8 +43,8 @@ describe('RotationRow', () => {
 
 	it('resolves an aura row’s icon against the buff aura rather than the spell', () => {
 		const aura = { ...ROW, kind: 'aura' } as ContentRow;
-		expect(mount(aura, []).container.querySelector<HTMLElement>('.rotation-row-icon')!.dataset.tooltipKind).toBe('buffAura');
-		expect(mount(ROW, []).container.querySelector<HTMLElement>('.rotation-row-icon')!.dataset.tooltipKind).toBe('spell');
+		expect(mount(aura, []).container.querySelector<HTMLElement>('[data-testid="rotation-row-icon"]')!.dataset.tooltipKind).toBe('buffAura');
+		expect(mount(ROW, []).container.querySelector<HTMLElement>('[data-testid="rotation-row-icon"]')!.dataset.tooltipKind).toBe('spell');
 	});
 
 	it('paints a resource row’s icon from its own url, since it has no action', () => {
@@ -59,7 +59,7 @@ describe('RotationRow', () => {
 			items: [],
 			maxRightUpTo: [],
 		} as ResourceRow;
-		const icon = mount(resource, []).container.querySelector<HTMLElement>('.rotation-row-icon')!;
+		const icon = mount(resource, []).container.querySelector<HTMLElement>('[data-testid="rotation-row-icon"]')!;
 		expect(icon.style.backgroundImage).toContain('mana.png');
 		expect(icon.dataset.tooltipKind).toBeUndefined();
 	});
@@ -68,20 +68,20 @@ describe('RotationRow', () => {
 describe('RotationHeaderRow', () => {
 	it('labels the section and shows an icon only when it has an action', () => {
 		const withIcon = { kind: 'header', key: 'header:a', section: 'a', height: 32, label: 'Target 1', actionId: actionId('Boss') } as HeaderRow;
-		expect(render(<RotationHeaderRow row={withIcon} />).container.querySelector('.rotation-row-icon')).not.toBeNull();
+		expect(render(<RotationHeaderRow row={withIcon} />).container.querySelector('[data-testid="rotation-row-icon"]')).not.toBeNull();
 
 		const plain = { ...withIcon, actionId: null } as HeaderRow;
 		const { container } = render(<RotationHeaderRow row={plain} />);
-		expect(container.querySelector('.rotation-row-icon')).toBeNull();
-		expect(container.querySelector('.rotation-label-text')!.textContent).toBe('Target 1');
-		expect(container.querySelector('.rotation-row-hide')).toBeNull();
+		expect(container.querySelector('[data-testid="rotation-row-icon"]')).toBeNull();
+		expect(container.querySelector('[data-testid="rotation-label-text"]')!.textContent).toBe('Target 1');
+		expect(container.querySelector('[data-testid="rotation-row-hide"]')).toBeNull();
 	});
 });
 
 describe('RotationSeparatorRow', () => {
 	it('is an empty row of its own height', () => {
 		const { container } = render(<RotationSeparatorRow row={{ kind: 'separator', key: 'sep:a', section: 'a', height: 17 } as SeparatorRow} />);
-		const row = container.querySelector<HTMLElement>('.rotation-row-separator')!;
+		const row = container.querySelector<HTMLElement>('[data-row-kind="separator"]')!;
 		expect(row.style.getPropertyValue('--row-h')).toBe('17');
 		expect(row.textContent).toBe('');
 	});

@@ -6,8 +6,8 @@ export interface RotationSeparatorRowProps {
 }
 
 export const RotationSeparatorRow = ({ row }: RotationSeparatorRowProps) => (
-	<div className="ui-timeline-row rotation-row rotation-row-separator border-b-white" style={rowStyle(row)} data-row-key={row.key}>
-		<div className="ui-timeline-label-col rotation-row-label" />
-		<div className="ui-timeline-row-track rotation-row-track" />
+	<div data-testid="rotation-row" data-row-kind={row.kind} className="ui-timeline-row border-b-white" style={rowStyle(row)} data-row-key={row.key}>
+		<div className="ui-timeline-label-col" />
+		<div data-testid="rotation-row-track" className="ui-timeline-row-track" />
 	</div>
 );

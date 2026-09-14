@@ -8,7 +8,7 @@ export interface TickTooltipProps {
 }
 
 export const TickTooltip = ({ log }: TickTooltipProps) => (
-	<div className="ui-timeline-tooltip timeline-tooltip">
+	<div className="ui-timeline-tooltip">
 		<span>
 			{log.timestamp.toFixed(2)}s - {log.actionId!.name} <DamageResult log={log} />
 		</span>

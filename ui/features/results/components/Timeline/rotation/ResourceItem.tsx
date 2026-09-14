@@ -21,14 +21,18 @@ const FILL_CLASSES: Record<string, string> = {
 
 export const ResourceItem = ({ item, index, cssName }: ResourceItemProps) => (
 	<div
-		className={clsx('ui-timeline-item ui-timeline-item-slice rotation-item-resource top-0 series-color', TIMELINE_SERIES_TEXT[cssName], cssName)}
+		data-testid="series-color"
+		className={clsx('ui-timeline-item ui-timeline-item-slice top-0', TIMELINE_SERIES_TEXT[cssName], cssName)}
 		data-item-index={index}
 		style={spanStyle(item.start, item.end - item.start)}>
 		<div
-			className={clsx('rotation-item-resource-fill absolute left-0 h-[calc(var(--fill)*1%)]', FILL_CLASSES[cssName])}
+			data-testid="rotation-item-resource-fill"
+			className={clsx('absolute left-0 h-[calc(var(--fill)*1%)]', FILL_CLASSES[cssName])}
 			hidden={item.display !== 'fill'}
 			style={item.display === 'fill' ? cssVars({ '--fill': String(item.fillPercent) }) : undefined}
 		/>
-		<span className="rotation-item-resource-text group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden">{item.text}</span>
+		<span data-testid="rotation-item-resource-text" className="group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden">
+			{item.text}
+		</span>
 	</div>
 );

@@ -1,6 +1,5 @@
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { WowheadIcon } from '@ui-kit/WowheadIcon';
-import clsx from 'clsx';
 import { memo } from 'react';
 
 import type { ContentRow } from '../../../model/timeline/rotation';
@@ -25,19 +24,19 @@ export const RotationRow = memo(({ row, items, onHide }: RotationRowProps) => {
 	const { iconUrl } = useActionId(row.kind === 'resource' ? undefined : row.actionId);
 
 	return (
-		<div className={clsx('ui-timeline-row rotation-row', `rotation-row-${row.kind}`)} style={rowStyle(row)} data-row-key={row.key}>
+		<div data-testid="rotation-row" data-row-kind={row.kind} className="ui-timeline-row" style={rowStyle(row)} data-row-key={row.key}>
 			<RotationRowLabel
 				text={row.label}
 				icon={
 					row.kind === 'resource' ? (
-						<WowheadIcon className="ui-timeline-row-icon rotation-row-icon" iconUrl={row.icon} />
+						<WowheadIcon data-testid="rotation-row-icon" className="ui-timeline-row-icon" iconUrl={row.icon} />
 					) : (
 						<RotationRowIcon actionId={row.actionId} tooltip={row.kind === 'aura' ? 'buffAura' : 'spell'} />
 					)
 				}
 				onHide={() => onHide(row.key)}
 			/>
-			<div className="ui-timeline-row-track rotation-row-track">
+			<div data-testid="rotation-row-track" className="ui-timeline-row-track">
 				{items.map(index => (
 					<RowItemView key={index} item={row.items[index]} index={index} iconUrl={iconUrl} cssName={row.kind === 'resource' ? row.cssName : ''} />
 				))}

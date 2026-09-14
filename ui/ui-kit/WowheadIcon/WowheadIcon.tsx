@@ -2,9 +2,9 @@ import type { ActionId } from '@sim/proto/action_id';
 import { externalRel } from '@sim/utils/links';
 import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-export interface WowheadIconProps {
+export interface WowheadIconProps extends ComponentPropsWithoutRef<'a'> {
 	as?: 'a' | 'div';
 	iconUrl?: string;
 	href?: string;
@@ -15,7 +15,7 @@ export interface WowheadIconProps {
 	children?: ReactNode;
 }
 
-export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, label, className, children }: WowheadIconProps) => {
+export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, label, className, children, ...rest }: WowheadIconProps) => {
 	const wowheadProps = useActionIdWowheadDataset(actionId ?? null, useBuffAura);
 
 	const Tag = as as 'a';
@@ -27,7 +27,8 @@ export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, la
 			{...anchorProps}
 			aria-label={label}
 			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
-			{...wowheadProps}>
+			{...wowheadProps}
+			{...rest}>
 			{children}
 		</Tag>
 	);
