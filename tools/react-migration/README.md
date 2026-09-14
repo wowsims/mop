@@ -110,6 +110,32 @@ explains. After such a commit the baseline is re-taken to a **new** directory
 REACT_PORT=3406 TW_PORT=3404 CONFINE='[data-testid="boolean-picker-root"]' node tools/react-migration/tw-probe.mjs
 ```
 
+## `state-probe.mjs`: the companion for panes `tw-probe.mjs` never opens
+
+`tw-probe.mjs` only ever captures each top-level tab **at rest**, plus one scrolled
+"results-stuck" state — it never clicks into a sub-pane, a dialog, or a modal. A real regression
+slipped through exactly that gap: the log runner's row height grew from 32.5px to 34px when a real
+`@utility` (`icon-sm`) was deleted as if it were a retired class hook, and `tw-probe.mjs`'s
+default-pane run stayed green because the log tab was never opened. `state-probe.mjs` is the
+companion — it runs a seeded sim and opens what `tw-probe.mjs` can't reach: the Detailed Results
+sub-tabs (damage/healing/damage-taken/buffs/debuffs/casts/resources/timeline/replay/log) plus one
+expanded metrics-table row, the Rotation tab's APL sub-panes and its Auto rotation type, the Bulk
+tab's Setup/Results sub-tabs, the gear selector modal's items/gems/enchants tabs, the settings
+Encounter Advanced dialog, and the EP weights dialog — diffing the same 54 computed properties and
+geometry `tw-probe.mjs` does, at the same widths.
+
+```bash
+REACT_PORT=3402 TW_PORT=3404 node tools/react-migration/state-probe.mjs
+```
+
+**The lesson this taught:** a custom `@utility` or a `ui-*` composition class is real styling, not a
+retired hook — the class-hook gate and the hook census tell the two apart by compiling every
+candidate against Tailwind's own design system (`tools/tailwind/canonical-classes.mjs`), never by a
+hand-written name list, and deleting one because it "looks like" an old semantic class is exactly
+the mistake this probe exists to catch. Run both probes before calling a class-hook or utility
+change done — `tw-probe.mjs` covers the shell and every tab at rest, `state-probe.mjs` covers
+everything only a click or a sim run reveals.
+
 `css-vars.mjs` retired at C-1b: its floor was the `--bs-modal-*` family, and A-S1 removed Bootstrap
 `modal` along with every `var(--bs-modal-*)` read, so after that commit the gate could no longer find
 anything to assert against — a check that always passes proves nothing.
