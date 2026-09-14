@@ -47,7 +47,7 @@ const column = (container: HTMLElement, index: number, filter?: (row: HTMLTableR
 		.rows.filter(row => filter?.(row) ?? true)
 		.map(row => row.cells[index].getAttribute('data-text'));
 
-const parents = (row: HTMLTableRowElement) => !row.classList.contains('child-metric');
+const parents = (row: HTMLTableRowElement) => !row.hasAttribute('data-child');
 
 const sortButton = (header: HTMLElement) => header.querySelector('button')!;
 
@@ -55,9 +55,9 @@ const ariaSorts = (container: HTMLElement) => table(container).headers.map(heade
 
 describe('MetricsTable', () => {
 	it('builds the whole shell before any result, with an empty body', () => {
-		const { container } = render(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />);
+		const { container } = render(<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />);
 
-		expect(container.querySelector('.test-metrics-root')).toBeTruthy();
+		expect(container.querySelector('[data-testid="test-metrics-root"]')).toBeTruthy();
 		expect(container.querySelector('table')).toBeTruthy();
 		expect(container.querySelector('thead')).toBeTruthy();
 		expect(container.querySelector('thead tr')).toBeTruthy();
@@ -72,7 +72,7 @@ describe('MetricsTable', () => {
 
 	it('makes every sortable header a real button and reports the sort on the cell', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 		const buttons = table(container).headers.map(sortButton);
 
@@ -92,24 +92,24 @@ describe('MetricsTable', () => {
 
 	it('unmounts the root only once a result has produced no rows', () => {
 		const { container, rerender } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={false} />,
 		);
-		expect(container.querySelector('.test-metrics-root')).toBeTruthy();
+		expect(container.querySelector('[data-testid="test-metrics-root"]')).toBeTruthy();
 
-		rerender(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={true} />);
-		expect(container.querySelector('.test-metrics-root')).toBeNull();
+		rerender(<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={[]} sortColumnId="value" hasResult={true} />);
+		expect(container.querySelector('[data-testid="test-metrics-root"]')).toBeNull();
 	});
 
 	it('opens sorted descending on the configured column', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 		expect(column(container, 1, parents)).toEqual(['70', '30', '10']);
 	});
 
 	it('sorts ascending on a first click, descending on a second, and never clears on a third', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 		const value = table(container).headers[1];
 
@@ -123,7 +123,7 @@ describe('MetricsTable', () => {
 
 	it('sorts the Name column by the metric name, not by the rendered cell', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 
 		fireEvent.click(table(container).headers[0]);
@@ -137,7 +137,7 @@ describe('MetricsTable', () => {
 
 	it('replaces the sort on a shift-click rather than adding a second column', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 
 		fireEvent.click(table(container).headers[0]);
@@ -150,15 +150,11 @@ describe('MetricsTable', () => {
 
 	it('keeps child rows with their parent and re-sorts them by the same column', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 
 		expect(
-			table(container).rows.map(row => [
-				row.cells[0].getAttribute('data-text'),
-				row.hasAttribute('data-expanded'),
-				row.classList.contains('child-metric'),
-			]),
+			table(container).rows.map(row => [row.cells[0].getAttribute('data-text'), row.hasAttribute('data-expanded'), row.hasAttribute('data-child')]),
 		).toEqual([
 			['Beta', true, false],
 			['Claw', false, true],
@@ -173,40 +169,40 @@ describe('MetricsTable', () => {
 
 	it('starts every parent expanded and unmounts its children when it is collapsed', () => {
 		const { container } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />,
 		);
 		const parent = table(container).rows[0];
 		expect(parent.hasAttribute('data-expanded')).toBe(true);
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(2);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(2);
 
 		fireEvent.click(parent);
 		expect(parent.hasAttribute('data-expanded')).toBe(false);
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(0);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(0);
 
 		fireEvent.click(parent);
 		expect(parent.hasAttribute('data-expanded')).toBe(true);
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(2);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(2);
 	});
 
 	it('keeps its state across a re-render with the same rows and resets expansion when they change', async () => {
 		const rows = buildRows();
 		const { container, rerender } = render(
-			<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={rows} sortColumnId="value" hasResult={true} />,
+			<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={rows} sortColumnId="value" hasResult={true} />,
 		);
 
 		fireEvent.click(table(container).headers[1]);
 		fireEvent.click(table(container).rows[2]);
 		expect(column(container, 1, parents)).toEqual(['10', '30', '70']);
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(0);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(0);
 
-		rerender(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={rows} sortColumnId="value" hasResult={true} />);
+		rerender(<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={rows} sortColumnId="value" hasResult={true} />);
 		expect(column(container, 1, parents)).toEqual(['10', '30', '70']);
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(0);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(0);
 
 		// A new result is a new array, and every parent comes back open — as rebuilding the body did.
 		// `autoResetExpanded` runs in a microtask after the row model rebuilds, hence the flush.
-		rerender(<MetricsTable rootClassName="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />);
+		rerender(<MetricsTable rootTestId="test-metrics-root" columns={columns} rows={buildRows()} sortColumnId="value" hasResult={true} />);
 		await act(async () => {});
-		expect(table(container).rows.filter(row => row.classList.contains('child-metric'))).toHaveLength(2);
+		expect(table(container).rows.filter(row => row.hasAttribute('data-child'))).toHaveLength(2);
 	});
 });

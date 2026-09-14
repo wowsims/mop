@@ -119,7 +119,11 @@ const runOneIteration = async page => {
 	await page.waitForSelector(`${q('detailed-results-1-iteration-button')}:not([disabled])`, { timeout: 60000 });
 	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
-	await page.waitForFunction(() => document.querySelectorAll('.damage-metrics-root tbody tr').length > 0, null, { timeout: 60000 });
+	await page.waitForFunction(
+		() => document.querySelectorAll(':is([data-testid="damage-metrics-root"], .damage-metrics-root) tbody tr').length > 0,
+		null,
+		{ timeout: 60000 },
+	);
 	await page.waitForTimeout(500);
 };
 

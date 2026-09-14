@@ -150,7 +150,7 @@ export const DamageMetricsTable = () => {
 	return (
 		<>
 			<MetricsTable
-				rootClassName="damage-metrics-root"
+				rootTestId="damage-metrics-root"
 				columns={columns}
 				rows={rows}
 				sortColumnId="dps"

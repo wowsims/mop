@@ -61,5 +61,5 @@ export const CastMetricsTable = () => {
 		[],
 	);
 
-	return <MetricsTable rootClassName="cast-metrics-root" columns={columns} rows={rows} sortColumnId="casts" hasResult={!!resultData} />;
+	return <MetricsTable rootTestId="cast-metrics-root" columns={columns} rows={rows} sortColumnId="casts" hasResult={!!resultData} />;
 };

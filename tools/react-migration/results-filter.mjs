@@ -69,10 +69,12 @@ const READ_TABLES = () => {
 	const topline = [...document.querySelectorAll('#damageTab .topline-results-root tbody td')].map(
 		(cell, index) => `${index} ${text(cell.querySelector('.topline-result-avg'))} ± ${text(cell.querySelector('.topline-result-stdev'))}`,
 	);
-	const rows = [...document.querySelectorAll('#damageTab .damage-metrics-root tbody tr')]
+	// Inlined rather than calling `q` — this function runs inside the page, where the module-scope
+	// helper does not exist.
+	const rows = [...document.querySelectorAll('#damageTab :is([data-testid="damage-metrics-root"], .damage-metrics-root) tbody tr')]
 		.slice(0, 8)
 		.map((row, index) => `${index} ${[...row.querySelectorAll('td')].map(text).join(' | ')}`);
-	const taken = [...document.querySelectorAll('#damageTakenTab .dtps-metrics-root tbody tr')]
+	const taken = [...document.querySelectorAll('#damageTakenTab :is([data-testid="dtps-metrics-root"], .dtps-metrics-root) tbody tr')]
 		.slice(0, 8)
 		.map((row, index) => `${index} ${[...row.querySelectorAll('td')].map(text).join(' | ')}`);
 	return { topline, rows, taken };

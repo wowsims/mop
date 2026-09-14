@@ -17,20 +17,24 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (
-		<div className="metrics-action flex items-center gap-2 whitespace-normal">
+		<div data-testid="metrics-action" className="flex items-center gap-2 whitespace-normal">
 			<WowheadIcon
-				className="metrics-action-icon h-[24px] w-[24px] align-middle mr-[4px]"
+				testId="metrics-action-icon"
+				className="h-[24px] w-[24px] align-middle mr-[4px]"
 				label={name}
 				href={href || undefined}
 				iconUrl={iconUrl}
 				actionId={actionId}
 				useBuffAura={useBuffAura}
 			/>
-			<span className="metrics-action-name truncate">{name}</span>
+			<span data-testid="metrics-action-name" className="truncate">
+				{name}
+			</span>
 			{expandable && (
 				<Button
 					variant="unstyled"
-					className="expand-toggle p-0 border-0 bg-transparent text-inherit ml-auto focus-visible:focus-ring"
+					data-testid="expand-toggle"
+					className="p-0 border-0 bg-transparent text-inherit ml-auto focus-visible:focus-ring"
 					aria-expanded={expanded}
 					aria-label={name}
 					onClick={event => {

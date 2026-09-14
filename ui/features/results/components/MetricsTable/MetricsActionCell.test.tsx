@@ -25,19 +25,19 @@ describe('MetricsActionCell', () => {
 	it('renders the icon anchor and the name, with no toggle on a row that cannot expand', () => {
 		const { container } = cell();
 
-		expect(container.querySelector('.metrics-action a.metrics-action-icon')).not.toBeNull();
-		expect(container.querySelector('.metrics-action-name')?.textContent).toBe('Kill Command');
-		expect(container.querySelector('.expand-toggle')).toBeNull();
+		expect(container.querySelector('[data-testid="metrics-action"] a[data-testid="metrics-action-icon"]')).not.toBeNull();
+		expect(container.querySelector('[data-testid="metrics-action-name"]')?.textContent).toBe('Kill Command');
+		expect(container.querySelector('[data-testid="expand-toggle"]')).toBeNull();
 	});
 
 	it('carries the href and background of a resolved action id, and neither of an empty one', () => {
 		resolved.state = { iconUrl: '', name: '', href: '', ready: true };
-		const empty = cell().container.querySelector<HTMLAnchorElement>('a.metrics-action-icon')!;
+		const empty = cell().container.querySelector<HTMLAnchorElement>('a[data-testid="metrics-action-icon"]')!;
 		expect(empty.getAttribute('href')).toBeNull();
 		expect(empty.style.backgroundImage).toBe('');
 
 		resolved.state = { iconUrl: 'https://icons/kc.jpg', name: 'Kill Command', href: 'https://wowhead/spell=34026', ready: true };
-		const filled = cell().container.querySelector<HTMLAnchorElement>('a.metrics-action-icon')!;
+		const filled = cell().container.querySelector<HTMLAnchorElement>('a[data-testid="metrics-action-icon"]')!;
 		expect(filled.getAttribute('href')).toBe('https://wowhead/spell=34026');
 		expect(filled.style.backgroundImage).toBe('url("https://icons/kc.jpg")');
 		expect(filled.getAttribute('rel')).toBe('noopener noreferrer');
@@ -45,7 +45,7 @@ describe('MetricsActionCell', () => {
 
 	it('names the icon anchor, which is a link with no text of its own', () => {
 		resolved.state = { iconUrl: 'https://icons/kc.jpg', name: 'Kill Command', href: 'https://wowhead/spell=34026', ready: true };
-		const icon = cell().container.querySelector<HTMLAnchorElement>('a.metrics-action-icon')!;
+		const icon = cell().container.querySelector<HTMLAnchorElement>('a[data-testid="metrics-action-icon"]')!;
 
 		expect(icon.textContent).toBe('');
 		expect(icon.getAttribute('aria-label')).toBe('Kill Command');
@@ -58,7 +58,7 @@ describe('MetricsActionCell', () => {
 
 		expect(wowhead.calls).toHaveLength(1);
 		expect(wowhead.calls[0]).toMatchObject([actionId, { useBuffAura: true }]);
-		await waitFor(() => expect(container.querySelector<HTMLElement>('a.metrics-action-icon')!.dataset.wowhead).toBe('spell=34026'));
+		await waitFor(() => expect(container.querySelector<HTMLElement>('a[data-testid="metrics-action-icon"]')!.dataset.wowhead).toBe('spell=34026'));
 	});
 
 	it('exposes the toggle as a focusable button reporting its state', () => {

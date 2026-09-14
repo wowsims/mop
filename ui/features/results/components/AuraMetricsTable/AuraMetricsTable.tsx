@@ -74,7 +74,7 @@ export const AuraMetricsTable = ({ useDebuffs }: AuraMetricsTableProps) => {
 
 	return (
 		<MetricsTable
-			rootClassName={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'}
+			rootTestId={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'}
 			columns={columns}
 			rows={rows}
 			sortColumnId="uptime"

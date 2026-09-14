@@ -61,7 +61,7 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 						{...anchorFor(column.metric)}>
 						<span className="topline-result-avg text-2xl">
 							{formatAverage(column, layout)}
-							<span className="metric-label text-ui font-normal"> {column.name}</span>
+							<span className="text-ui font-normal"> {column.name}</span>
 						</span>
 						{!!column.stdev && (
 							<span className="topline-result-stdev text-ui font-normal">

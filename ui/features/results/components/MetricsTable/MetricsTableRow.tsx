@@ -15,13 +15,9 @@ export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<
 	const isParent = row.getCanExpand();
 	return (
 		<tr
-			className={clsx(
-				'ui-metrics-row',
-				isParent && 'parent-metric cursor-pointer',
-				isParent && row.getIsExpanded() && 'expand',
-				row.depth > 0 && 'child-metric',
-				rowClassName?.(row.original.metric),
-			)}
+			className={clsx('ui-metrics-row', isParent && 'cursor-pointer', rowClassName?.(row.original.metric))}
+			data-parent={isParent ? '' : undefined}
+			data-child={row.depth > 0 ? '' : undefined}
 			data-expanded={isParent && row.getIsExpanded() ? '' : undefined}
 			onClick={isParent ? row.getToggleExpandedHandler() : undefined}>
 			{row.getAllCells().map((cell, index) => {

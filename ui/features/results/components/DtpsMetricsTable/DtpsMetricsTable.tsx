@@ -124,7 +124,7 @@ export const DtpsMetricsTable = () => {
 
 	return (
 		<>
-			<MetricsTable rootClassName="dtps-metrics-root" columns={columns} rows={rows} sortColumnId="dtps" hasResult={!!resultData} />
+			<MetricsTable rootTestId="dtps-metrics-root" columns={columns} rows={rows} sortColumnId="dtps" hasResult={!!resultData} />
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip id={TOOLTIP.missPercentHeader} />
 			<Tooltip

@@ -12,10 +12,11 @@ export interface WowheadIconProps extends ComponentPropsWithoutRef<'a'> {
 	useBuffAura?: boolean;
 	label?: string;
 	className?: string;
+	testId?: string;
 	children?: ReactNode;
 }
 
-export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, label, className, children, ...rest }: WowheadIconProps) => {
+export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, label, className, testId, children, ...rest }: WowheadIconProps) => {
 	const wowheadProps = useActionIdWowheadDataset(actionId ?? null, useBuffAura);
 
 	const Tag = as as 'a';
@@ -25,6 +26,7 @@ export const WowheadIcon = ({ as = 'a', iconUrl, href, actionId, useBuffAura, la
 		<Tag
 			className={clsx('relative inline-block bg-cover bg-center bg-no-repeat', className)}
 			{...anchorProps}
+			data-testid={testId}
 			aria-label={label}
 			style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
 			{...wowheadProps}

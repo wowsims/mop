@@ -110,7 +110,7 @@ describe('DamageMetricsTable', () => {
 	it('builds the ten-column shell before any result', () => {
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(container.querySelector('.damage-metrics-root')).toBeTruthy();
+		expect(container.querySelector('[data-testid="damage-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'metrics-table-header-cell ui-metrics-header-cell',
 			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric w-[400px] text-center',
@@ -130,7 +130,7 @@ describe('DamageMetricsTable', () => {
 		result = playerResult([metric('Steady Shot', { dps: 30 }), metric('Auto Shot', { dps: 5 })], [pet('Claw', { dps: 4 }), pet('Bite', { dps: 6 })]);
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.hasAttribute('data-expanded'), row.classList.contains('child-metric')])).toEqual([
+		expect(rows(container).map(row => [row.cells[0].textContent, row.hasAttribute('data-expanded'), row.hasAttribute('data-child')])).toEqual([
 			['Steady Shot', false, false],
 			['Claw', true, false],
 			['Bite', false, true],
@@ -174,7 +174,7 @@ describe('DamageMetricsTable', () => {
 		result = playerResult([], [pet('Claw', { dps: 4, hits: 40, crits: 0 }), pet('Bite', { dps: 6, hits: 60, crits: 0 })]);
 		const { container } = render(<DamageMetricsTable />);
 
-		const child = rows(container).find(row => row.classList.contains('child-metric') && row.cells[0].textContent === 'Claw')!;
+		const child = rows(container).find(row => row.hasAttribute('data-child') && row.cells[0].textContent === 'Claw')!;
 		fireEvent.mouseEnter(child.cells[4]);
 		await waitFor(() => expect(tooltipTable()).toBeTruthy());
 		expect([...tooltipTable()!.querySelectorAll<HTMLTableRowElement>('tbody tr')].map(row => row.cells[0].textContent)).toEqual([

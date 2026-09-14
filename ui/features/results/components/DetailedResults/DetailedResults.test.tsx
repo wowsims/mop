@@ -49,13 +49,13 @@ vi.mock('../Timeline', () => ({
 
 vi.mock('../ToplineResults', () => ({ ToplineResults: () => <div className="topline-results-root" /> }));
 vi.mock('../DpsHistogram', () => ({ DpsHistogram: () => <div className="dps-histogram-root" /> }));
-vi.mock('../DamageMetricsTable', () => ({ DamageMetricsTable: () => <div className="damage-metrics-root" /> }));
-vi.mock('../HealingMetricsTable', () => ({ HealingMetricsTable: () => <div className="healing-metrics-root" /> }));
-vi.mock('../DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div className="dtps-metrics-root" /> }));
-vi.mock('../CastMetricsTable', () => ({ CastMetricsTable: () => <div className="cast-metrics-root" /> }));
+vi.mock('../DamageMetricsTable', () => ({ DamageMetricsTable: () => <div data-testid="damage-metrics-root" /> }));
+vi.mock('../HealingMetricsTable', () => ({ HealingMetricsTable: () => <div data-testid="healing-metrics-root" /> }));
+vi.mock('../DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div data-testid="dtps-metrics-root" /> }));
+vi.mock('../CastMetricsTable', () => ({ CastMetricsTable: () => <div data-testid="cast-metrics-root" /> }));
 vi.mock('../ResourceMetricsTable', () => ({ ResourceMetricsTable: () => <div className="resource-metrics-root" /> }));
 vi.mock('../AuraMetricsTable', () => ({
-	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div className={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
+	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div data-testid={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
 }));
 
 const { DetailedResults } = await import('./DetailedResults');
@@ -146,12 +146,12 @@ describe('DetailedResults', () => {
 		metrics.threat = true;
 		metrics.healing = true;
 		const { container } = renderPane();
-		expect(container.querySelectorAll('#damageTab .damage-metrics > .damage-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#healingTab .healing-spell-metrics > .healing-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#damageTakenTab .dtps-metrics > .dtps-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#castsTab .cast-metrics > .cast-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#buffsTab .buff-aura-metrics > .buff-metrics-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#debuffsTab .debuff-aura-metrics > .debuff-metrics-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#damageTab .damage-metrics > [data-testid="damage-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#healingTab .healing-spell-metrics > [data-testid="healing-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#damageTakenTab .dtps-metrics > [data-testid="dtps-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#castsTab .cast-metrics > [data-testid="cast-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#buffsTab .buff-aura-metrics > [data-testid="buff-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#debuffsTab .debuff-aura-metrics > [data-testid="debuff-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#resourcesTab .resource-metrics > .resource-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('[data-testid="dr-row"].topline-results > .topline-results-root')).toHaveLength(3);
 		expect(container.querySelectorAll('#damageTab [data-testid="dr-row"].dps-histogram > .dps-histogram-root')).toHaveLength(1);

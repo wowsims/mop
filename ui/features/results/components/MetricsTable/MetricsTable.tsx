@@ -10,8 +10,8 @@ import { type MetricsColumnDef, useMetricsTable } from '../../hooks/useMetricsTa
 const ariaSort = (direction: false | SortDirection) => (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none');
 
 export interface MetricsTableProps<T> {
-	/** The root div's class, which the stylesheet and the gates address the table by. */
-	rootClassName: string;
+	/** The root div's `data-testid`, which the gates address the table by. */
+	rootTestId: string;
 	columns: Array<MetricsColumnDef<T>>;
 	rows: Array<MetricRow<T>>;
 	sortColumnId: string;
@@ -21,13 +21,13 @@ export interface MetricsTableProps<T> {
 	rowClassName?: (metric: T) => string | undefined;
 }
 
-export const MetricsTable = <T,>({ rootClassName, columns, rows, sortColumnId, hasResult, rowClassName }: MetricsTableProps<T>) => {
+export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasResult, rowClassName }: MetricsTableProps<T>) => {
 	const table = useMetricsTable({ columns, rows, sortColumnId });
 
 	if (hasResult && !rows.length) return null;
 
 	return (
-		<div className={rootClassName}>
+		<div data-testid={rootTestId}>
 			<table className="metrics-table ui-metrics-table">
 				<thead className="metrics-table-header">
 					{table.getHeaderGroups().map(headerGroup => (

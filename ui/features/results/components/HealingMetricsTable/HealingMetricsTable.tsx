@@ -197,7 +197,7 @@ export const HealingMetricsTable = () => {
 	return (
 		<>
 			<MetricsTable
-				rootClassName="healing-metrics-root"
+				rootTestId="healing-metrics-root"
 				columns={columns}
 				rows={rows}
 				sortColumnId="hps"

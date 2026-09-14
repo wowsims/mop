@@ -81,7 +81,7 @@ describe('HealingMetricsTable', () => {
 	it('builds the twelve-column shell before any result', () => {
 		const { container } = render(<HealingMetricsTable />);
 
-		expect(container.querySelector('.healing-metrics-root')).toBeTruthy();
+		expect(container.querySelector('[data-testid="healing-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'metrics-table-header-cell ui-metrics-header-cell',
 			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric w-[400px] text-center',

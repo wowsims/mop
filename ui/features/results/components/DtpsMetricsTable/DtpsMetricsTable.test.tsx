@@ -92,7 +92,7 @@ describe('DtpsMetricsTable', () => {
 	it('builds the nine-column shell before any result', () => {
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(container.querySelector('.dtps-metrics-root')).toBeTruthy();
+		expect(container.querySelector('[data-testid="dtps-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'metrics-table-header-cell ui-metrics-header-cell',
 			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric w-[400px] text-center',
@@ -118,10 +118,10 @@ describe('DtpsMetricsTable', () => {
 		result = targetResult([metric('Melee', { dps: 30 })], [metric('Melee', { dps: 10 })]);
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([
-			['Melee', 'ui-metrics-row parent-metric cursor-pointer expand'],
-			['Melee', 'ui-metrics-row child-metric'],
-			['Melee', 'ui-metrics-row child-metric'],
+		expect(rows(container).map(row => [row.cells[0].textContent, row.className, row.hasAttribute('data-parent'), row.hasAttribute('data-child')])).toEqual([
+			['Melee', 'ui-metrics-row cursor-pointer', true, false],
+			['Melee', 'ui-metrics-row', false, true],
+			['Melee', 'ui-metrics-row', false, true],
 		]);
 	});
 

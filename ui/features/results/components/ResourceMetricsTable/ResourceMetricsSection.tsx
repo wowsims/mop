@@ -33,9 +33,11 @@ export const ResourceMetricsSection = ({ resourceType, title, columns, resultDat
 	if (!rows.length) return null;
 
 	return (
-		<div className="resource-metrics-table-container mb-[20px]">
-			<span className="resource-metrics-table-title text-white font-bold text-lg">{title}</span>
-			<MetricsTable rootClassName="resource-metrics-table-root" columns={columns} rows={rows} sortColumnId="gain" hasResult={!!resultData} />
+		<div data-testid="resource-metrics-table-container" className="mb-[20px]">
+			<span data-testid="resource-metrics-table-title" className="text-white font-bold text-lg">
+				{title}
+			</span>
+			<MetricsTable rootTestId="resource-metrics-table-root" columns={columns} rows={rows} sortColumnId="gain" hasResult={!!resultData} />
 		</div>
 	);
 };

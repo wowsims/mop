@@ -18,8 +18,8 @@
 //
 // Deliberately shape-agnostic where the port will differ: collapsed children are asserted invisible
 // (`offsetParent === null`), never `.hide`, because vanilla hides them with a class and a React
-// table will unmount them instead. `.expand` on the *parent* is still asserted — the stylesheet
-// picks which caret shows off it, so it is a contract either way.
+// table will unmount them instead. `data-expanded` on the *parent* is still asserted — the caret
+// reads off it either way.
 import { launch, openSpec, PORTS, q, SERIALIZE } from './browser.mjs';
 
 // Beast mastery, not arms, and not by accident: `shouldCollapse` keeps a parent row only for a pet,
@@ -47,12 +47,12 @@ const plain = count => Array(count).fill(HEAD);
 // `ColumnSortType.Descending`. `mustHaveRows` is set only where a sim on this spec is guaranteed to
 // produce rows: dtps is empty for a DPS spec and healing is one incidental row, so neither claims it.
 const TABLES = [
-	{ root: '.damage-metrics-root', headers: [HEAD, PRIMARY, ...plain(7), RATE], sortCol: 9, mustHaveRows: true },
-	{ root: '.healing-metrics-root', headers: [HEAD, PRIMARY, ...plain(9), RATE], sortCol: 11 },
-	{ root: '.dtps-metrics-root', headers: [HEAD, PRIMARY, ...plain(6), RATE], sortCol: 8 },
-	{ root: '.cast-metrics-root', headers: plain(3), sortCol: 1, mustHaveRows: true },
-	{ root: '.buff-metrics-root', headers: plain(4), sortCol: 3, mustHaveRows: true },
-	{ root: '.debuff-metrics-root', headers: plain(4), sortCol: 3, mustHaveRows: true },
+	{ root: q('damage-metrics-root'), headers: [HEAD, PRIMARY, ...plain(7), RATE], sortCol: 9, mustHaveRows: true },
+	{ root: q('healing-metrics-root'), headers: [HEAD, PRIMARY, ...plain(9), RATE], sortCol: 11 },
+	{ root: q('dtps-metrics-root'), headers: [HEAD, PRIMARY, ...plain(6), RATE], sortCol: 8 },
+	{ root: q('cast-metrics-root'), headers: plain(3), sortCol: 1, mustHaveRows: true },
+	{ root: q('buff-metrics-root'), headers: plain(4), sortCol: 3, mustHaveRows: true },
+	{ root: q('debuff-metrics-root'), headers: plain(4), sortCol: 3, mustHaveRows: true },
 ];
 
 // `orderedResourceTypes` — always all 15 in the DOM, each container hidden until its table has rows.
@@ -123,11 +123,13 @@ const SHELL = roots =>
 		};
 	});
 
+// Inlined rather than calling `q` — this function is serialised into the page, where the
+// module-scope helper does not exist.
 const RESOURCES = () =>
-	[...document.querySelectorAll('.resource-metrics-table-container')].map(container => ({
+	[...document.querySelectorAll(':is([data-testid="resource-metrics-table-container"], .resource-metrics-table-container)')].map(container => ({
 		hidden: container.classList.contains('hide'),
-		title: container.querySelector('.resource-metrics-table-title')?.textContent ?? null,
-		tables: container.querySelectorAll('.resource-metrics-table-root').length,
+		title: container.querySelector(':is([data-testid="resource-metrics-table-title"], .resource-metrics-table-title)')?.textContent ?? null,
+		tables: container.querySelectorAll(':is([data-testid="resource-metrics-table-root"], .resource-metrics-table-root)').length,
 		columns: container.querySelectorAll('thead th').length,
 		rows: container.querySelectorAll('tbody tr').length,
 	}));
@@ -138,13 +140,15 @@ const ROWS = root => {
 	const rows = [...rootElem.querySelectorAll('tbody tr')];
 	return {
 		total: rows.length,
-		parents: rows.filter(row => row.classList.contains('parent-metric')).length,
-		children: rows.filter(row => row.classList.contains('child-metric')).length,
+		parents: rows.filter(row => row.hasAttribute('data-parent')).length,
+		children: rows.filter(row => row.hasAttribute('data-child')).length,
 		hidden: rootElem.classList.contains('hide'),
-		// The name cell `nameCellConfig` builds: an icon anchor and a name span, on every row.
-		withName: rows.filter(row => row.querySelector('.metrics-action-name')?.textContent.trim()).length,
-		withIcon: rows.filter(row => row.querySelector('a.metrics-action-icon')).length,
-		resolved: rows.filter(row => row.querySelector('a.metrics-action-icon')?.getAttribute('href')).length,
+		// The name cell `nameCellConfig` builds: an icon anchor and a name span, on every row. Inlined
+		// rather than calling `q` — this function is serialised into the page, where the module-scope
+		// helper does not exist.
+		withName: rows.filter(row => row.querySelector(':is([data-testid="metrics-action-name"], .metrics-action-name)')?.textContent.trim()).length,
+		withIcon: rows.filter(row => row.querySelector('a:is([data-testid="metrics-action-icon"], .metrics-action-icon)')).length,
+		resolved: rows.filter(row => row.querySelector('a:is([data-testid="metrics-action-icon"], .metrics-action-icon)')?.getAttribute('href')).length,
 	};
 };
 
@@ -158,7 +162,7 @@ const DEFAULT_SORT_PROBE = ({ root, column }) => {
 		const num = parseFloat(raw);
 		return isNaN(num) ? raw : num;
 	};
-	return [...document.querySelectorAll(`${root} tbody tr`)].filter(row => !row.classList.contains('child-metric')).map(row => parse(row.cells[column]));
+	return [...document.querySelectorAll(`${root} tbody tr`)].filter(row => !row.hasAttribute('data-child')).map(row => parse(row.cells[column]));
 };
 
 // Every probe below yields after a click before reading the result back. `TableSorter` mutates the
@@ -179,7 +183,7 @@ const SORT_PROBE = async root => {
 	};
 	const table = document.querySelector(`${root} table.metrics-table`);
 	if (!table) return { missing: true };
-	const column = index => [...table.querySelectorAll('tbody tr')].filter(row => !row.classList.contains('child-metric')).map(row => parse(row.cells[index]));
+	const column = index => [...table.querySelectorAll('tbody tr')].filter(row => !row.hasAttribute('data-child')).map(row => parse(row.cells[index]));
 	// `sortDesc` starts all-true and `setSort` flips before applying, so the first click on any
 	// column — the default one included — is ascending and the second is descending.
 	const out = [];
@@ -209,9 +213,9 @@ const GROUP_PROBE = async ({ root, column }) => {
 		const rows = [...table.querySelectorAll('tbody tr')];
 		const out = [];
 		for (let i = 0; i < rows.length; i++) {
-			if (!rows[i].classList.contains('parent-metric')) continue;
+			if (!rows[i].hasAttribute('data-parent')) continue;
 			const children = [];
-			for (let j = i + 1; j < rows.length && rows[j].classList.contains('child-metric'); j++) children.push(rows[j]);
+			for (let j = i + 1; j < rows.length && rows[j].hasAttribute('data-child'); j++) children.push(rows[j]);
 			out.push({ parent: key(rows[i]), children: children.map(key), values: children.map(child => parse(child.cells[column])) });
 		}
 		return out;
@@ -227,14 +231,14 @@ const EXPAND_PROBE = async root => {
 	const bodyRows = () => [...document.querySelectorAll(`${root} tbody tr`)];
 	const childrenOf = (rows, at) => {
 		const out = [];
-		for (let i = at + 1; i < rows.length && rows[i].classList.contains('child-metric'); i++) out.push(rows[i]);
+		for (let i = at + 1; i < rows.length && rows[i].hasAttribute('data-child'); i++) out.push(rows[i]);
 		return out;
 	};
 	// The biggest group, so the assertion is about a block of children rather than about one row.
 	const initial = bodyRows();
 	let at = -1;
 	initial.forEach((row, index) => {
-		if (row.classList.contains('parent-metric') && (at === -1 || childrenOf(initial, index).length > childrenOf(initial, at).length)) at = index;
+		if (row.hasAttribute('data-parent') && (at === -1 || childrenOf(initial, index).length > childrenOf(initial, at).length)) at = index;
 	});
 	if (at === -1) return { missing: 'no parent-metric row' };
 	const parent = initial[at];
@@ -246,7 +250,7 @@ const EXPAND_PROBE = async root => {
 		const index = rows.indexOf(parent);
 		const children = index === -1 ? [] : childrenOf(rows, index);
 		return {
-			expand: parent.classList.contains('expand'),
+			expand: parent.hasAttribute('data-expanded'),
 			children: children.length,
 			visible: children.filter(child => child.offsetParent !== null).length,
 		};
@@ -344,7 +348,11 @@ try {
 	const started = Date.now();
 	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
-	await page.waitForFunction(() => document.querySelectorAll('.damage-metrics-root tbody tr').length > 0, null, { timeout: 60000 });
+	await page.waitForFunction(
+		() => document.querySelectorAll(':is([data-testid="damage-metrics-root"], .damage-metrics-root) tbody tr').length > 0,
+		null,
+		{ timeout: 60000 },
+	);
 	await page.waitForTimeout(500);
 	console.log(`  ----  ${Date.now() - started} ms`);
 
@@ -431,7 +439,7 @@ try {
 	}
 
 	console.log('\nexpansion');
-	const expansion = await page.evaluate(EXPAND_PROBE, '.damage-metrics-root');
+	const expansion = await page.evaluate(EXPAND_PROBE, q('damage-metrics-root'));
 	check(
 		'a parent row starts expanded, hides its children on click, and shows them again on a second click',
 		!expansion.missing &&
@@ -453,14 +461,14 @@ try {
 		await page.waitForTimeout(650);
 		return page.evaluate(TIPS);
 	};
-	const primary = await hover(page.locator('.damage-metrics-root tbody tr td.metrics-table-cell--primary-metric').first());
+	const primary = await hover(page.locator(`${q('damage-metrics-root')} tbody tr td.metrics-table-cell--primary-metric`).first());
 	check('the primary-metric cell opens a tooltip holding a nested metrics table', primary.withTable > 0, JSON.stringify(primary));
 
 	// The threat veto: `onShow` returns false while threat metrics are off, so the
 	// same cell must open in one state and stay shut in the other. Both directions, because a gate
 	// that only saw the default state would pass on a veto that never fires.
 	const dpsRow = await page.evaluate(() =>
-		[...document.querySelectorAll('.damage-metrics-root tbody tr')].findIndex(
+		[...document.querySelectorAll(':is([data-testid="damage-metrics-root"], .damage-metrics-root) tbody tr')].findIndex(
 			row => row.offsetParent !== null && parseFloat(row.cells[9]?.dataset.text ?? '0') > 0,
 		),
 	);
@@ -478,7 +486,7 @@ try {
 			await page.waitForTimeout(700);
 			return previous;
 		};
-		const dpsCell = page.locator('.damage-metrics-root tbody tr').nth(dpsRow).locator('td.text-success');
+		const dpsCell = page.locator(`${q('damage-metrics-root')} tbody tr`).nth(dpsRow).locator('td.text-success');
 
 		const showedThreat = await setThreat(false);
 		const vetoed = await hover(dpsCell);
