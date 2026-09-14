@@ -167,7 +167,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		<>
 			<Button
 				size="none"
-				className="grow py-2 px-settings-button-inset -mr-(--settings-button-width)"
+				className="-mr-(--settings-button-width) grow px-settings-button-inset py-2"
 				data-testid="suggest-reforges-action-button"
 				data-sidebar-action=""
 				disabled={isRunning}
@@ -190,9 +190,9 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				container={container}
 				side="right"
 				align="start"
-				className="min-w-[300px]"
+				className="min-w-popup-min-w"
 				testId="reforge-optimiser-popover"
-				maxWidth="max-w-[350px] max-lg:max-w-settings-panel-max"
+				maxWidth="max-w-100 max-lg:max-w-settings-panel-max"
 				triggerClassName={[
 					'ui-button',
 					'ui-button-md',

@@ -14,7 +14,7 @@ const STRIP_ICON_CLASSES = 'ui-combat-replay-icon inset-ring-2 inset-ring-white-
 export const ReplayTickerIcon = ({ action, latest, opacity }: ReplayTickerIconProps) => (
 	<ReplayIcon actionId={action.actionId} className={STRIP_ICON_CLASSES} tooltip="spell" style={{ opacity }} active={latest} testId="cr-strip-icon">
 		{action.isCrit && (
-			<span data-testid="cr-crit-badge" className="absolute right-0.5 top-0.5 text-[9px] font-black leading-none text-damage-crit">
+			<span data-testid="cr-crit-badge" className="absolute top-0.5 right-0.5 text-cr-badge leading-none font-black text-damage-crit">
 				!
 			</span>
 		)}

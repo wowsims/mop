@@ -37,6 +37,7 @@
 	--spacing-page: 0.5rem;
 	--spacing-section: 2rem;
 	--spacing-fab-bar: calc(2.75rem + (var(--spacing) * 2 * 2) + 2px);
+	--spacing-popup-min-w: 300px;
 
 	--grid-template-columns-wide-narrow: 3fr 2fr;
 	--grid-template-columns-halves-wide: 1fr 1fr 2fr;
@@ -285,6 +286,7 @@
 	--drop-shadow-cr-silhouette: 0 0 14px var(--color-cr-hit-glow);
 
 	--spacing-cr-icon: 42px;
+	--text-cr-badge: 9px;
 }
 
 :root {

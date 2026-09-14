@@ -8,7 +8,7 @@
 	}
 
 	.ui-combat-replay-badge {
-		@apply absolute inset-x-0 bottom-0 p-0.5 text-center text-[9px] leading-none font-bold text-white text-shadow-outline-glow;
+		@apply absolute inset-x-0 bottom-0 p-0.5 text-center text-cr-badge leading-none font-bold text-white text-shadow-outline-glow;
 	}
 
 	.ui-combat-replay-resource-wrap {

@@ -27,7 +27,7 @@ export const ReplayAuraIcon = ({ aura }: ReplayAuraIconProps) => {
 			<span
 				ref={stacks}
 				data-testid="cr-aura-stack-badge"
-				className="absolute right-0.5 top-0.5 text-[9px] font-black leading-none text-white text-shadow-outline-soft"
+				className="absolute top-0.5 right-0.5 text-cr-badge leading-none font-black text-white text-shadow-outline-soft"
 			/>
 			<span ref={remaining} data-testid="cr-aura-time-badge" className="ui-combat-replay-badge" />
 		</ReplayIcon>

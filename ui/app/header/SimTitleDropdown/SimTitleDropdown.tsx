@@ -34,7 +34,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 			</Menu.SubmenuTrigger>
 			<Menu.Portal container={portalContainer ?? undefined}>
 				<Menu.Positioner side="right" align="start" sideOffset={0} className={clsx('ui-menu-positioner-plain')} data-testid="sim-title-positioner">
-					<Menu.Popup className={clsx('ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
+					<Menu.Popup className={clsx('ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-popup-min-w')} data-testid="sim-title-popup">
 						{Object.values(playerClass.specs).map(spec => (
 							<Menu.LinkItem
 								key={spec.simLink}

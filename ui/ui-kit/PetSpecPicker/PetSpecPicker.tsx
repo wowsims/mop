@@ -31,16 +31,16 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 	};
 
 	return (
-		<div className="col-span-full w-full flex flex-col gap-1" data-testid="pet-spec-picker">
-			<div className="p-3 flex items-center text-white bg-transparent text-base z-1 border-b border-b-border">
+		<div className="col-span-full flex w-full flex-col gap-1" data-testid="pet-spec-picker">
+			<div className="z-1 flex items-center border-b border-b-border bg-transparent p-3 text-base text-white">
 				<span className="mr-3 flex-1 font-bold whitespace-nowrap">Pet Spec</span>
 			</div>
-			<div className="flex flex-wrap gap-1 my-3 mx-0 z-1 max-md:flex-col md:flex-row">
+			<div className="z-1 mx-0 my-3 flex flex-wrap gap-1 max-md:flex-col md:flex-row">
 				{SPECS.map(({ spec, label, iconKey }) => (
 					<div
 						key={spec}
 						className={clsx(
-							'flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 ease-[ease] hover:bg-white-5',
+							'flex cursor-pointer items-center gap-2 rounded-sm border-2 p-2 transition-[border-color,background-color] duration-150 ease-in-out hover:bg-white-5',
 							spec === active ? 'border-talent-full bg-black-20' : 'border-transparent',
 						)}
 						data-testid="pet-spec-item"
@@ -49,7 +49,7 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 						onClick={() => select(spec)}>
 						<div
 							className={clsx(
-								'relative inline-block size-10 rounded-sm bg-no-repeat bg-cover bg-center cursor-pointer border',
+								'relative inline-block size-10 cursor-pointer rounded-sm border bg-cover bg-center bg-no-repeat',
 								spec === active ? 'border-talent-full' : 'border-gray-600',
 							)}
 							style={{ backgroundImage: `url('https://wow.zamimg.com/images/wow/icons/large/${iconKey}.jpg')` }}
