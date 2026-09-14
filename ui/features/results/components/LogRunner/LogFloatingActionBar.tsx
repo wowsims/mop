@@ -69,7 +69,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 				event.preventDefault();
 			}}>
 			<div className="ui-fab-clip">
-				<div className="ui-fab-panel group-data-[expanded=true]:[transform:none]">
+				<div className="ui-fab-panel group-data-[expanded=true]:transform-none">
 					{/* The clip wrapper only hides the collapsed panel; inert is what takes it out of the tab order. */}
 					<div data-testid="log-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
 						<div data-testid="log-fab-filters" className="ui-fab-drawer">

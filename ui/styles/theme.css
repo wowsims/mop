@@ -41,6 +41,7 @@
 	--grid-template-columns-split: 1fr 0 1fr;
 	--grid-template-columns-icon-triple: 4rem repeat(3, 1fr);
 	--grid-template-columns-icon-fill: repeat(auto-fill, 4rem);
+	--grid-template-rows-auto: auto;
 
 	--color-black: #000;
 	--color-white: #fff;

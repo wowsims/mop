@@ -24,7 +24,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 	return (
 		<li>
 			<a
-				className="ui-bulk-item-search-item text-left [text-decoration:none] [clear:both] font-normal text-white rounded-none bg-transparent hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-raised"
+				className="ui-bulk-item-search-item text-left no-underline clear-both font-normal text-white rounded-none bg-transparent hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-raised"
 				data-item-id={item.id}
 				href={href || undefined}
 				target="_blank"
