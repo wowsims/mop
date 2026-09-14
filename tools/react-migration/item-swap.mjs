@@ -48,14 +48,16 @@ console.log(`${SPEC} on :${PORT}\n`);
 console.log(`at rest      ${JSON.stringify(await page.evaluate(STATE))}`);
 
 // `reverse: true` on the picker means the checkbox reads inverted; click it rather than reason about it.
-await page.click('#enable-item-swap');
+// The clickable surface is the label, not the visually hidden native input BooleanPicker's
+// Checkbox.Root puts the id on.
+await page.click('label[for="enable-item-swap"]');
 await page.waitForTimeout(600);
 console.log(`toggled      ${JSON.stringify(await page.evaluate(STATE))}`);
 
 // A spec whose swap set starts enabled (warrior/protection) is hidden by the toggle above rather
 // than shown, and the swap button goes with it.
 if ((await page.evaluate(STATE)).hidden) {
-	await page.click('#enable-item-swap');
+	await page.click('label[for="enable-item-swap"]');
 	await page.waitForTimeout(600);
 	console.log(`re-toggled   ${JSON.stringify(await page.evaluate(STATE))}`);
 }
@@ -72,7 +74,7 @@ await page.waitForTimeout(900);
 console.log(`swapped back ${JSON.stringify(await page.evaluate(STATE))}`);
 
 // And back off again: the class has to come back, not just go away once.
-await page.click('#enable-item-swap');
+await page.click('label[for="enable-item-swap"]');
 await page.waitForTimeout(600);
 console.log(`toggled off  ${JSON.stringify(await page.evaluate(STATE))}`);
 

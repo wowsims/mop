@@ -24,6 +24,9 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const INSTALL = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
+	// The tab strip moved from a react-bootstrap `Nav.Link` (`.nav-link`) to a Base UI `Tab`
+	// (`.ui-tab-nav`) on both builds; match either.
+	const tabLink = ':is(.nav-link, .ui-tab-nav)';
 	const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 	const modalRoot = () => document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open], [data-testid="selector-modal"][data-open]');
@@ -36,10 +39,10 @@ const INSTALL = () => {
 			return {
 				open: true,
 				title: text(modal.querySelector(q('selector-modal-title'))),
-				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} .nav-link`)].map(
+				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} ${tabLink}`)].map(
 					tab => text(tab) || ((tab.dataset.label ?? '').startsWith('Gem') ? '<gem>' : '?'),
 				),
-				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} .nav-link.active`)),
+				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} ${tabLink}.active, ${q('selector-modal-tabs')} ${tabLink}[data-active]`)),
 				gemTabs: modal.querySelectorAll(`${q('selector-modal-tabs')} [data-label^="Gem"]`).length,
 				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
 				railActive: modal.querySelector(`.gear-picker-modal-slots :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
@@ -153,6 +156,8 @@ const say = line => console.log(line);
 const ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]', '[data-testid="selector-modal"][data-open]'];
 const modalRoot = ROOTS.join(', ');
 const sel = suffix => ROOTS.map(root => `${root} ${suffix}`).join(', ');
+// Same dual shape as the in-page INSTALL's tabLink: a react-bootstrap `.nav-link` or a Base UI `.ui-tab-nav`.
+const tabLink = ':is(.nav-link, .ui-tab-nav)';
 const activePane = `:is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)`;
 const pane = () => page.locator(sel(activePane)).first();
 const rows = () => pane().locator(q('selector-modal-list-item'));
@@ -207,6 +212,10 @@ if (first.heights.length > 1) say(`  NOTE        rows in this pane are not all o
 // no enchant on this class, and a weapon does.
 say('\nthe tab set each slot earns');
 const tabsForSlot = async slot => {
+	// The previous slot's wowhead tooltip can still be visible and overlap this slot's icon (rail
+	// slots are ~44px apart) until its hide debounce fires; move the mouse away and wait it out first.
+	await page.mouse.move(0, 0);
+	await page.waitForTimeout(250);
 	await page.locator(sel(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}[data-slot="${slot}"] ${q('item-picker-icon')}`)).first().click();
 	await settle();
 	return page.evaluate(() => window.selectorProbe.head());
@@ -229,25 +238,37 @@ if (trinketFilters.epValues !== 'absent') problems.push(`a trinket slot offers t
 // ---------------------------------------------------------------------------
 say('\nsearch, on the head slot');
 await tabsForSlot(0);
-const before = await page.evaluate(() => window.selectorProbe.visible());
-await pane().locator('#selector-modal-search').fill('helm');
-await settle(900);
-const searched = await page.evaluate(() => window.selectorProbe.visible());
-say(`  "helm"      rows ${before.scrollHeight} -> ${searched.scrollHeight}px of list, top ${JSON.stringify(searched.names.slice(0, 3))}`);
-if (searched.scrollHeight >= before.scrollHeight) problems.push('searching did not shorten the list');
-if (searched.names.some(name => !name.toLowerCase().includes('helm'))) problems.push(`a search result does not match: ${JSON.stringify(searched.names)}`);
-await pane().locator('#selector-modal-search').fill('');
-await settle(900);
-const cleared = await page.evaluate(() => window.selectorProbe.visible());
-say(`  cleared     ${cleared.scrollHeight}px, top ${JSON.stringify(cleared.names.slice(0, 3))}`);
-if (cleared.scrollHeight !== before.scrollHeight) problems.push(`clearing the search left ${cleared.scrollHeight}px, was ${before.scrollHeight}px`);
+const hasSearch = await pane().locator('#selector-modal-search').count();
+if (!hasSearch) {
+	say('  absent      this build has no search box on the items pane');
+	problems.push('the items pane has no search box');
+} else {
+	const before = await page.evaluate(() => window.selectorProbe.visible());
+	await pane().locator('#selector-modal-search').fill('helm');
+	await settle(900);
+	const searched = await page.evaluate(() => window.selectorProbe.visible());
+	say(`  "helm"      rows ${before.scrollHeight} -> ${searched.scrollHeight}px of list, top ${JSON.stringify(searched.names.slice(0, 3))}`);
+	if (searched.scrollHeight >= before.scrollHeight) problems.push('searching did not shorten the list');
+	if (searched.names.some(name => !name.toLowerCase().includes('helm'))) problems.push(`a search result does not match: ${JSON.stringify(searched.names)}`);
+	await pane().locator('#selector-modal-search').fill('');
+	await settle(900);
+	const cleared = await page.evaluate(() => window.selectorProbe.visible());
+	say(`  cleared     ${cleared.scrollHeight}px, top ${JSON.stringify(cleared.names.slice(0, 3))}`);
+	if (cleared.scrollHeight !== before.scrollHeight) problems.push(`clearing the search left ${cleared.scrollHeight}px, was ${before.scrollHeight}px`);
+}
 
 // ---------------------------------------------------------------------------
 // EP values ship off, which hides the column, its header and the delta beside every value. Turned
 // on here rather than at the top so the readouts above are the pane as it first opens, and left on
 // for everything below.
 say('\nthe EP option, and the two sortable headers');
-await pane().locator(`${q('selector-modal-show-ep-values')} input`).check();
+// Same BooleanPicker shape as item-swap's toggle: the clickable surface is the label, not the
+// visually hidden native input the Checkbox.Root id lands on, so click the label and only if the
+// box is not already checked (`.check()`'s idempotence, since a plain click always toggles).
+const epCheckbox = pane().locator(`${q('selector-modal-show-ep-values')} input`);
+if (!(await epCheckbox.isChecked())) {
+	await pane().locator(`${q('selector-modal-show-ep-values')} label`).click();
+}
 await settle();
 const withEp = await page.evaluate(() => window.selectorProbe.filters());
 const epRows = await page.evaluate(() => window.selectorProbe.visible());
@@ -339,7 +360,7 @@ say(`  active row  ${activeAfter.active.filter(Boolean).length} of ${activeAfter
 // Each of the three data-driven tabs, opened by its own label so a missing one reads as missing.
 say('\nthe data-driven tabs');
 const openTab = async label => {
-	const tab = page.locator(sel('.selector-modal-tabs .nav-link'), { hasText: label }).first();
+	const tab = page.locator(sel(`.selector-modal-tabs ${tabLink}`), { hasText: label }).first();
 	if (!(await tab.count())) return null;
 	await tab.click();
 	await settle(900);
@@ -395,7 +416,7 @@ if (await gemTab.count()) {
 // baseline moves the tab on Left/Right/Home/End too and neither build may move the slot with them.
 say('\nthe keyboard, strip against rail');
 const isReact = PORT !== PORTS.base;
-const focusTab = () => page.evaluate(selector => document.querySelector(selector)?.focus(), sel(`${q('selector-modal-tabs')} .nav-link.active`));
+const focusTab = () => page.evaluate(selector => document.querySelector(selector)?.focus(), sel(`${q('selector-modal-tabs')} ${tabLink}.active`));
 const keyState = () =>
 	page.evaluate(
 		({ selector, tabsSelector, titleSelector, pane: panesel }) => {
@@ -408,7 +429,7 @@ const keyState = () =>
 				pane: modal.querySelector(panesel)?.id ?? null,
 			};
 		},
-		{ selector: modalRoot, tabsSelector: `${q('selector-modal-tabs')} .nav-link`, titleSelector: q('selector-modal-title'), pane: activePane },
+		{ selector: modalRoot, tabsSelector: `${q('selector-modal-tabs')} ${tabLink}`, titleSelector: q('selector-modal-title'), pane: activePane },
 	);
 
 await focusTab();
@@ -461,7 +482,8 @@ await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
 const reopened = await page.evaluate(() => window.selectorProbe.visible());
 const reopenedState = await head();
-say(`  reopened    active=${JSON.stringify(reopenedState.activeTab)} scroll=${reopened.scrollTop} search=${JSON.stringify(await pane().locator('#selector-modal-search').inputValue())}`);
+const reopenedSearch = (await pane().locator('#selector-modal-search').count()) ? await pane().locator('#selector-modal-search').inputValue() : null;
+say(`  reopened    active=${JSON.stringify(reopenedState.activeTab)} scroll=${reopened.scrollTop} search=${JSON.stringify(reopenedSearch)}`);
 if (reopenedState.activeTab !== reopenedState.tabs[0]) problems.push(`reopening left ${JSON.stringify(reopenedState.activeTab)} active, expected ${JSON.stringify(reopenedState.tabs[0])}`);
 if (reopened.scrollTop !== 0) problems.push(`reopening left the list scrolled to ${reopened.scrollTop}`);
 await page.keyboard.press('Escape');
@@ -507,7 +529,7 @@ for (const picker of filtersMenu.pickers) say(`              ${picker}`);
 if (!filtersMenu.pickers.length) problems.push('the filters menu built no pickers');
 if (!filtersMenu.open) problems.push('the Filters button opened no filters menu');
 if (!filtersMenu.selectorStillOpen) problems.push('opening the filters menu closed the selector modal underneath it');
-await pane().locator('#selector-modal-search').fill('helm');
+if (await pane().locator('#selector-modal-search').count()) await pane().locator('#selector-modal-search').fill('helm');
 await settle(700);
 if (!(await page.evaluate(() => window.selectorProbe.open()))) problems.push('typing behind the filters menu closed the selector modal');
 say(`  typing      modalStillOpen=${await page.evaluate(() => window.selectorProbe.open())}`);
