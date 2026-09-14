@@ -203,8 +203,11 @@ fix is almost always removing whatever broke the native layering, not adding log
      compiling it against `ui/styles/tailwind.css` with Tailwind's own design system, not a
      hand-maintained list), isn't `ui-*`, and isn't on the allowlist, fails.
   2. **Retired names** — any token in `ui/retired_class_names.json` (the names Phase 6 removed)
-     appearing anywhere in `ui/` fails, even outside a `className`, so a hook can't quietly come back
-     through a comment-free reintroduction.
+     appearing anywhere in production `ui/` (`*.test.ts(x)` excluded) fails, even outside a
+     `className`, so a hook can't quietly come back through a comment-free reintroduction — unless
+     the token has since become a real Tailwind utility or is on the allowlist, since Phase 6 retired
+     some hand-rolled classes whose names collide with a later Tailwind utility of the same spelling
+     (`grayscale`, `flex-3`, `tabular-nums`, …).
   3. **`data-testid` styling** — a `.css` rule or TSX arbitrary variant selecting `[data-testid=…]`
      fails.
 - **`ui/class_hook_allowlist.json`** is the only way to keep a raw class name. An entry needs a

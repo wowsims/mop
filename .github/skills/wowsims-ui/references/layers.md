@@ -30,12 +30,14 @@ Global bans (`no-restricted-globals`, error): `window` `document` `localStorage`
 injected `Env` (`ui/sim/state/env.ts`; `sim.env` at runtime, `ui/app/browser_env.ts` in the browser,
 `tools/state-snapshots/memory_env.ts` in the harness).
 
-**Naming a DOM type is not the same as being a view.** `ui/sim/proto/action_id/dom.ts` sits in the
-sim layer on purpose: every function there takes an `HTMLElement` it is _handed_ and enriches it
-with an icon, an href or a Wowhead dataset. It never creates an element and it touches no browser
-global, so it satisfies the rule and belongs beside the `ActionId` value object it serves. Do not
-"tidy" it into `features/` — the test for this layer is browser globals and element _creation_, not
-whether `HTMLElement` appears in a signature.
+**Naming a DOM type is not the same as being a view.** A function that takes an `HTMLElement` it is
+_handed_ and enriches it — with an icon, an href, a Wowhead dataset — can still belong in the sim
+layer: it never creates an element and it touches no browser global, so it satisfies the rule.
+`ui/sim/proto/action_id/dom.ts` used to be that example, sitting beside the `ActionId` value object
+it served; its imperative DOM writers were deleted as dead code once the React port took over
+icon/href rendering, leaving `ui/sim/proto/action_id/tooltip_data.ts` behind. Do not "tidy" a
+sim-layer function that names `HTMLElement` into `features/` on sight — the test for this layer is
+browser globals and element _creation_, not whether `HTMLElement` appears in a signature.
 
 ## Three ways these rules surprise people
 

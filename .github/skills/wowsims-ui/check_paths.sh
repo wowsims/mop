@@ -30,6 +30,7 @@ tools/react-migration/
 tools/react-migration/README.md
 tools/restructure/move.mjs
 ui/index.ts
+ui/sim/proto/action_id/dom.ts
 ui/worker/highs.js"
 
 fail=0
