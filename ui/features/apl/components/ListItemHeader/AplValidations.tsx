@@ -98,7 +98,8 @@ export const AplValidations = ({ getValidations }: AplValidationsProps) => {
 		<>
 			<ListItemAction
 				icon={icon ?? ''}
-				className={['apl-validations', formatted && LEVEL_CLASS.get(formatted.maxLogLevel)]}
+				className={formatted ? LEVEL_CLASS.get(formatted.maxLogLevel) : undefined}
+				testId="apl-validations"
 				hidden={!formatted}
 				tooltip={i18n.t('common.list_picker.warnings')}
 				tooltipId={tooltipId}

@@ -41,7 +41,7 @@ export const GroupList = () => {
 	const config: ListPickerConfig<Player<any>, APLGroup> = {
 		title: i18n.t('rotation_tab.apl.actionGroups.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.overview'),
-		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker'],
+		extraClassNames: ['ui-apl-list-item-picker'],
 		itemLabel: groupName(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.groups || [],

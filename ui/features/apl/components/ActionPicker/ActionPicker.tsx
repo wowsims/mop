@@ -75,7 +75,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 	};
 
 	const implConfig = (implKind: ValidAPLActionKind): InputConfig<Player<any>, any> => ({
-		extraClassNames: [`apl-action-${implKind}`, `ui-apl-action-${implKind.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`],
+		extraClassNames: [`ui-apl-action-${implKind.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`],
 		getValue: () => (config.getValue(player)?.action as any)?.[implKind] || actionKinds[implKind].newValue(),
 		setValue: (subject: Player<any>, newValue: any) => {
 			const source = config.getValue(subject);
@@ -92,7 +92,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 			hidden={hidden}
 			disabled={disabled}>
 			<ValuePicker player={player} config={conditionConfig} testId="apl-action-condition" />
-			<div className="flex flex-row gap-2 max-md:flex-wrap">
+			<div className="flex flex-row gap-2 max-md:flex-wrap" data-kind={kind}>
 				<DropdownField<Player<any>, ValidAPLActionKind>
 					modObject={player}
 					config={kindConfig}

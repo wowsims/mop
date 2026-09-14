@@ -45,9 +45,9 @@ describe('ListItemHeader', () => {
 	it('renders the validations button before the hide picker', () => {
 		const { container } = mount({ hide: false }, () => []);
 
-		const nodes = Array.from(container.querySelectorAll('.apl-validations, [data-testid="hide-picker-root"]'));
+		const nodes = Array.from(container.querySelectorAll('[data-testid="apl-validations"], [data-testid="hide-picker-root"]'));
 		expect(nodes.length).toBe(2);
-		expect(nodes[0].classList.contains('apl-validations')).toBe(true);
+		expect(nodes[0].getAttribute('data-testid')).toBe('apl-validations');
 		expect(nodes[1].getAttribute('data-testid')).toBe('hide-picker-root');
 	});
 
@@ -56,8 +56,8 @@ describe('ListItemHeader', () => {
 			const notHidden = mount({ hide: false }, () => []);
 			const hidden = mount({ hide: true }, () => []);
 
-			const notHiddenIcon = notHidden.container.querySelector('.hide-picker-button i')!;
-			const hiddenIcon = hidden.container.querySelector('.hide-picker-button i')!;
+			const notHiddenIcon = notHidden.container.querySelector('[data-testid="hide-picker-button"] i')!;
+			const hiddenIcon = hidden.container.querySelector('[data-testid="hide-picker-button"] i')!;
 
 			expect(notHiddenIcon.classList.contains('fa-eye')).toBe(true);
 			expect(notHiddenIcon.classList.contains('fa-eye-slash')).toBe(false);
@@ -71,7 +71,7 @@ describe('ListItemHeader', () => {
 			const { container } = mount(item, () => [], player);
 
 			act(() => {
-				fireEvent.click(container.querySelector('.hide-picker-button') as HTMLButtonElement);
+				fireEvent.click(container.querySelector('[data-testid="hide-picker-button"]') as HTMLButtonElement);
 			});
 
 			expect(item.hide).toBe(true);
@@ -85,7 +85,7 @@ describe('ListItemHeader', () => {
 		it('stays hidden while there are no validations', () => {
 			const { container } = mount({ hide: false }, () => []);
 
-			const button = container.querySelector('.apl-validations') as HTMLElement;
+			const button = container.querySelector('[data-testid="apl-validations"]') as HTMLElement;
 			expect(button.style.display).toBe('none');
 			expect(button.classList.contains('apl-validation-warning')).toBe(false);
 			expect(button.classList.contains('apl-validation-error')).toBe(false);
@@ -100,7 +100,7 @@ describe('ListItemHeader', () => {
 				source.notify();
 			});
 
-			const button = container.querySelector('.apl-validations') as HTMLElement;
+			const button = container.querySelector('[data-testid="apl-validations"]') as HTMLElement;
 			expect(button.style.display).not.toBe('none');
 			expect(button.classList.contains('apl-validation-information')).toBe(true);
 			expect(button.querySelector('i')?.classList.contains('fa-info-circle')).toBe(true);
@@ -115,7 +115,7 @@ describe('ListItemHeader', () => {
 				source.notify();
 			});
 
-			const button = container.querySelector('.apl-validations') as HTMLElement;
+			const button = container.querySelector('[data-testid="apl-validations"]') as HTMLElement;
 			expect(button.classList.contains('apl-validation-error')).toBe(true);
 			expect(button.classList.contains('apl-validation-warning')).toBe(false);
 			expect(button.classList.contains('apl-validation-information')).toBe(false);
@@ -131,7 +131,7 @@ describe('ListItemHeader', () => {
 				source.notify();
 			});
 
-			const button = container.querySelector('.apl-validations') as HTMLElement;
+			const button = container.querySelector('[data-testid="apl-validations"]') as HTMLElement;
 			expect(button.classList.contains('apl-validation-warning')).toBe(true);
 			expect(button.querySelector('i')?.classList.contains('fa-exclamation-triangle')).toBe(true);
 		});
@@ -156,7 +156,7 @@ describe('ListItemHeader', () => {
 				source.notify();
 			});
 			expect(format.mock.calls.length).toBe(formatted + 1);
-			expect((container.querySelector('.apl-validations') as HTMLElement).classList.contains('apl-validation-error')).toBe(true);
+			expect((container.querySelector('[data-testid="apl-validations"]') as HTMLElement).classList.contains('apl-validation-error')).toBe(true);
 		});
 
 		// The sim formats rotation-supplied names into its messages ("Group reference '%s' not found"),
@@ -170,7 +170,7 @@ describe('ListItemHeader', () => {
 				source.notify();
 			});
 			await act(async () => {
-				fireEvent.mouseEnter(container.querySelector('.apl-validations') as HTMLElement);
+				fireEvent.mouseEnter(container.querySelector('[data-testid="apl-validations"]') as HTMLElement);
 			});
 
 			const tooltip = document.querySelector('.sim-tooltip') as HTMLElement;

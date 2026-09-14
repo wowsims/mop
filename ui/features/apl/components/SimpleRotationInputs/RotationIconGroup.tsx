@@ -20,7 +20,7 @@ export const RotationIconGroup = ({ inputs }: RotationIconGroupProps) => {
 	const player = usePlayer();
 
 	return (
-		<PickerGroup className="icon-group" data-testid="rotation-icon-group">
+		<PickerGroup variant="icons" data-testid="rotation-icon-group">
 			{inputs.map((config, index) =>
 				config.type === 'icon' ? (
 					<IconPicker key={index} modObject={player} config={config} />

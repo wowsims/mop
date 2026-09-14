@@ -59,11 +59,12 @@ describe('ActionPicker', () => {
 		expect(actionContainer.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
 	});
 
-	it('carries apl-action-<kind> on the field group', () => {
+	it('carries the kind as data-kind on the field group container', () => {
 		setup(APLAction.create({ action: { oneofKind: 'resetSequence', resetSequence: { sequenceName: 'seq' } } }));
 		render(<ActionPicker player={player as never} config={configForRoot() as never} />);
 
-		expect(document.querySelector('[data-testid="apl-picker-builder-root"]')!.className.split(' ')).toContain('apl-action-resetSequence');
+		const root = roots()[0];
+		expect(root.children[1].getAttribute('data-kind')).toBe('resetSequence');
 	});
 
 	it('renders no field group while the action has no kind', () => {

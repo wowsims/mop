@@ -60,11 +60,11 @@ afterEach(() => {
 });
 
 describe('PriorityList', () => {
-	it('renders one list-picker-root carrying apl-list-item-picker, one row per priorityList entry', () => {
+	it('renders one list-picker-root, one row per priorityList entry', () => {
 		setup([APLListItem.create({ action: {} }), APLListItem.create({ action: {} })]);
 		mount();
 
-		expect(listRoot().className.split(' ')).toContain('apl-list-item-picker');
+		expect(listRoot()).not.toBeNull();
 		expect(rowContainers()).toHaveLength(2);
 		expect(document.querySelectorAll('[data-testid="apl-list-item-picker-root"]')).toHaveLength(2);
 	});
@@ -75,11 +75,8 @@ describe('PriorityList', () => {
 
 		const row = rowContainers()[0];
 		const header = row.querySelector('[data-testid="list-picker-item-header"]') as HTMLElement;
-		const headerExtras = Array.from(header.querySelectorAll('.apl-validations, [data-testid="hide-picker-root"]'));
-		expect(headerExtras.map(el => (el.classList.contains('apl-validations') ? 'apl-validations' : el.getAttribute('data-testid')))).toEqual([
-			'apl-validations',
-			'hide-picker-root',
-		]);
+		const headerExtras = Array.from(header.querySelectorAll('[data-testid="apl-validations"], [data-testid="hide-picker-root"]'));
+		expect(headerExtras.map(el => el.getAttribute('data-testid'))).toEqual(['apl-validations', 'hide-picker-root']);
 
 		const body = row.querySelector('[data-testid="list-picker-item"]') as HTMLElement;
 		expect(body.querySelector('[data-testid="apl-action-picker-root"]')).not.toBeNull();
@@ -142,7 +139,7 @@ describe('PriorityList', () => {
 		const reset = (sequenceName: string) => APLListItem.create({ action: { action: { oneofKind: 'resetSequence', resetSequence: { sequenceName } } } });
 		setup([reset('a'), reset('b')]);
 		mount();
-		const inputs = () => Array.from(document.querySelectorAll<HTMLInputElement>('.apl-action-resetSequence input'));
+		const inputs = () => Array.from(document.querySelectorAll<HTMLInputElement>('[data-kind="resetSequence"] input'));
 		const names = () => inputs().map(input => input.value);
 		expect(names()).toEqual(['a', 'b']);
 

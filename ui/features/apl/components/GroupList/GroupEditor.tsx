@@ -37,7 +37,7 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 	);
 
 	const actionsConfig: ListPickerConfig<Player<any>, APLListItem> = {
-		extraClassNames: ['apl-list-item-picker', 'ui-apl-list-item-picker'],
+		extraClassNames: ['ui-apl-list-item-picker'],
 		title: i18n.t('rotation_tab.apl.actionGroups.attributes.actions'),
 		titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.actions'),
 		itemLabel: i18n.t('rotation_tab.apl.priorityList.name'),

@@ -99,10 +99,10 @@ describe('FieldGroup', () => {
 		expect(root().firstElementChild!.className.split(' ')).toContain('input-inline');
 	});
 
-	it('marks a list field apl-picker-builder-multi', () => {
+	it('marks a list field ui-apl-picker-builder-multi', () => {
 		setup({ vals: [] });
 		mount([valueListFieldConfig('vals')]);
 
-		expect(root().querySelector('[data-testid="list-picker-root"]')!.className.split(' ')).toContain('apl-picker-builder-multi');
+		expect(root().querySelector('[data-testid="list-picker-root"]')!.className.split(' ')).toContain('ui-apl-picker-builder-multi');
 	});
 });

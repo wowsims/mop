@@ -5,14 +5,11 @@ import type { InputConfig } from '@ui-kit/input';
 
 const INLINE_KINDS: ReadonlySet<AplFieldSpec['kind']> = new Set(['boolean', 'number', 'string']);
 
-/** The two list fields that carry `apl-picker-builder-multi` — `and.vals`, `sequence.actions` and their kin. */
+/** The two list fields that carry `ui-apl-picker-builder-multi` — `and.vals`, `sequence.actions` and their kin. */
 const MULTI_FIELDS: ReadonlySet<string> = new Set(['vals', 'actions']);
 
 const fieldClasses = (spec: AplFieldSpec): Array<string> | undefined => {
-	const classes = [
-		...(INLINE_KINDS.has(spec.kind) ? ['input-inline'] : []),
-		...(MULTI_FIELDS.has(spec.field) ? ['apl-picker-builder-multi', 'ui-apl-picker-builder-multi'] : []),
-	];
+	const classes = [...(INLINE_KINDS.has(spec.kind) ? ['input-inline'] : []), ...(MULTI_FIELDS.has(spec.field) ? ['ui-apl-picker-builder-multi'] : [])];
 	return classes.length ? classes : undefined;
 };
 

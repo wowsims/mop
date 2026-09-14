@@ -20,7 +20,7 @@ export const HidePicker = ({ player, config }: HidePickerProps) => {
 
 	return (
 		<PickerShell config={shellConfig} className="m-0 w-auto" testId="hide-picker-root" hidden={hidden} disabled={disabled}>
-			<ListItemAction icon={value ? 'fa-eye-slash' : 'fa-eye'} className="hide-picker-button" onClick={() => setValue(!value)} />
+			<ListItemAction icon={value ? 'fa-eye-slash' : 'fa-eye'} testId="hide-picker-button" onClick={() => setValue(!value)} />
 		</PickerShell>
 	);
 };
