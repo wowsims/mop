@@ -1,4 +1,5 @@
 import { Menu as BaseMenu } from '@base-ui/react/menu';
+import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 
@@ -61,24 +62,27 @@ export const Menu = ({
 	positionerProps,
 	popupProps,
 	children,
-}: MenuProps) => (
-	<BaseMenu.Root open={open} onOpenChange={onOpenChange} modal={modal}>
-		<BaseMenu.Trigger render={triggerRender} {...triggerProps}>
-			{trigger}
-		</BaseMenu.Trigger>
-		<BaseMenu.Portal container={container} keepMounted={keepMounted}>
-			<BaseMenu.Positioner
-				side={side}
-				align={align}
-				sideOffset={sideOffset}
-				collisionPadding={collisionPadding}
-				positionMethod={positionMethod}
-				className={clsx(POSITIONER_Z_CLASSES[surface], positionerClassName)}
-				{...positionerProps}>
-				<BaseMenu.Popup className={clsx(SURFACE_CLASSES[surface], WIDTH_CLASSES[width], className)} {...popupProps}>
-					{children}
-				</BaseMenu.Popup>
-			</BaseMenu.Positioner>
-		</BaseMenu.Portal>
-	</BaseMenu.Root>
-);
+}: MenuProps) => {
+	const portalContainer = usePortalContainer();
+	return (
+		<BaseMenu.Root open={open} onOpenChange={onOpenChange} modal={modal}>
+			<BaseMenu.Trigger render={triggerRender} {...triggerProps}>
+				{trigger}
+			</BaseMenu.Trigger>
+			<BaseMenu.Portal container={container ?? portalContainer ?? undefined} keepMounted={keepMounted}>
+				<BaseMenu.Positioner
+					side={side}
+					align={align}
+					sideOffset={sideOffset}
+					collisionPadding={collisionPadding}
+					positionMethod={positionMethod}
+					className={clsx(POSITIONER_Z_CLASSES[surface], positionerClassName)}
+					{...positionerProps}>
+					<BaseMenu.Popup className={clsx(SURFACE_CLASSES[surface], WIDTH_CLASSES[width], className)} {...popupProps}>
+						{children}
+					</BaseMenu.Popup>
+				</BaseMenu.Positioner>
+			</BaseMenu.Portal>
+		</BaseMenu.Root>
+	);
+};
