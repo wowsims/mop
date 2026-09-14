@@ -60,11 +60,11 @@ export const Exporter = ({
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			className="exporter"
+			testId="exporter"
 			title={title}
 			footer={
 				<>
-					<Button className="copy-button w-48" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
+					<Button className="w-48" data-testid="copy-button" onClick={copy} {...tooltipAnchorProps(copyTooltipId)}>
 						<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('export.json.copy_button')}
 					</Button>
@@ -79,7 +79,7 @@ export const Exporter = ({
 			}>
 			{selectCategories && <ExporterCategoryPickers categories={categories.current} onChange={onCategoryChange} />}
 			{/* `defaultValue` for the mount, the effect above for a change while open: the popup mounts a commit after the effect first runs, so a ref write alone leaves the box empty. */}
-			<TextArea spellCheck={false} className="exporter-textarea w-full h-[60vh] resize-none" ref={textRef} defaultValue={data} />
+			<TextArea spellCheck={false} className="w-full h-[60vh] resize-none" data-testid="exporter-textarea" ref={textRef} defaultValue={data} />
 		</Dialog>
 	);
 };

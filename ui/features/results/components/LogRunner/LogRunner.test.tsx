@@ -189,7 +189,7 @@ describe('LogRunner', () => {
 
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
 		// The cast-completed line is gone from both — that filter is on `logs`.
-		expect(document.querySelector<HTMLTextAreaElement>('.exporter .exporter-textarea')!.value.split('\n')).toHaveLength(3);
+		expect(document.querySelector<HTMLTextAreaElement>('[data-testid="exporter"] [data-testid="exporter-textarea"]')!.value.split('\n')).toHaveLength(3);
 	});
 
 	// The list shares a scroller with the rest of the pane, and `.log-runner-scroll` is not it: that
