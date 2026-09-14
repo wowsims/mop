@@ -290,7 +290,7 @@ try {
 	// of `ui/specs/**`, which is frozen, so the two builds start from the same blob — and if they
 	// ever did not, the DPS digits below would say so rather than this quietly comparing two
 	// different sims.
-	const opened = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
+	const opened = await openSpec(browser, PORT, SPEC, { selector: q('sim-tabs') });
 	page = opened.page;
 	const { errors } = opened;
 	const stored = await page.evaluate(suffix => {
@@ -305,7 +305,7 @@ try {
 	await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), { key: stored.key, value: JSON.stringify(settings) });
 	await page.addInitScript(INSTALL);
 	await page.reload({ waitUntil: 'load', timeout: 60000 });
-	await page.waitForSelector('.sim-tabs', { timeout: 60000 });
+	await page.waitForSelector(q('sim-tabs'), { timeout: 60000 });
 	await page.evaluate(INSTALL);
 	const loadedSeed = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}').settings?.fixedRngSeed, stored.key);
 	if (String(loadedSeed) !== SEED) throw new Error(`loaded seed ${loadedSeed}, not ${SEED} — the run would not be comparable`);

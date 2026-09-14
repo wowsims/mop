@@ -87,9 +87,11 @@ const renderManager = async () => {
 	return result;
 };
 
-const nameInput = () => document.querySelector<HTMLInputElement>('.saved-data-save-input')!;
-const saveButton = () => document.querySelector<HTMLButtonElement>('.saved-data-save-button')!;
-const chips = (section: 'presets' | 'custom') => [...document.querySelectorAll(`.saved-data-${section} [data-testid="saved-data-set-chip"]`)];
+const nameInput = () => document.querySelector<HTMLInputElement>('[data-testid="saved-data-save-input"]')!;
+const saveButton = () => document.querySelector<HTMLButtonElement>('[data-testid="saved-data-save-button"]')!;
+const chips = (section: 'presets' | 'custom') => [
+	...document.querySelectorAll(`:is(.saved-data-${section}, [data-testid="saved-data-${section}"]) [data-testid="saved-data-set-chip"]`),
+];
 const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
 const popover = () => document.querySelector('.sim-confirm-popover');
@@ -287,7 +289,7 @@ describe('SavedEpWeights', () => {
 			await renderManager();
 
 			expect(document.querySelector('.saved-data-presets')).toBeTruthy();
-			expect(document.querySelector('.saved-data-custom')).toBeNull();
+			expect(document.querySelector('[data-testid="saved-data-custom"]')).toBeNull();
 		});
 
 		it('holds the presets back until the sim is ready, as the vanilla manager did', () => {

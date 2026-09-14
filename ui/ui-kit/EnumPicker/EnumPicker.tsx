@@ -12,9 +12,10 @@ export interface EnumPickerProps<ModObject> {
 	/** For a select with no visible label. `config.label` renders one; this names it without adding markup. */
 	ariaLabel?: string;
 	selectClassName?: string;
+	testId?: string;
 }
 
-export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel, selectClassName }: EnumPickerProps<ModObject>) => {
+export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel, selectClassName, testId }: EnumPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const [select, setSelect] = useState<HTMLSelectElement | null>(null);
 	const attachSelect = useCallback((element: HTMLElement | null) => setSelect(element instanceof HTMLSelectElement ? element : null), []);
@@ -26,11 +27,12 @@ export const EnumPicker = <ModObject,>({ modObject, config, ariaLabel, selectCla
 	}, [value, revision, select]);
 
 	return (
-		<PickerShell config={config} className="enum-picker-root" testId="enum-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} hidden={hidden} disabled={disabled} testId={testId ?? 'enum-picker-root'}>
 			<Select
 				ref={attachSelect}
 				id={config.id}
-				className={clsx('enum-picker-selector w-auto max-w-full', selectClassName)}
+				className={clsx('w-auto max-w-full', selectClassName)}
+				data-testid="enum-picker-selector"
 				aria-label={ariaLabel}
 				disabled={disabled}
 				onChange={event => setValue(Number(event.currentTarget.value))}>

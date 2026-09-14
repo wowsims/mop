@@ -68,7 +68,7 @@ const structure = actionBarSelector => {
 		valuePickers: count(':is([data-testid="apl-value-picker-root"], .apl-value-picker-root)'),
 		hideButtons: count('.hide-picker-button'),
 		validations: count('.apl-validations'),
-		dropdownTriggers: count('.dropdown-picker-button'),
+		dropdownTriggers: count(':is([data-testid="dropdown-picker-button"], .dropdown-picker-button)'),
 		actionBars: count(actionBarSelector),
 	};
 };
@@ -122,7 +122,7 @@ try {
 	await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 });
 	await page.waitForTimeout(2500);
 
-	await page.click('.sim-tabs .rotation-tab, .sim-tabs li.rotation-tab .nav-link');
+	await page.click(':is([data-testid="sim-tabs"], .sim-tabs) .rotation-tab, :is([data-testid="sim-tabs"], .sim-tabs) li.rotation-tab .nav-link');
 	await page.waitForSelector('#apl-priority-list', { state: 'visible', timeout: 15000 });
 	await page.waitForTimeout(1200);
 
@@ -206,7 +206,7 @@ try {
 
 	// 5. a nested value picker — open the first item's condition kind menu and count what it offers.
 	await step('open a value menu', async () => {
-		const trigger = page.locator(`${LIST} ${q('apl-action-condition')} .dropdown-picker-button`).locator('visible=true').first();
+		const trigger = page.locator(`${LIST} ${q('apl-action-condition')} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`).locator('visible=true').first();
 		if (!(await trigger.count())) return 'NO CONDITION PICKER';
 		await trigger.click({ timeout: 10000 });
 		await page.waitForTimeout(500);
@@ -268,7 +268,7 @@ try {
 	// 7. rotation type — away from APL and back, which rebuilds the whole pane on both stacks.
 	await step('type -> Auto', () =>
 		page.evaluate(navbar => {
-			const picker = document.querySelector(`${navbar} :is([data-testid="rotation-type-container"], .rotation-type-container) .dropdown-picker-button`);
+			const picker = document.querySelector(`${navbar} :is([data-testid="rotation-type-container"], .rotation-type-container) :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
 			picker?.click();
 		}, NAVBAR),
 	);

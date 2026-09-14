@@ -86,7 +86,7 @@ describe('RotationTabBody', () => {
 		const pane = container.querySelector('.rotation-tab-apl')!;
 		const [navbar, left, right] = [...pane.children];
 		expect(navbar.getAttribute('data-testid')).toBe('apl-rotation-navbar');
-		expect(left.classList.contains('tab-panel-left')).toBe(true);
-		expect(right.classList.contains('tab-panel-right')).toBe(true);
+		expect(left.getAttribute('data-testid')).toBe('tab-panel-left');
+		expect(right.getAttribute('data-testid')).toBe('tab-panel-right');
 	});
 });

@@ -145,7 +145,7 @@ const INSTALL = () => {
 };
 
 const browser = await launch();
-const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
+const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: q('sim-tabs') });
 await page.addInitScript(INSTALL);
 await page.evaluate(INSTALL);
 

@@ -52,7 +52,7 @@ describe('AplNavbar', () => {
 		const { container } = mount();
 		const root = container.querySelector('[data-testid="apl-rotation-navbar"]')!;
 		expect(root.children[0].getAttribute('data-testid')).toBe('rotation-type-container');
-		expect(root.children[1].className.split(' ')).toEqual(expect.arrayContaining(['nav']));
+		expect(root.children[1].className.split(' ')).toEqual(expect.arrayContaining(['ui-tabs']));
 		expect(root.querySelector('[data-testid="rotation-type-container"] > .rotation-type-picker-stub')).not.toBeNull();
 	});
 

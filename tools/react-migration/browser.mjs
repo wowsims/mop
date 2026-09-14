@@ -177,7 +177,7 @@ export const dropRootClasses = dom => {
  *
  * The one contract this places on the Base UI port: the tab identifier must stay a class token on
  * the `[role=tab]` element (or on an ancestor `<li>`, which is where it lives today).
- * `Tabs.Tab` emits no `data-value`, so `className={`sim-tab-link ${entry.id}`}` is what carries it.
+ * `Tabs.Tab` emits no `data-value`, so `className={entry.id}` is what carries it.
  */
 const PROBE = () => {
 	// Page-context copy: `q` from module scope does not survive `addInitScript`'s serialisation.

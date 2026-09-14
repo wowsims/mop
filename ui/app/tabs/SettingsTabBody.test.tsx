@@ -91,7 +91,7 @@ const becomeReady = async () => {
 	});
 };
 
-const cols = (container: HTMLElement) => [...container.querySelectorAll('.tab-panel-col')];
+const cols = (container: HTMLElement) => [...container.querySelectorAll('[data-testid="tab-panel-col"]')];
 
 const blocks = (container: HTMLElement, colIndex: number) =>
 	[...cols(container)[colIndex].querySelectorAll(':scope > [data-testid="content-block"]')].map(block =>
@@ -107,9 +107,9 @@ describe('SettingsTabBody', () => {
 
 	it('renders the panels and the three columns before the sim is ready, and nothing in them', () => {
 		const container = mount();
-		expect(container.querySelector('.tab-panel-left')).not.toBeNull();
-		expect(container.querySelector('.tab-panel-right')).not.toBeNull();
-		expect(container.querySelectorAll('.tab-panel-col')).toHaveLength(3);
+		expect(container.querySelector('[data-testid="tab-panel-left"]')).not.toBeNull();
+		expect(container.querySelector('[data-testid="tab-panel-right"]')).not.toBeNull();
+		expect(container.querySelectorAll('[data-testid="tab-panel-col"]')).toHaveLength(3);
 		// A block that rendered early would read the database before it loads.
 		expect(container.querySelectorAll('[data-testid="content-block"]')).toHaveLength(0);
 	});
@@ -131,7 +131,7 @@ describe('SettingsTabBody', () => {
 	// saved-data panels.
 	it('renders the preset picker ahead of the two saved-data panels, with nothing wrapping them', () => {
 		const container = mount();
-		const right = container.querySelector('.tab-panel-right')!;
+		const right = container.querySelector('[data-testid="tab-panel-right"]')!;
 
 		expect([...right.children].map(child => child.className)).toEqual([
 			'preset-configuration-picker-root saved-data-manager-root',

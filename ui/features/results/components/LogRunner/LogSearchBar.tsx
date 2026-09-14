@@ -39,7 +39,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 					/>
 				))}
 			</div>
-			<div data-testid="log-search-add-field" className="ui-log-inline-picker">
+			<div data-testid="log-search-add-field">
 				<DropdownPicker
 					id="log-search-add-filter"
 					options={FIELD_OPTIONS}
@@ -47,7 +47,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 					onChange={addField}
 					equals={(a, b) => a === b}
 					defaultLabel={i18n.t('results_tab.details.logs.search_add_filter')}
-					triggerClassName="p-0"
+					triggerClassName="p-0 border-0"
 					{...DROPUP}
 				/>
 			</div>

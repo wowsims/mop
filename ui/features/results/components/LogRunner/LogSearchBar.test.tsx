@@ -50,7 +50,7 @@ describe('LogSearchBar', () => {
 		const { container } = mount([]);
 		await openAddField(container);
 
-		const positioner = document.querySelector('.dropdown-picker-positioner') as HTMLElement;
+		const positioner = document.querySelector('[data-testid="dropdown-picker-positioner"]') as HTMLElement;
 		expect(positioner.getAttribute('data-side')).toBe('top');
 		expect(positioner.style.position).toBe('fixed');
 	});

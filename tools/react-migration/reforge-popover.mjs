@@ -83,10 +83,10 @@ const inspect = selector => {
 		ep: saved
 			? {
 					presets: saved.querySelectorAll('.saved-data-presets > *').length,
-					custom: saved.querySelectorAll('.saved-data-custom > *').length,
-					customHidden: hidden(saved.querySelector('.saved-data-custom')),
+					custom: saved.querySelectorAll(':is([data-testid="saved-data-custom"], .saved-data-custom) > *').length,
+					customHidden: hidden(saved.querySelector(':is([data-testid="saved-data-custom"], .saved-data-custom)')),
 					// `presetsOnly` is "load only", so this row is the whole difference at the DOM level.
-					createRow: !!saved.querySelector('.saved-data-create-container'),
+					createRow: !!saved.querySelector(':is([data-testid="saved-data-create-container"], .saved-data-create-container)'),
 				}
 			: null,
 		buttons: [...box.querySelectorAll('button')].map(button => button.textContent.trim()).filter(Boolean),

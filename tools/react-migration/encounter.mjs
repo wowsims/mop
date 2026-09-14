@@ -42,7 +42,7 @@ const MODAL = () => {
 const browser = await launch();
 // `openSpec` installs the strip probe, which is the only shape-agnostic way to open a tab: the two
 // builds' strips are different markup.
-const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
+const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: q('sim-tabs') });
 await page.evaluate(() =>
 	window.simTabsProbe
 		.tabs()

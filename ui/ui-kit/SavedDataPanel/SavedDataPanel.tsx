@@ -129,7 +129,7 @@ export const SavedDataPanel = <T,>({
 
 	return (
 		<div className={clsx('saved-data-manager-root', className)}>
-			<ContentBlock className="saved-data" config={{ header: { title } }}>
+			<ContentBlock testId="saved-data" config={{ header: { title } }}>
 				<div className="saved-data-container ui-saved-data-container" data-testid="saved-data-container">
 					{presets.length > 0 && (
 						<div className="saved-data-presets ui-saved-data-presets" data-testid="saved-data-presets">
@@ -137,24 +137,24 @@ export const SavedDataPanel = <T,>({
 						</div>
 					)}
 					{userData.length > 0 && (
-						<div className="saved-data-custom ui-saved-data-custom" data-testid="saved-data-custom">
+						<div className="ui-saved-data-custom" data-testid="saved-data-custom">
 							{userData.map(renderChip)}
 						</div>
 					)}
 				</div>
 				{!loadOnly && (
-					<div ref={createRef} className="saved-data-create-container ui-saved-data-create-container" data-testid="saved-data-create-container">
+					<div ref={createRef} className="ui-saved-data-create-container" data-testid="saved-data-create-container">
 						<FieldLabel htmlFor={nameInputId}>{nameLabel ?? label}</FieldLabel>
 						<Input
 							id={nameInputId}
-							className="saved-data-save-input ui-saved-data-save-input"
+							className="ui-saved-data-save-input"
 							data-testid="saved-data-save-input"
 							type="text"
 							placeholder={i18n.t('common.name')}
 							value={name}
 							onChange={event => setName(event.target.value)}
 						/>
-						<Button className="saved-data-save-button ui-saved-data-save-button" data-testid="saved-data-save-button" onClick={handleSave}>
+						<Button className="ui-saved-data-save-button" data-testid="saved-data-save-button" onClick={handleSave}>
 							{saveButtonText ?? `Save ${label}`}
 						</Button>
 					</div>

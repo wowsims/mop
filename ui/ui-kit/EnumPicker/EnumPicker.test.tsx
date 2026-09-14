@@ -146,10 +146,11 @@ describe('EnumPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<EnumPicker modObject={settings} config={configFor({ description: 'Controls pet behaviour' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root', 'enum-picker-root']));
+		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
+		expect(root.getAttribute('data-testid')).toBe('enum-picker-root');
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SELECT']);
 		expect(root.querySelector('label')!.className).toBe('form-label ui-picker-label');
-		expect(root.querySelector('select')!.className.split(' ')).toEqual(expect.arrayContaining(['ui-select', 'enum-picker-selector']));
+		expect(root.querySelector('select')!.getAttribute('data-testid')).toBe('enum-picker-selector');
 	});
 
 	// InputConfig types both of these as string | Element. The reforge panel was the last caller to

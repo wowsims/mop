@@ -27,9 +27,9 @@ export interface TabNavProps {
 export const TabNav = ({ tabs, className, variant = 'nav-tabs', tabItemClassName, bordered = true, wrap = true, testId }: TabNavProps) => {
 	if (variant === 'sim') {
 		return (
-			<Tabs.List className={clsx('sim-tabs ui-tabs-sim font-bold', className)} data-testid={testId} activateOnFocus>
+			<Tabs.List className={clsx('ui-tabs-sim font-bold', className)} data-testid={testId} activateOnFocus>
 				{tabs.map(tab => (
-					<Tabs.Tab key={tab.id} value={tab.id} className={clsx('sim-tab-link', tab.id, 'ui-tab', tab.buttonClassName)} data-testid={tab.id}>
+					<Tabs.Tab key={tab.id} value={tab.id} className={clsx(tab.id, 'ui-tab', tab.buttonClassName)} data-testid={tab.id}>
 						{tab.label}
 						<TabBadge label={tab.badge} />
 					</Tabs.Tab>
@@ -40,7 +40,7 @@ export const TabNav = ({ tabs, className, variant = 'nav-tabs', tabItemClassName
 
 	return (
 		<Tabs.List
-			className={clsx('nav ui-tabs', wrap ? 'flex-wrap' : 'flex-nowrap', bordered ? 'border-b border-b-border' : 'border-b-0', className)}
+			className={clsx('ui-tabs', wrap ? 'flex-wrap' : 'flex-nowrap', bordered ? 'border-b border-b-border' : 'border-b-0', className)}
 			data-testid={testId}
 			activateOnFocus
 			render={<ul />}>

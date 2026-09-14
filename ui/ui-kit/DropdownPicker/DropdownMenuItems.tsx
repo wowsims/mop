@@ -31,7 +31,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 						render={<li />}
 						value={entry.index}
 						closeOnClick
-						className={clsx('dropdown-picker-item', 'ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}
+						className={clsx('ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}
 						data-testid="dropdown-picker-item"
 						{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
 						{entry.option.icon}
@@ -39,7 +39,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					</Menu.RadioItem>
 				) : (
 					<Menu.SubmenuRoot key={`submenu-${entry.key}-${position}`}>
-						<li className={clsx('dropdown-picker-item', 'ui-menu-item', 'ui-menu-item-row')} data-testid="dropdown-picker-item">
+						<li className="ui-menu-item ui-menu-item-row" data-testid="dropdown-picker-item">
 							<div>
 								<Menu.SubmenuTrigger
 									render={
@@ -61,11 +61,8 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 									)}
 								</Menu.SubmenuTrigger>
 								<Menu.Portal container={portalContainer ?? undefined}>
-									<Menu.Positioner align="start" side="right" className={clsx('dropdown-picker-positioner', 'ui-menu-positioner')}>
-										<Menu.Popup
-											render={<ul />}
-											className={clsx('dropdown-submenu', 'dropdown-picker-menu', 'ui-menu')}
-											data-testid="dropdown-submenu">
+									<Menu.Positioner align="start" side="right" className="ui-menu-positioner" data-testid="dropdown-picker-positioner">
+										<Menu.Popup render={<ul />} className="ui-menu" data-testid="dropdown-submenu">
 											<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
 										</Menu.Popup>
 									</Menu.Positioner>

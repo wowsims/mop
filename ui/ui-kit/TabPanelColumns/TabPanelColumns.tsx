@@ -40,7 +40,9 @@ const LEFT_VARIANT_CLASSES: Record<TabPanelColumnsLeftVariant, string> = {
 };
 
 const Left = ({ className, variant = 'default', children }: TabPanelColumnsLeftProps) => (
-	<div className={clsx('tab-panel-left w-full flex-4 gap-section', LEFT_VARIANT_CLASSES[variant], className)}>{children}</div>
+	<div className={clsx('w-full flex-4 gap-section', LEFT_VARIANT_CLASSES[variant], className)} data-testid="tab-panel-left">
+		{children}
+	</div>
 );
 
 export interface TabPanelColumnsRightProps {
@@ -48,7 +50,11 @@ export interface TabPanelColumnsRightProps {
 	children?: ReactNode;
 }
 
-const Right = ({ className, children }: TabPanelColumnsRightProps) => <div className={clsx('tab-panel-right ui-columns-right', className)}>{children}</div>;
+const Right = ({ className, children }: TabPanelColumnsRightProps) => (
+	<div className={clsx('ui-columns-right', className)} data-testid="tab-panel-right">
+		{children}
+	</div>
+);
 
 export interface TabPanelColumnsColProps {
 	className?: string;
@@ -57,7 +63,9 @@ export interface TabPanelColumnsColProps {
 }
 
 const Col = ({ className, externalGap, children }: TabPanelColumnsColProps) => (
-	<div className={clsx('tab-panel-col ui-columns-col', !externalGap && 'gap-section', className)}>{children}</div>
+	<div className={clsx('ui-columns-col', !externalGap && 'gap-section', className)} data-testid="tab-panel-col">
+		{children}
+	</div>
 );
 
 export const TabPanelColumns = { Root, Left, Right, Col };

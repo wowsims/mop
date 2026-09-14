@@ -201,11 +201,11 @@ describe('TargetsPicker', () => {
 			const inputRoots = [...document.querySelectorAll('[data-testid="target-input-picker-root"]')];
 
 			expect(inputRoots).toHaveLength(3);
-			expect(
-				inputRoots.map((node, index) =>
-					node.firstElementChild!.classList.contains(['number-picker-root', 'boolean-picker-root', 'enum-picker-root'][index]),
-				),
-			).toEqual([true, true, true]);
+			const matchesRoot = (node: Element, index: number) =>
+				index === 2
+					? node.firstElementChild!.getAttribute('data-testid') === 'enum-picker-root'
+					: node.firstElementChild!.classList.contains(['number-picker-root', 'boolean-picker-root'][index]);
+			expect(inputRoots.map((node, index) => matchesRoot(node, index))).toEqual([true, true, true]);
 		});
 
 		it('shows each input its own value', () => {

@@ -39,8 +39,8 @@ describe('DropdownPicker', () => {
 	it('renders the root and trigger the stylesheets select on', () => {
 		mount(undefined);
 
-		expect(root().className).toBe('dropdown-picker-root relative custom-root-class');
-		expect(trigger().className).toBe('dropdown-picker-button ui-dropdown-trigger text-foreground hover:text-white/80');
+		expect(root().className).toBe('relative custom-root-class');
+		expect(trigger().className).toBe('ui-dropdown-trigger text-foreground hover:text-white/80');
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
 	});
@@ -104,7 +104,6 @@ describe('DropdownPicker', () => {
 		await open();
 
 		expect(items()[1].className).toContain('text-class-warrior');
-		expect(items()[0].className).toContain('dropdown-picker-item');
 	});
 
 	// `side="top"` and `positionMethod="fixed"` are what a picker sitting in an overflow-clipped

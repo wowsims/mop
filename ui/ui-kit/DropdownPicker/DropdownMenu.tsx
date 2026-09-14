@@ -63,7 +63,6 @@ export const DropdownMenu = <V,>({
 				<Menu.Trigger
 					id={id}
 					className={clsx(
-						'dropdown-picker-button',
 						'ui-dropdown-trigger',
 						triggerClassName,
 						'text-foreground',
@@ -81,16 +80,16 @@ export const DropdownMenu = <V,>({
 					)}
 				</Menu.Trigger>
 				{/* This slot holds the place after the button that a portal aimed at the root cannot: Base UI appends its element in a later commit than React places the root's own children. */}
-				<div className="dropdown-picker-slot contents" data-testid="dropdown-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="dropdown-picker-portal contents" data-testid="dropdown-picker-portal">
+				<div className="contents" data-testid="dropdown-picker-slot" ref={setSlot} />
+				<Menu.Portal container={slot} className="contents" data-testid="dropdown-picker-portal">
 					<Menu.Positioner
 						align="start"
 						side={side}
 						positionMethod={positionMethod}
 						sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
-						className={clsx('dropdown-picker-positioner', 'ui-menu-positioner')}
+						className="ui-menu-positioner"
 						data-testid="dropdown-picker-positioner">
-						<Menu.Popup className={clsx('dropdown-picker-menu', 'ui-menu')} data-testid="dropdown-picker-menu">
+						<Menu.Popup className="ui-menu" data-testid="dropdown-picker-menu">
 							<Menu.RadioGroup
 								render={<ul />}
 								className="m-0 list-none p-0"

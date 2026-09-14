@@ -55,7 +55,7 @@ describe('ActionPicker', () => {
 		expect(root.children[0].getAttribute('data-testid')).toBe('apl-action-condition');
 
 		const actionContainer = root.children[1];
-		expect(actionContainer.children[0].className).toContain('dropdown-picker-root');
+		expect(actionContainer.children[0].getAttribute('data-testid')).toBe('dropdown-picker-root');
 		expect(actionContainer.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
 	});
 

@@ -30,11 +30,11 @@ const ROWS = level => {
 		tag: link.tagName.toLowerCase(),
 		// The class-colour token, which is what makes each row readable at a glance.
 		colour: [...link.classList].find(name => name.startsWith('text-')) ?? null,
-		label: link.querySelector('.sim-link-label')?.textContent.trim() ?? null,
-		title: link.querySelector('.sim-link-title')?.textContent.trim() ?? null,
-		status: link.querySelector('.launch-status-label')?.textContent.trim() ?? null,
+		label: link.querySelector(q('sim-link-label'))?.textContent.trim() ?? null,
+		title: link.querySelector(q('sim-link-title'))?.textContent.trim() ?? null,
+		status: link.querySelector(q('launch-status-label'))?.textContent.trim() ?? null,
 		href: link.getAttribute('href'),
-		icon: link.querySelector('.sim-link-icon')?.getAttribute('src') ?? null,
+		icon: link.querySelector(q('sim-link-icon'))?.getAttribute('src') ?? null,
 	}));
 };
 
@@ -49,9 +49,9 @@ const trigger = await page.evaluate(() => {
 	return {
 		tag: link?.tagName.toLowerCase(),
 		colour: [...(link?.classList ?? [])].find(name => name.startsWith('text-')) ?? null,
-		label: link?.querySelector('.sim-link-label')?.textContent.trim() ?? null,
-		title: link?.querySelector('.sim-link-title')?.textContent.trim() ?? null,
-		status: link?.querySelector('.launch-status-label')?.textContent.trim() ?? null,
+		label: link?.querySelector(q('sim-link-label'))?.textContent.trim() ?? null,
+		title: link?.querySelector(q('sim-link-title'))?.textContent.trim() ?? null,
+		status: link?.querySelector(q('launch-status-label'))?.textContent.trim() ?? null,
 	};
 });
 console.log(`  ${JSON.stringify(trigger)}`);

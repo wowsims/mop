@@ -18,7 +18,7 @@ describe('TabNav', () => {
 			</Tabs.Root>,
 		);
 		const list = getByTestId('tabs');
-		expect(list.className.split(' ')).toEqual(expect.arrayContaining(['nav', 'ui-tabs']));
+		expect(list.className.split(' ')).toEqual(expect.arrayContaining(['ui-tabs']));
 		const tabA = getByText('A');
 		expect(tabA.className.split(' ')).toEqual(expect.arrayContaining(['ui-tab']));
 		expect(tabA.hasAttribute('data-active')).toBe(true);
@@ -26,14 +26,13 @@ describe('TabNav', () => {
 		expect(tabB.hasAttribute('data-active')).toBe(false);
 	});
 
-	it('renders the sim variant with sim-tabs and sim-tab-link classes', () => {
+	it('renders the sim variant with its styling class and per-tab testid', () => {
 		const { getByTestId } = render(
 			<Tabs.Root defaultValue="a">
 				<TabNav variant="sim" testId="sim-tabs" tabs={[{ id: 'a', label: 'A' }]} />
 			</Tabs.Root>,
 		);
-		expect(getByTestId('sim-tabs').className).toContain('sim-tabs');
-		expect(getByTestId('a').className).toContain('sim-tab-link');
+		expect(getByTestId('sim-tabs').className).toContain('ui-tabs-sim');
 		expect(getByTestId('a').className).toContain('a');
 	});
 

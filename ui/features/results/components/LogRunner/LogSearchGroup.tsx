@@ -87,7 +87,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 				</ButtonGroup>
 				<DeleteButton onClick={onRemove} className="py-2 text-white" />
 			</div>
-			<div data-testid="log-search-group-items" className="ui-log-inline-picker flex flex-wrap items-center gap-1">
+			<div data-testid="log-search-group-items" className="flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (
 					<Chip
 						key={value}
@@ -126,7 +126,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 							onChange={addValue}
 							equals={(a, b) => a === b}
 							defaultLabel={i18n.t('results_tab.details.logs.search_add_value')}
-							triggerClassName="p-0"
+							triggerClassName="p-0 border-0"
 							{...DROPUP}
 						/>
 					)}

@@ -23,7 +23,7 @@
 // the baseline. Hence `MENU` below, which takes menu contents out of the at-rest tables on both
 // builds so they agree again, and `menus` further down, which opens each picker in turn and prints
 // what is inside.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/protection';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -190,10 +190,13 @@ const INSTALL = () => {
 			[...pane().querySelectorAll(q('content-block'))].map(block => ({
 				// `buildColumn(n, 'settings-left-col')` names the three left columns; the right panel
 				// holds the preset picker and the two saved-data managers.
-				column:
-					[...(block.closest('.tab-panel-col, .tab-panel-right')?.classList ?? [])].find(
-						name => name.startsWith('settings-left-col-') || name === 'tab-panel-right',
-					) ?? '?',
+				column: (() => {
+					const col = block.closest(`${q('tab-panel-col')}, ${q('tab-panel-right')}`);
+					if (!col) return '?';
+					const leftCol = [...col.classList].find(name => name.startsWith('settings-left-col-'));
+					if (leftCol) return leftCol;
+					return col.matches(q('tab-panel-right')) ? 'tab-panel-right' : '?';
+				})(),
 				name: [...block.classList].find(name => name !== 'content-block' && name !== 'ui-content-block') ?? '?',
 				title: text(block.querySelector(q('content-block-title'))),
 				// Only the raid-buffs block appends one, and only through `headerElement`, which a port
@@ -315,7 +318,7 @@ const INSTALL = () => {
 const browser = await launch();
 // `openSpec` installs the strip probe, which is the only shape-agnostic way to open a tab: the two
 // builds' tab strips are different markup.
-const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
+const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: q('sim-tabs') });
 await page.evaluate(() =>
 	window.simTabsProbe
 		.tabs()

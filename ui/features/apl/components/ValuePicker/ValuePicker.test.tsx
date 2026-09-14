@@ -64,7 +64,7 @@ describe('ValuePicker', () => {
 		render(<ValuePicker player={player as never} config={configForRoot() as never} />);
 
 		const root = roots()[0];
-		expect(root.children[0].className).toContain('dropdown-picker-root');
+		expect(root.children[0].getAttribute('data-testid')).toBe('dropdown-picker-root');
 		expect(root.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
 		expect(root.querySelector('.adaptive-string-picker-root input')).toHaveProperty('value', '5');
 	});

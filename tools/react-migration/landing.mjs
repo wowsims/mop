@@ -35,6 +35,10 @@ const SEL = {
 	dropdownItem: q('dropdown-item'),
 	wowsimsTitle: q('wowsims-title'),
 	expansionTitle: q('expansion-title'),
+	simLinkTitle: q('sim-link-title'),
+	simLinkLabel: q('sim-link-label'),
+	simLinkIcon: q('sim-link-icon'),
+	launchStatusLabel: q('launch-status-label'),
 };
 
 const READ = sel => {
@@ -49,24 +53,25 @@ const READ = sel => {
 		description: text(document.querySelector('#description')),
 		supportDevs: text(document.querySelector(`${sel.navbarNav} a[href*="patreon"] span`)),
 		socials: all(`${sel.navbarNav} a[href^="http"]`, a => a.getAttribute('href')).sort(),
-		classTitles: all(`${classRow} .sim-link-title`, text),
+		classTitles: all(`${classRow} ${sel.simLinkTitle}`, text),
 		// `ui-*` is the Tailwind stage-4 kit-styling class (A-U-landing); stripped because this check
-		// pins the per-class border colour (`border-class-*`), not the styling-class churn.
-		classIcons: all(`${classRow} .sim-link-icon`, i => `${i.getAttribute('src')}|${i.className.replace(/\bui-\S+\s*/g, '').trim()}`).sort(),
+		// pins the per-class border colour (`border-class-*`), not the styling-class churn. `sim-link-icon`
+		// is also stripped: the kit build only carries it as a testid now, the baseline still has it as a class.
+		classIcons: all(`${classRow} ${sel.simLinkIcon}`, i => `${i.getAttribute('src')}|${i.className.replace(/\b(?:ui-\S+|sim-link-icon)\s*/g, '').trim()}`).sort(),
 		// Sorted: both builds emit the rows in the same order today, but that order is the class
 		// list's and not something this check should pin.
 		specLinks: all(specRow, a => new URL(a.href).pathname).sort(),
-		specNames: all(specRow, a => `${text(a.querySelector('.sim-link-label'))} / ${text(a.querySelector('.sim-link-title'))}`).sort(),
-		specIcons: all(`${specRow} .sim-link-icon`, i => i.getAttribute('src')).sort(),
+		specNames: all(specRow, a => `${text(a.querySelector(sel.simLinkLabel))} / ${text(a.querySelector(sel.simLinkTitle))}`).sort(),
+		specIcons: all(`${specRow} ${sel.simLinkIcon}`, i => i.getAttribute('src')).sort(),
 		languages: all(sel.dropdownItem, text),
 
 		metaDescription: document.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
 		langCodes: all('[data-lang]', el => el.getAttribute('data-lang')),
 		togglers: all(sel.navbarToggler, b => ({ label: b.getAttribute('aria-label') ?? '', icon: !!b.querySelector('i[class*="fa-"]') })),
 		rollup: [...document.querySelectorAll(`#sim-links > ${sel.simLinkDropdown}`)].map(row => ({
-			name: text(row.querySelector(`:scope > ${sel.simLink} .sim-link-title`)),
-			status: text(row.querySelector(`:scope > ${sel.simLink} .launch-status-label`)),
-			specs: [...row.querySelectorAll('a[href*="/mop/"] .launch-status-label')].map(text),
+			name: text(row.querySelector(`:scope > ${sel.simLink} ${sel.simLinkTitle}`)),
+			status: text(row.querySelector(`:scope > ${sel.simLink} ${sel.launchStatusLabel}`)),
+			specs: [...row.querySelectorAll(`a[href*="/mop/"] ${sel.launchStatusLabel}`)].map(text),
 		})),
 	};
 };

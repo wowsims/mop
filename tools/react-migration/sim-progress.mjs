@@ -382,7 +382,7 @@ try {
 	// `hidden: null` is "the item is not in the tree", which is how the port says the same thing.
 	check('no warning is active on the default character', before.hidden !== false && before.itemDisplay !== 'block', JSON.stringify(before));
 
-	await page.click('.sim-tabs .talents-tab, .sim-tabs li.talents-tab .nav-link');
+	await page.click(`${q('sim-tabs')} .talents-tab, ${q('sim-tabs')} li.talents-tab .nav-link`);
 	await page.waitForSelector(q('talent-picker-icon'), { state: 'visible', timeout: 10000 });
 	await page.waitForTimeout(500);
 	// Right-click clears the talent in its row, which is what `hasRequiredTalents` reads; left-click on

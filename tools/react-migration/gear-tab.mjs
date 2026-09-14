@@ -154,7 +154,7 @@ const inModal = suffix => MODAL_ROOTS.map(root => `${root} ${suffix}`).join(', '
 const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 
 const browser = await launch();
-const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
+const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: q('sim-tabs') });
 await page.addInitScript(INSTALL);
 await page.evaluate(INSTALL);
 await page.evaluate(() =>

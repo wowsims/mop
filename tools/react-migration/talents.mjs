@@ -61,7 +61,7 @@ await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 }
 await page.waitForTimeout(2500);
 
 // The tab is not the one open on load, so this also exercises building its contents on first show.
-await page.click('.sim-tabs .talents-tab, .sim-tabs li.talents-tab .nav-link');
+await page.click(':is([data-testid="sim-tabs"], .sim-tabs) .talents-tab, :is([data-testid="sim-tabs"], .sim-tabs) li.talents-tab .nav-link');
 await page.waitForSelector(TALENT, { state: 'visible', timeout: 10000 });
 await page.waitForTimeout(500);
 

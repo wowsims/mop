@@ -196,12 +196,12 @@ const collect = async (browser, port, spec, seeded) => {
 		return `expanded=${root?.dataset.expanded} inert=${panel?.hasAttribute('inert')} filters=${!!document.querySelector(`${sel.fabFilters} ${sel.searchBar}`)}`;
 	}, SEL);
 
-	await page.click(`${SEL.addField} .dropdown-picker-button`);
+	await page.click(`${SEL.addField} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
 	await page.waitForTimeout(500);
 	out.addFieldMenu = await page.evaluate(sel => {
 		const menu = document.querySelector(`${sel.addField} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list)`);
 		if (!menu) return 'NO MENU';
-		const trigger = document.querySelector(`${sel.addField} .dropdown-picker-button`).getBoundingClientRect();
+		const trigger = document.querySelector(`${sel.addField} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`).getBoundingClientRect();
 		const box = menu.getBoundingClientRect();
 		const clip = document.querySelector(sel.fabFilters).getBoundingClientRect();
 		const positioned = menu.closest('[style*="position"]') ?? menu;
@@ -231,7 +231,7 @@ const collect = async (browser, port, spec, seeded) => {
 			.join(',')}`;
 	}, SEL);
 
-	await page.click(`${SEL.groupItems} .dropdown-picker-button`);
+	await page.click(`${SEL.groupItems} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
 	await page.waitForTimeout(500);
 	out.valueMenu = await page.evaluate(
 		sel =>
