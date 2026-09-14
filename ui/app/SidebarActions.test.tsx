@@ -38,7 +38,7 @@ describe('SidebarActions', () => {
 		[0, 2].forEach(i => {
 			const child = [...container.children][i];
 			expect(child.tagName).toBe('BUTTON');
-			expect(child.classList.contains('sim-sidebar-action-button')).toBe(true);
+			expect(child.hasAttribute('data-sidebar-action')).toBe(true);
 			expect(child.classList.contains('w-full')).toBe(true);
 		});
 	});

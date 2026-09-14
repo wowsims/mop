@@ -34,7 +34,7 @@ vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host, useSpecC
 const { RotationTabBody } = await import('./RotationTabBody');
 
 const paneStates = (container: HTMLElement) =>
-	[...container.querySelectorAll('[data-testid="rotation-tab-apl"] .tab-pane')].map(pane => [pane.id, (pane as HTMLElement).hidden] as const);
+	[...container.querySelectorAll('[data-testid="rotation-tab-apl"] [data-testid="tab-pane"]')].map(pane => [pane.id, (pane as HTMLElement).hidden] as const);
 
 beforeEach(() => vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver));
 afterEach(() => {

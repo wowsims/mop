@@ -47,7 +47,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 	if (hidden) return null;
 
 	return (
-		<div className={clsx('icon-picker', 'ui-icon-field')} data-testid="multi-icon-picker-root" {...groupProps}>
+		<div className="ui-icon-field" data-testid="multi-icon-picker-root" {...groupProps}>
 			<div className="relative" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger
@@ -55,7 +55,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						render={<a />}
 						openOnHover
 						delay={0}
-						className={clsx('icon-picker-button', 'ui-icon-picker-swatch', actionId ? 'active filter-none' : 'grayscale')}
+						className={clsx('ui-icon-picker-swatch', actionId ? 'filter-none' : 'grayscale')}
 						data-testid="multi-icon-picker-button"
 						data-active={actionId ? '' : undefined}
 						// The trigger is a bare anchor carrying a background image, so it announced nothing — and Base UI points the popup's `aria-labelledby` at it, which would have made the group nameless too.

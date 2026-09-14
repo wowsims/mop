@@ -10,7 +10,6 @@ if (history.scrollRestoration) {
 }
 
 const markReady = () => {
-	document.body.classList.add('ready');
 	document.body.toggleAttribute('data-ready', true);
 };
 

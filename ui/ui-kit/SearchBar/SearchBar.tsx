@@ -65,7 +65,7 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className={clsx('ui-field', 'input-root', grow === false && 'flex-none')} data-testid="search-bar-root">
+		<Field.Root className={clsx('ui-field', grow === false && 'flex-none')} data-testid="search-bar-root" data-input-root="">
 			{label && (
 				<Field.Label htmlFor={id} className="ui-field-label">
 					{label}

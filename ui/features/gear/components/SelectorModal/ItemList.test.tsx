@@ -28,7 +28,7 @@ vi.mock('@ui-kit/VirtualList', () => ({
 	VirtualList: ({ count, rowClassName, renderRow }: any) => (
 		<div className="virtual-list">
 			{Array.from({ length: count }, (_unused, index) => (
-				<div key={index} className={`virtual-list-row ${rowClassName?.(index) ?? ''}`}>
+				<div key={index} data-testid="virtual-list-row" className={rowClassName?.(index)}>
 					{renderRow(index)}
 				</div>
 			))}
@@ -260,7 +260,7 @@ describe('ItemList', () => {
 		const equipped = { item: item(2, 'Beta', 520) } as unknown as EquippedItem;
 		const { container } = setup({ equipped });
 
-		const rows = Array.from(container.querySelectorAll('.virtual-list-row'));
+		const rows = Array.from(container.querySelectorAll('[data-testid="virtual-list-row"]'));
 		expect(rows.map(node => node.querySelector('[data-row]')!.hasAttribute('data-active'))).toEqual([true, false, false]);
 		expect(Array.from(container.querySelectorAll('[data-row]')).map(node => (node as HTMLElement).dataset.equippedEp)).toEqual(['520', '520', '520']);
 	});

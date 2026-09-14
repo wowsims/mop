@@ -67,7 +67,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className={clsx('icon-picker', 'ui-icon-field', 'relative')}
+			className={clsx('ui-icon-field', 'relative')}
 			testId="icon-enum-picker-root"
 			iconField
 			hidden={hidden}
@@ -79,7 +79,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					render={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
 					openOnHover
 					delay={0}
-					className={clsx('icon-picker-button', 'ui-icon-picker-swatch', 'transition-none', active && 'active')}
+					className={clsx('ui-icon-picker-swatch', 'transition-none')}
 					data-testid="icon-enum-picker-button"
 					data-active={active ? '' : undefined}
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}

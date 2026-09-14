@@ -11,7 +11,7 @@
 // `stat-weights.mjs` does run a sim, but not this one: `PROGRESS()` there is scoped to
 // `.progress-tracker-dialog`, its `.results-pending-overlay` reads are the baseline's *stat-weights*
 // overlay (a different element, in a different feature, with zero occurrences on this branch), and it
-// never clicks `.dps-action` nor looks at `.results-viewer`. No overlap.
+// never clicks `:is([data-testid="dps-action"], .dps-action)` nor looks at `.results-viewer`. No overlap.
 //
 // `PORT` picks a build. The `check` assertions are invariants expected to hold on **both** — on the
 // baseline because that is what proves the invariants describe today's behaviour, and on the port
@@ -102,7 +102,7 @@ const ZONES = () => {
 // the race against the first progress tick.
 const START = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const button = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
+	const button = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
 	if (!button) return { missing: true };
 	button.click();
 	const viewer = document.querySelector(T('results-viewer'));
@@ -155,7 +155,7 @@ const STOPPED = () => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
+	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
 	return {
 		pending: shown(T('results-pending')),
 		content: shown(T('results-content')),
@@ -172,7 +172,7 @@ const FINISHED = () => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
+	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
 	return {
 		pending: shown(T('results-pending')),
 		content: shown(T('results-content')),
@@ -232,7 +232,7 @@ try {
 		window.alert = () => {};
 	});
 	await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-	await page.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action', { timeout: 60000 });
+	await page.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)', { timeout: 60000 });
 	await page.waitForTimeout(2500);
 
 	console.log(`${SPEC} on :${PORT}\n`);
@@ -343,7 +343,7 @@ try {
 					hidden(T('results-pending')) &&
 					hidden(T('results-content')) &&
 					hidden(T('button-zone')) &&
-					!document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').disabled
+					!document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)').disabled
 				);
 			},
 			null,
@@ -361,7 +361,7 @@ try {
 
 	console.log('\nrunning to completion');
 	await setIterations(SHORT_RUN);
-	await page.click(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
+	await page.click(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
 	await page
 		.waitForFunction(
 			() =>
@@ -451,13 +451,13 @@ try {
 		localStorage.setItem('lang', 'fr');
 	});
 	await fr.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-	await fr.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action', { timeout: 60000 });
+	await fr.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)', { timeout: 60000 });
 	await fr.waitForTimeout(2500);
 	await fr.fill('#simui-iterations', LONG_RUN);
 	await fr.dispatchEvent('#simui-iterations', 'change');
 	// `addAbortButton` runs synchronously in the Simulate handler, and the Stop button's own handler
 	// writes its label before calling the abort, so both clicks and the read are same-task.
-	await fr.evaluate(() => document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').click());
+	await fr.evaluate(() => document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)').click());
 	const frLabel = await fr.evaluate(() => {
 		const stop = document.querySelector(':is([data-testid="results-viewer"], .results-viewer) :is([data-testid="button-zone"], .button-zone) button');
 		if (!stop) return null;
@@ -469,7 +469,7 @@ try {
 		frLabel === FR.sidebar.results.stopping,
 		`${JSON.stringify(frLabel)} vs ${JSON.stringify(FR.sidebar.results.stopping)}`,
 	);
-	await fr.waitForFunction(() => !document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').disabled, null, { timeout: 60000 }).catch(() => {});
+	await fr.waitForFunction(() => !document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)').disabled, null, { timeout: 60000 }).catch(() => {});
 	await fr.close();
 
 	console.log(

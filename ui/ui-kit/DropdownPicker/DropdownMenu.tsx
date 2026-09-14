@@ -112,7 +112,6 @@ export const DropdownMenu = <V,>({
 			{hasTooltips && (
 				<Tooltip
 					id={tooltipId}
-					className="dropdown-tooltip"
 					maxWidth="max-w-[35vw]"
 					align="start"
 					render={({ activeAnchor }) => {

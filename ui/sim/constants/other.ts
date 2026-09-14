@@ -28,12 +28,12 @@ export const REPO_NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 export const REPO_CHOOSE_NEW_ISSUE_URL = `${REPO_NEW_ISSUE_URL}/choose`;
 
 export const SOCIALS = [
-	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'discord-link ui-social-link', icon: 'discord', tooltip: 'info.discord' },
-	{ key: 'github', href: REPO_URL, className: 'github-link ui-social-link', icon: 'github', tooltip: 'info.github' },
+	{ key: 'discord', href: 'https://discord.gg/p3DgvmnDCS', className: 'ui-social-link', icon: 'discord', tooltip: 'info.discord' },
+	{ key: 'github', href: REPO_URL, className: 'ui-social-link', icon: 'github', tooltip: 'info.github' },
 	{
 		key: 'patreon',
 		href: 'https://patreon.com/wowsims',
-		className: 'patreon-link ui-social-link',
+		className: 'ui-social-link',
 		icon: 'patreon',
 		tooltip: 'info.patreon',
 		label: ' Patreon',

@@ -147,8 +147,8 @@ const collect = async (browser, port, spec, seeded) => {
 	await openResultsTab(page);
 	const beforeRun = await page.evaluate(READ_TRIGGER, TRIGGER);
 
-	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
-	await page.click('.dps-action');
+	await page.waitForSelector(`${q('dps-action')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('dps-action'));
 	await page.waitForFunction(
 		() =>
 			document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)')

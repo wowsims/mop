@@ -5,7 +5,6 @@ import type { Player } from '@sim/player/player';
 import { FieldLabel } from '@ui-kit/FormControl';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
-import clsx from 'clsx';
 import { type ReactNode, useId, useMemo } from 'react';
 
 export interface ConsumeRowProps {
@@ -28,7 +27,7 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	if (!shown) return null;
 
 	return (
-		<div className={clsx('ui-field', 'input-root')} data-testid="consumes-row" data-layout="inline" role="group" aria-labelledby={labelId}>
+		<div className="ui-field" data-testid="consumes-row" data-input-root="" data-layout="inline" role="group" aria-labelledby={labelId}>
 			<FieldLabel as="span" id={labelId}>
 				{i18n.t(`settings_tab.consumables.${name}.title`)}
 			</FieldLabel>

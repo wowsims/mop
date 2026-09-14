@@ -81,7 +81,8 @@ describe('TargetsPicker', () => {
 	it('wears the classes the encounter stylesheet and the encounter gate select on', () => {
 		mount(new FakeEncounter());
 
-		expect(['input-root', 'mb-0'].every(name => root().classList.contains(name))).toBe(true);
+		expect(root().hasAttribute('data-input-root')).toBe(true);
+		expect(root().classList.contains('mb-0')).toBe(true);
 		expect(root().getAttribute('data-testid')).toBe('list-picker-root');
 		expect(targetRoots()).toHaveLength(1);
 		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];

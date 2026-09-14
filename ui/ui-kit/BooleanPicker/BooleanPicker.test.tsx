@@ -88,8 +88,8 @@ describe('BooleanPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<BooleanPicker modObject={settings} config={configFor({ description: 'Swaps mid-fight' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
 		expect(root.getAttribute('data-testid')).toBe('boolean-picker-root');
+		expect(root.hasAttribute('data-input-root')).toBe(true);
 		expect([...root.children].map(el => el.tagName)).toEqual(['SPAN', 'INPUT', 'LABEL', 'DIV']);
 		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 	});

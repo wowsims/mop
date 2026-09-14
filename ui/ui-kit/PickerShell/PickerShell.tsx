@@ -56,11 +56,11 @@ export const PickerShell = <ModObject, T, V>({
 			data-disabled={disabled ? '' : undefined}
 			data-layout={inline ? 'inline' : undefined}
 			data-testid={testId ?? 'input-root'}
+			data-input-root=""
 			className={dedupe(
 				clsx(
 					config.description && 'flex-wrap',
 					'ui-field',
-					'input-root',
 					!inline && !iconField && 'max-md:flex-col max-md:items-start',
 					className,
 					config.extraClassNames,

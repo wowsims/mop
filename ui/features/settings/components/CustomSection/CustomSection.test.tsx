@@ -76,7 +76,7 @@ describe('CustomSection', () => {
 			iconGroupClassName: 'totem-dropdowns-container',
 		});
 		const body = block.querySelector('[data-testid="content-block-body"]')!;
-		expect(body.querySelector('.picker-group.totem-dropdowns-container.ui-picker-group-icons')).not.toBeNull();
+		expect(body.querySelector('[data-picker-group].totem-dropdowns-container.ui-picker-group-icons')).not.toBeNull();
 		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-inline')).toBe('true');
 		expect(body.querySelector('[data-testid="input-picker-stub"]')!.getAttribute('data-inline')).toBe('true');
 	});

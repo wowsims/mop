@@ -87,7 +87,8 @@ describe('NumberListPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<NumberListPicker modObject={settings} config={configFor({ description: 'Comma separated' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
+		expect(root.getAttribute('data-testid')).toBe('number-list-picker-root');
+		expect(root.hasAttribute('data-input-root')).toBe(true);
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
 		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input']));

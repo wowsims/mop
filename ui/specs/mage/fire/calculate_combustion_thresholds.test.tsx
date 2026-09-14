@@ -52,10 +52,10 @@ describe('CombustionThresholds', () => {
 
 		expect(button).toBe(actionButton(container));
 		expect(button.classList.contains('mage-calculate-combustion-threshold-group')).toBe(true);
-		expect(button.classList.contains('sim-sidebar-action-button')).toBe(true);
+		expect(button.hasAttribute('data-sidebar-action')).toBe(true);
 		expect(button.classList.contains('w-full')).toBe(true);
 		expect(button.disabled).toBe(false);
-		expect(container.querySelector('.sim-sidebar-action-button-loading-icon')).not.toBeNull();
+		expect(container.querySelector('[data-sidebar-action-loading-icon]')).not.toBeNull();
 	});
 
 	it('registers itself as one sidebar entry rather than reaching into the DOM', () => {

@@ -9,7 +9,7 @@ export interface SimTabPaneProps extends Omit<ComponentPropsWithoutRef<'div'>, '
 }
 
 export const SimTabPane = ({ id, className, children, ...rest }: SimTabPaneProps) => (
-	<div id={id} className={clsx('sim-tab', id, className)} {...rest}>
+	<div id={id} className={clsx(id, className)} data-testid="sim-tab" {...rest}>
 		<TabPanelColumns.Root className="ui-tab-pane" data-testid="tab-pane-content-container">
 			{children}
 		</TabPanelColumns.Root>

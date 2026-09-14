@@ -196,8 +196,8 @@ const collect = async (browser, port, spec, seeded) => {
 	const loadedSeed = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}').settings?.fixedRngSeed, seeded.key);
 	if (String(loadedSeed) !== SEED) throw new Error(`${port} loaded seed ${loadedSeed}, not ${SEED} — the run would not be comparable`);
 
-	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
-	await page.click('.dps-action');
+	await page.waitForSelector(`${q('dps-action')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('dps-action'));
 	await page.waitForFunction(
 		() => document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)').length > 0,
 		null,

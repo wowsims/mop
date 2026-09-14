@@ -49,7 +49,7 @@ const INSTALL = () => {
 	// `MultiIconPicker` also spells `icon-dropdown-option` onto its "clear" anchor, so each multi
 	// picker contributes one extra row with an empty value. That is the class doing double duty in
 	// the app, not a miscount here.
-	const OWNERS = '.input-root, :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root), [data-testid="icon-dropdown-option"], .icon-dropdown-option';
+	const OWNERS = ':is([data-input-root], .input-root), :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root), [data-testid="icon-dropdown-option"], .icon-dropdown-option';
 
 	// The `<ul>` an icon picker keeps its options in. Vanilla builds `dropdown-menu` into the picker in
 	// its constructor and never takes it down; the port mounts Base UI's popup into the slot when the
@@ -205,7 +205,7 @@ const INSTALL = () => {
 				// Menu contents excluded, same as `ownersOf`: the baseline's multi-icon menus each hold
 				// their inputs' `IconPicker`s, which put this column 26 over on Raid Buffs and 10 over on
 				// Debuffs while this branch's menus were unbuilt.
-				pickers: [...block.querySelectorAll('.input-root, :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root)')].filter(el => !inMenu(el))
+				pickers: [...block.querySelectorAll(':is([data-input-root], .input-root), :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root)')].filter(el => !inMenu(el))
 					.length,
 			})),
 		rows,
@@ -250,7 +250,7 @@ const INSTALL = () => {
 			return {
 				present: true,
 				hide: group.classList.contains('hide'),
-				icons: [...group.querySelectorAll('.icon-picker-button')].filter(el => !inMenu(el)).length,
+				icons: [...group.querySelectorAll(':is([data-testid="icon-picker-button"], .icon-picker-button)')].filter(el => !inMenu(el)).length,
 				gridTemplateColumns: group.style.gridTemplateColumns || '(none)',
 			};
 		},
@@ -305,7 +305,7 @@ const INSTALL = () => {
 		engineering: () => {
 			const inputs = pane().querySelector(q('consumes-engi'));
 			const row = inputs?.closest(q('consumes-row'));
-			const picker = inputs?.querySelector('.input-root');
+			const picker = inputs?.querySelector(':is([data-input-root], .input-root)');
 			return {
 				profession1: document.getElementById('simui-profession1')?.value ?? null,
 				profession2: document.getElementById('simui-profession2')?.value ?? null,
@@ -416,7 +416,12 @@ if (broken.length) problems.push(`label points at another control on: ${broken.m
 // under the pointer. `positionMethod="fixed"` on both pickers settles it, and the scaffolding is gone
 // so the next regression of that shape shows up here instead of being driven around.
 const openMenu = async at => {
-	await page.locator(`${at} a.icon-picker-button`).first().hover();
+	await page
+		.locator(
+			`${at} a:is(.icon-picker-button, [data-testid="icon-picker-button"], [data-testid="multi-icon-picker-button"], [data-testid="icon-enum-picker-button"], .ui-icon-picker-swatch)`,
+		)
+		.first()
+		.hover();
 	// `attached`, not `visible`: the assertion is that the menu is in the page, and a positioner
 	// mid-transition is not something this readout should race.
 	return page.waitForSelector(`${at} ul`, { state: 'attached', timeout: 3000 }).then(() => true, () => false);

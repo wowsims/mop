@@ -87,7 +87,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	const main = (
 		<div className="relative size-10 shrink-0">
 			<a
-				className={clsx('icon-picker-button', 'ui-icon-picker-swatch', currentValue > 0 ? 'filter-none' : 'grayscale')}
+				className={clsx('ui-icon-picker-swatch', currentValue > 0 ? 'filter-none' : 'grayscale')}
 				data-testid="icon-picker-button"
 				data-active={currentValue > 0 ? '' : undefined}
 				data-use-counter={!useImprovedIcons && config.states > 2 ? '' : undefined}
@@ -132,7 +132,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className="icon-picker ui-icon-field"
+			className="ui-icon-field"
 			testId="icon-picker-root"
 			iconField
 			hidden={hidden}

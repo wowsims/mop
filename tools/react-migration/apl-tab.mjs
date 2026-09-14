@@ -228,8 +228,9 @@ try {
 				await page.evaluate(navbar => {
 					const rotationTabApl = ':is([data-testid="rotation-tab-apl"], .rotation-tab-apl)';
 					const ids = selector => [...document.querySelectorAll(`${rotationTabApl} :is(${selector})`)].map(pane => pane.id.replace('apl-', '')).join('+');
-					const active = '.tab-pane.active, .tab-pane:not([hidden]):not([data-ending-style])';
-					const show = '.tab-pane.show, .tab-pane:not([hidden]):not([data-starting-style]):not([data-ending-style])';
+					const pane = ':is([data-testid="tab-pane"], .tab-pane)';
+					const active = `${pane}.active, ${pane}:not([hidden]):not([data-ending-style])`;
+					const show = `${pane}.show, ${pane}:not([hidden]):not([data-starting-style]):not([data-ending-style])`;
 					const selected = [...document.querySelectorAll(`${navbar} [role=tab][aria-selected="true"]`)]
 						.map(tab => tab.getAttribute('aria-controls').replace('apl-', ''))
 						.join('+');
@@ -255,7 +256,8 @@ try {
 					({ pressed, navbar }) => {
 						const short = value => (value ?? '-').replace('apl-', '');
 						const selected = short(document.querySelector(`${navbar} [role=tab][aria-selected="true"]`)?.getAttribute('aria-controls'));
-						const activeSel = '.tab-pane.active, .tab-pane:not([hidden]):not([data-ending-style])';
+						const paneSel = ':is([data-testid="tab-pane"], .tab-pane)';
+						const activeSel = `${paneSel}.active, ${paneSel}:not([hidden]):not([data-ending-style])`;
 						const rotationTabApl = ':is([data-testid="rotation-tab-apl"], .rotation-tab-apl)';
 						const active = [...document.querySelectorAll(`${rotationTabApl} :is(${activeSel})`)].map(pane => short(pane.id)).join('+');
 						const focused = short(document.activeElement?.getAttribute?.('aria-controls'));

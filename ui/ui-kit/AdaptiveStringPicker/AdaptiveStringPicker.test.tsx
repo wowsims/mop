@@ -133,8 +133,8 @@ describe('AdaptiveStringPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<AdaptiveStringPicker modObject={settings} config={configFor({ description: 'A custom name' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
 		expect(root.getAttribute('data-testid')).toBe('adaptive-string-picker-root');
+		expect(root.hasAttribute('data-input-root')).toBe(true);
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'INPUT']);
 		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input']));

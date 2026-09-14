@@ -19,7 +19,7 @@ const BLOCK = () => {
 	return {
 		children: [...root.children].map(describeEl),
 		pickerIds: [...root.querySelectorAll('[id]')].map(el => el.id).filter(id => id.startsWith('encounter-')),
-		groups: [...root.querySelectorAll('.picker-group')].map(group => [...group.children].map(el => el.id || describeEl(el))),
+		groups: [...root.querySelectorAll('[data-picker-group]')].map(group => [...group.children].map(el => el.id || describeEl(el))),
 	};
 };
 
@@ -35,7 +35,7 @@ const MODAL = () => {
 		backdrop: window.simModalProbe.backdrop(),
 		bodyLocked: window.simModalProbe.bodyLocked(),
 		targets: dialog.querySelectorAll(':is([data-testid="list-picker-item"], .list-picker-item)').length,
-		headerGroups: dialog.querySelectorAll(`${q('encounter-header')} .picker-group`).length,
+		headerGroups: dialog.querySelectorAll(`${q('encounter-header')} [data-picker-group]`).length,
 	};
 };
 

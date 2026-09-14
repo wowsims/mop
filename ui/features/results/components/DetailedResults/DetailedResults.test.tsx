@@ -138,7 +138,7 @@ describe('DetailedResults', () => {
 		expect(container.querySelector<HTMLElement>('#damageTab')!.hidden).toBe(false);
 		expect(container.querySelector('#damageTab')!.hasAttribute('data-starting-style')).toBe(false);
 		expect(container.querySelector<HTMLElement>('#logTab')!.hidden).toBe(true);
-		expect(container.querySelectorAll('.tab-content > .tab-pane:not([hidden]):not([data-ending-style])')).toHaveLength(2);
+		expect(container.querySelectorAll('.tab-content > :is([data-testid="tab-pane"], .tab-pane):not([hidden]):not([data-ending-style])')).toHaveLength(2);
 		expect(container.querySelector('#noResultsTab')).toBeTruthy();
 	});
 

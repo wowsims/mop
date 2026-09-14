@@ -120,14 +120,14 @@ const collect = async (browser, port, spec, seeded) => {
 	const runOnce = async iterations => {
 		await page.fill('#simui-iterations', String(iterations));
 		await page.dispatchEvent('#simui-iterations', 'change');
-		await page.waitForSelector('.dps-action:not([disabled])', { timeout: 120000 });
+		await page.waitForSelector(`${q('dps-action')}:not([disabled])`, { timeout: 120000 });
 		const before = await page.evaluate(
 			() =>
 				document.querySelector(
 					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) :is([data-testid="topline-result-avg"], .topline-result-avg)',
 				)?.textContent ?? '',
 		);
-		await page.click('.dps-action');
+		await page.click(q('dps-action'));
 		// Waits for the *text* to change rather than for a tile to exist: the second run replaces a
 		// list that is already there, so a count would be satisfied before it ever re-rendered.
 		await page.waitForFunction(

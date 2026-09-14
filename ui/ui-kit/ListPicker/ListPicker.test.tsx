@@ -85,7 +85,8 @@ describe('ListPicker', () => {
 		it('renders the root, the items box and one container per item', () => {
 			mount(rowsOf('a', 'b'));
 
-			expect(root().className.split(' ').sort()).toEqual(['input-root', 'max-md:flex-col', 'max-md:items-start', 'ui-field', 'ui-list-picker-root']);
+			expect(root().className.split(' ').sort()).toEqual(['max-md:flex-col', 'max-md:items-start', 'ui-field', 'ui-list-picker-root']);
+			expect(root().hasAttribute('data-input-root')).toBe(true);
 			expect(itemsBox().className).toBe('ui-list-picker-items flex flex-col');
 			expect(containers()).toHaveLength(2);
 			expect(bodies()).toEqual(['a', 'b']);

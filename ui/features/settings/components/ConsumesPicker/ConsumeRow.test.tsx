@@ -57,7 +57,7 @@ describe('ConsumeRow', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
 		expect(element.getAttribute('data-testid')).toBe('consumes-row');
-		expect(element.classList.contains('input-root')).toBe(true);
+		expect(element.hasAttribute('data-input-root')).toBe(true);
 		expect(element.getAttribute('data-layout')).toBe('inline');
 		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([

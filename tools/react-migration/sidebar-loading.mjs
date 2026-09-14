@@ -32,9 +32,9 @@ const DB = '**/assets/database/db.*';
 // by keyboard, whatever it is painted like.
 const READ = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
-	const button = document.querySelector(`:is(${q('sim-sidebar-actions')}) .ep-weights-action`);
+	const button = document.querySelector(`:is(${q('sim-sidebar-actions')}) ${q('ep-weights-action')}`);
 	if (!button) return { present: false };
-	const icon = button.querySelector('.sim-sidebar-action-button-loading-icon');
+	const icon = button.querySelector(':is([data-sidebar-action-loading-icon], .sim-sidebar-action-button-loading-icon)');
 	return {
 		present: true,
 		loading: button.classList.contains('loading'),
@@ -107,7 +107,7 @@ check('the spinner is hidden from assistive tech', during.spinnerHidden === true
 check('it cannot take focus', during.focusable === false);
 
 release();
-await slow.page.waitForSelector(`:is(${q('sim-sidebar-actions')}) .ep-weights-action:not(.loading)`, { timeout: 60000 }).catch(() => {});
+await slow.page.waitForSelector(`:is(${q('sim-sidebar-actions')}) ${q('ep-weights-action')}:not(.loading)`, { timeout: 60000 }).catch(() => {});
 await slow.page.waitForTimeout(500);
 const after = await slow.page.evaluate(READ);
 console.log(`\nonce the sim is ready\n  ${JSON.stringify(after)}`);

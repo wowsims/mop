@@ -29,10 +29,11 @@ afterEach(() => {
 const button = (container: HTMLElement) => container.querySelector('button')!;
 
 describe('CopyButton', () => {
-	it('wears the base bundle, `copy-button` and the caller class list, with no variant of its own', () => {
+	it('wears the base bundle and the caller class list, carries the copy-button testid, with no variant of its own', () => {
 		const { container } = render(<CopyButton getContent={() => 'x'} className={['text-link-danger', 'mt-2']} />);
 
-		expect([...button(container).classList].sort()).toEqual(['ui-button', 'ui-button-md', 'text-link-danger', 'copy-button', 'mt-2'].sort());
+		expect([...button(container).classList].sort()).toEqual(['ui-button', 'ui-button-md', 'text-link-danger', 'mt-2'].sort());
+		expect(button(container).getAttribute('data-testid')).toBe('copy-button');
 		expect(button(container).getAttribute('type')).toBe('button');
 	});
 

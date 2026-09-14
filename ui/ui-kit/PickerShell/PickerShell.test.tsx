@@ -26,7 +26,8 @@ const root = () => screen.getByTestId('input-root');
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
 		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { disabled: true });
-		expect(root().getAttribute('class')).toBe('ui-field input-root number-picker-root apl-picker');
+		expect(root().getAttribute('class')).toBe('ui-field number-picker-root apl-picker');
+		expect(root().hasAttribute('data-input-root')).toBe(true);
 		expect(root().getAttribute('data-layout')).toBe('inline');
 		expect(root().hasAttribute('data-disabled')).toBe(true);
 	});
@@ -39,7 +40,8 @@ describe('PickerShell', () => {
 
 	it('omits the state classes when neither applies', () => {
 		shell(configFor());
-		expect(root().getAttribute('class')).toBe('ui-field input-root max-md:flex-col max-md:items-start number-picker-root');
+		expect(root().getAttribute('class')).toBe('ui-field max-md:flex-col max-md:items-start number-picker-root');
+		expect(root().hasAttribute('data-input-root')).toBe(true);
 	});
 
 	it('links the label to the input and titles it', () => {

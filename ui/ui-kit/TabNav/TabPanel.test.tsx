@@ -15,7 +15,7 @@ describe('TabPanel', () => {
 		);
 		const content = getByTestId('a-content');
 		const pane = content.parentElement as HTMLElement;
-		expect(pane.className).toContain('tab-pane');
+		expect(pane.getAttribute('data-testid')).toBe('tab-pane');
 		expect(pane.className).toContain('my-pane');
 		expect(pane.hasAttribute('hidden')).toBe(false);
 		expect(pane.hasAttribute('data-starting-style')).toBe(false);
@@ -34,7 +34,7 @@ describe('TabPanel', () => {
 			</Tabs.Root>,
 		);
 		const pane = getByTestId('b-content').parentElement as HTMLElement;
-		expect(pane.className).toContain('tab-pane');
+		expect(pane.getAttribute('data-testid')).toBe('tab-pane');
 		expect(pane.hasAttribute('hidden')).toBe(true);
 	});
 });

@@ -146,8 +146,8 @@ describe('EnumPicker', () => {
 		const settings = new Settings();
 		const { container } = render(<EnumPicker modObject={settings} config={configFor({ description: 'Controls pet behaviour' })} />);
 		const root = container.firstElementChild!;
-		expect([...root.classList]).toEqual(expect.arrayContaining(['input-root']));
 		expect(root.getAttribute('data-testid')).toBe('enum-picker-root');
+		expect(root.hasAttribute('data-input-root')).toBe(true);
 		expect([...root.children].map(el => el.tagName)).toEqual(['LABEL', 'DIV', 'SELECT']);
 		expect(root.querySelector('label')!.className).toBe('ui-picker-label');
 		expect(root.querySelector('select')!.getAttribute('data-testid')).toBe('enum-picker-selector');

@@ -81,7 +81,6 @@ describe('MultiIconPicker', () => {
 	it('builds the root, the dropend and the option list vanilla built', () => {
 		mount(new Buffs());
 
-		expect(root().classList.contains('icon-picker')).toBe(true);
 		expect(root().getAttribute('data-testid')).toBe('multi-icon-picker-root');
 		expect(root().children[0].className).toBe('relative');
 		expect(trigger()).toBeTruthy();

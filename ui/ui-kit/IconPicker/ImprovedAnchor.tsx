@@ -17,7 +17,6 @@ export const ImprovedAnchor = ({ actionId, testId, active, hidden }: ImprovedAnc
 	return (
 		<a
 			className={clsx(
-				'icon-picker-button icon-input-improved',
 				'ui-icon-picker-swatch absolute bottom-0 right-0 min-w-5 size-5 pointer-events-auto',
 				active ? 'filter-none' : 'grayscale border-gray-600',
 			)}

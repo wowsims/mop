@@ -20,14 +20,15 @@ export const SidebarActionButton = ({ children, className, onClick, disabled, lo
 	return (
 		<Button
 			variant="primary"
-			className={clsx('sim-sidebar-action-button w-full', className)}
+			className={clsx('w-full', className)}
 			data-testid={testId}
+			data-sidebar-action=""
 			data-loading={loading ? '' : undefined}
 			onClick={onClick}
 			disabled={disabled || sidebarDisabled}
 			aria-busy={loading || undefined}>
 			{children}
-			<span className="sim-sidebar-action-button-loading-icon">
+			<span data-sidebar-action-loading-icon="">
 				<Icon name="spinner" spin />
 			</span>
 		</Button>

@@ -200,7 +200,7 @@ export const ListPickerItem = ({
 			{canDelete && (
 				<ListItemAction
 					icon="fa-times"
-					className={['link-danger', 'text-link-danger']}
+					className={['text-link-danger']}
 					testId="list-picker-item-delete"
 					tooltip={deleteTooltip}
 					tooltipId={tooltipId}

@@ -84,7 +84,8 @@ describe('SearchBar', () => {
 	it('renders a bare input carrying any extra className, inside an input-root', () => {
 		const { container } = render(<SearchBar value="" onChange={vi.fn()} className="selector-modal-search" placeholder="Search" />);
 		const root = container.firstElementChild!;
-		expect(root.classList.contains('input-root')).toBe(true);
+		expect(root.getAttribute('data-testid')).toBe('search-bar-root');
+		expect(root.hasAttribute('data-input-root')).toBe(true);
 		expect(input().className.split(' ')).toEqual(expect.arrayContaining(['ui-input', 'selector-modal-search']));
 		expect(input().placeholder).toBe('Search');
 	});

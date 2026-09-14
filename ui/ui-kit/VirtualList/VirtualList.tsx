@@ -80,7 +80,7 @@ export const VirtualList = ({
 					data-index={item.index}
 					data-stripe={item.index % 2 === 0 ? 'even' : 'odd'}
 					data-testid="virtual-list-row"
-					className={clsx('virtual-list-row', rowClassName?.(item.index))}
+					className={rowClassName?.(item.index)}
 					style={{
 						position: 'absolute',
 						top: 0,

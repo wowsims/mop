@@ -30,7 +30,7 @@ const identical = <V,>(a: V | undefined, b: V | undefined) => a === b;
  * description and root classes.
  *
  * The root **is** the shell: the label, the button and the menu are all children of one
- * `div.input-root`, identified by `data-testid="dropdown-picker-root"`. Wrapping `DropdownPicker`
+ * `div[data-input-root]`, identified by `data-testid="dropdown-picker-root"`. Wrapping `DropdownPicker`
  * would nest a second root inside the shell.
  */
 export const DropdownField = <ModObject, T, V = T>({

@@ -89,13 +89,14 @@ describe('IconEnumPicker', () => {
 	it('builds the root, the button, the menu and the caption in vanilla’s order', () => {
 		mount(new Options());
 
-		expect(['relative', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
+		expect(root().classList.contains('relative')).toBe(true);
+		expect(root().hasAttribute('data-input-root')).toBe(true);
 
 		// The order is the whole reason the slot exists: Base UI appends its portal element to the
 		// container in a later commit than React places the root's own children, so a portal aimed
 		// straight at the root would land after the caption.
 		expect(Array.from(root().children).map(element => `${element.tagName.toLowerCase()}.${element.className}`)).toEqual([
-			'a.icon-picker-button ui-icon-picker-swatch transition-none',
+			'a.ui-icon-picker-swatch transition-none',
 			'div.contents',
 			'label.ui-field-label',
 		]);

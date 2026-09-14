@@ -173,8 +173,8 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 });
 	await page.waitForTimeout(2500);
 
-	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
-	await page.click('.dps-action');
+	await page.waitForSelector(`${q('dps-action')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('dps-action'));
 	await page.waitForFunction(
 		() =>
 			document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)')

@@ -59,7 +59,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 
 	return (
 		<div
-			className="ui-field grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0"
+			className="ui-field grid gap-3 grid-cols-1 xl:grid-cols-3 [&_[data-input-root]:is(:only-child)]:mb-0 [&_[data-input-root]:is(:last-child)]:mb-0"
 			data-testid="target-picker-root">
 			<PickerGroup data-testid="target-picker-section">
 				<EnumPicker modObject={null} config={npc} />

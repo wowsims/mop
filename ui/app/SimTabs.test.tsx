@@ -24,7 +24,7 @@ const Activators = ({ ids }: { ids: string[] }) => {
 // The pane is whatever the declaration wraps; the tab and the panel are React's.
 const makeTab = (id: string, index: number, ids: string[]) => (
 	<SimTabDef key={id} id={id} title={id}>
-		<div id={id} className="sim-tab">
+		<div id={id} data-testid="sim-tab">
 			{index === 0 && <Activators ids={ids} />}
 		</div>
 	</SimTabDef>
@@ -86,7 +86,7 @@ describe('SimTabs', () => {
 	it('keeps every panel mounted, because a pane is built once and may read the document', () => {
 		renderTabs(['gear-tab', 'settings-tab', 'talents-tab']);
 		expect(panels()).toHaveLength(3);
-		expect(panes.querySelectorAll('.sim-tab')).toHaveLength(3);
+		expect(panes.querySelectorAll('[data-testid="sim-tab"]')).toHaveLength(3);
 		// Hidden rather than removed — `[hidden]` is what stops them showing.
 		expect(panels().filter(panel => panel.hasAttribute('hidden'))).toHaveLength(2);
 	});
