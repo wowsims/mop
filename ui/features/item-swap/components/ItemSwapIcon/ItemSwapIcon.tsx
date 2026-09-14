@@ -38,7 +38,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 		<div className="icon-picker-root icon-picker relative" data-testid="icon-picker-root">
 			<ItemCellAnchor
 				className={clsx(
-					'icon-picker-button size-16 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1',
+					'icon-picker-button ui-icon-picker-swatch size-16 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1',
 					item ? 'active filter-none' : 'grayscale',
 				)}
 				data-testid="icon-picker-button"

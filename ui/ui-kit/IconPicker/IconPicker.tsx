@@ -89,6 +89,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 			<a
 				className={clsx(
 					'icon-picker-button',
+					'ui-icon-picker-swatch',
 					useImprovedIcons && 'use-improved-icons',
 					config.improvedId2 && 'use-improved-icons2',
 					!useImprovedIcons && config.states > 2 && 'use-counter',
@@ -108,7 +109,11 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				{...stateEvents}
 			/>
 			<div
-				className={clsx('icon-input-level-container', currentValue > 0 ? 'filter-none' : 'grayscale')}
+				className={clsx(
+					'icon-input-level-container',
+					'relative shrink-0 pointer-events-none mt-[2px] [--icon-input-level-size:calc(--spacing(10)-2px)] w-(--icon-input-level-size) h-(--icon-input-level-size) -ml-(--icon-input-level-size)',
+					currentValue > 0 ? 'filter-none' : 'grayscale',
+				)}
 				data-testid="icon-input-level-container"
 				{...stateEvents}>
 				<ImprovedAnchor

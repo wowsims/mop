@@ -1,5 +1,3 @@
-import './MultiIconPicker.scss';
-
 import { Menu } from '@base-ui/react/menu';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
@@ -49,7 +47,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 	if (hidden) return null;
 
 	return (
-		<div className={clsx('multi-icon-picker-root', 'icon-picker')} data-testid="multi-icon-picker-root" {...groupProps}>
+		<div className={clsx('multi-icon-picker-root', 'icon-picker', 'flex items-center')} data-testid="multi-icon-picker-root" {...groupProps}>
 			<div className="relative" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger
@@ -57,7 +55,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 						render={<a />}
 						openOnHover
 						delay={0}
-						className={clsx('icon-picker-button', actionId ? 'active filter-none' : 'grayscale')}
+						className={clsx('icon-picker-button', 'ui-icon-picker-swatch', actionId ? 'active filter-none' : 'grayscale')}
 						data-testid="multi-icon-picker-button"
 						data-active={actionId ? '' : undefined}
 						// The trigger is a bare anchor carrying a background image, so it announced nothing — and Base UI points the popup's `aria-labelledby` at it, which would have made the group nameless too.
@@ -75,13 +73,17 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							align="start"
 							sideOffset={-1}
 							positionMethod="fixed"
-							className="multi-icon-picker-positioner"
+							className="multi-icon-picker-positioner z-dropdown"
 							data-testid="multi-icon-picker-positioner">
 							{/* `role="group"`, not the `menu` Base UI would give it. A menu's children must be menuitems, and these are icon toggles — `Menu.Item` would close the popup on every click, and toggling several buffs in one visit is the whole point of this control. */}
-							<Menu.Popup render={<ul />} role="group" className="multi-icon-picker-menu" data-testid="multi-icon-picker-menu">
+							<Menu.Popup
+								render={<ul />}
+								role="group"
+								className="multi-icon-picker-menu grid grid-flow-col m-0 p-0 border-0 list-none"
+								data-testid="multi-icon-picker-menu">
 								<li>
 									<a
-										className="icon-dropdown-option dropdown-option p-0 [filter:opacity(0.7)] hover:filter-none"
+										className="icon-dropdown-option ui-icon-picker-swatch dropdown-option p-0 [filter:opacity(0.7)] hover:filter-none"
 										data-testid="icon-dropdown-option"
 										onClick={onClear}
 									/>
@@ -97,7 +99,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 				</Menu.Root>
 			</div>
 			{config.label && (
-				<span className="multi-icon-picker-label ui-field-label" data-testid="multi-icon-picker-label" id={labelId}>
+				<span className="multi-icon-picker-label ui-field-label mb-0" data-testid="multi-icon-picker-label" id={labelId}>
 					{config.label}
 				</span>
 			)}

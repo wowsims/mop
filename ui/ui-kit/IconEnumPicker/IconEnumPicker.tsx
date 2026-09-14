@@ -1,5 +1,3 @@
-import './IconEnumPicker.scss';
-
 import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
@@ -80,7 +78,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					render={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
 					openOnHover
 					delay={0}
-					className={clsx('icon-picker-button', active && 'active')}
+					className={clsx('icon-picker-button', 'ui-icon-picker-swatch', 'transition-none', active && 'active')}
 					data-testid="icon-enum-picker-button"
 					data-active={active ? '' : undefined}
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}
@@ -88,19 +86,19 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					data-disable-wowhead-touch-tooltip="true"
 					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
 				/>
-				<div className="icon-enum-picker-slot" data-testid="icon-enum-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="icon-enum-picker-portal" data-testid="icon-enum-picker-portal">
+				<div className="icon-enum-picker-slot contents" data-testid="icon-enum-picker-slot" ref={setSlot} />
+				<Menu.Portal container={slot} className="icon-enum-picker-portal contents" data-testid="icon-enum-picker-portal">
 					{/* `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against the `position: relative` picker root this portal sits inside. The popup lands a screenful away for one frame, and the focus Base UI moves into it scrolls the pane after it. */}
 					<Menu.Positioner
 						side={horizontal ? 'right' : 'bottom'}
 						align="start"
 						sideOffset={-1}
 						positionMethod="fixed"
-						className="icon-enum-picker-positioner"
+						className="icon-enum-picker-positioner z-dropdown"
 						data-testid="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}
-							className="icon-enum-picker-menu"
+							className="icon-enum-picker-menu grid m-0 p-0 border-0 list-none"
 							data-testid="icon-enum-picker-menu"
 							style={{
 								gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,

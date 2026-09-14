@@ -19,7 +19,7 @@
 		@apply flex-row justify-between items-center;
 
 		label {
-			@apply mr-2 mb-0;
+			@apply overflow-visible text-clip mr-2 mb-0;
 		}
 
 		input,
@@ -28,9 +28,12 @@
 		}
 	}
 
-	&[data-layout='inline'] label,
-	&.ui-icon-field label {
-		@apply overflow-visible text-clip;
+	&.ui-icon-field {
+		@apply flex-row items-center;
+
+		label {
+			@apply overflow-visible text-clip ml-2 mb-0;
+		}
 	}
 }
 

@@ -2,3 +2,7 @@
 	@apply w-full grid gap-3;
 	grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 }
+
+.ui-picker-group-icons {
+	@apply flex flex-wrap gap-1;
+}
