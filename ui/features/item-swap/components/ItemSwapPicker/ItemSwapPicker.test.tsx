@@ -42,7 +42,7 @@ describe('ItemSwapPicker', () => {
 	it('renders no picker row while item swap is off', () => {
 		const { container } = setup(false);
 
-		expect(container.querySelector('.input-item-swap-container')).toBeNull();
+		expect(container.querySelector('[data-testid="input-item-swap-container"]')).toBeNull();
 		expect(container.querySelector('.picker-group.icon-group')).toBeNull();
 	});
 });

@@ -33,7 +33,7 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 				<tr>
 					<th colSpan={4} className="pb-4">
 						<div className="flex">
-							<h6 className="content-block-title mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
+							<h6 className="mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
 							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(capsTooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>

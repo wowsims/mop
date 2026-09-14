@@ -20,21 +20,25 @@
 //      tippy's `setContent(<></>)`/`onShow` pair, and React's unmount/remount, in one assertion.
 //   6. that "Edit weights" opens the EP dialog and closes the popover. On master that was
 //      `hideAll()`; there is no `hideAll` for a Base UI popover, so it is a `setOpen(false)`.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 // Both sides: tippy's themed box on master, `Popover`'s popup on this branch.
-const POPOVER_PARTS = [".tippy-box[data-theme='reforge-optimiser-popover']", '[data-testid="sim-popover-popup"].reforge-optimiser-popover'];
+const POPOVER_PARTS = [
+	".tippy-box[data-theme='reforge-optimiser-popover']",
+	'[data-testid="sim-popover-popup"].reforge-optimiser-popover',
+	'[data-testid="reforge-optimiser-popover"]',
+];
 const POPOVER = POPOVER_PARTS.join(', ');
 // A selector list does not distribute over a descendant combinator, so each part gets its own.
 const inside = suffix => POPOVER_PARTS.map(part => `${part} ${suffix}`).join(', ');
-const TRIGGER = '.suggest-reforges-button-settings';
+const TRIGGER = q('suggest-reforges-button-settings');
 const GROUP = '.suggest-reforges-settings-group';
-const RUN = '.suggest-reforges-action-button';
+const RUN = q('suggest-reforges-action-button');
 const TOAST = '.suggest-reforges-toast';
-const PROGRESS = '.progress-tracker-modal, .progress-tracker-dialog, [data-testid="progress-tracker-dialog"]';
+const PROGRESS = '.progress-tracker-modal, .progress-tracker-dialog, [data-testid="progress-tracker-dialog"], [data-testid="reforge-optimizer-progress-tracker"]';
 const HIT_CAP = '#reforge-optimizer-Melee\\ Hit-percentage';
 const CUSTOM_EP = '#reforge-optimizer-enable-custom-ep-weights';
 const FREEZE = '#reforge-optimizer-freeze-item-slots';
@@ -342,7 +346,7 @@ try {
 	// `render` returning nothing. It also carries the one width tippy set on the instance.
 	await page.keyboard.press('Escape');
 	await page.waitForTimeout(400);
-	await page.hover('.suggest-reforges-action-button');
+	await page.hover(RUN);
 	await page.waitForTimeout(700);
 	const softCaps = await page.evaluate(() => {
 		const box = document.querySelector(".tippy-box[data-theme='suggest-reforges-softcaps'], .sim-tooltip.suggest-reforges-softcaps");

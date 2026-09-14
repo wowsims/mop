@@ -165,7 +165,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 		<>
 			<Button
 				size="none"
-				className="sim-sidebar-action-button suggest-reforges-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] -mr-(--settings-button-width)"
+				className="sim-sidebar-action-button grow py-2 px-[calc(--spacing(3)+var(--settings-button-width))] -mr-(--settings-button-width)"
+				data-testid="suggest-reforges-action-button"
 				disabled={isRunning}
 				onClick={onOptimize}
 				{...tooltipAnchorProps(softCapsTooltipId)}>
@@ -186,7 +187,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				container={container}
 				side="right"
 				align="start"
-				className="reforge-optimiser-popover min-w-[300px]"
+				className="min-w-[300px]"
+				testId="reforge-optimiser-popover"
 				maxWidth="max-w-[350px] max-lg:max-w-[min(350px,calc(100dvw-var(--settings-button-width,36px)-(--spacing(4))*2))]"
 				triggerClassName={[
 					'sim-sidebar-action-button',
@@ -204,8 +206,8 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 					'data-[popup-open]:bg-primary-active',
 					'data-[popup-open]:border-primary-active',
 					'w-(--settings-button-width)',
-					'suggest-reforges-button-settings',
 				]}
+				triggerTestId="suggest-reforges-button-settings"
 				triggerProps={tooltipAnchorProps(settingsTooltipId)}
 				trigger={
 					<>
@@ -240,7 +242,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 			{progressOpen && (
 				<ProgressTrackerDialog
 					open
-					className="reforge-optimizer-progress-tracker"
+					testId="reforge-optimizer-progress-tracker"
 					title="Optimizing Reforges"
 					state={{ stage: 'initializing' }}
 					warning={

@@ -31,7 +31,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 				<tr>
 					<th colSpan={3} className="pb-4">
 						<div className="flex">
-							<h6 className="content-block-title mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.breakpoint_limit')}</h6>
+							<h6 className="mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.breakpoint_limit')}</h6>
 							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(tooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>

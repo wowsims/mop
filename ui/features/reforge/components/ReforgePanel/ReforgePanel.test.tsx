@@ -50,9 +50,9 @@ describe('ReforgePanel', () => {
 				'px-[calc(--spacing(3)+var(--settings-button-width))]',
 				'-mr-(--settings-button-width)',
 				'sim-sidebar-action-button',
-				'suggest-reforges-action-button',
 			].sort(),
 		);
+		expect(run.getAttribute('data-testid')).toBe('suggest-reforges-action-button');
 		expect([...settings.classList].sort()).toEqual(
 			[
 				'ui-button',
@@ -70,9 +70,9 @@ describe('ReforgePanel', () => {
 				'data-[popup-open]:border-primary-active',
 				'w-(--settings-button-width)',
 				'sim-sidebar-action-button',
-				'suggest-reforges-button-settings',
 			].sort(),
 		);
+		expect(settings.getAttribute('data-testid')).toBe('suggest-reforges-button-settings');
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
 		expect(container.querySelectorAll('.sim-sidebar-action-button-loading-icon')).toHaveLength(2);
 	});

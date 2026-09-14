@@ -175,7 +175,7 @@ const INSTALL = () => {
 		// Bulk builds its own `SelectorModal`, so its tab panes are the ones prefixed
 		// `bulk-selector-modal-`. That is how this tells it apart from the gear tab's instance.
 		modal: () => {
-			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
+			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open], [data-testid="selector-modal"][data-open]');
 			if (!modal) return { open: false };
 			return {
 				open: true,
@@ -187,10 +187,10 @@ const INSTALL = () => {
 				// disagree about it. What both must show is a list filling the scroller.
 				rows: (() => {
 					const pane = modal.querySelector(activePane);
-					const list = pane?.querySelector('.selector-modal-list');
+					const list = pane?.querySelector(q('selector-modal-list'));
 					if (!list) return 0;
 					const box = list.getBoundingClientRect();
-					return [...pane.querySelectorAll('.selector-modal-list-item')]
+					return [...pane.querySelectorAll(q('selector-modal-list-item'))]
 						.map(row => row.getBoundingClientRect())
 						.filter(rect => rect.height > 0 && rect.bottom > box.top + 1 && rect.top < box.bottom - 1).length;
 				})(),

@@ -65,16 +65,16 @@ const INSTALL = () => {
 		modal: () => {
 			// Two shapes: on Bootstrap `.selector-modal` is the `.modal-dialog` and `.show` lands on the
 			// `.modal` root above it; on Base UI it is the popup itself, marked `data-open`.
-			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
+			const modal = document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open], [data-testid="selector-modal"][data-open]');
 			if (!modal) return { open: false };
 			return {
 				open: true,
-				title: text(modal.querySelector('.selector-modal-title')),
-				tabs: [...modal.querySelectorAll('.selector-modal-tabs .nav-link')].map(tab => text(tab)),
-				activeTab: text(modal.querySelector('.selector-modal-tabs .nav-link.active')),
+				title: text(modal.querySelector(q('selector-modal-title'))),
+				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} .nav-link`)].map(tab => text(tab)),
+				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} .nav-link.active`)),
 				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
-				railActive: modal.querySelector(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}.active`)?.getAttribute('data-slot') ?? null,
-				rows: modal.querySelectorAll(`${activePane} .selector-modal-list-item`).length,
+				railActive: modal.querySelector(`.gear-picker-modal-slots :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
+				rows: modal.querySelectorAll(`${activePane} ${q('selector-modal-list-item')}`).length,
 			};
 		},
 		// The autosaved blob is the oracle, the same one settings-tab.mjs and talents.mjs read: what
@@ -147,7 +147,7 @@ const INSTALL = () => {
 
 // A descendant selector has to be spelled out under each root — a bare comma between them binds
 // looser than the combinator and would match the modal root itself.
-const MODAL_ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
+const MODAL_ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]', '[data-testid="selector-modal"][data-open]'];
 const MODAL_OPEN = MODAL_ROOTS.join(', ');
 const inModal = suffix => MODAL_ROOTS.map(root => `${root} ${suffix}`).join(', ');
 const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
@@ -288,18 +288,19 @@ if (enchanted < 0) {
 	// The first row that is not the equipped one — `.active` marks that — so equipping the favourite
 	// afterwards is a change rather than a no-op. Favouriting the equipped enchant is how the first
 	// draft of this check passed while proving nothing.
-	const rows = page.locator(inModal(`${activePane} .selector-modal-list-item`));
+	const rows = page.locator(inModal(`${activePane} ${q('selector-modal-list-item')}`));
 	const rowCount = await rows.count();
 	let target = -1;
 	for (let index = 0; index < rowCount; index++) {
-		if (!(await rows.nth(index).evaluate(row => row.classList.contains('active')))) {
+		if (!(await rows.nth(index).evaluate(row => !!row.querySelector('[data-active]')))) {
 			target = index;
 			break;
 		}
 	}
 	if (target < 0) problems.push('every enchant row is the equipped one — nothing to favourite');
-	const favouriteName = target < 0 ? null : (await rows.nth(target).locator('.selector-modal-list-item-name').textContent())?.replace(/\s+/g, ' ').trim();
-	if (target >= 0) await rows.nth(target).locator('.selector-modal-list-item-favorite').click();
+	const favouriteName =
+		target < 0 ? null : (await rows.nth(target).locator(q('selector-modal-list-item-name')).textContent())?.replace(/\s+/g, ' ').trim();
+	if (target >= 0) await rows.nth(target).locator(q('selector-modal-list-item-favorite')).click();
 	await page.keyboard.press('Escape');
 	await page.waitForTimeout(700);
 

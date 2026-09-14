@@ -4,15 +4,16 @@
 // `panes-parity.mjs` compares this block at rest — with the toggle off, which is the default on
 // every spec — so on its own it proves only that the disabled state matches. Everything below
 // happens after a click. The whole output should be identical on both builds.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const STATE = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const root = document.querySelector('.item-swap-picker-root');
 	if (!root) return { error: 'no .item-swap-picker-root' };
-	const container = root.querySelector('.input-item-swap-container');
+	const container = root.querySelector(q('input-item-swap-container'));
 	return {
 		children: [...root.children].map(el => `${el.tagName.toLowerCase()}.${[...el.classList].sort().join('.')}`),
 		hidden: container?.classList.contains('hide') ?? null,
@@ -61,12 +62,12 @@ if ((await page.evaluate(STATE)).hidden) {
 
 // The swap button exchanges equipped gear with the swap set. Starting from an empty swap set, that
 // means the equipped items move into it — visible as placeholders becoming wowhead links.
-await page.click('.item-swap-picker-root .gear-swap-icon');
+await page.click(`.item-swap-picker-root ${q('gear-swap-icon')}`);
 await page.waitForTimeout(900);
 console.log(`swapped      ${JSON.stringify(await page.evaluate(STATE))}`);
 
 // Swapping again must put them back: the operation is its own inverse.
-await page.click('.item-swap-picker-root .gear-swap-icon');
+await page.click(`.item-swap-picker-root ${q('gear-swap-icon')}`);
 await page.waitForTimeout(900);
 console.log(`swapped back ${JSON.stringify(await page.evaluate(STATE))}`);
 

@@ -308,7 +308,7 @@ await page.waitForTimeout(700);
 // controller rather than a `BaseModal`.
 console.log('\nreforge opener');
 await closeDialog();
-const cog = page.locator(`:is(${q('sim-sidebar-actions')}) :is(${q('suggest-reforges-button-settings')})`);
+const cog = page.locator(`:is(${q('sim-sidebar-actions')}) ${q('suggest-reforges-button-settings')}`);
 if (await cog.count()) {
 	await cog.click();
 	await page.waitForTimeout(900);

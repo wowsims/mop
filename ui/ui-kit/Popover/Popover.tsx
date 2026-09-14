@@ -13,6 +13,7 @@ export interface PopoverProps {
 	/** What the popup is positioned against when there is no trigger. */
 	anchor?: BasePopover.Positioner.Props['anchor'];
 	triggerClassName?: ClassValue;
+	triggerTestId?: string;
 	/** Forwarded to the trigger `<button>`: `aria-label` for an icon-only trigger, and `tooltipAnchorProps(id)` for one that also carries a hover tooltip. */
 	triggerProps?: Omit<ComponentPropsWithoutRef<'button'>, 'className' | 'children'>;
 	/** Omit for an uncontrolled popover — the trigger drives it. `onOpenChange` fires either way. */
@@ -41,6 +42,7 @@ export const Popover = ({
 	trigger,
 	anchor,
 	triggerClassName,
+	triggerTestId,
 	triggerProps,
 	open,
 	onOpenChange,
@@ -60,7 +62,7 @@ export const Popover = ({
 	return (
 		<BasePopover.Root open={open} modal={false} onOpenChange={nextOpen => onOpenChange?.(nextOpen)}>
 			{trigger != null && (
-				<BasePopover.Trigger className={clsx(triggerClassName)} openOnHover={openOnHover} delay={delay} {...triggerProps}>
+				<BasePopover.Trigger className={clsx(triggerClassName)} data-testid={triggerTestId} openOnHover={openOnHover} delay={delay} {...triggerProps}>
 					{trigger}
 				</BasePopover.Trigger>
 			)}

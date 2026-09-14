@@ -26,7 +26,7 @@ const INSTALL = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
-	const modalRoot = () => document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
+	const modalRoot = () => document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open], [data-testid="selector-modal"][data-open]');
 
 	window.selectorProbe = {
 		open: () => !!modalRoot(),
@@ -42,7 +42,7 @@ const INSTALL = () => {
 				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} .nav-link.active`)),
 				gemTabs: modal.querySelectorAll(`${q('selector-modal-tabs')} [data-label^="Gem"]`).length,
 				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
-				railActive: modal.querySelector(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}.active`)?.getAttribute('data-slot') ?? null,
+				railActive: modal.querySelector(`.gear-picker-modal-slots :is(${q('item-picker-icon-wrapper')}.active, ${q('item-picker-icon-wrapper')}[data-active])`)?.getAttribute('data-slot') ?? null,
 			};
 		},
 		// The controls in the active pane's filter row, by class rather than by position.
@@ -150,7 +150,7 @@ const problems = [];
 const say = line => console.log(line);
 // Two roots, so a descendant selector has to be spelled out under each — a bare comma between them
 // binds looser than the combinator and matches the modal root itself.
-const ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
+const ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]', '[data-testid="selector-modal"][data-open]'];
 const modalRoot = ROOTS.join(', ');
 const sel = suffix => ROOTS.map(root => `${root} ${suffix}`).join(', ');
 const activePane = `:is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)`;
@@ -395,18 +395,21 @@ if (await gemTab.count()) {
 // baseline moves the tab on Left/Right/Home/End too and neither build may move the slot with them.
 say('\nthe keyboard, strip against rail');
 const isReact = PORT !== PORTS.base;
-const focusTab = () => page.evaluate(selector => document.querySelector(selector)?.focus(), sel('.selector-modal-tabs .nav-link.active'));
+const focusTab = () => page.evaluate(selector => document.querySelector(selector)?.focus(), sel(`${q('selector-modal-tabs')} .nav-link.active`));
 const keyState = () =>
-	page.evaluate(selector => {
-		const modal = document.querySelector(selector);
-		const tabs = [...modal.querySelectorAll('.selector-modal-tabs .nav-link')];
-		return {
-			slot: (modal.querySelector('.selector-modal-title')?.textContent ?? '').trim(),
-			tab: tabs.findIndex(tab => tab.classList.contains('active')),
-			count: tabs.length,
-			pane: modal.querySelector(activePane)?.id ?? null,
-		};
-	}, modalRoot);
+	page.evaluate(
+		({ selector, tabsSelector, titleSelector, pane: panesel }) => {
+			const modal = document.querySelector(selector);
+			const tabs = [...modal.querySelectorAll(tabsSelector)];
+			return {
+				slot: (modal.querySelector(titleSelector)?.textContent ?? '').trim(),
+				tab: tabs.findIndex(tab => tab.classList.contains('active')),
+				count: tabs.length,
+				pane: modal.querySelector(panesel)?.id ?? null,
+			};
+		},
+		{ selector: modalRoot, tabsSelector: `${q('selector-modal-tabs')} .nav-link`, titleSelector: q('selector-modal-title'), pane: activePane },
+	);
 
 await focusTab();
 const stripStart = await keyState();

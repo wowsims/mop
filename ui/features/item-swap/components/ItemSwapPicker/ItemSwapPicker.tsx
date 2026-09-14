@@ -49,13 +49,13 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 		<div className="item-swap-picker-root grid gap-3">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
-				<div className="ui-field input-root input-inline input-item-swap-container flex-wrap gap-3" data-layout="inline">
+				<div className="ui-field input-root input-inline flex-wrap gap-3" data-testid="input-item-swap-container" data-layout="inline">
 					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>
 					<Button
 						variant="unstyled"
-						className="gear-swap-icon"
+						data-testid="gear-swap-icon"
 						aria-label={swapTooltip}
 						{...tooltipAnchorProps(swapId)}
 						onClick={() => swapWithGear(player, itemSlots)}>
