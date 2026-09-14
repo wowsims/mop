@@ -119,6 +119,10 @@ page.on('console', message => {
 });
 await page.addInitScript(() => {
 	window.alert = () => {};
+	window.__aplLongTasks = [];
+	new PerformanceObserver(list => {
+		for (const entry of list.getEntries()) window.__aplLongTasks.push(entry.duration);
+	}).observe({ entryTypes: ['longtask'] });
 });
 
 try {
@@ -127,6 +131,21 @@ try {
 	await page.waitForTimeout(2500);
 
 	await page.click(':is([data-testid="sim-tabs"], .sim-tabs) .rotation-tab, :is([data-testid="sim-tabs"], .sim-tabs) li.rotation-tab .nav-link');
+	await page.waitForTimeout(600);
+
+	// Some specs (monk/windwalker among them) default to a non-APL rotation type, so the APL pane
+	// exists in the DOM but stays on the inactive tab until something switches to it. The dropdown
+	// itself is still mid fade-in right after the tab click, so its current text is read straight off
+	// the DOM rather than through a locator, which would otherwise wait on visibility that never
+	// resolves before the transition settles.
+	const currentType = await page.evaluate(() => document.getElementById('rotation-tab-rotation-type')?.textContent?.trim());
+	if (currentType && currentType !== 'APL') {
+		await page.locator('#rotation-tab-rotation-type').first().click({ timeout: 10000 });
+		await page.waitForTimeout(300);
+		await page.locator(`${q('dropdown-picker-list')} li, ${q('dropdown-picker-item')}`).locator('visible=true').getByText('APL', { exact: true }).first().click({ timeout: 10000 });
+		await page.waitForTimeout(600);
+	}
+
 	await page.waitForSelector('#apl-priority-list', { state: 'visible', timeout: 15000 });
 	await page.waitForTimeout(1200);
 
@@ -288,6 +307,83 @@ try {
 	const after = await page.evaluate(readRotation);
 	console.log(`\nend                      items=${after?.items} prepull=${after?.prepull} type=${after?.type} head=[${after?.head}]`);
 	console.log(`kinds                    ${after?.kinds}`);
+
+	// 8. a REAL mouse drag on the Default preset — the freeze this guards against only shows up under
+	// native HTML5 DnD (per-pixel `dragover`s), never under the synthetic `DragEvent`s step 4 fires.
+	// A fresh navigation, rather than reusing the page steps 1-7 left mutated, is what makes this
+	// deterministic: it starts from the same clean state as the manual repro that first found the bug.
+	console.log('');
+	await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
+	await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 });
+	await page.waitForTimeout(2500);
+	await page.click(':is([data-testid="sim-tabs"], .sim-tabs) .rotation-tab, :is([data-testid="sim-tabs"], .sim-tabs) li.rotation-tab .nav-link');
+	await page.waitForTimeout(600);
+
+	await step('load Default preset', async () => {
+		const currentType = await page.evaluate(() => document.getElementById('rotation-tab-rotation-type')?.textContent?.trim());
+		if (currentType && currentType !== 'APL') {
+			await page.locator('#rotation-tab-rotation-type').first().click({ timeout: 10000 });
+			await page.waitForTimeout(300);
+			await page.locator(`${q('dropdown-picker-list')} li, ${q('dropdown-picker-item')}`).locator('visible=true').getByText('APL', { exact: true }).first().click({ timeout: 10000 });
+			await page.waitForTimeout(600);
+		}
+		await page.waitForSelector('#apl-priority-list', { state: 'visible', timeout: 15000 });
+		const preset = page.locator(':is([data-testid="saved-data-set-name"], .saved-data-set-name):has-text("Default")').locator('visible=true').first();
+		if (!(await preset.count())) return 'NO DEFAULT PRESET';
+		await preset.click();
+		await page.waitForTimeout(1200);
+		return 'loaded';
+	});
+
+	await step('real mouse drag 0 -> 6 (freeze check)', async () => {
+		// Read rects straight off the DOM: a fresh mount of the APL pane (the preset click above
+		// switches rotation type and remounts it) can leave a Playwright locator's own visibility wait
+		// spinning past the fade-in, when the rects it would eventually see are already stable.
+		const rectsOf = selector =>
+			page.evaluate(sel => {
+				const rectOf = element => {
+					const rect = element.getBoundingClientRect();
+					return rect.width > 0 && rect.height > 0 ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null;
+				};
+				const items = [...document.querySelectorAll(sel)];
+				return { count: items.length, from: items[0] && rectOf(items[0]), to: items[6] && rectOf(items[6]) };
+			}, selector);
+		let rects = await rectsOf(ITEM);
+		for (let attempt = 0; attempt < 8 && (!rects.from || !rects.to); attempt++) {
+			await page.waitForTimeout(300);
+			rects = await rectsOf(ITEM);
+		}
+		if (rects.count < 2) return 'NOT ENOUGH ITEMS';
+		const fromBox = rects.from;
+		const toBox = rects.to ?? rects.from;
+		if (!fromBox || !toBox) return `NO BOUNDING BOX (count=${rects.count})`;
+		await page.evaluate(() => {
+			window.__aplLongTasks = [];
+		});
+		await page.mouse.move(fromBox.x + fromBox.width / 2, fromBox.y + 10);
+		await page.mouse.down();
+		await page.waitForTimeout(150);
+		const steps = 40;
+		for (let index = 1; index <= steps; index++) {
+			const y = fromBox.y + 10 + ((toBox.y - fromBox.y) * index) / steps;
+			await page.mouse.move(fromBox.x + fromBox.width / 2, y, { steps: 1 });
+			await page.waitForTimeout(15);
+		}
+		await page.mouse.up();
+		// The page must answer within 3s of the drop — that is the "frozen until reload" symptom made
+		// measurable: a real freeze never answers this at all.
+		const responsive = await Promise.race([
+			page.evaluate(() => 1).then(() => true),
+			new Promise(resolve => setTimeout(() => resolve(false), 3000)),
+		]);
+		if (!responsive) {
+			errors.push('FROZEN: page did not respond within 3s of a real drag drop');
+			return 'FROZEN: page did not respond within 3s of drop';
+		}
+		const longTasks = await page.evaluate(() => window.__aplLongTasks);
+		const maxTask = Math.max(0, ...longTasks);
+		return `responsive, longest main-thread block ${Math.round(maxTask)}ms (${longTasks.length} long tasks)`;
+	});
 } finally {
 	for (const error of errors) console.log(`  ERROR ${error}`);
 	await context.close();
