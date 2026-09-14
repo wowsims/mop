@@ -95,6 +95,9 @@ const DROPPED_HOOKS = new Set([
 	// `group-not-data-[no-results]/dr:hidden` utility already in its `className`.
 	'tab-pane',
 	'active',
+	// `DetailedResultsTabs`'s own `tabItemClassName`, unread by any CSS or test; this build's tab
+	// buttons carry no such wrapper class at all.
+	'dr-tab-tab',
 ]);
 
 /** Strips the same retired tokens out of a `SERIALIZE` dump, so the scaffolding diff below does not
