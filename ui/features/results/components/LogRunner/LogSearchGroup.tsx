@@ -12,9 +12,7 @@ import { isNumericFilter } from '../../model/log/search/indexes';
 import type { IdentifiedSearchGroup } from './utils';
 import { labelOf, sentenceCase, TYPED_FIELDS, valueCandidates } from './utils';
 
-// The group sits in the bottom bar's drawer, which clips its overflow; an out-of-flow menu is the one
-// that still opens past its edge, and up is the direction that has room down there. Both only hold
-// while the drawer panel (`ui-fab-panel`) drops its transform when expanded — see LogRunner.css.
+// The group sits in the bottom bar's Drawer sheet; up is the direction that has room below it.
 const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 
 // Nameless to a screen reader: giving it one needs a translation key the locale files do not have,
@@ -42,7 +40,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 				value,
 				label: labelOf(group.field, value),
 				icon: suggestions.spellIcons.get(value) ? (
-					<img data-testid="log-search-suggestion-icon" className="icon-sm mr-1" src={suggestions.spellIcons.get(value)} alt="" />
+					<img data-testid="log-search-suggestion-icon" className="mr-1 icon-sm" src={suggestions.spellIcons.get(value)} alt="" />
 				) : undefined,
 			})),
 		[group.field, suggestions],
@@ -97,13 +95,13 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						deleteSlot={<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />}
 					/>
 				))}
-				<div data-testid="input-group" className="relative flex flex-wrap items-stretch w-full">
+				<div data-testid="input-group" className="relative flex w-full flex-wrap items-stretch">
 					{placeholder ? (
 						<>
 							<Input
 								type="text"
 								data-testid="log-search-group-input"
-								className="w-32 relative flex-auto min-w-0 focus:z-5"
+								className="relative w-32 min-w-0 flex-auto focus:z-5"
 								placeholder={placeholder}
 								autoComplete="off"
 								value={draft}
@@ -126,7 +124,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 							onChange={addValue}
 							equals={(a, b) => a === b}
 							defaultLabel={i18n.t('results_tab.details.logs.search_add_value')}
-							triggerClassName="p-0 border-0"
+							triggerClassName="border-0 p-0"
 							{...DROPUP}
 						/>
 					)}

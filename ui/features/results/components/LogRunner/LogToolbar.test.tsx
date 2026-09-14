@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EMPTY_SUGGESTIONS } from '../../model/log/search/indexes';
-import { LogFloatingActionBar } from './LogFloatingActionBar';
+import { LogToolbar } from './LogToolbar';
 import type { IdentifiedSearchGroup } from './utils';
 
 vi.mock('./LogSearchBar', () => ({ LogSearchBar: () => <div className="log-search-bar" /> }));
@@ -35,9 +35,9 @@ const group = (field: IdentifiedSearchGroup['field'], values: Array<string>, id 
 const mount = (groups: Array<IdentifiedSearchGroup>, onChange = vi.fn()) => ({
 	onChange,
 	...render(
-		<LogFloatingActionBar groups={groups} suggestions={EMPTY_SUGGESTIONS} onChange={onChange}>
+		<LogToolbar groups={groups} suggestions={EMPTY_SUGGESTIONS} onChange={onChange}>
 			<button type="button" className="log-export" />
-		</LogFloatingActionBar>,
+		</LogToolbar>,
 	),
 });
 
@@ -46,7 +46,7 @@ const toggle = (container: HTMLElement) => container.querySelector<HTMLButtonEle
 const clear = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="log-fab-clear"]')!;
 const panel = () => screen.queryByTestId('log-fab-panel-inner');
 
-describe('LogFloatingActionBar', () => {
+describe('LogToolbar', () => {
 	it('starts collapsed, with the drawer out of the tab order', () => {
 		const { container } = mount([]);
 

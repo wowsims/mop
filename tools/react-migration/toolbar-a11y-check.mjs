@@ -7,8 +7,6 @@ await page.waitForTimeout(1500);
 
 const results = {};
 
-// APL tab: FloatingActionBar
-await page.evaluate(() => window.simTabsProbe.ids().find(id => id && /rotation/.test(id)));
 const rotationTabId = await page.evaluate(() => window.simTabsProbe.ids().find(id => id && /rotation/.test(id)));
 if (rotationTabId) {
 	await page.evaluate(id => window.simTabsProbe.tabs().find(t => window.simTabsProbe.idOf(t) === id).click(), rotationTabId);
@@ -36,6 +34,22 @@ if (drToolbarId) {
 	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForTimeout(500);
+	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=timelineTab]`).click(), q('dr-toolbar'));
+	await page.waitForTimeout(800);
+
+	results.rotationDrawerToolbarRole = await page.evaluate(sel => document.querySelector(sel)?.getAttribute('role'), q('rotation-fab-actions'));
+	results.rotationPanelAbsentAtRest = await page.evaluate(sel => document.querySelector(sel) === null, q('rotation-fab-panel-inner'));
+
+	await page.click(q('rotation-fab-toggle'));
+	await page.waitForTimeout(300);
+	results.rotationPanelOpensFromClick = await page.evaluate(sel => document.querySelector(sel) !== null, q('rotation-fab-panel-inner'));
+	results.rotationToggleAriaExpandedTrue = await page.evaluate(sel => document.querySelector(sel)?.getAttribute('aria-expanded'), q('rotation-fab-toggle'));
+
+	await page.keyboard.press('Escape');
+	await page.waitForTimeout(400);
+	results.rotationPanelClosesOnEscape = await page.evaluate(sel => document.querySelector(sel) === null, q('rotation-fab-panel-inner'));
+	results.rotationFocusReturnsToToggle = await page.evaluate(sel => document.activeElement === document.querySelector(sel), q('rotation-fab-toggle'));
+
 	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=logTab]`).click(), q('dr-toolbar'));
 	await page.waitForTimeout(800);
 

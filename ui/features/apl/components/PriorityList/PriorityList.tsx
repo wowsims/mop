@@ -1,6 +1,6 @@
 import { AplListItem } from '@features/apl/components/AplListItem';
+import { AplListToolbar } from '@features/apl/components/AplListToolbar';
 import { AplNameDialog } from '@features/apl/components/AplNameDialog';
-import { FloatingActionBar } from '@features/apl/components/FloatingActionBar';
 import { ListItemHeader } from '@features/apl/components/ListItemHeader';
 import { uuidValidations } from '@features/apl/components/ListItemHeader/utils';
 import { useVariableExtraction } from '@features/apl/hooks/useVariableExtraction';
@@ -64,7 +64,7 @@ export const PriorityList = () => {
 					/>
 				)}
 			/>
-			<FloatingActionBar
+			<AplListToolbar
 				itemName={itemLabel()}
 				onCreate={() => player.modifyAplRotation(rotation => rotation.priorityList.push(APLListItem.create({ action: {} })))}
 			/>

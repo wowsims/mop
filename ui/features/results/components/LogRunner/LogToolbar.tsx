@@ -3,8 +3,8 @@ import { Drawer } from '@ui-kit/Drawer';
 import { Icon } from '@ui-kit/Icon';
 import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import clsx from 'clsx';
-import type { CSSProperties, ReactNode } from 'react';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { SuggestionSource } from '../../model/log/search/indexes';
 import { LogSearchBar } from './LogSearchBar';
@@ -13,7 +13,7 @@ import { labelOf, sentenceCase } from './utils';
 
 const PREVIEW_LIMIT = 3;
 
-export interface LogFloatingActionBarProps {
+export interface LogToolbarProps {
 	groups: ReadonlyArray<IdentifiedSearchGroup>;
 	suggestions: SuggestionSource;
 	onChange: (groups: Array<IdentifiedSearchGroup>) => void;
@@ -21,19 +21,10 @@ export interface LogFloatingActionBarProps {
 	children?: ReactNode;
 }
 
-export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }: LogFloatingActionBarProps) => {
+export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolbarProps) => {
 	const [expanded, setExpanded] = useState(false);
 	const [stuck, setStuck] = useState(false);
 	const rootRef = useRef<HTMLDivElement>(null);
-	const [anchorStyle, setAnchorStyle] = useState<CSSProperties>();
-
-	useLayoutEffect(() => {
-		if (!expanded) return;
-		const element = rootRef.current;
-		if (!element) return;
-		const rect = element.getBoundingClientRect();
-		setAnchorStyle({ left: rect.left, right: window.innerWidth - rect.right, bottom: window.innerHeight - rect.top + 1 });
-	}, [expanded]);
 
 	// Same observer as the rotation's bar, for the same reason: built inside the hidden Results tab,
 	// the ratio goes 0 -> pinned without passing through 1, so [1] alone never fires again.
@@ -71,8 +62,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 					open={expanded}
 					onOpenChange={setExpanded}
 					modal={false}
-					className="ui-fab-drawer-popup"
-					style={anchorStyle}
+					className="ui-fab-sheet"
 					testId="log-fab-panel-inner"
 					trigger={
 						<ToolbarButton

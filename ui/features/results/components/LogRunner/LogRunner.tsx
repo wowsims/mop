@@ -14,8 +14,8 @@ import { useSimResult } from '../../hooks/useSimResult';
 import { EMPTY_SUGGESTIONS, LogIndex } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
 import { useDrToolbar } from '../DetailedResults/DrToolbarContext';
-import { LogFloatingActionBar } from './LogFloatingActionBar';
 import { LogRow } from './LogRow';
+import { LogToolbar } from './LogToolbar';
 import type { IdentifiedSearchGroup } from './utils';
 import { combinedLogText, DEBUG_MARKER, keywordsOf, selectedTargetNumber } from './utils';
 
@@ -242,7 +242,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					</div>
 				)}
 			</div>
-			<LogFloatingActionBar
+			<LogToolbar
 				groups={groups}
 				suggestions={suggestions}
 				onChange={next => {
@@ -256,7 +256,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					{i18n.t('results_tab.details.logs.top_button')}
 				</ToolbarButton>
 				<BooleanPicker modObject={showDebugHolder} config={showDebugConfig} />
-			</LogFloatingActionBar>
+			</LogToolbar>
 			<Exporter
 				open={exportOpen}
 				onOpenChange={setExportOpen}

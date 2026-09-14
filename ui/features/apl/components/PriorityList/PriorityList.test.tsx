@@ -23,7 +23,7 @@ vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).m
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 vi.mock('@sim/proto/action_id', () => ({ ActionId: { replaceAllInString: async (str: string) => str } }));
 
-// FloatingActionBar's sticky-bar effect needs one; happy-dom does not provide it.
+// AplListToolbar's sticky-bar effect needs one; happy-dom does not provide it.
 class FakeIntersectionObserver {
 	constructor() {}
 	observe = vi.fn();

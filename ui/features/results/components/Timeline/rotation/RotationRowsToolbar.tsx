@@ -1,14 +1,14 @@
 import i18n from '@i18n/config';
+import { Drawer } from '@ui-kit/Drawer';
 import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import clsx from 'clsx';
-import type { KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ContentRow, RotationModel, Section } from '../../../model/timeline/rotation';
 import { rowAt } from '../../../model/timeline/rotation';
 import { RotationFabGroup } from './RotationFabGroup';
 
-export interface RotationFloatingActionBarProps {
+export interface RotationRowsToolbarProps {
 	model: RotationModel | null;
 	hidden: ReadonlySet<string>;
 	onToggle: (key: string) => void;
@@ -30,9 +30,8 @@ const sectionTitle = (section: Section): string => {
 	}
 };
 
-export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }: RotationFloatingActionBarProps) => {
+export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: RotationRowsToolbarProps) => {
 	const rootRef = useRef<HTMLDivElement>(null);
-	const toggleRef = useRef<HTMLButtonElement>(null);
 	const [expanded, setExpanded] = useState(false);
 	const [stuck, setStuck] = useState(false);
 	// The chips are only worth building once someone opens the drawer. A new result then rebuilds them
@@ -83,51 +82,41 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 		if (next) setEverExpanded(true);
 	};
 
-	const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.key !== 'Escape') return;
-		open(false);
-		toggleRef.current?.focus();
-		event.preventDefault();
-	};
-
 	return (
 		<div
 			ref={rootRef}
 			data-testid="rotation-floating-action-bar-root"
 			className="group ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
-			data-stuck={stuck ? '' : undefined}
-			data-expanded={String(expanded)}
-			onKeyDown={onKeyDown}>
-			<div className="ui-fab-clip">
-				<div className="ui-fab-panel group-data-[expanded=true]:transform-[translate3d(0,0,0)]">
-					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}
-					<div data-testid="rotation-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
-						<div className="ui-fab-drawer flex flex-col gap-4">
-							{groups.map(group => (
-								<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
-							))}
-						</div>
-					</div>
-				</div>
-			</div>
+			data-stuck={stuck ? '' : undefined}>
 			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 items-center group-data-stuck:bg-background">
-				<ToolbarButton
-					ref={toggleRef}
-					testId="rotation-fab-toggle"
-					className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
-					aria-expanded={expanded}
-					aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
-					onClick={() => open(!expanded)}>
-					<i className="fas fa-eye-slash" />
-					<span data-testid="rotation-fab-summary">
-						{hiddenKeys.length
-							? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
-							: i18n.t('results_tab.details.timeline.floatingActionBar.allShown')}
-					</span>
-					<span data-testid="rotation-fab-preview" className="truncate opacity-75">
-						{preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
-					</span>
-				</ToolbarButton>
+				<Drawer
+					open={expanded}
+					onOpenChange={open}
+					modal={false}
+					className="ui-fab-sheet"
+					testId="rotation-fab-panel-inner"
+					trigger={
+						<ToolbarButton
+							testId="rotation-fab-toggle"
+							className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
+							aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}>
+							<i className="fas fa-eye-slash" />
+							<span data-testid="rotation-fab-summary">
+								{hiddenKeys.length
+									? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
+									: i18n.t('results_tab.details.timeline.floatingActionBar.allShown')}
+							</span>
+							<span data-testid="rotation-fab-preview" className="truncate opacity-75">
+								{preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
+							</span>
+						</ToolbarButton>
+					}>
+					<div className="ui-fab-drawer flex flex-col gap-4">
+						{groups.map(group => (
+							<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
+						))}
+					</div>
+				</Drawer>
 				<ToolbarButton
 					variant="link-danger"
 					size="sm"

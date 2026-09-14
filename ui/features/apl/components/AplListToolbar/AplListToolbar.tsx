@@ -6,7 +6,7 @@ import { Icon } from '@ui-kit/Icon';
 import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
 import { useState } from 'react';
 
-export interface FloatingActionBarProps {
+export interface AplListToolbarProps {
 	/** Names the thing the button creates, e.g. "Action" or "Variable". */
 	itemName: string;
 	/**
@@ -28,7 +28,7 @@ export interface FloatingActionBarProps {
  * but it is state derived by parity of events rather than from the event, and it is worth replacing
  * the day the class is given a second reader.
  */
-export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingActionBarProps) => {
+export const AplListToolbar = ({ itemName, nameDialog, onCreate }: AplListToolbarProps) => {
 	const host = useSimHost();
 	const newLabel = i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName });
 	const { ref: rootRef, stuck } = useStickyBottom<HTMLDivElement>();

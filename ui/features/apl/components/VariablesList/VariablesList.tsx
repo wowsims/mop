@@ -1,5 +1,5 @@
+import { AplListToolbar } from '@features/apl/components/AplListToolbar';
 import { AplNameDialog } from '@features/apl/components/AplNameDialog';
-import { FloatingActionBar } from '@features/apl/components/FloatingActionBar';
 import { AplValidations } from '@features/apl/components/ListItemHeader';
 import { uuidValidations } from '@features/apl/components/ListItemHeader/utils';
 import { useRenamedCopy } from '@features/apl/hooks/useRenamedCopy';
@@ -55,7 +55,7 @@ export const VariablesList = () => {
 				renderItem={(_index, itemConfig) => <VariableItem player={player} config={itemConfig} />}
 				renderItemHeader={index => <AplValidations getValidations={subject => uuidValidations(subject, variables()[index]?.value?.uuid?.value)} />}
 			/>
-			<FloatingActionBar
+			<AplListToolbar
 				itemName={variableName()}
 				nameDialog={{
 					inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),

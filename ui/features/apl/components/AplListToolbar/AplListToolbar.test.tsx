@@ -2,7 +2,7 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FloatingActionBar } from './FloatingActionBar';
+import { AplListToolbar } from './AplListToolbar';
 
 vi.mock('@i18n/config', () => ({ default: { t: (key: string, opts?: Record<string, unknown>) => (opts?.itemName ? `${key}:${opts.itemName}` : key) } }));
 
@@ -24,12 +24,12 @@ class FakeIntersectionObserver {
 const applyEmptyAplRotation = vi.fn();
 const host = { rootElem: document.body, applyEmptyAplRotation } as never;
 
-const mount = (props: Partial<Parameters<typeof FloatingActionBar>[0]> = {}) => {
+const mount = (props: Partial<Parameters<typeof AplListToolbar>[0]> = {}) => {
 	const scrollRoot = document.createElement('div');
 	document.body.appendChild(scrollRoot);
 	return render(
 		<SimHostProvider host={host}>
-			<FloatingActionBar itemName="Action" onCreate={() => {}} {...props} />
+			<AplListToolbar itemName="Action" onCreate={() => {}} {...props} />
 		</SimHostProvider>,
 		{ container: scrollRoot },
 	);
@@ -48,7 +48,7 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 });
 
-describe('FloatingActionBar', () => {
+describe('AplListToolbar', () => {
 	it('calls onCreate with no argument immediately when there is no nameDialog', () => {
 		const onCreate = vi.fn();
 		mount({ onCreate });

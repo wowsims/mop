@@ -14,10 +14,10 @@ import { NO_ITEMS } from '../../../model/timeline/rotation/row_track';
 import type { RowWindow, TrackBand } from '../../../model/timeline/rotation/timeline_window';
 import { trackBand, VERTICAL_PADDING_PX } from '../../../model/timeline/rotation/timeline_window';
 import { useDrToolbar } from '../../DetailedResults/DrToolbarContext';
-import { RotationFloatingActionBar } from './RotationFloatingActionBar';
 import { RotationHeaderRow } from './RotationHeaderRow';
 import { RotationRow } from './RotationRow';
 import { RotationRowLabel } from './RotationRowLabel';
+import { RotationRowsToolbar } from './RotationRowsToolbar';
 import { RotationSeparatorRow } from './RotationSeparatorRow';
 import { RotationToolbar } from './RotationToolbar';
 import { RowItemTooltip } from './RowItemTooltip';
@@ -465,7 +465,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					<RowItemTooltip item={hoveredItem} />
 				</div>
 			)}
-			<RotationFloatingActionBar model={model} hidden={hidden} onToggle={onToggle} onShowAll={onShowAll} />
+			<RotationRowsToolbar model={model} hidden={hidden} onToggle={onToggle} onShowAll={onShowAll} />
 		</div>
 	);
 };

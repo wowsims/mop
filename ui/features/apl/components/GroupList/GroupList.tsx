@@ -1,5 +1,5 @@
+import { AplListToolbar } from '@features/apl/components/AplListToolbar';
 import { AplNameDialog } from '@features/apl/components/AplNameDialog';
-import { FloatingActionBar } from '@features/apl/components/FloatingActionBar';
 import { AplProvider } from '@features/apl/context/AplContext';
 import { useRenamedCopy } from '@features/apl/hooks/useRenamedCopy';
 import { rotationSource } from '@features/apl/utils';
@@ -68,7 +68,7 @@ export const GroupList = () => {
 					config={config}
 					renderItem={(index, itemConfig) => <GroupEditor player={player} config={itemConfig} groupIndex={index} />}
 				/>
-				<FloatingActionBar
+				<AplListToolbar
 					itemName={groupName()}
 					nameDialog={{
 						inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),
