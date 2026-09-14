@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { findNonCanonical, findVarInClass } from '../tools/tailwind/canonical-classes';
+// oxlint-disable-next-line import/extensions
+import { findNonCanonical, findVarInClass } from '../tools/tailwind/canonical-classes.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
