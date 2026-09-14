@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const STRINGS: Record<string, string> = {
@@ -120,11 +121,24 @@ describe('SavedDataPanel', () => {
 		expect(within(screen.getByTestId('saved-data-presets')).queryByTestId('saved-data-set-delete')).toBeNull();
 	});
 
-	it('mounts its popovers in the container it is given', () => {
+	it('mounts its popovers in the portal container the shell provides', () => {
 		const host = document.createElement('div');
 		document.body.appendChild(host);
 
-		mount({ container: host });
+		render(
+			<PortalContainerContext value={host}>
+				<SavedDataPanel<string>
+					title="Saved Gear"
+					label="Gear Set"
+					presets={[entryOf('Preset', true)]}
+					userData={[entryOf('Mine')]}
+					currentJson="nothing matches"
+					onLoad={vi.fn()}
+					onSave={onSave}
+					onDelete={onDelete}
+				/>
+			</PortalContainerContext>,
+		);
 		fireEvent.click(deleteChip());
 
 		expect(host.querySelector('[data-testid="sim-confirm-popover"]')).not.toBeNull();

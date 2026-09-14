@@ -21,8 +21,6 @@ export interface SavedDataPanelProps<T> {
 	chooseNameAlert?: string;
 	nameExistsAlert?: string;
 	className?: ClassValue;
-	/** Where the confirmation popovers mount; the default is outside `.sim-ui`, where the spec theme lives. */
-	container?: HTMLElement | null;
 	presets: Array<SavedDataPanelEntry<T>>;
 	userData: Array<SavedDataPanelEntry<T>>;
 	// Serialised form of the subject's live value, compared against each entry's `json`.
@@ -47,7 +45,6 @@ export const SavedDataPanel = <T,>({
 	chooseNameAlert,
 	nameExistsAlert,
 	className,
-	container,
 	presets,
 	userData,
 	currentJson,
@@ -121,7 +118,6 @@ export const SavedDataPanel = <T,>({
 			chipTooltipId={chipTooltipId}
 			deleteMessage={deleteMessage(entry)}
 			deleteConfirmLabel={i18n.t('common.delete')}
-			container={container}
 			onLoad={handleLoad}
 			onDelete={entry.isPreset || loadOnly ? undefined : onDelete}
 		/>
@@ -166,7 +162,7 @@ export const SavedDataPanel = <T,>({
 				place="bottom"
 				render={({ content }) => (typeof content === 'string' && content ? <LocaleHtml html={content} /> : null)}
 			/>
-			<ConfirmPopover open={!!problem} onOpenChange={open => !open && setProblem(null)} anchor={createRef} container={container}>
+			<ConfirmPopover open={!!problem} onOpenChange={open => !open && setProblem(null)} anchor={createRef}>
 				{problem}
 			</ConfirmPopover>
 		</div>

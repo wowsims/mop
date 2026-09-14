@@ -4,13 +4,12 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 export interface ListItemPopoverProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	container?: HTMLElement | null;
 	children?: ReactNode;
 }
 
 const overlapTrigger = ({ anchor }: { anchor: { width: number } }) => -(anchor.width + 10);
 
-export const ListItemPopover = ({ open, onOpenChange, container, children }: ListItemPopoverProps) => (
+export const ListItemPopover = ({ open, onOpenChange, children }: ListItemPopoverProps) => (
 	<Popover
 		trigger={<i className="fa fa-xl fa-ellipsis" />}
 		triggerClassName="ui-list-picker-item-action"
@@ -19,7 +18,6 @@ export const ListItemPopover = ({ open, onOpenChange, container, children }: Lis
 		delay={0}
 		open={open}
 		onOpenChange={onOpenChange}
-		container={container}
 		side="left"
 		sideOffset={overlapTrigger}
 		className="ui-list-picker-item-popover"

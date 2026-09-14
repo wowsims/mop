@@ -12,7 +12,6 @@ export interface ConfirmPopoverProps {
 	trigger?: ReactNode;
 	triggerClassName?: PopoverProps['triggerClassName'];
 	triggerProps?: PopoverProps['triggerProps'];
-	container?: HTMLElement | null;
 	side?: PopoverProps['side'];
 	confirmLabel?: string;
 	cancelLabel?: string;
@@ -29,7 +28,6 @@ export const ConfirmPopover = ({
 	trigger,
 	triggerClassName,
 	triggerProps,
-	container,
 	side = 'top',
 	confirmLabel,
 	cancelLabel,
@@ -44,7 +42,6 @@ export const ConfirmPopover = ({
 		trigger={trigger}
 		triggerClassName={triggerClassName}
 		triggerProps={triggerProps}
-		container={container}
 		side={side}
 		testId={testId ?? 'sim-confirm-popover'}
 		maxWidth="max-w-55">

@@ -70,6 +70,7 @@ const root = () => document.querySelector('[data-testid="list-picker-root"]') as
 const targetRoots = () => [...document.querySelectorAll<HTMLElement>('[data-testid="target-picker-root"]')];
 const containers = () => [...root().querySelectorAll<HTMLElement>('[data-testid="list-picker-item-container"]')];
 const actionsButton = (index: number) => containers()[index].querySelector('[data-testid="list-picker-item-actions"]') as HTMLButtonElement;
+const popoverOf = (index: number) => document.getElementById(actionsButton(index).getAttribute('aria-controls')!);
 const idsIn = (element: Element) => [...element.querySelectorAll('[id]')].map(node => node.id);
 
 beforeEach(() => {
@@ -103,10 +104,10 @@ describe('TargetsPicker', () => {
 		mount(encounter);
 
 		fireEvent.click(actionsButton(0));
-		expect(containers()[0].querySelector('[data-testid="list-picker-item-popover"]')).not.toBeNull();
-		expect(containers()[0].querySelector('[data-testid="list-picker-item-delete"]')).toBeNull();
+		expect(popoverOf(0)).not.toBeNull();
+		expect(popoverOf(0)!.querySelector('[data-testid="list-picker-item-delete"]')).toBeNull();
 		fireEvent.click(actionsButton(1));
-		expect(containers()[1].querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
+		expect(popoverOf(1)!.querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
 	});
 
 	it('removes a target through the menu and reports it as a remove-target event', () => {
@@ -114,7 +115,7 @@ describe('TargetsPicker', () => {
 		mount(encounter);
 
 		fireEvent.click(actionsButton(1));
-		act(() => void fireEvent.click(containers()[1].querySelector('[data-testid="list-picker-item-delete"]')!));
+		act(() => void fireEvent.click(popoverOf(1)!.querySelector('[data-testid="list-picker-item-delete"]')!));
 
 		expect(encounter.targets).toHaveLength(1);
 		expect(trackEvent).toHaveBeenCalledWith(expect.objectContaining({ label: 'remove-target' }));

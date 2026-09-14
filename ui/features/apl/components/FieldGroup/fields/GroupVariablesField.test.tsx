@@ -63,7 +63,7 @@ const clickItemAction = (index: number, action: string) => {
 		fireEvent.click(item.querySelector('[data-testid="list-picker-item-actions"]')!);
 	});
 	act(() => {
-		fireEvent.click(item.querySelector(action)!);
+		fireEvent.click(document.querySelector(action)!);
 	});
 };
 
@@ -137,8 +137,8 @@ describe('GroupVariablesField', () => {
 		});
 
 		// Delete is asserted present so a popover that never opened fails here rather than passing.
-		expect(item.querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
-		expect(item.querySelector('.list-picker-item-copy')).toBeNull();
+		expect(document.querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
+		expect(document.querySelector('.list-picker-item-copy')).toBeNull();
 	});
 
 	it('writes a variableRef and touches the rotation when a row picks a variable', () => {

@@ -16,7 +16,6 @@ export interface ChipProps {
 	tooltip?: string;
 	deleteMessage?: ReactNode;
 	deleteConfirmLabel?: string;
-	container?: HTMLElement | null;
 	className?: string;
 	testId?: string;
 	as?: ElementType;
@@ -38,7 +37,6 @@ export const Chip = ({
 	tooltip,
 	deleteMessage,
 	deleteConfirmLabel,
-	container,
 	className,
 	testId = 'saved-data-set-chip',
 	as: Root = 'div',
@@ -70,7 +68,6 @@ export const Chip = ({
 				<ConfirmPopover
 					open={confirming}
 					onOpenChange={setConfirming}
-					container={container}
 					trigger={<Icon name="times" style="base" size="lg" />}
 					triggerClassName="ui-chip-delete"
 					triggerProps={

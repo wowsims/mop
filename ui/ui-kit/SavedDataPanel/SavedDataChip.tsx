@@ -12,7 +12,6 @@ export interface SavedDataChipProps<T> {
 	chipTooltipId?: string;
 	deleteMessage?: ReactNode;
 	deleteConfirmLabel?: string;
-	container?: HTMLElement | null;
 	onLoad: (entry: SavedDataPanelEntry<T>) => void;
 	onDelete?: (entry: SavedDataPanelEntry<T>) => void;
 }
@@ -26,7 +25,6 @@ export const SavedDataChip = <T,>({
 	chipTooltipId,
 	deleteMessage,
 	deleteConfirmLabel,
-	container,
 	onLoad,
 	onDelete,
 }: SavedDataChipProps<T>) => (
@@ -40,7 +38,6 @@ export const SavedDataChip = <T,>({
 		deleteTooltipId={deleteTooltipId}
 		deleteMessage={deleteMessage}
 		deleteConfirmLabel={deleteConfirmLabel}
-		container={container}
 		onSelect={() => onLoad(entry)}
 		onDelete={onDelete ? () => onDelete(entry) : undefined}
 	/>

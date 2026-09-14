@@ -63,7 +63,6 @@ export const ListPickerItem = ({
 	const [dragging, setDragging] = useState(false);
 	const [dragOver, setDragOver] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [headerElem, setHeaderElem] = useState<HTMLDivElement | null>(null);
 
 	const hasActions = canDelete || canCopy || !!extraActions?.length;
 
@@ -196,7 +195,7 @@ export const ListPickerItem = ({
 	const closeMenu = () => setMenuOpen(false);
 
 	const menu = hasActions && (
-		<ListItemPopover open={menuOpen} onOpenChange={setMenuOpen} container={headerElem}>
+		<ListItemPopover open={menuOpen} onOpenChange={setMenuOpen}>
 			{canDelete && (
 				<ListItemAction
 					icon="fa-times"
@@ -247,7 +246,7 @@ export const ListPickerItem = ({
 	);
 
 	const itemHeader = (
-		<div ref={setHeaderElem} className="ui-list-picker-item-header" data-testid="list-picker-item-header">
+		<div className="ui-list-picker-item-header" data-testid="list-picker-item-header">
 			{heading}
 			{header}
 			{menu}

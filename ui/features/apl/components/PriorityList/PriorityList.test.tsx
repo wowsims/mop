@@ -128,7 +128,7 @@ describe('PriorityList', () => {
 			fireEvent.click(rowContainers()[0].querySelector(':scope > [data-testid="list-picker-item-header"] > [data-testid="list-picker-item-actions"]')!);
 		});
 		act(() => {
-			fireEvent.click(rowContainers()[0].querySelector('[data-testid="list-picker-item-delete"]')!);
+			fireEvent.click(document.querySelector('[data-testid="list-picker-item-delete"]')!);
 		});
 
 		expect(player.aplRotation.priorityList).toHaveLength(1);
