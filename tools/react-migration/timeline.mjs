@@ -9,7 +9,7 @@
 //
 // Tooltips are read by hovering rather than by selector: vanilla appends `[data-tippy-root]` to the
 // body, the port draws its own `.timeline-hover-tooltip`, and what matters is the text either shows.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms'];
 const SEED = '1337';
@@ -19,25 +19,25 @@ const SETTINGS_SUFFIX = '__currentSettings__';
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
 const READ_ROTATION = () => {
-	const pane = document.querySelector('.rotation-pane');
-	if (!pane) return ['NO .rotation-pane'];
+	const pane = document.querySelector(q('rotation-pane'));
+	if (!pane) return ['NO rotation-pane'];
 	const style = getComputedStyle(pane);
-	const rows = [...pane.querySelectorAll('.rotation-row')];
-	const spacers = [...pane.querySelectorAll('.rotation-content > .rotation-vspacer')];
-	const ruler = [...pane.querySelectorAll('.rotation-ruler-label')];
+	const rows = [...pane.querySelectorAll(q('rotation-row'))];
+	const spacers = [...pane.querySelectorAll(`${q('rotation-content')} > ${q('rotation-vspacer')}`)];
+	const ruler = [...pane.querySelectorAll(q('rotation-ruler-label'))];
 	const cls = element => (element.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
 
 	return [
 		`pane pps=${style.getPropertyValue('--pps').trim()} duration=${style.getPropertyValue('--duration').trim()} label-w=${style.getPropertyValue('--label-w').trim()}`,
 		`spacers ${spacers.map(spacer => spacer.style.getPropertyValue('--vspacer-h')).join('/')}`,
-		`ruler ticks=${pane.querySelectorAll('.rotation-ruler-tick').length} labels=${ruler.map(label => label.textContent).join(',')}`,
+		`ruler ticks=${pane.querySelectorAll(q('rotation-ruler-tick')).length} labels=${ruler.map(label => label.textContent).join(',')}`,
 		...rows.map(row => {
-			const items = [...row.querySelectorAll('.rotation-row-track > [data-item-index]')];
+			const items = [...row.querySelectorAll(`${q('rotation-row-track')} > [data-item-index]`)];
 			return [
 				`row ${row.dataset.rowKey}`,
 				cls(row),
 				`h=${row.style.getPropertyValue('--row-h')}`,
-				`label=${row.querySelector('.rotation-label-text')?.textContent ?? ''}`,
+				`label=${row.querySelector(q('rotation-label-text'))?.textContent ?? ''}`,
 				`items=${items.length}`,
 				// Positions only: the port adds a `data-item-index` the vanilla items never carried, which
 				// is how its delegated hover finds the model row without a per-item listener.
@@ -51,14 +51,14 @@ const READ_ROTATION = () => {
 };
 
 const READ_FAB = () => {
-	const root = document.querySelector('.rotation-floating-action-bar-root');
-	if (!root) return ['NO .rotation-floating-action-bar-root'];
+	const root = document.querySelector(q('rotation-floating-action-bar-root'));
+	if (!root) return ['NO rotation-floating-action-bar-root'];
 	return [
-		`summary ${root.querySelector('.rotation-fab-summary')?.textContent ?? ''} | ${root.querySelector('.rotation-fab-preview')?.textContent ?? ''}`,
-		`showAll hidden=${root.querySelector('.rotation-fab-show-all')?.hidden}`,
-		...[...root.querySelectorAll('.rotation-fab-group')].map(
+		`summary ${root.querySelector(q('rotation-fab-summary'))?.textContent ?? ''} | ${root.querySelector(q('rotation-fab-preview'))?.textContent ?? ''}`,
+		`showAll hidden=${root.querySelector(q('rotation-fab-show-all'))?.hidden}`,
+		...[...root.querySelectorAll(q('rotation-fab-group'))].map(
 			group =>
-				`group ${group.querySelector('.rotation-fab-group-title')?.textContent} :: ${[...group.querySelectorAll('.rotation-fab-chip')]
+				`group ${group.querySelector(q('rotation-fab-group-title'))?.textContent} :: ${[...group.querySelectorAll(q('rotation-fab-chip'))]
 					.map(chip => `${chip.textContent}=${chip.getAttribute('aria-checked')}`)
 					.join(',')}`,
 		),
@@ -66,8 +66,8 @@ const READ_FAB = () => {
 };
 
 const READ_CHART = () => {
-	const chart = document.querySelector('.timeline-chart');
-	if (!chart) return ['NO .timeline-chart'];
+	const chart = document.querySelector(q('timeline-chart'));
+	if (!chart) return ['NO timeline-chart'];
 	const canvas = chart.querySelector('canvas');
 	const box = canvas?.getBoundingClientRect();
 	// Present *and* unhidden: master leaves both halves in the tree and hides one, the port renders
@@ -77,9 +77,9 @@ const READ_CHART = () => {
 		return !!element && !element.className.includes('hide');
 	};
 	return [
-		`canvas shown=${shown('.timeline-chart-canvas')} empty shown=${shown('.timeline-chart-empty')}`,
+		`canvas shown=${shown(q('timeline-chart-canvas'))} empty shown=${shown(q('timeline-chart-empty'))}`,
 		`size ${box ? `${Math.round(box.width)}x${Math.round(box.height)}` : 'none'}`,
-		`toolbar ${[...chart.querySelectorAll('.timeline-chart-toolbar button')].map(button => button.getAttribute('aria-label')).join(',')}`,
+		`toolbar ${[...chart.querySelectorAll(`${q('timeline-chart-toolbar')} button`)].map(button => button.getAttribute('aria-label')).join(',')}`,
 	];
 };
 
@@ -88,7 +88,7 @@ const READ_CHART = () => {
 // `.timeline-hover-tooltip` for item and chart alike, and react-tooltip for the toolbar.
 const OPEN_TOOLTIP = () => {
 	const open = [
-		...document.querySelectorAll('[data-tippy-root] .tippy-content, .timeline-chart-tooltip, .timeline-hover-tooltip, .react-tooltip.sim-tooltip'),
+		...document.querySelectorAll(`[data-tippy-root] .tippy-content, .timeline-chart-tooltip, ${q('timeline-hover-tooltip')}, .react-tooltip.sim-tooltip`),
 	].find(element =>
 		element.classList.contains('react-tooltip') ? element.classList.contains('react-tooltip__show') : !element.className.includes('hide'),
 	);
@@ -118,8 +118,8 @@ const hoverText = async (page, hover, argument) => {
 // box is not necessarily a point on the item — `elementFromPoint` is what settles that.
 const REACHABLE_ITEM = index => {
 	let seen = 0;
-	for (const row of document.querySelectorAll('.rotation-pane .rotation-row')) {
-		for (const item of row.querySelectorAll('.rotation-row-track > [data-item-index]')) {
+	for (const row of document.querySelectorAll(`${q('rotation-pane')} ${q('rotation-row')}`)) {
+		for (const item of row.querySelectorAll(`${q('rotation-row-track')} > [data-item-index]`)) {
 			const box = item.getBoundingClientRect();
 			if (box.width < 2 || box.right > window.innerWidth || box.bottom > window.innerHeight) continue;
 			const x = Math.round(box.left + box.width / 2);
@@ -133,14 +133,14 @@ const REACHABLE_ITEM = index => {
 };
 
 const ZOOM_BUTTON = () => {
-	const button = document.querySelector('.rotation-corner .rotation-zoom-button');
+	const button = document.querySelector(`${q('rotation-corner')} ${q('rotation-zoom-button')}`);
 	if (!button) return null;
 	const box = button.getBoundingClientRect();
 	return { x: Math.round(box.left + box.width / 2), y: Math.round(box.top + box.height / 2) };
 };
 
 const CHART_POINT = fraction => {
-	const canvas = document.querySelector('.timeline-chart canvas');
+	const canvas = document.querySelector(`${q('timeline-chart')} canvas`);
 	if (!canvas) return null;
 	const box = canvas.getBoundingClientRect();
 	return { x: Math.round(box.left + box.width * fraction), y: Math.round(box.top + box.height / 2) };
@@ -168,14 +168,24 @@ const settingsBlob = async (browser, spec) => {
 };
 
 const zoom = async (page, selector, times) => {
+	const corner = q('rotation-corner');
+	const zoomButton = q('rotation-zoom-button');
+	const pane = q('rotation-pane');
+	const scroller = q('rotation-scroller');
 	for (let index = 0; index < times; index++) {
-		await page.evaluate(button => document.querySelectorAll('.rotation-corner .rotation-zoom-button')[button].click(), selector);
+		await page.evaluate(
+			({ button, corner, zoomButton }) => document.querySelectorAll(`${corner} ${zoomButton}`)[button].click(),
+			{ button: selector, corner, zoomButton },
+		);
 		await page.waitForTimeout(200);
 	}
-	return page.evaluate(() => {
-		const pane = document.querySelector('.rotation-pane');
-		return `pps=${getComputedStyle(pane).getPropertyValue('--pps').trim()} density=${document.querySelector('.rotation-scroller').dataset.density} items=${pane.querySelectorAll('[data-item-index]').length}`;
-	});
+	return page.evaluate(
+		({ pane, scroller }) => {
+			const paneEl = document.querySelector(pane);
+			return `pps=${getComputedStyle(paneEl).getPropertyValue('--pps').trim()} density=${document.querySelector(scroller).dataset.density} items=${paneEl.querySelectorAll('[data-item-index]').length}`;
+		},
+		{ pane, scroller },
+	);
 };
 
 const collect = async (browser, port, spec, seeded) => {
@@ -188,9 +198,10 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
 	await page.click('.dps-action');
 	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
+	const paneRow = `${q('rotation-pane')} ${q('rotation-row')}`;
 	await openResultsTab(page);
 	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
-	await page.waitForFunction(() => document.querySelectorAll('.rotation-pane .rotation-row').length > 0, null, { timeout: 60000 });
+	await page.waitForFunction(sel => document.querySelectorAll(sel).length > 0, paneRow, { timeout: 60000 });
 	await page.waitForTimeout(1500);
 
 	const rotation = await page.evaluate(READ_ROTATION);
@@ -204,15 +215,18 @@ const collect = async (browser, port, spec, seeded) => {
 	// switch that drops icons and stack counts on the way.
 	const zoomed = [`in ${await zoom(page, 1, 2)}`, `out ${await zoom(page, 0, 4)}`, `reset ${await zoom(page, 3, 1)}`];
 
-	await page.evaluate(() => document.querySelector('.rotation-fab-toggle').click());
+	await page.evaluate(sel => document.querySelector(sel).click(), q('rotation-fab-toggle'));
 	await page.waitForTimeout(400);
 	const fabOpen = await page.evaluate(READ_FAB);
-	await page.evaluate(() => document.querySelector('.rotation-fab-chip').click());
+	await page.evaluate(sel => document.querySelector(sel).click(), q('rotation-fab-chip'));
 	await page.waitForTimeout(400);
-	const fabToggled = [...(await page.evaluate(READ_FAB)), `rows=${await page.evaluate(() => document.querySelectorAll('.rotation-pane .rotation-row').length)}`];
-	await page.evaluate(() => document.querySelector('.rotation-fab-show-all').click());
+	const fabToggled = [
+		...(await page.evaluate(READ_FAB)),
+		`rows=${await page.evaluate(sel => document.querySelectorAll(sel).length, paneRow)}`,
+	];
+	await page.evaluate(sel => document.querySelector(sel).click(), q('rotation-fab-show-all'));
 	await page.waitForTimeout(400);
-	const fabRestored = [`rows=${await page.evaluate(() => document.querySelectorAll('.rotation-pane .rotation-row').length)}`, ...(await page.evaluate(READ_FAB))];
+	const fabRestored = [`rows=${await page.evaluate(sel => document.querySelectorAll(sel).length, paneRow)}`, ...(await page.evaluate(READ_FAB))];
 
 	await page.evaluate(() => document.querySelector('#timeline-chart-view-dps').click());
 	await page.waitForTimeout(1500);
@@ -236,7 +250,7 @@ const collect = async (browser, port, spec, seeded) => {
 	// counting them from the chart view would compare master's hidden rows against nothing.
 	await page.evaluate(() => document.querySelector('#timeline-chart-view-rotation').click());
 	await page.waitForTimeout(600);
-	rebuilt.push(`rows=${await page.evaluate(() => document.querySelectorAll('.rotation-pane .rotation-row').length)}`);
+	rebuilt.push(`rows=${await page.evaluate(sel => document.querySelectorAll(sel).length, paneRow)}`);
 
 	await page.close();
 	return { rotation, itemTooltips, toolbarTooltip, zoomed, fabOpen, fabToggled, fabRestored, chart, chartTooltips, rebuilt, errors };

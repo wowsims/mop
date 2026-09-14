@@ -12,21 +12,22 @@
 //
 // So this asserts the invariant rather than the numbers: a row that is visible before the toggle and
 // survives it must not move, from any scroll position. Run with PORT to pick a build.
-import { launch, openSpec } from './browser.mjs';
+import { launch, openSpec, q } from './browser.mjs';
 
 const PORT = Number(process.env.PORT || 3401);
 const SPEC = process.argv[2] || 'warrior/arms';
+const ROW_SELECTOR = `${q('rotation-row')}, .rotation-timeline-row`;
 
 const readLandmark = page =>
-	page.evaluate(() => {
-		const rows = [...document.querySelectorAll('.rotation-row, .rotation-timeline-row')];
+	page.evaluate(sel => {
+		const rows = [...document.querySelectorAll(sel)];
 		const visible = rows.find(row => {
 			const box = row.getBoundingClientRect();
 			return box.top > 60 && box.bottom < innerHeight;
 		});
 		if (!visible) return null;
 		return { key: visible.dataset.rowKey || visible.className.slice(0, 40), top: Math.round(visible.getBoundingClientRect().top) };
-	});
+	}, ROW_SELECTOR);
 
 const browser = await launch();
 let failed = false;
@@ -41,10 +42,10 @@ try {
 	await page.waitForTimeout(800);
 	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=timelineTab]').click());
 	await page.waitForTimeout(1500);
-	await page.evaluate(() => {
-		const toggle = document.querySelector('.rotation-fab-toggle') || document.querySelector('.rotation-floating-action-bar button');
+	await page.evaluate(sel => {
+		const toggle = document.querySelector(sel) || document.querySelector('.rotation-floating-action-bar button');
 		toggle?.click();
-	});
+	}, q('rotation-fab-toggle'));
 	await page.waitForTimeout(500);
 
 	console.log(`${SPEC} on :${PORT}`);
@@ -64,17 +65,16 @@ try {
 			console.log(`  ${name.padEnd(14)} no fully-visible row to anchor on — skipped`);
 			continue;
 		}
-		await page.evaluate(() => document.querySelector('.rotation-fab-chip')?.click());
+		await page.evaluate(sel => document.querySelector(sel)?.click(), q('rotation-fab-chip'));
 		await page.waitForTimeout(700);
 		const after = await page.evaluate(
-			key =>
-				[...document.querySelectorAll('.rotation-row, .rotation-timeline-row')]
-					.filter(row => (row.dataset.rowKey || row.className.slice(0, 40)) === key)
-					.map(row => Math.round(row.getBoundingClientRect().top))[0] ?? null,
-			before.key,
+			({ key, sel }) =>
+				[...document.querySelectorAll(sel)].filter(row => (row.dataset.rowKey || row.className.slice(0, 40)) === key).map(row => Math.round(row.getBoundingClientRect().top))[0] ??
+				null,
+			{ key: before.key, sel: ROW_SELECTOR },
 		);
 		// Toggle it back so the two positions are measured against the same row set.
-		await page.evaluate(() => document.querySelector('.rotation-fab-chip')?.click());
+		await page.evaluate(sel => document.querySelector(sel)?.click(), q('rotation-fab-chip'));
 		await page.waitForTimeout(400);
 
 		if (after === null) {
