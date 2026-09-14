@@ -11,8 +11,8 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const STATE = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
-	const root = document.querySelector('.item-swap-picker-root');
-	if (!root) return { error: 'no .item-swap-picker-root' };
+	const root = document.querySelector(q('item-swap-picker-root'));
+	if (!root) return { error: 'no item-swap-picker-root' };
 	const container = root.querySelector(q('input-item-swap-container'));
 	return {
 		children: [...root.children].map(el => `${el.tagName.toLowerCase()}.${[...el.classList].sort().join('.')}`),
@@ -22,13 +22,13 @@ const STATE = () => {
 		// What the swap set actually holds. An empty slot is a placeholder image and `href="#"`; a
 		// filled one is `.active` with a wowhead link, so the item id is the readable part.
 		swap: [...root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) :is([data-testid="icon-picker-button"], .icon-picker-button)')].map(icon =>
-			icon.classList.contains('active') ? (icon.getAttribute('href')?.match(/item=(\d+)/)?.[1] ?? 'active') : 'empty',
+			icon.hasAttribute('data-active') ? (icon.getAttribute('href')?.match(/item=(\d+)/)?.[1] ?? 'active') : 'empty',
 		),
-	
+
 		// Paint state, which is where the two builds legitimately differ at rest: vanilla's `update()`
 		// only ran from an `itemSwap` change, so a spec that loads a swap preset renders four blank,
 		// unpainted slots until the set is next touched. Run this on `warrior/protection` to see it.
-		sockets: [...root.querySelectorAll('.item-picker-sockets-container')].map(container => container.children.length),
+		sockets: [...root.querySelectorAll(q('item-picker-sockets-container'))].map(container => container.children.length),
 		painted: [...root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) :is([data-testid="icon-picker-button"], .icon-picker-button)')].map(icon => !!icon.style.backgroundImage),
 	};
 };
@@ -41,7 +41,7 @@ await page.evaluate(() =>
 		.find(tab => window.simTabsProbe.idOf(tab) === 'settings-tab')
 		?.click(),
 );
-await page.waitForSelector('.item-swap-picker-root', { timeout: 60000, state: 'visible' });
+await page.waitForSelector(q('item-swap-picker-root'), { timeout: 60000, state: 'visible' });
 await page.waitForTimeout(1200);
 
 console.log(`${SPEC} on :${PORT}\n`);
@@ -64,12 +64,12 @@ if ((await page.evaluate(STATE)).hidden) {
 
 // The swap button exchanges equipped gear with the swap set. Starting from an empty swap set, that
 // means the equipped items move into it — visible as placeholders becoming wowhead links.
-await page.click(`.item-swap-picker-root ${q('gear-swap-icon')}`);
+await page.click(`${q('item-swap-picker-root')} ${q('gear-swap-icon')}`);
 await page.waitForTimeout(900);
 console.log(`swapped      ${JSON.stringify(await page.evaluate(STATE))}`);
 
 // Swapping again must put them back: the operation is its own inverse.
-await page.click(`.item-swap-picker-root ${q('gear-swap-icon')}`);
+await page.click(`${q('item-swap-picker-root')} ${q('gear-swap-icon')}`);
 await page.waitForTimeout(900);
 console.log(`swapped back ${JSON.stringify(await page.evaluate(STATE))}`);
 

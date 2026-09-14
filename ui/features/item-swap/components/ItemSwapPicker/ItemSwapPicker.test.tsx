@@ -36,7 +36,7 @@ describe('ItemSwapPicker', () => {
 
 		const group = container.querySelector('[data-picker-group].ui-picker-group-icons')!;
 		expect(group.children).toHaveLength(SLOTS.length);
-		expect([...group.children].every(child => child.classList.contains('icon-picker-root'))).toBe(true);
+		expect([...group.children].every(child => child.getAttribute('data-testid') === 'icon-picker-root')).toBe(true);
 	});
 
 	it('renders no picker row while item swap is off', () => {

@@ -88,7 +88,7 @@ describe('ItemSwapIcon', () => {
 	it('renders one picker root per swap slot, unfilled and carrying the slot placeholder', () => {
 		const { view } = setup();
 
-		expect(view.container.querySelectorAll('[data-testid="icon-picker-root"].icon-picker')).toHaveLength(SLOTS.length);
+		expect(view.container.querySelectorAll('[data-testid="icon-picker-root"]')).toHaveLength(SLOTS.length);
 		expect(icons(view.container).map(icon => icon.hasAttribute('data-active'))).toEqual([false, false, false, false]);
 		expect(icons(view.container)[0].style.backgroundImage).toContain('/mop/assets/item_slots/mainhand.jpg');
 	});
@@ -118,16 +118,16 @@ describe('ItemSwapIcon', () => {
 		const root = view.container.querySelector('[data-testid="icon-picker-root"]')!;
 		expect([...root.children].map(child => child.tagName.toLowerCase())).toEqual(['a', 'div']);
 		expect(root.querySelector('[data-testid="icon-picker-button"][data-active]')).toBe(root.children[0]);
-		expect(root.children[1].classList.contains('item-picker-sockets-container')).toBe(true);
-		expect(root.querySelectorAll('.item-picker-sockets-container [data-testid="gem-socket-container"]')).toHaveLength(2);
+		expect(root.children[1].getAttribute('data-testid')).toBe('item-picker-sockets-container');
+		expect(root.querySelectorAll('[data-testid="item-picker-sockets-container"] [data-testid="gem-socket-container"]')).toHaveLength(2);
 		expect(root.querySelector('[data-testid="icon-picker-button"] a')).toBeNull();
 	});
 
 	it('keeps the sockets container on an empty slot, so both builds serialise the same element', () => {
 		const { view } = setup();
 
-		expect(view.container.querySelectorAll('.item-picker-sockets-container')).toHaveLength(SLOTS.length);
-		expect(view.container.querySelector('.item-picker-sockets-container')!.children).toHaveLength(0);
+		expect(view.container.querySelectorAll('[data-testid="item-picker-sockets-container"]')).toHaveLength(SLOTS.length);
+		expect(view.container.querySelector('[data-testid="item-picker-sockets-container"]')!.children).toHaveLength(0);
 	});
 
 	it('opens one shared modal on the slot the icon was clicked for', () => {

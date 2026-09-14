@@ -46,7 +46,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	);
 
 	return (
-		<div className="item-swap-picker-root grid gap-3">
+		<div className="grid gap-3" data-testid="item-swap-picker-root">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
 				<div className="ui-field flex-wrap gap-3" data-testid="input-item-swap-container" data-input-root="" data-layout="inline">
