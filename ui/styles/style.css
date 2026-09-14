@@ -4,7 +4,7 @@
 @import 'tailwindcss/preflight.css' layer(base);
 @import './base.css' layer(base);
 @import './vendor.css';
-@import 'tailwindcss/utilities.css' important;
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 @import './theme.css';
 @import '../features/results/components/MetricsTable/MetricsTable.css';

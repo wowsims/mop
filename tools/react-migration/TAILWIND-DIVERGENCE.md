@@ -2129,3 +2129,16 @@ Three disjoint workers, one commit. No tree change anywhere (the probe compares 
 **Not built this pass** (brief calls for them; deferred, no tree change attempted without a way to verify): the `Bar` primitive (`fillRef`), `MetricsTableShell`, `SectionTitle`, `DrToolbarContext`.
 
 **Test/probe updates:** `MetricsActionCell.test.tsx` (single caret icon), `Damage/Healing/DtpsMetricsTable.test.tsx` (header-cell class string gains `ui-metrics-header-cell`; two Dtps row-class exact-string assertions gain `ui-metrics-row`), `SimResultsPanel.test.tsx` (`results-pending` gains `[&_.loader]:m-auto`). `tools/react-migration/*.mjs` **not** touched this pass — the probes still select by `.dr-root`/`.dr-toolbar`/`.metrics-table`/`.parent-metric`/`.child-metric`/`.expand`/`.resource-metrics-table-title`/`.topline-results-root`/etc., and every one of those class names was kept (only additive `ui-*`/utility classes were layered alongside), so no probe or gate script needed a selector change in what this pass actually converted.
+
+## Follow-up — the `important` utilities flag is gone
+
+`ui/styles/style.css:7` (the entry file was later renamed from `tailwind.css`) no longer imports
+`tailwindcss/utilities.css` with `important`. It was added in `98d1416180` to beat Bootstrap's own
+`!important` utilities and unlayered SCSS; both are gone from this app, so the flag now only causes
+harm — any co-located component `.css` that forgot its `@layer components` wrapper (unlayered CSS
+beats every layer) loses to a plain utility regardless of source order or specificity. The import is
+now `@import 'tailwindcss/utilities.css' layer(utilities);`. `Toast.css`, `Tooltip.css` and
+`UnitIcon.css` were the three co-located files still unlayered; they now wrap their rules in
+`@layer components { … }` like every other file `style.css` imports. Every statement above this
+section that says "every Tailwind utility in this app compiles `!important`" describes the state at
+the time it was written, not the current cascade.

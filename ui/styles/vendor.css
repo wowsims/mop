@@ -10,3 +10,11 @@
 .sim-tooltip--unpadded [class*='styles-module_content'] {
 	padding: 0;
 }
+
+.ui-toast-icon {
+	line-height: 1;
+}
+
+.ui-unit-icon {
+	display: flex;
+}

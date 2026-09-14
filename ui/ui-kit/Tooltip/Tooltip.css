@@ -1,3 +1,5 @@
-.ui-tooltip {
-	@apply p-0 border border-surface-border font-normal;
+@layer components {
+	.ui-tooltip {
+		@apply border border-surface-border p-0 font-normal;
+	}
 }
