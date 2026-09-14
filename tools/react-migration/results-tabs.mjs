@@ -25,8 +25,13 @@
 // active at `window load` or has since been clicked, so arrow keys on the baseline work from the
 // damage tab and from nowhere else. The React strip owns one keydown handler on the `<ul>`, so it
 // answers from every tab. The recorded lines make that delta visible instead of silent.
-import { dropHiddenSubtrees, dropReplayState, launch, openSpec, overusedIntended, PORTS, q, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
-import { INTENDED } from './intended.mjs';
+import { dropHiddenSubtrees, dropReplayState, launch, openSpec, PORTS, q, SERIALIZE, specsFromArgv, unexpectedLines } from './browser.mjs';
+
+// No intended divergences apply within the results sub-tabs: the label->heading/caption rewrites
+// `intended.mjs` used to list are sidebar (character-stats-label) and rotation-pane
+// (list-picker-title, multi-icon-picker-label, plain form-label) entries, and none of those classes
+// appear inside a results pane.
+const INTENDED = [];
 
 const SETTLE = 300;
 // Indents are two spaces per level, and the pane itself is level 0.
@@ -262,7 +267,6 @@ try {
 			const reactPane = reactVisible.dom.split('\n');
 			const tally = new Map();
 			const unexpected = unexpectedLines(basePane, reactPane, INTENDED, tally);
-			problems.push(...overusedIntended(INTENDED, tally).map(problem => `${tabId}: ${problem}`));
 			if (unexpected.length || basePane.length !== reactPane.length) {
 				const first = unexpected[0] ?? basePane.findIndex((line, index) => line !== reactPane[index]);
 				problems.push(

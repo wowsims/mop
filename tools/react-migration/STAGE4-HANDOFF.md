@@ -506,8 +506,8 @@ home `index-*.style.css` **99,352 B** (start 115,972) · shared Tailwind/theme c
   `ss -ltnp` shows → `ss -ltnp | grep -E ':340[1-6] '` empty. A server started from a shell holding
   the lock inherits fd 3 and keeps it; the next `flock` deadlocks on its own servers (happened once).
   Master (`/home/lutz/personal/wowsims-mop`, `npx vite build` there first) on 3401 only for
-  `tabs-a11y.mjs`, `parity.mjs`, `panes-parity.mjs`. `a11y.mjs` reads `REACT_PORT`; `tabs-a11y.mjs`
-  reads `BASE_PORT`/`REACT_PORT`.
+  `tabs-a11y.mjs` (`parity.mjs`/`panes-parity.mjs` retired). `a11y.mjs` reads `REACT_PORT`;
+  `tabs-a11y.mjs` reads `BASE_PORT`/`REACT_PORT`.
 - Only the build, vitest/snapshots and probe/test runs go under `flock -o -w 3000
   /tmp/claude-1000/e2e.lock`; one browser, one build.
 - Constraints: `RTK_DISABLED=1` on every command · `/usr/bin/grep` · graphify stale, never use ·

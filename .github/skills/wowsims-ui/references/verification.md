@@ -121,12 +121,11 @@ Rendering, layout and interaction. None of the five commands above constructs th
 about whether anything rendered.
 
 **There is a DOM-parity harness, and it is not in a fresh clone.** `tools/react-migration/` holds
-~35 `.mjs` files: Playwright probes (`parity.mjs`, `panes-parity.mjs`, `a11y.mjs`,
-`tabs-behaviour.mjs`, and one per tab and per widget) over a shared `browser.mjs`, plus an
-`intended.mjs` registry of divergences that are deliberate. Each probe compares a built React branch
-against a built baseline, both served first. Read `tools/react-migration/README.md` before running
-one — in particular its `PORT` section: twelve of the gates silently measure the **baseline** unless
-you set `PORT`, so a bare invocation can report a clean run of the wrong build.
+~30 `.mjs` files: Playwright probes (`a11y.mjs`, `tabs-behaviour.mjs`, and one per tab and per
+widget) over a shared `browser.mjs`. Each probe compares a built React branch against a built
+baseline, both served first. Read `tools/react-migration/README.md` before running one — in
+particular its `PORT` section: several of the gates silently measure the **baseline** unless you set
+`PORT`, so a bare invocation can report a clean run of the wrong build.
 
 The directory is **git-excluded**, not deleted: `tools/react-migration/` is a line in
 `.git/info/exclude`, which lives in the shared common git dir and therefore applies to every worktree
