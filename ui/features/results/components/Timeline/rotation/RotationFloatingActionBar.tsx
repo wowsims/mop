@@ -93,14 +93,15 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 	return (
 		<div
 			ref={rootRef}
-			className="group rotation-floating-action-bar-root ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
+			data-testid="rotation-floating-action-bar-root"
+			className="group ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}
 			data-expanded={String(expanded)}
 			onKeyDown={onKeyDown}>
 			<div className="ui-fab-clip">
 				<div className="ui-fab-panel group-data-[expanded=true]:[transform:translate3d(0,0,0)]">
 					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}
-					<div className="rotation-fab-panel-inner min-h-0 overflow-hidden" inert={!expanded}>
+					<div data-testid="rotation-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
 						<div className="ui-fab-drawer flex flex-col gap-4">
 							{groups.map(group => (
 								<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
@@ -112,24 +113,26 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 			<div className="relative flex flex-1 items-center min-w-0 group-data-[stuck]:bg-background">
 				<Button
 					ref={toggleRef}
-					className={clsx('flex items-center gap-2', 'rotation-fab-toggle ui-fab-toggle')}
+					data-testid="rotation-fab-toggle"
+					className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
 					aria-expanded={expanded}
 					aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
 					onClick={() => open(!expanded)}>
 					<i className="fas fa-eye-slash" />
-					<span className="rotation-fab-summary">
+					<span data-testid="rotation-fab-summary">
 						{hiddenKeys.length
 							? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
 							: i18n.t('results_tab.details.timeline.floatingActionBar.allShown')}
 					</span>
-					<span className="rotation-fab-preview truncate opacity-75">
+					<span data-testid="rotation-fab-preview" className="truncate opacity-75">
 						{preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
 					</span>
 				</Button>
 				<Button
 					variant="link-danger"
 					size="sm"
-					className={clsx('ml-auto rotation-fab-show-all', hiddenKeys.length === 0 && 'hidden')}
+					data-testid="rotation-fab-show-all"
+					className={clsx('ml-auto', hiddenKeys.length === 0 && 'hidden')}
 					hidden={hiddenKeys.length === 0}
 					onClick={onShowAll}>
 					<i className="fas fa-times mr-1" />

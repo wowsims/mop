@@ -13,7 +13,7 @@ export const RotationFabChip = ({ label, shown, focused, onToggle, onFocus }: Ro
 	<Chip
 		as="button"
 		nameAs="span"
-		className="rotation-fab-chip"
+		testId="rotation-fab-chip"
 		label={label}
 		active={shown}
 		rootProps={{

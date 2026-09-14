@@ -33,10 +33,10 @@ const mount = (hidden: Array<string> = []) => {
 	const onToggle = vi.fn();
 	const onShowAll = vi.fn();
 	const view = render(<RotationFloatingActionBar model={MODEL} hidden={new Set(hidden)} onToggle={onToggle} onShowAll={onShowAll} />);
-	return { ...view, onToggle, onShowAll, toggle: view.container.querySelector<HTMLButtonElement>('.rotation-fab-toggle')! };
+	return { ...view, onToggle, onShowAll, toggle: view.container.querySelector<HTMLButtonElement>('[data-testid="rotation-fab-toggle"]')! };
 };
 
-const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('.rotation-fab-chip')];
+const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[data-testid="rotation-fab-chip"]')];
 
 describe('RotationFloatingActionBar', () => {
 	it('builds no chips until the drawer is opened', () => {
@@ -45,7 +45,7 @@ describe('RotationFloatingActionBar', () => {
 
 		fireEvent.click(toggle);
 		expect(chips(container).map(chip => chip.textContent)).toEqual(['Alpha', 'Beta', 'Gamma', 'Delta']);
-		expect(container.querySelector('.rotation-fab-group-title')!.textContent).toBe('Player');
+		expect(container.querySelector('[data-testid="rotation-fab-group-title"]')!.textContent).toBe('Player');
 	});
 
 	it('keeps the drawer open across a new result and rebuilds its chips', () => {
@@ -55,13 +55,13 @@ describe('RotationFloatingActionBar', () => {
 		const next = rotationModel(['Epsilon', 'Zeta'].map((label, index) => castRow(`cast:${index}`, label, [])));
 		rerender(<RotationFloatingActionBar model={next} hidden={new Set()} onToggle={onToggle} onShowAll={onShowAll} />);
 
-		expect(container.querySelector('.rotation-floating-action-bar-root')!.getAttribute('data-expanded')).toBe('true');
+		expect(container.querySelector('[data-testid="rotation-floating-action-bar-root"]')!.getAttribute('data-expanded')).toBe('true');
 		expect(chips(container).map(chip => chip.textContent)).toEqual(['Epsilon', 'Zeta']);
 	});
 
 	it('takes the collapsed chips out of the tab order with inert', () => {
 		const { container, toggle } = mount();
-		const inner = container.querySelector<HTMLElement>('.rotation-fab-panel-inner')!;
+		const inner = container.querySelector<HTMLElement>('[data-testid="rotation-fab-panel-inner"]')!;
 		expect(inner.hasAttribute('inert')).toBe(true);
 		fireEvent.click(toggle);
 		expect(inner.hasAttribute('inert')).toBe(false);
@@ -80,19 +80,21 @@ describe('RotationFloatingActionBar', () => {
 	});
 
 	it('previews up to three hidden rows and marks the rest with an ellipsis', () => {
-		expect(mount(['cast:0', 'cast:1']).container.querySelector('.rotation-fab-preview')!.textContent).toBe('Alpha, Beta');
-		expect(mount(['cast:0', 'cast:1', 'cast:2', 'cast:3']).container.querySelector('.rotation-fab-preview')!.textContent).toBe('Alpha, Beta, Gamma, …');
+		expect(mount(['cast:0', 'cast:1']).container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe('Alpha, Beta');
+		expect(mount(['cast:0', 'cast:1', 'cast:2', 'cast:3']).container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe(
+			'Alpha, Beta, Gamma, …',
+		);
 	});
 
 	it('ignores hidden keys the current model does not have', () => {
 		const { container } = mount(['cast:0', 'from-another-result']);
-		expect(container.querySelector('.rotation-fab-preview')!.textContent).toBe('Alpha');
+		expect(container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe('Alpha');
 	});
 
 	it('offers show-all only while something is hidden', () => {
-		expect(mount().container.querySelector<HTMLElement>('.rotation-fab-show-all')!.hidden).toBe(true);
+		expect(mount().container.querySelector<HTMLElement>('[data-testid="rotation-fab-show-all"]')!.hidden).toBe(true);
 		const { container, onShowAll } = mount(['cast:0']);
-		const showAll = container.querySelector<HTMLElement>('.rotation-fab-show-all')!;
+		const showAll = container.querySelector<HTMLElement>('[data-testid="rotation-fab-show-all"]')!;
 		expect(showAll.hidden).toBe(false);
 		fireEvent.click(showAll);
 		expect(onShowAll).toHaveBeenCalled();
@@ -101,10 +103,10 @@ describe('RotationFloatingActionBar', () => {
 	it('closes on Escape and hands focus back to the toggle', () => {
 		const { container, toggle } = mount();
 		fireEvent.click(toggle);
-		expect(container.querySelector('.rotation-floating-action-bar-root')!.getAttribute('data-expanded')).toBe('true');
+		expect(container.querySelector('[data-testid="rotation-floating-action-bar-root"]')!.getAttribute('data-expanded')).toBe('true');
 
 		fireEvent.keyDown(chips(container)[0], { key: 'Escape' });
-		expect(container.querySelector('.rotation-floating-action-bar-root')!.getAttribute('data-expanded')).toBe('false');
+		expect(container.querySelector('[data-testid="rotation-floating-action-bar-root"]')!.getAttribute('data-expanded')).toBe('false');
 		expect(document.activeElement).toBe(toggle);
 	});
 
@@ -124,7 +126,7 @@ describe('RotationFloatingActionBar', () => {
 
 	it('pins itself against the viewport’s last pixel, reading the newest of a batched delivery', () => {
 		const { container } = mount();
-		const root = container.querySelector<HTMLElement>('.rotation-floating-action-bar-root')!;
+		const root = container.querySelector<HTMLElement>('[data-testid="rotation-floating-action-bar-root"]')!;
 		Object.defineProperty(root, 'clientHeight', { value: 44, configurable: true });
 		expect(observed[0].options).toMatchObject({ rootMargin: '0px 0px -1px 0px', threshold: [0, 1] });
 

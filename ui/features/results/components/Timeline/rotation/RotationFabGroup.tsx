@@ -19,16 +19,18 @@ export const RotationFabGroup = ({ title, rows, hidden, onToggle }: RotationFabG
 
 	const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-		const chips = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('.rotation-fab-chip')];
-		const at = chips.indexOf((event.target as Element).closest<HTMLButtonElement>('.rotation-fab-chip')!);
+		const chips = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('button[role="switch"]')];
+		const at = chips.indexOf((event.target as Element).closest<HTMLButtonElement>('button[role="switch"]')!);
 		if (at < 0) return;
 		chips[(at + (event.key === 'ArrowRight' ? 1 : chips.length - 1)) % chips.length].focus();
 		event.preventDefault();
 	};
 
 	return (
-		<div className="rotation-fab-group">
-			<div className="rotation-fab-group-title mb-1 font-bold">{title}</div>
+		<div data-testid="rotation-fab-group">
+			<div data-testid="rotation-fab-group-title" className="mb-1 font-bold">
+				{title}
+			</div>
 			<div className="flex flex-wrap gap-1" onKeyDown={onKeyDown}>
 				{rows.map(row => (
 					<RotationFabChip
