@@ -26,6 +26,7 @@ import {
 	specsFromArgv,
 	dropClosedItemMenus,
 	dropEagerMenus,
+	dropEmptyIconLevels,
 	dropHiddenSubtrees,
 	dropReplayState,
 	dropSubtrees,
@@ -83,8 +84,11 @@ for (const spec of specsFromArgv()) {
 				const eager = side === 'base' ? dropEagerMenus(visible.dom) : { dom: visible.dom, dropped: 0, problems: [] };
 				problems.push(...eager.problems.map(problem => `${id}: base ${problem}`));
 				eagerMenus += eager.dropped;
+				// The baseline only: see `dropEmptyIconLevels`. Before the lift below, for the same reason
+				// `dropEagerMenus` runs first — the two sides' level-container totals are compared next.
+				const delevel = side === 'base' ? dropEmptyIconLevels(eager.dom) : { dom: eager.dom, dropped: 0 };
 				// Both sides: see `normaliseLiftedSubtrees`. Its counts are compared across the two below.
-				const lifted = normaliseLiftedSubtrees(dropRootClasses(eager.dom));
+				const lifted = normaliseLiftedSubtrees(dropRootClasses(delevel.dom));
 				problems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
 				levels[side] = lifted;
 				// Both sides: see `normaliseSwapIcons`. The baseline's counts are asserted to be zero below.

@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { wowheadAnchorProps } from '../utils/wowhead';
 
 export interface ImprovedAnchorProps {
-	actionId?: ActionId;
+	actionId: ActionId;
 	testId: string;
 	active: boolean;
 	hidden: boolean;
@@ -20,7 +20,6 @@ export const ImprovedAnchor = ({ actionId, testId, active, hidden }: ImprovedAnc
 				'icon-picker-button icon-input-improved',
 				'ui-icon-picker-swatch absolute bottom-0 right-0 min-w-5 size-5 pointer-events-auto',
 				active ? 'filter-none' : 'grayscale border-gray-600',
-				!href && 'hidden',
 			)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}

@@ -47,7 +47,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 	if (hidden) return null;
 
 	return (
-		<div className={clsx('multi-icon-picker-root', 'icon-picker', 'flex items-center')} data-testid="multi-icon-picker-root" {...groupProps}>
+		<div className={clsx('multi-icon-picker-root', 'icon-picker', 'ui-icon-field')} data-testid="multi-icon-picker-root" {...groupProps}>
 			<div className="relative" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger

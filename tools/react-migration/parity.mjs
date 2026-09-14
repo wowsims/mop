@@ -14,6 +14,7 @@ import {
 	compareKey,
 	dropClosedItemMenus,
 	dropEagerMenus,
+	dropEmptyIconLevels,
 	dropHiddenSubtrees,
 	dropReplayState,
 	dropSubtrees,
@@ -307,8 +308,11 @@ const grab = async (browser, port, spec) => {
 		const eager = isReact ? { dom: visible.dom, dropped: 0, problems: [] } : dropEagerMenus(visible.dom);
 		paneProblems.push(...eager.problems.map(problem => `${id}: base ${problem}`));
 		eagerMenus += eager.dropped;
+		// The baseline only: see `dropEmptyIconLevels`. Before the lift below, for the same reason
+		// `dropEagerMenus` runs first — the two sides' level-container totals are compared next.
+		const delevel = isReact ? { dom: eager.dom, dropped: 0 } : dropEmptyIconLevels(eager.dom);
 		// Both sides: see `normaliseLiftedSubtrees`. Its counts are compared across the two below.
-		const lifted = normaliseLiftedSubtrees(dropRootClasses(eager.dom));
+		const lifted = normaliseLiftedSubtrees(dropRootClasses(delevel.dom));
 		paneProblems.push(...lifted.problems.map(problem => `${id}: ${problem}`));
 		levels[id] = { lifted: lifted.lifted, total: lifted.total };
 		// Both sides: see `normaliseSwapIcons`. The baseline's counts are asserted to be zero below.

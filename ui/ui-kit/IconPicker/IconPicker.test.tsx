@@ -62,30 +62,27 @@ beforeEach(() => {
 });
 
 describe('IconPicker', () => {
-	// Both improved anchors render once, at every `states`, and only the fill is gated. An
-	// unfilled one has no href, which is what `.icon-input-improved:not([href])` hides.
-	it('renders all three anchors at every states, filled or not', () => {
+	it('grows the anchor count as each improved anchor mounts once its own states gate is met', () => {
 		const settings = new Settings(0);
 		const { rerender } = render(<IconPicker modObject={settings} config={configFor()} />);
-		expect(allAnchors()).toHaveLength(3);
+		expect(allAnchors()).toHaveLength(1);
 
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		expect(allAnchors()).toHaveLength(3);
+		expect(allAnchors()).toHaveLength(2);
 
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
 		expect(allAnchors()).toHaveLength(3);
 	});
 
-	it('leaves an improved anchor without an href or a background until its states gate is met', () => {
+	it('mounts an improved anchor with its href and background already filled once its states gate is met', () => {
 		const settings = new Settings(0);
 		const { rerender } = render(<IconPicker modObject={settings} config={configFor({ states: 2, improvedId })} />);
-		const improved = () => allAnchors()[1];
-		expect(improved().hasAttribute('href')).toBe(false);
-		expect(improved().style.backgroundImage).toBe('');
+		expect(allAnchors()).toHaveLength(1);
 
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		expect(improved().getAttribute('href')).toBe(ActionId.makeSpellUrl(2));
-		expect(improved().style.backgroundImage).toContain('improved.jpg');
+		const improved = allAnchors()[1];
+		expect(improved.getAttribute('href')).toBe(ActionId.makeSpellUrl(2));
+		expect(improved.style.backgroundImage).toContain('improved.jpg');
 	});
 
 	// use-counter is added for states > 2 regardless of improvedId, but the counter TEXT only
@@ -231,7 +228,7 @@ describe('IconPicker', () => {
 
 	it('carries the wowhead opt-outs and opens in a new tab', () => {
 		const settings = new Settings(0);
-		render(<IconPicker modObject={settings} config={configFor()} />);
+		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
 		const [main, improved1] = allAnchors();
 		expect(main.target).toBe('_blank');
 		expect(main.dataset.whtticon).toBe('false');
@@ -251,7 +248,7 @@ describe('IconPicker', () => {
 		expect(allAnchors()[1].hasAttribute('data-active')).toBe(true);
 	});
 
-	it('hides the second improved anchor until value 3, and only when states 4 configures it', () => {
+	it('hides the second improved anchor until value 3, and drops it entirely when states 4 no longer configures it', () => {
 		const settings = new Settings(2);
 		const config = configFor({ states: 4, improvedId, improvedId2 });
 		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
@@ -261,10 +258,9 @@ describe('IconPicker', () => {
 		rerender(<IconPicker modObject={settings} config={config} />);
 		expect(allAnchors()[2].hidden).toBe(false);
 
-		// states 3 never touches either anchor's `hidden`, so neither is hidden.
 		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
+		expect(allAnchors()).toHaveLength(2);
 		expect(allAnchors()[1].hidden).toBe(false);
-		expect(allAnchors()[2].hidden).toBe(false);
 	});
 
 	it('renders no counter label at states 2 and renders one above', () => {

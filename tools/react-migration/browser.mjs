@@ -876,7 +876,8 @@ export const liftSubtrees = (dom, within, lift, parent) => {
  * `IconPicker`: vanilla builds the level container *inside* the picker's anchor, so its two
  * `<a class="icon-input-improved">` are anchors inside an anchor, which the content model has no
  * room for. React renders the container as the anchor's next sibling instead. It is the anchor's
- * only child either way, so the two shapes are the same lines and the move is a dedent.
+ * only child either way, so the two shapes are the same lines and the move is a dedent — once
+ * `dropEmptyIconLevels` has taken the baseline's empty ones off first; see there.
  *
  * The item-swap icons are the same shape and the same reason: `icon_item_swap_picker.tsx` built the
  * sockets container inside the icon's own anchor, and a filled socket is an `<a>` with an href, so a
@@ -900,6 +901,46 @@ const LIFTED_SUBTREES = [
 		parent: /^a\.(.*\.)?icon-picker-button(\.|$)/,
 	},
 ];
+
+const LEVEL_CONTAINER = /^div\.(.*\.)?icon-input-level-container(\.|$)/;
+const HIDDEN_LEVEL_LABEL = /^span\.(.*\.)?hide(\.|$)/;
+
+/**
+ * Drops the vanilla level container's subtree, **baseline only**, wherever its counter `<span>`
+ * carries `hide` — the class vanilla toggles on `config.states > 2`, the same condition `IconPicker`
+ * now gates the whole container's render on. Vanilla always builds the container and both improved
+ * anchors regardless of `states` or whether `improvedId`/`improvedId2` are set, so `SERIALIZE`
+ * (which strips `href` and every other non-class attribute) carries no per-anchor fill signal to
+ * match against — the counter span's class is the one structural difference it preserves, and it
+ * happens to key on exactly the same gate. Run before `normaliseLiftedSubtrees` so its `total` count
+ * lines up with React's, which never builds the container at all below that gate.
+ */
+export const dropEmptyIconLevels = dom => {
+	const lines = dom.split('\n');
+	const out = [];
+	let dropped = 0;
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+		const indent = line.length - line.trimStart().length;
+		if (LEVEL_CONTAINER.test(line.trim())) {
+			let end = i + 1;
+			let hidden = false;
+			while (end < lines.length && lines[end].length - lines[end].trimStart().length > indent) {
+				if (HIDDEN_LEVEL_LABEL.test(lines[end].trim())) hidden = true;
+				end++;
+			}
+			if (hidden) {
+				dropped++;
+				i = end;
+				continue;
+			}
+		}
+		out.push(line);
+		i++;
+	}
+	return { dom: out.join('\n'), dropped };
+};
 
 /**
  * The item-swap icons paint their loaded state on the React side and not on the baseline: vanilla's

@@ -85,7 +85,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	};
 
 	const main = (
-		<>
+		<div className="relative size-10 shrink-0">
 			<a
 				className={clsx(
 					'icon-picker-button',
@@ -106,36 +106,35 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				{...disabledAttribute}
 				{...stateEvents}
 			/>
-			<div
-				className={clsx(
-					'icon-input-level-container',
-					'relative shrink-0 pointer-events-none mt-[2px] [--icon-input-level-size:calc(--spacing(10)-2px)] w-(--icon-input-level-size) h-(--icon-input-level-size) -ml-(--icon-input-level-size)',
-					currentValue > 0 ? 'filter-none' : 'grayscale',
-				)}
-				data-testid="icon-input-level-container"
-				{...stateEvents}>
-				<ImprovedAnchor
-					actionId={fillImproved1 ? config.improvedId : undefined}
-					testId="icon-input-improved1"
-					active={fillImproved1 && currentValue > 1}
-					hidden={fillImproved2 && currentValue > 2}
-				/>
-				<ImprovedAnchor
-					actionId={fillImproved2 ? config.improvedId2 : undefined}
-					testId="icon-input-improved2"
-					active={fillImproved2 && currentValue > 2}
-					hidden={fillImproved2 && !(currentValue > 2)}
-				/>
-				{config.states > 2 && (
+			{config.states > 2 && (
+				<div
+					className={clsx(
+						'icon-input-level-container',
+						'absolute top-0.5 left-0.5 size-9.5 pointer-events-none',
+						currentValue > 0 ? 'filter-none' : 'grayscale',
+					)}
+					data-testid="icon-input-level-container"
+					{...stateEvents}>
+					{fillImproved1 && config.improvedId && (
+						<ImprovedAnchor
+							actionId={config.improvedId}
+							testId="icon-input-improved1"
+							active={currentValue > 1}
+							hidden={fillImproved2 && currentValue > 2}
+						/>
+					)}
+					{fillImproved2 && config.improvedId2 && (
+						<ImprovedAnchor actionId={config.improvedId2} testId="icon-input-improved2" active={currentValue > 2} hidden={!(currentValue > 2)} />
+					)}
 					<span
 						className="absolute inset-x-0 bottom-0 text-center bg-scrim text-success text-2xs font-bold whitespace-nowrap"
 						data-testid="icon-picker-label"
 						data-active={currentValue > 0 ? '' : undefined}>
 						{showCounterText ? String(currentValue) : null}
 					</span>
-				)}
-			</div>
-		</>
+				</div>
+			)}
+		</div>
 	);
 
 	return (
