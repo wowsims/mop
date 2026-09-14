@@ -7,7 +7,49 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
 
 ## Where the chain is
 
-- **LIVE STATE — main session orchestrates directly, one worktree per unit** (read this bullet first).
+- **PHASE 4 STATE (2026-09-14): read this bullet first. The live ledger is `/home/lutz/personal/.tw-stage4/PROGRESS.md`** (untracked; it lives next to the contracts `WORKER.md`, `VERIFIER.md`, `VERIFY-units.md`, `TAILWIND-DOCS.md`, the briefs and the probe outputs).
+  - **Landed on `wt/tailwind`**, each verified against a baseline dist built from its own base, with fix rounds until probe 0 (only the accepted or user-accepted rows):
+    - specs `fe28401ed`
+    - results `848543573`
+    - gear `0a1af2593`
+    - apl `e870eb0a8`
+    - replay `1aa61bff0`
+    - timeline `22f57021e`
+    - bulk `0d5e15a24`
+    - logrunner `808bf8000`
+    - statweights `2acd86f40`
+    - vars `c1d0b381e` and vars2 `d4b933e19` (cleanup of landed code: var() shorthands, tokens, named forms)
+    - kit-classes (b)/(c) `802cae015`
+    - settings `c683be729`
+    - U8a part 2 `28270d363`
+    - kit-classes (a)/(d) `51a7ba9ba`
+    - the final sweep `0f8e5f32c`
+    - U6 part 2 `273c796ff` (`apl.css` and `ListPicker.css` select only `ui-*`; the list, dropdown and APL SCSS deleted)
+    - Phase 5 step 24, the landing page, `6176ad676` (Bootstrap `containers`/`nav`/`navbar`/`dropdown`/`badge`/`alert` imports deleted)
+    - forms-tail + U5 part 2 `1bd7786f3`: **PHASE 4 COMPLETE**
+  - **Phase-4-close verification (tip `1bd7786f3` against baseline-3, `probe-phase4close-1`):** 197,373 elements; **all 3,684 rows in accepted classes, 0 bbox changes, 0 element-count mismatches**:
+    - 1,955 `border-radius 100% → PILL` on square icons
+    - 243 `grid-cols-N` serialisation
+    - 1,486 user-accepted metrics `12px → 10.5px` font and line-height
+    Gates: vitest 1758/220, lint:js 0/248, lint:css, locales, snapshots 34/34, a11y, tabs 6/6, collision and state-shadow scan 0/0. ProgressTrackerBar identical live. Saved as **baseline-9**.
+    - Phase 5 so far: the Bootstrap tail `f38a5da52` (`transitions` and `type` imports dropped). Bootstrap imports left: Sass machinery plus `root` and `reboot`.
+  - **In flight:** SCSS leftovers A (sim shell, saved data, title dropdown, content block, EP dialog) and B (icon pickers), and the Bootstrap tail (`wt/tw-bstail`: the `transitions` and `type` imports). Steps 25 (`root`) and 26 (`reboot` → preflight + `base.css` + `ui-*` into `@layer components`) land together after forms.
+  - **Then:** the Phase-4-close combined tip-verify (with a live ProgressTrackerBar check), then Phase 5 (`PHASE5.md`).
+  - **Baselines** (`/home/lutz/personal/.tw-stage4/baseline-dist-N`): 3 = `5b6f877d5`, 4 = `1aa61bff0`, 5 = `0d5e15a24`, 6 = `2acd86f40`, 7 = `c683be729`, 8 = `51a7ba9ba`. A unit verifies against the baseline built from its own base; combined tip-verifies run against baseline-3.
+  - **Contract rules added in Phase 4** (all in `WORKER.md`/`VERIFIER.md`):
+    - **accepted equivalents**: `grid-cols-N` for `repeat(N,1fr)`; `rounded-full` for `100%` on square elements; both only with bbox unchanged
+    - **user-accepted rows**: metrics `text-xs`; ResultsFilter `text-lg`
+    - **no artifacts**: every probe row is real until proven otherwise
+    - **§1c**: no single-var calc, hand-written negatives, `[prop:…]` with a utility, `var(--spacer-N)`, retired tokens via paren, or arbitrary values with a named form; `.css` selects only `ui-*`
+    - CSS keyword easings stay arbitrary
+    - `border-solid` with single-side widths only when the other sides compute 0 (no preflight)
+    - **cwd**: `cd <worktree> &&` in every call, vitest `--root`
+    - a local `merge=union` on `ui/styles/tailwind.css` in `.git/info/attributes`; **remove it after the last unit lands**
+  - **Recurring traps:**
+    - an important utility beats SCSS toggles (`rotation-tab`, `--pps`)
+    - `@apply` output loses to important call-site utilities and to equal-specificity SCSS (Spinner, Chip)
+    - unit verifiers blaming "the tip": disproved by combined tip-verifies every time
+- **(Historical) LIVE STATE — main session orchestrates directly, one worktree per unit.**
   **Phase 2 COMPLETE** — A-U-list landed `42142c5d1` (probe 0 after three fixes: missing root gap, `_input.scss` narrow-width gap contest, over-broad `data-[layout=inline]` variant; `test:snapshots` 34/34 on it as the Phase-2 close). A-U-icon landed `b8cae69bc` (probe 0, a11y/tabs/settings-tab clean); C-U3.2 `249309630` ( before it `33d01a51d` handoff, `47012afa4` A-U-shell).
   Unit worktrees `/home/lutz/personal/wowsims-mop-tw-<unit>` on `wt/tw-<unit>`, created by
   `/home/lutz/personal/.tw-stage4/mkunit.sh <unit>` (node_modules = per-entry symlinks, never a symlink; copies
