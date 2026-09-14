@@ -415,14 +415,14 @@
 
 @media (width >= 992px) {
 	:root {
-		--spacing-page: 3rem;
+		--spacing-page: 2rem;
 		--spacing-section: 1.5rem;
 	}
 }
 
 @media (width >= 1400px) {
 	:root {
-		--spacing-page: 4rem;
+		--spacing-page: 3rem;
 		--spacing-section: 2rem;
 	}
 }

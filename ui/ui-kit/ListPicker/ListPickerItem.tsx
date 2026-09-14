@@ -262,7 +262,7 @@ export const ListPickerItem = ({
 	return (
 		<div
 			ref={containerRef}
-			className={clsx('ui-list-picker-item-container', 'relative', inlineMenuBar && 'inline', canMove && itemLabel && listItemClassName(itemLabel))}
+			className={clsx('ui-list-picker-item-container', 'relative', canMove && itemLabel && listItemClassName(itemLabel))}
 			data-testid="list-picker-item-container"
 			data-list-item=""
 			data-layout={inlineMenuBar ? 'inline' : undefined}
