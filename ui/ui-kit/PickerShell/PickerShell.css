@@ -31,10 +31,11 @@
 }
 
 .ui-icon-field {
-	@apply flex flex-row items-center gap-2;
+	@apply flex flex-row items-center gap-2 min-w-0;
 
-	label {
-		@apply overflow-visible text-clip mb-0;
+	label,
+	.ui-field-label {
+		@apply line-clamp-2 min-w-0 mb-0;
 	}
 }
 
