@@ -23,6 +23,7 @@ export interface SearchBarProps {
 	grow?: boolean;
 	/** Rendered after the input group, inside the field — for a results list positioned against the same box. */
 	children?: ReactNode;
+	inputTestId?: string;
 }
 
 export const SearchBar = ({
@@ -40,6 +41,7 @@ export const SearchBar = ({
 	className,
 	grow = true,
 	children,
+	inputTestId,
 }: SearchBarProps) => {
 	const [draft, setDraft] = useState(value);
 	useEffect(() => setDraft(value), [value]);
@@ -73,6 +75,7 @@ export const SearchBar = ({
 				<Input
 					id={id}
 					type="text"
+					data-testid={inputTestId}
 					className={clsx('search-bar-input ui-input', className)}
 					placeholder={placeholder}
 					autoFocus={autoFocus}

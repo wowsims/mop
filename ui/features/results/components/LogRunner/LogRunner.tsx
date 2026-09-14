@@ -208,7 +208,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 						placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
 						debounceMs={SEARCH_DEBOUNCE_MS}
 						autoComplete="off"
-						className="log-search-input"
+						inputTestId="log-search-input"
 					/>
 				</div>
 				<div data-testid="log-runner-header" className="ui-log-row font-bold">
@@ -223,7 +223,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 					className="min-w-full w-(--log-runner-list-width,max-content)"
 					style={listWidth ? { ['--log-runner-list-width' as string]: `${Math.ceil(listWidth)}px` } : undefined}>
 					<VirtualList
-						className="log-runner-logs"
+						testId="log-runner-logs"
 						count={visibleIndexes.length}
 						rowHeight={rowHeight}
 						getScrollElement={() => scroller}

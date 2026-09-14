@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { LogLine } from './LogLine';
 
 // The anchor's own behaviour is `ActionLink`'s test; here it only has to be identifiable in the line.
-vi.mock('./ActionLink', () => ({ ActionLink: ({ isAura }: { isAura?: boolean }) => <a className="log-action" data-aura={String(!!isAura)} /> }));
+vi.mock('./ActionLink', () => ({ ActionLink: ({ isAura }: { isAura?: boolean }) => <a data-testid="log-action" data-aura={String(!!isAura)} /> }));
 
 const player = { name: 'Warrior', ownerName: '', index: 0, isTarget: false, isPet: false } as Entity;
 const boss = { name: 'Boss', ownerName: '', index: 0, isTarget: true, isPet: false } as Entity;
@@ -45,7 +45,7 @@ describe('LogLine', () => {
 	it('resolves an aura line against the buff aura', () => {
 		const auraLink = (log: CombatLog) =>
 			render(<LogLine log={log} />)
-				.container.querySelector('.log-action')!
+				.container.querySelector('[data-testid="log-action"]')!
 				.getAttribute('data-aura');
 		expect(auraLink(line({ kind: 'aura', isGained: true, isFaded: false }))).toBe('true');
 		expect(auraLink(line({ kind: 'aura-stacks', oldStacks: 1, newStacks: 2 }))).toBe('true');

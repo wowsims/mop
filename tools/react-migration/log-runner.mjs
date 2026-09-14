@@ -31,14 +31,13 @@ const NO_MATCH = 'zzzz-no-such-line';
 
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
-// `.log-runner-logs` stays a plain class on both builds: `VirtualList` has no prop to carry a
-// second, distinguishing `data-testid`, so the class itself is the cross-build hook here.
 const SEL = {
 	sticky: q('log-runner-sticky'),
 	row: q('log-runner-row'),
 	timestamp: q('log-timestamp'),
 	event: q('log-event'),
 	list: q('log-runner-list'),
+	logs: q('log-runner-logs'),
 	fab: q('log-floating-action-bar-root'),
 	fabToggle: q('log-fab-toggle'),
 	fabPanelInner: q('log-fab-panel-inner'),
@@ -64,7 +63,7 @@ const SEL = {
  */
 const ROWS = sel => {
 	const top = document.querySelector(sel.sticky)?.getBoundingClientRect().bottom ?? 0;
-	return [...document.querySelectorAll(`.log-runner-logs ${sel.row}`)]
+	return [...document.querySelectorAll(`${sel.logs} ${sel.row}`)]
 		.map(row => ({ row, box: row.getBoundingClientRect() }))
 		.filter(entry => entry.box.top >= top - 1)
 		.sort((a, b) => a.box.top - b.box.top)
@@ -77,7 +76,7 @@ const ROWS = sel => {
 
 const STATE = sel => {
 	const list = document.querySelector(sel.list);
-	const logs = document.querySelector('.log-runner-logs');
+	const logs = document.querySelector(sel.logs);
 	const scroller = document.querySelector('[data-testid="sim-ui"], .sim-ui');
 	const row = document.querySelector(sel.row);
 	const rowHeight = row ? Math.round(row.getBoundingClientRect().height * 2) / 2 : 0;
@@ -105,8 +104,8 @@ const STATE = sel => {
 };
 
 /** The stripe attribute at both ends of the window, and whether it follows the absolute index. */
-const STRIPES = () => {
-	const rows = [...document.querySelectorAll('.log-runner-logs [data-index]')];
+const STRIPES = sel => {
+	const rows = [...document.querySelectorAll(`${sel.logs} [data-index]`)];
 	if (!rows.length) return 'no data-index (vanilla list: stripes are :nth-child there)';
 	const indexes = rows.map(row => Number(row.getAttribute('data-index'))).sort((a, b) => a - b);
 	const wrong = rows.filter(row => row.getAttribute('data-stripe') !== (Number(row.getAttribute('data-index')) % 2 === 0 ? 'even' : 'odd'));
@@ -142,7 +141,7 @@ const settingsBlob = async (browser, spec) => {
 };
 
 const search = async (page, text) => {
-	await page.fill('.log-search-input', text);
+	await page.fill(q('log-search-input'), text);
 	// The box debounces at 150 ms on both builds.
 	await page.waitForTimeout(500);
 };
@@ -169,7 +168,7 @@ const collect = async (browser, port, spec, seeded) => {
 	const out = {};
 	out.restState = await page.evaluate(STATE, SEL);
 	out.restRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
-	out.restStripes = await page.evaluate(STRIPES);
+	out.restStripes = await page.evaluate(STRIPES, SEL);
 
 	// The scroller is `.sim-ui`, the one element above the pane with `overflow-y: auto`; the log
 	// shares it with the whole tab rather than scrolling itself.
@@ -177,7 +176,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(600);
 	out.deepState = await page.evaluate(STATE, SEL);
 	out.deepRows = (await page.evaluate(ROWS, SEL)).slice(0, COMPARE_ROWS);
-	out.deepStripes = await page.evaluate(STRIPES);
+	out.deepStripes = await page.evaluate(STRIPES, SEL);
 	await page.evaluate(() => document.querySelector('[data-testid="sim-ui"], .sim-ui').scrollTo({ top: 0 }));
 	await page.waitForTimeout(400);
 
@@ -277,7 +276,7 @@ const collect = async (browser, port, spec, seeded) => {
 		// Hit-tested rather than measured: a control can be on screen and still be under something.
 		const hit = box?.width ? document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) : null;
 		return {
-			rows: document.querySelectorAll(`.log-runner-logs ${sel.row}`).length,
+			rows: document.querySelectorAll(`${sel.logs} ${sel.row}`).length,
 			// The bar's bottom edge to the bottom of the viewport. Zero is where the reader expects the
 			// bar; the collapse reads here as several hundred pixels of dead space under it.
 			barGap: fab ? Math.round(window.innerHeight - fab.getBoundingClientRect().bottom) : null,

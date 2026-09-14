@@ -78,7 +78,9 @@ describe('LogSearchGroup', () => {
 		const { container } = mount(group({ field: 'spell' }));
 		await act(() => void fireEvent.click(container.querySelector<HTMLButtonElement>('[data-testid="dropdown-picker-button"]')!));
 
-		expect(container.querySelector<HTMLImageElement>('[data-testid="dropdown-picker-item"] img.icon-sm')!.src).toBe('https://icons/cleave.jpg');
+		expect(container.querySelector<HTMLImageElement>('[data-testid="dropdown-picker-item"] [data-testid="log-search-suggestion-icon"]')!.src).toBe(
+			'https://icons/cleave.jpg',
+		);
 	});
 
 	describe('the typed value box', () => {

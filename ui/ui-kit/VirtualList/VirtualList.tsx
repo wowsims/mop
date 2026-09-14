@@ -24,6 +24,7 @@ export interface VirtualListProps {
 	className?: string;
 	rowClassName?: (index: number) => string | undefined;
 	renderRow: (index: number) => ReactNode;
+	testId?: string;
 }
 
 const DEFAULT_ROW_HEIGHT = 28;
@@ -53,6 +54,7 @@ export const VirtualList = ({
 	className,
 	rowClassName,
 	renderRow,
+	testId = 'virtual-list',
 }: VirtualListProps) => {
 	// Read every render, because a caller that walks up for its scrolling ancestor has nothing to
 	// report until the list is in the document. `null` takes the element branch: neither mode can
@@ -71,7 +73,7 @@ export const VirtualList = ({
 	});
 
 	return (
-		<div className={clsx('virtual-list', className)} data-testid="virtual-list" style={{ position: 'relative', height: virtualizer.getTotalSize() }}>
+		<div className={className} data-testid={testId} style={{ position: 'relative', height: virtualizer.getTotalSize() }}>
 			{virtualizer.getVirtualItems().map(item => (
 				<div
 					key={item.key}

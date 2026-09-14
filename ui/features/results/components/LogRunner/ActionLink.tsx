@@ -20,7 +20,7 @@ export const ActionLink = ({ actionId, isAura }: ActionLinkProps) => {
 	return (
 		<a data-testid="log-action" className="text-brand" target="_blank" href={href || undefined} rel={externalRel(href, undefined)} {...wowheadProps}>
 			<span>
-				<span className="icon icon-sm align-middle" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} /> {name}
+				<span data-testid="log-action-icon" className="align-middle" style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined} /> {name}
 			</span>
 		</a>
 	);

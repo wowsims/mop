@@ -29,7 +29,9 @@ describe('ActionLink', () => {
 		const { container } = render(<ActionLink actionId={actionId()} />);
 
 		expect(anchor(container).textContent).toBe(' Mortal Strike');
-		expect(anchor(container).querySelector<HTMLElement>('.icon.icon-sm')!.style.backgroundImage).toContain('https://wow.zamimg.com/ms.jpg');
+		expect(anchor(container).querySelector<HTMLElement>('[data-testid="log-action-icon"]')!.style.backgroundImage).toContain(
+			'https://wow.zamimg.com/ms.jpg',
+		);
 	});
 
 	it('opens Wowhead in a new tab without handing it a window opener', () => {

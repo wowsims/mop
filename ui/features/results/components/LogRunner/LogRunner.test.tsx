@@ -15,26 +15,26 @@ vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 vi.mock('@ui-kit/VirtualList', () => ({
 	VirtualList: ({
 		count,
-		className,
+		testId,
 		renderRow,
 		getScrollElement,
 		scrollMargin,
 	}: {
 		count: number;
-		className?: string;
+		testId?: string;
 		renderRow: (index: number) => unknown;
 		getScrollElement: () => HTMLElement | Window | null;
 		scrollMargin?: number;
 	}) => (
 		<div
-			className={`virtual-list ${className ?? ''}`}
+			data-testid={testId ?? 'virtual-list'}
 			data-scroller={(() => {
 				const scroller = getScrollElement();
 				return scroller === null ? 'null' : scroller instanceof HTMLElement ? scroller.className : 'window';
 			})()}
 			data-scroll-margin={scrollMargin}>
 			{Array.from({ length: count }, (_unused, index) => (
-				<div key={index} className="virtual-list-row" data-index={index} data-stripe={index % 2 === 0 ? 'even' : 'odd'}>
+				<div key={index} data-testid="virtual-list-row" data-index={index} data-stripe={index % 2 === 0 ? 'even' : 'odd'}>
 					{renderRow(index) as never}
 				</div>
 			))}
@@ -75,7 +75,8 @@ const LOGS = [
 
 // Scoped to the list: the hidden width measurer renders a row of its own, and in a DOM that reports
 // every box as 0x0 it never gets its answer and so never unmounts.
-const rows = (container: HTMLElement) => [...container.querySelectorAll('.virtual-list-row [data-testid="log-event"]')].map(row => row.textContent);
+const rows = (container: HTMLElement) =>
+	[...container.querySelectorAll('[data-testid="virtual-list-row"] [data-testid="log-event"]')].map(row => row.textContent);
 
 // The export dialog reads the host for its portal container.
 const host = { rootElem: document.body } as never;
@@ -83,7 +84,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => <SimHostProvider host
 
 const mount = (active = true) => render(<LogRunner active={active} />, { wrapper: Wrapper });
 
-const searchInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('.log-search-input')!;
+const searchInput = (container: HTMLElement) => container.querySelector<HTMLInputElement>('[data-testid="log-search-input"]')!;
 
 beforeEach(() => {
 	result = null;
@@ -100,9 +101,7 @@ describe('LogRunner', () => {
 			'results_tab.details.logs.time_column',
 			'results_tab.details.logs.event_column',
 		]);
-		expect(container.querySelector('[data-testid="log-runner-scroll"] > [data-testid="log-runner-list"] > .virtual-list')!.className).toContain(
-			'log-runner-logs',
-		);
+		expect(container.querySelector('[data-testid="log-runner-scroll"] > [data-testid="log-runner-list"] > [data-testid="log-runner-logs"]')).not.toBeNull();
 		expect(rows(container)).toEqual([]);
 	});
 
@@ -128,7 +127,7 @@ describe('LogRunner', () => {
 		result = resultWith(LOGS);
 		const { container } = mount();
 
-		expect([...container.querySelectorAll('.virtual-list-row')].map(row => (row as HTMLElement).dataset.stripe)).toEqual(['even', 'odd']);
+		expect([...container.querySelectorAll('[data-testid="virtual-list-row"]')].map(row => (row as HTMLElement).dataset.stripe)).toEqual(['even', 'odd']);
 	});
 
 	it('narrows the list to the lines the search box matches', async () => {
@@ -204,14 +203,14 @@ describe('LogRunner', () => {
 		result = resultWith(LOGS);
 		const { container } = render(<LogRunner active />, { container: outer, wrapper: Wrapper });
 
-		expect(container.querySelector('.virtual-list')!.getAttribute('data-scroller')).toBe('sim-ui');
+		expect(container.querySelector('[data-testid="log-runner-logs"]')!.getAttribute('data-scroller')).toBe('sim-ui');
 	});
 
 	it('falls back to the window when nothing above the list scrolls', () => {
 		result = resultWith(LOGS);
 		const { container } = mount();
 
-		expect(container.querySelector('.virtual-list')!.getAttribute('data-scroller')).toBe('window');
+		expect(container.querySelector('[data-testid="log-runner-logs"]')!.getAttribute('data-scroller')).toBe('window');
 	});
 
 	it('gives both bar buttons an explicit type, so neither submits a form', () => {

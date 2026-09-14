@@ -41,7 +41,9 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 			valueCandidates(group.field, suggestions).map(value => ({
 				value,
 				label: labelOf(group.field, value),
-				icon: suggestions.spellIcons.get(value) ? <img className="icon-sm mr-1" src={suggestions.spellIcons.get(value)} alt="" /> : undefined,
+				icon: suggestions.spellIcons.get(value) ? (
+					<img data-testid="log-search-suggestion-icon" className="mr-1" src={suggestions.spellIcons.get(value)} alt="" />
+				) : undefined,
 			})),
 		[group.field, suggestions],
 	);
