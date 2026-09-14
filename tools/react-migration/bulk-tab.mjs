@@ -70,7 +70,7 @@ const INSTALL = () => {
 		// pane's computed display, not `.active`/`.show` alone. Those classes are recorded too, since
 		// the React `SimTab` is meant to keep driving them, but they are not what "open" means.
 		strip: () =>
-			[...pane().querySelectorAll('.bulk-tab-tabs .nav-link')].map(tab => {
+			[...pane().querySelectorAll(`${q('bulk-tab-tabs')} .nav-link`)].map(tab => {
 				const paneId = tab.getAttribute('aria-controls');
 				const paneElem = paneId ? document.getElementById(paneId) : null;
 				return {

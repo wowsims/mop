@@ -19,7 +19,7 @@ export const GearTabBody = () => {
 		<OpenSelectorModalContext value={selector.openTab}>
 			<TabPanelColumns.Left variant="auto-columns">
 				<GearPicker ready={ready} />
-				<div className="summary-tables-container grid gap-section grid-cols-2 grid-flow-row max-md:grid-cols-1">
+				<div className="grid gap-section grid-cols-2 grid-flow-row max-md:grid-cols-1">
 					<GemSummary />
 					<ReforgeSummary />
 					<UpgradeCostsSummary />

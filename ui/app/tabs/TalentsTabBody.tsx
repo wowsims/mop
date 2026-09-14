@@ -33,11 +33,11 @@ export const TalentsTabBody = () => {
 
 	return (
 		<>
-			<TabPanelColumns.Left className="talents-tab-left">
+			<TabPanelColumns.Left>
 				<TalentsPicker config={talentsConfig} />
 				{player.isClass(Class.ClassHunter) && <PetSpecPicker player={player} />}
 			</TabPanelColumns.Left>
-			<TabPanelColumns.Right className="talents-tab-right">
+			<TabPanelColumns.Right>
 				<PresetConfigurationPicker categories={TALENT_PRESETS} />
 				<SavedTalents />
 			</TabPanelColumns.Right>

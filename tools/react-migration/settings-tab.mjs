@@ -198,7 +198,7 @@ const INSTALL = () => {
 					if (leftCol) return leftCol;
 					return col.matches(q('tab-panel-right')) ? 'tab-panel-right' : '?';
 				})(),
-				name: [...block.classList].find(name => name !== 'content-block' && name !== 'ui-content-block') ?? '?',
+				name: block.dataset.block ?? [...block.classList].find(name => name !== 'content-block' && name !== 'ui-content-block') ?? '?',
 				title: text(block.querySelector(q('content-block-title'))),
 				// Only the raid-buffs block appends one, and only through `headerElement`, which a port
 				// that renders the header from a title string alone would drop.
@@ -327,7 +327,7 @@ await page.evaluate(() =>
 		.find(tab => window.simTabsProbe.idOf(tab) === 'settings-tab')
 		?.click(),
 );
-await page.waitForSelector('#settings-tab .other-settings', { timeout: 60000, state: 'visible' });
+await page.waitForSelector('#settings-tab :is([data-block="other-settings"], .other-settings)', { timeout: 60000, state: 'visible' });
 // The blocks are built behind `sim.waitForInit()`, and the icon anchors get their wowhead action
 // filled in asynchronously after that.
 await page.waitForTimeout(2500);

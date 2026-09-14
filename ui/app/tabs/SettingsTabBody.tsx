@@ -45,10 +45,14 @@ export const SettingsTabBody = () => {
 				<TabPanelColumns.Col>
 					{ready && (
 						<>
-							<ContentBlock className="encounter-settings" config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
+							<ContentBlock
+								rootDataAttributes={{ 'data-block': 'encounter-settings' }}
+								config={{ header: { title: i18n.t('settings_tab.encounter.title') } }}>
 								<EncounterPicker showExecuteProportion={config.encounterPicker.showExecuteProportion} />
 							</ContentBlock>
-							<ContentBlock className="player-settings" config={{ header: { title: i18n.t('settings_tab.player.title') } }}>
+							<ContentBlock
+								rootDataAttributes={{ 'data-block': 'player-settings' }}
+								config={{ header: { title: i18n.t('settings_tab.player.title') } }}>
 								<PlayerSettings iconInputs={config.playerIconInputs} inputs={config.playerInputs?.inputs ?? []} />
 							</ContentBlock>
 						</>
@@ -60,7 +64,9 @@ export const SettingsTabBody = () => {
 							{config.sections?.map(section => (
 								<CustomSection key={section.id} section={section} />
 							))}
-							<ContentBlock className="consumes-settings" config={{ header: { title: i18n.t('settings_tab.consumables.title') } }}>
+							<ContentBlock
+								rootDataAttributes={{ 'data-block': 'consumes-settings' }}
+								config={{ header: { title: i18n.t('settings_tab.consumables.title') } }}>
 								<ConsumesPicker
 									consumableStats={config.consumableStats ?? config.epStats}
 									conjuredOptions={options.conjured}
@@ -70,7 +76,7 @@ export const SettingsTabBody = () => {
 							</ContentBlock>
 							{hasOtherSettings && (
 								<ContentBlock
-									className="other-settings"
+									rootDataAttributes={{ 'data-block': 'other-settings' }}
 									config={{
 										header: { title: i18n.t('settings_tab.other.title') },
 										bodyClassName:
@@ -86,7 +92,7 @@ export const SettingsTabBody = () => {
 					{ready && (
 						<>
 							<ContentBlock
-								className="buffs-settings"
+								rootDataAttributes={{ 'data-block': 'buffs-settings' }}
 								config={{
 									header: {
 										title: i18n.t('settings_tab.raid_buffs.title'),
@@ -101,7 +107,7 @@ export const SettingsTabBody = () => {
 							</ContentBlock>
 							{options.externalDamageCooldowns.length > 0 && (
 								<ContentBlock
-									className="buffs-settings"
+									rootDataAttributes={{ 'data-block': 'buffs-settings' }}
 									config={{
 										header: {
 											title: i18n.t('settings_tab.external_damage_cooldowns.title'),
@@ -115,7 +121,7 @@ export const SettingsTabBody = () => {
 							)}
 							{options.externalDefensiveCooldowns.length > 0 && (
 								<ContentBlock
-									className="buffs-settings"
+									rootDataAttributes={{ 'data-block': 'buffs-settings' }}
 									config={{
 										header: {
 											title: i18n.t('settings_tab.external_defensive_cooldowns.title'),
@@ -128,7 +134,7 @@ export const SettingsTabBody = () => {
 								</ContentBlock>
 							)}
 							<ContentBlock
-								className="debuffs-settings"
+								rootDataAttributes={{ 'data-block': 'debuffs-settings' }}
 								config={{
 									header: {
 										title: i18n.t('settings_tab.debuffs.title'),

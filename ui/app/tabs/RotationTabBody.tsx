@@ -17,7 +17,6 @@ import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { TabPanel } from '@ui-kit/TabNav';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
-import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
@@ -62,10 +61,7 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 
 	return (
 		<>
-			<TabPanelColumns.Root
-				className={clsx('rotation-tab-auto', rotationType === APLRotationType.TypeAuto ? 'flex' : 'hidden')}
-				fullWidth
-				externalDisplay>
+			<TabPanelColumns.Root className={rotationType === APLRotationType.TypeAuto ? 'flex' : 'hidden'} fullWidth externalDisplay>
 				<TabPanelColumns.Left variant="stacked">
 					<div>
 						<RotationTypePicker />
@@ -77,23 +73,20 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
 
-			<TabPanelColumns.Root
-				className={clsx('rotation-tab-simple', rotationType === APLRotationType.TypeSimple ? 'flex' : 'hidden')}
-				fullWidth
-				externalDisplay>
+			<TabPanelColumns.Root className={rotationType === APLRotationType.TypeSimple ? 'flex' : 'hidden'} fullWidth externalDisplay>
 				{hasSimple && (
 					<>
-						<TabPanelColumns.Left className="tab-content" variant="stacked">
+						<TabPanelColumns.Left variant="stacked">
 							<div>
 								<RotationTypePicker />
 							</div>
 							<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
-								<ContentBlock className="rotation-settings" config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
+								<ContentBlock config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 									<SimpleRotationInputs />
 								</ContentBlock>
 								{hasCooldowns && (
 									<ContentBlock
-										className="cooldown-settings"
+										testId="cooldown-settings"
 										config={{
 											header: { title: i18n.t('rotation_tab.cooldowns.title'), tooltip: i18n.t('rotation_tab.cooldowns.tooltip') },
 										}}>
@@ -111,14 +104,15 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 
 			<TabPanelColumns.Root
 				as={Tabs.Root}
-				className={clsx('rotation-tab-apl', rotationType === APLRotationType.TypeAPL ? 'flex' : 'hidden')}
+				className={rotationType === APLRotationType.TypeAPL ? 'flex' : 'hidden'}
+				data-testid="rotation-tab-apl"
 				gap="apl"
 				fullWidth
 				externalDisplay
 				value={activeId}
 				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 				<AplNavbar />
-				<TabPanelColumns.Left className="tab-content">
+				<TabPanelColumns.Left>
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (

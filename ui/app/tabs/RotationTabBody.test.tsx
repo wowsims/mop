@@ -6,18 +6,18 @@ vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 
 // Every list is somebody else's component and is tested where it lives. What is under test here is
 // the assembly: which pane the strip opens, and the two-phase class the fade needs.
-vi.mock('@features/apl/components/GroupList', () => ({ GroupList: () => <div className="group-list-stub" /> }));
-vi.mock('@features/apl/components/PrePullList', () => ({ PrePullList: () => <div className="pre-pull-list-stub" /> }));
-vi.mock('@features/apl/components/PriorityList', () => ({ PriorityList: () => <div className="priority-list-stub" /> }));
-vi.mock('@features/apl/components/RotationTypePicker', () => ({ RotationTypePicker: () => <div className="rotation-type-picker-stub" /> }));
-vi.mock('@features/apl/components/SavedRotation', () => ({ SavedRotation: () => <div className="saved-rotation-stub" /> }));
-vi.mock('@features/apl/components/SimpleRotationInputs', () => ({ SimpleRotationInputs: () => <div className="simple-rotation-inputs-stub" /> }));
-vi.mock('@features/apl/components/VariablesList', () => ({ VariablesList: () => <div className="variables-list-stub" /> }));
+vi.mock('@features/apl/components/GroupList', () => ({ GroupList: () => <div /> }));
+vi.mock('@features/apl/components/PrePullList', () => ({ PrePullList: () => <div /> }));
+vi.mock('@features/apl/components/PriorityList', () => ({ PriorityList: () => <div /> }));
+vi.mock('@features/apl/components/RotationTypePicker', () => ({ RotationTypePicker: () => <div /> }));
+vi.mock('@features/apl/components/SavedRotation', () => ({ SavedRotation: () => <div /> }));
+vi.mock('@features/apl/components/SimpleRotationInputs', () => ({ SimpleRotationInputs: () => <div /> }));
+vi.mock('@features/apl/components/VariablesList', () => ({ VariablesList: () => <div /> }));
 vi.mock('@features/settings', () => ({
-	CooldownsPicker: () => <div className="cooldowns-picker-stub" />,
+	CooldownsPicker: () => <div />,
 	useAvailableCooldowns: () => available,
 }));
-vi.mock('../PresetConfigurationPicker', () => ({ PresetConfigurationPicker: () => <div className="preset-configuration-picker-stub" /> }));
+vi.mock('../PresetConfigurationPicker', () => ({ PresetConfigurationPicker: () => <div /> }));
 
 class FakeIntersectionObserver {
 	constructor(readonly callback: IntersectionObserverCallback) {}
@@ -34,7 +34,7 @@ vi.mock('@sim/context/SimHostContext', () => ({ useSimHost: () => host, useSpecC
 const { RotationTabBody } = await import('./RotationTabBody');
 
 const paneStates = (container: HTMLElement) =>
-	[...container.querySelectorAll('.rotation-tab-apl .tab-pane')].map(pane => [pane.id, (pane as HTMLElement).hidden] as const);
+	[...container.querySelectorAll('[data-testid="rotation-tab-apl"] .tab-pane')].map(pane => [pane.id, (pane as HTMLElement).hidden] as const);
 
 beforeEach(() => vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver));
 afterEach(() => {
@@ -51,7 +51,7 @@ describe('RotationTabBody', () => {
 			['apl-action-groups', true],
 			['apl-variables', true],
 		]);
-		expect(container.querySelectorAll('.rotation-tab-apl [role=tabpanel]')).toHaveLength(3);
+		expect(container.querySelectorAll('[data-testid="rotation-tab-apl"] [role=tabpanel]')).toHaveLength(3);
 	});
 
 	it('moves active on the click and show a frame later', async () => {
@@ -74,16 +74,16 @@ describe('RotationTabBody', () => {
 	it('renders no cooldown settings while the spec offers no major cooldowns', () => {
 		simple = true;
 		const { container, rerender } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
-		expect(container.querySelector('.cooldown-settings')).toBeNull();
+		expect(container.querySelector('[data-testid="cooldown-settings"]')).toBeNull();
 
 		available = [{}];
 		rerender(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
-		expect(container.querySelector('.cooldown-settings')).not.toBeNull();
+		expect(container.querySelector('[data-testid="cooldown-settings"]')).not.toBeNull();
 	});
 
 	it('renders the navbar ahead of both columns, which is what the layout depends on', () => {
 		const { container } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
-		const pane = container.querySelector('.rotation-tab-apl')!;
+		const pane = container.querySelector('[data-testid="rotation-tab-apl"]')!;
 		const [navbar, left, right] = [...pane.children];
 		expect(navbar.getAttribute('data-testid')).toBe('apl-rotation-navbar');
 		expect(left.getAttribute('data-testid')).toBe('tab-panel-left');

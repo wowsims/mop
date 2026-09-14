@@ -6,17 +6,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // test here is the assembly: which column a block lands in, in what order, whether it exists at all,
 // and that nothing exists before the sim is ready.
 vi.mock('@features/encounter', () => ({
-	EncounterPicker: () => <div className="encounter-picker-root" />,
-	SavedEncounter: () => <div className="saved-encounter-root" />,
+	EncounterPicker: () => <div />,
+	SavedEncounter: () => <div data-testid="saved-encounter-root" />,
 }));
 vi.mock('@features/settings', () => ({
-	ConsumesPicker: () => <div className="consumes-picker-root" />,
-	CustomSection: ({ section }: { section: { id: string } }) => <div className="custom-section-stub" data-id={section.id} />,
-	OtherSettings: () => <div className="other-settings-root" />,
-	PlayerSettings: () => <div className="player-settings-root" />,
-	RaidBuffs: () => <div className="raid-buffs-root" />,
-	SavedSettings: () => <div className="saved-settings-root" />,
-	StatOptionIcons: ({ options }: { options: ReadonlyArray<unknown> }) => <div className="stat-option-icons-root" data-count={options.length} />,
+	ConsumesPicker: () => <div />,
+	CustomSection: ({ section }: { section: { id: string } }) => <div data-testid="custom-section-stub" data-id={section.id} />,
+	OtherSettings: () => <div />,
+	PlayerSettings: () => <div />,
+	RaidBuffs: () => <div />,
+	SavedSettings: () => <div data-testid="saved-settings-root" />,
+	StatOptionIcons: ({ options }: { options: ReadonlyArray<unknown> }) => <div data-testid="stat-option-icons-root" data-count={options.length} />,
 }));
 
 // The option lists are looked up by identity, so the real config arrays are stand-ins for a name and
@@ -42,7 +42,7 @@ vi.mock('@features/settings/model/stat_options', () => ({
 // Needs a real player and store; SelectorModal.test.tsx is where it is asserted.
 vi.mock('@features/gear/components/SelectorModal', () => ({ SelectorModal: () => null }));
 vi.mock('../PresetConfigurationPicker', () => ({
-	PresetConfigurationPicker: () => <div className="preset-configuration-picker-root saved-data-manager-root" />,
+	PresetConfigurationPicker: () => <div data-testid="preset-configuration-picker-root" data-saved-data-manager="" />,
 }));
 
 const { SettingsTabBody } = await import('./SettingsTabBody');
@@ -94,11 +94,9 @@ const becomeReady = async () => {
 const cols = (container: HTMLElement) => [...container.querySelectorAll('[data-testid="tab-panel-col"]')];
 
 const blocks = (container: HTMLElement, colIndex: number) =>
-	[...cols(container)[colIndex].querySelectorAll(':scope > [data-testid="content-block"]')].map(block =>
-		[...block.classList].find(name => /-settings$/.test(name)),
-	);
+	[...cols(container)[colIndex].querySelectorAll(':scope > [data-testid="content-block"]')].map(block => (block as HTMLElement).dataset.block);
 
-const bodyOf = (container: HTMLElement, className: string) => container.querySelector(`.${className} > [data-testid="content-block-body"]`);
+const bodyOf = (container: HTMLElement, block: string) => container.querySelector(`[data-block="${block}"] > [data-testid="content-block-body"]`);
 
 describe('SettingsTabBody', () => {
 	beforeEach(() => {
@@ -121,10 +119,9 @@ describe('SettingsTabBody', () => {
 		expect(blocks(container, 1)).toEqual(['consumes-settings', 'other-settings']);
 		expect(blocks(container, 2)).toEqual(['buffs-settings', 'buffs-settings', 'buffs-settings', 'debuffs-settings']);
 		// The custom section owns its own block, so it is not a content-block child of the column.
-		expect(cols(container)[1].querySelector(':scope > .custom-section-stub')).not.toBeNull();
+		expect(cols(container)[1].querySelector(':scope > [data-testid="custom-section-stub"]')).not.toBeNull();
 		const firstChild = cols(container)[1].firstElementChild!;
-		expect(firstChild.classList.contains('custom-section-stub')).toBe(true);
-		expect(firstChild.getAttribute('data-testid')).not.toBe('content-block');
+		expect(firstChild.getAttribute('data-testid')).toBe('custom-section-stub');
 	});
 
 	// No wrapper element around any of the three: the preset picker has to keep leading the two
@@ -133,8 +130,8 @@ describe('SettingsTabBody', () => {
 		const container = mount();
 		const right = container.querySelector('[data-testid="tab-panel-right"]')!;
 
-		expect([...right.children].map(child => child.className)).toEqual([
-			'preset-configuration-picker-root saved-data-manager-root',
+		expect([...right.children].map(child => child.getAttribute('data-testid'))).toEqual([
+			'preset-configuration-picker-root',
 			'saved-encounter-root',
 			'saved-settings-root',
 		]);
@@ -144,7 +141,7 @@ describe('SettingsTabBody', () => {
 	it('keeps one preset picker when the sim becomes ready', async () => {
 		const container = mount();
 		await becomeReady();
-		expect(container.querySelectorAll('.preset-configuration-picker-root')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="preset-configuration-picker-root"]')).toHaveLength(1);
 	});
 
 	it('omits the other-settings block when the spec declares neither inputs nor swap slots', async () => {
@@ -165,14 +162,14 @@ describe('SettingsTabBody', () => {
 		await becomeReady();
 		expect(cols(container)[2].querySelectorAll(':scope > [data-testid="content-block"]')).toHaveLength(3);
 		// The one that survived is still the defensive block, so the guards are not interchangeable.
-		expect(container.querySelectorAll('.stat-option-icons-root')).toHaveLength(2);
+		expect(container.querySelectorAll('[data-testid="stat-option-icons-root"]')).toHaveLength(2);
 	});
 
 	it('renders no buffs or debuffs body when their own option lists are empty', async () => {
 		lists.value = { buffs: [], debuffs: [], externalDamage: [], externalDefensive: [] };
 		const container = mount();
 		await becomeReady();
-		expect(container.querySelector('.buffs-settings')).not.toBeNull();
+		expect(container.querySelector('[data-block="buffs-settings"]')).not.toBeNull();
 		expect(bodyOf(container, 'buffs-settings')).toBeNull();
 		expect(bodyOf(container, 'debuffs-settings')).toBeNull();
 	});

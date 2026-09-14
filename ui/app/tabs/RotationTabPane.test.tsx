@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 // The pane root's class list is exactly what both parity gates normalise away (`dropRootClasses`),
 // so this is the only place the rotation-type class is checked.
-vi.mock('./RotationTabBody', () => ({ RotationTabBody: () => <div className="rotation-tab-body-stub" /> }));
+vi.mock('./RotationTabBody', () => ({ RotationTabBody: () => <div data-testid="rotation-tab-body-stub" /> }));
 
 const KEY = 1;
 const store = createSimStore();
@@ -41,6 +41,6 @@ describe('RotationTabPane', () => {
 
 	it('renders the body inside the content container the stylesheets extend', () => {
 		const { container } = render(<RotationTabPane />);
-		expect(container.querySelector('#rotation-tab > [data-testid="tab-pane-content-container"] > .rotation-tab-body-stub')).not.toBeNull();
+		expect(container.querySelector('#rotation-tab > [data-testid="tab-pane-content-container"] > [data-testid="rotation-tab-body-stub"]')).not.toBeNull();
 	});
 });
