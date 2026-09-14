@@ -1,12 +1,20 @@
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RotationView } from './RotationView';
 import { castItem, castRow, rotationModel } from './testing';
 
+vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
+
 // The row icon is `useActionId` plus `useWowheadDataset`; both are covered where they live, and
 // letting them run here would put a Wowhead fetch behind every row.
 vi.mock('./RotationRowIcon', () => ({ RotationRowIcon: () => <a data-testid="rotation-row-icon" /> }));
+
+const host = fakeHost({
+	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
+});
 
 beforeEach(() => {
 	for (const name of ['ResizeObserver', 'IntersectionObserver']) {
@@ -33,7 +41,11 @@ const settle = async () => {
 };
 
 const mount = async (model = MODEL) => {
-	const view = render(<RotationView model={model} />);
+	const view = render(
+		<SimHostProvider host={host}>
+			<RotationView model={model} />
+		</SimHostProvider>,
+	);
 	const scroller = view.container.querySelector<HTMLElement>('[data-testid="rotation-scroller"]')!;
 	// happy-dom reports every element as 0x0, and a zero-width scroller is a frame the window
 	// declines to measure.

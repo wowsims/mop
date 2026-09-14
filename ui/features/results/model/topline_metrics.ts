@@ -25,8 +25,11 @@ export type ResultMetric = {
 	unit?: ResultMetricUnit;
 };
 
+export type ToplineDisplayMetrics = { damage: boolean; threat: boolean; healing: boolean };
+
 export type ToplineMetricsOptions = {
 	showOutOfMana?: boolean;
+	displayMetrics?: ToplineDisplayMetrics;
 };
 
 const NO_MANA_CLASSES = [DeathKnight, Rogue, Warrior, Hunter];
@@ -67,7 +70,7 @@ export const showsOutOfMana = (simResult: SimResult, filter?: SimResultFilter): 
 };
 
 export const toplineResultMetrics = (simResult: SimResult, filter?: SimResultFilter, options: ToplineMetricsOptions = {}): ResultMetric[] => {
-	const { showOutOfMana = false } = options;
+	const { showOutOfMana = false, displayMetrics } = options;
 
 	const players = simResult.getRaidIndexedPlayers(filter);
 
@@ -130,5 +133,10 @@ export const toplineResultMetrics = (simResult: SimResult, filter?: SimResultFil
 		resultColumns.push(column('oom', secondsOOM, { unit: 'seconds', extraClass: DANGER_TEXT[dangerLevel] }));
 	}
 
-	return resultColumns;
+	if (!displayMetrics) return resultColumns;
+
+	return resultColumns.filter(({ metric }) => {
+		const category = resultMetricCategories[metric];
+		return category !== 'damage' && category !== 'threat' && category !== 'healing' ? true : displayMetrics[category];
+	});
 };

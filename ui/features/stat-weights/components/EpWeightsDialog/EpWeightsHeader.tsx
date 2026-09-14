@@ -1,5 +1,4 @@
 import i18n from '@i18n/config';
-import { metricsClassName } from '@features/results/model/sim_results';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -32,7 +31,6 @@ export const EpWeightsHeader = ({ columns, isTank, showThreatMetrics }: EpWeight
 					className={clsx(
 						'ui-ep-weights-table-header-cell',
 						showThreatMetrics && 'lg:max-xl:pr-0',
-						column.metric && metricsClassName(column.metric),
 						isAction
 							? 'text-center'
 							: [

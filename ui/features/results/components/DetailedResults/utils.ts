@@ -5,9 +5,9 @@ export interface DetailedResultsTabConfig {
 }
 
 export const DETAILED_RESULTS_TABS: ReadonlyArray<DetailedResultsTabConfig> = [
-	{ id: 'damageTab', labelKey: 'results_tab.details.tabs.damage', className: 'damage-metrics-tab in-data-[hide-damage]:hidden' },
-	{ id: 'healingTab', labelKey: 'results_tab.details.tabs.healing', className: 'healing-metrics-tab in-data-[hide-healing]:hidden' },
-	{ id: 'damageTakenTab', labelKey: 'results_tab.details.tabs.damage_taken', className: 'threat-metrics-tab in-data-[hide-threat]:hidden' },
+	{ id: 'damageTab', labelKey: 'results_tab.details.tabs.damage', className: 'damage-metrics-tab' },
+	{ id: 'healingTab', labelKey: 'results_tab.details.tabs.healing', className: 'healing-metrics-tab' },
+	{ id: 'damageTakenTab', labelKey: 'results_tab.details.tabs.damage_taken', className: 'threat-metrics-tab' },
 	{ id: 'buffsTab', labelKey: 'results_tab.details.tabs.buffs' },
 	{ id: 'debuffsTab', labelKey: 'results_tab.details.tabs.debuffs' },
 	{ id: 'castsTab', labelKey: 'results_tab.details.tabs.casts' },

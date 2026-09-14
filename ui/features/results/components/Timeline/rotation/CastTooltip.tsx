@@ -1,4 +1,6 @@
 import i18n from '@i18n/config';
+import { useSim } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { CastLog } from '@sim/proto/combat_log';
 
 import { DamageResult } from '../../DamageResult';
@@ -8,6 +10,7 @@ export interface CastTooltipProps {
 }
 
 export const CastTooltip = ({ log }: CastTooltipProps) => {
+	const { threat: showThreatMetrics } = useDisplayMetrics(useSim());
 	const travelTime = log.travelTime == 0 ? '' : ` + ${log.travelTime.toFixed(2)}s travel time`;
 	const totalDamage = log.damageDealtLogs.reduce((total, ddl) => total + ddl.amount, 0);
 
@@ -33,8 +36,8 @@ export const CastTooltip = ({ log }: CastTooltipProps) => {
 							<span>
 								{ddl.timestamp.toFixed(2)}s - <DamageResult log={ddl} />
 							</span>
-							{!ddl.source?.isTarget && (
-								<span className="threat-metrics in-data-[hide-threat]:hidden">
+							{showThreatMetrics && !ddl.source?.isTarget && (
+								<span className="threat-metrics">
 									{' '}
 									({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
 								</span>

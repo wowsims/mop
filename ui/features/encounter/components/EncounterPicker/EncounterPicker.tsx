@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
@@ -18,6 +19,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 	const host = useSimHost();
 	const encounter = host.sim.encounter;
 	const player = host.player;
+	const { damage: showDamage } = useDisplayMetrics(host.sim);
 
 	const duration = useMemo(() => durationConfigs(encounter), [encounter]);
 	const execute = useMemo(() => (showExecuteProportion ? executeConfigs(encounter) : []), [encounter, showExecuteProportion]);
@@ -41,7 +43,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 					))}
 				</PickerGroup>
 			)}
-			<EnumPicker modObject={encounter} config={preset} />
+			{showDamage && <EnumPicker modObject={encounter} config={preset} />}
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}
 			{player.getPlayerSpec().isTankSpec && <NumberPicker modObject={encounter} config={minBaseDamage} />}
 			<TargetInputsPicker encounter={encounter} targetIndex={0} />

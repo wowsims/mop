@@ -2,14 +2,19 @@ import { Raid as RaidProto } from '@generated/proto/api';
 import { Encounter as EncounterProto } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { PlayerSpecs } from '@sim/player/specs/index';
-import { fakeHost } from '@sim/testing';
+import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SimResultsManager } from '../../model/results_manager';
 import { SimResultSummary } from './SimResultSummary';
 
-const host = fakeHost({ config: { cssScheme: 'mage' } });
+vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
+
+const host = fakeHost({
+	config: { cssScheme: 'mage' },
+	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
+});
 
 const dist = (avg: number, stdev = 0) => ({ avg, stdev });
 

@@ -1,7 +1,5 @@
 import { usePlayer } from '@sim/context/SimHostContext';
-import type { ResultMetricCategories } from '@features/results/model/sim_results';
-import { metricsClassName } from '@features/results/model/sim_results';
-import clsx from 'clsx';
+import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { Player } from '@sim/player/player';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -13,21 +11,22 @@ import { statName } from './utils';
 export interface EpReferenceOptionsProps {
 	epStats: Stat[];
 	epReferenceStat: Stat;
+	displayMetrics: DisplayMetrics;
 }
 
 type Reference = {
 	id: string;
-	metric: keyof ResultMetricCategories;
+	metric: keyof DisplayMetrics;
 	label: string;
 	getValue: (player: Player<any>) => Stat;
 	setValue: (player: Player<any>, value: Stat) => void;
 };
 
-export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOptionsProps) => {
+export const EpReferenceOptions = ({ epStats, epReferenceStat, displayMetrics }: EpReferenceOptionsProps) => {
 	const player = usePlayer();
 
-	const references = useMemo(
-		(): Reference[] => [
+	const references = useMemo(() => {
+		const all: Reference[] = [
 			{
 				id: 'ep-ref-stat-damage',
 				metric: 'damage',
@@ -49,22 +48,22 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat }: EpReferenceOpti
 				getValue: subject => subject.getRefStat('tankRefStat') ?? Stat.StatArmor,
 				setValue: (subject, value) => subject.setRefStat('tankRefStat', value),
 			},
-		],
-		[epReferenceStat],
-	);
+		];
+		return all.filter(reference => displayMetrics[reference.metric]);
+	}, [epReferenceStat, displayMetrics]);
 
 	const values = useMemo(() => epStats.map(stat => ({ name: statName(stat), value: stat })), [epStats]);
 
 	return (
 		<div data-testid="ep-reference-options" className="flex flex-wrap -mx-3 mb-3 [&_.ui-field-label]:font-bold">
 			{references.map(reference => (
-				<div key={reference.id} className={clsx('w-full px-3 sm:w-1/3', metricsClassName(reference.metric))}>
+				<div key={reference.id} className="w-full px-3 sm:w-1/3">
 					<EnumPicker
 						modObject={player}
 						config={{
 							id: reference.id,
 							label: reference.label,
-							extraClassNames: ['ref-stat-select', metricsClassName(reference.metric)],
+							extraClassNames: ['ref-stat-select'],
 							values,
 							storeField: 'epRefStat',
 							getValue: reference.getValue,

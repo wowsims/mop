@@ -65,3 +65,6 @@ export const metricsClasses: { [ResultMetricCategories: string]: string } = {
 	healing: 'healing-metrics',
 	threat: 'threat-metrics',
 };
+
+export const showsEpRatios = (metrics: { damage: boolean; threat: boolean; healing: boolean }): boolean =>
+	metrics.threat || (metrics.damage && metrics.healing);

@@ -260,6 +260,7 @@ describe('EpWeightsDialog', () => {
 	beforeEach(setup);
 
 	it('builds the column set in order, with the metric and type classes each rule selects on', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const headers = [...table().querySelectorAll('thead tr:first-child th')];
 		expect(headers.map(th => th.textContent)).toEqual([
@@ -332,6 +333,7 @@ describe('EpWeightsDialog', () => {
 	// DEFECT FIXED. `makeEpRatioCell` was applied to the six EP cells and the six weight cells, both
 	// indexed 0-5, so `ep-ratio-0`…`ep-ratio-5` each existed twice.
 	it('gives every EP-ratio picker a unique id', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const ids = [...table().querySelectorAll('tr.ep-ratios input')].map(input => input.id);
 		expect(ids).toHaveLength(12);
@@ -340,6 +342,7 @@ describe('EpWeightsDialog', () => {
 	});
 
 	it('writes the ratio at its own index', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const input = table().querySelector<HTMLInputElement>('#ep-ratio-ep-2')!;
 		act(() => {
@@ -377,6 +380,7 @@ describe('EpWeightsDialog', () => {
 	// DEFECT FIXED. Every `<button>` in the panel was written without one, so any inside a form would
 	// submit it.
 	it('types every button it renders', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const buttons = [...rootElem.querySelectorAll('button')];
 		expect(buttons.length).toBeGreaterThan(14);
@@ -386,6 +390,7 @@ describe('EpWeightsDialog', () => {
 	// DEFECT FIXED. The three reference selects were named by an adjacent `<span>`, which is not an
 	// accessible name at all.
 	it('labels each reference select', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		for (const id of ['ep-ref-stat-damage', 'ep-ref-stat-healing', 'ep-ref-stat-threat']) {
 			const label = popup().querySelector<HTMLLabelElement>(`label[for="${id}"]`)!;
@@ -437,6 +442,7 @@ describe('EpWeightsDialog', () => {
 	});
 
 	it('copies a column into the current EP weights, leaving excluded stats alone', () => {
+		host.sim.showThreatMetrics = true;
 		renderDialog();
 		player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
 		settings.setStatExcluded(AGILITY, true);

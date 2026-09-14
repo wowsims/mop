@@ -111,14 +111,12 @@ beforeEach(() => {
 });
 
 describe('DetailedResults', () => {
-	it('renders the ten tabs with the damage tab selected', () => {
+	it('renders only the tabs whose metrics toggle is on, damage tab selected', () => {
 		const { container } = renderPane();
 		const buttons = [...container.querySelectorAll<HTMLButtonElement>('.dr-toolbar [role="tab"]')];
-		expect(buttons).toHaveLength(10);
+		expect(buttons).toHaveLength(8);
 		expect(buttons.map(button => button.getAttribute('aria-controls'))).toEqual([
 			'damageTab',
-			'healingTab',
-			'damageTakenTab',
 			'buffsTab',
 			'debuffsTab',
 			'castsTab',
@@ -144,6 +142,8 @@ describe('DetailedResults', () => {
 	});
 
 	it('holds every ported metrics table in the container the vanilla pane built for it', () => {
+		metrics.threat = true;
+		metrics.healing = true;
 		const { container } = renderPane();
 		expect(container.querySelectorAll('#damageTab .damage-metrics > .damage-metrics-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#healingTab .healing-spell-metrics > .healing-metrics-root')).toHaveLength(1);
@@ -205,14 +205,11 @@ describe('DetailedResults', () => {
 		expect(stops()).toEqual([tabButton(container, 'logTab')]);
 	});
 
-	it('carries the metric-visibility classes the vanilla pane put on its root', () => {
+	it('renders only the tabs whose toggle is on', () => {
 		metrics.threat = true;
-		metrics.experimental = true;
 		const { container } = renderPane();
-		const root = container.querySelector('.detailed-results-manager-root')!;
-		expect(root.hasAttribute('data-hide-threat')).toBe(false);
-		expect(root.hasAttribute('data-hide-healing')).toBe(true);
-		expect(root.hasAttribute('data-hide-experimental')).toBe(false);
+		expect(container.querySelector('#damageTakenTab')).toBeTruthy();
+		expect(container.querySelector('#healingTab')).toBeNull();
 	});
 
 	it('leaves the damage tab for healing when damage metrics are off', async () => {
@@ -220,7 +217,7 @@ describe('DetailedResults', () => {
 		metrics.healing = true;
 		const { container } = renderPane();
 		await waitFor(() => expect(container.querySelector<HTMLElement>('#healingTab')!.hidden).toBe(false));
-		expect(container.querySelector<HTMLElement>('#damageTab')!.hidden).toBe(true);
+		expect(container.querySelector('#damageTab')).toBeNull();
 		expect(tabButton(container, 'healingTab').getAttribute('aria-selected')).toBe('true');
 	});
 

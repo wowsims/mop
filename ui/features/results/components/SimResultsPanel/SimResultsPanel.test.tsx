@@ -6,7 +6,7 @@
 import { ProgressMetrics } from '@generated/proto/api';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { SimWarning } from '@sim/sim_host';
-import { fakeHost } from '@sim/testing';
+import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { act, render } from '@testing-library/react';
 import { Profiler } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,6 +15,8 @@ import type { SimResultsManager } from '../../model/results_manager';
 import { WarningsRegistry } from '../../model/warnings';
 import { ResultsPanelStore } from './results_panel_store';
 import { SimResultsPanel } from './SimResultsPanel';
+
+vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
 
 // The summary needs a whole SimResult; SimResultSummary.test.tsx is where it is asserted. What is
 // under test here is that the content zone renders it and nothing else.
@@ -25,7 +27,12 @@ const host = (disabled = false, isHealingSpec = false) =>
 		disabled,
 		player: { getPlayerSpec: () => ({ isHealingSpec }) },
 		// The warnings only read the registry once the sim reports ready; every case here is a loaded sim.
-		sim: { waitForInit: () => Promise.resolve() },
+		sim: {
+			waitForInit: () => Promise.resolve(),
+			getShowDamageMetrics: () => true,
+			getShowThreatMetrics: () => true,
+			getShowHealingMetrics: () => true,
+		},
 	});
 
 const progress = (dps: number, hps: number, completed: number, total: number, presimRunning = false) =>

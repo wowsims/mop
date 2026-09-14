@@ -5,6 +5,7 @@ import i18n from '@i18n/config';
 import type { TopGearResult } from '@sim/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { formatDeltaText, formatSignificance, formatToNumber } from '@sim/utils/format';
 import { stDevToConf95, zTest } from '@sim/utils/math';
 import { Button } from '@ui-kit/Button';
@@ -29,6 +30,7 @@ const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: Ite
 
 export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowProps) => {
 	const host = useSimHost();
+	const { damage: showDamage } = useDisplayMetrics(host.sim);
 	const activateTab = useActivateTab();
 	const marginTooltipId = useId();
 	const deltaTooltipId = useId();
@@ -49,29 +51,31 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 	return (
 		<div className="bulk-sim-result-root flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6">
 			<div className="results-sim text-center flex-3">
-				<div className="results-sim-dps damage-metrics in-data-[hide-damage]:hidden font-bold grid grid-cols-wide-narrow text-left leading-none gap-2">
-					<span className="topline-result-avg text-2xl mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
-					{plusMinusDps > 0 && (
-						<>
-							<span className="text-muted text-sm" {...tooltipAnchorProps(marginTooltipId)}>
-								{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
-							</span>
-							<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
-						</>
-					)}
-					<div className="results-reference mb-0 font-normal flex items-end">
-						{isBaseResult ? (
-							<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
-						) : (
+				{showDamage && (
+					<div className="results-sim-dps damage-metrics font-bold grid grid-cols-wide-narrow text-left leading-none gap-2">
+						<span className="topline-result-avg text-2xl mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
+						{plusMinusDps > 0 && (
 							<>
-								<span className={clsx('results-reference-diff font-bold', delta.tone)} {...tooltipAnchorProps(deltaTooltipId)}>
-									{delta.text}
+								<span className="text-muted text-sm" {...tooltipAnchorProps(marginTooltipId)}>
+									{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
 								</span>
-								<Tooltip id={deltaTooltipId} content={formatSignificance(test)} />
+								<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
 							</>
 						)}
+						<div className="results-reference mb-0 font-normal flex items-end">
+							{isBaseResult ? (
+								<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
+							) : (
+								<>
+									<span className={clsx('results-reference-diff font-bold', delta.tone)} {...tooltipAnchorProps(deltaTooltipId)}>
+										{delta.text}
+									</span>
+									<Tooltip id={deltaTooltipId} content={formatSignificance(test)} />
+								</>
+							)}
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 			<div className="bulk-gear-combo flex flex-wrap gap-1 flex-5">
 				{!isBaseResult &&

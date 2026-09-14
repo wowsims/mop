@@ -37,7 +37,12 @@ class FakeEncounter {
 		public targets: Array<TargetProto> = [defaultTarget()],
 		public presetTargets: Array<PresetTarget> = [],
 	) {}
-	readonly sim = { db: { getAllPresetTargets: () => this.presetTargets } };
+	readonly sim = {
+		db: { getAllPresetTargets: () => this.presetTargets },
+		getShowDamageMetrics: () => true,
+		getShowThreatMetrics: () => true,
+		getShowHealingMetrics: () => true,
+	};
 	getTargets() {
 		return this.targets;
 	}
@@ -80,7 +85,6 @@ describe('TargetsPicker', () => {
 		expect(targetRoots()).toHaveLength(1);
 		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];
 		expect(sections).toHaveLength(3);
-		expect(sections[2].className).toContain('in-data-[hide-threat]:block');
 	});
 
 	it('renders one target row per target and adds another through the create button', () => {

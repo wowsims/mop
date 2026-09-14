@@ -1,5 +1,6 @@
-import { Target as TargetProto } from '@generated/proto/common';
+import { Stat, Target as TargetProto } from '@generated/proto/common';
 import type { Encounter } from '@sim/raid/encounter';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
@@ -30,6 +31,7 @@ export interface TargetPickerProps {
  * One target: three picker sections, in order.
  */
 export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
+	const { threat: showThreatMetrics } = useDisplayMetrics(encounter.sim);
 	const context = useMemo(
 		(): TargetFieldContext => ({
 			encounter,
@@ -44,7 +46,13 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const level = useMemo(() => levelConfig(context), [context]);
 	const mobType = useMemo(() => mobTypeConfig(context), [context]);
 	const tankIndex = useMemo(() => tankIndexConfig(context), [context]);
-	const stats = useMemo(() => ALL_TARGET_STATS.map(entry => statConfig(context, entry.stat, entry.tooltip, entry.extraClassNames)), [context]);
+	const stats = useMemo(
+		() =>
+			ALL_TARGET_STATS.filter(entry => showThreatMetrics || entry.stat !== Stat.StatAttackPower).map(entry =>
+				statConfig(context, entry.stat, entry.tooltip, entry.extraClassNames),
+			),
+		[context, showThreatMetrics],
+	);
 	const numbers = useMemo(() => numberConfigs(context), [context]);
 	const booleans = useMemo(() => booleanConfigs(context), [context]);
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);
@@ -58,7 +66,7 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 				<EnumPicker modObject={null} config={ai} />
 				<EnumPicker modObject={null} config={level} />
 				<EnumPicker modObject={null} config={mobType} />
-				<EnumPicker modObject={null} config={tankIndex} />
+				{showThreatMetrics && <EnumPicker modObject={null} config={tankIndex} />}
 				<TargetInputsPicker encounter={encounter} targetIndex={targetIndex} />
 			</PickerGroup>
 			<PickerGroup data-testid="target-picker-section">
@@ -66,17 +74,17 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
 			</PickerGroup>
-			<PickerGroup
-				data-testid="target-picker-section"
-				className="in-data-[hide-threat]:block in-data-[hide-threat]:invisible in-data-[hide-threat]:max-xl:hidden in-data-[hide-threat]:[&_.input-root]:hidden">
-				{numbers.map(config => (
-					<NumberPicker key={config.id} modObject={null} config={config} />
-				))}
-				{booleans.map(config => (
-					<BooleanPicker key={config.id} modObject={null} config={config} />
-				))}
-				<EnumPicker modObject={null} config={spellSchool} />
-			</PickerGroup>
+			{showThreatMetrics && (
+				<PickerGroup data-testid="target-picker-section">
+					{numbers.map(config => (
+						<NumberPicker key={config.id} modObject={null} config={config} />
+					))}
+					{booleans.map(config => (
+						<BooleanPicker key={config.id} modObject={null} config={config} />
+					))}
+					<EnumPicker modObject={null} config={spellSchool} />
+				</PickerGroup>
+			)}
 		</div>
 	);
 };

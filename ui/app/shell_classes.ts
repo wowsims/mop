@@ -1,6 +1,8 @@
-import { hideMetricsClassName } from '@features/results/model/sim_results';
+import { hideMetricsClassName, showsEpRatios } from '@features/results/model/sim_results';
 import type { PlayerSpec } from '@sim/player/player_spec';
 import clsx from 'clsx';
+
+export { showsEpRatios };
 
 export interface MetricVisibility {
 	damage: boolean;
@@ -18,10 +20,6 @@ export const simTypeClasses = (spec: PlayerSpec<any>): string =>
 		!spec.isHealingSpec && !spec.isTankSpec && spec.isMeleeDpsSpec && 'sim-type--melee',
 		!spec.isHealingSpec && !spec.isTankSpec && !spec.isMeleeDpsSpec && spec.isRangedDpsSpec && 'sim-type--ranged',
 	);
-
-/** EP ratios are a column *comparison*, so they only mean something when more than one column is on. */
-export const showsEpRatios = (metrics: { damage: boolean; threat: boolean; healing: boolean }): boolean =>
-	metrics.threat || (metrics.damage && metrics.healing);
 
 export const metricVisibilityClasses = (metrics: MetricVisibility): string =>
 	clsx(

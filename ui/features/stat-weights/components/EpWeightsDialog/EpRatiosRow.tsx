@@ -1,5 +1,4 @@
 import type { Player } from '@sim/player/player';
-import { metricsClassName } from '@features/results/model/sim_results';
 import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
@@ -33,7 +32,6 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 							cellClassName,
 							'text-right',
 							column.type === 'weight' ? 'in-data-[stats-type=ep]:hidden' : 'in-data-[stats-type=weight]:hidden',
-							column.metric && metricsClassName(column.metric),
 							`type-${column.type}`,
 						)}>
 						<NumberPicker

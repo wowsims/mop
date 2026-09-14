@@ -14,7 +14,7 @@ import { trackEvent, type TrackEventProps } from '../../../../../tracking/analyt
 export const ALL_TARGET_STATS: Array<{ stat: Stat; tooltip: string; extraClassNames: Array<string> }> = [
 	{ stat: Stat.StatHealth, tooltip: '', extraClassNames: [] },
 	{ stat: Stat.StatArmor, tooltip: '', extraClassNames: [] },
-	{ stat: Stat.StatAttackPower, tooltip: '', extraClassNames: ['in-data-[hide-threat]:hidden'] },
+	{ stat: Stat.StatAttackPower, tooltip: '', extraClassNames: [] },
 ];
 
 const mobTypeEnumValues = [
@@ -132,7 +132,6 @@ export const mobTypeConfig = ({ encounter, targetIndex, getTarget }: TargetField
 
 export const tankIndexConfig = ({ encounter, targetIndex, getTarget }: TargetFieldContext): EnumPickerConfig<null> => ({
 	id: targetId(targetIndex, 'tanked-by'),
-	extraClassNames: ['in-data-[hide-threat]:hidden'],
 	label: i18n.t('settings_tab.encounter.tanked_by.label'),
 	labelTooltip: i18n.t('settings_tab.encounter.tanked_by.tooltip'),
 	values: [

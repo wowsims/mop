@@ -1,17 +1,15 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { hideMetricsClassName } from '@features/results/model/sim_results';
 import { SimRun, SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
-import { useShowExperimental } from '@sim/hooks/useShowExperimental';
 import { SimResult } from '@sim/proto/sim_result';
 import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
 import clsx from 'clsx';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
 import { useSimResult } from '../../hooks/useSimResult';
@@ -41,7 +39,17 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 
 	const settingsSubscribe = subscribeSimSettingsChange(sim);
 	const { damage: showDamage, threat: showThreat, healing: showHealing } = useDisplayMetrics(sim);
-	const showExperimental = useShowExperimental(sim);
+
+	const visibleTabs = useMemo(
+		() =>
+			DETAILED_RESULTS_TABS.filter(tab => {
+				if (tab.id === 'damageTab') return showDamage;
+				if (tab.id === 'healingTab') return showHealing;
+				if (tab.id === 'damageTakenTab') return showThreat;
+				return true;
+			}),
+		[showDamage, showThreat, showHealing],
+	);
 
 	const [activeId, setActiveId] = useState<string>(DEFAULT_DETAILED_RESULTS_TAB);
 	const [deathDisabled, setDeathDisabled] = useState(true);
@@ -136,8 +144,9 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	}, [target, updateResults]);
 
 	useEffect(() => {
-		if (!showDamage && activeId === 'damageTab') setActiveId('healingTab');
-	}, [showDamage, activeId]);
+		if (visibleTabs.some(tab => tab.id === activeId)) return;
+		setActiveId(visibleTabs[0]?.id ?? DEFAULT_DETAILED_RESULTS_TAB);
+	}, [visibleTabs, activeId]);
 
 	const onSimulateDeath = () => {
 		trackEvent({ action: 'sim', category: 'simulate', label: 'death' });
@@ -156,18 +165,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	};
 
 	return (
-		<div
-			className={clsx(
-				'detailed-results-manager-root flex flex-col [&>*]:min-h-0',
-				!showDamage && hideMetricsClassName('damage'),
-				!showThreat && hideMetricsClassName('threat'),
-				!showHealing && hideMetricsClassName('healing'),
-				!showExperimental && 'hide-experimental',
-			)}
-			data-hide-damage={!showDamage ? '' : undefined}
-			data-hide-threat={!showThreat ? '' : undefined}
-			data-hide-healing={!showHealing ? '' : undefined}
-			data-hide-experimental={!showExperimental ? '' : undefined}>
+		<div className="detailed-results-manager-root flex flex-col [&>*]:min-h-0">
 			<div className="detailed-results-controls-div flex mb-3">
 				<Button
 					className="detailed-results-1-iteration-button"
@@ -201,7 +199,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						/>
 					</div>
 					<div className="tabs-filler grow min-h-0" />
-					<DetailedResultsTabs tabs={DETAILED_RESULTS_TABS} />
+					<DetailedResultsTabs tabs={visibleTabs} />
 				</div>
 				<div className="tab-content pt-6">
 					<div
@@ -209,24 +207,30 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						className="tab-pane dr-tab-content active transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
 						{i18n.t('results_tab.details.no_results')}
 					</div>
-					<DetailedResultsPane
-						id="damageTab"
-						className="damage-content [&_.metrics-table]:text-xs"
-						contentClassName="damage-metrics in-data-[hide-damage]:hidden"
-						topline
-						histogram>
-						<DamageMetricsTable />
-					</DetailedResultsPane>
-					<DetailedResultsPane
-						id="healingTab"
-						className="healing-content [&_.metrics-table]:text-xs"
-						contentClassName="healing-spell-metrics"
-						topline>
-						<HealingMetricsTable />
-					</DetailedResultsPane>
-					<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
-						<DtpsMetricsTable />
-					</DetailedResultsPane>
+					{showDamage && (
+						<DetailedResultsPane
+							id="damageTab"
+							className="damage-content [&_.metrics-table]:text-xs"
+							contentClassName="damage-metrics"
+							topline
+							histogram>
+							<DamageMetricsTable />
+						</DetailedResultsPane>
+					)}
+					{showHealing && (
+						<DetailedResultsPane
+							id="healingTab"
+							className="healing-content [&_.metrics-table]:text-xs"
+							contentClassName="healing-spell-metrics"
+							topline>
+							<HealingMetricsTable />
+						</DetailedResultsPane>
+					)}
+					{showThreat && (
+						<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
+							<DtpsMetricsTable />
+						</DetailedResultsPane>
+					)}
 					<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics">
 						<AuraMetricsTable useDebuffs={false} />
 					</DetailedResultsPane>

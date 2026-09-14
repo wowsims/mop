@@ -1,4 +1,5 @@
 import type { Player } from '@sim/player/player';
+import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { Stats, UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import type { StatWeightsResult } from '@generated/proto/api';
@@ -27,6 +28,8 @@ export interface EpWeightsTableProps {
 	onComputeEp: () => void;
 	isTank: boolean;
 	showThreatMetrics: boolean;
+	showEpRatios: boolean;
+	displayMetrics: DisplayMetrics;
 }
 
 export const EpWeightsTable = ({
@@ -44,12 +47,14 @@ export const EpWeightsTable = ({
 	onComputeEp,
 	isTank,
 	showThreatMetrics,
+	showEpRatios,
+	displayMetrics,
 }: EpWeightsTableProps) => (
 	<div data-testid="results-ep-table-container" className="relative flex-1 overflow-y-auto">
 		<table className={clsx('results-ep-table w-full', showThreatMetrics && 'max-lg:pr-0', `stats-type-${statsType}`)} data-stats-type={statsType}>
 			<thead>
 				<EpWeightsHeader columns={columns} isTank={isTank} showThreatMetrics={showThreatMetrics} />
-				{!isTank && <EpRatiosRow columns={columns} player={player} onComputeEp={onComputeEp} showThreatMetrics={showThreatMetrics} />}
+				{!isTank && showEpRatios && <EpRatiosRow columns={columns} player={player} onComputeEp={onComputeEp} showThreatMetrics={showThreatMetrics} />}
 			</thead>
 			<tbody>
 				{stats.map(stat => (
@@ -66,6 +71,7 @@ export const EpWeightsTable = ({
 						includable={isEpStat(stat, epStatSet)}
 						isTank={isTank}
 						showThreatMetrics={showThreatMetrics}
+						displayMetrics={displayMetrics}
 					/>
 				))}
 			</tbody>

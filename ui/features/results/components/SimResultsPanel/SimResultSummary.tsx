@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
-import { useSimHost } from '@sim/context/SimHostContext';
+import { useSim, useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { textClassName } from '@sim/proto/utils';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
@@ -18,6 +19,7 @@ export interface SimResultSummaryProps {
 /** The finished run: the sidebar's stacked metric list and the reference bar over it. Renders nothing until a run completes, so the panel's result zone is empty at load. */
 export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 	const { cssScheme } = useSimHost().config;
+	const displayMetrics = useDisplayMetrics(useSim());
 	const tooltipId = useId();
 	const { current, reference } = useStoreSubscribe(results.subscribe, results.getData);
 
@@ -26,7 +28,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 	return (
 		<div className="results-sim text-center">
 			<ResultMetricList
-				metrics={toplineResultMetrics(current.simResult)}
+				metrics={toplineResultMetrics(current.simResult, undefined, { displayMetrics })}
 				layout="list"
 				referenceDiffs={reference ? referenceDiffs(current.simResult, reference.simResult) : undefined}
 			/>

@@ -72,7 +72,6 @@ export const DistanceFromTarget = {
 export const TankAssignment = {
 	id: 'tank-assignment',
 	type: 'enum' as const,
-	extraClassNames: ['in-data-[hide-threat]:hidden'],
 	label: i18n.t('settings_tab.other.tank_assignment.label'),
 	labelTooltip: i18n.t('settings_tab.other.tank_assignment.tooltip'),
 	values: [
@@ -82,7 +81,8 @@ export const TankAssignment = {
 		{ name: i18n.t('common.tanks.tank_3'), value: 2 },
 		{ name: i18n.t('common.tanks.tank_4'), value: 3 },
 	],
-	storeField: 'raid:tanks' as const,
+	storeField: ['raid:tanks', 'ui:showThreatMetrics'] as const,
+	showWhen: (player: Player<any>) => player.sim.getShowThreatMetrics(),
 	getValue: (player: Player<any>) => (player.getRaid()?.getTanks() || []).findIndex(tank => UnitReference.equals(tank, player.makeUnitReference())),
 	setValue: (player: Player<any>, newValue: number) => {
 		const newTanks = [];

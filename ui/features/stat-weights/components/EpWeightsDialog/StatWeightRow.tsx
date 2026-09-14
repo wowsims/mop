@@ -1,8 +1,9 @@
 import { sanitizeId } from '@sim/utils/format';
+import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { Player } from '@sim/player/player';
 import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import type { StatWeightsResult } from '@generated/proto/api';
+import type { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
@@ -22,6 +23,7 @@ export interface StatWeightRowProps {
 	includable: boolean;
 	isTank: boolean;
 	showThreatMetrics: boolean;
+	displayMetrics: DisplayMetrics;
 }
 
 export const StatWeightRow = ({
@@ -36,19 +38,21 @@ export const StatWeightRow = ({
 	includable,
 	isTank,
 	showThreatMetrics,
+	displayMetrics,
 }: StatWeightRowProps) => {
 	const rowResult = settings.isUnitStatExcludedFromCalc(stat) ? null : result;
 	const epDelta = scaledEpValue(stat, epRatios, rowResult) - epWeights.getUnitStat(stat);
 	const fullName = stat.getFullName(player.getClass());
 	const cellClassName = clsx('ui-ep-weights-table-cell', showThreatMetrics && 'max-lg:pl-0');
-	const metrics = [
-		{ statWeights: rowResult?.dps, metricClass: 'damage-metrics' },
-		{ statWeights: rowResult?.hps, metricClass: 'healing-metrics' },
-		{ statWeights: rowResult?.tps, metricClass: 'threat-metrics' },
-		{ statWeights: rowResult?.dtps, metricClass: 'threat-metrics' },
-		{ statWeights: rowResult?.tmi, metricClass: 'threat-metrics' },
-		{ statWeights: rowResult?.pDeath, metricClass: 'threat-metrics' },
+	const allMetrics: { statWeights: StatWeightValues | undefined; metric: keyof DisplayMetrics }[] = [
+		{ statWeights: rowResult?.dps, metric: 'damage' },
+		{ statWeights: rowResult?.hps, metric: 'healing' },
+		{ statWeights: rowResult?.tps, metric: 'threat' },
+		{ statWeights: rowResult?.dtps, metric: 'threat' },
+		{ statWeights: rowResult?.tmi, metric: 'threat' },
+		{ statWeights: rowResult?.pDeath, metric: 'threat' },
 	];
+	const metrics = allMetrics.map((entry, ratioIndex) => ({ ...entry, ratioIndex })).filter(entry => displayMetrics[entry.metric]);
 
 	return (
 		<tr className="odd:bg-(--table-row-odd-bg) even:bg-(--table-row-even-bg)">
@@ -71,14 +75,13 @@ export const StatWeightRow = ({
 				</td>
 			)}
 			{!isTank &&
-				metrics.map(({ statWeights, metricClass }, index) => (
+				metrics.map(({ statWeights, ratioIndex }) => (
 					<StatWeightCells
-						key={index}
+						key={ratioIndex}
 						stat={stat}
 						statWeights={statWeights}
-						metricClass={metricClass}
 						iterations={iterations}
-						epRatio={epRatios[index]}
+						epRatio={epRatios[ratioIndex]}
 						epDelta={epDelta}
 						cellClassName={cellClassName}
 					/>

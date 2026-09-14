@@ -1,11 +1,24 @@
 import { ResourceType } from '@generated/proto/spell';
+import { SimHostProvider } from '@sim/context/SimHostContext';
+import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { AuraItem, CastItem, ResourceItem, RowItem, TickItem } from '../../../model/timeline/rotation';
 import { RowItemTooltip } from './RowItemTooltip';
 
-const text = (item: RowItem) => render(<RowItemTooltip item={item} />).container.textContent!;
+vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
+
+const host = fakeHost({
+	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
+});
+
+const text = (item: RowItem) =>
+	render(
+		<SimHostProvider host={host}>
+			<RowItemTooltip item={item} />
+		</SimHostProvider>,
+	).container.textContent!;
 
 const damage = (amount: number) => ({
 	timestamp: 1.5,

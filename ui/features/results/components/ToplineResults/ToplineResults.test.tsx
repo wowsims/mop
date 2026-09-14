@@ -1,13 +1,21 @@
+import { SimHostProvider } from '@sim/context/SimHostContext';
 import { PlayerSpecs } from '@sim/player/specs/index';
+import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { SimResultData } from '../../model/result_data';
 import { ToplineResults } from './ToplineResults';
 
+vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
+
 let result: SimResultData | null = null;
 
 vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
+
+const host = fakeHost({
+	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
+});
 
 const dist = (avg: number, stdev = 0) => ({ avg, stdev });
 
@@ -42,9 +50,11 @@ beforeEach(() => {
 	result = null;
 });
 
+const mount = () => render(<SimHostProvider host={host}>{<ToplineResults />}</SimHostProvider>);
+
 describe('ToplineResults', () => {
 	it('renders an empty root before the first run', () => {
-		const { container } = render(<ToplineResults />);
+		const { container } = mount();
 		const root = container.querySelector('.topline-results-root')!;
 
 		expect(root).toBeTruthy();
@@ -53,7 +63,7 @@ describe('ToplineResults', () => {
 
 	it('renders the one-row table once a result arrives', () => {
 		result = resultFor(PlayerSpecs.FireMage);
-		const { container } = render(<ToplineResults />);
+		const { container } = mount();
 
 		expect(container.querySelectorAll('.topline-results-root > table.metrics-table')).toHaveLength(1);
 		expect(container.querySelectorAll('.topline-results-root > *')).toHaveLength(1);
@@ -71,7 +81,7 @@ describe('ToplineResults', () => {
 
 	it('drops the out-of-mana column for a class with no mana bar', () => {
 		result = resultFor(PlayerSpecs.ArmsWarrior);
-		const { container } = render(<ToplineResults />);
+		const { container } = mount();
 
 		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric'))).not.toContain('oom');
 	});
