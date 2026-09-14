@@ -1,5 +1,3 @@
-import './EpWeightsDialog.scss';
-
 import { ErrorOutcomeType, type StatWeightsResult } from '@generated/proto/api';
 import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
@@ -199,7 +197,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						showThreatMetrics={showThreatMetrics}
 					/>
 				</div>
-				<div className="ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
+				<div className="ep-weights-sidebar ui-ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>

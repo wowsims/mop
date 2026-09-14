@@ -13,3 +13,7 @@
 .ui-ep-weights-table-cell {
 	@apply pt-2 pr-2 pb-2 pl-2;
 }
+
+.ui-ep-weights-sidebar .ui-saved-data-create-container {
+	@apply max-w-[200px];
+}

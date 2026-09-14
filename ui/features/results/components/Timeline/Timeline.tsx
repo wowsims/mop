@@ -1,5 +1,3 @@
-import './Timeline.scss';
-
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { UnitMetrics } from '@sim/proto/sim_result';

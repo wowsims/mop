@@ -93,7 +93,7 @@ describe('ContentBlock', () => {
 			/>,
 		);
 		const root = container.firstElementChild!;
-		expect(Array.from(root.classList).sort()).toEqual(['blk-extra', 'content-block', 'flex', 'flex-col', 'my-block'].sort());
+		expect(Array.from(root.classList).sort()).toEqual(['blk-extra', 'content-block', 'ui-content-block', 'flex', 'flex-col', 'my-block'].sort());
 		expect(screen.getByTestId('content-block-header').classList.contains('header-extra')).toBe(true);
 		expect(screen.getByTestId('content-block-body').classList.contains('body-extra')).toBe(true);
 	});

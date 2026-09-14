@@ -1,0 +1,11 @@
+.ui-content-block {
+	@apply gap-3;
+}
+
+.ui-content-block-header {
+	@apply pb-2 border-b border-b-border;
+}
+
+.ui-content-block-body {
+	@apply flex gap-3;
+}

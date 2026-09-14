@@ -1,37 +1,7 @@
-// Deferred (W1): `.sim-title .sim-link` background/hover interacts with the shared `.sim-link`
-// base rule in `_sim_links.scss` and with `SIM_LINK_CLASSES`'s own `bg-background` /
-// `hover:bg-surface-hover` utilities already on these elements (unlayered, `!important`) — not
-// confirmed which wins without deeper cross-file verification than this unit's time-box allows.
-.sim-title {
-	.sim-link {
-		background: var(--color-background);
-		height: 100%;
-		width: 100%;
-
-		&:hover,
-		&:focus,
-		&.active,
-		&[data-popup-open] {
-			background: var(--dropdown-link-hover-bg);
-		}
-
-		.sim-link-content {
-			padding-left: var(--spacing-gutter);
-			padding-right: var(--spacing-gutter);
-		}
-	}
-}
-
-// Relocated from `SimTitleDropdown.scss` (deleted): `.sim-link-content`'s own padding is set here
-// because `SimLinkContent` takes no className prop for its root.
-.sim-title-popup .sim-link-content {
-	padding-left: var(--spacing-gutter);
-	padding-right: var(--spacing-gutter);
-}
-
-// Relocated from `SimTitleDropdown.scss` (deleted). Base UI's `markOthers` sets
-// `data-base-ui-inert` on elements outside an open modal; kept as-is, not proven equivalent to a
-// utility form within this unit's time-box.
+// Base UI's `markOthers` sets `data-base-ui-inert` as a plain bookkeeping marker (not the native
+// `inert` attribute) on elements outside an open modal; no other CSS in this app currently sets
+// `pointer-events` on it, but the rule targets an arbitrary, dynamically-rendered descendant tree
+// (`* `) with no class of its own to hang a utility on, so it stays in plain CSS.
 .sim-title-positioner {
 	&[data-base-ui-inert],
 	&[data-base-ui-inert] * {

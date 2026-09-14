@@ -36,8 +36,8 @@ export const PresetConfigurationPicker = ({ categories }: PresetConfigurationPic
 			<ContentBlock
 				config={{ header: { title: i18n.t('gear_tab.preset_configurations.title'), tooltip: i18n.t('gear_tab.preset_configurations.tooltip') } }}>
 				{ready && (
-					<div className="saved-data-container">
-						<div className="saved-data-presets">
+					<div className="saved-data-container ui-saved-data-container">
+						<div className="saved-data-presets ui-saved-data-presets">
 							{builds.map((build, index) => (
 								<Chip
 									key={build.name}

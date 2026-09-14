@@ -1,0 +1,4 @@
+.ui-sim-title-trigger .ui-sim-link-content,
+.ui-sim-title-popup .ui-sim-link-content {
+	@apply px-6;
+}

@@ -57,7 +57,7 @@ describe('CustomSection', () => {
 
 	it('is a content block named by className, and carries custom-section', () => {
 		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(
-			['content-block', 'custom-section', 'flex', 'flex-col', 'totems-settings'].sort(),
+			['content-block', 'ui-content-block', 'custom-section', 'flex', 'flex-col', 'totems-settings'].sort(),
 		);
 	});
 

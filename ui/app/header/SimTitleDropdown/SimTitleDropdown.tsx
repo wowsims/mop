@@ -39,7 +39,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 					sideOffset={0}
 					className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
 					data-testid="sim-title-positioner">
-					<Menu.Popup className={clsx('sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
+					<Menu.Popup className={clsx('sim-title-popup ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-[300px]')} data-testid="sim-title-popup">
 						{Object.values(playerClass.specs).map(spec => (
 							<Menu.LinkItem
 								key={spec.simLink}
@@ -64,10 +64,15 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 	const portalContainer = usePortalContainer();
 	return (
-		<div className="h-[calc(var(--sim-header-height)-1px)]" data-testid="sim-title-dropdown-root">
+		<div className="h-[calc(var(--spacing-sim-header)-1px)]" data-testid="sim-title-dropdown-root">
 			<div className="relative sim-link-dropdown h-full">
 				<Menu.Root modal={false}>
-					<Menu.Trigger className={clsx('sim-link flex', textClassNameForSpec(currentSpec))} data-testid="sim-link">
+					<Menu.Trigger
+						className={clsx(
+							'sim-link ui-sim-title-trigger flex h-full w-full bg-background hover:bg-surface-hover focus:bg-surface-hover data-[popup-open]:bg-surface-hover',
+							textClassNameForSpec(currentSpec),
+						)}
+						data-testid="sim-link">
 						<SimLinkContent
 							iconPath={currentSpec.getIcon('large')}
 							label={i18n.t('sidebar.header.title')}
@@ -82,7 +87,9 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 							sideOffset={0}
 							className={clsx('sim-title-positioner', 'ui-menu-positioner-plain')}
 							data-testid="sim-title-positioner">
-							<Menu.Popup className={clsx('sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')} data-testid="sim-title-popup">
+							<Menu.Popup
+								className={clsx('sim-title-popup ui-sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')}
+								data-testid="sim-title-popup">
 								{PlayerClasses.naturalOrder.map(playerClass => (
 									<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />
 								))}

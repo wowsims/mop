@@ -1,18 +1,5 @@
-:root {
-	--sim-header-height: 4.5rem;
-
-	@include media-breakpoint-down(lg) {
-		--sim-header-height: 65px;
-	}
-}
-
-td,
-th {
-	padding: auto;
-}
-
 // TODO: Move these to an organized partial
-// Deferred (W1): no carrier under this unit's ownership. Each metric class lives on a feature
+// Deferred (leftovers A): no single carrier — each metric class lives on a feature
 // component owned by another unit (results tables, tabs, encounter picker, EP weights dialog,
 // rotation timeline tooltips) — converts with that unit.
 .hide-damage-metrics {

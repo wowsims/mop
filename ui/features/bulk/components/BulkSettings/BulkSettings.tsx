@@ -86,7 +86,7 @@ export const BulkSettings = () => {
 
 	return (
 		<TabPanelColumns.Right className="bulk-tab-right">
-			<div className="bulk-settings-outer-container sticky top-(--sim-header-height) pt-6">
+			<div className="bulk-settings-outer-container sticky top-sim-header pt-6">
 				<div className="bulk-settings-container p-4 border border-border grid gap-6 bg-background">
 					<CombinationsCount />
 					<Button className="bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
