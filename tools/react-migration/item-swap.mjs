@@ -16,7 +16,7 @@ const STATE = () => {
 	const container = root.querySelector(q('input-item-swap-container'));
 	return {
 		children: [...root.children].map(el => `${el.tagName.toLowerCase()}.${[...el.classList].sort().join('.')}`),
-		hidden: container?.classList.contains('hide') ?? null,
+		hidden: container ? container.classList.contains('hide') : true,
 		checked: root.querySelector('#enable-item-swap')?.checked ?? null,
 		icons: root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) > *').length,
 		// What the swap set actually holds. An empty slot is a placeholder image and `href="#"`; a
