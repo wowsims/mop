@@ -26,11 +26,7 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 // Both sides: tippy's themed box on master, `Popover`'s popup on this branch.
-const POPOVER_PARTS = [
-	".tippy-box[data-theme='reforge-optimiser-popover']",
-	'[data-testid="sim-popover-popup"].reforge-optimiser-popover',
-	'[data-testid="reforge-optimiser-popover"]',
-];
+const POPOVER_PARTS = [".tippy-box[data-theme='reforge-optimiser-popover']", '[data-testid="reforge-optimiser-popover"]'];
 const POPOVER = POPOVER_PARTS.join(', ');
 // A selector list does not distribute over a descendant combinator, so each part gets its own.
 const inside = suffix => POPOVER_PARTS.map(part => `${part} ${suffix}`).join(', ');

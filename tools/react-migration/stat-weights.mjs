@@ -319,7 +319,7 @@ if (await cog.count()) {
 	// the reforge panel's `Popover` renders. The selector was tippy-only, so this check had been quietly
 	// skipping itself on React ever since that panel ported.
 	const edit = page.locator(
-		'[data-tippy-root] button.btn-outline-primary, [data-testid="sim-popover-popup"] [data-testid="reforge-edit-weights"]',
+		'[data-tippy-root] button.btn-outline-primary, [data-testid="reforge-optimiser-popover"] [data-testid="reforge-edit-weights"]',
 	);
 	if (await edit.count()) {
 		await edit.first().click();
