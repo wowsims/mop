@@ -1,5 +1,4 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/raid/encounter';
 import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, Race } from '@generated/proto/common';
 import {
 	AfflictionWarlock_Options as WarlockOptions,
@@ -7,6 +6,7 @@ import {
 	WarlockMinorGlyph as MinorGlyph,
 	WarlockOptions_Summon as Summon,
 } from '@generated/proto/warlock';
+import { Encounter } from '@sim/raid/encounter';
 export { DefaultRaidBuffs } from '../shared/presets';
 import { WARLOCK_BREAKPOINTS } from '../shared/presets';
 import DefaultApl from './apls/default.apl.json';

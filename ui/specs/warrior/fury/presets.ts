@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Player } from '@sim/player/player';
 import { makeSpecChangeWarningToast } from '@features/settings/utils/spec_change_warning_toast';
 import { ConsumesSpec, HandType, ItemSlot, Profession, Race, Spec } from '@generated/proto/common';
 import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '@generated/proto/warrior';
+import { Player } from '@sim/player/player';
 
 import DefaultFuryApl from './apls/default.apl.json';
 import P2FurySMFGear from './gear_sets/p2_fury_smf.gear.json';

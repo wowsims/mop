@@ -1,6 +1,6 @@
+import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import { ActionId } from '@sim/proto/action_id';
 import { getEnchantDescription } from '@sim/proto/enchants';
-import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import { useActionIdWowheadDataset } from '@ui-kit/hooks/useActionIdWowheadDataset';
 import { useEffect, useMemo, useState } from 'react';
 

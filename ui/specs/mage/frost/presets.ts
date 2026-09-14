@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/raid/encounter';
 import { ConsumesSpec, Profession, Race } from '@generated/proto/common';
 import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
+import { Encounter } from '@sim/raid/encounter';
 
 import FrostApl from './apls/frost.apl.json';
 import FrostAoeApl from './apls/frost_aoe.apl.json';

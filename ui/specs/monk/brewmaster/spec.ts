@@ -1,12 +1,12 @@
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import * as StatCaps from '@sim/presets/stat_caps';
-import { UnitStat } from '@sim/proto/stats';
-import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { APLRotation } from '@generated/proto/apl';
 import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import * as StatCaps from '@sim/presets/stat_caps';
+import { UnitStat } from '@sim/proto/stats';
+import { defineSpec } from '@sim/spec_config';
 
 import { talentBasedSettingsRule } from '../shared/derived';
 import * as MonkPresets from '../shared/presets';

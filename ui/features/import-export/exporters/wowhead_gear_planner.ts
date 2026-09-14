@@ -1,8 +1,8 @@
+import { ItemSlot } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { CHARACTER_LEVEL } from '@sim/constants/mechanics';
 import { raceNames } from '@sim/proto/names';
 import { WOWHEAD_EXPANSION_ENV, WOWHEAD_GEAR_PLANNER_URL } from '@sim/proto/wowhead';
-import { ItemSlot } from '@generated/proto/common';
-import i18n from '@i18n/config';
 
 import { WOWHEAD_SLOT_IDS } from '../importers';
 import type { ExporterDefinition } from './types';

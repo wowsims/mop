@@ -1,7 +1,7 @@
-import { getEnumValues } from '@sim/utils/collections';
+import i18n from '@i18n/config';
 import { SimSettingCategories } from '@sim/constants/sim_settings';
 import { LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';
-import i18n from '@i18n/config';
+import { getEnumValues } from '@sim/utils/collections';
 
 import type { ExportCategories } from './types';
 

@@ -1,11 +1,11 @@
-import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
-import { Stats } from '@sim/proto/stats';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import type { SavedEPWeights } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { Stats } from '@sim/proto/stats';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import type { ClassValue } from 'clsx';

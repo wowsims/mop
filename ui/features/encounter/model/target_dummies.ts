@@ -1,7 +1,7 @@
+import { Spec } from '@generated/proto/common';
 import type { Player } from '@sim/player/player';
 import type { Sim } from '@sim/sim';
 import { subscribePlayerChange } from '@sim/state/subscriptions';
-import { Spec } from '@generated/proto/common';
 
 // Monks' dummy count is talent-driven (specs/monk/shared/derived.ts), so the rule below is not theirs to apply — their picker is hidden and the count is set for them.
 const TALENT_DRIVEN = [Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk];

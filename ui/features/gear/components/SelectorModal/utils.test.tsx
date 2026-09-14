@@ -4,7 +4,7 @@ import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { describe, expect, it } from 'vitest';
 
-import { SelectorModalTabs, type GearData } from '../../types';
+import { type GearData, SelectorModalTabs } from '../../types';
 import { buildSelectorTabs, eligibilityFor } from './utils';
 
 const gearData: GearData = { equipItem: () => undefined, getEquippedItem: () => null, subscribe: () => () => undefined };

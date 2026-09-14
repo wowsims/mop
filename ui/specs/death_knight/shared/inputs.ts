@@ -1,6 +1,6 @@
+import { Spec } from '@generated/proto/common';
 import { Player } from '@sim/player/player';
 import { Sim } from '@sim/sim';
-import { Spec } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for spec-specific UI elements on the settings tab.

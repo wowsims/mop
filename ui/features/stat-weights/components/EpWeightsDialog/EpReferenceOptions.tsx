@@ -1,8 +1,8 @@
+import { Stat } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { Player } from '@sim/player/player';
-import { Stat } from '@generated/proto/common';
-import i18n from '@i18n/config';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { useMemo } from 'react';
 

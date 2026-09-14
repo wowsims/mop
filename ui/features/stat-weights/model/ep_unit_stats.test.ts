@@ -1,5 +1,5 @@
-import { UnitStat } from '@sim/proto/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
+import { UnitStat } from '@sim/proto/stats';
 import { describe, expect, it } from 'vitest';
 
 import { EP_UNIT_STATS, isEpStat, visibleEpUnitStats } from './ep_unit_stats';

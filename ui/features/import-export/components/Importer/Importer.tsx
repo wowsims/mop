@@ -1,6 +1,6 @@
+import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { kebabCase } from '@sim/utils/format';
-import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { TextArea } from '@ui-kit/FormControl';

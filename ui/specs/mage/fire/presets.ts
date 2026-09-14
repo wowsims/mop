@@ -1,6 +1,4 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/raid/encounter';
-import { Stats, UnitStat, UnitStatPresets } from '@sim/proto/stats';
 import { ReforgeSettings } from '@generated/proto/api';
 import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec } from '@generated/proto/common';
 import {
@@ -11,6 +9,8 @@ import {
 	MageMinorGlyph as MinorGlyph,
 } from '@generated/proto/mage';
 import { SavedTalents } from '@generated/proto/ui';
+import { Stats, UnitStat, UnitStatPresets } from '@sim/proto/stats';
+import { Encounter } from '@sim/raid/encounter';
 
 import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import FireApl from './apls/fire.apl.json';

@@ -1,11 +1,11 @@
-import { stringComparator } from '@sim/utils/collections';
+import { type Class, type Glyphs, ItemQuality } from '@generated/proto/common';
+import i18n from '@i18n/config';
+import { getClassI18nKey } from '@i18n/entity_mapping';
 import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { Database } from '@sim/proto/database';
 import type { GlyphsConfig } from '@sim/talents/config';
-import { type Class, type Glyphs, ItemQuality } from '@generated/proto/common';
-import i18n from '@i18n/config';
-import { getClassI18nKey } from '@i18n/entity_mapping';
+import { stringComparator } from '@sim/utils/collections';
 import type { InputConfig } from '@ui-kit/input';
 
 export interface GlyphData {

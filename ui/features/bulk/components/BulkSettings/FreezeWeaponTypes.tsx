@@ -1,8 +1,8 @@
-import { getBulkFreezeWeaponTypes } from '@sim/bulk/utils';
-import { usePlayer } from '@sim/context/SimHostContext';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
+import { getBulkFreezeWeaponTypes } from '@sim/bulk/utils';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 
 import { trackEvent } from '../../../../tracking/analytics';

@@ -1,7 +1,7 @@
-import { ActionId } from '@sim/proto/action_id';
-import type { RogueSpecs } from '@sim/proto/spec_types';
 import { RogueOptions_PoisonOptions as Poison } from '@generated/proto/rogue';
 import i18n from '@i18n/config';
+import { ActionId } from '@sim/proto/action_id';
+import type { RogueSpecs } from '@sim/proto/spec_types';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for class-specific UI elements on the settings tab.

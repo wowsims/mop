@@ -1,6 +1,6 @@
-import { Stats, UnitStat } from '@sim/proto/stats';
 import { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
 import { PseudoStat, Stat, UnitStats } from '@generated/proto/common';
+import { Stats, UnitStat } from '@sim/proto/stats';
 
 import { EP_UNIT_STATS } from './ep_unit_stats';
 

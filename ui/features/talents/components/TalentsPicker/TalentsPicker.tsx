@@ -1,7 +1,7 @@
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { TalentsConfig } from '@sim/talents/config';
-import i18n from '@i18n/config';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { useInput } from '@ui-kit/hooks/useInput';

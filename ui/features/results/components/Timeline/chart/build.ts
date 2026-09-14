@@ -1,7 +1,8 @@
+import i18n from '@i18n/config';
 import SecondaryResource from '@sim/proto/secondary_resource';
 import { UnitMetrics } from '@sim/proto/sim_result';
-import i18n from '@i18n/config';
 
+import { TimelineChartSpec, TimelineDataset } from '../../../model/timeline/chart/types';
 import { majorCooldownAnnotations } from './annotations';
 import {
 	DPS_SERIES_ID,
@@ -22,7 +23,6 @@ import {
 	Y_RESOURCE_PCT,
 	Y_THREAT,
 } from './series';
-import { TimelineChartSpec, TimelineDataset } from '../../../model/timeline/chart/types';
 
 const timeAxis = (duration: number) => ({ x: timeScale(duration, i18n.t('results_tab.details.timeline.chart_options.time_axis')) });
 

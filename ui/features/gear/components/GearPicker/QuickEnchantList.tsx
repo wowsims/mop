@@ -1,9 +1,9 @@
-import { usePlayer } from '@sim/context/SimHostContext';
-import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import { ItemSlot, Profession } from '@generated/proto/common';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
 import { useMemo } from 'react';
 
 import { QuickSwapList } from './QuickSwapList';

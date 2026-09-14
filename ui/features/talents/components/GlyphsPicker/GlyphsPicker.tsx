@@ -1,11 +1,11 @@
+import type { Class } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Database } from '@sim/proto/database';
 import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classGlyphsConfig } from '@sim/talents/factory';
-import type { Class } from '@generated/proto/common';
-import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GlyphPicker } from './GlyphPicker';

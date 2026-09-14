@@ -1,5 +1,5 @@
-import { formatToNumber, formatToPercent } from '@sim/utils/format';
 import i18n from '@i18n/config';
+import { formatToNumber, formatToPercent } from '@sim/utils/format';
 import type { ReactNode } from 'react';
 
 import type { ResultMetrics } from '../../model/sim_results';

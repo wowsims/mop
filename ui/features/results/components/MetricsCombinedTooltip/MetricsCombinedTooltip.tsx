@@ -1,6 +1,6 @@
-import { formatToCompactNumber } from '@sim/utils/format';
 import type { SpellSchool } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { formatToCompactNumber } from '@sim/utils/format';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 

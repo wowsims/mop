@@ -1,6 +1,6 @@
+import { PriestOptions_Armor } from '@generated/proto/priest';
 import { ActionId } from '@sim/proto/action_id';
 import type { PriestSpecs } from '@sim/proto/spec_types';
-import { PriestOptions_Armor } from '@generated/proto/priest';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for class-specific UI elements on the settings tab.

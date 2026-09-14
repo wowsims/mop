@@ -1,14 +1,14 @@
-import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import { Stats, UnitStat } from '@sim/proto/stats';
-import { defineSpec } from '@sim/spec_config';
-import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { APLRotation } from '@generated/proto/apl';
 import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat, UnitStats } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import * as Mechanics from '@sim/constants/mechanics';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import { Stats, UnitStat } from '@sim/proto/stats';
+import { defineSpec } from '@sim/spec_config';
+import { subscribeAll, subscribePlayerField } from '@sim/state/subscriptions';
 
 import * as ShamanInputs from '../shared/inputs';
 import * as EnhancementInputs from './inputs';

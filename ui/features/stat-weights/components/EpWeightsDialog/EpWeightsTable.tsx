@@ -1,9 +1,9 @@
-import type { Player } from '@sim/player/player';
-import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
-import type { Stats, UnitStat } from '@sim/proto/stats';
-import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import type { StatWeightsResult } from '@generated/proto/api';
 import type { Stat } from '@generated/proto/common';
+import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import type { Player } from '@sim/player/player';
+import type { Stats, UnitStat } from '@sim/proto/stats';
+import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
 import clsx from 'clsx';
 
 import type { EpStatSet } from '../../model/ep_unit_stats';

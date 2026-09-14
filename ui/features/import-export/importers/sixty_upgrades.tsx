@@ -1,6 +1,6 @@
+import { Class, EquipmentSpec, ItemSpec, Race } from '@generated/proto/common';
 import { nameToClass, nameToRace } from '@sim/proto/names';
 import { talentSpellIdsToTalentString } from '@sim/talents/factory';
-import { Class, EquipmentSpec, ItemSpec, Race } from '@generated/proto/common';
 import { toastManager } from '@ui-kit/Toast';
 
 import { finishIndividualImport } from './finish_individual_import';

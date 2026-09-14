@@ -1,14 +1,14 @@
-import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import { StatCap, Stats, UnitStat } from '@sim/proto/stats';
-import { RelativeStatCap } from '@sim/settings/reforge_settings';
-import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { StatCapType } from '@generated/proto/api';
 import { APLRotation } from '@generated/proto/apl';
 import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import * as Mechanics from '@sim/constants/mechanics';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import { StatCap, Stats, UnitStat } from '@sim/proto/stats';
+import { RelativeStatCap } from '@sim/settings/reforge_settings';
+import { defineSpec } from '@sim/spec_config';
 
 import { talentBasedSettingsRule } from '../shared/derived';
 import * as Presets from './presets';

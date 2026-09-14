@@ -1,8 +1,8 @@
+import { ItemSlot, Race, Spec, Stat, WeaponType } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import * as Mechanics from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { Stats, UnitStat } from '@sim/proto/stats';
-import { ItemSlot, Race, Spec, Stat, WeaponType } from '@generated/proto/common';
-import i18n from '@i18n/config';
 
 export interface RacialBonuses {
 	/** Draenei: the racial hit is baked into the rating, and is subtracted before it is shown. */

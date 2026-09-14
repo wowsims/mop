@@ -1,6 +1,6 @@
-import { Stats, UnitStat } from '@sim/proto/stats';
 import { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
 import { PseudoStat, Stat } from '@generated/proto/common';
+import { Stats, UnitStat } from '@sim/proto/stats';
 import { describe, expect, it } from 'vitest';
 
 import { calculateEp, combineScaledEpValues, combineScaledWeights, emptyStatWeightsResult, epWeightsWithoutExcluded } from './ep_math';

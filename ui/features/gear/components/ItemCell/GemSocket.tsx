@@ -1,9 +1,10 @@
-import { ActionId } from '@sim/proto/action_id';
-import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import type { GemColor } from '@generated/proto/common';
 import type { UIGem as Gem } from '@generated/proto/ui';
+import { ActionId } from '@sim/proto/action_id';
+import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import clsx from 'clsx';
+
 import { ItemCellAnchor, type ItemCellAnchorProps } from './ItemCellAnchor';
 
 export interface GemSocketProps extends Omit<ItemCellAnchorProps, 'href' | 'children'> {

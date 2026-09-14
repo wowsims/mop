@@ -1,6 +1,6 @@
-import { Stats } from '@sim/proto/stats';
 import { StatWeightsResult } from '@generated/proto/api';
 import { Stat, UnitStats } from '@generated/proto/common';
+import { Stats } from '@sim/proto/stats';
 import { describe, expect, it, vi } from 'vitest';
 
 import { statsTableColumns, StatsTableSources } from './stats_table';

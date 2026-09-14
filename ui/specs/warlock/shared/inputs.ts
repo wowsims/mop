@@ -1,8 +1,8 @@
+import { Spec } from '@generated/proto/common';
+import { WarlockOptions_Summon as Summon } from '@generated/proto/warlock';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import type { WarlockSpecs } from '@sim/proto/spec_types';
-import { Spec } from '@generated/proto/common';
-import { WarlockOptions_Summon as Summon } from '@generated/proto/warlock';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for spec-specific UI elements on the settings tab.

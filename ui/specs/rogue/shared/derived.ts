@@ -1,8 +1,8 @@
+import { RogueOptions_PoisonOptions } from '@generated/proto/rogue';
 import type { Player } from '@sim/player/player';
 import type { RogueSpecs } from '@sim/proto/spec_types';
 import type { DerivedSetting } from '@sim/spec_config';
 import { subscribeAll, subscribeEncounterChange, subscribePlayerChange } from '@sim/state/subscriptions';
-import { RogueOptions_PoisonOptions } from '@generated/proto/rogue';
 
 // Unless the user opted into applying poisons manually, the lethal poison is
 // pinned to Deadly Poison. All three rogue specs installed the identical pair of

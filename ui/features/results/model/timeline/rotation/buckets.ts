@@ -1,9 +1,9 @@
-import { ActionId } from '@sim/proto/action_id';
-import type { AuraUptimeLog, CastLog } from '@sim/proto/combat_log';
-import type { UnitMetrics } from '@sim/proto/sim_result';
 import { APLActionItemSwap_SwapSet } from '@generated/proto/apl';
 import { OtherAction } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
+import { ActionId } from '@sim/proto/action_id';
+import type { AuraUptimeLog, CastLog } from '@sim/proto/combat_log';
+import type { UnitMetrics } from '@sim/proto/sim_result';
 
 import { actionCategory } from './categories';
 import type { SectionId } from './types';

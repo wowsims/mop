@@ -1,10 +1,10 @@
-import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
-import { batch } from '@sim/state/batch';
 import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import { Glyphs } from '@generated/proto/common';
 import type { SavedTalents as SavedTalentsProto } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
+import { batch } from '@sim/state/batch';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useMemo } from 'react';

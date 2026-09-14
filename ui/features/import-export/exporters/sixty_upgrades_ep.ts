@@ -1,5 +1,5 @@
-import { UnitStat } from '@sim/proto/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
+import { UnitStat } from '@sim/proto/stats';
 
 import type { ExporterDefinition } from './types';
 

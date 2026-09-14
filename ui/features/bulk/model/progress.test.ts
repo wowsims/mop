@@ -1,5 +1,5 @@
-import type { BulkSimProgressConfig } from '@sim/bulk/types';
 import { BulkSimStage, type ProgressMetrics } from '@generated/proto/api';
+import type { BulkSimProgressConfig } from '@sim/bulk/types';
 import { describe, expect, it } from 'vitest';
 
 import { candidateGearProgress, simProgress } from './progress';

@@ -1,6 +1,6 @@
-import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
 import { ItemQuality, ItemSlot, Stat } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
+import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
 import { describe, expect, it } from 'vitest';
 
 import { gemSummaryRows, itemsWithUpgradeOptions, reforgeTotals, upgradeCostTotals } from './summary_totals';

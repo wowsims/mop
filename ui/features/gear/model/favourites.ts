@@ -1,5 +1,5 @@
-import { getUniqueEnchantString } from '@sim/proto/enchants';
 import { DatabaseFilters, UIEnchant as Enchant } from '@generated/proto/ui';
+import { getUniqueEnchantString } from '@sim/proto/enchants';
 
 import { ItemDataFields, ItemListType, SelectorModalTabs } from '../types';
 

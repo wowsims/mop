@@ -1,7 +1,7 @@
+import { ItemSlot } from '@generated/proto/common';
 import { BulkSimItemSlot } from '@sim/bulk/constants_auto_gen';
 import type { BulkPickerEntry } from '@sim/bulk/types';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import { ItemSlot } from '@generated/proto/common';
 import { describe, expect, it } from 'vitest';
 
 import { addPickerEntry, frozenItemSlot, pickerEntryAt, removePickerEntry, updatePickerEntry } from './picker_groups';

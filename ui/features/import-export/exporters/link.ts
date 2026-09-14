@@ -1,9 +1,9 @@
-import { arrayEquals } from '@sim/utils/collections';
+import { IndividualSimSettings } from '@generated/proto/ui';
+import i18n from '@i18n/config';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@sim/constants/sim_settings';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';
-import { IndividualSimSettings } from '@generated/proto/ui';
-import i18n from '@i18n/config';
+import { arrayEquals } from '@sim/utils/collections';
 import { default as pako } from 'pako';
 
 import { selectedCategories } from './categories';

@@ -1,9 +1,9 @@
-import { kebabCase } from '@sim/utils/format';
+import { ResourceType } from '@generated/proto/spell';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@sim/proto/action_id';
 import type { AuraUptimeLog, CastLog, ResourceGroupLog } from '@sim/proto/combat_log';
 import { resourceNames } from '@sim/proto/names';
 import type { UnitMetrics } from '@sim/proto/sim_result';
-import { ResourceType } from '@generated/proto/spell';
+import { kebabCase } from '@sim/utils/format';
 
 import {
 	actionBucketKey,

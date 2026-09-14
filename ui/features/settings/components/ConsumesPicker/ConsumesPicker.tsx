@@ -1,9 +1,9 @@
-import { usePlayer } from '@sim/context/SimHostContext';
-import type { Player } from '@sim/player/player';
-import { Database } from '@sim/proto/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import type { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { usePlayer } from '@sim/context/SimHostContext';
+import type { Player } from '@sim/player/player';
+import { Database } from '@sim/proto/database';
 import type { IconInputConfig } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { IconPicker } from '@ui-kit/IconPicker';

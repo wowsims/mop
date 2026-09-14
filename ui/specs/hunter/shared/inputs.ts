@@ -1,6 +1,6 @@
-import type { HunterSpecs } from '@sim/proto/spec_types';
 import { makePetTypeInputConfig } from '@features/settings/model/hunter_pet';
 import i18n from '@i18n/config';
+import type { HunterSpecs } from '@sim/proto/spec_types';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // // Configuration for class-specific UI elements on the settings tab.

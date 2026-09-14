@@ -1,5 +1,5 @@
-import type { Social } from '@sim/constants/other';
 import i18n from '@i18n/config';
+import type { Social } from '@sim/constants/other';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

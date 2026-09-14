@@ -1,7 +1,7 @@
-import { useSimHost } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
 import type { SimResultsManager } from '@features/results/model/results_manager';
 import type { WarningsRegistry } from '@features/results/model/warnings';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
 import { Spinner } from '@ui-kit/Spinner';
 import { useSyncExternalStore } from 'react';
 

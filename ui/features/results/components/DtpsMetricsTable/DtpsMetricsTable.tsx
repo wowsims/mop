@@ -1,5 +1,5 @@
-import { ActionMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
+import { ActionMetrics } from '@sim/proto/sim_result';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 

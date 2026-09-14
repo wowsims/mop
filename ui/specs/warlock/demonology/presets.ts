@@ -1,5 +1,4 @@
 import * as PresetUtils from '@app/preset_utils';
-import { UnitStat } from '@sim/proto/stats';
 import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, Race } from '@generated/proto/common';
 import {
 	DemonologyWarlock_Options as WarlockOptions,
@@ -7,6 +6,7 @@ import {
 	WarlockMinorGlyph as MinorGlyph,
 	WarlockOptions_Summon as Summon,
 } from '@generated/proto/warlock';
+import { UnitStat } from '@sim/proto/stats';
 export { DefaultRaidBuffs } from '../shared/presets';
 import { WARLOCK_BREAKPOINTS } from '../shared/presets';
 import DefaultAPL from './apls/default.apl.json';

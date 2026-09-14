@@ -43,16 +43,9 @@ import {
 	UIItem_FactionRestriction,
 } from '@generated/proto/ui';
 
-import { omitDeep, stringComparator } from '../utils/collections';
 import * as Mechanics from '../constants/mechanics';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { SimSettingCategories } from '../constants/sim_settings';
-import { ItemSwapSettings } from '../settings/item_swap_settings';
-import { sum } from '../utils/math';
-import { MAX_PARTY_SIZE, Party } from '../raid/party';
-import { PlayerClass } from './player_class';
-import { PlayerSpec } from './player_spec';
-import { PlayerSpecs } from './specs';
 import type { PresetEpWeights } from '../presets/types';
 import { ActionId } from '../proto/action_id';
 import { Database } from '../proto/database';
@@ -65,13 +58,20 @@ import { specTypeFunctions, withSpec } from '../proto/spec_functions';
 import type { ClassOptions, ClassSpecs, SpecClasses, SpecOptions, SpecRotation, SpecTalents, SpecTypeFunctions } from '../proto/spec_types';
 import { Stats } from '../proto/stats';
 import { AL_CATEGORY_HARD_MODE, emptyUnitReference, getTalentTreePoints, newUnitReference, raceToFaction } from '../proto/utils';
+import { MAX_PARTY_SIZE, Party } from '../raid/party';
 import { Raid } from '../raid/raid';
+import { ItemSwapSettings } from '../settings/item_swap_settings';
 import { Sim } from '../sim';
 import { batch } from '../state/batch';
 import { deleteKeyed, patchKeyed, PLAYER_FIELDS, PlayerField, PlayerSlice, seedKeyed, zeroVersions } from '../state/sim_store';
 import { subscribePlayerField } from '../state/subscriptions';
 import { playerTalentStringToProto } from '../talents/factory';
+import { omitDeep, stringComparator } from '../utils/collections';
+import { sum } from '../utils/math';
 import { WorkerProgressCallback } from '../workers/worker_pool';
+import { PlayerClass } from './player_class';
+import { PlayerSpec } from './player_spec';
+import { PlayerSpecs } from './specs';
 
 export interface AuraStats {
 	data: AuraStatsProto;

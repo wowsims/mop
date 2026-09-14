@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs } from '@generated/proto/common';
 import { HolyPriest_Options as Options, PriestOptions_Armor } from '@generated/proto/priest';
 import { SavedTalents } from '@generated/proto/ui';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 
 import AOE24Apl from './apls/aoe_2_4.apl.json';
 import AOE4PlusApl from './apls/aoe_4_plus.apl.json';

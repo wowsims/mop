@@ -1,5 +1,5 @@
-import { formatDurationSeconds } from '@sim/utils/format';
 import i18n from '@i18n/config';
+import { formatDurationSeconds } from '@sim/utils/format';
 import { Trans } from 'react-i18next';
 
 import { useBulkProgress } from '../../hooks/useBulkProgress';

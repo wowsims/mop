@@ -1,6 +1,6 @@
+import type { ItemSlot, Spec } from '@generated/proto/common';
 import type { Player } from '@sim/player/player';
 import { batch } from '@sim/state/batch';
-import type { ItemSlot, Spec } from '@generated/proto/common';
 
 /** Exchanges the equipped item and the swap item in each of `itemSlots`, in one batch so the two writes land as a single notification. */
 export const swapWithGear = <SpecType extends Spec>(player: Player<SpecType>, itemSlots: ReadonlyArray<ItemSlot>): void => {

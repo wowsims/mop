@@ -1,9 +1,9 @@
-import type { Player } from '@sim/player/player';
-import type { Database } from '@sim/proto/database';
 import type { ConsumableStatOption } from '@features/settings/model/consumables';
 import * as ConsumablesInputs from '@features/settings/model/consumables';
 import { Class, ConsumableType, Spec, type Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import type { Player } from '@sim/player/player';
+import type { Database } from '@sim/proto/database';
 import type { TypedIconEnumPickerConfig } from '@ui-kit/input_helpers';
 
 export type ConsumeConfig = TypedIconEnumPickerConfig<Player<any>, number>;

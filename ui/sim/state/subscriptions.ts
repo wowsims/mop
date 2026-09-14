@@ -1,14 +1,14 @@
 // Field-level store subscriptions for pickers (InputConfig.storeSubscribe).
 // Each returns (onChange) => unsubscribe. All are batch-gated (see batch.ts):
 // inside batch() they fire once at the end with final state.
-import { arrayEquals } from '../utils/collections';
+import type { Player } from '../player/player';
 import type { Encounter } from '../raid/encounter';
 import type { Party } from '../raid/party';
-import type { Player } from '../player/player';
 import type { Raid } from '../raid/raid';
 import type { ReforgeSettings } from '../settings/reforge_settings';
-import type { Sim } from '../sim';
 import type { StatWeightActionSettings } from '../settings/stat_weight_settings';
+import type { Sim } from '../sim';
+import { arrayEquals } from '../utils/collections';
 import { subscribeGated } from './batch';
 import type {
 	EncounterSlice,

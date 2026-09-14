@@ -1,5 +1,5 @@
-import type { Player } from '@sim/player/player';
 import i18n from '@i18n/config';
+import type { Player } from '@sim/player/player';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { NumberPicker } from '@ui-kit/NumberPicker';

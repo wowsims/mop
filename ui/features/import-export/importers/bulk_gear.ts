@@ -1,7 +1,7 @@
 import { addBulkItems } from '@features/bulk/model/items';
 import { EquipmentSpec } from '@generated/proto/common';
-import { Database } from '@sim/proto/database';
 import i18n from '@i18n/config';
+import { Database } from '@sim/proto/database';
 
 import type { ImporterDefinition } from './types';
 

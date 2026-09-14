@@ -1,8 +1,8 @@
-import { Player } from '@sim/player/player';
-import { ActionId } from '@sim/proto/action_id';
 import { Spec } from '@generated/proto/common';
 import { ShamanImbue, ShamanSyncType } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
+import { Player } from '@sim/player/player';
+import { ActionId } from '@sim/proto/action_id';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for spec-specific UI elements on the settings tab.

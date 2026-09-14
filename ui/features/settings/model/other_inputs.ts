@@ -1,7 +1,7 @@
-import { Player } from '@sim/player/player';
-import { emptyUnitReference } from '@sim/proto/utils';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { Player } from '@sim/player/player';
+import { emptyUnitReference } from '@sim/proto/utils';
 
 const INPUT_DELAY_FIELDS = ['reactionTime', 'channelClipDelay'] as const;
 // The healing-model inputs below are enabled only while the player is one of the

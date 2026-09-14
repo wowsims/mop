@@ -1,10 +1,10 @@
+import type { Spec } from '@generated/proto/common';
 import { usePlayer } from '@sim/context/SimHostContext';
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { Player } from '@sim/player/player';
 import type { CustomSection as CustomSectionConfig } from '@sim/spec_config';
 import { type StoreSubscribe, subscribePlayerChange } from '@sim/state/subscriptions';
-import type { Spec } from '@generated/proto/common';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { IconPicker } from '@ui-kit/IconPicker';
 import { PickerGroup } from '@ui-kit/PickerGroup';
 

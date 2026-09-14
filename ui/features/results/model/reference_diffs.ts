@@ -1,7 +1,7 @@
+import type { DistributionMetrics } from '@generated/proto/api';
 import type { SimResult } from '@sim/proto/sim_result';
 import { type DeltaText, formatDeltaText, formatSignificance } from '@sim/utils/format';
 import { zTest } from '@sim/utils/math';
-import type { DistributionMetrics } from '@generated/proto/api';
 
 import type { ResultMetrics } from './sim_results';
 

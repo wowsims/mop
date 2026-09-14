@@ -1,6 +1,6 @@
-import { UnitStat } from '@sim/proto/stats';
 import { PseudoStat, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { UnitStat } from '@sim/proto/stats';
 
 import type { ExporterDefinition } from './types';
 

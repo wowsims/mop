@@ -1,6 +1,6 @@
-import { ReforgeData } from '@sim/proto/equipped_item';
 import { ItemLevelState } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
+import { ReforgeData } from '@sim/proto/equipped_item';
 import { describe, expect, it } from 'vitest';
 
 import { SelectorModalTabs } from '../types';

@@ -1,7 +1,6 @@
 import { Class } from '@generated/proto/common';
 
 import { kebabCase } from '../../utils/format';
-
 import { PlayerClass } from '../player_class';
 import { DeathKnight } from './death_knight';
 import { Druid } from './druid';

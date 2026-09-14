@@ -1,6 +1,6 @@
 import { Stat, Target as TargetProto } from '@generated/proto/common';
-import type { Encounter } from '@sim/raid/encounter';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import type { Encounter } from '@sim/raid/encounter';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { EnumPicker } from '@ui-kit/EnumPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';

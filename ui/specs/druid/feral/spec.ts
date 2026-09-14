@@ -1,11 +1,3 @@
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import * as StatCaps from '@sim/presets/stat_caps';
-import * as AplUtils from '@sim/proto/apl_utils';
-import { UnitStat } from '@sim/proto/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
-import { RelativeStatCap } from '@sim/settings/reforge_settings';
-import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { APLAction, APLListItem, APLPrepullAction, APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
@@ -15,6 +7,14 @@ import {
 	FeralDruid_Rotation_AplType as FeralRotationType,
 	FeralDruid_Rotation_HotwStrategy as HotwStrategy,
 } from '@generated/proto/druid';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import * as StatCaps from '@sim/presets/stat_caps';
+import * as AplUtils from '@sim/proto/apl_utils';
+import { UnitStat } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
+import { RelativeStatCap } from '@sim/settings/reforge_settings';
+import { defineSpec } from '@sim/spec_config';
 
 import * as FeralInputs from './inputs';
 import * as Presets from './presets';

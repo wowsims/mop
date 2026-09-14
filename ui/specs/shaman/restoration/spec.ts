@@ -1,11 +1,11 @@
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import { UnitStat } from '@sim/proto/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
-import { defineSpec } from '@sim/spec_config';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { APLRotation } from '@generated/proto/apl';
 import { Class, Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '@generated/proto/common';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import { UnitStat } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
+import { defineSpec } from '@sim/spec_config';
 
 import * as ShamanInputs from '../shared/inputs';
 import * as Presets from './presets';

@@ -1,6 +1,6 @@
-import { SortDirection } from '@sim/constants/other';
 import { ItemLevelState, ItemSlot } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
+import { SortDirection } from '@sim/constants/other';
 
 import { ItemDataFields, ItemListType, SelectorModalTabs } from '../types';
 

@@ -1,9 +1,9 @@
-import { ActionId } from '@sim/proto/action_id';
-import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
-import { StoreSubscribe } from '@sim/state/subscriptions';
 import { ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot } from '@generated/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { ActionId } from '@sim/proto/action_id';
+import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
+import { StoreSubscribe } from '@sim/state/subscriptions';
 
 export type ItemListType = Item | Enchant | Gem | ReforgeData | ItemRandomSuffix | ItemLevelState;
 

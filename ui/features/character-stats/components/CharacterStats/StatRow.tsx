@@ -1,10 +1,10 @@
+import { PseudoStat, Stat } from '@generated/proto/common';
+import i18n from '@i18n/config';
+import { translateMasterySpellName } from '@i18n/localization';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { ActionId } from '@sim/proto/action_id';
 import { masterySpellIDs } from '@sim/proto/names';
 import type { StatAttribution, Stats, UnitStat } from '@sim/proto/stats';
-import { PseudoStat, Stat } from '@generated/proto/common';
-import i18n from '@i18n/config';
-import { translateMasterySpellName } from '@i18n/localization';
 import { Button } from '@ui-kit/Button';
 import { Skeleton } from '@ui-kit/Skeleton';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';

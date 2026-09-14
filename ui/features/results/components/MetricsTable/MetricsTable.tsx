@@ -3,9 +3,9 @@ import { Button } from '@ui-kit/Button';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
+import { type MetricsColumnDef, useMetricsTable } from '../../hooks/useMetricsTable';
 import type { MetricRow } from '../../model/grouping';
 import { MetricsTableRow } from './MetricsTableRow';
-import { type MetricsColumnDef, useMetricsTable } from '../../hooks/useMetricsTable';
 
 const ariaSort = (direction: false | SortDirection) => (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none');
 

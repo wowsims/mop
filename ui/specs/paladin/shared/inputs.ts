@@ -1,7 +1,7 @@
-import { ActionId } from '@sim/proto/action_id';
-import type { PaladinSpecs } from '@sim/proto/spec_types';
 import { Spec } from '@generated/proto/common';
 import { PaladinSeal } from '@generated/proto/paladin';
+import { ActionId } from '@sim/proto/action_id';
+import type { PaladinSpecs } from '@sim/proto/spec_types';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for spec-specific UI elements on the settings tab.

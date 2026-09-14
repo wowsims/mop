@@ -17,14 +17,14 @@ import { SpellEffect } from '@generated/proto/spell';
 import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache/cache_handler';
-import { distinct } from '../utils/collections';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
-import { WOWHEAD_DOMAIN, WOWHEAD_EXPANSION_ENV } from './wowhead';
+import { distinct } from '../utils/collections';
 import { EquippedItem } from './equipped_item';
 import { Gear, ItemSwapGear } from './gear';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems';
 import { getEligibleEnchantSlots, getEligibleItemSlots } from './items';
 import { Stats } from './stats';
+import { WOWHEAD_DOMAIN, WOWHEAD_EXPANSION_ENV } from './wowhead';
 
 const dbUrlJson = '/mop/assets/database/db.json';
 const dbUrlBin = '/mop/assets/database/db.bin';

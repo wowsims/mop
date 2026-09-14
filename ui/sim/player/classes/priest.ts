@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { PriestSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { DisciplinePriest, HolyPriest, ShadowPriest } from '../specs/priest';
-import type { PriestSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Priest extends PlayerClass<Class.ClassPriest> {

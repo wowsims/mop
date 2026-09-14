@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Encounter } from '@sim/raid/encounter';
-import { Player } from '@sim/player/player';
 import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
+import { Player } from '@sim/player/player';
+import { Encounter } from '@sim/raid/encounter';
 
 import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';

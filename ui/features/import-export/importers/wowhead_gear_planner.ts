@@ -1,7 +1,7 @@
-import { nameToClass, nameToRace } from '@sim/proto/names';
-import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@sim/proto/wowhead';
 import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race } from '@generated/proto/common';
 import i18n from '@i18n/config';
+import { nameToClass, nameToRace } from '@sim/proto/names';
+import { WOWHEAD_DOMAIN, WOWHEAD_GEAR_PLANNER_URL } from '@sim/proto/wowhead';
 
 import { finishIndividualImport } from './finish_individual_import';
 import type { ImporterDefinition } from './types';

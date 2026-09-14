@@ -1,5 +1,5 @@
-import type { ActionMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
+import type { ActionMetrics } from '@sim/proto/sim_result';
 
 import { MetricsCombinedTooltip, type MetricsCombinedTooltipGroup } from '../MetricsCombinedTooltip';
 

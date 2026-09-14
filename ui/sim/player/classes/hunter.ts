@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { HunterSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BeastMasteryHunter, MarksmanshipHunter, SurvivalHunter } from '../specs/hunter';
-import type { HunterSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Hunter extends PlayerClass<Class.ClassHunter> {

@@ -1,5 +1,5 @@
-import { usePlayer } from '@sim/context/SimHostContext';
 import i18n from '@i18n/config';
+import { usePlayer } from '@sim/context/SimHostContext';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { FieldLabel } from '@ui-kit/FormControl';
 import { useMemo } from 'react';
@@ -7,8 +7,8 @@ import { useMemo } from 'react';
 import { trackEvent } from '../../../../tracking/analytics';
 import { useBulkState } from '../../hooks/useBulkState';
 import { availableSetBonuses, setBonusFeasibility } from '../../model/selectors';
-import { canEnableRequiredFourPiece, canEnableRequiredTwoPiece } from '../../model/set_bonuses';
 import type { BulkSetBonusOption } from '../../model/set_bonuses';
+import { canEnableRequiredFourPiece, canEnableRequiredTwoPiece } from '../../model/set_bonuses';
 import { setBulkRequiredSetBonus } from '../../model/settings';
 
 const setBonusDomId = (setBonus: BulkSetBonusOption) => `required-set-bonus-${setBonus.setId}-${setBonus.setName.replace(/\W+/g, '-')}`;

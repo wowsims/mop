@@ -1,6 +1,6 @@
-import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
 import { ItemQuality, ItemSlot, Stat } from '@generated/proto/common';
 import { UIGem as Gem } from '@generated/proto/ui';
+import { EquippedItem, ReforgeData } from '@sim/proto/equipped_item';
 
 export type UpgradeSummaryTotal = {
 	justicePoints: number;

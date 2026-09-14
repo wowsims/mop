@@ -11,8 +11,8 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-import { compareMetricValues, type MetricRow, metricRowId } from '../model/grouping';
 import type { MetricsColumnMeta } from '../components/MetricsTable/types';
+import { compareMetricValues, type MetricRow, metricRowId } from '../model/grouping';
 
 export const metricsTableFeatures = tableFeatures({
 	rowSortingFeature,

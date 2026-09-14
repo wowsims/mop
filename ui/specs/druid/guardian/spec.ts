@@ -1,14 +1,14 @@
-import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import { StatCap, Stats, UnitStat } from '@sim/proto/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
-import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { StatCapType } from '@generated/proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '@generated/proto/common';
+import * as Mechanics from '@sim/constants/mechanics';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import { StatCap, Stats, UnitStat } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
+import { defineSpec } from '@sim/spec_config';
 
 import * as DruidInputs from './inputs';
 import * as Presets from './presets';

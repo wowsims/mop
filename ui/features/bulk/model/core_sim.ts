@@ -1,11 +1,11 @@
+import { BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
+import i18n from '@i18n/config';
 import { BulkSimReforgeCacheProgress } from '@sim/bulk/reforge_cache';
 import { BulkSimProgressConfig, TopGearResult } from '@sim/bulk/types';
 import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from '@sim/bulk/utils';
 import { Gear } from '@sim/proto/gear';
 import { ReforgeOptimizeConfig } from '@sim/sim';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { BulkSettings, DistributionMetrics, ProgressMetrics } from '@generated/proto/api';
-import i18n from '@i18n/config';
 
 export interface CoreBulkSimContext {
 	simUI: IndividualSimHost<any>;

@@ -1,7 +1,7 @@
+import { MonkTalents } from '@generated/proto/monk';
 import { Player } from '@sim/player/player';
 import type { DerivedSetting } from '@sim/spec_config';
 import { subscribePlayerField } from '@sim/state/subscriptions';
-import { MonkTalents } from '@generated/proto/monk';
 
 /**
  * Sets talent-based settings for monk specs, particularly target dummies

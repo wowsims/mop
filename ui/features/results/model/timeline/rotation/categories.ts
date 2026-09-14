@@ -1,5 +1,5 @@
-import type { ActionId } from '@sim/proto/action_id';
 import { OtherAction } from '@generated/proto/common';
+import type { ActionId } from '@sim/proto/action_id';
 
 export const MELEE_ACTION_CATEGORY = 1;
 export const SPELL_ACTION_CATEGORY = 2;

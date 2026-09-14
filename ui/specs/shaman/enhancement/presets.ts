@@ -1,7 +1,4 @@
 import * as PresetUtils from '@app/preset_utils';
-import * as Mechanics from '@sim/constants/mechanics';
-import { Stats } from '@sim/proto/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 import { Class, ConsumesSpec, Debuffs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '@generated/proto/common';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
@@ -11,6 +8,9 @@ import {
 	ShamanShield,
 	ShamanSyncType,
 } from '@generated/proto/shaman';
+import * as Mechanics from '@sim/constants/mechanics';
+import { Stats } from '@sim/proto/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
 
 import P1Apl from './apls/default.apl.json';
 import P3Apl from './apls/p3.apl.json';

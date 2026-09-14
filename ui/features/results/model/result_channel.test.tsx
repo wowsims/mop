@@ -2,8 +2,8 @@ import { render } from '@testing-library/react';
 import { act, useSyncExternalStore } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import type { SimResultData } from './result_data';
 import { ResultChannel } from './result_channel';
+import type { SimResultData } from './result_data';
 
 const resultData = (label: string) => ({ result: { label }, filter: {} }) as unknown as SimResultData;
 

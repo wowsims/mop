@@ -1,7 +1,7 @@
-import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
-import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import i18n from '@i18n/config';
+import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { usePlayerStore } from '@sim/hooks/usePlayerStore';
+import { computeStatAttribution, Stats, UnitStat } from '@sim/proto/stats';
 import { useMemo } from 'react';
 
 import { CritCapRow } from './CritCapRow';

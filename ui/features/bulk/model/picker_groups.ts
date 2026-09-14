@@ -1,10 +1,10 @@
 // `@sim/bulk/utils` reaches `@i18n/entity_mapping`, which reads `BulkSimItemSlot` at module
 // scope, so importing the enum through it is a cycle. `constants_auto_gen` depends on the generated
 // protos and nothing else.
+import type { ItemSlot } from '@generated/proto/common';
 import { BulkSimItemSlot } from '@sim/bulk/constants_auto_gen';
 import type { BulkPickerEntry } from '@sim/bulk/types';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import type { ItemSlot } from '@generated/proto/common';
 
 const DUAL_SLOTS = [BulkSimItemSlot.ItemSlotHandWeapon, BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket];
 

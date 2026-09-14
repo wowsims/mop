@@ -19,11 +19,11 @@ import { ResourceType } from '@generated/proto/spell';
 import { SimRun } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache/cache_handler';
-import { bucket } from '../utils/collections';
-import { sum } from '../utils/math';
 import { PlayerClasses } from '../player/classes';
 import { PlayerSpec } from '../player/player_spec';
 import { PlayerSpecs } from '../player/specs';
+import { bucket } from '../utils/collections';
+import { sum } from '../utils/math';
 import { ActionId, defaultTargetIcon } from './action_id';
 import {
 	AuraUptimeLog,

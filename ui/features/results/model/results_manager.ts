@@ -1,10 +1,10 @@
+import { Raid as RaidProto } from '@generated/proto/api';
+import { Encounter as EncounterProto } from '@generated/proto/common';
+import { SimRunData } from '@generated/proto/ui';
 import type { SimResult } from '@sim/proto/sim_result';
 import type { Sim } from '@sim/sim';
 import { batch } from '@sim/state/batch';
 import { Emitter } from '@sim/state/events';
-import { Raid as RaidProto } from '@generated/proto/api';
-import { Encounter as EncounterProto } from '@generated/proto/common';
-import { SimRunData } from '@generated/proto/ui';
 
 import type { ReferenceData } from './sim_results';
 

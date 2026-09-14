@@ -10,10 +10,10 @@ import { findScrollParent } from '@ui-kit/utils/dom';
 import { VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { useDrToolbar } from '../DetailedResults/DrToolbarContext';
 import { useSimResult } from '../../hooks/useSimResult';
 import { EMPTY_SUGGESTIONS, LogIndex } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
+import { useDrToolbar } from '../DetailedResults/DrToolbarContext';
 import { LogFloatingActionBar } from './LogFloatingActionBar';
 import { LogRow } from './LogRow';
 import type { IdentifiedSearchGroup } from './utils';

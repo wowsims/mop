@@ -1,6 +1,6 @@
+import { MageArmor } from '@generated/proto/mage';
 import { ActionId } from '@sim/proto/action_id';
 import type { MageSpecs } from '@sim/proto/spec_types';
-import { MageArmor } from '@generated/proto/mage';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for class-specific UI elements on the settings tab.

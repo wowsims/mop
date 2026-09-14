@@ -9,8 +9,8 @@ import {
 } from '@generated/proto/api';
 import { SimRequest } from '@worker/types';
 
-import { isDevMode } from '../utils/env';
 import { SimSignals } from '../sim_signal_manager';
+import { isDevMode } from '../utils/env';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from '../workers/worker_pool';
 import { runConcurrentSim } from './sim';
 

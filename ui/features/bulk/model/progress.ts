@@ -1,6 +1,6 @@
-import type { BulkSimProgressConfig } from '@sim/bulk/types';
 import { BulkSimStage, ProgressMetrics } from '@generated/proto/api';
 import i18n from '@i18n/config';
+import type { BulkSimProgressConfig } from '@sim/bulk/types';
 
 export interface BulkProgress {
 	stage: string;

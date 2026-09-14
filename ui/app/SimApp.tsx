@@ -11,8 +11,8 @@ import { CrashReportDialog } from './CrashReportDialog';
 import { SimHostObject } from './individual_sim_ui';
 import { knownIssuesFor } from './known_issues';
 import { SettingsDialog } from './SettingsDialog';
-import type { ShellDom } from './types/shell_dom';
 import { SimShell } from './SimShell';
+import type { ShellDom } from './types/shell_dom';
 
 export interface SimAppProps<SpecType extends Spec> {
 	player: Player<SpecType>;

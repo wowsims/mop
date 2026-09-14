@@ -1,21 +1,19 @@
 import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual';
-import type { RectObserver } from '@ui-kit/VirtualList';
-import { WINDOW_SCROLLER } from '@ui-kit/VirtualList';
 import { cssVars } from '@ui-kit/utils/css';
 import { findScrollParent } from '@ui-kit/utils/dom';
+import type { RectObserver } from '@ui-kit/VirtualList';
+import { WINDOW_SCROLLER } from '@ui-kit/VirtualList';
 import clsx from 'clsx';
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { useDrToolbar } from '../../DetailedResults/DrToolbarContext';
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { ContentRow, RotationModel, Row } from '../../../model/timeline/rotation';
 import { computeOrder, rowAt } from '../../../model/timeline/rotation';
 import { NO_ITEMS } from '../../../model/timeline/rotation/row_track';
 import type { RowWindow, TrackBand } from '../../../model/timeline/rotation/timeline_window';
 import { trackBand, VERTICAL_PADDING_PX } from '../../../model/timeline/rotation/timeline_window';
-import { Ruler } from './ruler';
-import { DEFAULT_PPS, ZoomController } from './zoom';
+import { useDrToolbar } from '../../DetailedResults/DrToolbarContext';
 import { RotationFloatingActionBar } from './RotationFloatingActionBar';
 import { RotationHeaderRow } from './RotationHeaderRow';
 import { RotationRow } from './RotationRow';
@@ -23,8 +21,10 @@ import { RotationRowLabel } from './RotationRowLabel';
 import { RotationSeparatorRow } from './RotationSeparatorRow';
 import { RotationToolbar } from './RotationToolbar';
 import { RowItemTooltip } from './RowItemTooltip';
+import { Ruler } from './ruler';
 import type { RotationFrame } from './utils';
 import { EMPTY_FRAME, nextFrame } from './utils';
+import { DEFAULT_PPS, ZoomController } from './zoom';
 
 export interface RotationViewProps {
 	model: RotationModel | null;

@@ -2,10 +2,10 @@ import { Spec } from '@generated/proto/common';
 import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';
 
 import { LOCAL_STORAGE_PREFIX } from '../../constants/other';
-import { PlayerClass } from '../player_class';
-import { PlayerClasses } from '../classes';
-import { PlayerSpec } from '../player_spec';
 import type { SpecClasses } from '../../proto/spec_types';
+import { PlayerClasses } from '../classes';
+import { PlayerClass } from '../player_class';
+import { PlayerSpec } from '../player_spec';
 import * as DeathKnightSpecs from './death_knight';
 import * as DruidSpecs from './druid';
 import * as HunterSpecs from './hunter';

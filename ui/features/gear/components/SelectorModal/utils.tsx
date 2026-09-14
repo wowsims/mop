@@ -1,5 +1,5 @@
-import { GemColor, ItemLevelState, Profession } from '@generated/proto/common';
 import type { ItemSlot } from '@generated/proto/common';
+import { GemColor, ItemLevelState, Profession } from '@generated/proto/common';
 import { translateStat } from '@i18n/localization';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';

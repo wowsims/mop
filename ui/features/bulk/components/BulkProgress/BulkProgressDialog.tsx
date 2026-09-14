@@ -1,6 +1,6 @@
 import { useSimHost } from '@sim/context/SimHostContext';
-import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
 import type { ProgressTrackerHandle } from '@ui-kit/ProgressTrackerDialog';
+import { ProgressTrackerDialog } from '@ui-kit/ProgressTrackerDialog';
 import { useEffect, useRef, useState } from 'react';
 
 import { cancelBulkBatch, subscribeBulkProgress } from '../../model/run';

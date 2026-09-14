@@ -1,6 +1,5 @@
 import type { Player } from '../../player/player';
 import type { EquippedItem } from '../equipped_item';
-
 import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';
 import { ActionId } from './index';
 

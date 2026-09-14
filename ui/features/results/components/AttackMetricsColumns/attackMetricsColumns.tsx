@@ -1,6 +1,6 @@
-import { formatToCompactNumber, formatToNumber, formatToPercent } from '@sim/utils/format';
-import type { ActionMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
+import type { ActionMetrics } from '@sim/proto/sim_result';
+import { formatToCompactNumber, formatToNumber, formatToPercent } from '@sim/utils/format';
 import type { RefObject } from 'react';
 
 import { createMetricsColumnHelper, MetricsActionCell, type MetricsColumnMeta } from '../MetricsTable';

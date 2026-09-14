@@ -25,11 +25,11 @@ import {
 } from '@generated/proto/api';
 import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '@worker/types';
 
-import { WorkerPoolManager } from './concurrent_worker_pool';
 import { REPO_NAME } from '../constants/other';
-import { isDevMode } from '../utils/env';
 import { SimSignals } from '../sim_signal_manager';
+import { isDevMode } from '../utils/env';
 import { noop } from '../utils/misc';
+import { WorkerPoolManager } from './concurrent_worker_pool';
 
 const SIM_WORKER_URL = `/${REPO_NAME}/sim_worker.js`;
 const SIM_WASM_URL = `/${REPO_NAME}/lib.wasm.gz`;

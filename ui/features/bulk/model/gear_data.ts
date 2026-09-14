@@ -1,9 +1,9 @@
-import { Emitter } from '@sim/state/events';
-import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { GearData } from '@features/gear/types';
 import type { BulkSimItemSlot } from '@sim/bulk/constants_auto_gen';
 import type { Player } from '@sim/player/player';
+import type { EquippedItem } from '@sim/proto/equipped_item';
 import { bulkState } from '@sim/settings/bulk_settings';
+import { Emitter } from '@sim/state/events';
 
 import { updateBulkItem } from './items';
 import { pickerEntryAt } from './picker_groups';

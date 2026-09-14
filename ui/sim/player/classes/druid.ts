@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { DruidSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BalanceDruid, FeralDruid, GuardianDruid, RestorationDruid } from '../specs/druid';
-import type { DruidSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Druid extends PlayerClass<Class.ClassDruid> {

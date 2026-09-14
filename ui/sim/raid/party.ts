@@ -3,9 +3,9 @@ import { Class, PartyBuffs } from '@generated/proto/common';
 
 import { Player } from '../player/player';
 import { getPlayerSpecFromPlayer } from '../proto/utils';
-import { Raid } from './raid';
 import { Sim } from '../sim';
 import { batch } from '../state/batch';
+import { Raid } from './raid';
 export const MAX_PARTY_SIZE = 5;
 
 // Manages all the settings for a single Party.

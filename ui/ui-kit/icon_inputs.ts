@@ -1,7 +1,7 @@
+import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 import { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { Raid } from '@sim/raid/raid';
-import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
 import * as InputHelpers from './input_helpers';
 

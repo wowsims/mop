@@ -1,10 +1,10 @@
+import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
+import i18n from '@i18n/config';
+import type { JsonObject } from '@protobuf-ts/runtime';
 import { Database } from '@sim/proto/database';
 import { nameToClass, nameToProfession, nameToRace } from '@sim/proto/names';
 import type { GlyphConfig } from '@sim/talents/config';
 import { classGlyphsConfig } from '@sim/talents/factory';
-import { Class, EquipmentSpec, Glyphs, Profession, Race } from '@generated/proto/common';
-import i18n from '@i18n/config';
-import type { JsonObject } from '@protobuf-ts/runtime';
 import { toastManager } from '@ui-kit/Toast';
 
 import { finishIndividualImport } from './finish_individual_import';

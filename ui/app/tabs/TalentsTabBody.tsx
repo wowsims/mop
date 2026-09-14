@@ -1,10 +1,10 @@
+import { SavedTalents } from '@features/talents/components/SavedTalents';
+import { TalentsPicker } from '@features/talents/components/TalentsPicker';
+import { Class } from '@generated/proto/common';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { classTalentsConfig } from '@sim/talents/factory';
-import { SavedTalents } from '@features/talents/components/SavedTalents';
-import { TalentsPicker } from '@features/talents/components/TalentsPicker';
-import { Class } from '@generated/proto/common';
 import { PetSpecPicker } from '@ui-kit/PetSpecPicker';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useMemo } from 'react';

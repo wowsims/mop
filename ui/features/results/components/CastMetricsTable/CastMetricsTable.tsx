@@ -1,5 +1,5 @@
-import { ActionMetrics } from '@sim/proto/sim_result';
 import i18n from '@i18n/config';
+import { ActionMetrics } from '@sim/proto/sim_result';
 import { useMemo } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';

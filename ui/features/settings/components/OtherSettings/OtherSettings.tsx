@@ -1,7 +1,7 @@
-import type { Player } from '@sim/player/player';
-import type { InputConfig } from '@sim/spec_config';
 import { ItemSwapPicker } from '@features/item-swap';
 import type { ItemSlot } from '@generated/proto/common';
+import type { Player } from '@sim/player/player';
+import type { InputConfig } from '@sim/spec_config';
 
 import { InputPicker } from '../InputPicker';
 

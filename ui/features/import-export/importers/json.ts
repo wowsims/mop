@@ -1,6 +1,6 @@
-import { Database } from '@sim/proto/database';
 import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { Database } from '@sim/proto/database';
 
 import type { ImporterDefinition } from './types';
 

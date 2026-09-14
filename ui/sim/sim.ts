@@ -50,10 +50,7 @@ import {
 	writeBulkSimReforgeCacheResults,
 } from './bulk/reforge_cache';
 import { throwIfAborted } from './bulk/utils';
-import { distinct, getEnumValues } from './utils/collections';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
-import { Encounter } from './raid/encounter';
-import { environmentOf } from './utils/env';
 import { Player, UnitMetadata } from './player/player';
 import { Database } from './proto/database';
 import { Gear } from './proto/gear';
@@ -62,6 +59,7 @@ import { extendPlayerProtoWithMissingEffects } from './proto/proto_migration';
 import { SimResult } from './proto/sim_result';
 import { StatCap, Stats } from './proto/stats';
 import { hasBlacksmithing } from './proto/utils';
+import { Encounter } from './raid/encounter';
 import { Raid } from './raid/raid';
 import { SimRuns } from './sim_runs';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
@@ -71,6 +69,8 @@ import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
 import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
+import { distinct, getEnumValues } from './utils/collections';
+import { environmentOf } from './utils/env';
 import { hashString, noop, sleep } from './utils/misc';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './workers/worker_pool';

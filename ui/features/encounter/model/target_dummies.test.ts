@@ -1,8 +1,8 @@
+import { Spec } from '@generated/proto/common';
 import type { Player } from '@sim/player/player';
 import type { Sim } from '@sim/sim';
 import { createSimStore, patchKeyed, seedKeyed } from '@sim/state/sim_store';
 import { PLAYER_CHANGE_FIELDS } from '@sim/state/subscriptions';
-import { Spec } from '@generated/proto/common';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { watchTargetDummies } from './target_dummies';

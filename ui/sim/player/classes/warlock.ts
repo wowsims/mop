@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { WarlockSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { AfflictionWarlock, DemonologyWarlock, DestructionWarlock } from '../specs/warlock';
-import type { WarlockSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Warlock extends PlayerClass<Class.ClassWarlock> {

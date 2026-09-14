@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { RogueSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { AssassinationRogue, CombatRogue, SubtletyRogue } from '../specs/rogue';
-import type { RogueSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Rogue extends PlayerClass<Class.ClassRogue> {

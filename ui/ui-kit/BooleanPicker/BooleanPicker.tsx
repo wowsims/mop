@@ -1,6 +1,6 @@
 import { Checkbox } from '@base-ui/react/checkbox';
-import { Icon } from '@ui-kit/Icon';
 import { useInput } from '@ui-kit/hooks/useInput';
+import { Icon } from '@ui-kit/Icon';
 import { PickerShell } from '@ui-kit/PickerShell';
 
 import type { AnyBooleanPickerConfig } from './types';

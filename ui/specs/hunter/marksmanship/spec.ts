@@ -1,12 +1,12 @@
-import * as Mechanics from '@sim/constants/mechanics';
-import { Player } from '@sim/player/player';
-import { PlayerClasses } from '@sim/player/classes';
-import { Stats, UnitStat } from '@sim/proto/stats';
-import { defineSpec } from '@sim/spec_config';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { APLRotation } from '@generated/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import * as Mechanics from '@sim/constants/mechanics';
+import { PlayerClasses } from '@sim/player/classes';
+import { Player } from '@sim/player/player';
+import { Stats, UnitStat } from '@sim/proto/stats';
+import { defineSpec } from '@sim/spec_config';
 
 import * as HunterInputs from '../shared/inputs';
 import * as HunterPresets from '../shared/presets';

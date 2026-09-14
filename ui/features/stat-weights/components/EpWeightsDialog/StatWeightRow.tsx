@@ -1,10 +1,10 @@
-import { sanitizeId } from '@sim/utils/format';
+import type { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
+import type { Stat } from '@generated/proto/common';
 import type { DisplayMetrics } from '@sim/hooks/useDisplayMetrics';
 import type { Player } from '@sim/player/player';
 import { scaledEpValue, type Stats, type UnitStat } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import type { StatWeightsResult, StatWeightValues } from '@generated/proto/api';
-import type { Stat } from '@generated/proto/common';
+import { sanitizeId } from '@sim/utils/format';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import clsx from 'clsx';

@@ -1,9 +1,9 @@
+import { IndividualSimSettings } from '@generated/proto/ui';
+import i18n from '@i18n/config';
 import type { SimSettingCategories } from '@sim/constants/sim_settings';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { LINK_DEFAULT_CATEGORIES } from '@sim/state/sim_links';
 import { jsonStringifyWithFlattenedPaths } from '@sim/utils/json';
-import { IndividualSimSettings } from '@generated/proto/ui';
-import i18n from '@i18n/config';
 
 import { selectedCategories } from './categories';
 import type { ExporterDefinition } from './types';

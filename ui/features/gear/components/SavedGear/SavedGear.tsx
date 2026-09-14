@@ -1,13 +1,13 @@
-import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
-import { useSimReady } from '@sim/hooks/useSimReady';
-import { Stats } from '@sim/proto/stats';
-import { batch } from '@sim/state/batch';
-import { subscribePlayerChange } from '@sim/state/subscriptions';
 import { useSavedPanel } from '@features/hooks/useSavedPanel';
 import { EquipmentSpec, UnitStats } from '@generated/proto/common';
 import { SavedGearSet } from '@generated/proto/ui';
 import i18n from '@i18n/config';
+import { useSimHost, useSpecPresets } from '@sim/context/SimHostContext';
+import { useSimReady } from '@sim/hooks/useSimReady';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { Stats } from '@sim/proto/stats';
+import { batch } from '@sim/state/batch';
+import { subscribePlayerChange } from '@sim/state/subscriptions';
 import type { SavedDataPanelEntry } from '@ui-kit/SavedDataPanel';
 import { SavedDataPanel } from '@ui-kit/SavedDataPanel';
 import { useMemo } from 'react';

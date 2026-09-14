@@ -1,6 +1,6 @@
+import { Debuffs, PseudoStat, RaidBuffs } from '@generated/proto/common';
 import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
-import { Debuffs, PseudoStat, RaidBuffs } from '@generated/proto/common';
 
 export const LIVING_BOMB_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),

@@ -1,9 +1,9 @@
 import { Class } from '@generated/proto/common';
 
+import type { DeathKnightSpecs } from '../../proto/spec_types';
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BloodDeathKnight, FrostDeathKnight, UnholyDeathKnight } from '../specs/death_knight';
-import type { DeathKnightSpecs } from '../../proto/spec_types';
 import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class DeathKnight extends PlayerClass<Class.ClassDeathKnight> {

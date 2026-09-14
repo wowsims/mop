@@ -1,8 +1,8 @@
 // DOM-free half of the sidebar results panel: the shapes a stored run/reference consists of.
 // The rendering half is components/SimResultsPanel/SimResultSummary.tsx.
-import type { SimResult } from '@sim/proto/sim_result';
 import type { Raid as RaidProto } from '@generated/proto/api';
 import type { Encounter as EncounterProto } from '@generated/proto/common';
+import type { SimResult } from '@sim/proto/sim_result';
 
 export type ReferenceData = {
 	simResult: SimResult;
