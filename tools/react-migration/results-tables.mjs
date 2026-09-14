@@ -340,9 +340,9 @@ try {
 	);
 
 	console.log('\nrunning one iteration');
-	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
+	await page.waitForSelector(`${q('detailed-results-1-iteration-button')}:not([disabled])`, { timeout: 60000 });
 	const started = Date.now();
-	await page.click('.detailed-results-1-iteration-button');
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForFunction(() => document.querySelectorAll('.damage-metrics-root tbody tr').length > 0, null, { timeout: 60000 });
 	await page.waitForTimeout(500);

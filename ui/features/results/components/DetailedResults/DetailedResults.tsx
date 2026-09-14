@@ -8,7 +8,6 @@ import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
-import clsx from 'clsx';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -167,10 +166,10 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	};
 
 	return (
-		<div className="detailed-results-manager-root flex flex-col [&>*]:min-h-0">
-			<div className="detailed-results-controls-div flex mb-3">
+		<div data-testid="detailed-results-manager-root" className="flex flex-col [&>*]:min-h-0">
+			<div data-testid="detailed-results-controls-div" className="flex mb-3">
 				<Button
-					className="detailed-results-1-iteration-button"
+					data-testid="detailed-results-1-iteration-button"
 					disabled={host.disabled}
 					onClick={() => {
 						trackEvent({ action: 'sim', category: 'simulate', label: 'once' });
@@ -178,7 +177,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					}}>
 					{i18n.t('results_tab.details.sim_1_iteration')}
 				</Button>
-				<Button className="detailed-results-death-iteration-button ml-3" disabled={deathDisabled} onClick={onSimulateDeath}>
+				<Button className="ml-3" disabled={deathDisabled} onClick={onSimulateDeath}>
 					{i18n.t('results_tab.details.sim_1_death')}
 				</Button>
 			</div>
@@ -199,7 +198,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 								}}
 							/>
 						</div>
-						<div className="tabs-filler grow min-h-0" />
+						<div className="grow min-h-0" />
 						<DetailedResultsTabs tabs={visibleTabs} />
 					</div>
 					<div className="tab-content pt-6">
@@ -209,48 +208,39 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 							{i18n.t('results_tab.details.no_results')}
 						</div>
 						{showDamage && (
-							<DetailedResultsPane
-								id="damageTab"
-								className="damage-content [&_.metrics-table]:text-xs"
-								contentClassName="damage-metrics"
-								topline
-								histogram>
+							<DetailedResultsPane id="damageTab" className="[&_.metrics-table]:text-xs" contentClassName="damage-metrics" topline histogram>
 								<DamageMetricsTable />
 							</DetailedResultsPane>
 						)}
 						{showHealing && (
-							<DetailedResultsPane
-								id="healingTab"
-								className="healing-content [&_.metrics-table]:text-xs"
-								contentClassName="healing-spell-metrics"
-								topline>
+							<DetailedResultsPane id="healingTab" className="[&_.metrics-table]:text-xs" contentClassName="healing-spell-metrics" topline>
 								<HealingMetricsTable />
 							</DetailedResultsPane>
 						)}
 						{showThreat && (
-							<DetailedResultsPane id="damageTakenTab" className="damage-taken-content" contentClassName="dtps-metrics" topline>
+							<DetailedResultsPane id="damageTakenTab" contentClassName="dtps-metrics" topline>
 								<DtpsMetricsTable />
 							</DetailedResultsPane>
 						)}
-						<DetailedResultsPane id="buffsTab" className="buffs-content" contentClassName="buff-aura-metrics">
+						<DetailedResultsPane id="buffsTab" contentClassName="buff-aura-metrics">
 							<AuraMetricsTable useDebuffs={false} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="debuffsTab" className="debuffs-content" contentClassName="debuff-aura-metrics">
+						<DetailedResultsPane id="debuffsTab" contentClassName="debuff-aura-metrics">
 							<AuraMetricsTable useDebuffs={true} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="castsTab" className="casts-content" contentClassName="cast-metrics">
+						<DetailedResultsPane id="castsTab" contentClassName="cast-metrics">
 							<CastMetricsTable />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="resourcesTab" className="resources-content" contentClassName="resource-metrics">
+						<DetailedResultsPane id="resourcesTab" contentClassName="resource-metrics">
 							<ResourceMetricsTable />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="timelineTab" className="timeline-content" contentClassName="timeline" filling>
+						<DetailedResultsPane id="timelineTab" contentClassName="timeline" filling>
 							<Timeline active={activeId === 'timelineTab'} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="replayTab" className="replay-content p-0" contentClassName="combat-replay" filling>
+						<DetailedResultsPane id="replayTab" className="p-0" contentClassName="combat-replay" filling>
 							<CombatReplay active={activeId === 'replayTab'} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="logTab" className="log-content" contentClassName="log">
+						<DetailedResultsPane id="logTab" contentClassName="log">
 							<LogRunner active={activeId === 'logTab'} />
 						</DetailedResultsPane>
 					</div>

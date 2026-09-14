@@ -256,7 +256,7 @@ const collect = async (browser, port, spec, seeded) => {
 
 	// A second run while the tab is open: the scene is rebuilt and the playhead goes back to the start.
 	await page.evaluate(SEEK, 400);
-	await page.click('.detailed-results-1-iteration-button');
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page
 		.waitForFunction(sel => document.querySelector(sel)?.textContent?.startsWith('0:00.0'), q('cr-time-display'), { timeout: 120000 })
 		.catch(() => {});

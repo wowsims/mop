@@ -51,9 +51,9 @@ const TAB_IDS = [
 	'logTab',
 ];
 
-const STATE = ({ drRootSel, toolbarSel, dropped }) => {
+const STATE = ({ managerRootSel, drRootSel, toolbarSel, dropped }) => {
 	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(name => name && !dropped.includes(name)).sort().join('.');
-	const root = document.querySelector('.detailed-results-manager-root');
+	const root = document.querySelector(managerRootSel);
 	const drRoot = document.querySelector(drRootSel);
 	const toolbar = document.querySelector(toolbarSel);
 	const buttons = [...document.querySelectorAll(`${toolbarSel} [role=tab]`)];
@@ -84,8 +84,8 @@ const openResultsTab = async page => {
 };
 
 const runOneIteration = async page => {
-	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
-	await page.click('.detailed-results-1-iteration-button');
+	await page.waitForSelector(`${q('detailed-results-1-iteration-button')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForFunction(() => document.querySelectorAll('.damage-metrics-root tbody tr').length > 0, null, { timeout: 60000 });
 	await page.waitForTimeout(500);
@@ -138,7 +138,12 @@ const collect = async (browser, port, spec) => {
 		await clickSubTab(page, tabId);
 		await page.waitForTimeout(SETTLE);
 		perTab[tabId] = {
-			state: await page.evaluate(STATE, { drRootSel: DR_ROOT, toolbarSel: DR_TOOLBAR, dropped: [...DROPPED_HOOKS] }),
+			state: await page.evaluate(STATE, {
+				managerRootSel: q('detailed-results-manager-root'),
+				drRootSel: DR_ROOT,
+				toolbarSel: DR_TOOLBAR,
+				dropped: [...DROPPED_HOOKS],
+			}),
 			pane: await page.evaluate(SERIALIZE, `#${tabId}`),
 		};
 	}

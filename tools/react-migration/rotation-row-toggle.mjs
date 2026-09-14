@@ -36,8 +36,8 @@ try {
 	const tabId = await page.evaluate(() => window.simTabsProbe.ids().find(id => id && /detailed-results/.test(id)));
 	await page.evaluate(id => window.simTabsProbe.tabs().find(tab => window.simTabsProbe.idOf(tab) === id).click(), tabId);
 	await page.waitForTimeout(1200);
-	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
-	await page.click('.detailed-results-1-iteration-button');
+	await page.waitForSelector(`${q('detailed-results-1-iteration-button')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForTimeout(800);
 	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=timelineTab]`).click(), q('dr-toolbar'));

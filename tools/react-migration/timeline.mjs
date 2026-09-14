@@ -256,7 +256,7 @@ const collect = async (browser, port, spec, seeded) => {
 	// one on the same canvas from the same options object, which nothing else in the gate set reaches
 	// because every other swap happens with the rotation showing.
 	const beforeRebuild = await page.textContent('.results-sim-dps .topline-result-avg');
-	await page.click('.detailed-results-1-iteration-button');
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page
 		.waitForFunction(previous => document.querySelector('.results-sim-dps .topline-result-avg')?.textContent !== previous, beforeRebuild, { timeout: 120000 })
 		.catch(() => {});

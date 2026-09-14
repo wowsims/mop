@@ -294,7 +294,7 @@ describe('DetailedResults', () => {
 
 	it('keeps the death button disabled until a run reports death seeds', async () => {
 		const { container } = renderPane();
-		const buttons = [...container.querySelectorAll<HTMLButtonElement>('.detailed-results-controls-div button')];
+		const buttons = [...container.querySelectorAll<HTMLButtonElement>('[data-testid="detailed-results-controls-div"] button')];
 		expect(buttons.map(button => button.getAttribute('type'))).toEqual(['button', 'button']);
 		expect(buttons[0].disabled).toBe(false);
 		expect(buttons[1].disabled).toBe(true);

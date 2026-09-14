@@ -158,8 +158,8 @@ const collect = async (browser, port, spec, seeded) => {
 	if (String(loadedSeed) !== SEED) throw new Error(`${port} loaded seed ${loadedSeed}, not ${SEED} — the logs would not be comparable`);
 
 	await openResultsTab(page);
-	await page.waitForSelector('.detailed-results-1-iteration-button:not([disabled])', { timeout: 60000 });
-	await page.click('.detailed-results-1-iteration-button');
+	await page.waitForSelector(`${q('detailed-results-1-iteration-button')}:not([disabled])`, { timeout: 60000 });
+	await page.click(q('detailed-results-1-iteration-button'));
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 120000 });
 	await page.waitForTimeout(500);
 	await page.evaluate(toolbarSel => document.querySelector(`${toolbarSel} [role=tab][aria-controls=logTab]`).click(), q('dr-toolbar'));
