@@ -1,9 +1,8 @@
+import i18n from '@i18n/config';
 import { useSim } from '@sim/context/SimHostContext';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
-import { formatToNumber } from '@sim/utils/format';
 import { ActionMetrics } from '@sim/proto/sim_result';
-import { subscribeUiField } from '@sim/state/subscriptions';
-import i18n from '@i18n/config';
+import { formatToNumber } from '@sim/utils/format';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 

@@ -8,7 +8,7 @@ import { useStatWeights } from '@sim/hooks/useStatWeights';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Stats } from '@sim/proto/stats';
 import type { StatWeightActionSettings } from '@sim/settings/stat_weight_settings';
-import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
+import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { Dialog } from '@ui-kit/Dialog';
 import { Icon } from '@ui-kit/Icon';

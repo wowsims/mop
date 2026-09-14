@@ -1,6 +1,5 @@
 import { stDevToConf90 } from '@sim/utils/math';
 import { Icon } from '@ui-kit/Icon';
-import clsx from 'clsx';
 
 export interface StatWeightValueProps {
 	value: number;

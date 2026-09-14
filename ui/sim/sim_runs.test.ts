@@ -2,8 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SimRuns } from './sim_runs';
 import { RequestTypes } from './sim_signal_manager';
-import { createSimStore } from './state/sim_store';
-import { SimRunKind } from './state/sim_store';
+import { createSimStore, SimRunKind } from './state/sim_store';
 
 let store: ReturnType<typeof createSimStore>;
 let abortType: ReturnType<typeof vi.fn>;

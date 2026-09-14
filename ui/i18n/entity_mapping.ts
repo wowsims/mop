@@ -1,6 +1,3 @@
-import { BulkSimItemSlot } from '@sim/bulk/utils';
-import { LaunchStatus } from '@sim/constants/other';
-import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import {
 	ArmorType,
 	Class,
@@ -17,6 +14,9 @@ import {
 } from '@generated/proto/common';
 import { ResourceType } from '@generated/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';
+import { BulkSimItemSlot } from '@sim/bulk/constants_auto_gen';
+import { LaunchStatus } from '@sim/constants/other';
+import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 
 export const statI18nKeys: Record<Stat, string> = {
 	[Stat.StatStrength]: 'strength',

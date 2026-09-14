@@ -1,5 +1,4 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
 import { WINDOW_SCROLLER } from './window_scroller';

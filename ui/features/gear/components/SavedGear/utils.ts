@@ -1,6 +1,5 @@
-import type { Player } from '@sim/player/player';
-import { Stats } from '@sim/proto/stats';
 import { SavedGearSet } from '@generated/proto/ui';
+import type { Player } from '@sim/player/player';
 
 export const gearSetData = (player: Player<any>): SavedGearSet =>
 	SavedGearSet.create({ gear: player.getGear().asSpec(), bonusStatsStats: player.getBonusStats().toProto() });

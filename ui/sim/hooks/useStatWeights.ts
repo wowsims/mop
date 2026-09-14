@@ -2,11 +2,9 @@ import type { ProgressMetrics, StatWeightsResult } from '@generated/proto/api';
 import type { PseudoStat, Stat } from '@generated/proto/common';
 import { useCallback, useRef } from 'react';
 
-import { usePlayer } from '../context/SimHostContext';
-import { useSim } from '../context/SimHostContext';
-import type { SimRunState } from './useSimRun';
-import { useSimRun } from './useSimRun';
+import { usePlayer, useSim } from '../context/SimHostContext';
 import { SimRunKind } from '../state/sim_store';
+import { type SimRunState, useSimRun } from './useSimRun';
 
 export interface StatWeightsArgs {
 	epStats: Array<Stat>;

@@ -13,7 +13,7 @@ import { HelpText } from '@ui-kit/FormControl';
 import { Icon } from '@ui-kit/Icon';
 import { TabNav } from '@ui-kit/TabNav';
 import clsx from 'clsx';
-import { type KeyboardEvent, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { type KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { SelectorModalState } from '../../hooks/useSelectorModal';
 import { ALL_ITEM_SLOTS, createGearData } from '../../model/gear_data';
@@ -69,8 +69,8 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 		[player, slot, gearData, equippedItem, isBlacksmithing],
 	);
 	const eligibility = useMemo(
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		() => (slot !== null ? eligibilityFor({ player, slot, equippedItem, isBlacksmithing }) : null),
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[player, slot, equippedItem, isBlacksmithing, challengeMode],
 	);
 
