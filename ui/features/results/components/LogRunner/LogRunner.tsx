@@ -24,8 +24,6 @@ const SEARCH_DEBOUNCE_MS = 150;
 /** Until a real row has been measured. The sticky chrome is covered by the list's own overscan. */
 const ESTIMATED_ROW_HEIGHT = 32;
 
-const TAB_FADE_SETTLE_MS = 200;
-
 type Measured = { for: object | null; width: number; rowHeight: number };
 
 const UNMEASURED: Measured = { for: null, width: 0, rowHeight: ESTIMATED_ROW_HEIGHT };
@@ -132,12 +130,6 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 			if (frame !== null) cancelAnimationFrame(frame);
 		};
 	}, [measureChrome, drToolbarContext]);
-
-	useEffect(() => {
-		if (!active) return;
-		const timer = window.setTimeout(measureChrome, TAB_FADE_SETTLE_MS);
-		return () => window.clearTimeout(timer);
-	}, [active, measureChrome]);
 
 	const needsMeasure = logs.length > 0 && measured.for !== result;
 	const listWidth = measured.for === result ? measured.width : 0;

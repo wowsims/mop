@@ -167,7 +167,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 
 	return (
 		<div data-testid="detailed-results-manager-root" className="flex flex-col [&>*]:min-h-0">
-			<div data-testid="detailed-results-controls-div" className="flex mb-3">
+			<div data-testid="detailed-results-controls-div" className="mb-3 flex">
 				<Button
 					data-testid="detailed-results-1-iteration-button"
 					disabled={host.disabled}
@@ -189,7 +189,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					value={activeId}
 					onValueChange={next => setActiveId(String(next))}>
 					<div ref={toolbarRef} data-testid="dr-toolbar" className={stickyToolbarClassName} data-stuck={stuck ? '' : undefined}>
-						<div data-testid="results-filter" className="flex items-center min-h-0">
+						<div data-testid="results-filter" className="flex min-h-0 items-center">
 							<ResultsFilter
 								target={target}
 								onTargetChange={next => {
@@ -198,14 +198,14 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 								}}
 							/>
 						</div>
-						<div className="grow min-h-0" />
+						<div className="min-h-0 grow" />
 						<DetailedResultsTabs tabs={visibleTabs} />
 					</div>
-					<div className="pt-6" data-testid="dr-tab-content">
+					<div className="grid grid-cols-1 items-start pt-6" data-testid="dr-tab-content">
 						<div
 							id="noResultsTab"
 							data-active
-							className="transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
+							className="col-start-1 row-start-1 flex items-center justify-center p-6 text-base opacity-100 transition-opacity duration-150 ease-linear group-not-data-[no-results]/dr:hidden">
 							{i18n.t('results_tab.details.no_results')}
 						</div>
 						{showDamage && (
