@@ -1,7 +1,8 @@
 # Conventions, spec authoring, and decisions already made
 
 **Source of truth:** `.oxfmtrc.json` for formatting, `ui/README.md` for authoring a spec,
-`.oxlintrc.json` for anything that is actually enforced.
+`ui/STYLING.md` for styling/state/locating elements, `.oxlintrc.json` for anything that is actually
+enforced.
 
 ## Formatting
 
@@ -23,9 +24,11 @@ nothing else.
 Reformatting one of those is a diff nobody can review. Its ignore list also still names
 `ui/worker/highs.js`, which no longer exists — the solver comes from the npm `highs` package now.
 
-Stylesheets: a React component owns its SCSS in its own folder
-(`ui/ui-kit/<Name>/{<Name>.tsx, <Name>.scss, index.ts}`); `ui/scss/` keeps everything not owned by one
-component, including `ui/scss/sims/sim.scss`. `npm run lint:css` is stylelint over `ui/**/*.scss`.
+Stylesheets: Tailwind utilities, no SCSS or Bootstrap anywhere in `ui/`. A component that needs
+reusable multi-utility classes or state/descendant selectors gets a co-located
+`ui/ui-kit/<Name>/<Name>.css` of `ui-*` `@apply` classes, `@import`ed from `ui/styles/tailwind.css`.
+`npm run lint:css` is stylelint over `ui/**/*.css`. Full conventions — token policy, `ui-*` classes,
+`data-*` state, locating elements, the class-hook gates — are in `ui/STYLING.md`.
 
 ## JSX dialect
 
@@ -65,8 +68,10 @@ Adding one is three edits and no page:
    launch status: `ui/app/header/SimTitleDropdown/` reads it on a spec page, and the landing page
    (`ui/app/landing/`, entered from `ui/app/landing_entry.tsx`) builds its class menu and its per-spec
    status badges from `PlayerSpecs` via `ui/app/landing/landing_classes.ts`, not a hand-written list.
-3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class colour, background
-   image), which every spec page links unconditionally.
+3. Nothing, if the spec's class already has a theme block: `ui/styles/theme.css` keys its 34
+   `<spec>-sim-ui` theme blocks (class colour, background image) off class, so a new spec of an
+   existing class reuses its class's block automatically. A wholly new class needs a new block there
+   (see `ui/STYLING.md`).
 
 `tools/vite/spec_pages.mts` globs `ui/specs/*/*/spec.ts(x)`, so the page at `/mop/<class>/<spec>/`
 appears with no build-config edit and no html anywhere. Check the count with

@@ -1,5 +1,7 @@
 # ui/ layout
 
+Styling, state, and how to locate elements in tests/tools are `STYLING.md`, not here.
+
 Target tree:
 
 ```
@@ -38,8 +40,9 @@ ui/
   specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
                      ui/index_template.html is served (dev) and emitted (build) at every
                      /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
-  scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
-                     replace the 34 per-spec specs/<class>/<spec>/{index,_sim}.scss (PR 8a)
+  styles/            the one CSS entry (tailwind.css), theme.css (tokens + the 34 spec themes),
+                     base.css (element defaults), vendor.css (third-party-only selectors) — see
+                     STYLING.md. No SCSS and no Bootstrap remain anywhere in ui/
   index.html          the landing page, a React tree mounted by app/landing_entry.tsx on #root.
                      Its components are in app/landing/
   index_template.html, shared/, types/, tracking/   root, unchanged
@@ -50,8 +53,9 @@ ui/
 Every `.tsx` file is React (`tsconfig.json` is `jsx: react-jsx` / `jsxImportSource: react`, and both
 vite configs use the automatic runtime). There is no second dialect and no per-file pragma.
 
-Shared React components get a folder of their own,
-`ui-kit/<Name>/{<Name>.tsx, <Name>.scss, types.ts, index.ts}`. Hooks live one per file named after
+Shared React components get a folder of their own, `ui-kit/<Name>/{<Name>.tsx, types.ts, index.ts}`,
+plus a co-located `<Name>.css` only when the component needs `ui-*` composition classes (see
+`STYLING.md`) — most style with Tailwind utilities inline and have no `.css` file at all. Hooks live one per file named after
 the hook: the store's React binding and everything built on it in `sim/hooks/`
 (`useStoreSubscribe.ts`, `useSimRun.ts`), the sim-agnostic ones in `ui-kit/hooks/` (`useInput.ts`,
 `useActionId.ts`). There is no `ui-kit/react/`: every component here is React, so the qualifier
@@ -224,8 +228,9 @@ All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/app/landing/` renders the landing page's sim links from `PlayerSpecs`, no hand-written
    list; a class row's badge is the roll-up of its specs', in `landing_classes.ts`).
-3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (className, class color, background
-   image), which the spec page links unconditionally.
+3. Nothing, if the spec's class already has a theme block: `ui/styles/theme.css` keys its 34
+   `<spec>-sim-ui` theme blocks (class colour, background image) off class, so a new spec of an
+   existing class reuses its class's block automatically. A wholly new class needs a new block there.
 
 The page itself is not one of the steps: there is no per-spec `index.html`, in the source tree or
 anywhere else. `ui/index_template.html` is the _one_ spec page, and `tools/vite/spec_pages.mts`

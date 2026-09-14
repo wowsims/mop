@@ -12,10 +12,11 @@ Go compiled to WASM behind `ui/worker/*`; the UI only ever speaks protobuf to it
 The view layer is **React 19**, and it is now the only dialect. The `tsx-vanilla` runtime that half
 of `ui/` used to be written in has been retired: the package is uninstalled, no file carries a
 `@jsxImportSource` pragma, and the shim they pointed at is deleted — along with the vanilla
-`Component`/`Input` stack and every picker built on it, tippy, Bootstrap's JavaScript, and the
-`ui/index.ts` entry that booted the old landing page. Bootstrap's **stylesheet** is the part that
-stayed: `ui/scss/index.scss` imports its partials, so `form-control`, `d-none` and `btn` inside a
-React component are load-bearing, not residue.
+`Component`/`Input` stack and every picker built on it, tippy, and the `ui/index.ts` entry that
+booted the old landing page. Bootstrap and SCSS are gone too, JavaScript and stylesheet both: there
+is no `.scss` file anywhere in `ui/`, both HTML entries link a single `ui/styles/tailwind.css`, and
+`form-control`/`d-none`/`btn` are retired class names, not classes to reach for. Styling is Tailwind
+utilities plus co-located `ui-*` composition classes — see `ui/STYLING.md`.
 
 What the view is built from — reach for the existing thing before writing a new one:
 **Base UI** (`@base-ui/react`) for Dialog, Menu, Popover, Tabs and Toast, and also for the Field,
@@ -50,8 +51,8 @@ generated → worker → {sim, i18n} → ui-kit → features → app → specs �
 | `ui/app/`                  | `@app`       | composition root: `SimHostObject` (`individual_sim_ui.tsx`), `SimApp`/`SimShell`/`SimTabs`, `header/`, `tabs/`, `landing/`, `spec_entry.tsx`, `browser_env.ts` |
 | `ui/specs/<class>/<spec>/` | `@specs`     | spec data — one `spec.ts` per spec, may import everything                                                                                 |
 
-Not layers, and not in the arrow: `ui/scss/` (the stylesheets not owned by one component;
-`ui/scss/sims/sim.scss` drives all 34 spec themes off one `$sim-themes` map), `ui/shared/` (three
+Not layers, and not in the arrow: `ui/styles/` (Tailwind entry, tokens, the 34 spec themes as CSS
+variables — see `ui/STYLING.md`), `ui/shared/` (three
 browser helpers — `dom.ts`, `pointer.ts`, `page_boot.ts`), `ui/types/` (ambient `.d.ts`),
 `ui/tracking/` (the analytics shim), and `ui/index.html` / `ui/index_template.html` at the root.
 The React entry points are `ui/app/spec_entry.tsx` and `ui/app/landing_entry.tsx`.
@@ -70,6 +71,7 @@ arguing with one.
 | about to call a change done, or wondering what CI actually runs                                    | `references/verification.md`    |
 | running the sim in a browser, in a fresh worktree, or measuring a perf regression                  | `references/running-locally.md` |
 | adding a spec, formatting code, or about to re-litigate a decision that was already made           | `references/conventions.md`     |
+| styling a component, adding state, or locating an element in a test/tool                           | `ui/STYLING.md`                 |
 
 ## The short version of "done"
 
@@ -106,6 +108,7 @@ change, the way you would a stale comment.
 | a `package.json` script, `.github/workflows/run_tests.yml`, or the snapshot harness                   | `references/verification.md`                   |
 | `vite.config.mts`, `vite.build-workers.mts`, `tools/vite/spec_pages.mts`, the makefile's dist targets | `references/running-locally.md`                |
 | `.oxfmtrc.json`, `ui/specs/**` authoring, or a decision recorded as settled                           | `references/conventions.md`                    |
+| `ui/styles/*.css`, a `ui-*` class, a class-hook gate, or how elements are located in tests/tools      | `ui/STYLING.md`                                |
 
 Then run the path check, which fails on any file this skill names that no longer exists:
 
