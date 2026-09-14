@@ -19,13 +19,23 @@ const SETTINGS_SUFFIX = '__currentSettings__';
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
 const READ_ROTATION = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const pane = document.querySelector(q('rotation-pane'));
 	if (!pane) return ['NO rotation-pane'];
 	const style = getComputedStyle(pane);
 	const rows = [...pane.querySelectorAll(q('rotation-row'))];
 	const spacers = [...pane.querySelectorAll(`${q('rotation-content')} > ${q('rotation-vspacer')}`)];
 	const ruler = [...pane.querySelectorAll(q('rotation-ruler-label'))];
-	const cls = element => (element.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
+	// Legacy `rotation-*` marker classes carried no styling and are gone on this port (replaced by
+	// data-testid/data-row-kind, cc1b9bdb1); comparing them would flag an intentional rename as a diff.
+	const cls = element =>
+		(element.getAttribute('class') || '')
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean)
+			.filter(token => !token.startsWith('rotation-'))
+			.sort()
+			.join('.');
 
 	return [
 		`pane pps=${style.getPropertyValue('--pps').trim()} duration=${style.getPropertyValue('--duration').trim()} label-w=${style.getPropertyValue('--label-w').trim()}`,
@@ -51,6 +61,7 @@ const READ_ROTATION = () => {
 };
 
 const READ_FAB = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const root = document.querySelector(q('rotation-floating-action-bar-root'));
 	if (!root) return ['NO rotation-floating-action-bar-root'];
 	return [
@@ -66,6 +77,7 @@ const READ_FAB = () => {
 };
 
 const READ_CHART = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const chart = document.querySelector(q('timeline-chart'));
 	if (!chart) return ['NO timeline-chart'];
 	const canvas = chart.querySelector('canvas');
@@ -87,6 +99,7 @@ const READ_CHART = () => {
 // button, vanilla's own `.timeline-chart-tooltip` for a chart point, the port's one
 // `.timeline-hover-tooltip` for item and chart alike, and react-tooltip for the toolbar.
 const OPEN_TOOLTIP = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const open = [
 		...document.querySelectorAll(`[data-tippy-root] .tippy-content, .timeline-chart-tooltip, ${q('timeline-hover-tooltip')}, .react-tooltip.sim-tooltip`),
 	].find(element =>
@@ -117,6 +130,7 @@ const hoverText = async (page, hover, argument) => {
 // kinds of row. The sticky row label overlays the start of every track, so a point inside an item's
 // box is not necessarily a point on the item — `elementFromPoint` is what settles that.
 const REACHABLE_ITEM = index => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	let seen = 0;
 	for (const row of document.querySelectorAll(`${q('rotation-pane')} ${q('rotation-row')}`)) {
 		for (const item of row.querySelectorAll(`${q('rotation-row-track')} > [data-item-index]`)) {
@@ -133,6 +147,7 @@ const REACHABLE_ITEM = index => {
 };
 
 const ZOOM_BUTTON = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const button = document.querySelector(`${q('rotation-corner')} ${q('rotation-zoom-button')}`);
 	if (!button) return null;
 	const box = button.getBoundingClientRect();
@@ -140,6 +155,7 @@ const ZOOM_BUTTON = () => {
 };
 
 const CHART_POINT = fraction => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const canvas = document.querySelector(`${q('timeline-chart')} canvas`);
 	if (!canvas) return null;
 	const box = canvas.getBoundingClientRect();
