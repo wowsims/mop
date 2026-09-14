@@ -278,6 +278,16 @@ export async function findNonCanonical(root, opts = {}) {
 	return results;
 }
 
+// A class token may never contain a literal var(...): a single var belongs in the util-(--x)
+// paren shorthand, a compound of theme/runtime vars belongs in a named @theme inline token,
+// and anything no utility can express belongs in a co-located ui-* class.
+export function findVarInClass(root) {
+	const occurrences = collectTokens(root);
+	const results = occurrences.filter(occ => occ.token.includes('var(')).map(occ => ({ file: occ.file, line: occ.line, token: occ.token }));
+	results.sort((a, b) => (a.file === b.file ? a.line - b.line : a.file < b.file ? -1 : 1));
+	return results;
+}
+
 // Edits are applied against the whole file text with a forward-only cursor, not per-line:
 // a wrapped @apply/className spanning multiple lines can repeat the same "from" token more
 // than once, and a line-scoped indexOf only ever finds the first occurrence.
