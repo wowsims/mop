@@ -127,12 +127,21 @@ const runOneIteration = async page => {
 	await page.waitForTimeout(500);
 };
 
+// A metrics toggle off (`useDisplayMetrics`) drops damageTab/healingTab/damageTakenTab from the tree
+// entirely rather than hiding them, so a spec's default settings can leave one of TAB_IDS absent on
+// both builds. Returns false without clicking when that tab's button is not in the strip.
 const clickSubTab = async (page, tabId) => {
-	await page.evaluate(
-		({ id, toolbarSel }) => document.querySelector(`${toolbarSel} [role=tab][aria-controls=${id}]`).click(),
+	const clicked = await page.evaluate(
+		({ id, toolbarSel }) => {
+			const button = document.querySelector(`${toolbarSel} [role=tab][aria-controls=${id}]`);
+			if (!button) return false;
+			button.click();
+			return true;
+		},
 		{ id: tabId, toolbarSel: DR_TOOLBAR },
 	);
-	await page.waitForFunction(id => getComputedStyle(document.getElementById(id)).opacity === '1', tabId, { timeout: 5000 });
+	if (clicked) await page.waitForFunction(id => getComputedStyle(document.getElementById(id)).opacity === '1', tabId, { timeout: 5000 });
+	return clicked;
 };
 
 /** The pane's own scaffolding: everything down to a component root, nothing of what the component then filled it with. */
@@ -171,7 +180,11 @@ const collect = async (browser, port, spec) => {
 	await runOneIteration(page);
 	const perTab = {};
 	for (const tabId of TAB_IDS) {
-		await clickSubTab(page, tabId);
+		const clicked = await clickSubTab(page, tabId);
+		if (!clicked) {
+			perTab[tabId] = null;
+			continue;
+		}
 		await page.waitForTimeout(SETTLE);
 		perTab[tabId] = {
 			state: await page.evaluate(STATE, {
@@ -199,15 +212,22 @@ try {
 
 		const problems = [];
 		for (const tabId of TAB_IDS) {
-			const base = lines(sides.base.perTab[tabId].state);
-			const react = lines(sides.react.perTab[tabId].state);
+			const baseTab = sides.base.perTab[tabId];
+			const reactTab = sides.react.perTab[tabId];
+			if (!baseTab && !reactTab) continue;
+			if (!baseTab || !reactTab) {
+				problems.push(`${tabId}: present on ${baseTab ? 'base' : 'react'} only (a metrics toggle disagrees between the two builds)`);
+				continue;
+			}
+			const base = lines(baseTab.state);
+			const react = lines(reactTab.state);
 			for (let index = 0; index < Math.max(base.length, react.length); index++) {
 				if (base[index] !== react[index]) problems.push(`${tabId} state line ${index}\n      base : ${base[index]}\n      react: ${react[index]}`);
 			}
 			// See `dropReplayState`. `PORTS.base` is a React build too (not the retired vanilla stack), so
 			// a finished run leaves no hidden placeholder behind on either side.
-			const baseReplay = dropReplayState(scaffolding(stripDroppedHooks(sides.base.perTab[tabId].pane)), 'cr-empty');
-			const reactReplay = dropReplayState(scaffolding(stripDroppedHooks(sides.react.perTab[tabId].pane)), 'cr-empty');
+			const baseReplay = dropReplayState(scaffolding(stripDroppedHooks(baseTab.pane)), 'cr-empty');
+			const reactReplay = dropReplayState(scaffolding(stripDroppedHooks(reactTab.pane)), 'cr-empty');
 			if (baseReplay.dropped !== 0 || reactReplay.dropped !== 0) {
 				problems.push(`${tabId}: base hid ${baseReplay.dropped} replay placeholders (expected 0), react ${reactReplay.dropped} (expected 0)`);
 			}
@@ -233,7 +253,7 @@ try {
 		const ok = problems.length === 0;
 		if (!ok) failures++;
 		console.log(
-			`${ok ? 'PASS' : 'FAIL'}  ${spec.padEnd(22)} ${TAB_IDS.map(id => `${id}=${scaffolding(sides.react.perTab[id].pane).split('\n').length}`).join(' ')}`,
+			`${ok ? 'PASS' : 'FAIL'}  ${spec.padEnd(22)} ${TAB_IDS.map(id => `${id}=${sides.react.perTab[id] ? scaffolding(sides.react.perTab[id].pane).split('\n').length : 'absent'}`).join(' ')}`,
 		);
 		problems.forEach(problem => console.log('    ! ' + problem));
 		console.log('  keyboard base :', sides.base.keys.join('  '));

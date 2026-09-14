@@ -56,7 +56,7 @@ const READ = () => {
 		`set ${button(T('results-sim-set-reference'))}`,
 		`swap ${button(T('results-sim-reference-swap'))}`,
 		`delete ${button(T('results-sim-reference-delete'))}`,
-		...[...document.querySelectorAll(`${T('results-content')} .results-metric`)].map(metric => {
+		...[...document.querySelectorAll(`${T('results-content')} ${T('results-metric')}`)].map(metric => {
 			const slot = metric.querySelector('.results-reference');
 			const diff = metric.querySelector('.results-reference-diff');
 			return `${cls(metric)} slot=${slot ? cls(slot) : 'MISSING'} diff=${diff ? cls(diff) : 'MISSING'} text=${text(diff) ?? ''}`;
@@ -96,14 +96,19 @@ const collect = async (browser, port, spec, seeded) => {
 		await page.dispatchEvent('#simui-iterations', 'change');
 		await page.waitForSelector('.dps-action:not([disabled])', { timeout: 120000 });
 		const before = await page.evaluate(
-			() => document.querySelector(':is([data-testid="results-content"], .results-content) .results-metric .topline-result-avg')?.textContent ?? '',
+			() =>
+				document.querySelector(
+					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) .topline-result-avg',
+				)?.textContent ?? '',
 		);
 		await page.click('.dps-action');
 		// Waits for the *text* to change rather than for a tile to exist: the second run replaces a
 		// list that is already there, so a count would be satisfied before it ever re-rendered.
 		await page.waitForFunction(
 			previous => {
-				const avg = document.querySelector(':is([data-testid="results-content"], .results-content) .results-metric .topline-result-avg');
+				const avg = document.querySelector(
+					':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric) .topline-result-avg',
+				);
 				return !!avg && avg.textContent !== previous;
 			},
 			before,

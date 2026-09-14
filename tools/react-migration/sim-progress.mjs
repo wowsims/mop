@@ -178,7 +178,7 @@ const FINISHED = () => {
 		content: shown(T('results-content')),
 		buttons: shown(T('button-zone')),
 		stop: !!viewer.querySelector(`${T('button-zone')} button`),
-		metrics: viewer.querySelectorAll(`${T('results-content')} .results-metric`).length,
+		metrics: viewer.querySelectorAll(`${T('results-content')} ${T('results-metric')}`).length,
 		simulateDisabled: simulate ? simulate.disabled : null,
 	};
 };
@@ -292,7 +292,10 @@ try {
 	console.log(`  ----  ${JSON.stringify(running)}`);
 	check('a running block is on screen', running.present === true && running.visible === true, `parent=${running.parent}`);
 	check('it carries a dps number', Number.isFinite(parseFloat(running.dps)), String(running.dps));
-	check('it carries an hps number', Number.isFinite(parseFloat(running.hps)), String(running.hps));
+	// A metrics toggle off (`useDisplayMetrics`) drops the hps block from the tree entirely rather than
+	// leaving it at "0.00", so `running.hps` is `null` on a spec whose default settings hide healing.
+	if (running.hps !== null) check('it carries an hps number', Number.isFinite(parseFloat(running.hps)), String(running.hps));
+	else console.log('  SKIP  it carries an hps number  healing metric toggled off, block not rendered');
 	// `damage-metrics` is what `_shared.scss`'s `.hide-damage-metrics` rules key on, so the dps row
 	// following the sim's metric toggles depends on the class surviving; the hps row is read by testid.
 	// The `<br/>` between the two halves contributes no whitespace to `textContent`, so the separator is
@@ -354,7 +357,10 @@ try {
 	await page.click(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	await page
 		.waitForFunction(
-			() => document.querySelectorAll('.results-viewer :is([data-testid="results-content"], .results-content) .results-metric').length > 0,
+			() =>
+				document.querySelectorAll(
+					'.results-viewer :is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)',
+				).length > 0,
 			null,
 			{ timeout: 120000 },
 		)

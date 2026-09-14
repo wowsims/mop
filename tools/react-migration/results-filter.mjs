@@ -143,7 +143,9 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
 	await page.click('.dps-action');
 	await page.waitForFunction(
-		() => document.querySelectorAll(':is([data-testid="results-content"], .results-content) .results-metric').length > 0,
+		() =>
+			document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)')
+				.length > 0,
 		null,
 		{ timeout: 180000 },
 	);

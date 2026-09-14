@@ -43,10 +43,13 @@ const BENIGN_CONSOLE = /Empty action id!/;
 // `columnCount`/`primaryIndex` replace the old per-header exact-class-list comparison (name, primary
 // bar, +N plain, rate), which broke once the `ui-metrics-*` companion classes landed — structure is
 // asserted by count and by the primary column's position instead.
+// `togglable` marks a table behind a metrics toggle (`useDisplayMetrics`): SPEC's defaults leave
+// healing and threat off, so those two panes are never rendered at all — not hidden, absent — and
+// their shell-at-load check is skipped rather than failed.
 const TABLES = [
 	{ root: q('damage-metrics-root'), columnCount: 10, primaryIndex: 1, sortCol: 9, mustHaveRows: true },
-	{ root: q('healing-metrics-root'), columnCount: 12, primaryIndex: 1, sortCol: 11 },
-	{ root: q('dtps-metrics-root'), columnCount: 9, primaryIndex: 1, sortCol: 8 },
+	{ root: q('healing-metrics-root'), columnCount: 12, primaryIndex: 1, sortCol: 11, togglable: true },
+	{ root: q('dtps-metrics-root'), columnCount: 9, primaryIndex: 1, sortCol: 8, togglable: true },
 	{ root: q('cast-metrics-root'), columnCount: 3, primaryIndex: -1, sortCol: 1, mustHaveRows: true },
 	{ root: q('buff-metrics-root'), columnCount: 4, primaryIndex: -1, sortCol: 3, mustHaveRows: true },
 	{ root: q('debuff-metrics-root'), columnCount: 4, primaryIndex: -1, sortCol: 3, mustHaveRows: true },
@@ -318,6 +321,13 @@ try {
 	);
 	for (const [index, table] of TABLES.entries()) {
 		const seen = shell[index];
+		// The baseline (pre-metric-visibility) always renders every pane, hidden via CSS; this build
+		// renders a togglable one only when its metric is on, and SPEC's defaults leave healing/threat
+		// off — so a togglable table missing on the port alone is the fix working, not a shell gap.
+		if (!IS_BASE && table.togglable && seen.missing) {
+			console.log(`  SKIP  ${table.root} builds its whole shell before any sim  metric toggled off, pane not rendered`);
+			continue;
+		}
 		const tablesorterOk = IS_BASE ? seen.tablesorter === true : seen.tablesorter === false;
 		const ok =
 			!seen.missing &&

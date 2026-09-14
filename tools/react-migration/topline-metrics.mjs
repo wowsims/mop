@@ -44,7 +44,7 @@ const READ = panes => {
 
 	const topline = pane => {
 		const root = document.querySelector(`${pane} :is([data-testid="topline-results-root"], .topline-results-root)`);
-		if (!root) return `NO ${pane} topline-results-root`;
+		if (!root) return [`NO ${pane} topline-results-root`];
 		const headers = [...root.querySelectorAll('thead th')];
 		const cells = [...root.querySelectorAll('tbody td')];
 		// Both stylesheets moved out of the global cascade into co-located component files, so the
@@ -206,9 +206,16 @@ try {
 		diff('damage-pane tooltip', sides.base.paneTooltips, sides.react.paneTooltips, problems);
 		diff('sidebar tooltip', sides.base.sidebarTooltips, sides.react.sidebarTooltips, problems);
 
-		// The three panes render one model, so they must agree with each other as well as with the baseline.
+		// The three panes render one model, so they must agree with each other as well as with the
+		// baseline — but only where a metrics toggle left both rendered. `topline()` above returns the
+		// one-line `NO … topline-results-root` sentinel for a pane the toggle dropped from the tree
+		// entirely, and that is not a content mismatch to flag.
+		const notRendered = pane => pane.length === 1 && pane[0].startsWith('NO ');
 		const [first, ...rest] = PANES.map(pane => sides.react.dom.panes[pane]);
-		rest.forEach((pane, index) => diff(`${PANES[index + 1]} vs ${PANES[0]}`, first, pane, problems));
+		rest.forEach((pane, index) => {
+			if (notRendered(first) || notRendered(pane)) return;
+			diff(`${PANES[index + 1]} vs ${PANES[0]}`, first, pane, problems);
+		});
 
 		const ok = problems.length === 0;
 		if (!ok) failures++;
