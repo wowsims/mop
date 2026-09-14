@@ -10,6 +10,21 @@
   "bracketSameLine": true,
   "arrowParens": "avoid",
   "sortPackageJson": false,
+  "sortTailwindcss": {
+    "stylesheet": "./ui/styles/style.css",
+    "functions": ["clsx"],
+    "attributes": [
+      "bodyClassName",
+      "cellClassName",
+      "clearClassName",
+      "iconClassName",
+      "inputClassName",
+      "labelClassName",
+      "rowClassName",
+      "selectClassName",
+      "triggerClassName"
+    ]
+  },
   "ignorePatterns": [
     "ui/worker/highs.js",
     "ui/**/apls/*.apl.json",
