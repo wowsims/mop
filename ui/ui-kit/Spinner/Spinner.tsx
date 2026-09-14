@@ -6,5 +6,5 @@ export interface SpinnerProps {
 }
 
 export const Spinner = ({ size = 'md', className }: SpinnerProps) => (
-	<div data-testid="loader" className={clsx('loader ui-spinner rounded-full', size === 'sm' && 'ui-spinner-sm', className)} />
+	<div data-testid="loader" className={clsx('ui-spinner rounded-full', size === 'sm' && 'ui-spinner-sm', className)} />
 );

@@ -10,6 +10,8 @@ export interface SimTabPaneProps {
 
 export const SimTabPane = ({ id, className, children }: SimTabPaneProps) => (
 	<div id={id} className={clsx('sim-tab', id, className)}>
-		<TabPanelColumns.Root className="tab-pane-content-container">{children}</TabPanelColumns.Root>
+		<TabPanelColumns.Root className="ui-tab-pane" data-testid="tab-pane-content-container">
+			{children}
+		</TabPanelColumns.Root>
 	</div>
 );

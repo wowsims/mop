@@ -69,7 +69,7 @@ const mount = (block = document.createElement('div')) => {
 const rows = () => Array.from(document.querySelectorAll('[data-testid="cooldown-picker"]'));
 const labels = () => rows().map(row => row.querySelector('.cooldown-picker-label')!.textContent);
 const deleteButton = (index: number) => rows()[index].querySelector('[data-testid="delete-cooldown"]') as HTMLButtonElement;
-const timingsInput = (index: number) => rows()[index].querySelector('.number-list-picker-input') as HTMLInputElement;
+const timingsInput = (index: number) => rows()[index].querySelector('[data-testid="number-list-picker-input"]') as HTMLInputElement;
 
 beforeEach(() => {
 	// A filled ActionId as fill() returns one, so useActionId resolves synchronously and no test

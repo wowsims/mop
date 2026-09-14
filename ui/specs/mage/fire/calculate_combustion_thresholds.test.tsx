@@ -124,7 +124,7 @@ describe('CombustionThresholds', () => {
 		expect(actionButton(container).disabled).toBe(true);
 
 		await act(async () => {
-			fireEvent.click(rootElem.querySelector<HTMLButtonElement>('.progress-tracker-modal-cancel-btn')!);
+			fireEvent.click(rootElem.querySelector<HTMLButtonElement>('[data-testid="progress-tracker-modal-cancel-btn"]')!);
 		});
 
 		await waitFor(() => expect(actionButton(container).disabled).toBe(false));

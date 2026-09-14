@@ -79,7 +79,7 @@ describe('SimResultsPanel', () => {
 		expect([...viewer.children].map(el => el.getAttribute('data-testid'))).toEqual(['results-pending', 'results-content', 'button-zone', 'warning-zone']);
 		expect(zones(view)).toEqual({ pending: false, content: false, buttons: false });
 		expect(shown(view, '[data-testid="warning-zone"]')).toBe(true);
-		expect(viewer.querySelector('[data-testid="results-pending"] .loader')).not.toBeNull();
+		expect(viewer.querySelector('[data-testid="results-pending"] [data-testid="loader"]')).not.toBeNull();
 	});
 
 	it('follows the visibility table through the handle', () => {
@@ -95,7 +95,7 @@ describe('SimResultsPanel', () => {
 		act(() => panel.setProgress(progress(1, 2, 3, 4)));
 		expect(zones(view)).toEqual({ pending: true, content: false, buttons: true });
 		expect(view.container.querySelector('[data-testid="results-pending"] .results-sim')).not.toBeNull();
-		expect(view.container.querySelector('[data-testid="results-pending"] .loader')).toBeNull();
+		expect(view.container.querySelector('[data-testid="results-pending"] [data-testid="loader"]')).toBeNull();
 
 		act(() => panel.showResult());
 		expect(zones(view)).toEqual({ pending: false, content: true, buttons: true });

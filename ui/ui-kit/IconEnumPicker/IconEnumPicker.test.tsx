@@ -89,14 +89,14 @@ describe('IconEnumPicker', () => {
 	it('builds the root, the button, the menu and the caption in vanilla’s order', () => {
 		mount(new Options());
 
-		expect(['relative', 'icon-enum-picker-root', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
+		expect(['relative', 'icon-picker', 'input-root'].every(cls => root().classList.contains(cls))).toBe(true);
 
 		// The order is the whole reason the slot exists: Base UI appends its portal element to the
 		// container in a later commit than React places the root's own children, so a portal aimed
 		// straight at the root would land after the caption.
 		expect(Array.from(root().children).map(element => `${element.tagName.toLowerCase()}.${element.className}`)).toEqual([
 			'a.icon-picker-button ui-icon-picker-swatch transition-none',
-			'div.icon-enum-picker-slot contents',
+			'div.contents',
 			'label.ui-field-label',
 		]);
 
@@ -106,14 +106,16 @@ describe('IconEnumPicker', () => {
 		// By class and from the menu upwards, not by index: an open menu hangs Base UI's focus guards
 		// off the root and around the `<ul>` as well.
 		const slot = within(root()).getByTestId('icon-enum-picker-slot');
-		expect(slot.children[0].className).toBe('icon-enum-picker-portal contents');
-		expect(slot.children[0].children[0].className).toBe('icon-enum-picker-positioner z-dropdown');
+		expect(slot.children[0].className).toBe('contents');
+		expect(slot.children[0].getAttribute('data-testid')).toBe('icon-enum-picker-portal');
+		expect(slot.children[0].children[0].className).toBe('z-dropdown');
+		expect(slot.children[0].children[0].getAttribute('data-testid')).toBe('icon-enum-picker-positioner');
 		expect(menu()!.parentElement).toBe(slot.children[0].children[0]);
 
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
-			'li.icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
-			'li.icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
-			'li.icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
+			'li.ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none',
 		]);
 		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});
@@ -123,7 +125,8 @@ describe('IconEnumPicker', () => {
 		// No `keepMounted`: the portal, the `<ul>` and every option are built on open, so a page that
 		// nobody has opened a picker on holds none of them.
 		const slot = root().children[1];
-		expect(slot.className).toBe('icon-enum-picker-slot contents');
+		expect(slot.className).toBe('contents');
+		expect(slot.getAttribute('data-testid')).toBe('icon-enum-picker-slot');
 		expect(slot.children).toHaveLength(0);
 		expect(menu()).toBeNull();
 

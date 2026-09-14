@@ -16,7 +16,7 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	const input = (
 		<Checkbox.Root
 			id={config.id}
-			className="boolean-picker-input ui-boolean-picker-input inline-flex items-center justify-center p-0"
+			className="ui-boolean-picker-input inline-flex items-center justify-center p-0"
 			data-testid="boolean-picker-input"
 			checked={value}
 			disabled={disabled}
@@ -30,7 +30,7 @@ export const BooleanPicker = <ModObject,>({ modObject, config }: BooleanPickerPr
 	return (
 		<PickerShell
 			config={config}
-			className={config.reverse ? 'boolean-picker-root ui-boolean-picker ui-boolean-picker-reverse' : 'boolean-picker-root ui-boolean-picker'}
+			className={config.reverse ? 'ui-boolean-picker ui-boolean-picker-reverse' : 'ui-boolean-picker'}
 			testId="boolean-picker-root"
 			hidden={hidden}
 			disabled={disabled}

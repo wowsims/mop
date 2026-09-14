@@ -91,7 +91,7 @@ describe('IconPicker', () => {
 	it('shows the use-counter class but no text at states 3 without an improved id', () => {
 		const settings = new Settings(2);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
-		expect(mainAnchor().classList.contains('use-counter')).toBe(true);
+		expect(mainAnchor().hasAttribute('data-use-counter')).toBe(true);
 		expect(screen.queryByText('2')).toBeNull();
 	});
 

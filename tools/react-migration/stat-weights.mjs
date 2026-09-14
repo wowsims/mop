@@ -385,7 +385,7 @@ if (!IS_BASE) {
 }
 
 const cancel = page.locator(
-	'.progress-tracker-dialog .progress-tracker-modal-cancel-btn, [data-testid="progress-tracker-dialog"] .progress-tracker-modal-cancel-btn, .results-pending-overlay button',
+	`.progress-tracker-dialog ${q('progress-tracker-modal-cancel-btn')}, ${q('progress-tracker-dialog')} ${q('progress-tracker-modal-cancel-btn')}, .results-pending-overlay button`,
 );
 if (await cancel.count()) {
 	await cancel.first().click();

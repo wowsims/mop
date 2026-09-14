@@ -81,7 +81,8 @@ describe('MultiIconPicker', () => {
 	it('builds the root, the dropend and the option list vanilla built', () => {
 		mount(new Buffs());
 
-		expect(['multi-icon-picker-root', 'icon-picker'].every(cls => root().classList.contains(cls))).toBe(true);
+		expect(root().classList.contains('icon-picker')).toBe(true);
+		expect(root().getAttribute('data-testid')).toBe('multi-icon-picker-root');
 		expect(root().children[0].className).toBe('relative');
 		expect(trigger()).toBeTruthy();
 		// No `keepMounted`: the trigger is all the dropend holds until somebody opens the menu.
@@ -91,7 +92,8 @@ describe('MultiIconPicker', () => {
 		open();
 		const options = Array.from(menu().children);
 		expect(options).toHaveLength(4);
-		expect(options[0].querySelector('a')?.className).toBe('icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none');
+		expect(options[0].querySelector('a')?.className).toBe('ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none');
+		expect(options[0].querySelector('a')?.getAttribute('data-testid')).toBe('icon-dropdown-option');
 		expect(options.slice(1).map(option => option.className)).toEqual([
 			'opacity-70 hover:opacity-100',
 			'opacity-70 hover:opacity-100',

@@ -89,8 +89,8 @@ const chips = (section: 'presets' | 'custom') => [
 ];
 const chipNamed = (name: string) => [...document.querySelectorAll('[data-testid="saved-data-set-chip"]')].find(chip => chip.textContent?.startsWith(name))!;
 const stored = () => JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null');
-const popover = () => document.querySelector('.sim-confirm-popover');
-const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
+const popover = () => document.querySelector('[data-testid="sim-confirm-popover"]');
+const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('[data-testid="sim-confirm-popover-actions"] button') ?? [])];
 
 beforeEach(setup);
 

@@ -16,7 +16,7 @@ export const TooltipButton = ({ tooltip, icon = 'question-circle', iconStyle = '
 	const id = useId();
 	return (
 		<>
-			<Button variant="link" className={clsx('tooltip-button flex items-center justify-center', className)} {...tooltipAnchorProps(id)}>
+			<Button variant="link" className={clsx('flex items-center justify-center', className)} data-testid="tooltip-button" {...tooltipAnchorProps(id)}>
 				<Icon name={icon} style={iconStyle} />
 			</Button>
 			<Tooltip id={id} content={tooltip} place={place} />

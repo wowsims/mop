@@ -84,7 +84,6 @@ export const Dialog = ({
 				<BaseDialog.Viewport className="ui-dialog-viewport" data-testid="sim-dialog-viewport" data-elevated={elevated}>
 					<BaseDialog.Popup
 						className={clsx(
-							'sim-dialog-popup',
 							'ui-dialog',
 							maxWidth,
 							scrollContents && 'ui-dialog-scroll',

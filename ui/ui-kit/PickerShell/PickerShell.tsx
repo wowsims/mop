@@ -47,7 +47,7 @@ export const PickerShell = <ModObject, T, V>({
 	if (hidden) return null;
 
 	const inline = inlineProp || config.inline || !!config.extraClassNames?.includes('input-inline');
-	const iconField = iconFieldProp || !!className?.includes('ui-icon-field');
+	const iconField = iconFieldProp ?? !!className?.includes('ui-icon-field');
 
 	return (
 		<Field.Root

@@ -127,7 +127,7 @@ const INSTALL = () => {
 			const root = pane().querySelector(q('bulk-combinations-count'));
 			const button = pane().querySelector(q('bulk-settings-btn'));
 			return {
-				loading: !!root?.querySelector('.loader'),
+				loading: !!root?.querySelector(':is([data-testid="loader"], .loader)'),
 				text: text(root),
 				warning: !!root?.querySelector(q('warning')),
 				simulate: text(button),

@@ -50,7 +50,7 @@ const INSTALL = () => {
 	// `MultiIconPicker` also spells `icon-dropdown-option` onto its "clear" anchor, so each multi
 	// picker contributes one extra row with an empty value. That is the class doing double duty in
 	// the app, not a miscount here.
-	const OWNERS = '.input-root, .multi-icon-picker-root, [data-testid="icon-dropdown-option"], .icon-dropdown-option';
+	const OWNERS = '.input-root, :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root), [data-testid="icon-dropdown-option"], .icon-dropdown-option';
 
 	// The `<ul>` an icon picker keeps its options in. Vanilla builds `dropdown-menu` into the picker in
 	// its constructor and never takes it down; the port mounts Base UI's popup into the slot when the
@@ -58,7 +58,7 @@ const INSTALL = () => {
 	// tables must not see either one: on the baseline they are 89 rows of markup nobody has opened, and
 	// on this branch they are nothing at all, which is what stopped the two builds' output matching.
 	// These are `PORTED_MENUS`'s `eager` and popup lines, same two menus, same vocabulary.
-	const MENU = 'ul.dropdown-menu, ul.icon-enum-picker-menu, ul.multi-icon-picker-menu';
+	const MENU = 'ul.dropdown-menu, ul:is([data-testid="icon-enum-picker-menu"], .icon-enum-picker-menu), ul:is([data-testid="multi-icon-picker-menu"], .multi-icon-picker-menu)';
 	const inMenu = el => !!el.closest(MENU);
 
 	// The two pickers whose options `menus` opens. Named by the class the row already reports as its
@@ -72,6 +72,7 @@ const INSTALL = () => {
 	// What the row *is*, from its own class list. Named rather than the whole sorted class list
 	// because panes-parity already compares class lists byte for byte.
 	const kindOf = el =>
+		el.getAttribute('data-testid') ??
 		[...el.classList].find(name => name.endsWith('-picker-root')) ??
 		(el.classList.contains('consumes-row') ? 'consumes-row' : null) ??
 		(el.matches(':is([data-testid="icon-dropdown-option"], .icon-dropdown-option)') ? 'icon-dropdown-option' : null) ??
@@ -95,7 +96,7 @@ const INSTALL = () => {
 		// By class, not by tag, for the reason spelled out at the `.form-label` read below: the React
 		// caption is a `<span>` — it names an icon group rather than a control — so keying on `label`
 		// silently turned every multi-icon row's key into `multi:?` on this build only.
-		if (el.classList.contains('multi-icon-picker-root')) return `multi:${text(own(el, '.multi-icon-picker-label')) || '?'}`;
+		if (kindOf(el) === 'multi-icon-picker-root') return `multi:${text(own(el, ':is([data-testid="multi-icon-picker-label"], .multi-icon-picker-label)')) || '?'}`;
 		const anchor = own(el, 'a');
 		if (anchor) {
 			const href = anchor.getAttribute('href');
@@ -205,7 +206,8 @@ const INSTALL = () => {
 				// Menu contents excluded, same as `ownersOf`: the baseline's multi-icon menus each hold
 				// their inputs' `IconPicker`s, which put this column 26 over on Raid Buffs and 10 over on
 				// Debuffs while this branch's menus were unbuilt.
-				pickers: [...block.querySelectorAll('.input-root, .multi-icon-picker-root')].filter(el => !inMenu(el)).length,
+				pickers: [...block.querySelectorAll('.input-root, :is([data-testid="multi-icon-picker-root"], .multi-icon-picker-root)')].filter(el => !inMenu(el))
+					.length,
 			})),
 		rows,
 		// Every icon picker whose menu the walk below opens, in the document order the table prints,

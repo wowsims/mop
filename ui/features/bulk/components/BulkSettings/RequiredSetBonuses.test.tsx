@@ -28,7 +28,7 @@ const mount = () => {
 			<RequiredSetBonuses />
 		</SimHostProvider>,
 	);
-	const box = (suffix: string) => container.querySelectorAll<HTMLElement>('.boolean-picker-input')[suffix === '2p' ? 0 : 1];
+	const box = (suffix: string) => container.querySelectorAll<HTMLElement>('[data-testid="boolean-picker-input"]')[suffix === '2p' ? 0 : 1];
 	return { player, box };
 };
 

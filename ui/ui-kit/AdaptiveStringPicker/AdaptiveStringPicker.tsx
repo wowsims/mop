@@ -31,12 +31,7 @@ export const AdaptiveStringPicker = <ModObject,>({ modObject, config }: Adaptive
 	useCommitChange(input, committed => setValue(committed.value));
 
 	return (
-		<PickerShell
-			config={config}
-			className="adaptive-string-picker-root ui-adaptive-string-picker-root"
-			testId="adaptive-string-picker-root"
-			hidden={hidden}
-			disabled={disabled}>
+		<PickerShell config={config} className="ui-adaptive-string-picker-root" testId="adaptive-string-picker-root" hidden={hidden} disabled={disabled}>
 			<Input type="text" ref={attachInput} id={config.id} disabled={disabled} onInput={() => updateSize(input)} />
 		</PickerShell>
 	);

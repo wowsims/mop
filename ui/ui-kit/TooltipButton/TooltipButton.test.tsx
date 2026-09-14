@@ -7,7 +7,8 @@ describe('TooltipButton', () => {
 	it('renders the vanilla button, with the extra classes the callers pass', () => {
 		render(<TooltipButton tooltip="What this does" className="ml-2" />);
 		const button = screen.getByRole('button');
-		expect(Array.from(button.classList).sort()).toEqual(['ui-button-link', 'flex', 'items-center', 'justify-center', 'ml-2', 'tooltip-button'].sort());
+		expect(Array.from(button.classList).sort()).toEqual(['ui-button-link', 'flex', 'items-center', 'justify-center', 'ml-2'].sort());
+		expect(button.getAttribute('data-testid')).toBe('tooltip-button');
 		expect(button.getAttribute('type')).toBe('button');
 		// `Icon` normalises the FA5 spelling `question-circle` into its FA6 name.
 		expect(button.querySelector('i')!.className).toContain('far fa-circle-question');

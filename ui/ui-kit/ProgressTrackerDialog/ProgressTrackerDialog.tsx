@@ -63,11 +63,7 @@ export const ProgressTrackerDialog = ({
 				{state.message}
 			</div>
 			{onCancel && (
-				<Button
-					variant="outline-cancel"
-					className="progress-tracker-modal-cancel-btn"
-					data-testid="progress-tracker-modal-cancel-btn"
-					onClick={onCancel}>
+				<Button variant="outline-cancel" data-testid="progress-tracker-modal-cancel-btn" onClick={onCancel}>
 					<Icon name="ban" style="base" className="mr-1" />
 					{i18n.t('sidebar.results.reference.cancel')}
 				</Button>

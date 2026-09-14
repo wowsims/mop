@@ -205,7 +205,7 @@ describe('TargetsPicker', () => {
 			const matchesRoot = (node: Element, index: number) =>
 				index === 2
 					? node.firstElementChild!.getAttribute('data-testid') === 'enum-picker-root'
-					: node.firstElementChild!.classList.contains(['number-picker-root', 'boolean-picker-root'][index]);
+					: node.firstElementChild!.getAttribute('data-testid') === ['number-picker-root', 'boolean-picker-root'][index];
 			expect(inputRoots.map((node, index) => matchesRoot(node, index))).toEqual([true, true, true]);
 		});
 

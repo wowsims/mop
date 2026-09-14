@@ -41,7 +41,7 @@ const mount = (fields: Array<any>) =>
 	);
 
 const root = () => document.querySelector('[data-testid="apl-picker-builder-root"]') as HTMLElement;
-const stringInput = () => root().querySelector('.adaptive-string-picker-root input') as HTMLInputElement;
+const stringInput = () => root().querySelector('[data-testid="adaptive-string-picker-root"] input') as HTMLInputElement;
 
 beforeEach(() => {
 	document.body.innerHTML = '';
@@ -54,8 +54,8 @@ describe('FieldGroup', () => {
 
 		expect(root().className.split(' ')).toContain('input-root');
 		expect(
-			[...root().children].map((child, index) =>
-				child.classList.contains(['adaptive-string-picker-root', 'boolean-picker-root', 'number-picker-root'][index]),
+			[...root().children].map(
+				(child, index) => child.getAttribute('data-testid') === ['adaptive-string-picker-root', 'boolean-picker-root', 'number-picker-root'][index],
 			),
 		).toEqual([true, true, true]);
 	});

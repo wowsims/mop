@@ -88,7 +88,7 @@ const ZONES = () => {
 		content: shown(T('results-content')),
 		buttons: shown(T('button-zone')),
 		warningZone: shown(T('warning-zone')),
-		loader: !!viewer.querySelector(`${T('results-pending')} .loader`),
+		loader: !!viewer.querySelector(`${T('results-pending')} :is([data-testid="loader"], .loader)`),
 		warningItemHidden: item ? item.classList.contains('hide') : null,
 		warningTrigger: !!viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i`),
 		// Printed, never asserted: which zone holds the running block is the one deliberate divergence.
@@ -115,7 +115,7 @@ const START = () => {
 		pending: shown(T('results-pending')),
 		content: shown(T('results-content')),
 		buttons: shown(T('button-zone')),
-		loaderVisible: !!viewer.querySelector(`${T('results-pending')} .loader`)?.offsetParent,
+		loaderVisible: !!viewer.querySelector(`${T('results-pending')} :is([data-testid="loader"], .loader)`)?.offsetParent,
 		stop: !!stop,
 		simulateDisabled: button.disabled,
 	};

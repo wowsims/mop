@@ -94,7 +94,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 						)}
 					</ul>
 				</SearchBar>
-				<div className="flex items-center [&_.number-picker-root]:mb-0">
+				<div className="flex items-center [&_.ui-number-picker-root]:mb-0">
 					<NumberPicker modObject={player} config={ilvlConfigs.min} />
 					<span className="mx-3 mt-3">-</span>
 					<NumberPicker modObject={player} config={ilvlConfigs.max} />

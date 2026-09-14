@@ -38,7 +38,8 @@ const renderSummary = (faction: () => Faction) => {
 	);
 };
 
-const currencyIcon = (container: HTMLElement) => container.querySelector<HTMLImageElement>('.summary-table-row [data-testid="gem-icon"]')?.getAttribute('src');
+const currencyIcon = (container: HTMLElement) =>
+	container.querySelector<HTMLImageElement>('[data-testid="summary-table-row"] [data-testid="gem-icon"]')?.getAttribute('src');
 
 describe('UpgradeCostsSummary', () => {
 	it('names the honor currency icon after the faction', () => {

@@ -46,13 +46,12 @@ export const ConfirmPopover = ({
 		triggerProps={triggerProps}
 		container={container}
 		side={side}
-		testId={testId}
-		className="sim-confirm-popover"
+		testId={testId ?? 'sim-confirm-popover'}
 		maxWidth="max-w-[220px]">
-		<p className="sim-confirm-popover-message mb-3" data-testid="sim-confirm-popover-message">
+		<p className="mb-3" data-testid="sim-confirm-popover-message">
 			{children}
 		</p>
-		<div className="sim-confirm-popover-actions flex justify-end gap-2" data-testid="sim-confirm-popover-actions">
+		<div className="flex justify-end gap-2" data-testid="sim-confirm-popover-actions">
 			{onConfirm ? (
 				<>
 					<Button variant="outline-cancel" size="sm" onClick={() => onOpenChange(false)}>

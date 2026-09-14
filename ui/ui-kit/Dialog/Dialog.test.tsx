@@ -20,7 +20,7 @@ describe('Dialog', () => {
 
 		const popup = screen.getByRole('dialog');
 		expect(popup.classList.contains('advanced-encounter-picker-modal')).toBe(true);
-		expect(popup.classList.contains('sim-dialog-popup')).toBe(true);
+		expect(popup.getAttribute('data-testid')).toBe('sim-dialog-popup');
 		expect(popup.getAttribute('data-size')).toBe('xl');
 		expect(Array.from(popup.children).map(el => el.getAttribute('data-testid'))).toEqual(['sim-dialog-header', 'sim-dialog-body', 'sim-dialog-footer']);
 		expect(within(popup).getByTestId('sim-dialog-body').textContent).toBe('contents');

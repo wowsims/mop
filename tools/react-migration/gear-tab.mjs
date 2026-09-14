@@ -40,8 +40,8 @@ const INSTALL = () => {
 					hidden: root.classList.contains('hide'),
 					title: text(root.querySelector(q('content-block-title'))),
 					reset: text(root.querySelector(q('summary-table-reset-button'))) || null,
-					rows: [...root.querySelectorAll('.summary-table-row')].map(row => text(row)),
-					footer: [...root.querySelectorAll(`${q('content-block-body')} > div:not(.summary-table-row) button`)].map(button => text(button)),
+					rows: [...root.querySelectorAll(q('summary-table-row'))].map(row => text(row)),
+					footer: [...root.querySelectorAll(`${q('content-block-body')} > div:not(${q('summary-table-row')}) button`)].map(button => text(button)),
 				};
 			}),
 		// One line per equipped-item cell. Everything here is text or an attribute, which is exactly

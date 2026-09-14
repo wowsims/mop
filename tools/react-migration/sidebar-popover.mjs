@@ -23,7 +23,7 @@
 //
 // The commit oracle is the autosaved settings blob rather than the sidebar's own number: the
 // displayed stat needs a worker round trip, localStorage needs only 300 ms of autosave debounce.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -121,13 +121,13 @@ const run = async (browser, name) => {
 	const before = await page.evaluate(readBonusStats);
 	const valueBefore = await page.evaluate(readFirstValue);
 	await page.click(`${STAT_ROW} button:is([data-testid="add-bonus-stats"], .add-bonus-stats)`);
-	await page.waitForSelector(inside('.number-picker-input'), { state: 'visible', timeout: 5000 });
+	await page.waitForSelector(inside(q('number-picker-input')), { state: 'visible', timeout: 5000 });
 	// After the fade, so the count below is not reading a transition mid-flight.
 	await page.waitForTimeout(600);
 	const geo = await page.evaluate(geometry, POPOVER);
 	geo.openTooltips = await page.evaluate(countOpenTooltips, ANY_TOOLTIP);
 
-	const input = page.locator(inside('.number-picker-input'));
+	const input = page.locator(inside(q('number-picker-input')));
 	await input.click();
 	// Typed, not filled: `change` fires on blur only for a *user* edit, and only real key events
 	// set that flag. A programmatic `.value =` write plus a synthetic InputEvent does not.

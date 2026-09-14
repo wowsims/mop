@@ -74,7 +74,7 @@ export const SettingsTabBody = () => {
 									config={{
 										header: { title: i18n.t('settings_tab.other.title') },
 										bodyClassName:
-											'[&_.input-root_label]:w-3/5 [&_.input-root_label]:pr-2 [&_.input-root_input]:min-w-2/5 [&_.input-root_select]:min-w-2/5 [&_.input-root_.picker-group]:min-w-2/5',
+											'[&_.ui-field_label]:w-3/5 [&_.ui-field_label]:pr-2 [&_.ui-field_input]:min-w-2/5 [&_.ui-field_select]:min-w-2/5 [&_.ui-field_.ui-picker-group]:min-w-2/5',
 									}}>
 									<OtherSettings inputs={config.otherInputs.inputs} itemSlots={itemSwapSlots} />
 								</ContentBlock>

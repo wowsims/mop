@@ -66,7 +66,7 @@ describe('ValuePicker', () => {
 		const root = roots()[0];
 		expect(root.children[0].getAttribute('data-testid')).toBe('dropdown-picker-root');
 		expect(root.children[1].getAttribute('data-testid')).toBe('apl-picker-builder-root');
-		expect(root.querySelector('.adaptive-string-picker-root input')).toHaveProperty('value', '5');
+		expect(root.querySelector('[data-testid="adaptive-string-picker-root"] input')).toHaveProperty('value', '5');
 	});
 
 	it('renders no field group while the value has no kind', () => {
@@ -118,13 +118,14 @@ describe('ValuePicker', () => {
 			(player.aplRotation.valueVariables[0].value!.value as any).const.val = '9';
 			source.notify();
 		});
-		expect(document.querySelector('.adaptive-string-picker-root input')).toHaveProperty('value', '9');
+		expect(document.querySelector('[data-testid="adaptive-string-picker-root"] input')).toHaveProperty('value', '9');
 	});
 
 	it('shows the new kind’s operands when a value is replaced by another kind with the same fields', () => {
 		const list = (kind: 'and' | 'or', vals: Array<string>) =>
 			APLValue.create({ value: { oneofKind: kind, [kind]: { vals: vals.map(constValue) } } as APLValue['value'], uuid: { value: `u-${kind}` } });
-		const operands = () => Array.from(document.querySelectorAll<HTMLInputElement>('.adaptive-string-picker-root input')).map(input => input.value);
+		const operands = () =>
+			Array.from(document.querySelectorAll<HTMLInputElement>('[data-testid="adaptive-string-picker-root"] input')).map(input => input.value);
 		setup(list('and', ['1', '2']));
 		render(
 			<SimHostProvider host={{ player, rootElem: document.body } as never}>

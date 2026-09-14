@@ -87,14 +87,10 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	const main = (
 		<div className="relative size-10 shrink-0">
 			<a
-				className={clsx(
-					'icon-picker-button',
-					'ui-icon-picker-swatch',
-					!useImprovedIcons && config.states > 2 && 'use-counter',
-					currentValue > 0 ? 'filter-none' : 'grayscale',
-				)}
+				className={clsx('icon-picker-button', 'ui-icon-picker-swatch', currentValue > 0 ? 'filter-none' : 'grayscale')}
 				data-testid="icon-picker-button"
 				data-active={currentValue > 0 ? '' : undefined}
+				data-use-counter={!useImprovedIcons && config.states > 2 ? '' : undefined}
 				{...wowheadAnchorProps()}
 				// The glyph is a background image and the counter is a sibling now, so without this the
 				// anchor announces nothing; `name` is empty until `useActionId` resolves.
@@ -108,11 +104,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 			/>
 			{config.states > 2 && (
 				<div
-					className={clsx(
-						'icon-input-level-container',
-						'absolute top-0.5 left-0.5 size-9.5 pointer-events-none',
-						currentValue > 0 ? 'filter-none' : 'grayscale',
-					)}
+					className={clsx('absolute top-0.5 left-0.5 size-9.5 pointer-events-none', currentValue > 0 ? 'filter-none' : 'grayscale')}
 					data-testid="icon-input-level-container"
 					{...stateEvents}>
 					{fillImproved1 && config.improvedId && (
@@ -140,8 +132,9 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className="icon-picker-root icon-picker ui-icon-field"
+			className="icon-picker ui-icon-field"
 			testId="icon-picker-root"
+			iconField
 			hidden={hidden}
 			disabled={disabled}
 			leading={main}

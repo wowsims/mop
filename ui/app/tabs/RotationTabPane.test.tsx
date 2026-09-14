@@ -41,6 +41,6 @@ describe('RotationTabPane', () => {
 
 	it('renders the body inside the content container the stylesheets extend', () => {
 		const { container } = render(<RotationTabPane />);
-		expect(container.querySelector('#rotation-tab > .tab-pane-content-container > .rotation-tab-body-stub')).not.toBeNull();
+		expect(container.querySelector('#rotation-tab > [data-testid="tab-pane-content-container"] > .rotation-tab-body-stub')).not.toBeNull();
 	});
 });

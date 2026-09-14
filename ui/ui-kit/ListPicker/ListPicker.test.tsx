@@ -142,7 +142,7 @@ describe('ListPicker', () => {
 			const title = within(root()).getByTestId('list-picker-title');
 			expect(title.tagName).toBe('SPAN');
 			expect(title.textContent).toBe('Targets');
-			expect(title.querySelector('button.tooltip-button.ml-2')).not.toBeNull();
+			expect(title.querySelector('button[data-testid="tooltip-button"].ml-2')).not.toBeNull();
 		});
 
 		it('renders header extras between the title and the actions button', () => {

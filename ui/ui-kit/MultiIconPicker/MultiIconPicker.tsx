@@ -47,7 +47,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 	if (hidden) return null;
 
 	return (
-		<div className={clsx('multi-icon-picker-root', 'icon-picker', 'ui-icon-field')} data-testid="multi-icon-picker-root" {...groupProps}>
+		<div className={clsx('icon-picker', 'ui-icon-field')} data-testid="multi-icon-picker-root" {...groupProps}>
 			<div className="relative" ref={setDropend}>
 				<Menu.Root modal={false}>
 					<Menu.Trigger
@@ -67,7 +67,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							if (isRightClick(event.nativeEvent)) onClear();
 						}}
 					/>
-					<Menu.Portal container={dropend} className="multi-icon-picker-portal" data-testid="multi-icon-picker-portal">
+					<Menu.Portal container={dropend} data-testid="multi-icon-picker-portal">
 						<Menu.Positioner
 							side="right"
 							align="start"
@@ -79,11 +79,11 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							<Menu.Popup
 								render={<ul />}
 								role="group"
-								className="multi-icon-picker-menu grid grid-flow-col m-0 p-0 border-0 bg-grey list-none"
+								className="grid grid-flow-col m-0 p-0 border-0 bg-grey list-none"
 								data-testid="multi-icon-picker-menu">
 								<li>
 									<a
-										className="icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none"
+										className="ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none"
 										data-testid="icon-dropdown-option"
 										onClick={onClear}
 									/>
@@ -99,7 +99,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 				</Menu.Root>
 			</div>
 			{config.label && (
-				<span className="multi-icon-picker-label ui-field-label mb-0" data-testid="multi-icon-picker-label" id={labelId}>
+				<span className="ui-field-label mb-0" data-testid="multi-icon-picker-label" id={labelId}>
 					{config.label}
 				</span>
 			)}

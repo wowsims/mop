@@ -95,8 +95,8 @@ const CHECKS = regions => {
 		// An anchor inside an anchor, which the content model has no room for. Every one of these is an
 		// icon picker's, whose improved icons vanilla builds inside the picker's own anchor, so scoping
 		// to the picker roots names what is being measured rather than catching it by accident.
-		const pickerAnchors = within('.icon-picker-root a');
-		const nested = within('.icon-picker-root a a');
+		const pickerAnchors = within(':is([data-testid="icon-picker-root"], .icon-picker-root) a');
+		const nested = within(':is([data-testid="icon-picker-root"], .icon-picker-root) a a');
 
 		out[selector] = [
 			{ key: 'unnamed', bad: unnamed.length, of: controls.length, what: 'controls have an accessible name' },

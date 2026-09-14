@@ -67,8 +67,9 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className={clsx('icon-enum-picker-root', 'icon-picker', 'ui-icon-field', 'relative')}
+			className={clsx('icon-picker', 'ui-icon-field', 'relative')}
 			testId="icon-enum-picker-root"
+			iconField
 			hidden={hidden}
 			disabled={disabled}>
 			<Menu.Root modal={false}>
@@ -86,19 +87,19 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					data-disable-wowhead-touch-tooltip="true"
 					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
 				/>
-				<div className="icon-enum-picker-slot contents" data-testid="icon-enum-picker-slot" ref={setSlot} />
-				<Menu.Portal container={slot} className="icon-enum-picker-portal contents" data-testid="icon-enum-picker-portal">
+				<div className="contents" data-testid="icon-enum-picker-slot" ref={setSlot} />
+				<Menu.Portal container={slot} className="contents" data-testid="icon-enum-picker-portal">
 					{/* `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against the `position: relative` picker root this portal sits inside. The popup lands a screenful away for one frame, and the focus Base UI moves into it scrolls the pane after it. */}
 					<Menu.Positioner
 						side={horizontal ? 'right' : 'bottom'}
 						align="start"
 						sideOffset={-1}
 						positionMethod="fixed"
-						className="icon-enum-picker-positioner z-dropdown"
+						className="z-dropdown"
 						data-testid="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}
-							className="icon-enum-picker-menu grid m-0 p-0 border-0 bg-grey list-none"
+							className="grid m-0 p-0 border-0 bg-grey list-none"
 							data-testid="icon-enum-picker-menu"
 							style={{
 								gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,

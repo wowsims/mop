@@ -9,7 +9,6 @@ describe('Spinner', () => {
 		const el = container.firstElementChild as HTMLElement;
 		expect(el.tagName).toBe('DIV');
 		expect(el.getAttribute('data-testid')).toBe('loader');
-		expect(el.className).toContain('loader');
 		expect(el.className).toContain('ui-spinner');
 		expect(el.className).not.toContain('ui-spinner-sm');
 	});

@@ -37,9 +37,9 @@ const mount = (extra: Partial<React.ComponentProps<typeof SavedDataPanel<string>
 		/>,
 	);
 
-const popover = () => document.querySelector('.sim-confirm-popover');
-const popoverText = () => popover()?.querySelector('.sim-confirm-popover-message')?.textContent ?? '';
-const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('.sim-confirm-popover-actions button') ?? [])];
+const popover = () => document.querySelector('[data-testid="sim-confirm-popover"]');
+const popoverText = () => popover()?.querySelector('[data-testid="sim-confirm-popover-message"]')?.textContent ?? '';
+const popoverButtons = () => [...(popover()?.querySelectorAll<HTMLButtonElement>('[data-testid="sim-confirm-popover-actions"] button') ?? [])];
 const saveButton = () => screen.getByTestId('saved-data-save-button') as HTMLButtonElement;
 const nameInput = () => screen.getByTestId('saved-data-save-input') as HTMLInputElement;
 const deleteChip = () => within(screen.getByTestId('saved-data-custom')).getByTestId('saved-data-set-delete') as HTMLButtonElement;
@@ -127,7 +127,7 @@ describe('SavedDataPanel', () => {
 		mount({ container: host });
 		fireEvent.click(deleteChip());
 
-		expect(host.querySelector('.sim-confirm-popover')).not.toBeNull();
+		expect(host.querySelector('[data-testid="sim-confirm-popover"]')).not.toBeNull();
 		host.remove();
 	});
 });

@@ -36,7 +36,7 @@ describe('GemSummary', () => {
 		const { container } = renderSummary(hostWith([gem(1, 'Bold'), gem(1, 'Bold'), gem(2, 'Delicate')]));
 
 		expect(container.querySelector('[data-testid="summary-table-root"]')).not.toBeNull();
-		const rows = [...container.querySelectorAll('.summary-table-row')].map(row => row.textContent);
+		const rows = [...container.querySelectorAll('[data-testid="summary-table-row"]')].map(row => row.textContent);
 		expect(rows).toEqual(['Bold2', 'Delicate1']);
 	});
 

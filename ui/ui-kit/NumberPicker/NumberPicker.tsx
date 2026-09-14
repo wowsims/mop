@@ -12,6 +12,7 @@ export interface NumberPickerProps<ModObject> {
 	modObject: ModObject;
 	config: NumberPickerConfig<ModObject>;
 	inputClassName?: string;
+	testId?: string;
 }
 
 const formatSourceValue = (value: number, float: boolean, showZeroes: boolean, maxDecimalDigits: number): string => {
@@ -35,7 +36,7 @@ const updateSize = (input: HTMLInputElement | null) => {
 	if (input.size !== size) input.size = size;
 };
 
-export const NumberPicker = <ModObject,>({ modObject, config, inputClassName }: NumberPickerProps<ModObject>) => {
+export const NumberPicker = <ModObject,>({ modObject, config, inputClassName, testId }: NumberPickerProps<ModObject>) => {
 	const { value, setValue, hidden, disabled, revision } = useInput(modObject, config);
 	const [input, setInput] = useState<HTMLInputElement | null>(null);
 	const attachInput = useCallback((element: HTMLElement | null) => setInput(element instanceof HTMLInputElement ? element : null), []);
@@ -66,12 +67,13 @@ export const NumberPicker = <ModObject,>({ modObject, config, inputClassName }: 
 	});
 
 	return (
-		<PickerShell config={config} className="number-picker-root ui-number-picker-root" testId="number-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="ui-number-picker-root" testId={testId ?? 'number-picker-root'} hidden={hidden} disabled={disabled}>
 			<Input
 				type="text"
 				ref={attachInput}
 				id={config.id}
-				className={clsx('number-picker-input', config.inputClassName, inputClassName)}
+				className={clsx('ui-number-picker-input', config.inputClassName, inputClassName)}
+				data-testid="number-picker-input"
 				disabled={disabled}
 				onInput={() => updateSize(input)}
 			/>
