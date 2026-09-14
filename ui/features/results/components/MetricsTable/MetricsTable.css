@@ -47,7 +47,7 @@
 }
 
 .ui-metrics-cell {
-	@apply py-1 px-2 w-0 1080p:whitespace-nowrap;
+	@apply py-1 px-2 w-0 fhd:whitespace-nowrap;
 }
 
 .ui-metrics-tooltip th {

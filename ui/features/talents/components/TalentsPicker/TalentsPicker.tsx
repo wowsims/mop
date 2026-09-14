@@ -33,7 +33,7 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 	return (
 		<PickerShell
 			config={{ ...config, id: config.id ?? fallbackId }}
-			className="col-span-full w-fit flex flex-row gap-section max-1080p:flex-col max-xl:m-auto max-md:w-full"
+			className="col-span-full w-fit flex flex-row gap-section max-fhd:flex-col max-xl:m-auto max-md:w-full"
 			hidden={hidden}
 			disabled={disabled}>
 			<div className="flex flex-col max-lg:w-full">

@@ -11,9 +11,9 @@
 	--breakpoint-xl: 1200px;
 	--breakpoint-xxl: 1400px;
 	--breakpoint-xxxl: 1600px;
-	--breakpoint-1080p: 1921px;
-	--breakpoint-1440p: 2561px;
-	--breakpoint-4k: 3841px;
+	--breakpoint-fhd: 1921px;
+	--breakpoint-qhd: 2561px;
+	--breakpoint-uhd: 3841px;
 
 	--font-sans: SimDefaultFont, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
