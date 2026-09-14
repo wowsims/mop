@@ -78,7 +78,7 @@ describe('SimResultSummary', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
 
-		expect([...container.querySelectorAll('.results-metric')].map(row => row.getAttribute('data-metric'))).toEqual([
+		expect([...container.querySelectorAll('[data-testid="results-metric"]')].map(row => row.getAttribute('data-metric'))).toEqual([
 			'dps',
 			'tps',
 			'dtps',
@@ -101,7 +101,7 @@ describe('SimResultSummary', () => {
 
 		expect(diffs(container)).toEqual([]);
 		expect(container.querySelectorAll('.results-reference')).toHaveLength(0);
-		expect(container.querySelectorAll('.results-metric')).toHaveLength(7);
+		expect(container.querySelectorAll('[data-testid="results-metric"]')).toHaveLength(7);
 	});
 
 	it('fills the deltas in and flags the bar the moment the reference is set', () => {
