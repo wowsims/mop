@@ -68,20 +68,21 @@ export const ItemListRow = ({
 	return (
 		<>
 			{showIlvl && (
-				<div className="selector-modal-list-item-ilvl-container w-12 text-center">{itemData.ilvl || (itemData.item as unknown as Item).ilvl}</div>
+				<div className="w-12 text-center" data-testid="selector-modal-list-item-ilvl-container">
+					{itemData.ilvl || (itemData.item as unknown as Item).ilvl}
+				</div>
 			)}
-			<div className="selector-modal-list-label-cell gap-1 flex-1 flex items-center" data-active={active ? '' : undefined}>
+			<div className="gap-1 flex-1 flex items-center" data-testid="selector-modal-list-label-cell" data-active={active ? '' : undefined}>
 				<ItemCellAnchor
-					className="selector-modal-list-item-link flex items-center min-w-[10vw] relative after:content-[''] after:absolute after:inset-0"
+					className="ui-selector-modal-list-item-link"
+					data-testid="selector-modal-list-item-link"
 					href={href || undefined}
 					data-whtticon="false"
 					onActivate={onEquip}>
-					<img className="selector-modal-list-item-icon ui-selector-modal-list-item-icon" src={iconUrl || undefined} alt="" />
+					<img className="ui-selector-modal-list-item-icon" data-testid="selector-modal-list-item-icon" src={iconUrl || undefined} alt="" />
 					<span
-						className={clsx(
-							'selector-modal-list-item-name text-md ml-2 tracking-normal font-normal cursor-pointer',
-							itemQualityClassName(itemData.quality),
-						)}>
+						className={clsx('ui-selector-modal-list-item-name', itemQualityClassName(itemData.quality))}
+						data-testid="selector-modal-list-item-name">
 						{itemData.name}
 						{!!itemData.nameDescription && <NameDescriptionLabel nameDescription={itemData.nameDescription} />}
 					</span>
@@ -89,27 +90,29 @@ export const ItemListRow = ({
 				<ItemNoticeIcon itemId={itemData.id} />
 			</div>
 			{isItemsTab && (
-				<div className="selector-modal-list-item-source-container w-64">
+				<div className="w-64" data-testid="selector-modal-list-item-source-container">
 					<ItemSource item={itemData.item as unknown as Item} sim={host.sim} />
 				</div>
 			)}
 			{showEp && (
-				<div className="selector-modal-list-item-ep w-24 flex items-center [[data-hide-ep]_&]:hidden">
-					<span className="selector-modal-list-item-ep-value inline-block text-white text-right">
+				<div className="w-24 flex items-center [[data-hide-ep]_&]:hidden" data-testid="selector-modal-list-item-ep">
+					<span className="inline-block text-white text-right" data-testid="selector-modal-list-item-ep-value">
 						{itemEP < 9.95 ? itemEP.toFixed(1) : Math.round(itemEP).toString()}
 					</span>
 					<span
-						className={clsx('selector-modal-list-item-ep-delta ml-1 text-(length:--text-ep-delta)', delta?.tone)}
+						className={clsx('ml-1 text-(length:--text-ep-delta)', delta?.tone)}
+						data-testid="selector-modal-list-item-ep-delta"
 						data-sign={delta?.tone ?? undefined}>
 						{delta?.text}
 					</span>
 				</div>
 			)}
-			<div className="selector-modal-list-item-favorite-container">
+			<div data-testid="selector-modal-list-item-favorite-container">
 				<Button
 					iconOnly
 					aria-label="Favorite"
-					className={clsx('selector-modal-list-item-favorite relative z-1 w-8', favourited && 'text-brand')}
+					className={clsx('relative z-1 w-8', favourited && 'text-brand')}
+					data-testid="selector-modal-list-item-favorite"
 					data-tooltip-id={favouriteTooltipId}
 					data-favourited={String(favourited)}
 					onClick={event => {
@@ -120,11 +123,12 @@ export const ItemListRow = ({
 				</Button>
 			</div>
 			{isItemsTab && (
-				<div className="selector-modal-list-item-compare-container">
+				<div data-testid="selector-modal-list-item-compare-container">
 					<Button
 						iconOnly
 						aria-label="Compare"
-						className={clsx('selector-modal-list-item-compare relative z-1 w-8', inBatch && 'text-brand')}
+						className={clsx('relative z-1 w-8', inBatch && 'text-brand')}
+						data-testid="selector-modal-list-item-compare"
 						data-tooltip-id={compareTooltipId}
 						data-in-batch={String(inBatch)}
 						onClick={() => {

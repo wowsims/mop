@@ -23,6 +23,8 @@ const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const INSTALL = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 	const modalRoot = () => document.querySelector('.modal.show .selector-modal, [data-testid="sim-dialog-popup"].selector-modal[data-open]');
 
@@ -33,19 +35,19 @@ const INSTALL = () => {
 			if (!modal) return { open: false };
 			return {
 				open: true,
-				title: text(modal.querySelector('.selector-modal-title')),
-				tabs: [...modal.querySelectorAll('.selector-modal-tabs .nav-link')].map(
-					tab => text(tab) || (tab.classList.contains('selector-modal-tab-gem') ? '<gem>' : '?'),
+				title: text(modal.querySelector(q('selector-modal-title'))),
+				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} .nav-link`)].map(
+					tab => text(tab) || ((tab.dataset.label ?? '').startsWith('Gem') ? '<gem>' : '?'),
 				),
-				activeTab: text(modal.querySelector('.selector-modal-tabs .nav-link.active')),
-				gemTabs: modal.querySelectorAll('.selector-modal-tabs .selector-modal-tab-gem').length,
-				railSlots: modal.querySelectorAll('.gear-picker-modal-slots .item-picker-icon-wrapper').length,
-				railActive: modal.querySelector('.gear-picker-modal-slots .item-picker-icon-wrapper.active')?.getAttribute('data-slot') ?? null,
+				activeTab: text(modal.querySelector(`${q('selector-modal-tabs')} .nav-link.active`)),
+				gemTabs: modal.querySelectorAll(`${q('selector-modal-tabs')} [data-label^="Gem"]`).length,
+				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
+				railActive: modal.querySelector(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}.active`)?.getAttribute('data-slot') ?? null,
 			};
 		},
 		// The controls in the active pane's filter row, by class rather than by position.
 		filters: () => {
-			const pane = modalRoot()?.querySelector('.selector-modal-tab-pane.active');
+			const pane = modalRoot()?.querySelector(activePane);
 			if (!pane) return null;
 			const shown = selector => {
 				const el = pane.querySelector(selector);
@@ -53,28 +55,29 @@ const INSTALL = () => {
 				return el.classList.contains('hide') || getComputedStyle(el).display === 'none' ? 'hidden' : 'shown';
 			};
 			return {
-				search: !!pane.querySelector('.selector-modal-search'),
-				filtersButton: text(pane.querySelector('.selector-modal-filters-button')) || null,
-				phase: shown('.selector-modal-phase-selector'),
-				weapons1h: shown('.selector-modal-show-1h-weapons'),
-				weapons2h: shown('.selector-modal-show-2h-weapons'),
-				matchingGems: shown('.selector-modal-show-matching-gems'),
-				epValues: shown('.selector-modal-show-ep-values'),
-				remove: text(pane.querySelector('.selector-modal-remove-button')) || null,
-				headers: [...pane.querySelectorAll('.selector-modal-list-labels h6')].map(
-					label => `${[...label.classList].sort().join('.')}:${text(label) || '-'}:${getComputedStyle(label).display === 'none' ? 'hidden' : 'shown'}`,
-				),
-				hideEp: !!pane.querySelector('.selector-modal-list.hide-ep'),
+				search: !!pane.querySelector('#selector-modal-search'),
+				filtersButton: text(pane.querySelector(q('selector-modal-filters-button'))) || null,
+				phase: shown(q('selector-modal-phase-selector')),
+				weapons1h: shown(q('selector-modal-show-1h-weapons')),
+				weapons2h: shown(q('selector-modal-show-2h-weapons')),
+				matchingGems: shown(q('selector-modal-show-matching-gems')),
+				epValues: shown(q('selector-modal-show-ep-values')),
+				remove: text(pane.querySelector(q('selector-modal-remove-button'))) || null,
+				headers: [...pane.querySelectorAll(`${q('selector-modal-list-labels')} h6`)].map(label => {
+					const name = label.dataset.testid ?? [...label.classList].find(c => c.endsWith('-label')) ?? '?';
+					return `${name}:${text(label) || '-'}:${getComputedStyle(label).display === 'none' ? 'hidden' : 'shown'}`;
+				}),
+				hideEp: !!pane.querySelector(`${q('selector-modal-list')}[data-hide-ep]`),
 			};
 		},
 		// Geometry, not DOM order: the rows overlapping the scroller's box, top to bottom. Identical
 		// on any windowing strategy, which row counts are not.
 		visible: () => {
-			const pane = modalRoot()?.querySelector('.selector-modal-tab-pane.active');
-			const list = pane?.querySelector('.selector-modal-list');
+			const pane = modalRoot()?.querySelector(activePane);
+			const list = pane?.querySelector(q('selector-modal-list'));
 			if (!list) return null;
 			const box = list.getBoundingClientRect();
-			const rows = [...pane.querySelectorAll('.selector-modal-list-item')]
+			const rows = [...pane.querySelectorAll(q('selector-modal-list-item'))]
 				.map(row => ({ row, rect: row.getBoundingClientRect() }))
 				.filter(({ rect }) => rect.height > 0 && rect.bottom > box.top + 1 && rect.top < box.bottom - 1)
 				.sort((a, b) => a.rect.top - b.rect.top);
@@ -82,11 +85,11 @@ const INSTALL = () => {
 				scrollTop: Math.round(list.scrollTop),
 				scrollHeight: Math.round(list.scrollHeight),
 				clientHeight: Math.round(list.clientHeight),
-				rendered: pane.querySelectorAll('.selector-modal-list-item').length,
-				names: rows.map(({ row }) => text(row.querySelector('.selector-modal-list-item-name'))),
-				ilvls: rows.map(({ row }) => text(row.querySelector('.selector-modal-list-item-ilvl-container')) || '-'),
-				eps: rows.map(({ row }) => text(row.querySelector('.selector-modal-list-item-ep-value')) || '-'),
-				active: rows.map(({ row }) => row.classList.contains('active')),
+				rendered: pane.querySelectorAll(q('selector-modal-list-item')).length,
+				names: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-name')))),
+				ilvls: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-ilvl-container'))) || '-'),
+				eps: rows.map(({ row }) => text(row.querySelector(q('selector-modal-list-item-ep-value'))) || '-'),
+				active: rows.map(({ row }) => !!row.querySelector('[data-active]')),
 				heights: [...new Set(rows.map(({ rect }) => Math.round(rect.height)))].sort((a, b) => a - b),
 			};
 		},
@@ -94,9 +97,9 @@ const INSTALL = () => {
 		// — `:nth-child` parity on the baseline, `[data-stripe]` on the port. Reported as the shape of
 		// the sequence rather than as colours, so a theme change does not read as a regression.
 		stripes: () => {
-			const pane = modalRoot()?.querySelector('.selector-modal-tab-pane.active');
+			const pane = modalRoot()?.querySelector(activePane);
 			if (!pane) return null;
-			const rows = [...pane.querySelectorAll('.selector-modal-list-item')]
+			const rows = [...pane.querySelectorAll(q('selector-modal-list-item'))]
 				.map(row => ({ row, rect: row.getBoundingClientRect() }))
 				.filter(({ rect }) => rect.height > 0)
 				.sort((a, b) => a.rect.top - b.rect.top)
@@ -129,7 +132,7 @@ const INSTALL = () => {
 			);
 		},
 		scrollList: to => {
-			const list = modalRoot()?.querySelector('.selector-modal-tab-pane.active .selector-modal-list');
+			const list = modalRoot()?.querySelector(`${activePane} ${q('selector-modal-list')}`);
 			if (!list) return null;
 			list.scrollTop = to === 'bottom' ? list.scrollHeight : to;
 			list.dispatchEvent(new Event('scroll'));
@@ -150,8 +153,9 @@ const say = line => console.log(line);
 const ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
 const modalRoot = ROOTS.join(', ');
 const sel = suffix => ROOTS.map(root => `${root} ${suffix}`).join(', ');
-const pane = () => page.locator(sel('.selector-modal-tab-pane.active')).first();
-const rows = () => pane().locator('.selector-modal-list-item');
+const activePane = `:is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)`;
+const pane = () => page.locator(sel(activePane)).first();
+const rows = () => pane().locator(q('selector-modal-list-item'));
 const settle = (ms = 700) => page.waitForTimeout(ms);
 const head = () => page.evaluate(() => window.selectorProbe.head());
 
@@ -163,14 +167,14 @@ await page.evaluate(() =>
 		.find(tab => window.simTabsProbe.idOf(tab) === 'gear-tab')
 		?.click(),
 );
-await page.waitForSelector('#gear-tab .gear-picker-root .item-picker-root', { timeout: 60000, state: 'visible' });
+await page.waitForSelector(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`, { timeout: 60000, state: 'visible' });
 await page.waitForTimeout(2500);
 
 // ---------------------------------------------------------------------------
 // The head slot: sockets, an upgrade track and a reforge are all available there, so it is the one
 // cell whose tab set exercises every conditional branch at once.
 say('opened from the head cell');
-await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
+await page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).first().locator(q('item-picker-icon')).click();
 await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle();
 const opened = await head();
@@ -203,7 +207,7 @@ if (first.heights.length > 1) say(`  NOTE        rows in this pane are not all o
 // no enchant on this class, and a weapon does.
 say('\nthe tab set each slot earns');
 const tabsForSlot = async slot => {
-	await page.locator(sel(`.gear-picker-modal-slots .item-picker-icon-wrapper[data-slot="${slot}"] .item-picker-icon`)).first().click();
+	await page.locator(sel(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}[data-slot="${slot}"] ${q('item-picker-icon')}`)).first().click();
 	await settle();
 	return page.evaluate(() => window.selectorProbe.head());
 };
@@ -226,13 +230,13 @@ if (trinketFilters.epValues !== 'absent') problems.push(`a trinket slot offers t
 say('\nsearch, on the head slot');
 await tabsForSlot(0);
 const before = await page.evaluate(() => window.selectorProbe.visible());
-await pane().locator('.selector-modal-search').fill('helm');
+await pane().locator('#selector-modal-search').fill('helm');
 await settle(900);
 const searched = await page.evaluate(() => window.selectorProbe.visible());
 say(`  "helm"      rows ${before.scrollHeight} -> ${searched.scrollHeight}px of list, top ${JSON.stringify(searched.names.slice(0, 3))}`);
 if (searched.scrollHeight >= before.scrollHeight) problems.push('searching did not shorten the list');
 if (searched.names.some(name => !name.toLowerCase().includes('helm'))) problems.push(`a search result does not match: ${JSON.stringify(searched.names)}`);
-await pane().locator('.selector-modal-search').fill('');
+await pane().locator('#selector-modal-search').fill('');
 await settle(900);
 const cleared = await page.evaluate(() => window.selectorProbe.visible());
 say(`  cleared     ${cleared.scrollHeight}px, top ${JSON.stringify(cleared.names.slice(0, 3))}`);
@@ -243,7 +247,7 @@ if (cleared.scrollHeight !== before.scrollHeight) problems.push(`clearing the se
 // on here rather than at the top so the readouts above are the pane as it first opens, and left on
 // for everything below.
 say('\nthe EP option, and the two sortable headers');
-await pane().locator('.selector-modal-show-ep-values input').check();
+await pane().locator(`${q('selector-modal-show-ep-values')} input`).check();
 await settle();
 const withEp = await page.evaluate(() => window.selectorProbe.filters());
 const epRows = await page.evaluate(() => window.selectorProbe.visible());
@@ -256,16 +260,16 @@ if (epRows.eps.every(value => value === '-')) problems.push('no row shows an EP 
 // tie kept whatever order the *previous* sort left it in, and the same list state came out
 // differently depending on which headers had been clicked before. The React one sorts the filtered
 // set every time, so ties fall in item-database order whatever the history.
-await pane().locator('.ilvl-label').click();
+await pane().locator(q('ilvl-label')).click();
 await settle();
 const byIlvlAsc = await page.evaluate(() => window.selectorProbe.visible());
 say(`  ilvl once   ${JSON.stringify(byIlvlAsc.ilvls.slice(0, 4))}`);
-await pane().locator('.ilvl-label').click();
+await pane().locator(q('ilvl-label')).click();
 await settle();
 const byIlvlDesc = await page.evaluate(() => window.selectorProbe.visible());
 say(`  ilvl twice  ${JSON.stringify(byIlvlDesc.ilvls.slice(0, 4))}`);
 if (byIlvlAsc.ilvls[0] === byIlvlDesc.ilvls[0]) problems.push('clicking the ilvl header twice did not reverse the order');
-await pane().locator('.ep-label').click();
+await pane().locator(q('ep-label')).click();
 await settle();
 const byEp = await page.evaluate(() => window.selectorProbe.visible());
 say(`  ep once     ${JSON.stringify(byEp.eps.slice(0, 4))} ${JSON.stringify(byEp.names.slice(0, 2))}`);
@@ -311,14 +315,14 @@ const beforeGear = await page.evaluate(() => window.selectorProbe.gear());
 const count = await rows().count();
 let target = -1;
 for (let index = 0; index < count; index++) {
-	if (!(await rows().nth(index).evaluate(row => row.classList.contains('active')))) {
+	if (!(await rows().nth(index).evaluate(row => !!row.querySelector('[data-active]')))) {
 		target = index;
 		break;
 	}
 }
 if (target < 0) problems.push('every row is the equipped one — nothing to equip');
-const targetName = target < 0 ? null : (await rows().nth(target).locator('.selector-modal-list-item-name').textContent())?.replace(/\s+/g, ' ').trim();
-if (target >= 0) await rows().nth(target).locator('.selector-modal-list-item-link').click();
+const targetName = target < 0 ? null : (await rows().nth(target).locator(q('selector-modal-list-item-name')).textContent())?.replace(/\s+/g, ' ').trim();
+if (target >= 0) await rows().nth(target).locator(q('selector-modal-list-item-link')).click();
 await settle(1200);
 const afterTabs = await head();
 const afterGear = await page.evaluate(() => window.selectorProbe.gear());
@@ -358,7 +362,7 @@ for (const label of ['Enchants', 'Reforging', 'Upgrades']) {
 	if (!result.view.names.length) problems.push(`the ${label} tab has no rows`);
 }
 // The gem tabs carry a socket icon instead of a label, so they are reached by position.
-const gemTab = page.locator(sel('.selector-modal-tabs .selector-modal-tab-gem')).first();
+const gemTab = page.locator(sel(`${q('selector-modal-tabs')} [data-label^="Gem"]`)).first();
 if (await gemTab.count()) {
 	await gemTab.click();
 	await settle(900);
@@ -400,7 +404,7 @@ const keyState = () =>
 			slot: (modal.querySelector('.selector-modal-title')?.textContent ?? '').trim(),
 			tab: tabs.findIndex(tab => tab.classList.contains('active')),
 			count: tabs.length,
-			pane: modal.querySelector('.selector-modal-tab-pane.active')?.id ?? null,
+			pane: modal.querySelector(activePane)?.id ?? null,
 		};
 	}, modalRoot);
 
@@ -449,12 +453,12 @@ await settle(900);
 const closed = await page.evaluate(() => window.selectorProbe.open());
 say(`  escape      open=${closed}`);
 if (closed) problems.push('Escape did not close the modal');
-await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
+await page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).first().locator(q('item-picker-icon')).click();
 await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
 const reopened = await page.evaluate(() => window.selectorProbe.visible());
 const reopenedState = await head();
-say(`  reopened    active=${JSON.stringify(reopenedState.activeTab)} scroll=${reopened.scrollTop} search=${JSON.stringify(await pane().locator('.selector-modal-search').inputValue())}`);
+say(`  reopened    active=${JSON.stringify(reopenedState.activeTab)} scroll=${reopened.scrollTop} search=${JSON.stringify(await pane().locator('#selector-modal-search').inputValue())}`);
 if (reopenedState.activeTab !== reopenedState.tabs[0]) problems.push(`reopening left ${JSON.stringify(reopenedState.activeTab)} active, expected ${JSON.stringify(reopenedState.tabs[0])}`);
 if (reopened.scrollTop !== 0) problems.push(`reopening left the list scrolled to ${reopened.scrollTop}`);
 await page.keyboard.press('Escape');
@@ -476,10 +480,10 @@ await settle(600);
 const FILTERS_ROOT = `.modal.show > .filters-menu, [data-testid="sim-dialog-popup"].filters-menu[data-open], ${q('filters-menu')}[data-open]`;
 
 say('\nthe filters menu, opened over the modal');
-await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
+await page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).first().locator(q('item-picker-icon')).click();
 await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
-await pane().locator('.selector-modal-filters-button').click();
+await pane().locator(q('selector-modal-filters-button')).click();
 await settle(900);
 const filtersMenu = await page.evaluate(
 	({ root, sectionTitle }) => {
@@ -500,7 +504,7 @@ for (const picker of filtersMenu.pickers) say(`              ${picker}`);
 if (!filtersMenu.pickers.length) problems.push('the filters menu built no pickers');
 if (!filtersMenu.open) problems.push('the Filters button opened no filters menu');
 if (!filtersMenu.selectorStillOpen) problems.push('opening the filters menu closed the selector modal underneath it');
-await pane().locator('.selector-modal-search').fill('helm');
+await pane().locator('#selector-modal-search').fill('helm');
 await settle(700);
 if (!(await page.evaluate(() => window.selectorProbe.open()))) problems.push('typing behind the filters menu closed the selector modal');
 say(`  typing      modalStillOpen=${await page.evaluate(() => window.selectorProbe.open())}`);
@@ -519,18 +523,18 @@ if (!menuClosed) problems.push('the filters menu did not close on its own close 
 // one, so on the baseline Escape takes the selector modal down with the filters menu. Base UI
 // dismisses the innermost dialog of the floating tree and leaves the one underneath open.
 if (!(await page.evaluate(() => window.selectorProbe.open()))) {
-	await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
+	await page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).first().locator(q('item-picker-icon')).click();
 	await page.waitForSelector(modalRoot, { timeout: 20000 });
 	await settle(900);
 }
 // Clicked through the DOM, not the locator: on the baseline the menu is still up from the step
 // above and its backdrop makes the button fail Playwright's actionability check.
 await page.evaluate(
-	({ roots, filtersRoot }) => {
+	({ roots, filtersRoot, activePane: pane }) => {
 		if (document.querySelector(filtersRoot)) return;
-		document.querySelector(roots.map(root => `${root} .selector-modal-tab-pane.active .selector-modal-filters-button`).join(', '))?.click();
+		document.querySelector(roots.map(root => `${root} ${pane} .selector-modal-filters-button`).join(', '))?.click();
 	},
-	{ roots: ROOTS, filtersRoot: FILTERS_ROOT },
+	{ roots: ROOTS, filtersRoot: FILTERS_ROOT, activePane },
 );
 await settle(900);
 await page.keyboard.press('Escape');

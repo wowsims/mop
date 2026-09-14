@@ -17,15 +17,24 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 	const emptyIconUrl = getEmptyGemSocketIconUrl(socketColor);
 
 	return (
-		<span className="gem-socket-container relative size-(--gem-width) shrink-0 not-last:mr-px" style={{ '--gem-width': '2rem' } as CSSProperties}>
+		<span
+			className="relative size-(--gem-width) shrink-0 not-last:mr-px"
+			data-testid="gem-socket-container"
+			style={{ '--gem-width': '2rem' } as CSSProperties}>
 			{gem && (
 				<img
-					className="gem-icon absolute inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="absolute inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					data-testid="gem-icon"
 					src={iconUrl || undefined}
 					alt=""
 				/>
 			)}
-			<img className="socket-icon absolute inline-block size-full inset-0 bg-no-repeat bg-cover bg-center cursor-pointer" src={emptyIconUrl} alt="" />
+			<img
+				className="absolute inline-block size-full inset-0 bg-no-repeat bg-cover bg-center cursor-pointer"
+				data-testid="socket-icon"
+				src={emptyIconUrl}
+				alt=""
+			/>
 		</span>
 	);
 };

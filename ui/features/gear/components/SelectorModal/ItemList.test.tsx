@@ -117,7 +117,7 @@ describe('ItemList', () => {
 
 	const names = (container: HTMLElement) => Array.from(container.querySelectorAll('[data-row]')).map(node => (node as HTMLElement).dataset.row);
 	const headers = (container: HTMLElement) =>
-		Array.from(container.querySelectorAll('.selector-modal-list-labels h6')).map(node => Array.from(node.classList)[0]);
+		Array.from(container.querySelectorAll('[data-testid="selector-modal-list-labels"] h6')).map(node => node.getAttribute('data-testid'));
 
 	beforeEach(() => {
 		filtersMenu.opens.length = 0;
@@ -147,12 +147,12 @@ describe('ItemList', () => {
 
 	it('offers the filters button and its dialog only on the items tab', () => {
 		const { container, unmount } = setup();
-		expect(container.querySelector('.selector-modal-filters-button')).not.toBeNull();
+		expect(container.querySelector('[data-testid="selector-modal-filters-button"]')).not.toBeNull();
 		expect(container.querySelector('[data-filters-menu]')?.getAttribute('data-filters-slot')).toBe(String(ItemSlot.ItemSlotHead));
 		unmount();
 
 		const enchants = setup({ label: SelectorModalTabs.Enchants });
-		expect(enchants.container.querySelector('.selector-modal-filters-button')).toBeNull();
+		expect(enchants.container.querySelector('[data-testid="selector-modal-filters-button"]')).toBeNull();
 		expect(enchants.container.querySelector('[data-filters-menu]')).toBeNull();
 	});
 
@@ -160,7 +160,7 @@ describe('ItemList', () => {
 		const { container } = setup();
 		expect(container.querySelector('[data-filters-menu]')?.getAttribute('data-filters-menu')).toBe('false');
 
-		act(() => container.querySelector<HTMLButtonElement>('.selector-modal-filters-button')!.click());
+		act(() => container.querySelector<HTMLButtonElement>('[data-testid="selector-modal-filters-button"]')!.click());
 		expect(container.querySelector('[data-filters-menu]')?.getAttribute('data-filters-menu')).toBe('true');
 
 		act(() => filtersMenu.setOpen!(false));
@@ -169,28 +169,28 @@ describe('ItemList', () => {
 
 	it('withholds the EP option and the EP column from a trinket slot, which it computes no EP for', () => {
 		const { container, unmount } = setup({ slot: ItemSlot.ItemSlotTrinket1 });
-		expect(container.querySelector('.selector-modal-show-ep-values')).toBeNull();
+		expect(container.querySelector('[data-testid="selector-modal-show-ep-values"]')).toBeNull();
 		expect(container.querySelector('#show-ep-values-selector')).toBeNull();
 		unmount();
 
 		const head = setup();
-		expect(head.container.querySelector('.selector-modal-show-ep-values')).not.toBeNull();
+		expect(head.container.querySelector('[data-testid="selector-modal-show-ep-values"]')).not.toBeNull();
 		expect(head.container.querySelector('#show-ep-values-selector')).not.toBeNull();
 	});
 
 	it('renders the matching-gems option on a gem tab and nowhere else', () => {
 		const { container, unmount } = setup();
-		expect(container.querySelector('.selector-modal-show-matching-gems')).toBeNull();
+		expect(container.querySelector('[data-testid="selector-modal-show-matching-gems"]')).toBeNull();
 		unmount();
 
 		const gems = setup({ label: SelectorModalTabs.Gem2 });
-		expect(gems.container.querySelector('.selector-modal-show-matching-gems')).not.toBeNull();
+		expect(gems.container.querySelector('[data-testid="selector-modal-show-matching-gems"]')).not.toBeNull();
 	});
 
 	it('offers the weapon options in a main hand and, for a warrior, an off hand — never in another slot', () => {
 		const shown = (slot: ItemSlot, label = SelectorModalTabs.Items) => {
 			const { container, unmount } = setup({ slot, label });
-			const box = !!container.querySelector('.selector-modal-show-1h-weapons');
+			const box = !!container.querySelector('[data-testid="selector-modal-show-1h-weapons"]');
 			expect(!!container.querySelector('#show-1h-weapons-selector')).toBe(box);
 			unmount();
 			return box;
@@ -205,13 +205,13 @@ describe('ItemList', () => {
 	it('withholds the off hand weapon options from a class that is not a warrior', () => {
 		(host.player as any).getClass = () => Class.ClassRogue;
 		const { container } = setup({ slot: ItemSlot.ItemSlotOffHand });
-		expect(container.querySelector('.selector-modal-show-2h-weapons')).toBeNull();
+		expect(container.querySelector('[data-testid="selector-modal-show-2h-weapons"]')).toBeNull();
 	});
 
 	it('names the remove button after the tab it is on', () => {
 		const labelFor = (label: SelectorModalTabs) => {
 			const { container, unmount } = setup({ label });
-			const text = container.querySelector('.selector-modal-remove-button')!.textContent;
+			const text = container.querySelector('[data-testid="selector-modal-remove-button"]')!.textContent;
 			unmount();
 			return text;
 		};
@@ -238,15 +238,15 @@ describe('ItemList', () => {
 		const { container } = setup();
 		expect(names(container)).toEqual(['Beta', 'Gamma', 'Alpha']);
 
-		act(() => container.querySelector<HTMLElement>('.ilvl-label')!.click());
+		act(() => container.querySelector<HTMLElement>('[data-testid="ilvl-label"]')!.click());
 		expect(names(container)).toEqual(['Beta', 'Gamma', 'Alpha']);
-		act(() => container.querySelector<HTMLElement>('.ilvl-label')!.click());
+		act(() => container.querySelector<HTMLElement>('[data-testid="ilvl-label"]')!.click());
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 
-		fireEvent.change(container.querySelector('.selector-modal-search')!, { target: { value: 'a' } });
+		fireEvent.change(container.querySelector('#selector-modal-search')!, { target: { value: 'a' } });
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 
-		fireEvent.change(container.querySelector('.selector-modal-search')!, { target: { value: 'bet' } });
+		fireEvent.change(container.querySelector('#selector-modal-search')!, { target: { value: 'bet' } });
 		expect(names(container)).toEqual(['Beta']);
 	});
 
@@ -281,8 +281,8 @@ describe('ItemList', () => {
 	it('hides the EP column through the list class when EP values are off', () => {
 		showEPValues = false;
 		const { container } = setup();
-		expect(container.querySelector('.selector-modal-list')!.hasAttribute('data-hide-ep')).toBe(true);
-		expect(container.querySelector<HTMLElement>('.ep-label')!.style.display).toBe('none');
+		expect(container.querySelector('[data-testid="selector-modal-list"]')!.hasAttribute('data-hide-ep')).toBe(true);
+		expect(container.querySelector<HTMLElement>('[data-testid="ep-label"]')!.style.display).toBe('none');
 	});
 
 	it('re-reads the rows when the sim announces a filter change', () => {

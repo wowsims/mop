@@ -105,11 +105,11 @@ const renderRow = (
 describe('ItemListRow', () => {
 	it('renders the six list cells in order on the items tab', () => {
 		const { wrapper } = renderRow();
-		expect(Array.from(wrapper.children).map(child => child.className)).toEqual([
-			'selector-modal-list-item-ilvl-container w-12 text-center',
-			'selector-modal-list-label-cell gap-1 flex-1 flex items-center',
-			'selector-modal-list-item-source-container w-64',
-			'selector-modal-list-item-ep w-24 flex items-center [[data-hide-ep]_&]:hidden',
+		expect(Array.from(wrapper.children).map(child => child.getAttribute('data-testid'))).toEqual([
+			'selector-modal-list-item-ilvl-container',
+			'selector-modal-list-label-cell',
+			'selector-modal-list-item-source-container',
+			'selector-modal-list-item-ep',
 			'selector-modal-list-item-favorite-container',
 			'selector-modal-list-item-compare-container',
 		]);
@@ -117,76 +117,76 @@ describe('ItemListRow', () => {
 
 	it('omits the ilvl cell outside the items and upgrades tabs', () => {
 		const { container } = renderRow({ label: SelectorModalTabs.Enchants });
-		expect(container.querySelector('.selector-modal-list-item-ilvl-container')).toBeNull();
+		expect(container.querySelector('[data-testid="selector-modal-list-item-ilvl-container"]')).toBeNull();
 	});
 
 	it('prefers the itemData ilvl over the item ilvl', () => {
 		const { container } = renderRow({ itemData: makeItemData({ ilvl: 500, item: { id: 1, ilvl: 400 } as Item }) });
-		expect(container.querySelector('.selector-modal-list-item-ilvl-container')?.textContent).toBe('500');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-ilvl-container"]')?.textContent).toBe('500');
 	});
 
 	it('falls back to the item ilvl when the itemData ilvl is unset', () => {
 		const { container } = renderRow({ itemData: makeItemData({ ilvl: 0, item: { id: 1, ilvl: 450 } as Item }) });
-		expect(container.querySelector('.selector-modal-list-item-ilvl-container')?.textContent).toBe('450');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-ilvl-container"]')?.textContent).toBe('450');
 	});
 
 	it('renders the item source cell only on the items tab', () => {
 		const items = renderRow({ label: SelectorModalTabs.Items });
-		expect(items.container.querySelector('.selector-modal-list-item-source-container')).not.toBeNull();
+		expect(items.container.querySelector('[data-testid="selector-modal-list-item-source-container"]')).not.toBeNull();
 
 		const upgrades = renderRow({ label: SelectorModalTabs.Upgrades });
-		expect(upgrades.container.querySelector('.selector-modal-list-item-source-container')).toBeNull();
+		expect(upgrades.container.querySelector('[data-testid="selector-modal-list-item-source-container"]')).toBeNull();
 	});
 
 	it('hides the ep cell for trinket slots', () => {
 		const trinket1 = renderRow({ slot: ItemSlot.ItemSlotTrinket1 });
-		expect(trinket1.container.querySelector('.selector-modal-list-item-ep')).toBeNull();
+		expect(trinket1.container.querySelector('[data-testid="selector-modal-list-item-ep"]')).toBeNull();
 
 		const trinket2 = renderRow({ slot: ItemSlot.ItemSlotTrinket2 });
-		expect(trinket2.container.querySelector('.selector-modal-list-item-ep')).toBeNull();
+		expect(trinket2.container.querySelector('[data-testid="selector-modal-list-item-ep"]')).toBeNull();
 
 		const head = renderRow({ slot: ItemSlot.ItemSlotHead });
-		expect(head.container.querySelector('.selector-modal-list-item-ep')).not.toBeNull();
+		expect(head.container.querySelector('[data-testid="selector-modal-list-item-ep"]')).not.toBeNull();
 	});
 
 	it('formats ep with one decimal below the rounding boundary and rounds at or above it', () => {
 		const below = renderRow({ itemEP: 9.94 });
-		expect(below.container.querySelector('.selector-modal-list-item-ep-value')?.textContent).toBe('9.9');
+		expect(below.container.querySelector('[data-testid="selector-modal-list-item-ep-value"]')?.textContent).toBe('9.9');
 
 		const above = renderRow({ itemEP: 9.95 });
-		expect(above.container.querySelector('.selector-modal-list-item-ep-value')?.textContent).toBe('10');
+		expect(above.container.querySelector('[data-testid="selector-modal-list-item-ep-value"]')?.textContent).toBe('10');
 	});
 
 	it('omits the delta when there is no equipped item to compare against', () => {
 		const { container } = renderRow({ equippedEP: null, itemEP: 5 });
-		expect(container.querySelector('.selector-modal-list-item-ep-delta')?.textContent).toBe('');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-ep-delta"]')?.textContent).toBe('');
 	});
 
 	it('omits the delta when the equipped and candidate ep are equal', () => {
 		const { container } = renderRow({ equippedEP: 5, itemEP: 5 });
-		expect(container.querySelector('.selector-modal-list-item-ep-delta')?.textContent).toBe('');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-ep-delta"]')?.textContent).toBe('');
 	});
 
 	it('shows a positive delta for a higher-ep item', () => {
 		const { container } = renderRow({ equippedEP: 5, itemEP: 8 });
-		const delta = container.querySelector('.selector-modal-list-item-ep-delta');
+		const delta = container.querySelector('[data-testid="selector-modal-list-item-ep-delta"]');
 		expect(delta?.textContent).toBe('+3');
 		expect(delta?.getAttribute('data-sign')).toBe('positive');
 	});
 
 	it('shows a negative delta for a lower-ep item', () => {
 		const { container } = renderRow({ equippedEP: 8, itemEP: 5 });
-		const delta = container.querySelector('.selector-modal-list-item-ep-delta');
+		const delta = container.querySelector('[data-testid="selector-modal-list-item-ep-delta"]');
 		expect(delta?.textContent).toBe('-3');
 		expect(delta?.getAttribute('data-sign')).toBe('negative');
 	});
 
 	it('carries the item quality class on the name, and wires the icon and anchor to useActionId', () => {
 		const { container } = renderRow({ itemData: makeItemData({ quality: ItemQuality.ItemQualityLegendary }) });
-		const name = container.querySelector('.selector-modal-list-item-name');
+		const name = container.querySelector('[data-testid="selector-modal-list-item-name"]');
 		expect(name?.classList.contains(itemQualityClassName(ItemQuality.ItemQualityLegendary)!)).toBe(true);
-		expect(container.querySelector('.selector-modal-list-item-icon')?.getAttribute('src')).toBe('icon-url.png');
-		expect(container.querySelector('.selector-modal-list-item-link')?.getAttribute('href')).toBe('https://example.com/item');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-icon"]')?.getAttribute('src')).toBe('icon-url.png');
+		expect(container.querySelector('[data-testid="selector-modal-list-item-link"]')?.getAttribute('href')).toBe('https://example.com/item');
 	});
 
 	it('renders the name description label only when set', () => {
@@ -200,7 +200,7 @@ describe('ItemListRow', () => {
 	it('calls onEquip when the row link is clicked', () => {
 		const onEquip = vi.fn();
 		const { container } = renderRow({ onEquip });
-		fireEvent.click(container.querySelector('.selector-modal-list-item-link')!);
+		fireEvent.click(container.querySelector('[data-testid="selector-modal-list-item-link"]')!);
 		expect(onEquip).toHaveBeenCalledTimes(1);
 	});
 
@@ -210,7 +210,7 @@ describe('ItemListRow', () => {
 		const onWrapperClick = vi.fn();
 		const { container } = renderRow({ onEquip, onToggleFavourite }, {}, onWrapperClick);
 
-		fireEvent.click(container.querySelector('.selector-modal-list-item-favorite')!);
+		fireEvent.click(container.querySelector('[data-testid="selector-modal-list-item-favorite"]')!);
 
 		expect(onToggleFavourite).toHaveBeenCalledTimes(1);
 		expect(onEquip).not.toHaveBeenCalled();
@@ -219,40 +219,40 @@ describe('ItemListRow', () => {
 
 	it('marks the favourite button data attributes and swaps the star style', () => {
 		const favouritedRow = renderRow({ favourited: true, favouriteTooltipId: 'fav-42' });
-		const favouritedButton = favouritedRow.container.querySelector('.selector-modal-list-item-favorite')!;
+		const favouritedButton = favouritedRow.container.querySelector('[data-testid="selector-modal-list-item-favorite"]')!;
 		expect(favouritedButton.getAttribute('data-favourited')).toBe('true');
 		expect(favouritedButton.getAttribute('data-tooltip-id')).toBe('fav-42');
 		expect(favouritedButton.querySelector('i')?.classList.contains('fas')).toBe(true);
 
 		const unfavouritedRow = renderRow({ favourited: false });
-		const unfavouritedButton = unfavouritedRow.container.querySelector('.selector-modal-list-item-favorite')!;
+		const unfavouritedButton = unfavouritedRow.container.querySelector('[data-testid="selector-modal-list-item-favorite"]')!;
 		expect(unfavouritedButton.getAttribute('data-favourited')).toBe('false');
 		expect(unfavouritedButton.querySelector('i')?.classList.contains('far')).toBe(true);
 	});
 
 	it('reflects whether the item is already in the bulk batch', () => {
 		const inBatch = renderRow({}, { hasItem: vi.fn(() => true) });
-		expect(inBatch.container.querySelector('.selector-modal-list-item-compare')?.getAttribute('data-in-batch')).toBe('true');
+		expect(inBatch.container.querySelector('[data-testid="selector-modal-list-item-compare"]')?.getAttribute('data-in-batch')).toBe('true');
 
 		const notInBatch = renderRow({}, { hasItem: vi.fn(() => false) });
-		expect(notInBatch.container.querySelector('.selector-modal-list-item-compare')?.getAttribute('data-in-batch')).toBe('false');
+		expect(notInBatch.container.querySelector('[data-testid="selector-modal-list-item-compare"]')?.getAttribute('data-in-batch')).toBe('false');
 	});
 
 	it('adds the item to the batch when absent, and removes it when present', () => {
 		const notInBatch = renderRow({ itemData: makeItemData({ id: 7 }) }, { hasItem: vi.fn(() => false) });
-		fireEvent.click(notInBatch.container.querySelector('.selector-modal-list-item-compare')!);
+		fireEvent.click(notInBatch.container.querySelector('[data-testid="selector-modal-list-item-compare"]')!);
 		expect(notInBatch.batch.addItem).toHaveBeenCalledTimes(1);
 		expect(notInBatch.batch.removeItem).not.toHaveBeenCalled();
 
 		const inBatch = renderRow({ itemData: makeItemData({ id: 7 }) }, { hasItem: vi.fn(() => true) });
-		fireEvent.click(inBatch.container.querySelector('.selector-modal-list-item-compare')!);
+		fireEvent.click(inBatch.container.querySelector('[data-testid="selector-modal-list-item-compare"]')!);
 		expect(inBatch.batch.removeItem).toHaveBeenCalledTimes(1);
 		expect(inBatch.batch.addItem).not.toHaveBeenCalled();
 	});
 
 	it('re-reads the batch flag when a recycled row is handed a different item', () => {
 		const { container, rerender } = renderRow({ itemData: makeItemData({ id: 1 }) }, { hasItem: vi.fn((spec: any) => spec.id === 2) });
-		const compare = () => container.querySelector('.selector-modal-list-item-compare')!;
+		const compare = () => container.querySelector('[data-testid="selector-modal-list-item-compare"]')!;
 		expect(compare().getAttribute('data-in-batch')).toBe('false');
 
 		rerender({ itemData: makeItemData({ id: 2 }) });
@@ -264,7 +264,7 @@ describe('ItemListRow', () => {
 		const { container, batch, rerender } = renderRow({ itemData: makeItemData({ id: 1 }) }, { hasItem: vi.fn((spec: any) => spec.id === 1) });
 
 		rerender({ itemData: makeItemData({ id: 2 }) });
-		fireEvent.click(container.querySelector('.selector-modal-list-item-compare')!);
+		fireEvent.click(container.querySelector('[data-testid="selector-modal-list-item-compare"]')!);
 
 		expect(batch.addItem).toHaveBeenCalledTimes(1);
 		expect(batch.removeItem).not.toHaveBeenCalled();
@@ -272,9 +272,9 @@ describe('ItemListRow', () => {
 
 	it('renders the compare container on the items tab alone', () => {
 		const items = renderRow({ label: SelectorModalTabs.Items });
-		expect(items.container.querySelector('.selector-modal-list-item-compare-container')).not.toBeNull();
+		expect(items.container.querySelector('[data-testid="selector-modal-list-item-compare-container"]')).not.toBeNull();
 
 		const enchants = renderRow({ label: SelectorModalTabs.Enchants });
-		expect(enchants.container.querySelector('.selector-modal-list-item-compare-container')).toBeNull();
+		expect(enchants.container.querySelector('[data-testid="selector-modal-list-item-compare-container"]')).toBeNull();
 	});
 });

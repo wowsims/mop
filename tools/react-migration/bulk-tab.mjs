@@ -45,7 +45,7 @@
 //     clearing a list that has had anything removed from it raises one error toast per hole. Toast
 //     *text* is deliberately not read here at all: they are transient, and reading them would make
 //     the diff a race rather than a comparison.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -58,6 +58,8 @@ const MAX_SEARCH_RESULTS = 21;
 const RUN_TIMEOUT = 600000;
 
 const INSTALL = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 	const pane = () => document.getElementById('bulk-tab');
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 	const cls = el => (el?.getAttribute('class') ?? '').trim().split(/\s+/).filter(Boolean).sort().join('.');
@@ -178,13 +180,13 @@ const INSTALL = () => {
 			return {
 				open: true,
 				bulk: !!modal.querySelector('[id^="bulk-selector-modal-"]'),
-				title: text(modal.querySelector('.selector-modal-title')),
-				tabs: [...modal.querySelectorAll('.selector-modal-tabs .nav-link')].map(tab => text(tab)),
+				title: text(modal.querySelector(q('selector-modal-title'))),
+				tabs: [...modal.querySelectorAll(`${q('selector-modal-tabs')} .nav-link`)].map(tab => text(tab)),
 				// Geometry, not DOM order, the way `selector-modal.mjs` reads its list: how many rows
 				// a windowing strategy keeps in the DOM is its own business, and the two stacks
 				// disagree about it. What both must show is a list filling the scroller.
 				rows: (() => {
-					const pane = modal.querySelector('.selector-modal-tab-pane.active');
+					const pane = modal.querySelector(activePane);
 					const list = pane?.querySelector('.selector-modal-list');
 					if (!list) return 0;
 					const box = list.getBoundingClientRect();
@@ -228,8 +230,8 @@ const INSTALL = () => {
 						// `href` is what `apply()` sets and `reset()` clears, so it is the signal; the
 						// text is not, because an emptied cell keeps enough whitespace to read as filled
 						// and the count then pins at 16 and discriminates nothing.
-						filled: cells.filter(cell => cell.querySelector('.gear-change-icon, .item-picker-icon[href]')).length,
-						changeIcons: row.querySelectorAll('.gear-change-icon').length,
+						filled: cells.filter(cell => cell.querySelector(`${q('gear-change-icon')}, ${q('item-picker-icon')}[href]`)).length,
+						changeIcons: row.querySelectorAll(q('gear-change-icon')).length,
 					};
 				}),
 			};
@@ -423,7 +425,7 @@ try {
 	// -------------------------------------------------------------------------
 	// The editability gate, and the one place bulk still constructs the vanilla selector modal.
 	say('\nthe selector modal, opened from a picker');
-	await click('#bulk-tab .bulk-item-picker:not(.bulk-item-picker-equipped) .item-picker-icon');
+	await click(`#bulk-tab .bulk-item-picker:not(.bulk-item-picker-equipped) ${q('item-picker-icon')}`);
 	await page.waitForTimeout(1200);
 	const modal = await page.evaluate(() => window.bulkProbe.modal());
 	say(`  added picker   open=${Number(modal.open)} bulkInstance=${Number(!!modal.bulk)} title=${JSON.stringify(modal.title ?? null)} rows=${modal.rows ?? 0}`);
@@ -435,7 +437,7 @@ try {
 		await page.waitForTimeout(700);
 	}
 	// An equipped picker reports what is worn rather than offering a choice, so its click is vetoed.
-	await click('#bulk-tab .bulk-item-picker-equipped .item-picker-icon');
+	await click(`#bulk-tab .bulk-item-picker-equipped ${q('item-picker-icon')}`);
 	await page.waitForTimeout(900);
 	const vetoed = await page.evaluate(() => window.bulkProbe.modal());
 	say(`  equipped picker open=${Number(vetoed.open)}`);

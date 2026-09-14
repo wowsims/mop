@@ -5,7 +5,7 @@
 
 .ui-selector-modal-list-item {
 	@apply relative p-2 flex items-center bg-gray-900 gap-4 hover:bg-gray-800
-		[&.active_.selector-modal-list-item-icon]:outline-2 [&.active_.selector-modal-list-item-icon]:outline-success;
+		[&[data-active]_.ui-selector-modal-list-item-icon]:outline-2 [&[data-active]_.ui-selector-modal-list-item-icon]:outline-success;
 }
 
 .ui-selector-modal-list-item-link {

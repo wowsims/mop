@@ -105,13 +105,14 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 		// `Tabs.Root` has to be a React ancestor of both the strip and the panes, and the dialog takes
 		// them as two separate props. `display: contents` keeps the element it renders out of the layout.
 		<Tabs.Root
-			className="selector-modal-tabs-root contents"
+			className="contents"
+			data-testid="selector-modal-tabs-root"
 			value={activeTab?.label ?? null}
 			onValueChange={next => request && setSelected({ sequence: request.sequence, tab: next as SelectorModalTabs })}>
 			<Dialog
 				open={open}
 				onOpenChange={state.setOpen}
-				className="selector-modal"
+				testId="selector-modal"
 				size="xl"
 				maxWidth="max-w-[min(calc(var(--modal-width-xl)-(--spacing(10))),calc(100vw-(2*var(--modal-margin))-(--spacing(10))))]"
 				headerFlush
@@ -120,10 +121,12 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 					<>
 						{rail && <SlotRail gear={gear} isBlacksmithing={isBlacksmithing} currentSlot={slot} onOpen={openSlot} />}
 						<div>
-							<h6 className="selector-modal-title mb-0">{slot !== null ? (translateSlotName(slot) ?? '') : ''}</h6>
+							<h6 className="mb-0" data-testid="selector-modal-title">
+								{slot !== null ? (translateSlotName(slot) ?? '') : ''}
+							</h6>
 							<TabNav
 								bordered={false}
-								className="selector-modal-tabs"
+								testId="selector-modal-tabs"
 								tabs={tabs.map(tab => ({
 									id: tab.label,
 									label:
@@ -136,16 +139,15 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 									ariaControls: paneId(tab.label),
 									dataLabel: tab.label,
 									buttonClassName: clsx(
-										'selector-modal-item-tab',
 										tab.socketIdx !== undefined &&
-											'selector-modal-tab-gem p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 [&.active]:opacity-100',
+											'p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 [&.active]:opacity-100',
 									),
 								}))}
 							/>
 						</div>
 					</>
 				}>
-				<div className="tab-content selector-modal-tab-content">
+				<div className="tab-content">
 					{request &&
 						slot !== null &&
 						tabs.map(tab => (
@@ -157,7 +159,9 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								value={tab.label}
 								id={paneId(tab.label)}
 								keepMounted
-								className={clsx('selector-modal-tab-pane tab-pane fade-in-out p-0', tab.label === activeTab?.label ? 'active' : 'opacity-0')}>
+								className={clsx('tab-pane fade-in-out p-0', tab.label !== activeTab?.label && 'opacity-0')}
+								data-testid="selector-modal-tab-pane"
+								data-active={tab.label === activeTab?.label ? '' : undefined}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />
 							</Tabs.Panel>
 						))}

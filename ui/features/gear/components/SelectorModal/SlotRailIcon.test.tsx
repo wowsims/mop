@@ -38,7 +38,7 @@ const setup = (props: Partial<Parameters<typeof SlotRailIcon>[0]> = {}) => {
 describe('SlotRailIcon', () => {
 	it('marks the wrapper with the slot and only goes active when told to', () => {
 		const { container, rerender } = setup({ slot: ItemSlot.ItemSlotFeet, active: false });
-		let wrapper = container.querySelector<HTMLElement>('.item-picker-icon-wrapper')!;
+		let wrapper = container.querySelector<HTMLElement>('[data-testid="item-picker-icon-wrapper"]')!;
 		expect(wrapper.dataset.slot).toBe(String(ItemSlot.ItemSlotFeet));
 		expect(wrapper.hasAttribute('data-active')).toBe(false);
 
@@ -47,21 +47,21 @@ describe('SlotRailIcon', () => {
 				<SlotRailIcon slot={ItemSlot.ItemSlotFeet} item={null} isBlacksmithing={false} active={true} tooltipId="rail-tooltip" onOpen={vi.fn()} />
 			</SimHostProvider>,
 		);
-		wrapper = container.querySelector<HTMLElement>('.item-picker-icon-wrapper')!;
+		wrapper = container.querySelector<HTMLElement>('[data-testid="item-picker-icon-wrapper"]')!;
 		expect(wrapper.hasAttribute('data-active')).toBe(true);
 	});
 
 	it('shows the equipped item icon when a slot is filled', () => {
 		const { container } = setup({ item: equippedItem(1) });
-		const anchor = container.querySelector<HTMLElement>('.item-picker-icon')!;
+		const anchor = container.querySelector<HTMLElement>('[data-testid="item-picker-icon"]')!;
 		expect(anchor.style.backgroundImage).toContain('item-icon.jpg');
 	});
 
 	it('falls back to the empty slot icon, which differs per slot, when no item is equipped', () => {
 		const head = setup({ slot: ItemSlot.ItemSlotHead, item: null });
 		const feet = setup({ slot: ItemSlot.ItemSlotFeet, item: null });
-		const headAnchor = head.container.querySelector<HTMLElement>('.item-picker-icon')!;
-		const feetAnchor = feet.container.querySelector<HTMLElement>('.item-picker-icon')!;
+		const headAnchor = head.container.querySelector<HTMLElement>('[data-testid="item-picker-icon"]')!;
+		const feetAnchor = feet.container.querySelector<HTMLElement>('[data-testid="item-picker-icon"]')!;
 		expect(headAnchor.style.backgroundImage).toContain(getEmptySlotIconUrl(ItemSlot.ItemSlotHead));
 		expect(feetAnchor.style.backgroundImage).toContain(getEmptySlotIconUrl(ItemSlot.ItemSlotFeet));
 		expect(headAnchor.style.backgroundImage).not.toBe(feetAnchor.style.backgroundImage);
@@ -69,7 +69,7 @@ describe('SlotRailIcon', () => {
 
 	it('opens the picker exactly once on click and links to the resolved action id', () => {
 		const { container, onOpen } = setup({ item: equippedItem(1) });
-		const anchor = container.querySelector<HTMLAnchorElement>('.item-picker-icon')!;
+		const anchor = container.querySelector<HTMLAnchorElement>('[data-testid="item-picker-icon"]')!;
 		expect(anchor.href).toBe('https://wowhead.com/item=1');
 
 		anchor.click();
@@ -78,7 +78,7 @@ describe('SlotRailIcon', () => {
 
 	it('carries the shared tooltip id and the translated slot label', () => {
 		const { container } = setup({ slot: ItemSlot.ItemSlotWaist, tooltipId: 'rail-tooltip' });
-		const anchor = container.querySelector<HTMLElement>('.item-picker-icon')!;
+		const anchor = container.querySelector<HTMLElement>('[data-testid="item-picker-icon"]')!;
 		expect(anchor.dataset.tooltipId).toBe('rail-tooltip');
 		expect(anchor.dataset.slotLabel).toBe(translateSlotName(ItemSlot.ItemSlotWaist));
 	});

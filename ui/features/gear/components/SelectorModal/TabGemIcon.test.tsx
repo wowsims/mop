@@ -16,8 +16,8 @@ describe('TabGemIcon', () => {
 	it('shows the gem icon and the socket icon for a filled socket', () => {
 		const { container } = render(<TabGemIcon socketColor={GemColor.GemColorRed} gem={gem} />);
 
-		const gemIcon = container.querySelector<HTMLImageElement>('.gem-icon')!;
-		const socketIcon = container.querySelector<HTMLImageElement>('.socket-icon')!;
+		const gemIcon = container.querySelector<HTMLImageElement>('[data-testid="gem-icon"]')!;
+		const socketIcon = container.querySelector<HTMLImageElement>('[data-testid="socket-icon"]')!;
 		expect(gemIcon.src).toContain('gem-icon.jpg');
 		expect(socketIcon.src).toContain(getEmptyGemSocketIconUrl(GemColor.GemColorRed));
 	});
@@ -25,9 +25,9 @@ describe('TabGemIcon', () => {
 	it('renders no gem icon and points the socket image at the empty socket for an empty socket', () => {
 		const { container } = render(<TabGemIcon socketColor={GemColor.GemColorRed} gem={null} />);
 
-		const socketIcon = container.querySelector<HTMLImageElement>('.socket-icon')!;
+		const socketIcon = container.querySelector<HTMLImageElement>('[data-testid="socket-icon"]')!;
 		const emptyUrl = getEmptyGemSocketIconUrl(GemColor.GemColorRed);
-		expect(container.querySelector('.gem-icon')).toBeNull();
+		expect(container.querySelector('[data-testid="gem-icon"]')).toBeNull();
 		expect(socketIcon.src).toContain(emptyUrl);
 		expect(useActionId).toHaveBeenCalledWith(undefined);
 	});
@@ -36,8 +36,8 @@ describe('TabGemIcon', () => {
 		const { container: red } = render(<TabGemIcon socketColor={GemColor.GemColorRed} gem={null} />);
 		const { container: blue } = render(<TabGemIcon socketColor={GemColor.GemColorBlue} gem={null} />);
 
-		const redSrc = red.querySelector<HTMLImageElement>('.socket-icon')!.src;
-		const blueSrc = blue.querySelector<HTMLImageElement>('.socket-icon')!.src;
+		const redSrc = red.querySelector<HTMLImageElement>('[data-testid="socket-icon"]')!.src;
+		const blueSrc = blue.querySelector<HTMLImageElement>('[data-testid="socket-icon"]')!.src;
 		expect(redSrc).not.toBe(blueSrc);
 	});
 });

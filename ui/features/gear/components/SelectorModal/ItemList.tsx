@@ -25,8 +25,12 @@ import { FiltersMenu } from '../FiltersMenu';
 import { ItemListRow } from './ItemListRow';
 import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils';
 
-// Fixed: one row's height, applied to all of them.
 const ROW_HEIGHT = 56;
+const ROW_CLASS = clsx(
+	'selector-modal-list-item relative p-2 flex items-center bg-gray-900 gap-4',
+	'data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even hover:bg-gray-800',
+	'[&_[data-active]_.ui-selector-modal-list-item-icon]:outline-2 [&_[data-active]_.ui-selector-modal-list-item-icon]:outline-success',
+);
 
 export interface ItemListProps {
 	tab: SelectorTab;
@@ -92,18 +96,24 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 
 	return (
 		<>
-			<div className="selector-modal-filters ui-selector-modal-filters mb-(--modal-padding) flex items-center [&>*:not(:last-child)]:mr-2">
-				<SearchBar value={search} onChange={setSearch} placeholder={i18n.t('common.search')} className="selector-modal-search max-w-48" grow={false} />
+			<div className="ui-selector-modal-filters mb-(--modal-padding) flex items-center [&>*:not(:last-child)]:mr-2">
+				<SearchBar
+					value={search}
+					onChange={setSearch}
+					placeholder={i18n.t('common.search')}
+					className="max-w-48"
+					id="selector-modal-search"
+					grow={false}
+				/>
 				{label === SelectorModalTabs.Items && (
 					<>
-						<Button className="selector-modal-filters-button" onClick={() => setFiltersOpen(true)}>
+						<Button data-testid="selector-modal-filters-button" onClick={() => setFiltersOpen(true)}>
 							{i18n.t('gear_tab.gear_picker.filters_button')}
 						</Button>
-						{/* Rendered inside the dialog's own React tree, which is how Base UI knows the two are nested: a press in this one is not an outside press for the selector modal underneath it. */}
 						<FiltersMenu slot={slot} open={filtersOpen} onOpenChange={setFiltersOpen} />
 					</>
 				)}
-				<div className="selector-modal-phase-selector min-w-28">
+				<div className="min-w-28" data-testid="selector-modal-phase-selector">
 					<EnumPicker
 						modObject={sim}
 						config={{
@@ -123,7 +133,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					/>
 				</div>
 				{showWeaponOptions && (
-					<div className="sim-input selector-modal-boolean-option selector-modal-show-1h-weapons">
+					<div data-testid="selector-modal-show-1h-weapons">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -143,7 +153,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</div>
 				)}
 				{showWeaponOptions && (
-					<div className="sim-input selector-modal-boolean-option selector-modal-show-2h-weapons">
+					<div data-testid="selector-modal-show-2h-weapons">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -163,7 +173,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</div>
 				)}
 				{label.startsWith('Gem') && (
-					<div className="sim-input selector-modal-boolean-option selector-modal-show-matching-gems">
+					<div data-testid="selector-modal-show-matching-gems">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -183,7 +193,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</div>
 				)}
 				{showEPOptions && (
-					<div className="sim-input selector-modal-boolean-option selector-modal-show-ep-values">
+					<div data-testid="selector-modal-show-ep-values">
 						<BooleanPicker
 							modObject={sim}
 							config={{
@@ -198,20 +208,27 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						/>
 					</div>
 				)}
-				<Button variant="danger" className="selector-modal-remove-button -mt-2 mr-4 -mb-2 ml-auto" onClick={onRemove}>
+				<Button variant="danger" className="-mt-2 mr-4 -mb-2 ml-auto" data-testid="selector-modal-remove-button" onClick={onRemove}>
 					{removeButtonLabel(label, key => i18n.t(key))}
 				</Button>
 			</div>
-			<div className="selector-modal-list-labels flex pr-2 mr-4 text-md justify-between gap-4 max-xl:mr-0">
+			<div className="flex pr-2 mr-4 text-md justify-between gap-4 max-xl:mr-0" data-testid="selector-modal-list-labels">
 				{(label === SelectorModalTabs.Items || label === SelectorModalTabs.Upgrades) && (
-					<h6 className="ilvl-label interactive w-12" onClick={() => sort(ItemListSortBy.ILVL)}>
+					<h6 className="w-12" data-testid="ilvl-label" onClick={() => sort(ItemListSortBy.ILVL)}>
 						{i18n.t('gear_tab.gear_picker.table_headers.ilvl')}
 					</h6>
 				)}
-				<h6 className="item-label flex-1 mr-2">{columnHeaderLabel(label, getTranslatedTabLabel)}</h6>
-				{label === SelectorModalTabs.Items && <h6 className="source-label w-64">{i18n.t('gear_tab.gear_picker.table_headers.source')}</h6>}
+				<h6 className="flex-1 mr-2" data-testid="item-label">
+					{columnHeaderLabel(label, getTranslatedTabLabel)}
+				</h6>
+				{label === SelectorModalTabs.Items && (
+					<h6 className="w-64" data-testid="source-label">
+						{i18n.t('gear_tab.gear_picker.table_headers.source')}
+					</h6>
+				)}
 				<h6
-					className="ep-label interactive w-24 flex items-center float-right"
+					className="w-24 flex items-center float-right"
+					data-testid="ep-label"
 					style={{ display: showEPValues ? undefined : 'none' }}
 					onClick={() => sort(ItemListSortBy.EP)}>
 					<span>EP</span>
@@ -220,26 +237,20 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 						<Icon name="question-circle" style="regular" size="lg" />
 					</Button>
 				</h6>
-				<h6 className="favorite-label w-8" />
-				{label === SelectorModalTabs.Items && <h6 className="compare-label w-8" />}
+				<h6 className="w-8" data-testid="favorite-label" />
+				{label === SelectorModalTabs.Items && <h6 className="w-8" data-testid="compare-label" />}
 			</div>
 			<div
 				ref={listRef}
-				className={clsx('selector-modal-list w-full max-h-[60vh] overflow-y-scroll overflow-x-hidden p-0 mb-0', !showEPValues && 'hide-ep')}
+				className="w-full max-h-[60vh] overflow-y-scroll overflow-x-hidden p-0 mb-0"
+				data-testid="selector-modal-list"
 				data-hide-ep={!showEPValues ? '' : undefined}
 				tabIndex={0}>
 				<VirtualList
 					count={itemsToDisplay.length}
 					rowHeight={ROW_HEIGHT}
 					getScrollElement={() => listRef.current}
-					rowClassName={index =>
-						clsx(
-							'selector-modal-list-item relative p-2 flex items-center bg-gray-900 gap-4',
-							'data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even hover:bg-gray-800',
-							'[&.active_.selector-modal-list-item-icon]:outline-2 [&.active_.selector-modal-list-item-icon]:outline-success',
-							itemData[itemsToDisplay[index]].id === equippedId && 'active',
-						)
-					}
+					rowClassName={() => ROW_CLASS}
 					renderRow={index => {
 						const row = itemData[itemsToDisplay[index]];
 						return (

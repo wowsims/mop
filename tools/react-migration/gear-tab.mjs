@@ -23,6 +23,7 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const INSTALL = () => {
 	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 	const pane = () => document.getElementById('gear-tab');
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 
@@ -73,7 +74,7 @@ const INSTALL = () => {
 				activeTab: text(modal.querySelector('.selector-modal-tabs .nav-link.active')),
 				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
 				railActive: modal.querySelector(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}.active`)?.getAttribute('data-slot') ?? null,
-				rows: modal.querySelectorAll('.selector-modal-tab-pane.active .selector-modal-list-item').length,
+				rows: modal.querySelectorAll(`${activePane} .selector-modal-list-item`).length,
 			};
 		},
 		// The autosaved blob is the oracle, the same one settings-tab.mjs and talents.mjs read: what
@@ -149,6 +150,7 @@ const INSTALL = () => {
 const MODAL_ROOTS = ['.modal.show .selector-modal', '[data-testid="sim-dialog-popup"].selector-modal[data-open]'];
 const MODAL_OPEN = MODAL_ROOTS.join(', ');
 const inModal = suffix => MODAL_ROOTS.map(root => `${root} ${suffix}`).join(', ');
+const activePane = ':is([data-testid="selector-modal-tab-pane"][data-active], .selector-modal-tab-pane.active)';
 
 const browser = await launch();
 const { page, errors } = await openSpec(browser, PORT, SPEC, { selector: '.sim-tabs' });
@@ -286,7 +288,7 @@ if (enchanted < 0) {
 	// The first row that is not the equipped one — `.active` marks that — so equipping the favourite
 	// afterwards is a change rather than a no-op. Favouriting the equipped enchant is how the first
 	// draft of this check passed while proving nothing.
-	const rows = page.locator(inModal('.selector-modal-tab-pane.active .selector-modal-list-item'));
+	const rows = page.locator(inModal(`${activePane} .selector-modal-list-item`));
 	const rowCount = await rows.count();
 	let target = -1;
 	for (let index = 0; index < rowCount; index++) {

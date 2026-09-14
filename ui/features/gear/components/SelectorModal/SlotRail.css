@@ -2,7 +2,7 @@
 .ui-slot-rail-icon-wrapper {
 	@apply relative size-10 border border-(color:--modal-border-color);
 
-	&.active {
+	&[data-active] {
 		@apply border-2 border-r-0 size-12;
 	}
 

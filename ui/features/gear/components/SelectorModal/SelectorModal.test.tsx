@@ -102,9 +102,10 @@ describe('SelectorModal', () => {
 		return result;
 	};
 
-	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('.selector-modal-tabs [role="tab"]'));
-	const openPanes = () => Array.from(document.querySelectorAll<HTMLElement>('.selector-modal-tab-pane.active [data-pane]')).map(pane => pane.dataset.pane);
-	const popup = () => document.querySelector('[data-testid="sim-dialog-popup"].selector-modal')!;
+	const tabButtons = () => Array.from(document.querySelectorAll<HTMLButtonElement>('[data-testid="selector-modal-tabs"] [role="tab"]'));
+	const openPanes = () =>
+		Array.from(document.querySelectorAll<HTMLElement>('[data-testid="selector-modal-tab-pane"][data-active] [data-pane]')).map(pane => pane.dataset.pane);
+	const popup = () => document.querySelector('[data-testid="selector-modal"]')!;
 
 	beforeEach(() => {
 		openSpy.mockClear();
@@ -148,8 +149,8 @@ describe('SelectorModal', () => {
 	it('marks a gem tab and gives it an icon instead of a label', () => {
 		setup({ tabSet: [tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Gem1, 0), tab(SelectorModalTabs.Gem2, 1)] });
 
-		expect(tabButtons().map(button => button.classList.contains('selector-modal-tab-gem'))).toEqual([false, true, true]);
-		expect(document.querySelectorAll('.selector-modal-tab-gem .gem-socket-container')).toHaveLength(2);
+		expect(tabButtons().map(button => !!button.dataset.label?.startsWith('Gem'))).toEqual([false, true, true]);
+		expect(document.querySelectorAll('[data-label^="Gem"] [data-testid="gem-socket-container"]')).toHaveLength(2);
 	});
 
 	it('opens on the requested tab, and on Items when the request is one the slot no longer offers', () => {

@@ -107,8 +107,7 @@ export const buildSelectorTabs = ({ player, slot, gearData, equippedItem, isBlac
 					label: SelectorModalTabs.Upgrades,
 					itemData: upgradesTabData(gearData, equippedItem, ({ index, ilvlDelta, upgradeStep, numberOfUpgrades }) => (
 						<>
-							{index > 0 ? <>+ {ilvlDelta}</> : <>Base</>}{' '}
-							<span className="selector-modal-list-item-upgrade-step-container ml-2">{`(${upgradeStep}/${numberOfUpgrades})`}</span>
+							{index > 0 ? <>+ {ilvlDelta}</> : <>Base</>} <span className="ml-2">{`(${upgradeStep}/${numberOfUpgrades})`}</span>
 						</>
 					)),
 					computeEP: (upgradeStep: ItemLevelState) => player.computeUpgradeEP(equippedItem, upgradeStep, slot),
@@ -124,10 +123,10 @@ export const buildSelectorTabs = ({ player, slot, gearData, equippedItem, isBlac
 					label: SelectorModalTabs.Reforging,
 					itemData: reforgesTabData(player, gearData, equippedItem, reforgeData => (
 						<div>
-							<span className="reforge-value text-danger inline-block w-40">
+							<span className="text-danger inline-block w-40">
 								{reforgeData.fromAmount} {translateStat(reforgeData.fromStat)}
 							</span>
-							<span className="reforge-value text-success inline-block w-40">
+							<span className="text-success inline-block w-40">
 								+{reforgeData.toAmount} {translateStat(reforgeData.toStat)}
 							</span>
 						</div>

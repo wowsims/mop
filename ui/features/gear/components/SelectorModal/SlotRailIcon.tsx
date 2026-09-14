@@ -4,7 +4,6 @@ import { usePlayer } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { getEmptySlotIconUrl } from '../../model/empty_slot_icons';
@@ -27,9 +26,10 @@ export const SlotRailIcon = ({ slot, item, isBlacksmithing, active, tooltipId, o
 	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
-		<div className={clsx('item-picker-icon-wrapper ui-slot-rail-icon-wrapper', active && 'active')} data-active={active ? '' : undefined} data-slot={slot}>
+		<div className="ui-slot-rail-icon-wrapper" data-testid="item-picker-icon-wrapper" data-active={active ? '' : undefined} data-slot={slot}>
 			<ItemCellAnchor
-				className="item-picker-icon ui-item-picker-icon"
+				className="ui-item-picker-icon"
+				data-testid="item-picker-icon"
 				role="button"
 				href={href || undefined}
 				onActivate={onOpen}
