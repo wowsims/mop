@@ -41,7 +41,7 @@ export const GroupList = () => {
 	const config: ListPickerConfig<Player<any>, APLGroup> = {
 		title: i18n.t('rotation_tab.apl.actionGroups.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.overview'),
-		extraClassNames: ['ui-apl-list-item-picker'],
+		extraClassNames: ['ui-apl-list-item-picker', 'peer'],
 		itemLabel: groupName(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.groups || [],
@@ -69,6 +69,7 @@ export const GroupList = () => {
 					renderItem={(index, itemConfig) => <GroupEditor player={player} config={itemConfig} groupIndex={index} />}
 				/>
 				<AplListToolbar
+					className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
 					itemName={groupName()}
 					nameDialog={{
 						inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),

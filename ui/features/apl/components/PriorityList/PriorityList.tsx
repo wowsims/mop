@@ -31,7 +31,7 @@ export const PriorityList = () => {
 	const config: ListPickerConfig<Player<any>, APLListItem> = {
 		title: i18n.t('rotation_tab.apl.priorityList.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.priorityList.tooltips.overview'),
-		extraClassNames: ['ui-apl-list-item-picker'],
+		extraClassNames: ['ui-apl-list-item-picker', 'peer'],
 		itemLabel: itemLabel(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.priorityList,
@@ -65,6 +65,7 @@ export const PriorityList = () => {
 				)}
 			/>
 			<AplListToolbar
+				className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
 				itemName={itemLabel()}
 				onCreate={() => player.modifyAplRotation(rotation => rotation.priorityList.push(APLListItem.create({ action: {} })))}
 			/>

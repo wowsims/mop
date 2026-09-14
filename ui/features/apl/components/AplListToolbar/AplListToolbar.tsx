@@ -4,6 +4,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useStickyBottom } from '@ui-kit/hooks/useStickyBottom';
 import { Icon } from '@ui-kit/Icon';
 import { Toolbar, ToolbarButton } from '@ui-kit/Toolbar';
+import clsx from 'clsx';
 import { useState } from 'react';
 
 export interface AplListToolbarProps {
@@ -18,12 +19,13 @@ export interface AplListToolbarProps {
 		existingNames: () => Array<string>;
 	};
 	onCreate: (name?: string) => void;
+	className?: string;
 }
 
 /**
  * The sticky "new / reset" bar under an APL list.
  */
-export const AplListToolbar = ({ itemName, nameDialog, onCreate }: AplListToolbarProps) => {
+export const AplListToolbar = ({ itemName, nameDialog, onCreate, className }: AplListToolbarProps) => {
 	const host = useSimHost();
 	const newLabel = i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName });
 	const { ref: rootRef, stuck } = useStickyBottom<HTMLDivElement>();
@@ -32,7 +34,10 @@ export const AplListToolbar = ({ itemName, nameDialog, onCreate }: AplListToolba
 	return (
 		<Toolbar
 			ref={rootRef}
-			className="sticky bottom-0 mt-3 flex items-center border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:border data-stuck:bg-background data-stuck:p-2"
+			className={clsx(
+				'sticky bottom-0 mt-3 flex items-center border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:border data-stuck:bg-background data-stuck:p-2',
+				className,
+			)}
 			testId="apl-floating-action-bar-root"
 			data-stuck={stuck ? '' : undefined}>
 			<ToolbarButton variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>

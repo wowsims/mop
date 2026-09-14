@@ -33,7 +33,7 @@ export const VariablesList = () => {
 	const config: ListPickerConfig<Player<any>, APLValueVariable> = {
 		title: i18n.t('rotation_tab.apl.variables.header'),
 		titleTooltip: i18n.t('rotation_tab.apl.variables.tooltips.overview'),
-		extraClassNames: ['ui-apl-list-item-picker'],
+		extraClassNames: ['ui-apl-list-item-picker', 'peer'],
 		itemLabel: variableName(),
 		storeSubscribe: rotationSource,
 		getValue: (subject: Player<any>) => subject.aplRotation.valueVariables || [],
@@ -56,6 +56,7 @@ export const VariablesList = () => {
 				renderItemHeader={index => <AplValidations getValidations={subject => uuidValidations(subject, variables()[index]?.value?.uuid?.value)} />}
 			/>
 			<AplListToolbar
+				className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
 				itemName={variableName()}
 				nameDialog={{
 					inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
