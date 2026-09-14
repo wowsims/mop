@@ -46,10 +46,7 @@ export const ContentBlock = ({
 	const TitleTag = (header?.titleTag || 'h6') as ElementType;
 
 	return (
-		<div
-			className={clsx('ui-content-block', className, flush && 'mb-0', 'flex flex-col')}
-			data-testid={testId}
-			{...rootDataAttributes}>
+		<div className={clsx('ui-content-block', className, flush && 'mb-0', 'flex flex-col')} data-testid={testId} {...rootDataAttributes}>
 			{hasHeader && header && (
 				<div ref={headerRef} className={clsx('ui-content-block-header flex items-baseline gap-2', header.className)} data-testid="content-block-header">
 					<TitleTag className="flex items-center font-bold mb-0" data-testid="content-block-title">

@@ -9,7 +9,7 @@ import { PickerGroup } from '@ui-kit/PickerGroup';
 import { useMemo } from 'react';
 
 import { InputPicker } from '../InputPicker';
-import { iconGridColumns, professionInput, raceInput } from './utils';
+import { professionInput, raceInput } from './utils';
 
 export interface PlayerSettingsProps {
 	iconInputs: ReadonlyArray<IconInputConfig<Player<any>, any>>;
@@ -24,7 +24,7 @@ export const PlayerSettings = ({ iconInputs, inputs }: PlayerSettingsProps) => {
 	return (
 		<>
 			{iconInputs.length > 0 && (
-				<PickerGroup className="icon-group" data-testid="player-icon-group" style={{ gridTemplateColumns: iconGridColumns(iconInputs.length) }}>
+				<PickerGroup className="icon-group" data-testid="player-icon-group">
 					{iconInputs.map((config, index) =>
 						config.type === 'icon' ? (
 							<IconPicker key={index} modObject={player} config={config} />

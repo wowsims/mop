@@ -1,6 +1,6 @@
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { iconGridColumns, type IconInputConfig } from '@ui-kit/icon_inputs';
+import type { IconInputConfig } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { IconPicker } from '@ui-kit/IconPicker';
 import { PickerGroup } from '@ui-kit/PickerGroup';
@@ -20,7 +20,7 @@ export const RotationIconGroup = ({ inputs }: RotationIconGroupProps) => {
 	const player = usePlayer();
 
 	return (
-		<PickerGroup className="icon-group" data-testid="rotation-icon-group" style={{ gridTemplateColumns: iconGridColumns(inputs.length) }}>
+		<PickerGroup className="icon-group" data-testid="rotation-icon-group">
 			{inputs.map((config, index) =>
 				config.type === 'icon' ? (
 					<IconPicker key={index} modObject={player} config={config} />
