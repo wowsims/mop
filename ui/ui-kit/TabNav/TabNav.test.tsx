@@ -20,9 +20,10 @@ describe('TabNav', () => {
 		const list = getByTestId('tabs');
 		expect(list.className.split(' ')).toEqual(expect.arrayContaining(['nav', 'ui-tabs']));
 		const tabA = getByText('A');
-		expect(tabA.className.split(' ')).toEqual(expect.arrayContaining(['ui-tab', 'active']));
+		expect(tabA.className.split(' ')).toEqual(expect.arrayContaining(['ui-tab']));
+		expect(tabA.hasAttribute('data-active')).toBe(true);
 		const tabB = getByText('B');
-		expect(tabB.className.split(' ')).not.toContain('active');
+		expect(tabB.hasAttribute('data-active')).toBe(false);
 	});
 
 	it('renders the sim variant with sim-tabs and sim-tab-link classes', () => {

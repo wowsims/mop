@@ -226,10 +226,12 @@ try {
 			seen.push(
 				await page.evaluate(navbar => {
 					const ids = selector => [...document.querySelectorAll(`.rotation-tab-apl ${selector}`)].map(pane => pane.id.replace('apl-', '')).join('+');
+					const active = '.tab-pane.active, .tab-pane:not([hidden]):not([data-ending-style])';
+					const show = '.tab-pane.show, .tab-pane:not([hidden]):not([data-starting-style]):not([data-ending-style])';
 					const selected = [...document.querySelectorAll(`${navbar} [role=tab][aria-selected="true"]`)]
 						.map(tab => tab.getAttribute('aria-controls').replace('apl-', ''))
 						.join('+');
-					return `${ids('.tab-pane.active')}/${ids('.tab-pane.show')}/${selected}`;
+					return `${ids(active)}/${ids(show)}/${selected}`;
 				}, NAVBAR),
 			);
 		}
@@ -251,7 +253,8 @@ try {
 					({ pressed, navbar }) => {
 						const short = value => (value ?? '-').replace('apl-', '');
 						const selected = short(document.querySelector(`${navbar} [role=tab][aria-selected="true"]`)?.getAttribute('aria-controls'));
-						const active = [...document.querySelectorAll('.rotation-tab-apl .tab-pane.active')].map(pane => short(pane.id)).join('+');
+						const activeSel = '.tab-pane.active, .tab-pane:not([hidden]):not([data-ending-style])';
+						const active = [...document.querySelectorAll(`.rotation-tab-apl ${activeSel}`)].map(pane => short(pane.id)).join('+');
 						const focused = short(document.activeElement?.getAttribute?.('aria-controls'));
 						return `${pressed}:${selected}${active === selected ? '' : `/PANE=${active}`}${focused === selected ? '' : `/FOCUS=${focused}`}`;
 					},

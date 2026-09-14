@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { TabPanel } from './TabPanel';
 
 describe('TabPanel', () => {
-	it('marks the active panel with tab-pane, active and show', () => {
+	it('marks the active panel as visible via the hidden and transition-style attributes', () => {
 		const { getByTestId } = render(
 			<Tabs.Root defaultValue="a">
 				<TabPanel value="a" className="my-pane">
@@ -17,11 +17,12 @@ describe('TabPanel', () => {
 		const pane = content.parentElement as HTMLElement;
 		expect(pane.className).toContain('tab-pane');
 		expect(pane.className).toContain('my-pane');
-		expect(pane.className).toContain('active');
-		expect(pane.className).toContain('show');
+		expect(pane.hasAttribute('hidden')).toBe(false);
+		expect(pane.hasAttribute('data-starting-style')).toBe(false);
+		expect(pane.hasAttribute('data-ending-style')).toBe(false);
 	});
 
-	it('omits active and show on an inactive panel', () => {
+	it('marks an inactive panel hidden', () => {
 		const { getByTestId } = render(
 			<Tabs.Root defaultValue="a">
 				<TabPanel value="a">
@@ -34,7 +35,6 @@ describe('TabPanel', () => {
 		);
 		const pane = getByTestId('b-content').parentElement as HTMLElement;
 		expect(pane.className).toContain('tab-pane');
-		expect(pane.className).not.toContain('active');
-		expect(pane.className).not.toContain('show');
+		expect(pane.hasAttribute('hidden')).toBe(true);
 	});
 });

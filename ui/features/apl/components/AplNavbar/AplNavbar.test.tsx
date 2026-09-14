@@ -61,12 +61,7 @@ describe('AplNavbar', () => {
 		expect(container.querySelector('[role=tablist]')).not.toBeNull();
 		expect([...container.querySelectorAll('[role=presentation]')]).toHaveLength(3);
 		expect(
-			tabs(container).map(tab => [
-				tab.getAttribute('aria-controls'),
-				tab.className.split(' ').includes('active'),
-				tab.getAttribute('aria-selected'),
-				tab.tabIndex,
-			]),
+			tabs(container).map(tab => [tab.getAttribute('aria-controls'), tab.hasAttribute('data-active'), tab.getAttribute('aria-selected'), tab.tabIndex]),
 		).toEqual([
 			['apl-priority-list', false, 'false', -1],
 			['apl-action-groups', true, 'true', 0],

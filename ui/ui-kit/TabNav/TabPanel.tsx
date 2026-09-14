@@ -1,4 +1,4 @@
-import { Tabs, type TabsPanelState } from '@base-ui/react/tabs';
+import { Tabs } from '@base-ui/react/tabs';
 import type { ClassValue } from 'clsx';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
@@ -11,14 +11,12 @@ export interface TabPanelProps {
 	children?: ReactNode;
 }
 
-const tabPaneClass = (state: TabsPanelState, extra?: ClassValue) => {
-	const active = !state.hidden && state.transitionStatus !== 'ending';
-	const show = active && state.transitionStatus !== 'starting';
-	return clsx('tab-pane fade-in-out', extra, active && 'active', show && 'show', !show && 'opacity-0');
-};
-
 export const TabPanel = ({ value, id, keepMounted = true, className, children }: TabPanelProps) => (
-	<Tabs.Panel value={value} id={id ?? value} keepMounted={keepMounted} className={state => tabPaneClass(state, className)}>
+	<Tabs.Panel
+		value={value}
+		id={id ?? value}
+		keepMounted={keepMounted}
+		className={clsx('tab-pane fade-in-out', className, 'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0')}>
 		{children}
 	</Tabs.Panel>
 );

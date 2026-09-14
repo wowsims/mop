@@ -51,7 +51,7 @@ export const TabNav = ({ tabs, className, variant = 'nav-tabs', tabItemClassName
 						id={tab.tabId}
 						aria-controls={tab.ariaControls ?? tab.id}
 						data-label={tab.dataLabel}
-						className={state => clsx('ui-tab ui-tab-nav', tab.buttonClassName, state.active && 'active')}>
+						className={clsx('ui-tab ui-tab-nav', tab.buttonClassName)}>
 						{tab.label}
 						<TabBadge label={tab.badge} />
 					</Tabs.Tab>
