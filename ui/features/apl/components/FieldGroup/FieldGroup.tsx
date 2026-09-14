@@ -33,7 +33,7 @@ export const FieldGroup = ({ player, config, fields }: FieldGroupProps) => {
 	return (
 		<PickerShell
 			config={{ ...config, id: config.id || generatedId }}
-			className="apl-picker-builder-root ui-apl-picker-builder-root w-auto flex-row flex-wrap gap-2"
+			className="apl-picker-builder-root ui-apl-picker-builder-root w-auto flex-row max-md:flex-col flex-wrap gap-2"
 			hidden={false}
 			disabled={false}>
 			{/* The field list is fixed by the kind, so the position is the identity. */}

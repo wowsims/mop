@@ -5,12 +5,12 @@
 		@apply [filter:opacity(0.5)];
 	}
 
-	&:not([data-layout]) label {
+	&:where(:not([data-layout])):where(:not(.ui-icon-field)) label {
 		@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
 	}
 
 	@media (width < 768px) {
-		&:not([data-layout]) {
+		&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
 			@apply flex-col items-start gap-2;
 		}
 	}
@@ -29,7 +29,7 @@
 	}
 
 	&[data-layout='inline'] label,
-	&[data-layout='icon'] label {
+	&.ui-icon-field label {
 		@apply overflow-visible text-clip;
 	}
 }

@@ -62,7 +62,11 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 						<Icon name="arrows-rotate" className="me-1" />
 					</Button>
 					<Tooltip id={swapId} content={swapTooltip} />
-					<PickerGroup className="icon-group items-center justify-end" role="group" aria-labelledby={labelId}>
+					<PickerGroup
+						className="icon-group items-center justify-end"
+						style={{ gridTemplateColumns: `repeat(${itemSlots.length}, 4rem)` }}
+						role="group"
+						aria-labelledby={labelId}>
 						{itemSlots.map(itemSlot => (
 							<ItemSwapIcon key={itemSlot} slot={itemSlot} />
 						))}

@@ -187,6 +187,7 @@ const makeWrappedNumberInput = <SpecType extends Spec, ModObject>(
 		enableWhen: config.enableWhen ? (player: Player<SpecType>) => config.enableWhen!(getModObject(player)) : undefined,
 		showWhen: config.showWhen ? (player: Player<SpecType>) => config.showWhen!(getModObject(player)) : undefined,
 		extraClassNames: config.extraClassNames,
+		inputClassName: config.inputClassName,
 	};
 };
 export interface PlayerNumberInputConfig<SpecType extends Spec, Message>
