@@ -44,7 +44,7 @@ const mount = (initial: Partial<Glyphs> = {}) => {
 };
 
 const slots = (kind: 'major' | 'minor') =>
-	Array.from(document.querySelectorAll<HTMLElement>(`.${kind}-glyphs [data-testid="content-block-body"] [data-testid="glyph-picker-root"]`));
+	Array.from(document.querySelectorAll<HTMLElement>(`[data-testid="${kind}-glyphs"] [data-testid="content-block-body"] [data-testid="glyph-picker-root"]`));
 const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('[data-testid="glyph-link"]')!;
 const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('.selector-modal-list .selector-modal-list-item'));
 const searchBox = () => document.querySelector<HTMLInputElement>('.selector-modal-search')!;
@@ -82,8 +82,8 @@ describe('GlyphsPicker', () => {
 		const slot = slots('major')[0];
 		expect(['input-root', 'item-picker-root'].every(name => slot.classList.contains(name))).toBe(true);
 		expect(slot.getAttribute('data-layout')).toBe('inline');
-		expect(slot.querySelector('[data-testid="glyph-link"] > img.item-picker-icon')).not.toBeNull();
-		expect(slot.querySelector('.item-picker-labels-container > .item-picker-name-container')).not.toBeNull();
+		expect(slot.querySelector('[data-testid="glyph-link"] > img[data-testid="item-picker-icon"]')).not.toBeNull();
+		expect(slot.querySelector('[data-testid="item-picker-labels-container"] > span')).not.toBeNull();
 	});
 
 	it('offers every major glyph the class has, plus an empty entry', async () => {
@@ -116,7 +116,7 @@ describe('GlyphsPicker', () => {
 		expect(majorIds).toContain(glyphs.major2);
 		expect(glyphs.major1).toBe(0);
 		expect(glyphs.major3).toBe(0);
-		await waitFor(() => expect(link('major', 1).querySelector('.item-picker-name-container')!.textContent).toBe(name));
+		await waitFor(() => expect(link('major', 1).querySelector('[data-testid="item-picker-name-container"]')!.textContent).toBe(name));
 		expect(link('major', 1).getAttribute('href')).toContain('wowhead');
 	});
 

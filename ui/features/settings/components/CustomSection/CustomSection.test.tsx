@@ -56,9 +56,7 @@ describe('CustomSection', () => {
 	});
 
 	it('is a content block named by className', () => {
-		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(
-			['ui-content-block', 'flex', 'flex-col', 'totems-settings'].sort(),
-		);
+		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(['ui-content-block', 'flex', 'flex-col', 'totems-settings'].sort());
 	});
 
 	it('falls back to the section id when it declares no className', () => {
@@ -76,7 +74,7 @@ describe('CustomSection', () => {
 			iconGroupClassName: 'totem-dropdowns-container',
 		});
 		const body = block.querySelector('[data-testid="content-block-body"]')!;
-		expect(body.querySelector('.picker-group.totem-dropdowns-container.icon-group')).not.toBeNull();
+		expect(body.querySelector('.picker-group.totem-dropdowns-container.ui-picker-group-icons')).not.toBeNull();
 		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-inline')).toBe('true');
 		expect(body.querySelector('[data-testid="input-picker-stub"]')!.getAttribute('data-inline')).toBe('true');
 	});

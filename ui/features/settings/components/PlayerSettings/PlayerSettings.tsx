@@ -24,7 +24,7 @@ export const PlayerSettings = ({ iconInputs, inputs }: PlayerSettingsProps) => {
 	return (
 		<>
 			{iconInputs.length > 0 && (
-				<PickerGroup className="icon-group" data-testid="player-icon-group">
+				<PickerGroup variant="icons" data-testid="player-icon-group">
 					{iconInputs.map((config, index) =>
 						config.type === 'icon' ? (
 							<IconPicker key={index} modObject={player} config={config} />

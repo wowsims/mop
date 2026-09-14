@@ -27,7 +27,6 @@ import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/protection';
 const PORT = Number(process.env.PORT ?? PORTS.base);
-const IS_BASE = PORT === PORTS.base;
 
 // Installed once, after the tab is open, rather than written as separate `page.evaluate` arrows.
 // Three readers share one notion of "which control is this"; computing that key two different ways
@@ -87,8 +86,8 @@ const INSTALL = () => {
 		if (control?.id) return control.id;
 		if (el.classList.contains('consumes-row')) {
 			// `ConsumeRow`'s label is i18n text; the `consumes-*` class on its inputs container is not.
-			const tokens = [...el.querySelectorAll('[class]')]
-				.flatMap(node => [...node.classList])
+			const tokens = [...el.querySelectorAll('[class],[data-testid]')]
+				.flatMap(node => [...node.classList, node.getAttribute('data-testid')].filter(Boolean))
 				.filter(name => name.startsWith('consumes-') && name !== 'consumes-row-inputs')
 				.map(name => name.slice('consumes-'.length));
 			return `row:${[...new Set(tokens)].sort().join('+') || '?'}`;
@@ -304,7 +303,7 @@ const INSTALL = () => {
 		// `iconEnumPickerShown` in React. Keyed on the `.consumes-engi` class rather than the row's
 		// "Engineering" label, which is i18n text.
 		engineering: () => {
-			const inputs = pane().querySelector('.consumes-engi');
+			const inputs = pane().querySelector(q('consumes-engi'));
 			const row = inputs?.closest('.consumes-row');
 			const picker = inputs?.querySelector('.input-root');
 			return {
@@ -372,21 +371,18 @@ for (const [index, block] of blocks.entries()) {
 const dangling = await page.evaluate(
 	() => [...document.querySelectorAll('.settings-tab label[for]')].filter(label => !document.getElementById(label.getAttribute('for'))).length,
 );
-// At 0 this is an equality: no label in the React pane names anything that is not there. Measured
-// on eleven specs across ten classes — three of them build no player icon inputs at all, one builds
+// At 0 this is an equality: no label in the pane names anything that is not there. Measured on
+// eleven specs across ten classes — three of them build no player icon inputs at all, one builds
 // only an `icon`, and seven build the ported `IconEnumPicker`. The buffs and debuffs port is what
 // took the `for="undefined"` icon labels this tracked; the player port found none left to take, so
 // this is the earlier port's slack rather than a count this one moved. Raising it means a port put
-// one back.
+// one back. Both `PORT` and `BASE_PORT` are ported Base UI builds now (`baseline-14` on), so the
+// ceiling applies on both sides rather than only the react one.
 const REACT_DANGLING_MAX = 0;
-const danglingOk = IS_BASE ? dangling > 0 : dangling <= REACT_DANGLING_MAX;
+const danglingOk = dangling <= REACT_DANGLING_MAX;
 say(`  labels naming nothing: ${danglingOk ? 'as-recorded' : `UNEXPECTED(${dangling})`} — falls as blocks port; see REACT_DANGLING_MAX`);
 if (!danglingOk)
-	problems.push(
-		IS_BASE
-			? `the baseline has no labels naming nothing — the defect this ratchet tracks is gone, so it and REACT_DANGLING_MAX can go too`
-			: `${dangling} labels name nothing, above the recorded ceiling of ${REACT_DANGLING_MAX} — a port put one back, or lower the ceiling if it removed some`,
-	);
+	problems.push(`${dangling} labels name nothing, above the recorded ceiling of ${REACT_DANGLING_MAX} — a port put one back, or lower the ceiling if it removed some`);
 
 // Ids have to be unique for the readout above to mean anything: `configureInputSection` builds every
 // input from a config that names its own id, so a port that duplicates one makes `document
@@ -401,15 +397,11 @@ if (broken.length) problems.push(`label points at another control on: ${broken.m
 // `MultiIconPicker` keeps behind its dropdown. The table above cannot reach them any more — see the
 // header — so they are read one picker at a time here.
 //
-// **The React side is driven and the baseline is read where it stands.** Vanilla's `<ul
-// class="dropdown-menu">` and every option in it is built in the picker's constructor and left in the
-// page; that is not an accident of this gate's timing, it is the property `dropEagerMenus` asserts
-// twice over before taking those menus off the baseline's tree in `parity.mjs`. So there is nothing
-// to drive there: clicking Bootstrap's toggle as well would make this gate depend on `data-bs-toggle`
-// mechanics that the port deletes, take a second round trip per picker, and reveal markup that is
-// already in front of it. The port has no such option — a Base UI menu mounts when it opens — so the
-// hover is on this side only. It is the same asymmetry the tree gates already split the two builds
-// along, one helper per side, and the two readouts still have to come out byte for byte identical.
+// **Both sides are driven the same way now.** Every baseline this gate runs against is itself a
+// Base UI build (`baseline-14` on) rather than the vanilla `<ul class="dropdown-menu">` left standing
+// by the picker's constructor — both sides mount their menu on hover and neither has anything to read
+// at rest. `a.icon-picker-button` inside the root is the trigger and, at rest, the only one there —
+// the options wear the same class, and they do not exist yet.
 //
 // Both pickers open on hover (`openOnHover delay={0}`), which is what `IconEnumPicker.test.tsx` and
 // `MultiIconPicker.test.tsx` drive with `mouseEnter` + `mouseMove`. `a.icon-picker-button` inside the
@@ -433,15 +425,15 @@ const menuPickers = await page.evaluate(() => window.settingsProbe.markMenus());
 const menus = [];
 for (const picker of menuPickers) {
 	const at = `[data-probe-menu="${picker.mark}"]`;
-	if (picker.shown && !IS_BASE) {
+	if (picker.shown) {
 		await openMenu(at);
 		// `useActionId` resolves the option icons after the menu mounts, and `fill()` can move the
-		// wowhead href with `spellIdTooltipOverride`. The baseline's have been settled since load.
+		// wowhead href with `spellIdTooltipOverride`.
 		await page.waitForTimeout(200);
 	}
 	const options = picker.shown ? await page.evaluate(mark => window.settingsProbe.menuRows(mark), picker.mark) : null;
 	menus.push({ ...picker, options });
-	if (picker.shown && !IS_BASE) {
+	if (picker.shown) {
 		// Off the trigger first, because `openOnHover` reopens it otherwise, then Escape for the case
 		// where the pointer left but the menu stayed. Left open, a menu would land back in every
 		// `rows()` the interactions below read.

@@ -67,7 +67,7 @@ const mount = (block = document.createElement('div')) => {
 };
 
 const rows = () => Array.from(document.querySelectorAll('[data-testid="cooldown-picker"]'));
-const labels = () => rows().map(row => row.querySelector('.cooldown-picker-label')!.textContent);
+const labels = () => rows().map(row => row.querySelector('[data-testid="cooldown-picker-label"]')!.textContent);
 const deleteButton = (index: number) => rows()[index].querySelector('[data-testid="delete-cooldown"]') as HTMLButtonElement;
 const timingsInput = (index: number) => rows()[index].querySelector('[data-testid="number-list-picker-input"]') as HTMLInputElement;
 

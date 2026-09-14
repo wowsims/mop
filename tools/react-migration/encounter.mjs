@@ -13,8 +13,8 @@ const PORT = Number(process.env.PORT ?? PORTS.base);
 // The block's own children, and the ids of the pickers in it: order is what the vanilla constructor
 // decided by call order and what React now decides by JSX order, and the two must agree.
 const BLOCK = () => {
-	const root = document.querySelector('.encounter-picker-root');
-	if (!root) return { error: 'no .encounter-picker-root' };
+	const root = document.querySelector(':is([data-testid="encounter-picker-root"], .encounter-picker-root)');
+	if (!root) return { error: 'no encounter-picker-root' };
 	const describeEl = el => `${el.tagName.toLowerCase()}.${[...el.classList].sort().join('.')}`;
 	return {
 		children: [...root.children].map(describeEl),
@@ -34,7 +34,7 @@ const MODAL = () => {
 		open: window.simModalProbe.isOpen(dialog),
 		backdrop: window.simModalProbe.backdrop(),
 		bodyLocked: window.simModalProbe.bodyLocked(),
-		targets: dialog.querySelectorAll('.targets-picker :is([data-testid="list-picker-item"], .list-picker-item)').length,
+		targets: dialog.querySelectorAll(':is([data-testid="list-picker-item"], .list-picker-item)').length,
 		headerGroups: dialog.querySelectorAll(`${q('encounter-header')} .picker-group`).length,
 	};
 };
@@ -49,7 +49,7 @@ await page.evaluate(() =>
 		.find(tab => window.simTabsProbe.idOf(tab) === 'settings-tab')
 		?.click(),
 );
-await page.waitForSelector('.encounter-picker-root', { timeout: 60000, state: 'visible' });
+await page.waitForSelector(q('encounter-picker-root'), { timeout: 60000, state: 'visible' });
 await page.waitForTimeout(1500);
 
 console.log(`${SPEC} on :${PORT}\n`);
@@ -63,7 +63,7 @@ for (const [key, value] of Object.entries(await page.evaluate(BLOCK))) {
 const modalCount = await page.locator(q('advanced-encounter-picker-modal')).count();
 console.log(`\nmodal\n  instances    ${modalCount}`);
 console.log(`  before click ${JSON.stringify(await page.evaluate(MODAL))}`);
-await page.click(`.encounter-picker-root ${q('advanced-button')}`);
+await page.click(`${q('encounter-picker-root')} ${q('advanced-button')}`);
 await page.waitForTimeout(800);
 console.log(`  after click  ${JSON.stringify(await page.evaluate(MODAL))}`);
 await page.keyboard.press('Escape');
