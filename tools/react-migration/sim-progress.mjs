@@ -90,7 +90,7 @@ const ZONES = () => {
 		warningZone: shown(T('warning-zone')),
 		loader: !!viewer.querySelector(`${T('results-pending')} :is([data-testid="loader"], .loader)`),
 		warningItemHidden: item ? item.classList.contains('hide') : null,
-		warningTrigger: !!viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i`),
+		warningTrigger: !!viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) :is([data-testid="warning-trigger"], button.warning.link-warning) i`),
 		// Printed, never asserted: which zone holds the running block is the one deliberate divergence.
 		simBlockParent: sim ? [...sim.parentElement.classList].sort().join('.') : null,
 	};
@@ -102,7 +102,7 @@ const ZONES = () => {
 // the race against the first progress tick.
 const START = () => {
 	const T = name => `:is([data-testid="${name}"], .${name})`;
-	const button = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
+	const button = document.querySelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${T('dps-action')}`);
 	if (!button) return { missing: true };
 	button.click();
 	const viewer = document.querySelector(T('results-viewer'));
@@ -155,7 +155,7 @@ const STOPPED = () => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
+	const simulate = document.querySelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${T('dps-action')}`);
 	return {
 		pending: shown(T('results-pending')),
 		content: shown(T('results-content')),
@@ -172,7 +172,7 @@ const FINISHED = () => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
+	const simulate = document.querySelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${T('dps-action')}`);
 	return {
 		pending: shown(T('results-pending')),
 		content: shown(T('results-content')),
@@ -194,7 +194,7 @@ const WARNINGS = () => {
 		zoneDisplay: viewer ? getComputedStyle(viewer.querySelector(T('warning-zone'))).display : null,
 		triggerText: trigger ? trigger.textContent.trim() : null,
 		triggerName: trigger ? (trigger.getAttribute('aria-label') ?? '') || trigger.textContent.trim() : null,
-		trigger: !!viewer?.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i`),
+		trigger: !!viewer?.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) :is([data-testid="warning-trigger"], button.warning.link-warning) i`),
 		// Counted only while the tooltip is open: tippy has no node in the document until it shows.
 		items: viewer ? [...viewer.querySelectorAll(`${T('warning-zone')} li`)].map(li => li.textContent.trim()) : [],
 	};
@@ -232,7 +232,7 @@ try {
 		window.alert = () => {};
 	});
 	await page.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-	await page.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)', { timeout: 60000 });
+	await page.waitForSelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${q('dps-action')}`, { timeout: 60000 });
 	await page.waitForTimeout(2500);
 
 	console.log(`${SPEC} on :${PORT}\n`);
@@ -343,7 +343,7 @@ try {
 					hidden(T('results-pending')) &&
 					hidden(T('results-content')) &&
 					hidden(T('button-zone')) &&
-					!document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)').disabled
+					!document.querySelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${T('dps-action')}`).disabled
 				);
 			},
 			null,
@@ -361,7 +361,7 @@ try {
 
 	console.log('\nrunning to completion');
 	await setIterations(SHORT_RUN);
-	await page.click(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)');
+	await page.click(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${q('dps-action')}`);
 	await page
 		.waitForFunction(
 			() =>
@@ -451,7 +451,7 @@ try {
 		localStorage.setItem('lang', 'fr');
 	});
 	await fr.goto(`http://localhost:${PORT}/mop/${SPEC}/`, { waitUntil: 'load', timeout: 60000 });
-	await fr.waitForSelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) :is([data-testid="dps-action"], .dps-action)', { timeout: 60000 });
+	await fr.waitForSelector(`:is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) ${q('dps-action')}`, { timeout: 60000 });
 	await fr.waitForTimeout(2500);
 	await fr.fill('#simui-iterations', LONG_RUN);
 	await fr.dispatchEvent('#simui-iterations', 'change');

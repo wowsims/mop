@@ -90,6 +90,11 @@ const DROPPED_HOOKS = new Set([
 	// `ToplineResults`'s own root class on the baseline; this build's root carries no such wrapper
 	// class at all, only the co-located `[&_...]` selectors above.
 	'results-sim',
+	// `noResultsTab` dropped its bare `tab-pane`/`active` classes: the pane never went through
+	// `TabPanel`, so nothing styled or read them at that element, and visibility is entirely the
+	// `group-not-data-[no-results]/dr:hidden` utility already in its `className`.
+	'tab-pane',
+	'active',
 ]);
 
 /** Strips the same retired tokens out of a `SERIALIZE` dump, so the scaffolding diff below does not
@@ -120,7 +125,7 @@ const STATE = ({ managerRootSel, drRootSel, toolbarSel, dropped }) => {
 		drRoot: drRoot ? cls(drRoot) : 'MISSING',
 		toolbar: toolbar ? cls(toolbar) : 'MISSING',
 		items: buttons.map(button => `${cls(button.closest('li'))}|${cls(button)}|sel=${button.getAttribute('aria-selected')}|tab=${button.tabIndex}`),
-		panes: [...document.querySelectorAll(`${drRootSel} > .tab-content > [id]`)].map(pane => {
+		panes: [...document.querySelectorAll(`${drRootSel} > :is([data-testid="dr-tab-content"], .tab-content) > [id]`)].map(pane => {
 			const style = getComputedStyle(pane);
 			return `#${pane.id} ${cls(pane)} display=${style.display} opacity=${style.opacity} role=${pane.getAttribute('role')}`;
 		}),

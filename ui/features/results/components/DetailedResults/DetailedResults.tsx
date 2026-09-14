@@ -201,10 +201,11 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						<div className="grow min-h-0" />
 						<DetailedResultsTabs tabs={visibleTabs} />
 					</div>
-					<div className="tab-content pt-6">
+					<div className="pt-6" data-testid="dr-tab-content">
 						<div
 							id="noResultsTab"
-							className="tab-pane active transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
+							data-active
+							className="transition-opacity duration-150 ease-linear opacity-100 flex items-center justify-center p-6 text-base group-not-data-[no-results]/dr:hidden">
 							{i18n.t('results_tab.details.no_results')}
 						</div>
 						{showDamage && (

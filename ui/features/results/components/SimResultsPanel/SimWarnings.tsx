@@ -22,10 +22,11 @@ export const SimWarnings = ({ warnings, ready }: SimWarningsProps) => {
 	return (
 		<div className="text-center" data-testid="warning-zone">
 			{contents.length > 0 && (
-				<div className="sim-toolbar-item">
+				<div data-testid="sim-toolbar-item">
 					<Button
 						variant="unstyled"
-						className="warning link-warning text-link-warning focus-visible:focus-ring"
+						className="text-link-warning focus-visible:focus-ring"
+						data-testid="warning-trigger"
 						aria-label={i18n.t('sidebar.warnings.label')}
 						{...tooltipAnchorProps(id)}>
 						<Icon name="exclamation-triangle" size="3x" />

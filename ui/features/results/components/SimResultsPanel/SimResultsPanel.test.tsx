@@ -192,7 +192,7 @@ describe('SimResultsPanel', () => {
 			getContent: () => active,
 		});
 		const { view } = mount(panel, warnings);
-		const item = () => view.container.querySelector('[data-testid="warning-zone"] .sim-toolbar-item');
+		const item = () => view.container.querySelector('[data-testid="warning-zone"] [data-testid="sim-toolbar-item"]');
 		expect(item()).toBeNull();
 
 		// The sim reports ready a microtask after mount, and the warnings say nothing until it does.
