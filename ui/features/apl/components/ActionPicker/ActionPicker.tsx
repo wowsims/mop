@@ -9,6 +9,7 @@ import type { Player } from '@sim/player/player';
 import { DropdownField } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
 import { PickerShell } from '@ui-kit/PickerShell';
+import clsx from 'clsx';
 import { memo, useId, useMemo } from 'react';
 
 import { FieldGroup } from '../FieldGroup';
@@ -17,6 +18,8 @@ import { ValuePicker } from '../ValuePicker';
 export interface ActionPickerProps {
 	player: Player<any>;
 	config: InputConfig<Player<any>, APLAction>;
+	stacked?: boolean;
+	fullWidth?: boolean;
 }
 
 type ValidAPLActionKind = NonNullable<APLActionKind>;
@@ -33,7 +36,7 @@ type ValidAPLActionKind = NonNullable<APLActionKind>;
  * Memoised because a list row hands it a config that lives as long as the row, so a rotation change
  * that leaves the row's content alone stops here instead of re-rendering the row's whole tree.
  */
-export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
+export const ActionPicker = memo(({ player, config, stacked, fullWidth }: ActionPickerProps) => {
 	const kindId = useId();
 	const { isPrepull, changeSource } = useApl();
 
@@ -82,7 +85,11 @@ export const ActionPicker = memo(({ player, config }: ActionPickerProps) => {
 	});
 
 	return (
-		<PickerShell config={shellConfig} className="apl-action-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell
+			config={shellConfig}
+			className={clsx('apl-action-picker-root m-0 gap-2', stacked ? 'flex-col' : 'flex-row', fullWidth && 'w-full')}
+			hidden={hidden}
+			disabled={disabled}>
 			<ValuePicker player={player} config={conditionConfig} />
 			<div className="flex flex-row gap-2 max-md:flex-wrap">
 				<DropdownField<Player<any>, ValidAPLActionKind>

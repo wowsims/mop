@@ -128,7 +128,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 	return (
 		<PickerShell
 			config={{ ...config, extraClassNames, id: config.id ?? listId }}
-			className="list-picker-root"
+			className="list-picker-root ui-list-picker-root"
 			testId="list-picker-root"
 			hidden={hidden}
 			disabled={disabled}>
@@ -140,7 +140,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				</span>
 			)}
 			{value.length > 0 && (
-				<div className="list-picker-items flex flex-col" data-testid="list-picker-items">
+				<div className="list-picker-items ui-list-picker-items flex flex-col" data-testid="list-picker-items">
 					{value.map((_item, index) => (
 						<ListPickerItem
 							key={index}

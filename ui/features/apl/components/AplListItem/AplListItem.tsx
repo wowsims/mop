@@ -17,8 +17,8 @@ export interface HideableAction {
 export interface AplListItemProps<T extends HideableAction> {
 	player: Player<any>;
 	config: InputConfig<Player<any>, T>;
-	/** Rendered above the action picker — the pre-pull list's "Do At" value. */
 	leading?: ReactNode;
+	actionFullWidth?: boolean;
 }
 
 /**
@@ -26,7 +26,7 @@ export interface AplListItemProps<T extends HideableAction> {
  *
  * A hidden row renders `disabled` rather than being unmounted — that is all `hide` means here.
  */
-export const AplListItem = <T extends HideableAction>({ player, config, leading }: AplListItemProps<T>) => {
+export const AplListItem = <T extends HideableAction>({ player, config, leading, actionFullWidth }: AplListItemProps<T>) => {
 	const { changeSource } = useApl();
 	const { hidden, disabled, shellConfig } = useAplInput(player, { ...config, enableWhen: () => !config.getValue(player)?.hide });
 
@@ -51,7 +51,7 @@ export const AplListItem = <T extends HideableAction>({ player, config, leading 
 		<AplProvider changeSource={row.changeSource}>
 			<PickerShell config={shellConfig} className="apl-list-item-picker-root flex flex-row items-center m-0 gap-2" hidden={hidden} disabled={disabled}>
 				{leading}
-				<ActionPicker player={player} config={row.action} />
+				<ActionPicker player={player} config={row.action} stacked fullWidth={actionFullWidth} />
 			</PickerShell>
 		</AplProvider>
 	);

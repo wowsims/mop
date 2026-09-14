@@ -1,0 +1,7 @@
+.rotation-tab {
+	display: flex;
+
+	&[hidden] {
+		display: none;
+	}
+}

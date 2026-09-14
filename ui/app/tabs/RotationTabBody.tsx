@@ -10,6 +10,7 @@ import { VariablesList } from '@features/apl/components/VariablesList';
 import type { AplPaneId } from '@features/apl/model/apl_panes';
 import { APL_PANES } from '@features/apl/model/apl_panes';
 import { CooldownsPicker, useAvailableCooldowns } from '@features/settings';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
@@ -45,7 +46,11 @@ const RotationSidebar = () => (
 	</>
 );
 
-export const RotationTabBody = () => {
+export interface RotationTabBodyProps {
+	rotationType: APLRotationType;
+}
+
+export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 	const host = useSimHost();
 	const player = host.player;
 	const config = useSpecConfig();
@@ -56,7 +61,7 @@ export const RotationTabBody = () => {
 
 	return (
 		<>
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-auto" fullWidth externalDisplay hidden={rotationType !== APLRotationType.TypeAuto}>
 				<TabPanelColumns.Left variant="stacked">
 					<div>
 						<RotationTypePicker />
@@ -68,7 +73,7 @@ export const RotationTabBody = () => {
 				</TabPanelColumns.Right>
 			</TabPanelColumns.Root>
 
-			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay>
+			<TabPanelColumns.Root className="rotation-tab rotation-tab-simple" fullWidth externalDisplay hidden={rotationType !== APLRotationType.TypeSimple}>
 				{hasSimple && (
 					<>
 						<TabPanelColumns.Left className="tab-content" variant="stacked">
@@ -103,6 +108,7 @@ export const RotationTabBody = () => {
 				gap="apl"
 				fullWidth
 				externalDisplay
+				hidden={rotationType !== APLRotationType.TypeAPL}
 				value={activeId}
 				onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 				<AplNavbar />

@@ -18,7 +18,7 @@ export const RotationTabPane = () => {
 
 	return (
 		<SimTabPane id="rotation-tab" className={ROTATION_TYPE_CLASSES[rotationType]}>
-			<RotationTabBody />
+			<RotationTabBody rotationType={rotationType} />
 		</SimTabPane>
 	);
 };

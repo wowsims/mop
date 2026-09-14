@@ -74,7 +74,7 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 					<ListPicker<Player<any>, APLListItem>
 						modObject={player}
 						config={actionsConfig}
-						renderItem={(_index, itemConfig) => <AplListItem player={player} config={itemConfig} />}
+						renderItem={(_index, itemConfig) => <AplListItem player={player} config={itemConfig} actionFullWidth />}
 						renderItemHeader={index => (
 							<ListItemHeader
 								player={player}

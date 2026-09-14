@@ -80,7 +80,7 @@ export const ValuePicker = memo(({ player, config }: ValuePickerProps) => {
 	});
 
 	return (
-		<PickerShell config={shellConfig} className="apl-value-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={shellConfig} className="apl-value-picker-root flex-row m-0 gap-2" hidden={hidden} disabled={disabled}>
 			<DropdownField<Player<any>, APLValueKind>
 				modObject={player}
 				config={kindConfig}

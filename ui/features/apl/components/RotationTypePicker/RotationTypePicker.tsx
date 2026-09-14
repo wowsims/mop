@@ -26,6 +26,7 @@ export const RotationTypePicker = () => {
 	const config = useMemo(
 		(): InputConfig<Player<any>, APLRotationType> & { id: string } => ({
 			id: 'rotation-tab-rotation-type',
+			extraClassNames: ['py-4'],
 			storeField: 'rotation',
 			getValue: (subject: Player<any>) => subject.getRotationType(),
 			setValue: (subject: Player<any>, newValue: APLRotationType) => {

@@ -1,3 +1,4 @@
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -44,7 +45,7 @@ afterEach(() => {
 
 describe('RotationTabBody', () => {
 	it('opens the priority pane and leaves the other two faded out', () => {
-		const { container } = render(<RotationTabBody />);
+		const { container } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		expect(paneStates(container)).toEqual([
 			['apl-priority-list', false],
 			['apl-action-groups', true],
@@ -54,7 +55,7 @@ describe('RotationTabBody', () => {
 	});
 
 	it('moves active on the click and show a frame later', async () => {
-		const { container } = render(<RotationTabBody />);
+		const { container } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		fireEvent.click(container.querySelector('[aria-controls="apl-variables"]')!);
 		expect(container.querySelector<HTMLElement>('#apl-variables')!.hidden).toBe(false);
 		expect(container.querySelector('#apl-variables')!.hasAttribute('data-starting-style')).toBe(true);
@@ -63,7 +64,7 @@ describe('RotationTabBody', () => {
 	});
 
 	it('drives the strip and the panes off one selection', () => {
-		const { container } = render(<RotationTabBody />);
+		const { container } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		fireEvent.click(container.querySelector('[aria-controls="apl-action-groups"]')!);
 		const selected = [...container.querySelectorAll('[role=tab]')].filter(tab => tab.getAttribute('aria-selected') === 'true');
 		expect(selected.map(tab => tab.getAttribute('aria-controls'))).toEqual(['apl-action-groups']);
@@ -72,16 +73,16 @@ describe('RotationTabBody', () => {
 
 	it('renders no cooldown settings while the spec offers no major cooldowns', () => {
 		simple = true;
-		const { container, rerender } = render(<RotationTabBody />);
+		const { container, rerender } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		expect(container.querySelector('.cooldown-settings')).toBeNull();
 
 		available = [{}];
-		rerender(<RotationTabBody />);
+		rerender(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		expect(container.querySelector('.cooldown-settings')).not.toBeNull();
 	});
 
 	it('renders the navbar ahead of both columns, which is what the layout depends on', () => {
-		const { container } = render(<RotationTabBody />);
+		const { container } = render(<RotationTabBody rotationType={APLRotationType.TypeAPL} />);
 		const pane = container.querySelector('.rotation-tab-apl')!;
 		const [navbar, left, right] = [...pane.children];
 		expect(navbar.getAttribute('data-testid')).toBe('apl-rotation-navbar');
