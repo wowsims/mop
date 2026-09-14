@@ -72,8 +72,8 @@ describe('ItemPickerCell', () => {
 	};
 
 	const anchors = (container: HTMLElement) => [
-		container.querySelector<HTMLElement>('.item-picker-icon')!,
-		container.querySelector<HTMLElement>('.item-picker-name-container')!,
+		container.querySelector<HTMLElement>('[data-testid="item-picker-icon"]')!,
+		container.querySelector<HTMLElement>('[data-testid="item-picker-name-container"]')!,
 	];
 
 	it('shows the tooltip the equipped item resolved to, on both the icon and the name', async () => {

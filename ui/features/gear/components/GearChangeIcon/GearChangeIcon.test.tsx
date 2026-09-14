@@ -36,17 +36,17 @@ describe('GearChangeIcon', () => {
 	it('renders the empty frame for a slot with no item', () => {
 		const { container } = renderIcon({ slot: ItemSlot.ItemSlotHead });
 
-		expect(container.querySelector('.item-picker-icon-wrapper')?.getAttribute('style')).toContain('empty-slot.png');
-		expect(container.querySelector('.gear-change-icon-link')?.getAttribute('href')).toBeNull();
-		expect((container.querySelector('.gear-change-icon-reforge') as HTMLElement | null)?.hidden).toBe(true);
-		expect(container.querySelectorAll('.gem-socket-container')).toHaveLength(0);
+		expect(container.querySelector('[data-testid="item-picker-icon-wrapper"]')?.getAttribute('style')).toContain('empty-slot.png');
+		expect(container.querySelector('[data-testid="gear-change-icon-link"]')?.getAttribute('href')).toBeNull();
+		expect((container.querySelector('[data-testid="gear-change-icon-reforge"]') as HTMLElement | null)?.hidden).toBe(true);
+		expect(container.querySelectorAll('[data-testid="gem-socket-container"]')).toHaveLength(0);
 	});
 
 	it('paints the item icon, its wowhead link and the no-tooltip-icon marker', () => {
 		const { container } = renderIcon({ slot: ItemSlot.ItemSlotHead, item: item({}) });
 
-		expect(container.querySelector('.item-picker-icon-wrapper')?.getAttribute('style')).toContain('icon.png');
-		const link = container.querySelector('.gear-change-icon-link')!;
+		expect(container.querySelector('[data-testid="item-picker-icon-wrapper"]')?.getAttribute('style')).toContain('icon.png');
+		const link = container.querySelector('[data-testid="gear-change-icon-link"]')!;
 		expect(link.getAttribute('href')).toBe('https://wowhead/item');
 		expect(link.getAttribute('data-whtticon')).toBe('false');
 	});
@@ -54,7 +54,7 @@ describe('GearChangeIcon', () => {
 	it('shows the reforge marker when a reforge was added, and anchors its tooltip', () => {
 		const { container } = renderIcon({ slot: ItemSlot.ItemSlotHead, item: item({ reforge: { fromStat: 0, toStat: 1 } }) });
 
-		const marker = container.querySelector('.gear-change-icon-reforge')!;
+		const marker = container.querySelector('[data-testid="gear-change-icon-reforge"]')!;
 		expect((marker as HTMLElement).hidden).toBe(false);
 		expect(marker.getAttribute('data-tooltip-id')).toBeTruthy();
 	});
@@ -66,7 +66,7 @@ describe('GearChangeIcon', () => {
 			previousItem: item({ reforge: { fromStat: 0, toStat: 1 } }),
 		});
 
-		expect((container.querySelector('.gear-change-icon-reforge') as HTMLElement | null)?.hidden).toBe(false);
+		expect((container.querySelector('[data-testid="gear-change-icon-reforge"]') as HTMLElement | null)?.hidden).toBe(false);
 	});
 
 	it('marks only the sockets whose gem moved', () => {
@@ -88,11 +88,11 @@ describe('GearChangeIcon', () => {
 			}),
 		});
 
-		const sockets = [...container.querySelectorAll('.gem-socket-container')];
+		const sockets = [...container.querySelectorAll('[data-testid="gem-socket-container"]')];
 		expect(sockets).toHaveLength(2);
-		expect(sockets[0].classList.contains('interactive')).toBe(false);
+		expect(sockets[0].hasAttribute('data-interactive')).toBe(false);
 		expect(sockets[0].querySelector('.fa-exclamation-circle')).toBeNull();
-		expect(sockets[1].classList.contains('interactive')).toBe(true);
+		expect(sockets[1].hasAttribute('data-interactive')).toBe(true);
 		expect(sockets[1].querySelector('.fa-exclamation-circle')).not.toBeNull();
 		expect(sockets[1].getAttribute('data-tooltip-id')).toBeTruthy();
 	});

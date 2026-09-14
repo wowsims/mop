@@ -119,7 +119,7 @@ describe('ItemSwapIcon', () => {
 		expect([...root.children].map(child => child.tagName.toLowerCase())).toEqual(['a', 'div']);
 		expect(root.querySelector('[data-testid="icon-picker-button"][data-active]')).toBe(root.children[0]);
 		expect(root.children[1].classList.contains('item-picker-sockets-container')).toBe(true);
-		expect(root.querySelectorAll('.item-picker-sockets-container .gem-socket-container')).toHaveLength(2);
+		expect(root.querySelectorAll('.item-picker-sockets-container [data-testid="gem-socket-container"]')).toHaveLength(2);
 		expect(root.querySelector('[data-testid="icon-picker-button"] a')).toBeNull();
 	});
 

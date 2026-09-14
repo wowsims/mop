@@ -1,26 +1,26 @@
 @layer components {
 .ui-bulk-item-cell {
-	& .item-picker-icon-wrapper {
+	& .ui-item-picker-icon-wrapper {
 		--icon-size: 3.5rem;
 		min-width: 3.5rem;
 		min-height: 3.5rem;
 	}
 
-	& .gem-socket-container {
+	& .ui-gem-socket {
 		--gem-width: 1rem;
 	}
 
-	& .item-picker-name-row {
+	& .ui-item-picker-name-row {
 		width: 100%;
 	}
 
-	& .item-picker-labels-container {
+	& .ui-item-picker-labels-container {
 		width: 100%;
 		padding-top: 0;
 		overflow: hidden;
 	}
 
-	& .item-picker-name-container {
+	& .ui-item-picker-name-container {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: baseline;
@@ -28,7 +28,7 @@
 		max-width: 100%;
 	}
 
-	& .item-picker-name {
+	& .ui-item-picker-name {
 		max-width: 100%;
 		white-space: nowrap;
 		overflow: hidden;

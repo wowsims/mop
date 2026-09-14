@@ -16,12 +16,13 @@
 // the modal stayed cut — the modal used to read `gearPicker.itemPickers[i]` for the rail's icons and
 // for its ArrowUp/ArrowDown navigation, and now takes its slots from the player. `selector-modal.mjs`
 // is the one that operates the list, the tabs and the filters.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
 
 const INSTALL = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const pane = () => document.getElementById('gear-tab');
 	const text = el => (el?.textContent ?? '').replace(/\s+/g, ' ').trim();
 
@@ -29,14 +30,14 @@ const INSTALL = () => {
 		// Each summary block by its own modifier class, so a block that stops rendering reads as
 		// missing rather than as empty.
 		summaries: () =>
-			[...pane().querySelectorAll('.summary-table-root')].map(root => {
-				const block = root.querySelector('.content-block');
-				const modifier = [...(block?.classList ?? [])].find(name => name.startsWith('summary-table--')) ?? '?';
+			[...pane().querySelectorAll(q('summary-table-root'))].map(root => {
+				const baselineModifier = [...(root.querySelector('.content-block')?.classList ?? [])].find(name => name.startsWith('summary-table--'));
+				const modifier = root.dataset.summary ?? baselineModifier ?? '?';
 				return {
 					modifier,
 					hidden: root.classList.contains('hide'),
 					title: text(root.querySelector('.content-block-title')),
-					reset: text(root.querySelector('.summary-table-reset-button')) || null,
+					reset: text(root.querySelector(q('summary-table-reset-button'))) || null,
 					rows: [...root.querySelectorAll('.summary-table-row')].map(row => text(row)),
 					footer: [...root.querySelectorAll('.content-block-body > div:not(.summary-table-row) button')].map(button => text(button)),
 				};
@@ -44,20 +45,20 @@ const INSTALL = () => {
 		// One line per equipped-item cell. Everything here is text or an attribute, which is exactly
 		// what the two tree gates cannot see.
 		cells: () =>
-			[...pane().querySelectorAll('.gear-picker-root .item-picker-root')].map(cell => {
+			[...pane().querySelectorAll(`${q('gear-picker-root')} ${q('item-picker-root')}`)].map(cell => {
 				const label = el => (el && !el.classList.contains('hide') ? text(el) : null);
-				const icon = cell.querySelector('.item-picker-icon');
+				const icon = cell.querySelector(q('item-picker-icon'));
 				return {
-					ilvl: text(cell.querySelector('.item-picker-ilvl')),
-					name: text(cell.querySelector('.item-picker-name-container')),
-					quality: [...(cell.querySelector('.item-picker-name-container')?.classList ?? [])].find(name => name.startsWith('text-')) ?? null,
+					ilvl: text(cell.querySelector(q('item-picker-ilvl'))),
+					name: text(cell.querySelector(q('item-picker-name-container'))),
+					quality: [...(cell.querySelector(q('item-picker-name-container'))?.classList ?? [])].find(name => name.startsWith('text-')) ?? null,
 					icon: (icon?.getAttribute('style') ?? '').includes('url(') ? 'set' : 'unset',
 					linked: !!icon?.getAttribute('href'),
 					wowhead: !!icon?.getAttribute('data-wowhead'),
-					enchant: label(cell.querySelector('.item-picker-enchant')),
-					tinker: label(cell.querySelector('.item-picker-tinker')),
-					reforge: label(cell.querySelector('.item-picker-reforge')),
-					sockets: [...cell.querySelectorAll('.gem-socket-container')].map(socket => (socket.classList.contains('hide') ? 'hidden' : 'shown')),
+					enchant: label(cell.querySelector(q('item-picker-enchant'))),
+					tinker: label(cell.querySelector(q('item-picker-tinker'))),
+					reforge: label(cell.querySelector(q('item-picker-reforge'))),
+					sockets: [...cell.querySelectorAll(q('gem-socket-container'))].map(socket => (socket.classList.contains('hide') ? 'hidden' : 'shown')),
 				};
 			}),
 		modal: () => {
@@ -70,8 +71,8 @@ const INSTALL = () => {
 				title: text(modal.querySelector('.selector-modal-title')),
 				tabs: [...modal.querySelectorAll('.selector-modal-tabs .nav-link')].map(tab => text(tab)),
 				activeTab: text(modal.querySelector('.selector-modal-tabs .nav-link.active')),
-				railSlots: modal.querySelectorAll('.gear-picker-modal-slots .item-picker-icon-wrapper').length,
-				railActive: modal.querySelector('.gear-picker-modal-slots .item-picker-icon-wrapper.active')?.getAttribute('data-slot') ?? null,
+				railSlots: modal.querySelectorAll(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}`).length,
+				railActive: modal.querySelector(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}.active`)?.getAttribute('data-slot') ?? null,
 				rows: modal.querySelectorAll('.selector-modal-tab-pane.active .selector-modal-list-item').length,
 			};
 		},
@@ -118,26 +119,26 @@ const INSTALL = () => {
 		// Offsets down each column, so a popover that lands in the flow between two cells — and moves
 		// the `:nth-child(6)` weapon separator with it — reads as a cell that moved.
 		cellTops: () => {
-			const root = pane().querySelector('.gear-picker-root');
+			const root = pane().querySelector(q('gear-picker-root'));
 			const origin = root.getBoundingClientRect().top;
-			return [...root.querySelectorAll('.item-picker-root')].map(cell => Math.round(cell.getBoundingClientRect().top - origin));
+			return [...root.querySelectorAll(q('item-picker-root'))].map(cell => Math.round(cell.getBoundingClientRect().top - origin));
 		},
 		popoverStyle: () => {
 			const box = document.querySelector('.sim-tooltip.tooltip-quick-swap, .tippy-box[data-theme="tooltip-quick-swap"]');
 			if (!box) return null;
 			const align = el => (el ? getComputedStyle(el).textAlign : 'missing');
-			return `box=${align(box)} empty=${align(box.querySelector('.tooltip-quick-swap__empty'))} footer=${align(box.querySelector('.tooltip-quick-swap__footer'))}`;
+			return `box=${align(box)} empty=${align(box.querySelector(q('tooltip-quick-swap__empty')))} footer=${align(box.querySelector(q('tooltip-quick-swap__footer')))}`;
 		},
 		quickSwap: () => {
 			const popover = document.querySelector('.sim-tooltip.tooltip-quick-swap, .tippy-box[data-theme="tooltip-quick-swap"]');
 			if (!popover) return { open: false };
 			return {
 				open: true,
-				title: text(popover.querySelector('.tooltip-quick-swap__title')),
-				entries: [...popover.querySelectorAll('.tooltip-quick-swap__label')].map(label => text(label)),
-				active: [...popover.querySelectorAll('.tooltip-quick-swap__anchor')].map(anchor => anchor.classList.contains('active')),
-				empty: text(popover.querySelector('.tooltip-quick-swap__empty')) || null,
-				footer: text(popover.querySelector('.tooltip-quick-swap__footer button')),
+				title: text(popover.querySelector(q('tooltip-quick-swap__title'))),
+				entries: [...popover.querySelectorAll(q('tooltip-quick-swap__label'))].map(label => text(label)),
+				active: [...popover.querySelectorAll(q('tooltip-quick-swap__anchor'))].map(anchor => anchor.hasAttribute('data-active')),
+				empty: text(popover.querySelector(q('tooltip-quick-swap__empty'))) || null,
+				footer: text(popover.querySelector(`${q('tooltip-quick-swap__footer')} button`)),
 			};
 		},
 	};
@@ -159,7 +160,7 @@ await page.evaluate(() =>
 		.find(tab => window.simTabsProbe.idOf(tab) === 'gear-tab')
 		?.click(),
 );
-await page.waitForSelector('#gear-tab .gear-picker-root .item-picker-root', { timeout: 60000, state: 'visible' });
+await page.waitForSelector(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`, { timeout: 60000, state: 'visible' });
 // The cells fill their icons and wowhead datasets asynchronously, and the summaries wait for the
 // spec's default gear to land.
 await page.waitForTimeout(2500);
@@ -171,6 +172,8 @@ const say = line => console.log(line);
 // table is empty where master left it in the tree carrying `hide`, so "not there" has to be an answer
 // this probe can print and assert rather than a block it quietly stops looking for.
 const SUMMARY_MODIFIERS = ['summary-table--gems', 'summary-table--reforge', 'summary-table--upgrade-costs'];
+const summaryResetButton = modifier =>
+	`#gear-tab ${q('summary-table-root')}[data-summary="${modifier}"] ${q('summary-table-reset-button')}, #gear-tab .${modifier} ${q('summary-table-reset-button')}`;
 const shown = block => !!block && !block.hidden;
 
 say(`${SPEC} on :${PORT}\n`);
@@ -220,8 +223,8 @@ say('\nselector modal, opened from a cell');
 // cell's position in the DOM is not its `ItemSlot`. The rail and the equipment array are both in
 // slot order, so the two readouts only line up through this.
 const SLOT_OF_CELL = [0, 1, 2, 3, 4, 5, 14, 15, 6, 7, 8, 9, 10, 11, 12, 13];
-const cell = index => page.locator('#gear-tab .gear-picker-root .item-picker-root').nth(index);
-await cell(0).locator('.item-picker-icon').click();
+const cell = index => page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).nth(index);
+await cell(0).locator(q('item-picker-icon')).click();
 await page.waitForSelector(MODAL_OPEN, { timeout: 20000 });
 await page.waitForTimeout(600);
 const opened = await page.evaluate(() => window.gearProbe.modal());
@@ -253,7 +256,10 @@ say(`  ArrowUp     active=${wrapped.railActive} (wrapped)`);
 if (wrapped.railActive !== '15') problems.push(`ArrowUp from the first slot left ${wrapped.railActive} active, expected it to wrap to 15`);
 
 // Clicking a rail icon is the third reader of the entry, and the one a cell never triggers.
-await page.locator(inModal('.gear-picker-modal-slots .item-picker-icon-wrapper:nth-of-type(3) .item-picker-icon')).first().click();
+await page
+	.locator(inModal(`.gear-picker-modal-slots ${q('item-picker-icon-wrapper')}:nth-of-type(3) ${q('item-picker-icon')}`))
+	.first()
+	.click();
 await page.waitForTimeout(700);
 const railClicked = await page.evaluate(() => window.gearProbe.modal());
 say(`  rail click  title=${JSON.stringify(railClicked.title)} active=${railClicked.railActive} rows=${railClicked.rows}`);
@@ -270,7 +276,7 @@ const enchanted = cells.findIndex(cell => cell.enchant);
 if (enchanted < 0) {
 	problems.push('no cell shows an enchant, so the quick-swap path was not exercised');
 } else {
-	const enchantLabel = cell(enchanted).locator('.item-picker-enchant');
+	const enchantLabel = cell(enchanted).locator(q('item-picker-enchant'));
 	await enchantLabel.click();
 	await page.waitForSelector(MODAL_OPEN, { timeout: 20000 });
 	await page.waitForTimeout(700);
@@ -311,7 +317,7 @@ if (enchanted < 0) {
 		problems.push(`the popover lists ${JSON.stringify(popover.entries)}, which does not include the enchant just favourited (${favouriteName})`);
 
 	const before = await page.evaluate(() => window.gearProbe.gear());
-	await page.click('.tooltip-quick-swap__anchor');
+	await page.click(q('tooltip-quick-swap__anchor'));
 	await page.waitForTimeout(900);
 	const after = await page.evaluate(() => window.gearProbe.gear());
 	const moved = after.map((entry, index) => (entry === before[index] ? null : index)).filter(index => index !== null);
@@ -331,7 +337,7 @@ if (enchanted < 0) {
 		problems.push('no right-column cell shows an enchant, so the popover was only opened in the left column');
 	} else {
 		const rightTopsBefore = await page.evaluate(() => window.gearProbe.cellTops());
-		await cell(rightEnchanted).locator('.item-picker-enchant').hover();
+		await cell(rightEnchanted).locator(q('item-picker-enchant')).hover();
 		await page.waitForTimeout(900);
 		const rightTopsDuring = await page.evaluate(() => window.gearProbe.cellTops());
 		const rightShifted = rightTopsDuring.map((top, index) => (top === rightTopsBefore[index] ? null : index)).filter(index => index !== null);
@@ -343,8 +349,9 @@ if (enchanted < 0) {
 // ---------------------------------------------------------------------------
 say('\nreforge summary: the copy button');
 await page.evaluate(() => window.gearProbe.stubClipboard());
-if (await page.locator('#gear-tab .reforge-summary-footer .copy-button').count()) {
-	await page.click('#gear-tab .reforge-summary-footer .copy-button');
+const copyButtonSelector = `#gear-tab ${q('reforge-summary-footer')} ${q('copy-button')}`;
+if (await page.locator(copyButtonSelector).count()) {
+	await page.click(copyButtonSelector);
 	await page.waitForTimeout(400);
 	const copied = await page.evaluate(() => window.gearProbe.copied());
 	let parsed = null;
@@ -380,15 +387,15 @@ const step = async (label, action) => {
 
 // Reset first: the shipped gear sets are already fully upgraded, so "upgrade all" is a no-op until
 // something has been reset, and asserting it in the other order asserts nothing.
-const resetUpgrades = await step('reset upgrades', () => page.click('#gear-tab .summary-table--upgrade-costs .summary-table-reset-button'));
+const resetUpgrades = await step('reset upgrades', () => page.click(summaryResetButton('summary-table--upgrade-costs')));
 if (!resetUpgrades.moved) problems.push('resetting upgrades changed no slot');
-const upgradeAll = await step('upgrade all', () => page.click('#gear-tab .upgrade-costs-summary-footer button'));
+const upgradeAll = await step('upgrade all', () => page.click(`#gear-tab ${q('upgrade-costs-summary-footer')} button`));
 if (upgradeAll.moved !== resetUpgrades.moved)
 	problems.push(`"upgrade all" changed ${upgradeAll.moved} slots, and resetting upgrades had changed ${resetUpgrades.moved}`);
-const resetReforges = await step('reset reforges', () => page.click('#gear-tab .summary-table--reforge .summary-table-reset-button'));
+const resetReforges = await step('reset reforges', () => page.click(summaryResetButton('summary-table--reforge')));
 if (!resetReforges.moved) problems.push('resetting reforges changed no slot');
 if (shown(resetReforges.summary['summary-table--reforge'])) problems.push('the reforge summary is still shown after every reforge was removed');
-const resetGems = await step('reset gems', () => page.click('#gear-tab .summary-table--gems .summary-table-reset-button'));
+const resetGems = await step('reset gems', () => page.click(summaryResetButton('summary-table--gems')));
 if (!resetGems.moved) problems.push('resetting gems changed no slot');
 if (shown(resetGems.summary['summary-table--gems'])) problems.push('the gem summary is still shown after every gem was removed');
 

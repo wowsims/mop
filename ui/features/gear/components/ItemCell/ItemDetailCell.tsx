@@ -81,7 +81,8 @@ export const ItemDetailCell = ({
 			}
 			icon={
 				<ItemCellAnchor
-					className="item-picker-icon ui-item-picker-icon"
+					className="ui-item-picker-icon"
+					data-testid="item-picker-icon"
 					role="button"
 					href={href || undefined}
 					onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
@@ -107,7 +108,8 @@ export const ItemDetailCell = ({
 			name={
 				<>
 					<ItemCellAnchor
-						className={clsx('item-picker-name-container ui-item-picker-name-container', itemQualityClassName(item?.item.quality))}
+						className={clsx('ui-item-picker-name-container', itemQualityClassName(item?.item.quality))}
+						data-testid="item-picker-name-container"
 						role="button"
 						href={href || undefined}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Items))}
@@ -115,7 +117,7 @@ export const ItemDetailCell = ({
 						{...wowheadProps}>
 						{item ? (
 							<>
-								<span className="item-picker-name tracking-normal">
+								<span className="ui-item-picker-name tracking-normal" data-testid="item-picker-name">
 									{item.item.name}
 									{!!item.randomSuffix && ` ${translateProtoStatName(item.randomSuffix.name)}`}
 								</span>
@@ -142,19 +144,22 @@ export const ItemDetailCell = ({
 			labels={
 				<>
 					<EnchantLabel
-						className="item-picker-enchant ui-item-picker-label-muted tracking-normal"
+						className="ui-item-picker-label-muted tracking-normal"
+						testId="item-picker-enchant"
 						enchant={item?.enchant}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Enchants))}
 						tooltipId={enchantTooltipId}
 					/>
 					<EnchantLabel
-						className="item-picker-tinker ui-item-picker-label-muted tracking-normal"
+						className="ui-item-picker-label-muted tracking-normal"
+						testId="item-picker-tinker"
 						enchant={item?.tinker}
 						onActivate={onOpen && (() => onOpen(SelectorModalTabs.Tinkers))}
 					/>
 					{reforgeData && (
 						<ItemCellAnchor
-							className="item-picker-reforge ui-item-picker-label-muted tracking-normal"
+							className="ui-item-picker-label-muted tracking-normal"
+							data-testid="item-picker-reforge"
 							role="button"
 							onActivate={onOpen && (() => onOpen(SelectorModalTabs.Reforging))}>
 							{i18n.t('gear_tab.gear_picker.reforge_text', {

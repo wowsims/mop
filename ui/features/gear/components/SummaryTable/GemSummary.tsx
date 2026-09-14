@@ -23,13 +23,14 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 	return (
 		<SummaryTableRow>
 			<a
-				className={clsx('summary-table-link flex items-center', itemQualityClassName(gem.quality))}
+				className={clsx('flex items-center', itemQualityClassName(gem.quality))}
 				data-whtticon="false"
 				target="_blank"
 				href={href || undefined}
 				rel={externalRel(href, undefined)}>
 				<img
-					className="gem-icon ui-summary-table-gem-icon static rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="ui-summary-table-gem-icon static rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					data-testid="gem-icon"
 					src={iconUrl || undefined}
 					alt=""
 				/>
@@ -49,8 +50,7 @@ export const GemSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.gem_summary.title')}
-			className="summary-table--gems"
-			headerClassName="summary-table--gems"
+			modifier="summary-table--gems"
 			empty={!rows.length}
 			reset={{
 				label: i18n.t('gear_tab.gem_summary.reset_gems'),

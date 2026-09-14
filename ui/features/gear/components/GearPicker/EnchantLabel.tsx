@@ -8,12 +8,13 @@ import { ItemCellAnchor } from '../ItemCell';
 
 export interface EnchantLabelProps {
 	className: string;
+	testId?: string;
 	enchant?: Enchant | null;
 	onActivate?: () => void;
 	tooltipId?: string;
 }
 
-export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: EnchantLabelProps) => {
+export const EnchantLabel = ({ className, testId, enchant, onActivate, tooltipId }: EnchantLabelProps) => {
 	const [description, setDescription] = useState('');
 
 	const actionId = useMemo(
@@ -48,6 +49,7 @@ export const EnchantLabel = ({ className, enchant, onActivate, tooltipId }: Ench
 	return (
 		<ItemCellAnchor
 			className={className}
+			data-testid={testId}
 			role="button"
 			href={href}
 			onActivate={onActivate}

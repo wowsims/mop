@@ -64,8 +64,8 @@ describe('FiltersMenu', () => {
 		return { onOpenChange };
 	};
 
-	const sections = () => Array.from(rootElem.querySelectorAll('.menu-section-title')).map(node => node.textContent);
-	const pickerIds = () => Array.from(rootElem.querySelectorAll<HTMLElement>('.filters-menu [id^=filter]')).map(node => node.id);
+	const sections = () => Array.from(rootElem.querySelectorAll('[data-testid="menu-section-title"]')).map(node => node.textContent);
+	const pickerIds = () => Array.from(rootElem.querySelectorAll<HTMLElement>('[data-testid="filters-menu"] [id^=filter]')).map(node => node.id);
 
 	beforeEach(() => {
 		filters = DatabaseFilters.create({});
@@ -76,13 +76,13 @@ describe('FiltersMenu', () => {
 
 	it('portals into the sim root so the popup keeps the spec theme', () => {
 		setup();
-		expect(rootElem.querySelector('[data-testid="sim-dialog-popup"].filters-menu')).not.toBeNull();
-		expect(document.body.querySelector(':scope > [data-testid="sim-dialog-popup"]')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="filters-menu"]')).not.toBeNull();
+		expect(document.body.querySelector(':scope > [data-testid="filters-menu"]')).toBeNull();
 	});
 
 	it('renders nothing while closed', () => {
 		setup({}, { open: false });
-		expect(rootElem.querySelector('.filters-menu')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="filters-menu"]')).toBeNull();
 	});
 
 	it('always offers the general, source and raid sections', () => {
@@ -186,7 +186,7 @@ describe('FiltersMenu', () => {
 	it('closes on its own close button', () => {
 		const { onOpenChange } = setup();
 
-		fireEvent.click(rootElem.querySelector<HTMLButtonElement>('.filters-menu [data-testid="sim-dialog-close"]')!);
+		fireEvent.click(rootElem.querySelector<HTMLButtonElement>('[data-testid="filters-menu"] [data-testid="sim-dialog-close"]')!);
 		expect(onOpenChange).toHaveBeenCalledWith(false);
 	});
 });

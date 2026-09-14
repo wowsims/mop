@@ -191,10 +191,10 @@ describe('ItemListRow', () => {
 
 	it('renders the name description label only when set', () => {
 		const withDescription = renderRow({ itemData: makeItemData({ nameDescription: 'Heroic' }) });
-		expect(withDescription.container.querySelector('.heroic-label')?.textContent).toBe('(Heroic)');
+		expect(withDescription.container.querySelector('[data-testid="heroic-label"]')?.textContent).toBe('(Heroic)');
 
 		const withoutDescription = renderRow({ itemData: makeItemData({ nameDescription: '' }) });
-		expect(withoutDescription.container.querySelector('.heroic-label')).toBeNull();
+		expect(withoutDescription.container.querySelector('[data-testid="heroic-label"]')).toBeNull();
 	});
 
 	it('calls onEquip when the row link is clicked', () => {

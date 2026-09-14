@@ -30,7 +30,7 @@ export const UpgradeCostsSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.upgrade_summary.title')}
-			className="summary-table--upgrade-costs"
+			modifier="summary-table--upgrade-costs"
 			empty={!upgradeable.length}
 			reset={{
 				label: i18n.t('gear_tab.upgrade_summary.reset_upgrades'),
@@ -45,7 +45,8 @@ export const UpgradeCostsSummary = () => {
 						<SummaryTableRow>
 							<div className="flex items-center">
 								<img
-									className="gem-icon ui-summary-table-gem-icon static cursor-default rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center"
+									className="ui-summary-table-gem-icon static cursor-default rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center"
+									data-testid="gem-icon"
 									src={currencyIconUrl(key, faction)}
 									alt=""
 								/>
@@ -56,7 +57,7 @@ export const UpgradeCostsSummary = () => {
 					</div>
 				) : null,
 			)}
-			<div className="upgrade-costs-summary-footer mt-2">
+			<div className="mt-2" data-testid="upgrade-costs-summary-footer">
 				<div className="flex w-full justify-end">
 					<Button
 						variant="outline-primary"

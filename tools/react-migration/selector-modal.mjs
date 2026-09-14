@@ -17,7 +17,7 @@
 // *names*, read by geometry from the rows overlapping the scroller's box, are data and must match.
 //
 // Set `PORT` to pick a build; the whole output should be identical on both.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -473,7 +473,7 @@ await settle(600);
 // OUTER one and reads "open" whether or not this menu is. Under the descendant form this file
 // recorded the baseline's close button as broken; it is not, and neither was the menu open before
 // Filters was ever clicked.
-const FILTERS_ROOT = '.modal.show > .filters-menu, [data-testid="sim-dialog-popup"].filters-menu[data-open]';
+const FILTERS_ROOT = `.modal.show > .filters-menu, [data-testid="sim-dialog-popup"].filters-menu[data-open], ${q('filters-menu')}[data-open]`;
 
 say('\nthe filters menu, opened over the modal');
 await page.locator('#gear-tab .gear-picker-root .item-picker-root').first().locator('.item-picker-icon').click();
@@ -481,15 +481,18 @@ await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
 await pane().locator('.selector-modal-filters-button').click();
 await settle(900);
-const filtersMenu = await page.evaluate(root => {
-	const menu = document.querySelector(root);
-	return {
-		open: !!menu,
-		selectorStillOpen: window.selectorProbe.open(),
-		sections: [...(menu?.querySelectorAll('.menu-section-title') ?? [])].map(title => (title.textContent ?? '').replace(/\s+/g, ' ').trim()),
-		pickers: [...(menu?.querySelectorAll('[id^=filter]') ?? [])].map(el => `${el.id}=${el.type === 'checkbox' ? el.checked : el.value}`),
-	};
-}, FILTERS_ROOT);
+const filtersMenu = await page.evaluate(
+	({ root, sectionTitle }) => {
+		const menu = document.querySelector(root);
+		return {
+			open: !!menu,
+			selectorStillOpen: window.selectorProbe.open(),
+			sections: [...(menu?.querySelectorAll(sectionTitle) ?? [])].map(title => (title.textContent ?? '').replace(/\s+/g, ' ').trim()),
+			pickers: [...(menu?.querySelectorAll('[id^=filter]') ?? [])].map(el => `${el.id}=${el.type === 'checkbox' ? el.checked : el.value}`),
+		};
+	},
+	{ root: FILTERS_ROOT, sectionTitle: q('menu-section-title') },
+);
 say(`  opened      ${filtersMenu.open} modalStillOpen=${filtersMenu.selectorStillOpen}`);
 say(`  sections    ${JSON.stringify(filtersMenu.sections)}`);
 say(`  pickers     ${filtersMenu.pickers.length}`);

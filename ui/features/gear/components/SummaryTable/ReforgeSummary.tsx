@@ -37,7 +37,7 @@ export const ReforgeSummary = () => {
 	return (
 		<SummaryTable
 			title={i18n.t('gear_tab.reforge_summary.title')}
-			className="summary-table--reforge"
+			modifier="summary-table--reforge"
 			empty={!stats.length}
 			reset={{
 				label: i18n.t('gear_tab.reforge_summary.reset_reforges'),
@@ -58,9 +58,9 @@ export const ReforgeSummary = () => {
 					</SummaryTableRow>
 				);
 			})}
-			<div className="reforge-summary-footer mt-2">
+			<div className="mt-2" data-testid="reforge-summary-footer">
 				<div className="flex w-full justify-end">
-					<Button variant="outline-primary" className="copy-button" onClick={copy}>
+					<Button variant="outline-primary" data-testid="copy-button" onClick={copy}>
 						<Icon name={copied ? 'check' : 'copy'} className="mr-1" />
 						{copied ? i18n.t('common.copy_button.copied') : i18n.t('gear_tab.reforge_summary.copy_to_reforge_lite')}
 					</Button>

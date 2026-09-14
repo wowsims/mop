@@ -42,31 +42,34 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 	const sockets = useMemo(() => gearChangeSockets(item, previousItem), [item, previousItem]);
 
 	return (
-		<div className="item-picker-root ui-item-picker-root gear-change-icon">
-			<div className="gear-change-icon-frame relative w-fit">
+		<div className="ui-item-picker-root" data-testid="gear-change-icon">
+			<div className="relative w-fit">
 				<div
-					className="item-picker-icon-wrapper ui-item-picker-icon-wrapper"
+					className="ui-item-picker-icon-wrapper"
+					data-testid="item-picker-icon-wrapper"
 					style={{ backgroundImage: `url('${(item && iconUrl) || getEmptySlotIconUrl(slot)}')` }}
 				/>
 				<a
-					className="gear-change-icon-link absolute inset-0"
+					className="absolute inset-0"
+					data-testid="gear-change-icon-link"
 					href={item ? href || undefined : undefined}
 					data-whtticon={item ? 'false' : undefined}
 					{...wowheadProps}
 				/>
 				<div
-					className={clsx('gear-change-icon-reforge ui-gear-change-icon-reforge interactive', !showReforge && 'hidden')}
+					className={clsx('ui-gear-change-icon-reforge', !showReforge && 'hidden')}
+					data-testid="gear-change-icon-reforge"
+					data-interactive={showReforge || undefined}
 					hidden={!showReforge}
 					{...(showReforge ? tooltipAnchorProps(`${tooltipId}-reforge`) : {})}
 				/>
-				<div className="item-picker-sockets-container ui-item-picker-sockets-container">
+				<div className="ui-item-picker-sockets-container" data-testid="item-picker-sockets-container">
 					{sockets.map(({ socketColor, gemName, changed }, gemIdx) => (
 						<div
 							key={gemIdx}
-							className={clsx(
-								'gem-socket-container ui-gear-change-icon-gem-socket relative size-(--gem-width) shrink-0 not-last:mr-px',
-								changed && 'interactive',
-							)}
+							className="ui-gear-change-icon-gem-socket relative size-(--gem-width) shrink-0 not-last:mr-px"
+							data-testid="gem-socket-container"
+							data-interactive={changed || undefined}
 							style={{ backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})` }}
 							{...(changed && gemName ? tooltipAnchorProps(`${tooltipId}-socket-${gemIdx}`) : {})}>
 							{changed && <i className="block fas fa-exclamation-circle ui-gear-change-icon-gem-marker" />}

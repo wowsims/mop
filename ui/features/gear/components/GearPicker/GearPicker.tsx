@@ -9,21 +9,19 @@ export interface GearPickerProps {
 }
 
 export const GearPicker = ({ ready }: GearPickerProps) => (
-	<div className="gear-picker-root grid grid-cols-2 gap-section max-lg:gap-3 max-sm:grid-cols-1">
-		<TabPanelColumns.Col className="gear-picker-left gap-3 *:flex-row *:text-left [&>*:nth-child(6)]:mb-section" externalGap>
+	<div className="ui-gear-picker grid grid-cols-2 gap-section max-lg:gap-3 max-sm:grid-cols-1" data-testid="gear-picker-root">
+		<TabPanelColumns.Col className="gap-3 *:flex-row *:text-left [&>*:nth-child(6)]:mb-section" externalGap>
 			{LEFT_ITEM_SLOTS.map(slot => (
 				<ItemPickerCell key={slot} slot={slot} ready={ready} />
 			))}
 		</TabPanelColumns.Col>
 		<TabPanelColumns.Col
 			className={clsx(
-				'gear-picker-right gap-3 *:flex-row-reverse max-md:*:flex-row',
-				'[&_.item-picker-labels-container]:items-end max-md:[&_.item-picker-labels-container]:items-start',
-				'[&_.item-picker-labels-container]:text-right',
-				'[&_.item-picker-name-row]:text-right max-md:[&_.item-picker-name-row]:text-left',
-				'[&_.item-picker-reforge]:text-right max-md:[&_.item-picker-reforge]:text-left',
-				'[&_.item-picker-enchant]:text-right max-md:[&_.item-picker-enchant]:text-left',
-				'[&_.item-picker-tinker]:text-right max-md:[&_.item-picker-tinker]:text-left',
+				'gap-3 *:flex-row-reverse max-md:*:flex-row',
+				'[&_.ui-item-picker-labels-container]:items-end max-md:[&_.ui-item-picker-labels-container]:items-start',
+				'[&_.ui-item-picker-labels-container]:text-right',
+				'[&_.ui-item-picker-name-row]:text-right max-md:[&_.ui-item-picker-name-row]:text-left',
+				'[&_.ui-item-picker-label-muted]:text-right max-md:[&_.ui-item-picker-label-muted]:text-left',
 			)}
 			externalGap>
 			{RIGHT_ITEM_SLOTS.map(slot => (

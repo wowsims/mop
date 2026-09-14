@@ -22,22 +22,22 @@
 }
 
 .ui-item-picker-name-container {
-	@apply text-white text-(length:--h6-font-size) [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1
-		[.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+	@apply text-white text-(length:--h6-font-size) [.ui-gear-picker_&]:focus-visible:outline [.ui-gear-picker_&]:focus-visible:outline-1
+		[.ui-gear-picker_&]:focus-visible:outline-link [.ui-gear-picker_&]:focus-visible:outline-offset-1;
 }
 
 .ui-item-picker-label-muted {
-	@apply text-quality-uncommon text-ui [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1
-		[.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+	@apply text-quality-uncommon text-ui [.ui-gear-picker_&]:focus-visible:outline [.ui-gear-picker_&]:focus-visible:outline-1
+		[.ui-gear-picker_&]:focus-visible:outline-link [.ui-gear-picker_&]:focus-visible:outline-offset-1;
 }
 
 .ui-item-picker-icon {
-	@apply bg-no-repeat bg-cover bg-center relative cursor-pointer inline-block h-full w-full [.gear-picker-root_&]:focus-visible:outline
-		[.gear-picker-root_&]:focus-visible:outline-1 [.gear-picker-root_&]:focus-visible:outline-link [.gear-picker-root_&]:focus-visible:outline-offset-1;
+	@apply bg-no-repeat bg-cover bg-center relative cursor-pointer inline-block h-full w-full [.ui-gear-picker_&]:focus-visible:outline
+		[.ui-gear-picker_&]:focus-visible:outline-1 [.ui-gear-picker_&]:focus-visible:outline-link [.ui-gear-picker_&]:focus-visible:outline-offset-1;
 }
 
 .ui-gem-socket-focus-scope {
-	@apply [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1 [.gear-picker-root_&]:focus-visible:outline-link
-		[.gear-picker-root_&]:focus-visible:outline-offset-1;
+	@apply [.ui-gear-picker_&]:focus-visible:outline [.ui-gear-picker_&]:focus-visible:outline-1 [.ui-gear-picker_&]:focus-visible:outline-link
+		[.ui-gear-picker_&]:focus-visible:outline-offset-1;
 }
 }

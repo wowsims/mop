@@ -42,14 +42,14 @@ describe('QuickEnchantList', () => {
 	it('lists the eligible favourites', () => {
 		const { view } = setup();
 
-		expect([...view.container.querySelectorAll('.tooltip-quick-swap__label')].map(label => label.textContent)).toEqual(['Test Enchant']);
+		expect([...view.container.querySelectorAll('[data-testid="tooltip-quick-swap__label"]')].map(label => label.textContent)).toEqual(['Test Enchant']);
 	});
 
 	it('enchants the item that is in the slot at click time, not the one it rendered', () => {
 		const { view, equipItem, swapSlotTo } = setup();
 
 		swapSlotTo('second');
-		view.container.querySelector<HTMLAnchorElement>('.tooltip-quick-swap__anchor')!.click();
+		view.container.querySelector<HTMLAnchorElement>('[data-testid="tooltip-quick-swap__anchor"]')!.click();
 
 		expect(equipItem).toHaveBeenCalledWith(ItemSlot.ItemSlotHead, { id: 'second', enchant: ENCHANT });
 	});
