@@ -26,7 +26,7 @@ export const TargetInputPicker = ({ encounter, targetIndex, inputIndex, input }:
 	);
 
 	return (
-		<div className="ui-field input-root target-input-picker-root">
+		<div className="ui-field" data-testid="target-input-picker-root">
 			{picker.kind === 'number' && <NumberPicker modObject={null} config={picker.config} />}
 			{picker.kind === 'boolean' && <BooleanPicker modObject={null} config={picker.config} />}
 			{picker.kind === 'enum' && <EnumPicker modObject={null} config={picker.config} />}

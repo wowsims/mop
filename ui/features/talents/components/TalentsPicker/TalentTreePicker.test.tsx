@@ -39,7 +39,7 @@ const tree = (talentsString: string) => {
 	return onChange;
 };
 
-const talents = () => Array.from(document.querySelectorAll<HTMLAnchorElement>('.talent-picker-root'));
+const talents = () => Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-testid="talent-picker-root"]'));
 const talentAt = (rowIdx: number, colIdx: number) => talents()[rowIdx * COLS + colIdx];
 
 afterEach(() => vi.useRealTimers());
@@ -48,7 +48,14 @@ describe('TalentTreePicker', () => {
 	it('lays the config out as a grid, one level gutter per row', () => {
 		tree('000000');
 		expect(talents()).toHaveLength(ROWS * COLS);
-		expect(Array.from(document.querySelectorAll('.talent-tree-level')).map(el => el.textContent)).toEqual(['15', '30', '45', '60', '75', '90']);
+		expect(Array.from(document.querySelectorAll('[data-testid="talent-tree-level"]')).map(el => el.textContent)).toEqual([
+			'15',
+			'30',
+			'45',
+			'60',
+			'75',
+			'90',
+		]);
 	});
 
 	// Three stylesheet rules read the value, one of them `.talent-tree-row:has([data-selected='true'])`,
@@ -142,14 +149,14 @@ describe('TalentTreePicker', () => {
 
 	it('zeroes every row from the reset button', () => {
 		const onChange = tree('123123');
-		fireEvent.click(document.querySelector('.talent-tree-reset')!);
+		fireEvent.click(document.querySelector('[data-testid="talent-tree-reset"]')!);
 		expect(onChange).toHaveBeenCalledWith('000000');
 	});
 
 	it('keeps the reset button on the bare base bundle, as the stylesheet expects', () => {
 		tree('000000');
 		expect(screen.getByRole('button').className.split(' ').sort()).toEqual(
-			['ui-button', 'ui-button-md', 'leading-none', 'link-danger', 'talent-tree-reset', 'text-link-danger', '-mr-3'].sort(),
+			['ui-button', 'ui-button-md', 'leading-none', 'link-danger', 'text-link-danger', '-mr-3'].sort(),
 		);
 	});
 });

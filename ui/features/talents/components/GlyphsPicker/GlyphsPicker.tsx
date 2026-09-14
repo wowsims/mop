@@ -45,7 +45,7 @@ export const GlyphsPicker = () => {
 	const isMajor = (majorGlyphFields as ReadonlyArray<GlyphField>).includes(field);
 
 	return (
-		<div className="glyphs-picker-root grid gap-section grid-cols-1 pt-2 md:max-1080p:w-full md:max-1080p:gap-0 md:max-1080p:grid-cols-2 md:max-1080p:pt-0">
+		<div className="grid gap-section grid-cols-1 pt-2 md:max-1080p:w-full md:max-1080p:gap-0 md:max-1080p:grid-cols-2 md:max-1080p:pt-0">
 			<ContentBlock
 				className="major-glyphs gap-0"
 				config={{ header: { title: i18n.t('talents_tab.glyphs.major'), className: 'border-0' }, bodyClassName: 'grid' }}>

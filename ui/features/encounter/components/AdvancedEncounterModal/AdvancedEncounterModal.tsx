@@ -26,7 +26,7 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 		return {
 			id: 'aem-encounter-picker',
 			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-			extraClassNames: ['encounter-picker', 'mb-0', 'pr-2', 'order-first', 'w-1/3', 'max-sm:w-1/2'],
+			extraClassNames: ['mb-0', 'pr-2', 'order-first', 'w-1/3', 'max-sm:w-1/2'],
 			values: [{ name: 'Custom', value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
 			storeField: 'encounter:*',
 			getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),
@@ -46,23 +46,23 @@ export const AdvancedEncounterModal = ({ open, onOpenChange }: AdvancedEncounter
 		<Dialog
 			open={open}
 			onOpenChange={onOpenChange}
-			className="advanced-encounter-picker-modal"
+			testId="advanced-encounter-picker-modal"
 			bodyClassName="overflow-auto"
 			bodyGap="gap-3"
 			headerChildren={<EnumPicker modObject={encounter} config={presetConfig} />}>
-			<div className="encounter-header flex flex-col gap-3">
+			<div className="flex flex-col gap-3" data-testid="encounter-header">
 				<PickerGroup>
 					{duration.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
 				</PickerGroup>
-				<PickerGroup className="execute-group flex-row">
+				<PickerGroup className="flex-row">
 					{execute.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
 				</PickerGroup>
 			</div>
-			<div className="encounter-targets">
+			<div>
 				<TargetsPicker encounter={encounter} />
 			</div>
 		</Dialog>

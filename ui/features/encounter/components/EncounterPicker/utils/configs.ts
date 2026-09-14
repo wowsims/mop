@@ -122,7 +122,7 @@ export const presetEncounterConfig = (encounter: Encounter): EnumPickerConfig<En
 	return {
 		id: 'encounter-preset-encouter',
 		label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-		extraClassNames: ['damage-metrics', 'npc-picker', 'in-data-[hide-damage]:hidden'],
+		extraClassNames: ['damage-metrics', 'in-data-[hide-damage]:hidden'],
 		values: [{ name: i18n.t('common.custom'), value: -1 }, ...presets.map((preset, index) => ({ name: preset.path, value: index }))],
 		storeField: 'encounter:*',
 		getValue: (subject: Encounter) => presets.findIndex(preset => subject.matchesPreset(preset)),

@@ -50,8 +50,10 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 	const spellSchool = useMemo(() => spellSchoolConfig(context), [context]);
 
 	return (
-		<div className="ui-field input-root target-picker-root grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0">
-			<PickerGroup className="target-picker-section target-picker-section1">
+		<div
+			className="ui-field grid gap-3 grid-cols-1 xl:grid-cols-3 [&_.input-root:is(:only-child)]:mb-0 [&_.input-root:is(:last-child)]:mb-0"
+			data-testid="target-picker-root">
+			<PickerGroup data-testid="target-picker-section">
 				<EnumPicker modObject={null} config={npc} />
 				<EnumPicker modObject={null} config={ai} />
 				<EnumPicker modObject={null} config={level} />
@@ -59,12 +61,14 @@ export const TargetPicker = ({ encounter, targetIndex }: TargetPickerProps) => {
 				<EnumPicker modObject={null} config={tankIndex} />
 				<TargetInputsPicker encounter={encounter} targetIndex={targetIndex} />
 			</PickerGroup>
-			<PickerGroup className="target-picker-section target-picker-section2">
+			<PickerGroup data-testid="target-picker-section">
 				{stats.map(config => (
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}
 			</PickerGroup>
-			<PickerGroup className="target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden">
+			<PickerGroup
+				data-testid="target-picker-section"
+				className="in-data-[hide-threat]:block in-data-[hide-threat]:invisible in-data-[hide-threat]:max-xl:hidden in-data-[hide-threat]:[&_.input-root]:hidden">
 				{numbers.map(config => (
 					<NumberPicker key={config.id} modObject={null} config={config} />
 				))}

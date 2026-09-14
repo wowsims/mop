@@ -30,7 +30,7 @@ vi.mock('@ui-kit/IconPicker', () => ({
 }));
 vi.mock('../InputPicker', () => ({
 	InputPicker: ({ config }: { config: { id: string; inline?: boolean } }) => (
-		<div className="input-picker-stub" data-id={config.id} data-inline={String(!!config.inline)} />
+		<div data-testid="input-picker-stub" data-id={config.id} data-inline={String(!!config.inline)} />
 	),
 }));
 
@@ -55,9 +55,9 @@ describe('CustomSection', () => {
 		source.subscribed = 0;
 	});
 
-	it('is a content block named by className, and carries custom-section', () => {
+	it('is a content block named by className', () => {
 		expect([...mount({ className: 'totems-settings' }).classList].sort()).toEqual(
-			['content-block', 'ui-content-block', 'custom-section', 'flex', 'flex-col', 'totems-settings'].sort(),
+			['content-block', 'ui-content-block', 'flex', 'flex-col', 'totems-settings'].sort(),
 		);
 	});
 
@@ -78,7 +78,7 @@ describe('CustomSection', () => {
 		const body = block.querySelector('[data-testid="content-block-body"]')!;
 		expect(body.querySelector('.picker-group.totem-dropdowns-container.icon-group')).not.toBeNull();
 		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-inline')).toBe('true');
-		expect(body.querySelector('.input-picker-stub')!.getAttribute('data-inline')).toBe('true');
+		expect(body.querySelector('[data-testid="input-picker-stub"]')!.getAttribute('data-inline')).toBe('true');
 	});
 
 	it('does not subscribe at all when the section declares no `when`', () => {

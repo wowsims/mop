@@ -35,7 +35,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 				))}
 			</PickerGroup>
 			{showExecuteProportion && (
-				<PickerGroup className="execute-group w-full flex-col flex-nowrap">
+				<PickerGroup className="w-full flex-col flex-nowrap">
 					{execute.map(config => (
 						<NumberPicker key={config.id} modObject={encounter} config={config} />
 					))}
@@ -45,7 +45,7 @@ export const EncounterPicker = ({ showExecuteProportion }: EncounterPickerProps)
 			{player.canEnableTargetDummies() && <NumberPicker modObject={host.sim.raid} config={allies} />}
 			{player.getPlayerSpec().isTankSpec && <NumberPicker modObject={encounter} config={minBaseDamage} />}
 			<TargetInputsPicker encounter={encounter} targetIndex={0} />
-			<Button className="advanced-button min-w-[calc(50%-0.5rem)] max-xxl:w-full" onClick={() => setAdvancedOpen(true)}>
+			<Button className="min-w-[calc(50%-0.5rem)] max-xxl:w-full" data-testid="advanced-button" onClick={() => setAdvancedOpen(true)}>
 				{i18n.t('settings_tab.encounter.advanced')}
 			</Button>
 			<AdvancedEncounterModal open={advancedOpen} onOpenChange={setAdvancedOpen} />

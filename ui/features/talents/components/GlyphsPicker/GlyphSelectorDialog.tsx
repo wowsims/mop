@@ -21,7 +21,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 	const activeId = entries.some(entry => entry.id === selectedId) ? selectedId : emptyGlyphData.id;
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange} className="glyph-modal" title={i18n.t('talents_tab.glyphs.modal.title')}>
+		<Dialog open={open} onOpenChange={onOpenChange} testId="glyph-modal" title={i18n.t('talents_tab.glyphs.modal.title')}>
 			<SearchBar className="selector-modal-search max-w-48" placeholder={i18n.t('common.search')} value={search} onChange={setSearch} />
 			<ul className="selector-modal-list">
 				{entries.map(entry => (
@@ -46,7 +46,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 								className={clsx('selector-modal-list-item-name ui-selector-modal-list-item-name flex-2', itemQualityClassName(entry.quality))}>
 								{entry.name}
 							</span>
-							<span className="selector-modal-list-item-description ml-4 tracking-normal text-quality-junk flex-3">{entry.description}</span>
+							<span className="ml-4 tracking-normal text-quality-junk flex-3">{entry.description}</span>
 						</a>
 					</li>
 				))}

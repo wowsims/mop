@@ -15,7 +15,7 @@ export const CooldownsPicker = () => {
 	const available = useAvailableCooldowns();
 
 	return (
-		<div className="cooldowns-picker-root flex flex-col">
+		<div className="flex flex-col">
 			{Array.from({ length: cooldowns.length + 1 }, (_, index) => (
 				<CooldownRow
 					key={index}

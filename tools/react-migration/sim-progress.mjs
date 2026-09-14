@@ -42,7 +42,7 @@
 // one on the spec's defaults.
 import { readFileSync } from 'node:fs';
 
-import { launch, PORTS, SERIALIZE } from './browser.mjs';
+import { launch, PORTS, q, SERIALIZE } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.react);
@@ -364,7 +364,7 @@ try {
 	check('no warning is active on the default character', before.hidden !== false && before.itemDisplay !== 'block', JSON.stringify(before));
 
 	await page.click('.sim-tabs .talents-tab, .sim-tabs li.talents-tab .nav-link');
-	await page.waitForSelector('.talent-picker-icon', { state: 'visible', timeout: 10000 });
+	await page.waitForSelector(q('talent-picker-icon'), { state: 'visible', timeout: 10000 });
 	await page.waitForTimeout(500);
 	// Right-click clears the talent in its row, which is what `hasRequiredTalents` reads; left-click on
 	// the same anchor puts it back, so the round trip is two clicks and the build is unchanged.
@@ -372,9 +372,12 @@ try {
 	// Held by index, not by `[data-selected="true"]`: the right click is what makes that attribute
 	// false, so a lazily re-resolved selector would put the point back in a *different* row and leave
 	// the warning up.
-	const at = await page.evaluate(() => [...document.querySelectorAll('a.talent-picker-root')].findIndex(anchor => anchor.dataset.selected === 'true'));
+	const at = await page.evaluate(() => {
+		const q = name => `:is([data-testid="${name}"], .${name})`;
+		return [...document.querySelectorAll(`a${q('talent-picker-root')}`)].findIndex(anchor => anchor.dataset.selected === 'true');
+	});
 	check('the spec has a selected talent to clear', at >= 0, `index ${at}`);
-	const talent = page.locator('a.talent-picker-root').nth(Math.max(at, 0));
+	const talent = page.locator(`a${q('talent-picker-root')}`).nth(Math.max(at, 0));
 	await talent.click({ button: 'right' });
 	await page.waitForTimeout(600);
 	const raised = await page.evaluate(WARNINGS);

@@ -44,12 +44,12 @@ const mount = (initial: Partial<Glyphs> = {}) => {
 };
 
 const slots = (kind: 'major' | 'minor') =>
-	Array.from(document.querySelectorAll<HTMLElement>(`.${kind}-glyphs [data-testid="content-block-body"] .glyph-picker-root`));
-const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('.glyph-link')!;
+	Array.from(document.querySelectorAll<HTMLElement>(`.${kind}-glyphs [data-testid="content-block-body"] [data-testid="glyph-picker-root"]`));
+const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('[data-testid="glyph-link"]')!;
 const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('.selector-modal-list .selector-modal-list-item'));
 const searchBox = () => document.querySelector<HTMLInputElement>('.selector-modal-search')!;
 const dialogOpen = () => {
-	const modal = document.querySelector('.glyph-modal');
+	const modal = document.querySelector('[data-testid="glyph-modal"]');
 	return modal !== null && !modal.hasAttribute('hidden');
 };
 
@@ -80,8 +80,8 @@ describe('GlyphsPicker', () => {
 		await waitFor(() => expect(slots('major')).toHaveLength(3));
 
 		const slot = slots('major')[0];
-		expect(['input-root', 'glyph-picker-root', 'input-inline', 'item-picker-root'].every(name => slot.classList.contains(name))).toBe(true);
-		expect(slot.querySelector('.glyph-link > img.item-picker-icon')).not.toBeNull();
+		expect(['input-root', 'input-inline', 'item-picker-root'].every(name => slot.classList.contains(name))).toBe(true);
+		expect(slot.querySelector('[data-testid="glyph-link"] > img.item-picker-icon')).not.toBeNull();
 		expect(slot.querySelector('.item-picker-labels-container > .item-picker-name-container')).not.toBeNull();
 	});
 

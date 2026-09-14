@@ -240,7 +240,7 @@ const INSTALL = () => {
 		// writes an inline `gridTemplateColumns`. An inline style is invisible to `SERIALIZE`, which
 		// only reads the class attribute, so nothing else would notice it going missing.
 		playerIcons: () => {
-			const group = pane().querySelector('.player-icon-group');
+			const group = pane().querySelector(':is([data-testid="player-icon-group"], .player-icon-group)');
 			if (!group) return { present: false };
 			return {
 				present: true,

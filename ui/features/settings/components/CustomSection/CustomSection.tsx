@@ -25,7 +25,7 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 	if (!visible) return null;
 
 	return (
-		<ContentBlock className={[section.className || section.id, 'custom-section']} config={{ header: { title: section.title, tooltip: section.tooltip } }}>
+		<ContentBlock className={[section.className || section.id]} config={{ header: { title: section.title, tooltip: section.tooltip } }}>
 			{!!section.iconInputs?.length && (
 				<PickerGroup className={[section.iconGroupClassName, 'icon-group']}>
 					{section.iconInputs.map((config, index) => {

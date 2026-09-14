@@ -5,7 +5,7 @@
 // compare is a modal that does not exist until clicked — and the button is React's now while the
 // modal behind it is still a vanilla `BaseModal`, so the wiring between them is exactly the new
 // seam. The whole output should be identical on both builds.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/protection';
 const PORT = Number(process.env.PORT ?? PORTS.base);
@@ -26,6 +26,7 @@ const BLOCK = () => {
 // Read through `simModalProbe` so this survives the Base UI `Dialog` swap: the caller's own class is
 // the only thing both shapes put in the same place, and everything else about "is it open" moves.
 const MODAL = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const dialog = window.simModalProbe.find('advanced-encounter-picker-modal');
 	if (!dialog) return { present: false };
 	return {
@@ -34,7 +35,7 @@ const MODAL = () => {
 		backdrop: window.simModalProbe.backdrop(),
 		bodyLocked: window.simModalProbe.bodyLocked(),
 		targets: dialog.querySelectorAll('.targets-picker .list-picker-item').length,
-		headerGroups: dialog.querySelectorAll('.encounter-header .picker-group').length,
+		headerGroups: dialog.querySelectorAll(`${q('encounter-header')} .picker-group`).length,
 	};
 };
 
@@ -59,10 +60,10 @@ for (const [key, value] of Object.entries(await page.evaluate(BLOCK))) {
 }
 
 // One duplicate modal would be invisible everywhere else: `parity.mjs` compares modals as a set.
-const modalCount = await page.locator('.advanced-encounter-picker-modal').count();
+const modalCount = await page.locator(q('advanced-encounter-picker-modal')).count();
 console.log(`\nmodal\n  instances    ${modalCount}`);
 console.log(`  before click ${JSON.stringify(await page.evaluate(MODAL))}`);
-await page.click('.encounter-picker-root .advanced-button');
+await page.click(`.encounter-picker-root ${q('advanced-button')}`);
 await page.waitForTimeout(800);
 console.log(`  after click  ${JSON.stringify(await page.evaluate(MODAL))}`);
 await page.keyboard.press('Escape');

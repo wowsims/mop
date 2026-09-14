@@ -14,7 +14,6 @@ export const availableCooldowns = (player: Player<any>): Array<ActionId> =>
 		.filter(actionId => !player.hiddenMCDs.includes(actionId.spellId !== 0 ? actionId.spellId : actionId.itemId));
 
 export const actionPickerConfig = (available: ReadonlyArray<ActionId>, index: number): IconEnumPickerConfig<Player<any>, ActionIdProto> => ({
-	extraClassNames: ['cooldown-action-picker'],
 	numColumns: 3,
 	values: ([{ color: '#grey', value: ActionIdProto.create() }] as Array<IconEnumValueConfig<Player<any>, ActionIdProto>>).concat(
 		available.map(cooldownAction => ({ actionId: cooldownAction, value: cooldownAction.toProto() })),
@@ -39,7 +38,7 @@ export const actionPickerConfig = (available: ReadonlyArray<ActionId>, index: nu
 
 export const timingsPickerConfig = (index: number, isAdd = false): NumberListPickerConfig<Player<any>> => ({
 	id: `cooldown-timings-${index}`,
-	extraClassNames: ['cooldown-timings-picker', 'mb-0', 'ml-auto', 'min-w-2/5', 'w-2/5', ...(isAdd ? ['invisible'] : [])],
+	extraClassNames: ['mb-0', 'ml-auto', 'min-w-2/5', 'w-2/5', ...(isAdd ? ['invisible'] : [])],
 	placeholder: i18n.t('rotation_tab.cooldowns.timings_placeholder'),
 	storeField: 'rotation' as const,
 	getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[index]?.timings || [],

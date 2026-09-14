@@ -23,9 +23,10 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 	const wowheadProps = useWowheadDataset(resolveTooltip);
 
 	return (
-		<PickerShell config={config} className="glyph-picker-root mb-0 flex-row flex-1" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="mb-0 flex-row flex-1" testId="glyph-picker-root" hidden={hidden} disabled={disabled}>
 			<a
-				className="glyph-link flex gap-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+				className="flex gap-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+				data-testid="glyph-link"
 				role="button"
 				href={selected ? glyphUrl(selected) : undefined}
 				data-whtticon="false"

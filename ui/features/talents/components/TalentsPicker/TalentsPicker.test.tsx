@@ -29,7 +29,7 @@ const mount = () => {
 	);
 };
 
-const button = () => document.querySelector<HTMLButtonElement>('.talents-picker-actions button')!;
+const button = () => document.querySelector<HTMLButtonElement>('[data-testid="talents-picker-actions"] button')!;
 
 beforeEach(() => {
 	vi.useFakeTimers();
@@ -51,16 +51,13 @@ afterEach(() => {
 });
 
 describe('TalentsPicker copy button', () => {
-	// `gear-tab.mjs` selects on `.copy-button` and `_talents_picker.scss` sizes `button.copy-talents`.
-	it('keeps the class vocabulary the gates and the stylesheet select on', () => {
+	it('keeps the class vocabulary the gates select on', () => {
 		mount();
 
-		expect(button().className.split(' ').sort()).toEqual(
-			['ui-button', 'ui-button-outline-primary', 'ui-button-sm', 'copy-button', 'copy-talents', 'w-24'].sort(),
-		);
+		expect(button().className.split(' ').sort()).toEqual(['ui-button', 'ui-button-outline-primary', 'ui-button-sm', 'copy-button', 'w-24'].sort());
 		expect(button().getAttribute('type')).toBe('button');
 		// The closed `Tooltip` renders nothing, so the button stays the actions div's only child.
-		expect(document.querySelector('.talents-picker-actions')!.children).toHaveLength(1);
+		expect(document.querySelector('[data-testid="talents-picker-actions"]')!.children).toHaveLength(1);
 		expect(button().getAttribute('data-tooltip-id')).toBeTruthy();
 	});
 

@@ -14,7 +14,7 @@ import { trackEvent, type TrackEventProps } from '../../../../../tracking/analyt
 export const ALL_TARGET_STATS: Array<{ stat: Stat; tooltip: string; extraClassNames: Array<string> }> = [
 	{ stat: Stat.StatHealth, tooltip: '', extraClassNames: [] },
 	{ stat: Stat.StatArmor, tooltip: '', extraClassNames: [] },
-	{ stat: Stat.StatAttackPower, tooltip: '', extraClassNames: ['threat-metrics', 'in-data-[hide-threat]:hidden'] },
+	{ stat: Stat.StatAttackPower, tooltip: '', extraClassNames: ['in-data-[hide-threat]:hidden'] },
 ];
 
 const mobTypeEnumValues = [
@@ -62,7 +62,6 @@ export const npcConfig = ({ encounter, targetIndex, getTarget }: TargetFieldCont
 	const presetTargets = encounter.sim.db.getAllPresetTargets();
 	return {
 		id: targetId(targetIndex, 'npc'),
-		extraClassNames: ['npc-picker'],
 		label: i18n.t('settings_tab.encounter.npc.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.npc.tooltip'),
 		values: [{ name: i18n.t('common.custom'), value: -1 }].concat(presetTargets.map((preset, index) => ({ name: preset.path, value: index }))),
@@ -85,7 +84,6 @@ export const aiConfig = ({ encounter, targetIndex, getTarget }: TargetFieldConte
 	const byNpcId = distinct(presetTargets, (a, b) => a.target?.id === b.target?.id);
 	return {
 		id: targetId(targetIndex, 'ai'),
-		extraClassNames: ['ai-picker'],
 		label: i18n.t('settings_tab.encounter.ai.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.ai.tooltip'),
 		values: [{ name: i18n.t('common.none'), value: 0 }].concat(byNpcId.map(preset => ({ name: preset.path, value: preset.target!.id }))),
@@ -134,7 +132,7 @@ export const mobTypeConfig = ({ encounter, targetIndex, getTarget }: TargetField
 
 export const tankIndexConfig = ({ encounter, targetIndex, getTarget }: TargetFieldContext): EnumPickerConfig<null> => ({
 	id: targetId(targetIndex, 'tanked-by'),
-	extraClassNames: ['threat-metrics', 'in-data-[hide-threat]:hidden'],
+	extraClassNames: ['in-data-[hide-threat]:hidden'],
 	label: i18n.t('settings_tab.encounter.tanked_by.label'),
 	labelTooltip: i18n.t('settings_tab.encounter.tanked_by.tooltip'),
 	values: [
@@ -336,7 +334,7 @@ export const targetInputConfig = (encounter: Encounter, targetIndex: number, inp
 			kind: 'boolean' as const,
 			config: {
 				...shared,
-				extraClassNames: ['input-inline'],
+				inline: true,
 				getValue: () => getTargetInput().boolValue,
 				setValue: write<boolean>((draft, value) => {
 					draft.boolValue = value;

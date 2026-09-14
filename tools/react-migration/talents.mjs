@@ -8,11 +8,11 @@
 // The oracle is the autosaved settings blob rather than the rendered counters: a talents string is
 // what actually has to survive, and reading it the same way on both stacks keeps the check honest
 // even if the markup around it changes.
-import { ENVIRONMENTAL, launch, PORTS } from './browser.mjs';
+import { ENVIRONMENTAL, launch, PORTS, q } from './browser.mjs';
 
 const SPEC = process.argv[2] ?? 'warrior/arms';
 const PORT = Number(process.env.PORT ?? PORTS.base);
-const TALENT = '.talent-picker-icon';
+const TALENT = q('talent-picker-icon');
 
 const readTalents = () => {
 	for (const key of Object.keys(localStorage)) {
@@ -30,13 +30,14 @@ const readTalents = () => {
 // Scoped to the pane: SavedDataManager and PresetConfigurationPicker have consumers in four tabs,
 // so a page-wide count says nothing about this one.
 const structure = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const pane = document.getElementById('talents-tab');
 	const count = selector => pane.querySelectorAll(selector).length;
 	return {
-		trees: count('.talent-tree-main'),
-		talents: count('.talent-picker-icon'),
-		resetButtons: count('.talent-tree-reset'),
-		glyphSlots: count('.glyph-picker-root a, .glyph-anchor'),
+		trees: count(q('talent-tree-main')),
+		talents: count(q('talent-picker-icon')),
+		resetButtons: count(q('talent-tree-reset')),
+		glyphSlots: count(`${q('glyph-picker-root')} a, .glyph-anchor`),
 		savedDataManagers: count('.saved-data-manager-root'),
 		presetPickers: count('.preset-configuration-picker-root'),
 		leftPanelChildren: pane.querySelector('.talents-tab-left')?.children.length ?? 'NO LEFT PANEL',
@@ -87,7 +88,7 @@ await step('click first talent', () => icons.first().click());
 await step('click it again', () => icons.first().click());
 await step('right-click it', () => icons.first().click({ button: 'right' }));
 await step('right-click again', () => icons.first().click({ button: 'right' }));
-await step('reset the tree', () => page.locator('.talent-tree-reset').first().click());
+await step('reset the tree', () => page.locator(q('talent-tree-reset')).first().click());
 
 if (errors.length) {
 	for (const e of errors) console.log(`  ERROR ${e}`);

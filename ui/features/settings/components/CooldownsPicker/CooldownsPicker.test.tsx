@@ -66,9 +66,9 @@ const mount = (block = document.createElement('div')) => {
 	return block;
 };
 
-const rows = () => Array.from(document.querySelectorAll('.cooldown-picker'));
+const rows = () => Array.from(document.querySelectorAll('[data-testid="cooldown-picker"]'));
 const labels = () => rows().map(row => row.querySelector('.cooldown-picker-label')!.textContent);
-const deleteButton = (index: number) => rows()[index].querySelector('.delete-cooldown') as HTMLButtonElement;
+const deleteButton = (index: number) => rows()[index].querySelector('[data-testid="delete-cooldown"]') as HTMLButtonElement;
 const timingsInput = (index: number) => rows()[index].querySelector('.number-list-picker-input') as HTMLInputElement;
 
 beforeEach(() => {
@@ -152,7 +152,7 @@ describe('CooldownsPicker', () => {
 		setup([cooldownFor(1)]);
 		mount();
 
-		expect(Array.from(deleteButton(0).classList).sort()).toEqual(['delete-cooldown', 'link-danger', 'text-link-danger']);
+		expect(Array.from(deleteButton(0).classList).sort()).toEqual(['link-danger', 'text-link-danger']);
 		expect(Array.from(deleteButton(0).querySelector('i')!.classList).sort()).toEqual(['fa', 'fa-times', 'fa-xl']);
 	});
 

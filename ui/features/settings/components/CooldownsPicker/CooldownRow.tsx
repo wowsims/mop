@@ -30,15 +30,14 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 	const { name } = useActionId(actionId);
 
 	return (
-		<div
-			className={clsx('cooldown-picker flex items-center justify-between mb-3 [&>*:not(:last-child)]:mr-2', isAdd && 'add-cooldown-picker')}
-			data-add={isAdd ? '' : undefined}>
+		<div className="flex items-center justify-between mb-3 [&>*:not(:last-child)]:mr-2" data-testid="cooldown-picker" data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
 			<FieldLabel className="cooldown-picker-label min-w-[30%] overflow-hidden text-ellipsis">{name}</FieldLabel>
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
 				variant="unstyled"
-				className={clsx('delete-cooldown link-danger text-link-danger', isAdd && 'invisible')}
+				className={clsx('link-danger text-link-danger', isAdd && 'invisible')}
+				data-testid="delete-cooldown"
 				onClick={() => deleteCooldown(player, index)}
 				{...tooltipAnchorProps(deleteTooltipId)}>
 				<Icon name="times" style="base" size="xl" />

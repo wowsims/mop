@@ -62,7 +62,7 @@ class FakeEncounter {
 const mount = (encounter: FakeEncounter) => render(<TargetsPicker encounter={encounter as unknown as Encounter} />);
 
 const root = () => document.querySelector('.list-picker-root') as HTMLElement;
-const targetRoots = () => [...document.querySelectorAll<HTMLElement>('.target-picker-root')];
+const targetRoots = () => [...document.querySelectorAll<HTMLElement>('[data-testid="target-picker-root"]')];
 const containers = () => [...root().querySelectorAll<HTMLElement>('[data-testid="list-picker-item-container"]')];
 const actionsButton = (index: number) => containers()[index].querySelector('[data-testid="list-picker-item-actions"]') as HTMLButtonElement;
 const idsIn = (element: Element) => [...element.querySelectorAll('[id]')].map(node => node.id);
@@ -78,11 +78,9 @@ describe('TargetsPicker', () => {
 
 		expect(['input-root', 'list-picker-root', 'mb-0', 'targets-picker'].every(name => root().classList.contains(name))).toBe(true);
 		expect(targetRoots()).toHaveLength(1);
-		expect([...targetRoots()[0].querySelectorAll('.target-picker-section')].map(section => section.className)).toEqual([
-			'picker-group ui-picker-group target-picker-section target-picker-section1',
-			'picker-group ui-picker-group target-picker-section target-picker-section2',
-			'picker-group ui-picker-group target-picker-section target-picker-section3 threat-metrics in-[.hide-threat-metrics]:block in-[.hide-threat-metrics]:invisible in-[.hide-threat-metrics]:max-xl:hidden in-[.hide-threat-metrics]:[&_.input-root]:hidden',
-		]);
+		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];
+		expect(sections).toHaveLength(3);
+		expect(sections[2].className).toContain('in-data-[hide-threat]:block');
 	});
 
 	it('renders one target row per target and adds another through the create button', () => {
@@ -159,7 +157,7 @@ describe('TargetsPicker', () => {
 	// this picker's value, and all the sim resolves an AI from.
 	describe('AI options', () => {
 		const preset = (path: string, id: number) => PresetTarget.create({ path, target: TargetProto.create({ id }) });
-		const aiOptions = () => [...document.querySelectorAll<HTMLOptionElement>('.ai-picker option')].map(option => option.value);
+		const aiOptions = () => [...document.querySelectorAll<HTMLOptionElement>('#target-0-picker-ai option')].map(option => option.value);
 
 		it('offers one option per npc id, however many presets share it', () => {
 			mount(
@@ -175,7 +173,10 @@ describe('TargetsPicker', () => {
 		it('keeps the preset the sim resolves the id to, which is the first one registered', () => {
 			mount(new FakeEncounter([defaultTarget()], [preset('first', 71466), preset('second', 71466)]));
 
-			expect([...document.querySelectorAll<HTMLOptionElement>('.ai-picker option')].map(option => option.textContent)).toEqual(['common.none', 'first']);
+			expect([...document.querySelectorAll<HTMLOptionElement>('#target-0-picker-ai option')].map(option => option.textContent)).toEqual([
+				'common.none',
+				'first',
+			]);
 		});
 	});
 
@@ -193,7 +194,7 @@ describe('TargetsPicker', () => {
 
 		it('renders one picker per input, dispatched on its declared type', () => {
 			mount(withInputs());
-			const inputRoots = [...document.querySelectorAll('.target-input-picker-root')];
+			const inputRoots = [...document.querySelectorAll('[data-testid="target-input-picker-root"]')];
 
 			expect(inputRoots).toHaveLength(3);
 			expect(
@@ -205,7 +206,7 @@ describe('TargetsPicker', () => {
 
 		it('shows each input its own value', () => {
 			mount(withInputs());
-			const inputRoots = [...document.querySelectorAll('.target-input-picker-root')];
+			const inputRoots = [...document.querySelectorAll('[data-testid="target-input-picker-root"]')];
 
 			// `float: true`, so the number box shows two decimals.
 			expect(inputRoots[0].querySelector('input')!.value).toBe('3.00');
@@ -225,7 +226,7 @@ describe('TargetsPicker', () => {
 		it('writes a number input back to its own index', () => {
 			const encounter = withInputs();
 			mount(encounter);
-			const numberInput = document.querySelectorAll('.target-input-picker-root')[0].querySelector('input')!;
+			const numberInput = document.querySelectorAll('[data-testid="target-input-picker-root"]')[0].querySelector('input')!;
 
 			act(() => void fireEvent.change(numberInput, { target: { value: '7' } }));
 
