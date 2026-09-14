@@ -35,7 +35,7 @@ const makeHost = () =>
 	}) as unknown as IndividualSimHost<Spec.SpecFireMage>;
 
 const renderFeature = () => render(<CombustionThresholds host={makeHost()} />);
-const actionButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('button.mage-calculate-combustion-threshold-group')!;
+const actionButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="mage-calculate-combustion-threshold-group"]')!;
 
 beforeEach(() => {
 	rootElem.replaceChildren();
@@ -51,7 +51,7 @@ describe('CombustionThresholds', () => {
 		const button = within(container).getByRole<HTMLButtonElement>('button');
 
 		expect(button).toBe(actionButton(container));
-		expect(button.classList.contains('mage-calculate-combustion-threshold-group')).toBe(true);
+		expect(button.getAttribute('data-testid')).toBe('mage-calculate-combustion-threshold-group');
 		expect(button.hasAttribute('data-sidebar-action')).toBe(true);
 		expect(button.classList.contains('w-full')).toBe(true);
 		expect(button.disabled).toBe(false);
@@ -76,14 +76,14 @@ describe('CombustionThresholds', () => {
 		});
 
 		expect(actionButton(container).disabled).toBe(true);
-		expect(rootElem.querySelector('.combustion-thresholds-progress-tracker')).not.toBeNull();
+		expect(rootElem.querySelector('[data-testid="combustion-thresholds-progress-tracker"]')).not.toBeNull();
 
 		await act(async () => {
 			releases.forEach(release => release([{}, { logs: LOGS }]));
 		});
 
 		await waitFor(() => expect(actionButton(container).disabled).toBe(false));
-		expect(rootElem.querySelector('.combustion-thresholds-progress-tracker')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="combustion-thresholds-progress-tracker"]')).toBeNull();
 	});
 
 	it('opens the results dialog with the thresholds it computed, and applies them on update', async () => {
@@ -93,7 +93,7 @@ describe('CombustionThresholds', () => {
 		});
 
 		const dialog = await waitFor(() => {
-			const found = rootElem.querySelector('.combustion-thresholds-modal');
+			const found = rootElem.querySelector('[data-testid="combustion-thresholds-modal"]');
 			expect(found).not.toBeNull();
 			return found!;
 		});
@@ -101,8 +101,8 @@ describe('CombustionThresholds', () => {
 		// combustPostAlter is the one threshold taken from .max.
 		const rows = [...dialog.querySelectorAll('tbody tr')];
 		expect(rows).toHaveLength(5);
-		expect(rows[2].querySelector('.positive')?.textContent).toBe(String(ESTIMATE));
-		expect(rows[2].querySelector('.negative')?.textContent).toBe('3');
+		expect(rows[2].querySelector('[data-testid="combustion-thresholds-new"]')?.textContent).toBe(String(ESTIMATE));
+		expect(rows[2].querySelector('[data-testid="combustion-thresholds-current"]')?.textContent).toBe('3');
 
 		const update = [...dialog.querySelectorAll('button')].find(button => button.textContent?.includes('update'))!;
 		await act(async () => {
@@ -111,7 +111,7 @@ describe('CombustionThresholds', () => {
 
 		expect(setSimpleRotation).toHaveBeenCalledWith(expect.objectContaining({ combustPostAlter: ESTIMATE }));
 		expect(toast).toHaveBeenCalled();
-		await waitFor(() => expect(rootElem.querySelector('.combustion-thresholds-modal')).toBeNull());
+		await waitFor(() => expect(rootElem.querySelector('[data-testid="combustion-thresholds-modal"]')).toBeNull());
 	});
 
 	it('unwinds cleanly when the run is cancelled, opening no results dialog', async () => {
@@ -128,8 +128,8 @@ describe('CombustionThresholds', () => {
 		});
 
 		await waitFor(() => expect(actionButton(container).disabled).toBe(false));
-		expect(rootElem.querySelector('.combustion-thresholds-progress-tracker')).toBeNull();
-		expect(rootElem.querySelector('.combustion-thresholds-modal')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="combustion-thresholds-progress-tracker"]')).toBeNull();
+		expect(rootElem.querySelector('[data-testid="combustion-thresholds-modal"]')).toBeNull();
 	});
 
 	it('runs one gear sim per batch', async () => {
@@ -138,7 +138,7 @@ describe('CombustionThresholds', () => {
 			fireEvent.click(actionButton(container));
 		});
 
-		await waitFor(() => expect(rootElem.querySelector('.combustion-thresholds-modal')).not.toBeNull());
+		await waitFor(() => expect(rootElem.querySelector('[data-testid="combustion-thresholds-modal"]')).not.toBeNull());
 		expect(runGearSim).toHaveBeenCalledTimes(10);
 	});
 });

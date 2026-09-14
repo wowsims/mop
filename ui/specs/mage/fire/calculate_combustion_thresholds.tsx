@@ -340,14 +340,14 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 
 	return (
 		<>
-			<SidebarActionButton className="mage-calculate-combustion-threshold-group" onClick={() => void onCalculate()} disabled={isRunning}>
+			<SidebarActionButton testId="mage-calculate-combustion-threshold-group" onClick={() => void onCalculate()} disabled={isRunning}>
 				{i18n.t('fire_mage.combustion_thresholds.button')}
 			</SidebarActionButton>
 			{isRunning && (
 				<ProgressTrackerDialog
 					open
 					container={host.rootElem}
-					className="combustion-thresholds-progress-tracker"
+					testId="combustion-thresholds-progress-tracker"
 					title={i18n.t('fire_mage.combustion_thresholds.progress_title')}
 					state={progress}
 					hasProgressBar
@@ -366,7 +366,7 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 					open={resultsOpen}
 					onOpenChange={setResultsOpen}
 					container={host.rootElem}
-					className="combustion-thresholds-modal"
+					testId="combustion-thresholds-modal"
 					size="md"
 					title={i18n.t('fire_mage.combustion_thresholds.modal_title')}
 					preventClose>
@@ -393,11 +393,13 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 										return (
 											<tr key={key}>
 												<th className="py-2 px-4 text-right text-xs border-b-2 border-border">{i18n.t(CATEGORY_LABELS[typedKey])}</th>
-												<td className="negative py-2 px-4 text-right text-xs text-danger">
+												<td className="py-2 px-4 text-right text-xs text-danger" data-testid="combustion-thresholds-current">
 													{Math.round(results.currentValues[typedKey])}
 												</td>
 												<td className="py-2 px-4 text-right text-xs">→</td>
-												<td className="positive py-2 px-4 text-right text-xs text-success">{Math.round(value)}</td>
+												<td className="py-2 px-4 text-right text-xs text-success" data-testid="combustion-thresholds-new">
+													{Math.round(value)}
+												</td>
 											</tr>
 										);
 									})}
