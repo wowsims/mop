@@ -24,7 +24,7 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill.
 
 	return (
-		<div className="dropdown flex static" data-testid="sim-dropdown-menu">
+		<div className="flex static" data-testid="sim-dropdown-menu">
 			<Menu
 				surface="menu"
 				open={open}
