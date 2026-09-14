@@ -1,7 +1,9 @@
 import 'react-tooltip/dist/react-tooltip.css';
 
+import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { type ITooltip, Tooltip as ReactTooltip, type TooltipRefProps } from 'react-tooltip';
 
 export type TooltipPlace = 'top' | 'right' | 'bottom' | 'left';
@@ -43,7 +45,8 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 		ref,
 	) => {
 		const maxWidthClassName = maxWidth === 'default' ? DEFAULT_MAX_WIDTH : maxWidth === 'none' ? 'max-w-none' : maxWidth;
-		return (
+		const portalContainer = usePortalContainer();
+		const tooltip = (
 			<ReactTooltip
 				ref={ref}
 				id={id}
@@ -61,7 +64,7 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				className={clsx(
 					'sim-tooltip',
 					'ui-tooltip',
-					'rounded-none bg-overlay text-white text-sm',
+					'rounded-none bg-overlay text-sm text-white',
 					maxWidthClassName,
 					width,
 					align === 'start' && 'text-left',
@@ -74,6 +77,7 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				{content}
 			</ReactTooltip>
 		);
+		return portalContainer ? createPortal(tooltip, portalContainer) : tooltip;
 	},
 );
 Tooltip.displayName = 'Tooltip';

@@ -4,6 +4,7 @@ import type { Spec } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { SpecDefinition } from '@sim/spec_config';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { trackPageView } from '../tracking/analytics';
@@ -23,6 +24,7 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 	const domRef = useRef<ShellDom | null>(null);
 	const constructed = useRef(false);
 	const [simUI, setSimUI] = useState<SimHostObject<SpecType> | null>(null);
+	const [rootEl, setRootEl] = useState<HTMLElement | null>(null);
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const [epWeightsOpen, setEpWeightsOpen] = useState(false);
 	const openEpWeights = useCallback(() => setEpWeightsOpen(true), []);
@@ -31,31 +33,34 @@ export const SimApp = <SpecType extends Spec>({ player, def }: SimAppProps<SpecT
 		if (constructed.current || !domRef.current) return;
 		constructed.current = true;
 		setSimUI(new SimHostObject(domRef.current, player, def));
+		setRootEl(domRef.current.root);
 	}, [player, def]);
 
 	return (
-		<SimHostProvider host={simUI}>
-			<OpenEpWeightsContext value={openEpWeights}>
-				<SimShell
-					domRef={domRef}
-					host={simUI}
-					sim={player.sim}
-					className={def.className}
-					spec={player.getPlayerSpec()}
-					knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
-					onOpenSettings={() => {
-						trackPageView('Options', '/settings-menu');
-						setSettingsOpen(true);
-					}}
-				/>
-				{simUI && (
-					<>
-						<CrashReportDialog opener={simUI.crashReport} />
-						<EpWeightsDialog open={epWeightsOpen} onOpenChange={setEpWeightsOpen} settings={simUI.statWeightActionSettings} />
-						<SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} host={simUI} />
-					</>
-				)}
-			</OpenEpWeightsContext>
-		</SimHostProvider>
+		<PortalContainerContext value={rootEl}>
+			<SimHostProvider host={simUI}>
+				<OpenEpWeightsContext value={openEpWeights}>
+					<SimShell
+						domRef={domRef}
+						host={simUI}
+						sim={player.sim}
+						className={def.className}
+						spec={player.getPlayerSpec()}
+						knownIssues={knownIssuesFor(player.getPlayerSpec().launch, def.knownIssues)}
+						onOpenSettings={() => {
+							trackPageView('Options', '/settings-menu');
+							setSettingsOpen(true);
+						}}
+					/>
+					{simUI && (
+						<>
+							<CrashReportDialog opener={simUI.crashReport} />
+							<EpWeightsDialog open={epWeightsOpen} onOpenChange={setEpWeightsOpen} settings={simUI.statWeightActionSettings} />
+							<SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} host={simUI} />
+						</>
+					)}
+				</OpenEpWeightsContext>
+			</SimHostProvider>
+		</PortalContainerContext>
 	);
 };
