@@ -183,7 +183,7 @@ consequences worth knowing:
 Two notes from building them:
 
 - Use Playwright, not the Chrome extension. The extension reports false "renderer frozen" on this
-  app (see `tools/browser-perf/README.md`).
+  app.
 - StrictMode only double-invokes under the dev server or vitest. `vite build --mode development`
   does not help — it still resolves React's production bundle.
 - Under a static server the Go host's `/version` endpoint 404s and GitHub rate-limits the release
