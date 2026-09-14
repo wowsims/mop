@@ -10,7 +10,8 @@ export interface ReplaySeekButtonProps {
 export const ReplaySeekButton = ({ delta, glyph, onSeekBy }: ReplaySeekButtonProps) => (
 	<button
 		type="button"
-		className="cr-ctrl-btn ui-combat-replay-ctrl-btn"
+		data-testid="cr-ctrl-btn"
+		className="ui-combat-replay-ctrl-btn"
 		title={delta < 0 ? i18n.t('combat_replay.seek_back', { time: -delta }) : i18n.t('combat_replay.seek_fwd', { time: delta })}
 		onClick={() => onSeekBy(delta)}>
 		{glyph}
