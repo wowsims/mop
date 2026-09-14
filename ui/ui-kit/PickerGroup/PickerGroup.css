@@ -5,6 +5,6 @@
 }
 
 .ui-picker-group-icons {
-	@apply flex flex-wrap gap-1;
+	@apply grid grid-cols-2 1080p:grid-cols-3 gap-1;
 }
 }

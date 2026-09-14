@@ -99,7 +99,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 				</Menu.Root>
 			</div>
 			{config.label && (
-				<span className="ui-field-label mb-0" data-testid="multi-icon-picker-label" id={labelId}>
+				<span className="ui-field-label mb-0" data-testid="multi-icon-picker-label" id={labelId} title={config.label}>
 					{config.label}
 				</span>
 			)}
