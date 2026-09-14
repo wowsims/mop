@@ -288,7 +288,7 @@ describe('SavedEpWeights', () => {
 			presets = [{ name: 'Default', epWeights: weights(3) }];
 			await renderManager();
 
-			expect(document.querySelector('.saved-data-presets')).toBeTruthy();
+			expect(document.querySelector('[data-testid="saved-data-presets"]')).toBeTruthy();
 			expect(document.querySelector('[data-testid="saved-data-custom"]')).toBeNull();
 		});
 

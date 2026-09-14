@@ -74,7 +74,7 @@ const inspect = selector => {
 	// The three-paragraph note that swaps with the hard-cap table.
 	const note = [...box.querySelectorAll('div')].find(div => div.children.length === 3 && [...div.children].every(child => child.tagName === 'P'));
 
-	const saved = box.querySelector('.saved-data-manager-root');
+	const saved = box.querySelector(':is([data-saved-data-manager], .saved-data-manager-root)');
 	return {
 		open: true,
 		controls,
@@ -82,7 +82,7 @@ const inspect = selector => {
 		note: note ? { hidden: hidden(note) } : null,
 		ep: saved
 			? {
-					presets: saved.querySelectorAll('.saved-data-presets > *').length,
+					presets: saved.querySelectorAll(':is([data-testid="saved-data-presets"], .saved-data-presets) > *').length,
 					custom: saved.querySelectorAll(':is([data-testid="saved-data-custom"], .saved-data-custom) > *').length,
 					customHidden: hidden(saved.querySelector(':is([data-testid="saved-data-custom"], .saved-data-custom)')),
 					// `presetsOnly` is "load only", so this row is the whole difference at the DOM level.

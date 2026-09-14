@@ -38,10 +38,10 @@ const structure = () => {
 		talents: count(q('talent-picker-icon')),
 		resetButtons: count(q('talent-tree-reset')),
 		glyphSlots: count(`${q('glyph-picker-root')} a, .glyph-anchor`),
-		savedDataManagers: count('.saved-data-manager-root'),
+		savedDataManagers: count(':is([data-saved-data-manager], .saved-data-manager-root)'),
 		presetPickers: count(q('preset-configuration-picker-root')),
-		leftPanelChildren: pane.querySelector('.talents-tab-left')?.children.length ?? 'NO LEFT PANEL',
-		rightPanelChildren: pane.querySelector('.talents-tab-right')?.children.length ?? 'NO RIGHT PANEL',
+		leftPanelChildren: pane.querySelector(q('tab-panel-left'))?.children.length ?? 'NO LEFT PANEL',
+		rightPanelChildren: pane.querySelector(q('tab-panel-right'))?.children.length ?? 'NO RIGHT PANEL',
 	};
 };
 
