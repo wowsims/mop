@@ -74,6 +74,10 @@
 	}
 }
 
+@utility leading-heading {
+	line-height: 1.2;
+}
+
 @utility interactive {
 	cursor: pointer;
 	user-select: none;

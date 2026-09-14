@@ -14,7 +14,6 @@
 // Bootstrap layout & components
 @import 'bootstrap/scss/root';
 @import 'bootstrap/scss/reboot';
-@import 'bootstrap/scss/type';
 
 // `nav`, `navbar`, `dropdown`, `badge` and `containers` are gone: A-U-landing converted the two
 // landing menus and the `.container`/`.container-fluid` call sites to utilities and `ui-*`
@@ -22,7 +21,11 @@
 // `SimShell`'s notices banner (the one element that carried it) is utilities now. `transitions` is
 // gone too: `DetailedResults.tsx` and `SelectorModal.tsx`, its only emitters, carry `transition-opacity`/
 // `fade-in-out` and `opacity-0` utilities that already computed the identical `.fade`/`.show` result;
-// `.collapse`/`.collapsing` had no emitters at all.
+// `.collapse`/`.collapsing` had no emitters at all. `type` is gone too: it supplied only the
+// `.h1`-`.h6`/`.small`/`.mark` class aliases (`@extend h1` etc, reachable through the heading/small/mark
+// TAG rules that `reboot` still owns); the tree's only class emitters were `CombinationsCount.tsx`'s
+// `.h4`, `QuickSwapList.tsx`'s `.h6` and `BulkResultRow.tsx`'s `.small`, all converted to utilities.
+// `.lead`/`.display-*`/`.list-unstyled`/`.list-inline*`/`.initialism`/`.blockquote*` had no emitters.
 
 // `bootstrap/scss/close` and `bootstrap/scss/modal` are both gone: no TSX, TS or HTML in the tree
 // emits `.btn-close`, `.btn-close-white` or any `.modal*` class (the `modal` strings in the tree are

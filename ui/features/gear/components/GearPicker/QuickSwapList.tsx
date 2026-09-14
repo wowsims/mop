@@ -57,7 +57,7 @@ const keyOf = (item: QuickSwapItem) => ('effectId' in item ? `enchant-${item.eff
 
 export const QuickSwapList = <T extends QuickSwapItem>({ title, emptyMessage, entries, onItemClick, footerButton }: QuickSwapListProps<T>) => (
 	<>
-		<h3 className="tooltip-quick-swap__title h6 text-center px-2 pt-2 pb-2 mb-0">{title}</h3>
+		<h3 className="tooltip-quick-swap__title text-(length:--h6-font-size) text-center px-2 pt-2 pb-2 mb-0">{title}</h3>
 		{entries.length ? (
 			<ul className="tooltip-quick-swap__list max-h-[206px] overflow-y-auto pl-0 list-none mb-0 gap-0.5">
 				{entries.map(entry => (

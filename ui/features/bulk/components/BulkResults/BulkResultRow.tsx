@@ -53,7 +53,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					<span className="topline-result-avg text-2xl mr-1">{formatToNumber(result.dpsMetrics.avg)}</span>
 					{plusMinusDps > 0 && (
 						<>
-							<span className="text-muted small" {...tooltipAnchorProps(marginTooltipId)}>
+							<span className="text-muted text-(length:--text-sm)" {...tooltipAnchorProps(marginTooltipId)}>
 								{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
 							</span>
 							<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
