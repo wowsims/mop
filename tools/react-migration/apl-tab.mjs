@@ -123,6 +123,26 @@ await page.addInitScript(() => {
 	new PerformanceObserver(list => {
 		for (const entry of list.getEntries()) window.__aplLongTasks.push(entry.duration);
 	}).observe({ entryTypes: ['longtask'] });
+
+	// A safe point to drop onto `row`: scans down its left gutter for the first point whose
+	// `elementFromPoint` nearest `[data-list-item]` ancestor is `row` itself and is not inside an
+	// interactive control — row heights and nested pickers vary too much to trust a fixed offset.
+	window.findDropPoint = row => {
+		row.scrollIntoView({ block: 'nearest' });
+		const rect = row.getBoundingClientRect();
+		for (const xFraction of [0.15, 0.5, 0.85]) {
+			const x = rect.x + rect.width * xFraction;
+			for (let yFraction = 0.1; yFraction <= 0.9; yFraction += 0.1) {
+				const y = rect.y + rect.height * yFraction;
+				const atPoint = document.elementFromPoint(x, y);
+				if (!atPoint) continue;
+				if (atPoint.closest('[data-list-item]') !== row) continue;
+				if (atPoint.closest('button, input, select, textarea, [role="combobox"], [role="button"]')) continue;
+				return { x, y };
+			}
+		}
+		return null;
+	};
 });
 
 try {
@@ -335,28 +355,37 @@ try {
 		return 'loaded';
 	});
 
+	// A safe drop point on item index `targetIndex`: scanned in the page, not guessed by a fixed
+	// offset — row heights and nested pickers vary, and a blind offset can land on a nested picker
+	// with a different itemLabel (silently rejected) or an interactive control (never reached).
+	const dropPointFor = targetIndex =>
+		page.evaluate(([sel, index]) => {
+			const items = [...document.querySelectorAll(sel)];
+			const row = items[index];
+			if (!row) return null;
+			return findDropPoint(row);
+		}, [ITEM, targetIndex]);
+
+	const boxOf = index =>
+		page.evaluate(([sel, i]) => {
+			const el = document.querySelectorAll(sel)[i];
+			if (!el) return null;
+			const rect = el.getBoundingClientRect();
+			return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+		}, [ITEM, index]);
+
 	await step('real mouse drag 0 -> 6 (freeze check)', async () => {
-		// Read rects straight off the DOM: a fresh mount of the APL pane (the preset click above
-		// switches rotation type and remounts it) can leave a Playwright locator's own visibility wait
-		// spinning past the fade-in, when the rects it would eventually see are already stable.
-		const rectsOf = selector =>
-			page.evaluate(sel => {
-				const rectOf = element => {
-					const rect = element.getBoundingClientRect();
-					return rect.width > 0 && rect.height > 0 ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null;
-				};
-				const items = [...document.querySelectorAll(sel)];
-				return { count: items.length, from: items[0] && rectOf(items[0]), to: items[6] && rectOf(items[6]) };
-			}, selector);
-		let rects = await rectsOf(ITEM);
-		for (let attempt = 0; attempt < 8 && (!rects.from || !rects.to); attempt++) {
+		// The drop point's own scan scrolls the target into view first, so read the source's box only
+		// after that settles — scrolling to center the 6th row can move the 0th row too.
+		let point = await dropPointFor(6);
+		for (let attempt = 0; attempt < 8 && !point; attempt++) {
 			await page.waitForTimeout(300);
-			rects = await rectsOf(ITEM);
+			point = await dropPointFor(6);
 		}
-		if (rects.count < 2) return 'NOT ENOUGH ITEMS';
-		const fromBox = rects.from;
-		const toBox = rects.to ?? rects.from;
-		if (!fromBox || !toBox) return `NO BOUNDING BOX (count=${rects.count})`;
+		if (!point) return 'NO SAFE DROP POINT ON TARGET ROW';
+		const fromBox = await boxOf(0);
+		if (!fromBox) return 'NO SOURCE ROW';
+		const before = await page.evaluate(readRotation);
 		await page.evaluate(() => {
 			window.__aplLongTasks = [];
 		});
@@ -365,8 +394,9 @@ try {
 		await page.waitForTimeout(150);
 		const steps = 40;
 		for (let index = 1; index <= steps; index++) {
-			const y = fromBox.y + 10 + ((toBox.y - fromBox.y) * index) / steps;
-			await page.mouse.move(fromBox.x + fromBox.width / 2, y, { steps: 1 });
+			const x = fromBox.x + fromBox.width / 2 + ((point.x - fromBox.x - fromBox.width / 2) * index) / steps;
+			const y = fromBox.y + 10 + ((point.y - fromBox.y - 10) * index) / steps;
+			await page.mouse.move(x, y, { steps: 1 });
 			await page.waitForTimeout(15);
 		}
 		await page.mouse.up();
@@ -380,9 +410,54 @@ try {
 			errors.push('FROZEN: page did not respond within 3s of a real drag drop');
 			return 'FROZEN: page did not respond within 3s of drop';
 		}
+		await page.waitForTimeout(300);
+		const after = await page.evaluate(readRotation);
+		if (before?.head === after?.head) errors.push('drag 0 -> 6 landed on a safe point but did not reorder');
 		const longTasks = await page.evaluate(() => window.__aplLongTasks);
 		const maxTask = Math.max(0, ...longTasks);
-		return `responsive, longest main-thread block ${Math.round(maxTask)}ms (${longTasks.length} long tasks)`;
+		return `responsive, reordered=${before?.head !== after?.head}, longest main-thread block ${Math.round(maxTask)}ms (${longTasks.length} long tasks)`;
+	});
+
+	// 9. the sticky toolbar under the list must not swallow a drop meant for the row underneath it —
+	// the freeze this unit actually found. Once the toolbar goes `pointer-events-none` mid-drag, a
+	// safe point on the row the toolbar overlaps must resolve to that row, and the drop must commit.
+	await step('drop at the sticky toolbar reaches the row underneath', async () => {
+		const barRow = await page.evaluate(([sel]) => {
+			const bar = document.querySelector('[data-testid="apl-floating-action-bar-root"]');
+			const items = [...document.querySelectorAll(sel)];
+			if (!bar) return null;
+			const barRect = bar.getBoundingClientRect();
+			const overlapping = items.findIndex(item => {
+				const r = item.getBoundingClientRect();
+				return barRect.y < r.y + r.height && barRect.y + barRect.height > r.y;
+			});
+			return overlapping;
+		}, [ITEM]);
+		if (barRow == null || barRow < 0) return 'NO ROW UNDER THE TOOLBAR';
+		let point = await dropPointFor(barRow);
+		for (let attempt = 0; attempt < 8 && !point; attempt++) {
+			await page.waitForTimeout(300);
+			point = await dropPointFor(barRow);
+		}
+		if (!point) return `NO SAFE DROP POINT ON ROW ${barRow} (under the toolbar)`;
+		const fromBox = await boxOf(0);
+		if (!fromBox) return 'NO SOURCE ROW';
+		const before = await page.evaluate(readRotation);
+		await page.mouse.move(fromBox.x + fromBox.width / 2, fromBox.y + 10);
+		await page.mouse.down();
+		await page.waitForTimeout(150);
+		const steps = 25;
+		for (let index = 1; index <= steps; index++) {
+			const x = fromBox.x + fromBox.width / 2 + ((point.x - fromBox.x - fromBox.width / 2) * index) / steps;
+			const y = fromBox.y + 10 + ((point.y - fromBox.y - 10) * index) / steps;
+			await page.mouse.move(x, y, { steps: 1 });
+			await page.waitForTimeout(15);
+		}
+		await page.mouse.up();
+		await page.waitForTimeout(500);
+		const after = await page.evaluate(readRotation);
+		if (before?.head === after?.head) errors.push(`drop at the toolbar's row (index ${barRow}) did not reorder`);
+		return `target row=${barRow}, reordered=${before?.head !== after?.head}`;
 	});
 } finally {
 	for (const error of errors) console.log(`  ERROR ${error}`);
