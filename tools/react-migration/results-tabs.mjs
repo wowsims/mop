@@ -36,7 +36,39 @@ const DR_ROOT = q('dr-root');
 const DR_TOOLBAR = q('dr-toolbar');
 // Retired class hooks: filtered out of the literal class-list comparison below so the check still
 // catches a real styling regression instead of flagging their own removal.
-const DROPPED_HOOKS = new Set(['dr-root', 'dr-toolbar', 'dr-no-results', 'sticky-toolbar-root', 'stuck']);
+const DROPPED_HOOKS = new Set([
+	'dr-root',
+	'dr-toolbar',
+	'dr-no-results',
+	'sticky-toolbar-root',
+	'stuck',
+	'dr-tab-content',
+	'damage-content',
+	'healing-content',
+	'damage-taken-content',
+	'buffs-content',
+	'debuffs-content',
+	'casts-content',
+	'resources-content',
+	'timeline-content',
+	'replay-content',
+	'log-content',
+	// A testid now (STATE()'s own `cls()` reads only the class attribute, unlike `SERIALIZE`, which
+	// unions in `data-testid`), so it is filtered the same way as an unread hook.
+	'detailed-results-manager-root',
+	'detailed-results-death-iteration-button',
+	'tabs-filler',
+	'damage-metrics-tab',
+	'healing-metrics-tab',
+	'threat-metrics-tab',
+	// Additive, not a hook: `dr-row` renamed to this co-located `ui-*` class, with `dr-row` kept as a
+	// `data-testid` for readers. Base has no counterpart, so it is filtered the same way.
+	'ui-dr-row',
+]);
+
+/** Strips the same retired tokens out of a `SERIALIZE` dump, so the scaffolding diff below does not
+ * flag their own removal either. */
+const stripDroppedHooks = text => [...DROPPED_HOOKS].reduce((acc, name) => acc.split(`.${name}`).join(''), text);
 
 const TAB_IDS = [
 	'damageTab',
@@ -168,13 +200,12 @@ try {
 			for (let index = 0; index < Math.max(base.length, react.length); index++) {
 				if (base[index] !== react[index]) problems.push(`${tabId} state line ${index}\n      base : ${base[index]}\n      react: ${react[index]}`);
 			}
-			// See `dropReplayState`. A run has finished by the time the panes are read, so the half the
-			// baseline is hiding here is the placeholder, and the port has none to drop.
-			const baseReplay = dropReplayState(scaffolding(sides.base.perTab[tabId].pane), 'cr-empty');
-			const reactReplay = dropReplayState(scaffolding(sides.react.perTab[tabId].pane), 'cr-empty');
-			const expected = tabId === 'replayTab' ? 1 : 0;
-			if (baseReplay.dropped !== expected || reactReplay.dropped !== 0) {
-				problems.push(`${tabId}: base hid ${baseReplay.dropped} replay placeholders (expected ${expected}), react ${reactReplay.dropped} (expected 0)`);
+			// See `dropReplayState`. `PORTS.base` is a React build too (not the retired vanilla stack), so
+			// a finished run leaves no hidden placeholder behind on either side.
+			const baseReplay = dropReplayState(scaffolding(stripDroppedHooks(sides.base.perTab[tabId].pane)), 'cr-empty');
+			const reactReplay = dropReplayState(scaffolding(stripDroppedHooks(sides.react.perTab[tabId].pane)), 'cr-empty');
+			if (baseReplay.dropped !== 0 || reactReplay.dropped !== 0) {
+				problems.push(`${tabId}: base hid ${baseReplay.dropped} replay placeholders (expected 0), react ${reactReplay.dropped} (expected 0)`);
 			}
 			// Both sides, and after the replay drop so the placeholder is still there to be counted: see
 			// `dropHiddenSubtrees`. The two builds hold different numbers of hidden metrics roots and
