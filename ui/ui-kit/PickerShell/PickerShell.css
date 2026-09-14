@@ -9,12 +9,6 @@
 		@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
 	}
 
-	@media (width < 768px) {
-		&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
-			@apply flex-col items-start gap-2;
-		}
-	}
-
 	&[data-layout='inline'] {
 		@apply flex-row justify-between items-center;
 

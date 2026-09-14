@@ -34,6 +34,7 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 	if (hidden) return null;
 
 	const inline = config.inline || !!config.extraClassNames?.includes('input-inline');
+	const iconField = !!className?.includes('ui-icon-field');
 
 	return (
 		<Field.Root
@@ -47,6 +48,7 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 					config.description && 'flex-wrap',
 					'ui-field',
 					'input-root',
+					!inline && !iconField && 'max-md:flex-col max-md:items-start max-md:gap-2',
 					className,
 					config.inline && 'input-inline',
 					config.extraClassNames,
