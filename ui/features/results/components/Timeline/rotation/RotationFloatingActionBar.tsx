@@ -99,7 +99,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 			data-expanded={String(expanded)}
 			onKeyDown={onKeyDown}>
 			<div className="ui-fab-clip">
-				<div className="ui-fab-panel group-data-[expanded=true]:[transform:translate3d(0,0,0)]">
+				<div className="ui-fab-panel group-data-[expanded=true]:transform-[translate3d(0,0,0)]">
 					{/* The clip wrapper only hides the collapsed chips; `inert` is what takes them out of the tab order. */}
 					<div data-testid="rotation-fab-panel-inner" className="min-h-0 overflow-hidden" inert={!expanded}>
 						<div className="ui-fab-drawer flex flex-col gap-4">
@@ -110,7 +110,7 @@ export const RotationFloatingActionBar = ({ model, hidden, onToggle, onShowAll }
 					</div>
 				</div>
 			</div>
-			<div className="relative flex flex-1 items-center min-w-0 group-data-[stuck]:bg-background">
+			<div className="relative flex flex-1 items-center min-w-0 group-data-stuck:bg-background">
 				<Button
 					ref={toggleRef}
 					data-testid="rotation-fab-toggle"

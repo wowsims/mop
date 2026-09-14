@@ -94,7 +94,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 									<div
 										ref={sidebarActions}
-										className="ui-sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
+										className="ui-sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 *:mb-0"
 										data-testid="sim-sidebar-actions">
 										<IterationsPicker sim={sim} />
 										{host && <SimSidebarActions host={host} />}
@@ -119,13 +119,13 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									ref={header}
 									className={clsx(
 										'sticky -top-px h-sim-header pt-6 pr-page pl-page -mx-page whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
-										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:after:w-full",
-										'data-[stuck]:bg-background',
+										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-stuck:after:w-full",
+										'data-stuck:bg-background',
 									)}
 									data-testid="sim-header"
 									data-stuck={stuck ? '' : undefined}>
 									<div
-										className="h-full flex items-stretch flex-1 overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+										className="h-full flex items-stretch flex-1 overflow-x-scroll [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
 										data-testid="sim-header-container">
 										<div className="contents" data-testid="sim-tabs-mount">
 											{host && <SimTabsSection host={host} />}
@@ -140,7 +140,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 										</div>
 									</div>
 								</header>
-								<main ref={main} className="h-4/5 flex flex-grow" data-testid="sim-main" />
+								<main ref={main} className="h-4/5 flex grow" data-testid="sim-main" />
 							</div>
 						</div>
 					</div>

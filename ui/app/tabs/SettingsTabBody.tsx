@@ -100,7 +100,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.buffs.length === 0,
-									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:break-words',
+									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
 								}}
 								headerChildren={<p className="text-sm">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
@@ -114,7 +114,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_damage_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:break-words',
+										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
 									}}>
 									<StatOptionIcons options={options.externalDamageCooldowns} />
 								</ContentBlock>
@@ -128,7 +128,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_defensive_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:break-words',
+										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
 									}}>
 									<StatOptionIcons options={options.externalDefensiveCooldowns} />
 								</ContentBlock>
@@ -142,7 +142,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.debuffs.length === 0,
-									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:break-words',
+									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
 								}}>
 								<StatOptionIcons options={options.debuffs} />
 							</ContentBlock>

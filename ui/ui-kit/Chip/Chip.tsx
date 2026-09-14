@@ -51,7 +51,7 @@ export const Chip = ({
 
 	return (
 		<Root
-			className={clsx('ui-chip', 'data-[active]:[&_.ui-chip-name]:text-primary-foreground', className)}
+			className={clsx('ui-chip', 'data-active:[&_.ui-chip-name]:text-primary-foreground', className)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}
 			data-disabled={disabled ? '' : undefined}

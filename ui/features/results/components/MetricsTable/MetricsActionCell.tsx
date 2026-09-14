@@ -20,7 +20,7 @@ export const MetricsActionCell = ({ name, actionId, useBuffAura, expandable, exp
 		<div data-testid="metrics-action" className="flex items-center gap-2 whitespace-normal">
 			<WowheadIcon
 				testId="metrics-action-icon"
-				className="h-[24px] w-[24px] align-middle mr-[4px]"
+				className="h-6 w-6 align-middle mr-1"
 				label={name}
 				href={href || undefined}
 				iconUrl={iconUrl}

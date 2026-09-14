@@ -39,7 +39,7 @@ export const SimTabs = ({ panes, children }: SimTabsProps) => {
 								key={tab.id}
 								value={tab.id}
 								keepMounted
-								className="max-w-full grow pt-6 opacity-100 transition-opacity duration-150 ease-linear data-[starting-style]:opacity-0 max-lg:pt-4"
+								className="max-w-full grow pt-6 opacity-100 transition-opacity duration-150 ease-linear data-starting-style:opacity-0 max-lg:pt-4"
 								data-testid="sim-tab-panel">
 								{tab.children}
 							</Tabs.Panel>

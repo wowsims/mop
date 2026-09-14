@@ -17,7 +17,7 @@ export const TabPanel = ({ value, id, keepMounted = true, className, children }:
 		id={id ?? value}
 		keepMounted={keepMounted}
 		data-testid="tab-pane"
-		className={clsx('fade-in-out', className, 'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0')}>
+		className={clsx('fade-in-out', className, 'data-starting-style:opacity-0 data-ending-style:opacity-0')}>
 		{children}
 	</Tabs.Panel>
 );

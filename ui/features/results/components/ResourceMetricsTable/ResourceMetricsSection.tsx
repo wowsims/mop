@@ -33,7 +33,7 @@ export const ResourceMetricsSection = ({ resourceType, title, columns, resultDat
 	if (!rows.length) return null;
 
 	return (
-		<div data-testid="resource-metrics-table-container" className="mb-[20px]">
+		<div data-testid="resource-metrics-table-container" className="mb-5">
 			<span data-testid="resource-metrics-table-title" className="text-white font-bold text-lg">
 				{title}
 			</span>

@@ -60,7 +60,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						)}
 					</div>
 				</td>
-				<td colSpan={3} className="w-[75px] pl-0.5 pr-0.5 pb-1">
+				<td colSpan={3} className="w-18.75 pl-0.5 pr-0.5 pb-1">
 					<NumberPicker
 						modObject={player}
 						config={{
@@ -78,7 +78,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						inputClassName="pl-2 pr-2 text-right"
 					/>
 				</td>
-				<td colSpan={1} className="text-right w-[60px] pl-0.5 pb-1">
+				<td colSpan={1} className="text-right w-15 pl-0.5 pb-1">
 					<BooleanPicker
 						modObject={player}
 						config={{

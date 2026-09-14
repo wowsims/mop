@@ -44,12 +44,12 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />
 			</div>
 			<div
-				className="absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-[length:100%_100%] shadow-talent-tree z-0"
+				className="absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-size-[100%_100%] shadow-talent-tree z-0"
 				style={{ backgroundImage: `url('${config.backgroundUrl}')` }}
 			/>
 			<div className="my-3 mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10" data-testid="talent-tree-main">
 				{rows.map((row, rowIdx) => (
-					<div className="grid grid-cols-icon-triple has-[[data-selected='true']]:[&>a:not([data-selected='true'])]:grayscale" key={rowIdx}>
+					<div className="grid grid-cols-icon-triple has-data-[selected='true']:[&>a:not([data-selected='true'])]:grayscale" key={rowIdx}>
 						<div className="p-2 content-center justify-self-center" data-testid="talent-tree-level">
 							{(rowIdx + 1) * LEVELS_PER_ROW}
 						</div>

@@ -16,7 +16,7 @@ export interface DetailedResultsPaneProps {
 	children?: ReactNode;
 }
 
-const rowClassName = 'ui-dr-row group-data-[no-results]/dr:hidden';
+const rowClassName = 'ui-dr-row group-data-no-results/dr:hidden';
 
 export const DetailedResultsPane = ({ id, className, contentTestId, topline, histogram, filling, children }: DetailedResultsPaneProps) => (
 	<TabPanel value={id} className={clsx('col-start-1 row-start-1 pt-0 pb-0', filling && 'ui-dr-filling-pane', className)}>

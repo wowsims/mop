@@ -166,8 +166,8 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	};
 
 	return (
-		<div data-testid="detailed-results-manager-root" className="flex flex-col [&>*]:min-h-0">
-			<div data-testid="detailed-results-controls-div" className="mb-3 flex">
+		<div data-testid="detailed-results-manager-root" className="flex flex-col *:min-h-0">
+			<div data-testid="detailed-results-controls-div" className="flex mb-3">
 				<Button
 					data-testid="detailed-results-1-iteration-button"
 					disabled={host.disabled}
@@ -205,7 +205,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						<div
 							id="noResultsTab"
 							data-active
-							className="col-start-1 row-start-1 flex items-center justify-center p-6 text-base opacity-100 transition-opacity duration-150 ease-linear group-not-data-[no-results]/dr:hidden">
+							className="col-start-1 row-start-1 flex items-center justify-center p-6 text-base opacity-100 transition-opacity duration-150 ease-linear group-not-data-no-results/dr:hidden">
 							{i18n.t('results_tab.details.no_results')}
 						</div>
 						{showDamage && (

@@ -18,7 +18,7 @@ export const ReplayEnemyFormation = ({ enemies, hiddenCount }: ReplayEnemyFormat
 			{layout.map(card => (
 				<ReplayEnemyCard key={card.index} enemy={enemies[card.index]} layout={card} />
 			))}
-			{hiddenCount > 0 && <div className="absolute bottom-[8px] right-[10px] self-center text-[1.2rem] font-bold text-white-50">+{hiddenCount}</div>}
+			{hiddenCount > 0 && <div className="absolute bottom-[8px] right-2.5 self-center text-[1.2rem] font-bold text-white-50">+{hiddenCount}</div>}
 		</div>
 	);
 };

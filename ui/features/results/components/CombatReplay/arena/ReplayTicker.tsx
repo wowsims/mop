@@ -13,7 +13,7 @@ export const ReplayTicker = ({ actions }: ReplayTickerProps) => {
 	const casts = useFrameList(actions, time => tickerCasts(actions, time), castKey);
 
 	return (
-		<div className="flex items-center gap-[4px]">
+		<div className="flex items-center gap-1">
 			{casts.map((cast, index) => (
 				<ReplayTickerIcon key={castKey(cast)} action={cast} latest={index === casts.length - 1} opacity={tickerOpacity(index, casts.length)} />
 			))}

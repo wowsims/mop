@@ -209,7 +209,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 						displayMetrics={displayMetrics}
 					/>
 				</div>
-				<div className="ui-ep-weights-sidebar min-w-[170px] lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
+				<div className="ui-ep-weights-sidebar min-w-42.5 lg:sticky lg:top-0 lg:z-sticky order-0 lg:order-1">
 					<SavedEpWeights />
 				</div>
 			</div>

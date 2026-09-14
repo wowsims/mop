@@ -22,8 +22,8 @@ const FORWARD_STEPS = [
 ];
 
 export const ReplayControls = ({ clock }: ReplayControlsProps) => (
-	<div className="relative z-1 shrink-0 px-[12px] pb-[8px] pt-[6px] border-t border-white-6 bg-transparent">
-		<div className="flex min-h-[32px] flex-nowrap items-center gap-[6px] overflow-x-auto overflow-y-hidden [scrollbar-width:thin]">
+	<div className="relative z-1 shrink-0 px-3 pb-[8px] pt-1.5 border-t border-white-6 bg-transparent">
+		<div className="flex min-h-[32px] flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-thin">
 			{REWIND_STEPS.map(step => (
 				<ReplaySeekButton key={step.delta} delta={step.delta} glyph={step.glyph} onSeekBy={clock.seekBy} />
 			))}
@@ -38,13 +38,13 @@ export const ReplayControls = ({ clock }: ReplayControlsProps) => (
 			{FORWARD_STEPS.map(step => (
 				<ReplaySeekButton key={step.delta} delta={step.delta} glyph={step.glyph} onSeekBy={clock.seekBy} />
 			))}
-			<div className="flex gap-[4px]">
+			<div className="flex gap-1">
 				{RATES.map(rate => (
 					<button
 						key={rate}
 						type="button"
 						data-testid="cr-speed-btn"
-						className="cursor-pointer rounded-[4px] border border-white-12 bg-white-5 px-[8px] py-[3px] text-[0.75rem] text-white-60 aria-pressed:border-white-50 aria-pressed:text-white"
+						className="cursor-pointer rounded-sm border border-white-12 bg-white-5 px-[8px] py-0.75 text-[0.75rem] text-white-60 aria-pressed:border-white-50 aria-pressed:text-white"
 						aria-pressed={clock.rate === rate}
 						onClick={() => clock.setRate(rate)}>
 						{rate}x
@@ -53,7 +53,7 @@ export const ReplayControls = ({ clock }: ReplayControlsProps) => (
 			</div>
 			<ReplayTimeDisplay duration={clock.duration} />
 		</div>
-		<div className="mt-[4px]">
+		<div className="mt-1">
 			<ReplayScrubber duration={clock.duration} onScrubStart={clock.pause} onSeek={clock.seekTo} />
 		</div>
 	</div>

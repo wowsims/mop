@@ -34,16 +34,16 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 	});
 
 	return (
-		<div className="ui-combat-replay-resource-wrap w-full gap-[6px]">
+		<div className="ui-combat-replay-resource-wrap w-full gap-1.5">
 			<span data-testid="cr-dot-label" className="shrink-0 whitespace-nowrap text-[0.6rem] font-semibold text-white-70">
 				{row.label}
 			</span>
-			<div ref={bar} className="flex h-[12px] flex-1 items-stretch gap-[3px]" style={pipVars(row)}>
+			<div ref={bar} className="flex h-3 flex-1 items-stretch gap-0.75" style={pipVars(row)}>
 				{Array.from({ length: total }, (_, index) => (
 					<div
 						key={index}
 						data-testid="cr-segment"
-						className="h-full min-w-0 flex-1 rounded-[3px] bg-white-7 data-filled:bg-[linear-gradient(180deg,var(--cr-segment-from),var(--cr-segment-to))] data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
+						className="h-full min-w-0 flex-1 rounded-xs bg-white-7 data-filled:bg-[linear-gradient(180deg,var(--cr-segment-from),var(--cr-segment-to))] data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
 					/>
 				))}
 			</div>

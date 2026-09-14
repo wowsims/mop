@@ -64,7 +64,7 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 				<Menu.Root modal={false}>
 					<Menu.Trigger
 						className={clsx(
-							'ui-sim-title-trigger flex h-full w-full bg-background hover:bg-surface-hover focus:bg-surface-hover data-[popup-open]:bg-surface-hover',
+							'ui-sim-title-trigger flex h-full w-full bg-background hover:bg-surface-hover focus:bg-surface-hover data-popup-open:bg-surface-hover',
 							textClassNameForSpec(currentSpec),
 						)}
 						data-testid="sim-link">

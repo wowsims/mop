@@ -37,7 +37,7 @@ export const FloatingActionBar = ({ itemName, nameDialog, onCreate }: FloatingAc
 	return (
 		<div
 			ref={rootRef}
-			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-[stuck]:p-2 data-[stuck]:border data-[stuck]:bg-background"
+			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:p-2 data-stuck:border data-stuck:bg-background"
 			data-testid="apl-floating-action-bar-root"
 			data-stuck={stuck ? '' : undefined}>
 			<Button variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>

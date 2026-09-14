@@ -71,7 +71,7 @@ export const Timeline = ({ active }: TimelineProps) => {
 			</div>
 			<div className="grow">
 				{chartVisible ? (
-					<div data-testid="dps-resources-plot" className="h-[32rem]">
+					<div data-testid="dps-resources-plot" className="h-128">
 						<TimelineChart spec={spec} />
 					</div>
 				) : (

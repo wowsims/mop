@@ -33,7 +33,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					event.preventDefault();
 					onAdd();
 				}}>
-				<div className="flex-shrink-0 size-10 border border-border">
+				<div className="shrink-0 size-10 border border-border">
 					<span className="ui-item-picker-ilvl" data-testid="item-picker-ilvl">
 						{baseIlvl(item)}
 					</span>

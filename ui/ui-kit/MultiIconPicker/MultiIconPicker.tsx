@@ -83,7 +83,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 								data-testid="multi-icon-picker-menu">
 								<li>
 									<a
-										className="ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none"
+										className="ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none"
 										data-testid="icon-dropdown-option"
 										onClick={onClear}
 									/>

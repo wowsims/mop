@@ -26,7 +26,7 @@ export const LandingLanguageMenu = () => {
 								<Menu.Item
 									key={code}
 									render={<button type="button" />}
-									className="block w-full font-normal [text-align:start] whitespace-nowrap bg-transparent border-0 rounded-none no-underline clear-both text-white"
+									className="block w-full font-normal text-start whitespace-nowrap bg-transparent border-0 rounded-none no-underline clear-both text-white"
 									data-active={code === currentLang ? '' : undefined}
 									data-lang={code}
 									data-testid="dropdown-item"

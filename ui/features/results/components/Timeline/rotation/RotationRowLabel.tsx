@@ -22,7 +22,7 @@ export const RotationRowLabel = ({ text, icon, onHide, className, header, measur
 		className={clsx(
 			measuring ? 'flex box-border shrink-0 grow-0 basis-auto w-max items-center gap-1 pr-2' : 'ui-timeline-label-col sticky left-0 z-3',
 			'overflow-hidden bg-background whitespace-nowrap font-bold',
-			header ? 'text-[14px] uppercase' : 'text-[13px]',
+			header ? 'text-sm uppercase' : 'text-[13px]',
 			className,
 		)}>
 		{onHide && (

@@ -1,33 +1,33 @@
 @layer components {
-.ui-tab {
-	@apply flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link [font-family:inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out;
-	@apply hover:text-link-hover;
+	.ui-tab {
+		@apply flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link font-[inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out;
+		@apply hover:text-link-hover;
 
-	&:focus-visible {
-		@apply outline-0 focus-ring;
-	}
+		&:focus-visible {
+			@apply outline-0 focus-ring;
+		}
 
-	&[data-active] {
-		@apply relative text-white;
+		&[data-active] {
+			@apply relative text-white;
 
-		&::after {
-			content: '';
+			&::after {
+				content: '';
 
-			@apply absolute inset-x-0 bottom-0 h-[2px] bg-white;
+				@apply absolute inset-x-0 bottom-0 h-0.5 bg-white;
+			}
 		}
 	}
-}
 
-.ui-tab-nav {
-	@apply h-full border-current;
-	@apply focus:text-link-hover;
-}
+	.ui-tab-nav {
+		@apply h-full border-current;
+		@apply focus:text-link-hover;
+	}
 
-.ui-tabs-sim {
-	@apply m-0 flex list-none flex-nowrap items-end p-0;
-}
+	.ui-tabs-sim {
+		@apply m-0 flex list-none flex-nowrap items-end p-0;
+	}
 
-.ui-tabs {
-	@apply flex mb-0 pl-0 list-none;
-}
+	.ui-tabs {
+		@apply flex mb-0 pl-0 list-none;
+	}
 }

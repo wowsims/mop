@@ -15,7 +15,7 @@ export interface StatWeightCellsProps {
 }
 
 const NotApplicable = () => (
-	<span data-testid="results-avg" data-notapplicable className="pr-[25px] font-bold">
+	<span data-testid="results-avg" data-notapplicable className="pr-6.25 font-bold">
 		{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}
 	</span>
 );

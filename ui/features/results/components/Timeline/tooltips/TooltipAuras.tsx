@@ -17,7 +17,7 @@ export const TooltipAuras = ({ log }: TooltipAurasProps) => {
 			<ul data-testid="timeline-active-auras" className="block max-h-[56vh] columns-2 gap-4">
 				{log.activeAuras.map((auraLog, index) => (
 					<li key={index} className="mb-1 break-inside-avoid">
-						{auraLog.actionId!.iconUrl && <img className="size-[20px]" src={auraLog.actionId!.iconUrl} alt="" />}
+						{auraLog.actionId!.iconUrl && <img className="size-5" src={auraLog.actionId!.iconUrl} alt="" />}
 						<span>{auraLog.actionId!.name}</span>
 					</li>
 				))}

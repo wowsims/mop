@@ -40,7 +40,7 @@ export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecP
 					<div
 						key={spec}
 						className={clsx(
-							'flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 [transition-timing-function:ease] hover:bg-white-5',
+							'flex items-center gap-2 p-2 border-2 rounded-sm cursor-pointer transition-[border-color,background-color] duration-150 ease-[ease] hover:bg-white-5',
 							spec === active ? 'border-talent-full bg-black-20' : 'border-transparent',
 						)}
 						data-testid="pet-spec-item"

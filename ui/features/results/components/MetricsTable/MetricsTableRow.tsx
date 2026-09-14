@@ -29,7 +29,7 @@ export const MetricsTableRow = <T,>({ row, rowThreatOnly }: MetricsTableRowProps
 						data-primary-metric={cell.column.columnDef.meta?.primaryColumn ? '' : undefined}
 						className={clsx(
 							'ui-metrics-cell',
-							row.depth > 0 && index === 0 && 'pl-[20px]',
+							row.depth > 0 && index === 0 && 'pl-5',
 							cell.column.columnDef.meta?.columnClass,
 							cell.column.columnDef.meta?.dataClass,
 						)}

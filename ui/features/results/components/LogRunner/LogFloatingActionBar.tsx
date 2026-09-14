@@ -80,7 +80,7 @@ export const LogFloatingActionBar = ({ groups, suggestions, onChange, children }
 			</div>
 			<div
 				data-testid="log-fab-actions"
-				className="relative flex flex-1 min-w-0 gap-2 flex-col md:items-center md:flex-row group-data-[stuck]:bg-background">
+				className="relative flex flex-1 min-w-0 gap-2 flex-col md:items-center md:flex-row group-data-stuck:bg-background">
 				<Button
 					ref={toggleRef}
 					data-testid="log-fab-toggle"

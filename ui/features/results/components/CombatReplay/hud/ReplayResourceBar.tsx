@@ -28,22 +28,22 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 
 	return (
 		<div className="ui-combat-replay-resource-wrap">
-			<div className="relative h-[12px] w-full overflow-hidden rounded-sm bg-white-7">
+			<div className="relative h-3 w-full overflow-hidden rounded-sm bg-white-7">
 				<div
 					ref={fill}
 					data-testid="cr-res-bar-fill"
-					className="h-full rounded-sm bg-[linear-gradient(90deg,var(--cr-resbar-from),var(--cr-resbar-to))] shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-[50ms] ease-linear"
+					className="h-full rounded-sm bg-[linear-gradient(90deg,var(--cr-resbar-from),var(--cr-resbar-to))] shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-50 ease-linear"
 					style={barVars(row)}
 				/>
 				<span
 					data-testid="cr-bar-label"
-					className="absolute left-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80 pointer-events-none">
+					className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80 pointer-events-none">
 					{row.label}
 				</span>
 				<span
 					ref={value}
 					data-testid="cr-bar-val"
-					className="absolute right-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] text-white-70 pointer-events-none"
+					className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-white-70 pointer-events-none"
 				/>
 			</div>
 		</div>

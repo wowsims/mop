@@ -1,45 +1,45 @@
 @layer components {
-.ui-field {
-	@apply flex flex-col items-start;
+	.ui-field {
+		@apply flex flex-col items-start;
 
-	&[data-disabled] {
-		@apply [filter:opacity(0.5)];
-	}
+		&[data-disabled] {
+			@apply filter-[opacity(0.5)];
+		}
 
-	&:where(:not([data-layout])):where(:not(.ui-icon-field)) label {
-		@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
-	}
+		&:where(:not([data-layout])):where(:not(.ui-icon-field)) label {
+			@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
+		}
 
-	@media (width < 768px) {
-		&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
-			@apply gap-2;
+		@media (width < 768px) {
+			&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
+				@apply gap-2;
+			}
+		}
+
+		&[data-layout='inline'] {
+			@apply flex-row justify-between items-center;
+
+			label {
+				@apply overflow-visible text-clip mr-2 mb-0;
+			}
+
+			input,
+			select {
+				@apply w-20;
+			}
 		}
 	}
 
-	&[data-layout='inline'] {
-		@apply flex-row justify-between items-center;
+	.ui-icon-field {
+		@apply flex flex-row items-center gap-2 min-w-0;
 
-		label {
-			@apply overflow-visible text-clip mr-2 mb-0;
-		}
-
-		input,
-		select {
-			@apply w-20;
+		label,
+		.ui-field-label {
+			@apply line-clamp-2 min-w-0 mb-0;
 		}
 	}
-}
 
-.ui-icon-field {
-	@apply flex flex-row items-center gap-2 min-w-0;
-
-	label,
-	.ui-field-label {
-		@apply line-clamp-2 min-w-0 mb-0;
+	.ui-field-description {
+		@apply mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0;
 	}
-}
-
-.ui-field-description {
-	@apply mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0;
-}
 }

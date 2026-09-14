@@ -1,79 +1,79 @@
 @layer components {
-.ui-dialog-backdrop {
-	@apply fixed inset-0 bg-black opacity-50 z-modal-backdrop fade-in-out motion-reduce:transition-none;
+	.ui-dialog-backdrop {
+		@apply fixed inset-0 bg-black opacity-50 z-modal-backdrop fade-in-out motion-reduce:transition-none;
 
-	&[data-elevated='true'] {
-		@apply z-modal-elevated-backdrop;
-	}
-}
-
-.ui-dialog-viewport {
-	@apply fixed inset-0 overflow-x-hidden overflow-y-auto z-modal fade-in-out motion-reduce:transition-none;
-
-	&[data-elevated='true'] {
-		@apply z-modal-elevated;
-	}
-}
-
-.ui-dialog {
-	@apply flex relative flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none;
-
-	&[data-size='sm'] {
-		@apply max-w-modal-sm max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+		&[data-elevated='true'] {
+			@apply z-modal-elevated-backdrop;
+		}
 	}
 
-	&[data-size='md'] {
-		@apply max-w-modal-md max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+	.ui-dialog-viewport {
+		@apply fixed inset-0 overflow-x-hidden overflow-y-auto z-modal fade-in-out motion-reduce:transition-none;
+
+		&[data-elevated='true'] {
+			@apply z-modal-elevated;
+		}
 	}
 
-	&[data-size='lg'] {
-		@apply max-w-modal-lg max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+	.ui-dialog {
+		@apply flex relative flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none;
+
+		&[data-size='sm'] {
+			@apply max-w-modal-sm max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+		}
+
+		&[data-size='md'] {
+			@apply max-w-modal-md max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+		}
+
+		&[data-size='lg'] {
+			@apply max-w-modal-lg max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+		}
+
+		&[data-size='xl'] {
+			@apply max-w-modal-xl max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+		}
 	}
 
-	&[data-size='xl'] {
-		@apply max-w-modal-xl max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+	.ui-dialog-header {
+		@apply flex shrink-0 items-start mx-5 border-b border-border py-5;
 	}
-}
 
-.ui-dialog-header {
-	@apply flex shrink-0 items-start mx-5 border-b border-border py-5;
-}
-
-.ui-dialog-title {
-	@apply mb-0 text-lg leading-normal;
-}
-
-.ui-dialog-close {
-	@apply flex items-center justify-center box-content w-[1em] h-[1em] -mt-2 -mb-2 -mr-1 ml-auto py-2 px-2 text-link transition-colors duration-150 ease-in-out z-modal-close;
-	@apply hover:text-white;
-
-	&:focus-visible {
-		@apply outline-0 shadow-focus-ring;
+	.ui-dialog-title {
+		@apply mb-0 text-lg leading-normal;
 	}
-}
 
-.ui-dialog-body {
-	@apply flex relative flex-1 flex-col p-5 gap-5;
-}
+	.ui-dialog-close {
+		@apply flex items-center justify-center box-content w-[1em] h-[1em] -mt-2 -mb-2 -mr-1 ml-auto py-2 px-2 text-link transition-colors duration-150 ease-in-out z-modal-close;
+		@apply hover:text-white;
 
-.ui-dialog-footer {
-	@apply flex shrink-0 flex-wrap items-center justify-end mx-5 py-5 border-t border-border;
-}
+		&:focus-visible {
+			@apply outline-0 shadow-focus-ring;
+		}
+	}
 
-.ui-dialog-top {
-	@apply my-7 mx-auto;
-	@apply data-[starting-style]:transform-(--modal-fade-transform) data-[ending-style]:transform-(--modal-fade-transform);
-}
+	.ui-dialog-body {
+		@apply flex relative flex-1 flex-col p-5 gap-5;
+	}
 
-.ui-dialog-centered {
-	@apply m-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
-}
+	.ui-dialog-footer {
+		@apply flex shrink-0 flex-wrap items-center justify-end mx-5 py-5 border-t border-border;
+	}
 
-.ui-dialog-scroll {
-	@apply max-h-[calc(100vh-2*var(--modal-margin))];
-}
+	.ui-dialog-top {
+		@apply my-7 mx-auto;
+		@apply data-starting-style:transform-(--modal-fade-transform) data-ending-style:transform-(--modal-fade-transform);
+	}
 
-.ui-dialog-header-flush {
-	@apply pt-5 pb-0;
-}
+	.ui-dialog-centered {
+		@apply m-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+	}
+
+	.ui-dialog-scroll {
+		@apply max-h-[calc(100vh-2*var(--modal-margin))];
+	}
+
+	.ui-dialog-header-flush {
+		@apply pt-5 pb-0;
+	}
 }

@@ -27,12 +27,12 @@ const CARD_CLASSES =
 
 export const ReplayEnemyCard = ({ enemy, layout }: ReplayEnemyCardProps) => (
 	<div className={CARD_CLASSES} data-testid="cr-enemy-card" data-idx={enemy.index} style={cardVars(layout)}>
-		<div className="relative z-2 w-full rounded-[6px] bg-black-55 px-[6px] py-[4px]">
-			<div data-testid="cr-enemy-name" className="mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs font-semibold text-danger">
+		<div className="relative z-2 w-full rounded-md bg-black-55 px-1.5 py-1">
+			<div data-testid="cr-enemy-name" className="mb-0.75 overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs font-semibold text-danger">
 				{enemy.name}
 			</div>
 			<ReplayEnemyHealth enemy={enemy} />
-			<ReplayAuraIcons testId="cr-debuff-row" className="flex flex-wrap gap-[4px] mt-[3px] min-h-0" auras={enemy.auras} />
+			<ReplayAuraIcons testId="cr-debuff-row" className="flex flex-wrap gap-1 mt-0.75 min-h-0" auras={enemy.auras} />
 		</div>
 		<div className="relative flex w-full shrink items-end justify-center">
 			<img

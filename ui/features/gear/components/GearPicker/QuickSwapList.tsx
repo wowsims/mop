@@ -26,13 +26,13 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 	const { iconUrl, href } = useActionId(actionId);
 
 	return (
-		<li className="[&:not(:last-child)]:border-b [&:not(:last-child)]:border-b-border odd:[&_a]:bg-table-odd">
+		<li className="not-last:border-b not-last:border-b-border odd:[&_a]:bg-table-odd">
 			<a
 				href={href || undefined}
 				className={clsx(
 					'flex items-center cursor-pointer bg-table-even border border-transparent',
 					'transition-[background-color,color,border] duration-150 ease-in-out',
-					'[@media(pointer:fine)]:hover:[background-color:hsla(var(--table-row-even-bg-hsl),0.9)]',
+					'pointer-fine:hover:bg-[hsla(var(--table-row-even-bg-hsl),0.9)]',
 					'data-active:border-success focus-visible:outline focus-visible:outline-1 focus-visible:outline-link -outline-offset-1',
 				)}
 				data-testid="tooltip-quick-swap__anchor"
@@ -64,7 +64,7 @@ export const QuickSwapList = <T extends QuickSwapItem>({ title, emptyMessage, en
 			{title}
 		</h3>
 		{entries.length ? (
-			<ul className="max-h-[206px] overflow-y-auto pl-0 list-none mb-0 gap-0.5">
+			<ul className="max-h-51.5 overflow-y-auto pl-0 list-none mb-0 gap-0.5">
 				{entries.map(entry => (
 					<QuickSwapRow key={keyOf(entry.item)} entry={entry} onItemClick={onItemClick} />
 				))}

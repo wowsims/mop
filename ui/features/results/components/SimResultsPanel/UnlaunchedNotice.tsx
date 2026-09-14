@@ -8,7 +8,7 @@ export interface UnlaunchedNoticeProps {
 
 export const UnlaunchedNotice = ({ isHealingSpec }: UnlaunchedNoticeProps) => (
 	<div
-		className="flex flex-col items-center text-center mt-auto mb-auto ml-auto mr-auto max-w-[400px] [&_i]:text-danger"
+		className="flex flex-col items-center text-center mt-auto mb-auto ml-auto mr-auto max-w-100 [&_i]:text-danger"
 		data-testid="sim-ui-unlaunched-container">
 		<Icon name="ban" size="3x" className="mb-2" />
 		<h6>{i18n.t('sim.unlaunched.title')}</h6>

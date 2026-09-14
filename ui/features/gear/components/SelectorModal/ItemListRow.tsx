@@ -95,12 +95,12 @@ export const ItemListRow = ({
 				</div>
 			)}
 			{showEp && (
-				<div className="w-24 flex items-center [[data-hide-ep]_&]:hidden" data-testid="selector-modal-list-item-ep">
+				<div className="w-24 flex items-center in-data-hide-ep:hidden" data-testid="selector-modal-list-item-ep">
 					<span className="inline-block text-white text-right" data-testid="selector-modal-list-item-ep-value">
 						{itemEP < 9.95 ? itemEP.toFixed(1) : Math.round(itemEP).toString()}
 					</span>
 					<span
-						className={clsx('ml-1 text-(length:--text-ep-delta)', delta?.tone)}
+						className={clsx('ml-1 text-ep-delta', delta?.tone)}
 						data-testid="selector-modal-list-item-ep-delta"
 						data-sign={delta?.tone ?? undefined}>
 						{delta?.text}

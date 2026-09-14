@@ -48,7 +48,7 @@ export const EpRatiosRow = ({ columns, player, onComputeEp, showThreatMetrics }:
 									subject.setEpRatios(epRatios);
 								},
 							}}
-							inputClassName={clsx('max-w-[100px] ui-ep-weights-input-align-right', showThreatMetrics && 'ui-ep-weights-compact-input')}
+							inputClassName={clsx('max-w-25 ui-ep-weights-input-align-right', showThreatMetrics && 'ui-ep-weights-compact-input')}
 						/>
 					</td>
 				))}

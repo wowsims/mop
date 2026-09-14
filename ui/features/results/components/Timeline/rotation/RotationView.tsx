@@ -397,14 +397,14 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		<div
 			ref={rootRef}
 			data-testid="rotation-pane"
-			className="relative flex min-h-0 flex-col text-white [--rotation-fab-h:calc(2.75rem+2*--spacing(2)+2*1px)] [--rotation-item-h:24px]"
+			className="relative flex min-h-0 flex-col text-white [--rotation-fab-h:calc(2.75rem+2*(--spacing(2))+2*1px)] [--rotation-item-h:24px]"
 			style={cssVars({
 				'--pps': `${DEFAULT_PPS}px`,
 				'--label-w': labelWidthCss,
 				'--duration': String(model?.duration ?? 0),
 				'--rotation-sticky-top': `${stickyTop}px`,
 			})}>
-			<div className="sticky top-(--rotation-sticky-top,0px) z-5 flex basis-[30px] grow-0 shrink-0 h-[30px] -mr-(--spacing-page) bg-background">
+			<div className="sticky top-(--rotation-sticky-top,0px) z-5 flex basis-7.5 grow-0 shrink-0 h-7.5 -mr-(--spacing-page) bg-background">
 				<RotationToolbar
 					ref={cornerRef}
 					onZoomOut={() => zoomRef.current?.stepOut()}
@@ -418,7 +418,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					<div
 						ref={rulerTrackRef}
 						data-testid="rotation-ruler-track"
-						className="absolute top-0 left-0 h-full w-[calc(var(--pps)*var(--duration))] [transform:translateX(calc(var(--pan,0)*-1px))]"
+						className="absolute top-0 left-0 h-full w-[calc(var(--pps)*var(--duration))] transform-[translateX(calc(var(--pan,0)*-1px))]"
 					/>
 				</div>
 			</div>

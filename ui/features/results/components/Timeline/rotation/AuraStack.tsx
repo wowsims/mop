@@ -13,7 +13,7 @@ export const AuraStack = ({ segment, indent }: AuraStackProps) => (
 		data-testid="rotation-item-stacks"
 		className={clsx(
 			'ui-timeline-item ui-timeline-item-slice top-0 group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden',
-			indent && 'indent-[30px]',
+			indent && 'indent-7.5',
 		)}
 		style={spanStyle(segment.offset, segment.duration)}>
 		{segment.stacks}

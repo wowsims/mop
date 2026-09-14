@@ -26,11 +26,11 @@ export const LandingHeader = () => {
 
 	return (
 		<header>
-			<div className="w-full max-w-full px-3 lg:max-w-[960px] lg:mx-auto xl:max-w-[1140px] xxl:max-w-[1320px] h-full flex pt-section max-md:pb-4">
+			<div className="w-full max-w-full px-3 lg:max-w-240 lg:mx-auto xl:max-w-modal-xl xxl:max-w-330 h-full flex pt-section max-md:pb-4">
 				<nav className="flex flex-wrap items-end w-full relative justify-between md:justify-start py-2">
 					<div className="flex order-0 max-md:w-full max-md:justify-between max-md:items-end">
 						<a href="#" className="flex items-center p-0 m-0 whitespace-nowrap text-lg text-white">
-							<img className="w-24 mr-4 max-md:w-[48px]" src="/mop/assets/img/WoW-Simulator-Icon.png" alt="" />
+							<img className="w-24 mr-4 max-md:w-12" src="/mop/assets/img/WoW-Simulator-Icon.png" alt="" />
 							<div className="flex flex-col">
 								<h2 className="text-fluid-5xl font-bold text-brand m-0 leading-none" data-testid="wowsims-title">
 									{i18n.t('landing.header.wowsims')}
