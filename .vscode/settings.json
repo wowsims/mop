@@ -17,7 +17,7 @@
 	"less.validate": false,
 	"scss.validate": false,
 	"stylelint.validate": ["scss"],
-	"tailwindCSS.experimental.configFile": "ui/styles/tailwind.css",
+	"tailwindCSS.experimental.configFile": "ui/styles/style.css",
 	"tailwindCSS.classFunctions": ["clsx"],
 	"[scss]": {
 		"editor.codeActionsOnSave": {

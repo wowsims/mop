@@ -1,12 +1,12 @@
 # Styling, state and locating elements
 
-Source of truth: `ui/styles/tailwind.css` (entry, `@utility`, `@source`), `ui/styles/theme.css`
+Source of truth: `ui/styles/style.css` (entry, `@utility`, `@source`), `ui/styles/theme.css`
 (tokens), `ui/styles/base.css` (element defaults, replaces Bootstrap's reboot), `ui/styles/vendor.css`
 (the handful of selectors with no JSX element to carry them), `tools/tailwind/canonical-classes.mjs`
 and `tools/tailwind/class-hooks.mjs`, `ui/no_class_hooks.test.ts`.
 
 There is no SCSS and no Bootstrap left anywhere in `ui/` (`find ui -name '*.scss'` is empty; neither
-HTML entry links anything but `tailwind.css` and the FontAwesome CDN sheet). Every class in `ui/`
+HTML entry links anything but `style.css` and the FontAwesome CDN sheet). Every class in `ui/`
 markup is a Tailwind utility, a `ui-*` composition class, one of a small fixed allowlist (`sim-ui`,
 `<spec>-sim-ui`, `group`/`peer` and their named forms, FontAwesome's `fa`/`fas`/`far`/`fab`/`fa-*`,
 and the two react-tooltip class-as-theme names), or a `data-testid`/`data-*` used only by tests and
@@ -62,7 +62,7 @@ at `:root`, before `.sim-ui` re-declares it).
 
 When a component needs a reusable multi-utility recipe, or a rule keyed on a state/descendant
 selector Tailwind's utility-per-property model can't express cleanly, it gets a `ui-<component>-<part>`
-class in a co-located `.css` file, `@import`ed from `ui/styles/tailwind.css` (see the long list of
+class in a co-located `.css` file, `@import`ed from `ui/styles/style.css` (see the long list of
 `@import '../ui-kit/…/X.css'` lines there — one per component that has one). Example,
 `ui/ui-kit/Chip/Chip.css`:
 
@@ -93,13 +93,13 @@ Rules:
   exceptions are `theme.css` (the spec theme selectors) and `vendor.css` (see below).
 - Built with `@apply`, unlayered classes stay unlayered (until the global element rules that used to
   fight them are fully gone); the file itself lives inside `@layer components` in the ones written so
-  far, matching the layer order declared in `tailwind.css:1`.
+  far, matching the layer order declared in `style.css:1`.
 - No comments — including lint-disable directives — in any `ui/` `.css` file, same rule as `.ts`/`.tsx`.
 - Names are `ui-<component>-<part-or-variant>` for both kit and feature components, so they can never
   collide with a retired hook name; tests never locate elements by them (see §5).
 - `@utility` is reserved for a handful of atomic, non-component patterns where every carrier is
   enumerable and nothing else on any carrier sets the same properties. Only five exist today, all in
-  `ui/styles/tailwind.css`: `text-fluid-xl`/`text-fluid-5xl` (RFS-style fluid headings), `interactive`
+  `ui/styles/style.css`: `text-fluid-xl`/`text-fluid-5xl` (RFS-style fluid headings), `interactive`
   (cursor + user-select), `icon-sm` (a fixed icon box), `focus-ring`/`focus-ring-inset` (the
   outline-based focus treatment), and `active-underline`/`fade-in-out` (an animated underline and a
   Base UI enter/exit fade). Don't add a sixth without the same proof: enumerate every element that
@@ -200,7 +200,7 @@ fix is almost always removing whatever broke the native layering, not adding log
 - **`ui/no_class_hooks.test.ts`** (vitest) runs three checks over `ui/**/*.{ts,tsx}` (excluding
   `*.test.ts(x)`) via `tools/tailwind/class-hooks.mjs`:
   1. **Class hooks** — every class-bearing string that isn't a real Tailwind utility (checked by
-     compiling it against `ui/styles/tailwind.css` with Tailwind's own design system, not a
+     compiling it against `ui/styles/style.css` with Tailwind's own design system, not a
      hand-maintained list), isn't `ui-*`, and isn't on the allowlist, fails.
   2. **Retired names** — any token in `ui/retired_class_names.json` (the names Phase 6 removed)
      appearing anywhere in production `ui/` (`*.test.ts(x)` excluded) fails, even outside a

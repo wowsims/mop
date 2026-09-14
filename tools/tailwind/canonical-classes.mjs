@@ -41,10 +41,8 @@ function classifyRewrite(from, to) {
 
 export function findDefaultCss(root) {
 	const style = path.join(root, 'ui/styles/style.css');
-	const tailwind = path.join(root, 'ui/styles/tailwind.css');
 	if (fs.existsSync(style)) return style;
-	if (fs.existsSync(tailwind)) return tailwind;
-	throw new Error('Could not find ui/styles/style.css or ui/styles/tailwind.css');
+	throw new Error('Could not find ui/styles/style.css');
 }
 
 function walk(dir, exts, skipDirs) {

@@ -44,7 +44,7 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
     - CSS keyword easings stay arbitrary
     - `border-solid` with single-side widths only when the other sides compute 0 (no preflight)
     - **cwd**: `cd <worktree> &&` in every call, vitest `--root`
-    - a local `merge=union` on `ui/styles/tailwind.css` in `.git/info/attributes`; **remove it after the last unit lands**
+    - a local `merge=union` on `ui/styles/style.css` (formerly `ui/styles/tailwind.css`) in `.git/info/attributes`; **remove it after the last unit lands**
   - **Recurring traps:**
     - an important utility beats SCSS toggles (`rotation-tab`, `--pps`)
     - `@apply` output loses to important call-site utilities and to equal-specificity SCSS (Spinner, Chip)
@@ -336,7 +336,7 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
   session transcript. Lost for good: the buttons probe reports, the annotated diff map, and the collision-scan script (to be
   rewritten). Commits now carry the trailer `Claude-Session: https://claude.ai/code/session_01KrgvxekDT75BMsWuAqYP4Z`.
 - **User decision (2026-09-13): kit style bundles become `@apply` component classes.** Co-located
-  `ui/ui-kit/<C>/<C>.css`, `ui-` prefix, `@import`ed from `tailwind.css`, **unlayered** until Phase 5, then
+  `ui/ui-kit/<C>/<C>.css`, `ui-` prefix, `@import`ed from `style.css` (then `tailwind.css`), **unlayered** until Phase 5, then
   `@layer components`. Call-site utilities override (important vs non-important `@apply`, verified by compile).
   Source order in the file is base → variant → size. A **kit-classes** unit runs after T1 lands. Brief: `/home/lutz/personal/.tw-stage4/KIT-CLASSES.md` (19 components,
   18 CSS files, commits a–d). Census risks to handle: (1) legacy SCSS and react-tooltip CSS win specificity ties against
@@ -357,7 +357,7 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
      hooks and the totem inputs become utilities, and `mage_fire.scss` and `_totem_inputs.scss` are deleted. **No `specs.css`.**
      A small `specs` unit does this after T1 lands. Logic and tests stay frozen except the one sanctioned assertion.
 - **User directive (2026-09-13): the Bootstrap-name shim goes.** `.d-flex/.flex-column/.align-items-end/
-  .justify-content-end/.w-100/.gap-3` in `tailwind.css` are replaced by built-ins. The user sanctioned editing
+  .justify-content-end/.w-100/.gap-3` in `tailwind.css` (now `style.css`) are replaced by built-ins. The user sanctioned editing
   the three className strings in the frozen `ui/specs/mage/fire/calculate_combustion_thresholds.tsx:373,374,399`,
   className strings only. Bootstrap `gap-3` (1rem) becomes `gap-4`. Assigned to tokens T1.
 - **Buttons verification RED (ad3f4d568):** (1) the `--shadow-focus-*` tokens landed in `:root`, not `@theme`, so no utility is
@@ -526,7 +526,7 @@ home `index-*.style.css` **99,352 B** (start 115,972) · shared Tailwind/theme c
   inert declarations like `right: 0` on `position: static` count too) · no jest-dom matchers exist.
 - Operating model: Sonnet workers do edits (one unit each, cheap gates only under the lock:
   type-check, lint:js, own-dir vitest); waves of ≤5 disjoint workers; single-writer files
-  (`theme.css`, `tailwind.css`, `vendor.css`, `shell_classes.ts`, `browser/intended/tw-probe.mjs`,
+  (`theme.css`, `style.css` (formerly `tailwind.css`), `vendor.css`, `shell_classes.ts`, `browser/intended/tw-probe.mjs`,
   `README.md`, this file) go to exactly one worker per wave; `TAILWIND-DIVERGENCE.md` is appended
   by workers **only via shell heredoc `>>`**; same-file edits across workers are Edit-only with a
   re-read first. A Sonnet verifier runs the full gate set per wave (report-only); the orchestrator

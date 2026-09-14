@@ -40,7 +40,7 @@ ui/
   specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
                      ui/index_template.html is served (dev) and emitted (build) at every
                      /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
-  styles/            the one CSS entry (tailwind.css), theme.css (tokens + the 34 spec themes),
+  styles/            the one CSS entry (style.css), theme.css (tokens + the 34 spec themes),
                      base.css (element defaults), vendor.css (third-party-only selectors) — see
                      STYLING.md. No SCSS and no Bootstrap remain anywhere in ui/
   index.html          the landing page, a React tree mounted by app/landing_entry.tsx on #root.

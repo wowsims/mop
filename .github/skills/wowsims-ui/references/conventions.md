@@ -26,7 +26,7 @@ Reformatting one of those is a diff nobody can review. Its ignore list also stil
 
 Stylesheets: Tailwind utilities, no SCSS or Bootstrap anywhere in `ui/`. A component that needs
 reusable multi-utility classes or state/descendant selectors gets a co-located
-`ui/ui-kit/<Name>/<Name>.css` of `ui-*` `@apply` classes, `@import`ed from `ui/styles/tailwind.css`.
+`ui/ui-kit/<Name>/<Name>.css` of `ui-*` `@apply` classes, `@import`ed from `ui/styles/style.css`.
 `npm run lint:css` is stylelint over `ui/**/*.css`. Full conventions — token policy, `ui-*` classes,
 `data-*` state, locating elements, the class-hook gates — are in `ui/STYLING.md`.
 

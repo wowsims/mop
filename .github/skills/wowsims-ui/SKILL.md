@@ -14,7 +14,7 @@ of `ui/` used to be written in has been retired: the package is uninstalled, no 
 `@jsxImportSource` pragma, and the shim they pointed at is deleted — along with the vanilla
 `Component`/`Input` stack and every picker built on it, tippy, and the `ui/index.ts` entry that
 booted the old landing page. Bootstrap and SCSS are gone too, JavaScript and stylesheet both: there
-is no `.scss` file anywhere in `ui/`, both HTML entries link a single `ui/styles/tailwind.css`, and
+is no `.scss` file anywhere in `ui/`, both HTML entries link a single `ui/styles/style.css`, and
 `form-control`/`d-none`/`btn` are retired class names, not classes to reach for. Styling is Tailwind
 utilities plus co-located `ui-*` composition classes — see `ui/STYLING.md`.
 

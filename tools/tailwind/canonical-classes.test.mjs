@@ -9,9 +9,7 @@ import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 import { findNonCanonical } from './canonical-classes.mjs';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..');
-const CSS_PATH = fs.existsSync(path.join(REPO_ROOT, 'ui/styles/style.css'))
-	? path.join(REPO_ROOT, 'ui/styles/style.css')
-	: path.join(REPO_ROOT, 'ui/styles/tailwind.css');
+const CSS_PATH = path.join(REPO_ROOT, 'ui/styles/style.css');
 
 const CASES = [
 	['p-[5px]', 'p-1.25'],
