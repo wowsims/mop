@@ -543,10 +543,10 @@ const menuClosed = await page.evaluate(root => {
 say(`  close       closed=${menuClosed}`);
 if (!menuClosed) problems.push('the filters menu did not close on its own close button');
 
-// The second recorded divergence, and the reason the menu is re-opened for it. `BaseModal.open()`
-// puts an Escape handler on `document` for every modal it opens and never scopes it to the topmost
-// one, so on the baseline Escape takes the selector modal down with the filters menu. Base UI
-// dismisses the innermost dialog of the floating tree and leaves the one underneath open.
+// The second recorded divergence, and the reason the menu is re-opened for it. Base UI dismisses
+// only the innermost dialog of the floating tree on Escape and leaves the one underneath open —
+// true on both builds compared by this stage, since both are already Base UI dialogs here (this is
+// not the vanilla-Bootstrap baseline `BASE_PORT` names elsewhere in this file).
 if (!(await page.evaluate(() => window.selectorProbe.open()))) {
 	await page.locator(`#gear-tab ${q('gear-picker-root')} ${q('item-picker-root')}`).first().locator(q('item-picker-icon')).click();
 	await page.waitForSelector(modalRoot, { timeout: 20000 });
@@ -555,17 +555,17 @@ if (!(await page.evaluate(() => window.selectorProbe.open()))) {
 // Clicked through the DOM, not the locator: on the baseline the menu is still up from the step
 // above and its backdrop makes the button fail Playwright's actionability check.
 await page.evaluate(
-	({ roots, filtersRoot, activePane: pane }) => {
+	({ roots, filtersRoot, activePane: pane, filtersButton }) => {
 		if (document.querySelector(filtersRoot)) return;
-		document.querySelector(roots.map(root => `${root} ${pane} .selector-modal-filters-button`).join(', '))?.click();
+		document.querySelector(roots.map(root => `${root} ${pane} ${filtersButton}`).join(', '))?.click();
 	},
-	{ roots: ROOTS, filtersRoot: FILTERS_ROOT, activePane },
+	{ roots: ROOTS, filtersRoot: FILTERS_ROOT, activePane, filtersButton: q('selector-modal-filters-button') },
 );
 await settle(900);
 await page.keyboard.press('Escape');
 await settle(700);
 const afterEscape = await page.evaluate(root => ({ filters: !!document.querySelector(root), selector: window.selectorProbe.open() }), FILTERS_ROOT);
-const expectedEscape = { filters: false, selector: PORT !== PORTS.base };
+const expectedEscape = { filters: false, selector: true };
 say(`  escape      ${JSON.stringify(afterEscape) === JSON.stringify(expectedEscape) ? 'as-recorded' : `UNEXPECTED ${JSON.stringify(afterEscape)}`}`);
 if (JSON.stringify(afterEscape) !== JSON.stringify(expectedEscape)) {
 	problems.push(`Escape over the filters menu left ${JSON.stringify(afterEscape)}, recorded as ${JSON.stringify(expectedEscape)}`);

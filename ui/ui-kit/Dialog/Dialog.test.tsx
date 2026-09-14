@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Dialog } from './Dialog';
@@ -183,5 +184,35 @@ describe('Dialog', () => {
 		);
 
 		expect(screen.getAllByTestId('sim-dialog-backdrop').filter(el => el.getAttribute('data-elevated') === 'true')).toHaveLength(0);
+	});
+
+	it('closes only the innermost of two nested dialogs on Escape, and the outer one on a second Escape', () => {
+		const outerChange = vi.fn();
+		const innerChange = vi.fn();
+		const NestedDialogs = () => {
+			const [innerOpen, setInnerOpen] = useState(true);
+			return (
+				<Dialog open onOpenChange={outerChange} title="Outer">
+					<Dialog
+						open={innerOpen}
+						onOpenChange={next => {
+							innerChange(next);
+							setInnerOpen(next);
+						}}
+						elevated
+						title="Inner">
+						body
+					</Dialog>
+				</Dialog>
+			);
+		};
+		render(<NestedDialogs />);
+
+		fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
+		expect(innerChange).toHaveBeenCalledWith(false);
+		expect(outerChange).not.toHaveBeenCalled();
+
+		fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
+		expect(outerChange).toHaveBeenCalledWith(false);
 	});
 });
