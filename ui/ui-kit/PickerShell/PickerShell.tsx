@@ -17,9 +17,22 @@ export interface PickerShellProps<ModObject, T, V> {
 	children?: ReactNode;
 	ref?: Ref<HTMLDivElement>;
 	testId?: string;
+	inline?: boolean;
+	iconField?: boolean;
 }
 
-export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabled, leading, children, ref, testId }: PickerShellProps<ModObject, T, V>) => {
+export const PickerShell = <ModObject, T, V>({
+	config,
+	className,
+	hidden,
+	disabled,
+	leading,
+	children,
+	ref,
+	testId,
+	inline: inlineProp,
+	iconField: iconFieldProp,
+}: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
 	const renderable = typeof tooltip === 'string' || isNode(tooltip) || isValidElement(tooltip);
 	if (tooltip !== undefined && !renderable) {
@@ -33,8 +46,8 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 
 	if (hidden) return null;
 
-	const inline = config.inline || !!config.extraClassNames?.includes('input-inline');
-	const iconField = !!className?.includes('ui-icon-field');
+	const inline = inlineProp || config.inline || !!config.extraClassNames?.includes('input-inline');
+	const iconField = iconFieldProp || !!className?.includes('ui-icon-field');
 
 	return (
 		<Field.Root

@@ -7,23 +7,22 @@ import { wowheadAnchorProps } from '../utils/wowhead';
 
 export interface ImprovedAnchorProps {
 	actionId?: ActionId;
-	className: string;
+	testId: string;
 	active: boolean;
 	hidden: boolean;
 }
 
-export const ImprovedAnchor = ({ actionId, className, active, hidden }: ImprovedAnchorProps) => {
+export const ImprovedAnchor = ({ actionId, testId, active, hidden }: ImprovedAnchorProps) => {
 	const { iconUrl, href } = useActionId(actionId);
 	return (
 		<a
 			className={clsx(
 				'icon-picker-button icon-input-improved',
 				'ui-icon-picker-swatch absolute bottom-0 right-0 min-w-5 size-5 pointer-events-auto',
-				className,
-				active ? 'active filter-none' : 'grayscale border-gray-600',
+				active ? 'filter-none' : 'grayscale border-gray-600',
 				!href && 'hidden',
 			)}
-			data-testid={className}
+			data-testid={testId}
 			data-active={active ? '' : undefined}
 			{...wowheadAnchorProps()}
 			href={href || undefined}

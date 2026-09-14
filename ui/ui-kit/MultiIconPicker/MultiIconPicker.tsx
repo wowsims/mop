@@ -73,7 +73,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							align="start"
 							sideOffset={-1}
 							positionMethod="fixed"
-							className="multi-icon-picker-positioner z-dropdown"
+							className="z-dropdown"
 							data-testid="multi-icon-picker-positioner">
 							{/* `role="group"`, not the `menu` Base UI would give it. A menu's children must be menuitems, and these are icon toggles — `Menu.Item` would close the popup on every click, and toggling several buffs in one visit is the whole point of this control. */}
 							<Menu.Popup
@@ -83,13 +83,13 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 								data-testid="multi-icon-picker-menu">
 								<li>
 									<a
-										className="icon-dropdown-option ui-icon-picker-swatch dropdown-option p-0 [filter:opacity(0.7)] hover:filter-none"
+										className="icon-dropdown-option ui-icon-picker-swatch p-0 [filter:opacity(0.7)] hover:filter-none"
 										data-testid="icon-dropdown-option"
 										onClick={onClear}
 									/>
 								</li>
 								{config.inputs.map((input, index) => (
-									<li key={index} className="icon-picker-option dropdown-option opacity-70 hover:opacity-100">
+									<li key={index} className="opacity-70 hover:opacity-100">
 										<IconPicker modObject={modObject} config={input} />
 									</li>
 								))}

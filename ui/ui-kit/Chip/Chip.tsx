@@ -51,13 +51,7 @@ export const Chip = ({
 
 	return (
 		<Root
-			className={clsx(
-				'saved-data-set-chip ui-chip',
-				'data-[active]:[&_.saved-data-set-name]:text-primary-foreground',
-				active && 'active',
-				disabled && 'disabled',
-				className,
-			)}
+			className={clsx('saved-data-set-chip ui-chip', 'data-[active]:[&_.saved-data-set-name]:text-primary-foreground', className)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}
 			data-disabled={disabled ? '' : undefined}
@@ -78,7 +72,7 @@ export const Chip = ({
 					onOpenChange={setConfirming}
 					container={container}
 					trigger={<Icon name="times" style="base" size="lg" />}
-					triggerClassName="saved-data-set-delete ui-chip-delete"
+					triggerClassName="ui-chip-delete"
 					triggerProps={
 						{
 							'aria-label': deleteLabel,

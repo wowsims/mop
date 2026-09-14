@@ -9,7 +9,7 @@
 	&[data-active] {
 		@apply bg-primary;
 
-		& .saved-data-set-delete {
+		& .ui-chip-delete {
 			@apply text-primary-foreground;
 		}
 	}
