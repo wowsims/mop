@@ -31,7 +31,7 @@ const panes = vi.hoisted(() => ({ log: [] as Array<boolean>, timeline: [] as Arr
 vi.mock('../CombatReplay', () => ({
 	CombatReplay: ({ active }: { active: boolean }) => {
 		panes.replay.push(active);
-		return <div className="combat-replay-root" />;
+		return <div data-testid="combat-replay-root" />;
 	},
 }));
 vi.mock('../LogRunner', () => ({
@@ -161,7 +161,7 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('.dr-toolbar > .results-filter > .results-filter-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#logTab .dr-row > .log > .log-runner-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#timelineTab .dr-row > .timeline > .timeline-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#replayTab .dr-row > .combat-replay > .combat-replay-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#replayTab .dr-row > .combat-replay > [data-testid="combat-replay-root"]')).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {

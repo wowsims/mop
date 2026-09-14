@@ -17,7 +17,7 @@
 // scheduled by React and runs in a later task. So CDP's `Performance.getMetrics` is read across the
 // same window as well: `TaskDuration` and `ScriptDuration` catch every task whoever scheduled it,
 // and `RecalcStyleDuration` / `LayoutDuration` catch the work neither wrapper can see.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms'];
 const SEED = '1337';
@@ -31,57 +31,59 @@ const MEASURE_MS = 5000;
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
 const READ_REPLAY = () => {
-	const root = document.querySelector('.combat-replay-root');
-	if (!root) return ['NO .combat-replay-root'];
+	// Page-context copy: `q` from module scope does not survive `page.evaluate`'s serialisation.
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const root = document.querySelector(q('combat-replay-root'));
+	if (!root) return ['NO combat-replay-root'];
 	const text = (scope, selector) => [...scope.querySelectorAll(selector)].map(element => element.textContent.trim());
 	const width = element => (element ? Math.round(parseFloat(getComputedStyle(element).width)) : -1);
 	const icon = element => (element.style.backgroundImage.match(/([^/"']+\.(?:jpg|png|webp))/) ?? ['none'])[0];
-	const cards = [...root.querySelectorAll('.cr-enemy-card')];
+	const cards = [...root.querySelectorAll(q('cr-enemy-card'))];
 
 	return [
-		`player ${root.querySelector('.cr-cdm-player-label')?.textContent}`,
-		`time ${root.querySelector('.cr-time-display')?.textContent}`,
-		`scrubber ${root.querySelector('.cr-scrubber')?.value}`,
-		`castbar "${root.querySelector('.cr-cast-bar-label')?.textContent}" "${root.querySelector('.cr-cast-bar-time')?.textContent}" w=${width(root.querySelector('.cr-cast-bar-fill'))}`,
-		`ticker n=${root.querySelectorAll('.cr-strip-icon').length} active=${root.querySelectorAll('.cr-strip-icon[data-active]').length} crit=${root.querySelectorAll('.cr-crit-badge').length}`,
-		`ticker-dmg ${text(root, '.cr-dmg-badge').join(',')}`,
-		`ticker-icons ${[...root.querySelectorAll('.cr-strip-icon')].map(icon).join(',')}`,
-		`ticker-fade ${[...root.querySelectorAll('.cr-strip-icon')].map(element => Number(getComputedStyle(element).opacity).toFixed(2)).join(',')}`,
-		`buffs n=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon').length} fresh=${root.querySelectorAll('.cr-buff-icons .cr-aura-icon[data-active]').length}`,
-		`buff-icons ${[...root.querySelectorAll('.cr-buff-icons .cr-aura-icon')].map(icon).join(',')}`,
-		`buff-timers ${text(root, '.cr-buff-icons .cr-aura-time-badge').join(',')}`,
-		`buff-stacks ${text(root, '.cr-buff-icons .cr-aura-stack-badge').join(',')}`,
-		`res-labels ${text(root, '.cr-bar-label').join(',')}`,
-		`res-values ${text(root, '.cr-bar-val').join(',')}`,
-		`res-widths ${[...root.querySelectorAll('.cr-res-bar-fill')].map(width).join(',')}`,
-		`pip-labels ${text(root, '.cr-dot-label').join(',')}`,
-		`pip-values ${text(root, '.cr-dot-val').join(',')}`,
+		`player ${root.querySelector(q('cr-cdm-player-label'))?.textContent}`,
+		`time ${root.querySelector(q('cr-time-display'))?.textContent}`,
+		`scrubber ${root.querySelector(q('cr-scrubber'))?.value}`,
+		`castbar "${root.querySelector(q('cr-cast-bar-label'))?.textContent}" "${root.querySelector(q('cr-cast-bar-time'))?.textContent}" w=${width(root.querySelector(q('cr-cast-bar-fill')))}`,
+		`ticker n=${root.querySelectorAll(q('cr-strip-icon')).length} active=${root.querySelectorAll(`${q('cr-strip-icon')}[data-active]`).length} crit=${root.querySelectorAll(q('cr-crit-badge')).length}`,
+		`ticker-dmg ${text(root, q('cr-dmg-badge')).join(',')}`,
+		`ticker-icons ${[...root.querySelectorAll(q('cr-strip-icon'))].map(icon).join(',')}`,
+		`ticker-fade ${[...root.querySelectorAll(q('cr-strip-icon'))].map(element => Number(getComputedStyle(element).opacity).toFixed(2)).join(',')}`,
+		`buffs n=${root.querySelectorAll(`${q('cr-buff-icons')} ${q('cr-aura-icon')}`).length} fresh=${root.querySelectorAll(`${q('cr-buff-icons')} ${q('cr-aura-icon')}[data-active]`).length}`,
+		`buff-icons ${[...root.querySelectorAll(`${q('cr-buff-icons')} ${q('cr-aura-icon')}`)].map(icon).join(',')}`,
+		`buff-timers ${text(root, `${q('cr-buff-icons')} ${q('cr-aura-time-badge')}`).join(',')}`,
+		`buff-stacks ${text(root, `${q('cr-buff-icons')} ${q('cr-aura-stack-badge')}`).join(',')}`,
+		`res-labels ${text(root, q('cr-bar-label')).join(',')}`,
+		`res-values ${text(root, q('cr-bar-val')).join(',')}`,
+		`res-widths ${[...root.querySelectorAll(q('cr-res-bar-fill'))].map(width).join(',')}`,
+		`pip-labels ${text(root, q('cr-dot-label')).join(',')}`,
+		`pip-values ${text(root, q('cr-dot-val')).join(',')}`,
 		// A lit pip carries a gradient, an empty one a flat colour — read off the computed style, because
 		// the port moves the gradient out of an inline style and into a class fed by custom properties.
-		`pips ${[...root.querySelectorAll('.cr-segment')].map(element => (getComputedStyle(element).backgroundImage === 'none' ? '.' : '#')).join('')}`,
-		`pip-lit ${[...root.querySelectorAll('.cr-segment')].map(element => getComputedStyle(element).backgroundImage.replace(/\s+/g, '')).filter(value => value !== 'none')[0] ?? 'none'}`,
-		`grid n=${root.querySelectorAll('.cr-action-icon').length} active=${root.querySelectorAll('.cr-action-icon[data-active]').length}`,
-		`grid-icons ${[...root.querySelectorAll('.cr-action-icon')].map(icon).join(',')}`,
+		`pips ${[...root.querySelectorAll(q('cr-segment'))].map(element => (getComputedStyle(element).backgroundImage === 'none' ? '.' : '#')).join('')}`,
+		`pip-lit ${[...root.querySelectorAll(q('cr-segment'))].map(element => getComputedStyle(element).backgroundImage.replace(/\s+/g, '')).filter(value => value !== 'none')[0] ?? 'none'}`,
+		`grid n=${root.querySelectorAll(q('cr-action-icon')).length} active=${root.querySelectorAll(`${q('cr-action-icon')}[data-active]`).length}`,
+		`grid-icons ${[...root.querySelectorAll(q('cr-action-icon'))].map(icon).join(',')}`,
 		...cards.map(card =>
 			[
 				`card ${card.dataset.idx}`,
-				`name="${card.querySelector('.cr-enemy-name')?.textContent}"`,
+				`name="${card.querySelector(q('cr-enemy-name'))?.textContent}"`,
 				`x=${card.style.getPropertyValue('--cr-card-x')}`,
 				`w=${card.style.getPropertyValue('--cr-card-w')}`,
 				`scale=${card.style.getPropertyValue('--cr-card-scale')}`,
 				`z=${card.style.getPropertyValue('--cr-card-z')}`,
 				`bright=${card.style.getPropertyValue('--cr-card-brightness')}`,
-				`hp="${card.querySelector('.cr-hp-text')?.textContent}"`,
-				`hpw=${width(card.querySelector('.cr-hp-fill'))}`,
-				`debuffs=${text(card, '.cr-debuff-row .cr-aura-time-badge').join('/')}`,
-				`hits=${card.querySelectorAll('.cr-hit-effect').length}`,
-				`nums=${text(card, '.cr-dmg-num').join('/')}`,
-				`flash=${[...card.querySelectorAll('.cr-hit-flash')].map(width).join('/')}`,
-				`ring=${[...card.querySelectorAll('.cr-hit-ring')].map(width).join('/')}`,
+				`hp="${card.querySelector(q('cr-hp-text'))?.textContent}"`,
+				`hpw=${width(card.querySelector(q('cr-hp-fill')))}`,
+				`debuffs=${text(card, `${q('cr-debuff-row')} ${q('cr-aura-time-badge')}`).join('/')}`,
+				`hits=${card.querySelectorAll(q('cr-hit-effect')).length}`,
+				`nums=${text(card, q('cr-dmg-num')).join('/')}`,
+				`flash=${[...card.querySelectorAll(q('cr-hit-flash'))].map(width).join('/')}`,
+				`ring=${[...card.querySelectorAll(q('cr-hit-ring'))].map(width).join('/')}`,
 			].join(' '),
 		),
-		`speeds ${[...root.querySelectorAll('.cr-speed-btn')].map(button => `${button.textContent.trim()}${button.getAttribute('aria-pressed') === 'true' ? '*' : ''}`).join(' ')}`,
-		`play ${root.querySelector('.cr-play-btn i')?.className}`,
+		`speeds ${[...root.querySelectorAll(q('cr-speed-btn'))].map(button => `${button.textContent.trim()}${button.getAttribute('aria-pressed') === 'true' ? '*' : ''}`).join(' ')}`,
+		`play ${root.querySelector(`${q('cr-play-btn')} i`)?.className}`,
 	];
 };
 
@@ -91,19 +93,29 @@ const READ_REPLAY = () => {
  * all outside the log, so it is asserted on the port instead of compared.
  */
 const READ_TOOLTIPS = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
 	const first = selector => {
 		const element = document.querySelector(selector);
 		return element ? `${element.dataset.wowhead ?? 'none'} | ${element.getAttribute('href') ?? 'none'}` : 'NO ' + selector;
 	};
-	return [`ticker ${first('.cr-strip-icon')}`, `buff ${first('.cr-buff-icons .cr-aura-icon')}`, `grid ${first('.cr-action-icon')}`];
+	return [
+		`ticker ${first(q('cr-strip-icon'))}`,
+		`buff ${first(`${q('cr-buff-icons')} ${q('cr-aura-icon')}`)}`,
+		`grid ${first(q('cr-action-icon'))}`,
+	];
 };
 
-const READ_ANCHOR_REL = () =>
-	['.cr-strip-icon', '.cr-buff-icons .cr-aura-icon', '.cr-action-icon'].map(selector => document.querySelector(selector)?.getAttribute('rel') ?? 'none');
+const READ_ANCHOR_REL = () => {
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	return [q('cr-strip-icon'), `${q('cr-buff-icons')} ${q('cr-aura-icon')}`, q('cr-action-icon')].map(
+		selector => document.querySelector(selector)?.getAttribute('rel') ?? 'none',
+	);
+};
 
 /** Set through the native setter so React's value tracker sees the change, then fire the event both builds listen for. */
 const SEEK = value => {
-	const scrubber = document.querySelector('.cr-scrubber');
+	const q = name => `:is([data-testid="${name}"], .${name})`;
+	const scrubber = document.querySelector(q('cr-scrubber'));
 	Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(scrubber, String(value));
 	scrubber.dispatchEvent(new Event('input', { bubbles: true }));
 };
@@ -144,7 +156,7 @@ const settingsBlob = async (browser, spec) => {
 	return { key: stored.key, value: JSON.stringify(settings) };
 };
 
-const timeDisplay = page => page.evaluate(() => document.querySelector('.cr-time-display')?.textContent ?? '');
+const timeDisplay = page => page.evaluate(sel => document.querySelector(sel)?.textContent ?? '', q('cr-time-display'));
 
 const TIMERS = ['TaskDuration', 'ScriptDuration', 'RecalcStyleDuration', 'LayoutDuration'];
 
@@ -169,16 +181,19 @@ const collect = async (browser, port, spec, seeded) => {
 	// The pane before the tab is opened: a finished run is held, not drawn. Read as what is on screen
 	// rather than what is in the tree — the vanilla builds both the placeholder and an empty scene and
 	// toggles `display`, and the port renders whichever of the two it is showing.
-	const beforeOpen = await page.evaluate(() => {
-		const shown = selector => {
-			const element = document.querySelector(selector);
-			return !!element && getComputedStyle(element).display !== 'none';
-		};
-		return `placeholder=${shown('.cr-empty')} scene=${shown('.cr-scene')} cards=${document.querySelectorAll('.cr-enemy-card').length}`;
-	});
+	const beforeOpen = await page.evaluate(
+		({ empty, scene, card }) => {
+			const shown = selector => {
+				const element = document.querySelector(selector);
+				return !!element && getComputedStyle(element).display !== 'none';
+			};
+			return `placeholder=${shown(empty)} scene=${shown(scene)} cards=${document.querySelectorAll(card).length}`;
+		},
+		{ empty: q('cr-empty'), scene: q('cr-scene'), card: q('cr-enemy-card') },
+	);
 
 	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=replayTab]').click());
-	await page.waitForFunction(() => document.querySelectorAll('.cr-enemy-card').length > 0, null, { timeout: 60000 });
+	await page.waitForFunction(sel => document.querySelectorAll(sel).length > 0, q('cr-enemy-card'), { timeout: 60000 });
 	await page.waitForTimeout(800);
 
 	const atRest = await page.evaluate(READ_REPLAY);
@@ -195,27 +210,30 @@ const collect = async (browser, port, spec, seeded) => {
 
 	// Seeking by dragging the track: mousedown pauses, the input that follows moves the playhead.
 	await page.evaluate(SEEK, 0);
-	const box = await page.locator('.cr-scrubber').boundingBox();
+	const box = await page.locator(q('cr-scrubber')).boundingBox();
 	await page.mouse.click(box.x + box.width * 0.4, box.y + box.height / 2);
 	await page.waitForTimeout(300);
-	const dragged = [`play ${await page.evaluate(() => document.querySelector('.cr-play-btn i')?.className)}`, ...(await page.evaluate(READ_REPLAY))];
+	const dragged = [
+		`play ${await page.evaluate(sel => document.querySelector(sel)?.className, `${q('cr-play-btn')} i`)}`,
+		...(await page.evaluate(READ_REPLAY)),
+	];
 
 	// Playback itself: the clock has to move while playing and stop dead on pause. The values are
 	// wall-clock, so only the direction of travel is compared.
 	await page.evaluate(SEEK, 0);
 	await page.evaluate(() => (window.__replayFrames = { count: 0, total: 0, max: 0 }));
-	await page.evaluate(() => document.querySelectorAll('.cr-speed-btn')[2].click());
+	await page.evaluate(sel => document.querySelectorAll(sel)[2].click(), q('cr-speed-btn'));
 	const cdp = await page.context().newCDPSession(page);
 	await cdp.send('Performance.enable');
 	const before = metricsOf(await cdp.send('Performance.getMetrics'));
-	await page.click('.cr-play-btn');
+	await page.click(q('cr-play-btn'));
 	const started = await timeDisplay(page);
 	await page.waitForTimeout(MEASURE_MS);
 	const running = await timeDisplay(page);
 	const frames = await page.evaluate(() => window.__replayFrames);
 	const tasks = spent(before, metricsOf(await cdp.send('Performance.getMetrics')));
 	await cdp.detach();
-	await page.click('.cr-play-btn');
+	await page.click(q('cr-play-btn'));
 	const paused = await timeDisplay(page);
 	await page.waitForTimeout(600);
 	const stillPaused = await timeDisplay(page);
@@ -223,8 +241,8 @@ const collect = async (browser, port, spec, seeded) => {
 	const playback = [
 		`advances ${running !== started}`,
 		`freezes ${paused === stillPaused}`,
-		`play ${await page.evaluate(() => document.querySelector('.cr-play-btn i')?.className)}`,
-		`speeds ${await page.evaluate(() => [...document.querySelectorAll('.cr-speed-btn')].map(button => (button.getAttribute('aria-pressed') === 'true' ? '*' : '-')).join(''))}`,
+		`play ${await page.evaluate(sel => document.querySelector(sel)?.className, `${q('cr-play-btn')} i`)}`,
+		`speeds ${await page.evaluate(sel => [...document.querySelectorAll(sel)].map(button => (button.getAttribute('aria-pressed') === 'true' ? '*' : '-')).join(''), q('cr-speed-btn'))}`,
 	];
 
 	// Back to the tab it came from, then in again: the vanilla stopped playback on hide and held the
@@ -234,12 +252,14 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(400);
 	await page.evaluate(() => document.querySelector('.dr-toolbar [role=tab][aria-controls=replayTab]').click());
 	await page.waitForTimeout(600);
-	const reopened = [`time ${await timeDisplay(page)}`, `cards ${await page.evaluate(() => document.querySelectorAll('.cr-enemy-card').length)}`];
+	const reopened = [`time ${await timeDisplay(page)}`, `cards ${await page.evaluate(sel => document.querySelectorAll(sel).length, q('cr-enemy-card'))}`];
 
 	// A second run while the tab is open: the scene is rebuilt and the playhead goes back to the start.
 	await page.evaluate(SEEK, 400);
 	await page.click('.detailed-results-1-iteration-button');
-	await page.waitForFunction(() => document.querySelector('.cr-time-display')?.textContent?.startsWith('0:00.0'), null, { timeout: 120000 }).catch(() => {});
+	await page
+		.waitForFunction(sel => document.querySelector(sel)?.textContent?.startsWith('0:00.0'), q('cr-time-display'), { timeout: 120000 })
+		.catch(() => {});
 	await page.waitForTimeout(1200);
 	const rerun = [`time ${await timeDisplay(page)}`, ...(await page.evaluate(READ_REPLAY)).slice(0, 4)];
 
