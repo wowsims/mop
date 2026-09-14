@@ -42,7 +42,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 				value,
 				label: labelOf(group.field, value),
 				icon: suggestions.spellIcons.get(value) ? (
-					<img data-testid="log-search-suggestion-icon" className="mr-1" src={suggestions.spellIcons.get(value)} alt="" />
+					<img data-testid="log-search-suggestion-icon" className="icon-sm mr-1" src={suggestions.spellIcons.get(value)} alt="" />
 				) : undefined,
 			})),
 		[group.field, suggestions],

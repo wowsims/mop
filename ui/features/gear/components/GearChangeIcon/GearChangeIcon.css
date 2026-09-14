@@ -1,21 +1,21 @@
 @layer components {
-.ui-gear-change-icon-reforge {
-	--reforge-glyph-size: 50%;
-	--reforge-glyph-border-size: 107.5%;
-	background:
-		center / var(--reforge-glyph-border-size) url('https://wow.zamimg.com/images/Icon/medium/border/default.png') no-repeat,
-		center / contain url('https://wow.zamimg.com/images/wow/interface/cursor/crosshair/reforge.png') no-repeat;
+	.ui-gear-change-icon-reforge {
+		--reforge-glyph-size: 50%;
+		--reforge-glyph-border-size: 107.5%;
+		background:
+			center / var(--reforge-glyph-border-size) url('https://wow.zamimg.com/images/Icon/medium/border/default.png') no-repeat,
+			center / contain url('https://wow.zamimg.com/images/wow/interface/cursor/crosshair/reforge.png') no-repeat;
 
-	@apply absolute top-1 left-1/2 -translate-x-1/2 w-(--reforge-glyph-size) h-(--reforge-glyph-size) bg-gray-800 rounded-[3px];
-}
+		@apply absolute top-1 left-1/2 -translate-x-1/2 w-(--reforge-glyph-size) h-(--reforge-glyph-size) bg-gray-800 rounded-[3px] data-interactive:cursor-pointer data-interactive:select-none;
+	}
 
-.ui-gear-change-icon-gem-socket {
-	--changed-socket-marker-size: calc(var(--gem-width) * 0.7);
+	.ui-gear-change-icon-gem-socket {
+		--changed-socket-marker-size: calc(var(--gem-width) * 0.7);
 
-	@apply bg-contain bg-no-repeat flex items-center justify-center tracking-[0px];
-}
+		@apply bg-contain bg-no-repeat flex items-center justify-center tracking-[0px] data-interactive:cursor-pointer data-interactive:select-none;
+	}
 
-.ui-gear-change-icon-gem-marker {
-	@apply ml-px text-(length:--changed-socket-marker-size) text-danger;
-}
+	.ui-gear-change-icon-gem-marker {
+		@apply ml-px text-(length:--changed-socket-marker-size) text-danger;
+	}
 }

@@ -214,7 +214,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 			</div>
 			<div className="flex pr-2 mr-4 text-md justify-between gap-4 max-xl:mr-0" data-testid="selector-modal-list-labels">
 				{(label === SelectorModalTabs.Items || label === SelectorModalTabs.Upgrades) && (
-					<h6 className="w-12" data-testid="ilvl-label" onClick={() => sort(ItemListSortBy.ILVL)}>
+					<h6 className="w-12 cursor-pointer select-none" data-testid="ilvl-label" onClick={() => sort(ItemListSortBy.ILVL)}>
 						{i18n.t('gear_tab.gear_picker.table_headers.ilvl')}
 					</h6>
 				)}
@@ -227,7 +227,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</h6>
 				)}
 				<h6
-					className="w-24 flex items-center float-right"
+					className="w-24 flex items-center float-right cursor-pointer select-none"
 					data-testid="ep-label"
 					style={{ display: showEPValues ? undefined : 'none' }}
 					onClick={() => sort(ItemListSortBy.EP)}>
