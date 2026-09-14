@@ -28,22 +28,27 @@ export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasR
 
 	return (
 		<div data-testid={rootTestId}>
-			<table className="metrics-table ui-metrics-table">
-				<thead className="metrics-table-header">
+			<table data-testid="metrics-table" className="ui-metrics-table">
+				<thead data-testid="metrics-table-header">
 					{table.getHeaderGroups().map(headerGroup => (
-						<tr className="metrics-table-header-row ui-metrics-header-row" key={headerGroup.id}>
+						<tr data-testid="metrics-table-header-row" className="ui-metrics-header-row" key={headerGroup.id}>
 							{headerGroup.headers.map(header => (
 								<th
 									key={header.id}
+									data-testid="metrics-table-header-cell"
+									data-primary-metric={header.column.columnDef.meta?.primaryColumn ? '' : undefined}
 									className={clsx(
-										'metrics-table-header-cell ui-metrics-header-cell',
+										'ui-metrics-header-cell',
 										header.column.columnDef.meta?.columnClass,
 										header.column.columnDef.meta?.headerCellClass,
 									)}
 									aria-sort={ariaSort(header.column.getIsSorted())}
 									onClick={header.column.getToggleSortingHandler()}
 									{...tooltipAnchorProps(header.column.columnDef.meta?.headerTooltipId, header.column.columnDef.meta?.headerTooltip)}>
-									<Button variant="unstyled" className="metrics-table-sort text-inherit [font:inherit] focus-visible:focus-ring">
+									<Button
+										data-testid="metrics-table-sort"
+										variant="unstyled"
+										className="text-inherit [font:inherit] focus-visible:focus-ring">
 										<span>
 											<table.FlexRender header={header} />
 										</span>
@@ -53,7 +58,7 @@ export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasR
 						</tr>
 					))}
 				</thead>
-				<tbody className="metrics-table-body">
+				<tbody data-testid="metrics-table-body">
 					{table.getRowModel().rows.map(row => (
 						<MetricsTableRow key={row.id} row={row} rowClassName={rowClassName} />
 					))}

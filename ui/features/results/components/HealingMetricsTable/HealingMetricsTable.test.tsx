@@ -65,7 +65,7 @@ const playerResult = (actions: Array<ActionMetrics>) =>
 	}) as unknown as SimResultData;
 
 const rows = (container: HTMLElement) => [...container.querySelectorAll<HTMLTableRowElement>('tbody tr')];
-const tooltipTable = () => document.querySelector('.sim-tooltip table.metrics-table');
+const tooltipTable = () => document.querySelector('.sim-tooltip table[data-testid="metrics-table"]');
 
 describe('HealingMetricsTable', () => {
 	beforeEach(() => {
@@ -83,18 +83,18 @@ describe('HealingMetricsTable', () => {
 
 		expect(container.querySelector('[data-testid="healing-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric w-[400px] text-center',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell w-[400px] text-center',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
 		]);
 		expect(rows(container)).toHaveLength(0);
 	});
@@ -110,21 +110,21 @@ describe('HealingMetricsTable', () => {
 		result = playerResult([metric('Healing Touch')]);
 		const { container } = render(<HealingMetricsTable />);
 
-		expect(container.querySelectorAll('td.metrics-table-cell--primary-metric .metrics-total-bar-fill')).toHaveLength(2);
+		expect(container.querySelectorAll('td[data-primary-metric] .metrics-total-bar-fill')).toHaveLength(2);
 	});
 
 	it('drops the overlay bar when nothing is shielded', () => {
 		result = playerResult([metric('Healing Touch', { shielding: 0 })]);
 		const { container } = render(<HealingMetricsTable />);
 
-		expect(container.querySelectorAll('td.metrics-table-cell--primary-metric .metrics-total-bar-fill')).toHaveLength(1);
+		expect(container.querySelectorAll('td[data-primary-metric] .metrics-total-bar-fill')).toHaveLength(1);
 	});
 
 	it('opens the healing breakdown with its average column from the primary-metric cell', async () => {
 		result = playerResult([metric('Healing Touch')]);
 		const { container } = render(<HealingMetricsTable />);
 
-		fireEvent.mouseEnter(container.querySelector('td.metrics-table-cell--primary-metric')!);
+		fireEvent.mouseEnter(container.querySelector('td[data-primary-metric]')!);
 		await waitFor(() => expect(tooltipTable()).toBeTruthy());
 		expect([...tooltipTable()!.querySelectorAll('thead th')]).toHaveLength(3);
 		expect([...tooltipTable()!.querySelectorAll<HTMLTableRowElement>('tbody tr')].map(row => row.cells[0].textContent)).toEqual([
@@ -173,7 +173,7 @@ describe('HealingMetricsTable', () => {
 		result = playerResult([metric('Healing Touch')]);
 		const { container, unmount } = render(<HealingMetricsTable />);
 
-		fireEvent.mouseEnter(container.querySelector('td.metrics-table-cell--primary-metric')!);
+		fireEvent.mouseEnter(container.querySelector('td[data-primary-metric]')!);
 		await waitFor(() => expect(tooltipTable()).toBeTruthy());
 
 		unmount();

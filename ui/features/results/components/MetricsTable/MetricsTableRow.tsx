@@ -26,6 +26,7 @@ export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<
 					// The model value, which the display string may round or abbreviate away.
 					<td
 						key={cell.id}
+						data-primary-metric={cell.column.columnDef.meta?.primaryColumn ? '' : undefined}
 						className={clsx(
 							'ui-metrics-cell',
 							row.depth > 0 && index === 0 && 'pl-[20px]',

@@ -72,7 +72,7 @@ describe('MetricsCombinedTooltip', () => {
 
 	it('writes a group header row only when there is more than one named group', () => {
 		const one = render(<MetricsCombinedTooltip hasMetricBars={false} groups={[group('Hits', [{ name: 'Hit', value: 10, percentage: 10 }])]} />);
-		expect(one.container.querySelectorAll('.metrics-table-group-header')).toHaveLength(0);
+		expect(one.container.querySelectorAll('[data-testid="metrics-table-group-header"]')).toHaveLength(0);
 
 		const two = render(
 			<MetricsCombinedTooltip
@@ -80,7 +80,7 @@ describe('MetricsCombinedTooltip', () => {
 				groups={[group('Hits', [{ name: 'Hit', value: 10, percentage: 10 }]), group('Ticks', [{ name: 'Tick', value: 5, percentage: 5 }])]}
 			/>,
 		);
-		expect([...two.container.querySelectorAll('.metrics-table-group-header')].map(row => row.textContent)).toEqual(['Hits', 'Ticks']);
+		expect([...two.container.querySelectorAll('[data-testid="metrics-table-group-header"]')].map(row => row.textContent)).toEqual(['Hits', 'Ticks']);
 	});
 
 	it('renders a total bar per row unless bars are turned off', () => {

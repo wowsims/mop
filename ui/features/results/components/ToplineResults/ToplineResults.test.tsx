@@ -65,7 +65,7 @@ describe('ToplineResults', () => {
 		result = resultFor(PlayerSpecs.FireMage);
 		const { container } = mount();
 
-		expect(container.querySelectorAll('.topline-results-root > table.metrics-table')).toHaveLength(1);
+		expect(container.querySelectorAll('.topline-results-root > table[data-testid="metrics-table"]')).toHaveLength(1);
 		expect(container.querySelectorAll('.topline-results-root > *')).toHaveLength(1);
 		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric'))).toEqual([
 			'dps',

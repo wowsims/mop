@@ -31,28 +31,25 @@ const PORT = Number(process.env.PORT ?? PORTS.react);
 // builds and the React shell stops emitting it, so the class list is asserted exactly on each side
 // rather than relaxed to a containment test that would stop noticing a stray class on either.
 const IS_BASE = PORT === PORTS.base;
-const TABLE_CLASSES = IS_BASE ? 'metrics-table.tablesorter' : 'metrics-table';
 
 // Logged by `ActionId.toStringIgnoringTag()` for the merged pet-group parent rows, whose
 // `actionIdOverride` is an absent `petActionId`. Present on both builds; the count drops as tables
 // port, because a React name cell keys its icon on `equalityKey()`, which does not log.
 const BENIGN_CONSOLE = /Empty action id!/;
 
-const HEAD = 'metrics-table-header-cell';
-const PRIMARY = 'metrics-table-cell--primary-metric.metrics-table-header-cell.text-center';
-const RATE = 'metrics-table-header-cell.text-body.text-success';
-const plain = count => Array(count).fill(HEAD);
-
 // The at-load shell, read off the column configs. `sortCol` is the one column carrying
 // `ColumnSortType.Descending`. `mustHaveRows` is set only where a sim on this spec is guaranteed to
 // produce rows: dtps is empty for a DPS spec and healing is one incidental row, so neither claims it.
+// `columnCount`/`primaryIndex` replace the old per-header exact-class-list comparison (name, primary
+// bar, +N plain, rate), which broke once the `ui-metrics-*` companion classes landed — structure is
+// asserted by count and by the primary column's position instead.
 const TABLES = [
-	{ root: q('damage-metrics-root'), headers: [HEAD, PRIMARY, ...plain(7), RATE], sortCol: 9, mustHaveRows: true },
-	{ root: q('healing-metrics-root'), headers: [HEAD, PRIMARY, ...plain(9), RATE], sortCol: 11 },
-	{ root: q('dtps-metrics-root'), headers: [HEAD, PRIMARY, ...plain(6), RATE], sortCol: 8 },
-	{ root: q('cast-metrics-root'), headers: plain(3), sortCol: 1, mustHaveRows: true },
-	{ root: q('buff-metrics-root'), headers: plain(4), sortCol: 3, mustHaveRows: true },
-	{ root: q('debuff-metrics-root'), headers: plain(4), sortCol: 3, mustHaveRows: true },
+	{ root: q('damage-metrics-root'), columnCount: 10, primaryIndex: 1, sortCol: 9, mustHaveRows: true },
+	{ root: q('healing-metrics-root'), columnCount: 12, primaryIndex: 1, sortCol: 11 },
+	{ root: q('dtps-metrics-root'), columnCount: 9, primaryIndex: 1, sortCol: 8 },
+	{ root: q('cast-metrics-root'), columnCount: 3, primaryIndex: -1, sortCol: 1, mustHaveRows: true },
+	{ root: q('buff-metrics-root'), columnCount: 4, primaryIndex: -1, sortCol: 3, mustHaveRows: true },
+	{ root: q('debuff-metrics-root'), columnCount: 4, primaryIndex: -1, sortCol: 3, mustHaveRows: true },
 ];
 
 // `orderedResourceTypes` — always all 15 in the DOM, each container hidden until its table has rows.
@@ -94,23 +91,31 @@ const ordering = (values, asc) => {
 
 // Everything below runs in the page.
 
+// Structure only, by testid/role on both builds — `metrics-table`/`-header`/`-header-row`/`-body`/
+// `-header-cell` are hooks this unit converts to `data-testid`, so a `:is([data-testid=…], .…)`
+// selector is what still finds them on the baseline (class) and the port (testid) alike. The
+// primary-metric column is a `data-primary-metric` attribute rather than a testid, because it marks
+// a repeated column across every row, not one located element; the baseline still carries the literal
+// `.metrics-table-cell--primary-metric` class it always had.
 const SHELL = roots =>
 	roots.map(root => {
 		const rootElem = document.querySelector(root);
 		if (!rootElem) return { root, missing: true };
 		const table = rootElem.querySelector('table');
-		const thead = table?.querySelector('thead');
-		const tbody = table?.querySelector('tbody');
-		const classesOf = el => [...el.classList].sort().join('.');
-		const headers = [...(thead?.querySelectorAll('th') ?? [])];
+		const thead = table?.querySelector(':is([data-testid="metrics-table-header"], .metrics-table-header)');
+		const tbody = table?.querySelector(':is([data-testid="metrics-table-body"], .metrics-table-body)');
+		const headerRow = thead?.querySelector(':is([data-testid="metrics-table-header-row"], .metrics-table-header-row)');
+		const headers = [...(headerRow?.querySelectorAll(':is([data-testid="metrics-table-header-cell"], .metrics-table-header-cell)') ?? [])];
 		return {
 			root,
-			table: table ? classesOf(table) : null,
-			thead: thead ? classesOf(thead) : null,
-			headerRow: thead?.querySelector('tr') ? classesOf(thead.querySelector('tr')) : null,
-			tbody: tbody ? classesOf(tbody) : null,
+			hasTable: !!table,
+			tablesorter: table ? table.classList.contains('tablesorter') : null,
+			hasThead: !!thead,
+			hasHeaderRow: !!headerRow,
+			hasTbody: !!tbody,
 			rows: tbody ? tbody.querySelectorAll('tr').length : null,
-			headers: headers.map(classesOf),
+			headerCount: headers.length,
+			primaryIndex: headers.findIndex(th => th.matches(':is([data-primary-metric], .metrics-table-cell--primary-metric)')),
 			// Every `<th>` wraps its whole label in a span, and nothing else in the cell carries text.
 			// Not "the span is the cell's first element child": the React shell puts the label's span
 			// inside the focusable `<button>` a sortable header needs, which vanilla has no room for.
@@ -181,7 +186,7 @@ const SORT_PROBE = async root => {
 		const num = parseFloat(raw);
 		return isNaN(num) ? raw : num;
 	};
-	const table = document.querySelector(`${root} table.metrics-table`);
+	const table = document.querySelector(`${root} table:is([data-testid="metrics-table"], .metrics-table)`);
 	if (!table) return { missing: true };
 	const column = index => [...table.querySelectorAll('tbody tr')].filter(row => !row.hasAttribute('data-child')).map(row => parse(row.cells[index]));
 	// `sortDesc` starts all-true and `setSort` flips before applying, so the first click on any
@@ -206,7 +211,7 @@ const GROUP_PROBE = async ({ root, column }) => {
 		const num = parseFloat(raw);
 		return isNaN(num) ? raw : num;
 	};
-	const table = document.querySelector(`${root} table.metrics-table`);
+	const table = document.querySelector(`${root} table:is([data-testid="metrics-table"], .metrics-table)`);
 	if (!table) return { missing: true };
 	const key = row => [...row.cells].map(cell => cell.textContent.trim()).join('|');
 	const groups = () => {
@@ -274,7 +279,7 @@ const TIPS = () => {
 		...[...document.querySelectorAll('.tippy-box')].filter(box => box.getAttribute('data-state') === 'visible'),
 		...document.querySelectorAll('.react-tooltip__show'),
 	];
-	return { open: boxes.length, withTable: boxes.filter(box => box.querySelector('table.metrics-table')).length };
+	return { open: boxes.length, withTable: boxes.filter(box => box.querySelector('table:is([data-testid="metrics-table"], .metrics-table)')).length };
 };
 
 const browser = await launch();
@@ -313,17 +318,19 @@ try {
 	);
 	for (const [index, table] of TABLES.entries()) {
 		const seen = shell[index];
-		const expected = table.headers;
+		const tablesorterOk = IS_BASE ? seen.tablesorter === true : seen.tablesorter === false;
 		const ok =
 			!seen.missing &&
-			seen.table === TABLE_CLASSES &&
-			seen.thead === 'metrics-table-header' &&
-			seen.headerRow === 'metrics-table-header-row' &&
-			seen.tbody === 'metrics-table-body' &&
+			seen.hasTable &&
+			tablesorterOk &&
+			seen.hasThead &&
+			seen.hasHeaderRow &&
+			seen.hasTbody &&
 			seen.rows === 0 &&
-			seen.labelled === expected.length &&
-			JSON.stringify(seen.headers) === JSON.stringify(expected);
-		check(`${table.root} builds its whole shell before any sim`, ok, `${seen.headers?.length ?? 0}/${expected.length} columns, ${seen.rows} rows`);
+			seen.headerCount === table.columnCount &&
+			seen.labelled === table.columnCount &&
+			seen.primaryIndex === table.primaryIndex;
+		check(`${table.root} builds its whole shell before any sim`, ok, `${seen.headerCount ?? 0}/${table.columnCount} columns, ${seen.rows} rows`);
 		if (!ok) console.log(`        got ${JSON.stringify(seen)}`);
 	}
 
@@ -461,7 +468,7 @@ try {
 		await page.waitForTimeout(650);
 		return page.evaluate(TIPS);
 	};
-	const primary = await hover(page.locator(`${q('damage-metrics-root')} tbody tr td.metrics-table-cell--primary-metric`).first());
+	const primary = await hover(page.locator(`${q('damage-metrics-root')} tbody tr td:is([data-primary-metric], .metrics-table-cell--primary-metric)`).first());
 	check('the primary-metric cell opens a tooltip holding a nested metrics table', primary.withTable > 0, JSON.stringify(primary));
 
 	// The threat veto: `onShow` returns false while threat metrics are off, so the

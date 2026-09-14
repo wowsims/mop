@@ -77,7 +77,7 @@ const targetResult = (...targets: Array<Array<ActionMetrics>>) =>
 	}) as unknown as SimResultData;
 
 const rows = (container: HTMLElement) => [...container.querySelectorAll<HTMLTableRowElement>('tbody tr')];
-const tooltipTable = () => document.querySelector('.sim-tooltip table.metrics-table');
+const tooltipTable = () => document.querySelector('.sim-tooltip table[data-testid="metrics-table"]');
 
 describe('DtpsMetricsTable', () => {
 	beforeEach(() => {
@@ -94,15 +94,15 @@ describe('DtpsMetricsTable', () => {
 
 		expect(container.querySelector('[data-testid="dtps-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell metrics-table-cell--primary-metric w-[400px] text-center',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
-			'metrics-table-header-cell ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell w-[400px] text-center',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
+			'ui-metrics-header-cell',
 		]);
 		expect(rows(container)).toHaveLength(0);
 	});
@@ -138,7 +138,7 @@ describe('DtpsMetricsTable', () => {
 		result = targetResult([metric('Melee')]);
 		const { container } = render(<DtpsMetricsTable />);
 
-		fireEvent.mouseEnter(container.querySelector('td.metrics-table-cell--primary-metric')!);
+		fireEvent.mouseEnter(container.querySelector('td[data-primary-metric]')!);
 		await waitFor(() => expect(tooltipTable()).toBeTruthy());
 		expect([...tooltipTable()!.querySelectorAll<HTMLTableRowElement>('tbody tr')].map(row => row.cells[0].textContent)).toEqual([
 			'results_tab.details.attack_types.hit',

@@ -36,30 +36,30 @@ export const MetricsCombinedTooltip = ({ groups, headerValues, hasMetricBars = t
 	const hasAverageColumn = displayGroups.some(group => group.data.some(entry => typeof entry.average === 'number'));
 
 	return (
-		<table className="metrics-table ui-metrics-table">
-			<thead className="metrics-table-header">
-				<tr className="metrics-table-header-row ui-metrics-header-row">
-					<th className="metrics-table-header-cell ui-metrics-header-cell">
+		<table data-testid="metrics-table" className="ui-metrics-table">
+			<thead data-testid="metrics-table-header">
+				<tr data-testid="metrics-table-header-row" className="ui-metrics-header-row">
+					<th data-testid="metrics-table-header-cell" className="ui-metrics-header-cell">
 						{headerValues?.[0] || i18n.t('results_tab.details.tooltip_table.type')}
 					</th>
-					<th className="metrics-table-header-cell ui-metrics-header-cell">
+					<th data-testid="metrics-table-header-cell" className="ui-metrics-header-cell">
 						{headerValues?.[1] || i18n.t('results_tab.details.tooltip_table.count')}
 					</th>
 					{hasAverageColumn && (
-						<th className="metrics-table-header-cell ui-metrics-header-cell">
+						<th data-testid="metrics-table-header-cell" className="ui-metrics-header-cell">
 							{headerValues?.[2] || i18n.t('results_tab.details.tooltip_table.average')}
 						</th>
 					)}
 				</tr>
 			</thead>
-			<tbody className="metrics-table-body">
+			<tbody data-testid="metrics-table-body">
 				{displayGroups.map(({ name: groupName, className, data, spellSchool, totalPercentage }, groupIndex) => {
 					const maxValue = Math.max(...data.map(entry => entry.value));
 					const columnCount = data.some(entry => typeof entry.average === 'number') ? 3 : 2;
 					return (
 						<Fragment key={groupName ?? groupIndex}>
 							{groupName && displayGroups.length > 1 && (
-								<tr className={clsx('metrics-table-group-header ui-metrics-row', className)}>
+								<tr data-testid="metrics-table-group-header" className={clsx('ui-metrics-row', className)}>
 									<th className="text-left font-normal" colSpan={columnCount}>
 										{groupName}
 									</th>
