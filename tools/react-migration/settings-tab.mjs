@@ -84,7 +84,7 @@ const INSTALL = () => {
 	const keyOf = el => {
 		const control = own(el, 'input, select');
 		if (control?.id) return control.id;
-		if (el.classList.contains('consumes-row')) {
+		if (el.matches(q('consumes-row'))) {
 			// `ConsumeRow`'s label is i18n text; the `consumes-*` class on its inputs container is not.
 			const tokens = [...el.querySelectorAll('[class],[data-testid]')]
 				.flatMap(node => [...node.classList, node.getAttribute('data-testid')].filter(Boolean))
@@ -304,7 +304,7 @@ const INSTALL = () => {
 		// "Engineering" label, which is i18n text.
 		engineering: () => {
 			const inputs = pane().querySelector(q('consumes-engi'));
-			const row = inputs?.closest('.consumes-row');
+			const row = inputs?.closest(q('consumes-row'));
 			const picker = inputs?.querySelector('.input-root');
 			return {
 				profession1: document.getElementById('simui-profession1')?.value ?? null,

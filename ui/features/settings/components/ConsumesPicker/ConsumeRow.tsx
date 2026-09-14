@@ -28,7 +28,7 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	if (!shown) return null;
 
 	return (
-		<div className={clsx('consumes-row', 'ui-field', 'input-root')} data-layout="inline" role="group" aria-labelledby={labelId}>
+		<div className={clsx('ui-field', 'input-root')} data-testid="consumes-row" data-layout="inline" role="group" aria-labelledby={labelId}>
 			<FieldLabel as="span" id={labelId}>
 				{i18n.t(`settings_tab.consumables.${name}.title`)}
 			</FieldLabel>

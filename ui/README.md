@@ -172,7 +172,7 @@ sections: [{
     id: 'totems',                                    // ContentBlock css class when className is unset
     title: 'Totems',
     tooltip: '…',                                    // optional — header tooltip button
-    className: 'totems-settings',                    // what the stylesheet hooks on
+    className: 'my-custom-section',                   // extra utility classes on the block
     iconGroupClassName: 'totem-dropdowns-container', // layout hook for the icon row
     iconInputs: [ … ],                               // same configs as `playerIconInputs`
     inputs: [ … ],                                   // same configs as `otherInputs.inputs`

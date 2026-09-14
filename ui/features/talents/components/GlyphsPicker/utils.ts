@@ -83,7 +83,6 @@ export const glyphOfField = (glyphs: Glyphs, field: GlyphField) => glyphs[field]
 export const glyphInputConfig = (field: GlyphField): InputConfig<Player<any>, number> & { id: string } => ({
 	id: `glyph-picker-glyph-${field}`,
 	inline: true,
-	extraClassNames: ['item-picker-root'],
 	storeField: 'glyphs' as const,
 	getValue: (player: Player<any>) => readGlyph(player, field),
 	setValue: (player: Player<any>, newValue: number) => setGlyph(player, field, newValue),

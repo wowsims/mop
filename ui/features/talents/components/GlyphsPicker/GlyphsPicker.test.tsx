@@ -46,8 +46,8 @@ const mount = (initial: Partial<Glyphs> = {}) => {
 const slots = (kind: 'major' | 'minor') =>
 	Array.from(document.querySelectorAll<HTMLElement>(`[data-testid="${kind}-glyphs"] [data-testid="content-block-body"] [data-testid="glyph-picker-root"]`));
 const link = (kind: 'major' | 'minor', index: number) => slots(kind)[index].querySelector<HTMLAnchorElement>('[data-testid="glyph-link"]')!;
-const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('.selector-modal-list .selector-modal-list-item'));
-const searchBox = () => document.querySelector<HTMLInputElement>('.selector-modal-search')!;
+const listItems = () => Array.from(document.querySelectorAll<HTMLLIElement>('[data-testid="selector-modal-list"] [data-testid="selector-modal-list-item"]'));
+const searchBox = () => document.querySelector<HTMLInputElement>('[data-testid="selector-modal-search"]')!;
 const dialogOpen = () => {
 	const modal = document.querySelector('[data-testid="glyph-modal"]');
 	return modal !== null && !modal.hasAttribute('hidden');
@@ -73,14 +73,12 @@ describe('GlyphsPicker', () => {
 		expect(slots('minor')).toHaveLength(3);
 	});
 
-	// The picker wears `item-picker-root` and its label vocabulary to inherit `_gear_picker.scss`,
-	// which stays global. Losing a name here silently loses the styling.
-	it('wears the item-picker class names it borrows its stylesheet from', async () => {
+	it('wears the input-root class its label vocabulary needs', async () => {
 		mount();
 		await waitFor(() => expect(slots('major')).toHaveLength(3));
 
 		const slot = slots('major')[0];
-		expect(['input-root', 'item-picker-root'].every(name => slot.classList.contains(name))).toBe(true);
+		expect(slot.classList.contains('input-root')).toBe(true);
 		expect(slot.getAttribute('data-layout')).toBe('inline');
 		expect(slot.querySelector('[data-testid="glyph-link"] > img[data-testid="item-picker-icon"]')).not.toBeNull();
 		expect(slot.querySelector('[data-testid="item-picker-labels-container"] > span')).not.toBeNull();
@@ -94,7 +92,7 @@ describe('GlyphsPicker', () => {
 		await openSlot('major', 0);
 
 		expect(listItems()).toHaveLength(majorIds.length + 1);
-		expect(document.querySelectorAll('.selector-modal-list-item-link')).toHaveLength(majorIds.length + 1);
+		expect(document.querySelectorAll('[data-testid="selector-modal-list-item-link"]')).toHaveLength(majorIds.length + 1);
 	});
 
 	it('offers the minor list when a minor slot opens it', async () => {
@@ -109,7 +107,7 @@ describe('GlyphsPicker', () => {
 		await openSlot('major', 1);
 
 		const entry = listItems()[1];
-		const name = entry.querySelector('.selector-modal-list-item-name')!.textContent;
+		const name = entry.querySelector('[data-testid="selector-modal-list-item-name"]')!.textContent;
 		fireEvent.click(entry.querySelector('a')!);
 
 		expect(glyphs.major2).not.toBe(0);
@@ -162,7 +160,7 @@ describe('GlyphsPicker', () => {
 	it('hides the entries whose name does not carry every search word', async () => {
 		mount();
 		await openSlot('major', 0);
-		const target = listItems()[1].querySelector('.selector-modal-list-item-name')!.textContent!;
+		const target = listItems()[1].querySelector('[data-testid="selector-modal-list-item-name"]')!.textContent!;
 
 		fireEvent.change(searchBox(), { target: { value: target } });
 

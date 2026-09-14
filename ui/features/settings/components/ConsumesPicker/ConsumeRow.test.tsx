@@ -49,14 +49,15 @@ const row = (options: Options, configs?: Array<IconEnumPickerConfig<Options, num
 			</ConsumeRow>
 		</SimHostProvider>,
 	);
-	return document.querySelector('.consumes-row') as HTMLElement;
+	return document.querySelector('[data-testid="consumes-row"]') as HTMLElement;
 };
 
 describe('ConsumeRow', () => {
 	it('builds vanilla’s row: the caption first, then whatever it was given', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
-		expect(['consumes-row', 'input-root'].every(name => element.classList.contains(name))).toBe(true);
+		expect(element.getAttribute('data-testid')).toBe('consumes-row');
+		expect(element.classList.contains('input-root')).toBe(true);
 		expect(element.getAttribute('data-layout')).toBe('inline');
 		// A <span>: it names the row's icon group, not a form control.
 		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
@@ -77,16 +78,16 @@ describe('ConsumeRow', () => {
 	it('unmounts the row when every picker in it is hidden, and mounts it again', () => {
 		const options = new Options();
 		row(options, [configFor(opts => opts.engineer), configFor(opts => opts.engineer)]);
-		expect(document.querySelector('.consumes-row')).toBeTruthy();
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeTruthy();
 
 		options.engineer = false;
 		act(() => options.changeProfession(1));
-		expect(document.querySelector('.consumes-row')).toBeNull();
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeNull();
 		expect(document.querySelector('.consumes-engi')).toBeNull();
 
 		options.engineer = true;
 		act(() => options.changeProfession(2));
-		expect(document.querySelector('.consumes-row')).toBeTruthy();
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeTruthy();
 	});
 
 	it('keeps the row shown while any one of its pickers is', () => {
@@ -113,9 +114,9 @@ describe('ConsumeRow', () => {
 
 		options.engineer = false;
 		act(() => options.changeSomethingElse());
-		expect(document.querySelector('.consumes-row')).toBeTruthy();
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeTruthy();
 
 		act(() => options.changeProfession(1));
-		expect(document.querySelector('.consumes-row')).toBeNull();
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeNull();
 	});
 });
