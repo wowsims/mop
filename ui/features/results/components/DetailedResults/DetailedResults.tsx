@@ -213,34 +213,34 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 							</DetailedResultsPane>
 						)}
 						{showHealing && (
-							<DetailedResultsPane id="healingTab" className="[&_.metrics-table]:text-xs" contentClassName="healing-spell-metrics" topline>
+							<DetailedResultsPane id="healingTab" className="[&_.metrics-table]:text-xs" contentTestId="healing-spell-metrics" topline>
 								<HealingMetricsTable />
 							</DetailedResultsPane>
 						)}
 						{showThreat && (
-							<DetailedResultsPane id="damageTakenTab" contentClassName="dtps-metrics" topline>
+							<DetailedResultsPane id="damageTakenTab" contentTestId="dtps-metrics" topline>
 								<DtpsMetricsTable />
 							</DetailedResultsPane>
 						)}
-						<DetailedResultsPane id="buffsTab" contentClassName="buff-aura-metrics">
+						<DetailedResultsPane id="buffsTab" contentTestId="buff-aura-metrics">
 							<AuraMetricsTable useDebuffs={false} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="debuffsTab" contentClassName="debuff-aura-metrics">
+						<DetailedResultsPane id="debuffsTab" contentTestId="debuff-aura-metrics">
 							<AuraMetricsTable useDebuffs={true} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="castsTab" contentClassName="cast-metrics">
+						<DetailedResultsPane id="castsTab" contentTestId="cast-metrics">
 							<CastMetricsTable />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="resourcesTab" contentClassName="resource-metrics">
+						<DetailedResultsPane id="resourcesTab" contentTestId="resource-metrics">
 							<ResourceMetricsTable />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="timelineTab" contentClassName="timeline" filling>
+						<DetailedResultsPane id="timelineTab" contentTestId="timeline" filling>
 							<Timeline active={activeId === 'timelineTab'} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="replayTab" className="p-0" contentClassName="combat-replay" filling>
+						<DetailedResultsPane id="replayTab" className="p-0" contentTestId="combat-replay" filling>
 							<CombatReplay active={activeId === 'replayTab'} />
 						</DetailedResultsPane>
-						<DetailedResultsPane id="logTab" contentClassName="log">
+						<DetailedResultsPane id="logTab" contentTestId="log">
 							<LogRunner active={activeId === 'logTab'} />
 						</DetailedResultsPane>
 					</div>

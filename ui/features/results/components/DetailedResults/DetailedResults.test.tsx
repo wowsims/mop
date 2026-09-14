@@ -53,7 +53,7 @@ vi.mock('../DamageMetricsTable', () => ({ DamageMetricsTable: () => <div data-te
 vi.mock('../HealingMetricsTable', () => ({ HealingMetricsTable: () => <div data-testid="healing-metrics-root" /> }));
 vi.mock('../DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div data-testid="dtps-metrics-root" /> }));
 vi.mock('../CastMetricsTable', () => ({ CastMetricsTable: () => <div data-testid="cast-metrics-root" /> }));
-vi.mock('../ResourceMetricsTable', () => ({ ResourceMetricsTable: () => <div className="resource-metrics-root" /> }));
+vi.mock('../ResourceMetricsTable', () => ({ ResourceMetricsTable: () => <div data-testid="resource-metrics-root" /> }));
 vi.mock('../AuraMetricsTable', () => ({
 	AuraMetricsTable: ({ useDebuffs }: { useDebuffs: boolean }) => <div data-testid={useDebuffs ? 'debuff-metrics-root' : 'buff-metrics-root'} />,
 }));
@@ -147,12 +147,12 @@ describe('DetailedResults', () => {
 		metrics.healing = true;
 		const { container } = renderPane();
 		expect(container.querySelectorAll('#damageTab .damage-metrics > [data-testid="damage-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#healingTab .healing-spell-metrics > [data-testid="healing-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#damageTakenTab .dtps-metrics > [data-testid="dtps-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#castsTab .cast-metrics > [data-testid="cast-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#buffsTab .buff-aura-metrics > [data-testid="buff-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#debuffsTab .debuff-aura-metrics > [data-testid="debuff-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#resourcesTab .resource-metrics > .resource-metrics-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#healingTab [data-testid="healing-spell-metrics"] > [data-testid="healing-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#damageTakenTab [data-testid="dtps-metrics"] > [data-testid="dtps-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#castsTab [data-testid="cast-metrics"] > [data-testid="cast-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#buffsTab [data-testid="buff-aura-metrics"] > [data-testid="buff-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#debuffsTab [data-testid="debuff-aura-metrics"] > [data-testid="debuff-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#resourcesTab [data-testid="resource-metrics"] > [data-testid="resource-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('[data-testid="dr-row"].topline-results > .topline-results-root')).toHaveLength(3);
 		expect(container.querySelectorAll('#damageTab [data-testid="dr-row"].dps-histogram > .dps-histogram-root')).toHaveLength(1);
 	});
@@ -160,9 +160,11 @@ describe('DetailedResults', () => {
 	it('keeps each pane in the container its island was built into', () => {
 		const { container } = renderPane();
 		expect(container.querySelectorAll('[data-testid="dr-toolbar"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > .log > .log-runner-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > .timeline > .timeline-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#replayTab [data-testid="dr-row"] > .combat-replay > [data-testid="combat-replay-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > [data-testid="log"] > .log-runner-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > [data-testid="timeline"] > .timeline-root')).toHaveLength(1);
+		expect(
+			container.querySelectorAll('#replayTab [data-testid="dr-row"] > [data-testid="combat-replay"] > [data-testid="combat-replay-root"]'),
+		).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
