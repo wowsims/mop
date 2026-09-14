@@ -29,14 +29,14 @@ describe('paintHitLayer', () => {
 	it('gives a crit a second ring and a hit only one', () => {
 		paintHitLayer(container, cache, [hit(1), hit(2, { isCrit: true })], 2);
 
-		expect(roots()[0].querySelectorAll('.cr-hit-ring')).toHaveLength(1);
-		expect(roots()[1].querySelectorAll('.cr-hit-ring')).toHaveLength(2);
-		expect(roots()[1].querySelector('.cr-dmg-num')!.classList.contains('cr-dmg-crit')).toBe(true);
+		expect(roots()[0].querySelectorAll('[data-testid="cr-hit-ring"]')).toHaveLength(1);
+		expect(roots()[1].querySelectorAll('[data-testid="cr-hit-ring"]')).toHaveLength(2);
+		expect(roots()[1].querySelector('[data-testid="cr-dmg-num"]')!.hasAttribute('data-crit')).toBe(true);
 	});
 
 	it('leaves out the number when the hit dealt nothing', () => {
 		paintHitLayer(container, cache, [hit(1, { dmg: null })], 1);
-		expect(roots()[0].querySelector('.cr-dmg-num')).toBeNull();
+		expect(roots()[0].querySelector('[data-testid="cr-dmg-num"]')).toBeNull();
 	});
 
 	// The point of the pool: a hit that is still on screen keeps its node, so a frame is style writes
@@ -55,7 +55,7 @@ describe('paintHitLayer', () => {
 	it('grows and fades an effect as it ages', () => {
 		const only = hit(1);
 		paintHitLayer(container, cache, [only], 1);
-		const flash = roots()[0].querySelector<HTMLElement>('.cr-hit-flash')!;
+		const flash = roots()[0].querySelector<HTMLElement>('[data-testid="cr-hit-flash"]')!;
 		expect(flash.style.width).toBe('14px');
 		expect(flash.style.opacity).toBe('0.85');
 

@@ -12,38 +12,37 @@ interface HitNodes {
 
 export type HitNodeCache = Map<ReplayHit, HitNodes>;
 
-const div = (className: string): HTMLElement => {
+const div = (className: string, testId: string): HTMLElement => {
 	const element = document.createElement('div');
 	element.className = className;
+	element.dataset.testid = testId;
 	return element;
 };
 
-const ROOT_CLASSES = 'cr-hit-effect absolute -translate-x-1/2 -translate-y-1/2';
-const FLASH_CLASSES = 'cr-hit-flash absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-cr-hit-flash';
-const RING_HIT_CLASSES = 'cr-hit-ring cr-hit-outcome-hit absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-damage-hit text-damage-hit';
-const RING_CRIT_CLASSES =
-	'cr-hit-ring cr-hit-outcome-crit absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-damage-crit text-damage-crit';
-const RING_SECONDARY_CLASSES =
-	'cr-hit-ring cr-hit-outcome-crit-secondary absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-warning text-warning';
-const DMG_NUM_CLASSES =
-	'cr-dmg-num absolute left-1/2 top-1/2 whitespace-nowrap text-base font-extrabold text-cr-dmg-num text-shadow-outline-strong pointer-events-none';
+const ROOT_CLASSES = 'absolute -translate-x-1/2 -translate-y-1/2';
+const FLASH_CLASSES = 'absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-cr-hit-flash';
+const RING_HIT_CLASSES = 'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-damage-hit text-damage-hit';
+const RING_CRIT_CLASSES = 'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-damage-crit text-damage-crit';
+const RING_SECONDARY_CLASSES = 'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-warning text-warning';
+const DMG_NUM_CLASSES = 'absolute left-1/2 top-1/2 whitespace-nowrap text-base font-extrabold text-cr-dmg-num text-shadow-outline-strong pointer-events-none';
 const DMG_NUM_CRIT_CLASSES =
-	'cr-dmg-num cr-dmg-crit absolute left-1/2 top-1/2 whitespace-nowrap text-[1.3rem] font-extrabold text-damage-crit text-shadow-glow-crit pointer-events-none';
+	'absolute left-1/2 top-1/2 whitespace-nowrap text-[1.3rem] font-extrabold text-damage-crit text-shadow-glow-crit pointer-events-none';
 
 const createHitNodes = (hit: ReplayHit): HitNodes => {
-	const root = div(ROOT_CLASSES);
+	const root = div(ROOT_CLASSES, 'cr-hit-effect');
 	root.style.left = `${hit.x}%`;
 	root.style.top = `${hit.y}%`;
 
-	const flash = div(FLASH_CLASSES);
-	const ring = div(hit.isCrit ? RING_CRIT_CLASSES : RING_HIT_CLASSES);
+	const flash = div(FLASH_CLASSES, 'cr-hit-flash');
+	const ring = div(hit.isCrit ? RING_CRIT_CLASSES : RING_HIT_CLASSES, 'cr-hit-ring');
 	root.append(flash, ring);
 
-	const secondary = hit.isCrit ? div(RING_SECONDARY_CLASSES) : null;
+	const secondary = hit.isCrit ? div(RING_SECONDARY_CLASSES, 'cr-hit-ring') : null;
 	if (secondary) root.append(secondary);
 
-	const number = hit.dmg == null ? null : div(hit.isCrit ? DMG_NUM_CRIT_CLASSES : DMG_NUM_CLASSES);
+	const number = hit.dmg == null ? null : div(hit.isCrit ? DMG_NUM_CRIT_CLASSES : DMG_NUM_CLASSES, 'cr-dmg-num');
 	if (number) {
+		if (hit.isCrit) number.dataset.crit = '';
 		number.textContent = hitDamageLabel(hit.dmg!);
 		root.append(number);
 	}

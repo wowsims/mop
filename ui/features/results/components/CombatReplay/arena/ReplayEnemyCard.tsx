@@ -23,18 +23,18 @@ export interface ReplayEnemyCardProps {
 }
 
 const CARD_CLASSES =
-	'cr-enemy-card absolute top-1/2 bottom-0 z-(--cr-card-z,1) flex max-h-full flex-col items-center gap-[10px] pointer-events-auto origin-bottom left-(--cr-card-x) w-(--cr-card-w) [transform:translate(-50%,-50%)_scale(var(--cr-card-scale,1))] brightness-(--cr-card-brightness,1)';
+	'absolute top-1/2 bottom-0 z-(--cr-card-z,1) flex max-h-full flex-col items-center gap-[10px] pointer-events-auto origin-bottom left-(--cr-card-x) w-(--cr-card-w) [transform:translate(-50%,-50%)_scale(var(--cr-card-scale,1))] brightness-(--cr-card-brightness,1)';
 
 export const ReplayEnemyCard = ({ enemy, layout }: ReplayEnemyCardProps) => (
-	<div className={CARD_CLASSES} data-idx={enemy.index} style={cardVars(layout)}>
-		<div className="cr-nameplate relative z-2 w-full rounded-[6px] bg-black-55 px-[6px] py-[4px]">
-			<div className="cr-enemy-name mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs font-semibold text-danger">
+	<div className={CARD_CLASSES} data-testid="cr-enemy-card" data-idx={enemy.index} style={cardVars(layout)}>
+		<div className="relative z-2 w-full rounded-[6px] bg-black-55 px-[6px] py-[4px]">
+			<div data-testid="cr-enemy-name" className="mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs font-semibold text-danger">
 				{enemy.name}
 			</div>
 			<ReplayEnemyHealth enemy={enemy} />
-			<ReplayAuraIcons className="cr-debuff-row flex flex-wrap gap-[4px] mt-[3px] min-h-0" auras={enemy.auras} />
+			<ReplayAuraIcons testId="cr-debuff-row" className="flex flex-wrap gap-[4px] mt-[3px] min-h-0" auras={enemy.auras} />
 		</div>
-		<div className="cr-silhouette relative flex w-full shrink items-end justify-center">
+		<div className="relative flex w-full shrink items-end justify-center">
 			<img
 				src={BOSS_IMAGE_URL}
 				alt={enemy.name}
