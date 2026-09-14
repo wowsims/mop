@@ -7,15 +7,15 @@ import type { MetricRow } from '../../model/grouping';
 
 export interface MetricsTableRowProps<T> {
 	row: Row<MetricsTableFeatures, MetricRow<T>>;
-	/** `customizeRowElem`: an extra class taken from the row's own metric, on parents and children alike. */
-	rowClassName?: (metric: T) => string | undefined;
+	rowThreatOnly?: (metric: T) => boolean;
 }
 
-export const MetricsTableRow = <T,>({ row, rowClassName }: MetricsTableRowProps<T>) => {
+export const MetricsTableRow = <T,>({ row, rowThreatOnly }: MetricsTableRowProps<T>) => {
 	const isParent = row.getCanExpand();
 	return (
 		<tr
-			className={clsx('ui-metrics-row', isParent && 'cursor-pointer', rowClassName?.(row.original.metric))}
+			className={clsx('ui-metrics-row', isParent && 'cursor-pointer')}
+			data-testid={rowThreatOnly?.(row.original.metric) ? 'threat-metrics' : undefined}
 			data-parent={isParent ? '' : undefined}
 			data-child={row.depth > 0 ? '' : undefined}
 			data-expanded={isParent && row.getIsExpanded() ? '' : undefined}

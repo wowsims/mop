@@ -143,10 +143,18 @@ describe('DamageMetricsTable', () => {
 		result = playerResult([metric('Steady Shot'), metric('Vigilance', { hitAttempts: 0, dps: 0 })]);
 		const { container } = render(<DamageMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.classList.contains('threat-metrics')])).toEqual([
+		expect(rows(container).map(row => [row.cells[0].textContent, row.getAttribute('data-testid') === 'threat-metrics'])).toEqual([
 			['Steady Shot', false],
 			['Vigilance', true],
 		]);
+	});
+
+	it('drops a threat-only row entirely once threat metrics are hidden', () => {
+		result = playerResult([metric('Steady Shot'), metric('Vigilance', { hitAttempts: 0, dps: 0 })]);
+		showThreatMetrics = false;
+		const { container } = render(<DamageMetricsTable />);
+
+		expect(rows(container).map(row => row.cells[0].textContent)).toEqual(['Steady Shot']);
 	});
 
 	it('dashes a passive action on Avg Cast and sorts it as 0', () => {

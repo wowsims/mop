@@ -8,7 +8,7 @@ import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
-import { buildMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
+import { buildMetricRows, filterMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
 import type { SimResultData } from '../../model/result_data';
 import { attackFormat, attackMetricsColumns, threatTooltip, useMetricMax } from '../AttackMetricsColumns';
 import { MetricsCombinedTooltip, type MetricsCombinedTooltipGroup } from '../MetricsCombinedTooltip';
@@ -92,15 +92,17 @@ const healingHitGroups = (metric: ActionMetrics): Array<MetricsCombinedTooltipGr
 	},
 ];
 
-const rowClassName = (showThreatMetrics: boolean) => (metric: ActionMetrics) =>
-	metric.hitAttempts == 0 && metric.hps == 0 ? (showThreatMetrics ? 'threat-metrics' : 'threat-metrics hidden') : undefined;
+const isThreatOnly = (metric: ActionMetrics) => metric.hitAttempts == 0 && metric.hps == 0;
 
 export const HealingMetricsTable = () => {
 	const resultData = useSimResult();
 	const sim = useSim();
 	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
 
-	const rows = useMemo(() => (resultData ? buildMetricRows(healingGroups(resultData), grouping) : NO_ROWS), [resultData]);
+	const rows = useMemo(() => {
+		const built = resultData ? buildMetricRows(healingGroups(resultData), grouping) : NO_ROWS;
+		return showThreatMetrics ? built : filterMetricRows(built, isThreatOnly);
+	}, [resultData, showThreatMetrics]);
 	const metricsByRowId = useMemo(() => indexMetricRows(rows), [rows]);
 	const maxHealing = useMetricMax(rows, metric => metric.healing);
 
@@ -202,7 +204,7 @@ export const HealingMetricsTable = () => {
 				rows={rows}
 				sortColumnId="hps"
 				hasResult={!!resultData}
-				rowClassName={rowClassName(showThreatMetrics)}
+				rowThreatOnly={isThreatOnly}
 			/>
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip id={TOOLTIP.hitsHeader} />

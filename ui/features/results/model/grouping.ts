@@ -15,6 +15,9 @@ export const buildMetricRows = <T>(groups: Array<Array<T>>, { merge, shouldColla
 			group.length === 1 && shouldCollapse(group[0]) ? { metric: group[0] } : { metric: merge(group), subRows: group.map(metric => ({ metric })) },
 		);
 
+export const filterMetricRows = <T>(rows: Array<MetricRow<T>>, exclude: (metric: T) => boolean): Array<MetricRow<T>> =>
+	rows.filter(row => !exclude(row.metric)).map(row => (row.subRows ? { ...row, subRows: filterMetricRows(row.subRows, exclude) } : row));
+
 /** A row's identity, passed to the table as `getRowId` and reused by `indexMetricRows`, so the two cannot drift. */
 export const metricRowId = (index: number, parentId?: string): string => (parentId === undefined ? String(index) : `${parentId}.${index}`);
 

@@ -45,6 +45,10 @@ const DROPPED_HOOKS = new Set([
 	'dr-tab-content',
 	'damage-content',
 	'healing-content',
+	// The last of `resultMetricClasses`/`metricsClasses`: the damageTab content wrapper carried
+	// `damage-metrics` as a plain class; it is `contentTestId="damage-spell-metrics"` now, matching
+	// every sibling pane.
+	'damage-metrics',
 	'damage-taken-content',
 	'buffs-content',
 	'debuffs-content',

@@ -146,7 +146,7 @@ describe('DetailedResults', () => {
 		metrics.threat = true;
 		metrics.healing = true;
 		const { container } = renderPane();
-		expect(container.querySelectorAll('#damageTab .damage-metrics > [data-testid="damage-metrics-root"]')).toHaveLength(1);
+		expect(container.querySelectorAll('#damageTab [data-testid="damage-spell-metrics"] > [data-testid="damage-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#healingTab [data-testid="healing-spell-metrics"] > [data-testid="healing-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#damageTakenTab [data-testid="dtps-metrics"] > [data-testid="dtps-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#castsTab [data-testid="cast-metrics"] > [data-testid="cast-metrics-root"]')).toHaveLength(1);

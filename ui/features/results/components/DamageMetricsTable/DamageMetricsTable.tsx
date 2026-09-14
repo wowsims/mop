@@ -8,7 +8,7 @@ import { Tooltip } from '@ui-kit/Tooltip';
 import { useMemo } from 'react';
 
 import { useSimResult } from '../../hooks/useSimResult';
-import { buildMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
+import { buildMetricRows, filterMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
 import type { SimResultData } from '../../model/result_data';
 import {
 	amountHeader,
@@ -61,15 +61,17 @@ const grouping: MetricGrouping<ActionMetrics> = {
 	shouldCollapse: metric => !metric.unit?.isPet,
 };
 
-const rowClassName = (showThreatMetrics: boolean) => (metric: ActionMetrics) =>
-	metric.hitAttempts == 0 && metric.dps == 0 ? (showThreatMetrics ? 'threat-metrics' : 'threat-metrics hidden') : undefined;
+const isThreatOnly = (metric: ActionMetrics) => metric.hitAttempts == 0 && metric.dps == 0;
 
 export const DamageMetricsTable = () => {
 	const resultData = useSimResult();
 	const sim = useSim();
 	const { threat: showThreatMetrics } = useDisplayMetrics(sim);
 
-	const rows = useMemo(() => (resultData ? buildMetricRows(damageGroups(resultData), grouping) : NO_ROWS), [resultData]);
+	const rows = useMemo(() => {
+		const built = resultData ? buildMetricRows(damageGroups(resultData), grouping) : NO_ROWS;
+		return showThreatMetrics ? built : filterMetricRows(built, isThreatOnly);
+	}, [resultData, showThreatMetrics]);
 	const metricsByRowId = useMemo(() => indexMetricRows(rows), [rows]);
 	const maxDamage = useMetricMax(rows, metric => metric.damage);
 
@@ -155,7 +157,7 @@ export const DamageMetricsTable = () => {
 				rows={rows}
 				sortColumnId="dps"
 				hasResult={!!resultData}
-				rowClassName={rowClassName(showThreatMetrics)}
+				rowThreatOnly={isThreatOnly}
 			/>
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip

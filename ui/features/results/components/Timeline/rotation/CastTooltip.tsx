@@ -37,7 +37,7 @@ export const CastTooltip = ({ log }: CastTooltipProps) => {
 								{ddl.timestamp.toFixed(2)}s - <DamageResult log={ddl} />
 							</span>
 							{showThreatMetrics && !ddl.source?.isTarget && (
-								<span className="threat-metrics">
+								<span>
 									{' '}
 									({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
 								</span>

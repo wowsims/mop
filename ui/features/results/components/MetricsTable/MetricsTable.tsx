@@ -17,11 +17,10 @@ export interface MetricsTableProps<T> {
 	sortColumnId: string;
 	/** Whether a run has completed. A table with no rows hides only once one has — never at load. */
 	hasResult: boolean;
-	/** `customizeRowElem`: an extra class taken from the row's own metric. */
-	rowClassName?: (metric: T) => string | undefined;
+	rowThreatOnly?: (metric: T) => boolean;
 }
 
-export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasResult, rowClassName }: MetricsTableProps<T>) => {
+export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasResult, rowThreatOnly }: MetricsTableProps<T>) => {
 	const table = useMetricsTable({ columns, rows, sortColumnId });
 
 	if (hasResult && !rows.length) return null;
@@ -60,7 +59,7 @@ export const MetricsTable = <T,>({ rootTestId, columns, rows, sortColumnId, hasR
 				</thead>
 				<tbody data-testid="metrics-table-body">
 					{table.getRowModel().rows.map(row => (
-						<MetricsTableRow key={row.id} row={row} rowClassName={rowClassName} />
+						<MetricsTableRow key={row.id} row={row} rowThreatOnly={rowThreatOnly} />
 					))}
 				</tbody>
 			</table>
