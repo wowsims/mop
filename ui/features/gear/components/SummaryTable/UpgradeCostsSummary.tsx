@@ -45,7 +45,7 @@ export const UpgradeCostsSummary = () => {
 						<SummaryTableRow>
 							<div className="flex items-center">
 								<img
-									className="ui-summary-table-gem-icon static cursor-default rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center"
+									className="ui-summary-table-gem-icon static cursor-default rounded-none inline-block size-gem-inner inset-gem z-1 bg-no-repeat bg-cover bg-center"
 									data-testid="gem-icon"
 									src={currencyIconUrl(key, faction)}
 									alt=""

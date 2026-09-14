@@ -42,7 +42,7 @@ describe('ReforgePanel', () => {
 		const [run, settings] = [...container.querySelectorAll('button')];
 
 		expect([...run.classList].sort()).toEqual(
-			['ui-button', 'ui-button-primary', 'grow', 'py-2', 'px-[calc(--spacing(3)+var(--settings-button-width))]', '-mr-(--settings-button-width)'].sort(),
+			['ui-button', 'ui-button-primary', 'grow', 'py-2', 'px-settings-button-inset', '-mr-(--settings-button-width)'].sort(),
 		);
 		expect(run.getAttribute('data-testid')).toBe('suggest-reforges-action-button');
 		expect(run.hasAttribute('data-sidebar-action')).toBe(true);

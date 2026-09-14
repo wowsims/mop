@@ -415,11 +415,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				<div
 					ref={rulerViewportRef}
 					className="relative box-border min-w-0 grow shrink basis-0 overflow-hidden border-b border-white text-white text-[12px] font-bold">
-					<div
-						ref={rulerTrackRef}
-						data-testid="rotation-ruler-track"
-						className="absolute top-0 left-0 h-full w-[calc(var(--pps)*var(--duration))] transform-[translateX(calc(var(--pan,0)*-1px))]"
-					/>
+					<div ref={rulerTrackRef} data-testid="rotation-ruler-track" className="ui-timeline-ruler-track" />
 				</div>
 			</div>
 			<div
@@ -439,12 +435,8 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				onMouseOver={onItemOver}
 				onMouseMove={onItemMove}
 				onMouseLeave={hideTip}>
-				<div ref={contentRef} data-testid="rotation-content" className="min-w-full w-[calc(var(--label-w)+var(--pps)*var(--duration))]">
-					<div
-						data-testid="rotation-vspacer"
-						className="h-[calc(var(--vspacer-h,0)*1px)]"
-						style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })}
-					/>
+				<div ref={contentRef} data-testid="rotation-content" className="min-w-full w-timeline-content-w">
+					<div data-testid="rotation-vspacer" className="h-timeline-vspacer-h" style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })} />
 					{order.slice(frame.window.first, frame.window.last + 1).map(key => {
 						const row = rowFor(key);
 						if (row.kind === 'separator') return <RotationSeparatorRow key={key} row={row} />;
@@ -453,7 +445,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 					})}
 					<div
 						data-testid="rotation-vspacer"
-						className="h-[calc(var(--vspacer-h,0)*1px)]"
+						className="h-timeline-vspacer-h"
 						style={cssVars({ '--vspacer-h': String(frame.window.bottomSpacer) })}
 					/>
 				</div>

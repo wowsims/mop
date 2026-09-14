@@ -28,7 +28,7 @@ export const GemSocket = ({ socketColor, gem, hidden, className, ...rest }: GemS
 			href={href}>
 			{gem && (
 				<img
-					className="absolute inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="absolute inline-block size-gem-inner inset-gem rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
 					data-testid="gem-icon"
 					src={iconUrl || undefined}
 					alt=""

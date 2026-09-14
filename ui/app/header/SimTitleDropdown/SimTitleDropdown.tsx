@@ -59,7 +59,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 	const portalContainer = usePortalContainer();
 	return (
-		<div className="h-[calc(var(--spacing-sim-header)-1px)]" data-testid="sim-title-dropdown-root">
+		<div className="h-sim-header-minus" data-testid="sim-title-dropdown-root">
 			<div className="relative h-full" data-testid="sim-link-dropdown">
 				<Menu.Root modal={false}>
 					<Menu.Trigger

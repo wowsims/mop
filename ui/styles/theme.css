@@ -391,6 +391,33 @@
 	--color-input-focus-border: color-mix(in srgb, var(--color-surface-border), var(--color-white) 20%);
 	--shadow-focus-input: 0 0 0.25rem var(--color-input-disabled);
 	--shadow-focus-checkbox: 0 0 0.25rem var(--color-primary);
+
+	--spacing-settings-button-inset: calc(--spacing(3) + var(--settings-button-width));
+	--spacing-settings-panel-max: min(350px, calc(100dvw - var(--settings-button-width, 36px) - --spacing(4) * 2));
+	--spacing-selector-modal-w: min(calc(var(--modal-width-xl) - --spacing(10)), calc(100vw - (2 * var(--modal-margin)) - --spacing(10)));
+	--spacing-modal-inset-w: calc(100vw - 2 * var(--modal-margin));
+	--spacing-modal-inset-h: calc(100vh - 2 * var(--modal-margin));
+	--spacing-sticky-toolbar-w: calc(100% + var(--spacing-page) * 2);
+	--spacing-page-inset-w: calc(100% - 2 * var(--spacing-page));
+	--spacing-sim-header-plus: calc(var(--spacing-sim-header) + 1px);
+	--spacing-sim-header-minus: calc(var(--spacing-sim-header) - 1px);
+	--spacing-cr-icon-offset: calc(var(--spacing-cr-icon) + 20px);
+	--spacing-log-body-min-h: calc(100dvh - var(--log-sticky-top, 0px) - var(--spacing-page));
+	--spacing-gem-inner: calc(4 * var(--gem-width) / 5);
+	--spacing-gem: calc(var(--gem-width) / 10);
+	--color-table-row-even-hover: hsla(var(--table-row-even-bg-hsl), 0.9);
+
+	--spacing-timeline-pos: calc(var(--pps) * var(--t));
+	--spacing-timeline-segment: calc(var(--pps) * var(--dur));
+	--spacing-timeline-segment-floor: max(2px, calc(var(--pps) * var(--dur)));
+	--spacing-timeline-total: calc(var(--pps) * var(--duration));
+	--spacing-timeline-content-w: calc(var(--label-w) + var(--pps) * var(--duration));
+	--spacing-timeline-row-h: calc(var(--row-h) * 1px);
+	--spacing-timeline-vspacer-h: calc(var(--vspacer-h, 0) * 1px);
+	--spacing-timeline-fill: calc(var(--fill) * 1%);
+
+	--background-image-cr-resbar-fill: linear-gradient(90deg, var(--cr-resbar-from), var(--cr-resbar-to));
+	--background-image-cr-segment-fill: linear-gradient(180deg, var(--cr-segment-from), var(--cr-segment-to));
 }
 
 @keyframes loading-shimmer {

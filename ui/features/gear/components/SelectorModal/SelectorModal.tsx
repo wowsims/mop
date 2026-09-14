@@ -114,7 +114,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 				onOpenChange={state.setOpen}
 				testId="selector-modal"
 				size="xl"
-				maxWidth="max-w-[min(calc(var(--modal-width-xl)-(--spacing(10))),calc(100vw-(2*var(--modal-margin))-(--spacing(10))))]"
+				maxWidth="max-w-selector-modal-w"
 				headerFlush
 				onKeyDown={onRailKeyDown}
 				headerChildren={

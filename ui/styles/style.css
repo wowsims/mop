@@ -24,6 +24,7 @@
 @import '../features/results/components/LogRunner/LogRunner.css';
 @import '../features/stat-weights/components/EpWeightsDialog/EpWeightsDialog.css';
 @import '../features/reforge/components/ReforgePanel/ReforgePanel.css';
+@import '../features/talents/components/TalentsPicker/TalentPicker.css';
 
 @import '../ui-kit/Button/Button.css';
 @import '../ui-kit/FormControl/FormControl.css';

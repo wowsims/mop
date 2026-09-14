@@ -1,0 +1,9 @@
+@layer components {
+	.ui-talent-picker-root {
+		--talent-border-color: var(--color-gray-600);
+
+		&[data-selected='true'] {
+			--talent-border-color: color-mix(in srgb, var(--color-talent-full) 40%, transparent);
+		}
+	}
+}

@@ -32,7 +32,7 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 				<div
 					ref={fill}
 					data-testid="cr-res-bar-fill"
-					className="h-full rounded-sm bg-[linear-gradient(90deg,var(--cr-resbar-from),var(--cr-resbar-to))] shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-50 ease-linear"
+					className="h-full rounded-sm bg-cr-resbar-fill shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-50 ease-linear"
 					style={barVars(row)}
 				/>
 				<span

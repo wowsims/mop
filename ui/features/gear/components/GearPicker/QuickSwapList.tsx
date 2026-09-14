@@ -32,7 +32,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 				className={clsx(
 					'flex items-center cursor-pointer bg-table-even border border-transparent',
 					'transition-[background-color,color,border] duration-150 ease-in-out',
-					'pointer-fine:hover:bg-[hsla(var(--table-row-even-bg-hsl),0.9)]',
+					'pointer-fine:hover:bg-table-row-even-hover',
 					'data-active:border-success focus-visible:outline focus-visible:outline-1 focus-visible:outline-link -outline-offset-1',
 				)}
 				data-testid="tooltip-quick-swap__anchor"
@@ -43,7 +43,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 				}}>
 				<img
 					alt={entry.item.name}
-					className="shrink-0 static mr-1 rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="shrink-0 static mr-1 rounded-none inline-block size-gem-inner inset-gem z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
 					data-testid="gem-icon"
 					style={{ '--gem-width': '2.5rem' } as CSSProperties}
 					src={iconUrl || undefined}

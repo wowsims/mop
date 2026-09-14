@@ -43,7 +43,7 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 					<div
 						key={index}
 						data-testid="cr-segment"
-						className="h-full min-w-0 flex-1 rounded-xs bg-white-7 data-filled:bg-[linear-gradient(180deg,var(--cr-segment-from),var(--cr-segment-to))] data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
+						className="h-full min-w-0 flex-1 rounded-xs bg-white-7 data-filled:bg-cr-segment-fill data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
 					/>
 				))}
 			</div>

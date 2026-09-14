@@ -9,7 +9,7 @@ export interface AuraItemProps {
 
 export const AuraItem = ({ item, index }: AuraItemProps) => (
 	<div
-		className="ui-timeline-item top-(--rotation-item-top) min-w-[calc(var(--pps)*var(--dur))] h-(--rotation-item-h) bg-timeline-aura opacity-50"
+		className="ui-timeline-item top-(--rotation-item-top) min-w-timeline-segment h-(--rotation-item-h) bg-timeline-aura opacity-50"
 		data-shares-row={item.sharesRowWithCast ? '' : undefined}
 		data-item-index={index}
 		style={spanStyle(item.start, item.end - item.start)}>

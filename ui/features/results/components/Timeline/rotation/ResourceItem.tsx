@@ -27,7 +27,7 @@ export const ResourceItem = ({ item, index, cssName }: ResourceItemProps) => (
 		style={spanStyle(item.start, item.end - item.start)}>
 		<div
 			data-testid="rotation-item-resource-fill"
-			className={clsx('absolute left-0 h-[calc(var(--fill)*1%)]', FILL_CLASSES[cssName])}
+			className={clsx('absolute left-0 h-timeline-fill', FILL_CLASSES[cssName])}
 			hidden={item.display !== 'fill'}
 			style={item.display === 'fill' ? cssVars({ '--fill': String(item.fillPercent) }) : undefined}
 		/>

@@ -23,7 +23,7 @@ export const ReplayScene = ({ model, clock }: ReplaySceneProps) => (
 				<div className="absolute inset-x-0 top-2.5 z-10 flex justify-center">
 					<ReplayTicker actions={model.actions} />
 				</div>
-				<div className="absolute inset-x-5 bottom-0 top-[calc(var(--spacing-cr-icon)+20px)] z-1 overflow-hidden">
+				<div className="absolute inset-x-5 bottom-0 top-cr-icon-offset z-1 overflow-hidden">
 					<ReplayEnemyFormation enemies={model.enemies} hiddenCount={model.hiddenEnemyCount} />
 				</div>
 			</div>

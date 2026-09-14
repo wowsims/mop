@@ -15,7 +15,7 @@ export const ReforgeSidebarGroup = ({ model, options }: ReforgeSidebarGroupProps
 	return (
 		<ButtonGroup
 			ref={setGroup}
-			className="[--settings-button-width:36px] [--reforge-cols:auto_var(--settings-button-width)] w-full grid grid-cols-(--reforge-cols) order-20 ui-reforge-sidebar-actions"
+			className="[--settings-button-width:36px] w-full grid grid-cols-(--reforge-cols) order-20 ui-reforge-sidebar-actions"
 			data-testid="suggest-reforges-settings-group">
 			{group && <ReforgePanel model={model} options={options} container={group} />}
 		</ButtonGroup>

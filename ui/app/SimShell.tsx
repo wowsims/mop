@@ -83,9 +83,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 							<aside
 								className="sticky -top-px flex-1 flex flex-col items-stretch bg-background h-dvh z-sidebar max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-auto"
 								data-testid="sim-sidebar">
-								<div
-									className="h-[calc(var(--spacing-sim-header)+1px)] border-b border-b-border z-sim-title max-lg:sticky max-lg:-top-px"
-									data-testid="sim-title">
+								<div className="h-sim-header-plus border-b border-b-border z-sim-title max-lg:sticky max-lg:-top-px" data-testid="sim-title">
 									<SimTitleDropdown currentSpec={spec} />
 								</div>
 								<div
@@ -119,7 +117,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									ref={header}
 									className={clsx(
 										'sticky -top-px h-sim-header pt-6 pr-page pl-page -mx-page whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
-										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-stuck:after:w-full",
+										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-page-inset-w after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-stuck:after:w-full",
 										'data-stuck:bg-background',
 									)}
 									data-testid="sim-header"

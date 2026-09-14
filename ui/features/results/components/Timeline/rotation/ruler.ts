@@ -76,14 +76,14 @@ export class Ruler {
 
 	constructor(private readonly track: HTMLElement) {
 		const tickClass =
-			'absolute bottom-0 left-[calc(var(--pps)*var(--t))] -ml-px h-[5px] w-[3px] [background-image:linear-gradient(to_right,transparent_1px,currentcolor_1px,currentcolor_2px,transparent_2px)]';
+			'absolute bottom-0 left-timeline-pos -ml-px h-[5px] w-[3px] [background-image:linear-gradient(to_right,transparent_1px,currentcolor_1px,currentcolor_2px,transparent_2px)]';
 		this.minorTicks = new TickPool(track, tickClass, 'rotation-ruler-tick', (elem, index) => elem.style.setProperty('--t', String(index * this.minorStep)));
 		this.majorTicks = new TickPool(track, `${tickClass} h-[12px]`, 'rotation-ruler-tick', (elem, index) =>
 			elem.style.setProperty('--t', String(index * this.labelStep)),
 		);
 		this.labels = new TickPool(
 			track,
-			'absolute top-[2px] left-[calc(var(--pps)*var(--t))] -translate-x-1/2 whitespace-nowrap data-first:translate-x-0',
+			'absolute top-[2px] left-timeline-pos -translate-x-1/2 whitespace-nowrap data-first:translate-x-0',
 			'rotation-ruler-label',
 			(elem, index) => {
 				const time = index * this.labelStep;

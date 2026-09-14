@@ -10,4 +10,8 @@
 	.ui-reforge-cap-value-cell {
 		@apply w-18.75 pl-0.5 pb-1;
 	}
+
+	.ui-reforge-sidebar-actions {
+		--reforge-cols: auto var(--settings-button-width);
+	}
 }

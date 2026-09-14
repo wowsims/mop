@@ -29,7 +29,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 				href={href || undefined}
 				rel={externalRel(href, undefined)}>
 				<img
-					className="ui-summary-table-gem-icon static rounded-none inline-block size-[calc(4*var(--gem-width)/5)] inset-[calc(var(--gem-width)/10)] z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="ui-summary-table-gem-icon static rounded-none inline-block size-gem-inner inset-gem z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
 					data-testid="gem-icon"
 					src={iconUrl || undefined}
 					alt=""

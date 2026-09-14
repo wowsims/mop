@@ -73,7 +73,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 	return (
 		<a
 			ref={rootRef}
-			className="flex items-center gap-2 p-2 border-2 border-transparent [--talent-border-color:var(--color-gray-600)] data-[selected=true]:[--talent-border-color:color-mix(in_srgb,var(--color-talent-full)_40%,transparent)] data-[selected=true]:border-(--talent-border-color)"
+			className="ui-talent-picker-root flex items-center gap-2 p-2 border-2 border-transparent data-[selected=true]:border-(--talent-border-color)"
 			data-testid="talent-picker-root"
 			href={href || undefined}
 			rel={externalRel(href, undefined)}

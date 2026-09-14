@@ -19,19 +19,19 @@
 		@apply flex relative flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none;
 
 		&[data-size='sm'] {
-			@apply max-w-modal-sm max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+			@apply max-w-modal-sm max-lg:max-w-modal-inset-w;
 		}
 
 		&[data-size='md'] {
-			@apply max-w-modal-md max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+			@apply max-w-modal-md max-lg:max-w-modal-inset-w;
 		}
 
 		&[data-size='lg'] {
-			@apply max-w-modal-lg max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+			@apply max-w-modal-lg max-lg:max-w-modal-inset-w;
 		}
 
 		&[data-size='xl'] {
-			@apply max-w-modal-xl max-lg:max-w-[calc(100vw-2*var(--modal-margin))];
+			@apply max-w-modal-xl max-lg:max-w-modal-inset-w;
 		}
 	}
 
@@ -70,7 +70,7 @@
 	}
 
 	.ui-dialog-scroll {
-		@apply max-h-[calc(100vh-2*var(--modal-margin))];
+		@apply max-h-modal-inset-h;
 	}
 
 	.ui-dialog-header-flush {
