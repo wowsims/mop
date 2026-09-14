@@ -140,7 +140,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 									dataLabel: tab.label,
 									buttonClassName: clsx(
 										tab.socketIdx !== undefined &&
-											'p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 [&.active]:opacity-100',
+											'p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 data-active:opacity-100',
 									),
 								}))}
 							/>

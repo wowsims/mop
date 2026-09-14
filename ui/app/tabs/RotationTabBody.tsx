@@ -122,7 +122,7 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 					{APL_PANES.map(pane => {
 						const Body = PANE_BODIES[pane.id];
 						return (
-							<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section [&.active]:flex [&.active]:flex-col">
+							<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section not-data-hidden:flex not-data-hidden:flex-col">
 								<Body />
 							</TabPanel>
 						);

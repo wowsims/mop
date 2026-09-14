@@ -46,7 +46,7 @@ export const BulkTabBody = () => {
 				<Tabs.Root className="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
 					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
 					<div className="tab-content">
-						<TabPanel value="bulkSetupTab" className="gap-6 [&.active]:grid">
+						<TabPanel value="bulkSetupTab" className="gap-6 not-data-hidden:grid">
 							<p className="mb-0">
 								<LocaleHtml html={i18n.t('bulk_tab.description')} />
 							</p>
