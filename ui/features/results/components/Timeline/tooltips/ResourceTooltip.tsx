@@ -27,25 +27,25 @@ export const ResourceTooltip = ({ log, maxValue, includeAuras }: ResourceTooltip
 	const display = (value: number) => (asPercent ? `${value.toFixed(1)} (${((value / maxValue) * 100).toFixed(0)}%)` : `${value.toFixed(1)}`);
 
 	return (
-		<div className={`ui-timeline-tooltip timeline-tooltip ${kebabCase(resourceName)}`}>
-			<div className="ui-timeline-tooltip-header timeline-tooltip-header">
+		<div data-resource={kebabCase(resourceName)} className="ui-timeline-tooltip">
+			<div data-testid="timeline-tooltip-header" className="ui-timeline-tooltip-header">
 				<span className="font-bold">{log.timestamp.toFixed(2)}s</span>
 			</div>
-			<div className="ui-timeline-tooltip-body timeline-tooltip-body">
-				<div className="ui-timeline-tooltip-body-row timeline-tooltip-body-row">
-					<span className={clsx('series-color font-bold', seriesColorClass)}>
+			<div className="ui-timeline-tooltip-body">
+				<div data-testid="timeline-tooltip-body-row" className="ui-timeline-tooltip-body-row">
+					<span data-testid="series-color" className={clsx('font-bold', seriesColorClass)}>
 						{i18n.t('results_tab.details.timeline.tooltips.before')}: {display(log.valueBefore)}
 					</span>
 				</div>
-				<ul className="timeline-mana-events">
+				<ul data-testid="timeline-mana-events">
 					{log.logs.map((resourceLog, index) => (
 						<TooltipLogItem key={index} log={resourceLog} seriesColorClass={seriesColorClass}>
 							{delta(resourceLog)}
 						</TooltipLogItem>
 					))}
 				</ul>
-				<div className="ui-timeline-tooltip-body-row timeline-tooltip-body-row">
-					<span className={clsx('series-color font-bold', seriesColorClass)}>
+				<div data-testid="timeline-tooltip-body-row" className="ui-timeline-tooltip-body-row">
+					<span data-testid="series-color" className={clsx('font-bold', seriesColorClass)}>
 						{i18n.t('results_tab.details.timeline.tooltips.after')}: {display(log.valueAfter)}
 					</span>
 				</div>

@@ -24,35 +24,35 @@ const mount = (resourceType: ResourceType, maxValue = 1000, includeAuras = false
 
 describe('ResourceTooltip', () => {
 	it('classes itself by the resource’s own name, which is what colours its numbers', () => {
-		expect(mount(ResourceType.ResourceTypeMana).classList.contains('mana')).toBe(true);
-		expect(mount(ResourceType.ResourceTypeComboPoints).classList.contains('combo-points')).toBe(true);
+		expect(mount(ResourceType.ResourceTypeMana).dataset.resource).toBe('mana');
+		expect(mount(ResourceType.ResourceTypeComboPoints).dataset.resource).toBe('combo-points');
 	});
 
 	it('shows mana as a share of the maximum and everything else as a plain number', () => {
-		const mana = mount(ResourceType.ResourceTypeMana).querySelectorAll('.timeline-tooltip-body-row');
+		const mana = mount(ResourceType.ResourceTypeMana).querySelectorAll('[data-testid="timeline-tooltip-body-row"]');
 		expect(mana[0].textContent).toContain('800.0 (80%)');
 		expect(mana[1].textContent).toContain('500.0 (50%)');
 
-		const rage = mount(ResourceType.ResourceTypeRage).querySelectorAll('.timeline-tooltip-body-row');
+		const rage = mount(ResourceType.ResourceTypeRage).querySelectorAll('[data-testid="timeline-tooltip-body-row"]');
 		expect(rage[0].textContent).toContain('800.0');
 		expect(rage[0].textContent).not.toContain('%');
 	});
 
 	it('signs each event by its direction', () => {
-		const events = [...mount(ResourceType.ResourceTypeRage).querySelectorAll('.timeline-mana-events li')];
-		expect(events.map(event => event.querySelector('.series-color')!.textContent)).toEqual(['-300.0', '+200.0']);
+		const events = [...mount(ResourceType.ResourceTypeRage).querySelectorAll('[data-testid="timeline-mana-events"] li')];
+		expect(events.map(event => event.querySelector('[data-testid="series-color"]')!.textContent)).toEqual(['-300.0', '+200.0']);
 	});
 
 	it('shows an icon only for an event that has one, and always names the action', () => {
-		const events = [...mount(ResourceType.ResourceTypeRage).querySelectorAll('.timeline-mana-events li')];
+		const events = [...mount(ResourceType.ResourceTypeRage).querySelectorAll('[data-testid="timeline-mana-events"] li')];
 		expect(events[0].querySelector('img')!.getAttribute('src')).toBe('fireball.png');
 		expect(events[1].querySelector('img')).toBeNull();
 		expect(events[1].textContent).toContain('Evocation');
 	});
 
 	it('lists the active auras only when asked, which the rotation’s own blocks are not', () => {
-		expect(mount(ResourceType.ResourceTypeRage, 1000, false).querySelector('.timeline-tooltip-auras')).toBeNull();
-		const auras = mount(ResourceType.ResourceTypeRage, 1000, true).querySelector('.timeline-tooltip-auras')!;
+		expect(mount(ResourceType.ResourceTypeRage, 1000, false).querySelector('[data-testid="timeline-tooltip-auras"]')).toBeNull();
+		const auras = mount(ResourceType.ResourceTypeRage, 1000, true).querySelector('[data-testid="timeline-tooltip-auras"]')!;
 		expect(auras.textContent).toContain('Arcane Power');
 	});
 });
