@@ -14,13 +14,11 @@ export const ReplayEnemyFormation = ({ enemies, hiddenCount }: ReplayEnemyFormat
 	const layout = useMemo(() => enemyFormation(enemies.length), [enemies.length]);
 
 	return (
-		<div className="cr-enemy-formation absolute inset-x-0 top-0 h-full pointer-events-none">
+		<div className="absolute inset-x-0 top-0 h-full pointer-events-none">
 			{layout.map(card => (
 				<ReplayEnemyCard key={card.index} enemy={enemies[card.index]} layout={card} />
 			))}
-			{hiddenCount > 0 && (
-				<div className="cr-enemy-more absolute bottom-[8px] right-[10px] self-center text-[1.2rem] font-bold text-white-50">+{hiddenCount}</div>
-			)}
+			{hiddenCount > 0 && <div className="absolute bottom-[8px] right-[10px] self-center text-[1.2rem] font-bold text-white-50">+{hiddenCount}</div>}
 		</div>
 	);
 };

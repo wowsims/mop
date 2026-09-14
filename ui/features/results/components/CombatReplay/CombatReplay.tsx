@@ -43,7 +43,9 @@ export const CombatReplay = ({ active }: CombatReplayProps) => {
 	}, [active, model, pause, seekTo]);
 
 	return (
-		<div className="combat-replay-root flex min-h-0 flex-auto flex-col overflow-hidden bg-background pb-[16px] text-muted [font-family:inherit]">
+		<div
+			data-testid="combat-replay-root"
+			className="flex min-h-0 flex-auto flex-col overflow-hidden bg-background pb-[16px] text-muted [font-family:inherit]">
 			{model ? <ReplayScene model={model} clock={clock} /> : <ReplayEmpty />}
 		</div>
 	);

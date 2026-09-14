@@ -15,11 +15,12 @@ export interface ReplayIconProps {
 	/** Passed in by a caller that also paints the anchor every frame, so the two share one node. */
 	anchorRef?: RefObject<HTMLAnchorElement | null>;
 	active?: boolean;
+	testId?: string;
 	children?: ReactNode;
 }
 
 /** The replay's one icon: the cast strip, the aura rows and the action grid are all this with a different class. */
-export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, active, children }: ReplayIconProps) => {
+export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, active, testId, children }: ReplayIconProps) => {
 	const { iconUrl, href } = useActionId(actionId ?? undefined);
 	const ownRef = useRef<HTMLAnchorElement>(null);
 	const ref = anchorRef ?? ownRef;
@@ -33,6 +34,7 @@ export const ReplayIcon = ({ actionId, className, tooltip, style, anchorRef, act
 			href={href || undefined}
 			rel={externalRel(href, undefined)}
 			style={iconUrl ? { ...style, backgroundImage: `url('${iconUrl}')` } : style}
+			data-testid={testId}
 			data-active={active || undefined}
 			{...wowheadProps}>
 			{children}
