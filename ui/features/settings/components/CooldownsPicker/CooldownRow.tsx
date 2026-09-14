@@ -8,7 +8,6 @@ import { Icon } from '@ui-kit/Icon';
 import { IconEnumPicker } from '@ui-kit/IconEnumPicker';
 import { NumberListPicker } from '@ui-kit/NumberListPicker';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import { actionPickerConfig, deleteCooldown, timingsPickerConfig } from './utils';
@@ -37,8 +36,8 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 			</FieldLabel>
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
-				variant="unstyled"
-				className={clsx('link-danger text-link-danger', isAdd && 'invisible')}
+				variant="link-danger"
+				className={isAdd ? 'invisible' : undefined}
 				data-testid="delete-cooldown"
 				onClick={() => deleteCooldown(player, index)}
 				{...tooltipAnchorProps(deleteTooltipId)}>

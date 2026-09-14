@@ -152,7 +152,7 @@ describe('CooldownsPicker', () => {
 		setup([cooldownFor(1)]);
 		mount();
 
-		expect(Array.from(deleteButton(0).classList).sort()).toEqual(['link-danger', 'text-link-danger']);
+		expect(Array.from(deleteButton(0).classList).sort()).toEqual(['ui-button-link', 'ui-button-link-danger']);
 		expect(Array.from(deleteButton(0).querySelector('i')!.classList).sort()).toEqual(['fa', 'fa-times', 'fa-xl']);
 	});
 
