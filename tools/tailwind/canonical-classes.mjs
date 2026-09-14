@@ -39,7 +39,7 @@ function classifyRewrite(from, to) {
 	return 'other';
 }
 
-function findDefaultCss(root) {
+export function findDefaultCss(root) {
 	const style = path.join(root, 'ui/styles/style.css');
 	const tailwind = path.join(root, 'ui/styles/tailwind.css');
 	if (fs.existsSync(style)) return style;
@@ -178,6 +178,11 @@ function collectStringLiteralsFrom(snippet, offset, found) {
 	while ((m = strPattern.exec(snippet))) {
 		const [full, quote, body] = m;
 		const index = offset + m.index;
+		const before = snippet.slice(0, m.index);
+		const after = snippet.slice(m.index + full.length);
+		if (/(===|!==|==|!=)\s*$/.test(before)) continue; // comparison operand, not a rendered class
+		if (/^\s*(===|!==|==|!=)/.test(after)) continue; // comparison operand, not a rendered class
+		if (/^\s*\]/.test(after)) continue; // computed member/index literal, not a rendered class
 		if (quote === '`') {
 			for (const part of staticPartsOfTemplate(body)) {
 				for (const token of splitClassString(part)) found.push({ token, index });
