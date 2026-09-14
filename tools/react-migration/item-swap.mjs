@@ -18,10 +18,10 @@ const STATE = () => {
 		children: [...root.children].map(el => `${el.tagName.toLowerCase()}.${[...el.classList].sort().join('.')}`),
 		hidden: container?.classList.contains('hide') ?? null,
 		checked: root.querySelector('#enable-item-swap')?.checked ?? null,
-		icons: root.querySelectorAll('.icon-group > *').length,
+		icons: root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) > *').length,
 		// What the swap set actually holds. An empty slot is a placeholder image and `href="#"`; a
 		// filled one is `.active` with a wowhead link, so the item id is the readable part.
-		swap: [...root.querySelectorAll('.icon-group .icon-picker-button')].map(icon =>
+		swap: [...root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) .icon-picker-button')].map(icon =>
 			icon.classList.contains('active') ? (icon.getAttribute('href')?.match(/item=(\d+)/)?.[1] ?? 'active') : 'empty',
 		),
 	
@@ -29,7 +29,7 @@ const STATE = () => {
 		// only ran from an `itemSwap` change, so a spec that loads a swap preset renders four blank,
 		// unpainted slots until the set is next touched. Run this on `warrior/protection` to see it.
 		sockets: [...root.querySelectorAll('.item-picker-sockets-container')].map(container => container.children.length),
-		painted: [...root.querySelectorAll('.icon-group .icon-picker-button')].map(icon => !!icon.style.backgroundImage),
+		painted: [...root.querySelectorAll(':is(.icon-group, .ui-picker-group-icons) .icon-picker-button')].map(icon => !!icon.style.backgroundImage),
 	};
 };
 
