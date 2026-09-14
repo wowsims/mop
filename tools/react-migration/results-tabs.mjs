@@ -47,8 +47,10 @@ const DROPPED_HOOKS = new Set([
 	'healing-content',
 	// The last of `resultMetricClasses`/`metricsClasses`: the damageTab content wrapper carried
 	// `damage-metrics` as a plain class; it is `contentTestId="damage-spell-metrics"` now, matching
-	// every sibling pane.
+	// every sibling pane. The baseline carries neither — its wrapper is a bare, classless `div` — so
+	// both the old class and the current testid are filtered.
 	'damage-metrics',
+	'damage-spell-metrics',
 	'damage-taken-content',
 	'buffs-content',
 	'debuffs-content',
@@ -68,6 +70,21 @@ const DROPPED_HOOKS = new Set([
 	// Additive, not a hook: `dr-row` renamed to this co-located `ui-*` class, with `dr-row` kept as a
 	// `data-testid` for readers. Base has no counterpart, so it is filtered the same way.
 	'ui-dr-row',
+	// The topline row's own testid, `dr-row-topline` (before `dr-row`, so a straight substring split
+	// takes the whole token rather than leaving `-topline` stuck to what follows). The baseline still
+	// carries this row as two plain classes, `dr-row` and `topline-results`, which are filtered too.
+	'dr-row-topline',
+	'dr-row',
+	'topline-results',
+	// `MetricsTable`'s co-located rename: `.metrics-table` (still the testid, still a literal class on
+	// the baseline) is `.ui-metrics-table` on this build. `ui-metrics-table` first for the same
+	// substring reason as `dr-row-topline` above — it does not collide with `.metrics-table` either
+	// way, but keeping the longer token first is the safe order.
+	'ui-metrics-table',
+	'metrics-table',
+	// `ToplineResults`'s own root class on the baseline; this build's root carries no such wrapper
+	// class at all, only the co-located `[&_...]` selectors above.
+	'results-sim',
 ]);
 
 /** Strips the same retired tokens out of a `SERIALIZE` dump, so the scaffolding diff below does not

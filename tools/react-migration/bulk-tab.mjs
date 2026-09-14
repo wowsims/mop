@@ -70,7 +70,7 @@ const INSTALL = () => {
 		// pane's computed display, not `.active`/`.show` alone. Those classes are recorded too, since
 		// the React `SimTab` is meant to keep driving them, but they are not what "open" means.
 		strip: () =>
-			[...pane().querySelectorAll(`${q('bulk-tab-tabs')} .nav-link`)].map(tab => {
+			[...pane().querySelectorAll(`${q('bulk-tab-tabs')} :is([role="tab"], .nav-link)`)].map(tab => {
 				const paneId = tab.getAttribute('aria-controls');
 				const paneElem = paneId ? document.getElementById(paneId) : null;
 				return {
@@ -221,11 +221,11 @@ const INSTALL = () => {
 						tied: !!row.closest(q('bulk-results-tie-group')),
 						avg: text(row.querySelector(q('topline-result-avg'))),
 						margin: text(row.querySelector(`${q('results-sim-dps')} .text-muted`)) || null,
-						baseline: !!row.querySelector(`${q('results-reference')} .fw-bold`),
+						baseline: !!row.querySelector(q('results-reference')) && !row.querySelector(q('results-reference-diff')),
 						delta: text(row.querySelector(q('results-reference-diff'))) || null,
 						deltaClasses: cls(row.querySelector(q('results-reference-diff'))),
 						equip: text(row.querySelector(q('bulk-equip-btn'))),
-						equipHidden: !!row.querySelector(`${q('bulk-equip-btn')}.d-none`),
+						equipHidden: !!row.querySelector(`${q('bulk-equip-btn')}:is(.d-none, .hidden)`),
 						cells: cells.length,
 						// An unchanged slot still gets an `ItemRenderer`, rendered with `null` — the element
 						// is always there and only its contents say whether the slot moved. The icon's
@@ -547,7 +547,7 @@ try {
 	// Destructive, so last: equipping a result rewrites the gear and leaves the bulk tab.
 	say('\nequipping a result');
 	const gearBefore = await page.evaluate(() => window.bulkProbe.gear());
-	await click(`#bulkResultsTab ${q('bulk-sim-result-root')} ${q('bulk-equip-btn')}:not(.d-none)`);
+	await click(`#bulkResultsTab ${q('bulk-sim-result-root')} ${q('bulk-equip-btn')}:not(.d-none):not(.hidden)`);
 	await page.waitForTimeout(1500);
 	const gearAfter = await page.evaluate(() => window.bulkProbe.gear());
 	const moved = gearAfter.map((entry, index) => (entry === gearBefore[index] ? null : index)).filter(index => index !== null);

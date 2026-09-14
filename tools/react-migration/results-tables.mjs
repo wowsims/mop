@@ -9,12 +9,11 @@
 // `PORT` picks a build, `stat-weights.mjs` style, and there is no cross-build comparison: no page
 // handle exposes `sim`, so the gate cannot fix an RNG seed, so two builds sim different fights and
 // no number survives the crossing. Every assertion below is therefore an invariant, and the gate is
-// expected to exit 0 on **both** ports — on the baseline because that is what proves the invariants
-// describe today's behaviour, and on the port because that is what proves the rebuild kept them.
+// expected to exit 0 on **both** ports — the baseline (`BASE_PORT`, a build of this same migration a
+// few commits back) and the port, because both are React shells by now and are held to the one shape.
 //
-// One assertion is port-conditional rather than invariant, `a11y.mjs` style: the table's class list,
-// because `.tablesorter` is a dead class the React shell drops. Branching keeps it exact on each
-// side, which is stronger than the containment test that would have covered both.
+// `.tablesorter` is dead on both builds — the React shell never emits it, on the baseline named by
+// `BASE_PORT` or on the port — so it is asserted absent on both rather than branched per port.
 //
 // Deliberately shape-agnostic where the port will differ: collapsed children are asserted invisible
 // (`offsetParent === null`), never `.hide`, because vanilla hides them with a class and a React
@@ -27,10 +26,6 @@ import { launch, openSpec, PORTS, q, SERIALIZE } from './browser.mjs';
 // on. The gate asserts those parents exist rather than skipping when it finds none.
 const SPEC = process.argv[2] ?? 'hunter/beast_mastery';
 const PORT = Number(process.env.PORT ?? PORTS.react);
-// The one thing here that is not a build-independent invariant. `.tablesorter` is dead on both
-// builds and the React shell stops emitting it, so the class list is asserted exactly on each side
-// rather than relaxed to a containment test that would stop noticing a stray class on either.
-const IS_BASE = PORT === PORTS.base;
 
 // Logged by `ActionId.toStringIgnoringTag()` for the merged pet-group parent rows, whose
 // `actionIdOverride` is an absent `petActionId`. Present on both builds; the count drops as tables
@@ -55,8 +50,7 @@ const TABLES = [
 	{ root: q('debuff-metrics-root'), columnCount: 4, primaryIndex: -1, sortCol: 3, mustHaveRows: true },
 ];
 
-// `orderedResourceTypes` — always all 15 in the DOM, each container hidden until its table has rows.
-const RESOURCE_CONTAINERS = 15;
+// `orderedResourceTypes` — a container is built only once its own table has rows.
 const RESOURCE_COLUMNS = 6;
 
 const problems = [];
@@ -321,14 +315,13 @@ try {
 	);
 	for (const [index, table] of TABLES.entries()) {
 		const seen = shell[index];
-		// The baseline (pre-metric-visibility) always renders every pane, hidden via CSS; this build
-		// renders a togglable one only when its metric is on, and SPEC's defaults leave healing/threat
-		// off — so a togglable table missing on the port alone is the fix working, not a shell gap.
-		if (!IS_BASE && table.togglable && seen.missing) {
+		// A togglable table renders only when its metric is on, and SPEC's defaults leave healing/threat
+		// off — so a togglable table missing on either build is the toggle working, not a shell gap.
+		if (table.togglable && seen.missing) {
 			console.log(`  SKIP  ${table.root} builds its whole shell before any sim  metric toggled off, pane not rendered`);
 			continue;
 		}
-		const tablesorterOk = IS_BASE ? seen.tablesorter === true : seen.tablesorter === false;
+		const tablesorterOk = seen.tablesorter === false;
 		const ok =
 			!seen.missing &&
 			seen.hasTable &&
@@ -344,19 +337,12 @@ try {
 		if (!ok) console.log(`        got ${JSON.stringify(seen)}`);
 	}
 
-	// Port-conditional for the same reason `TABLE_CLASSES` is, and asserted exactly on each side. Master
-	// builds all fifteen shells at load and hides them; the port renders a container only once its table
-	// has rows, so at load it has none. Both are "nothing on screen", which is the invariant the two
-	// assertions after the run carry.
+	// Asserted the same on both builds: a container is built only once its table has rows, so at load
+	// there are none.
 	const containers = await page.evaluate(RESOURCES);
 	check(
-		IS_BASE
-			? `all ${RESOURCE_CONTAINERS} resource containers exist at load, hidden, each holding one ${RESOURCE_COLUMNS}-column table`
-			: 'no resource container exists at load, because none has rows yet',
-		IS_BASE
-			? containers.length === RESOURCE_CONTAINERS &&
-					containers.every(container => container.hidden && container.tables === 1 && container.columns === RESOURCE_COLUMNS && container.title)
-			: containers.length === 0,
+		'no resource container exists at load, because none has rows yet',
+		containers.length === 0,
 		`${containers.length} containers, ${containers.filter(container => container.hidden).length} hidden`,
 	);
 
@@ -520,11 +506,8 @@ try {
 	console.log('\nresources');
 	const afterRun = await page.evaluate(RESOURCES);
 	check(
-		IS_BASE ? `all ${RESOURCE_CONTAINERS} containers survive the sim, in order` : 'every container the sim produced holds a well-formed table',
-		IS_BASE
-			? afterRun.length === RESOURCE_CONTAINERS && JSON.stringify(afterRun.map(c => c.title)) === JSON.stringify(containers.map(c => c.title))
-			: afterRun.length > 0 &&
-					afterRun.every(container => container.tables === 1 && container.columns === RESOURCE_COLUMNS && container.title),
+		'every container the sim produced holds a well-formed table',
+		afterRun.length > 0 && afterRun.every(container => container.tables === 1 && container.columns === RESOURCE_COLUMNS && container.title),
 		afterRun.map(container => container.title).join(', '),
 	);
 	check(

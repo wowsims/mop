@@ -52,6 +52,13 @@ const READ = panes => {
 		'threat-metrics',
 		'healing-metrics',
 		'demo-metrics',
+		// `MetricsTable`'s co-located rename: the table, header row and header cell all carry a testid
+		// matching their old class name plus a new `ui-metrics-*` companion class the baseline never
+		// had. Filtered so the rename does not read as a diff.
+		'ui-metrics-table',
+		'ui-metrics-header-row',
+		'ui-metrics-header-cell',
+		'ui-metrics-cell',
 	]);
 	const cls = el => {
 		const tokens = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean);

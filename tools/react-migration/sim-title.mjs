@@ -73,10 +73,21 @@ for (const row of classes ?? []) console.log(`    ${row.tag.padEnd(6)} ${String(
 // comparison with them, and all 34 spec links were in there. This is where they are covered now.
 const normalise = href => String(href).replace(`localhost:${PORT}`, 'localhost:<port>');
 console.log('\nspecs (hover each class)');
-const rowSelector = `:is(${q('sim-title')}) .dropdown-menu.show > li > .sim-link-dropdown > :is(${q('sim-link')}), ${q('sim-title-popup')} > :is(${q('sim-link')})`;
+// A row within the root menu, relative to it: `> li > .sim-link-dropdown > sim-link` for Bootstrap's
+// nested `<ul>`, `> sim-link` for Base UI's flat popup. `.nth(index)` against an *un*scoped selector
+// matches rows across every open Base UI popup, not just the root menu, so a submenu opening while
+// this loop runs (the previous iteration's hover) drifts the index. Scoped to the first — root —
+// open menu below, which stays first in document order however many submenus open after it.
+const rowSelector = `:scope > li > .sim-link-dropdown > :is(${q('sim-link')}), :scope > :is(${q('sim-link')})`;
+const rootMenu = () => page.locator(`:is(${q('sim-title')}) .dropdown-menu.show, ${q('sim-title-popup')}`).first();
 let total = 0;
 for (const [index, klass] of (classes ?? []).entries()) {
-	await page.locator(rowSelector).nth(index).hover();
+	// The previous class's submenu is still open and its positioner can overlap the next row — move
+	// the pointer away first so it closes before this hover, the same wait `selector-modal.mjs` gives
+	// a wowhead tooltip before its next click.
+	await page.mouse.move(0, 0);
+	await page.waitForTimeout(250);
+	await rootMenu().locator(rowSelector).nth(index).hover();
 	await page.waitForTimeout(500);
 	const open = (await page.evaluate(MENUS)).length;
 	const specs = await page.evaluate(ROWS, 1);

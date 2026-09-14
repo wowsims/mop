@@ -58,7 +58,7 @@ const INSTALL = () => {
 				return el.classList.contains('hide') || getComputedStyle(el).display === 'none' ? 'hidden' : 'shown';
 			};
 			return {
-				search: !!pane.querySelector('#selector-modal-search'),
+				search: !!pane.querySelector(':is(#selector-modal-search, .selector-modal-search)'),
 				filtersButton: text(pane.querySelector(q('selector-modal-filters-button'))) || null,
 				phase: shown(q('selector-modal-phase-selector')),
 				weapons1h: shown(q('selector-modal-show-1h-weapons')),
@@ -238,19 +238,19 @@ if (trinketFilters.epValues !== 'absent') problems.push(`a trinket slot offers t
 // ---------------------------------------------------------------------------
 say('\nsearch, on the head slot');
 await tabsForSlot(0);
-const hasSearch = await pane().locator('#selector-modal-search').count();
+const hasSearch = await pane().locator(':is(#selector-modal-search, .selector-modal-search)').count();
 if (!hasSearch) {
 	say('  absent      this build has no search box on the items pane');
 	problems.push('the items pane has no search box');
 } else {
 	const before = await page.evaluate(() => window.selectorProbe.visible());
-	await pane().locator('#selector-modal-search').fill('helm');
+	await pane().locator(':is(#selector-modal-search, .selector-modal-search)').fill('helm');
 	await settle(900);
 	const searched = await page.evaluate(() => window.selectorProbe.visible());
 	say(`  "helm"      rows ${before.scrollHeight} -> ${searched.scrollHeight}px of list, top ${JSON.stringify(searched.names.slice(0, 3))}`);
 	if (searched.scrollHeight >= before.scrollHeight) problems.push('searching did not shorten the list');
 	if (searched.names.some(name => !name.toLowerCase().includes('helm'))) problems.push(`a search result does not match: ${JSON.stringify(searched.names)}`);
-	await pane().locator('#selector-modal-search').fill('');
+	await pane().locator(':is(#selector-modal-search, .selector-modal-search)').fill('');
 	await settle(900);
 	const cleared = await page.evaluate(() => window.selectorProbe.visible());
 	say(`  cleared     ${cleared.scrollHeight}px, top ${JSON.stringify(cleared.names.slice(0, 3))}`);
@@ -483,7 +483,7 @@ await page.waitForSelector(modalRoot, { timeout: 20000 });
 await settle(900);
 const reopened = await page.evaluate(() => window.selectorProbe.visible());
 const reopenedState = await head();
-const reopenedSearch = (await pane().locator('#selector-modal-search').count()) ? await pane().locator('#selector-modal-search').inputValue() : null;
+const reopenedSearch = (await pane().locator(':is(#selector-modal-search, .selector-modal-search)').count()) ? await pane().locator(':is(#selector-modal-search, .selector-modal-search)').inputValue() : null;
 say(`  reopened    active=${JSON.stringify(reopenedState.activeTab)} scroll=${reopened.scrollTop} search=${JSON.stringify(reopenedSearch)}`);
 if (reopenedState.activeTab !== reopenedState.tabs[0]) problems.push(`reopening left ${JSON.stringify(reopenedState.activeTab)} active, expected ${JSON.stringify(reopenedState.tabs[0])}`);
 if (reopened.scrollTop !== 0) problems.push(`reopening left the list scrolled to ${reopened.scrollTop}`);
@@ -530,7 +530,7 @@ for (const picker of filtersMenu.pickers) say(`              ${picker}`);
 if (!filtersMenu.pickers.length) problems.push('the filters menu built no pickers');
 if (!filtersMenu.open) problems.push('the Filters button opened no filters menu');
 if (!filtersMenu.selectorStillOpen) problems.push('opening the filters menu closed the selector modal underneath it');
-if (await pane().locator('#selector-modal-search').count()) await pane().locator('#selector-modal-search').fill('helm');
+if (await pane().locator(':is(#selector-modal-search, .selector-modal-search)').count()) await pane().locator(':is(#selector-modal-search, .selector-modal-search)').fill('helm');
 await settle(700);
 if (!(await page.evaluate(() => window.selectorProbe.open()))) problems.push('typing behind the filters menu closed the selector modal');
 say(`  typing      modalStillOpen=${await page.evaluate(() => window.selectorProbe.open())}`);

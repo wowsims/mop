@@ -105,7 +105,7 @@ const OPEN_TOOLTIP = () => {
 	].find(element =>
 		element.classList.contains('react-tooltip') ? element.classList.contains('react-tooltip__show') : !element.className.includes('hide'),
 	);
-	return open?.textContent.replace(/\s+/g, ' ').trim() || null;
+	return open?.innerText.replace(/\s+/g, ' ').trim() || null;
 };
 
 /** Hovers one item — or one point on the chart canvas — and reads back whatever tooltip opens. */
