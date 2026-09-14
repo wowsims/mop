@@ -32,19 +32,21 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 				layout="list"
 				referenceDiffs={reference ? referenceDiffs(current.simResult, reference.simResult) : undefined}
 			/>
-			<div className={clsx('results-sim-reference mt-2 font-normal', reference && 'has-reference')} data-has-reference={reference ? '' : undefined}>
+			<div className="mt-2 font-normal" data-testid="results-sim-reference" data-has-reference={reference ? '' : undefined}>
 				<button
 					type="button"
-					className={clsx('results-sim-set-reference', reference && 'hidden')}
+					className={clsx(reference && 'hidden')}
+					data-testid="results-sim-set-reference"
 					onClick={() => results.setReference()}
 					{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.use_as_reference'))}>
 					<i className={`fa fa-map-pin fa-lg ${textClassName(cssScheme)} mr-2`} />
 					{i18n.t('sidebar.results.reference.save_as_reference')}
 				</button>
-				<div className={clsx('results-sim-reference-bar', !reference && 'hidden')}>
+				<div className={clsx(!reference && 'hidden')}>
 					<button
 						type="button"
-						className="results-sim-reference-swap mr-4"
+						className="mr-4"
+						data-testid="results-sim-reference-swap"
 						onClick={() => results.swapReference()}
 						{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.swap_reference_with_current'))}>
 						<i className="fas fa-arrows-rotate mr-1" />
@@ -52,7 +54,7 @@ export const SimResultSummary = ({ results }: SimResultSummaryProps) => {
 					</button>
 					<button
 						type="button"
-						className="results-sim-reference-delete"
+						data-testid="results-sim-reference-delete"
 						onClick={() => results.clearReference()}
 						{...tooltipAnchorProps(tooltipId, i18n.t('sidebar.results.reference.remove_reference'))}>
 						<i className="fa fa-times fa-lg mr-1" />

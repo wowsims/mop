@@ -5,7 +5,7 @@
 // only in the state a page reaches on its own: no reference, every `.results-reference` still
 // `hide`. `sim-progress.mjs` stops at "the result carries its metric tiles". The three buttons and
 // the delta text under them were observed by **zero** checks, and they are exactly what porting the
-// vanilla builder out of `.results-content` had to keep.
+// vanilla builder out of the results content zone had to keep.
 //
 // Two runs are needed, not one: a reference only becomes visible once a *second* result is compared
 // against it, and only a second run can make a delta non-zero. Both are short and seeded, so the
@@ -16,13 +16,11 @@
 // character for character. What is *not* comparable is `type` on the three buttons — vanilla emits
 // none — so that is asserted only on the port, the way `sim-progress.mjs` handles its defects.
 //
-// One divergence is deliberate, and it is the `deleted` stage's delta text. Vanilla's
-// `updateReference` re-adds `hide` and returns early when the reference is gone, leaving the last
-// delta it wrote in the hidden span; the port renders that span from state, so it goes empty. Both
-// slots are `hide`, so nothing is on screen either way. The stage is therefore compared with the
-// text stripped, and the divergence itself is asserted below — including that the baseline still
-// leaves text behind, so a stale entry fails rather than passing quietly.
-import { launch, openSpec, PORTS } from './browser.mjs';
+// Both ports are React now (`PORTS.base` is a plain build off an earlier commit, not the retired
+// vanilla stack), so the `deleted` stage's delta text is compared with the text stripped and then
+// asserted directly: `ResultReferenceDiff` renders nothing once the reference is cleared, so neither
+// side should carry any delta text in the hidden slot.
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms'];
 const SEED = '1337';
@@ -38,10 +36,11 @@ const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 // Classes are sorted so a clsx-vs-classList ordering difference is not read as a divergence; the
 // question here is which classes are on, not in what order they were written.
 const READ = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : null);
-	const bar = document.querySelector('.results-content .results-sim-reference');
-	if (!bar) return ['NO .results-content .results-sim-reference'];
+	const bar = document.querySelector(`${T('results-content')} ${T('results-sim-reference')}`);
+	if (!bar) return ['NO results-content results-sim-reference'];
 
 	const visible = el => !!el && !!el.offsetParent;
 	const button = selector => {
@@ -49,21 +48,27 @@ const READ = () => {
 		return el ? `${text(el)} visible=${visible(el)}` : 'MISSING';
 	};
 
+	// The identity string is normalised, not the raw class list: the react build carries the flag as
+	// `data-has-reference` and the testid as an attribute, not a class, so it no longer matches the
+	// baseline's class string byte for byte.
 	return [
-		`bar ${cls(bar)}`,
-		`set ${button('.results-sim-set-reference')}`,
-		`swap ${button('.results-sim-reference-swap')}`,
-		`delete ${button('.results-sim-reference-delete')}`,
-		...[...document.querySelectorAll('.results-content .results-metric')].map(metric => {
+		`bar ${bar.hasAttribute('data-has-reference') ? 'has-reference.results-sim-reference' : 'results-sim-reference'}`,
+		`set ${button(T('results-sim-set-reference'))}`,
+		`swap ${button(T('results-sim-reference-swap'))}`,
+		`delete ${button(T('results-sim-reference-delete'))}`,
+		...[...document.querySelectorAll(`${T('results-content')} .results-metric`)].map(metric => {
 			const slot = metric.querySelector('.results-reference');
 			const diff = metric.querySelector('.results-reference-diff');
-			return `${cls(metric)} slot=${slot ? cls(slot) : 'MISSING'} diff=${cls(diff)} text=${text(diff)}`;
+			return `${cls(metric)} slot=${slot ? cls(slot) : 'MISSING'} diff=${diff ? cls(diff) : 'MISSING'} text=${text(diff) ?? ''}`;
 		}),
 	];
 };
 
 // The port's own fix, invisible to a cross-port diff because the baseline has nothing to compare.
-const TYPES = () => [...document.querySelectorAll('.results-content .results-sim-reference button')].map(button => button.getAttribute('type'));
+const TYPES = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
+	return [...document.querySelectorAll(`${T('results-content')} ${T('results-sim-reference')} button`)].map(button => button.getAttribute('type'));
+};
 
 const settingsBlob = async (browser, spec) => {
 	const { page } = await openSpec(browser, PORTS.base, spec);
@@ -90,13 +95,15 @@ const collect = async (browser, port, spec, seeded) => {
 		await page.fill('#simui-iterations', String(iterations));
 		await page.dispatchEvent('#simui-iterations', 'change');
 		await page.waitForSelector('.dps-action:not([disabled])', { timeout: 120000 });
-		const before = await page.evaluate(() => document.querySelector('.results-content .results-metric .topline-result-avg')?.textContent ?? '');
+		const before = await page.evaluate(
+			() => document.querySelector(':is([data-testid="results-content"], .results-content) .results-metric .topline-result-avg')?.textContent ?? '',
+		);
 		await page.click('.dps-action');
 		// Waits for the *text* to change rather than for a tile to exist: the second run replaces a
 		// list that is already there, so a count would be satisfied before it ever re-rendered.
 		await page.waitForFunction(
 			previous => {
-				const avg = document.querySelector('.results-content .results-metric .topline-result-avg');
+				const avg = document.querySelector(':is([data-testid="results-content"], .results-content) .results-metric .topline-result-avg');
 				return !!avg && avg.textContent !== previous;
 			},
 			before,
@@ -109,18 +116,18 @@ const collect = async (browser, port, spec, seeded) => {
 	await runOnce(ITERATIONS);
 	stages.firstRun = await page.evaluate(READ);
 
-	await page.click('.results-sim-set-reference');
+	await page.click(q('results-sim-set-reference'));
 	await page.waitForTimeout(200);
 	stages.referenceSet = await page.evaluate(READ);
 
 	await runOnce(RERUN_ITERATIONS);
 	stages.secondRun = await page.evaluate(READ);
 
-	await page.click('.results-sim-reference-swap');
+	await page.click(q('results-sim-reference-swap'));
 	await page.waitForTimeout(300);
 	stages.swapped = await page.evaluate(READ);
 
-	await page.click('.results-sim-reference-delete');
+	await page.click(q('results-sim-reference-delete'));
 	await page.waitForTimeout(200);
 	stages.deleted = await page.evaluate(READ);
 
@@ -152,8 +159,9 @@ try {
 		}
 
 		const deletedText = side => sides[side].stages.deleted.filter(line => line.includes(' text=')).map(line => line.replace(/^.* text=/, ''));
-		if (deletedText('react').some(text => text !== '')) problems.push(`deleted: the port left delta text in the hidden slot — ${JSON.stringify(deletedText('react'))}`);
-		if (!deletedText('base').some(text => text !== '')) problems.push('deleted: the baseline no longer leaves stale delta text, so the recorded divergence is gone');
+		for (const side of ['base', 'react']) {
+			if (deletedText(side).some(text => text !== '')) problems.push(`deleted: ${side} left delta text in the hidden slot — ${JSON.stringify(deletedText(side))}`);
+		}
 
 		// Invariants, so a build where every stage is identically broken still fails. `has-reference`
 		// is the class the stylesheet swaps the button for the bar on; the deltas are what the bar is

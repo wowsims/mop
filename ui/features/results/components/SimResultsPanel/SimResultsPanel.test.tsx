@@ -20,7 +20,7 @@ vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
 
 // The summary needs a whole SimResult; SimResultSummary.test.tsx is where it is asserted. What is
 // under test here is that the content zone renders it and nothing else.
-vi.mock('./SimResultSummary', () => ({ SimResultSummary: () => <div className="sim-result-summary-root" /> }));
+vi.mock('./SimResultSummary', () => ({ SimResultSummary: () => <div data-testid="sim-result-summary-root" /> }));
 
 const host = (disabled = false, isHealingSpec = false) =>
 	fakeHost({
@@ -53,9 +53,9 @@ const mount = (panel: ResultsPanelStore, warnings: WarningsRegistry, disabled = 
 const zone = (view: ReturnType<typeof render>, selector: string) => view.container.querySelector<HTMLElement>(selector)!;
 const shown = (view: ReturnType<typeof render>, selector: string) => !zone(view, selector).hidden;
 const zones = (view: ReturnType<typeof render>) => ({
-	pending: shown(view, '.results-pending'),
-	content: shown(view, '.results-content'),
-	buttons: shown(view, '.button-zone'),
+	pending: shown(view, '[data-testid="results-pending"]'),
+	content: shown(view, '[data-testid="results-content"]'),
+	buttons: shown(view, '[data-testid="button-zone"]'),
 });
 
 let panel: ResultsPanelStore;
@@ -76,15 +76,10 @@ describe('SimResultsPanel', () => {
 		const { view } = mount(panel, warnings);
 		const viewer = zone(view, '.results-viewer');
 
-		expect([...viewer.children].map(el => el.className)).toEqual([
-			'results-pending [&_.loader]:m-auto',
-			'results-content',
-			'button-zone text-center',
-			'warning-zone text-center',
-		]);
+		expect([...viewer.children].map(el => el.getAttribute('data-testid'))).toEqual(['results-pending', 'results-content', 'button-zone', 'warning-zone']);
 		expect(zones(view)).toEqual({ pending: false, content: false, buttons: false });
-		expect(shown(view, '.warning-zone')).toBe(true);
-		expect(viewer.querySelector('.results-pending .loader')).not.toBeNull();
+		expect(shown(view, '[data-testid="warning-zone"]')).toBe(true);
+		expect(viewer.querySelector('[data-testid="results-pending"] .loader')).not.toBeNull();
 	});
 
 	it('follows the visibility table through the handle', () => {
@@ -99,8 +94,8 @@ describe('SimResultsPanel', () => {
 
 		act(() => panel.setProgress(progress(1, 2, 3, 4)));
 		expect(zones(view)).toEqual({ pending: true, content: false, buttons: true });
-		expect(view.container.querySelector('.results-pending .results-sim')).not.toBeNull();
-		expect(view.container.querySelector('.results-pending .loader')).toBeNull();
+		expect(view.container.querySelector('[data-testid="results-pending"] .results-sim')).not.toBeNull();
+		expect(view.container.querySelector('[data-testid="results-pending"] .loader')).toBeNull();
 
 		act(() => panel.showResult());
 		expect(zones(view)).toEqual({ pending: false, content: true, buttons: true });
@@ -108,17 +103,17 @@ describe('SimResultsPanel', () => {
 		// `hideAll` takes the Stop button's zone down with the other two, before it is ever removed.
 		act(() => panel.hideAll());
 		expect(zones(view)).toEqual({ pending: false, content: false, buttons: false });
-		expect(view.container.querySelector('.button-zone button')).not.toBeNull();
+		expect(view.container.querySelector('[data-testid="button-zone"] button')).not.toBeNull();
 
 		act(() => panel.removeAbortButton());
-		expect(view.container.querySelector('.button-zone button')).toBeNull();
+		expect(view.container.querySelector('[data-testid="button-zone"] button')).toBeNull();
 	});
 
 	it('renders the finished run into the content zone, and leaves it empty without a manager', () => {
-		expect(zone(mount(panel, warnings).view, '.results-content').childNodes.length).toBe(0);
+		expect(zone(mount(panel, warnings).view, '[data-testid="results-content"]').childNodes.length).toBe(0);
 
 		const { view } = mount(panel, warnings, false, false, {} as SimResultsManager);
-		expect(zone(view, '.results-content > .sim-result-summary-root')).not.toBeNull();
+		expect(zone(view, '[data-testid="results-content"] > [data-testid="sim-result-summary-root"]')).not.toBeNull();
 	});
 
 	it('puts the first tick on screen in the same commit that mounts the block', () => {
@@ -130,7 +125,7 @@ describe('SimResultsPanel', () => {
 		act(() => panel.setProgress(progress(1234.5678, 22.5, 10, 1000)));
 
 		expect(zone(view, '.results-sim-dps .topline-result-avg').textContent).toBe('1234.57');
-		expect(zone(view, '.results-sim-hps .topline-result-avg').textContent).toBe('22.50');
+		expect(zone(view, '[data-testid="results-sim-hps"] .topline-result-avg').textContent).toBe('22.50');
 		expect(zone(view, '.results-sim').lastElementChild!.textContent).toBe(`10 / 1000${ITERATIONS}`);
 	});
 
@@ -143,7 +138,7 @@ describe('SimResultsPanel', () => {
 		for (let i = 2; i <= 100; i++) act(() => panel.setProgress(progress(i, i * 2, i, 100)));
 
 		expect(zone(view, '.results-sim-dps .topline-result-avg').textContent).toBe('100.00');
-		expect(zone(view, '.results-sim-hps .topline-result-avg').textContent).toBe('200.00');
+		expect(zone(view, '[data-testid="results-sim-hps"] .topline-result-avg').textContent).toBe('200.00');
 		expect(zone(view, '.results-sim').lastElementChild!.textContent).toBe(`100 / 100${ITERATIONS}`);
 		expect(commits.mock.calls.length).toBe(afterMount);
 
@@ -173,12 +168,12 @@ describe('SimResultsPanel', () => {
 		const { view } = mount(panel, warnings);
 		act(() =>
 			panel.addAbortButton(() => {
-				const button = view.container.querySelector<HTMLButtonElement>('.button-zone button')!;
+				const button = view.container.querySelector<HTMLButtonElement>('[data-testid="button-zone"] button')!;
 				seen.push({ label: button.textContent!.trim(), disabled: button.disabled });
 			}),
 		);
 
-		const button = view.container.querySelector<HTMLButtonElement>('.button-zone button')!;
+		const button = view.container.querySelector<HTMLButtonElement>('[data-testid="button-zone"] button')!;
 		expect(button.getAttribute('type')).toBe('button');
 		expect(button.textContent!.trim()).toBe('sidebar.results.stop');
 
@@ -197,7 +192,7 @@ describe('SimResultsPanel', () => {
 			getContent: () => active,
 		});
 		const { view } = mount(panel, warnings);
-		const item = () => view.container.querySelector('.warning-zone .sim-toolbar-item');
+		const item = () => view.container.querySelector('[data-testid="warning-zone"] .sim-toolbar-item');
 		expect(item()).toBeNull();
 
 		// The sim reports ready a microtask after mount, and the warnings say nothing until it does.
@@ -221,7 +216,7 @@ describe('SimResultsPanel', () => {
 		const { view } = mount(panel, warnings);
 		// The trigger only mounts once the sim reports ready and the registry has something to say.
 		await act(async () => {});
-		const trigger = zone(view, '.warning-zone button');
+		const trigger = zone(view, '[data-testid="warning-zone"] button');
 
 		expect(trigger.getAttribute('aria-label')).toBeTruthy();
 		expect(trigger.querySelector('i')!.classList.contains('fa-triangle-exclamation')).toBe(true);
@@ -229,13 +224,13 @@ describe('SimResultsPanel', () => {
 
 	it('renders the unlaunched notice after the four zones, and only for a disabled spec', () => {
 		const launched = mount(panel, warnings, false);
-		expect(launched.view.container.querySelector('.sim-ui-unlaunched-container')).toBeNull();
+		expect(launched.view.container.querySelector('[data-testid="sim-ui-unlaunched-container"]')).toBeNull();
 		launched.view.unmount();
 
 		const { view } = mount(new ResultsPanelStore(), new WarningsRegistry(), true, true);
 		const viewer = zone(view, '.results-viewer');
-		expect(viewer.lastElementChild!.classList.contains('sim-ui-unlaunched-container')).toBe(true);
-		expect(viewer.querySelectorAll('.sim-ui-unlaunched-container p').length).toBe(2);
+		expect(viewer.lastElementChild!.getAttribute('data-testid')).toBe('sim-ui-unlaunched-container');
+		expect(viewer.querySelectorAll('[data-testid="sim-ui-unlaunched-container"] p').length).toBe(2);
 	});
 
 	it('drops its subscriptions and its tooltip on unmount', () => {

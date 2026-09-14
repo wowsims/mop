@@ -70,23 +70,27 @@ const FR = JSON.parse(readFileSync(new URL('../../assets/locales/fr/translation.
 // Computed `display`, not `.hide` and not the `style` attribute: the port swaps the inline style for
 // the `hidden` attribute, and a gate that read the mechanism would fail the port for the right change.
 const ZONES = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const viewer = document.querySelector('.results-viewer');
 	if (!viewer) return { missing: true };
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const item = viewer.querySelector('.warning-zone :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)');
+	const item = viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)`);
 	const sim = viewer.querySelector('.results-sim');
+	// A testid on the react build, the marker class on the baseline: either way this is the zone's name.
+	const ZONE_NAMES = ['results-pending', 'results-content', 'button-zone', 'warning-zone'];
+	const identify = el => el.getAttribute('data-testid') || [...el.classList].find(c => ZONE_NAMES.includes(c)) || '?';
 	return {
-		zones: [...viewer.children].map(el => [...el.classList].sort().join('.')),
-		pending: shown('.results-pending'),
-		content: shown('.results-content'),
-		buttons: shown('.button-zone'),
-		warningZone: shown('.warning-zone'),
-		loader: !!viewer.querySelector('.results-pending .loader'),
+		zones: [...viewer.children].map(identify),
+		pending: shown(T('results-pending')),
+		content: shown(T('results-content')),
+		buttons: shown(T('button-zone')),
+		warningZone: shown(T('warning-zone')),
+		loader: !!viewer.querySelector(`${T('results-pending')} .loader`),
 		warningItemHidden: item ? item.classList.contains('hide') : null,
-		warningTrigger: !!viewer.querySelector('.warning-zone :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i'),
+		warningTrigger: !!viewer.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i`),
 		// Printed, never asserted: which zone holds the running block is the one deliberate divergence.
 		simBlockParent: sim ? [...sim.parentElement.classList].sort().join('.') : null,
 	};
@@ -97,6 +101,7 @@ const ZONES = () => {
 // so the pending state is deterministic here — and a click/evaluate round trip would eventually lose
 // the race against the first progress tick.
 const START = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const button = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	if (!button) return { missing: true };
 	button.click();
@@ -105,23 +110,24 @@ const START = () => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
 	};
-	const stop = viewer.querySelector('.button-zone button');
+	const stop = viewer.querySelector(`${T('button-zone')} button`);
 	return {
-		pending: shown('.results-pending'),
-		content: shown('.results-content'),
-		buttons: shown('.button-zone'),
-		loaderVisible: !!viewer.querySelector('.results-pending .loader')?.offsetParent,
+		pending: shown(T('results-pending')),
+		content: shown(T('results-content')),
+		buttons: shown(T('button-zone')),
+		loaderVisible: !!viewer.querySelector(`${T('results-pending')} .loader`)?.offsetParent,
 		stop: !!stop,
 		simulateDisabled: button.disabled,
 	};
 };
 
 const RUNNING = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const viewer = document.querySelector('.results-viewer');
 	const sim = viewer?.querySelector('.results-sim');
 	if (!sim) return { present: false };
 	const text = selector => sim.querySelector(selector)?.textContent?.trim() ?? null;
-	const stop = viewer.querySelector('.button-zone button');
+	const stop = viewer.querySelector(`${T('button-zone')} button`);
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
 		return el ? getComputedStyle(el).display !== 'none' : null;
@@ -131,11 +137,11 @@ const RUNNING = () => {
 		visible: sim.offsetParent !== null,
 		parent: [...sim.parentElement.classList].sort().join('.'),
 		dps: text('.results-sim-dps.damage-metrics .topline-result-avg'),
-		hps: text('.results-sim-hps.healing-metrics .topline-result-avg'),
+		hps: text(`${T('results-sim-hps')} .topline-result-avg`),
 		// The third child: either the presim string or `completed / total`, then the localised
 		// "iterations complete".
 		counter: sim.lastElementChild?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
-		buttons: shown('.button-zone'),
+		buttons: shown(T('button-zone')),
 		stopLabel: stop ? stop.textContent.trim() : null,
 		stopDisabled: stop ? stop.disabled : null,
 		stopType: stop ? stop.getAttribute('type') : null,
@@ -143,6 +149,7 @@ const RUNNING = () => {
 };
 
 const STOPPED = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const viewer = document.querySelector('.results-viewer');
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
@@ -150,15 +157,16 @@ const STOPPED = () => {
 	};
 	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	return {
-		pending: shown('.results-pending'),
-		content: shown('.results-content'),
-		buttons: shown('.button-zone'),
-		stop: !!viewer.querySelector('.button-zone button'),
+		pending: shown(T('results-pending')),
+		content: shown(T('results-content')),
+		buttons: shown(T('button-zone')),
+		stop: !!viewer.querySelector(`${T('button-zone')} button`),
 		simulateDisabled: simulate ? simulate.disabled : null,
 	};
 };
 
 const FINISHED = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const viewer = document.querySelector('.results-viewer');
 	const shown = selector => {
 		const el = viewer.querySelector(selector);
@@ -166,28 +174,29 @@ const FINISHED = () => {
 	};
 	const simulate = document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	return {
-		pending: shown('.results-pending'),
-		content: shown('.results-content'),
-		buttons: shown('.button-zone'),
-		stop: !!viewer.querySelector('.button-zone button'),
-		metrics: viewer.querySelectorAll('.results-content .results-metric').length,
+		pending: shown(T('results-pending')),
+		content: shown(T('results-content')),
+		buttons: shown(T('button-zone')),
+		stop: !!viewer.querySelector(`${T('button-zone')} button`),
+		metrics: viewer.querySelectorAll(`${T('results-content')} .results-metric`).length,
 		simulateDisabled: simulate ? simulate.disabled : null,
 	};
 };
 
 const WARNINGS = () => {
+	const T = name => `:is([data-testid="${name}"], .${name})`;
 	const viewer = document.querySelector('.results-viewer');
-	const item = viewer?.querySelector('.warning-zone :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)');
-	const trigger = viewer?.querySelector('.warning-zone button');
+	const item = viewer?.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item)`);
+	const trigger = viewer?.querySelector(`${T('warning-zone')} button`);
 	return {
 		hidden: item ? item.classList.contains('hide') : null,
 		itemDisplay: item ? getComputedStyle(item).display : null,
-		zoneDisplay: viewer ? getComputedStyle(viewer.querySelector('.warning-zone')).display : null,
+		zoneDisplay: viewer ? getComputedStyle(viewer.querySelector(T('warning-zone'))).display : null,
 		triggerText: trigger ? trigger.textContent.trim() : null,
 		triggerName: trigger ? (trigger.getAttribute('aria-label') ?? '') || trigger.textContent.trim() : null,
-		trigger: !!viewer?.querySelector('.warning-zone :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i'),
+		trigger: !!viewer?.querySelector(`${T('warning-zone')} :is([data-testid="sim-toolbar-item"], .sim-toolbar-item) button.warning.link-warning i`),
 		// Counted only while the tooltip is open: tippy has no node in the document until it shows.
-		items: viewer ? [...viewer.querySelectorAll('.warning-zone li')].map(li => li.textContent.trim()) : [],
+		items: viewer ? [...viewer.querySelectorAll(`${T('warning-zone')} li`)].map(li => li.textContent.trim()) : [],
 	};
 };
 
@@ -239,7 +248,7 @@ try {
 	console.log(`  ----  ${JSON.stringify(load)}\n`);
 	check(
 		'the panel holds the four zones in order',
-		JSON.stringify(load.zones) === JSON.stringify(['results-pending', 'results-content', 'button-zone.text-center', 'text-center.warning-zone']),
+		JSON.stringify(load.zones) === JSON.stringify(['results-pending', 'results-content', 'button-zone', 'warning-zone']),
 		JSON.stringify(load.zones),
 	);
 	check('the pending zone holds the loader', load.loader);
@@ -284,9 +293,8 @@ try {
 	check('a running block is on screen', running.present === true && running.visible === true, `parent=${running.parent}`);
 	check('it carries a dps number', Number.isFinite(parseFloat(running.dps)), String(running.dps));
 	check('it carries an hps number', Number.isFinite(parseFloat(running.hps)), String(running.hps));
-	// `damage-metrics` / `healing-metrics` are what `_shared.scss`'s `.hide-damage-metrics` rules key
-	// on, so the two rows following the sim's metric toggles depends on both classes surviving. They
-	// are part of the two selectors above.
+	// `damage-metrics` is what `_shared.scss`'s `.hide-damage-metrics` rules key on, so the dps row
+	// following the sim's metric toggles depends on the class surviving; the hps row is read by testid.
 	// The `<br/>` between the two halves contributes no whitespace to `textContent`, so the separator is
 	// optional rather than asserted: it is a line break, not a space, on either build.
 	check(
@@ -297,9 +305,9 @@ try {
 	check('the Stop button is still up while running', running.buttons === true && running.stopLabel === 'Stop' && running.stopDisabled === false);
 
 	console.log('\nstopping');
-	await page.click('.results-viewer .button-zone button');
+	await page.click(`.results-viewer ${q('button-zone')} button`);
 	const stopping = await page.evaluate(() => {
-		const stop = document.querySelector('.results-viewer .button-zone button');
+		const stop = document.querySelector(':is([data-testid="button-zone"], .button-zone) button');
 		return stop ? { label: stop.textContent.trim(), disabled: stop.disabled } : { missing: true };
 	});
 	console.log(`  ----  ${JSON.stringify(stopping)}`);
@@ -318,12 +326,13 @@ try {
 	await page
 		.waitForFunction(
 			() => {
+				const T = name => `:is([data-testid="${name}"], .${name})`;
 				const viewer = document.querySelector('.results-viewer');
 				const hidden = selector => getComputedStyle(viewer.querySelector(selector)).display === 'none';
 				return (
-					hidden('.results-pending') &&
-					hidden('.results-content') &&
-					hidden('.button-zone') &&
+					hidden(T('results-pending')) &&
+					hidden(T('results-content')) &&
+					hidden(T('button-zone')) &&
 					!document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').disabled
 				);
 			},
@@ -344,7 +353,11 @@ try {
 	await setIterations(SHORT_RUN);
 	await page.click(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action');
 	await page
-		.waitForFunction(() => document.querySelectorAll('.results-viewer .results-content .results-metric').length > 0, null, { timeout: 120000 })
+		.waitForFunction(
+			() => document.querySelectorAll('.results-viewer :is([data-testid="results-content"], .results-content) .results-metric').length > 0,
+			null,
+			{ timeout: 120000 },
+		)
 		.catch(() => problems.push('no result arrived within 120s'));
 	await page.waitForTimeout(500);
 	const finished = await page.evaluate(FINISHED);
@@ -388,7 +401,7 @@ try {
 		JSON.stringify(raised),
 	);
 
-	await page.locator('.results-viewer .warning-zone button').hover({ timeout: 5000 });
+	await page.locator(`.results-viewer ${q('warning-zone')} button`).hover({ timeout: 5000 });
 	await page.waitForTimeout(700);
 	const open = await page.evaluate(WARNINGS);
 	console.log(`  ----  open ${JSON.stringify(open)}`);
@@ -433,7 +446,7 @@ try {
 	// writes its label before calling the abort, so both clicks and the read are same-task.
 	await fr.evaluate(() => document.querySelector(':is([data-testid="sim-sidebar-actions"], .sim-sidebar-actions) .dps-action').click());
 	const frLabel = await fr.evaluate(() => {
-		const stop = document.querySelector('.results-viewer .button-zone button');
+		const stop = document.querySelector('.results-viewer :is([data-testid="button-zone"], .button-zone) button');
 		if (!stop) return null;
 		stop.click();
 		return stop.textContent.trim();

@@ -12,7 +12,7 @@ const registryWith = (...contents: string[]) => {
 	return registry;
 };
 
-const zone = () => document.querySelector('.warning-zone .sim-toolbar-item') as HTMLElement | null;
+const zone = () => document.querySelector('[data-testid="warning-zone"] .sim-toolbar-item') as HTMLElement | null;
 const shown = () => !!zone();
 
 describe('SimWarnings', () => {

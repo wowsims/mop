@@ -27,13 +27,16 @@ export const SimResultsPanel = ({ panel, warnings, results }: SimResultsPanelPro
 
 	return (
 		<div className="results-viewer">
-			<div className="results-pending [&_.loader]:m-auto" hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
+			<div
+				className="[&_.loader]:m-auto"
+				data-testid="results-pending"
+				hidden={stage !== ResultsPanelStage.Pending && stage !== ResultsPanelStage.Running}>
 				{stage === ResultsPanelStage.Running ? <SimProgress panel={panel} /> : <Spinner />}
 			</div>
-			<div className="results-content" hidden={stage !== ResultsPanelStage.Result}>
+			<div data-testid="results-content" hidden={stage !== ResultsPanelStage.Result}>
 				{results && <SimResultSummary results={results} />}
 			</div>
-			<div className="button-zone text-center" hidden={!buttonsVisible}>
+			<div className="text-center" data-testid="button-zone" hidden={!buttonsVisible}>
 				{abortHandler && <AbortButton onAbort={abortHandler} />}
 			</div>
 			<SimWarnings warnings={warnings} ready={ready} />

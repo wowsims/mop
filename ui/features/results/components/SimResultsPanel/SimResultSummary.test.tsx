@@ -87,8 +87,8 @@ describe('SimResultSummary', () => {
 			'tto',
 			'hps',
 		]);
-		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(false);
-		expect([...container.querySelectorAll('.results-sim-reference button')].map(button => button.getAttribute('type'))).toEqual([
+		expect(container.querySelector('[data-testid="results-sim-reference"]')?.hasAttribute('data-has-reference')).toBe(false);
+		expect([...container.querySelectorAll('[data-testid="results-sim-reference"] button')].map(button => button.getAttribute('type'))).toEqual([
 			'button',
 			'button',
 			'button',
@@ -108,8 +108,8 @@ describe('SimResultSummary', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
 
-		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
-		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(true);
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-set-reference"]')!));
+		expect(container.querySelector('[data-testid="results-sim-reference"]')?.hasAttribute('data-has-reference')).toBe(true);
 
 		// Same run on both sides: every rendered metric gets a delta, all of them zero and none coloured.
 		expect(diffs(container)).toHaveLength(7);
@@ -120,7 +120,7 @@ describe('SimResultSummary', () => {
 	it('colours a significant gain positive and carries the z score on the anchor', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
-		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-set-reference"]')!));
 		act(() => results.setSimResult(result(1100)));
 
 		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
@@ -132,20 +132,20 @@ describe('SimResultSummary', () => {
 	it('drops the reference again on delete', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
-		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
-		act(() => fireEvent.click(container.querySelector('.results-sim-reference-delete')!));
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-set-reference"]')!));
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-reference-delete"]')!));
 
-		expect(container.querySelector('.results-sim-reference')?.hasAttribute('data-has-reference')).toBe(false);
+		expect(container.querySelector('[data-testid="results-sim-reference"]')?.hasAttribute('data-has-reference')).toBe(false);
 		expect(diffs(container)).toEqual([]);
 	});
 
 	it('swaps the two runs, so the delta changes sign', () => {
 		act(() => results.setSimResult(result(1000)));
 		const { container } = mount(results);
-		act(() => fireEvent.click(container.querySelector('.results-sim-set-reference')!));
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-set-reference"]')!));
 		act(() => results.setSimResult(result(1100)));
 
-		act(() => fireEvent.click(container.querySelector('.results-sim-reference-swap')!));
+		act(() => fireEvent.click(container.querySelector('[data-testid="results-sim-reference-swap"]')!));
 
 		const dps = container.querySelector('.results-sim-dps .results-reference-diff')!;
 		expect(dps.textContent).toBe('-100.00 (10.00%)');

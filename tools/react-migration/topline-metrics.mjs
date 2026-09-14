@@ -20,7 +20,7 @@
 // markup: tippy appends `[data-tippy-root]` to the body, react-tooltip renders `.sim-tooltip` and
 // nothing at all while closed. Hovering asks the only question that matters — does this metric
 // carry a tooltip, and what does it say.
-import { launch, openSpec, PORTS } from './browser.mjs';
+import { launch, openSpec, PORTS, q } from './browser.mjs';
 
 const SPECS = ['warrior/arms', 'warrior/protection', 'mage/fire'];
 const PANES = ['#damageTab', '#healingTab', '#damageTakenTab'];
@@ -65,7 +65,7 @@ const READ = panes => {
 		];
 	};
 
-	const sidebar = [...document.querySelectorAll('.results-content .results-metric')].map(
+	const sidebar = [...document.querySelectorAll(':is([data-testid="results-content"], .results-content) .results-metric')].map(
 		(metric, index) =>
 			`${index} ${cls(metric)} avg=${text(metric.querySelector('.topline-result-avg'))} stdev=${text(
 				metric.querySelector('.topline-result-stdev'),
@@ -161,14 +161,18 @@ const collect = async (browser, port, spec, seeded) => {
 
 	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
 	await page.click('.dps-action');
-	await page.waitForFunction(() => document.querySelectorAll('.results-content .results-metric').length > 0, null, { timeout: 180000 });
+	await page.waitForFunction(
+		() => document.querySelectorAll(':is([data-testid="results-content"], .results-content) .results-metric').length > 0,
+		null,
+		{ timeout: 180000 },
+	);
 	await openResultsTab(page);
 	await page.waitForFunction(() => !document.querySelector('[data-no-results]'), null, { timeout: 60000 });
 	await page.waitForTimeout(500);
 
 	const dom = await page.evaluate(READ, PANES);
 	const paneTooltips = await tooltips(page, '#damageTab .topline-results-root thead th');
-	const sidebarTooltips = await tooltips(page, '.results-content .results-metric');
+	const sidebarTooltips = await tooltips(page, `${q('results-content')} .results-metric`);
 	await page.close();
 	return { dom, paneTooltips, sidebarTooltips, errors };
 };

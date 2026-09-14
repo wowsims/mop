@@ -40,7 +40,7 @@ export const SimProgress = ({ panel }: SimProgressProps) => {
 				</div>
 			)}
 			{showHealing && (
-				<div className="results-sim-hps healing-metrics font-bold">
+				<div className="font-bold" data-testid="results-sim-hps">
 					<span ref={hps} className="topline-result-avg text-2xl" />
 				</div>
 			)}
