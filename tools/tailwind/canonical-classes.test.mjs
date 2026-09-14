@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 
-import { findNonCanonical } from './canonical-classes.mjs';
+import { deriveClassAttrs, findNonCanonical } from './canonical-classes.mjs';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..');
 const CSS_PATH = path.join(REPO_ROOT, 'ui/styles/style.css');
@@ -53,7 +53,7 @@ async function testFixtureTree() {
 		path.join(dir, 'ui/Widget.tsx'),
 		[
 			'const a = <div className="p-[5px] flex ui-widget-root" />;',
-			'const b = <div triggerClassName={\'w-[18px]\'} />;',
+			"const b = <div triggerClassName={'w-[18px]'} />;",
 			'const cond = clsx("mt-[3px]", isOpen && "data-[stuck]:bg-background", extra);',
 			'const dyn = <div className={`ease-[cubic-bezier(0.4,0,0.2,1)] ${size}`} />;',
 			'const obj = { iconClassName: "flex-[2]", extraClassNames: ["border-[3px]"] };',
@@ -86,9 +86,35 @@ async function testFixtureTree() {
 	fs.rmSync(dir, { recursive: true, force: true });
 }
 
+function testDeriveClassAttrs() {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'canon-attrs-fixture-'));
+	fs.mkdirSync(path.join(dir, 'ui'), { recursive: true });
+
+	fs.writeFileSync(
+		path.join(dir, 'ui/Widget.tsx'),
+		[
+			'const a = <div rootClassName="p-2" iconGroupClassName={\'p-2\'} />;',
+			"const b = ({ headerClassName = '' }: Props) => <div headerClassName={headerClassName} />;",
+			'const notAnAttr = someValue;',
+			'const spaced = value;',
+		].join('\n'),
+	);
+
+	const attrs = deriveClassAttrs(dir);
+
+	assert.ok(attrs.includes('className'), 'className is always included');
+	assert.ok(attrs.includes('rootClassName'), 'rootClassName must be derived from the tree');
+	assert.ok(attrs.includes('iconGroupClassName'), 'a multi-word *ClassName attribute must be derived');
+	assert.ok(attrs.includes('headerClassName'), 'a destructured prop default counts as an attribute site');
+	assert.ok(!attrs.includes('notAnAttr'), 'a plain identifier must not be treated as a class attribute');
+
+	fs.rmSync(dir, { recursive: true, force: true });
+}
+
 async function main() {
 	await testDesignSystemCases();
 	await testFixtureTree();
+	testDeriveClassAttrs();
 	console.log('canonical-classes.test.mjs: all tests passed');
 }
 

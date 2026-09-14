@@ -6,11 +6,10 @@
 // Usage:
 //   node tools/tailwind/class-hooks.mjs [--css <path>] [--json] [root]
 
-import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { collectTokens, findDefaultCss } from './canonical-classes.mjs';
+import { collectTokens, findDefaultCss, loadDesignSystemCached } from './canonical-classes.mjs';
 
 function loadAllowlist(root) {
 	const file = path.join(root, 'ui/class_hook_allowlist.json');
@@ -38,8 +37,7 @@ function isTestFile(relPath) {
 export async function findClassHooks(root, opts = {}) {
 	const allowlist = opts.allowlist || loadAllowlist(root);
 	const cssPath = opts.css || findDefaultCss(root);
-	const css = fs.readFileSync(cssPath, 'utf8');
-	const designSystem = await __unstable__loadDesignSystem(css, { base: path.dirname(cssPath) });
+	const designSystem = await loadDesignSystemCached(cssPath);
 
 	const occurrences = collectTokens(root)
 		.filter(occ => occ.file.endsWith('.ts') || occ.file.endsWith('.tsx'))
@@ -61,8 +59,7 @@ export async function findClassHooks(root, opts = {}) {
 export async function findRetiredClassNames(root, retired, opts = {}) {
 	const allowlist = opts.allowlist || loadAllowlist(root);
 	const cssPath = opts.css || findDefaultCss(root);
-	const css = fs.readFileSync(cssPath, 'utf8');
-	const designSystem = await __unstable__loadDesignSystem(css, { base: path.dirname(cssPath) });
+	const designSystem = await loadDesignSystemCached(cssPath);
 	const retiredSet = new Set(retired);
 
 	const occurrences = collectTokens(root).filter(occ => !isTestFile(occ.file));

@@ -10,20 +10,21 @@ import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const CLASS_ATTRS = [
-	'className',
-	'bodyClassName',
-	'cellClassName',
-	'clearClassName',
-	'contentClassName',
-	'iconClassName',
-	'inputClassName',
-	'labelClassName',
-	'rowClassName',
-	'selectClassName',
-	'tabItemClassName',
-	'triggerClassName',
-];
+const CLASS_ATTR_RE = /\b([a-zA-Z]+ClassNames?)=/g;
+
+// Both this module and class-hooks.mjs need the design system and the tree's token
+// occurrences; a gate run loads both in the same process, so cache each by key instead of
+// re-parsing the CSS or re-walking ui/ per call.
+const designSystemCache = new Map();
+export function loadDesignSystemCached(cssPath) {
+	if (!designSystemCache.has(cssPath)) {
+		const css = fs.readFileSync(cssPath, 'utf8');
+		designSystemCache.set(cssPath, __unstable__loadDesignSystem(css, { base: path.dirname(cssPath) }));
+	}
+	return designSystemCache.get(cssPath);
+}
+
+const tokensCache = new Map();
 
 function stripVariants(token) {
 	const parts = token.replace(/^!/, '').split(':');
@@ -105,13 +106,33 @@ function isGeneratedFile(relPath) {
 	return relPath.startsWith('ui/generated/') || relPath.endsWith('_auto_gen.ts');
 }
 
+// Derives the JSX class-attribute name list from the tree itself, instead of a hardcoded
+// list: any tight `wordClassName=`/`wordClassNames=` occurrence (JSX attributes and
+// destructured prop defaults are written without spaces around `=`; a plain `const x = …`
+// assignment has spaces and so is not matched), plus className itself.
+export function deriveClassAttrs(root) {
+	const skipDirs = new Set([path.join(root, 'ui/generated'), path.join(root, 'node_modules')]);
+	const scriptFiles = walk(path.join(root, 'ui'), ['.tsx', '.ts'], skipDirs);
+
+	const attrs = new Set(['className']);
+	for (const file of scriptFiles) {
+		const relPath = path.relative(root, file);
+		if (isGeneratedFile(relPath)) continue;
+		const text = fs.readFileSync(file, 'utf8');
+		let m;
+		CLASS_ATTR_RE.lastIndex = 0;
+		while ((m = CLASS_ATTR_RE.exec(text))) attrs.add(m[1]);
+	}
+	return [...attrs].sort();
+}
+
 // Collects {token, index} occurrences from TSX/TS source: className-style attributes,
 // clsx(...) calls, and object properties named className / *ClassName / extraClassNames.
-function collectFromScript(text, relPath) {
+function collectFromScript(text, relPath, classAttrs) {
 	const found = [];
 	const skipDynamic = isSpecsFile(relPath);
 
-	const attrPattern = new RegExp(`\\b(${CLASS_ATTRS.join('|')})\\s*=\\s*(\\{([^{}]|\\{[^{}]*\\})*\\}|"[^"]*"|'[^']*')`, 'g');
+	const attrPattern = new RegExp(`\\b(${classAttrs.join('|')})\\s*=\\s*(\\{([^{}]|\\{[^{}]*\\})*\\}|"[^"]*"|'[^']*')`, 'g');
 	let m;
 	while ((m = attrPattern.exec(text))) {
 		const raw = m[2];
@@ -204,9 +225,12 @@ function collectFromCss(text) {
 }
 
 export function collectTokens(root) {
+	if (tokensCache.has(root)) return tokensCache.get(root);
+
 	const skipDirs = new Set([path.join(root, 'ui/generated'), path.join(root, 'node_modules')]);
 	const scriptFiles = walk(path.join(root, 'ui'), ['.tsx', '.ts'], skipDirs);
 	const cssFiles = walk(path.join(root, 'ui'), ['.css'], skipDirs);
+	const classAttrs = deriveClassAttrs(root);
 
 	const occurrences = [];
 	for (const file of scriptFiles) {
@@ -214,7 +238,7 @@ export function collectTokens(root) {
 		if (isGeneratedFile(relPath)) continue;
 		const text = fs.readFileSync(file, 'utf8');
 		const onlyClassName = isSpecsFile(relPath);
-		for (const { token, line } of collectFromScript(text, relPath)) {
+		for (const { token, line } of collectFromScript(text, relPath, classAttrs)) {
 			occurrences.push({ file: relPath, line, token, onlyClassNameSite: onlyClassName });
 		}
 	}
@@ -225,18 +249,27 @@ export function collectTokens(root) {
 			occurrences.push({ file: relPath, line, token });
 		}
 	}
+	tokensCache.set(root, occurrences);
 	return occurrences;
 }
 
 export async function findNonCanonical(root, opts = {}) {
 	const cssPath = opts.css || findDefaultCss(root);
-	const css = fs.readFileSync(cssPath, 'utf8');
-	const designSystem = await __unstable__loadDesignSystem(css, { base: path.dirname(cssPath) });
+	const designSystem = await loadDesignSystemCached(cssPath);
 
 	const occurrences = collectTokens(root);
+	// canonicalizeCandidates(candidates) canonicalizes each candidate independently (no
+	// cross-candidate collapsing happens unless the `collapse` option is set, which we never
+	// pass), so batching every unique token into one call is equivalent to the brief's
+	// "run each token alone" per-class IntelliSense check, just without the per-call overhead.
+	const uniqueTokens = [...new Set(occurrences.map(occ => occ.token))];
+	const canonicalByToken = new Map();
+	const canonicalized = designSystem.canonicalizeCandidates(uniqueTokens, { rem: 16 });
+	uniqueTokens.forEach((token, i) => canonicalByToken.set(token, canonicalized[i]));
+
 	const results = [];
 	for (const occ of occurrences) {
-		const [canonical] = designSystem.canonicalizeCandidates([occ.token], { rem: 16 });
+		const canonical = canonicalByToken.get(occ.token);
 		if (!canonical) continue;
 		if (canonical === occ.token) continue;
 		results.push({ file: occ.file, line: occ.line, from: occ.token, to: canonical, kind: classifyRewrite(occ.token, canonical) });
@@ -245,6 +278,9 @@ export async function findNonCanonical(root, opts = {}) {
 	return results;
 }
 
+// Edits are applied against the whole file text with a forward-only cursor, not per-line:
+// a wrapped @apply/className spanning multiple lines can repeat the same "from" token more
+// than once, and a line-scoped indexOf only ever finds the first occurrence.
 function applyWrite(root, results) {
 	const byFile = new Map();
 	for (const r of results) {
@@ -253,15 +289,16 @@ function applyWrite(root, results) {
 	}
 	for (const [relFile, edits] of byFile) {
 		const full = path.join(root, relFile);
-		const lines = fs.readFileSync(full, 'utf8').split('\n');
+		let text = fs.readFileSync(full, 'utf8');
+		let cursor = 0;
 		for (const edit of edits) {
-			const idx = edit.line - 1;
-			const lineText = lines[idx];
-			const at = lineText.indexOf(edit.from);
+			let at = text.indexOf(edit.from, cursor);
+			if (at === -1) at = text.indexOf(edit.from);
 			if (at === -1) continue;
-			lines[idx] = lineText.slice(0, at) + edit.to + lineText.slice(at + edit.from.length);
+			text = text.slice(0, at) + edit.to + text.slice(at + edit.from.length);
+			cursor = at + edit.to.length;
 		}
-		fs.writeFileSync(full, lines.join('\n'));
+		fs.writeFileSync(full, text);
 	}
 }
 
