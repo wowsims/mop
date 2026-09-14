@@ -24,7 +24,7 @@ export const CastItem = ({ item, index, iconUrl }: CastItemProps) => (
 			style={item.travelStart == null ? undefined : spanStyle(item.travelStart, item.travelDuration ?? 0)}
 		/>
 		<WowheadIcon
-			data-testid="rotation-item-icon"
+			testId="rotation-item-icon"
 			className="h-(--rotation-item-h) w-(--rotation-item-h) flex-none border-b-[3px] border-gray-600 group-data-[outcome=miss]/cast:border-damage-miss group-data-[outcome=partial]/cast:border-damage-partial group-data-[outcome=hit]/cast:border-damage-hit group-data-[outcome=crit]/cast:border-damage-crit group-data-[outcome=cancelled]/cast:border-cancel group-data-[density=coarse]/scroller:hidden"
 			iconUrl={iconUrl}
 		/>

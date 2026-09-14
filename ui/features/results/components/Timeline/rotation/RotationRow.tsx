@@ -29,7 +29,7 @@ export const RotationRow = memo(({ row, items, onHide }: RotationRowProps) => {
 				text={row.label}
 				icon={
 					row.kind === 'resource' ? (
-						<WowheadIcon data-testid="rotation-row-icon" className="ui-timeline-row-icon" iconUrl={row.icon} />
+						<WowheadIcon testId="rotation-row-icon" className="ui-timeline-row-icon" iconUrl={row.icon} />
 					) : (
 						<RotationRowIcon actionId={row.actionId} tooltip={row.kind === 'aura' ? 'buffAura' : 'spell'} />
 					)

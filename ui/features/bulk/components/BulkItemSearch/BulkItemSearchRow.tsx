@@ -37,7 +37,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					<span className="ui-item-picker-ilvl" data-testid="item-picker-ilvl">
 						{baseIlvl(item)}
 					</span>
-					<WowheadIcon as="div" className="size-full" data-testid="bulk-item-search-item-icon" iconUrl={iconUrl} />
+					<WowheadIcon as="div" className="size-full" testId="bulk-item-search-item-icon" iconUrl={iconUrl} />
 				</div>
 				<div className="flex flex-col gap-1 pl-2">
 					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">
