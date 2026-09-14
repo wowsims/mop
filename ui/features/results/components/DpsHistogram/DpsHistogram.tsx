@@ -56,5 +56,9 @@ export const DpsHistogram = () => {
 		[],
 	);
 
-	return <div className="dps-histogram-root h-64 w-full mt-3 mx-auto">{data && <Bar data={data} options={options} />}</div>;
+	return (
+		<div data-testid="dps-histogram-root" className="h-64 w-full mt-3 mx-auto">
+			{data && <Bar data={data} options={options} />}
+		</div>
+	);
 };

@@ -18,7 +18,9 @@ export const ToplineResults = () => {
 	}, [resultData, displayMetrics]);
 
 	return (
-		<div className="topline-results-root results-sim text-center pb-6 [&_.metrics-table]:w-full [&_.metrics-table]:max-w-full [&_.metrics-table]:table-fixed [&_.metrics-table-header-row]:border-b-0 [&_.metrics-table-body_tr]:border-b-0 [&_.metrics-table-body_tr:hover]:bg-transparent">
+		<div
+			data-testid="topline-results-root"
+			className="results-sim text-center pb-6 [&_.ui-metrics-table]:w-full [&_.ui-metrics-table]:max-w-full [&_.ui-metrics-table]:table-fixed [&_.ui-metrics-header-row]:border-b-0 [&_.ui-metrics-row]:border-b-0 [&_.ui-metrics-row:hover]:bg-transparent">
 			{metrics && <ResultMetricList metrics={metrics} layout="row" />}
 		</div>
 	);

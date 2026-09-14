@@ -48,7 +48,7 @@ describe('DpsHistogram', () => {
 	it('renders an empty root before the first run', () => {
 		const { container } = render(<DpsHistogram />);
 
-		expect(container.querySelector('.dps-histogram-root')!.children).toHaveLength(0);
+		expect(container.querySelector('[data-testid="dps-histogram-root"]')!.children).toHaveLength(0);
 		expect(charts).toHaveLength(0);
 	});
 
@@ -56,7 +56,7 @@ describe('DpsHistogram', () => {
 		result = resultWith({ 100: 1, 200: 5, 300: 2 }, 200, 50);
 		const { container } = render(<DpsHistogram />);
 
-		expect(container.querySelectorAll('.dps-histogram-root > canvas')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="dps-histogram-root"] > canvas')).toHaveLength(1);
 		expect(charts).toHaveLength(1);
 		expect(charts[0].config.data.labels).toEqual(['100', '200', '300']);
 		expect(charts[0].config.data.datasets[0].data).toEqual([1, 5, 2]);
@@ -88,7 +88,7 @@ describe('DpsHistogram', () => {
 		rerender(<DpsHistogram />);
 
 		expect(charts[0].destroyed).toBe(true);
-		expect(container.querySelector('.dps-histogram-root')!.children).toHaveLength(0);
+		expect(container.querySelector('[data-testid="dps-histogram-root"]')!.children).toHaveLength(0);
 	});
 
 	it('destroys the chart when it unmounts', () => {

@@ -208,12 +208,12 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 							{i18n.t('results_tab.details.no_results')}
 						</div>
 						{showDamage && (
-							<DetailedResultsPane id="damageTab" className="[&_.metrics-table]:text-xs" contentClassName="damage-metrics" topline histogram>
+							<DetailedResultsPane id="damageTab" className="[&_.ui-metrics-table]:text-xs" contentClassName="damage-metrics" topline histogram>
 								<DamageMetricsTable />
 							</DetailedResultsPane>
 						)}
 						{showHealing && (
-							<DetailedResultsPane id="healingTab" className="[&_.metrics-table]:text-xs" contentTestId="healing-spell-metrics" topline>
+							<DetailedResultsPane id="healingTab" className="[&_.ui-metrics-table]:text-xs" contentTestId="healing-spell-metrics" topline>
 								<HealingMetricsTable />
 							</DetailedResultsPane>
 						)}

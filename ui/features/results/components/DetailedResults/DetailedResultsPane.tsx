@@ -17,22 +17,22 @@ export interface DetailedResultsPaneProps {
 	children?: ReactNode;
 }
 
-const rowClassName = (extra?: string) => clsx('ui-dr-row group-data-[no-results]/dr:hidden', extra);
+const rowClassName = 'ui-dr-row group-data-[no-results]/dr:hidden';
 
 export const DetailedResultsPane = ({ id, className, contentClassName, contentTestId, topline, histogram, filling, children }: DetailedResultsPaneProps) => (
 	<TabPanel value={id} className={clsx('pt-0 pb-0', filling && 'ui-dr-filling-pane', className)}>
 		{topline && (
-			<div data-testid="dr-row" className={rowClassName('topline-results')}>
+			<div data-testid="dr-row-topline" className={rowClassName}>
 				<ToplineResults />
 			</div>
 		)}
-		<div data-testid="dr-row" className={rowClassName()}>
+		<div data-testid="dr-row" className={rowClassName}>
 			<div data-testid={contentTestId} className={contentClassName}>
 				{children}
 			</div>
 		</div>
 		{histogram && (
-			<div data-testid="dr-row" className={rowClassName('dps-histogram')}>
+			<div data-testid="dr-row-dps-histogram" className={rowClassName}>
 				<DpsHistogram />
 			</div>
 		)}

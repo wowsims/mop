@@ -55,7 +55,7 @@ const mount = () => render(<SimHostProvider host={host}>{<ToplineResults />}</Si
 describe('ToplineResults', () => {
 	it('renders an empty root before the first run', () => {
 		const { container } = mount();
-		const root = container.querySelector('.topline-results-root')!;
+		const root = container.querySelector('[data-testid="topline-results-root"]')!;
 
 		expect(root).toBeTruthy();
 		expect(root.children).toHaveLength(0);
@@ -65,8 +65,8 @@ describe('ToplineResults', () => {
 		result = resultFor(PlayerSpecs.FireMage);
 		const { container } = mount();
 
-		expect(container.querySelectorAll('.topline-results-root > table[data-testid="metrics-table"]')).toHaveLength(1);
-		expect(container.querySelectorAll('.topline-results-root > *')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="topline-results-root"] > table[data-testid="metrics-table"]')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="topline-results-root"] > *')).toHaveLength(1);
 		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric'))).toEqual([
 			'dps',
 			'tps',

@@ -66,7 +66,7 @@ const READ_OPTIONS = selector =>
 // What the filter is for: the numbers every table shows for the current selection.
 const READ_TABLES = () => {
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : 'MISSING');
-	const topline = [...document.querySelectorAll('#damageTab .topline-results-root tbody td')].map(
+	const topline = [...document.querySelectorAll('#damageTab :is([data-testid="topline-results-root"], .topline-results-root) tbody td')].map(
 		(cell, index) => `${index} ${text(cell.querySelector('.topline-result-avg'))} ± ${text(cell.querySelector('.topline-result-stdev'))}`,
 	);
 	// Inlined rather than calling `q` — this function runs inside the page, where the module-scope

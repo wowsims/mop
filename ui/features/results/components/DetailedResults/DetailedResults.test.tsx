@@ -47,8 +47,8 @@ vi.mock('../Timeline', () => ({
 	},
 }));
 
-vi.mock('../ToplineResults', () => ({ ToplineResults: () => <div className="topline-results-root" /> }));
-vi.mock('../DpsHistogram', () => ({ DpsHistogram: () => <div className="dps-histogram-root" /> }));
+vi.mock('../ToplineResults', () => ({ ToplineResults: () => <div data-testid="topline-results-root" /> }));
+vi.mock('../DpsHistogram', () => ({ DpsHistogram: () => <div data-testid="dps-histogram-root" /> }));
 vi.mock('../DamageMetricsTable', () => ({ DamageMetricsTable: () => <div data-testid="damage-metrics-root" /> }));
 vi.mock('../HealingMetricsTable', () => ({ HealingMetricsTable: () => <div data-testid="healing-metrics-root" /> }));
 vi.mock('../DtpsMetricsTable', () => ({ DtpsMetricsTable: () => <div data-testid="dtps-metrics-root" /> }));
@@ -153,8 +153,8 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('#buffsTab [data-testid="buff-aura-metrics"] > [data-testid="buff-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#debuffsTab [data-testid="debuff-aura-metrics"] > [data-testid="debuff-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('#resourcesTab [data-testid="resource-metrics"] > [data-testid="resource-metrics-root"]')).toHaveLength(1);
-		expect(container.querySelectorAll('[data-testid="dr-row"].topline-results > .topline-results-root')).toHaveLength(3);
-		expect(container.querySelectorAll('#damageTab [data-testid="dr-row"].dps-histogram > .dps-histogram-root')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-testid="dr-row-topline"] > [data-testid="topline-results-root"]')).toHaveLength(3);
+		expect(container.querySelectorAll('#damageTab [data-testid="dr-row-dps-histogram"] > [data-testid="dps-histogram-root"]')).toHaveLength(1);
 	});
 
 	it('keeps each pane in the container its island was built into', () => {

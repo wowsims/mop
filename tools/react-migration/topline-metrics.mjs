@@ -31,12 +31,20 @@ const SETTINGS_SUFFIX = '__currentSettings__';
 const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
 const READ = panes => {
-	const cls = el => (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).sort().join('.');
+	// Unions `data-testid` into the same token set as SERIALIZE does in `browser.mjs`, so a class hook
+	// this unit turned into a testid still compares equal against the baseline, which still carries it
+	// as a class.
+	const cls = el => {
+		const tokens = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean);
+		const testId = el.getAttribute('data-testid');
+		if (testId) tokens.push(testId);
+		return [...new Set(tokens)].sort().join('.');
+	};
 	const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : null);
 
 	const topline = pane => {
-		const root = document.querySelector(`${pane} .topline-results-root`);
-		if (!root) return `NO ${pane} .topline-results-root`;
+		const root = document.querySelector(`${pane} :is([data-testid="topline-results-root"], .topline-results-root)`);
+		if (!root) return `NO ${pane} topline-results-root`;
 		const headers = [...root.querySelectorAll('thead th')];
 		const cells = [...root.querySelectorAll('tbody td')];
 		// Both stylesheets moved out of the global cascade into co-located component files, so the
@@ -56,7 +64,7 @@ const READ = panes => {
 					`th=${cls(header)}`,
 					`td=${cell ? cls(cell) : 'MISSING'}`,
 					`avg=${text(cell?.querySelector('.topline-result-avg'))}`,
-					`stdev=${text(cell?.querySelector('.topline-result-stdev'))}`,
+					`stdev=${text(cell?.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'))}`,
 					// Shown, not present: master renders the slot for every layout and hides it until a
 					// reference is saved, and the port renders none until then. Neither is on screen here.
 					`ref=${!!cell?.querySelector('.results-reference:not(.hide) > .results-reference-diff')}`,
@@ -65,14 +73,14 @@ const READ = panes => {
 		];
 	};
 
-	const sidebar = [...document.querySelectorAll(':is([data-testid="results-content"], .results-content) .results-metric')].map(
+	const sidebar = [...document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)')].map(
 		(metric, index) =>
 			`${index} ${cls(metric)} avg=${text(metric.querySelector('.topline-result-avg'))} stdev=${text(
-				metric.querySelector('.topline-result-stdev'),
+				metric.querySelector(':is([data-testid="topline-result-stdev"], .topline-result-stdev)'),
 			)} ref=${!!metric.querySelector('.results-reference:not(.hide) > .results-reference-diff')}`,
 	);
 
-	const histogram = document.querySelector('#damageTab .dps-histogram-root');
+	const histogram = document.querySelector('#damageTab :is([data-testid="dps-histogram-root"], .dps-histogram-root)');
 	const chart = histogram
 		? [
 				`root ${cls(histogram)} h=${getComputedStyle(histogram).height} w=${getComputedStyle(histogram).width} mt=${
@@ -162,7 +170,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForSelector('.dps-action:not([disabled])', { timeout: 60000 });
 	await page.click('.dps-action');
 	await page.waitForFunction(
-		() => document.querySelectorAll(':is([data-testid="results-content"], .results-content) .results-metric').length > 0,
+		() => document.querySelectorAll(':is([data-testid="results-content"], .results-content) :is([data-testid="results-metric"], .results-metric)').length > 0,
 		null,
 		{ timeout: 180000 },
 	);
@@ -171,8 +179,8 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.waitForTimeout(500);
 
 	const dom = await page.evaluate(READ, PANES);
-	const paneTooltips = await tooltips(page, '#damageTab .topline-results-root thead th');
-	const sidebarTooltips = await tooltips(page, `${q('results-content')} .results-metric`);
+	const paneTooltips = await tooltips(page, '#damageTab :is([data-testid="topline-results-root"], .topline-results-root) thead th');
+	const sidebarTooltips = await tooltips(page, `${q('results-content')} ${q('results-metric')}`);
 	await page.close();
 	return { dom, paneTooltips, sidebarTooltips, errors };
 };
