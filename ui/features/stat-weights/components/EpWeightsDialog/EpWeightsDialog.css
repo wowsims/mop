@@ -1,3 +1,4 @@
+@layer components {
 .ui-ep-weights-table-header-cell {
 	@apply sticky top-0 pt-2 pr-2 pb-2 bg-background text-left;
 }
@@ -16,4 +17,5 @@
 
 .ui-ep-weights-sidebar .ui-saved-data-create-container {
 	@apply max-w-[200px];
+}
 }

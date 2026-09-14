@@ -1,3 +1,5 @@
+@layer components {
 .ui-popover {
 	@apply max-h-(--available-height) overflow-y-auto p-0 border border-surface-border rounded-none bg-overlay text-white text-sm font-normal px-2 py-2 text-left opacity-100 fade-in-out motion-reduce:transition-none;
+}
 }

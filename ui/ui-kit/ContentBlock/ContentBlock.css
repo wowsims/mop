@@ -1,3 +1,4 @@
+@layer components {
 .ui-content-block {
 	@apply gap-3;
 }
@@ -8,4 +9,5 @@
 
 .ui-content-block-body {
 	@apply flex gap-3;
+}
 }

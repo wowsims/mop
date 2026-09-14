@@ -1,3 +1,4 @@
+@layer components {
 .ui-button {
 	@apply inline-block border border-transparent rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none transition-[color,background-color,border-color] duration-150 ease-in-out;
 
@@ -208,4 +209,5 @@
 
 .ui-button-inline {
 	@apply px-2 py-0;
+}
 }

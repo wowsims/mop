@@ -1,3 +1,4 @@
+@layer components {
 .ui-saved-data-container {
 	@apply flex flex-col gap-3;
 }
@@ -18,4 +19,5 @@
 
 .ui-saved-data-create-container .ui-saved-data-save-input {
 	@apply mb-3;
+}
 }

@@ -1,3 +1,4 @@
+@layer components {
 .ui-sim-link-content {
 	@apply p-2 flex items-center;
 }
@@ -13,4 +14,5 @@
 
 .ui-sim-link-title {
 	@apply text-lg font-bold whitespace-nowrap;
+}
 }

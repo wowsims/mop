@@ -1,3 +1,4 @@
+@layer components {
 .ui-dropdown-trigger {
 	@apply flex items-center border-0 rounded-none text-sm leading-normal font-normal text-center align-middle no-underline cursor-pointer select-none whitespace-nowrap transition-[color,background-color,border-color] duration-150 ease-in-out py-4 px-0;
 
@@ -19,4 +20,5 @@
 		border-bottom: 0;
 		border-left: 0.3em solid transparent;
 	}
+}
 }

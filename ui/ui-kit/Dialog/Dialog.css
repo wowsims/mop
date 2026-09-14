@@ -1,3 +1,4 @@
+@layer components {
 .ui-dialog-backdrop {
 	@apply fixed inset-0 bg-black opacity-50 z-modal-backdrop fade-in-out motion-reduce:transition-none;
 
@@ -74,4 +75,5 @@
 
 .ui-dialog-header-flush {
 	@apply pt-5 pb-0;
+}
 }

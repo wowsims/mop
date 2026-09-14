@@ -1,3 +1,4 @@
+@layer components {
 .ui-item-picker-root {
 	@apply flex;
 }
@@ -38,4 +39,5 @@
 .ui-gem-socket-focus-scope {
 	@apply [.gear-picker-root_&]:focus-visible:outline [.gear-picker-root_&]:focus-visible:outline-1 [.gear-picker-root_&]:focus-visible:outline-link
 		[.gear-picker-root_&]:focus-visible:outline-offset-1;
+}
 }

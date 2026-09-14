@@ -1,3 +1,4 @@
+@layer components {
 .ui-tab {
 	@apply flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link [font-family:inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out;
 	@apply hover:text-link-hover;
@@ -28,4 +29,5 @@
 
 .ui-tabs {
 	@apply flex mb-0 pl-0 list-none;
+}
 }

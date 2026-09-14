@@ -1,3 +1,4 @@
+@layer components {
 .ui-slot-rail-icon-wrapper {
 	@apply relative size-10 border border-(color:--modal-border-color);
 
@@ -13,4 +14,5 @@
 	&:not(:first-child) {
 		@apply -mt-px;
 	}
+}
 }

@@ -1,3 +1,4 @@
+@layer components {
 .ui-chip {
 	@apply rounded-full flex p-0 border border-primary text-white text-ui font-normal whitespace-nowrap text-center leading-none select-none cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out;
 
@@ -20,4 +21,5 @@
 
 .ui-chip-delete {
 	@apply py-2 pr-0 pl-0 mr-2 text-white;
+}
 }

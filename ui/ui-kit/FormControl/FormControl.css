@@ -1,3 +1,4 @@
+@layer components {
 .ui-input {
 	@apply block w-full py-1.5 px-3 rounded-none text-ui leading-normal text-foreground bg-surface border border-surface-border transition-colors duration-150 ease-in-out;
 
@@ -33,4 +34,5 @@
 
 .ui-help-text {
 	@apply mt-1 text-ui text-gray-600;
+}
 }

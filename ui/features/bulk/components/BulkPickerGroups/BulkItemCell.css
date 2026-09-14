@@ -1,3 +1,4 @@
+@layer components {
 .ui-bulk-item-cell {
 	& .item-picker-icon-wrapper {
 		--icon-size: 3.5rem;
@@ -46,4 +47,5 @@
 	padding: --spacing(2);
 	border: 1px solid var(--color-border);
 	white-space: normal;
+}
 }

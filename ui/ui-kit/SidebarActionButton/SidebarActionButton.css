@@ -1,3 +1,4 @@
+@layer components {
 .ui-sim-sidebar-actions > button,
 .ui-reforge-sidebar-actions button {
 	position: relative;
@@ -20,4 +21,5 @@
 
 .ui-sim-sidebar-actions > button[data-loading] > span {
 	display: block;
+}
 }

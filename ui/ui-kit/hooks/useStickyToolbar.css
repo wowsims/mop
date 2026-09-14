@@ -1,3 +1,4 @@
+@layer components {
 .ui-sticky-toolbar {
 	@apply sticky top-sim-header -mx-page w-[calc(100%+var(--spacing-page)*2)] flex px-page z-toolbar transition-colors duration-150 ease-in-out;
 
@@ -15,4 +16,5 @@
 			@apply w-full;
 		}
 	}
+}
 }

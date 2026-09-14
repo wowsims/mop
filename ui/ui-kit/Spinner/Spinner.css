@@ -1,3 +1,4 @@
+@layer components {
 .ui-spinner {
 	@apply border-spinner-track border-t-spinner animate-spin;
 	@apply w-(--loader-width,120px) h-(--loader-height,120px) border-[calc(var(--loader-width,120px)/7.5)];
@@ -5,4 +6,5 @@
 
 .ui-spinner-sm {
 	@apply w-(--loader-width,60px) h-(--loader-height,60px) border-[calc(var(--loader-width,60px)/7.5)];
+}
 }

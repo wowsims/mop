@@ -1,3 +1,4 @@
+@layer components {
 .ui-metrics-table {
 	@apply w-full;
 }
@@ -51,4 +52,5 @@
 
 .ui-metrics-tooltip th {
 	@apply pt-0;
+}
 }

@@ -1,3 +1,4 @@
+@layer components {
 .ui-dr-filling-pane {
 	@apply group-not-data-[no-results]/dr:[&.active]:flex group-not-data-[no-results]/dr:[&.active]:flex-col
 		group-not-data-[no-results]/dr:[&.active]:min-h-(--dr-filling-pane-min-height);
@@ -9,4 +10,5 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
+}
 }

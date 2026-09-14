@@ -1,3 +1,4 @@
+@layer components {
 .ui-timeline-item {
 	@apply absolute left-[calc(var(--pps)*var(--t))];
 }
@@ -50,4 +51,5 @@
 
 .ui-timeline-tooltip-body-row {
 	@apply flex items-center;
+}
 }

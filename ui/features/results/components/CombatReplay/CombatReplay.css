@@ -1,3 +1,4 @@
+@layer components {
 .ui-combat-replay-icon {
 	@apply relative block size-cr-icon overflow-hidden rounded-sm bg-cover bg-center bg-no-repeat no-underline inset-ring-2 inset-ring-white-20 transition-shadow duration-100;
 
@@ -20,4 +21,5 @@
 	&:hover {
 		@apply bg-white-15;
 	}
+}
 }

@@ -1,3 +1,4 @@
+@layer components {
 .ui-progress {
 	@apply relative flex w-full max-w-[250px] flex-col gap-1 self-center;
 }
@@ -12,4 +13,5 @@
 	&[data-indeterminate] {
 		@apply hidden;
 	}
+}
 }

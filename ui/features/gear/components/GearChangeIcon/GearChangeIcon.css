@@ -1,3 +1,4 @@
+@layer components {
 .ui-gear-change-icon-reforge {
 	--reforge-glyph-size: 50%;
 	--reforge-glyph-border-size: 107.5%;
@@ -16,4 +17,5 @@
 
 .ui-gear-change-icon-gem-marker {
 	@apply ml-px text-(length:--changed-socket-marker-size) text-danger;
+}
 }
