@@ -23,12 +23,13 @@ export const ReplayAuraIcon = ({ aura }: ReplayAuraIconProps) => {
 	});
 
 	return (
-		<ReplayIcon actionId={aura.actionId} className="cr-aura-icon ui-combat-replay-icon shrink-0" tooltip="buffAura" anchorRef={anchor}>
+		<ReplayIcon actionId={aura.actionId} className="ui-combat-replay-icon shrink-0" tooltip="buffAura" anchorRef={anchor} testId="cr-aura-icon">
 			<span
 				ref={stacks}
-				className="cr-aura-stack-badge absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-white text-shadow-outline-soft"
+				data-testid="cr-aura-stack-badge"
+				className="absolute right-[2px] top-[2px] text-[9px] font-black leading-none text-white text-shadow-outline-soft"
 			/>
-			<span ref={remaining} className="cr-aura-time-badge ui-combat-replay-badge" />
+			<span ref={remaining} data-testid="cr-aura-time-badge" className="ui-combat-replay-badge" />
 		</ReplayIcon>
 	);
 };

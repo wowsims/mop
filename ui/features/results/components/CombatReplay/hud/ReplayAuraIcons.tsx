@@ -9,15 +9,16 @@ import { ReplayAuraIcon } from './ReplayAuraIcon';
 
 export interface ReplayAuraIconsProps {
 	className: ClassValue;
+	testId?: string;
 	auras: ReadonlyArray<ReplayAura>;
 }
 
 /** Whatever is up right now, soonest to expire first — the player's buff row, and each enemy's debuffs. */
-export const ReplayAuraIcons = ({ className, auras }: ReplayAuraIconsProps) => {
+export const ReplayAuraIcons = ({ className, testId, auras }: ReplayAuraIconsProps) => {
 	const active = useFrameList(auras, time => activeAuras(auras, time), auraKey);
 
 	return (
-		<div className={clsx(className)}>
+		<div className={clsx(className)} data-testid={testId}>
 			{active.map(aura => (
 				<ReplayAuraIcon key={auraKey(aura)} aura={aura} />
 			))}

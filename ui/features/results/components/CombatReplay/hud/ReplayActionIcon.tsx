@@ -19,5 +19,5 @@ export const ReplayActionIcon = ({ action, actions }: ReplayActionIconProps) => 
 		anchor.current?.toggleAttribute('data-active', recent);
 	});
 
-	return <ReplayIcon actionId={action.actionId} className="cr-action-icon ui-combat-replay-icon shrink-0" tooltip="spell" anchorRef={anchor} />;
+	return <ReplayIcon actionId={action.actionId} className="ui-combat-replay-icon shrink-0" tooltip="spell" anchorRef={anchor} testId="cr-action-icon" />;
 };

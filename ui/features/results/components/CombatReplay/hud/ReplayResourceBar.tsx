@@ -27,17 +27,24 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 	});
 
 	return (
-		<div className="cr-resource-wrap ui-combat-replay-resource-wrap">
-			<div className="cr-res-bar-outer relative h-[12px] w-full overflow-hidden rounded-sm bg-white-7">
+		<div className="ui-combat-replay-resource-wrap">
+			<div className="relative h-[12px] w-full overflow-hidden rounded-sm bg-white-7">
 				<div
 					ref={fill}
-					className="cr-res-bar-fill h-full rounded-sm bg-[linear-gradient(90deg,var(--cr-resbar-from),var(--cr-resbar-to))] shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-[50ms] ease-linear"
+					data-testid="cr-res-bar-fill"
+					className="h-full rounded-sm bg-[linear-gradient(90deg,var(--cr-resbar-from),var(--cr-resbar-to))] shadow-glow-10 shadow-(color:--cr-resbar-glow) transition-[width] duration-[50ms] ease-linear"
 					style={barVars(row)}
 				/>
-				<span className="cr-bar-label absolute left-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80 pointer-events-none">
+				<span
+					data-testid="cr-bar-label"
+					className="absolute left-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80 pointer-events-none">
 					{row.label}
 				</span>
-				<span ref={value} className="cr-bar-val absolute right-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] text-white-70 pointer-events-none" />
+				<span
+					ref={value}
+					data-testid="cr-bar-val"
+					className="absolute right-[6px] top-1/2 -translate-y-1/2 text-[0.6rem] text-white-70 pointer-events-none"
+				/>
 			</div>
 		</div>
 	);
