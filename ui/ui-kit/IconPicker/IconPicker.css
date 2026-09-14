@@ -1,3 +1,3 @@
 .ui-icon-picker-swatch {
-	@apply relative block min-w-10 size-10 border border-border bg-cover [transition:border-color_0.15s_ease-in-out] data-active:border-success;
+	@apply relative block min-w-10 size-10 border border-border bg-grey bg-cover [transition:border-color_0.15s_ease-in-out] data-active:border-success;
 }

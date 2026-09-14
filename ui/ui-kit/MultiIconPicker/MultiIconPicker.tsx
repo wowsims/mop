@@ -79,7 +79,7 @@ export const MultiIconPicker = <ModObject,>({ modObject, config, subscribe, onCl
 							<Menu.Popup
 								render={<ul />}
 								role="group"
-								className="multi-icon-picker-menu grid grid-flow-col m-0 p-0 border-0 list-none"
+								className="multi-icon-picker-menu grid grid-flow-col m-0 p-0 border-0 bg-grey list-none"
 								data-testid="multi-icon-picker-menu">
 								<li>
 									<a

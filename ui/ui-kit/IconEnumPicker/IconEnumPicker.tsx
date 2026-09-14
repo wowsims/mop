@@ -98,7 +98,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 						data-testid="icon-enum-picker-positioner">
 						<Menu.Popup
 							render={<ul />}
-							className="icon-enum-picker-menu grid m-0 p-0 border-0 list-none"
+							className="icon-enum-picker-menu grid m-0 p-0 border-0 bg-grey list-none"
 							data-testid="icon-enum-picker-menu"
 							style={{
 								gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,

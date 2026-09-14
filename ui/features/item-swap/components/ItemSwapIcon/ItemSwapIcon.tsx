@@ -35,7 +35,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const wowheadProps = useEquippedItemWowheadDataset(player, item, isBlacksmithing);
 
 	return (
-		<div className="icon-picker-root icon-picker relative" data-testid="icon-picker-root">
+		<div className="icon-picker-root icon-picker relative items-center" data-testid="icon-picker-root">
 			<ItemCellAnchor
 				className={clsx(
 					'icon-picker-button ui-icon-picker-swatch size-16 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1',
