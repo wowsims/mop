@@ -42,8 +42,8 @@ export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
 		</SimTabDef>
 		{/* Not a `SimTabPane`: the doubled id and the missing content container are what the stylesheets select on. */}
 		<SimTabDef id="detailed-results-tab-tab" title={i18n.t('results_tab.title')}>
-			<div id="detailed-results-tab-tab" className="sim-tab">
-				<div className="detailed-results">
+			<div id="detailed-results-tab-tab">
+				<div>
 					<DetailedResults resultsManager={host.raidSimResultsManager} />
 				</div>
 			</div>

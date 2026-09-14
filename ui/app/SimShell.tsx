@@ -68,7 +68,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 					ref={root}
 					className={clsx(
 						simUiClasses({ className, spec }),
-						'max-h-screen overflow-y-auto scrollbar-thumb-primary scrollbar-track-background scrollbar-thin [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary',
+						'max-h-screen overflow-y-auto [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary',
 					)}
 					data-testid="sim-ui"
 					{...simUiAttributes({ spec })}>
@@ -84,17 +84,17 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								className="sticky -top-px flex-1 flex flex-col items-stretch bg-background h-dvh z-sidebar max-lg:relative max-lg:top-0 max-lg:h-auto max-lg:w-full max-lg:min-h-auto"
 								data-testid="sim-sidebar">
 								<div
-									className="sim-title h-[calc(var(--spacing-sim-header)+1px)] border-b border-b-border z-sim-title max-lg:sticky max-lg:-top-px"
+									className="h-[calc(var(--spacing-sim-header)+1px)] border-b border-b-border z-sim-title max-lg:sticky max-lg:-top-px"
 									data-testid="sim-title">
 									<SimTitleDropdown currentSpec={spec} />
 								</div>
 								<div
-									className="sim-sidebar-content p-6 flex flex-1 flex-col overflow-y-auto scrollbar-thumb-primary scrollbar-track-background scrollbar-thin [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary max-xxl:px-4 max-lg:py-4 max-lg:px-2 max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
+									className="p-6 flex flex-1 flex-col overflow-y-auto [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-track]:bg-background [&::-webkit-scrollbar-thumb]:bg-primary max-xxl:px-4 max-lg:py-4 max-lg:px-2 max-lg:min-h-0 [&>*:not(:last-child)]:mb-6"
 									data-testid="sim-sidebar-content">
 									{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 									<div
 										ref={sidebarActions}
-										className="sim-sidebar-actions ui-sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
+										className="ui-sim-sidebar-actions px-page -mx-6 flex flex-col items-center gap-3 max-xxl:p-0 max-xxl:mx-0 [&>*]:mb-0"
 										data-testid="sim-sidebar-actions">
 										<IterationsPicker sim={sim} />
 										{host && <SimSidebarActions host={host} />}
@@ -120,7 +120,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									className={clsx(
 										'sticky -top-px h-sim-header pt-6 pr-page pl-page -mx-page whitespace-nowrap transition-colors duration-150 ease-in-out z-header max-lg:pt-2',
 										"after:content-[''] after:absolute after:-bottom-px after:inset-x-0 after:mx-auto after:h-px after:w-[calc(100%-2*var(--spacing-page))] after:bg-border after:transition-[width] after:duration-150 after:ease-in-out data-[stuck]:after:w-full",
-										stuck && 'stuck data-[stuck]:bg-background',
+										'data-[stuck]:bg-background',
 									)}
 									data-testid="sim-header"
 									data-stuck={stuck ? '' : undefined}>
@@ -134,7 +134,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 											{host && <SimImportExport />}
 										</div>
 										<div
-											className="sim-toolbar flex flex-nowrap items-end mb-0 pl-0 list-none font-bold ml-auto text-(length:--text-ui)"
+											className="flex flex-nowrap items-end mb-0 pl-0 list-none font-bold ml-auto text-(length:--text-ui)"
 											data-testid="sim-toolbar">
 											<SimToolbar sim={sim} knownIssues={knownIssues} onOpenSettings={onOpenSettings} />
 										</div>

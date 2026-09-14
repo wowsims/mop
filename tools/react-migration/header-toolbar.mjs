@@ -176,7 +176,11 @@ await away();
 
 // `.stuck` comes from an IntersectionObserver whose rootMargin is the header's height, read while
 // the tabs are being constructed — so it is the assertion that catches a header measured too early.
-const stuck = async () => await page.evaluate(() => document.querySelector(':is([data-testid="sim-header"], .sim-header)')?.classList.contains('stuck') ?? null);
+const stuck = async () =>
+	await page.evaluate(() => {
+		const header = document.querySelector(':is([data-testid="sim-header"], .sim-header)');
+		return header ? header.hasAttribute('data-stuck') || header.classList.contains('stuck') : null;
+	});
 console.log('\nsticky');
 console.log(`  at top      ${await stuck()}`);
 await page.evaluate(() => document.querySelector(':is([data-testid="sim-ui"], .sim-ui)')?.scrollTo({ top: 400 }));

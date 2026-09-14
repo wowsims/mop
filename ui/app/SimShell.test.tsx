@@ -8,7 +8,7 @@ import type { ShellDom } from './types/shell_dom';
 
 // Everything the sidebar's ordering does not depend on. The picker is stubbed too: what is under
 // test is where it sits, not what it renders.
-vi.mock('./IterationsPicker', () => ({ IterationsPicker: () => <div className="iterations-picker" /> }));
+vi.mock('./IterationsPicker', () => ({ IterationsPicker: () => <div data-testid="iterations-picker" /> }));
 vi.mock('./SimSidebarActions', () => ({
 	SimSidebarActions: () => (
 		<>
@@ -24,7 +24,7 @@ vi.mock('@features/character-stats', () => ({ CharacterStats: () => <div /> }));
 vi.mock('./header/SimTitleDropdown', () => ({ SimTitleDropdown: () => <div /> }));
 vi.mock('./header/SimToolbar', () => ({ SimToolbar: () => <div /> }));
 vi.mock('@ui-kit/SocialLink', () => ({ SocialLink: () => <a /> }));
-vi.mock('@ui-kit/Toast', () => ({ ToastArea: () => <div className="sim-toast-portal" />, toastManager: {} }));
+vi.mock('@ui-kit/Toast', () => ({ ToastArea: () => <div data-testid="sim-toast-portal" />, toastManager: {} }));
 vi.mock('@sim/hooks/useDisplayMetrics', () => ({ useDisplayMetrics: () => ({}) }));
 vi.mock('@sim/hooks/useShowExperimental', () => ({ useShowExperimental: () => false }));
 
@@ -46,7 +46,11 @@ describe('SimShell sidebar order', () => {
 		const { getByTestId } = renderShell({} as SimHostObject<any>);
 
 		const actions = getByTestId('sim-sidebar-actions');
-		expect([...actions.children].map(child => child.className)).toEqual(['iterations-picker', 'dps-action', 'ep-weights-action']);
+		expect([...actions.children].map(child => child.getAttribute('data-testid') ?? child.className)).toEqual([
+			'iterations-picker',
+			'dps-action',
+			'ep-weights-action',
+		]);
 	});
 
 	it('keeps the picker first when the host has not been constructed yet', () => {
@@ -54,6 +58,6 @@ describe('SimShell sidebar order', () => {
 
 		const actions = getByTestId('sim-sidebar-actions');
 		expect(actions.children).toHaveLength(1);
-		expect(actions.firstElementChild?.className).toBe('iterations-picker');
+		expect(actions.firstElementChild?.getAttribute('data-testid')).toBe('iterations-picker');
 	});
 });
