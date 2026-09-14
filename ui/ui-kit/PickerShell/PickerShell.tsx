@@ -48,7 +48,7 @@ export const PickerShell = <ModObject, T, V>({ config, className, hidden, disabl
 					config.description && 'flex-wrap',
 					'ui-field',
 					'input-root',
-					!inline && !iconField && 'max-md:flex-col max-md:items-start max-md:gap-2',
+					!inline && !iconField && 'max-md:flex-col max-md:items-start',
 					className,
 					config.inline && 'input-inline',
 					config.extraClassNames,

@@ -37,7 +37,7 @@ describe('PickerShell', () => {
 
 	it('omits the state classes when neither applies', () => {
 		shell(configFor());
-		expect(root().getAttribute('class')).toBe('ui-field input-root max-md:flex-col max-md:items-start max-md:gap-2 number-picker-root');
+		expect(root().getAttribute('class')).toBe('ui-field input-root max-md:flex-col max-md:items-start number-picker-root');
 	});
 
 	it('links the label to the input and titles it', () => {

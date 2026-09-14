@@ -89,7 +89,6 @@ describe('ListPicker', () => {
 				'input-root',
 				'list-picker-root',
 				'max-md:flex-col',
-				'max-md:gap-2',
 				'max-md:items-start',
 				'ui-field',
 				'ui-list-picker-root',
