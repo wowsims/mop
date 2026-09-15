@@ -64,6 +64,7 @@ export const RotationView = ({ model, active }: RotationViewProps) => {
 	const cornerRef = useRef<HTMLDivElement>(null);
 	const rulerViewportRef = useRef<HTMLDivElement>(null);
 	const rulerTrackRef = useRef<HTMLDivElement>(null);
+	const rulerRowRef = useRef<HTMLDivElement>(null);
 	const scrollerRef = useRef<HTMLDivElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const measurerRef = useRef<HTMLDivElement>(null);
@@ -226,13 +227,13 @@ export const RotationView = ({ model, active }: RotationViewProps) => {
 		const root = rootRef.current;
 		const scroller = scrollerRef.current;
 		const rulerTrack = rulerTrackRef.current;
-		if (!root || !scroller || !rulerTrack) return;
+		const rulerRow = rulerRowRef.current;
+		if (!root || !scroller || !rulerTrack || !rulerRow) return;
 
 		rulerRef.current = new Ruler(rulerTrack);
 		const zoom = new ZoomController({
 			scroller,
-			// --pps is read by the ruler as well as by the rows, and the ruler is not inside the scroller.
-			styleHost: root,
+			styleHosts: [root, rulerRow],
 			labelWidth: () => labelWidth.current,
 			// The scroller is overflow-y hidden, so vertical keys have to move the page's scroller.
 			scrollVerticalBy,
@@ -383,20 +384,18 @@ export const RotationView = ({ model, active }: RotationViewProps) => {
 	const hoveredRow = hover && model?.byKey.has(hover.rowKey) ? rowFor(hover.rowKey) : null;
 	const hoveredItem = hoveredRow && hoveredRow.kind !== 'header' && hoveredRow.kind !== 'separator' ? hoveredRow.items[hover!.index] : null;
 
+	const paneVars = cssVars({
+		'--pps': `${DEFAULT_PPS}px`,
+		'--label-w': labelWidthCss,
+		'--duration': String(model?.duration ?? 0),
+	});
+
 	return (
-		<div
-			ref={rootRef}
-			data-testid="rotation-pane"
-			className="relative flex min-h-0 flex-col text-white [--rotation-item-h:24px]"
-			style={cssVars({
-				'--pps': `${DEFAULT_PPS}px`,
-				'--label-w': labelWidthCss,
-				'--duration': String(model?.duration ?? 0),
-			})}>
+		<div ref={rootRef} data-testid="rotation-pane" className="relative flex min-h-0 flex-col text-white [--rotation-item-h:24px]" style={paneVars}>
 			{active &&
 				stickySlot &&
 				createPortal(
-					<div className="flex h-7.5 shrink-0 grow-0 basis-7.5 text-white">
+					<div ref={rulerRowRef} className="flex h-7.5 shrink-0 grow-0 basis-7.5 text-white" style={paneVars}>
 						<RotationToolbar
 							ref={cornerRef}
 							onZoomOut={() => zoomRef.current?.stepOut()}

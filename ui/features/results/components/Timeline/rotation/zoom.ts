@@ -15,8 +15,8 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 export interface ZoomConfig {
 	scroller: HTMLElement;
-	// --pps is read by the ruler as well as by the rows, and the ruler is not inside the scroller.
-	styleHost: HTMLElement;
+	// --pps is read by the ruler as well as by the rows, and the ruler is portalled out of the pane.
+	styleHosts: ReadonlyArray<HTMLElement>;
 	labelWidth: () => number;
 	// The scroller is overflow-y hidden, so vertical keys have to move the page's scroller.
 	scrollVerticalBy: (delta: number) => void;
@@ -143,7 +143,7 @@ export class ZoomController {
 	}
 
 	private apply() {
-		this.config.styleHost.style.setProperty('--pps', `${this.ppsValue}px`);
+		this.config.styleHosts.forEach(host => host.style.setProperty('--pps', `${this.ppsValue}px`));
 		this.config.scroller.dataset.density = densityForPps(this.ppsValue);
 	}
 }

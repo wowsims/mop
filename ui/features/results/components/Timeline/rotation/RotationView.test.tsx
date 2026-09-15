@@ -149,6 +149,21 @@ describe('RotationView', () => {
 		expect(container.querySelector('[data-testid="timeline-hover-tooltip"]')).toBeNull();
 	});
 
+	it('gives the portalled ruler row the pane timeline variables, and keeps its zoom in step', async () => {
+		const { container } = await mount();
+		const pane = container.querySelector<HTMLElement>('[data-testid="rotation-pane"]')!;
+		const rulerRow = container.querySelector<HTMLElement>('[data-testid="rotation-ruler-track"]')!.parentElement!.parentElement!;
+		expect(pane.contains(rulerRow)).toBe(false);
+		expect(rulerRow.style.getPropertyValue('--duration')).toBe(pane.style.getPropertyValue('--duration'));
+		expect(rulerRow.style.getPropertyValue('--label-w')).toBe(pane.style.getPropertyValue('--label-w'));
+
+		fireEvent.click(container.querySelectorAll('[data-testid="rotation-zoom-button"]')[1]);
+		await settle();
+
+		expect(pane.style.getPropertyValue('--pps')).not.toBe('100px');
+		expect(rulerRow.style.getPropertyValue('--pps')).toBe(pane.style.getPropertyValue('--pps'));
+	});
+
 	it('renders nothing but its chrome without a model', async () => {
 		const { container } = await mount(null as never);
 		expect(rowKeys(container)).toEqual([]);
