@@ -93,7 +93,7 @@ Everything listed in the draft section "User decisions honoured": root 14px ever
   - a type-check failure from an extensionless `.mjs` import.
 
 ### Post-handoff fixes (2026-09-15, after `1495b3470d`, from the user's review)
-Code tip after these: `619f38b048`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
+Code tip after these: `977241fa1a`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
 - **Every Base UI menu has one padded layer per row** (`082c3a1bdc`, plus `c49aeaf8fe` for the IconEnumPicker: its `li` is bare and one `Menu.LinkItem` carries the swatch styling once, replacing two overlapping copies). The shape is `ul[role=menu] > li[role=none]` (structural, no padding) `> button|a` (the single `ui-menu-item` layer, `px-2 py-1`, the full-row highlight).
   - The APL picker's submenu-trigger rows were double-padded; they're 24.5px now (from 31.5px), uniform with the rest.
   - Import/Export entries are real buttons instead of `div`s, and the sim-title and landing menus have the same shape.
@@ -139,6 +139,15 @@ Code tip after these: `619f38b048`. The first round ended at `3f0d30ce41`; the s
   - The portalled row now gets the same variables, and `ZoomController` writes `--pps` to both hosts. The ruler and the rows share one coordinate system again: a cast at 10.04s sits at exactly 150px × 10.04 after a zoom-in.
   - Every earlier verify missed it: no script asserted tick positions, and both sides of every comparison had the bug.
 - **Popovers open above modals** (`619f38b048`). Popover positioners used `z-dropdown` (1000) while dialogs sit at `z-modal` (1055), and both portal to the same root since the portal standardisation, so a popover opened inside a modal painted underneath it. In the advanced encounter modal the target actions (copy, delete) were unreachable: the ⋯ icon intercepted the click. A new `--z-index-popover` (1070) sits above both modal layers and below tooltips. The modal's dropdowns are native `<select>`s and were never affected.
+- **A downward drag lands where it is dropped** (`da89a07679`). This was the user's "drag/drop sometimes doesn't shift the order properly".
+  - `dropIndex` returns the destination in the list's positions before the dragged item is removed (below a row's midpoint → after it), but `moveItem` removed the item and then inserted at that index. So every downward move landed one row past the drop cue, and a drop on the top half of the next row still moved the item. Upward moves were right.
+  - `moveItem` now shifts a forward destination by one, and a drop directly before or after the dragged item writes nothing.
+  - The old unit test had pinned the overshoot as intended behaviour, and master's `list_picker.tsx` has the same splice-then-splice logic.
+  - Checked on warrior/protection with drops at explicit positions vs the pre-fix build.
+- **Switching tabs no longer shifts the layout** (`977241fa1a`).
+  - The kit `TabPanel` keeps panels mounted and cross-fades them, so during a switch the outgoing and incoming panels were both in flow. In the APL sub-tabs they became separate items of `ui-columns-left`'s grid and sat side by side; in Bulk they stacked.
+  - A new kit `TabPanels` (`grid grid-cols-1 items-start`) holds the panels, and every `TabPanel` sits in its single cell. RotationTabBody, BulkTabBody and DetailedResults use it, and DetailedResults' hand-rolled stacking is gone.
+  - Live on the dev server: every visible APL panel stays at the same x/y and the full column width through the fade.
 - **The APL drag freeze was stale tab state** (see open item 1).
 - **Combined verify #2, GREEN** (`70a895ff93` vs baseline-30):
   - Gates: vitest 225 files / 1771 tests, snapshots 34/34, lint 0/0.
