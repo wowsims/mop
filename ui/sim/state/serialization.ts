@@ -18,7 +18,6 @@ export interface IndividualSimSerializationContext {
 	reforgeSettings?: ReforgeSettings;
 	// Fallback EP weights applied when a loaded proto carries none.
 	defaultEpWeights: Stats;
-	// Mutable holder; loads write the ref stats back into it.
 }
 
 export function updateIndividualSimProtoVersion(settingsProto: IndividualSimSettings) {

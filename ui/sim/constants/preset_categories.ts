@@ -1,4 +1,4 @@
-// The categories a PresetBuild (ui/core/preset_utils.tsx) can carry. Lives here
+// The categories a PresetBuild (ui/sim/presets/types.ts) can carry. Lives here
 // rather than beside the picker so ui/i18n does not have to import a UI
 // component for its translation map.
 export enum PresetConfigurationCategory {

@@ -28,7 +28,6 @@ export function zTest(
 	return { z, isDiff: z > Z_95 };
 }
 
-// Swaps two elements in the given array.
 export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);
 }
@@ -36,7 +35,7 @@ export function stDevToConf90(stDev: number, N: number) {
 export function stDevToConf95(stDev: number, N: number) {
 	return (Z_95 * stDev) / Math.sqrt(N);
 }
-// Only works for numeric enums
+
 export function permutations<T>(arr: Array<T>, k: number): Array<Array<T>> {
 	if (k == 0) {
 		return [];
@@ -82,7 +81,7 @@ export function permutationsWithDups<T>(arr: Array<T>, k: number): Array<Array<T
 			.flat();
 	}
 }
-// Converts a Uint8Array into a hex string.
+
 export const mod = (n: number, m: number): number => {
 	return ((n % m) + m) % m;
 };

@@ -50,7 +50,6 @@ export function swap<T>(arr: Array<T>, i: number, j: number) {
 	[arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
-// Returns a new array containing only elements present in both a and b.
 export function arrayEquals<T>(a: Array<T>, b: Array<T>, comparator?: (a: T, b: T) => boolean): boolean {
 	comparator = comparator || ((a: T, b: T) => a == b);
 	return a.length == b.length && a.every((val, i) => comparator!(val, b[i]));
@@ -95,7 +94,6 @@ export function getEnumValues<E>(enumType: any): Array<E> {
 		.map(key => parseInt(enumType[key]) as unknown as E);
 }
 
-// Whether a click event was a right click.
 export const getEnumKeyFromValue = <T extends Record<string, string | number>>(enumObj: T, value: number): string | undefined => {
 	return (enumObj as any)[value];
 };

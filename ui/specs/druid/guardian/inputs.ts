@@ -19,24 +19,24 @@ export const GuardianDruidRotationConfig = {
 	inputs: [
 		InputHelpers.makeRotationBooleanInput<Spec.SpecGuardianDruid>({
 			fieldName: 'maintainFaerieFire',
-			label: i18n.t('rotation_tab.options.druid.guardian.maintain_faerie_fire.label'),
-			labelTooltip: i18n.t('rotation_tab.options.druid.guardian.maintain_faerie_fire.tooltip'),
+			label: i18n.t('rotation_tab.options.guardian.maintain_faerie_fire.label'),
+			labelTooltip: i18n.t('rotation_tab.options.guardian.maintain_faerie_fire.tooltip'),
 		}),
 		InputHelpers.makeRotationBooleanInput<Spec.SpecGuardianDruid>({
 			fieldName: 'maintainDemoralizingRoar',
-			label: i18n.t('rotation_tab.options.druid.guardian.maintain_demo_roar.label'),
-			labelTooltip: i18n.t('rotation_tab.options.druid.guardian.maintain_demo_roar.tooltip'),
+			label: i18n.t('rotation_tab.options.guardian.maintain_demo_roar.label'),
+			labelTooltip: i18n.t('rotation_tab.options.guardian.maintain_demo_roar.tooltip'),
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecGuardianDruid>({
 			fieldName: 'demoTime',
-			label: i18n.t('rotation_tab.options.druid.guardian.demo_roar_refresh_leeway.label'),
-			labelTooltip: i18n.t('rotation_tab.options.druid.guardian.demo_roar_refresh_leeway.tooltip'),
+			label: i18n.t('rotation_tab.options.guardian.demo_roar_refresh_leeway.label'),
+			labelTooltip: i18n.t('rotation_tab.options.guardian.demo_roar_refresh_leeway.tooltip'),
 			showWhen: (player: Player<Spec.SpecGuardianDruid>) => player.getSimpleRotation().maintainDemoralizingRoar,
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecGuardianDruid>({
 			fieldName: 'pulverizeTime',
-			label: i18n.t('rotation_tab.options.druid.guardian.pulverize_refresh_leeway.label'),
-			labelTooltip: i18n.t('rotation_tab.options.druid.guardian.pulverize_refresh_leeway.tooltip'),
+			label: i18n.t('rotation_tab.options.guardian.pulverize_refresh_leeway.label'),
+			labelTooltip: i18n.t('rotation_tab.options.guardian.pulverize_refresh_leeway.tooltip'),
 		}),
 		// InputHelpers.makeRotationBooleanInput<Spec.SpecGuardianDruid>({
 		// 	fieldName: 'prepullStampede',

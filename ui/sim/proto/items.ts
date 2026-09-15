@@ -203,6 +203,11 @@ export function canEquipEnchant<SpecType extends Spec>(enchant: Enchant, playerS
 	return true;
 }
 
+/**
+ * Identity of a gear set for change detection. Reforges and non-meta gems are deliberately
+ * excluded, so this is NOT a cache key: use getReforgeCacheGearKey for anything that keys an
+ * optimizer result.
+ */
 export function getGearIdentityKey(spec: EquipmentSpec): string {
 	return buildGearKey(spec);
 }

@@ -105,7 +105,7 @@ export default defineSpec<Spec.SpecBeastMasteryHunter>({
 	},
 
 	presets: {
-		epWeights: [Presets.P5_EP_PRESET, Presets.P5_EP_PRESET],
+		epWeights: [Presets.P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
