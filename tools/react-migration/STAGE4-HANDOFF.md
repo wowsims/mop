@@ -5,7 +5,109 @@ Read this first when relaunching the orchestrator. The plan is the source of tru
 sequence of 29 steps in 6 phases, workstreams A/B/C, censuses). This file only records where the
 chain is and what a fresh orchestrator needs to keep it moving without the user.
 
-## Where the chain is
+## Final state (2026-09-15): stage 4 complete, awaiting the user review
+
+`wt/tailwind` code tip: **`df099f237a`** (the last code commit before this handoff commit). Every unit, the end passes and the final script repairs have landed. This section supersedes "History: where the chain was" below. The ledger with the full detail is `/home/lutz/personal/.tw-stage4/PROGRESS.md` (untracked).
+
+### What the branch delivers
+- **Zero component SCSS, zero Bootstrap.** One CSS entry: `ui/styles/style.css`. Preflight plus `base.css` replace reboot/root. Tokens live in `@theme` (`ui/styles/theme.css`). The 34 spec themes are CSS variables under `<spec>-sim-ui`. `ui-*` composition classes sit in `@layer components`.
+- **Utilities are a normal layer** (`@import 'tailwindcss/utilities.css' layer(utilities);`), not `!important`. Only `vendor.css` (react-tooltip and Font Awesome overrides) stays unlayered.
+- **Root font 14px at every width.** Converted px values follow the root; JS-coupled sizes are pinned px tokens (timeline rows via an inline `--row-h`, `--rotation-item-h`).
+- **Zero class hooks** (`ui/no_class_hooks.test.ts`, `ui/class_hook_allowlist.json`, `ui/retired_class_names.json`).
+- **Canonical Tailwind spelling, no `var(` in class tokens** (`ui/canonical_classes.test.ts`, `tools/tailwind/canonical-classes.mjs`, `rem: 16`, per-token; the collector covers `className`/`*ClassName`/`clsx`, the `width`/`maxWidth` props and `*Class(es)` consts).
+- **One standard portal root:** `PortalContainerContext` at `SimApp`, the theme-scoped `sim-ui`. Every overlay goes through `usePortalContainer()`, the Tooltip included. The guard is `ui/ui-kit/hooks/usePortalContainer.guard.test.ts`; its exceptions are LandingClassMenu (reading order), plus the layout slots SimTabs and the DR sticky slot.
+- **Kit `Toolbar` and `Drawer` on Base UI:** `AplListToolbar`/`LogToolbar`/`RotationRowsToolbar`; non-modal drawers; the bar height is `--spacing-fab-bar`.
+- **Native CSS sticky Log/Rotation headers:** a `dr-sticky-slot` inside the sticky DR toolbar; `useScrollMargin` for the virtualizer; no measured offsets.
+- **Packages:** `bootstrap`, `sass-embedded`, `stylelint-scss`, `@namics/stylelint-bem` and `vite-plugin-stylelint` are removed from `package.json`. `sass-embedded` stays in `node_modules` as `vite`'s own peer. The lockfile has no version changes.
+- **The whole tree is oxfmt Tailwind-sorted** (`.oxfmtrc.json` `sortTailwindcss`).
+
+### Final verify
+Final integration verify on `684b797aff` (a report-only verifier, a fresh build), plus follow-up checks:
+- **Gates:**
+  - type-check 0 errors;
+  - vitest 225 files / 1756 tests;
+  - `lint:js` 0/0, `lint:css` clean;
+  - `test:locales` 8/8, `test:snapshots` 34/34;
+  - the canonical-classes and class-hooks gates 0;
+  - `vite build` OK;
+  - `style.css` has exactly one `layer(utilities)` import and no `!important`;
+  - the 5 packages are gone from `package.json` (`sass-embedded` remains only as vite's peer).
+- **tw-probe vs `baseline-dist-15`** (`0c50f9b6c9`, the Phase 6 close): 66 sections, all accounted for. The classes:
+  - the accepted ×0.875 root-14 conversions;
+  - the reflow from them;
+  - the user's own `--spacing-page` tiers (4rem → 3rem at ≥1400px; content +22px at 1600, +35px at 2200);
+  - the intended unit changes: toolbar/drawer markup, the DR sticky slot, the portal root, the pxease tokens, the corrected unstuck toolbar, RotationTabBody's single pane, the stacked DR panes.
+- **The state probe:** 0 ABSENT. The noise floor (tip vs tip) is the Casts-table column-width swaps only.
+- **The user-report regression matrix (windwalker, live):**
+
+  | # | Check | Result |
+  |---|---|---|
+  | 1 | Gear-modal rows | 56px apart; ep-label hidden |
+  | 2 | Log scroll | rows cover the viewport at 500/3000/20000/bottom after a pre-scroll |
+  | 3 | APL drag incl. a drop at the sticky bar | reorders (3/3 runs, max long task 89–96ms) |
+  | 4 | Modal theme | the Stat Weights `--color-primary` is the spec colour |
+  | 5 | Gem tooltip | paints over the sidebar |
+  | 6 | Log/Rotation drawers | flush and clickable |
+  | 7 | Sticky Log/Rotation headers | pinned under the DR toolbar |
+  | 8 | Threat/tank/healing metrics | hidden when off |
+
+- **Findings settled after the first verify pass:**
+  - the "results-tabs lacks the DR stacking classes" finding was a reversed reading (the tip has `col-start-1 row-start-1` on every pane);
+  - the `apl-tab.mjs` failure was a script bug with the default spec (an off-screen drag source), not the app;
+  - the `useShowExperimental` orphan predates Phase 6 (open item 12).
+- **Check scripts:** every script in `tools/react-migration/` runs on the tip. The last repairs landed as `93fef4af16`…`df099f237a`:
+  - `toolbar-a11y-check.mjs` switches to the APL rotation type first;
+  - `sidebar-loading.mjs` reads `data-loading`;
+  - `log-runner.mjs`/`results-filter.mjs` query the dropdown list document-wide (it's portalled now);
+  - `apl-tab.mjs` presses the drag source while it's visible and nudges before scrolling (reorders on warrior/protection and monk/windwalker);
+  - `tw-bold.mjs`/`tw-elixir.mjs` are retired (they needed the removed vanilla build).
+  
+  Pre-existing and documented: `rotation-row-toggle.mjs` records a scroll defect that is also on master.
+
+### User decisions honoured
+Everything listed in the draft section "User decisions honoured": root 14px everywhere; the exact 16px-basis dynamic steps; easing → Tailwind defaults; native CSS over measure-and-offset; the Toolbar plus a non-modal Drawer; one portal root; setting-driven visibility as a conditional render; Escape and dismissal are Base UI's; `data-testid` is never a styling hook; no `var(` in classes; the icon-picker/label layout; the user's own commits `dd662d075c`, `482289906e`, `21e8d451c5`.
+
+### Bugs found and fixed (beyond the migration)
+- **Found by the user:**
+  - gear-modal VirtualList gaps and the ep-label never hiding (global `!important` utilities beat inline styles);
+  - the Log not scrolling (a stale `scrollMargin`; the DR panes now stack in one grid cell);
+  - the APL sticky "+ New Action" bar swallowing drops;
+  - modals losing the spec theme (dialogs portalled to `<body>`);
+  - gear tooltips hidden behind the sidebar;
+  - threat/tank/healing metrics shown with their toggles off.
+- **Found along the way:**
+  - RotationTabBody mounting all three panes (a duplicate id);
+  - Popover positioners painting behind `sim-content`;
+  - the Log/Rotation drawer sheet covering its own toolbar, and the empty Rotation drawer;
+  - `useStickyBottom` toggling its state;
+  - Font Awesome's unlayered CSS beating the layered Toast/UnitIcon rules;
+  - the log-runner `icon-sm` row height;
+  - the TabPanel `.active` consumers;
+  - an `entity_mapping.ts` import cycle.
+- **Tooling:**
+  - `canonicalizeCandidates()` batch-drop index shifts (canon2's rewrite audited: 0/170 mismatches);
+  - canonical collector gaps;
+  - tw-probe/state-probe hangs on subtree moves;
+  - self-matching `pgrep -f` wait loops;
+  - stale copied probe baselines;
+  - a type-check failure from an extensionless `.mjs` import.
+
+### Open items for the user review (not fixed on this branch)
+1. **The APL drag "hangs until refresh" on Windows Chrome:** not reproduced by automation. The sticky-bar fix removed the worst stalls (~2.3s → ~100ms). **The user should retest on Windows.**
+2. Dropping a dragged APL row onto another row's inner control silently fails (pre-existing; identical on the React build).
+3. `ListPicker` keys items by index (`key={index}`).
+4. Healers can't Simulate (pre-existing).
+5. The Mastery / Strikes of Opportunity sidebar rows overlap (pre-existing).
+6. The improved icons in the icon picker are unreachable (no callers).
+7. The Casts table's tied rows reorder between runs (an unstable tie-break).
+8. `ProgressTrackerDialog`'s `container` prop exists only for the frozen spec `calculate_combustion_thresholds.tsx`.
+9. The residual canonical-collector gap: class strings as positional args (`new TickPool(…)`).
+10. The commit titled "test(ui): update fixtures for canonical Tailwind spelling" changed only unit-test className assertions, not fixtures; consider rewording.
+11. For the React branch: Melee Crit Cap should show its skeleton state.
+12. `ui/sim/hooks/useShowExperimental.ts` is orphaned (only a `vi.mock` in `SimShell.test.tsx` references it), and the "Show experimental" setting gates nothing. This predates the Phase 6 close. Delete both, or wire it to an experiment.
+
+
+## History: where the chain was (Phases 1–4; superseded by "Final state" above)
 
 - **PHASE 4 STATE (2026-09-14): read this bullet first. The live ledger is `/home/lutz/personal/.tw-stage4/PROGRESS.md`** (untracked; it lives next to the contracts `WORKER.md`, `VERIFIER.md`, `VERIFY-units.md`, `TAILWIND-DOCS.md`, the briefs and the probe outputs).
   - **Landed on `wt/tailwind`**, each verified against a baseline dist built from its own base, with fix rounds until probe 0 (only the accepted or user-accepted rows):
@@ -33,6 +135,9 @@ chain is and what a fresh orchestrator needs to keep it moving without the user.
     - 1,486 user-accepted metrics `12px → 10.5px` font and line-height
     Gates: vitest 1758/220, lint:js 0/248, lint:css, locales, snapshots 34/34, a11y, tabs 6/6, collision and state-shadow scan 0/0. ProgressTrackerBar identical live. Saved as **baseline-9**.
     - Phase 5 so far: the Bootstrap tail `f38a5da52` (`transitions` and `type` imports dropped). Bootstrap imports left: Sass machinery plus `root` and `reboot`.
+    - Phase 5 SCSS leftovers: the icon pickers `3d3f066d9`; leftovers-A `152f36a3f` (sim shell, saved data, title dropdown, content block, EP dialog, the `hide-*-metrics` toggles; those toggles later became a conditional render). **All component SCSS is gone**; 12 files remain (the global/base layer plus entries). baseline-10 = `152f36a3f`.
+    - Steps 25+26 `d43c4f91b`: preflight plus `base.css` (restores reboot, root and the globals); `--spacer-*` and the retired spacing vars gone; 42 `ui-*` files in `@layer components`. baseline-11 = `d43c4f91b`.
+    - Step 27 `64e8288b8`: **zero `.scss`**; `ui/scss/` deleted; one CSS entry (later renamed `ui/styles/style.css`); SCSS removed from the vite and stylelint configs; `lint:css` targets `ui/**/*.css`. Phase 5 complete; the 5-package uninstall followed as end pass (a2).
   - **In flight:** SCSS leftovers A (sim shell, saved data, title dropdown, content block, EP dialog) and B (icon pickers), and the Bootstrap tail (`wt/tw-bstail`: the `transitions` and `type` imports). Steps 25 (`root`) and 26 (`reboot` → preflight + `base.css` + `ui-*` into `@layer components`) land together after forms.
   - **Then:** the Phase-4-close combined tip-verify (with a live ProgressTrackerBar check), then Phase 5 (`PHASE5.md`).
   - **Baselines** (`/home/lutz/personal/.tw-stage4/baseline-dist-N`): 3 = `5b6f877d5`, 4 = `1aa61bff0`, 5 = `0d5e15a24`, 6 = `2acd86f40`, 7 = `c683be729`, 8 = `51a7ba9ba`. A unit verifies against the baseline built from its own base; combined tip-verifies run against baseline-3.
