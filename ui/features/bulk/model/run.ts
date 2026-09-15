@@ -142,7 +142,7 @@ const runWithBulkAbort = async <T>(player: Player<any>, promise: Promise<T>, sig
 	});
 
 	try {
-		return Promise.race([promise, abortPromise]);
+		return await Promise.race([promise, abortPromise]);
 	} finally {
 		if (abortHandler) {
 			signal.removeEventListener('abort', abortHandler);
