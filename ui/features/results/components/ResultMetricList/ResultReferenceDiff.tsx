@@ -1,5 +1,6 @@
 import i18n from '@i18n/config';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { toneTextClass } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 
 import type { ReferenceDiff } from '../../model/reference_diffs';
@@ -14,7 +15,7 @@ export const ResultReferenceDiff = ({ diff, tooltipId }: ResultReferenceDiffProp
 	diff ? (
 		<div data-testid="results-reference" className="mb-2 font-normal">
 			<span
-				className={clsx('font-bold', diff.tone)}
+				className={clsx('font-bold', toneTextClass(diff.tone))}
 				data-testid="results-reference-diff"
 				data-sign={diff.tone ?? undefined}
 				{...tooltipAnchorProps(tooltipId, diff.significance)}>

@@ -50,6 +50,8 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const [filtersOpen, setFiltersOpen] = useState(false);
 	const tooltipId = useId();
+	const searchId = useId();
+	const phaseId = useId();
 
 	const filters = useStoreSubscribe(subscribeSimField(sim, 'filters'), () => sim.getFilters());
 	const phase = useStoreSubscribe(subscribeSimField(sim, 'phase'), () => sim.getPhase());
@@ -102,7 +104,8 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					onChange={setSearch}
 					placeholder={i18n.t('common.search')}
 					className="max-w-48"
-					id="selector-modal-search"
+					id={searchId}
+					inputTestId="selector-modal-search"
 					grow={false}
 				/>
 				{label === SelectorModalTabs.Items && (
@@ -117,7 +120,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					<EnumPicker
 						modObject={sim}
 						config={{
-							id: 'phase-selector',
+							id: phaseId,
 							extraClassNames: ['mb-0'],
 							values: [
 								{ name: i18n.t('common.phases.1'), value: 1 },

@@ -1,4 +1,5 @@
 import { Spec } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { type ReactNode, useId } from 'react';
@@ -24,6 +25,7 @@ export const ItemNoticeIcon = ({ itemId, additionalNotice }: ItemNoticeIconProps
 		<div className="relative z-1 inline">
 			<button
 				type="button"
+				aria-label={i18n.t('common.list_picker.warnings')}
 				className="fa fa-exclamation-triangle fa-xl mr-2 text-damage-partial text-shadow-glow-danger"
 				{...tooltipAnchorProps(tooltipId)}
 			/>

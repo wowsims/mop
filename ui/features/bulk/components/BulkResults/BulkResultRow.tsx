@@ -12,6 +12,7 @@ import { Button } from '@ui-kit/Button';
 import { useActivateTab } from '@ui-kit/tab_activation';
 import { toastManager } from '@ui-kit/Toast';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { toneTextClass } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { useId } from 'react';
 
@@ -72,7 +73,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 							) : (
 								<>
 									<span
-										className={clsx('font-bold', delta.tone)}
+										className={clsx('font-bold', toneTextClass(delta.tone))}
 										data-testid="results-reference-diff"
 										{...tooltipAnchorProps(deltaTooltipId)}>
 										{delta.text}

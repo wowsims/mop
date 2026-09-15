@@ -243,10 +243,10 @@ describe('ItemList', () => {
 		act(() => container.querySelector<HTMLElement>('[data-testid="ilvl-label"]')!.click());
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 
-		fireEvent.change(container.querySelector('#selector-modal-search')!, { target: { value: 'a' } });
+		fireEvent.change(container.querySelector('[data-testid="selector-modal-search"]')!, { target: { value: 'a' } });
 		expect(names(container)).toEqual(['Alpha', 'Gamma', 'Beta']);
 
-		fireEvent.change(container.querySelector('#selector-modal-search')!, { target: { value: 'bet' } });
+		fireEvent.change(container.querySelector('[data-testid="selector-modal-search"]')!, { target: { value: 'bet' } });
 		expect(names(container)).toEqual(['Beta']);
 	});
 

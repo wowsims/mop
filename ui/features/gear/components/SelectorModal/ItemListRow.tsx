@@ -6,7 +6,7 @@ import { isIndividualSimHost } from '@sim/sim_host';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
-import { itemQualityClassName } from '@ui-kit/utils/css';
+import { itemQualityClassName, toneTextClass } from '@ui-kit/utils/css';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
 import { useStore } from 'zustand';
@@ -100,7 +100,7 @@ export const ItemListRow = ({
 						{itemEP < 9.95 ? itemEP.toFixed(1) : Math.round(itemEP).toString()}
 					</span>
 					<span
-						className={clsx('ml-1 text-ep-delta', delta?.tone)}
+						className={clsx('ml-1 text-ep-delta', toneTextClass(delta?.tone))}
 						data-testid="selector-modal-list-item-ep-delta"
 						data-sign={delta?.tone ?? undefined}>
 						{delta?.text}

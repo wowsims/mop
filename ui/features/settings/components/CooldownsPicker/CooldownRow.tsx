@@ -1,4 +1,5 @@
 import type { ActionID as ActionIdProto } from '@generated/proto/common';
+import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { ActionId } from '@sim/proto/action_id';
 import { Button } from '@ui-kit/Button';
@@ -32,12 +33,13 @@ export const CooldownRow = ({ index, id, available, isAdd, deleteTooltipId }: Co
 	return (
 		<div className="mb-3 flex items-center justify-between [&>*:not(:last-child)]:mr-2" data-testid="cooldown-picker" data-add={isAdd ? '' : undefined}>
 			<IconEnumPicker modObject={player} config={actionConfig} />
-			<FieldLabel className="min-w-[30%] overflow-hidden text-ellipsis" testId="cooldown-picker-label">
+			<FieldLabel as="span" className="min-w-[30%] overflow-hidden text-ellipsis" testId="cooldown-picker-label">
 				{name}
 			</FieldLabel>
 			<NumberListPicker modObject={player} config={timingsConfig} />
 			<Button
 				variant="unstyled"
+				aria-label={i18n.t('rotation_tab.cooldowns.delete_tooltip')}
 				className={clsx('text-link-danger', isAdd && 'invisible')}
 				data-testid="delete-cooldown"
 				onClick={() => deleteCooldown(player, index)}

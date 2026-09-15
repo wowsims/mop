@@ -148,6 +148,13 @@ export const CLASS_BORDER: Record<string, string> = {
 
 export const itemQualityClassName = (quality: ItemQuality | null | undefined): string | undefined => (quality ? QUALITY_TEXT[quality] : undefined);
 
+export const TONE_TEXT: Record<'positive' | 'negative', string> = {
+	positive: 'text-success',
+	negative: 'text-danger',
+};
+
+export const toneTextClass = (tone: 'positive' | 'negative' | null | undefined): string | undefined => (tone ? TONE_TEXT[tone] : undefined);
+
 export const DANGER_TEXT: Record<'safe' | 'warning' | 'danger', string> = {
 	safe: 'text-success',
 	warning: 'text-damage-partial text-shadow-glow-danger',
