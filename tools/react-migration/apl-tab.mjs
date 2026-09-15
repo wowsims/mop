@@ -366,36 +366,54 @@ try {
 			return findDropPoint(row);
 		}, [ITEM, targetIndex]);
 
-	const boxOf = index =>
-		page.evaluate(([sel, i]) => {
-			const el = document.querySelectorAll(sel)[i];
-			if (!el) return null;
-			const rect = el.getBoundingClientRect();
-			return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-		}, [ITEM, index]);
+	// The safe point on item 0, retried the same way as any target: on a spec with tall rows (no
+	// Default preset, so the preloaded rotation's rows run ~150px tall), a fixed offset from the row's
+	// top can land on that row's own nested picker button instead of a draggable strip, and no HTML5
+	// drag ever starts. Press down here BEFORE finding the target's drop point below — scrolling a
+	// distant target into view can carry row 0 hundreds of pixels off-screen, and holding the button
+	// while the list then scrolls is exactly what a real drag-to-the-edge does.
+	const pressSource = async () => {
+		let point = await dropPointFor(0);
+		for (let attempt = 0; attempt < 8 && !point; attempt++) {
+			await page.waitForTimeout(300);
+			point = await dropPointFor(0);
+		}
+		if (!point) return null;
+		await page.mouse.move(point.x, point.y);
+		await page.mouse.down();
+		// The browser only recognises a drag gesture if the pointer is still over the source element
+		// when it first crosses the move threshold — so this nudge happens now, before anything below
+		// gets a chance to scroll row 0 out from under the (stationary) cursor. Without it, `mousedown`
+		// arms the item (`draggable` flips true) but no `dragstart` ever fires once the source has
+		// scrolled away, which reads identically to a genuine freeze: 0 long tasks, no reorder.
+		await page.mouse.move(point.x, point.y + 3, { steps: 1 });
+		await page.waitForTimeout(80);
+		await page.mouse.move(point.x, point.y + 6, { steps: 1 });
+		await page.waitForTimeout(80);
+		return { x: point.x, y: point.y + 6 };
+	};
 
 	await step('real mouse drag 0 -> 6 (freeze check)', async () => {
-		// The drop point's own scan scrolls the target into view first, so read the source's box only
-		// after that settles — scrolling to center the 6th row can move the 0th row too.
+		const fromPoint = await pressSource();
+		if (!fromPoint) return 'NO SAFE SOURCE POINT';
+		const before = await page.evaluate(readRotation);
+		await page.evaluate(() => {
+			window.__aplLongTasks = [];
+		});
+		await page.waitForTimeout(150);
 		let point = await dropPointFor(6);
 		for (let attempt = 0; attempt < 8 && !point; attempt++) {
 			await page.waitForTimeout(300);
 			point = await dropPointFor(6);
 		}
-		if (!point) return 'NO SAFE DROP POINT ON TARGET ROW';
-		const fromBox = await boxOf(0);
-		if (!fromBox) return 'NO SOURCE ROW';
-		const before = await page.evaluate(readRotation);
-		await page.evaluate(() => {
-			window.__aplLongTasks = [];
-		});
-		await page.mouse.move(fromBox.x + fromBox.width / 2, fromBox.y + 10);
-		await page.mouse.down();
-		await page.waitForTimeout(150);
+		if (!point) {
+			await page.mouse.up();
+			return 'NO SAFE DROP POINT ON TARGET ROW';
+		}
 		const steps = 40;
 		for (let index = 1; index <= steps; index++) {
-			const x = fromBox.x + fromBox.width / 2 + ((point.x - fromBox.x - fromBox.width / 2) * index) / steps;
-			const y = fromBox.y + 10 + ((point.y - fromBox.y - 10) * index) / steps;
+			const x = fromPoint.x + ((point.x - fromPoint.x) * index) / steps;
+			const y = fromPoint.y + ((point.y - fromPoint.y) * index) / steps;
 			await page.mouse.move(x, y, { steps: 1 });
 			await page.waitForTimeout(15);
 		}
@@ -434,22 +452,24 @@ try {
 			return overlapping;
 		}, [ITEM]);
 		if (barRow == null || barRow < 0) return 'NO ROW UNDER THE TOOLBAR';
+		// Press down on the source before finding the target's drop point — see pressSource above.
+		const fromPoint = await pressSource();
+		if (!fromPoint) return 'NO SAFE SOURCE POINT';
+		const before = await page.evaluate(readRotation);
+		await page.waitForTimeout(150);
 		let point = await dropPointFor(barRow);
 		for (let attempt = 0; attempt < 8 && !point; attempt++) {
 			await page.waitForTimeout(300);
 			point = await dropPointFor(barRow);
 		}
-		if (!point) return `NO SAFE DROP POINT ON ROW ${barRow} (under the toolbar)`;
-		const fromBox = await boxOf(0);
-		if (!fromBox) return 'NO SOURCE ROW';
-		const before = await page.evaluate(readRotation);
-		await page.mouse.move(fromBox.x + fromBox.width / 2, fromBox.y + 10);
-		await page.mouse.down();
-		await page.waitForTimeout(150);
+		if (!point) {
+			await page.mouse.up();
+			return `NO SAFE DROP POINT ON ROW ${barRow} (under the toolbar)`;
+		}
 		const steps = 25;
 		for (let index = 1; index <= steps; index++) {
-			const x = fromBox.x + fromBox.width / 2 + ((point.x - fromBox.x - fromBox.width / 2) * index) / steps;
-			const y = fromBox.y + 10 + ((point.y - fromBox.y - 10) * index) / steps;
+			const x = fromPoint.x + ((point.x - fromPoint.x) * index) / steps;
+			const y = fromPoint.y + ((point.y - fromPoint.y) * index) / steps;
 			await page.mouse.move(x, y, { steps: 1 });
 			await page.waitForTimeout(15);
 		}
