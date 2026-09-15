@@ -1,10 +1,8 @@
 @theme static {
 	--color-black: #000;
 	--color-white: #fff;
-	--color-off-white: #f0f0f0;
 	--color-grey: #808080;
 
-	--color-light: #f8f9fa;
 	--color-gray-300: #dee2e6;
 	--color-gray-600: #6c757d;
 	--color-gray-700: #495057;
@@ -23,9 +21,6 @@
 	--color-panel-hover: color-mix(in srgb, var(--color-background) 85%, transparent);
 	--color-border: var(--color-gray-600);
 	--color-border-muted: color-mix(in srgb, var(--color-border) 50%, transparent);
-	--color-table-even: #18191e;
-	--color-table-odd: #222328;
-
 	--color-primary: #0d6efd;
 	--color-primary-foreground: var(--color-white);
 	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, var(--color-black));
@@ -138,7 +133,6 @@
 	--color-input-disabled: color-mix(in srgb, var(--color-background), var(--color-white) 20%);
 	--color-scrim: --alpha(var(--color-black) / 50%);
 	--color-spinner: #3498db;
-	--color-spinner-track: #f3f3f3;
 
 	--color-cr-scene-glow: color-mix(in srgb, var(--color-background) 65%, var(--color-warning) 35%);
 	--color-cr-dmg-num: color-mix(in srgb, var(--color-warning) 80%, var(--color-white));
@@ -148,6 +142,11 @@
 }
 
 @theme static inline {
+	--color-light: var(--color-gray-50);
+	--color-off-white: var(--color-zinc-100);
+	--color-table-even: var(--color-zinc-900);
+	--color-table-odd: var(--color-zinc-800);
+	--color-spinner-track: var(--color-zinc-100);
 	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, var(--color-black));
 	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, var(--color-black));
 	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, var(--color-black));
