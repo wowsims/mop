@@ -235,8 +235,13 @@ const INSTALL = () => {
 		// option reads exactly as it read when the baseline's eagerly built menus came out of the table
 		// for free. `null` means the menu is not in the page — on this branch that is a picker that
 		// failed to open, which is a finding, not a skip.
-		menuRows: mark => {
-			const menu = pane().querySelector(`[data-probe-menu="${mark}"]`)?.querySelector(MENU);
+		//
+		// Looked up document-wide, not as a descendant of the marked trigger: the portals unit moved
+		// IconEnumPicker/MultiIconPicker's menu to the shared `usePortalContainer()` root, so it is no
+		// longer nested under `[data-probe-menu]`. The walk above opens and closes one picker's menu at
+		// a time, so at most one `MENU` match exists in the document when this runs.
+		menuRows: () => {
+			const menu = document.querySelector(MENU);
 			if (!menu) return null;
 			const owners = [...menu.querySelectorAll(OWNERS)];
 			return owners.map((el, ordinal) => rowOf(el, owners, ordinal, null));
@@ -415,6 +420,11 @@ if (broken.length) problems.push(`label points at another control on: ${broken.m
 // the focus Base UI moves into it dragged `.sim-ui` to its maximum, and the trigger went out from
 // under the pointer. `positionMethod="fixed"` on both pickers settles it, and the scaffolding is gone
 // so the next regression of that shape shows up here instead of being driven around.
+// Same string as `INSTALL`'s in-page `MENU`, duplicated because this one drives `page.waitForSelector`
+// from Node rather than `document.querySelector` from the page. Document-wide, not `${at} ul`: the
+// portals unit moved IconEnumPicker/MultiIconPicker's menu to the shared `usePortalContainer()` root,
+// so it is no longer a DOM descendant of the marked trigger.
+const MENU_SELECTOR = 'ul.dropdown-menu, ul:is([data-testid="icon-enum-picker-menu"], .icon-enum-picker-menu), ul:is([data-testid="multi-icon-picker-menu"], .multi-icon-picker-menu)';
 const openMenu = async at => {
 	await page
 		.locator(
@@ -424,7 +434,7 @@ const openMenu = async at => {
 		.hover();
 	// `attached`, not `visible`: the assertion is that the menu is in the page, and a positioner
 	// mid-transition is not something this readout should race.
-	return page.waitForSelector(`${at} ul`, { state: 'attached', timeout: 3000 }).then(() => true, () => false);
+	return page.waitForSelector(MENU_SELECTOR, { state: 'attached', timeout: 3000 }).then(() => true, () => false);
 };
 const menuPickers = await page.evaluate(() => window.settingsProbe.markMenus());
 const menus = [];
@@ -436,7 +446,7 @@ for (const picker of menuPickers) {
 		// wowhead href with `spellIdTooltipOverride`.
 		await page.waitForTimeout(200);
 	}
-	const options = picker.shown ? await page.evaluate(mark => window.settingsProbe.menuRows(mark), picker.mark) : null;
+	const options = picker.shown ? await page.evaluate(() => window.settingsProbe.menuRows()) : null;
 	menus.push({ ...picker, options });
 	if (picker.shown) {
 		// Off the trigger first, because `openOnHover` reopens it otherwise, then Escape for the case
@@ -444,7 +454,7 @@ for (const picker of menuPickers) {
 		// `rows()` the interactions below read.
 		await page.mouse.move(0, 0);
 		await page.keyboard.press('Escape');
-		await page.waitForSelector(`${at} ul`, { state: 'detached', timeout: 15000 }).catch(() => {});
+		await page.waitForSelector(MENU_SELECTOR, { state: 'detached', timeout: 15000 }).catch(() => {});
 	}
 }
 
