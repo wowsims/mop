@@ -7,17 +7,6 @@
 	padding: var(--tooltip-body-padding-y) var(--tooltip-body-padding-x);
 }
 
-.sim-tooltip[class] {
-	background-color: var(--tooltip-bg);
-	border-radius: 0;
-	color: var(--tooltip-body-color);
-	font-size: var(--text-sm);
-}
-
-.sim-tooltip.ui-metrics-tooltip[class] {
-	font-size: var(--text-xs);
-}
-
 .sim-tooltip--unpadded [class*='styles-module_content'] {
 	padding: 0;
 }

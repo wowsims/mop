@@ -1,5 +1,3 @@
-import 'react-tooltip/dist/react-tooltip.css';
-
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
@@ -64,6 +62,7 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				className={clsx(
 					'sim-tooltip',
 					'ui-tooltip',
+					'rounded-none bg-overlay text-sm text-white',
 					maxWidthClassName,
 					width,
 					align === 'start' && 'text-left',
