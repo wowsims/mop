@@ -37,7 +37,7 @@ const READ = () => {
 	const icon = button.querySelector(':is([data-sidebar-action-loading-icon], .sim-sidebar-action-button-loading-icon)');
 	return {
 		present: true,
-		loading: button.classList.contains('loading'),
+		loading: button.classList.contains('loading') || button.hasAttribute('data-loading'),
 		disabled: button.disabled,
 		ariaBusy: button.getAttribute('aria-busy'),
 		spinnerShown: !!icon && getComputedStyle(icon).display !== 'none',
