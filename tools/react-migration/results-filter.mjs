@@ -27,7 +27,9 @@ const specs = () => (process.argv[2] ? process.argv[2].split(',') : SPECS);
 
 const FILTER = q('results-filter-root');
 const TRIGGER = `${FILTER} ${q('dropdown-picker-button')}`;
-const ITEM = `${FILTER} ${q('dropdown-picker-item')}`;
+// Base UI's `Menu.Portal` renders the menu (and its items) to `document.body`, not as a descendant
+// of the trigger it opens from, so — unlike TRIGGER — this is never scoped to FILTER.
+const ITEM = q('dropdown-picker-item');
 
 const READ_TRIGGER = selector => {
 	const button = document.querySelector(selector);
