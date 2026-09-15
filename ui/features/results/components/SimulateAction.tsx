@@ -23,8 +23,8 @@ export const SimulateAction = () => {
 			label: 'simulate',
 			value: host.sim.getIterations(),
 		});
-		setDisabled(true);
 		if (runs.isRunning(SimRunKind.IndividualSim)) return;
+		setDisabled(true);
 
 		host.resultsViewer.addAbortButton(async () => {
 			if (waitAbort.current) return;

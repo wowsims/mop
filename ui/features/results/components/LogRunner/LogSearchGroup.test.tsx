@@ -57,7 +57,7 @@ describe('LogSearchGroup', () => {
 	it('removes the whole group from its head', () => {
 		const { container, onRemove } = mount(group());
 
-		fireEvent.click(container.querySelector<HTMLButtonElement>('[data-testid="log-search-group-head"] [data-testid="saved-data-set-delete"]')!);
+		fireEvent.click(container.querySelector<HTMLButtonElement>('[data-testid="log-search-group-remove"]')!);
 
 		expect(onRemove).toHaveBeenCalledTimes(1);
 	});

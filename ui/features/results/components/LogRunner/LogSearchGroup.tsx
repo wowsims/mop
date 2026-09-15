@@ -15,10 +15,8 @@ import { labelOf, sentenceCase, TYPED_FIELDS, valueCandidates } from './utils';
 // The group sits in the bottom bar's Drawer sheet; up is the direction that has room below it.
 const DROPUP = { side: 'top', positionMethod: 'fixed' } as const;
 
-// Nameless to a screen reader: giving it one needs a translation key the locale files do not have,
-// and inventing untranslated English here is the worse trade. Flagged.
-const DeleteButton = ({ onClick, className }: { onClick: () => void; className?: string }) => (
-	<button type="button" className={className} data-testid="saved-data-set-delete" onClick={onClick}>
+const DeleteButton = ({ label, onClick, className }: { label: string; onClick: () => void; className?: string }) => (
+	<button type="button" className={className} data-testid="log-search-group-remove" aria-label={label} onClick={onClick}>
 		<Icon name="times" style="base" size="lg" />
 	</button>
 );
@@ -83,7 +81,11 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						</Button>
 					))}
 				</ButtonGroup>
-				<DeleteButton onClick={onRemove} className="py-2 text-white" />
+				<DeleteButton
+					label={i18n.t('common.list_picker.delete_item', { itemLabel: sentenceCase(group.field) })}
+					onClick={onRemove}
+					className="py-2 text-white"
+				/>
 			</div>
 			<div data-testid="log-search-group-items" className="flex flex-wrap items-center gap-1">
 				{group.values.map((value, valueIndex) => (

@@ -7,13 +7,12 @@ export interface ReplaySeekButtonProps {
 	onSeekBy: (delta: number) => void;
 }
 
-export const ReplaySeekButton = ({ delta, glyph, onSeekBy }: ReplaySeekButtonProps) => (
-	<button
-		type="button"
-		data-testid="cr-ctrl-btn"
-		className="ui-combat-replay-ctrl-btn"
-		title={delta < 0 ? i18n.t('combat_replay.seek_back', { time: -delta }) : i18n.t('combat_replay.seek_fwd', { time: delta })}
-		onClick={() => onSeekBy(delta)}>
-		{glyph}
-	</button>
-);
+export const ReplaySeekButton = ({ delta, glyph, onSeekBy }: ReplaySeekButtonProps) => {
+	const label = delta < 0 ? i18n.t('combat_replay.seek_back', { time: -delta }) : i18n.t('combat_replay.seek_fwd', { time: delta });
+
+	return (
+		<button type="button" data-testid="cr-ctrl-btn" className="ui-combat-replay-ctrl-btn" title={label} aria-label={label} onClick={() => onSeekBy(delta)}>
+			<span aria-hidden="true">{glyph}</span>
+		</button>
+	);
+};

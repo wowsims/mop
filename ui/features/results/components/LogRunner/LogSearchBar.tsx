@@ -1,6 +1,5 @@
 import i18n from '@i18n/config';
 import { DropdownPicker } from '@ui-kit/DropdownPicker';
-import { useRef } from 'react';
 
 import type { SuggestionSource } from '../../model/log/search/indexes';
 import type { ClauseField } from '../../model/log/search/query';
@@ -22,9 +21,9 @@ export interface LogSearchBarProps {
 
 /** The filter groups in the bottom bar's drawer. The free-text box is the sticky header's, not this. */
 export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProps) => {
-	const nextId = useRef(0);
+	const nextId = groups.reduce((highest, group) => Math.max(highest, group.id), -1) + 1;
 
-	const addField = (field: ClauseField) => onChange([...groups, { id: nextId.current++, field, join: 'or', values: [] }]);
+	const addField = (field: ClauseField) => onChange([...groups, { id: nextId, field, join: 'or', values: [] }]);
 
 	return (
 		<div data-testid="log-search-bar" className="flex flex-col gap-2">
