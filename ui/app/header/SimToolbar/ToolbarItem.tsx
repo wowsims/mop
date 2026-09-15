@@ -2,7 +2,6 @@ import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import type { IconName, IconSize, IconStyle } from '@ui-kit/Icon/types';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { type ReactNode, useId } from 'react';
 
 export interface ToolbarItemProps {
@@ -34,7 +33,6 @@ export const ToolbarItem = ({
 }: ToolbarItemProps) => {
 	const id = useId();
 	const anchor = tooltip ? tooltipAnchorProps(id) : {};
-	const classes = clsx(className);
 	// An icon-only control announces nothing: the glyph is a private-use codepoint in a font, and the tooltip is a `data-` attribute no assistive tech reads.
 	const label = !children && typeof tooltip === 'string' ? tooltip : undefined;
 	const content = (
@@ -47,11 +45,11 @@ export const ToolbarItem = ({
 		<div className="ml-4 flex transition-colors duration-150 ease-in-out [&_a]:my-4 [&_button]:my-4" data-testid="sim-toolbar-item">
 			{!hidden &&
 				(href ? (
-					<Button as="a" variant="unstyled" href={href} target="_blank" className={classes} aria-label={label} data-testid={testId} {...anchor}>
+					<Button as="a" variant="unstyled" href={href} target="_blank" className={className} aria-label={label} data-testid={testId} {...anchor}>
 						{content}
 					</Button>
 				) : (
-					<Button variant="unstyled" className={classes} aria-label={label} onClick={onClick} data-testid={testId} {...anchor}>
+					<Button variant="unstyled" className={className} aria-label={label} onClick={onClick} data-testid={testId} {...anchor}>
 						{content}
 					</Button>
 				))}

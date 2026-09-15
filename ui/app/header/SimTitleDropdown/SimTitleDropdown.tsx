@@ -33,7 +33,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 					<SimLinkContent iconPath={playerClass.getIcon('large')} title={translatePlayerClass(playerClass)} />
 				</Menu.SubmenuTrigger>
 				<Menu.Portal container={portalContainer ?? undefined}>
-					<Menu.Positioner side="right" align="start" sideOffset={0} className={clsx('ui-menu-positioner-plain')} data-testid="sim-title-positioner">
+					<Menu.Positioner side="right" align="start" sideOffset={0} className="ui-menu-positioner-plain" data-testid="sim-title-positioner">
 						<Menu.Popup
 							render={<ul />}
 							className={clsx('m-0 list-none p-0', 'ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-popup-min-w')}

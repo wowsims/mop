@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 
 export interface ButtonGroupProps extends ComponentPropsWithoutRef<'div'> {
@@ -6,7 +5,7 @@ export interface ButtonGroupProps extends ComponentPropsWithoutRef<'div'> {
 }
 
 export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({ size, role = 'group', className, children, ...props }, ref) => (
-	<div ref={ref} role={role} data-size={size} className={clsx(className)} {...props}>
+	<div ref={ref} role={role} data-size={size} className={className} {...props}>
 		{children}
 	</div>
 ));
