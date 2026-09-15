@@ -76,10 +76,9 @@ const READ = sel => {
 	};
 };
 
-// The class menus open on hover — Bootstrap never did that on its own, `bootstrap_overrides.ts` added
-// a capturing `mouseover`, and this branch asks Base UI for it with `openOnHover`. Read as shape, not
-// as markup: the two builds draw different elements, and the point is that a hover still produces a
-// menu of the right size beside the row it belongs to.
+// The class menus open on hover: this branch asks Base UI for it with `openOnHover`. Read as shape,
+// not as markup: the two builds draw different elements, and the point is that a hover still produces
+// a menu of the right size beside the row it belongs to.
 const HOVER = async (page, sel) => {
 	const dropdownSel = `#sim-links > ${sel.simLinkDropdown}`;
 	const rowLinkSel = sel.simLink;

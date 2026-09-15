@@ -66,8 +66,7 @@ const classes = await page.evaluate(ROWS, 0);
 console.log(`  rows         ${classes?.length}`);
 for (const row of classes ?? []) console.log(`    ${row.tag.padEnd(6)} ${String(row.colour).padEnd(18)} ${row.title}`);
 
-// The class rows open on hover, which is what `bootstrap_overrides.ts` gave them and what Base UI
-// does for a submenu by default.
+// The class rows open on hover, which is what Base UI does for a submenu by default.
 //
 // Every class, not just one: dropping the menus out of `parity.mjs` took 361 lines of shell
 // comparison with them, and all 34 spec links were in there. This is where they are covered now.

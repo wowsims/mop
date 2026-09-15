@@ -1,9 +1,8 @@
 // The header, the toolbar and the two dropdowns — the region the shell migration rewrites next.
 //
 // `parity.mjs` sees this markup at load, but it sees nothing that only exists after an interaction,
-// and the header's most fragile behaviour is exactly that: Bootstrap's dropdown plugin opens the
-// import/export menus, `bootstrap_overrides.ts` adds hover-to-open and hover-to-close on top of it,
-// and the sticky `.stuck` class is an IntersectionObserver whose rootMargin is measured from the
+// and the header's most fragile behaviour is exactly that: the import/export menus open and close on
+// hover, and the sticky `.stuck` class is an IntersectionObserver whose rootMargin is measured from the
 // header's own height at construction time. None of that survives a port by accident.
 //
 // Runs against `BASE_PORT` by default; set `PORT` to point at the React build. The whole output
@@ -112,10 +111,9 @@ for (const [key, value] of Object.entries(await page.evaluate(structure))) {
 	for (const line of JSON.stringify(value, null, 1).split('\n')) console.log(`    ${line}`);
 }
 
-// These menus open on **hover**, not on click: `bootstrap_overrides.ts` adds a capturing `mouseover`
-// on `body` that calls `Dropdown.show()`, and Bootstrap's own click data-API then *toggles* — so a
-// single `page.click()` opens the menu on the way in and closes it on the click, reading as "never
-// opened". Each gesture below therefore starts from the pointer parked away from the header.
+// These menus open on **hover**, not on click, so a single `page.click()` opens the menu on the way
+// in and closes it on the click, reading as "never opened". Each gesture below therefore starts from
+// the pointer parked away from the header.
 console.log('\ndropdown behaviour');
 const away = async () => {
 	await page.mouse.move(5, 500);
