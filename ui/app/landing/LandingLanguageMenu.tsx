@@ -23,18 +23,19 @@ export const LandingLanguageMenu = () => {
 				</Menu.Trigger>
 				<Menu.Portal container={portalContainer ?? undefined} keepMounted>
 					<Menu.Positioner align="end" sideOffset={0} className="z-dropdown">
-						<Menu.Popup className="ui-landing-language-popup">
+						<Menu.Popup render={<ul />} className="ui-landing-language-popup m-0 list-none p-0">
 							{Object.entries(supportedLanguages).map(([code, name]) => (
-								<Menu.Item
-									key={code}
-									render={<button type="button" />}
-									className="clear-both block w-full rounded-none border-0 bg-transparent text-start font-normal whitespace-nowrap text-white no-underline"
-									data-active={code === currentLang ? '' : undefined}
-									data-lang={code}
-									data-testid="dropdown-item"
-									onClick={() => selectLang(code)}>
-									{name}
-								</Menu.Item>
+								<li key={code} role="none">
+									<Menu.Item
+										render={<button type="button" />}
+										className="clear-both block w-full rounded-none border-0 bg-transparent text-start font-normal whitespace-nowrap text-white no-underline"
+										data-active={code === currentLang ? '' : undefined}
+										data-lang={code}
+										data-testid="dropdown-item"
+										onClick={() => selectLang(code)}>
+										{name}
+									</Menu.Item>
+								</li>
 							))}
 						</Menu.Popup>
 					</Menu.Positioner>

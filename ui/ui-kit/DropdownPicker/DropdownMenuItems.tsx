@@ -26,48 +26,47 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 		<>
 			{entries.map((entry, position) =>
 				entry.kind === 'option' ? (
-					<Menu.RadioItem
-						key={`option-${entry.index}`}
-						render={<li />}
-						value={entry.index}
-						closeOnClick
-						className={clsx('ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}
-						data-testid="dropdown-picker-item"
-						{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
-						{entry.option.icon}
-						{entry.option.label}
-					</Menu.RadioItem>
+					<li key={`option-${entry.index}`} role="none">
+						<Menu.RadioItem
+							render={<button type="button" />}
+							value={entry.index}
+							closeOnClick
+							className={clsx('ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}
+							data-testid="dropdown-picker-item"
+							{...tooltipAnchorProps(entry.option.tooltip === undefined ? undefined : tooltipId, entry.option.tooltip)}>
+							{entry.option.icon}
+							{entry.option.label}
+						</Menu.RadioItem>
+					</li>
 				) : (
 					<Menu.SubmenuRoot key={`submenu-${entry.key}-${position}`}>
-						<li className="ui-menu-item ui-menu-item-row" data-testid="dropdown-picker-item">
-							<div>
-								<Menu.SubmenuTrigger
-									render={
-										<button
-											type="button"
-											className={clsx('ui-menu-item', 'ui-menu-item-row', entry.trigger?.option.className)}
-											data-testid="dropdown-item"
-										/>
-									}
-									onClick={entry.trigger ? () => onSelect(entry.trigger!.index) : undefined}
-									{...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip)}>
-									{entry.trigger ? (
-										<>
-											{entry.trigger.option.icon}
-											{entry.trigger.option.label}
-										</>
-									) : (
-										entry.label
-									)}
-								</Menu.SubmenuTrigger>
-								<Menu.Portal container={portalContainer ?? undefined}>
-									<Menu.Positioner align="start" side="right" className="ui-menu-positioner" data-testid="dropdown-picker-positioner">
-										<Menu.Popup render={<ul />} className="ui-menu" data-testid="dropdown-submenu">
-											<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
-										</Menu.Popup>
-									</Menu.Positioner>
-								</Menu.Portal>
-							</div>
+						<li role="none">
+							<Menu.SubmenuTrigger
+								render={
+									<button
+										type="button"
+										className={clsx('ui-menu-item', 'ui-menu-item-row', entry.trigger?.option.className)}
+										data-testid="dropdown-item"
+									/>
+								}
+								onClick={entry.trigger ? () => onSelect(entry.trigger!.index) : undefined}
+								{...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip)}>
+								{entry.trigger ? (
+									<>
+										{entry.trigger.option.icon}
+										{entry.trigger.option.label}
+									</>
+								) : (
+									entry.label
+								)}
+							</Menu.SubmenuTrigger>
+							<Menu.Portal container={portalContainer ?? undefined}>
+								<Menu.Positioner align="start" side="right" className="ui-menu-positioner" data-testid="dropdown-picker-positioner">
+									<Menu.Popup render={<ul />} className="ui-menu" data-testid="dropdown-submenu">
+										<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
+									</Menu.Popup>
+								</Menu.Positioner>
+							</Menu.Portal>
 						</li>
 					</Menu.SubmenuRoot>
 				),

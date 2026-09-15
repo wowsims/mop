@@ -78,7 +78,10 @@ export const Menu = ({
 					positionMethod={positionMethod}
 					className={clsx(POSITIONER_Z_CLASSES[surface], positionerClassName)}
 					{...positionerProps}>
-					<BaseMenu.Popup className={clsx(SURFACE_CLASSES[surface], WIDTH_CLASSES[width], className)} {...popupProps}>
+					<BaseMenu.Popup
+						render={<ul />}
+						className={clsx('m-0 list-none p-0', SURFACE_CLASSES[surface], WIDTH_CLASSES[width], className)}
+						{...popupProps}>
 						{children}
 					</BaseMenu.Popup>
 				</BaseMenu.Positioner>

@@ -159,8 +159,7 @@ describe('DropdownPicker', () => {
 
 			const rows = [...screen.getByTestId('dropdown-picker-list').children] as Array<HTMLElement>;
 			expect(rows.map(row => row.textContent)).toEqual(['None', 'logic »', 'resources »']);
-			// Only the root-level option is a radio item; a trigger is a button in a `.dropend`.
-			expect(rows[0].getAttribute('role')).toBe('menuitemradio');
+			expect(within(rows[0]).getByRole('menuitemradio')).not.toBeNull();
 			expect(within(rows[1]).queryByTestId('dropdown-item')).not.toBeNull();
 		});
 

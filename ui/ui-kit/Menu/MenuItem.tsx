@@ -18,7 +18,14 @@ export interface MenuItemProps {
 }
 
 export const MenuItem = ({ layout, disabled, onClick, render, className, children, ...rest }: MenuItemProps) => (
-	<BaseMenu.Item render={render} disabled={disabled} onClick={onClick} className={clsx('ui-menu-item', LAYOUT_CLASSES[layout], className)} {...rest}>
-		{children}
-	</BaseMenu.Item>
+	<li role="none">
+		<BaseMenu.Item
+			render={render ?? <button type="button" />}
+			disabled={disabled}
+			onClick={onClick}
+			className={clsx('ui-menu-item', LAYOUT_CLASSES[layout], className)}
+			{...rest}>
+			{children}
+		</BaseMenu.Item>
+	</li>
 );
