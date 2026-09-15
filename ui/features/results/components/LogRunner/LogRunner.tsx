@@ -161,7 +161,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 								inputTestId="log-search-input"
 							/>
 						</div>
-						<div data-testid="log-runner-header" className="ui-log-row font-bold">
+						<div data-testid="log-runner-header" className="ui-log-row border-b-0 font-bold">
 							<div className="p-2 text-right">{i18n.t('results_tab.details.logs.time_column')}</div>
 							<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
 						</div>

@@ -13,12 +13,13 @@
 	}
 
 	.ui-fab-drawer {
-		@apply max-h-[min(45vh,26rem)] overflow-y-auto p-2;
+		@apply max-h-[min(45vh,26rem)] overflow-y-auto border-t border-r border-l border-border bg-background px-2 py-4;
+		@apply transition-transform duration-150 ease-in-out motion-reduce:transition-none;
 	}
 
 	.ui-fab-sheet {
-		@apply fixed z-dropdown border-t border-border bg-background px-page py-2 outline-none;
-		@apply opacity-100 transition-[transform,opacity] duration-150 ease-in-out motion-reduce:transition-none;
+		@apply fixed z-dropdown overflow-clip outline-none;
+		@apply opacity-100 transition-opacity duration-150 ease-in-out motion-reduce:transition-none;
 
 		@supports not (anchor-name: --a) {
 			@apply inset-x-0 bottom-fab-bar;
@@ -26,7 +27,11 @@
 
 		&[data-starting-style],
 		&[data-ending-style] {
-			@apply translate-y-full opacity-0;
+			@apply opacity-0;
+
+			& .ui-fab-drawer {
+				@apply translate-y-full;
+			}
 		}
 	}
 
