@@ -15,6 +15,19 @@ if (rotationTabId) {
 	await page.evaluate(id => window.simTabsProbe.tabs().find(t => window.simTabsProbe.idOf(t) === id).click(), rotationTabId);
 	await page.waitForTimeout(800);
 }
+
+// Since aplfreeze's RotationTabBody fix, only the active rotation-type pane mounts, and the
+// default spec type isn't APL, so the APL pane (and its toolbar) doesn't exist yet. Switch the
+// rotation type to APL first, mirroring apl-tab.mjs.
+const currentType = await page.evaluate(() => document.getElementById('rotation-tab-rotation-type')?.textContent?.trim());
+if (currentType && currentType !== 'APL') {
+	await page.locator('#rotation-tab-rotation-type').first().click({ timeout: 10000 });
+	await page.waitForTimeout(300);
+	await page.locator(`${q('dropdown-picker-list')} li, ${q('dropdown-picker-item')}`).locator('visible=true').getByText('APL', { exact: true }).first().click({ timeout: 10000 });
+	await page.waitForTimeout(600);
+}
+await page.waitForSelector(q('apl-floating-action-bar-root'), { state: 'visible', timeout: 15000 });
+
 results.aplToolbarRole = await page.evaluate(sel => document.querySelector(sel)?.getAttribute('role'), q('apl-floating-action-bar-root'));
 results.aplButtons = await page.evaluate(sel => document.querySelectorAll(`${sel} button`).length, q('apl-floating-action-bar-root'));
 
