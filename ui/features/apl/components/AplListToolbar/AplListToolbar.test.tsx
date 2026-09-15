@@ -99,13 +99,13 @@ describe('AplListToolbar', () => {
 		expect(root.hasAttribute('data-stuck')).toBe(false);
 
 		const observer = FakeIntersectionObserver.instances[0];
-		act(() => observer.fire(true));
-		expect(root.hasAttribute('data-stuck')).toBe(true);
-
-		act(() => observer.fire(true));
+		act(() => observer.fire(false));
 		expect(root.hasAttribute('data-stuck')).toBe(true);
 
 		act(() => observer.fire(false));
+		expect(root.hasAttribute('data-stuck')).toBe(true);
+
+		act(() => observer.fire(true));
 		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 });
