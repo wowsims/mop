@@ -17,12 +17,42 @@
 	}
 
 	.ui-fab-sheet {
-		@apply fixed inset-x-0 bottom-fab-bar z-dropdown border-t border-border bg-background px-page py-2 outline-none;
+		@apply fixed z-dropdown border-t border-border bg-background px-page py-2 outline-none;
 		@apply opacity-100 transition-[transform,opacity] duration-150 ease-in-out motion-reduce:transition-none;
+
+		@supports not (anchor-name: --a) {
+			@apply inset-x-0 bottom-fab-bar;
+		}
 
 		&[data-starting-style],
 		&[data-ending-style] {
 			@apply translate-y-full opacity-0;
+		}
+	}
+
+	.ui-log-fab-bar {
+		anchor-name: --log-fab;
+	}
+
+	.ui-log-fab-sheet {
+		@supports (anchor-name: --a) {
+			position-anchor: --log-fab;
+			left: anchor(left);
+			right: anchor(right);
+			bottom: anchor(top);
+		}
+	}
+
+	.ui-rotation-fab-bar {
+		anchor-name: --rotation-fab;
+	}
+
+	.ui-rotation-fab-sheet {
+		@supports (anchor-name: --a) {
+			position-anchor: --rotation-fab;
+			left: anchor(left);
+			right: anchor(right);
+			bottom: anchor(top);
 		}
 	}
 }

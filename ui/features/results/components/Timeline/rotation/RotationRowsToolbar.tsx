@@ -77,7 +77,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 		<div
 			ref={rootRef}
 			data-testid="rotation-floating-action-bar-root"
-			className="group ui-fab-root [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
+			className="group ui-fab-root ui-rotation-fab-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}>
 			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 flex-nowrap items-center overflow-x-auto group-data-stuck:bg-background">
 				<Drawer
@@ -85,7 +85,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 					onOpenChange={setExpanded}
 					modal={false}
 					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
-					className="ui-fab-sheet"
+					className="ui-fab-sheet ui-rotation-fab-sheet"
 					testId="rotation-fab-panel-inner"
 					trigger={
 						<ToolbarButton

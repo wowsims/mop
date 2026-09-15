@@ -56,14 +56,14 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 		.map(group => `${sentenceCase(group.field)}: ${group.values.map(value => labelOf(group.field, value)).join(', ')}`);
 
 	return (
-		<div ref={rootRef} data-testid="log-floating-action-bar-root" className="group ui-fab-root" data-stuck={stuck ? '' : undefined}>
+		<div ref={rootRef} data-testid="log-floating-action-bar-root" className="group ui-fab-root ui-log-fab-bar" data-stuck={stuck ? '' : undefined}>
 			<Toolbar testId="log-fab-actions" className="relative min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto group-data-stuck:bg-background">
 				<Drawer
 					open={expanded}
 					onOpenChange={setExpanded}
 					modal={false}
 					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
-					className="ui-fab-sheet"
+					className="ui-fab-sheet ui-log-fab-sheet"
 					testId="log-fab-panel-inner"
 					trigger={
 						<ToolbarButton
