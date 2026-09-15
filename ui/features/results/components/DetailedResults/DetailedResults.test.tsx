@@ -159,7 +159,9 @@ describe('DetailedResults', () => {
 
 	it('keeps each pane in the container its island was built into', () => {
 		const { container } = renderPane();
-		expect(container.querySelectorAll('[data-testid="dr-toolbar"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]')).toHaveLength(1);
+		expect(
+			container.querySelectorAll('[data-testid="dr-toolbar-row"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]'),
+		).toHaveLength(1);
 		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > [data-testid="log"] > .log-runner-root')).toHaveLength(1);
 		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > [data-testid="timeline"] > .timeline-root')).toHaveLength(1);
 		expect(

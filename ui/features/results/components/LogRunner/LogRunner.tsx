@@ -7,13 +7,14 @@ import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { SearchBar } from '@ui-kit/SearchBar';
 import { ToolbarButton } from '@ui-kit/Toolbar';
 import { findScrollParent } from '@ui-kit/utils/dom';
-import { VirtualList } from '@ui-kit/VirtualList';
+import { useScrollMargin, VirtualList } from '@ui-kit/VirtualList';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useSimResult } from '../../hooks/useSimResult';
 import { EMPTY_SUGGESTIONS, LogIndex } from '../../model/log/search/indexes';
 import type { SimResultData } from '../../model/result_data';
-import { useDrToolbar } from '../DetailedResults/DrToolbarContext';
+import { useDrStickySlot } from '../DetailedResults/DrStickySlotContext';
 import { LogRow } from './LogRow';
 import { LogToolbar } from './LogToolbar';
 import type { IdentifiedSearchGroup } from './utils';
@@ -37,7 +38,7 @@ export interface LogRunnerProps {
 
 export const LogRunner = ({ active }: LogRunnerProps) => {
 	const resultData = useSimResult();
-	const drToolbarContext = useDrToolbar();
+	const stickySlot = useDrStickySlot();
 
 	const [seen, setSeen] = useState<SimResultData | null>(null);
 	const [searchText, setSearchText] = useState('');
@@ -47,14 +48,10 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	// `null` until the list is in the document. In this app it resolves to `.sim-ui`, the one element
 	// above the pane with `overflow-y: auto`; `window` is the fallback for a page that scrolls itself.
 	const [scroller, setScroller] = useState<HTMLElement | Window | null>(null);
-	const [scrollMargin, setScrollMargin] = useState(0);
 
-	const rootRef = useRef<HTMLDivElement>(null);
-	const stickyRef = useRef<HTMLDivElement>(null);
 	const listRef = useRef<HTMLDivElement>(null);
-	// Both read from callbacks rather than from a render, so neither can be a piece of state.
-	const stickyTopRef = useRef(0);
-	const scrollerRef = useRef<HTMLElement | Window | null>(null);
+
+	const scrollMargin = useScrollMargin(listRef, scroller, stickySlot?.parentElement ?? null);
 
 	useEffect(() => {
 		if (active && resultData) setSeen(resultData);
@@ -81,55 +78,14 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const [exportOpen, setExportOpen] = useState(false);
 	const exportData = useCallback(() => combinedLogText(logsRef.current), []);
 
-	// Where the scroller's content starts, in viewport coordinates. Subtracting it from an element's
-	// box gives that element's offset *down the scroll content*, which does not move as it scrolls.
-	const contentTop = (scroller: HTMLElement | Window | null) =>
-		scroller instanceof HTMLElement ? scroller.getBoundingClientRect().top - scroller.scrollTop : -window.scrollY;
-
-	// The toolbar is resolved here rather than at mount: the pane is built before it is in the
-	// document. Rendering from inside a ResizeObserver callback loops, so every measurement lands in
-	// a frame of its own.
-	const measureChrome = useCallback(() => {
-		const list = listRef.current;
-		const toolbar = drToolbarContext?.current ?? null;
-		const stickyTop = toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0;
-		stickyTopRef.current = stickyTop;
-		rootRef.current?.style.setProperty('--log-sticky-top', `${stickyTop}px`);
-		// Scroll-independent on purpose: this is remeasured whenever the chrome above resizes, and a
-		// viewport-relative number would be whatever the scroll position happened to be at the time.
-		if (list && list.offsetParent !== null) setScrollMargin(list.getBoundingClientRect().top - contentTop(scrollerRef.current));
-	}, [drToolbarContext]);
-
 	useLayoutEffect(() => {
-		const sticky = stickyRef.current;
 		const list = listRef.current;
-		if (!sticky || !list) return;
-
+		if (!list) return;
 		// `findScrollParent` skips an `overflow: hidden` ancestor, which is what `.log-runner-scroll`
 		// is on the vertical axis — it only carries the sideways overflow of a long line. What it
 		// finds here is `.sim-ui`; `window` is the fallback for a page that scrolls itself.
-		scrollerRef.current = findScrollParent(list) ?? window;
-		setScroller(scrollerRef.current);
-
-		let frame: number | null = null;
-		const observer = new ResizeObserver(() => {
-			if (frame !== null) return;
-			frame = requestAnimationFrame(() => {
-				frame = null;
-				measureChrome();
-			});
-		});
-		observer.observe(sticky);
-		observer.observe(list);
-		const toolbar = drToolbarContext?.current ?? null;
-		if (toolbar) observer.observe(toolbar);
-		measureChrome();
-
-		return () => {
-			observer.disconnect();
-			if (frame !== null) cancelAnimationFrame(frame);
-		};
-	}, [measureChrome, drToolbarContext]);
+		setScroller(findScrollParent(list) ?? window);
+	}, []);
 
 	const needsMeasure = logs.length > 0 && measured.for !== result;
 	const listWidth = measured.for === result ? measured.width : 0;
@@ -156,20 +112,10 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 		setMeasured(current => (width > current.width ? { ...current, width } : current));
 	}, []);
 
-	// Brings the first row back under the sticky header, and only ever upwards: the list shares its
-	// scroller with the whole pane, so scrolling down to it would push the chrome off screen.
 	const scrollListToTop = useCallback(() => {
 		const list = listRef.current;
-		const scroller = scrollerRef.current;
-		// `offsetParent` is null while the pane is the closed tab, and scrolling then moves whatever
-		// tab is open instead.
-		if (!list || !scroller || list.offsetParent === null) return;
-		const visibleTop =
-			(scroller instanceof HTMLElement ? scroller.getBoundingClientRect().top : 0) +
-			stickyTopRef.current +
-			(stickyRef.current?.getBoundingClientRect().height ?? 0);
-		const top = list.getBoundingClientRect().top - visibleTop;
-		if (top < 0) scroller.scrollBy({ top });
+		if (!list || list.offsetParent === null) return;
+		list.scrollIntoView({ block: 'start' });
 	}, []);
 
 	useEffect(() => {
@@ -196,31 +142,36 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	);
 
 	return (
-		<div ref={rootRef} data-testid="log-runner-root" className="flex min-h-log-body-min-h flex-col">
-			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 bg-background pt-2">
-				<div data-testid="log-search" className="w-full lg:max-w-[50%]">
-					<SearchBar
-						value={searchText}
-						onChange={next => {
-							setSearchText(next);
-							scrollListToTop();
-						}}
-						placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
-						debounceMs={SEARCH_DEBOUNCE_MS}
-						autoComplete="off"
-						inputTestId="log-search-input"
-					/>
-				</div>
-				<div data-testid="log-runner-header" className="ui-log-row font-bold">
-					<div className="p-2 text-right">{i18n.t('results_tab.details.logs.time_column')}</div>
-					<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
-				</div>
-			</div>
+		<div data-testid="log-runner-root" className="flex min-h-log-body-min-h flex-col">
+			{active &&
+				stickySlot &&
+				createPortal(
+					<div data-testid="log-runner-sticky" className="flex flex-col gap-2 pt-2">
+						<div data-testid="log-search" className="w-full lg:max-w-[50%]">
+							<SearchBar
+								value={searchText}
+								onChange={next => {
+									setSearchText(next);
+									scrollListToTop();
+								}}
+								placeholder={i18n.t('results_tab.details.logs.search_placeholder')}
+								debounceMs={SEARCH_DEBOUNCE_MS}
+								autoComplete="off"
+								inputTestId="log-search-input"
+							/>
+						</div>
+						<div data-testid="log-runner-header" className="ui-log-row font-bold">
+							<div className="p-2 text-right">{i18n.t('results_tab.details.logs.time_column')}</div>
+							<div className="p-2">{i18n.t('results_tab.details.logs.event_column')}</div>
+						</div>
+					</div>,
+					stickySlot,
+				)}
 			<div data-testid="log-runner-scroll" className="relative shrink-0 grow basis-auto overflow-x-auto overflow-y-hidden">
 				<div
 					ref={listRef}
 					data-testid="log-runner-list"
-					className="w-(--log-runner-list-width,max-content) min-w-full"
+					className="w-(--log-runner-list-width,max-content) min-w-full scroll-mt-(--spacing-sim-header)"
 					style={listWidth ? { ['--log-runner-list-width' as string]: `${Math.ceil(listWidth)}px` } : undefined}>
 					<VirtualList
 						testId="log-runner-logs"

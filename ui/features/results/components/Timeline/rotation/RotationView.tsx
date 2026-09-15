@@ -6,6 +6,7 @@ import { WINDOW_SCROLLER } from '@ui-kit/VirtualList';
 import clsx from 'clsx';
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useHoverTooltip } from '../../../hooks/useHoverTooltip';
 import type { ContentRow, RotationModel, Row } from '../../../model/timeline/rotation';
@@ -13,7 +14,7 @@ import { computeOrder, rowAt } from '../../../model/timeline/rotation';
 import { NO_ITEMS } from '../../../model/timeline/rotation/row_track';
 import type { RowWindow, TrackBand } from '../../../model/timeline/rotation/timeline_window';
 import { trackBand, VERTICAL_PADDING_PX } from '../../../model/timeline/rotation/timeline_window';
-import { useDrToolbar } from '../../DetailedResults/DrToolbarContext';
+import { useDrStickySlot } from '../../DetailedResults/DrStickySlotContext';
 import { RotationHeaderRow } from './RotationHeaderRow';
 import { RotationRow } from './RotationRow';
 import { RotationRowLabel } from './RotationRowLabel';
@@ -28,6 +29,7 @@ import { DEFAULT_PPS, ZoomController } from './zoom';
 
 export interface RotationViewProps {
 	model: RotationModel | null;
+	active: boolean;
 }
 
 const NO_HIDDEN: ReadonlySet<string> = new Set();
@@ -57,7 +59,7 @@ const padScrollport =
 const PADDED_ELEMENT_RECT = padScrollport(observeElementRect);
 const PADDED_WINDOW_RECT = padScrollport(WINDOW_SCROLLER.observeElementRect!);
 
-export const RotationView = ({ model }: RotationViewProps) => {
+export const RotationView = ({ model, active }: RotationViewProps) => {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const cornerRef = useRef<HTMLDivElement>(null);
 	const rulerViewportRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,6 @@ export const RotationView = ({ model }: RotationViewProps) => {
 
 	const [hidden, setHidden] = useState(NO_HIDDEN);
 	const [labelWidthCss, setLabelWidthCss] = useState('clamp(8rem, 14rem, 20rem)');
-	const [stickyTop, setStickyTop] = useState(0);
 	const [paneWidth, setPaneWidth] = useState(0);
 	const [scrollport, setScrollport] = useState<HTMLElement | Window | null>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -141,8 +142,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const rulerWidth = useRef(0);
 	const outer = useRef<HTMLElement | null>(null);
 	const attached = useRef(false);
-	const drToolbar = useRef<HTMLElement | null>(null);
-	const drToolbarContext = useDrToolbar();
+	const stickySlot = useDrStickySlot();
 
 	const schedule = useCallback(() => {
 		if (frameHandle.current != null) return;
@@ -158,13 +158,6 @@ export const RotationView = ({ model }: RotationViewProps) => {
 	const measureWidths = useCallback(() => {
 		labelWidth.current = cornerRef.current?.offsetWidth ?? 0;
 		rulerWidth.current = rulerViewportRef.current?.clientWidth ?? 0;
-	}, []);
-
-	const measureStickyTop = useCallback(() => {
-		const toolbar = drToolbar.current;
-		// getBoundingClientRect, not offsetHeight: the latter rounds to whole pixels and leaves the
-		// ruler a fraction of a pixel behind the toolbar.
-		setStickyTop(toolbar ? (parseFloat(getComputedStyle(toolbar).top) || 0) + toolbar.getBoundingClientRect().height : 0);
 	}, []);
 
 	const scrollVerticalBy = useCallback((delta: number) => {
@@ -185,10 +178,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		setScrollport(outer.current ?? window);
 		if (outer.current) resizeObserverRef.current?.observe(outer.current);
 		else window.addEventListener('resize', schedule, { passive: true });
-		drToolbar.current = drToolbarContext?.current ?? null;
-		if (drToolbar.current) resizeObserverRef.current?.observe(drToolbar.current);
-		measureStickyTop();
-	}, [schedule, measureStickyTop, drToolbarContext]);
+	}, [schedule]);
 
 	runFrameRef.current = () => {
 		const scroller = scrollerRef.current;
@@ -227,9 +217,10 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		const root = rootRef.current;
 		if (root && root.clientWidth !== paneWidth) setPaneWidth(root.clientWidth);
 		measureWidths();
-		measureStickyTop();
 		schedule();
 	};
+
+	const portalMounted = active && stickySlot !== null;
 
 	useEffect(() => {
 		const root = rootRef.current;
@@ -267,9 +258,8 @@ export const RotationView = ({ model }: RotationViewProps) => {
 			rulerRef.current = null;
 			outer.current = null;
 			attached.current = false;
-			drToolbar.current = null;
 		};
-	}, [schedule, scrollVerticalBy]);
+	}, [schedule, scrollVerticalBy, portalMounted]);
 
 	// Grab-to-pan. The horizontal scrollbar sits at the far end of the rotation now that the page owns
 	// vertical scrolling, so dragging and shift+wheel are the reachable ways to pan.
@@ -402,22 +392,26 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				'--pps': `${DEFAULT_PPS}px`,
 				'--label-w': labelWidthCss,
 				'--duration': String(model?.duration ?? 0),
-				'--rotation-sticky-top': `${stickyTop}px`,
 			})}>
-			<div className="sticky top-(--rotation-sticky-top,0px) z-5 -mr-(--spacing-page) flex h-7.5 shrink-0 grow-0 basis-7.5 bg-background">
-				<RotationToolbar
-					ref={cornerRef}
-					onZoomOut={() => zoomRef.current?.stepOut()}
-					onZoomIn={() => zoomRef.current?.stepIn()}
-					onFit={() => zoomRef.current?.fitToWidth()}
-					onReset={() => zoomRef.current?.reset()}
-				/>
-				<div
-					ref={rulerViewportRef}
-					className="relative box-border min-w-0 shrink grow basis-0 overflow-hidden border-b border-white text-[12px] font-bold text-white">
-					<div ref={rulerTrackRef} data-testid="rotation-ruler-track" className="ui-timeline-ruler-track" />
-				</div>
-			</div>
+			{active &&
+				stickySlot &&
+				createPortal(
+					<div className="flex h-7.5 shrink-0 grow-0 basis-7.5 text-white">
+						<RotationToolbar
+							ref={cornerRef}
+							onZoomOut={() => zoomRef.current?.stepOut()}
+							onZoomIn={() => zoomRef.current?.stepIn()}
+							onFit={() => zoomRef.current?.fitToWidth()}
+							onReset={() => zoomRef.current?.reset()}
+						/>
+						<div
+							ref={rulerViewportRef}
+							className="relative box-border min-w-0 shrink grow basis-0 overflow-hidden border-b border-white text-[12px] font-bold text-white">
+							<div ref={rulerTrackRef} data-testid="rotation-ruler-track" className="ui-timeline-ruler-track" />
+						</div>
+					</div>,
+					stickySlot,
+				)}
 			<div
 				ref={scrollerRef}
 				data-testid="rotation-scroller"

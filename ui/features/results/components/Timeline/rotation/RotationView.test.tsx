@@ -1,8 +1,11 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { DrStickySlotContext } from '../../DetailedResults/DrStickySlotContext';
 import { RotationView } from './RotationView';
 import { castItem, castRow, rotationModel } from './testing';
 
@@ -40,11 +43,21 @@ const settle = async () => {
 	});
 };
 
+const Wrapper = ({ children }: { children: ReactNode }) => {
+	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
+	return (
+		<SimHostProvider host={host}>
+			<div data-testid="dr-sticky-slot" ref={setSlot} />
+			<DrStickySlotContext.Provider value={slot}>{children}</DrStickySlotContext.Provider>
+		</SimHostProvider>
+	);
+};
+
 const mount = async (model = MODEL) => {
 	const view = render(
-		<SimHostProvider host={host}>
-			<RotationView model={model} />
-		</SimHostProvider>,
+		<Wrapper>
+			<RotationView model={model} active />
+		</Wrapper>,
 	);
 	const scroller = view.container.querySelector<HTMLElement>('[data-testid="rotation-scroller"]')!;
 	// happy-dom reports every element as 0x0, and a zero-width scroller is a frame the window

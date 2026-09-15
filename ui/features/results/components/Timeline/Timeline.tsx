@@ -60,9 +60,9 @@ export const Timeline = ({ active }: TimelineProps) => {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex flex-wrap items-start gap-2">
-				<div className="flex max-lg:grow max-lg:shrink max-lg:basis-full flex-col">
+				<div className="flex flex-col max-lg:shrink max-lg:grow max-lg:basis-full">
 					<p>
-						<i className="text-damage-partial text-shadow-glow-danger fa fa-exclamation-triangle fa-xl mr-2" />
+						<i className="fa fa-exclamation-triangle fa-xl mr-2 text-damage-partial text-shadow-glow-danger" />
 						{i18n.t('results_tab.details.timeline.disclaimer')}
 					</p>
 					<p>{i18n.t('results_tab.details.timeline.note')}</p>
@@ -77,7 +77,7 @@ export const Timeline = ({ active }: TimelineProps) => {
 				) : (
 					<div data-testid="rotation-plot">
 						<div className="m-auto">
-							<RotationView model={model} />
+							<RotationView model={model} active={active} />
 						</div>
 					</div>
 				)}

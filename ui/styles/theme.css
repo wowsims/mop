@@ -407,7 +407,7 @@
 	--spacing-sim-header-plus: calc(var(--spacing-sim-header) + 1px);
 	--spacing-sim-header-minus: calc(var(--spacing-sim-header) - 1px);
 	--spacing-cr-icon-offset: calc(var(--spacing-cr-icon) + 20px);
-	--spacing-log-body-min-h: calc(100dvh - var(--log-sticky-top, 0px) - var(--spacing-page));
+	--spacing-log-body-min-h: calc(100dvh - var(--spacing-sim-header) - var(--spacing-page));
 	--spacing-gem-inner: calc(4 * var(--gem-width) / 5);
 	--spacing-gem: calc(var(--gem-width) / 10);
 	--color-table-row-even-hover: hsla(var(--table-row-even-bg-hsl), 0.9);

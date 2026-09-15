@@ -2,9 +2,11 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { CombatLog } from '@sim/proto/combat_log';
 import { act, fireEvent, render } from '@testing-library/react';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { SimResultData } from '../../model/result_data';
+import { DrStickySlotContext } from '../DetailedResults/DrStickySlotContext';
 import { LogRunner } from './LogRunner';
 
 let result: SimResultData | null = null;
@@ -12,7 +14,8 @@ vi.mock('../../hooks/useSimResult', () => ({ useSimResult: () => result }));
 
 // Every row, so the assertions are about what the list selected rather than what it windowed. The
 // wrapper carries `data-index`/`data-stripe` because that is what the real one stripes off.
-vi.mock('@ui-kit/VirtualList', () => ({
+vi.mock('@ui-kit/VirtualList', async importOriginal => ({
+	...(await importOriginal<typeof import('@ui-kit/VirtualList')>()),
 	VirtualList: ({
 		count,
 		testId,
@@ -80,7 +83,15 @@ const rows = (container: HTMLElement) =>
 
 // The export dialog reads the host for its portal container.
 const host = { rootElem: document.body } as never;
-const Wrapper = ({ children }: { children: ReactNode }) => <SimHostProvider host={host}>{children}</SimHostProvider>;
+const Wrapper = ({ children }: { children: ReactNode }) => {
+	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
+	return (
+		<SimHostProvider host={host}>
+			<div data-testid="dr-sticky-slot" ref={setSlot} />
+			<DrStickySlotContext.Provider value={slot}>{children}</DrStickySlotContext.Provider>
+		</SimHostProvider>
+	);
+};
 
 const mount = (active = true) => render(<LogRunner active={active} />, { wrapper: Wrapper });
 
@@ -225,26 +236,24 @@ describe('LogRunner', () => {
 	// The debounced search box fires `onChange('')` once on mount. Scrolling the page then would move
 	// whichever tab is actually open, because this pane is `display: none` until its tab is picked.
 	describe('scrolling back to the top', () => {
-		const scrollBy = vi.fn();
+		const scrollIntoView = vi.fn();
 
 		// happy-dom leaves every box at 0x0 and every `offsetParent` null, which is also what a closed
 		// tab looks like — so an open one has to be described on the element itself.
-		const placeList = (container: HTMLElement, top: number, offsetParent: HTMLElement | null) => {
+		const placeList = (container: HTMLElement, offsetParent: HTMLElement | null) => {
 			const list = container.querySelector<HTMLElement>('[data-testid="log-runner-list"]')!;
 			Object.defineProperty(list, 'offsetParent', { value: offsetParent, configurable: true });
-			list.getBoundingClientRect = () => ({ top, height: 0, bottom: top }) as DOMRect;
+			list.scrollIntoView = scrollIntoView;
 		};
 
-		const showPane = (container: HTMLElement, top: number) => placeList(container, top, document.body);
-		// Scrolled well past the header, so only the closed-tab guard can be what stops the scroll.
-		const hidePane = (container: HTMLElement) => placeList(container, -240, null);
+		const showPane = (container: HTMLElement) => placeList(container, document.body);
+		const hidePane = (container: HTMLElement) => placeList(container, null);
 
 		const backToTop = (container: HTMLElement) =>
 			fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][1]);
 
 		beforeEach(() => {
-			scrollBy.mockClear();
-			vi.stubGlobal('scrollBy', scrollBy);
+			scrollIntoView.mockClear();
 		});
 
 		it('does not scroll while the pane is the closed tab', async () => {
@@ -252,35 +261,24 @@ describe('LogRunner', () => {
 			result = resultWith(LOGS);
 			const { container } = mount();
 			hidePane(container);
-			scrollBy.mockClear();
+			scrollIntoView.mockClear();
 
 			fireEvent.change(searchInput(container), { target: { value: 'Cleave' } });
 			await act(async () => void vi.advanceTimersByTime(200));
 			backToTop(container);
 
-			expect(scrollBy).not.toHaveBeenCalled();
+			expect(scrollIntoView).not.toHaveBeenCalled();
 		});
 
-		it('pulls the list back under the sticky header when it has scrolled past it', () => {
+		it('scrolls the list to the top of its scroller natively when the pane is open', () => {
 			result = resultWith(LOGS);
 			const { container } = mount();
-			showPane(container, -240);
-			scrollBy.mockClear();
+			showPane(container);
+			scrollIntoView.mockClear();
 
 			backToTop(container);
 
-			expect(scrollBy).toHaveBeenCalledWith({ top: -240 });
-		});
-
-		it('leaves the page alone when the list is already below the header', () => {
-			result = resultWith(LOGS);
-			const { container } = mount();
-			showPane(container, 120);
-			scrollBy.mockClear();
-
-			backToTop(container);
-
-			expect(scrollBy).not.toHaveBeenCalled();
+			expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' });
 		});
 	});
 });

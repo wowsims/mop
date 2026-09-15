@@ -8,7 +8,7 @@ import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
-import type { RefObject } from 'react';
+import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -26,7 +26,7 @@ import { ALL_UNITS, hasTarget, ResultsFilter, simResultFilter } from '../Results
 import { Timeline } from '../Timeline';
 import { DetailedResultsPane } from './DetailedResultsPane';
 import { DetailedResultsTabs } from './DetailedResultsTabs';
-import { DrToolbarContext } from './DrToolbarContext';
+import { DrStickySlotContext } from './DrStickySlotContext';
 import { DEFAULT_DETAILED_RESULTS_TAB, DETAILED_RESULTS_TABS } from './utils';
 
 export interface DetailedResultsProps {
@@ -58,6 +58,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 	const hasResults = useSimResult() !== null;
 
 	const { ref: toolbarRef, stuck, className: stickyToolbarClassName } = useStickyToolbar<HTMLDivElement>();
+	const [stickySlot, setStickySlot] = useState<HTMLElement | null>(null);
 	// `updateResults` is bound to the emitter, not to the filter, so the selection it reads is a ref.
 	const targetRef = useRef(target);
 	// What the last emit already carried, so the reset below does not queue a second one.
@@ -167,7 +168,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 
 	return (
 		<div data-testid="detailed-results-manager-root" className="flex flex-col *:min-h-0">
-			<div data-testid="detailed-results-controls-div" className="flex mb-3">
+			<div data-testid="detailed-results-controls-div" className="mb-3 flex">
 				<Button
 					data-testid="detailed-results-1-iteration-button"
 					disabled={host.disabled}
@@ -181,25 +182,28 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 					{i18n.t('results_tab.details.sim_1_death')}
 				</Button>
 			</div>
-			<DrToolbarContext.Provider value={toolbarRef as RefObject<HTMLElement | null>}>
+			<DrStickySlotContext.Provider value={stickySlot}>
 				<Tabs.Root
 					className="group/dr flex flex-col"
 					data-testid="dr-root"
 					data-no-results={!hasResults ? '' : undefined}
 					value={activeId}
 					onValueChange={next => setActiveId(String(next))}>
-					<div ref={toolbarRef} data-testid="dr-toolbar" className={stickyToolbarClassName} data-stuck={stuck ? '' : undefined}>
-						<div data-testid="results-filter" className="flex min-h-0 items-center">
-							<ResultsFilter
-								target={target}
-								onTargetChange={next => {
-									targetRef.current = next;
-									setTarget(next);
-								}}
-							/>
+					<div ref={toolbarRef} data-testid="dr-toolbar" className={clsx(stickyToolbarClassName, 'flex-col')} data-stuck={stuck ? '' : undefined}>
+						<div data-testid="dr-toolbar-row" className="flex min-h-0 w-full items-center">
+							<div data-testid="results-filter" className="flex min-h-0 items-center">
+								<ResultsFilter
+									target={target}
+									onTargetChange={next => {
+										targetRef.current = next;
+										setTarget(next);
+									}}
+								/>
+							</div>
+							<div className="min-h-0 grow" />
+							<DetailedResultsTabs tabs={visibleTabs} />
 						</div>
-						<div className="min-h-0 grow" />
-						<DetailedResultsTabs tabs={visibleTabs} />
+						<div ref={setStickySlot} data-testid="dr-sticky-slot" />
 					</div>
 					<div className="grid grid-cols-1 items-start pt-6" data-testid="dr-tab-content">
 						<div
@@ -251,7 +255,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						</DetailedResultsPane>
 					</div>
 				</Tabs.Root>
-			</DrToolbarContext.Provider>
+			</DrStickySlotContext.Provider>
 		</div>
 	);
 };
