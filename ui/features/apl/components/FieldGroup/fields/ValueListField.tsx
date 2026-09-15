@@ -56,7 +56,9 @@ export const ValueListField = ({ player, config }: ValueListFieldProps) => {
 				modObject={player}
 				config={listConfig}
 				renderItem={(_index, itemConfig) => <ValuePicker player={player} config={itemConfig} />}
-				renderItemHeader={index => <AplValidations getValidations={subject => uuidValidations(subject, values()[index]?.uuid?.value)} />}
+				renderItemHeader={(_index, itemConfig) => (
+					<AplValidations getValidations={subject => uuidValidations(subject, itemConfig.getValue(subject)?.uuid?.value)} />
+				)}
 			/>
 			<AplNameDialog {...extraction.dialog} />
 		</>

@@ -76,13 +76,13 @@ export const GroupEditor = ({ player, config, groupIndex }: GroupEditorProps) =>
 						modObject={player}
 						config={actionsConfig}
 						renderItem={(_index, itemConfig) => <AplListItem player={player} config={itemConfig} actionFullWidth />}
-						renderItemHeader={index => (
+						renderItemHeader={(index, itemConfig) => (
 							<ListItemHeader
 								player={player}
-								getItem={() => actions()[index]}
+								getItem={subject => itemConfig.getValue(subject)}
 								getValidations={subject => [
 									...(subject.getCurrentStats().rotationStats?.groups?.[groupIndex]?.actions?.[index]?.validations || []),
-									...uuidValidations(subject, actions()[index]?.action?.condition?.uuid?.value),
+									...uuidValidations(subject, itemConfig.getValue(subject)?.action?.condition?.uuid?.value),
 								]}
 							/>
 						)}

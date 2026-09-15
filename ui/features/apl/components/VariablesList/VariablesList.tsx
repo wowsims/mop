@@ -53,7 +53,9 @@ export const VariablesList = () => {
 				modObject={player}
 				config={config}
 				renderItem={(_index, itemConfig) => <VariableItem player={player} config={itemConfig} />}
-				renderItemHeader={index => <AplValidations getValidations={subject => uuidValidations(subject, variables()[index]?.value?.uuid?.value)} />}
+				renderItemHeader={(_index, itemConfig) => (
+					<AplValidations getValidations={subject => uuidValidations(subject, itemConfig.getValue(subject)?.value?.uuid?.value)} />
+				)}
 			/>
 			<AplListToolbar
 				className="peer-has-data-[drag='from']:pointer-events-none peer-has-data-[drag='from']:opacity-50"

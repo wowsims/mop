@@ -53,13 +53,13 @@ export const PriorityList = () => {
 				modObject={player}
 				config={config}
 				renderItem={(_index, itemConfig) => <AplListItem player={player} config={itemConfig} />}
-				renderItemHeader={index => (
+				renderItemHeader={(index, itemConfig) => (
 					<ListItemHeader
 						player={player}
-						getItem={subject => subject.aplRotation.priorityList[index]}
+						getItem={subject => itemConfig.getValue(subject)}
 						getValidations={subject => [
 							...(subject.getCurrentStats().rotationStats?.priorityList[index]?.validations || []),
-							...uuidValidations(subject, subject.aplRotation.priorityList[index]?.action?.condition?.uuid?.value),
+							...uuidValidations(subject, itemConfig.getValue(subject)?.action?.condition?.uuid?.value),
 						]}
 					/>
 				)}

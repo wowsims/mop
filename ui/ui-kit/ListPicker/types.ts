@@ -61,6 +61,6 @@ export interface ListPickerProps<ModObject, ItemType> {
 	/** The item's body. A render prop: the node is placed by the list, not rendered by the caller. */
 	renderItem: (index: number, itemConfig: ListItemPickerConfig<ModObject, ItemType>) => ReactNode;
 	/** Extra content for the item's header row, beside the actions button. */
-	renderItemHeader?: (index: number) => ReactNode;
+	renderItemHeader?: (index: number, itemConfig: ListItemPickerConfig<ModObject, ItemType>) => ReactNode;
 	testId?: string;
 }

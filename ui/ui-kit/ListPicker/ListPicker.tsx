@@ -11,7 +11,7 @@ import type { ListDrag } from './drag_state';
 import { ListItemAction } from './ListItemAction';
 import { ListPickerItem } from './ListPickerItem';
 import type { ListItemPickerConfig, ListPickerProps } from './types';
-import { actionEnabled, canDeleteAt, moveItem } from './utils';
+import { actionEnabled, canDeleteAt, carryId, keyFor, moveItem } from './utils';
 
 /**
  * A reorderable list of pickers: add, remove, copy, and drag to reorder or to move between two
@@ -100,15 +100,25 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 		[listId, source, commit],
 	);
 
-	const itemConfig = (index: number): ListItemPickerConfig<ModObject, ItemType> => ({
-		storeSubscribe: config.storeSubscribe,
-		getValue: () => source()[index],
-		setValue: (obj: ModObject, newValue: ItemType) => {
-			const next = configRef.current.getValue(obj);
-			next[index] = newValue;
-			configRef.current.setValue(obj, next);
-		},
-	});
+	const itemConfig = (item: ItemType, itemIndex: number): ListItemPickerConfig<ModObject, ItemType> => {
+		const key = keyFor(item, itemIndex);
+		const indexOf = (list: Array<ItemType>) => list.findIndex((candidate, i) => keyFor(candidate, i) === key);
+		return {
+			storeSubscribe: config.storeSubscribe,
+			getValue: () => {
+				const list = source();
+				return list[indexOf(list)];
+			},
+			setValue: (obj: ModObject, newValue: ItemType) => {
+				const next = configRef.current.getValue(obj);
+				const idx = indexOf(next);
+				if (idx === -1) return;
+				carryId(next[idx], newValue);
+				next[idx] = newValue;
+				configRef.current.setValue(obj, next);
+			},
+		};
+	};
 
 	const deleteTooltip = i18n.t('common.list_picker.delete_item', { itemLabel: translateItemLabel(config.itemLabel) });
 	const copyTooltip = i18n.t('common.list_picker.copy_to_new', { itemLabel: translateItemLabel(config.itemLabel) });
@@ -141,31 +151,34 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 			)}
 			{value.length > 0 && (
 				<div className="ui-list-picker-items flex flex-col" data-testid="list-picker-items">
-					{value.map((_item, index) => (
-						<ListPickerItem
-							key={index}
-							index={index}
-							listId={listId}
-							itemLabel={config.itemLabel}
-							inlineMenuBar={inlineMenuBar}
-							title={!inlineMenuBar && config.itemLabel ? `${config.itemLabel} ${index + 1}` : undefined}
-							dragGroup={config.dragGroup}
-							sameGroupOnly={config.sameGroupOnly}
-							canDelete={canDelete && canDeleteAt(index, config.minimumItems)}
-							canCopy={canCopy}
-							canMove={canMove}
-							extraActions={config.extraActions}
-							deleteTooltip={deleteTooltip}
-							copyTooltip={copyTooltip}
-							tooltipId={tooltipId}
-							onDelete={onDelete}
-							onCopy={onCopy}
-							makeDrag={makeDrag}
-							onDrop={onDrop}
-							header={renderItemHeader?.(index)}>
-							{renderItem(index, itemConfig(index))}
-						</ListPickerItem>
-					))}
+					{value.map((item, index) => {
+						const cfg = itemConfig(item, index);
+						return (
+							<ListPickerItem
+								key={keyFor(item, index)}
+								index={index}
+								listId={listId}
+								itemLabel={config.itemLabel}
+								inlineMenuBar={inlineMenuBar}
+								title={!inlineMenuBar && config.itemLabel ? `${config.itemLabel} ${index + 1}` : undefined}
+								dragGroup={config.dragGroup}
+								sameGroupOnly={config.sameGroupOnly}
+								canDelete={canDelete && canDeleteAt(index, config.minimumItems)}
+								canCopy={canCopy}
+								canMove={canMove}
+								extraActions={config.extraActions}
+								deleteTooltip={deleteTooltip}
+								copyTooltip={copyTooltip}
+								tooltipId={tooltipId}
+								onDelete={onDelete}
+								onCopy={onCopy}
+								makeDrag={makeDrag}
+								onDrop={onDrop}
+								header={renderItemHeader?.(index, cfg)}>
+								{renderItem(index, cfg)}
+							</ListPickerItem>
+						);
+					})}
 				</div>
 			)}
 			{canCreate &&

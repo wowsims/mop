@@ -34,3 +34,23 @@ export const moveItem = <T>(list: Array<T>, from: number, to: number): Array<T> 
 	next.splice(to, 0, item);
 	return next;
 };
+
+const itemIds = new WeakMap<object, number>();
+let nextItemId = 1;
+
+export const keyFor = (item: unknown, fallbackIndex: number): number => {
+	if (item === null || typeof item !== 'object') return -(fallbackIndex + 1);
+	let id = itemIds.get(item);
+	if (id === undefined) {
+		id = nextItemId++;
+		itemIds.set(item, id);
+	}
+	return id;
+};
+
+export const carryId = (oldItem: unknown, newItem: unknown): void => {
+	if (oldItem === null || typeof oldItem !== 'object') return;
+	if (newItem === null || typeof newItem !== 'object') return;
+	const id = itemIds.get(oldItem);
+	if (id !== undefined) itemIds.set(newItem, id);
+};

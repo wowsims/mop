@@ -63,10 +63,10 @@ export const PrePullList = () => {
 							}
 						/>
 					)}
-					renderItemHeader={index => (
+					renderItemHeader={(index, itemConfig) => (
 						<ListItemHeader
 							player={player}
-							getItem={subject => subject.aplRotation.prepullActions[index]}
+							getItem={subject => itemConfig.getValue(subject)}
 							getValidations={subject => subject.getCurrentStats().rotationStats?.prepullActions[index]?.validations || []}
 						/>
 					)}

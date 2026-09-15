@@ -1,10 +1,12 @@
+import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { memo, useEffect, useRef } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { endDrag, getDrag } from './drag_state';
 import { ListPicker } from './ListPicker';
-import type { ListPickerConfig } from './types';
+import type { ListItemPickerConfig, ListPickerConfig } from './types';
 
 interface Row {
 	name: string;
@@ -426,6 +428,95 @@ describe('ListPicker', () => {
 
 			expect(left.value.map(row => row.name)).toEqual([]);
 			expect(right.value.map(row => row.name)).toEqual(['a', 'x']);
+		});
+	});
+
+	describe('stable identity through reorders', () => {
+		const MemoRow = memo(({ rows, itemConfig }: { rows: Rows; itemConfig: ListItemPickerConfig<Rows, Row> }) => {
+			const mounts = useRef(0);
+			useEffect(() => {
+				mounts.current++;
+			}, []);
+			const value = useStoreSubscribe(itemConfig.storeSubscribe!(rows), () => itemConfig.getValue(rows));
+			return (
+				<div data-testid="memo-row" data-mounts={mounts.current}>
+					<span data-testid="memo-name">{value?.name}</span>
+					<input data-testid="memo-input" value={value?.name ?? ''} onChange={event => itemConfig.setValue(rows, { name: event.target.value })} />
+				</div>
+			);
+		});
+
+		const mountMemo = (rows: Rows) =>
+			render(
+				<ListPicker<Rows, Row>
+					modObject={rows}
+					config={configFor({ storeSubscribe: (subject: Rows) => subject.subscribe })}
+					renderItem={(_index, itemConfig) => <MemoRow rows={rows} itemConfig={itemConfig} />}
+				/>,
+			);
+
+		const names = () =>
+			within(root())
+				.queryAllByTestId('memo-name')
+				.map(node => node.textContent);
+		const inputs = () => within(root()).queryAllByTestId('memo-input') as Array<HTMLInputElement>;
+
+		it('keeps every row, including a memoized store-subscribed child, reading its own object after a reorder', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			mountMemo(rows);
+			expect(names()).toEqual(['a', 'b', 'c']);
+
+			startDrag(2);
+			dropOn(0);
+
+			expect(rows.value.map(row => row.name)).toEqual(['c', 'a', 'b']);
+			expect(names()).toEqual(['c', 'a', 'b']);
+		});
+
+		it('edits the moved item through its own child config, and only that object changes', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			mountMemo(rows);
+
+			startDrag(2);
+			dropOn(0);
+			expect(names()).toEqual(['c', 'a', 'b']);
+
+			fireEvent.change(inputs()[0], { target: { value: 'c!' } });
+			expect(rows.value.map(row => row.name)).toEqual(['c!', 'a', 'b']);
+		});
+
+		it('replaces an item through setValue without remounting it', () => {
+			const rows = rowsOf('a');
+			mountMemo(rows);
+			const before = Number(within(root()).getByTestId('memo-row').getAttribute('data-mounts'));
+
+			fireEvent.change(inputs()[0], { target: { value: 'a2' } });
+
+			const after = Number(within(root()).getByTestId('memo-row').getAttribute('data-mounts'));
+			expect(after).toBe(before);
+			expect(rows.value.map(row => row.name)).toEqual(['a2']);
+		});
+
+		it('keeps ids unique and stable through copy, delete and a further move', () => {
+			const rows = rowsOf('a', 'b');
+			mountMemo(rows);
+
+			openMenu(1);
+			fireEvent.click(within(document.getElementById(actionsButton(1).getAttribute('aria-controls')!)!).getByTestId('list-picker-item-copy'));
+			expect(rows.value.map(row => row.name)).toEqual(['a', 'b', 'b']);
+			expect(names()).toEqual(['a', 'b', 'b']);
+
+			openMenu(0);
+			fireEvent.click(within(document.getElementById(actionsButton(0).getAttribute('aria-controls')!)!).getByTestId('list-picker-item-delete'));
+			expect(rows.value.map(row => row.name)).toEqual(['b', 'b']);
+
+			startDrag(1);
+			dropOn(0);
+			expect(rows.value.map(row => row.name)).toEqual(['b', 'b']);
+			expect(names()).toEqual(['b', 'b']);
+
+			fireEvent.change(inputs()[1], { target: { value: 'second' } });
+			expect(rows.value.map(row => row.name)).toEqual(['b', 'second']);
 		});
 	});
 

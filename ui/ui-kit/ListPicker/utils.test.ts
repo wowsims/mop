@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { actionEnabled, canDeleteAt, dropIndex, isInteractiveTarget, listItemClassName, moveItem } from './utils';
+import { actionEnabled, canDeleteAt, carryId, dropIndex, isInteractiveTarget, keyFor, listItemClassName, moveItem } from './utils';
 
 describe('listItemClassName', () => {
 	it('kebab-cases the label, agreeing with the vanilla list on every label a caller passes', () => {
@@ -89,6 +89,46 @@ describe('moveItem', () => {
 	it('leaves the source array alone', () => {
 		moveItem(list, 0, 3);
 		expect(list).toEqual(['a', 'b', 'c', 'd']);
+	});
+});
+
+describe('keyFor', () => {
+	it('mints one id per object and keeps returning it', () => {
+		const item = { name: 'a' };
+		const id = keyFor(item, 0);
+		expect(keyFor(item, 5)).toBe(id);
+	});
+
+	it('mints different ids for different objects, including ones at the same index', () => {
+		expect(keyFor({ name: 'a' }, 0)).not.toBe(keyFor({ name: 'b' }, 0));
+	});
+
+	it('falls back to a per-index id for a nullish item, never throwing', () => {
+		expect(() => keyFor(undefined, 3)).not.toThrow();
+		expect(keyFor(undefined, 3)).toBe(keyFor(undefined, 3));
+		expect(keyFor(undefined, 3)).not.toBe(keyFor(undefined, 4));
+	});
+
+	it('never collides a nullish fallback id with a real object id', () => {
+		const item = { name: 'a' };
+		expect(keyFor(item, 0)).not.toBe(keyFor(undefined, 0));
+	});
+});
+
+describe('carryId', () => {
+	it('moves the old id onto the new object, so it resolves to the same key', () => {
+		const oldItem = { name: 'a' };
+		const newItem = { name: 'a2' };
+		const id = keyFor(oldItem, 0);
+
+		carryId(oldItem, newItem);
+
+		expect(keyFor(newItem, 0)).toBe(id);
+	});
+
+	it('does nothing for a nullish old or new item', () => {
+		expect(() => carryId(undefined, { name: 'a' })).not.toThrow();
+		expect(() => carryId({ name: 'a' }, undefined)).not.toThrow();
 	});
 });
 
