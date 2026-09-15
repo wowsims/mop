@@ -10,14 +10,14 @@ export const AplNavbar = () => {
 	const { ref, stuck, className } = useStickyToolbar<HTMLDivElement>();
 
 	return (
-		<div ref={ref} className={clsx('grow shrink-0 basis-full gap-1', className)} data-testid="apl-rotation-navbar" data-stuck={stuck ? '' : undefined}>
+		<div ref={ref} className={clsx('shrink-0 grow basis-full gap-1', className)} data-testid="apl-rotation-navbar" data-stuck={stuck ? '' : undefined}>
 			<div data-testid="rotation-type-container">
 				<RotationTypePicker />
 			</div>
 			<TabNav
 				bordered={false}
 				wrap={false}
-				className="ml-auto overflow-auto shrink"
+				className="ml-auto shrink overflow-auto"
 				tabs={APL_PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))}
 			/>
 		</div>

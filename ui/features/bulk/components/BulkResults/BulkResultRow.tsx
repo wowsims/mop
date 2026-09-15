@@ -50,23 +50,23 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 
 	return (
 		<div
-			className="flex gap-4 items-center not-last:not-only:pb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:mb-6"
+			className="flex items-center gap-4 not-last:not-only:mb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:pb-6"
 			data-testid="bulk-sim-result-root">
-			<div className="text-center flex-3" data-testid="results-sim">
+			<div className="flex-3 text-center" data-testid="results-sim">
 				{showDamage && (
-					<div className="font-bold grid grid-cols-wide-narrow text-left leading-none gap-2" data-testid="results-sim-dps">
-						<span className="text-2xl mr-1" data-testid="topline-result-avg">
+					<div className="grid grid-cols-wide-narrow gap-2 text-left leading-none font-bold" data-testid="results-sim-dps">
+						<span className="mr-1 text-2xl" data-testid="topline-result-avg">
 							{formatToNumber(result.dpsMetrics.avg)}
 						</span>
 						{plusMinusDps > 0 && (
 							<>
-								<span className="text-muted text-sm" {...tooltipAnchorProps(marginTooltipId)}>
+								<span className="text-sm text-muted" {...tooltipAnchorProps(marginTooltipId)}>
 									{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
 								</span>
 								<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
 							</>
 						)}
-						<div className="mb-0 font-normal flex items-end" data-testid="results-reference">
+						<div className="mb-0 flex items-end font-normal" data-testid="results-reference">
 							{isBaseResult ? (
 								<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
 							) : (
@@ -84,7 +84,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 					</div>
 				)}
 			</div>
-			<div className="flex flex-wrap gap-1 flex-5" data-testid="bulk-gear-combo">
+			<div className="flex flex-5 flex-wrap gap-1" data-testid="bulk-gear-combo">
 				{!isBaseResult &&
 					resultAsSpec.items.map((spec, idx) => {
 						const swappableItemSlotPair = getSwappableItemSlotPair(idx, canDualWield);
@@ -112,7 +112,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 							<ItemDetailCell
 								key={idx}
 								testId="bulk-result-item"
-								className="ui-bulk-result-item ui-bulk-item-cell p-0 mb-0 [&_.ui-item-picker-labels-container]:hidden"
+								className="ui-bulk-result-item ui-bulk-item-cell mb-0 p-0 [&_.ui-item-picker-labels-container]:hidden"
 								slot={idx}
 								item={itemChanged && spec.id !== 0 ? host.sim.db.lookupItemSpec(spec) : null}
 								nameDescriptionFlush
@@ -120,7 +120,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 						);
 					})}
 			</div>
-			<div className="flex justify-end flex-1">
+			<div className="flex flex-1 justify-end">
 				<Button
 					className={clsx(isBaseResult && 'hidden')}
 					data-testid="bulk-equip-btn"

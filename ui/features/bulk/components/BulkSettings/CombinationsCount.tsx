@@ -19,7 +19,7 @@ export const CombinationsCount = () => {
 
 	if (pending) {
 		return (
-			<div className="text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
+			<div className="mb-0 flex items-center gap-2 text-fluid-xl leading-heading font-bold xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
 				<Spinner size="sm" />
 			</div>
 		);
@@ -28,7 +28,7 @@ export const CombinationsCount = () => {
 	const iterationsLimit = bulkIterationsLimit(sim.isNative);
 	const showWarning = iterations > iterationsLimit;
 	return (
-		<div className="text-fluid-xl font-bold leading-heading mb-0 flex items-center gap-2 xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
+		<div className="mb-0 flex items-center gap-2 text-fluid-xl leading-heading font-bold xl:max-xxl:flex-wrap" data-testid="bulk-combinations-count">
 			<span className={clsx(showWarning && 'text-danger')}>
 				{combinations === 1
 					? i18n.t('bulk_tab.settings.combination_singular')

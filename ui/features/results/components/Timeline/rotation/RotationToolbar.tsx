@@ -34,7 +34,7 @@ export const RotationToolbar = forwardRef<HTMLDivElement, RotationToolbarProps>(
 						iconOnly
 						aria-label={label}
 						data-testid="rotation-zoom-button"
-						className="py-0 px-1 leading-none text-white hover:text-brand"
+						className="px-1 py-0 leading-none text-white hover:text-brand"
 						onClick={button.run}
 						{...tooltipAnchorProps(tooltipId, label)}>
 						<i className={button.icon} />

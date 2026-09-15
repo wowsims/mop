@@ -4,16 +4,16 @@
 	}
 
 	.ui-fab-root {
-		@apply sticky bottom-0 flex h-fab-bar items-center mt-3 border-0 border-border box-border z-4 -mb-page;
-		@apply data-stuck:border data-stuck:p-2 data-stuck:bg-background;
+		@apply sticky bottom-0 z-4 mt-3 -mb-page box-border flex h-fab-bar items-center border-0 border-border;
+		@apply data-stuck:border data-stuck:bg-background data-stuck:p-2;
 	}
 
 	.ui-fab-toggle {
-		@apply relative min-w-0 z-1;
+		@apply relative z-1 min-w-0;
 	}
 
 	.ui-fab-drawer {
-		@apply max-h-[min(45vh,26rem)] p-2 overflow-y-auto;
+		@apply max-h-[min(45vh,26rem)] overflow-y-auto p-2;
 	}
 
 	.ui-fab-sheet {
@@ -22,7 +22,7 @@
 
 		&[data-starting-style],
 		&[data-ending-style] {
-			@apply opacity-0 translate-y-full;
+			@apply translate-y-full opacity-0;
 		}
 	}
 }

@@ -28,7 +28,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 
 	return (
 		<div data-testid="log-search-bar" className="flex flex-col gap-2">
-			<div data-testid="log-search-groups" className="flex flex-wrap items-start gap-y-1 gap-x-2">
+			<div data-testid="log-search-groups" className="flex flex-wrap items-start gap-x-2 gap-y-1">
 				{groups.map((group, index) => (
 					<LogSearchGroup
 						key={group.id}
@@ -47,7 +47,7 @@ export const LogSearchBar = ({ groups, suggestions, onChange }: LogSearchBarProp
 					onChange={addField}
 					equals={(a, b) => a === b}
 					defaultLabel={i18n.t('results_tab.details.logs.search_add_filter')}
-					triggerClassName="p-0 border-0"
+					triggerClassName="border-0 p-0"
 					{...DROPUP}
 				/>
 			</div>

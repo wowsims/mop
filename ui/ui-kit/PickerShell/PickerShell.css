@@ -7,7 +7,7 @@
 		}
 
 		&:where(:not([data-layout])):where(:not(.ui-icon-field)) label {
-			@apply whitespace-nowrap overflow-hidden text-ellipsis max-w-full;
+			@apply max-w-full overflow-hidden text-ellipsis whitespace-nowrap;
 		}
 
 		@media (width < 768px) {
@@ -17,10 +17,10 @@
 		}
 
 		&[data-layout='inline'] {
-			@apply flex-row justify-between items-center;
+			@apply flex-row items-center justify-between;
 
 			label {
-				@apply overflow-visible text-clip mr-2 mb-0;
+				@apply mr-2 mb-0 overflow-visible text-clip;
 			}
 
 			input,
@@ -31,15 +31,15 @@
 	}
 
 	.ui-icon-field {
-		@apply flex flex-row items-center gap-2 min-w-0;
+		@apply flex min-w-0 flex-row items-center gap-2;
 
 		label,
 		.ui-field-label {
-			@apply line-clamp-2 min-w-0 mb-0;
+			@apply mb-0 line-clamp-2 min-w-0;
 		}
 	}
 
 	.ui-field-description {
-		@apply mt-1 order-3 p-2 w-full bg-surface text-ui [&_*:last-child]:mb-0;
+		@apply order-3 mt-1 w-full bg-surface p-2 text-ui [&_*:last-child]:mb-0;
 	}
 }

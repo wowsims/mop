@@ -65,7 +65,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 
 	return (
 		<ContentBlock config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
-			<div className="relative grid gap-6 p-4 border border-border bg-background grid-cols-2 md:grid-cols-halves-wide">
+			<div className="relative grid grid-cols-2 gap-6 border border-border bg-background p-4 md:grid-cols-halves-wide">
 				<SearchBar
 					id="bulkGearSearch"
 					label={i18n.t('common.name')}
@@ -74,21 +74,21 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					onChange={setQuery}
 					clearable
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
-					clearClassName="z-2 -ml-px py-1.5 px-3 flex items-center bg-surface border border-surface-border">
+					clearClassName="z-2 -ml-px flex items-center border border-surface-border bg-surface px-3 py-1.5">
 					<ul
-						className="absolute hidden data-open:grid gap-2 top-full left-4 right-4 w-full min-w-40 p-2 z-10 m-0 text-base text-white text-left list-none bg-surface-raised bg-clip-padding border border-surface-border rounded-none shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] grid-cols-1 md:grid-cols-2 xxl:grid-cols-3"
+						className="absolute top-full right-4 left-4 z-10 m-0 hidden w-full min-w-40 list-none grid-cols-1 gap-2 rounded-none border border-surface-border bg-surface-raised bg-clip-padding p-2 text-left text-base text-white shadow-[0_0.5rem_1rem_rgba(0,0,0,0.15)] data-open:grid md:grid-cols-2 xxl:grid-cols-3"
 						data-testid="bulk-gear-search-results"
 						data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (
 							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
 						))}
 						{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
-							<li className="ui-bulk-item-search-item border-none col-span-full justify-center" data-testid="bulk-item-search-results-note">
+							<li className="ui-bulk-item-search-item col-span-full justify-center border-none" data-testid="bulk-item-search-results-note">
 								{i18n.t('bulk_tab.search.showing_results', { max: MAX_SEARCH_RESULTS, total: shown.matchCount })}
 							</li>
 						)}
 						{shown?.matchCount === 0 && (
-							<li className="ui-bulk-item-search-item border-none col-span-full justify-center" data-testid="bulk-item-search-results-note">
+							<li className="ui-bulk-item-search-item col-span-full justify-center border-none" data-testid="bulk-item-search-results-note">
 								{i18n.t('bulk_tab.search.no_results')}
 							</li>
 						)}

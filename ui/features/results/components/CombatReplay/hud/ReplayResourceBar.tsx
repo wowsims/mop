@@ -37,13 +37,13 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 				/>
 				<span
 					data-testid="cr-bar-label"
-					className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80 pointer-events-none">
+					className="pointer-events-none absolute top-1/2 left-1.5 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80">
 					{row.label}
 				</span>
 				<span
 					ref={value}
 					data-testid="cr-bar-val"
-					className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-white-70 pointer-events-none"
+					className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.6rem] text-white-70"
 				/>
 			</div>
 		</div>

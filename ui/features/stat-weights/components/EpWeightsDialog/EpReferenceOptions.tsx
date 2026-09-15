@@ -55,7 +55,7 @@ export const EpReferenceOptions = ({ epStats, epReferenceStat, displayMetrics }:
 	const values = useMemo(() => epStats.map(stat => ({ name: statName(stat), value: stat })), [epStats]);
 
 	return (
-		<div data-testid="ep-reference-options" className="flex flex-wrap -mx-3 mb-3 [&_.ui-field-label]:font-bold">
+		<div data-testid="ep-reference-options" className="-mx-3 mb-3 flex flex-wrap [&_.ui-field-label]:font-bold">
 			{references.map(reference => (
 				<div key={reference.id} className="w-full px-3 sm:w-1/3">
 					<EnumPicker

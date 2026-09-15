@@ -37,5 +37,5 @@ export const RotationTypePicker = () => {
 		[],
 	);
 
-	return <DropdownField<Player<any>, APLRotationType> modObject={player} config={config} options={options} defaultLabel="" triggerClassName="py-4 px-0" />;
+	return <DropdownField<Player<any>, APLRotationType> modObject={player} config={config} options={options} defaultLabel="" triggerClassName="px-0 py-4" />;
 };

@@ -48,7 +48,7 @@ const describe = <T extends ItemListType>(spec: TabSpec<T>): SelectorTab | null 
 const randomSuffixName = ({ label, statString }: { label: string; statString: string }): ReactNode => (
 	<div className="flex flex-col">
 		{label}
-		<span className="text-ui text-success mt-1">{statString}</span>
+		<span className="mt-1 text-ui text-success">{statString}</span>
 	</div>
 );
 
@@ -123,10 +123,10 @@ export const buildSelectorTabs = ({ player, slot, gearData, equippedItem, isBlac
 					label: SelectorModalTabs.Reforging,
 					itemData: reforgesTabData(player, gearData, equippedItem, reforgeData => (
 						<div>
-							<span className="text-danger inline-block w-40">
+							<span className="inline-block w-40 text-danger">
 								{reforgeData.fromAmount} {translateStat(reforgeData.fromStat)}
 							</span>
-							<span className="text-success inline-block w-40">
+							<span className="inline-block w-40 text-success">
 								+{reforgeData.toAmount} {translateStat(reforgeData.toStat)}
 							</span>
 						</div>

@@ -44,7 +44,7 @@ export const CharacterStats = () => {
 
 	return (
 		<div data-testid="character-stats-root" className="w-full">
-			<h3 data-testid="character-stats-label" className="inline-block m-0 mb-2 text-base font-bold leading-tight">
+			<h3 data-testid="character-stats-label" className="m-0 mb-2 inline-block text-base leading-tight font-bold">
 				{i18n.t('sidebar.character_stats.title')}
 			</h3>
 			<table className="w-full p-2.5" aria-busy={pending || undefined}>

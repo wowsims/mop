@@ -19,7 +19,7 @@ export interface ReforgeDoneToastProps {
 export const ReforgeDoneToast = ({ itemSlots, changedSlots, previousGear, settingsExport, onCopied }: ReforgeDoneToastProps) => (
 	<>
 		<p className="mb-0">{i18n.t('gear_tab.reforge_success.title')}</p>
-		<ul className="grid grid-cols-icon-fill w-full gap-2 m-0 list-none p-0">
+		<ul className="m-0 grid w-full list-none grid-cols-icon-fill gap-2 p-0">
 			{itemSlots.map(slot => (
 				<li key={slot} style={{ '--icon-size': '4rem' } as CSSProperties}>
 					<GearChangeIcon slot={slot} item={changedSlots.get(slot)} previousItem={previousGear?.getEquippedItem(slot) ?? undefined} />

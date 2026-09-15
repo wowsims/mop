@@ -27,8 +27,8 @@ import { columnHeaderLabel, removeButtonLabel, type SelectorTab } from './utils'
 
 const ROW_HEIGHT = 56;
 const ROW_CLASS = clsx(
-	'relative p-2 flex items-center bg-gray-900 gap-4',
-	'data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even hover:bg-gray-800',
+	'relative flex items-center gap-4 bg-gray-900 p-2',
+	'hover:bg-gray-800 data-[stripe=even]:not-hover:bg-table-odd data-[stripe=odd]:not-hover:bg-table-even',
 	'[&_[data-active]_.ui-selector-modal-list-item-icon]:outline-2 [&_[data-active]_.ui-selector-modal-list-item-icon]:outline-success',
 );
 
@@ -212,13 +212,13 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					{removeButtonLabel(label, key => i18n.t(key))}
 				</Button>
 			</div>
-			<div className="flex pr-2 mr-4 text-md justify-between gap-4 max-xl:mr-0" data-testid="selector-modal-list-labels">
+			<div className="mr-4 flex justify-between gap-4 pr-2 text-md max-xl:mr-0" data-testid="selector-modal-list-labels">
 				{(label === SelectorModalTabs.Items || label === SelectorModalTabs.Upgrades) && (
 					<h6 className="w-12 cursor-pointer select-none" data-testid="ilvl-label" onClick={() => sort(ItemListSortBy.ILVL)}>
 						{i18n.t('gear_tab.gear_picker.table_headers.ilvl')}
 					</h6>
 				)}
-				<h6 className="flex-1 mr-2" data-testid="item-label">
+				<h6 className="mr-2 flex-1" data-testid="item-label">
 					{columnHeaderLabel(label, getTranslatedTabLabel)}
 				</h6>
 				{label === SelectorModalTabs.Items && (
@@ -227,7 +227,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 					</h6>
 				)}
 				<h6
-					className="w-24 flex items-center float-right cursor-pointer select-none"
+					className="float-right flex w-24 cursor-pointer items-center select-none"
 					data-testid="ep-label"
 					style={{ display: showEPValues ? undefined : 'none' }}
 					onClick={() => sort(ItemListSortBy.EP)}>
@@ -242,7 +242,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 			</div>
 			<div
 				ref={listRef}
-				className="w-full max-h-[60vh] overflow-y-scroll overflow-x-hidden p-0 mb-0"
+				className="mb-0 max-h-[60vh] w-full overflow-x-hidden overflow-y-scroll p-0"
 				data-testid="selector-modal-list"
 				data-hide-ep={!showEPValues ? '' : undefined}
 				tabIndex={0}>

@@ -49,7 +49,7 @@ export const ContentBlock = ({
 		<div className={clsx('ui-content-block', className, flush && 'mb-0', 'flex flex-col')} data-testid={testId} {...rootDataAttributes}>
 			{hasHeader && header && (
 				<div ref={headerRef} className={clsx('ui-content-block-header flex items-baseline gap-2', header.className)} data-testid="content-block-header">
-					<TitleTag className="flex items-center font-bold mb-0" data-testid="content-block-title">
+					<TitleTag className="mb-0 flex items-center font-bold" data-testid="content-block-title">
 						{header.title}
 						{header.tooltip && <TooltipButton tooltip={<LocaleHtml html={header.tooltip} />} className="ml-2" />}
 					</TitleTag>

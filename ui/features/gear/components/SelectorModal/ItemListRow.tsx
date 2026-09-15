@@ -72,7 +72,7 @@ export const ItemListRow = ({
 					{itemData.ilvl || (itemData.item as unknown as Item).ilvl}
 				</div>
 			)}
-			<div className="gap-1 flex-1 flex items-center" data-testid="selector-modal-list-label-cell" data-active={active ? '' : undefined}>
+			<div className="flex flex-1 items-center gap-1" data-testid="selector-modal-list-label-cell" data-active={active ? '' : undefined}>
 				<ItemCellAnchor
 					className="ui-selector-modal-list-item-link"
 					data-testid="selector-modal-list-item-link"
@@ -95,8 +95,8 @@ export const ItemListRow = ({
 				</div>
 			)}
 			{showEp && (
-				<div className="w-24 flex items-center in-data-hide-ep:hidden" data-testid="selector-modal-list-item-ep">
-					<span className="inline-block text-white text-right" data-testid="selector-modal-list-item-ep-value">
+				<div className="flex w-24 items-center in-data-hide-ep:hidden" data-testid="selector-modal-list-item-ep">
+					<span className="inline-block text-right text-white" data-testid="selector-modal-list-item-ep-value">
 						{itemEP < 9.95 ? itemEP.toFixed(1) : Math.round(itemEP).toString()}
 					</span>
 					<span

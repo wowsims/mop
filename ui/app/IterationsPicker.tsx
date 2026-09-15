@@ -13,7 +13,7 @@ export const IterationsPicker = ({ sim }: IterationsPickerProps) => (
 	<NumberPicker
 		modObject={sim}
 		testId="iterations-picker"
-		inputClassName="w-full m-0"
+		inputClassName="m-0 w-full"
 		config={{
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),

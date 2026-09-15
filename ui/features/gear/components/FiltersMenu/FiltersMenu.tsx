@@ -39,7 +39,7 @@ const MenuSection = ({ name, className, children }: { name: string; className?: 
 		<div className="flex-1">
 			<h6 data-testid="menu-section-title">{name}</h6>
 		</div>
-		<div className={clsx('flex flex-col flex-3', className ?? 'gap-3')}>{children}</div>
+		<div className={clsx('flex flex-3 flex-col', className ?? 'gap-3')}>{children}</div>
 	</div>
 );
 

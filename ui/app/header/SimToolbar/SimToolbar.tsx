@@ -26,7 +26,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 				testId="known-issues"
 				hidden={knownIssues.length === 0}
 				tooltip={
-					<ul className="text-left pl-4 mb-0">
+					<ul className="mb-0 pl-4 text-left">
 						{knownIssues.map((issue, index) => (
 							<li key={index}>{issue}</li>
 						))}
@@ -41,7 +41,7 @@ export const SimToolbar = ({ sim, knownIssues, onOpenSettings }: SimToolbarProps
 
 			<ToolbarItem testId="sim-options" icon="cog" tooltip={i18n.t('info.sim_options')} onClick={onOpenSettings} />
 
-			<div className="ml-4 flex mt-2 mb-2 border-l border-l-border [&_a]:my-2 [&_button]:my-2" data-testid="sim-toolbar-socials">
+			<div className="mt-2 mb-2 ml-4 flex border-l border-l-border [&_a]:my-2 [&_button]:my-2" data-testid="sim-toolbar-socials">
 				{SOCIALS.map(social => (
 					<div key={social.key} className="ml-4 flex transition-colors duration-150 ease-in-out" data-testid="sim-toolbar-item">
 						<SocialLink social={social} />

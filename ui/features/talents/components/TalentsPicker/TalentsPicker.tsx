@@ -33,11 +33,11 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 	return (
 		<PickerShell
 			config={{ ...config, id: config.id ?? fallbackId }}
-			className="col-span-full w-fit flex flex-row gap-section max-fhd:flex-col max-xl:m-auto max-md:w-full"
+			className="col-span-full flex w-fit flex-row gap-section max-fhd:flex-col max-xl:m-auto max-md:w-full"
 			hidden={hidden}
 			disabled={disabled}>
 			<div className="flex flex-col max-lg:w-full">
-				<div className="w-full mb-1 flex items-center">
+				<div className="mb-1 flex w-full items-center">
 					<div className="ml-auto" data-testid="talents-picker-actions">
 						<Button
 							variant="outline-primary"
@@ -52,7 +52,7 @@ export const TalentsPicker = <TalentsProto,>({ config }: TalentsPickerProps<Tale
 						<Tooltip id={copyTooltipId} content={i18n.t('talents_tab.copy_button.tooltip')} />
 					</div>
 				</div>
-				<div id="talents" className="flex-1 max-lg:flex max-lg:justify-center max-lg:overflow-x-hidden max-lg:-mx-page">
+				<div id="talents" className="flex-1 max-lg:-mx-page max-lg:flex max-lg:justify-center max-lg:overflow-x-hidden">
 					<TalentTreePicker config={config.tree} talentsString={value} onChange={setValue} />
 				</div>
 			</div>

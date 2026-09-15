@@ -32,7 +32,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 						data-active={entry.id === activeId ? '' : undefined}
 						hidden={!matchesGlyphSearch(entry.name, search)}>
 						<a
-							className="ui-selector-modal-list-item-link flex-1 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+							className="ui-selector-modal-list-item-link flex-1 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-link"
 							data-testid="selector-modal-list-item-link"
 							href={glyphUrl(entry)}
 							onClick={event => {
@@ -45,7 +45,7 @@ export const GlyphSelectorDialog = ({ open, onOpenChange, options, selectedId, o
 								data-testid="selector-modal-list-item-name">
 								{entry.name}
 							</span>
-							<span className="ml-4 tracking-normal text-quality-junk flex-3">{entry.description}</span>
+							<span className="ml-4 flex-3 tracking-normal text-quality-junk">{entry.description}</span>
 						</a>
 					</li>
 				))}

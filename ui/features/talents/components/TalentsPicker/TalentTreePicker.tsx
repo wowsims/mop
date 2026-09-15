@@ -29,13 +29,13 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 	const rows = useMemo(() => buildTalentRows(config.talents), [config.talents]);
 
 	return (
-		<div className="relative border border-border flex flex-col flex-1 not-first:-ml-px">
-			<div className="p-3 flex items-center text-white bg-black text-base z-1">
-				<img src={spec.getIcon('medium')} className="size-8 mr-3 rounded-full" />
+		<div className="relative flex flex-1 flex-col border border-border not-first:-ml-px">
+			<div className="z-1 flex items-center bg-black p-3 text-base text-white">
+				<img src={spec.getIcon('medium')} className="mr-3 size-8 rounded-full" />
 				<span className="mr-3 flex-1 font-bold whitespace-nowrap">{translatePlayerSpec(spec)}</span>
 				<Button
 					variant={null}
-					className="leading-none text-link-danger -mr-3"
+					className="-mr-3 leading-none text-link-danger"
 					data-testid="talent-tree-reset"
 					{...tooltipAnchorProps(resetTooltipId)}
 					onClick={() => onChange(clearedTalentsString())}>
@@ -44,13 +44,13 @@ export const TalentTreePicker = <TalentsProto,>({ config, talentsString, onChang
 				<Tooltip id={resetTooltipId} content={i18n.t('talents_tab.reset_button.tooltip')} />
 			</div>
 			<div
-				className="absolute top-14 right-0 bottom-0 left-0 bg-no-repeat bg-size-[100%_100%] shadow-talent-tree z-0"
+				className="absolute top-14 right-0 bottom-0 left-0 z-0 bg-size-[100%_100%] bg-no-repeat shadow-talent-tree"
 				style={{ backgroundImage: `url('${config.backgroundUrl}')` }}
 			/>
-			<div className="my-3 mx-[2vw] z-1 max-xxxl:mx-auto max-lg:mx-10" data-testid="talent-tree-main">
+			<div className="z-1 mx-[2vw] my-3 max-xxxl:mx-auto max-lg:mx-10" data-testid="talent-tree-main">
 				{rows.map((row, rowIdx) => (
 					<div className="grid grid-cols-icon-triple has-data-[selected='true']:[&>a:not([data-selected='true'])]:grayscale" key={rowIdx}>
-						<div className="p-2 content-center justify-self-center" data-testid="talent-tree-level">
+						<div className="content-center justify-self-center p-2" data-testid="talent-tree-level">
 							{(rowIdx + 1) * LEVELS_PER_ROW}
 						</div>
 						{row.map(talent => (

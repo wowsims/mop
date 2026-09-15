@@ -1,10 +1,10 @@
 @layer components {
 	.ui-tab {
-		@apply flex items-center m-0 border-0 py-4 px-4 bg-transparent text-link font-[inherit] text-sm font-bold whitespace-nowrap no-underline cursor-pointer transition-colors duration-150 ease-in-out;
+		@apply m-0 flex cursor-pointer items-center border-0 bg-transparent px-4 py-4 font-[inherit] text-sm font-bold whitespace-nowrap text-link no-underline transition-colors duration-150 ease-in-out;
 		@apply hover:text-link-hover;
 
 		&:focus-visible {
-			@apply outline-0 focus-ring;
+			@apply focus-ring outline-0;
 		}
 
 		&[data-active] {
@@ -28,6 +28,6 @@
 	}
 
 	.ui-tabs {
-		@apply flex mb-0 pl-0 list-none;
+		@apply mb-0 flex list-none pl-0;
 	}
 }

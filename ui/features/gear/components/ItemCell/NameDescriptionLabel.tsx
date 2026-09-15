@@ -8,7 +8,7 @@ export interface NameDescriptionLabelProps {
 }
 
 export const NameDescriptionLabel = ({ nameDescription, className, flush }: NameDescriptionLabelProps) => (
-	<small className={clsx('text-quality-uncommon text-ui', flush ? 'ml-0' : 'ml-1', className)} data-testid="heroic-label">
+	<small className={clsx('text-ui text-quality-uncommon', flush ? 'ml-0' : 'ml-1', className)} data-testid="heroic-label">
 		({nameDescription})
 	</small>
 );

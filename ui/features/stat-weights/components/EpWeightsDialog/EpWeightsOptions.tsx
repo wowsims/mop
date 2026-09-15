@@ -14,7 +14,7 @@ const STATS_TYPES: StatsType[] = [StatsType.Ep, StatsType.Weight];
 
 /** Both values are UI-local and read back off `options`, which the dialog owns because this body unmounts on close: `useInput` re-reads its source synchronously on its own write, which is before a `useState` has committed. */
 export const EpWeightsOptions = ({ options, onStatsTypeChange, onShowAllStatsChange }: EpWeightsOptionsProps) => (
-	<div className="flex flex-wrap -mx-3 mb-3">
+	<div className="-mx-3 mb-3 flex flex-wrap">
 		<div className="w-full px-3 sm:w-1/4">
 			<EnumPicker
 				modObject={options}

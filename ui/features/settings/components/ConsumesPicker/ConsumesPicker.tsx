@@ -41,7 +41,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<div data-testid="consumes-flasks">
 						<IconEnumPicker modObject={player} config={configs.flask} />
 					</div>
-					<span className="w-6 flex items-center justify-center">{i18n.t('settings_tab.consumables.elixirs.separator')}</span>
+					<span className="flex w-6 items-center justify-center">{i18n.t('settings_tab.consumables.elixirs.separator')}</span>
 					<div className="empty:hidden" data-testid="consumes-battle-elixirs">
 						<IconEnumPicker modObject={player} config={configs.battleElixir} />
 					</div>

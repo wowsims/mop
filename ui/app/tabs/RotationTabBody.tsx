@@ -81,7 +81,7 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 						<div>
 							<RotationTypePicker />
 						</div>
-						<div className="grid grid-cols-2 max-xl:grid-cols-1 gap-page">
+						<div className="grid grid-cols-2 gap-page max-xl:grid-cols-1">
 							<ContentBlock config={{ header: { title: i18n.t('rotation_tab.simple.title') } }}>
 								<SimpleRotationInputs />
 							</ContentBlock>
@@ -115,7 +115,7 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 						{APL_PANES.map(pane => {
 							const Body = PANE_BODIES[pane.id];
 							return (
-								<TabPanel key={pane.id} value={pane.id} className="pt-0 gap-section not-data-hidden:flex not-data-hidden:flex-col">
+								<TabPanel key={pane.id} value={pane.id} className="gap-section pt-0 not-data-hidden:flex not-data-hidden:flex-col">
 									<Body />
 								</TabPanel>
 							);

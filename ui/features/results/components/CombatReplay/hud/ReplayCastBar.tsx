@@ -28,12 +28,12 @@ export const ReplayCastBar = ({ actions, duration }: ReplayCastBarProps) => {
 			<div
 				ref={label}
 				data-testid="cr-cast-bar-label"
-				className="absolute inset-0 flex items-center justify-center text-[0.7rem] font-semibold text-white text-shadow-outline-md pointer-events-none"
+				className="pointer-events-none absolute inset-0 flex items-center justify-center text-[0.7rem] font-semibold text-white text-shadow-outline-md"
 			/>
 			<div
 				ref={remaining}
 				data-testid="cr-cast-bar-time"
-				className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.65rem] text-white-75 pointer-events-none"
+				className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.65rem] text-white-75"
 			/>
 		</div>
 	);

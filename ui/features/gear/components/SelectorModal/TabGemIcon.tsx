@@ -23,14 +23,14 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 			style={{ '--gem-width': '2rem' } as CSSProperties}>
 			{gem && (
 				<img
-					className="absolute inline-block size-gem-inner inset-gem rounded-full z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="absolute inset-gem z-1 inline-block size-gem-inner cursor-pointer rounded-full bg-cover bg-center bg-no-repeat"
 					data-testid="gem-icon"
 					src={iconUrl || undefined}
 					alt=""
 				/>
 			)}
 			<img
-				className="absolute inline-block size-full inset-0 bg-no-repeat bg-cover bg-center cursor-pointer"
+				className="absolute inset-0 inline-block size-full cursor-pointer bg-cover bg-center bg-no-repeat"
 				data-testid="socket-icon"
 				src={emptyIconUrl}
 				alt=""

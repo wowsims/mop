@@ -72,7 +72,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 							data-interactive={changed || undefined}
 							style={{ backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})` }}
 							{...(changed && gemName ? tooltipAnchorProps(`${tooltipId}-socket-${gemIdx}`) : {})}>
-							{changed && <i className="block fas fa-exclamation-circle ui-gear-change-icon-gem-marker" />}
+							{changed && <i className="fas fa-exclamation-circle ui-gear-change-icon-gem-marker block" />}
 						</div>
 					))}
 				</div>

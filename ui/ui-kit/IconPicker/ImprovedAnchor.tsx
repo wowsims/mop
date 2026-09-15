@@ -17,8 +17,8 @@ export const ImprovedAnchor = ({ actionId, testId, active, hidden }: ImprovedAnc
 	return (
 		<a
 			className={clsx(
-				'ui-icon-picker-swatch absolute bottom-0 right-0 min-w-5 size-5 pointer-events-auto',
-				active ? 'filter-none' : 'grayscale border-gray-600',
+				'ui-icon-picker-swatch pointer-events-auto absolute right-0 bottom-0 size-5 min-w-5',
+				active ? 'filter-none' : 'border-gray-600 grayscale',
 			)}
 			data-testid={testId}
 			data-active={active ? '' : undefined}

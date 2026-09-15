@@ -24,7 +24,7 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 	return (
 		<li>
 			<a
-				className="ui-bulk-item-search-item text-left no-underline clear-both font-normal text-white rounded-none bg-transparent hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-raised"
+				className="ui-bulk-item-search-item clear-both rounded-none bg-transparent text-left font-normal text-white no-underline hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-raised"
 				data-item-id={item.id}
 				href={href || undefined}
 				target="_blank"
@@ -33,14 +33,14 @@ export const BulkItemSearchRow = ({ item, onAdd }: BulkItemSearchRowProps) => {
 					event.preventDefault();
 					onAdd();
 				}}>
-				<div className="shrink-0 size-10 border border-border">
+				<div className="size-10 shrink-0 border border-border">
 					<span className="ui-item-picker-ilvl" data-testid="item-picker-ilvl">
 						{baseIlvl(item)}
 					</span>
 					<WowheadIcon as="div" className="size-full" testId="bulk-item-search-item-icon" iconUrl={iconUrl} />
 				</div>
 				<div className="flex flex-col gap-1 pl-2">
-					<div className="flex flex-wrap flex-col xxl:flex-row gap-x-1">
+					<div className="flex flex-col flex-wrap gap-x-1 xxl:flex-row">
 						<span className={itemQualityClassName(item.quality)}>{item.name}</span>
 						{!!item.nameDescription && <NameDescriptionLabel nameDescription={item.nameDescription} flush />}
 						{item.factionRestriction === UIItem_FactionRestriction.HORDE_ONLY && (

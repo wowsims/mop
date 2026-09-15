@@ -79,7 +79,7 @@ export const Exporter = ({
 			}>
 			{selectCategories && <ExporterCategoryPickers categories={categories.current} onChange={onCategoryChange} />}
 			{/* `defaultValue` for the mount, the effect above for a change while open: the popup mounts a commit after the effect first runs, so a ref write alone leaves the box empty. */}
-			<TextArea spellCheck={false} className="w-full h-[60vh] resize-none" data-testid="exporter-textarea" ref={textRef} defaultValue={data} />
+			<TextArea spellCheck={false} className="h-[60vh] w-full resize-none" data-testid="exporter-textarea" ref={textRef} defaultValue={data} />
 		</Dialog>
 	);
 };

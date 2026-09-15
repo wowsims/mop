@@ -375,14 +375,14 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 							<table>
 								<thead>
 									<tr>
-										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+										<th className="border-b-2 border-border px-4 py-2 text-right text-xs">
 											{i18n.t('fire_mage.combustion_thresholds.table.threshold')}
 										</th>
-										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+										<th className="border-b-2 border-border px-4 py-2 text-right text-xs">
 											{i18n.t('fire_mage.combustion_thresholds.table.current')}
 										</th>
-										<th className="py-2 px-4 text-right text-xs border-b-2 border-border"></th>
-										<th className="py-2 px-4 text-right text-xs border-b-2 border-border">
+										<th className="border-b-2 border-border px-4 py-2 text-right text-xs"></th>
+										<th className="border-b-2 border-border px-4 py-2 text-right text-xs">
 											{i18n.t('fire_mage.combustion_thresholds.table.new')}
 										</th>
 									</tr>
@@ -392,12 +392,12 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 										const typedKey = key as keyof FireMage_Rotation;
 										return (
 											<tr key={key}>
-												<th className="py-2 px-4 text-right text-xs border-b-2 border-border">{i18n.t(CATEGORY_LABELS[typedKey])}</th>
-												<td className="py-2 px-4 text-right text-xs text-danger" data-testid="combustion-thresholds-current">
+												<th className="border-b-2 border-border px-4 py-2 text-right text-xs">{i18n.t(CATEGORY_LABELS[typedKey])}</th>
+												<td className="px-4 py-2 text-right text-xs text-danger" data-testid="combustion-thresholds-current">
 													{Math.round(results.currentValues[typedKey])}
 												</td>
-												<td className="py-2 px-4 text-right text-xs">→</td>
-												<td className="py-2 px-4 text-right text-xs text-success" data-testid="combustion-thresholds-new">
+												<td className="px-4 py-2 text-right text-xs">→</td>
+												<td className="px-4 py-2 text-right text-xs text-success" data-testid="combustion-thresholds-new">
 													{Math.round(value)}
 												</td>
 											</tr>
@@ -406,7 +406,7 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 								</tbody>
 							</table>
 						</div>
-						<div className="flex justify-end w-full gap-4">
+						<div className="flex w-full justify-end gap-4">
 							<Button variant="outline-primary" onClick={() => setResultsOpen(false)}>
 								{i18n.t('fire_mage.combustion_thresholds.close')}
 							</Button>

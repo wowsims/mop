@@ -69,7 +69,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				...(!state.isFrozen && !state.isEditable ? { 'data-equipped': '' } : {}),
 			}}
 			className={clsx(
-				'ui-bulk-item-cell p-2 mb-0',
+				'ui-bulk-item-cell mb-0 p-2',
 				state.isFrozen ? 'border-3 border-frozen' : !state.isEditable ? 'border border-brand' : 'border border-border',
 			)}
 			onOpen={(tab: SelectorModalTabs) => {
@@ -77,7 +77,7 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
-				<div className="ml-2 gap-1 grid grid-flow-col [align-items:start]">
+				<div className="ml-2 grid grid-flow-col [align-items:start] gap-1">
 					{index >= 0 && state.isEditable && (
 						<>
 							<Button

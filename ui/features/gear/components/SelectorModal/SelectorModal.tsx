@@ -140,7 +140,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 									dataLabel: tab.label,
 									buttonClassName: clsx(
 										tab.socketIdx !== undefined &&
-											'p-0 py-2 px-2 ml-2 -mr-2 flex items-center opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 data-active:opacity-100',
+											'-mr-2 ml-2 flex items-center p-0 px-2 py-2 opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100 data-active:opacity-100',
 									),
 								}))}
 							/>
@@ -159,7 +159,7 @@ export const SelectorModal = ({ state, id = DEFAULT_MODAL_ID, rail = true }: Sel
 								value={tab.label}
 								id={paneId(tab.label)}
 								keepMounted
-								className={clsx('fade-in-out p-0', tab.label !== activeTab?.label && 'opacity-0')}
+								className={clsx('p-0 fade-in-out', tab.label !== activeTab?.label && 'opacity-0')}
 								data-testid="selector-modal-tab-pane"
 								data-active={tab.label === activeTab?.label ? '' : undefined}>
 								<ItemList tab={tab} slot={slot} equippedItem={equippedItem} />

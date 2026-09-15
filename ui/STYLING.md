@@ -23,7 +23,7 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   e.g. `--color-grey: #808080`) rather than writing `bg-[#808080]` — never drop a declaration because
   no token exists yet either; a missing visible property is a bug, not a simplification.
 - **No arbitrary spacing where a scale step exists.** Tailwind's spacing scale in this repo is
-  *dynamic*: any multiple of `0.25` is a legal step, so `p-1.25` is exactly 5px and `w-4.5` is 18px.
+  _dynamic_: any multiple of `0.25` is a legal step, so `p-1.25` is exactly 5px and `w-4.5` is 18px.
   Convert a source px value to its **exact** step (`gap-[4px]` → `gap-1`, `10px` → `p-2.5`, `5px` →
   `p-1.25`, `18px` → `w-4.5`) rather than writing `[Npx]` — see §7 for why a rounded/nearest
   conversion is not acceptable here. Keep a literal `[Npx]` only when no step lands on the value
@@ -69,27 +69,28 @@ class in a co-located `.css` file, `@import`ed from `ui/styles/style.css` (see t
 
 ```css
 @layer components {
-.ui-chip {
-	@apply rounded-full flex p-0 border border-primary text-white text-ui font-normal …;
+	.ui-chip {
+		@apply rounded-full flex p-0 border border-primary text-white text-ui font-normal …;
 
-	&:hover:not([data-active]) {
-		@apply bg-primary-dampened;
-	}
+		&:hover:not([data-active]) {
+			@apply bg-primary-dampened;
+		}
 
-	&[data-active] {
-		@apply bg-primary;
+		&[data-active] {
+			@apply bg-primary;
 
-		& .ui-chip-delete {
-			@apply text-primary-foreground;
+			& .ui-chip-delete {
+				@apply text-primary-foreground;
+			}
 		}
 	}
-}
 }
 ```
 
 Rules:
+
 - **A `.css` file selects only `ui-*` classes** — attribute (`[data-active]`), pseudo (`:hover`,
-  `::after`), and element/descendant parts are allowed *inside* a `ui-*` rule, but the file may never
+  `::after`), and element/descendant parts are allowed _inside_ a `ui-*` rule, but the file may never
   target a semantic hook class, a `data-testid`, or a raw element selector at the top level. The two
   exceptions are `theme.css` (the spec theme selectors) and `vendor.css` (see below).
 - Built with `@apply`, unlayered classes stay unlayered (until the global element rules that used to
@@ -169,7 +170,7 @@ frozen).
   the element, the testid keeps the old class name verbatim (`className="apl-list-item-picker"` →
   `data-testid="apl-list-item-picker"`), so the mechanical rewrite is a search-and-replace and every
   `\.name(\.|$)` regex a tool used to run against the class keeps matching the testid instead. An
-  *unread* hook is just deleted — don't add a testid nobody consumes.
+  _unread_ hook is just deleted — don't add a testid nobody consumes.
 - **`data-testid` is never a styling hook.** No `.css` rule, `@apply` selector, or TSX arbitrary
   variant may key off `[data-testid=…]`; `ui/no_class_hooks.test.ts`'s "no `[data-testid]` styling"
   check fails the build on one. If a style needs to reach a child, give that child a prop
@@ -181,12 +182,12 @@ frozen).
   surrounding wrapper elements).
 - **`tools/react-migration/*.mjs`** (the Playwright probes — tracked on this branch) use a shared
   helper:
-  ```js
-  const q = name => `:is([data-testid="${name}"], .${name})`;
-  ```
-  which matches the testid on a converted build and the bare class on an unconverted one, so one
-  selector string works across the migration. Inside a `page.evaluate`/`waitForFunction` closure
-  Node's `q()` isn't available — inline the same one-liner or pass the selector in as an argument.
+    ```js
+    const q = name => `:is([data-testid="${name}"], .${name})`;
+    ```
+    which matches the testid on a converted build and the bare class on an unconverted one, so one
+    selector string works across the migration. Inside a `page.evaluate`/`waitForFunction` closure
+    Node's `q()` isn't available — inline the same one-liner or pass the selector in as an argument.
 
 ## 6. Dialogs, menus, popovers
 
@@ -200,17 +201,17 @@ fix is almost always removing whatever broke the native layering, not adding log
 
 - **`ui/no_class_hooks.test.ts`** (vitest) runs three checks over `ui/**/*.{ts,tsx}` (excluding
   `*.test.ts(x)`) via `tools/tailwind/class-hooks.mjs`:
-  1. **Class hooks** — every class-bearing string that isn't a real Tailwind utility (checked by
-     compiling it against `ui/styles/style.css` with Tailwind's own design system, not a
-     hand-maintained list), isn't `ui-*`, and isn't on the allowlist, fails.
-  2. **Retired names** — any token in `ui/retired_class_names.json` (the names Phase 6 removed)
-     appearing anywhere in production `ui/` (`*.test.ts(x)` excluded) fails, even outside a
-     `className`, so a hook can't quietly come back through a comment-free reintroduction — unless
-     the token has since become a real Tailwind utility or is on the allowlist, since Phase 6 retired
-     some hand-rolled classes whose names collide with a later Tailwind utility of the same spelling
-     (`grayscale`, `flex-3`, `tabular-nums`, …).
-  3. **`data-testid` styling** — a `.css` rule or TSX arbitrary variant selecting `[data-testid=…]`
-     fails.
+    1. **Class hooks** — every class-bearing string that isn't a real Tailwind utility (checked by
+       compiling it against `ui/styles/style.css` with Tailwind's own design system, not a
+       hand-maintained list), isn't `ui-*`, and isn't on the allowlist, fails.
+    2. **Retired names** — any token in `ui/retired_class_names.json` (the names Phase 6 removed)
+       appearing anywhere in production `ui/` (`*.test.ts(x)` excluded) fails, even outside a
+       `className`, so a hook can't quietly come back through a comment-free reintroduction — unless
+       the token has since become a real Tailwind utility or is on the allowlist, since Phase 6 retired
+       some hand-rolled classes whose names collide with a later Tailwind utility of the same spelling
+       (`grayscale`, `flex-3`, `tabular-nums`, …).
+    3. **`data-testid` styling** — a `.css` rule or TSX arbitrary variant selecting `[data-testid=…]`
+       fails.
 - **`ui/class_hook_allowlist.json`** is the only way to keep a raw class name. An entry needs a
   `token` or a `pattern` plus a `reason`, and today it holds exactly: `sim-ui` and the
   `<spec>-sim-ui` pattern (the theme root `theme.css` selects), `group`/`group/*`, `peer`/`peer/*`
@@ -228,31 +229,31 @@ fix is almost always removing whatever broke the native layering, not adding log
   both walk the DOM by child-index path from `document.body` plus tag, capturing ~54 computed style
   properties and the bounding box per node, and diff that against a baseline build, which validates
   a class-hook removal for free.
-  - `tw-probe.mjs` captures each top-level tab **at rest** (`TABS` in the script), at three widths
-    (`2200/1600/700`), plus one scrolled "results-stuck" capture. **It never opens a sub-pane, a
-    dialog, or a modal** — it only ever sees the default state of each top-level tab.
-  - `state-probe.mjs` is the companion for exactly what `tw-probe.mjs` can't reach: it runs a seeded
-    sim and opens the Detailed Results sub-tabs, an expanded metrics-table row, the Rotation tab's
-    APL sub-panes and Auto rotation type, the Bulk tab's sub-tabs, the gear selector modal, the
-    settings Encounter Advanced dialog, and the EP weights dialog, diffing the same properties.
-  - That split is exactly how a real regression slipped through once: the log runner's rows grew
-    from 32.5px to 34px when a real `@utility` (`icon-sm`) was deleted as if it were a retired class
-    hook. `tw-probe.mjs`'s default-pane run stayed green because it never opened the log tab; only a
-    probe that opens sub-panes (or a behaviour script) caught it. **The lesson: a custom `@utility`
-    or a `ui-*` composition class is real styling, not a hook** — the class-hook gate and the hook
-    census tell the two apart by compiling every candidate against Tailwind's own design system
-    (`tools/tailwind/canonical-classes.mjs`), never a hand-written name list, and deleting one
-    because it "looks like" an old semantic class is the mistake both probes exist to catch. Run
-    both before calling a class-hook or utility change done.
-  - `tw-probe.mjs` separately caught a different regression, historical but worth knowing: three
-    early utility conversions rendered **12.5% smaller** than the SCSS they replaced (`padding: 10px`
-    → `p-2.5` computed to 8.75px, not 10px — `1rem` is 14px here, not 16px), passing type-check,
-    ~1700 unit tests, oxlint and all 34 snapshots straight through. **The current rule (superseding
-    that fixed-`[Npx]` reaction) is the exact dynamic spacing step**: Tailwind v4's spacing scale
-    here accepts any multiple of `0.25`, so a source px value converts to its exact step —
-    `10px` → `p-2.5`, `5px` → `p-1.25`, `18px` → `w-4.5` — computed-identically, and
-    `tools/tailwind/canonical-classes.mjs` rewrites a lingering `p-[5px]` to `p-1.25` automatically.
-    Keep an arbitrary `[Npx]` only where no named or dynamic step exists (an odd one-off border
-    width, say), and add a token instead of an arbitrary value for anything repeated.
-  - A class-removal commit and a DOM-structure commit must never land together — both probes are
-    position-keyed, so an inserted or deleted element misaligns every comparison after it.
+    - `tw-probe.mjs` captures each top-level tab **at rest** (`TABS` in the script), at three widths
+      (`2200/1600/700`), plus one scrolled "results-stuck" capture. **It never opens a sub-pane, a
+      dialog, or a modal** — it only ever sees the default state of each top-level tab.
+    - `state-probe.mjs` is the companion for exactly what `tw-probe.mjs` can't reach: it runs a seeded
+      sim and opens the Detailed Results sub-tabs, an expanded metrics-table row, the Rotation tab's
+      APL sub-panes and Auto rotation type, the Bulk tab's sub-tabs, the gear selector modal, the
+      settings Encounter Advanced dialog, and the EP weights dialog, diffing the same properties.
+    - That split is exactly how a real regression slipped through once: the log runner's rows grew
+      from 32.5px to 34px when a real `@utility` (`icon-sm`) was deleted as if it were a retired class
+      hook. `tw-probe.mjs`'s default-pane run stayed green because it never opened the log tab; only a
+      probe that opens sub-panes (or a behaviour script) caught it. **The lesson: a custom `@utility`
+      or a `ui-*` composition class is real styling, not a hook** — the class-hook gate and the hook
+      census tell the two apart by compiling every candidate against Tailwind's own design system
+      (`tools/tailwind/canonical-classes.mjs`), never a hand-written name list, and deleting one
+      because it "looks like" an old semantic class is the mistake both probes exist to catch. Run
+      both before calling a class-hook or utility change done.
+    - `tw-probe.mjs` separately caught a different regression, historical but worth knowing: three
+      early utility conversions rendered **12.5% smaller** than the SCSS they replaced (`padding: 10px`
+      → `p-2.5` computed to 8.75px, not 10px — `1rem` is 14px here, not 16px), passing type-check,
+      ~1700 unit tests, oxlint and all 34 snapshots straight through. **The current rule (superseding
+      that fixed-`[Npx]` reaction) is the exact dynamic spacing step**: Tailwind v4's spacing scale
+      here accepts any multiple of `0.25`, so a source px value converts to its exact step —
+      `10px` → `p-2.5`, `5px` → `p-1.25`, `18px` → `w-4.5` — computed-identically, and
+      `tools/tailwind/canonical-classes.mjs` rewrites a lingering `p-[5px]` to `p-1.25` automatically.
+      Keep an arbitrary `[Npx]` only where no named or dynamic step exists (an odd one-off border
+      width, say), and add a token instead of an arbitrary value for anything repeated.
+    - A class-removal commit and a DOM-structure commit must never land together — both probes are
+      position-keyed, so an inserted or deleted element misaligns every comparison after it.

@@ -30,10 +30,10 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 			<a
 				href={href || undefined}
 				className={clsx(
-					'flex items-center cursor-pointer bg-table-even border border-transparent',
+					'flex cursor-pointer items-center border border-transparent bg-table-even',
 					'transition-[background-color,color,border] duration-150 ease-in-out',
 					'pointer-fine:hover:bg-table-row-even-hover',
-					'data-active:border-success focus-visible:outline focus-visible:outline-1 focus-visible:outline-link -outline-offset-1',
+					'-outline-offset-1 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link data-active:border-success',
 				)}
 				data-testid="tooltip-quick-swap__anchor"
 				data-active={entry.active ? '' : undefined}
@@ -43,7 +43,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 				}}>
 				<img
 					alt={entry.item.name}
-					className="shrink-0 static mr-1 rounded-none inline-block size-gem-inner inset-gem z-1 bg-no-repeat bg-cover bg-center cursor-pointer"
+					className="static inset-gem z-1 mr-1 inline-block size-gem-inner shrink-0 cursor-pointer rounded-none bg-cover bg-center bg-no-repeat"
 					data-testid="gem-icon"
 					style={{ '--gem-width': '2.5rem' } as CSSProperties}
 					src={iconUrl || undefined}
@@ -60,21 +60,21 @@ const keyOf = (item: QuickSwapItem) => ('effectId' in item ? `enchant-${item.eff
 
 export const QuickSwapList = <T extends QuickSwapItem>({ title, emptyMessage, entries, onItemClick, footerButton }: QuickSwapListProps<T>) => (
 	<>
-		<h3 className="text-(length:--h6-font-size) text-center px-2 pt-2 pb-2 mb-0" data-testid="tooltip-quick-swap__title">
+		<h3 className="mb-0 px-2 pt-2 pb-2 text-center text-(length:--h6-font-size)" data-testid="tooltip-quick-swap__title">
 			{title}
 		</h3>
 		{entries.length ? (
-			<ul className="max-h-51.5 overflow-y-auto pl-0 list-none mb-0 gap-0.5">
+			<ul className="mb-0 max-h-51.5 list-none gap-0.5 overflow-y-auto pl-0">
 				{entries.map(entry => (
 					<QuickSwapRow key={keyOf(entry.item)} entry={entry} onItemClick={onItemClick} />
 				))}
 			</ul>
 		) : (
-			<p className="px-2 mb-0 text-link-danger" data-testid="tooltip-quick-swap__empty">
+			<p className="mb-0 px-2 text-link-danger" data-testid="tooltip-quick-swap__empty">
 				{emptyMessage}
 			</p>
 		)}
-		<div className="flex justify-center px-2 pt-2 pb-2 mb-0" data-testid="tooltip-quick-swap__footer">
+		<div className="mb-0 flex justify-center px-2 pt-2 pb-2" data-testid="tooltip-quick-swap__footer">
 			<Button size="sm" onClick={footerButton.onClick}>
 				{footerButton.label}
 			</Button>

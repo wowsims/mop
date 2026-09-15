@@ -83,7 +83,7 @@ export const ValuePicker = memo(({ player, config, testId }: ValuePickerProps) =
 	return (
 		<PickerShell
 			config={shellConfig}
-			className="ui-apl-value-picker-root flex-row m-0 gap-2"
+			className="ui-apl-value-picker-root m-0 flex-row gap-2"
 			testId={testId ?? 'apl-value-picker-root'}
 			hidden={hidden}
 			disabled={disabled}>

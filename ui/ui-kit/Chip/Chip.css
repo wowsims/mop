@@ -1,25 +1,25 @@
 @layer components {
-.ui-chip {
-	@apply rounded-full flex p-0 border border-primary text-white text-ui font-normal whitespace-nowrap text-center leading-none select-none cursor-pointer transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out;
+	.ui-chip {
+		@apply flex cursor-pointer rounded-full border border-primary p-0 text-center text-ui leading-none font-normal whitespace-nowrap text-white transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out select-none;
 
-	&:hover:not([data-active]) {
-		@apply bg-primary-dampened;
-	}
+		&:hover:not([data-active]) {
+			@apply bg-primary-dampened;
+		}
 
-	&[data-active] {
-		@apply bg-primary;
+		&[data-active] {
+			@apply bg-primary;
 
-		& .ui-chip-delete {
-			@apply text-primary-foreground;
+			& .ui-chip-delete {
+				@apply text-primary-foreground;
+			}
+		}
+
+		&[data-disabled] {
+			@apply hidden;
 		}
 	}
 
-	&[data-disabled] {
-		@apply hidden;
+	.ui-chip-delete {
+		@apply mr-2 py-2 pr-0 pl-0 text-white;
 	}
-}
-
-.ui-chip-delete {
-	@apply py-2 pr-0 pl-0 mr-2 text-white;
-}
 }

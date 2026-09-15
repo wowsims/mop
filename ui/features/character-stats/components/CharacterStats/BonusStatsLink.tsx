@@ -22,7 +22,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 
 	return (
 		<>
-			<Button variant="unstyled" data-testid="add-bonus-stats" className="text-white ml-2" aria-label={action} {...tooltipAnchorProps(`${id}-popover`)}>
+			<Button variant="unstyled" data-testid="add-bonus-stats" className="ml-2 text-white" aria-label={action} {...tooltipAnchorProps(`${id}-popover`)}>
 				<Icon name="plus-minus" {...tooltipAnchorProps(`${id}-icon`)} />
 			</Button>
 			<Tooltip id={`${id}-icon`} content={label} hidden={popoverOpen} />
@@ -30,7 +30,7 @@ export const BonusStatsLink = ({ rootStat }: BonusStatsLinkProps) => {
 				ref={popover}
 				id={`${id}-popover`}
 				testId="bonus-stats-popover"
-				className="[&_.ui-number-picker-root]:flex-col [&_.ui-number-picker-input]:w-32 [&_.ui-number-picker-input]:m-0 [&_.ui-number-picker-input]:flex-1"
+				className="[&_.ui-number-picker-input]:m-0 [&_.ui-number-picker-input]:w-32 [&_.ui-number-picker-input]:flex-1 [&_.ui-number-picker-root]:flex-col"
 				align="start"
 				place="right"
 				openOnClick

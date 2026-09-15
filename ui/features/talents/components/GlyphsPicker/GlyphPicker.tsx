@@ -23,9 +23,9 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 	const wowheadProps = useWowheadDataset(resolveTooltip);
 
 	return (
-		<PickerShell config={config} className="mb-0 flex-row flex-1" testId="glyph-picker-root" hidden={hidden} disabled={disabled}>
+		<PickerShell config={config} className="mb-0 flex-1 flex-row" testId="glyph-picker-root" hidden={hidden} disabled={disabled}>
 			<a
-				className="flex gap-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+				className="flex gap-3 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-link"
 				data-testid="glyph-link"
 				role="button"
 				href={selected ? glyphUrl(selected) : undefined}
@@ -36,12 +36,12 @@ export const GlyphPicker = ({ field, options, onOpen }: GlyphPickerProps) => {
 				}}
 				{...wowheadProps}>
 				<img
-					className="relative inline-block cursor-pointer bg-no-repeat bg-cover bg-center size-12 border border-border"
+					className="relative inline-block size-12 cursor-pointer border border-border bg-cover bg-center bg-no-repeat"
 					data-testid="item-picker-icon"
 					src={shown.iconUrl}
 				/>
-				<div className="flex flex-1 flex-col items-start p-0 justify-center" data-testid="item-picker-labels-container">
-					<span className="text-white text-(length:--h6-font-size)" data-testid="item-picker-name-container">
+				<div className="flex flex-1 flex-col items-start justify-center p-0" data-testid="item-picker-labels-container">
+					<span className="text-(length:--h6-font-size) text-white" data-testid="item-picker-name-container">
 						{shown.name}
 					</span>
 				</div>

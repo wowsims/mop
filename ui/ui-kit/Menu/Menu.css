@@ -1,41 +1,41 @@
 @layer components {
-.ui-menu-item {
-	@apply block w-full py-1 px-2 border-0 bg-transparent text-white font-normal text-left whitespace-nowrap cursor-pointer transition-colors duration-200 ease-in-out;
+	.ui-menu-item {
+		@apply block w-full cursor-pointer border-0 bg-transparent px-2 py-1 text-left font-normal whitespace-nowrap text-white transition-colors duration-200 ease-in-out;
 
-	&[data-highlighted] {
-		@apply bg-surface-hover;
+		&[data-highlighted] {
+			@apply bg-surface-hover;
+		}
+
+		&[data-checked] {
+			@apply bg-surface-raised;
+		}
+
+		&[data-disabled] {
+			@apply pointer-events-auto cursor-not-allowed opacity-50;
+		}
 	}
 
-	&[data-checked] {
-		@apply bg-surface-raised;
+	.ui-menu-item-row {
+		@apply flex items-center;
 	}
 
-	&[data-disabled] {
-		@apply pointer-events-auto opacity-50 cursor-not-allowed;
+	.ui-menu-positioner {
+		@apply z-dropdown;
 	}
-}
 
-.ui-menu-item-row {
-	@apply flex items-center;
-}
+	.ui-menu-positioner-plain {
+		@apply z-menu;
+	}
 
-.ui-menu-positioner {
-	@apply z-dropdown;
-}
+	.ui-menu {
+		@apply min-w-40 border border-surface-border bg-surface-raised py-0 text-base text-white;
+	}
 
-.ui-menu-positioner-plain {
-	@apply z-menu;
-}
+	.ui-menu-plain {
+		@apply border-0 bg-background;
+	}
 
-.ui-menu {
-	@apply min-w-40 py-0 border border-surface-border bg-surface-raised text-white text-base;
-}
-
-.ui-menu-plain {
-	@apply border-0 bg-background;
-}
-
-.ui-menu-anchor-width {
-	@apply w-(--anchor-width);
-}
+	.ui-menu-anchor-width {
+		@apply w-(--anchor-width);
+	}
 }

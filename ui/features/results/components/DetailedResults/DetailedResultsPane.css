@@ -1,7 +1,6 @@
 @layer components {
 	.ui-dr-filling-pane {
-		@apply group-not-data-no-results/dr:not-data-hidden:flex group-not-data-no-results/dr:not-data-hidden:flex-col
-		group-not-data-no-results/dr:not-data-hidden:min-h-(--dr-filling-pane-min-height);
+		@apply group-not-data-no-results/dr:not-data-hidden:flex group-not-data-no-results/dr:not-data-hidden:min-h-(--dr-filling-pane-min-height) group-not-data-no-results/dr:not-data-hidden:flex-col;
 	}
 
 	.group\/dr:not([data-no-results]) .ui-dr-filling-pane:not([data-hidden]) > .ui-dr-row,

@@ -73,7 +73,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 	return (
 		<a
 			ref={rootRef}
-			className="ui-talent-picker-root flex items-center gap-2 p-2 border-2 border-transparent data-[selected=true]:border-(--talent-border-color)"
+			className="ui-talent-picker-root flex items-center gap-2 border-2 border-transparent p-2 data-[selected=true]:border-(--talent-border-color)"
 			data-testid="talent-picker-root"
 			href={href || undefined}
 			rel={externalRel(href, undefined)}
@@ -83,7 +83,7 @@ export const TalentPicker = <TalentsProto,>({ config, talentsString, onChange }:
 			onContextMenu={event => event.preventDefault()}
 			onMouseDown={event => (isRightClick(event.nativeEvent) ? handlers.current.clear() : handlers.current.select())}>
 			<div
-				className="relative inline-block size-10 rounded-sm border border-(--talent-border-color) bg-no-repeat bg-cover bg-center cursor-pointer"
+				className="relative inline-block size-10 cursor-pointer rounded-sm border border-(--talent-border-color) bg-cover bg-center bg-no-repeat"
 				data-testid="talent-picker-icon"
 				style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
 			/>

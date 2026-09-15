@@ -104,7 +104,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 			/>
 			{config.states > 2 && (
 				<div
-					className={clsx('absolute top-0.5 left-0.5 size-9.5 pointer-events-none', currentValue > 0 ? 'filter-none' : 'grayscale')}
+					className={clsx('pointer-events-none absolute top-0.5 left-0.5 size-9.5', currentValue > 0 ? 'filter-none' : 'grayscale')}
 					data-testid="icon-input-level-container"
 					{...stateEvents}>
 					{fillImproved1 && config.improvedId && (
@@ -119,7 +119,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 						<ImprovedAnchor actionId={config.improvedId2} testId="icon-input-improved2" active={currentValue > 2} hidden={!(currentValue > 2)} />
 					)}
 					<span
-						className="absolute inset-x-0 bottom-0 text-center bg-scrim text-success text-2xs font-bold whitespace-nowrap"
+						className="absolute inset-x-0 bottom-0 bg-scrim text-center text-2xs font-bold whitespace-nowrap text-success"
 						data-testid="icon-picker-label"
 						data-active={currentValue > 0 ? '' : undefined}>
 						{showCounterText ? String(currentValue) : null}

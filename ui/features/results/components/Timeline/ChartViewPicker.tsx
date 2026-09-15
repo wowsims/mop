@@ -32,7 +32,7 @@ export const ChartViewPicker = ({ value, onChange, className }: ChartViewPickerP
 			<Fragment key={view}>
 				<input
 					type="radio"
-					className={clsx(PEER_INPUT_CLASSES[view], 'absolute [clip:rect(0,0,0,0)] pointer-events-none')}
+					className={clsx(PEER_INPUT_CLASSES[view], 'pointer-events-none absolute [clip:rect(0,0,0,0)]')}
 					name="timeline-chart-view"
 					id={`timeline-chart-view-${view}`}
 					value={view}

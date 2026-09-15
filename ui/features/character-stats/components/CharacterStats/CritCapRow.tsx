@@ -23,7 +23,7 @@ export const CritCapRow = ({ info, text }: CritCapRowProps) => {
 						{`${text} `}
 					</Button>
 				</div>
-				<span className="px-2 border-x border-transparent" />
+				<span className="border-x border-transparent px-2" />
 				<Tooltip
 					id={id}
 					content={

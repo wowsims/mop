@@ -60,7 +60,7 @@ export const BulkTabBody = () => {
 									</p>
 								)}
 							</div>
-							<div className="flex gap-3 grid-flow-col" data-testid="bulk-gear-actions">
+							<div className="flex grid-flow-col gap-3" data-testid="bulk-gear-actions">
 								<Button variant="secondary" onClick={() => setImportOpen(true)}>
 									<Icon name="download" style="base" className="mr-1" /> {i18n.t('bulk_tab.actions.import_bags')}
 								</Button>

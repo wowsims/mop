@@ -34,7 +34,7 @@ export const ResourceMetricsSection = ({ resourceType, title, columns, resultDat
 
 	return (
 		<div data-testid="resource-metrics-table-container" className="mb-5">
-			<span data-testid="resource-metrics-table-title" className="text-white font-bold text-lg">
+			<span data-testid="resource-metrics-table-title" className="text-lg font-bold text-white">
 				{title}
 			</span>
 			<MetricsTable rootTestId="resource-metrics-table-root" columns={columns} rows={rows} sortColumnId="gain" hasResult={!!resultData} />

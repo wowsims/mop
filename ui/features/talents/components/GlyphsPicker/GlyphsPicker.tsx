@@ -45,7 +45,7 @@ export const GlyphsPicker = () => {
 	const isMajor = (majorGlyphFields as ReadonlyArray<GlyphField>).includes(field);
 
 	return (
-		<div className="grid gap-section grid-cols-1 pt-2 md:max-fhd:w-full md:max-fhd:gap-0 md:max-fhd:grid-cols-2 md:max-fhd:pt-0">
+		<div className="grid grid-cols-1 gap-section pt-2 md:max-fhd:w-full md:max-fhd:grid-cols-2 md:max-fhd:gap-0 md:max-fhd:pt-0">
 			<ContentBlock
 				className="gap-0"
 				testId="major-glyphs"

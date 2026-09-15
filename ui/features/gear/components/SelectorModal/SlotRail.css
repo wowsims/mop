@@ -3,7 +3,7 @@
 		@apply relative size-10 border border-(--modal-border-color);
 
 		&[data-active] {
-			@apply border-2 border-r-0 size-12;
+			@apply size-12 border-2 border-r-0;
 		}
 
 		&:nth-child(6),

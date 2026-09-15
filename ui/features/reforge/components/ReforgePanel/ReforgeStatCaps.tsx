@@ -33,13 +33,13 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 				<tr>
 					<th colSpan={4} className="pb-4">
 						<div className="flex">
-							<h6 className="mb-0 mr-1">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
+							<h6 className="mr-1 mb-0">{i18n.t('sidebar.buttons.suggest_reforges.edit_stat_caps')}</h6>
 							<Button variant="unstyled" className="inline" {...tooltipAnchorProps(capsTooltipId)}>
 								<Icon name="circle-question" style="regular" />
 							</Button>
 							<Button
 								variant="unstyled"
-								className="inline ml-auto"
+								className="ml-auto inline"
 								{...tooltipAnchorProps(resetTooltipId)}
 								onClick={() => settings.setStatCaps(model.defaults.statCaps || new Stats())}>
 								<Icon name="arrow-rotate-left" />
@@ -51,10 +51,10 @@ export const ReforgeStatCaps = ({ model, player, displayStats, statTooltips, use
 				</tr>
 				<tr>
 					<th className="pr-2 pb-1">{i18n.t('sidebar.buttons.suggest_reforges.stat')}</th>
-					<th colSpan={3} className="text-right pl-0.5 pr-0.5 pb-1">
+					<th colSpan={3} className="pr-0.5 pb-1 pl-0.5 text-right">
 						%
 					</th>
-					<th colSpan={1} className="text-left pl-0.5 pb-1">
+					<th colSpan={1} className="pb-1 pl-0.5 text-left">
 						Max?
 					</th>
 				</tr>

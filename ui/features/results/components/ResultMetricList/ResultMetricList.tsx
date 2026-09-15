@@ -41,7 +41,7 @@ export const ResultMetricList = ({ metrics, layout, referenceDiffs }: ResultMetr
 					<tbody data-testid="metrics-table-body">
 						<tr className="ui-metrics-row">
 							{metrics.map(column => (
-								<td key={column.metric} className={clsx('text-center align-top ui-metrics-cell font-bold', column.extraClass)}>
+								<td key={column.metric} className={clsx('ui-metrics-cell text-center align-top font-bold', column.extraClass)}>
 									<div data-testid="topline-result-avg" className="text-2xl">
 										{formatAverage(column, layout)}
 									</div>

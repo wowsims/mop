@@ -7,13 +7,13 @@ import { LandingHeader } from './LandingHeader';
 
 export const LandingPage = () => (
 	<>
-		<div className="fixed w-full h-full bg-landing bg-no-repeat bg-cover bg-center -z-1 opacity-30" />
-		<div id="homepage" className="h-full flex flex-col">
+		<div className="fixed -z-1 h-full w-full bg-landing bg-cover bg-center bg-no-repeat opacity-30" />
+		<div id="homepage" className="flex h-full flex-col">
 			<LandingHeader />
 			<main>
-				<div className="w-full max-w-full px-3 lg:max-w-landing-lg lg:mx-auto xl:max-w-modal-xl xxl:max-w-landing-xxl h-full flex flex-col pt-page pb-page max-md:mb-4">
+				<div className="flex h-full w-full max-w-full flex-col px-3 pt-page pb-page max-md:mb-4 lg:mx-auto lg:max-w-landing-lg xl:max-w-modal-xl xxl:max-w-landing-xxl">
 					<div className="mb-page flex flex-col max-md:mb-4">
-						<p id="description" className="text-fluid-xl w-3/4 m-0 max-lg:w-full">
+						<p id="description" className="m-0 w-3/4 text-fluid-xl max-lg:w-full">
 							{i18n.t('landing.home.welcomeDescription')}
 						</p>
 					</div>

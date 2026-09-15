@@ -29,7 +29,7 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 				onSelect();
 			}}>
 			<a
-				className="ui-icon-picker-swatch transition-none -m-px"
+				className="ui-icon-picker-swatch -m-px transition-none"
 				data-testid="icon-picker-button"
 				{...wowheadAnchorProps()}
 				href={href || undefined}

@@ -20,8 +20,8 @@ export interface RotationRowLabelProps {
 export const RotationRowLabel = ({ text, icon, onHide, className, header, measuring }: RotationRowLabelProps) => (
 	<div
 		className={clsx(
-			measuring ? 'flex box-border shrink-0 grow-0 basis-auto w-max items-center gap-1 pr-2' : 'ui-timeline-label-col sticky left-0 z-3',
-			'overflow-hidden bg-background whitespace-nowrap font-bold',
+			measuring ? 'box-border flex w-max shrink-0 grow-0 basis-auto items-center gap-1 pr-2' : 'ui-timeline-label-col sticky left-0 z-3',
+			'overflow-hidden bg-background font-bold whitespace-nowrap',
 			header ? 'text-sm uppercase' : 'text-[13px]',
 			className,
 		)}>
@@ -36,7 +36,7 @@ export const RotationRowLabel = ({ text, icon, onHide, className, header, measur
 			/>
 		)}
 		{icon}
-		<span data-testid="rotation-label-text" className="max-lg:hidden overflow-hidden text-ellipsis">
+		<span data-testid="rotation-label-text" className="overflow-hidden text-ellipsis max-lg:hidden">
 			{text}
 		</span>
 	</div>

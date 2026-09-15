@@ -38,7 +38,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 		<div className="relative items-center" data-testid="icon-picker-root">
 			<ItemCellAnchor
 				className={clsx(
-					'ui-icon-picker-swatch size-16 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1',
+					'ui-icon-picker-swatch size-16 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-link',
 					item ? 'filter-none' : 'grayscale',
 				)}
 				data-testid="icon-picker-button"
@@ -58,7 +58,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 						socketColor={socketColor}
 						gem={item.gems[gemIdx] ?? null}
 						hidden={gemIdx === item.numPossibleSockets - 1 && item.couldHaveExtraSocket() && !isBlacksmithing}
-						className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-link focus-visible:outline-offset-1"
+						className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-link"
 					/>
 				))}
 			</div>

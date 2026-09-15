@@ -43,7 +43,7 @@ export const ReforgeSoftCapsTooltip = ({ player, softCaps, additionalInformation
 								<th className="text-right">
 									<em>%</em>
 								</th>
-								<th colSpan={2} className="whitespace-nowrap text-right">
+								<th colSpan={2} className="text-right whitespace-nowrap">
 									<em>{i18n.t('sidebar.buttons.suggest_reforges.post_cap_ep')}</em>
 								</th>
 							</tr>
