@@ -57,7 +57,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 									<EnumPicker
 										modObject={player}
 										config={{
-											id: `reforge-optimizer-${statName}-presets`,
+											id: `reforge-optimizer-${statName}-breakpoint-limit`,
 											extraClassNames: ['mb-0'],
 											label: '',
 											values: [
