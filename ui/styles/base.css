@@ -17,7 +17,7 @@
 	--font-size-root: 14px;
 	font-size: var(--font-size-root);
 
-	@media (prefers-reduced-motion: no-preference) {
+	@variant motion-safe {
 		scroll-behavior: smooth;
 	}
 }
@@ -64,7 +64,7 @@ h6 {
 h1 {
 	font-size: calc(1.375rem + 1.5vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 2.5rem;
 	}
 }
@@ -72,7 +72,7 @@ h1 {
 h2 {
 	font-size: calc(1.325rem + 0.9vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 2rem;
 	}
 }
@@ -80,7 +80,7 @@ h2 {
 h3 {
 	font-size: calc(1.3rem + 0.6vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 1.75rem;
 	}
 }
@@ -88,7 +88,7 @@ h3 {
 h4 {
 	font-size: calc(1.275rem + 0.3vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 1.5rem;
 	}
 }

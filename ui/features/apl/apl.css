@@ -50,7 +50,7 @@
 					align-items: flex-start;
 					justify-content: flex-end;
 
-					@media (width < 768px) {
+					@variant max-md {
 						flex-direction: column-reverse;
 					}
 				}
@@ -60,7 +60,7 @@
 				}
 
 				& .ui-list-picker-item {
-					@media (width < 768px) {
+					@variant max-md {
 						flex-grow: 1;
 					}
 				}
@@ -90,7 +90,7 @@
 			gap: var(--apl-spacer);
 
 			& div:not(.ui-list-picker-item-header) .ui-field:not([data-layout='inline']):not(.ui-icon-field) {
-				@media (width < 768px) {
+				@variant max-md {
 					flex-grow: 1;
 					align-items: stretch !important;
 				}

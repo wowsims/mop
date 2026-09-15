@@ -72,7 +72,7 @@
 @utility text-fluid-xl {
 	font-size: calc(1.275rem + 0.3vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 1.5rem;
 	}
 }
@@ -80,7 +80,7 @@
 @utility text-fluid-5xl {
 	font-size: calc(1.625rem + 4.5vw);
 
-	@media (width >= 1200px) {
+	@variant xl {
 		font-size: 5rem;
 	}
 }

@@ -12,22 +12,18 @@
 	--breakpoint-uhd: 3841px;
 }
 
-@media (width >= 992px) {
-	:root {
+:root {
+	@variant lg {
 		--spacing-page: 2rem;
 		--spacing-section: 1.5rem;
 	}
-}
 
-@media (width >= 1400px) {
-	:root {
+	@variant xxl {
 		--spacing-page: 3rem;
 		--spacing-section: 2rem;
 	}
-}
 
-@media (width < 992px) {
-	:root {
+	@variant max-lg {
 		--spacing-sim-header: 65px;
 	}
 }

@@ -10,8 +10,8 @@
 			@apply max-w-full overflow-hidden text-ellipsis whitespace-nowrap;
 		}
 
-		@media (width < 768px) {
-			&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
+		&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
+			@variant max-md {
 				@apply gap-2;
 			}
 		}
