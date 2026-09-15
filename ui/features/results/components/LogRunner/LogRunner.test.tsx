@@ -243,9 +243,10 @@ describe('LogRunner', () => {
 
 		// happy-dom leaves every box at 0x0 and every `offsetParent` null, which is also what a closed
 		// tab looks like — so an open one has to be described on the element itself.
-		const placeList = (container: HTMLElement, offsetParent: HTMLElement | null) => {
+		const placeList = (container: HTMLElement, offsetParent: HTMLElement | null, listTop = -500) => {
 			const list = container.querySelector<HTMLElement>('[data-testid="log-runner-list"]')!;
 			Object.defineProperty(list, 'offsetParent', { value: offsetParent, configurable: true });
+			list.getBoundingClientRect = () => DOMRect.fromRect({ x: 0, y: listTop, width: 0, height: 0 });
 			list.scrollIntoView = listScrollIntoView;
 			container.querySelector<HTMLElement>('[data-testid="dr-root"]')!.scrollIntoView = rootScrollIntoView;
 		};
@@ -285,6 +286,18 @@ describe('LogRunner', () => {
 			backToTop(container);
 
 			expect(rootScrollIntoView).toHaveBeenCalledWith({ block: 'start' });
+			expect(listScrollIntoView).not.toHaveBeenCalled();
+		});
+
+		it('never scrolls down to the list when its first row is already below the sticky chrome', () => {
+			result = resultWith(LOGS);
+			const { container } = mount();
+			placeList(container, document.body, 200);
+			rootScrollIntoView.mockClear();
+
+			backToTop(container);
+
+			expect(rootScrollIntoView).not.toHaveBeenCalled();
 			expect(listScrollIntoView).not.toHaveBeenCalled();
 		});
 	});
