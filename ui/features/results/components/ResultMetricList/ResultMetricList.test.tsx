@@ -23,20 +23,16 @@ describe('ResultMetricList row layout', () => {
 	it('renders one header cell and one body cell per metric, in order', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="row" />);
 
-		expect([...container.querySelectorAll('th')].map(cell => cell.className)).toEqual([
-			'ui-metrics-header-cell font-bold',
-			'ui-metrics-header-cell font-bold',
-			'ui-metrics-header-cell font-bold',
-			'ui-metrics-header-cell font-bold danger',
-		]);
-		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric-category'))).toEqual(['damage', 'threat', 'healing', null]);
+		const headers = [...container.querySelectorAll('th')];
+		expect(headers).toHaveLength(4);
+		expect(headers.every(cell => cell.classList.contains('ui-metrics-header-cell') && cell.classList.contains('font-bold'))).toBe(true);
+		expect(headers.map(cell => cell.classList.contains('danger'))).toEqual([false, false, false, true]);
+		expect(headers.map(cell => cell.getAttribute('data-metric-category'))).toEqual(['damage', 'threat', 'healing', null]);
 		expect(cells(container, 'th')).toEqual(['DPS', 'TMI', 'TTO', 'OOM']);
-		expect([...container.querySelectorAll('td')].map(cell => cell.className)).toEqual([
-			'ui-metrics-cell text-center align-top font-bold',
-			'ui-metrics-cell text-center align-top font-bold',
-			'ui-metrics-cell text-center align-top font-bold',
-			'ui-metrics-cell text-center align-top font-bold danger',
-		]);
+		const bodyCells = [...container.querySelectorAll('td')];
+		expect(bodyCells).toHaveLength(4);
+		expect(bodyCells.every(cell => ['ui-metrics-cell', 'text-center', 'align-top', 'font-bold'].every(token => cell.classList.contains(token)))).toBe(true);
+		expect(bodyCells.map(cell => cell.classList.contains('danger'))).toEqual([false, false, false, true]);
 	});
 
 	it('formats each unit the way the metric asks for', () => {
@@ -71,12 +67,10 @@ describe('ResultMetricList list layout', () => {
 	it('renders one metric div per metric, with the label inside the value', () => {
 		const { container } = render(<ResultMetricList metrics={METRICS} layout="list" />);
 
-		expect([...container.querySelectorAll('[data-testid="results-metric"]')].map(row => row.className)).toEqual([
-			'text-left font-bold',
-			'text-left font-bold',
-			'text-left font-bold',
-			'text-left font-bold danger',
-		]);
+		const rows = [...container.querySelectorAll('[data-testid="results-metric"]')];
+		expect(rows).toHaveLength(4);
+		expect(rows.every(row => row.classList.contains('text-left') && row.classList.contains('font-bold'))).toBe(true);
+		expect(rows.map(row => row.classList.contains('danger'))).toEqual([false, false, false, true]);
 		expect(cells(container, '[data-testid="topline-result-avg"]')).toEqual(['1234.50 DPS', '2.50 TMI', '30.00 TTO', '5.00 OOM']);
 	});
 

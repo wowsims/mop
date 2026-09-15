@@ -19,7 +19,9 @@ const aura = (name: string, uptimePercent: number, isPet = false) =>
 		averageProcs: 1,
 		ppm: 1,
 		unit: { isPet, petActionId: null },
-		actionId: { toStringIgnoringTag: () => name },
+		data: { uptimeSecondsAvg: uptimePercent },
+		resultData: {},
+		actionId: { name, toStringIgnoringTag: () => name, withoutTag: () => ({ name, toStringIgnoringTag: () => name }) },
 	}) as unknown as AuraMetrics;
 
 const playerResult = (auras: Array<AuraMetrics>, petAuras: Array<AuraMetrics> = []) =>
@@ -58,13 +60,13 @@ describe('AuraMetricsTable', () => {
 		expect(rowNames(container)).toEqual(['Bloodbath', 'Recklessness']);
 	});
 
-	// The pet filter applies to the pet groups too, so they always empty. Reproduced on purpose.
-	it('drops every pet aura from the buffs table, the player list and the pet groups alike', () => {
-		result = playerResult([aura('Recklessness', 12), aura('Pet Only', 90, true)], [aura('Frenzy', 80, true)]);
+	it("drops a pet's aura from the player list but keeps it under that pet's own group", () => {
+		result = playerResult([aura('Recklessness', 12), aura('Pet Only', 90, true)], [aura('Frenzy', 80, true), aura('Bite', 70, true)]);
 		const { container } = render(<AuraMetricsTable useDebuffs={false} />);
 
-		expect(rowNames(container)).toEqual(['Recklessness']);
-		expect(container.querySelectorAll('[data-parent]')).toHaveLength(0);
+		expect(rowNames(container)).toEqual(['Recklessness', 'Frenzy', 'Frenzy', 'Bite']);
+		expect(container.querySelectorAll('[data-parent]')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-child]')).toHaveLength(2);
 	});
 
 	it('reads the debuff list rather than the player when the flag is set', () => {

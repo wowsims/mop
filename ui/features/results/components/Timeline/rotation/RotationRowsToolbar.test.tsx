@@ -126,6 +126,9 @@ describe('RotationRowsToolbar', () => {
 		fireEvent.keyDown(chips(document.body)[1], { key: 'ArrowLeft' });
 		fireEvent.keyDown(chips(document.body)[0], { key: 'ArrowLeft' });
 		expect(document.activeElement).toBe(chips(document.body)[3]);
+
+		fireEvent.keyDown(chips(document.body)[3], { key: 'ArrowRight' });
+		expect(document.activeElement).toBe(chips(document.body)[0]);
 	});
 
 	it('pins itself against the viewport’s last pixel, reading the newest of a batched delivery', () => {

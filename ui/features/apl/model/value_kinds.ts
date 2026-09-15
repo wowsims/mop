@@ -1001,7 +1001,6 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		label: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.label'),
 		submenu: ['aura_sets'],
 		shortDescription: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.tooltip'),
-		fullDescription: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.full_description'),
 		newValue: () =>
 			APLValueAnyTrinketStatProcsAvailable.create({
 				statType1: -1,
@@ -1082,7 +1081,6 @@ export const valueKinds: { [f in ValidAPLValueKind]: ValueKindModel<APLValueImpl
 		label: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.label'),
 		submenu: ['aura_sets'],
 		shortDescription: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.tooltip'),
-		fullDescription: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.full_description'),
 		newValue: () =>
 			APLValueAnyStatBuffCooldownsMinDuration.create({
 				statType1: -1,

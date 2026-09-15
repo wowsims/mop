@@ -1,6 +1,6 @@
 import type { CombatLog } from '@sim/proto/combat_log';
 import { render } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { LogRow } from './LogRow';
 
@@ -13,6 +13,8 @@ const sizedRow = (scrollWidth: number, clientWidth: number) => {
 	vi.spyOn(proto, 'scrollWidth', 'get').mockReturnValue(scrollWidth);
 	vi.spyOn(proto, 'clientWidth', 'get').mockReturnValue(clientWidth);
 };
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('LogRow', () => {
 	it('lays the timestamp and the event out as the two columns the grid declares', () => {
@@ -31,7 +33,6 @@ describe('LogRow', () => {
 
 		expect(onWidth).toHaveBeenCalledTimes(1);
 		expect(onWidth).toHaveBeenCalledWith(900);
-		vi.restoreAllMocks();
 	});
 
 	it('says nothing while the line already fits', () => {
@@ -40,6 +41,5 @@ describe('LogRow', () => {
 		render(<LogRow log={log} onWidth={onWidth} />);
 
 		expect(onWidth).not.toHaveBeenCalled();
-		vi.restoreAllMocks();
 	});
 });

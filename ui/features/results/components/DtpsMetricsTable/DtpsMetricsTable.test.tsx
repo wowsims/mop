@@ -93,17 +93,11 @@ describe('DtpsMetricsTable', () => {
 		const { container } = render(<DtpsMetricsTable />);
 
 		expect(container.querySelector('[data-testid="dtps-metrics-root"]')).toBeTruthy();
-		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell w-100 text-center',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-			'ui-metrics-header-cell',
-		]);
+		const headers = [...container.querySelectorAll('thead th')];
+		expect(headers).toHaveLength(9);
+		expect(headers.every(th => th.classList.contains('ui-metrics-header-cell'))).toBe(true);
+		expect(headers.filter(th => th.classList.contains('w-100'))).toEqual([headers[1]]);
+		expect(headers.filter(th => th.classList.contains('text-center'))).toEqual([headers[1]]);
 		expect(rows(container)).toHaveLength(0);
 	});
 
@@ -111,17 +105,19 @@ describe('DtpsMetricsTable', () => {
 		result = targetResult([metric('Melee')]);
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className])).toEqual([['Melee', 'ui-metrics-row']]);
+		expect(rows(container).map(row => [row.cells[0].textContent, row.hasAttribute('data-parent'), row.hasAttribute('data-child'), row.className])).toEqual([
+			['Melee', false, false, 'ui-metrics-row'],
+		]);
 	});
 
 	it('merges the same ability across targets into one parent with a child per target', () => {
 		result = targetResult([metric('Melee', { dps: 30 })], [metric('Melee', { dps: 10 })]);
 		const { container } = render(<DtpsMetricsTable />);
 
-		expect(rows(container).map(row => [row.cells[0].textContent, row.className, row.hasAttribute('data-parent'), row.hasAttribute('data-child')])).toEqual([
-			['Melee', 'ui-metrics-row cursor-pointer', true, false],
-			['Melee', 'ui-metrics-row', false, true],
-			['Melee', 'ui-metrics-row', false, true],
+		expect(rows(container).map(row => [row.cells[0].textContent, row.hasAttribute('data-parent'), row.hasAttribute('data-child'), row.className])).toEqual([
+			['Melee', true, false, 'ui-metrics-row cursor-pointer'],
+			['Melee', false, true, 'ui-metrics-row'],
+			['Melee', false, true, 'ui-metrics-row'],
 		]);
 	});
 

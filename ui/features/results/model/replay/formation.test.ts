@@ -12,6 +12,10 @@ describe('enemyFormation', () => {
 		expect(indices(7)).toEqual([6, 4, 2, 0, 1, 3, 5]);
 	});
 
+	it('still emits the centre pair for a count of zero, which no caller reaches', () => {
+		expect(indices(0)).toEqual([0, 1]);
+	});
+
 	it('shares the centre between 0 and 1 when the count is even', () => {
 		expect(indices(2)).toEqual([0, 1]);
 		expect(indices(4)).toEqual([2, 0, 1, 3]);

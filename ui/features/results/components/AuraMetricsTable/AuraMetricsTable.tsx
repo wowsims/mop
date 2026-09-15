@@ -20,7 +20,7 @@ const auraGroups = (resultData: SimResultData, useDebuffs: boolean): Array<Array
 	if (!players.length) return [];
 
 	const player = players[0];
-	return AuraMetrics.groupById(withoutPetAuras(player.auras)).concat(player.pets.map(pet => withoutPetAuras(pet.auras)));
+	return AuraMetrics.groupById(withoutPetAuras(player.auras)).concat(player.pets.map(pet => pet.auras));
 };
 
 const grouping: MetricGrouping<AuraMetrics> = {

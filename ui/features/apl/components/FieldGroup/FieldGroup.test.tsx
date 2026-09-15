@@ -92,11 +92,11 @@ describe('FieldGroup', () => {
 		expect(stringInput().value).toBe('z');
 	});
 
-	it('marks the three leaf pickers input-inline', () => {
-		setup({ text: 'a' });
-		mount([stringFieldConfig('text')]);
+	it('lays the three leaf pickers out inline', () => {
+		setup({ text: 'a', flag: true, count: 3 });
+		mount([stringFieldConfig('text'), booleanFieldConfig('flag', 'Flag'), numberFieldConfig('count', false)]);
 
-		expect(root().firstElementChild!.getAttribute('data-layout')).toBe('inline');
+		expect([...root().children].map(child => child.getAttribute('data-layout'))).toEqual(['inline', 'inline', 'inline']);
 	});
 
 	it('marks a list field ui-apl-picker-builder-multi', () => {
