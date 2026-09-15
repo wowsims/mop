@@ -92,10 +92,38 @@ Everything listed in the draft section "User decisions honoured": root 14px ever
   - stale copied probe baselines;
   - a type-check failure from an extensionless `.mjs` import.
 
+### Post-handoff fixes (2026-09-15, after `1495b3470d`, from the user's review)
+Code tip after these: `3f0d30ce41`.
+- **Every Base UI menu has one padded layer per row** (`082c3a1bdc`, plus `c49aeaf8fe` for the IconEnumPicker: its `li` is bare and one `Menu.LinkItem` carries the swatch styling once, replacing two overlapping copies). The shape is `ul[role=menu] > li[role=none]` (structural, no padding) `> button|a` (the single `ui-menu-item` layer, `px-2 py-1`, the full-row highlight).
+  - The APL picker's submenu-trigger rows were double-padded; they're 24.5px now (from 31.5px), uniform with the rest.
+  - Import/Export entries are real buttons instead of `div`s, and the sim-title and landing menus have the same shape.
+  - ARIA is menu > none > menuitem, and keyboard navigation is verified.
+- **The APL list toolbar's stuck/default styling was flipped** (`c88df0b67f`). `useStickyBottom`'s root is a zero-height line at the scroll parent's bottom, so `isIntersecting` means "at rest". It's now `setStuck(!isIntersecting)`, which matches the pre-Tailwind React build, both pinned and at rest.
+- **The Log/Rotation filter drawers span their own toolbar, not the viewport** (`91cb9db297`). This uses CSS anchor positioning (`anchor-name` on each bar; the sheet takes `left`/`right`/`bottom` from it), with an `@supports` fallback to the old full-width sheet.
+- **Long Timeline cast tooltips flow into columns** instead of scrolling inside a tooltip you can't reach (`6de89e093f`). The hit list is a column-flowing grid (`grid-flow-col`, `grid-rows-[repeat(auto-fit,1lh)]`, single-line rows) that widens up to the tooltip's max width.
+  - **Columns start only once the list would pass the tooltip's 80vh cap** (`b957a8aaa5`): the list's max-height is that cap minus the header lines and padding. The Combustion (DoT) tooltip (~48 ticks) is now 2 columns × 34 rows, fully on screen; it was 4 columns with the 4th clipped. Short tooltips are unchanged.
+  - Limits: at 1600px, a 3rd column overflows the width from ~69 hits. At 700px, 2 columns already exceed the tooltip's `92vw` width cap (pre-existing).
+- **The APL action ⋯ popover has its gap back** (`af017d5b36`). `1550e1e77f` moved the popover to the standard portal root, so the header-nested rule stopped matching; it's now a top-level rule.
+- **Thin custom scrollbars on both axes** (`01c341f3d8`). The sim-ui and sidebar scrollers sized only the `::-webkit-scrollbar` width, so a horizontal bar was the thick default with the theme thumb; `size-[0.2rem]` covers both.
+- **An attempt to key `ListPicker` items by identity was landed and reverted** (`de639ce188` → `3f0d30ce41`). It halved a production drop of the windwalker Tigereye Brew action (~180ms → ~95ms). But item configs read their value by position (`source()[index]`), and memoised pickers keep their old closures. So a moved item rendered another action's data (an empty group reference in place of Tigereye Brew), and an edit there would have written to the wrong action. A redo needs position-independent item configs first, verified by checking the moved item's own content and editing it.
+- **The test harness:** `sim-title.mjs`'s hover-row selector predated the `li > button` rows (fixed in `0634b17596`; verified on builds with the old and the new menus). `header-toolbar.mjs` hard-codes 3401 as the vanilla base, so a tip-vs-tip run on 3401/3402 reports a false "UNEXPECTED" while the measured values agree.
+- **Verification:**
+  - The consolidated verify was GREEN on `c49aeaf8fe` vs `baseline-dist-26` (a fresh build of the handoff):
+    - All 15 check scripts match the baseline. `a11y.mjs` has one gear-tab tooltip-anchor failure on both sides (pre-existing).
+    - tw-probe 21/66: all the warrior/protection AplListToolbar stuck state (intended).
+    - The state probe 16/48: the same toolbar signature, plus the known Casts-width noise.
+  - The re-verify was GREEN on `3f0d30ce41` vs a build of `c49aeaf8fe`:
+    - type-check, lint (0/0), vitest 225 files / 1756 tests, locales, snapshots 34/34, and the canonical/class-hooks gates;
+    - tw-probe 0 diffs (66/66 sections, 174,075 elements);
+    - sim-title, apl-tab (windwalker and default), timeline and log-runner all match.
+
 ### Open items for the user review (not fixed on this branch)
-1. **The APL drag "hangs until refresh" on Windows Chrome:** not reproduced by automation. The sticky-bar fix removed the worst stalls (~2.3s → ~100ms). **The user should retest on Windows.**
+1. **The APL drag "hangs until refresh" on Windows Chrome is still not reproduced.** The user sees it unthrottled on the dev server with the big windwalker Tigereye Brew action; master does not freeze.
+   - Synthetic drag events in the user's Chrome on the dev server (main-thread time measured with MessageChannel): dragstart and dragover ~1ms; **each drop blocks the main thread ~1.1–1.2s** while dev-mode React re-renders the whole 69-action APL.
+   - A production build on Linux takes ~180ms per drop and never hung, headless or headed, ×1 or ×4 CPU.
+   - A native Windows drag has not been profiled: the user's Performance profile of the hang is the next step.
 2. Dropping a dragged APL row onto another row's inner control silently fails (pre-existing; identical on the React build).
-3. `ListPicker` keys items by index (`key={index}`).
+3. `ListPicker` keys items by index (`key={index}`). Identity keys need position-independent item configs first (see the reverted `de639ce188`).
 4. Healers can't Simulate (pre-existing).
 5. The Mastery / Strikes of Opportunity sidebar rows overlap (pre-existing).
 6. The improved icons in the icon picker are unreachable (no callers).
