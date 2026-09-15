@@ -53,6 +53,9 @@ const SEL = {
 	fabPreview: q('log-fab-preview'),
 	fabClear: q('log-fab-clear'),
 	empty: q('log-runner-empty'),
+	// Base UI's `Menu.Portal` renders the list to `document.body`, not as a descendant of the trigger
+	// it opens from — so, unlike every other key here, this one is never scoped to a container.
+	dropdownList: q('dropdown-picker-list'),
 };
 
 /**
@@ -200,7 +203,7 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click(`${SEL.addField} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
 	await page.waitForTimeout(500);
 	out.addFieldMenu = await page.evaluate(sel => {
-		const menu = document.querySelector(`${sel.addField} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list)`);
+		const menu = document.querySelector(sel.dropdownList);
 		if (!menu) return 'NO MENU';
 		const trigger = document.querySelector(`${sel.addField} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`).getBoundingClientRect();
 		const box = menu.getBoundingClientRect();
@@ -218,9 +221,7 @@ const collect = async (browser, port, spec, seeded) => {
 	// Outcome, because its values come from a fixed list rather than from the run. Vanilla puts a
 	// `<button>` inside each `<li>` and hangs the handler on it; React's `<li>` *is* the menu item.
 	await page.evaluate(sel => {
-		const item = [...document.querySelectorAll(`${sel.addField} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)].find(
-			li => li.textContent.trim() === 'Outcome',
-		);
+		const item = [...document.querySelectorAll(`${sel.dropdownList} li`)].find(li => li.textContent.trim() === 'Outcome');
 		(item.querySelector('button') ?? item).click();
 	}, SEL);
 	await page.waitForTimeout(500);
@@ -235,16 +236,11 @@ const collect = async (browser, port, spec, seeded) => {
 	await page.click(`${SEL.groupItems} :is([data-testid="dropdown-picker-button"], .dropdown-picker-button)`);
 	await page.waitForTimeout(500);
 	out.valueMenu = await page.evaluate(
-		sel =>
-			[...document.querySelectorAll(`${sel.groupItems} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)]
-				.map(item => item.textContent.trim())
-				.join(',') || 'NO MENU',
+		sel => [...document.querySelectorAll(`${sel.dropdownList} li`)].map(item => item.textContent.trim()).join(',') || 'NO MENU',
 		SEL,
 	);
 	await page.evaluate(sel => {
-		const item = [...document.querySelectorAll(`${sel.groupItems} :is([data-testid="dropdown-picker-list"], .dropdown-picker-list) li`)].find(
-			li => li.textContent.trim() === 'Crit',
-		);
+		const item = [...document.querySelectorAll(`${sel.dropdownList} li`)].find(li => li.textContent.trim() === 'Crit');
 		(item.querySelector('button') ?? item).click();
 	}, SEL);
 	await page.waitForTimeout(700);
