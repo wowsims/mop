@@ -93,7 +93,7 @@ Everything listed in the draft section "User decisions honoured": root 14px ever
   - a type-check failure from an extensionless `.mjs` import.
 
 ### Post-handoff fixes (2026-09-15, after `1495b3470d`, from the user's review)
-Code tip after these: `977241fa1a`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
+Code tip after these: `6b79345168`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
 - **Every Base UI menu has one padded layer per row** (`082c3a1bdc`, plus `c49aeaf8fe` for the IconEnumPicker: its `li` is bare and one `Menu.LinkItem` carries the swatch styling once, replacing two overlapping copies). The shape is `ul[role=menu] > li[role=none]` (structural, no padding) `> button|a` (the single `ui-menu-item` layer, `px-2 py-1`, the full-row highlight).
   - The APL picker's submenu-trigger rows were double-padded; they're 24.5px now (from 31.5px), uniform with the rest.
   - Import/Export entries are real buttons instead of `div`s, and the sim-title and landing menus have the same shape.
@@ -148,6 +148,13 @@ Code tip after these: `977241fa1a`. The first round ended at `3f0d30ce41`; the s
   - The kit `TabPanel` keeps panels mounted and cross-fades them, so during a switch the outgoing and incoming panels were both in flow. In the APL sub-tabs they became separate items of `ui-columns-left`'s grid and sat side by side; in Bulk they stacked.
   - A new kit `TabPanels` (`grid grid-cols-1 items-start`) holds the panels, and every `TabPanel` sits in its single cell. RotationTabBody, BulkTabBody and DetailedResults use it, and DetailedResults' hand-rolled stacking is gone.
   - Live on the dev server: every visible APL panel stays at the same x/y and the full column width through the fade.
+- **`theme.css` is split into `ui/styles/theme/` by token type** (user-approved; `e3b7e81f8a`, `ee0efb8710`, `3da280d821`, `d35fc2eafc`).
+  - The files are `colors`, `spacing`, `breakpoints`, `typography`, `effects`, `z-index`, `vars` (with section-separator comments, at the user's request) and `specs`, and `index.css` imports them in that order.
+  - Derived tokens sit in `@theme static inline` blocks inside their type's file.
+  - All 14 hand-written `@media` blocks in `ui/**/*.css` became `@variant` (`lg`/`xxl`/`max-lg`/`max-md`/`xl`/`motion-safe`), so they follow the `--breakpoint-*` tokens.
+  - `gray-500` is gone: the dead plain var, and the token; the muted stat cells use `text-white-70`. The even-row hover uses `color-mix()` instead of a split-HSL copy.
+  - Verified: the built CSS is identical apart from those intended removals; tw-probe 0 diffs.
+- **Repeated colour literals now reference tokens** (`6b79345168`, the user's request). `#000`/`#fff`/`#15171e`/`#6c757d`/`#373d57`/… inside the theme became `var(--color-black)`/`var(--color-white)`/`var(--color-background)`/`var(--color-gray-600)`/`var(--color-surface-border)`/…, with no new tokens needed. With every `var()` and `color-mix()` resolved, the values are identical; tw-probe 0 diffs. Two coincidental shared hexes between unrelated WoW tokens stay separate (physical school/artifact quality; success/uncommon quality).
 - **The APL drag freeze was stale tab state** (see open item 1).
 - **Combined verify #2, GREEN** (`70a895ff93` vs baseline-30):
   - Gates: vitest 225 files / 1771 tests, snapshots 34/34, lint 0/0.
@@ -177,6 +184,10 @@ Code tip after these: `977241fa1a`. The first round ended at `3f0d30ce41`; the s
 14. A possible deeper fix from the simplify pass: make the clone-on-write writers keep identity (`Encounter.modifyTarget` edits in place or carries an id; `Player.setAplRotation` carries ids the way `row_source.ts` carries uuids). Then `ListPicker` could drop its positional `reconcileIds`, and its one known edge case with it. That means touching sim-model code and the writers' change notifications.
 15. APL drag and drop library: `@dnd-kit/react` was evaluated (0.5.0, pre-1.0; the classic packages are frozen since Dec 2024). The decision is to keep the native drag and revisit at 1.0. The stable-id prerequisite has landed.
 16. **A sim crash when copying an encounter target that has boss AI:** on warrior/protection with the default encounter, copying the Sha of Fear target in the advanced encounter modal crashed the WASM sim with "Aura Naked and Afraid already registered!". The copy registers the same AI aura twice. It's a Go sim issue, not the UI, and probably also on master. It was unreachable in the UI until the popover fix above.
+17. **The Death Knight class colour has drifted:** `ui/sim/player/classes/death_knight.ts` uses `#c41e3a` (196,30,58), while the CSS token `--color-class-death-knight` is `rgb(194,46,70)`. The other class colours match their tokens. Pick one source. Longer term, the TS class colours could come from shared constants that also feed the CSS tokens.
+18. **Small theme leftovers:**
+    - `--focus-ring` in `ui/styles/theme/vars.css` is defined but never used; delete it.
+    - The Bulk item-search dropdown reuses the `shadow-toast` token because its value is identical, but the name is toast-specific; consider a neutral token such as `shadow-popup`.
 
 
 ## History: where the chain was (Phases 1–4; superseded by "Final state" above)
