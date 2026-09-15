@@ -20,22 +20,20 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 	if (hidden) return null;
 
 	return (
-		<Menu.Item
-			render={<li />}
-			className={clsx('ui-icon-picker-swatch', 'p-0 filter-[opacity(0.7)] hover:filter-none')}
-			data-testid="icon-dropdown-option"
-			onClick={event => {
-				event.preventDefault();
-				onSelect();
-			}}>
-			<a
-				className="ui-icon-picker-swatch -m-px transition-none"
+		<li role="none" data-testid="icon-dropdown-option">
+			<Menu.LinkItem
+				closeOnClick
+				className={clsx('ui-icon-picker-swatch', 'filter-[opacity(0.7)] transition-none hover:filter-none')}
 				data-testid="icon-picker-button"
+				onClick={event => {
+					event.preventDefault();
+					onSelect();
+				}}
 				{...wowheadAnchorProps()}
 				href={href || undefined}
 				style={iconStyleOf(valueConfig, iconUrl)}
 				{...tooltipAnchorProps(valueConfig.tooltip ? tooltipId : undefined, valueConfig.tooltip)}
 			/>
-		</Menu.Item>
+		</li>
 	);
 };

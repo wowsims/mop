@@ -104,12 +104,13 @@ describe('IconEnumPicker', () => {
 		expect(portal.children[0].getAttribute('data-testid')).toBe('icon-enum-picker-positioner');
 		expect(menu()!.parentElement).toBe(portal.children[0]);
 
-		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual([
-			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
-			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
-			'li.ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none',
+		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual(['li.', 'li.', 'li.']);
+		expect(items().map(item => item.getAttribute('role'))).toEqual(['none', 'none', 'none']);
+		expect(items().map(item => within(item).getByTestId('icon-picker-button').className)).toEqual([
+			'ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none',
+			'ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none',
+			'ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none',
 		]);
-		expect(items().every(item => within(item).queryByTestId('icon-picker-button'))).toBe(true);
 	});
 
 	it('mounts the options when the menu opens and renders none of them until then', () => {
@@ -202,7 +203,7 @@ describe('IconEnumPicker', () => {
 		expect(button().getAttribute('aria-expanded')).toBe('true');
 
 		act(() => {
-			fireEvent.click(items()[2]);
+			fireEvent.click(optionAnchor(2));
 		});
 		expect(options.armor).toBe(2);
 		expect(button().getAttribute('aria-expanded')).toBe('false');
