@@ -4,7 +4,7 @@
 	}
 
 	.ui-fab-root {
-		@apply sticky bottom-0 flex items-center mt-3 border-0 border-border box-border z-4 -mb-page;
+		@apply sticky bottom-0 flex h-fab-bar items-center mt-3 border-0 border-border box-border z-4 -mb-page;
 		@apply data-stuck:border data-stuck:p-2 data-stuck:bg-background;
 	}
 
@@ -17,9 +17,8 @@
 	}
 
 	.ui-fab-sheet {
-		@apply fixed inset-x-0 z-dropdown border-t border-border bg-background px-page py-2 outline-none;
-		@apply opacity-100 [transition:transform_150ms_ease,opacity_150ms_ease] motion-reduce:transition-none;
-		bottom: var(--fab-bar-h, 0px);
+		@apply fixed inset-x-0 bottom-fab-bar z-dropdown border-t border-border bg-background px-page py-2 outline-none;
+		@apply opacity-100 transition-[transform,opacity] duration-150 ease-in-out motion-reduce:transition-none;
 
 		&[data-starting-style],
 		&[data-ending-style] {

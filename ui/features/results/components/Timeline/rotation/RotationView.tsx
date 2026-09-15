@@ -397,7 +397,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 		<div
 			ref={rootRef}
 			data-testid="rotation-pane"
-			className="relative flex min-h-0 flex-col text-white [--rotation-fab-h:calc(2.75rem+2*(--spacing(2))+2*1px)] [--rotation-item-h:24px]"
+			className="relative flex min-h-0 flex-col text-white [--rotation-item-h:24px]"
 			style={cssVars({
 				'--pps': `${DEFAULT_PPS}px`,
 				'--label-w': labelWidthCss,

@@ -73,21 +73,15 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 		return () => observer.disconnect();
 	}, []);
 
-	useEffect(() => {
-		const element = rootRef.current;
-		if (!element) return;
-		const observer = new ResizeObserver(([entry]) => document.documentElement.style.setProperty('--fab-bar-h', `${entry.contentRect.height}px`));
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, []);
-
 	return (
 		<div
 			ref={rootRef}
 			data-testid="rotation-floating-action-bar-root"
-			className="group ui-fab-root min-h-(--rotation-fab-h) [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
+			className="group ui-fab-root [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}>
-			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 items-center group-data-stuck:bg-background">
+			<Toolbar
+				testId="rotation-fab-actions"
+				className="relative min-w-0 flex-1 flex-nowrap items-center overflow-x-auto group-data-stuck:bg-background">
 				<Drawer
 					open={expanded}
 					onOpenChange={setExpanded}
