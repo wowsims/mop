@@ -11,7 +11,7 @@ import type { ListDrag } from './drag_state';
 import { ListItemAction } from './ListItemAction';
 import { ListPickerItem } from './ListPickerItem';
 import type { ListItemPickerConfig, ListPickerProps } from './types';
-import { actionEnabled, canDeleteAt, moveItem } from './utils';
+import { actionEnabled, canDeleteAt, keyFor, moveItem } from './utils';
 
 /**
  * A reorderable list of pickers: add, remove, copy, and drag to reorder or to move between two
@@ -143,7 +143,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				<div className="ui-list-picker-items flex flex-col" data-testid="list-picker-items">
 					{value.map((_item, index) => (
 						<ListPickerItem
-							key={index}
+							key={keyFor(_item as object)}
 							index={index}
 							listId={listId}
 							itemLabel={config.itemLabel}
