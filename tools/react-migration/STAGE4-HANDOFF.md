@@ -93,7 +93,7 @@ Everything listed in the draft section "User decisions honoured": root 14px ever
   - a type-check failure from an extensionless `.mjs` import.
 
 ### Post-handoff fixes (2026-09-15, after `1495b3470d`, from the user's review)
-Code tip after these: `3f0d30ce41`.
+Code tip after these: `08d19d7381`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
 - **Every Base UI menu has one padded layer per row** (`082c3a1bdc`, plus `c49aeaf8fe` for the IconEnumPicker: its `li` is bare and one `Menu.LinkItem` carries the swatch styling once, replacing two overlapping copies). The shape is `ul[role=menu] > li[role=none]` (structural, no padding) `> button|a` (the single `ui-menu-item` layer, `px-2 py-1`, the full-row highlight).
   - The APL picker's submenu-trigger rows were double-padded; they're 24.5px now (from 31.5px), uniform with the rest.
   - Import/Export entries are real buttons instead of `div`s, and the sim-title and landing menus have the same shape.
@@ -116,6 +116,35 @@ Code tip after these: `3f0d30ce41`.
     - type-check, lint (0/0), vitest 225 files / 1756 tests, locales, snapshots 34/34, and the canonical/class-hooks gates;
     - tw-probe 0 diffs (66/66 sections, 174,075 elements);
     - sim-title, apl-tab (windwalker and default), timeline and log-runner all match.
+- **The Log search chips' × has its padding back** (`395e95f1fc`). The value chips passed a bare button as the Chip's `deleteSlot`, so it never got `ui-chip-delete` (`py-2 mr-2`). The kit Chip now has `confirmDelete={false}` (a plain, kit-styled delete with no confirm popover), and `deleteSlot` is gone.
+- **The Log/Rotation filter drawer slides out from behind its toolbar** (`75c2aee7b0`).
+  - Tailwind v4's `translate-y-full` sets `translate`, not `transform`, so the old `transition-[transform,opacity]` never slid: the sheet snapped open, and on close it jumped by its own height before fading.
+  - The portalled popup is now a clip frame anchored to the bar's top edge. The panel inside slides with `transition-transform`, so it emerges from behind the bar without depending on the bar's stacking context.
+  - It includes the user's side borders on the panel and the Log header's `border-b-0`.
+- **Opening the Log tab no longer jumps the page down** (`39f9db984c`). `scrollListToTop` ran on every first activation after a sim and scrolled the DR root to the top unconditionally. The pre-Tailwind React build only ever scrolled upwards; that guard is restored.
+- **Tooltips have their intended background, corners and font size again** (`032e30fbc9`, `37395c3371`).
+  - `Tooltip.tsx` imported react-tooltip's CSS unlayered, so its `#222` background, 3px radius and 90% font size beat every utility on every tooltip. With our `disableStyleInjection="core"`, react-tooltip injects nothing at runtime, so the CSS is now `@import`ed into `layer(base)` and the kit and call-site utilities win.
+  - The metrics-table tooltips (`text-xs`) match master's computed values again.
+  - The dropdown tooltips' `max-w-[35vw]` is now the `max-w-tooltip-dropdown` token.
+- **`ListPicker` keys items by identity, with position-independent item configs** (`a4dc50c006`, `2d50860d51`, `70a895ff93`). Closes open item 3.
+  - Each item gets a WeakMap id.
+  - Configs resolve the current index by id at call time, so a memoised picker holding an old config still reaches its own item after a move.
+  - An item replaced by a clone at the same position inherits the old id (`reconcileIds`), so clone-on-write writers (`Encounter.modifyTarget`, `Player.setAplRotation`) don't remount rows.
+  - Process: a high-effort code review (4 findings, all fixed), then a simplify pass.
+  - A production drop of the big windwalker Tigereye Brew action: ~180ms → ~90ms.
+  - Known limitation: a delete plus an unrelated insert at the same index would inherit the id (no caller does that).
+  - The earlier attempt (`de639ce188`, reverted in `3f0d30ce41`) changed only the key and rendered moved rows with another action's data.
+- **The Timeline rotation ruler is back** (`08d19d7381`).
+  - Since `2c1f472fa2` the ruler row is portalled into the DR sticky slot, outside `rotation-pane`, which is where `--pps`/`--duration`/`--label-w` are set. The track's width and every tick's position resolved against undefined variables, so the track was 0px wide, all ticks sat at x=0, and the corner ignored the label width.
+  - The portalled row now gets the same variables, and `ZoomController` writes `--pps` to both hosts. The ruler and the rows share one coordinate system again: a cast at 10.04s sits at exactly 150px × 10.04 after a zoom-in.
+  - Every earlier verify missed it: no script asserted tick positions, and both sides of every comparison had the bug.
+- **The APL drag freeze was stale tab state** (see open item 1).
+- **Combined verify #2, GREEN** (`70a895ff93` vs baseline-30):
+  - Gates: vitest 225 files / 1771 tests, snapshots 34/34, lint 0/0.
+  - tw-probe: 0 diffs across 174,075 elements.
+  - Scripts: `apl-tab` ×2, timeline, results-filter, sim-title, settings, gear and selector all pass.
+  - Live checks: tooltip font sizes, chip padding, Log activation without a jump, drawer frame alignment, windwalker drag keeping the input's DOM node and focus, and encounter Tab focus all pass.
+  - The ruler fix was verified on its own afterwards: vitest 225/1772, plus live tip-vs-baseline geometry.
 
 ### Open items for the user review (not fixed on this branch)
 1. **Resolved, not an app bug: the APL drag "hangs until refresh" on Windows Chrome.** It was state stuck in one browser tab.
@@ -124,7 +153,7 @@ Code tip after these: `3f0d30ce41`.
    - It worked in Incognito, and it worked again after closing and reopening the tab. A reload doesn't clear per-tab state; a debugger client's drag interception (CDP `Input.setInterceptDrags`) left on is the likely cause.
    - Still worth knowing: in the dev build, each drop of the big windwalker Tigereye Brew action blocks the main thread ~1.1–1.2s while dev-mode React re-renders the whole 69-action APL (a production build: ~180ms).
 2. Dropping a dragged APL row onto another row's inner control silently fails (pre-existing; identical on the React build).
-3. `ListPicker` keys items by index (`key={index}`). Identity keys need position-independent item configs first (see the reverted `de639ce188`).
+3. **Resolved:** `ListPicker` keyed items by index. It now keys by identity (`a4dc50c006`…`70a895ff93`; see the post-handoff fixes).
 4. Healers can't Simulate (pre-existing).
 5. The Mastery / Strikes of Opportunity sidebar rows overlap (pre-existing).
 6. The improved icons in the icon picker are unreachable (no callers).
@@ -134,6 +163,9 @@ Code tip after these: `3f0d30ce41`.
 10. The commit titled "test(ui): update fixtures for canonical Tailwind spelling" changed only unit-test className assertions, not fixtures; consider rewording.
 11. For the React branch: Melee Crit Cap should show its skeleton state.
 12. `ui/sim/hooks/useShowExperimental.ts` is orphaned (only a `vi.mock` in `SimShell.test.tsx` references it), and the "Show experimental" setting gates nothing. This predates the Phase 6 close. Delete both, or wire it to an experiment.
+13. `tools/react-migration/log-runner.mjs`'s "after a deep scroll" check uses a relative `scrollBy`. Against a build from before `39f9db984c`, which still jumps the page on Log activation, it lands 66px apart and reports a false mismatch. Use an absolute `scrollTop` there.
+14. A possible deeper fix from the simplify pass: make the clone-on-write writers keep identity (`Encounter.modifyTarget` edits in place or carries an id; `Player.setAplRotation` carries ids the way `row_source.ts` carries uuids). Then `ListPicker` could drop its positional `reconcileIds`, and its one known edge case with it. That means touching sim-model code and the writers' change notifications.
+15. APL drag and drop library: `@dnd-kit/react` was evaluated (0.5.0, pre-1.0; the classic packages are frozen since Dec 2024). The decision is to keep the native drag and revisit at 1.0. The stable-id prerequisite has landed.
 
 
 ## History: where the chain was (Phases 1–4; superseded by "Final state" above)
