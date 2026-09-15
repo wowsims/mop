@@ -34,15 +34,3 @@ export const moveItem = <T>(list: Array<T>, from: number, to: number): Array<T> 
 	next.splice(to, 0, item);
 	return next;
 };
-
-const itemKeys = new WeakMap<object, number>();
-let nextItemKey = 0;
-
-export const keyFor = (item: object): number => {
-	let key = itemKeys.get(item);
-	if (key === undefined) {
-		key = nextItemKey++;
-		itemKeys.set(item, key);
-	}
-	return key;
-};
