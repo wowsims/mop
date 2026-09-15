@@ -4,12 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 // oxlint-disable-next-line import/extensions
-import { findNonCanonical, findVarInClass } from '../tools/tailwind/canonical-classes.mjs';
+import { findNonCanonical, findVarInClass } from './testing/tailwind/canonical-classes.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function formatOffenders(rows: Awaited<ReturnType<typeof findNonCanonical>>): string {
-	return rows.map(r => `${r.file}:${r.line} ${r.from} → ${r.to} -- run \`node tools/tailwind/canonical-classes.mjs --write\``).join('\n');
+	return rows.map(r => `${r.file}:${r.line} ${r.from} → ${r.to} -- run \`node ui/testing/tailwind/canonical-classes.mjs --write\``).join('\n');
 }
 
 function formatVarOffenders(rows: Array<{ file: string; line: number; token: string }>): string {

@@ -8,7 +8,7 @@ import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 
 import { deriveClassAttrs, findNonCanonical } from './canonical-classes.mjs';
 
-const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..');
+const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..', '..');
 const CSS_PATH = path.join(REPO_ROOT, 'ui/styles/style.css');
 
 const CASES = [

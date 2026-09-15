@@ -4,7 +4,7 @@
 // arbitrary variants. Reuses canonical-classes.mjs's token collector.
 //
 // Usage:
-//   node tools/tailwind/class-hooks.mjs [--css <path>] [--json] [root]
+//   node ui/testing/tailwind/class-hooks.mjs [--css <path>] [--json] [root]
 
 import fs from 'node:fs';
 import path from 'node:path';

@@ -4,7 +4,7 @@
 // uses for "The class X can be written as Y").
 //
 // Usage:
-//   node tools/tailwind/canonical-classes.mjs [--css <path>] [--write] [--json] [root]
+//   node ui/testing/tailwind/canonical-classes.mjs [--css <path>] [--write] [--json] [root]
 
 import { __unstable__loadDesignSystem } from '@tailwindcss/node';
 import fs from 'node:fs';

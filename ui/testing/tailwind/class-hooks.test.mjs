@@ -6,7 +6,7 @@ import path from 'node:path';
 import { findClassHooks, findTestidStyling } from './class-hooks.mjs';
 import { findDefaultCss } from './canonical-classes.mjs';
 
-const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..');
+const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..', '..');
 const CSS_PATH = findDefaultCss(REPO_ROOT);
 
 async function testFindClassHooks() {

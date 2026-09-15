@@ -4,8 +4,8 @@ Source of truth: `ui/styles/style.css` (entry, `@utility`, `@source`), `ui/style
 (tokens, split by type — `colors.css`, `spacing.css`, `breakpoints.css`, `typography.css`,
 `effects.css`, `z-index.css`, `vars.css`, `specs.css`, imported via `index.css`),
 `ui/styles/base.css` (element defaults, replaces Bootstrap's reboot), `ui/styles/vendor.css`
-(the handful of selectors with no JSX element to carry them), `tools/tailwind/canonical-classes.mjs`
-and `tools/tailwind/class-hooks.mjs`, `ui/no_class_hooks.test.ts`.
+(the handful of selectors with no JSX element to carry them), `ui/testing/tailwind/canonical-classes.mjs`
+and `ui/testing/tailwind/class-hooks.mjs`, `ui/no_class_hooks.test.ts`.
 
 There is no SCSS and no Bootstrap left anywhere in `ui/` (`find ui -name '*.scss'` is empty; neither
 HTML entry links anything but `style.css` and the FontAwesome CDN sheet). Every class in `ui/`
@@ -33,7 +33,7 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   (`ui/styles/base.css`'s `--font-size-root`), so a converted step follows the root everywhere — a
   size the JavaScript relies on (the timeline, the log runner's virtual list, the combat replay) is
   pinned to an exact px value with a named `@theme` token instead, so it never scales with the root.
-- **Canonical spelling only.** `node tools/tailwind/canonical-classes.mjs` runs Tailwind's own
+- **Canonical spelling only.** `node ui/testing/tailwind/canonical-classes.mjs` runs Tailwind's own
   `designSystem.canonicalizeCandidates()` — the same function IntelliSense's "the class X can be
   written as Y" lint uses — over every `className`/`clsx`/`*ClassName` string and every `@apply` in
   `ui/`, and fails if any token isn't already in its canonical form (`data-stuck:` not
@@ -183,8 +183,8 @@ frozen).
   `data-testid` on the element that actually carries the identity (often not the root — `Dialog`'s
   `testId` lands on the popup, with `sim-dialog-portal`/`-backdrop`/`-viewport` fixed on the
   surrounding wrapper elements).
-- **`tools/react-migration/*.mjs`** (the Playwright probes — tracked on this branch) use a shared
-  helper:
+- **`tools/react-migration/*.mjs`** (the Playwright probes — local, untracked tooling, git-excluded
+  and absent from a fresh clone) use a shared helper:
     ```js
     const q = name => `:is([data-testid="${name}"], .${name})`;
     ```
@@ -203,7 +203,7 @@ fix is almost always removing whatever broke the native layering, not adding log
 ## 7. The gates
 
 - **`ui/no_class_hooks.test.ts`** (vitest) runs three checks over `ui/**/*.{ts,tsx}` (excluding
-  `*.test.ts(x)`) via `tools/tailwind/class-hooks.mjs`:
+  `*.test.ts(x)`) via `ui/testing/tailwind/class-hooks.mjs`:
     1. **Class hooks** — every class-bearing string that isn't a real Tailwind utility (checked by
        compiling it against `ui/styles/style.css` with Tailwind's own design system, not a
        hand-maintained list), isn't `ui-*`, and isn't on the allowlist, fails.
@@ -225,10 +225,11 @@ fix is almost always removing whatever broke the native layering, not adding log
   a component's `className` as its own `data-theme` attribute and forwards no `data-testid`
   equivalent, so these can't become pure testids. Add an entry only for a genuinely external
   constraint like these, never as a shortcut past a real conversion.
-- **The canonical-class check** (`tools/tailwind/canonical-classes.mjs`, §1) runs as a standalone
+- **The canonical-class check** (`ui/testing/tailwind/canonical-classes.mjs`, §1) runs as a standalone
   script today; it becomes a tree-wide CI gate in a later pass — run it by hand before that lands.
 - **The rendering gate is `tools/react-migration/tw-probe.mjs`**, and its companion is
-  `tools/react-migration/state-probe.mjs` (both tracked on this branch). Neither reads a class —
+  `tools/react-migration/state-probe.mjs` (both local, untracked tooling, git-excluded and absent
+  from a fresh clone). Neither reads a class —
   both walk the DOM by child-index path from `document.body` plus tag, capturing ~54 computed style
   properties and the bounding box per node, and diff that against a baseline build, which validates
   a class-hook removal for free.
@@ -245,7 +246,7 @@ fix is almost always removing whatever broke the native layering, not adding log
       probe that opens sub-panes (or a behaviour script) caught it. **The lesson: a custom `@utility`
       or a `ui-*` composition class is real styling, not a hook** — the class-hook gate and the hook
       census tell the two apart by compiling every candidate against Tailwind's own design system
-      (`tools/tailwind/canonical-classes.mjs`), never a hand-written name list, and deleting one
+      (`ui/testing/tailwind/canonical-classes.mjs`), never a hand-written name list, and deleting one
       because it "looks like" an old semantic class is the mistake both probes exist to catch. Run
       both before calling a class-hook or utility change done.
     - `tw-probe.mjs` separately caught a different regression, historical but worth knowing: three
@@ -255,7 +256,7 @@ fix is almost always removing whatever broke the native layering, not adding log
       that fixed-`[Npx]` reaction) is the exact dynamic spacing step**: Tailwind v4's spacing scale
       here accepts any multiple of `0.25`, so a source px value converts to its exact step —
       `10px` → `p-2.5`, `5px` → `p-1.25`, `18px` → `w-4.5` — computed-identically, and
-      `tools/tailwind/canonical-classes.mjs` rewrites a lingering `p-[5px]` to `p-1.25` automatically.
+      `ui/testing/tailwind/canonical-classes.mjs` rewrites a lingering `p-[5px]` to `p-1.25` automatically.
       Keep an arbitrary `[Npx]` only where no named or dynamic step exists (an odd one-off border
       width, say), and add a token instead of an arbitrary value for anything repeated.
     - A class-removal commit and a DOM-structure commit must never land together — both probes are
