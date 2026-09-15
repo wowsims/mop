@@ -54,14 +54,28 @@ const SNAP = ({ props, root: rootSel }) => {
 		return `rgba(${r}, ${g}, ${b}, ${String(Math.round(a * 1000) / 1000)})`;
 	};
 	const root = document.querySelector(rootSel) || document.body;
+	// Same normalisation as tw-probe.mjs's SNAP: skip a `display: contents` element (never
+	// painted, so it isn't layout) and promote its children, and drop a portalled overlay subtree
+	// entirely — otherwise a structural-only move (a slot wrapper this unit removes) shifts every
+	// later sibling's index and reads as a wall of unrelated diffs.
+	const isContents = el => getComputedStyle(el).display === 'contents';
+	const isPortalRoot = el => el.hasAttribute('data-base-ui-portal') || el.classList.contains('react-tooltip');
+	const flatten = children => {
+		const out = [];
+		for (const c of children) {
+			if (c.nodeType !== 1 || isPortalRoot(c)) continue;
+			if (isContents(c)) out.push(...flatten(c.children));
+			else out.push(c);
+		}
+		return out;
+	};
 	const out = [];
 	const walk = (el, path) => {
 		const cs = getComputedStyle(el);
 		const r = el.getBoundingClientRect();
 		const vals = props.map(p => normalizeColor(cs.getPropertyValue(p))).join('|');
 		out.push(`${path} ${el.tagName.toLowerCase()} [${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}] ${vals}`);
-		let i = 0;
-		for (const c of el.children) walk(c, `${path}/${i++}`);
+		flatten(el.children).forEach((c, i) => walk(c, `${path}/${i}`));
 	};
 	walk(root, '');
 	return out;
