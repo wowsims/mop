@@ -18,15 +18,15 @@
 	--input-padding-x: 0.75rem;
 
 	/* Dropdown */
-	--dropdown-bg: color-mix(in srgb, #15171e, #fff 5%);
+	--dropdown-bg: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
 	--dropdown-border-width: 1px;
-	--dropdown-link-active-bg: color-mix(in srgb, #15171e, #fff 5%);
-	--dropdown-link-color: #fff;
-	--dropdown-link-hover-color: #fff;
-	--dropdown-link-hover-bg: color-mix(in srgb, #15171e, #000 30%);
+	--dropdown-link-active-bg: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
+	--dropdown-link-color: var(--color-white);
+	--dropdown-link-hover-color: var(--color-white);
+	--dropdown-link-hover-bg: color-mix(in srgb, var(--color-background), var(--color-black) 30%);
 	--dropdown-padding-y: 0;
 	--dropdown-min-width: 10rem;
-	--dropdown-border-color: #373d57;
+	--dropdown-border-color: var(--color-surface-border);
 	--dropdown-font-size: 1rem;
 	--dropdown-item-padding-y: 0.25rem;
 	--dropdown-item-padding-x: 1rem;
@@ -38,9 +38,9 @@
 	--modal-width-md: 500px;
 	--modal-width-lg: 800px;
 	--modal-width-xl: 1140px;
-	--modal-bg: #15171e;
+	--modal-bg: var(--color-background);
 	--modal-border-width: 1px;
-	--modal-border-color: #373d57;
+	--modal-border-color: var(--color-surface-border);
 	--modal-padding: 1.25rem;
 	--modal-transition: transform 0.3s ease-out;
 	--modal-fade-transform: translate(0, -50px);
@@ -48,19 +48,19 @@
 	--modal-header-padding-y: 1rem;
 	--modal-header-padding-x: 1rem;
 	--modal-header-border-width: 1px;
-	--modal-header-border-color: #6c757d;
+	--modal-header-border-color: var(--color-gray-600);
 	--modal-title-font-size: 1.25rem;
 	--modal-title-line-height: 1.5;
-	--modal-close-color: #a5b1d6;
+	--modal-close-color: var(--color-link);
 	--modal-footer-border-width: 1px;
 	--modal-footer-border-color: var(--color-border);
-	--modal-backdrop-bg: #000;
+	--modal-backdrop-bg: var(--color-black);
 	--modal-backdrop-opacity: 0.5;
 
 	/* Tooltip */
-	--tooltip-bg: color-mix(in srgb, #15171e, #fff 5%);
-	--tooltip-border: #373d57;
-	--tooltip-body-color: #fff;
+	--tooltip-bg: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
+	--tooltip-border: var(--color-surface-border);
+	--tooltip-body-color: var(--color-white);
 	--tooltip-max-width: 15vw;
 	--tooltip-max-width-lg: 25vw;
 	--tooltip-max-width-sm: 75vw;
@@ -68,7 +68,7 @@
 	--tooltip-body-padding-y: --spacing(2);
 
 	/* Focus & transition */
-	--focus-ring: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	--focus-ring: var(--shadow-focus-ring);
 	--transition-fade: opacity 0.15s linear;
 
 	/* Tab */
@@ -77,11 +77,11 @@
 	--tab-transition: var(--link-transition);
 	--tab-color: var(--color-link);
 	--tab-color-hover: var(--color-link-hover);
-	--tab-color-active: #fff;
+	--tab-color-active: var(--color-white);
 
 	/* Body & table */
-	--body-bg: #15171e;
-	--border-color: #6c757d;
-	--table-row-even-bg: #18191e;
-	--table-row-odd-bg: #222328;
+	--body-bg: var(--color-background);
+	--border-color: var(--color-gray-600);
+	--table-row-even-bg: var(--color-table-even);
+	--table-row-odd-bg: var(--color-table-odd);
 }

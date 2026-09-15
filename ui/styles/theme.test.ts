@@ -13,8 +13,8 @@ for (const m of css.matchAll(/--color-class-([a-z-]+):\s*rgb\((\d+),\s*(\d+),\s*
 }
 
 const foregrounds = new Map<string, string>();
-for (const m of css.matchAll(/--color-class-([a-z-]+)-foreground:\s*(#fff|#000)/g)) {
-	foregrounds.set(m[1], m[2]);
+for (const m of css.matchAll(/--color-class-([a-z-]+)-foreground:\s*(#fff|#000|var\(--color-white\)|var\(--color-black\))/g)) {
+	foregrounds.set(m[1], m[2] === '#fff' || m[2] === 'var(--color-white)' ? '#fff' : '#000');
 }
 
 const srgbToLinear = (c: number) => {
