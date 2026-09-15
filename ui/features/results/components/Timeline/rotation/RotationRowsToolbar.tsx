@@ -34,14 +34,10 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 	const rootRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
 	const [stuck, setStuck] = useState(false);
-	// The chips are only worth building once someone opens the drawer. A new result then rebuilds them
-	// where they stand rather than closing it: a swap between two references is exactly when someone is
-	// watching the same row list.
-	const [everExpanded, setEverExpanded] = useState(false);
 
 	const groups = useMemo(
 		() =>
-			!model || !everExpanded
+			!model
 				? []
 				: model.sections
 						.map(section => ({
@@ -52,7 +48,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 								.filter((row): row is ContentRow => row.kind !== 'header' && row.kind !== 'separator'),
 						}))
 						.filter(group => group.rows.length > 0),
-		[model, everExpanded],
+		[model],
 	);
 
 	const hiddenKeys = useMemo(() => [...hidden].filter(key => !!model?.byKey.has(key)), [hidden, model]);
@@ -77,10 +73,13 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 		return () => observer.disconnect();
 	}, []);
 
-	const open = (next: boolean) => {
-		setExpanded(next);
-		if (next) setEverExpanded(true);
-	};
+	useEffect(() => {
+		const element = rootRef.current;
+		if (!element) return;
+		const observer = new ResizeObserver(([entry]) => document.documentElement.style.setProperty('--fab-bar-h', `${entry.contentRect.height}px`));
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
 
 	return (
 		<div
@@ -91,8 +90,9 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 items-center group-data-stuck:bg-background">
 				<Drawer
 					open={expanded}
-					onOpenChange={open}
+					onOpenChange={setExpanded}
 					modal={false}
+					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
 					className="ui-fab-sheet"
 					testId="rotation-fab-panel-inner"
 					trigger={

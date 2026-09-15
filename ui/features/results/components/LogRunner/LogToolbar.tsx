@@ -26,6 +26,14 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 	const [stuck, setStuck] = useState(false);
 	const rootRef = useRef<HTMLDivElement>(null);
 
+	useEffect(() => {
+		const element = rootRef.current;
+		if (!element) return;
+		const observer = new ResizeObserver(([entry]) => document.documentElement.style.setProperty('--fab-bar-h', `${entry.contentRect.height}px`));
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
+
 	// Same observer as the rotation's bar, for the same reason: built inside the hidden Results tab,
 	// the ratio goes 0 -> pinned without passing through 1, so [1] alone never fires again.
 	//
@@ -62,6 +70,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 					open={expanded}
 					onOpenChange={setExpanded}
 					modal={false}
+					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
 					className="ui-fab-sheet"
 					testId="log-fab-panel-inner"
 					trigger={

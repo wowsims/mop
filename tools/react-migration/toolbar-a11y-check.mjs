@@ -1,7 +1,10 @@
 import { launch, openSpec, q } from './browser.mjs';
 
+const PORT = Number(process.env.PORT || 3404);
+const SPEC = process.argv[2] || 'warrior/arms';
+
 const browser = await launch();
-const { page } = await openSpec(browser, 3404, 'warrior/arms');
+const { page } = await openSpec(browser, PORT, SPEC);
 await page.waitForSelector('[data-testid="sim-ui"], .sim-ui', { timeout: 60000 });
 await page.waitForTimeout(1500);
 

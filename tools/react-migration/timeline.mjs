@@ -67,7 +67,7 @@ const READ_FAB = () => {
 	return [
 		`summary ${root.querySelector(q('rotation-fab-summary'))?.textContent ?? ''} | ${root.querySelector(q('rotation-fab-preview'))?.textContent ?? ''}`,
 		`showAll hidden=${root.querySelector(q('rotation-fab-show-all'))?.hidden}`,
-		...[...root.querySelectorAll(q('rotation-fab-group'))].map(
+		...[...document.querySelectorAll(q('rotation-fab-group'))].map(
 			group =>
 				`group ${group.querySelector(q('rotation-fab-group-title'))?.textContent} :: ${[...group.querySelectorAll(q('rotation-fab-chip'))]
 					.map(chip => `${chip.textContent}=${chip.getAttribute('aria-checked')}`)

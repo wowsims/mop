@@ -17,8 +17,9 @@
 	}
 
 	.ui-fab-sheet {
-		@apply fixed inset-x-0 bottom-0 z-dropdown border-t border-border bg-background px-page py-2 outline-none;
+		@apply fixed inset-x-0 z-dropdown border-t border-border bg-background px-page py-2 outline-none;
 		@apply opacity-100 [transition:transform_150ms_ease,opacity_150ms_ease] motion-reduce:transition-none;
+		bottom: var(--fab-bar-h, 0px);
 
 		&[data-starting-style],
 		&[data-ending-style] {

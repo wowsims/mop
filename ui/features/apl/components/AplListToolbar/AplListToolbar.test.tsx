@@ -16,8 +16,8 @@ class FakeIntersectionObserver {
 	observe = vi.fn();
 	disconnect = vi.fn();
 	unobserve = vi.fn();
-	fire() {
-		this.callback([] as Array<IntersectionObserverEntry>, this as unknown as IntersectionObserver);
+	fire(isIntersecting: boolean) {
+		this.callback([{ isIntersecting } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
 	}
 }
 
@@ -93,16 +93,19 @@ describe('AplListToolbar', () => {
 		expect(applyEmptyAplRotation).toHaveBeenCalledTimes(1);
 	});
 
-	it('toggles the stuck class on each IntersectionObserver delivery', () => {
+	it('sets the stuck class from the entry, not by toggling', () => {
 		const { container } = mount();
 		const root = container.querySelector('[data-testid="apl-floating-action-bar-root"]') as HTMLElement;
 		expect(root.hasAttribute('data-stuck')).toBe(false);
 
 		const observer = FakeIntersectionObserver.instances[0];
-		act(() => observer.fire());
+		act(() => observer.fire(true));
 		expect(root.hasAttribute('data-stuck')).toBe(true);
 
-		act(() => observer.fire());
+		act(() => observer.fire(true));
+		expect(root.hasAttribute('data-stuck')).toBe(true);
+
+		act(() => observer.fire(false));
 		expect(root.hasAttribute('data-stuck')).toBe(false);
 	});
 });

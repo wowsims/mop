@@ -6,6 +6,7 @@ export interface DrawerProps {
 	trigger: ReactElement;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
+	ignoreOutsidePress?: (event: Event) => boolean;
 	modal?: boolean;
 	className?: string;
 	/** Positions the portalled popup, since it no longer shares a containing block with its anchor. */
@@ -14,10 +15,19 @@ export interface DrawerProps {
 	testId?: string;
 }
 
-export const Drawer = ({ trigger, open, onOpenChange, modal = true, className, style, children, testId }: DrawerProps) => {
+export const Drawer = ({ trigger, open, onOpenChange, ignoreOutsidePress, modal = true, className, style, children, testId }: DrawerProps) => {
 	const portalContainer = usePortalContainer();
 	return (
-		<BaseDrawer.Root open={open} modal={modal} onOpenChange={nextOpen => onOpenChange?.(nextOpen)}>
+		<BaseDrawer.Root
+			open={open}
+			modal={modal}
+			onOpenChange={(nextOpen, eventDetails) => {
+				if (!nextOpen && eventDetails.reason === 'outside-press' && ignoreOutsidePress?.(eventDetails.event)) {
+					eventDetails.cancel();
+					return;
+				}
+				onOpenChange?.(nextOpen);
+			}}>
 			<BaseDrawer.Trigger render={trigger} />
 			<BaseDrawer.Portal container={portalContainer ?? undefined}>
 				<BaseDrawer.Viewport className="contents">

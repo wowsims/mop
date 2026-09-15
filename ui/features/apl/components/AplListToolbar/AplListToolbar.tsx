@@ -22,11 +22,6 @@ export interface AplListToolbarProps {
 
 /**
  * The sticky "new / reset" bar under an APL list.
- *
- * `stuck` is **toggled** on each observer delivery rather than set from `isIntersecting`: with the
- * `-100%` top margin the element crosses the boundary once per direction, so the toggle tracks it —
- * but it is state derived by parity of events rather than from the event, and it is worth replacing
- * the day the class is given a second reader.
  */
 export const AplListToolbar = ({ itemName, nameDialog, onCreate }: AplListToolbarProps) => {
 	const host = useSimHost();
