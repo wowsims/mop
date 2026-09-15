@@ -117,8 +117,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 		[listId, source, commit],
 	);
 
-	const itemConfig = (item: ItemType, itemIndex: number): ListItemPickerConfig<ModObject, ItemType> => {
-		const key = keyFor(item, itemIndex);
+	const itemConfig = (key: number): ListItemPickerConfig<ModObject, ItemType> => {
 		const indexOf = (list: Array<ItemType>) => list.findIndex((candidate, i) => keyFor(candidate, i) === key);
 		return {
 			storeSubscribe: config.storeSubscribe,
@@ -169,10 +168,11 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 			{value.length > 0 && (
 				<div className="ui-list-picker-items flex flex-col" data-testid="list-picker-items">
 					{value.map((item, index) => {
-						const cfg = itemConfig(item, index);
+						const key = keyFor(item, index);
+						const cfg = itemConfig(key);
 						return (
 							<ListPickerItem
-								key={keyFor(item, index)}
+								key={key}
 								index={index}
 								listId={listId}
 								itemLabel={config.itemLabel}

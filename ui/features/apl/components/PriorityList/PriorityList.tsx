@@ -56,7 +56,7 @@ export const PriorityList = () => {
 				renderItemHeader={(index, itemConfig) => (
 					<ListItemHeader
 						player={player}
-						getItem={subject => itemConfig.getValue(subject)}
+						getItem={itemConfig.getValue}
 						getValidations={subject => [
 							...(subject.getCurrentStats().rotationStats?.priorityList[index]?.validations || []),
 							...uuidValidations(subject, itemConfig.getValue(subject)?.action?.condition?.uuid?.value),
