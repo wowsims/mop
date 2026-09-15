@@ -9,7 +9,7 @@ import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassW
 export class DeathKnight extends PlayerClass<Class.ClassDeathKnight> {
 	static classID = Class.ClassDeathKnight as Class.ClassDeathKnight;
 	static friendlyName = 'Death Knight';
-	static hexColor = '#c41e3a';
+	static hexColor = '#c22e46';
 	static specs: Record<string, PlayerSpec<DeathKnightSpecs>> = {
 		[BloodDeathKnight.friendlyName]: BloodDeathKnight,
 		[FrostDeathKnight.friendlyName]: FrostDeathKnight,

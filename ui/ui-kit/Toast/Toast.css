@@ -1,6 +1,6 @@
 @layer components {
 	.ui-toast {
-		@apply pointer-events-auto w-full max-w-full rounded-none border border-surface-border bg-overlay bg-clip-padding text-sm text-white fade-in-out shadow-toast motion-reduce:transition-none;
+		@apply pointer-events-auto w-full max-w-full rounded-none border border-surface-border bg-overlay bg-clip-padding text-sm text-white fade-in-out shadow-popup motion-reduce:transition-none;
 
 		&[data-limited] {
 			@apply hidden;

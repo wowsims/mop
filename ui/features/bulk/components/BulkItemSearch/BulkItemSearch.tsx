@@ -76,7 +76,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
 					clearClassName="z-2 -ml-px flex items-center border border-surface-border bg-surface px-3 py-1.5">
 					<ul
-						className="absolute top-full right-4 left-4 z-10 m-0 hidden w-full min-w-40 list-none grid-cols-1 gap-2 rounded-none border border-surface-border bg-surface-raised bg-clip-padding p-2 text-left text-base text-white shadow-toast data-open:grid md:grid-cols-2 xxl:grid-cols-3"
+						className="absolute top-full right-4 left-4 z-10 m-0 hidden w-full min-w-40 list-none grid-cols-1 gap-2 rounded-none border border-surface-border bg-surface-raised bg-clip-padding p-2 text-left text-base text-white shadow-popup data-open:grid md:grid-cols-2 xxl:grid-cols-3"
 						data-testid="bulk-gear-search-results"
 						data-open={open ? '' : undefined}>
 						{shown?.items.map(item => (

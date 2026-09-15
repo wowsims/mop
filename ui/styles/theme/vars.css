@@ -67,8 +67,7 @@
 	--tooltip-body-padding-x: --spacing(2);
 	--tooltip-body-padding-y: --spacing(2);
 
-	/* Focus & transition */
-	--focus-ring: var(--shadow-focus-ring);
+	/* Transition */
 	--transition-fade: opacity 0.15s linear;
 
 	/* Tab */
