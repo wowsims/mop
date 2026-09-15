@@ -32,7 +32,7 @@ const CLASS_TEXT: Record<string, string> = {
 	warrior: 'text-class-warrior',
 };
 
-/** The class-colour class. `--color-class-*` in `styles/theme.css` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
+/** The class-colour class. `--color-class-*` in `styles/theme/colors.css` is what makes it resolve, so the argument has to be a `getCssScheme` slug and not a display name. */
 export function textClassName(className: string): string {
 	return CLASS_TEXT[className];
 }

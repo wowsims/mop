@@ -68,7 +68,7 @@ Adding one is three edits and no page:
    launch status: `ui/app/header/SimTitleDropdown/` reads it on a spec page, and the landing page
    (`ui/app/landing/`, entered from `ui/app/landing_entry.tsx`) builds its class menu and its per-spec
    status badges from `PlayerSpecs` via `ui/app/landing/landing_classes.ts`, not a hand-written list.
-3. Nothing, if the spec's class already has a theme block: `ui/styles/theme.css` keys its 34
+3. Nothing, if the spec's class already has a theme block: `ui/styles/theme/specs.css` keys its 34
    `<spec>-sim-ui` theme blocks (class colour, background image) off class, so a new spec of an
    existing class reuses its class's block automatically. A wholly new class needs a new block there
    (see `ui/STYLING.md`).

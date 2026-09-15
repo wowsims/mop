@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const css = readFileSync(path.join(here, 'theme.css'), 'utf-8');
+const css = readFileSync(path.join(here, 'theme', 'colors.css'), 'utf-8');
 
 const classColors = new Map<string, [number, number, number]>();
 for (const m of css.matchAll(/--color-class-([a-z-]+):\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)/g)) {

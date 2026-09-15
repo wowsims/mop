@@ -40,7 +40,9 @@ ui/
   specs/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
                      ui/index_template.html is served (dev) and emitted (build) at every
                      /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
-  styles/            the one CSS entry (style.css), theme.css (tokens + the 34 spec themes),
+  styles/            the one CSS entry (style.css), theme/ (tokens + the 34 spec themes, split by
+                     type: colors.css, spacing.css, breakpoints.css, typography.css, effects.css,
+                     z-index.css, vars.css, specs.css, imported via index.css),
                      base.css (element defaults), vendor.css (third-party-only selectors) — see
                      STYLING.md. No SCSS and no Bootstrap remain anywhere in ui/
   index.html          the landing page, a React tree mounted by app/landing_entry.tsx on #root.
@@ -228,7 +230,7 @@ All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/app/landing/` renders the landing page's sim links from `PlayerSpecs`, no hand-written
    list; a class row's badge is the roll-up of its specs', in `landing_classes.ts`).
-3. Nothing, if the spec's class already has a theme block: `ui/styles/theme.css` keys its 34
+3. Nothing, if the spec's class already has a theme block: `ui/styles/theme/specs.css` keys its 34
    `<spec>-sim-ui` theme blocks (class colour, background image) off class, so a new spec of an
    existing class reuses its class's block automatically. A wholly new class needs a new block there.
 

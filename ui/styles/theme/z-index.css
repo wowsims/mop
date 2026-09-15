@@ -1,0 +1,17 @@
+@theme static {
+	--z-index-toolbar: 99;
+	--z-index-header: 100;
+	--z-index-sidebar: 200;
+	--z-index-sim-title: 201;
+	--z-index-dropdown: 1000;
+	--z-index-modal-close: 1000;
+	--z-index-modal-backdrop: 1050;
+	--z-index-modal: 1055;
+	--z-index-modal-elevated-backdrop: 1060;
+	--z-index-modal-elevated: 1065;
+	--z-index-popover: 1070;
+	--z-index-tooltip: 1080;
+	--z-index-sticky: 1020;
+	--z-index-menu: 1500;
+	--z-index-toast: 9999;
+}

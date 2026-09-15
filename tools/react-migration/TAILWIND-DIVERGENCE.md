@@ -993,6 +993,8 @@ them.
 
 ### `theme.css`
 
+Later split into `ui/styles/theme/` (`colors.css`, `spacing.css`, `breakpoints.css`, `typography.css`, `effects.css`, `z-index.css`, `vars.css`, `specs.css`, `index.css`); the mentions below describe the single-file state at the time.
+
 **`static` on `@theme static { ... }`** means: emit every token at `:root` even when no utility uses
 it, so hand-written CSS can read them with `var()`.
 

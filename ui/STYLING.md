@@ -1,7 +1,9 @@
 # Styling, state and locating elements
 
-Source of truth: `ui/styles/style.css` (entry, `@utility`, `@source`), `ui/styles/theme.css`
-(tokens), `ui/styles/base.css` (element defaults, replaces Bootstrap's reboot), `ui/styles/vendor.css`
+Source of truth: `ui/styles/style.css` (entry, `@utility`, `@source`), `ui/styles/theme/`
+(tokens, split by type — `colors.css`, `spacing.css`, `breakpoints.css`, `typography.css`,
+`effects.css`, `z-index.css`, `vars.css`, `specs.css`, imported via `index.css`),
+`ui/styles/base.css` (element defaults, replaces Bootstrap's reboot), `ui/styles/vendor.css`
 (the handful of selectors with no JSX element to carry them), `tools/tailwind/canonical-classes.mjs`
 and `tools/tailwind/class-hooks.mjs`, `ui/no_class_hooks.test.ts`.
 
@@ -17,7 +19,7 @@ tools. `ui/no_class_hooks.test.ts` enforces this — see "The gates" below.
 Reach for a **named utility** first, including its variants and `!`-free forms. Arbitrary values
 (`bg-[#123456]`, `text-[rgb(0,0,0)]`, `p-[10px]`) are a last resort, not a shortcut:
 
-- **No arbitrary colours.** Every colour is a `--color-*` token in `ui/styles/theme.css`'s
+- **No arbitrary colours.** Every colour is a `--color-*` token in `ui/styles/theme/colors.css`'s
   `@theme static { … }` block, so it renders as `bg-primary`, `text-danger`, `border-surface-border`,
   and so on. If the colour you need has no token, add one to `@theme static` (named by role or hue,
   e.g. `--color-grey: #808080`) rather than writing `bg-[#808080]` — never drop a declaration because
@@ -44,20 +46,21 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   inside a genuine multi-term `calc()`/`min()`/gradient, or an arbitrary property (`[prop:…]`) that
   has no utility form.
 
-Breakpoints are named tokens in `theme.css`: `sm md lg xl xxl xxxl fhd qhd uhd` (`576px` through
-`3841px`; `fhd` is the legacy `1080p` 1921px cutover, kept as a layout breakpoint even though the
-root font-size no longer changes there). All breakpoints are px, so they never depend on the root.
+Breakpoints are named tokens in `ui/styles/theme/breakpoints.css`: `sm md lg xl xxl xxxl fhd qhd uhd`
+(`576px` through `3841px`; `fhd` is the legacy `1080p` 1921px cutover, kept as a layout breakpoint even
+though the root font-size no longer changes there). All breakpoints are px, so they never depend on
+the root.
 
-**Spec themes are CSS variables, not per-spec CSS.** `theme.css`'s `.sim-ui` block declares
-`--color-primary`/`--color-primary-foreground` from `--theme-color`/`--theme-color-foreground`, and
+**Spec themes are CSS variables, not per-spec CSS.** `ui/styles/theme/specs.css`'s `.sim-ui` block
+declares `--color-primary`/`--color-primary-foreground` from `--theme-color`/`--theme-color-foreground`, and
 34 per-spec blocks (`.arms-warrior-sim-ui, .fury-warrior-sim-ui, … { --theme-color: var(--color-class-warrior); … }`)
 set those two variables from the class-colour tokens. A component never needs a spec-aware variant —
 `bg-primary`/`text-primary`/`border-primary` already re-theme per spec because the sim root carries
 the spec's class. Derived shades (`--color-primary-hover/-active/-dampened/-disabled`) are
 `color-mix(in srgb, var(--color-primary) …)` in `@theme static inline` — `inline` because they read a
-var that's re-declared lower in the tree (see `theme.css`'s comment-free but documented block; the
-`inline` flag matters here specifically because plain `@theme` would resolve `var(--color-primary)`
-at `:root`, before `.sim-ui` re-declares it).
+var that's re-declared lower in the tree (see `ui/styles/theme/colors.css`'s comment-free but
+documented block; the `inline` flag matters here specifically because plain `@theme` would resolve
+`var(--color-primary)` at `:root`, before `.sim-ui` re-declares it).
 
 ## 2. `ui-*` composition classes
 
@@ -92,7 +95,7 @@ Rules:
 - **A `.css` file selects only `ui-*` classes** — attribute (`[data-active]`), pseudo (`:hover`,
   `::after`), and element/descendant parts are allowed _inside_ a `ui-*` rule, but the file may never
   target a semantic hook class, a `data-testid`, or a raw element selector at the top level. The two
-  exceptions are `theme.css` (the spec theme selectors) and `vendor.css` (see below).
+  exceptions are `ui/styles/theme/specs.css` (the spec theme selectors) and `vendor.css` (see below).
 - Built with `@apply`, unlayered classes stay unlayered (until the global element rules that used to
   fight them are fully gone); the file itself lives inside `@layer components` in the ones written so
   far, matching the layer order declared in `style.css:1`.
@@ -214,7 +217,7 @@ fix is almost always removing whatever broke the native layering, not adding log
        fails.
 - **`ui/class_hook_allowlist.json`** is the only way to keep a raw class name. An entry needs a
   `token` or a `pattern` plus a `reason`, and today it holds exactly: `sim-ui` and the
-  `<spec>-sim-ui` pattern (the theme root `theme.css` selects), `group`/`group/*`, `peer`/`peer/*`
+  `<spec>-sim-ui` pattern (the theme root `ui/styles/theme/specs.css` selects), `group`/`group/*`, `peer`/`peer/*`
   (Tailwind's own marker classes), `sim-tooltip`/`sim-tooltip--unpadded` (the Tooltip base class,
   forwarded into react-tooltip), `fa`/`fas`/`far`/`fab`/`fa-*` (FontAwesome, loaded from a CDN
   stylesheet, not ours to convert), and three **third-party-required** names

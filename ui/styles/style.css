@@ -7,7 +7,7 @@
 @import './vendor.css';
 @import 'tailwindcss/utilities.css' layer(utilities);
 
-@import './theme.css';
+@import './theme/index.css';
 @import '../features/results/components/MetricsTable/MetricsTable.css';
 @import '../features/character-stats/components/CharacterStats/CharacterStats.css';
 
