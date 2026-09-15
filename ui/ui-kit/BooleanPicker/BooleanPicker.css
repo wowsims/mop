@@ -1,0 +1,37 @@
+@layer components {
+	.ui-boolean-picker.ui-field {
+		@apply min-h-6 justify-start pl-8 max-xl:flex-row;
+
+		> .ui-picker-label {
+			@apply mb-0 ml-2;
+		}
+	}
+
+	.ui-boolean-picker-reverse.ui-field {
+		@apply min-h-6 justify-between pr-8 pl-0 text-right max-xl:flex-row;
+
+		> .ui-picker-label {
+			@apply mb-0 ml-0 text-left;
+		}
+
+		> .ui-boolean-picker-input {
+			@apply float-right -mr-8 ml-0;
+		}
+	}
+
+	.ui-boolean-picker-input {
+		@apply float-left -ml-8 size-8 shrink-0 appearance-none rounded-none border border-surface-border bg-surface align-top;
+
+		&:focus {
+			@apply border-input-focus-border shadow-focus-checkbox outline-none;
+		}
+
+		&[data-checked] {
+			@apply border-primary bg-primary;
+		}
+
+		&[data-disabled] {
+			@apply pointer-events-none opacity-50;
+		}
+	}
+}

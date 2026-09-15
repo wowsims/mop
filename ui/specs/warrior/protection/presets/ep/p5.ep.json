@@ -1,0 +1,20 @@
+{
+	"name": "P5 - Balanced",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 1.91,
+		"StatHitRating": 3.73,
+		"StatCritRating": 1.04,
+		"StatHasteRating": 0.12,
+		"StatExpertiseRating": 2.58,
+		"StatDodgeRating": 1.48,
+		"StatParryRating": 1.49,
+		"StatMasteryRating": 0.36,
+		"StatAttackPower": 0.25,
+		"StatArmor": 0.56,
+		"StatBonusArmor": 0.56
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 0.35
+	}
+}

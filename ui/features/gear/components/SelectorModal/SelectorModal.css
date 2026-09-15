@@ -1,0 +1,24 @@
+@layer components {
+	.ui-selector-modal-list-item-icon {
+		@apply relative inline-block h-12 w-12 cursor-pointer border border-border bg-cover bg-center bg-no-repeat;
+	}
+
+	.ui-selector-modal-list-item {
+		@apply relative flex items-center gap-4 bg-gray-900 p-2 hover:bg-gray-800 [&[data-active]_.ui-selector-modal-list-item-icon]:outline-2 [&[data-active]_.ui-selector-modal-list-item-icon]:outline-success;
+	}
+
+	.ui-selector-modal-list-item-link {
+		@apply relative flex min-w-[10vw] items-center after:absolute after:inset-0 after:content-[''];
+	}
+
+	.ui-selector-modal-list-item-name {
+		@apply ml-2 cursor-pointer text-md font-normal tracking-normal;
+	}
+
+	.ui-selector-modal-filters {
+		& input,
+		& select {
+			@apply py-(--btn-padding-y) text-(length:--btn-font-size);
+		}
+	}
+}

@@ -1,0 +1,5 @@
+@layer components {
+	.ui-unit-icon {
+		@apply mr-1 flex size-4 items-center justify-center;
+	}
+}

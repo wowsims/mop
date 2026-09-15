@@ -8,12 +8,30 @@
 	"[javascript][javascriptreact][typescript][typescriptreact][html]": {
 		"editor.codeActionsOnSave": {
 			"source.fixAll.oxc": "always"
+		},
+		"editor.quickSuggestions": {
+			"strings": "on"
 		}
 	},
 	"css.validate": false,
 	"less.validate": false,
 	"scss.validate": false,
-	"stylelint.validate": ["css", "scss"],
+	"stylelint.validate": ["scss"],
+	"tailwindCSS.experimental.configFile": "ui/styles/style.css",
+	"tailwindCSS.classFunctions": ["clsx"],
+	"tailwindCSS.classAttributes": [
+		"class",
+		"className",
+		"bodyClassName",
+		"cellClassName",
+		"clearClassName",
+		"iconClassName",
+		"inputClassName",
+		"labelClassName",
+		"rowClassName",
+		"selectClassName",
+		"triggerClassName"
+	],
 	"[scss]": {
 		"editor.codeActionsOnSave": {
 			"source.fixAll.stylelint": "always"

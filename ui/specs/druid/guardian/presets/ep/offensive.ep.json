@@ -1,0 +1,19 @@
+{
+	"name": "Offensive Post-Caps",
+	"stats": {
+		"StatHealth": 0.01,
+		"StatStamina": 0.15,
+		"StatAgility": 1.0,
+		"StatArmor": 0.08,
+		"StatBonusArmor": 0.02,
+		"StatDodgeRating": 0.04,
+		"StatMasteryRating": 0.04,
+		"StatStrength": 0.24,
+		"StatAttackPower": 0.23,
+		"StatHitRating": 0.0,
+		"StatExpertiseRating": 0.0,
+		"StatCritRating": 1.42,
+		"StatHasteRating": 0.98
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 1.04 }
+}

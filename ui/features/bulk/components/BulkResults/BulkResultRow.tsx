@@ -1,0 +1,138 @@
+import { GearChangeIcon } from '@features/gear/components/GearChangeIcon';
+import { ItemDetailCell } from '@features/gear/components/ItemCell';
+import { ItemSlot, ItemSpec } from '@generated/proto/common';
+import i18n from '@i18n/config';
+import type { TopGearResult } from '@sim/bulk/types';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
+import { useSimHost } from '@sim/context/SimHostContext';
+import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { formatDeltaText, formatSignificance, formatToNumber } from '@sim/utils/format';
+import { stDevToConf95, zTest } from '@sim/utils/math';
+import { Button } from '@ui-kit/Button';
+import { useActivateTab } from '@ui-kit/tab_activation';
+import { toastManager } from '@ui-kit/Toast';
+import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
+import { toneTextClass } from '@ui-kit/utils/css';
+import clsx from 'clsx';
+import { useId } from 'react';
+
+export interface BulkResultRowProps {
+	result: TopGearResult;
+	baseResult: TopGearResult;
+	iterations: number;
+}
+
+const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
+	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
+
+const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: ItemSpec[], [slot1, slot2]: [ItemSlot, ItemSlot]): boolean =>
+	(ItemSpec.equals(resultItems[slot1], originalItems[slot1]) && ItemSpec.equals(resultItems[slot2], originalItems[slot2])) ||
+	(ItemSpec.equals(resultItems[slot1], originalItems[slot2]) && ItemSpec.equals(resultItems[slot2], originalItems[slot1]));
+
+export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowProps) => {
+	const host = useSimHost();
+	const { damage: showDamage } = useDisplayMetrics(host.sim);
+	const activateTab = useActivateTab();
+	const marginTooltipId = useId();
+	const deltaTooltipId = useId();
+
+	// Displayed per-row uncertainty (95% CI of the mean). Deliberately the UNPAIRED error:
+	// it describes this row's own mean; tie grouping uses the much tighter paired error of
+	// the difference between rows — both are correct, they answer different questions.
+	const plusMinusDps = stDevToConf95(result.dpsMetrics.stdev, iterations);
+	const isBaseResult = result.gear.equals(baseResult.gear);
+
+	const test = zTest(iterations, result.dpsMetrics.avg, result.dpsMetrics.stdev, iterations, baseResult.dpsMetrics.avg, baseResult.dpsMetrics.stdev);
+	const delta = formatDeltaText(baseResult.dpsMetrics.avg, result.dpsMetrics.avg, 2, undefined, !test.isDiff, true);
+
+	const canDualWield = getBulkPlayerCanDualWield(host.player);
+	const resultAsSpec = result.gear.asSpec();
+	const originalEquipmentSpec = baseResult.gear.asSpec();
+
+	return (
+		<div
+			className="flex items-center gap-4 not-last:not-only:mb-6 not-last:not-only:border-b not-last:not-only:border-b-border not-last:not-only:pb-6"
+			data-testid="bulk-sim-result-root">
+			<div className="flex-3 text-center" data-testid="results-sim">
+				{showDamage && (
+					<div className="grid grid-cols-wide-narrow gap-2 text-left leading-none font-bold" data-testid="results-sim-dps">
+						<span className="mr-1 text-2xl" data-testid="topline-result-avg">
+							{formatToNumber(result.dpsMetrics.avg)}
+						</span>
+						{plusMinusDps > 0 && (
+							<>
+								<span className="text-sm text-muted" {...tooltipAnchorProps(marginTooltipId)}>
+									{' ±' + formatToNumber(plusMinusDps, { maximumFractionDigits: 0 })}
+								</span>
+								<Tooltip id={marginTooltipId} content={i18n.t('bulk_tab.results.margin_of_error')} />
+							</>
+						)}
+						<div className="mb-0 flex items-end font-normal" data-testid="results-reference">
+							{isBaseResult ? (
+								<span className="font-bold">{i18n.t('bulk_tab.results.current_gear')}</span>
+							) : (
+								<>
+									<span
+										className={clsx('font-bold', toneTextClass(delta.tone))}
+										data-testid="results-reference-diff"
+										{...tooltipAnchorProps(deltaTooltipId)}>
+										{delta.text}
+									</span>
+									<Tooltip id={deltaTooltipId} content={formatSignificance(test)} />
+								</>
+							)}
+						</div>
+					</div>
+				)}
+			</div>
+			<div className="flex flex-5 flex-wrap gap-1" data-testid="bulk-gear-combo">
+				{!isBaseResult &&
+					resultAsSpec.items.map((spec, idx) => {
+						const swappableItemSlotPair = getSwappableItemSlotPair(idx, canDualWield);
+						const itemChanged = swappableItemSlotPair
+							? !itemSpecPairsEqualUnordered(resultAsSpec.items, originalEquipmentSpec.items, swappableItemSlotPair)
+							: !ItemSpec.equals(spec, originalEquipmentSpec.items[idx]);
+
+						// Three display states per slot:
+						// 1. Unchanged -  slots stay empty
+						// 2. Same - Item with a different reforge/gems shows the compact change icon (reforge + socket markers);
+						// 3. New - The item appearing at all already says the slot changed.
+						if (itemChanged && spec.id !== 0 && spec.id === originalEquipmentSpec.items[idx]?.id) {
+							return (
+								<div key={idx} className="ui-bulk-result-item" data-testid="bulk-result-item">
+									<GearChangeIcon
+										slot={idx}
+										item={host.sim.db.lookupItemSpec(spec) ?? undefined}
+										previousItem={baseResult.gear.getEquippedItem(idx) ?? undefined}
+									/>
+								</div>
+							);
+						}
+
+						return (
+							<ItemDetailCell
+								key={idx}
+								testId="bulk-result-item"
+								className="ui-bulk-result-item ui-bulk-item-cell mb-0 p-0 [&_.ui-item-picker-labels-container]:hidden"
+								slot={idx}
+								item={itemChanged && spec.id !== 0 ? host.sim.db.lookupItemSpec(spec) : null}
+								nameDescriptionFlush
+							/>
+						);
+					})}
+			</div>
+			<div className="flex flex-1 justify-end">
+				<Button
+					className={clsx(isBaseResult && 'hidden')}
+					data-testid="bulk-equip-btn"
+					onClick={() => {
+						host.player.setGear(result.gear);
+						activateTab('gear-tab');
+						toastManager.add({ variant: 'success', body: i18n.t('bulk_tab.results.gear_equipped') });
+					}}>
+					{i18n.t('bulk_tab.results.equip_button')}
+				</Button>
+			</div>
+		</div>
+	);
+};

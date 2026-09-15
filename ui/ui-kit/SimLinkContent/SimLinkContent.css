@@ -1,0 +1,18 @@
+@layer components {
+	.ui-sim-link-content {
+		@apply flex items-center p-2;
+	}
+
+	.ui-sim-link-icon {
+		@apply mr-2 h-12 w-12 rounded-full border-2 border-solid;
+	}
+
+	.ui-sim-link-label,
+	.ui-sim-link-status {
+		@apply text-xs font-normal whitespace-nowrap;
+	}
+
+	.ui-sim-link-title {
+		@apply text-lg font-bold whitespace-nowrap;
+	}
+}

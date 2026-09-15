@@ -1,0 +1,7 @@
+@layer components {
+	.ui-summary-table-gem-icon {
+		--gem-width: 2rem;
+
+		@apply mr-1 border border-border;
+	}
+}

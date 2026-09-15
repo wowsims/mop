@@ -1,0 +1,17 @@
+@layer components {
+	.ui-progress {
+		@apply relative flex w-full max-w-62.5 flex-col gap-1 self-center;
+	}
+
+	.ui-progress-track {
+		@apply flex h-3 w-full overflow-hidden rounded-sm bg-surface-border;
+	}
+
+	.ui-progress-indicator {
+		@apply animate-shimmer bg-progress bg-size-[200%_100%] motion-reduce:animate-none;
+
+		&[data-indeterminate] {
+			@apply hidden;
+		}
+	}
+}

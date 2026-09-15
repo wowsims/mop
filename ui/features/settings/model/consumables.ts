@@ -1,0 +1,158 @@
+import { Class, ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
+import { Consumable } from '@generated/proto/db';
+import i18n from '@i18n/config';
+import { Player } from '@sim/player/player';
+import { ActionId } from '@sim/proto/action_id';
+import { batch } from '@sim/state/batch';
+import { IconEnumValueConfig } from '@ui-kit/IconEnumPicker/types';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
+import { ActionInputConfig, ItemStatOption } from './stat_options';
+export interface ConsumableInputConfig<T> extends ActionInputConfig<T> {
+	value: T;
+}
+
+export interface ConsumableStatOption<T> extends ItemStatOption<T> {
+	config: ConsumableInputConfig<T>;
+}
+
+export interface ConsumeInputFactoryArgs<T extends number> {
+	consumesFieldName: keyof ConsumesSpec;
+	// Additional callback if logic besides syncing consumes is required
+	onSet?: (player: Player<any>, newValue: T) => void;
+	showWhen?: (player: Player<any>) => boolean;
+}
+
+function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
+	args: ConsumeInputFactoryArgs<T>,
+): (options: ConsumableStatOption<T>[], tooltip?: string) => InputHelpers.TypedIconEnumPickerConfig<Player<SpecType>, T> {
+	return (options: ConsumableStatOption<T>[], tooltip?: string) => {
+		const valueOptions = options.map(
+			option =>
+				({
+					actionId: option.config.actionId,
+					value: option.config.value,
+					showWhen: (player: Player<SpecType>) =>
+						(!option.config.showWhen || option.config.showWhen(player)) && (option.config.faction || player.getFaction()) == player.getFaction(),
+				}) satisfies IconEnumValueConfig<Player<SpecType>, T>,
+		);
+		return {
+			type: 'iconEnum',
+			tooltip: tooltip,
+			numColumns: options.length > 5 ? 2 : 1,
+			values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') } as unknown as IconEnumValueConfig<Player<SpecType>, T>].concat(valueOptions),
+			equals: (a: T, b: T) => a == b,
+			zeroValue: 0 as T,
+			storeField: ['consumables', 'gear', 'profession1', 'profession2', 'race'],
+			showWhen: (player: Player<any>) => (!args.showWhen || args.showWhen(player)) && valueOptions.some(option => option.showWhen?.(player)),
+			getValue: (player: Player<any>) => player.getConsumes()[args.consumesFieldName] as T,
+			setValue: (player: Player<any>, newValue: number) => {
+				const newConsumes = player.getConsumes();
+				if (newConsumes[args.consumesFieldName] === newValue) {
+					return;
+				}
+
+				(newConsumes[args.consumesFieldName] as number) = newValue;
+				batch(() => {
+					player.setConsumes(newConsumes);
+					if (args.onSet) {
+						args.onSet(player, newValue as T);
+					}
+				});
+			},
+		};
+	};
+}
+
+///////////////////////////////////////////////////////////////////////////
+//                                 CONJURED
+///////////////////////////////////////////////////////////////////////////
+
+export const ConjuredDarkRune = {
+	actionId: ActionId.fromItemId(12662),
+	value: 12662,
+};
+export const ConjuredHealthstone = {
+	actionId: ActionId.fromItemId(5512),
+	value: 5512,
+};
+export const ConjuredRogueThistleTea = {
+	actionId: ActionId.fromItemId(7676),
+	value: 7676,
+	showWhen: <SpecType extends Spec>(player: Player<SpecType>) => player.getClass() == Class.ClassRogue,
+};
+
+export const CONJURED_CONFIG = [
+	{ config: ConjuredRogueThistleTea, stats: [] },
+	{ config: ConjuredHealthstone, stats: [Stat.StatStamina] },
+	{ config: ConjuredDarkRune, stats: [Stat.StatIntellect] },
+] as ConsumableStatOption<number>[];
+
+export const makeConjuredInput = makeConsumeInputFactory({ consumesFieldName: 'conjuredId' });
+
+export const ExplosiveBigDaddy = {
+	actionId: ActionId.fromItemId(63396),
+	value: 89637,
+	showWhen: (player: Player<any>) => player.hasProfession(Profession.Engineering),
+};
+
+export const HighpoweredBoltGun = {
+	actionId: ActionId.fromItemId(60223),
+	value: 82207,
+	showWhen: (player: Player<any>) => player.hasProfession(Profession.Engineering),
+};
+
+export const EXPLOSIVE_CONFIG = [
+	{ config: ExplosiveBigDaddy, stats: [] },
+	{ config: HighpoweredBoltGun, stats: [] },
+] as ConsumableStatOption<number>[];
+export const makeExplosivesInput = makeConsumeInputFactory({ consumesFieldName: 'explosiveId' });
+
+export interface ConsumableInputOptions {
+	consumesFieldName: keyof ConsumesSpec;
+	setValue?: (player: Player<any>, newValue: number) => void;
+}
+
+export function makeConsumableInput(
+	items: Consumable[],
+	options: ConsumableInputOptions,
+	tooltip?: string,
+): InputHelpers.TypedIconEnumPickerConfig<Player<any>, number> {
+	const valueOptions = items.map(item => ({
+		value: item.id,
+		iconUrl: item.icon,
+		actionId: ActionId.fromItemId(item.id),
+		tooltip: item.name,
+	}));
+	return {
+		type: 'iconEnum',
+		tooltip: tooltip,
+		numColumns: items.length > 5 ? 2 : 1,
+		values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') }].concat(valueOptions),
+		equals: (a: number, b: number) => a === b,
+		zeroValue: 0,
+		storeField: 'consumables',
+		getValue: (player: Player<any>) => player.getConsumes()[options.consumesFieldName] as number,
+		showWhen: (_: Player<any>) => !!valueOptions.length,
+		setValue: (player: Player<any>, newValue: number) => {
+			if (options.setValue) {
+				options.setValue(player, newValue);
+			}
+
+			const newConsumes = {
+				...player.getConsumes(),
+				[options.consumesFieldName]: newValue,
+			};
+
+			if (options.consumesFieldName === 'flaskId') {
+				newConsumes.guardianElixirId = 0;
+				newConsumes.battleElixirId = 0;
+			}
+
+			if ((options.consumesFieldName === 'battleElixirId' || options.consumesFieldName === 'guardianElixirId') && newValue != 0) {
+				newConsumes.flaskId = 0;
+			}
+			player.setConsumes(newConsumes);
+		},
+	};
+}

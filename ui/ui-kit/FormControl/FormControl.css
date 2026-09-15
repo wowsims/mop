@@ -1,0 +1,38 @@
+@layer components {
+	.ui-input {
+		@apply block w-full rounded-none border border-surface-border bg-surface px-3 py-1.5 text-ui leading-normal text-foreground transition-colors duration-150 ease-in-out;
+
+		&::placeholder {
+			@apply text-secondary;
+		}
+
+		&:focus {
+			@apply border-input-focus-border shadow-focus-input outline-none;
+		}
+
+		&:disabled {
+			@apply bg-input-disabled opacity-100;
+		}
+	}
+
+	.ui-select {
+		@apply block w-full appearance-none rounded-none border border-surface-border bg-surface bg-select-chevron bg-size-[16px_12px] bg-position-[right_.75rem_center] bg-no-repeat px-3 py-1.5 pr-9 text-ui leading-normal text-foreground transition-colors duration-150 ease-in-out;
+
+		&:focus {
+			@apply border-input-focus-border shadow-focus-input outline-none;
+		}
+
+		&:disabled {
+			@apply bg-input-disabled opacity-100;
+		}
+	}
+
+	.ui-field-label,
+	.ui-picker-label {
+		@apply mb-1 inline-block text-ui font-normal;
+	}
+
+	.ui-help-text {
+		@apply mt-1 text-ui text-gray-600;
+	}
+}

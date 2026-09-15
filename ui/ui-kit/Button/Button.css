@@ -1,0 +1,213 @@
+@layer components {
+	.ui-button {
+		@apply inline-block cursor-pointer rounded-none border border-transparent text-center align-middle text-sm leading-normal font-normal no-underline transition-[color,background-color,border-color] duration-150 ease-in-out select-none;
+
+		&:focus-visible {
+			@apply outline-none;
+		}
+
+		&:disabled {
+			@apply pointer-events-none opacity-65;
+		}
+	}
+
+	.ui-button-link {
+		@apply cursor-pointer rounded-none border-0 p-0 text-center align-middle text-sm leading-normal font-normal no-underline transition-[color,background-color,border-color] duration-150 ease-in-out select-none;
+
+		&:focus-visible {
+			@apply outline-none;
+		}
+
+		&:disabled {
+			@apply pointer-events-none opacity-65;
+		}
+	}
+
+	.ui-button-icon {
+		@apply cursor-pointer border-0 bg-transparent;
+	}
+
+	.ui-button-primary {
+		@apply border-primary bg-primary text-primary-foreground;
+
+		&:hover {
+			@apply border-primary-hover bg-primary-hover;
+		}
+
+		&:focus-visible {
+			@apply border-primary-hover bg-primary-hover shadow-focus-primary;
+		}
+
+		&:active {
+			@apply border-primary-active bg-primary-active;
+		}
+
+		&[data-popup-open] {
+			@apply border-primary-active bg-primary-active;
+		}
+
+		&:disabled {
+			@apply border-primary-disabled bg-primary-disabled;
+		}
+	}
+
+	.ui-button-secondary {
+		@apply border-secondary bg-secondary text-white;
+
+		&:hover {
+			@apply border-secondary-hover bg-secondary-hover;
+		}
+
+		&:focus-visible {
+			@apply border-secondary-hover bg-secondary-hover shadow-focus-secondary;
+		}
+
+		&:active {
+			@apply border-secondary-active bg-secondary-active;
+		}
+	}
+
+	.ui-button-danger {
+		@apply border-danger bg-danger text-white;
+
+		&:hover {
+			@apply border-danger-hover bg-danger-hover;
+		}
+
+		&:focus-visible {
+			@apply border-danger-hover bg-danger-hover shadow-focus-danger;
+		}
+
+		&:active {
+			@apply border-danger-active bg-danger-active;
+		}
+	}
+
+	.ui-button-cancel {
+		@apply border-cancel bg-cancel text-black;
+
+		&:hover {
+			@apply border-cancel-hover bg-cancel-hover;
+		}
+
+		&:focus-visible {
+			@apply border-cancel-hover bg-cancel-hover shadow-focus-cancel;
+		}
+
+		&:active {
+			@apply border-cancel-active bg-cancel-active;
+		}
+	}
+
+	.ui-button-link {
+		@apply text-link;
+
+		&:hover {
+			@apply text-link-hover;
+		}
+
+		&:focus-visible {
+			@apply shadow-focus-link;
+		}
+
+		&:disabled {
+			@apply text-gray-600;
+		}
+	}
+
+	.ui-button-link-danger {
+		@apply text-link-danger;
+
+		&:hover {
+			@apply text-foreground;
+		}
+
+		&:focus-visible {
+			@apply text-foreground shadow-focus-link-danger;
+		}
+
+		&:disabled {
+			@apply text-foreground-disabled;
+		}
+	}
+
+	.ui-button-outline-primary {
+		@apply border-primary text-primary;
+
+		&:hover {
+			@apply border-primary-hover bg-primary-hover text-primary-foreground;
+		}
+
+		&:focus-visible {
+			@apply border-primary-hover bg-primary-hover text-primary-foreground shadow-focus-outline-primary;
+		}
+
+		&:active {
+			@apply border-primary-active bg-primary-active text-primary-foreground;
+		}
+
+		&:disabled {
+			@apply border-primary text-primary;
+		}
+	}
+
+	.ui-button-outline-light {
+		@apply border-light text-light;
+
+		&:hover {
+			@apply border-light bg-light text-black;
+		}
+
+		&:focus-visible {
+			@apply border-light bg-light text-black shadow-focus-outline-light;
+		}
+
+		&:active {
+			@apply border-light bg-light text-black;
+		}
+	}
+
+	.ui-button-outline-cancel {
+		@apply border-cancel text-cancel;
+
+		&:hover {
+			@apply border-cancel bg-cancel text-black;
+		}
+
+		&:focus-visible {
+			@apply border-cancel bg-cancel text-black shadow-focus-outline-cancel;
+		}
+
+		&:active {
+			@apply border-cancel bg-cancel text-black;
+		}
+	}
+
+	.ui-button-warning {
+		@apply text-link-warning;
+
+		&:hover {
+			@apply text-link-warning;
+		}
+
+		&:focus-visible {
+			@apply text-link-warning shadow-none;
+		}
+
+		&:disabled {
+			@apply text-link-warning;
+		}
+	}
+
+	.ui-button-md {
+		@apply px-3 py-2;
+	}
+
+	.ui-button-sm {
+		@apply px-2 py-1;
+	}
+
+	.ui-button-inline {
+		@apply px-2 py-0;
+	}
+}

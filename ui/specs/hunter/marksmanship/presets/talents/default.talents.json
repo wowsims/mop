@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "312213",
+	"glyphs": {
+		"major1": "GlyphOfAnimalBond",
+		"major2": "GlyphOfDeterrence",
+		"major3": "GlyphOfAimedShot"
+	}
+}

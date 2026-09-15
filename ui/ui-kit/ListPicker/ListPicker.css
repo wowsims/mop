@@ -1,0 +1,108 @@
+@layer components {
+	.ui-list-picker-root {
+		@apply flex-col items-start gap-3 max-md:gap-2;
+
+		&.ui-list-picker-horizontal {
+			@apply flex-row items-center;
+
+			& .ui-list-picker-items {
+				@apply flex-row flex-wrap items-center;
+			}
+		}
+
+		&.ui-list-picker-compact {
+			& .ui-list-picker-item-container {
+				border: 0;
+				padding: 0 !important;
+			}
+
+			& .ui-list-picker-item-header {
+				display: none !important;
+			}
+		}
+	}
+
+	.ui-list-picker-items {
+		@apply w-full gap-3;
+		--drag-background-spacing: 0;
+	}
+
+	.ui-list-picker-item-container {
+		border: var(--border-default);
+
+		& .ui-list-picker-items {
+			--drag-background-spacing: var(--apl-spacer);
+		}
+
+		&[data-drag='from'] {
+			background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+			filter: opacity(0.5);
+			cursor: move;
+		}
+
+		&[data-drag='to'] {
+			filter: brightness(0.5);
+		}
+
+		&[data-draggable] {
+			cursor: grab;
+
+			&:hover:not(:has(.ui-list-picker-item-container[data-draggable]:hover)) {
+				&::after {
+					content: '';
+					position: absolute;
+					top: calc(var(--drag-background-spacing) * -1);
+					left: calc(var(--drag-background-spacing) * -1);
+					height: calc(100% + var(--drag-background-spacing) * 2);
+					width: calc(100% + var(--drag-background-spacing) * 2);
+					background-color: color-mix(in srgb, var(--color-border) 20%, transparent);
+					pointer-events: none;
+				}
+			}
+		}
+
+		&[data-layout='inline'] {
+			display: flex;
+
+			& .ui-list-picker-item-header {
+				padding: 0;
+				border: 0;
+				margin: 0;
+			}
+		}
+
+		&:not([data-layout='inline']) {
+			padding: --spacing(4);
+
+			& .ui-list-picker-item-header .ui-list-picker-item-action:first-of-type {
+				margin-left: auto;
+			}
+		}
+
+		& .ui-list-picker-item-header {
+			padding-bottom: --spacing(3);
+			border-bottom: var(--border-default);
+			margin-bottom: --spacing(3);
+			display: flex;
+			align-items: center;
+			flex: 1;
+			--list-picker-item-spacing: --spacing(2);
+			gap: var(--list-picker-item-spacing);
+
+			& .ui-list-picker-item-title {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.ui-list-picker-item-popover {
+		display: flex;
+		gap: --spacing(2);
+		font-size: inherit;
+	}
+
+	span.ui-list-picker-title {
+		border-bottom: var(--border-default);
+		font-weight: bold;
+	}
+}

@@ -20,9 +20,9 @@ func TestWindwalker(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p5_bis"),
+			GearSet: core.GetGearSet("../../../ui/specs/monk/windwalker/gear_sets", "p5_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p4_bis"),
+				core.GetGearSet("../../../ui/specs/monk/windwalker/gear_sets", "p4_bis"),
 			},
 			Talents: WindwalkerTalents,
 			OtherTalentSets: []core.TalentsCombo{
@@ -33,7 +33,7 @@ func TestWindwalker(t *testing.T) {
 			Glyphs:      WindwalkerDefaultGlyphs,
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsWindwalker},
-			Rotation:    core.GetAplRotation("../../../ui/monk/windwalker/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/specs/monk/windwalker/apls", "default"),
 
 			ItemFilter: ItemFilter,
 		},

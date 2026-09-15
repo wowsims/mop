@@ -1,0 +1,61 @@
+@layer components {
+	.ui-timeline-item {
+		@apply absolute left-timeline-pos;
+	}
+
+	.ui-timeline-item-slice {
+		@apply flex h-full w-timeline-segment items-center overflow-x-hidden border-x border-gray-600 font-bold;
+	}
+
+	.ui-timeline-row-icon {
+		@apply h-6 w-6 flex-none;
+	}
+
+	.ui-timeline-row-track {
+		@apply relative box-border min-w-0 shrink-0 grow basis-timeline-total;
+	}
+
+	.ui-timeline-row {
+		@apply m-0 box-border flex h-timeline-row-h items-stretch border-b border-gray-700 bg-background contain-[layout_style];
+	}
+
+	.ui-timeline-ruler-track {
+		@apply absolute top-0 left-0 h-full w-timeline-total;
+		transform: translateX(calc(var(--pan, 0) * -1px));
+	}
+
+	.ui-timeline-label-col {
+		@apply box-border flex w-(--label-w) shrink-0 grow-0 basis-(--label-w) items-center gap-1 pr-2;
+	}
+
+	.ui-timeline-hover-tooltip {
+		@apply pointer-events-none fixed z-1000 max-h-[80vh] max-w-[min(94vw,68rem)] overflow-hidden border border-solid border-(--tooltip-border) bg-(--tooltip-bg) px-(--tooltip-body-padding-x) py-(--tooltip-body-padding-y) text-(--tooltip-body-color);
+		left: calc(var(--tooltip-x, 0) * 1px);
+		top: calc(var(--tooltip-y, 0) * 1px);
+	}
+
+	.ui-timeline-tooltip {
+		@apply flex max-w-[min(92vw,64rem)] flex-col items-start gap-4;
+
+		& ul {
+			@apply m-0 grid list-none auto-cols-max grid-flow-col grid-rows-[repeat(auto-fit,1lh)] gap-x-4 gap-y-1 pl-0;
+			max-height: calc(80vh - 2lh - --spacing(8) - 2 * var(--tooltip-body-padding-y) - 2px);
+		}
+
+		& li {
+			@apply flex items-center gap-2 whitespace-nowrap;
+		}
+	}
+
+	.ui-timeline-tooltip-header {
+		@apply border-b border-white;
+	}
+
+	.ui-timeline-tooltip-body {
+		@apply flex flex-col gap-4;
+	}
+
+	.ui-timeline-tooltip-body-row {
+		@apply flex items-center;
+	}
+}

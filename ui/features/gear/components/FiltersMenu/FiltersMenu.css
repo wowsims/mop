@@ -1,0 +1,9 @@
+@layer components {
+	.ui-filters-menu-section-bool-list {
+		@apply grid grid-cols-2 gap-x-(--modal-padding) gap-y-1;
+	}
+
+	.ui-filters-menu-section-number-list {
+		@apply grid grid-cols-2 gap-x-(--modal-padding);
+	}
+}

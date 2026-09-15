@@ -1,0 +1,21 @@
+{
+	"name": "P5 - Offensive",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatStamina": 0.35,
+		"StatHitRating": 3.25,
+		"StatCritRating": 1.02,
+		"StatHasteRating": 1.01,
+		"StatExpertiseRating": 1.91,
+		"StatDodgeRating": 0.1,
+		"StatParryRating": 0.24,
+		"StatMasteryRating": 0.52,
+		"StatAttackPower": 0.24,
+		"StatArmor": 0.1,
+		"StatBonusArmor": 0.1
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.28,
+		"PseudoStatOffHandDps": 0.72
+	}
+}

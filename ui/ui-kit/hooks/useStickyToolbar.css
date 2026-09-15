@@ -1,0 +1,20 @@
+@layer components {
+	.ui-sticky-toolbar {
+		@apply sticky top-sim-header z-toolbar -mx-page flex w-sticky-toolbar-w px-page transition-colors duration-150 ease-in-out;
+
+		&::after {
+			content: ' ';
+			width: calc(100% - 2 * var(--spacing-page));
+
+			@apply absolute inset-x-0 -bottom-px mx-auto h-px bg-border transition-[width] duration-150 ease-in-out;
+		}
+
+		&[data-stuck] {
+			@apply bg-sim-backdrop;
+
+			&::after {
+				@apply w-full;
+			}
+		}
+	}
+}

@@ -1,0 +1,56 @@
+@layer components {
+	.ui-metrics-table {
+		@apply w-full;
+	}
+
+	.ui-metrics-table th,
+	.ui-metrics-table td {
+		@apply border-x border-solid border-x-white/20;
+	}
+
+	.ui-metrics-table th:first-child,
+	.ui-metrics-table td:first-child {
+		@apply border-l-0 border-l-current;
+	}
+
+	.ui-metrics-table th:last-child,
+	.ui-metrics-table td:last-child {
+		@apply border-r-0 border-r-current;
+	}
+
+	.ui-metrics-table tbody td:first-child {
+		@apply text-left;
+	}
+
+	.ui-metrics-table tbody td:not(:first-child) {
+		@apply text-right;
+	}
+
+	.ui-metrics-header-row {
+		@apply border-b-2 border-solid border-b-white/80;
+	}
+
+	.ui-metrics-header-cell {
+		@apply w-0 cursor-pointer px-2 py-1 text-center whitespace-nowrap;
+	}
+
+	.ui-metrics-row {
+		@apply border-b border-solid border-b-white/20;
+	}
+
+	.ui-metrics-row:nth-child(even) {
+		@apply bg-white/5;
+	}
+
+	.ui-metrics-row:hover {
+		@apply bg-scrim;
+	}
+
+	.ui-metrics-cell {
+		@apply w-0 px-2 py-1 fhd:whitespace-nowrap;
+	}
+
+	.ui-metrics-tooltip th {
+		@apply pt-0;
+	}
+}

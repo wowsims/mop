@@ -1,0 +1,5 @@
+@layer components {
+	.ui-icon-picker-swatch {
+		@apply relative block size-10 min-w-10 border border-border bg-grey bg-cover [transition:border-color_0.15s_ease-in-out] data-active:border-success;
+	}
+}

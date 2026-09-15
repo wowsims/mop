@@ -1,0 +1,12 @@
+.sim-tooltip {
+	z-index: var(--z-index-tooltip);
+	--rt-opacity: 1;
+}
+
+.sim-tooltip [class*='styles-module_content'] {
+	padding: var(--tooltip-body-padding-y) var(--tooltip-body-padding-x);
+}
+
+.sim-tooltip--unpadded [class*='styles-module_content'] {
+	padding: 0;
+}

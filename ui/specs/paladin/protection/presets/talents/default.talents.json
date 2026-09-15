@@ -1,0 +1,10 @@
+{
+	"name": "Default",
+	"talentsString": "313213",
+	"glyphs": {
+		"major1": "GlyphOfFocusedShield",
+		"major2": "GlyphOfTheAlabasterShield",
+		"major3": "GlyphOfDivineProtection",
+		"minor1": "GlyphOfFocusedWrath"
+	}
+}

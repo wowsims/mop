@@ -1,0 +1,25 @@
+@layer components {
+	.ui-chip {
+		@apply flex cursor-pointer rounded-full border border-primary p-0 text-center text-ui leading-none font-normal whitespace-nowrap text-white transition-[color,background-color,border-color,box-shadow] duration-150 ease-in-out select-none;
+
+		&:hover:not([data-active]) {
+			@apply bg-primary-dampened;
+		}
+
+		&[data-active] {
+			@apply bg-primary;
+
+			& .ui-chip-delete {
+				@apply text-primary-foreground;
+			}
+		}
+
+		&[data-disabled] {
+			@apply hidden;
+		}
+	}
+
+	.ui-chip-delete {
+		@apply mr-2 py-2 pr-0 pl-0 text-white;
+	}
+}

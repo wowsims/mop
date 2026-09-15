@@ -1,0 +1,23 @@
+@layer components {
+	.ui-saved-data-container {
+		@apply flex flex-col gap-3;
+	}
+
+	.ui-saved-data-presets,
+	.ui-saved-data-custom {
+		@apply flex flex-wrap gap-3;
+	}
+
+	.ui-saved-data-create-container {
+		@apply flex flex-col;
+	}
+
+	.ui-saved-data-create-container .ui-saved-data-save-input,
+	.ui-saved-data-create-container .ui-saved-data-save-button {
+		@apply w-40 max-xxl:w-full;
+	}
+
+	.ui-saved-data-create-container .ui-saved-data-save-input {
+		@apply mb-3;
+	}
+}

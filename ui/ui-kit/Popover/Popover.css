@@ -1,0 +1,9 @@
+@layer components {
+	.ui-popover-positioner {
+		@apply z-popover;
+	}
+
+	.ui-popover {
+		@apply max-h-(--available-height) overflow-y-auto rounded-none border border-surface-border bg-overlay p-0 px-2 py-2 text-left text-sm font-normal text-white fade-in-out opacity-100 motion-reduce:transition-none;
+	}
+}

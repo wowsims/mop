@@ -1,7 +1,0 @@
-.apl-floating-action-bar-root {
-	@include bottom-floating-action-bar(var(--apl-spacer));
-	transition:
-		padding 0.15s ease-in-out,
-		border-width 0.15s ease-in-out,
-		background-color 0.15s ease-in-out;
-}

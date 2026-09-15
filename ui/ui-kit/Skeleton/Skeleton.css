@@ -1,0 +1,5 @@
+@layer components {
+	.ui-skeleton {
+		@apply inline-block h-[0.85em] w-14 animate-skeleton rounded-xs bg-skeleton bg-size-[200%_100%] align-middle motion-reduce:animate-none;
+	}
+}
