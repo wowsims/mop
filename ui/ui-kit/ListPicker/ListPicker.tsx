@@ -112,6 +112,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				commit(next);
 				return;
 			}
+			if (dstIndex === drag.index || dstIndex === drag.index + 1) return;
 			commit(moveItem(next, drag.index, dstIndex));
 		},
 		[listId, source, commit],

@@ -68,14 +68,15 @@ describe('dropIndex', () => {
 describe('moveItem', () => {
 	const list = ['a', 'b', 'c', 'd'];
 
-	it('removes before inserting, so a forward move lands one place later than the drop cue', () => {
-		// The destination is computed against the *pre-removal* positions and then applied after the
-		// removal has shifted everything down. Dropping 'a' on the top half of 'c' (index 2) puts it
-		// after 'c' rather than before it. The rule is drag behaviour, not markup, so changing it
-		// here would be a silent behaviour change.
-		expect(moveItem(list, 0, 2)).toEqual(['b', 'c', 'a', 'd']);
-		// A backwards move has no shift to absorb and lands where the cue says.
+	it('moves forwards to exactly where the drop cue says', () => {
+		expect(moveItem(list, 0, 2)).toEqual(['b', 'a', 'c', 'd']);
+		expect(moveItem(list, 0, 3)).toEqual(['b', 'c', 'a', 'd']);
 		expect(moveItem(list, 2, 0)).toEqual(['c', 'a', 'b', 'd']);
+	});
+
+	it('leaves the order unchanged for a destination on either side of the item itself', () => {
+		expect(moveItem(list, 1, 1)).toEqual(list);
+		expect(moveItem(list, 1, 2)).toEqual(list);
 	});
 
 	it('moves backwards to exactly the destination index', () => {

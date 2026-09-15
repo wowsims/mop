@@ -320,6 +320,24 @@ describe('ListPicker', () => {
 			expect(rows.value.map(row => row.name)).toEqual(['c', 'a', 'b']);
 		});
 
+		it('moves an item down to the row it is dropped on, not one past it', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			mount(rows);
+
+			startDrag(0);
+			dropOn(2);
+			expect(rows.value.map(row => row.name)).toEqual(['b', 'a', 'c']);
+		});
+
+		it('writes nothing for a drop just below the dragged item', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			mount(rows);
+
+			startDrag(0);
+			dropOn(1);
+			expect(rows.writes).toBe(0);
+		});
+
 		it('refuses to drop an item on itself', () => {
 			const rows = rowsOf('a', 'b');
 			mount(rows);

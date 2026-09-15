@@ -31,7 +31,7 @@ export const dropIndex = (targetIndex: number, clientY: number, rect: { top: num
 export const moveItem = <T>(list: Array<T>, from: number, to: number): Array<T> => {
 	const next = list.slice();
 	const [item] = next.splice(from, 1);
-	next.splice(to, 0, item);
+	next.splice(to > from ? to - 1 : to, 0, item);
 	return next;
 };
 
