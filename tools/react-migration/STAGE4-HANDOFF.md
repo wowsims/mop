@@ -93,7 +93,7 @@ Everything listed in the draft section "User decisions honoured": root 14px ever
   - a type-check failure from an extensionless `.mjs` import.
 
 ### Post-handoff fixes (2026-09-15, after `1495b3470d`, from the user's review)
-Code tip after these: `08d19d7381`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
+Code tip after these: `619f38b048`. The first round ended at `3f0d30ce41`; the second round is the block starting at the Log search chips.
 - **Every Base UI menu has one padded layer per row** (`082c3a1bdc`, plus `c49aeaf8fe` for the IconEnumPicker: its `li` is bare and one `Menu.LinkItem` carries the swatch styling once, replacing two overlapping copies). The shape is `ul[role=menu] > li[role=none]` (structural, no padding) `> button|a` (the single `ui-menu-item` layer, `px-2 py-1`, the full-row highlight).
   - The APL picker's submenu-trigger rows were double-padded; they're 24.5px now (from 31.5px), uniform with the rest.
   - Import/Export entries are real buttons instead of `div`s, and the sim-title and landing menus have the same shape.
@@ -138,6 +138,7 @@ Code tip after these: `08d19d7381`. The first round ended at `3f0d30ce41`; the s
   - Since `2c1f472fa2` the ruler row is portalled into the DR sticky slot, outside `rotation-pane`, which is where `--pps`/`--duration`/`--label-w` are set. The track's width and every tick's position resolved against undefined variables, so the track was 0px wide, all ticks sat at x=0, and the corner ignored the label width.
   - The portalled row now gets the same variables, and `ZoomController` writes `--pps` to both hosts. The ruler and the rows share one coordinate system again: a cast at 10.04s sits at exactly 150px × 10.04 after a zoom-in.
   - Every earlier verify missed it: no script asserted tick positions, and both sides of every comparison had the bug.
+- **Popovers open above modals** (`619f38b048`). Popover positioners used `z-dropdown` (1000) while dialogs sit at `z-modal` (1055), and both portal to the same root since the portal standardisation, so a popover opened inside a modal painted underneath it. In the advanced encounter modal the target actions (copy, delete) were unreachable: the ⋯ icon intercepted the click. A new `--z-index-popover` (1070) sits above both modal layers and below tooltips. The modal's dropdowns are native `<select>`s and were never affected.
 - **The APL drag freeze was stale tab state** (see open item 1).
 - **Combined verify #2, GREEN** (`70a895ff93` vs baseline-30):
   - Gates: vitest 225 files / 1771 tests, snapshots 34/34, lint 0/0.
@@ -166,6 +167,7 @@ Code tip after these: `08d19d7381`. The first round ended at `3f0d30ce41`; the s
 13. `tools/react-migration/log-runner.mjs`'s "after a deep scroll" check uses a relative `scrollBy`. Against a build from before `39f9db984c`, which still jumps the page on Log activation, it lands 66px apart and reports a false mismatch. Use an absolute `scrollTop` there.
 14. A possible deeper fix from the simplify pass: make the clone-on-write writers keep identity (`Encounter.modifyTarget` edits in place or carries an id; `Player.setAplRotation` carries ids the way `row_source.ts` carries uuids). Then `ListPicker` could drop its positional `reconcileIds`, and its one known edge case with it. That means touching sim-model code and the writers' change notifications.
 15. APL drag and drop library: `@dnd-kit/react` was evaluated (0.5.0, pre-1.0; the classic packages are frozen since Dec 2024). The decision is to keep the native drag and revisit at 1.0. The stable-id prerequisite has landed.
+16. **A sim crash when copying an encounter target that has boss AI:** on warrior/protection with the default encounter, copying the Sha of Fear target in the advanced encounter modal crashed the WASM sim with "Aura Naked and Afraid already registered!". The copy registers the same AI aura twice. It's a Go sim issue, not the UI, and probably also on master. It was unreachable in the UI until the popover fix above.
 
 
 ## History: where the chain was (Phases 1–4; superseded by "Final state" above)
