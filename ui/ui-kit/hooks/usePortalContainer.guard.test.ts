@@ -19,18 +19,24 @@ const relative = (file: string) => path.relative(path.resolve(here, '../../..'),
 
 const IMPORTS_HOOK = /usePortalContainer/;
 
+const PORTAL_EXCEPTIONS: Record<string, string> = {
+	'app/landing/LandingClassMenu.tsx':
+		'keepMounted, one per class (34 on the page): pointing all of them at the shared root made tw-probe.mjs, which walks the DOM by index, hang on a multi-thousand-node index misalignment at the landing page rest state — measured, not assumed. Kept local to its own wrapper div.',
+};
+
 const OVERLAY_PORTAL_EXCEPTIONS: Record<string, string> = {
 	'app/SimTabs.tsx': 'a layout slot for the tab panes, not an overlay',
 };
 
 describe('portal root guard', () => {
-	it('every Base UI .Portal in ui-kit and app goes through usePortalContainer', () => {
+	it('every Base UI .Portal in ui-kit and app goes through usePortalContainer, or is a documented exception', () => {
 		const offenders: Array<string> = [];
 		for (const file of [...walk(uiKitRoot), ...walk(appRoot)]) {
 			const contents = readFileSync(file, 'utf-8');
 			if (!/\.Portal\b/.test(contents)) continue;
 			const key = relative(file).replace(/^ui\//, '');
 			if (IMPORTS_HOOK.test(contents)) continue;
+			if (key in PORTAL_EXCEPTIONS) continue;
 			offenders.push(key);
 		}
 		expect(offenders).toEqual([]);

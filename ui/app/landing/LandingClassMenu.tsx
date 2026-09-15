@@ -4,10 +4,10 @@ import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18
 import { PlayerClasses } from '@sim/player/classes/index';
 import type { PlayerClass } from '@sim/player/player_class';
 import { textClassNameForClass, textClassNameForSpec } from '@sim/proto/utils';
-import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { SimLinkContent } from '@ui-kit/SimLinkContent';
 import { CLASS_BORDER } from '@ui-kit/utils/colors';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { useMedia } from 'react-use';
 
 import { classLaunchStatus } from './landing_classes';
@@ -21,12 +21,12 @@ export interface LandingClassMenuProps {
 }
 
 export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
-	const portalContainer = usePortalContainer();
+	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const stacked = useMedia(STACKED, false);
 	const className = translatePlayerClass(playerClass);
 
 	return (
-		<div className="ui-landing-sim-link-dropdown" data-testid="sim-link-dropdown">
+		<div className="ui-landing-sim-link-dropdown" ref={setContainer} data-testid="sim-link-dropdown">
 			<Menu.Root modal={false}>
 				<Menu.Trigger openOnHover delay={0} className={clsx('ui-landing-sim-link-cell', textClassNameForClass(playerClass))} data-testid="sim-link">
 					<SimLinkContent
@@ -37,7 +37,7 @@ export const LandingClassMenu = ({ playerClass }: LandingClassMenuProps) => {
 					/>
 				</Menu.Trigger>
 				{/* `keepMounted`: the 34 spec links are the landing page's only content for a crawler, and an unmounted popup has none of them in the document. */}
-				<Menu.Portal container={portalContainer ?? undefined} keepMounted>
+				<Menu.Portal container={container} keepMounted>
 					<Menu.Positioner side={stacked ? 'bottom' : 'right'} align="start" sideOffset={0} collisionPadding={4} className="z-dropdown">
 						<Menu.Popup className="ui-landing-sim-link-popup">
 							{Object.values(playerClass.specs).map(spec => (
