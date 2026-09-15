@@ -1,5 +1,9 @@
 @layer components {
-.ui-popover {
-	@apply max-h-(--available-height) overflow-y-auto p-0 border border-surface-border rounded-none bg-overlay text-white text-sm font-normal px-2 py-2 text-left opacity-100 fade-in-out motion-reduce:transition-none;
-}
+	.ui-popover-positioner {
+		@apply z-dropdown;
+	}
+
+	.ui-popover {
+		@apply max-h-(--available-height) overflow-y-auto rounded-none border border-surface-border bg-overlay p-0 px-2 py-2 text-left text-sm font-normal text-white fade-in-out opacity-100 motion-reduce:transition-none;
+	}
 }

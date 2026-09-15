@@ -68,7 +68,13 @@ export const Popover = ({
 			)}
 			{/* Named, because with a `container` the portal renders a wrapper element of its own. */}
 			<BasePopover.Portal className="contents" data-testid="sim-popover-portal" container={container ?? portalContainer ?? undefined}>
-				<BasePopover.Positioner data-testid="sim-popover-positioner" anchor={anchor} side={side} align={align} sideOffset={sideOffset}>
+				<BasePopover.Positioner
+					className="ui-popover-positioner"
+					data-testid="sim-popover-positioner"
+					anchor={anchor}
+					side={side}
+					align={align}
+					sideOffset={sideOffset}>
 					<BasePopover.Popup
 						className={clsx(maxWidth ?? 'max-w-(--available-width)', 'ui-popover', className)}
 						data-testid={testId ?? 'sim-popover-popup'}
