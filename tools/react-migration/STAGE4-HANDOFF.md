@@ -118,10 +118,11 @@ Code tip after these: `3f0d30ce41`.
     - sim-title, apl-tab (windwalker and default), timeline and log-runner all match.
 
 ### Open items for the user review (not fixed on this branch)
-1. **The APL drag "hangs until refresh" on Windows Chrome is still not reproduced.** The user sees it unthrottled on the dev server with the big windwalker Tigereye Brew action; master does not freeze.
-   - Synthetic drag events in the user's Chrome on the dev server (main-thread time measured with MessageChannel): dragstart and dragover ~1ms; **each drop blocks the main thread ~1.1–1.2s** while dev-mode React re-renders the whole 69-action APL.
-   - A production build on Linux takes ~180ms per drop and never hung, headless or headed, ×1 or ×4 CPU.
-   - A native Windows drag has not been profiled: the user's Performance profile of the hang is the next step.
+1. **Resolved, not an app bug: the APL drag "hangs until refresh" on Windows Chrome.** It was state stuck in one browser tab.
+   - Two Performance traces from the user showed the same thing: `dragstart` fires, then no `dragenter`/`dragover`/`drop`/`dragend`. The page stayed idle (88ms busy in 6.5s) while its mouse input was swallowed, and the browser kept forwarding plain mouse moves, i.e. there was no OS drag loop.
+   - Disabling the custom drag image and DevTools device emulation changed nothing.
+   - It worked in Incognito, and it worked again after closing and reopening the tab. A reload doesn't clear per-tab state; a debugger client's drag interception (CDP `Input.setInterceptDrags`) left on is the likely cause.
+   - Still worth knowing: in the dev build, each drop of the big windwalker Tigereye Brew action blocks the main thread ~1.1–1.2s while dev-mode React re-renders the whole 69-action APL (a production build: ~180ms).
 2. Dropping a dragged APL row onto another row's inner control silently fails (pre-existing; identical on the React build).
 3. `ListPicker` keys items by index (`key={index}`). Identity keys need position-independent item configs first (see the reverted `de639ce188`).
 4. Healers can't Simulate (pre-existing).
