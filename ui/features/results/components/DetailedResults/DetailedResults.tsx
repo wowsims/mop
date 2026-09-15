@@ -184,7 +184,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 			</div>
 			<DrStickySlotContext.Provider value={stickySlot}>
 				<Tabs.Root
-					className="group/dr flex flex-col"
+					className="group/dr flex scroll-mt-sim-header flex-col"
 					data-testid="dr-root"
 					data-no-results={!hasResults ? '' : undefined}
 					value={activeId}

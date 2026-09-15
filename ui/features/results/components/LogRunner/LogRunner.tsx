@@ -115,8 +115,9 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	const scrollListToTop = useCallback(() => {
 		const list = listRef.current;
 		if (!list || list.offsetParent === null) return;
-		list.scrollIntoView({ block: 'start' });
-	}, []);
+		const target = stickySlot?.closest<HTMLElement>('[data-testid="dr-root"]') ?? list;
+		target.scrollIntoView({ block: 'start' });
+	}, [stickySlot]);
 
 	useEffect(() => {
 		if (seen) scrollListToTop();
@@ -171,7 +172,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 				<div
 					ref={listRef}
 					data-testid="log-runner-list"
-					className="w-(--log-runner-list-width,max-content) min-w-full scroll-mt-(--spacing-sim-header)"
+					className="w-(--log-runner-list-width,max-content) min-w-full"
 					style={listWidth ? { ['--log-runner-list-width' as string]: `${Math.ceil(listWidth)}px` } : undefined}>
 					<VirtualList
 						testId="log-runner-logs"

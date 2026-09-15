@@ -87,7 +87,9 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
 	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
 	return (
 		<SimHostProvider host={host}>
-			<div data-testid="dr-sticky-slot" ref={setSlot} />
+			<div data-testid="dr-root">
+				<div data-testid="dr-sticky-slot" ref={setSlot} />
+			</div>
 			<DrStickySlotContext.Provider value={slot}>{children}</DrStickySlotContext.Provider>
 		</SimHostProvider>
 	);
@@ -236,14 +238,16 @@ describe('LogRunner', () => {
 	// The debounced search box fires `onChange('')` once on mount. Scrolling the page then would move
 	// whichever tab is actually open, because this pane is `display: none` until its tab is picked.
 	describe('scrolling back to the top', () => {
-		const scrollIntoView = vi.fn();
+		const rootScrollIntoView = vi.fn();
+		const listScrollIntoView = vi.fn();
 
 		// happy-dom leaves every box at 0x0 and every `offsetParent` null, which is also what a closed
 		// tab looks like — so an open one has to be described on the element itself.
 		const placeList = (container: HTMLElement, offsetParent: HTMLElement | null) => {
 			const list = container.querySelector<HTMLElement>('[data-testid="log-runner-list"]')!;
 			Object.defineProperty(list, 'offsetParent', { value: offsetParent, configurable: true });
-			list.scrollIntoView = scrollIntoView;
+			list.scrollIntoView = listScrollIntoView;
+			container.querySelector<HTMLElement>('[data-testid="dr-root"]')!.scrollIntoView = rootScrollIntoView;
 		};
 
 		const showPane = (container: HTMLElement) => placeList(container, document.body);
@@ -253,7 +257,8 @@ describe('LogRunner', () => {
 			fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][1]);
 
 		beforeEach(() => {
-			scrollIntoView.mockClear();
+			rootScrollIntoView.mockClear();
+			listScrollIntoView.mockClear();
 		});
 
 		it('does not scroll while the pane is the closed tab', async () => {
@@ -261,24 +266,26 @@ describe('LogRunner', () => {
 			result = resultWith(LOGS);
 			const { container } = mount();
 			hidePane(container);
-			scrollIntoView.mockClear();
+			rootScrollIntoView.mockClear();
 
 			fireEvent.change(searchInput(container), { target: { value: 'Cleave' } });
 			await act(async () => void vi.advanceTimersByTime(200));
 			backToTop(container);
 
-			expect(scrollIntoView).not.toHaveBeenCalled();
+			expect(rootScrollIntoView).not.toHaveBeenCalled();
+			expect(listScrollIntoView).not.toHaveBeenCalled();
 		});
 
-		it('scrolls the list to the top of its scroller natively when the pane is open', () => {
+		it('scrolls the whole detailed-results section to the top natively, not the list itself which the sticky toolbar would cover', () => {
 			result = resultWith(LOGS);
 			const { container } = mount();
 			showPane(container);
-			scrollIntoView.mockClear();
+			rootScrollIntoView.mockClear();
 
 			backToTop(container);
 
-			expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' });
+			expect(rootScrollIntoView).toHaveBeenCalledWith({ block: 'start' });
+			expect(listScrollIntoView).not.toHaveBeenCalled();
 		});
 	});
 });
