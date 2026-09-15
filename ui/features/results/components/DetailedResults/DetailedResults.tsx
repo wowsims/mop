@@ -8,6 +8,7 @@ import { subscribeSimSettingsChange } from '@sim/state/subscriptions';
 import { isDevMode } from '@sim/utils/env';
 import { Button } from '@ui-kit/Button';
 import { useStickyToolbar } from '@ui-kit/hooks/useStickyToolbar';
+import { TabPanels } from '@ui-kit/TabNav';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -205,7 +206,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						</div>
 						<div ref={setStickySlot} data-testid="dr-sticky-slot" />
 					</div>
-					<div className="grid grid-cols-1 items-start pt-6" data-testid="dr-tab-content">
+					<TabPanels className="pt-6" data-testid="dr-tab-content">
 						<div
 							id="noResultsTab"
 							data-active
@@ -253,7 +254,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						<DetailedResultsPane id="logTab" contentTestId="log">
 							<LogRunner active={activeId === 'logTab'} />
 						</DetailedResultsPane>
-					</div>
+					</TabPanels>
 				</Tabs.Root>
 			</DrStickySlotContext.Provider>
 		</div>

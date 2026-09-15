@@ -15,7 +15,7 @@ import i18n from '@i18n/config';
 import { PresetConfigurationCategory } from '@sim/constants/preset_categories';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { ContentBlock } from '@ui-kit/ContentBlock';
-import { TabPanel } from '@ui-kit/TabNav';
+import { TabPanel, TabPanels } from '@ui-kit/TabNav';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
@@ -112,14 +112,16 @@ export const RotationTabBody = ({ rotationType }: RotationTabBodyProps) => {
 					onValueChange={(next: string) => setActiveId(next as AplPaneId)}>
 					<AplNavbar />
 					<TabPanelColumns.Left>
-						{APL_PANES.map(pane => {
-							const Body = PANE_BODIES[pane.id];
-							return (
-								<TabPanel key={pane.id} value={pane.id} className="gap-section pt-0 not-data-hidden:flex not-data-hidden:flex-col">
-									<Body />
-								</TabPanel>
-							);
-						})}
+						<TabPanels>
+							{APL_PANES.map(pane => {
+								const Body = PANE_BODIES[pane.id];
+								return (
+									<TabPanel key={pane.id} value={pane.id} className="gap-section pt-0 not-data-hidden:flex not-data-hidden:flex-col">
+										<Body />
+									</TabPanel>
+								);
+							})}
+						</TabPanels>
 					</TabPanelColumns.Left>
 					<TabPanelColumns.Right>
 						<RotationSidebar />

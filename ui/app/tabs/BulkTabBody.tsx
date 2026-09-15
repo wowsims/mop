@@ -16,7 +16,7 @@ import { useSimHost } from '@sim/context/SimHostContext';
 import { useSimReady } from '@sim/hooks/useSimReady';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
-import { TabNav, TabPanel } from '@ui-kit/TabNav';
+import { TabNav, TabPanel, TabPanels } from '@ui-kit/TabNav';
 import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { LocaleHtml } from '@ui-kit/Tooltip';
 import { useEffect, useState } from 'react';
@@ -45,7 +45,7 @@ export const BulkTabBody = () => {
 			<TabPanelColumns.Left className="pt-2" variant="auto-columns">
 				<Tabs.Root data-testid="bulk-tab-tabs" value={activeId} onValueChange={next => setActiveId(next as BulkPaneId)}>
 					<TabNav tabs={PANES.map(pane => ({ id: pane.id, label: i18n.t(pane.labelKey) }))} />
-					<div>
+					<TabPanels>
 						<TabPanel value="bulkSetupTab" className="gap-6 not-data-hidden:grid">
 							<p className="mb-0">
 								<LocaleHtml html={i18n.t('bulk_tab.description')} />
@@ -85,7 +85,7 @@ export const BulkTabBody = () => {
 						<TabPanel value="bulkResultsTab">
 							<BulkResults />
 						</TabPanel>
-					</div>
+					</TabPanels>
 				</Tabs.Root>
 			</TabPanelColumns.Left>
 			<BulkSettings />
