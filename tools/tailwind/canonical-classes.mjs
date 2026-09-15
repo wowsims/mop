@@ -141,10 +141,21 @@ function collectFromScript(text, relPath, classAttrs) {
 	const attrPattern = new RegExp(`\\b(${classAttrs.join('|')})\\s*=\\s*(\\{([^{}]|\\{[^{}]*\\})*\\}|"[^"]*"|'[^']*')`, 'g');
 	let m;
 	while ((m = attrPattern.exec(text))) {
+		// A KNOWN_CLASS_PROPS name (width/maxWidth) also occurs as an ordinary destructured
+		// parameter default (`{ ..., maxWidth = 'default', ... }`), which isn't a JSX attribute
+		// at all; those are always preceded by `,` or `{`, which a real JSX attribute never is.
+		if (KNOWN_CLASS_PROPS.includes(m[1])) {
+			const before = text.slice(0, m.index).trimEnd();
+			if (before.endsWith(',') || before.endsWith('{')) continue;
+		}
 		const raw = m[2];
 		const index = m.index + m[0].indexOf(raw);
 		if (raw.startsWith('"') || raw.startsWith("'")) {
-			for (const token of splitClassString(raw.slice(1, -1))) found.push({ token, index });
+			const body = raw.slice(1, -1);
+			// `width` is also the native <img>/<video> pixel attribute (width="15"), which
+			// isn't a Tailwind class at all; a plain integer is never a class token.
+			if (KNOWN_CLASS_PROPS.includes(m[1]) && /^\d+$/.test(body)) continue;
+			for (const token of splitClassString(body)) found.push({ token, index });
 			continue;
 		}
 		const inner = raw.slice(1, -1).trim();
@@ -221,9 +232,13 @@ function collectStringLiteralsFrom(snippet, offset, found) {
 }
 
 // Collects string/template/object-literal tokens out of `const <name>Class(es) = …` and
-// `const <NAME>_CLASSES = …` declarations (ROOT_CLASSES, tickClass, LAYOUT_CLASSES, …): a
-// widespread convention for module- or function-scoped Tailwind class strings that never
-// reach a className attribute, a clsx() call, or a *ClassName object property directly.
+// `const <NAME>_CLASSES = '…'` declarations (ROOT_CLASSES, tickClass, …): a widespread
+// convention for module- or function-scoped Tailwind class strings that never reach a
+// className attribute, a clsx() call, or a *ClassName object property directly. Deliberately
+// limited to a plain string/template-literal RHS: a `{…}` object literal (e.g. WIDTH_CLASSES
+// = { content: '', anchor: 'ui-menu-anchor-width' }) can't be told apart from an arbitrary,
+// unrelated `*Class(es)`-named object or namespace (PlayerClasses, with methods and thrown
+// errors) by name alone, and scanning its body wholesale pulls in every string literal in it.
 function collectFromClassDecls(text, found) {
 	const declPattern = /\b(?:export\s+)?(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;]+)?=\s*/g;
 	let m;
@@ -231,7 +246,7 @@ function collectFromClassDecls(text, found) {
 		if (!/class(es)?$/i.test(m[1])) continue;
 		const start = declPattern.lastIndex;
 		const next = text[start];
-		if (next !== "'" && next !== '"' && next !== '`' && next !== '{') continue;
+		if (next !== "'" && next !== '"' && next !== '`') continue;
 		let depth = 0;
 		let i = start;
 		for (; i < text.length; i++) {
