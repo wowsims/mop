@@ -47,7 +47,7 @@ export const ConfirmPopover = ({
 		container={container}
 		side={side}
 		testId={testId ?? 'sim-confirm-popover'}
-		maxWidth="max-w-[220px]">
+		maxWidth="max-w-55">
 		<p className="mb-3" data-testid="sim-confirm-popover-message">
 			{children}
 		</p>

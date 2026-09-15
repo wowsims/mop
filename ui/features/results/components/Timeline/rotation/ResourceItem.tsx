@@ -13,10 +13,10 @@ export interface ResourceItemProps {
 }
 
 const FILL_CLASSES: Record<string, string> = {
-	focus: 'bottom-0 w-[10px] bg-orange',
-	energy: 'bottom-0 w-[10px] bg-damage-partial',
-	'lunar-energy': 'bottom-0 w-[24px] bg-resource-lunar-energy',
-	'solar-energy': 'top-0 w-[24px] bg-resource-solar-energy',
+	focus: 'bottom-0 w-2.5 bg-orange',
+	energy: 'bottom-0 w-2.5 bg-damage-partial',
+	'lunar-energy': 'bottom-0 w-6 bg-resource-lunar-energy',
+	'solar-energy': 'top-0 w-6 bg-resource-solar-energy',
 };
 
 export const ResourceItem = ({ item, index, cssName }: ResourceItemProps) => (
@@ -31,7 +31,7 @@ export const ResourceItem = ({ item, index, cssName }: ResourceItemProps) => (
 			hidden={item.display !== 'fill'}
 			style={item.display === 'fill' ? cssVars({ '--fill': String(item.fillPercent) }) : undefined}
 		/>
-		<span data-testid="rotation-item-resource-text" className="group-data-[density=medium]/scroller:hidden group-data-[density=coarse]/scroller:hidden">
+		<span data-testid="rotation-item-resource-text" className="group-data-[density=coarse]/scroller:hidden group-data-[density=medium]/scroller:hidden">
 			{item.text}
 		</span>
 	</div>

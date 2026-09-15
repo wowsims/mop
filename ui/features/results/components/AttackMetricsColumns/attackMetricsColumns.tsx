@@ -83,7 +83,7 @@ export const attackMetricsColumns = {
 		helper.accessor(row => total(row.metric), {
 			id,
 			header,
-			meta: { columnClass: 'w-[400px]', headerCellClass: 'text-center', tooltipId, primaryColumn: true },
+			meta: { columnClass: 'w-100', headerCellClass: 'text-center', tooltipId, primaryColumn: true },
 			cell: info => {
 				const metric = info.row.original.metric;
 				return (

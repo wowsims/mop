@@ -192,7 +192,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				align="start"
 				className="min-w-popup-min-w"
 				testId="reforge-optimiser-popover"
-				maxWidth="max-w-100 max-lg:max-w-settings-panel-max"
+				maxWidth="max-w-87.5 max-lg:max-w-settings-panel-max"
 				triggerClassName={[
 					'ui-button',
 					'ui-button-md',
@@ -227,7 +227,7 @@ export const ReforgePanel = ({ model, options, container }: ReforgePanelProps) =
 				place="bottom"
 				clickable
 				className="suggest-reforges-softcaps"
-				maxWidth="max-w-[310px]"
+				maxWidth="max-w-77.5"
 				// The limits are read per open.
 				render={() => {
 					const softCaps = model.softCapsConfigWithLimits;

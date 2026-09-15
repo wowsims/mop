@@ -18,23 +18,23 @@ export interface ReplaySceneProps {
 export const ReplayScene = ({ model, clock }: ReplaySceneProps) => (
 	<ReplayFramesContext value={clock.frames}>
 		<div data-testid="cr-scene" className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-cr-scene">
-			<div className="absolute inset-0 z-0 bg-cr-vignette pointer-events-none" aria-hidden="true" />
+			<div className="pointer-events-none absolute inset-0 z-0 bg-cr-vignette" aria-hidden="true" />
 			<div className="relative z-1 min-h-45 flex-1 overflow-hidden bg-transparent">
 				<div className="absolute inset-x-0 top-2.5 z-10 flex justify-center">
 					<ReplayTicker actions={model.actions} />
 				</div>
-				<div className="absolute inset-x-5 bottom-0 top-cr-icon-offset z-1 overflow-hidden">
+				<div className="absolute inset-x-5 top-cr-icon-offset bottom-0 z-1 overflow-hidden">
 					<ReplayEnemyFormation enemies={model.enemies} hiddenCount={model.hiddenEnemyCount} />
 				</div>
 			</div>
-			<div className="relative z-1 w-1/2 shrink-0 self-center bg-black-92 px-4 py-[8px] border-t border-white-8 flex flex-col gap-1.5">
-				<div className="flex min-h-11.5 flex-nowrap items-center gap-[8px]">
+			<div className="relative z-1 flex w-1/2 shrink-0 flex-col gap-1.5 self-center border-t border-white-8 bg-black-92 px-4 py-2">
+				<div className="flex min-h-11.5 flex-nowrap items-center gap-2">
 					<div data-testid="cr-cdm-player-label" className="shrink-0 text-ep-delta font-bold tracking-[0.04em] text-white-70">
 						{model.playerName}
 					</div>
 					<ReplayAuraIcons
 						testId="cr-buff-icons"
-						className="flex w-full min-w-0 flex-1 flex-row flex-wrap content-start justify-start gap-0.75 min-h-11.25 max-h-33 overflow-hidden"
+						className="flex max-h-33 min-h-11.25 w-full min-w-0 flex-1 flex-row flex-wrap content-start justify-start gap-0.75 overflow-hidden"
 						auras={model.playerAuras}
 					/>
 				</div>

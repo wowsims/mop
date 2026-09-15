@@ -110,11 +110,16 @@ function isGeneratedFile(relPath) {
 // list: any tight `wordClassName=`/`wordClassNames=` occurrence (JSX attributes and
 // destructured prop defaults are written without spaces around `=`; a plain `const x = …`
 // assignment has spaces and so is not matched), plus className itself.
+// Tooltip/Popover pass a bare Tailwind class string through `width`/`maxWidth` props
+// (see ui/ui-kit/Tooltip/Tooltip.tsx, ui/ui-kit/Popover/Popover.tsx); those names don't
+// follow the `*ClassName(s)` convention CLASS_ATTR_RE derives, so they're listed explicitly.
+const KNOWN_CLASS_PROPS = ['width', 'maxWidth'];
+
 export function deriveClassAttrs(root) {
 	const skipDirs = new Set([path.join(root, 'ui/generated'), path.join(root, 'node_modules')]);
 	const scriptFiles = walk(path.join(root, 'ui'), ['.tsx', '.ts'], skipDirs);
 
-	const attrs = new Set(['className']);
+	const attrs = new Set(['className', ...KNOWN_CLASS_PROPS]);
 	for (const file of scriptFiles) {
 		const relPath = path.relative(root, file);
 		if (isGeneratedFile(relPath)) continue;
@@ -127,7 +132,8 @@ export function deriveClassAttrs(root) {
 }
 
 // Collects {token, index} occurrences from TSX/TS source: className-style attributes,
-// clsx(...) calls, and object properties named className / *ClassName / extraClassNames.
+// clsx(...) calls, object properties named className / *ClassName / extraClassNames, and
+// *Class(es) declarations (see collectFromClassDecls).
 function collectFromScript(text, relPath, classAttrs) {
 	const found = [];
 	const skipDynamic = isSpecsFile(relPath);
@@ -171,6 +177,8 @@ function collectFromScript(text, relPath, classAttrs) {
 			collectStringLiteralsFrom(args, argsStart, found);
 		}
 
+		collectFromClassDecls(text, found);
+
 		const propPattern = /\b(className|\w+ClassName|extraClassNames)\s*:\s*(\[[^\]]*\]|["'`][^"'`]*["'`])/g;
 		while ((m = propPattern.exec(text))) {
 			const raw = m[2];
@@ -209,6 +217,43 @@ function collectStringLiteralsFrom(snippet, offset, found) {
 		} else {
 			for (const token of splitClassString(body)) found.push({ token, index });
 		}
+	}
+}
+
+// Collects string/template/object-literal tokens out of `const <name>Class(es) = …` and
+// `const <NAME>_CLASSES = …` declarations (ROOT_CLASSES, tickClass, LAYOUT_CLASSES, …): a
+// widespread convention for module- or function-scoped Tailwind class strings that never
+// reach a className attribute, a clsx() call, or a *ClassName object property directly.
+function collectFromClassDecls(text, found) {
+	const declPattern = /\b(?:export\s+)?(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;]+)?=\s*/g;
+	let m;
+	while ((m = declPattern.exec(text))) {
+		if (!/class(es)?$/i.test(m[1])) continue;
+		const start = declPattern.lastIndex;
+		const next = text[start];
+		if (next !== "'" && next !== '"' && next !== '`' && next !== '{') continue;
+		let depth = 0;
+		let i = start;
+		for (; i < text.length; i++) {
+			const ch = text[i];
+			if (ch === '\\') {
+				i++;
+				continue;
+			}
+			if (ch === "'" || ch === '"' || ch === '`') {
+				const quote = ch;
+				i++;
+				while (i < text.length && text[i] !== quote) {
+					if (text[i] === '\\') i++;
+					i++;
+				}
+				continue;
+			}
+			if (ch === '{' || ch === '[' || ch === '(') depth++;
+			else if (ch === '}' || ch === ']' || ch === ')') depth--;
+			else if (ch === ';' && depth <= 0) break;
+		}
+		collectStringLiteralsFrom(text.slice(start, i), start, found);
 	}
 }
 
@@ -258,14 +303,18 @@ export async function findNonCanonical(root, opts = {}) {
 	const designSystem = await loadDesignSystemCached(cssPath);
 
 	const occurrences = collectTokens(root);
-	// canonicalizeCandidates(candidates) canonicalizes each candidate independently (no
-	// cross-candidate collapsing happens unless the `collapse` option is set, which we never
-	// pass), so batching every unique token into one call is equivalent to the brief's
-	// "run each token alone" per-class IntelliSense check, just without the per-call overhead.
+	// canonicalizeCandidates(candidates) drops an entry from its return array whenever two
+	// distinct input candidates canonicalize to the same output (e.g. the already-canonical
+	// 'data-popup-open:x' and the bracketed 'data-[popup-open]:x' elsewhere in the tree both
+	// resolve to 'data-popup-open:x'), which silently shifts every later index in a shared
+	// batch out of alignment with its input. So each unique token is canonicalized in its own
+	// single-element call -- slower, but positionally safe regardless of what else is present.
 	const uniqueTokens = [...new Set(occurrences.map(occ => occ.token))];
 	const canonicalByToken = new Map();
-	const canonicalized = designSystem.canonicalizeCandidates(uniqueTokens, { rem: 16 });
-	uniqueTokens.forEach((token, i) => canonicalByToken.set(token, canonicalized[i]));
+	for (const token of uniqueTokens) {
+		const [canonical] = designSystem.canonicalizeCandidates([token], { rem: 16 });
+		canonicalByToken.set(token, canonical);
+	}
 
 	const results = [];
 	for (const occ of occurrences) {

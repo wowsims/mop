@@ -113,7 +113,7 @@ describe('DamageMetricsTable', () => {
 		expect(container.querySelector('[data-testid="damage-metrics-root"]')).toBeTruthy();
 		expect([...container.querySelectorAll('thead th')].map(th => th.getAttribute('class'))).toEqual([
 			'ui-metrics-header-cell',
-			'ui-metrics-header-cell w-[400px] text-center',
+			'ui-metrics-header-cell w-100 text-center',
 			'ui-metrics-header-cell',
 			'ui-metrics-header-cell',
 			'ui-metrics-header-cell',

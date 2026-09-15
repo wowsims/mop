@@ -22,8 +22,8 @@ const FORWARD_STEPS = [
 ];
 
 export const ReplayControls = ({ clock }: ReplayControlsProps) => (
-	<div className="relative z-1 shrink-0 px-3 pb-[8px] pt-1.5 border-t border-white-6 bg-transparent">
-		<div className="flex min-h-[32px] flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-thin">
+	<div className="relative z-1 shrink-0 border-t border-white-6 bg-transparent px-3 pt-1.5 pb-2">
+		<div className="flex min-h-8 scrollbar-thin flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden">
 			{REWIND_STEPS.map(step => (
 				<ReplaySeekButton key={step.delta} delta={step.delta} glyph={step.glyph} onSeekBy={clock.seekBy} />
 			))}
@@ -44,7 +44,7 @@ export const ReplayControls = ({ clock }: ReplayControlsProps) => (
 						key={rate}
 						type="button"
 						data-testid="cr-speed-btn"
-						className="cursor-pointer rounded-sm border border-white-12 bg-white-5 px-[8px] py-0.75 text-[0.75rem] text-white-60 aria-pressed:border-white-50 aria-pressed:text-white"
+						className="cursor-pointer rounded-sm border border-white-12 bg-white-5 px-2 py-0.75 text-[0.75rem] text-white-60 aria-pressed:border-white-50 aria-pressed:text-white"
 						aria-pressed={clock.rate === rate}
 						onClick={() => clock.setRate(rate)}>
 						{rate}x
