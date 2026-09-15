@@ -73,11 +73,12 @@ for (const row of classes ?? []) console.log(`    ${row.tag.padEnd(6)} ${String(
 const normalise = href => String(href).replace(`localhost:${PORT}`, 'localhost:<port>');
 console.log('\nspecs (hover each class)');
 // A row within the root menu, relative to it: `> li > .sim-link-dropdown > sim-link` for Bootstrap's
-// nested `<ul>`, `> sim-link` for Base UI's flat popup. `.nth(index)` against an *un*scoped selector
+// nested `<ul>`, `> li > sim-link` for Base UI's `ul > li[role=none] > button` rows (since 082c3a1bdc),
+// `> sim-link` for the older flat popup. The same three forms as `ROWS()`. `.nth(index)` against an *un*scoped selector
 // matches rows across every open Base UI popup, not just the root menu, so a submenu opening while
 // this loop runs (the previous iteration's hover) drifts the index. Scoped to the first — root —
 // open menu below, which stays first in document order however many submenus open after it.
-const rowSelector = `:scope > li > .sim-link-dropdown > :is(${q('sim-link')}), :scope > :is(${q('sim-link')})`;
+const rowSelector = `:scope > li > .sim-link-dropdown > :is(${q('sim-link')}), :scope > li > :is(${q('sim-link')}), :scope > :is(${q('sim-link')})`;
 const rootMenu = () => page.locator(`:is(${q('sim-title')}) .dropdown-menu.show, ${q('sim-title-popup')}`).first();
 let total = 0;
 for (const [index, klass] of (classes ?? []).entries()) {
