@@ -65,7 +65,7 @@ export const PriorityList = () => {
 				)}
 			/>
 			<AplListToolbar
-				className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
+				className="peer-has-data-[drag='from']:pointer-events-none peer-has-data-[drag='from']:opacity-50"
 				itemName={itemLabel()}
 				onCreate={() => player.modifyAplRotation(rotation => rotation.priorityList.push(APLListItem.create({ action: {} })))}
 			/>

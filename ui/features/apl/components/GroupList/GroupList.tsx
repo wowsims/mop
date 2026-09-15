@@ -69,7 +69,7 @@ export const GroupList = () => {
 					renderItem={(index, itemConfig) => <GroupEditor player={player} config={itemConfig} groupIndex={index} />}
 				/>
 				<AplListToolbar
-					className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
+					className="peer-has-data-[drag='from']:pointer-events-none peer-has-data-[drag='from']:opacity-50"
 					itemName={groupName()}
 					nameDialog={{
 						inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),

@@ -56,7 +56,7 @@ export const VariablesList = () => {
 				renderItemHeader={index => <AplValidations getValidations={subject => uuidValidations(subject, variables()[index]?.value?.uuid?.value)} />}
 			/>
 			<AplListToolbar
-				className="peer-has-[[data-drag='from']]:pointer-events-none peer-has-[[data-drag='from']]:opacity-50"
+				className="peer-has-data-[drag='from']:pointer-events-none peer-has-data-[drag='from']:opacity-50"
 				itemName={variableName()}
 				nameDialog={{
 					inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
