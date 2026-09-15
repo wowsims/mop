@@ -30,7 +30,7 @@ export const StatWeightCells = ({ stat, statWeights, iterations, epRatio, epDelt
 			<td
 				data-testid="stdev-cell"
 				data-column-type="weight"
-				className={clsx('text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-gray-500')}
+				className={clsx('text-right in-data-[stats-type=ep]:hidden', cellClassName, unused && 'text-white-70')}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue
@@ -45,7 +45,7 @@ export const StatWeightCells = ({ stat, statWeights, iterations, epRatio, epDelt
 			<td
 				data-testid="stdev-cell"
 				data-column-type="ep"
-				className={clsx('text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-gray-500')}
+				className={clsx('text-right in-data-[stats-type=weight]:hidden', cellClassName, unused && 'text-white-70')}
 				data-unused={unused ? '' : undefined}>
 				{statWeights ? (
 					<StatWeightValue

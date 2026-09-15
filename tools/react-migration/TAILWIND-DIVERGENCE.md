@@ -856,8 +856,9 @@ aliases themselves had zero readers and went.
 
 **91 dead `:root` custom properties** were deleted from `_variables.scss` — one more than the
 census's 90 (`--body-font-size`'s only apparent reader was the prose above, in backticks). The whole
-"single seam" block at the end of the file is now six survivors: `--body-bg` and `--gray-500` and
-the three `--table-row-*` (all read by `EpWeightsDialog.scss` / `GearPicker.scss`) plus
+"single seam" block at the end of the file is now six survivors: `--body-bg` and `--gray-500`
+(removed 2026-09-15, unused) and the three `--table-row-*` (all read by `EpWeightsDialog.scss` /
+`GearPicker.scss`) plus
 `--border-color`, whose one reader is the **frozen** `sims/mage_fire.scss:19`. The dead names were
 the second and third copies of colours that live for real as `--bs-*` (351 reads) or as Tailwind
 `--color-*`: every `--quality-*`, `--school-*`, `--resource-*`, `--damage-*`, `--faction-*`, the
