@@ -1,7 +1,7 @@
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { endDrag, getDrag } from './drag_state';
@@ -432,26 +432,25 @@ describe('ListPicker', () => {
 	});
 
 	describe('stable identity through reorders', () => {
-		const MemoRow = memo(({ rows, itemConfig }: { rows: Rows; itemConfig: ListItemPickerConfig<Rows, Row> }) => {
-			const mounts = useRef(0);
+		const MemoRow = memo(({ rows, itemConfig, onMount }: { rows: Rows; itemConfig: ListItemPickerConfig<Rows, Row>; onMount?: () => void }) => {
 			useEffect(() => {
-				mounts.current++;
-			}, []);
+				onMount?.();
+			}, [onMount]);
 			const value = useStoreSubscribe(itemConfig.storeSubscribe!(rows), () => itemConfig.getValue(rows));
 			return (
-				<div data-testid="memo-row" data-mounts={mounts.current}>
+				<div data-testid="memo-row">
 					<span data-testid="memo-name">{value?.name}</span>
 					<input data-testid="memo-input" value={value?.name ?? ''} onChange={event => itemConfig.setValue(rows, { name: event.target.value })} />
 				</div>
 			);
 		});
 
-		const mountMemo = (rows: Rows) =>
+		const mountMemo = (rows: Rows, onMount?: () => void) =>
 			render(
 				<ListPicker<Rows, Row>
 					modObject={rows}
 					config={configFor({ storeSubscribe: (subject: Rows) => subject.subscribe })}
-					renderItem={(_index, itemConfig) => <MemoRow rows={rows} itemConfig={itemConfig} />}
+					renderItem={(_index, itemConfig) => <MemoRow rows={rows} itemConfig={itemConfig} onMount={onMount} />}
 				/>,
 			);
 
@@ -460,6 +459,7 @@ describe('ListPicker', () => {
 				.queryAllByTestId('memo-name')
 				.map(node => node.textContent);
 		const inputs = () => within(root()).queryAllByTestId('memo-input') as Array<HTMLInputElement>;
+		const cloneRow = (row: Row): Row => ({ ...row });
 
 		it('keeps every row, including a memoized store-subscribed child, reading its own object after a reorder', () => {
 			const rows = rowsOf('a', 'b', 'c');
@@ -487,14 +487,63 @@ describe('ListPicker', () => {
 
 		it('replaces an item through setValue without remounting it', () => {
 			const rows = rowsOf('a');
-			mountMemo(rows);
-			const before = Number(within(root()).getByTestId('memo-row').getAttribute('data-mounts'));
+			let mountCount = 0;
+			mountMemo(rows, () => mountCount++);
+			expect(mountCount).toBe(1);
 
 			fireEvent.change(inputs()[0], { target: { value: 'a2' } });
 
-			const after = Number(within(root()).getByTestId('memo-row').getAttribute('data-mounts'));
-			expect(after).toBe(before);
+			expect(mountCount).toBe(1);
 			expect(rows.value.map(row => row.name)).toEqual(['a2']);
+		});
+
+		it('does not remount any row when one item is replaced in place by a clone at the same index', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			let mountCount = 0;
+			mountMemo(rows, () => mountCount++);
+			expect(mountCount).toBe(3);
+
+			act(() => rows.set([rows.value[0], cloneRow(rows.value[1]), rows.value[2]]));
+
+			expect(mountCount).toBe(3);
+			expect(names()).toEqual(['a', 'b', 'c']);
+		});
+
+		it('does not remount any row when the whole list is replaced by clones at the same positions', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			let mountCount = 0;
+			mountMemo(rows, () => mountCount++);
+			expect(mountCount).toBe(3);
+
+			act(() => rows.set(rows.value.map(cloneRow)));
+
+			expect(mountCount).toBe(3);
+			expect(names()).toEqual(['a', 'b', 'c']);
+		});
+
+		it('a stale itemConfig captured before a reorder still reaches its own item after the reorder', () => {
+			const rows = rowsOf('a', 'b', 'c');
+			let staleConfig: ListItemPickerConfig<Rows, Row> | null = null;
+			render(
+				<ListPicker<Rows, Row>
+					modObject={rows}
+					config={configFor()}
+					renderItem={(_index, itemConfig) => {
+						staleConfig ??= itemConfig;
+						return <span data-testid="leaf">{itemConfig.getValue(rows).name}</span>;
+					}}
+				/>,
+			);
+			expect(staleConfig!.getValue(rows).name).toBe('a');
+
+			startDrag(2);
+			dropOn(0);
+			expect(rows.value.map(row => row.name)).toEqual(['c', 'a', 'b']);
+
+			expect(staleConfig!.getValue(rows).name).toBe('a');
+
+			staleConfig!.setValue(rows, { name: 'a!' });
+			expect(rows.value.map(row => row.name)).toEqual(['c', 'a!', 'b']);
 		});
 
 		it('keeps ids unique and stable through copy, delete and a further move', () => {

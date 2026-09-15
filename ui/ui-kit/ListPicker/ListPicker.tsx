@@ -11,7 +11,7 @@ import type { ListDrag } from './drag_state';
 import { ListItemAction } from './ListItemAction';
 import { ListPickerItem } from './ListPickerItem';
 import type { ListItemPickerConfig, ListPickerProps } from './types';
-import { actionEnabled, canDeleteAt, carryId, keyFor, moveItem } from './utils';
+import { actionEnabled, canDeleteAt, carryId, hasId, keyFor, moveItem } from './utils';
 
 /**
  * A reorderable list of pickers: add, remove, copy, and drag to reorder or to move between two
@@ -33,9 +33,26 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 
 	const { value, hidden, disabled } = useInput(modObject, config);
 
+	const prevValueRef = useRef<Array<ItemType> | null>(null);
+	const reconcileIds = useCallback((list: Array<ItemType>) => {
+		if (prevValueRef.current !== null && prevValueRef.current !== list) {
+			const prevValue = prevValueRef.current;
+			const stillPresent = new Set(list);
+			for (let index = 0; index < list.length; index++) {
+				const item = list[index];
+				if (hasId(item)) continue;
+				const old = prevValue[index];
+				if (old !== undefined && !stillPresent.has(old)) carryId(old, item);
+			}
+		}
+		prevValueRef.current = list;
+		return list;
+	}, []);
+	reconcileIds(value);
+
 	// Read through the config, not through the snapshot: every write below is a splice against the
 	// live array, and the store notification is what re-renders.
-	const source = useCallback(() => configRef.current.getValue(modObject), [modObject]);
+	const source = useCallback(() => reconcileIds(configRef.current.getValue(modObject)), [modObject, reconcileIds]);
 	const commit = useCallback((next: Array<ItemType>) => configRef.current.setValue(modObject, next), [modObject]);
 
 	const horizontal = !!config.horizontalLayout;

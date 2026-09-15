@@ -54,3 +54,5 @@ export const carryId = (oldItem: unknown, newItem: unknown): void => {
 	const id = itemIds.get(oldItem);
 	if (id !== undefined) itemIds.set(newItem, id);
 };
+
+export const hasId = (item: unknown): boolean => item !== null && typeof item === 'object' && itemIds.has(item);
