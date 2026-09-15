@@ -43,6 +43,12 @@ const PROPS = [
 	'text-align','text-overflow','white-space','text-transform','letter-spacing','vertical-align','user-select','filter','transform',
 ];
 
+// `display: contents` never paints — it has no box, so it isn't layout — and a portalled overlay
+// root is verified by the state probe and the live matrix, not by the rest-state walk. SNAP and
+// ROOTS each keep their own copy of this normalisation (they run inside `page.evaluate`, which
+// serialises the function on its own and cannot see this module's scope), so a structural-only move
+// (a `display: contents` slot wrapper dropped, an overlay portalled to a different parent) doesn't
+// shift every later element's index into a wall of spurious diffs.
 const SNAP = props => {
 	const normalizeColor = value => {
 		const m = value.match(/^color\(srgb\s+([\d.]+|none)\s+([\d.]+|none)\s+([\d.]+|none)(?:\s*\/\s*([\d.]+|none))?\)$/);
@@ -54,26 +60,58 @@ const SNAP = props => {
 		if (a === 1) return `rgb(${r}, ${g}, ${b})`;
 		return `rgba(${r}, ${g}, ${b}, ${String(Math.round(a * 1000) / 1000)})`;
 	};
+	const isContents = el => getComputedStyle(el).display === 'contents';
+	const isPortalRoot = el => el.hasAttribute('data-base-ui-portal') || el.classList.contains('react-tooltip');
+	const flatten = children => {
+		const out = [];
+		for (const c of children) {
+			if (c.nodeType !== 1 || isPortalRoot(c)) continue;
+			if (isContents(c)) out.push(...flatten(c.children));
+			else out.push(c);
+		}
+		return out;
+	};
 	const out = [];
+	const limit = 20000;
+	let visited = 0;
+	let gaveUp = false;
 	const walk = (el, path) => {
+		if (gaveUp) return;
+		if (++visited > limit) {
+			out.push(`${path} ALIGNMENT-GAVE-UP`);
+			gaveUp = true;
+			return;
+		}
 		const cs = getComputedStyle(el);
 		const r = el.getBoundingClientRect();
 		const vals = props.map(p => normalizeColor(cs.getPropertyValue(p))).join('|');
 		out.push(`${path} ${el.tagName.toLowerCase()} [${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}] ${vals}`);
-		let i = 0;
-		for (const c of el.children) walk(c, `${path}/${i++}`);
+		const kids = flatten(el.children);
+		kids.forEach((c, i) => walk(c, `${path}/${i}`));
 	};
 	walk(document.body, '');
 	return out;
 };
 
 // Paths (in SNAP's scheme: body is '', its children '/0', '/1', …) of every element matching the
-// CONFINE selector — the subtrees a tree-changing commit is allowed to touch.
+// CONFINE selector — the subtrees a tree-changing commit is allowed to touch. Uses the same
+// display:contents/portal normalisation as SNAP so indices line up between the two.
 const ROOTS = selector => {
+	const isContents = el => getComputedStyle(el).display === 'contents';
+	const isPortalRoot = el => el.hasAttribute('data-base-ui-portal') || el.classList.contains('react-tooltip');
+	const flatten = children => {
+		const out = [];
+		for (const c of children) {
+			if (c.nodeType !== 1 || isPortalRoot(c)) continue;
+			if (isContents(c)) out.push(...flatten(c.children));
+			else out.push(c);
+		}
+		return out;
+	};
 	const pathOf = el => {
 		const parts = [];
 		for (let node = el; node && node !== document.body; node = node.parentElement) {
-			parts.unshift(Array.prototype.indexOf.call(node.parentElement.children, node));
+			parts.unshift(flatten(node.parentElement.children).indexOf(node));
 		}
 		return `/${parts.join('/')}`;
 	};
@@ -209,6 +247,25 @@ const confine = (a, b, rootsA, rootsB) => {
 	return out;
 };
 
+// Wall-clock backstop for a section that will not settle for reasons SNAP's own bound can't see
+// (a stuck page, a runaway resize/re-render loop): past this, the section is abandoned rather than
+// hanging the whole run, with a message giving the section so it can be triaged.
+const ALIGN_TIMEOUT_MS = Number(process.env.ALIGN_TIMEOUT_MS ?? 45000);
+const withAlignTimeout = (promise, label) =>
+	new Promise((resolve, reject) => {
+		const timer = setTimeout(() => reject(new Error(`ALIGNMENT GAVE UP at ${label}`)), ALIGN_TIMEOUT_MS);
+		promise.then(
+			v => {
+				clearTimeout(timer);
+				resolve(v);
+			},
+			e => {
+				clearTimeout(timer);
+				reject(e);
+			},
+		);
+	});
+
 const main = async () => {
 	mkdirSync(OUT, { recursive: true });
 	const browser = await launch();
@@ -220,19 +277,33 @@ const main = async () => {
 	const confined = [];
 	for (const [name, url, tabs] of pages) {
 		for (const width of WIDTHS) {
-			const r = await capture(browser, PORTS.react, url, width, { tabs });
-			const t = await capture(browser, PORTS.tw, url, width, { tabs });
+			const sectionLabel = `${name} @${width}`;
+			let r, t;
+			try {
+				r = await withAlignTimeout(capture(browser, PORTS.react, url, width, { tabs }), `${sectionLabel} (react)`);
+				t = await withAlignTimeout(capture(browser, PORTS.tw, url, width, { tabs }), `${sectionLabel} (tw)`);
+			} catch (e) {
+				problems++;
+				report.push(`\n### ${e.message}`);
+				continue;
+			}
 			for (const key of Object.keys(r.shots)) {
 				const a = r.shots[key];
 				const b = t.shots[key] ?? [];
 				elements += a.length;
-				const d = diff(a, b);
-				const tag = `${name} @${width} ${key}`;
-				if (d.length) {
+				const tag = `${sectionLabel} ${key}`;
+				const gaveUp = a.some(l => l.endsWith(' ALIGNMENT-GAVE-UP')) || b.some(l => l.endsWith(' ALIGNMENT-GAVE-UP'));
+				if (gaveUp) {
 					problems++;
-					report.push(`\n### DIFF ${tag}  (${a.length} vs ${b.length} elements)\n${d.join('\n')}`);
+					report.push(`\nALIGNMENT GAVE UP at ${tag}`);
 				} else {
-					report.push(`OK   ${tag}  ${a.length} elements identical`);
+					const d = diff(a, b);
+					if (d.length) {
+						problems++;
+						report.push(`\n### DIFF ${tag}  (${a.length} vs ${b.length} elements)\n${d.join('\n')}`);
+					} else {
+						report.push(`OK   ${tag}  ${a.length} elements identical`);
+					}
 				}
 				if (CONFINE) {
 					const c = confine(a, b, r.roots[key] ?? [], t.roots[key] ?? []);
