@@ -64,7 +64,6 @@ export const Tooltip = forwardRef<TooltipRefProps, TooltipProps>(
 				className={clsx(
 					'sim-tooltip',
 					'ui-tooltip',
-					'rounded-none bg-overlay text-sm text-white',
 					maxWidthClassName,
 					width,
 					align === 'start' && 'text-left',

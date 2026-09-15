@@ -110,7 +110,7 @@ export const DropdownMenu = <V,>({
 			{hasTooltips && (
 				<Tooltip
 					id={tooltipId}
-					maxWidth="max-w-[35vw]"
+					maxWidth="max-w-tooltip-dropdown"
 					align="start"
 					render={({ activeAnchor }) => {
 						const content = activeAnchor?.getAttribute('data-tooltip-content');
