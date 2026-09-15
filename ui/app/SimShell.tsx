@@ -64,7 +64,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 				ref={root}
 				className={clsx(
 					simUiClasses({ className, spec }),
-					'max-h-screen overflow-y-auto [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:bg-background',
+					'max-h-screen overflow-y-auto [&::-webkit-scrollbar]:size-[0.2rem] [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:bg-background',
 				)}
 				data-testid="sim-ui"
 				{...simUiAttributes({ spec })}>
@@ -83,7 +83,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								<SimTitleDropdown currentSpec={spec} />
 							</div>
 							<div
-								className="flex flex-1 flex-col overflow-y-auto p-6 max-xxl:px-4 max-lg:min-h-0 max-lg:px-2 max-lg:py-4 [&::-webkit-scrollbar]:w-[0.2rem] [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:bg-background [&>*:not(:last-child)]:mb-6"
+								className="flex flex-1 flex-col overflow-y-auto p-6 max-xxl:px-4 max-lg:min-h-0 max-lg:px-2 max-lg:py-4 [&::-webkit-scrollbar]:size-[0.2rem] [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:bg-background [&>*:not(:last-child)]:mb-6"
 								data-testid="sim-sidebar-content">
 								{/* The picker is the shell's own and has to stay ahead of every action the registry adds. */}
 								<div
