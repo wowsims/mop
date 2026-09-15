@@ -182,5 +182,5 @@
 	--color-sim-backdrop: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
 	--color-cr-cast-fill-end: color-mix(in srgb, var(--color-primary) 78%, var(--color-white));
 	--color-input-focus-border: color-mix(in srgb, var(--color-surface-border), var(--color-white) 20%);
-	--color-table-row-even-hover: hsla(var(--table-row-even-bg-hsl), 0.9);
+	--color-table-row-even-hover: color-mix(in srgb, var(--table-row-even-bg) 90%, transparent);
 }
