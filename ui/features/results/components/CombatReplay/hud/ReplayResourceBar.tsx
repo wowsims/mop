@@ -28,7 +28,7 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 
 	return (
 		<div className="ui-combat-replay-resource-wrap">
-			<div className="relative h-3 w-full overflow-hidden rounded-sm bg-white-7">
+			<div className="relative h-3 w-full overflow-hidden rounded-sm bg-white/7">
 				<div
 					ref={fill}
 					data-testid="cr-res-bar-fill"
@@ -37,13 +37,13 @@ export const ReplayResourceBar = ({ row }: ReplayResourceBarProps) => {
 				/>
 				<span
 					data-testid="cr-bar-label"
-					className="pointer-events-none absolute top-1/2 left-1.5 -translate-y-1/2 text-[0.6rem] font-semibold text-white-80">
+					className="pointer-events-none absolute top-1/2 left-1.5 -translate-y-1/2 text-[0.6rem] font-semibold text-white/80">
 					{row.label}
 				</span>
 				<span
 					ref={value}
 					data-testid="cr-bar-val"
-					className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.6rem] text-white-70"
+					className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.6rem] text-white/70"
 				/>
 			</div>
 		</div>

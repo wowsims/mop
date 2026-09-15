@@ -27,9 +27,9 @@ export const ReplayScene = ({ model, clock }: ReplaySceneProps) => (
 					<ReplayEnemyFormation enemies={model.enemies} hiddenCount={model.hiddenEnemyCount} />
 				</div>
 			</div>
-			<div className="relative z-1 flex w-1/2 shrink-0 flex-col gap-1.5 self-center border-t border-white-8 bg-black-92 px-4 py-2">
+			<div className="relative z-1 flex w-1/2 shrink-0 flex-col gap-1.5 self-center border-t border-white/8 bg-black/92 px-4 py-2">
 				<div className="flex min-h-11.5 flex-nowrap items-center gap-2">
-					<div data-testid="cr-cdm-player-label" className="shrink-0 text-ep-delta font-bold tracking-[0.04em] text-white-70">
+					<div data-testid="cr-cdm-player-label" className="shrink-0 text-ep-delta font-bold tracking-[0.04em] text-white/70">
 						{model.playerName}
 					</div>
 					<ReplayAuraIcons

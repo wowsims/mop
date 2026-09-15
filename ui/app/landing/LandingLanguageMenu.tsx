@@ -17,7 +17,7 @@ export const LandingLanguageMenu = () => {
 			<Menu.Root modal={false}>
 				<Menu.Trigger
 					id="languageDropdown"
-					className="ui-landing-language-caret flex items-center px-0 py-4 text-sm whitespace-nowrap text-white-55 max-md:pt-2 md:px-2"
+					className="ui-landing-language-caret flex items-center px-0 py-4 text-sm whitespace-nowrap text-white/55 max-md:pt-2 md:px-2"
 					aria-label={supportedLanguages[currentLang]}>
 					<Icon name="globe" size="2x" />
 				</Menu.Trigger>

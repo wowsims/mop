@@ -45,7 +45,7 @@ export const LandingHeader = () => {
 					<div
 						id={COLLAPSE_ID}
 						className={clsx(
-							'order-2 grow basis-full items-end justify-end pt-4 pb-4 max-md:fixed max-md:inset-0 max-md:z-dropdown max-md:bg-black-90 max-md:p-4 md:order-1 md:flex md:basis-auto',
+							'order-2 grow basis-full items-end justify-end pt-4 pb-4 max-md:fixed max-md:inset-0 max-md:z-dropdown max-md:bg-black/90 max-md:p-4 md:order-1 md:flex md:basis-auto',
 							!open && 'hidden',
 						)}>
 						<div className="flex flex-col max-md:relative max-md:items-start md:flex-row" data-testid="navbar-nav">

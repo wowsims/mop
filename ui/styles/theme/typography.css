@@ -32,7 +32,7 @@
 	--text-shadow-glow-offwhite: 0 0 0.5rem var(--color-off-white);
 	--text-shadow-outline-sm: 1px 1px 3px var(--color-black);
 	--text-shadow-outline-md: 1px 1px 4px var(--color-black);
-	--text-shadow-outline-strong: 0 0 6px var(--color-black), 0 0 6px var(--color-black), 0 2px 4px var(--color-black-80);
+	--text-shadow-outline-strong: 0 0 6px var(--color-black), 0 0 6px var(--color-black), 0 2px 4px --alpha(var(--color-black) / 80%);
 	--text-shadow-outline-soft: 0 0 3px var(--color-black), 0 0 3px var(--color-black);
 	--text-shadow-outline-glow: 0 0 4px var(--color-black), 0 0 4px var(--color-black);
 	--text-shadow-glow-crit: 0 0 8px var(--color-danger), 0 0 8px var(--color-danger);

@@ -23,7 +23,7 @@ export const ReplayCastBar = ({ actions, duration }: ReplayCastBarProps) => {
 	});
 
 	return (
-		<div className="relative h-4.5 min-h-4.5 shrink-0 overflow-hidden rounded-sm bg-white-7">
+		<div className="relative h-4.5 min-h-4.5 shrink-0 overflow-hidden rounded-sm bg-white/7">
 			<div ref={fill} data-testid="cr-cast-bar-fill" className="h-full w-0 rounded-sm bg-cr-cast-fill transition-[width] duration-50 ease-linear" />
 			<div
 				ref={label}
@@ -33,7 +33,7 @@ export const ReplayCastBar = ({ actions, duration }: ReplayCastBarProps) => {
 			<div
 				ref={remaining}
 				data-testid="cr-cast-bar-time"
-				className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.65rem] text-white-75"
+				className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[0.65rem] text-white/75"
 			/>
 		</div>
 	);

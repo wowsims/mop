@@ -1,9 +1,9 @@
 @layer components {
 	.ui-combat-replay-icon {
-		@apply relative block size-cr-icon overflow-hidden rounded-sm bg-cover bg-center bg-no-repeat no-underline inset-ring-2 inset-ring-white-20 transition-shadow duration-100;
+		@apply relative block size-cr-icon overflow-hidden rounded-sm bg-cover bg-center bg-no-repeat no-underline inset-ring-2 inset-ring-white/20 transition-shadow duration-100;
 
 		&[data-active] {
-			@apply inset-ring-white-70;
+			@apply inset-ring-white/70;
 		}
 	}
 
@@ -20,10 +20,10 @@
 	}
 
 	.ui-combat-replay-ctrl-btn {
-		@apply cursor-pointer rounded-[5px] border border-white-15 bg-white-7 px-2 py-1 text-sm text-foreground transition-colors duration-100;
+		@apply cursor-pointer rounded-[5px] border border-white/15 bg-white/7 px-2 py-1 text-sm text-foreground transition-colors duration-100;
 
 		&:hover {
-			@apply bg-white-15;
+			@apply bg-white/15;
 		}
 	}
 }

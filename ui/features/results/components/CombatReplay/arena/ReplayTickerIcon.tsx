@@ -9,7 +9,7 @@ export interface ReplayTickerIconProps {
 	opacity: number;
 }
 
-const STRIP_ICON_CLASSES = 'ui-combat-replay-icon inset-ring-2 inset-ring-white-15 data-active:inset-ring-white-70 data-active:shadow-glow-white-30';
+const STRIP_ICON_CLASSES = 'ui-combat-replay-icon inset-ring-2 inset-ring-white/15 data-active:inset-ring-white/70 data-active:shadow-glow-white-30';
 
 export const ReplayTickerIcon = ({ action, latest, opacity }: ReplayTickerIconProps) => (
 	<ReplayIcon actionId={action.actionId} className={STRIP_ICON_CLASSES} tooltip="spell" style={{ opacity }} active={latest} testId="cr-strip-icon">

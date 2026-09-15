@@ -27,7 +27,7 @@ const CARD_CLASSES =
 
 export const ReplayEnemyCard = ({ enemy, layout }: ReplayEnemyCardProps) => (
 	<div className={CARD_CLASSES} data-testid="cr-enemy-card" data-idx={enemy.index} style={cardVars(layout)}>
-		<div className="relative z-2 w-full rounded-md bg-black-55 px-1.5 py-1">
+		<div className="relative z-2 w-full rounded-md bg-black/55 px-1.5 py-1">
 			<div data-testid="cr-enemy-name" className="mb-0.75 overflow-hidden text-center text-xs font-semibold text-ellipsis whitespace-nowrap text-danger">
 				{enemy.name}
 			</div>

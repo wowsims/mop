@@ -14,5 +14,5 @@ export const ReplayTimeDisplay = ({ duration }: ReplayTimeDisplayProps) => {
 		if (label.current) label.current.textContent = replayTimeLabel(time, duration);
 	});
 
-	return <span ref={label} data-testid="cr-time-display" className="ml-auto text-[0.75rem] text-white-60 tabular-nums" />;
+	return <span ref={label} data-testid="cr-time-display" className="ml-auto text-[0.75rem] text-white/60 tabular-nums" />;
 };

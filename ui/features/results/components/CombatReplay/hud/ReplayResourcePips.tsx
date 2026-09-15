@@ -35,7 +35,7 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 
 	return (
 		<div className="ui-combat-replay-resource-wrap w-full gap-1.5">
-			<span data-testid="cr-dot-label" className="shrink-0 text-[0.6rem] font-semibold whitespace-nowrap text-white-70">
+			<span data-testid="cr-dot-label" className="shrink-0 text-[0.6rem] font-semibold whitespace-nowrap text-white/70">
 				{row.label}
 			</span>
 			<div ref={bar} className="flex h-3 flex-1 items-stretch gap-0.75" style={pipVars(row)}>
@@ -43,11 +43,11 @@ export const ReplayResourcePips = ({ row }: ReplayResourcePipsProps) => {
 					<div
 						key={index}
 						data-testid="cr-segment"
-						className="h-full min-w-0 flex-1 rounded-xs bg-white-7 data-filled:bg-cr-segment-fill data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
+						className="h-full min-w-0 flex-1 rounded-xs bg-white/7 data-filled:bg-cr-segment-fill data-filled:shadow-glow-8 data-filled:shadow-(color:--cr-segment-glow)"
 					/>
 				))}
 			</div>
-			<span ref={value} data-testid="cr-dot-val" className="shrink-0 text-[0.6rem] whitespace-nowrap text-white-60" />
+			<span ref={value} data-testid="cr-dot-val" className="shrink-0 text-[0.6rem] whitespace-nowrap text-white/60" />
 		</div>
 	);
 };

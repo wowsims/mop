@@ -20,7 +20,7 @@ export const ReplayEnemyHealth = ({ enemy }: ReplayEnemyHealthProps) => {
 	});
 
 	return (
-		<div className="relative h-2 overflow-hidden rounded-sm bg-white-10">
+		<div className="relative h-2 overflow-hidden rounded-sm bg-white/10">
 			<div ref={fill} data-testid="cr-hp-fill" className="h-full rounded-sm bg-cr-hp-fill transition-[width] duration-50 ease-linear" />
 			<span
 				ref={text}
