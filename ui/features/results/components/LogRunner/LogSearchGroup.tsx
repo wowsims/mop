@@ -92,7 +92,8 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 						testId="log-search-chip"
 						nameAs="span"
 						label={labelOf(group.field, value)}
-						deleteSlot={<DeleteButton onClick={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })} />}
+						confirmDelete={false}
+						onDelete={() => onChange({ ...group, values: group.values.filter((_, index) => index !== valueIndex) })}
 					/>
 				))}
 				<div data-testid="input-group" className="relative flex w-full flex-wrap items-stretch">

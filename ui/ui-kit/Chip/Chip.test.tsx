@@ -40,4 +40,13 @@ describe('Chip', () => {
 		fireEvent.click(getByTestId('saved-data-set-delete'));
 		expect(onDelete).not.toHaveBeenCalled();
 	});
+
+	it('calls onDelete immediately when confirmDelete is false', () => {
+		const onDelete = vi.fn();
+		const { getByTestId } = render(<Chip label="Loadout 1" onDelete={onDelete} confirmDelete={false} />);
+		const deleteButton = getByTestId('saved-data-set-delete');
+		expect(deleteButton.className).toContain('ui-chip-delete');
+		fireEvent.click(deleteButton);
+		expect(onDelete).toHaveBeenCalledTimes(1);
+	});
 });

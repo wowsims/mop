@@ -22,7 +22,7 @@ export interface ChipProps {
 	nameAs?: ElementType;
 	rootProps?: Record<string, unknown>;
 	nameProps?: Record<string, unknown>;
-	deleteSlot?: ReactNode;
+	confirmDelete?: boolean;
 }
 
 export const Chip = ({
@@ -43,7 +43,7 @@ export const Chip = ({
 	nameAs: Name = 'button',
 	rootProps,
 	nameProps,
-	deleteSlot,
+	confirmDelete = true,
 }: ChipProps) => {
 	const [confirming, setConfirming] = useState(false);
 
@@ -63,8 +63,18 @@ export const Chip = ({
 				{...nameProps}>
 				{label}
 			</Name>
-			{deleteSlot}
-			{!deleteSlot && onDelete && (
+			{onDelete && !confirmDelete && (
+				<button
+					type="button"
+					className="ui-chip-delete"
+					data-testid="saved-data-set-delete"
+					aria-label={deleteLabel}
+					{...tooltipAnchorProps(deleteTooltipId)}
+					onClick={onDelete}>
+					<Icon name="times" style="base" size="lg" />
+				</button>
+			)}
+			{onDelete && confirmDelete && (
 				<ConfirmPopover
 					open={confirming}
 					onOpenChange={setConfirming}
