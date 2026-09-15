@@ -32,7 +32,7 @@ export const AplListToolbar = ({ itemName, nameDialog, onCreate }: AplListToolba
 	return (
 		<Toolbar
 			ref={rootRef}
-			className="sticky bottom-0 flex items-center mt-3 border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:border data-stuck:bg-background data-stuck:p-2"
+			className="sticky bottom-0 mt-3 flex items-center border-0 border-border transition-[padding,border-width,background-color] duration-150 ease-in-out data-stuck:border data-stuck:bg-background data-stuck:p-2"
 			testId="apl-floating-action-bar-root"
 			data-stuck={stuck ? '' : undefined}>
 			<ToolbarButton variant="primary" onClick={() => (nameDialog ? setNaming(true) : onCreate())}>

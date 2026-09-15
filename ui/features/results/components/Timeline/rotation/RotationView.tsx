@@ -404,7 +404,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				'--duration': String(model?.duration ?? 0),
 				'--rotation-sticky-top': `${stickyTop}px`,
 			})}>
-			<div className="sticky top-(--rotation-sticky-top,0px) z-5 flex basis-7.5 grow-0 shrink-0 h-7.5 -mr-(--spacing-page) bg-background">
+			<div className="sticky top-(--rotation-sticky-top,0px) z-5 -mr-(--spacing-page) flex h-7.5 shrink-0 grow-0 basis-7.5 bg-background">
 				<RotationToolbar
 					ref={cornerRef}
 					onZoomOut={() => zoomRef.current?.stepOut()}
@@ -414,7 +414,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				/>
 				<div
 					ref={rulerViewportRef}
-					className="relative box-border min-w-0 grow shrink basis-0 overflow-hidden border-b border-white text-white text-[12px] font-bold">
+					className="relative box-border min-w-0 shrink grow basis-0 overflow-hidden border-b border-white text-[12px] font-bold text-white">
 					<div ref={rulerTrackRef} data-testid="rotation-ruler-track" className="ui-timeline-ruler-track" />
 				</div>
 			</div>
@@ -422,7 +422,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				ref={scrollerRef}
 				data-testid="rotation-scroller"
 				className={clsx(
-					'group/scroller relative shrink-0 grow-0 basis-auto min-h-0 -mr-(--spacing-page) overflow-x-auto overflow-y-hidden outline-none cursor-grab data-[density=coarse]:[--rotation-item-h:20px]',
+					'group/scroller relative -mr-(--spacing-page) min-h-0 shrink-0 grow-0 basis-auto cursor-grab overflow-x-auto overflow-y-hidden outline-none data-[density=coarse]:[--rotation-item-h:20px]',
 					panning && 'cursor-grabbing select-none',
 				)}
 				tabIndex={0}
@@ -435,7 +435,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				onMouseOver={onItemOver}
 				onMouseMove={onItemMove}
 				onMouseLeave={hideTip}>
-				<div ref={contentRef} data-testid="rotation-content" className="min-w-full w-timeline-content-w">
+				<div ref={contentRef} data-testid="rotation-content" className="w-timeline-content-w min-w-full">
 					<div data-testid="rotation-vspacer" className="h-timeline-vspacer-h" style={cssVars({ '--vspacer-h': String(frame.window.topSpacer) })} />
 					{order.slice(frame.window.first, frame.window.last + 1).map(key => {
 						const row = rowFor(key);
@@ -451,7 +451,7 @@ export const RotationView = ({ model }: RotationViewProps) => {
 				</div>
 			</div>
 			{measureFor !== null && (
-				<div ref={measurerRef} className="absolute top-0 left-0 w-max invisible pointer-events-none" aria-hidden="true">
+				<div ref={measurerRef} className="pointer-events-none invisible absolute top-0 left-0 w-max" aria-hidden="true">
 					<RotationRowLabel
 						text={longestLabel}
 						icon={<a data-testid="rotation-row-icon" className="ui-timeline-row-icon" />}

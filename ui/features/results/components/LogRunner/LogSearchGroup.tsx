@@ -63,7 +63,7 @@ export const LogSearchGroup = ({ group, suggestions, onChange, onRemove }: LogSe
 	return (
 		<div
 			data-testid="log-search-group"
-			className="max-w-62.5 flex flex-col gap-2 p-2 border border-border-muted rounded-none bg-panel [transition:all_0.2s_ease] hover:bg-panel-hover hover:border-border">
+			className="flex max-w-62.5 flex-col gap-2 rounded-none border border-border-muted bg-panel p-2 [transition:all_0.2s_ease] hover:border-border hover:bg-panel-hover">
 			<div data-testid="log-search-group-head" className="flex items-center gap-2">
 				<span data-testid="log-search-group-field" className="text-(length:--btn-font-size) leading-normal">
 					{sentenceCase(group.field)}

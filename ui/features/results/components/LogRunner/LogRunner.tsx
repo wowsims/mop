@@ -196,8 +196,8 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 	);
 
 	return (
-		<div ref={rootRef} data-testid="log-runner-root" className="flex flex-col min-h-log-body-min-h">
-			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 pt-2 bg-background">
+		<div ref={rootRef} data-testid="log-runner-root" className="flex min-h-log-body-min-h flex-col">
+			<div ref={stickyRef} data-testid="log-runner-sticky" className="sticky top-(--log-sticky-top,0px) z-5 flex flex-col gap-2 bg-background pt-2">
 				<div data-testid="log-search" className="w-full lg:max-w-[50%]">
 					<SearchBar
 						value={searchText}

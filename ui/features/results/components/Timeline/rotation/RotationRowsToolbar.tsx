@@ -79,9 +79,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			data-testid="rotation-floating-action-bar-root"
 			className="group ui-fab-root [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			data-stuck={stuck ? '' : undefined}>
-			<Toolbar
-				testId="rotation-fab-actions"
-				className="relative min-w-0 flex-1 flex-nowrap items-center overflow-x-auto group-data-stuck:bg-background">
+			<Toolbar testId="rotation-fab-actions" className="relative min-w-0 flex-1 flex-nowrap items-center overflow-x-auto group-data-stuck:bg-background">
 				<Drawer
 					open={expanded}
 					onOpenChange={setExpanded}

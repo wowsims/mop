@@ -57,9 +57,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 
 	return (
 		<div ref={rootRef} data-testid="log-floating-action-bar-root" className="group ui-fab-root" data-stuck={stuck ? '' : undefined}>
-			<Toolbar
-				testId="log-fab-actions"
-				className="relative min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto group-data-stuck:bg-background">
+			<Toolbar testId="log-fab-actions" className="relative min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto group-data-stuck:bg-background">
 				<Drawer
 					open={expanded}
 					onOpenChange={setExpanded}
