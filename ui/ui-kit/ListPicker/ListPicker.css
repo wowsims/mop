@@ -92,13 +92,13 @@
 			& .ui-list-picker-item-title {
 				margin-bottom: 0;
 			}
-
-			& .ui-list-picker-item-popover {
-				font-size: inherit;
-				display: flex;
-				gap: var(--list-picker-item-spacing);
-			}
 		}
+	}
+
+	.ui-list-picker-item-popover {
+		display: flex;
+		gap: --spacing(2);
+		font-size: inherit;
 	}
 
 	span.ui-list-picker-title {
