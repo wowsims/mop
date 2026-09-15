@@ -84,7 +84,6 @@ export const buildMenuTree = <V>(options: Array<DropdownOption<V>>, equals: (a: 
 		const path = option.submenu ?? [];
 		if (isSubmenuParent(option)) {
 			// Create (or adopt) this option's own submenu and mark it selectable.
-			ensure(path);
 			const parent = ensure(path);
 			let submenu = findSubmenu(parent, option.value, equals);
 			if (!submenu) {

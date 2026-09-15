@@ -26,6 +26,11 @@ export const RESOURCE_TEXT: Partial<Record<ResourceType, string>> = {
 };
 
 export const SECONDARY_RESOURCE_TEXT: Partial<Record<SecondaryResourceType, string>> = {
+	[SecondaryResourceType.SecondaryResourceTypeArcaneCharges]: 'text-resource-arcane-charges',
+	[SecondaryResourceType.SecondaryResourceTypeShadowOrbs]: 'text-resource-shadow-orbs',
+	[SecondaryResourceType.SecondaryResourceTypeDemonicFury]: 'text-resource-demonic-fury',
+	[SecondaryResourceType.SecondaryResourceTypeBurningEmbers]: 'text-resource-burning-embers',
+	[SecondaryResourceType.SecondaryResourceTypeSoulShards]: 'text-resource-soul-shards',
 	[SecondaryResourceType.SecondaryResourceTypeHolyPower]: 'text-resource-holy-power',
 };
 

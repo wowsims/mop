@@ -12,7 +12,9 @@ export const useWowheadDataset = (resolve: (() => Promise<string>) | null): Wowh
 
 	useEffect(() => {
 		if (!resolve) return;
-		resolve().then(url => setResolved(current => (current.resolve === resolve ? { resolve, url } : current)));
+		resolve()
+			.then(url => setResolved(current => (current.resolve === resolve ? { resolve, url } : current)))
+			.catch(console.error);
 	}, [resolve]);
 
 	return useMemo(() => ({ 'data-wowhead': resolved.resolve === resolve ? resolved.url : undefined }), [resolve, resolved]);
