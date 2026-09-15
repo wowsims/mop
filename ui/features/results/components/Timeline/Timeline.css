@@ -35,14 +35,14 @@
 	}
 
 	.ui-timeline-tooltip {
-		@apply flex max-h-[75vh] max-w-[min(92vw,64rem)] flex-col gap-4 overflow-auto;
+		@apply flex max-w-[min(92vw,64rem)] flex-col items-start gap-4;
 
 		& ul {
-			@apply mb-0 flex list-none flex-col gap-1 pl-0;
+			@apply m-0 grid max-h-80 list-none auto-cols-max grid-flow-col grid-rows-[repeat(auto-fit,1lh)] gap-x-4 gap-y-1 pl-0;
 		}
 
 		& li {
-			@apply flex flex-wrap items-center gap-2;
+			@apply flex items-center gap-2 whitespace-nowrap;
 		}
 	}
 
