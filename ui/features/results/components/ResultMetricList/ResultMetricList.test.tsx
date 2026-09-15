@@ -32,10 +32,10 @@ describe('ResultMetricList row layout', () => {
 		expect([...container.querySelectorAll('th')].map(cell => cell.getAttribute('data-metric-category'))).toEqual(['damage', 'threat', 'healing', null]);
 		expect(cells(container, 'th')).toEqual(['DPS', 'TMI', 'TTO', 'OOM']);
 		expect([...container.querySelectorAll('td')].map(cell => cell.className)).toEqual([
-			'text-center align-top ui-metrics-cell font-bold',
-			'text-center align-top ui-metrics-cell font-bold',
-			'text-center align-top ui-metrics-cell font-bold',
-			'text-center align-top ui-metrics-cell font-bold danger',
+			'ui-metrics-cell text-center align-top font-bold',
+			'ui-metrics-cell text-center align-top font-bold',
+			'ui-metrics-cell text-center align-top font-bold',
+			'ui-metrics-cell text-center align-top font-bold danger',
 		]);
 	});
 

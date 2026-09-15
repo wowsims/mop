@@ -39,7 +39,7 @@ describe('ContentBlock', () => {
 	it('renders headerChildren after the title, inside the header', () => {
 		render(<ContentBlock className="mt-2" config={{ header: { title: 'Raid Buffs' } }} headerChildren={<p className="text-sm">Describes it</p>} />);
 		const header = screen.getByTestId('content-block-header');
-		expect(Array.from(header.children).map(child => child.className)).toEqual(['flex items-center font-bold mb-0', 'text-sm']);
+		expect(Array.from(header.children).map(child => child.className)).toEqual(['mb-0 flex items-center font-bold', 'text-sm']);
 	});
 
 	it('puts the tooltip button inside the title element, not the header', () => {

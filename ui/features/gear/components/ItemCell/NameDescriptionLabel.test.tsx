@@ -9,7 +9,7 @@ describe('NameDescriptionLabel', () => {
 		it(`wraps "${nameDescription}" in parentheses`, () => {
 			const { container } = render(<NameDescriptionLabel nameDescription={nameDescription} />);
 			expect(container.firstElementChild!.outerHTML).toBe(
-				`<small class="text-quality-uncommon text-ui ml-1" data-testid="heroic-label">(${nameDescription})</small>`,
+				`<small class="text-ui text-quality-uncommon ml-1" data-testid="heroic-label">(${nameDescription})</small>`,
 			);
 		});
 	}
@@ -17,6 +17,6 @@ describe('NameDescriptionLabel', () => {
 	it('appends className after the base class', () => {
 		const className: ClassValue = ['extra-a', { 'extra-b': true, 'extra-c': false }];
 		const { container } = render(<NameDescriptionLabel nameDescription="Heroic" className={className} />);
-		expect(container.firstElementChild!.getAttribute('class')).toBe('text-quality-uncommon text-ui ml-1 extra-a extra-b');
+		expect(container.firstElementChild!.getAttribute('class')).toBe('text-ui text-quality-uncommon ml-1 extra-a extra-b');
 	});
 });
