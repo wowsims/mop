@@ -159,7 +159,12 @@ function collectFromScript(text, relPath, classAttrs) {
 			continue;
 		}
 		const inner = raw.slice(1, -1).trim();
-		if (/^clsx\(/.test(inner)) continue; // handled by the clsx scanner below
+		if (/^clsx\(/.test(inner)) {
+			// Outside ui/specs the clsx scanner below covers this; inside it that scanner is off,
+			// so a className={clsx(...)} site would otherwise go unchecked entirely.
+			if (skipDynamic) collectStringLiteralsFrom(raw, index, found);
+			continue;
+		}
 		const strMatch = inner.match(/^(['"`])([\s\S]*)\1$/);
 		if (strMatch) {
 			const [, quote, body] = strMatch;
@@ -297,9 +302,8 @@ export function collectTokens(root) {
 		const relPath = path.relative(root, file);
 		if (isGeneratedFile(relPath)) continue;
 		const text = fs.readFileSync(file, 'utf8');
-		const onlyClassName = isSpecsFile(relPath);
 		for (const { token, line } of collectFromScript(text, relPath, classAttrs)) {
-			occurrences.push({ file: relPath, line, token, onlyClassNameSite: onlyClassName });
+			occurrences.push({ file: relPath, line, token });
 		}
 	}
 	for (const file of cssFiles) {

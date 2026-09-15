@@ -23,10 +23,6 @@
 	--color-border-muted: color-mix(in srgb, var(--color-border) 50%, transparent);
 	--color-primary: #0d6efd;
 	--color-primary-foreground: var(--color-white);
-	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, var(--color-black));
-	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, var(--color-black));
-	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, var(--color-black));
-	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
 	--color-primary-disabled-foreground: var(--color-white);
 	--color-secondary: var(--color-gray-600);
 	--color-secondary-hover: #4c5258;
@@ -151,7 +147,6 @@
 	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, var(--color-black));
 	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, var(--color-black));
 	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
-	--color-danger: #dc3545;
 	--color-sim-backdrop: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
 	--color-cr-cast-fill-end: color-mix(in srgb, var(--color-primary) 78%, var(--color-white));
 	--color-input-focus-border: color-mix(in srgb, var(--color-surface-border), var(--color-white) 20%);

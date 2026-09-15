@@ -60,7 +60,10 @@ async function testFixtureTree() {
 		].join('\n'),
 	);
 	fs.writeFileSync(path.join(dir, 'ui/Widget.css'), '.ui-widget {\n  @apply p-[5px] flex;\n}\n');
-	fs.writeFileSync(path.join(dir, 'ui/specs/Widget.spec.tsx'), 'const s = <div className="p-[5px]" data-testid={clsx("mt-[3px]")} />;');
+	fs.writeFileSync(
+		path.join(dir, 'ui/specs/Widget.spec.tsx'),
+		['const s = <div className="p-[5px]" data-testid={clsx("mt-[3px]")} />;', 'const c = <div className={clsx("w-[18px]")} />;'].join('\n'),
+	);
 	fs.writeFileSync(path.join(dir, 'ui/generated/gen.ts'), 'const g = <div className="p-[5px]" />;');
 
 	const results = await findNonCanonical(dir, { css: CSS_PATH });
@@ -77,6 +80,7 @@ async function testFixtureTree() {
 
 	assert.equal(byFrom['ui/specs/Widget.spec.tsx:p-[5px]'], 'p-1.25');
 	assert.equal(byFrom['ui/specs/Widget.spec.tsx:mt-[3px]'], undefined, 'non-className clsx call in ui/specs must be skipped');
+	assert.equal(byFrom['ui/specs/Widget.spec.tsx:w-[18px]'], 'w-4.5', 'a className={clsx(...)} site in ui/specs must still be reported');
 
 	assert.equal(byFrom['ui/generated/gen.ts:p-[5px]'], undefined, 'generated files must be skipped');
 

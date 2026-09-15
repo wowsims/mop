@@ -42,7 +42,7 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
 - **CSS variables in class names.** Never write `-[var(--x)]`. If `--x` is a `@theme` token, use its
   named utility instead — `--z-index-*` tokens generate `z-<name>` directly (`z-dropdown`,
   `z-modal`), no paren form needed. For a non-token var, use the paren shorthand:
-  `w-(--loader-width,60px)`, `text-(length:--tab-font-size)`. `var()` stays inside a class name only
+  `w-(--loader-width,60px)`, `text-(length:--btn-font-size)`. `var()` stays inside a class name only
   inside a genuine multi-term `calc()`/`min()`/gradient, or an arbitrary property (`[prop:…]`) that
   has no utility form.
 
