@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const uiKitRoot = path.resolve(here, '..');
 const appRoot = path.resolve(here, '../../app');
+const featuresRoot = path.resolve(here, '../../features');
 
 const walk = (dir: string): Array<string> =>
 	readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -26,12 +27,16 @@ const PORTAL_EXCEPTIONS: Record<string, string> = {
 
 const OVERLAY_PORTAL_EXCEPTIONS: Record<string, string> = {
 	'app/SimTabs.tsx': 'a layout slot for the tab panes, not an overlay',
+	'features/results/components/LogRunner/LogRunner.tsx':
+		"portals its sticky header into DrStickySlotContext's dr-sticky-slot, a layout slot in DetailedResults.tsx, not an overlay",
+	'features/results/components/Timeline/rotation/RotationView.tsx':
+		"portals its sticky header into DrStickySlotContext's dr-sticky-slot, a layout slot in DetailedResults.tsx, not an overlay",
 };
 
 describe('portal root guard', () => {
-	it('every Base UI .Portal in ui-kit and app goes through usePortalContainer, or is a documented exception', () => {
+	it('every Base UI .Portal in ui-kit, app and features goes through usePortalContainer, or is a documented exception', () => {
 		const offenders: Array<string> = [];
-		for (const file of [...walk(uiKitRoot), ...walk(appRoot)]) {
+		for (const file of [...walk(uiKitRoot), ...walk(appRoot), ...walk(featuresRoot)]) {
 			const contents = readFileSync(file, 'utf-8');
 			if (!/\.Portal\b/.test(contents)) continue;
 			const key = relative(file).replace(/^ui\//, '');
@@ -44,7 +49,7 @@ describe('portal root guard', () => {
 
 	it('every createPortal for an overlay goes through usePortalContainer, or is a documented exception', () => {
 		const offenders: Array<string> = [];
-		for (const file of [...walk(uiKitRoot), ...walk(appRoot)]) {
+		for (const file of [...walk(uiKitRoot), ...walk(appRoot), ...walk(featuresRoot)]) {
 			const contents = readFileSync(file, 'utf-8');
 			if (!contents.includes('createPortal(')) continue;
 			const key = relative(file).replace(/^ui\//, '');
