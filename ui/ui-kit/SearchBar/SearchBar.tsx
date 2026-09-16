@@ -71,7 +71,7 @@ export const SearchBar = ({
 					{label}
 				</Field.Label>
 			)}
-			<div className={clsx('relative flex items-center', grow === false && 'flex-none')}>
+			<div className={clsx('relative flex w-full', grow === false && 'flex-none')}>
 				<Input
 					id={id}
 					type="text"
