@@ -206,7 +206,7 @@ export const DetailedResults = ({ resultsManager }: DetailedResultsProps) => {
 						</div>
 						<div ref={setStickySlot} data-testid="dr-sticky-slot" />
 					</div>
-					<TabPanels className="pt-6" data-testid="dr-tab-content">
+					<TabPanels data-testid="dr-tab-content">
 						<div
 							id="noResultsTab"
 							data-active

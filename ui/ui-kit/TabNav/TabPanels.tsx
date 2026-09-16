@@ -9,7 +9,7 @@ export interface TabPanelsProps {
 }
 
 export const TabPanels = ({ className, children, ...rest }: TabPanelsProps) => (
-	<div className={clsx('grid grid-cols-1 items-start', className)} {...rest}>
+	<div className={clsx('grid grid-cols-1 items-start pt-section', className)} {...rest}>
 		{children}
 	</div>
 );
