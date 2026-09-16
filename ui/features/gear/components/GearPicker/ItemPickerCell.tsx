@@ -24,8 +24,7 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const player = host.player;
 	const tooltipId = useId();
 
-	const gear = usePlayerStore('gear');
-	const item = gear.getEquippedItem(slot);
+	const item = usePlayerStore('gear').getEquippedItem(slot);
 
 	const showQuickSwapSetting = useUiStore('showQuickSwap');
 	const showQuickSwap = !hasTouch() && showQuickSwapSetting;

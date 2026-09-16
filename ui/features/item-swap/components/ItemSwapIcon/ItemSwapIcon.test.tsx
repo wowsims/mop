@@ -5,22 +5,21 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { ItemSwapGear } from '@sim/proto/gear';
-import { createSimStore, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
+import { createSimStore, PLAYER_FIELDS, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-type Release = ReturnType<typeof vi.fn>;
-
-const released: Release[] = [];
-
-const recordingSubscribe = () => (_onChange: () => void) => {
-	const release = vi.fn();
-	released.push(release);
-	return release;
+const trackReleases = (store: SimStore) => {
+	const releases: Array<ReturnType<typeof vi.fn>> = [];
+	const real = store.subscribe.bind(store) as (...args: Array<unknown>) => () => void;
+	vi.spyOn(store, 'subscribe').mockImplementation(((...args: Array<unknown>) => {
+		const release = vi.fn(real(...args));
+		releases.push(release);
+		return release;
+	}) as unknown as SimStore['subscribe']);
+	return releases;
 };
-
-vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(recordingSubscribe()));
 
 vi.mock('@ui-kit/hooks/useActionId', () => ({
 	useActionId: (actionId?: { itemId: number }) =>
@@ -59,6 +58,7 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 	const equipItem = vi.fn();
 	const openTab = vi.fn();
 	const store = createSimStore();
+	const releases = trackReleases(store);
 	const storeKey = 0;
 	seedKeyed(store, 'players', storeKey, {
 		itemSwapGear: new ItemSwapGear(Object.fromEntries(swap)),
@@ -80,7 +80,7 @@ const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] 
 			</OpenSelectorModalContext>
 		</SimHostProvider>,
 	);
-	return { view, equipItem, openTab };
+	return { view, equipItem, openTab, releases };
 };
 
 const icons = (container: Element) => [
@@ -88,7 +88,6 @@ const icons = (container: Element) => [
 ];
 
 beforeEach(() => {
-	released.length = 0;
 	tooltip.settles.length = 0;
 });
 
@@ -160,11 +159,14 @@ describe('ItemSwapIcon', () => {
 		expect(equipItem).toHaveBeenCalledWith(ItemSlot.ItemSlotOffHand, null);
 	});
 
-	it('reads the swap item through the shared store hook, not a subscribe* helper, and unmounts cleanly', () => {
-		const { view } = setup();
+	it('holds a live store listener per mounted icon, and releases every one of them on unmount', () => {
+		const { view, releases } = setup();
 
-		expect(released.length).toBe(0);
+		expect(releases.length).toBeGreaterThan(0);
+		expect(releases.filter(release => release.mock.calls.length > 0)).toHaveLength(0);
 
-		expect(() => view.unmount()).not.toThrow();
+		view.unmount();
+
+		expect(releases.filter(release => release.mock.calls.length === 0)).toHaveLength(0);
 	});
 });

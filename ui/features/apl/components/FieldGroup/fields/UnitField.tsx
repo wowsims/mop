@@ -2,14 +2,12 @@ import type { UNIT_SET } from '@features/apl/model/unit_sets';
 import { unitSets } from '@features/apl/model/unit_sets';
 import { refToValue, unitOptionModels } from '@features/apl/model/unit_values';
 import type { UnitReference } from '@generated/proto/common';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { useUnitMetadataVersion } from '@sim/hooks/useUnitMetadataVersion';
 import type { Player } from '@sim/player/player';
-import { subscribeUnitMetadata } from '@sim/state/subscriptions';
 import { DropdownField } from '@ui-kit/DropdownPicker';
 import type { InputConfig } from '@ui-kit/input';
 import { sameUnit, unitOption } from '@ui-kit/UnitPicker';
 import type { UnitValue } from '@ui-kit/UnitPicker/types';
-import { useMemo } from 'react';
 
 export interface UnitFieldProps {
 	player: Player<any>;
@@ -29,9 +27,8 @@ export interface UnitFieldProps {
  */
 export const UnitField = ({ player, config, unitSet }: UnitFieldProps) => {
 	const targetUI = unitSets[unitSet].targetUI;
-	const subscribe = subscribeUnitMetadata(player.sim);
-	const models = useStoreSubscribe(subscribe, () => unitOptionModels(unitSet, player));
-	const options = useMemo(() => models.map(model => unitOption(model.unit, model.submenu)), [models]);
+	useUnitMetadataVersion(player.sim);
+	const options = unitOptionModels(unitSet, player).map(model => unitOption(model.unit, model.submenu));
 
 	const boundConfig = {
 		...config,
