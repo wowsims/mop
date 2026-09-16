@@ -1,13 +1,11 @@
 @layer components {
 	.ui-bulk-item-cell {
+		--gem-width: 1rem;
+
 		& .ui-item-picker-icon-wrapper {
 			--icon-size: 3.5rem;
 			min-width: 3.5rem;
 			min-height: 3.5rem;
-		}
-
-		& .ui-gem-socket {
-			--gem-width: 1rem;
 		}
 
 		& .ui-item-picker-name-row {

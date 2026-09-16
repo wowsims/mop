@@ -99,7 +99,7 @@ export const BulkResultRow = ({ result, baseResult, iterations }: BulkResultRowP
 						// 3. New - The item appearing at all already says the slot changed.
 						if (itemChanged && spec.id !== 0 && spec.id === originalEquipmentSpec.items[idx]?.id) {
 							return (
-								<div key={idx} className="ui-bulk-result-item" data-testid="bulk-result-item">
+								<div key={idx} className="ui-bulk-result-item ui-bulk-item-cell" data-testid="bulk-result-item">
 									<GearChangeIcon
 										slot={idx}
 										item={host.sim.db.lookupItemSpec(spec) ?? undefined}
