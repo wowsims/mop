@@ -23,7 +23,7 @@ const FORWARD_STEPS = [
 
 export const ReplayControls = ({ clock }: ReplayControlsProps) => (
 	<div className="relative z-1 shrink-0 border-t border-white/6 bg-transparent px-3 pt-1.5 pb-2">
-		<div className="flex min-h-8 scrollbar-thin flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden">
+		<div className="flex min-h-8 flex-nowrap items-center gap-1.5 overflow-x-auto overflow-y-hidden">
 			{REWIND_STEPS.map(step => (
 				<ReplaySeekButton key={step.delta} delta={step.delta} glyph={step.glyph} onSeekBy={clock.seekBy} />
 			))}

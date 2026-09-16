@@ -33,17 +33,24 @@ html {
 	scrollbar-color: var(--color-primary) var(--color-background);
 }
 
-*::-webkit-scrollbar {
-	width: var(--size-scrollbar);
-	height: var(--size-scrollbar);
-}
+@supports selector(::-webkit-scrollbar) {
+	* {
+		scrollbar-width: auto;
+		scrollbar-color: auto;
+	}
 
-*::-webkit-scrollbar-thumb {
-	background-color: var(--color-primary);
-}
+	*::-webkit-scrollbar {
+		width: var(--size-scrollbar);
+		height: var(--size-scrollbar);
+	}
 
-*::-webkit-scrollbar-track {
-	background-color: var(--color-background);
+	*::-webkit-scrollbar-thumb {
+		background-color: var(--color-primary);
+	}
+
+	*::-webkit-scrollbar-track {
+		background-color: var(--color-background);
+	}
 }
 
 body {
