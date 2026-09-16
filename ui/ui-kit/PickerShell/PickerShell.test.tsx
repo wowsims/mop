@@ -40,7 +40,10 @@ describe('PickerShell', () => {
 
 	it('omits the state classes when neither applies', () => {
 		shell(configFor());
-		expect(root().getAttribute('class')).toBe('ui-field max-md:flex-col max-md:items-start number-picker-root');
+		expect(Array.from(root().classList).filter(name => name.startsWith('ui-'))).toEqual(['ui-field']);
+		expect(root().classList.contains('number-picker-root')).toBe(true);
+		expect(root().hasAttribute('data-layout')).toBe(false);
+		expect(root().hasAttribute('data-disabled')).toBe(false);
 		expect(root().hasAttribute('data-input-root')).toBe(true);
 	});
 

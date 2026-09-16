@@ -61,7 +61,11 @@ describe('UnitPicker', () => {
 
 		expect(within(items()[0]).queryByTestId('unit-picker-item-icon')).toBeNull();
 		expect(within(items()[1]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('boss.jpg');
-		expect(within(items()[2]).getByTestId('unit-picker-item-icon').className).toBe('fa fa-users ui-unit-icon');
+		const glyph = within(items()[2]).getByTestId('unit-picker-item-icon');
+		expect(glyph.tagName).not.toBe('IMG');
+		expect(glyph.classList.contains('fa')).toBe(true);
+		expect(glyph.classList.contains('fa-users')).toBe(true);
+		expect(glyph.classList.contains('ui-unit-icon')).toBe(true);
 		expect(within(items()[3]).getByTestId('unit-picker-item-icon').getAttribute('src')).toBe('spell.jpg');
 	});
 

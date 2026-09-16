@@ -39,6 +39,10 @@ describe('Chip', () => {
 		const { getByTestId } = render(<Chip label="Loadout 1" onDelete={onDelete} deleteConfirmLabel="Delete" />);
 		fireEvent.click(getByTestId('saved-data-set-delete'));
 		expect(onDelete).not.toHaveBeenCalled();
+
+		const [, confirm] = document.querySelectorAll<HTMLButtonElement>('[data-testid="sim-confirm-popover-actions"] button');
+		fireEvent.click(confirm);
+		expect(onDelete).toHaveBeenCalledTimes(1);
 	});
 
 	it('calls onDelete immediately when confirmDelete is false', () => {

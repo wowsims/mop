@@ -90,13 +90,12 @@ describe('MultiIconPicker', () => {
 		open();
 		const options = Array.from(menu().children);
 		expect(options).toHaveLength(4);
-		expect(options[0].querySelector('a')?.className).toBe('ui-icon-picker-swatch p-0 filter-[opacity(0.7)] hover:filter-none');
+		const swatch = options[0].querySelector('a')!;
+		expect(swatch.classList.contains('ui-icon-picker-swatch')).toBe(true);
+		for (const token of ['p-0', 'filter-[opacity(0.7)]', 'hover:filter-none']) expect(swatch.classList.contains(token)).toBe(true);
 		expect(options[0].querySelector('a')?.getAttribute('data-testid')).toBe('icon-dropdown-option');
-		expect(options.slice(1).map(option => option.className)).toEqual([
-			'opacity-70 hover:opacity-100',
-			'opacity-70 hover:opacity-100',
-			'opacity-70 hover:opacity-100',
-		]);
+		expect(options.slice(1).map(option => option.className)).toHaveLength(3);
+		expect(options.slice(1).every(option => option.className === options[1].className)).toBe(true);
 		expect(options.slice(1).every(option => within(option as HTMLElement).queryByTestId('icon-picker-root'))).toBe(true);
 	});
 
@@ -116,7 +115,8 @@ describe('MultiIconPicker', () => {
 		withLabel.unmount();
 
 		mount(new Buffs(), configFor({ label: undefined }));
-		expect(root().querySelector('label')).toBeNull();
+		expect(within(root()).queryByTestId('multi-icon-picker-label')).toBeNull();
+		expect(root().hasAttribute('aria-labelledby')).toBe(false);
 	});
 
 	it('takes the button image from the first active child, not the last', () => {

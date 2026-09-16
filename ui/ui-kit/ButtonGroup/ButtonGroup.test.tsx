@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ButtonGroup } from './ButtonGroup';
 
 describe('ButtonGroup', () => {
-	it('renders a group role with the layout classes and caller classes, additive', () => {
+	it('renders a group role carrying the caller classes and no layout classes of its own', () => {
 		render(
 			<ButtonGroup className="mt-2">
 				<button type="button">One</button>

@@ -33,7 +33,8 @@ describe('TabNav', () => {
 			</Tabs.Root>,
 		);
 		expect(getByTestId('sim-tabs').className).toContain('ui-tabs-sim');
-		expect(getByTestId('a').className).toContain('a');
+		expect(getByTestId('a').classList.contains('a')).toBe(true);
+		expect(getByTestId('a').classList.contains('ui-tab')).toBe(true);
 	});
 
 	it('carries per-tab id, aria-controls and data-label', () => {

@@ -189,15 +189,12 @@ describe('NumberPicker', () => {
 		expect(settings.value).toBe(12.5);
 	});
 
-	// The positive-float rewrite formats with grouping (formatToNumber's default), unlike the
-	// normal display format above. Reading the rewritten field back with Number(value) then chokes
-	// on the thousands separator and silently falls back to 0.
-	it('loses a positive-float value at 1000+ to the thousands separator, matching the vanilla bug', () => {
+	it('keeps a positive-float value at 1000+, which the thousands separator used to swallow', () => {
 		const settings = new Settings(0);
 		render(<NumberPicker modObject={settings} config={configFor({ positive: true, float: true })} />);
 		fireEvent.change(input(), { target: { value: '-1234.5' } });
 		fireEvent.blur(input());
-		expect(settings.value).toBe(0);
+		expect(settings.value).toBe(1234.5);
 	});
 
 	it('reads back a float value with Number(value||"")||0, falling back to 0 on garbage', () => {

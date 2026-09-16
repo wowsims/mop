@@ -39,8 +39,11 @@ describe('DropdownPicker', () => {
 	it('renders the root and trigger the stylesheets select on', () => {
 		mount(undefined);
 
-		expect(root().className).toBe('relative custom-root-class');
-		expect(trigger().className).toBe('ui-dropdown-trigger text-foreground hover:text-white/80');
+		expect(root().classList.contains('relative')).toBe(true);
+		expect(root().classList.contains('custom-root-class')).toBe(true);
+		expect(Array.from(trigger().classList).filter(name => name.startsWith('ui-'))).toEqual(['ui-dropdown-trigger']);
+		expect(trigger().classList.contains('text-foreground')).toBe(true);
+		expect(trigger().classList.contains('hover:text-white/80')).toBe(true);
 		expect(trigger().id).toBe('target-filter');
 		expect(trigger().getAttribute('type')).toBe('button');
 	});

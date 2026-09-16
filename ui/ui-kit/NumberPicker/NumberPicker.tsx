@@ -22,7 +22,7 @@ const formatSourceValue = (value: number, float: boolean, showZeroes: boolean, m
 };
 
 const applyPositive = (text: string, float: boolean, maxDecimalDigits: number): string => {
-	if (float) return formatToNumber(Math.abs(Number(text)), { minimumFractionDigits: 2, maximumFractionDigits: maxDecimalDigits });
+	if (float) return formatToNumber(Math.abs(Number(text)), { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: maxDecimalDigits });
 	return Math.abs(parseInt(text)).toString();
 };
 
