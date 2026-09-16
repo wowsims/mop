@@ -5,16 +5,15 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@sim/bulk/utils';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { getEligibleItemSlots } from '@sim/proto/items';
-import { bulkState } from '@sim/settings/bulk_settings';
-import { subscribeAll, subscribeBulkChange, subscribePlayerField } from '@sim/state/subscriptions';
 import { Button } from '@ui-kit/Button';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
 
+import { useBulkState } from '../../hooks/useBulkState';
 import { createBulkGearData } from '../../model/gear_data';
 import { removeBulkItemByIndex } from '../../model/items';
 import { frozenItemSlot } from '../../model/picker_groups';
@@ -39,22 +38,15 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 	const player = usePlayer();
 	const tooltipId = useId();
 
-	// One subscription over everything the cell's own state depends on: the frozen choices are the
-	// tab's, and which entry counts as equipped is the player's gear.
-	const state = useStoreSubscribe(subscribeAll([subscribeBulkChange(player), subscribePlayerField(player, 'gear')]), () => {
-		const gear = player.getGear();
-		const ownSlot = equippedSlotOf(bulkSlot, index);
-		const frozenBulkSlot = frozenItemSlot(gear, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot), bulkState(player).frozenItems.get(bulkSlot));
-		const isCurrentlyEquipped = bulkSlot !== BulkSimItemSlot.ItemSlotHandWeapon && player.getEquippedItems().some(equipped => equipped?.id === item.id);
-		return {
-			isEditable: index >= 0 && !isCurrentlyEquipped,
-			isFrozen: !ownSlot
-				? false
-				: ownSlot === bulkState(player).frozenWeaponSlot
-					? (gear.getEquippedItem(ownSlot)?.equals(item) ?? false)
-					: ownSlot === frozenBulkSlot,
-		};
-	});
+	const gear = usePlayerStore('gear');
+	const frozenItems = useBulkState(slice => slice.frozenItems);
+	const frozenWeaponSlot = useBulkState(slice => slice.frozenWeaponSlot);
+
+	const ownSlot = equippedSlotOf(bulkSlot, index);
+	const frozenBulkSlot = frozenItemSlot(gear, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot), frozenItems.get(bulkSlot));
+	const isCurrentlyEquipped = bulkSlot !== BulkSimItemSlot.ItemSlotHandWeapon && player.getEquippedItems().some(equipped => equipped?.id === item.id);
+	const isEditable = index >= 0 && !isCurrentlyEquipped;
+	const isFrozen = !ownSlot ? false : ownSlot === frozenWeaponSlot ? (gear.getEquippedItem(ownSlot)?.equals(item) ?? false) : ownSlot === frozenBulkSlot;
 
 	const slot = getEligibleItemSlots(item.item)[0];
 
@@ -65,20 +57,17 @@ export const BulkItemPicker = ({ bulkSlot, index, item }: BulkItemPickerProps) =
 			nameDescriptionFlush
 			testId="bulk-item-picker"
 			rootDataAttributes={{
-				...(state.isFrozen ? { 'data-frozen': '' } : {}),
-				...(!state.isFrozen && !state.isEditable ? { 'data-equipped': '' } : {}),
+				...(isFrozen ? { 'data-frozen': '' } : {}),
+				...(!isFrozen && !isEditable ? { 'data-equipped': '' } : {}),
 			}}
-			className={clsx(
-				'ui-bulk-item-cell mb-0 p-2',
-				state.isFrozen ? 'border-3 border-frozen' : !state.isEditable ? 'border border-brand' : 'border border-border',
-			)}
+			className={clsx('ui-bulk-item-cell mb-0 p-2', isFrozen ? 'border-3 border-frozen' : !isEditable ? 'border border-brand' : 'border border-border')}
 			onOpen={(tab: SelectorModalTabs) => {
-				if (!state.isEditable) return;
+				if (!isEditable) return;
 				openSelectorModal(slot, tab, createBulkGearData(player, bulkSlot, index));
 			}}
 			action={
 				<div className="ml-2 grid grid-flow-col [align-items:start] gap-1">
-					{index >= 0 && state.isEditable && (
+					{index >= 0 && isEditable && (
 						<>
 							<Button
 								iconOnly
