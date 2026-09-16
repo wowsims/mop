@@ -1,7 +1,5 @@
-import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
-import { Button } from '@ui-kit/Button';
-import { Icon } from '@ui-kit/Icon';
+import { FieldShell } from '@ui-kit/FieldShell';
 import clsx from 'clsx';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
@@ -65,37 +63,28 @@ export const SearchBar = ({
 	};
 
 	return (
-		<Field.Root className={clsx('ui-field', grow === false && 'flex-none')} data-testid="search-bar-root" data-input-root="">
-			{label && (
-				<Field.Label htmlFor={id} className="ui-field-label">
-					{label}
-				</Field.Label>
-			)}
-			<div className={clsx('relative flex', grow === false ? 'flex-none' : 'w-full')}>
-				<Input
-					id={id}
-					type="text"
-					data-testid={inputTestId}
-					className={clsx('ui-input', className)}
-					placeholder={placeholder}
-					autoFocus={autoFocus}
-					autoComplete={autoComplete}
-					value={draft}
-					onChange={event => handleInput(event.target.value)}
-				/>
-				{clearable && draft.length > 0 && (
-					<Button
-						variant="link"
-						size="inline"
-						className={clsx('absolute inset-y-0 right-0 flex items-center', clearClassName)}
-						data-testid="search-bar-clear-btn"
-						aria-label={clearLabel}
-						onClick={handleClear}>
-						<Icon name="times" />
-					</Button>
-				)}
-			</div>
-			{children}
-		</Field.Root>
+		<FieldShell
+			label={label}
+			id={id}
+			grow={grow}
+			rootTestId="search-bar-root"
+			showClear={clearable && draft.length > 0}
+			clearLabel={clearLabel}
+			clearClassName={clearClassName}
+			clearTestId="search-bar-clear-btn"
+			onClear={handleClear}
+			after={children}>
+			<Input
+				id={id}
+				type="text"
+				data-testid={inputTestId}
+				className={clsx('ui-input', className)}
+				placeholder={placeholder}
+				autoFocus={autoFocus}
+				autoComplete={autoComplete}
+				value={draft}
+				onChange={event => handleInput(event.target.value)}
+			/>
+		</FieldShell>
 	);
 };
