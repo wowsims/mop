@@ -20,7 +20,7 @@ export function buildCategories(build: PresetBuild): Array<string> {
 
 	if (build.encounter?.encounter) categories.push(translatePresetConfigurationCategory(PresetConfigurationCategory.Encounter));
 	if (build.epWeights) categories.push(i18n.t('common.preset.stat_weights'));
-	if (build.reforgeSettings) categories.push('Reforge Settings');
+	if (build.reforgeSettings) categories.push(i18n.t('common.preset.reforge_settings'));
 
 	if (build.settings) {
 		Object.keys(build.settings).forEach(c => {

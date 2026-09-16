@@ -854,6 +854,9 @@
 						"stat_weights": {
 							"type": "string"
 						},
+						"reforge_settings": {
+							"type": "string"
+						},
 						"class_spec_options": {
 							"type": "string"
 						},
@@ -877,6 +880,7 @@
 						"settings",
 						"description",
 						"stat_weights",
+						"reforge_settings",
 						"class_spec_options",
 						"consumables",
 						"other_settings",

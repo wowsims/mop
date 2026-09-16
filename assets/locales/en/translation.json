@@ -240,6 +240,7 @@
 			"settings": "Settings",
 			"description": "This preset affects the following settings:",
 			"stat_weights": "Stat Weights",
+			"reforge_settings": "Reforge Settings",
 			"class_spec_options": "Class/Spec Options",
 			"consumables": "Consumables",
 			"other_settings": "Other Settings",

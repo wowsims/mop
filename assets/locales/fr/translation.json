@@ -240,6 +240,7 @@
             "settings": "Paramètres",
             "description": "Ce préréglage affecte les paramètres suivants :",
             "stat_weights": "Poids des Stats",
+            "reforge_settings": "Paramètres de reforge",
             "class_spec_options": "Options Classe/Spé",
             "consumables": "Consommables",
             "other_settings": "Autres Paramètres",
