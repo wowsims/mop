@@ -1,36 +1,56 @@
 import { Spec } from '@generated/proto/common';
 import type { Database } from '@sim/proto/database';
+import { render } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { ITEM_NOTICES, MISSING_RANDOM_SUFFIX_WARNING, registerSetBonusNotices, SET_BONUS_NOTICES } from './item_notices';
 
 const markup = (itemId: number, spec: Spec = Spec.SpecUnknown) => renderToStaticMarkup(ITEM_NOTICES.get(itemId)?.[spec]);
+const noticeContainer = (itemId: number, spec: Spec = Spec.SpecUnknown) => render(<>{ITEM_NOTICES.get(itemId)?.[spec]}</>).container;
 
 describe('the item notice table', () => {
 	it('renders the tentative-implementation notice', () => {
-		expect(markup(95346)).toBe(
-			'<p>This item <span class="font-bold">is</span> implemented, but detailed proc behavior will be confirmed on PTR.</p>' +
-				'<p class="mb-0">Want to help out by providing additional information? Contact us on our Discord!</p>',
-		);
+		const container = noticeContainer(95346);
+		expect([...container.children].map(child => child.tagName.toLowerCase())).toEqual(['p', 'p']);
+		const paragraphs = container.querySelectorAll('p');
+		expect(paragraphs[0].textContent).toBe('This item is implemented, but detailed proc behavior will be confirmed on PTR.');
+		expect(paragraphs[0].querySelectorAll('span')).toHaveLength(1);
+		expect(paragraphs[0].querySelector('span')!.className).toBe('font-bold');
+		expect(paragraphs[0].querySelector('span')!.textContent).toBe('is');
+		expect(paragraphs[1].className).toBe('mb-0');
+		expect(paragraphs[1].textContent).toBe('Want to help out by providing additional information? Contact us on our Discord!');
 	});
 
 	it('lists the tooltips a missing item effect carries', () => {
-		expect(markup(84373)).toBe(
-			'<p class="font-bold">The following item effect (on-use or proc) is not implemented!</p>' +
-				'<ul><li>Your Chains of Ice ability now generates an additional 10 Runic Power.</li></ul>',
-		);
+		const container = noticeContainer(84373);
+		expect([...container.children].map(child => child.tagName.toLowerCase())).toEqual(['p', 'ul']);
+		const heading = container.querySelector('p')!;
+		expect(heading.className).toBe('font-bold');
+		expect(heading.textContent).toBe('The following item effect (on-use or proc) is not implemented!');
+		const items = container.querySelectorAll('ul > li');
+		expect(items).toHaveLength(1);
+		expect(items[0].textContent).toBe('Your Chains of Ice ability now generates an additional 10 Runic Power.');
 	});
 
 	it('renders the hand-written trinket notice', () => {
-		expect(markup(94523)).toBe(
-			'<p>The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span class="font-bold">not</span> implemented. ' +
-				'The DPS gain of these is around ~40 DPS.</p>',
+		const container = noticeContainer(94523);
+		expect([...container.children].map(child => child.tagName.toLowerCase())).toEqual(['p']);
+		const paragraphs = container.querySelectorAll('p');
+		expect(paragraphs[0].textContent).toBe(
+			'The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are not implemented. The DPS gain of these is around ~40 DPS.',
 		);
+		expect(paragraphs[0].querySelectorAll('span')).toHaveLength(1);
+		expect(paragraphs[0].querySelector('span')!.className).toBe('font-bold');
+		expect(paragraphs[0].querySelector('span')!.textContent).toBe('not');
 	});
 
 	it('renders the random suffix warning', () => {
-		expect(renderToStaticMarkup(MISSING_RANDOM_SUFFIX_WARNING)).toBe('<p class="mb-0">Please select a random suffix</p>');
+		const container = render(<>{MISSING_RANDOM_SUFFIX_WARNING}</>).container;
+		expect([...container.children].map(child => child.tagName.toLowerCase())).toEqual(['p']);
+		const p = container.querySelector('p')!;
+		expect(p.className).toBe('mb-0');
+		expect(p.textContent).toBe('Please select a random suffix');
 	});
 });
 

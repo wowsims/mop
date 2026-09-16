@@ -152,8 +152,13 @@ describe('CooldownsPicker', () => {
 		setup([cooldownFor(1)]);
 		mount();
 
-		expect(Array.from(deleteButton(0).classList).sort()).toEqual(['text-link-danger']);
-		expect(Array.from(deleteButton(0).querySelector('i')!.classList).sort()).toEqual(['fa', 'fa-times', 'fa-xl']);
+		const buttonClasses = Array.from(deleteButton(0).classList);
+		expect(buttonClasses).toHaveLength(1);
+		expect(buttonClasses).toContain('text-link-danger');
+
+		const iconClasses = Array.from(deleteButton(0).querySelector('i')!.classList);
+		expect(iconClasses).toHaveLength(3);
+		for (const token of ['fa', 'fa-times', 'fa-xl']) expect(iconClasses).toContain(token);
 	});
 
 	it('anchors every delete button to one shared tooltip', () => {

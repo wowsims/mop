@@ -357,7 +357,9 @@ describe('EpWeightsDialog', () => {
 			fireEvent.click(getByTestId('toggle-open'));
 		});
 
-		expect(table().className.split(' ')).toEqual(expect.arrayContaining(['w-full', 'stats-type-weight']));
+		const tableClasses = table().className.split(' ');
+		expect(tableClasses).toHaveLength(2);
+		expect(tableClasses).toEqual(expect.arrayContaining(['w-full', 'stats-type-weight']));
 		expect(select().value).toBe('1');
 		expect(showAll().checked).toBe(true);
 	});

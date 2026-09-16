@@ -41,11 +41,13 @@ const configFor = (shown: (options: Options) => boolean): IconEnumPickerConfig<O
 		setValue: () => {},
 	}) as IconEnumPickerConfig<Options, number>;
 
+const CHILD_CLASS_NAME = 'picker-group icon-group consumes-row-inputs consumes-engi';
+
 const row = (options: Options, configs?: Array<IconEnumPickerConfig<Options, number>>) => {
 	render(
 		<SimHostProvider host={{ player: options } as never}>
 			<ConsumeRow name="engineering" configs={configs as never}>
-				<div className="picker-group icon-group consumes-row-inputs consumes-engi" />
+				<div className={CHILD_CLASS_NAME} />
 			</ConsumeRow>
 		</SimHostProvider>,
 	);
@@ -59,10 +61,11 @@ describe('ConsumeRow', () => {
 		expect(element.hasAttribute('data-input-root')).toBe(true);
 		expect(element.getAttribute('data-layout')).toBe('inline');
 		// A <span>: it names the row's icon group, not a form control.
-		expect(Array.from(element.children).map(child => `${child.tagName.toLowerCase()}.${child.className}`)).toEqual([
-			'span.ui-field-label',
-			'div.picker-group icon-group consumes-row-inputs consumes-engi',
-		]);
+		const children = Array.from(element.children);
+		expect(children).toHaveLength(2);
+		expect(children.map(child => child.tagName.toLowerCase())).toEqual(['span', 'div']);
+		expect(children[0].className.split(' ')).toEqual(['ui-field-label']);
+		expect(children[1].className).toBe(CHILD_CLASS_NAME);
 	});
 
 	it('names the row group with its caption', () => {

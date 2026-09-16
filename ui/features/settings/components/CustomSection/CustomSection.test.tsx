@@ -56,9 +56,9 @@ describe('CustomSection', () => {
 	});
 
 	it('is a content block named by className', () => {
-		expect([...mount({ className: 'custom-section-example' }).classList].sort()).toEqual(
-			['ui-content-block', 'flex', 'flex-col', 'custom-section-example'].sort(),
-		);
+		const classes = [...mount({ className: 'custom-section-example' }).classList];
+		expect(classes).toHaveLength(4);
+		for (const token of ['ui-content-block', 'flex', 'flex-col', 'custom-section-example']) expect(classes).toContain(token);
 	});
 
 	it('falls back to the section id when it declares no className', () => {

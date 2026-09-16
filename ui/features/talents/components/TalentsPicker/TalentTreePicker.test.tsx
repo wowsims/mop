@@ -155,8 +155,8 @@ describe('TalentTreePicker', () => {
 
 	it('keeps the reset button on the bare base bundle, as the stylesheet expects', () => {
 		tree('000000');
-		expect(screen.getByRole('button').className.split(' ').sort()).toEqual(
-			['ui-button', 'ui-button-md', 'leading-none', 'text-link-danger', '-mr-3'].sort(),
-		);
+		const classes = screen.getByRole('button').className.split(' ');
+		expect(classes).toHaveLength(5);
+		for (const token of ['ui-button', 'ui-button-md', 'leading-none', 'text-link-danger', '-mr-3']) expect(classes).toContain(token);
 	});
 });
