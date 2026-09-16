@@ -1,9 +1,8 @@
 import type { Class } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { Database } from '@sim/proto/database';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { classGlyphsConfig } from '@sim/talents/factory';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -34,8 +33,7 @@ export const GlyphsPicker = () => {
 	const majorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Major, playerClass, db) : []), [db, glyphsConfig, playerClass]);
 	const minorOptions = useMemo(() => (db ? buildGlyphOptions(glyphsConfig, GlyphKind.Minor, playerClass, db) : []), [db, glyphsConfig, playerClass]);
 
-	const glyphsSubscribe = subscribePlayerField(player, 'glyphs');
-	const glyphs = useStoreSubscribe(glyphsSubscribe, () => player.getGlyphs());
+	const glyphs = usePlayerStore('glyphs');
 
 	const onOpen = useCallback((next: GlyphField) => {
 		setField(next);

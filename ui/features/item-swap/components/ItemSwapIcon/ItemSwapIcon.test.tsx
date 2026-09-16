@@ -4,7 +4,8 @@ import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import { createSimStore } from '@sim/state/sim_store';
+import { ItemSwapGear } from '@sim/proto/gear';
+import { createSimStore, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -57,8 +58,15 @@ const equippedItem = (itemId: number, socketColors: GemColor[] = []) =>
 const setup = (swap: Map<ItemSlot, EquippedItem> = new Map(), slots: ItemSlot[] = SLOTS) => {
 	const equipItem = vi.fn();
 	const openTab = vi.fn();
+	const store = createSimStore();
+	const storeKey = 0;
+	seedKeyed(store, 'players', storeKey, {
+		itemSwapGear: new ItemSwapGear(Object.fromEntries(swap)),
+		v: zeroVersions(PLAYER_FIELDS),
+	} as never);
 	const player = {
-		sim: { store: createSimStore() },
+		storeKey,
+		sim: { store },
 		itemSwapSettings: { getItem: (slot: ItemSlot) => swap.get(slot) ?? null, equipItem },
 		getChallengeModeEnabled: () => false,
 	} as unknown as Player<any>;
@@ -152,14 +160,11 @@ describe('ItemSwapIcon', () => {
 		expect(equipItem).toHaveBeenCalledWith(ItemSlot.ItemSlotOffHand, null);
 	});
 
-	it('releases every store subscription when the icons unmount', () => {
+	it('reads the swap item through the shared store hook, not a subscribe* helper, and unmounts cleanly', () => {
 		const { view } = setup();
 
-		expect(released.length).toBe(SLOTS.length);
-		expect(released.filter(release => release.mock.calls.length)).toHaveLength(0);
+		expect(released.length).toBe(0);
 
-		view.unmount();
-
-		expect(released.filter(release => release.mock.calls.length)).toHaveLength(released.length);
+		expect(() => view.unmount()).not.toThrow();
 	});
 });

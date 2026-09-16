@@ -5,7 +5,7 @@ import { Class, PseudoStat, Stat } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { Stats, UnitStat } from '@sim/proto/stats';
 import { SimRuns } from '@sim/sim_runs';
-import { createSimStore } from '@sim/state/sim_store';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { act, fireEvent, render } from '@testing-library/react';
 import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { useState } from 'react';
@@ -111,12 +111,25 @@ const STRENGTH = UnitStat.fromStat(Stat.StatStrength);
 const AGILITY = UnitStat.fromStat(Stat.StatAgility);
 
 class FakePlayer {
-	epWeights = new Stats();
+	storeKey = 0;
+	readonly sim: { store: SimStore };
 	epRatios = [1, 0, 0, 0, 0, 0];
 	readonly refStats: { dpsRefStat?: Stat; healRefStat?: Stat; tankRefStat?: Stat } = {};
 	readonly playerClass = { classID: Class.ClassWarrior };
 	playerSpec: { isTankSpec: boolean; isHealingSpec: boolean } | undefined = undefined;
 	computeStatWeights = vi.fn<(...args: any[]) => Promise<StatWeightsResult>>();
+
+	constructor(store: SimStore) {
+		this.sim = { store };
+		seedKeyed(store, 'players', this.storeKey, { epWeights: new Stats(), v: zeroVersions(PLAYER_FIELDS) } as never);
+	}
+
+	get epWeights(): Stats {
+		return this.sim.store.getState().players[this.storeKey].epWeights;
+	}
+	set epWeights(next: Stats) {
+		patchKeyed(this.sim.store, 'players', this.storeKey, { epWeights: next }, ['epWeights']);
+	}
 
 	getClass() {
 		return Class.ClassWarrior;
@@ -126,7 +139,6 @@ class FakePlayer {
 	}
 	setEpWeights(weights: Stats) {
 		this.epWeights = weights;
-		source.notify('player:epWeights');
 	}
 	getEpRatios() {
 		return this.epRatios.slice();
@@ -190,10 +202,10 @@ const weightsResult = (values: Array<[UnitStat, number]>): StatWeightsResult => 
 const setup = () => {
 	source.listeners.clear();
 	toasts.length = 0;
-	player = new FakePlayer();
+	const store = createSimStore();
+	player = new FakePlayer(store);
 	settings = new FakeSettings();
 	abortType = vi.fn().mockResolvedValue(undefined);
-	const store = createSimStore();
 	runsStore.store = store;
 	const runs = new SimRuns(store, { abortType: abortType as unknown as (mask: number) => Promise<void> });
 	host = {

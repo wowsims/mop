@@ -1,4 +1,5 @@
 import { APLRotation } from '@generated/proto/apl';
+import { createSimStore } from '@sim/state/sim_store';
 
 /**
  * A player stub with just the surface the APL pickers touch.
@@ -24,7 +25,7 @@ export const makePlayer = (rotation: APLRotation, notify: () => void = () => {})
 			raid: { getPlayer: () => undefined, getActivePlayers: () => [], size: () => 1 },
 			encounter: { targetsMetadata: { asList: () => [] } },
 			getUnitMetadata: () => metadata,
-			store: { getState: () => ({ players: {} }) },
+			store: createSimStore(),
 		},
 		getClass: () => 0,
 		getSpec: () => -1,

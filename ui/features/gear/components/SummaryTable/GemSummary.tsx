@@ -2,9 +2,8 @@ import type { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { ActionId } from '@sim/proto/action_id';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { externalRel } from '@sim/utils/links';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
@@ -43,7 +42,7 @@ const GemRow = ({ gem, count }: { gem: Gem; count: number }) => {
 
 export const GemSummary = () => {
 	const player = usePlayer();
-	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
+	const gear = usePlayerStore('gear');
 	const isBlacksmithing = useIsBlacksmithing();
 	const rows = useMemo(() => gemSummaryRows(gear.getAllGems(isBlacksmithing)), [gear, isBlacksmithing]);
 

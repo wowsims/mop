@@ -2,7 +2,8 @@ import { OpenSelectorModalContext } from '@features/gear/hooks/useSelectorModal'
 import { ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { createSimStore } from '@sim/state/sim_store';
+import { ItemSwapGear } from '@sim/proto/gear';
+import { createSimStore, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -16,8 +17,12 @@ const { ItemSwapPicker } = await import('./ItemSwapPicker');
 const SLOTS = [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1];
 
 const setup = (enabled: boolean) => {
+	const store = createSimStore();
+	const storeKey = 0;
+	seedKeyed(store, 'players', storeKey, { itemSwapEnabled: enabled, itemSwapGear: new ItemSwapGear({}), v: zeroVersions(PLAYER_FIELDS) } as never);
 	const player = {
-		sim: { store: createSimStore() },
+		storeKey,
+		sim: { store },
 		itemSwapSettings: { getEnableItemSwap: () => enabled, getItem: () => null },
 	} as unknown as Player<any>;
 	const host = fakeHost({ player });

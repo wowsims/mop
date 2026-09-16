@@ -1,9 +1,8 @@
 import type { ItemSlot, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { Player } from '@sim/player/player';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import type { BooleanPickerConfig } from '@ui-kit/BooleanPicker/types';
 import { Button } from '@ui-kit/Button';
@@ -28,8 +27,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 	const labelId = useId();
 	const swapTooltip = i18n.t('settings_tab.other.item_swap.tooltip');
 
-	const subscribe = subscribePlayerField(player, 'itemSwap');
-	const enabled = useStoreSubscribe(subscribe, () => player.itemSwapSettings.getEnableItemSwap());
+	const enabled = usePlayerStore('itemSwapEnabled');
 
 	const enableConfig = useMemo(
 		(): BooleanPickerConfig<Player<SpecType>> => ({

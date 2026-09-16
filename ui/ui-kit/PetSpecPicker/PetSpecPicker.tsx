@@ -1,8 +1,7 @@
 import { PetSpec } from '@generated/proto/hunter';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import type { Player } from '@sim/player/player';
 import type { HunterSpecs } from '@sim/proto/spec_types';
-import { subscribePlayerField } from '@sim/state/subscriptions';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId } from 'react';
@@ -19,8 +18,8 @@ const SPECS: ReadonlyArray<{ spec: PetSpec; label: string; iconKey: string }> = 
 
 export const PetSpecPicker = <SpecType extends HunterSpecs>({ player }: PetSpecPickerProps<SpecType>) => {
 	const id = useId();
-	const subscribe = subscribePlayerField(player, 'specOptions');
-	const active = useStoreSubscribe(subscribe, () => player.getClassOptions().petSpec);
+	usePlayerStore('specOptions');
+	const active = player.getClassOptions().petSpec;
 
 	// The options object is read, mutated and written back, which is what the facade expects.
 	const select = (spec: PetSpec) => {

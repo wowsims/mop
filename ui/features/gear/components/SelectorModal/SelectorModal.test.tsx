@@ -2,7 +2,7 @@ import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { createSimStore } from '@sim/state/sim_store';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, type SimStore, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { useMemo } from 'react';
@@ -90,6 +90,10 @@ describe('SelectorModal', () => {
 	let getEquippedItem: ReturnType<typeof vi.fn<() => EquippedItem | null>>;
 	let host: IndividualSimHost<any>;
 	let gearData: GearData;
+	let realStore: SimStore;
+	const STORE_KEY = 0;
+	const makeGear = () => ({ getEquippedItem: (slot: ItemSlot) => equippedItems.get(slot) ?? null });
+	const refreshGear = () => patchKeyed(realStore, 'players', STORE_KEY, { gear: makeGear() as never }, ['gear']);
 
 	const setup = ({ tabSet = [tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Enchants)], requestTab = SelectorModalTabs.Items } = {}) => {
 		tabs.build.mockReturnValue(tabSet);
@@ -118,10 +122,13 @@ describe('SelectorModal', () => {
 		const rootElem = document.createElement('div');
 		rootElem.className = 'sim-ui';
 		document.body.appendChild(rootElem);
+		realStore = createSimStore();
+		seedKeyed(realStore, 'players', STORE_KEY, { gear: makeGear(), challengeModeEnabled: false, v: zeroVersions(PLAYER_FIELDS) } as never);
 		host = fakeHost({
 			rootElem,
 			player: {
-				sim: { store: createSimStore() },
+				storeKey: STORE_KEY,
+				sim: { store: realStore },
 				getGear: () => ({ getEquippedItem: (slot: ItemSlot) => equippedItems.get(slot) ?? null }),
 				getChallengeModeEnabled: () => false,
 				equipItem: () => undefined,
@@ -180,7 +187,7 @@ describe('SelectorModal', () => {
 		tabs.build.mockReturnValue([tab(SelectorModalTabs.Items), tab(SelectorModalTabs.Reforging)]);
 		act(() => {
 			equippedItems.set(OPEN_SLOT, item(999));
-			store.notify();
+			refreshGear();
 		});
 
 		expect(tabButtons().find(button => button.getAttribute('aria-selected') === 'true')?.dataset.label).toBe(SelectorModalTabs.Items);
@@ -245,13 +252,13 @@ describe('SelectorModal', () => {
 
 		act(() => {
 			equippedItems.set(ALL_ITEM_SLOTS[0], item(42));
-			store.notify();
+			refreshGear();
 		});
 		expect(getEquippedItem.mock.calls.length).toBe(before);
 
 		act(() => {
 			equippedItems.set(OPEN_SLOT, item(43));
-			store.notify();
+			refreshGear();
 		});
 		expect(getEquippedItem.mock.calls.length).toBe(before + 1);
 	});

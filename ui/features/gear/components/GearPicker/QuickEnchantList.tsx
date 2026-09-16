@@ -2,8 +2,8 @@ import { ItemSlot, Profession } from '@generated/proto/common';
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField, subscribeSimField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
+import { useSimStore } from '@sim/hooks/useSimStore';
 import { useMemo } from 'react';
 
 import { QuickSwapList } from './QuickSwapList';
@@ -17,10 +17,8 @@ const isTinker = (enchant: Enchant) => enchant.requiredProfession === Profession
 
 export const QuickEnchantList = ({ slot, onOpenDetail }: QuickEnchantListProps) => {
 	const player = usePlayer();
-	const gearSubscribe = subscribePlayerField(player, 'gear');
-	const filtersSubscribe = subscribeSimField(player.sim, 'filters');
-	const currentItem = useStoreSubscribe(gearSubscribe, () => player.getEquippedItem(slot));
-	const favoriteEnchants = useStoreSubscribe(filtersSubscribe, () => player.sim.getFilters().favoriteEnchants);
+	const currentItem = usePlayerStore('gear').getEquippedItem(slot);
+	const favoriteEnchants = useSimStore('filters').favoriteEnchants;
 
 	const entries = useMemo(() => {
 		if (!currentItem) return [];

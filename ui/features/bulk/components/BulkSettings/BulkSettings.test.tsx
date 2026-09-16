@@ -4,7 +4,7 @@ import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import { bulkState, seedBulkSettings } from '@sim/settings/bulk_settings';
-import { createSimStore } from '@sim/state/sim_store';
+import { createSimStore, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -22,6 +22,7 @@ const RING = { id: 1, equals: () => false } as unknown as EquippedItem;
 const mount = () => {
 	const store = createSimStore();
 	const gear = { getEquippedItem: (slot: ItemSlot) => (slot === ItemSlot.ItemSlotFinger1 ? RING : null) };
+	seedKeyed(store, 'players', STORE_KEY, { gear, v: zeroVersions(PLAYER_FIELDS) } as never);
 	const player = { sim: { store, isNative: false }, storeKey: STORE_KEY, getGear: () => gear } as unknown as Player<any>;
 	seedBulkSettings(player);
 	const host = { player, sim: player.sim } as never;

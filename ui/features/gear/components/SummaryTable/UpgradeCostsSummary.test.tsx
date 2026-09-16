@@ -1,24 +1,11 @@
-import { Faction, ItemQuality } from '@generated/proto/common';
+import { ItemQuality, Race } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { EquippedItem } from '@sim/proto/equipped_item';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-
-const { listeners } = vi.hoisted(() => ({ listeners: new Map<string, Set<() => void>>() }));
-
-vi.mock('@sim/state/subscriptions', async () => {
-	const { mockSubscriptions, noopSubscribe } = await import('@sim/testing');
-	return mockSubscriptions(noopSubscribe, {
-		subscribePlayerField: (_player: unknown, field: string) => (callback: () => void) => {
-			const forField = listeners.get(field) ?? new Set<() => void>();
-			listeners.set(field, forField);
-			forField.add(callback);
-			return () => forField.delete(callback);
-		},
-	});
-});
 
 const { UpgradeCostsSummary } = await import('./UpgradeCostsSummary');
 
@@ -28,14 +15,14 @@ const gladiatorCloak = {
 	getMaxUpgradeCount: () => 2,
 } as unknown as EquippedItem;
 
-const renderSummary = (faction: () => Faction) => {
+const STORE_KEY = 0;
+
+const renderSummary = (race: Race) => {
 	const gear = { asArray: () => [gladiatorCloak] };
-	const player = { getGear: () => gear, getFaction: faction, canDualWield2H: () => false, setGear: vi.fn() } as unknown as Player<any>;
-	return render(
-		<SimHostProvider host={fakeHost({ player })}>
-			<UpgradeCostsSummary />
-		</SimHostProvider>,
-	);
+	const store = createSimStore();
+	seedKeyed(store, 'players', STORE_KEY, { gear, race, v: zeroVersions(PLAYER_FIELDS) } as never);
+	const player = { storeKey: STORE_KEY, sim: { store }, getGear: () => gear, canDualWield2H: () => false, setGear: vi.fn() } as unknown as Player<any>;
+	return { store, ...render(<SimHostProvider host={fakeHost({ player })}>{<UpgradeCostsSummary />}</SimHostProvider>) };
 };
 
 const currencyIcon = (container: HTMLElement) =>
@@ -43,17 +30,15 @@ const currencyIcon = (container: HTMLElement) =>
 
 describe('UpgradeCostsSummary', () => {
 	it('names the honor currency icon after the faction', () => {
-		const { container } = renderSummary(() => Faction.Horde);
+		const { container } = renderSummary(Race.RaceOrc);
 
 		expect(currencyIcon(container)).toContain('pvpcurrency-honor-horde');
 	});
 
 	it('repaints the honor currency icon when the race changes without the gear changing', () => {
-		let faction = Faction.Horde;
-		const { container } = renderSummary(() => faction);
+		const { store, container } = renderSummary(Race.RaceOrc);
 
-		faction = Faction.Alliance;
-		act(() => listeners.get('race')?.forEach(callback => callback()));
+		act(() => patchKeyed(store, 'players', STORE_KEY, { race: Race.RaceHuman }, ['race']));
 
 		expect(currencyIcon(container)).toContain('pvpcurrency-honor-alliance');
 	});

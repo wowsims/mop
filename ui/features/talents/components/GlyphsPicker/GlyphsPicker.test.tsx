@@ -2,6 +2,7 @@ import { Class, Glyphs } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { Database } from '@sim/proto/database';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { classGlyphsConfig } from '@sim/talents/factory';
 import { fakeHost } from '@sim/testing';
 import { fireEvent, render, waitFor } from '@testing-library/react';
@@ -25,13 +26,20 @@ const minorIds = Object.keys(config.minorGlyphs).map(Number);
 
 let glyphs: Glyphs;
 
+const STORE_KEY = 0;
+
 const mount = (initial: Partial<Glyphs> = {}) => {
 	glyphs = Glyphs.create(initial);
+	const store = createSimStore();
+	seedKeyed(store, 'players', STORE_KEY, { glyphs, v: zeroVersions(PLAYER_FIELDS) } as never);
 	const player = {
+		storeKey: STORE_KEY,
+		sim: { store },
 		getClass: () => CLASS,
 		getGlyphs: () => Glyphs.clone(glyphs),
 		setGlyphs: (next: Glyphs) => {
 			glyphs = Glyphs.clone(next);
+			patchKeyed(store, 'players', STORE_KEY, { glyphs }, ['glyphs']);
 			listeners.forEach(listener => listener());
 		},
 	} as unknown as Player<any>;

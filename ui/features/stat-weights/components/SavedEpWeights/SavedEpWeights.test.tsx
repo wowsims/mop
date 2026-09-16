@@ -2,6 +2,7 @@ import { Stat } from '@generated/proto/common';
 import { SavedEPWeights } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { Stats } from '@sim/proto/stats';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -43,13 +44,25 @@ const MIXED = new Stats().withStat(Stat.StatAgility, 4).withStat(Stat.StatCritRa
 const MIXED_JSON = SavedEPWeights.toJson(SavedEPWeights.create({ epWeights: MIXED.toProto() }));
 
 class FakePlayer {
-	epWeights = new Stats();
+	storeKey = 0;
+	sim = { store: createSimStore() };
+
+	constructor() {
+		seedKeyed(this.sim.store, 'players', this.storeKey, { epWeights: new Stats(), v: zeroVersions(PLAYER_FIELDS) } as never);
+	}
+
+	get epWeights(): Stats {
+		return this.sim.store.getState().players[this.storeKey].epWeights;
+	}
+	set epWeights(next: Stats) {
+		patchKeyed(this.sim.store, 'players', this.storeKey, { epWeights: next }, ['epWeights']);
+	}
+
 	getEpWeights() {
 		return this.epWeights;
 	}
 	setEpWeights = vi.fn((next: Stats) => {
 		this.epWeights = next;
-		source.notify();
 	});
 }
 

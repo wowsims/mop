@@ -1,10 +1,11 @@
 import type { ItemSlot } from '@generated/proto/common';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField, subscribeUiField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
+import { useUiStore } from '@sim/hooks/useUiStore';
 import { Tooltip } from '@ui-kit/Tooltip';
 import { useCallback, useId } from 'react';
 
+import { hasTouch } from '../../../../shared/pointer';
 import { useOpenSelectorModal } from '../../hooks/useSelectorModal';
 import { createGearData } from '../../model/gear_data';
 import { SelectorModalTabs } from '../../types';
@@ -23,12 +24,11 @@ export const ItemPickerCell = ({ slot, ready }: ItemPickerCellProps) => {
 	const player = host.player;
 	const tooltipId = useId();
 
-	const gearSubscribe = subscribePlayerField(player, 'gear');
-	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
+	const gear = usePlayerStore('gear');
 	const item = gear.getEquippedItem(slot);
 
-	const quickSwapSubscribe = subscribeUiField(player.sim, 'showQuickSwap');
-	const showQuickSwap = useStoreSubscribe(quickSwapSubscribe, () => player.sim.getShowQuickSwap());
+	const showQuickSwapSetting = useUiStore('showQuickSwap');
+	const showQuickSwap = !hasTouch() && showQuickSwapSetting;
 
 	const open = useCallback(
 		(tab: SelectorModalTabs) => {

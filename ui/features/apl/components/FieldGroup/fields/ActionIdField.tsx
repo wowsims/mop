@@ -3,6 +3,7 @@ import { type ACTION_ID_SET, actionIdSets } from '@features/apl/model/action_id_
 import type { DEFAULT_UNIT_REF } from '@features/apl/model/field_descriptors';
 import { ActionID, UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { useUnitMetadataVersion } from '@sim/hooks/useUnitMetadataVersion';
 import type { Player } from '@sim/player/player';
 import { ActionId } from '@sim/proto/action_id';
 import { subscribeAll, subscribeUnitMetadata } from '@sim/state/subscriptions';
@@ -61,8 +62,7 @@ export const ActionIdField = ({ player, config, actionIdSet, unitRefField, defau
 
 	// Metadata is mutated in place, so its identity does not move when it gains a spell. This counter
 	// is what forces the refetch off the notification instead.
-	const [metadataEpoch, setMetadataEpoch] = useState(0);
-	useEffect(() => subscribeUnitMetadata(player.sim)(() => setMetadataEpoch(epoch => epoch + 1)), [player]);
+	const metadataEpoch = useUnitMetadataVersion(player.sim);
 
 	const [available, setAvailable] = useState<Array<DropdownOption<ActionId>>>([]);
 	const { metadata } = view;

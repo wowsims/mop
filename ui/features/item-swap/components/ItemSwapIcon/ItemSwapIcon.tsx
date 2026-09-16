@@ -6,8 +6,7 @@ import type { ItemSlot } from '@generated/proto/common';
 import { translateSlotName } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { useIsBlacksmithing } from '@sim/hooks/useIsBlacksmithing';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useEquippedItemWowheadDataset } from '@ui-kit/hooks/useEquippedItemWowheadDataset';
 import clsx from 'clsx';
@@ -24,8 +23,7 @@ export const ItemSwapIcon = ({ slot }: ItemSwapIconProps) => {
 	const openSelectorModal = useOpenSelectorModal();
 	const player = host.player;
 
-	const swapSubscribe = subscribePlayerField(player, 'itemSwap');
-	const item = useStoreSubscribe(swapSubscribe, () => player.itemSwapSettings.getItem(slot));
+	const item = usePlayerStore('itemSwapGear').getEquippedItem(slot);
 
 	const isBlacksmithing = useIsBlacksmithing();
 

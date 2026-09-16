@@ -3,6 +3,7 @@ import { DatabaseFilters, UIItem as Item } from '@generated/proto/ui';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { IndividualSimHost } from '@sim/sim_host';
+import { createSimStore, patchSlice, type SimStore } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -91,6 +92,7 @@ describe('ItemList', () => {
 	let showEPValues: boolean;
 	let host: IndividualSimHost<any>;
 	let setFilters: ReturnType<typeof vi.fn>;
+	let realStore: SimStore;
 
 	const tab = (label: SelectorModalTabs, over: Partial<SelectorTab> = {}): SelectorTab =>
 		({
@@ -126,9 +128,14 @@ describe('ItemList', () => {
 		setFilters = vi.fn((next: DatabaseFilters) => {
 			filters = next;
 		});
+		realStore = createSimStore();
+		patchSlice(realStore, 'sim', { phase: 5 });
+		patchSlice(realStore, 'ui', { showEPValues });
 		host = fakeHost({
+			sim: { store: realStore },
 			player: {
 				sim: {
+					store: realStore,
 					db: { getNpc: () => undefined },
 					getFilters: () => DatabaseFilters.clone(filters),
 					setFilters,
@@ -252,6 +259,7 @@ describe('ItemList', () => {
 
 	it('drops a row from a later phase than the one the sim is on', () => {
 		(host.player.sim as any).getPhase = () => 2;
+		patchSlice(realStore, 'sim', { phase: 2 });
 		const { container } = setup({ over: { itemData: [row(1, 'Alpha', 500, 1), row(2, 'Beta', 520, 5)] } });
 		expect(names(container)).toEqual(['Alpha']);
 	});
@@ -280,6 +288,7 @@ describe('ItemList', () => {
 
 	it('hides the EP column through the list class when EP values are off', () => {
 		showEPValues = false;
+		patchSlice(realStore, 'ui', { showEPValues: false });
 		const { container } = setup();
 		expect(container.querySelector('[data-testid="selector-modal-list"]')!.hasAttribute('data-hide-ep')).toBe(true);
 		expect(container.querySelector<HTMLElement>('[data-testid="ep-label"]')!.style.display).toBe('none');

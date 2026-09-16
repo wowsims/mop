@@ -1,24 +1,13 @@
 import { ItemLevelState, ItemQuality, ItemSlot, Spec } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
-import { createSimStore } from '@sim/state/sim_store';
+import { createSimStore, patchKeyed, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-const store = vi.hoisted(() => {
-	const listeners = new Set<() => void>();
-	return {
-		subscribe: (callback: () => void) => {
-			listeners.add(callback);
-			return () => listeners.delete(callback);
-		},
-		notify: () => listeners.forEach(listener => listener()),
-	};
-});
 const tooltip = vi.hoisted(() => ({ settles: [] as Array<(url: string) => void> }));
 
-vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions(store.subscribe));
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 vi.mock('@sim/proto/action_id/tooltip_data', () => ({
 	equippedItemWowheadTooltipData: () => new Promise<string>(resolve => tooltip.settles.push(resolve)),
@@ -47,13 +36,17 @@ const equippedItem = (id: number) =>
 
 describe('ItemPickerCell', () => {
 	const setup = () => {
-		let gear = { getEquippedItem: () => equippedItem(1), asArray: () => [equippedItem(1)] };
+		const store = createSimStore();
+		const storeKey = 0;
+		const gear = (id: number) => ({ getEquippedItem: () => equippedItem(id), asArray: () => [equippedItem(id)] });
+		seedKeyed(store, 'players', storeKey, { gear: gear(1), v: zeroVersions(PLAYER_FIELDS) } as never);
 		const player = {
-			sim: { getShowQuickSwap: () => false, store: createSimStore() },
-			getGear: () => gear,
+			storeKey,
+			sim: { store },
+			getGear: () => store.getState().players[storeKey].gear,
 			getSpec: () => Spec.SpecUnknown,
 		} as unknown as Player<any>;
-		const host = fakeHost({ player });
+		const host = fakeHost({ player, sim: { store } });
 
 		tooltip.settles.length = 0;
 		const { container } = render(
@@ -63,11 +56,7 @@ describe('ItemPickerCell', () => {
 		);
 		return {
 			container,
-			equip: (id: number) =>
-				act(() => {
-					gear = { getEquippedItem: () => equippedItem(id), asArray: () => [equippedItem(id)] };
-					store.notify();
-				}),
+			equip: (id: number) => act(() => patchKeyed(store, 'players', storeKey, { gear: gear(id) } as never, ['gear'])),
 		};
 	};
 

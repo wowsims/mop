@@ -1,11 +1,11 @@
 import { ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
+import { createSimStore, patchSlice, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@sim/state/subscriptions', async () => (await import('@sim/testing')).mockSubscriptions());
 vi.mock('@ui-kit/hooks/useActionId', () => ({ useActionId: () => ({ iconUrl: '', name: '', href: '', ready: true }) }));
 
 const { QuickEnchantList } = await import('./QuickEnchantList');
@@ -23,14 +23,19 @@ describe('QuickEnchantList', () => {
 	const setup = () => {
 		let equipped = equippedItem('first');
 		const equipItem = vi.fn();
+		const storeKey = 0;
+		const store = createSimStore();
+		seedKeyed(store, 'players', storeKey, { gear: { getEquippedItem: () => equipped }, v: zeroVersions(PLAYER_FIELDS) } as never);
+		patchSlice(store, 'sim', { filters: { favoriteEnchants: ['4444-0'] } as never });
 		const player = {
-			sim: { getFilters: () => ({ favoriteEnchants: ['4444-0'] }) },
+			storeKey,
+			sim: { store },
 			getEnchants: () => [ENCHANT],
 			getTinkers: () => [],
 			getEquippedItem: () => equipped,
 			equipItem,
 		} as unknown as Player<any>;
-		const host = fakeHost({ player });
+		const host = fakeHost({ player, sim: { store } });
 		const view = render(
 			<SimHostProvider host={host}>
 				<QuickEnchantList slot={ItemSlot.ItemSlotHead} onOpenDetail={() => {}} />

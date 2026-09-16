@@ -4,6 +4,7 @@ import { Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { useSimHost, useSpecConfig } from '@sim/context/SimHostContext';
 import { useDisplayMetrics } from '@sim/hooks/useDisplayMetrics';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { useStatWeights } from '@sim/hooks/useStatWeights';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
 import { Stats } from '@sim/proto/stats';
@@ -76,7 +77,7 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 		tank: player.getRefStat('tankRefStat'),
 	}));
 	const epRatios = useStoreSubscribe(subscribePlayerField(player, 'epRatios'), () => player.getEpRatios());
-	const epWeights = useStoreSubscribe(subscribePlayerField(player, 'epWeights'), () => player.getEpWeights());
+	const epWeights = usePlayerStore('epWeights');
 
 	// `calculateEp` writes `epValues` from `weights`, which normalisation leaves alone.
 	const result = useMemo(() => (simResult ? calculateEp(simResult, refStats) : null), [simResult, refStats]);

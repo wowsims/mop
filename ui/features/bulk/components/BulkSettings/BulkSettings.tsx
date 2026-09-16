@@ -2,8 +2,7 @@ import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BulkSimItemSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { usePlayer, useSimHost } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -57,7 +56,7 @@ export const BulkSettings = () => {
 	const inheritUpgrades = useBulkState(slice => slice.inheritUpgrades);
 	const useLegacyBulkSim = useBulkState(slice => slice.useLegacyBulkSim);
 	const canRun = useBulkState(slice => canRunBatch(slice, bulkCombinationsLimit(player.sim.isNative)));
-	const gear = useStoreSubscribe(subscribePlayerField(player, 'gear'), () => player.getGear());
+	const gear = usePlayerStore('gear');
 
 	// Clearing a frozen item whose slot no longer holds it writes to the store; that is not safe
 	// during render, so it runs in an effect after render instead.

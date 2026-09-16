@@ -1,8 +1,8 @@
-import { Faction } from '@generated/proto/common';
+import { Faction, type Race } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
+import { raceToFaction } from '@sim/proto/utils';
 import { Button } from '@ui-kit/Button';
 import { Icon } from '@ui-kit/Icon';
 import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
@@ -20,10 +20,8 @@ const currencyIconUrl = (key: string, faction: Faction) => {
 
 export const UpgradeCostsSummary = () => {
 	const player = usePlayer();
-	const gearSubscribe = subscribePlayerField(player, 'gear');
-	const raceSubscribe = subscribePlayerField(player, 'race');
-	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
-	const faction = useStoreSubscribe(raceSubscribe, () => player.getFaction());
+	const gear = usePlayerStore('gear');
+	const faction = raceToFaction[usePlayerStore('race') as Race];
 	const upgradeable = useMemo(() => itemsWithUpgradeOptions(gear.asArray()), [gear]);
 	const totals = useMemo(() => upgradeCostTotals(upgradeable), [upgradeable]);
 

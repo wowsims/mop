@@ -1,7 +1,7 @@
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import type { IndividualSimHost } from '@sim/sim_host';
-import { createSimStore } from '@sim/state/sim_store';
+import { createSimStore, PLAYER_FIELDS, seedKeyed, zeroVersions } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -15,8 +15,12 @@ const gem = (id: number, name: string) => ({ id, name, quality: 4 });
 
 const hostWith = (gems: Array<ReturnType<typeof gem>>, setGear = vi.fn()) => {
 	const gear = { getAllGems: () => gems, withoutGems: () => 'stripped' };
+	const store = createSimStore();
+	const storeKey = 0;
+	seedKeyed(store, 'players', storeKey, { gear, v: zeroVersions(PLAYER_FIELDS) } as never);
 	const player = {
-		sim: { store: createSimStore() },
+		storeKey,
+		sim: { store },
 		getGear: () => gear,
 		canDualWield2H: () => false,
 		setGear,

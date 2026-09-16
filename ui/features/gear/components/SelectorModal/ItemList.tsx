@@ -3,9 +3,11 @@ import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/p
 import i18n from '@i18n/config';
 import { SortDirection } from '@sim/constants/other';
 import { useSimHost } from '@sim/context/SimHostContext';
+import { useSimStore } from '@sim/hooks/useSimStore';
 import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
+import { useUiStore } from '@sim/hooks/useUiStore';
 import type { EquippedItem } from '@sim/proto/equipped_item';
-import { subscribeSimField, subscribeUiField } from '@sim/state/subscriptions';
+import { subscribeSimField } from '@sim/state/subscriptions';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -54,8 +56,8 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 	const phaseId = useId();
 
 	const filters = useStoreSubscribe(subscribeSimField(sim, 'filters'), () => sim.getFilters());
-	const phase = useStoreSubscribe(subscribeSimField(sim, 'phase'), () => sim.getPhase());
-	const showEPValues = useStoreSubscribe(subscribeUiField(sim, 'showEPValues'), () => sim.getShowEPValues());
+	const phase = useSimStore('phase');
+	const showEPValues = useUiStore('showEPValues');
 
 	const isFavourited = useCallback((row: ItemDataFields<ItemListType>) => isItemFavourited(filters, label, row), [filters, label]);
 
