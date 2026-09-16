@@ -5,6 +5,7 @@
 // ui/sim/wasm/sim.ts:118 decimates by worker count) and ~2/s on the native host, which is why the
 // bar renders per message instead of coalescing across frames.
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { Profiler, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -164,6 +165,20 @@ describe('ProgressTrackerDialog', () => {
 		const popup = screen.getByRole('dialog', { hidden: true });
 		expect(popup.getAttribute('data-size')).toBe('md');
 		expect(popup.hasAttribute('hidden')).toBe(true);
+	});
+
+	it('portals into the container from context, which is the only way it is given one', () => {
+		const host = document.createElement('div');
+		document.body.appendChild(host);
+
+		render(
+			<PortalContainerContext value={host}>
+				<Harness />
+			</PortalContainerContext>,
+		);
+		expect(host.contains(screen.getByRole('dialog'))).toBe(true);
+
+		host.remove();
 	});
 });
 

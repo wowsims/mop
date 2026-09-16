@@ -16,28 +16,15 @@ export interface ProgressTrackerDialogProps {
 	warning?: ReactNode;
 	hasProgressBar?: boolean;
 	onCancel?: () => void;
-	container?: HTMLElement | null;
 	ref?: Ref<ProgressTrackerHandle>;
 	testId?: string;
 }
 
-export const ProgressTrackerDialog = ({
-	open,
-	title,
-	state,
-	className,
-	warning,
-	hasProgressBar,
-	onCancel,
-	container,
-	ref,
-	testId,
-}: ProgressTrackerDialogProps) => (
+export const ProgressTrackerDialog = ({ open, title, state, className, warning, hasProgressBar, onCancel, ref, testId }: ProgressTrackerDialogProps) => (
 	<Dialog
 		open={open}
 		onOpenChange={() => {}}
 		className={className}
-		container={container}
 		size="md"
 		verticalAlign="center"
 		title={title}

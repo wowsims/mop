@@ -1,6 +1,7 @@
 import type { Spec } from '@generated/proto/common';
 import type { IndividualSimHost } from '@sim/sim_host';
 import { act, fireEvent, render, waitFor, within } from '@testing-library/react';
+import { PortalContainerContext } from '@ui-kit/hooks/usePortalContainer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const toast = vi.fn();
@@ -34,7 +35,13 @@ const makeHost = () =>
 		},
 	}) as unknown as IndividualSimHost<Spec.SpecFireMage>;
 
-const renderFeature = () => render(<CombustionThresholds host={makeHost()} />);
+// `SimApp` provides this context with the same element the host exposes as `rootElem`.
+const renderFeature = () =>
+	render(
+		<PortalContainerContext value={rootElem}>
+			<CombustionThresholds host={makeHost()} />
+		</PortalContainerContext>,
+	);
 const actionButton = (container: HTMLElement) => container.querySelector<HTMLButtonElement>('[data-testid="mage-calculate-combustion-threshold-group"]')!;
 
 beforeEach(() => {

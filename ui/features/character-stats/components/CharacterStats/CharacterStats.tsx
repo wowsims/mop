@@ -54,7 +54,7 @@ export const CharacterStats = () => {
 							row.kind === 'stat' ? (
 								<StatRow key={row.id} unitStat={row.unitStat} bonusStats={bonusStats} attribution={attribution} show={show} pending={pending} />
 							) : (
-								critCap && <CritCapRow key={row.id} info={critCap.info} text={critCap.text} />
+								critCap && <CritCapRow key={row.id} info={critCap.info} text={critCap.text} pending={pending} />
 							),
 						)}
 					</tbody>

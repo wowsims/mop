@@ -346,7 +346,6 @@ export const CombustionThresholds = ({ host }: CombustionThresholdsProps) => {
 			{isRunning && (
 				<ProgressTrackerDialog
 					open
-					container={host.rootElem}
 					testId="combustion-thresholds-progress-tracker"
 					title={i18n.t('fire_mage.combustion_thresholds.progress_title')}
 					state={progress}
