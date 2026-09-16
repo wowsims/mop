@@ -28,6 +28,24 @@ html {
 	font-size: var(--font-size-root);
 }
 
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-primary) var(--color-background);
+}
+
+*::-webkit-scrollbar {
+	width: var(--size-scrollbar);
+	height: var(--size-scrollbar);
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: var(--color-primary);
+}
+
+*::-webkit-scrollbar-track {
+	background-color: var(--color-background);
+}
+
 body {
 	height: 100%;
 	color: var(--color-foreground);
