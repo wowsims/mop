@@ -67,6 +67,6 @@ describe('parseWowheadGearLink', () => {
 	});
 
 	it('rejects a link that is not a gear planner link', () => {
-		expect(() => parseWowheadGearLink('https://www.wowhead.com/item=86885')).toThrow(/Invalid WCL URL/);
+		expect(() => parseWowheadGearLink('https://www.wowhead.com/item=86885')).toThrow(/Invalid Wowhead Gear Planner URL/);
 	});
 });

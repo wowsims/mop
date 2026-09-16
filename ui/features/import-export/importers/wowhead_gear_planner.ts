@@ -180,7 +180,7 @@ function parseTalentString(e: number[]) {
 export function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 	const match = link.match(new RegExp(`${WOWHEAD_DOMAIN}/gear-planner/(.+)`));
 	if (!match) {
-		throw new Error(`Invalid WCL URL ${link}, must look like "${WOWHEAD_GEAR_PLANNER_URL}/CLASS/RACE/XXXX"`);
+		throw new Error(`Invalid Wowhead Gear Planner URL ${link}, must look like "${WOWHEAD_GEAR_PLANNER_URL}/CLASS/RACE/XXXX"`);
 	}
 	const e = match[1];
 	return readHash(e);

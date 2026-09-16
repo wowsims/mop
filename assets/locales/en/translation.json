@@ -2167,7 +2167,7 @@
 				"title": "Tinker issues",
 				"message": "There are known issues importing tinkers from Wowhead. Always make sure to double check your tinkers after importing."
 			},
-			"error_invalid_url": "Invalid WCL URL {{url}}, must look like \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
+			"error_invalid_url": "Invalid Wowhead Gear Planner URL {{url}}, must look like \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
 			"error_cannot_parse_class": "Could not parse Class: {{classId}}",
 			"error_cannot_parse_race": "Could not parse Race: {{raceId}}"
 		},

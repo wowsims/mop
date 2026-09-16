@@ -2168,7 +2168,7 @@
 				"title": "Problèmes de bricolage",
 				"message": "Il y a des problèmes connus lors de l'importation des bricolages depuis Wowhead. Assurez-vous toujours de vérifier vos bricolages après l'importation."
 			},
-			"error_invalid_url": "URL WCL invalide {{url}}, doit ressembler à \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
+			"error_invalid_url": "URL du Planificateur d'Équipement Wowhead invalide {{url}}, doit ressembler à \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
 			"error_cannot_parse_class": "Impossible de parser la classe : {{classId}}",
 			"error_cannot_parse_race": "Impossible de parser la race : {{raceId}}"
 		},
