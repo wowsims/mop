@@ -26,6 +26,7 @@ export const BulkItemSearchRow = ({ item }: BulkItemSearchRowProps) => {
 			data-item-id={item.id}
 			href={href || undefined}
 			target="_blank"
+			tabIndex={-1}
 			rel={externalRel(href || undefined, undefined)}
 			onClick={event => event.preventDefault()}>
 			<div className="relative size-10 shrink-0 border border-border">
