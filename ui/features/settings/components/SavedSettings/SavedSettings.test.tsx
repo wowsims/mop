@@ -66,11 +66,13 @@ const setup = () => {
 		source.notify();
 	});
 
+	let config: { presets: { settings: Array<any>; itemSwaps: Array<any> } } | undefined;
 	host = {
 		player: { getParty: () => ({}) },
 		sim: { waitForInit: () => waitForInit(), raid: {} },
 		get individualConfig() {
-			return { presets: { settings: presets, itemSwaps: itemSwapPresets } };
+			config ??= { presets: { settings: presets, itemSwaps: itemSwapPresets } };
+			return config;
 		},
 		getSavedSettingsStorageKey: () => STORAGE_KEY,
 	};
@@ -139,13 +141,20 @@ describe('SavedSettings', () => {
 		// instead of only `[ready, host, config]`, every itemSwap preset's `json` would track the
 		// current settings and the chip would read "active" forever.
 		it("bakes the item-swap preset's snapshot at build time, not the live settings", async () => {
+			const swapSettings = (race: Race) => SavedSettingsProto.create({ race, enableItemSwap: true, itemSwap: ItemSwap.create() });
+			let live = swapSettings(Race.RaceHuman);
+			savedSettingsModel.readSavedSettings.mockImplementation(() => live);
+			savedSettingsModel.applySavedSettings.mockImplementation((_h: unknown, next: SavedSettingsProto) => {
+				live = next;
+				source.notify();
+			});
 			itemSwapPresets = [{ name: 'Council Swap', itemSwap: ItemSwap.create() }];
 			await renderPanel();
 
-			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(false);
+			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(true);
 
 			await act(async () => {
-				savedSettingsModel.applySavedSettings(host, settingsWith(Race.RaceOrc));
+				savedSettingsModel.applySavedSettings(host, swapSettings(Race.RaceOrc));
 			});
 
 			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(false);

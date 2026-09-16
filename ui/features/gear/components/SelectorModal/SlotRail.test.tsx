@@ -6,8 +6,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ALL_ITEM_SLOTS } from '../../model/gear_data';
 
 vi.mock('./SlotRailIcon', () => ({
-	SlotRailIcon: ({ slot, active, onOpen }: { slot: ItemSlot; active: boolean; onOpen: () => void }) => (
-		<button data-slot={slot} data-active={String(active)} onClick={onOpen} />
+	SlotRailIcon: ({ slot, item, active, onOpen }: { slot: ItemSlot; item: { slot: ItemSlot } | null; active: boolean; onOpen: () => void }) => (
+		<button data-slot={slot} data-item-slot={item ? String(item.slot) : ''} data-active={String(active)} onClick={onOpen} />
 	),
 }));
 vi.mock('@ui-kit/Tooltip', () => ({ Tooltip: ({ id }: { id: string }) => <div data-testid="rail-tooltip" data-id={id} /> }));
@@ -42,12 +42,11 @@ describe('SlotRail', () => {
 	});
 
 	it('passes each icon the equipped item for its own slot', () => {
-		render(<SlotRail gear={gear} isBlacksmithing={false} currentSlot={null} onOpen={vi.fn()} />);
+		const { container } = render(<SlotRail gear={gear} isBlacksmithing={false} currentSlot={null} onOpen={vi.fn()} />);
 
-		ALL_ITEM_SLOTS.forEach(slot => {
-			expect(gear.getEquippedItem).toHaveBeenCalledWith(slot);
-		});
-		expect(gear.getEquippedItem).toHaveReturnedWith(equippedItems.get(ItemSlot.ItemSlotFeet));
+		const buttons = Array.from(container.querySelectorAll<HTMLButtonElement>('button'));
+		expect(buttons.map(button => button.dataset.itemSlot)).toEqual(ALL_ITEM_SLOTS.map(String));
+		expect(buttons.map(button => button.dataset.slot)).toEqual(buttons.map(button => button.dataset.itemSlot));
 	});
 
 	it('opens the clicked slot, not the first one', () => {

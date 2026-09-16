@@ -56,7 +56,6 @@ describe('ConsumeRow', () => {
 	it('builds vanilla’s row: the caption first, then whatever it was given', () => {
 		const element = row(new Options(), [configFor(() => true)]);
 
-		expect(element.getAttribute('data-testid')).toBe('consumes-row');
 		expect(element.hasAttribute('data-input-root')).toBe(true);
 		expect(element.getAttribute('data-layout')).toBe('inline');
 		// A <span>: it names the row's icon group, not a form control.

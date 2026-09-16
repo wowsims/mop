@@ -182,12 +182,12 @@ describe('ItemSource', () => {
 		expect(container.textContent).toBe(`Sold by${"Sha'tari Quartermaster"}`);
 	});
 
-	it('opens external links in a new tab with a rel attribute', () => {
+	it('opens external links in a new tab, with noopener and noreferrer', () => {
 		const item = Item.create({ id: 1000, sources: [], randomSuffixOptions: [1] });
 		const { getByRole } = mount(item);
 
 		expect(getByRole('link').getAttribute('target')).toBe('_blank');
-		expect(getByRole('link').getAttribute('rel')).toBeTruthy();
+		expect(getByRole('link').getAttribute('rel')!.split(/\s+/)).toEqual(expect.arrayContaining(['noopener', 'noreferrer']));
 	});
 
 	it('opts every source anchor out of the wowhead link icon', () => {

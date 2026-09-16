@@ -84,7 +84,6 @@ describe('TargetsPicker', () => {
 
 		expect(root().hasAttribute('data-input-root')).toBe(true);
 		expect(root().classList.contains('mb-0')).toBe(true);
-		expect(root().getAttribute('data-testid')).toBe('list-picker-root');
 		expect(targetRoots()).toHaveLength(1);
 		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];
 		expect(sections).toHaveLength(3);

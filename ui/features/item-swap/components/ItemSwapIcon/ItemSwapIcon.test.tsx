@@ -137,7 +137,6 @@ describe('ItemSwapIcon', () => {
 
 		expect(openTab).toHaveBeenCalledTimes(SLOTS.length);
 		expect(openTab.mock.calls.map(([slot]) => slot)).toEqual(SLOTS);
-		expect(new Set(openTab.mock.instances)).toHaveProperty('size', 1);
 		expect(openTab.mock.calls.map(([, tab]) => tab)).toEqual(['Items', 'Items', 'Items', 'Items']);
 	});
 

@@ -28,7 +28,11 @@ const mount = () => {
 			<RequiredSetBonuses />
 		</SimHostProvider>,
 	);
-	const box = (suffix: string) => container.querySelectorAll<HTMLElement>('[data-testid="boolean-picker-input"]')[suffix === '2p' ? 0 : 1];
+	const box = (suffix: '2p' | '4p') =>
+		container
+			.querySelector(`#required-set-bonus-${SET_ID}-Battlegear-${suffix}`)!
+			.closest('[data-testid="boolean-picker-root"]')!
+			.querySelector<HTMLElement>('[data-testid="boolean-picker-input"]')!;
 	return { player, box };
 };
 

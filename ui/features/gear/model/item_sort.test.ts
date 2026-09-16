@@ -47,10 +47,6 @@ describe('defaultSortBy', () => {
 	it('is ilvl on the Upgrades tab whatever the slot', () => {
 		expect(defaultSortBy(ItemSlot.ItemSlotHead, SelectorModalTabs.Upgrades)).toBe(ItemListSortBy.ILVL);
 	});
-
-	it('depends on nothing but the slot and the tab', () => {
-		expect(defaultSortBy(ItemSlot.ItemSlotHead, SelectorModalTabs.Items)).toBe(defaultSortBy(ItemSlot.ItemSlotHead, SelectorModalTabs.Items));
-	});
 });
 
 describe('sortItemIdxs', () => {

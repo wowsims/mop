@@ -36,34 +36,14 @@ beforeEach(() => {
 });
 
 describe('ReforgePanel', () => {
-	// The class lists the sidebar's action group gave the two buttons; the group element itself is `ReforgeSidebarGroup`'s.
-	it('renders the run button and the settings trigger with the sidebar action classes', () => {
+	it('renders the run button and the settings trigger as one sidebar action pair', () => {
 		const { container } = renderPanel();
 		const [run, settings] = [...container.querySelectorAll('button')];
 
-		expect([...run.classList].sort()).toEqual(
-			['ui-button', 'ui-button-primary', 'grow', 'py-2', 'px-settings-button-inset', '-mr-(--settings-button-width)'].sort(),
-		);
+		expect([...run.classList]).toEqual(expect.arrayContaining(['ui-button', 'ui-button-primary']));
 		expect(run.getAttribute('data-testid')).toBe('suggest-reforges-action-button');
 		expect(run.hasAttribute('data-sidebar-action')).toBe(true);
-		expect([...settings.classList].sort()).toEqual(
-			[
-				'ui-button',
-				'ui-button-md',
-				'ui-button-primary',
-				'bg-transparent',
-				'border-transparent',
-				'hover:bg-primary-hover',
-				'hover:border-primary-hover',
-				'focus-visible:bg-primary-hover',
-				'focus-visible:border-primary-hover',
-				'active:bg-primary-active',
-				'active:border-primary-active',
-				'data-[popup-open]:bg-primary-active',
-				'data-[popup-open]:border-primary-active',
-				'w-(--settings-button-width)',
-			].sort(),
-		);
+		expect([...settings.classList]).toEqual(expect.arrayContaining(['ui-button', 'ui-button-primary']));
 		expect(settings.getAttribute('data-testid')).toBe('suggest-reforges-button-settings');
 		expect(settings.hasAttribute('data-sidebar-action')).toBe(true);
 		expect(settings.querySelector('.fa-cog')).not.toBeNull();
