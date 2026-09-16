@@ -87,7 +87,7 @@ export const SearchBar = ({
 					<Button
 						variant="link"
 						size="inline"
-						className={clsx('absolute right-0', clearClassName)}
+						className={clsx('absolute inset-y-0 right-0 flex items-center', clearClassName)}
 						data-testid="search-bar-clear-btn"
 						aria-label={clearLabel}
 						onClick={handleClear}>
