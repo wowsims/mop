@@ -3,6 +3,7 @@ import i18n from '@i18n/config';
 import * as Mechanics from '@sim/constants/mechanics';
 import { Player } from '@sim/player/player';
 import { Stats, UnitStat } from '@sim/proto/stats';
+import { TONE_TEXT } from '@ui-kit/utils/colors';
 
 export interface RacialBonuses {
 	/** Draenei: the racial hit is baked into the rating, and is subtracted before it is shown. */
@@ -101,7 +102,8 @@ export const masteryScaling = (player: Player<any>): { modifiers: number[]; cust
 	return { modifiers, customBonus };
 };
 
-export const bonusStatClass = (bonusStatValue: number): string => (bonusStatValue === 0 ? 'text-white' : bonusStatValue > 0 ? 'text-success' : 'text-danger');
+export const bonusStatClass = (bonusStatValue: number): string =>
+	bonusStatValue === 0 ? 'text-white' : TONE_TEXT[bonusStatValue > 0 ? 'positive' : 'negative'];
 
 /** The crit cap reads the other way round: over the cap is bad. */
-export const critCapClass = (capDelta: number): string => (capDelta === 0 ? 'text-white' : capDelta > 0 ? 'text-danger' : 'text-success');
+export const critCapClass = (capDelta: number): string => (capDelta === 0 ? 'text-white' : TONE_TEXT[capDelta > 0 ? 'negative' : 'positive']);

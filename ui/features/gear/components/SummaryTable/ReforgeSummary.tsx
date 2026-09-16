@@ -3,12 +3,12 @@ import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { useSimHost } from '@sim/context/SimHostContext';
-import { useStoreSubscribe } from '@sim/hooks/useStoreSubscribe';
-import { subscribePlayerField } from '@sim/state/subscriptions';
+import { usePlayerStore } from '@sim/hooks/usePlayerStore';
 import { Button } from '@ui-kit/Button';
 import { useCopyToClipboard } from '@ui-kit/hooks/useCopyToClipboard';
 import { Icon } from '@ui-kit/Icon';
 import { SummaryTableRow } from '@ui-kit/SummaryTableRow';
+import { toneTextClass } from '@ui-kit/utils/css';
 import { useMemo } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
@@ -18,8 +18,7 @@ import { SummaryTable } from './SummaryTable';
 export const ReforgeSummary = () => {
 	const host = useSimHost();
 	const player = host.player;
-	const gearSubscribe = subscribePlayerField(player, 'gear');
-	const gear = useStoreSubscribe(gearSubscribe, () => player.getGear());
+	const gear = usePlayerStore('gear');
 	const totals = useMemo(() => reforgeTotals(gear.getAllReforges()), [gear]);
 	const stats = Object.keys(totals).map(Number) as Stat[];
 
@@ -49,10 +48,11 @@ export const ReforgeSummary = () => {
 			{stats.map(stat => {
 				const value = totals[stat];
 				if (!value) return null;
+				const tone = value > 0 ? 'positive' : 'negative';
 				return (
 					<SummaryTableRow key={stat}>
 						<div>{translateStat(stat)}</div>
-						<div className={value > 0 ? 'text-success' : 'text-danger'} data-sign={value > 0 ? 'positive' : 'negative'}>
+						<div className={toneTextClass(tone)} data-sign={tone}>
 							{value}
 						</div>
 					</SummaryTableRow>
