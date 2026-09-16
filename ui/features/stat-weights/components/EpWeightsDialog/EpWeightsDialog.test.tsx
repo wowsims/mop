@@ -260,10 +260,27 @@ const calculate = () => popup().querySelector<HTMLButtonElement>('[data-testid="
 describe('EpWeightsDialog', () => {
 	beforeEach(setup);
 
-	it('builds the column set in order, with the metric and type classes each rule selects on', () => {
+	it('builds the column set in order, each metric column tagged with the type its hide rule selects on', () => {
 		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const headers = [...table().querySelectorAll('thead tr:first-child th')];
+		expect(headers.map(th => th.getAttribute('data-column-type'))).toEqual([
+			null,
+			null,
+			'weight',
+			'ep',
+			'weight',
+			'ep',
+			'weight',
+			'ep',
+			'weight',
+			'ep',
+			'weight',
+			'ep',
+			'weight',
+			'ep',
+			null,
+		]);
 		expect(headers.map(th => th.textContent)).toEqual([
 			'sidebar.buttons.stat_weights.modal.column_headers.stat',
 			'sidebar.buttons.stat_weights.modal.column_headers.update',
@@ -458,6 +475,7 @@ describe('EpWeightsDialog', () => {
 
 	it('copies a column into the current EP weights, leaving excluded stats alone', () => {
 		host.sim.showThreatMetrics = true;
+		host.individualConfig.defaults.epWeights = new Stats().withStat(Stat.StatAgility, 7).withStat(Stat.StatStrength, 11);
 		renderDialog();
 		player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
 		settings.setStatExcluded(AGILITY, true);
@@ -466,6 +484,7 @@ describe('EpWeightsDialog', () => {
 			fireEvent.click(table().querySelectorAll('thead tr:first-child th')[14].querySelector('[data-testid="col-action"]')!);
 		});
 
+		expect(player.epWeights.getStat(Stat.StatStrength)).toBe(11);
 		expect(player.epWeights.getStat(Stat.StatAgility)).toBe(3);
 	});
 
@@ -573,6 +592,28 @@ describe('EpWeightsDialog', () => {
 
 			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
 			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBe('negative');
+		});
+
+		it('colours the moved EP with a live utility, not the bare tone name', async () => {
+			player.computeStatWeights.mockResolvedValue(
+				weightsResult([
+					[STRENGTH, 2],
+					[AGILITY, 1],
+				]),
+			);
+			renderDialog();
+			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5));
+
+			await act(async () => {
+				fireEvent.click(calculate());
+			});
+
+			const epValue = (stat: string) => rowFor(stat).querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!;
+			expect([...epValue('Strength').classList]).toEqual(['text-success']);
+			expect([...epValue('Agility').classList]).toEqual([]);
+
+			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
+			expect([...epValue('Agility').classList]).toEqual(['text-danger']);
 		});
 
 		it('greys the columns whose EP ratio is zero', async () => {
