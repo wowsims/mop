@@ -92,14 +92,7 @@ export const GroupVariablesField = ({ player, config, groupNameField, getParentV
 			<ListPicker<Player<any>, any>
 				modObject={player}
 				config={listConfig}
-				renderItem={(index, itemConfig) => (
-					<GroupVariableRow
-						player={player}
-						config={itemConfig}
-						name={itemConfig.getValue(player)?.name ?? ''}
-						groupSelected={!!parentRef.current()?.[groupNameField]}
-					/>
-				)}
+				renderItem={(index, itemConfig) => <GroupVariableRow player={player} config={itemConfig} name={itemConfig.getValue(player)?.name ?? ''} />}
 			/>
 		</PickerShell>
 	);

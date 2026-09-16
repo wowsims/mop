@@ -15,7 +15,6 @@ export interface GroupVariableRowProps {
 	/** The placeholder this row fills in. */
 	name: string;
 	/** Without a selected group there is nothing to assign, and the menu offers nothing. */
-	groupSelected: boolean;
 }
 
 /**
@@ -24,12 +23,12 @@ export interface GroupVariableRowProps {
  * The name is a real `<label>`, with the `htmlFor` naming the dropdown beside it — unlike the
  * list's own title, which labels no control at all and so had to become a `<span>`.
  */
-export const GroupVariableRow = ({ player, config, name, groupSelected }: GroupVariableRowProps) => {
+export const GroupVariableRow = ({ player, config, name }: GroupVariableRowProps) => {
 	const rootId = useId();
 	const valueId = useId();
 
 	const subscribe = rotationSource(player);
-	const available = useStoreSubscribe(subscribe, () => (groupSelected ? (player.aplRotation?.valueVariables || []).map(variable => variable.name) : []));
+	const available = useStoreSubscribe(subscribe, () => (player.aplRotation?.valueVariables || []).map(variable => variable.name));
 	const options = useMemo(() => available.map(variableName => ({ value: variableName, label: variableName })), [available]);
 
 	const valueConfig: InputConfig<Player<any>, string> & { id: string } = {
