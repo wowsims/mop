@@ -3,10 +3,10 @@ import i18n from '@i18n/config';
 import { usePlayer } from '@sim/context/SimHostContext';
 import type { Player } from '@sim/player/player';
 import { canEquipItem } from '@sim/proto/items';
+import { ComboBox } from '@ui-kit/ComboBox';
 import { ContentBlock } from '@ui-kit/ContentBlock';
 import { NumberPicker } from '@ui-kit/NumberPicker';
 import type { NumberPickerConfig } from '@ui-kit/NumberPicker/types';
-import { SearchBar } from '@ui-kit/SearchBar';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addBulkItem } from '../../model/items';
@@ -26,6 +26,7 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 	// The configs are built once and read the current filter through a ref, so a picker's
 	// `getValue` cannot close over a stale render.
 	const filters = useRef({ minIlvl: 0, maxIlvl: 0 });
+	const panelRef = useRef<HTMLDivElement>(null);
 
 	const allItems = useMemo(
 		() =>
@@ -38,8 +39,10 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 		[ready, player],
 	);
 
-	const open = query.length > 0;
-	const matches = useMemo(() => (open ? searchBulkItems(allItems, query, minIlvl, maxIlvl) : null), [open, allItems, query, minIlvl, maxIlvl]);
+	const [dismissed, setDismissed] = useState(false);
+	const hasQuery = query.length > 0;
+	const open = hasQuery && !dismissed;
+	const matches = useMemo(() => (hasQuery ? searchBulkItems(allItems, query, minIlvl, maxIlvl) : null), [hasQuery, allItems, query, minIlvl, maxIlvl]);
 	// Clearing the box hides the list without emptying it.
 	const [shown, setShown] = useState<BulkSearchResult | null>(null);
 	useEffect(() => {
@@ -65,35 +68,43 @@ export const BulkItemSearch = ({ ready }: BulkItemSearchProps) => {
 
 	return (
 		<ContentBlock config={{ header: { title: i18n.t('bulk_tab.search.title'), className: 'pb-0 border-b-0' } }} flush>
-			<div className="relative grid grid-cols-2 gap-6 border border-border bg-background p-4 md:grid-cols-halves-wide">
-				<SearchBar
+			<div ref={panelRef} className="relative grid grid-cols-2 gap-6 border border-border bg-background p-4 md:grid-cols-halves-wide">
+				<ComboBox
 					id="bulkGearSearch"
 					label={i18n.t('common.name')}
 					placeholder={i18n.t('common.search')}
 					value={query}
-					onChange={setQuery}
+					onChange={next => {
+						setDismissed(false);
+						setQuery(next);
+					}}
+					open={open}
+					onOpenChange={(next, reason) => setDismissed(!next && reason === 'escape-key')}
+					multiColumn
+					popupAnchor={panelRef}
+					items={shown?.items ?? []}
+					itemKey={item => item.id}
+					renderItem={item => <BulkItemSearchRow item={item} />}
+					onItemSelect={item => addBulkItem(player, ItemSpec.create({ id: item.id }))}
 					clearable
 					clearLabel={i18n.t('bulk_tab.search.clear_search')}
-					clearClassName="z-2 -ml-px flex items-center border border-surface-border bg-surface px-3 py-1.5">
-					<ul
-						className="absolute top-full right-4 left-4 z-10 m-0 hidden w-full min-w-40 list-none grid-cols-1 gap-2 rounded-none border border-surface-border bg-surface-raised bg-clip-padding p-2 text-left text-base text-white shadow-popup data-open:grid md:grid-cols-2 xxl:grid-cols-3"
-						data-testid="bulk-gear-search-results"
-						data-open={open ? '' : undefined}>
-						{shown?.items.map(item => (
-							<BulkItemSearchRow key={item.id} item={item} onAdd={() => addBulkItem(player, ItemSpec.create({ id: item.id }))} />
-						))}
-						{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
-							<li className="ui-bulk-item-search-item col-span-full justify-center border-none" data-testid="bulk-item-search-results-note">
-								{i18n.t('bulk_tab.search.showing_results', { max: MAX_SEARCH_RESULTS, total: shown.matchCount })}
-							</li>
-						)}
-						{shown?.matchCount === 0 && (
-							<li className="ui-bulk-item-search-item col-span-full justify-center border-none" data-testid="bulk-item-search-results-note">
-								{i18n.t('bulk_tab.search.no_results')}
-							</li>
-						)}
-					</ul>
-				</SearchBar>
+					clearClassName="z-2 -ml-px flex items-center border border-surface-border bg-surface px-3 py-1.5"
+					listTestId="bulk-gear-search-results"
+					footer={
+						<>
+							{!!shown && shown.matchCount > MAX_SEARCH_RESULTS && (
+								<div className="ui-combo-box-footer" data-testid="bulk-item-search-results-note">
+									{i18n.t('bulk_tab.search.showing_results', { max: MAX_SEARCH_RESULTS, total: shown.matchCount })}
+								</div>
+							)}
+							{shown?.matchCount === 0 && (
+								<div className="ui-combo-box-footer" data-testid="bulk-item-search-results-note">
+									{i18n.t('bulk_tab.search.no_results')}
+								</div>
+							)}
+						</>
+					}
+				/>
 				<div className="flex items-center [&_.ui-number-picker-root]:mb-0">
 					<NumberPicker modObject={player} config={ilvlConfigs.min} />
 					<span className="mx-3 mt-3">-</span>

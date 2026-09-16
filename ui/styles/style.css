@@ -28,6 +28,7 @@
 @import '../features/talents/components/TalentsPicker/TalentPicker.css';
 
 @import '../ui-kit/Button/Button.css';
+@import '../ui-kit/ComboBox/ComboBox.css';
 @import '../ui-kit/FormControl/FormControl.css';
 @import '../ui-kit/PickerShell/PickerShell.css';
 @import '../ui-kit/IconPicker/IconPicker.css';

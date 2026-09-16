@@ -1,0 +1,65 @@
+@layer components {
+	.ui-combo-box-positioner {
+		@apply z-dropdown w-(--anchor-width);
+	}
+
+	.ui-combo-box-popup {
+		@apply flex max-h-(--available-height) w-full flex-col border border-surface-border bg-surface-raised bg-clip-padding text-left text-base text-white shadow-popup;
+	}
+
+	.ui-combo-box-list {
+		@apply m-0 grid min-h-0 list-none grid-cols-1 gap-1 overflow-y-auto p-2;
+
+		&[data-multi-column] {
+			@apply md:grid-cols-2 xxl:grid-cols-3;
+		}
+	}
+
+	.ui-combo-box-footer {
+		@apply shrink-0 border-t border-surface-border px-2 py-1.5 text-center;
+	}
+
+	.ui-combo-box-item {
+		@apply flex items-stretch border-none bg-table-even outline-none;
+
+		&:nth-child(even) {
+			@apply bg-table-odd;
+		}
+
+		&[data-highlighted] {
+			@apply bg-surface-hover;
+		}
+	}
+
+	.ui-combo-box-list[data-multi-column] {
+		@variant md {
+			> .ui-combo-box-item:nth-child(4n + 1),
+			> .ui-combo-box-item:nth-child(4n + 2) {
+				@apply bg-table-even;
+			}
+
+			> .ui-combo-box-item:nth-child(4n + 3),
+			> .ui-combo-box-item:nth-child(4n + 4) {
+				@apply bg-table-odd;
+			}
+		}
+
+		@variant xxl {
+			> .ui-combo-box-item:nth-child(6n + 1),
+			> .ui-combo-box-item:nth-child(6n + 2),
+			> .ui-combo-box-item:nth-child(6n + 3) {
+				@apply bg-table-even;
+			}
+
+			> .ui-combo-box-item:nth-child(6n + 4),
+			> .ui-combo-box-item:nth-child(6n + 5),
+			> .ui-combo-box-item:nth-child(6n + 6) {
+				@apply bg-table-odd;
+			}
+		}
+
+		> .ui-combo-box-item[data-highlighted] {
+			@apply bg-surface-hover;
+		}
+	}
+}
