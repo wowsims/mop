@@ -4,7 +4,12 @@ import { ItemDataFields, ItemListType } from '../types';
 
 export type NpcNameLookup = (npcId: number) => string | undefined;
 
-export const formatSearchQuery = (value: string): string => value.toLowerCase().replaceAll(/[^a-zA-Z0-9\s]/g, '');
+export const formatSearchQuery = (value: string): string =>
+	value
+		.normalize('NFD')
+		.replaceAll(/\p{Diacritic}/gu, '')
+		.toLowerCase()
+		.replaceAll(/[^\p{L}\p{N}\s]/gu, '');
 
 export const itemSourceSearchNames = <T extends ItemListType>(itemData: ItemDataFields<T>, getNpcName: NpcNameLookup): string[] => {
 	if (!('item' in itemData) || typeof itemData.item != 'object' || !('sources' in itemData.item)) return [];
@@ -19,7 +24,7 @@ export const itemSourceSearchNames = <T extends ItemListType>(itemData: ItemData
 			} else if (source.oneofKind === 'crafted') {
 				label = professionNames.get(source.crafted.profession);
 			}
-			return label?.toLowerCase();
+			return label && formatSearchQuery(label);
 		})
 		.filter((name): name is string => !!name);
 };

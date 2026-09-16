@@ -34,8 +34,14 @@ describe('formatSearchQuery', () => {
 		expect(formatSearchQuery("Sha'tar Ring, Heroic")).toBe('shatar ring heroic');
 	});
 
-	it('drops non-ASCII letters entirely — recorded, not fixed', () => {
-		expect(formatSearchQuery('龙牙')).toBe('');
+	it('folds accents to their base letter, so an unaccented query still hits', () => {
+		expect(formatSearchQuery('Épée de Justice')).toBe('epee de justice');
+		expect(matchesSearch('epee', row({ item: item(), searchText: 'Épée de Justice' }), noNpc)).toBe(true);
+	});
+
+	it('keeps non-Latin letters rather than collapsing the query to a match-everything empty string', () => {
+		expect(formatSearchQuery('龙牙')).toBe('龙牙');
+		expect(matchesSearch('龙牙', row({ item: item(), searchText: 'Gauntlets of the Shadowy Conqueror' }), noNpc)).toBe(false);
 	});
 });
 
@@ -79,10 +85,11 @@ describe('itemSourceSearchNames', () => {
 		expect(itemSourceSearchNames(row({ item: 3 as unknown as ItemListType }), noNpc)).toEqual([]);
 	});
 
-	it('lower-cases vendor names without stripping their punctuation', () => {
+	it('folds vendor names the same way as the query, so punctuation cannot block a match', () => {
 		const entry = row({
 			item: item({ sources: [{ source: { oneofKind: 'soldBy', soldBy: { npcId: 2, npcName: "Sha'tari Quartermaster", zoneId: 1 } } }] }),
 		});
-		expect(itemSourceSearchNames(entry, noNpc)).toEqual(["sha'tari quartermaster"]);
+		expect(itemSourceSearchNames(entry, noNpc)).toEqual(['shatari quartermaster']);
+		expect(matchesSearch("sha'tari", entry, noNpc)).toBe(true);
 	});
 });
