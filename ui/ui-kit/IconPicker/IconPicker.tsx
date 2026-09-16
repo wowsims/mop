@@ -7,7 +7,6 @@ import clsx from 'clsx';
 import { type MouseEvent, useEffect, useRef } from 'react';
 
 import { wowheadAnchorProps } from '../utils/wowhead';
-import { ImprovedAnchor } from './ImprovedAnchor';
 import type { IconPickerConfig } from './types';
 
 export interface IconPickerProps<ModObject, ValueType> {
@@ -45,10 +44,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 
 	const { iconUrl, href, name } = useActionId(config.actionId);
 
-	const useImprovedIcons = Boolean(config.improvedId);
-	const fillImproved1 = config.states >= 3 && !!config.improvedId;
-	const fillImproved2 = config.states >= 4 && !!config.improvedId2;
-	const showCounterText = !config.improvedId && (config.states > 3 || config.states === 0);
+	const showCounterText = config.states > 3 || config.states === 0;
 
 	const handleLeftClick = () => {
 		if (config.states === 0 || currentValue + 1 < config.states) {
@@ -69,7 +65,6 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 	// `Input.update()` writes `disabled` on the input element as well as the class on the root, and `disabled` is not in React's anchor prop types because HTML has no such attribute on <a>.
 	const disabledAttribute = (disabled ? { disabled: true } : {}) as Record<string, boolean>;
 
-	// The level container overlays the anchor rather than sitting inside it, so a click on the improved icons reaches these only by carrying them on both.
 	const stateEvents = {
 		onClick: (event: MouseEvent) => {
 			event.preventDefault();
@@ -90,7 +85,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 				className={clsx('ui-icon-picker-swatch', currentValue > 0 ? 'filter-none' : 'grayscale')}
 				data-testid="icon-picker-button"
 				data-active={currentValue > 0 ? '' : undefined}
-				data-use-counter={!useImprovedIcons && config.states > 2 ? '' : undefined}
+				data-use-counter={config.states > 2 ? '' : undefined}
 				{...wowheadAnchorProps()}
 				// The glyph is a background image and the counter is a sibling now, so without this the
 				// anchor announces nothing; `name` is empty until `useActionId` resolves.
@@ -105,19 +100,7 @@ export const IconPicker = <ModObject, ValueType>({ modObject, config }: IconPick
 			{config.states > 2 && (
 				<div
 					className={clsx('pointer-events-none absolute top-0.5 left-0.5 size-9.5', currentValue > 0 ? 'filter-none' : 'grayscale')}
-					data-testid="icon-input-level-container"
-					{...stateEvents}>
-					{fillImproved1 && config.improvedId && (
-						<ImprovedAnchor
-							actionId={config.improvedId}
-							testId="icon-input-improved1"
-							active={currentValue > 1}
-							hidden={fillImproved2 && currentValue > 2}
-						/>
-					)}
-					{fillImproved2 && config.improvedId2 && (
-						<ImprovedAnchor actionId={config.improvedId2} testId="icon-input-improved2" active={currentValue > 2} hidden={!(currentValue > 2)} />
-					)}
+					data-testid="icon-input-level-container">
 					<span
 						className="absolute inset-x-0 bottom-0 bg-scrim text-center text-2xs font-bold whitespace-nowrap text-success"
 						data-testid="icon-picker-label"

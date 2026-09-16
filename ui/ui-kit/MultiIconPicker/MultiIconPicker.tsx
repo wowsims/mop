@@ -24,8 +24,6 @@ const firstActiveActionId = <ModObject,>(config: MultiIconPickerConfig<ModObject
 	for (const input of config.inputs) {
 		const value = Number(input.getValue(modObject));
 		if (value === 0) continue;
-		if (value === 2 && input.improvedId) return input.improvedId;
-		if (value === 3 && input.improvedId2) return input.improvedId2;
 		return input.actionId;
 	}
 	return null;

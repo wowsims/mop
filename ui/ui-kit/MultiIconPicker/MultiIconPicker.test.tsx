@@ -14,7 +14,6 @@ const filled = (actionId: ActionId, name: string, iconUrl: string) => Object.ass
 const kingsId = filled(ActionId.fromSpellId(20217), 'Kings', 'kings.jpg');
 const markId = filled(ActionId.fromSpellId(1126), 'Mark', 'mark.jpg');
 const emperorId = filled(ActionId.fromSpellId(115921), 'Emperor', 'emperor.jpg');
-const improvedId = filled(ActionId.fromSpellId(9000), 'Improved', 'improved.jpg');
 const categoryId = filled(ActionId.fromSpellId(9999), 'Category', 'category.jpg');
 
 /** Stands in for the player: one number per buff, plus the `(onChange) => unsubscribe` contract. */
@@ -137,16 +136,6 @@ describe('MultiIconPicker', () => {
 		act(() => buffs.set('emperor', 0));
 		expect(trigger().hasAttribute('data-active')).toBe(false);
 		expect(backgroundIcon()).toBe('');
-	});
-
-	it('uses the improved id at state 2, as IconPicker.getActionId does', () => {
-		const buffs = new Buffs();
-		mount(buffs, configFor({ inputs: [input('kings', kingsId, { states: 3, improvedId })] }));
-
-		act(() => buffs.set('kings', 1));
-		expect(backgroundIcon()).toBe('kings.jpg');
-		act(() => buffs.set('kings', 2));
-		expect(backgroundIcon()).toBe('improved.jpg');
 	});
 
 	it('prefers categoryId over the active child, and keeps it while nothing is on', () => {

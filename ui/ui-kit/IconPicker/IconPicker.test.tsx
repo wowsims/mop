@@ -12,8 +12,6 @@ import type { IconPickerConfig } from './types';
 const filled = (actionId: ActionId, name: string, iconUrl: string) => Object.assign(Object.create(ActionId.prototype), actionId, { name, iconUrl }) as ActionId;
 
 const buffId = filled(ActionId.fromSpellId(1), 'Buff', 'buff.jpg');
-const improvedId = filled(ActionId.fromSpellId(2), 'Improved Buff', 'improved.jpg');
-const improvedId2 = filled(ActionId.fromSpellId(3), 'Greater Buff', 'greater.jpg');
 
 // Stands in for a domain facade: a numeric value plus the (onChange) => unsubscribe contract
 // every storeSubscribe helper in state/subscriptions.ts returns.
@@ -48,8 +46,7 @@ const configFor = (extra: Partial<IconPickerConfig<Settings, number>> = {}): Ico
 	...extra,
 });
 
-// By role would miss them: an <a> without an href has no `link` role, and an unfilled improved
-// anchor is exactly that.
+// By role would miss it before `useActionId` resolves: an <a> without an href has no `link` role.
 const allAnchors = () => Array.from(document.querySelectorAll('a'));
 const mainAnchor = () => allAnchors()[0];
 
@@ -62,40 +59,17 @@ beforeEach(() => {
 });
 
 describe('IconPicker', () => {
-	it('grows the anchor count as each improved anchor mounts once its own states gate is met', () => {
-		const settings = new Settings(0);
-		const { rerender } = render(<IconPicker modObject={settings} config={configFor()} />);
-		expect(allAnchors()).toHaveLength(1);
-
-		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		expect(allAnchors()).toHaveLength(2);
-
-		rerender(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
-		expect(allAnchors()).toHaveLength(3);
-	});
-
-	it('mounts an improved anchor with its href and background already filled once its states gate is met', () => {
-		const settings = new Settings(0);
-		const { rerender } = render(<IconPicker modObject={settings} config={configFor({ states: 2, improvedId })} />);
-		expect(allAnchors()).toHaveLength(1);
-
-		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		const improved = allAnchors()[1];
-		expect(improved.getAttribute('href')).toBe(ActionId.makeSpellUrl(2));
-		expect(improved.style.backgroundImage).toContain('improved.jpg');
-	});
-
-	// use-counter is added for states > 2 regardless of improvedId, but the counter TEXT only
-	// renders when there is no improvedId and states > 3 (or states === 0). At states === 3 with
-	// no improvedId the class is present and the text is empty — reproduce that asymmetry exactly.
-	it('shows the use-counter class but no text at states 3 without an improved id', () => {
+	// use-counter is added for states > 2, but the counter TEXT only renders at states > 3 (or
+	// states === 0). At states === 3 the class is present and the text is empty — reproduce that
+	// asymmetry exactly.
+	it('shows the use-counter class but no text at states 3', () => {
 		const settings = new Settings(2);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3 })} />);
 		expect(mainAnchor().hasAttribute('data-use-counter')).toBe(true);
 		expect(screen.queryByText('2')).toBeNull();
 	});
 
-	it('shows the counter text at states 4 without an improved id', () => {
+	it('shows the counter text at states 4', () => {
 		const settings = new Settings(3);
 		render(<IconPicker modObject={settings} config={configFor({ states: 4 })} />);
 		expect(screen.getByText('3')).toBeTruthy();
@@ -163,15 +137,6 @@ describe('IconPicker', () => {
 		expect(mainAnchor().hasAttribute('data-active')).toBe(false);
 	});
 
-	it('marks only the second improved anchor active, and hides the first, above value 2', () => {
-		const settings = new Settings(3);
-		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
-		const [, improved1, improved2] = allAnchors();
-		expect(improved1.hidden).toBe(true);
-		expect(improved2.hidden).toBe(false);
-		expect(improved2.hasAttribute('data-active')).toBe(true);
-	});
-
 	it('stores the value and zeroes the source when showWhen goes false, and restores it when true again', () => {
 		const settings = new Settings(2);
 		render(<IconPicker modObject={settings} config={configFor({ states: 3, showWhen: s => s.visible })} />);
@@ -228,39 +193,11 @@ describe('IconPicker', () => {
 
 	it('carries the wowhead opt-outs and opens in a new tab', () => {
 		const settings = new Settings(0);
-		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		const [main, improved1] = allAnchors();
+		render(<IconPicker modObject={settings} config={configFor()} />);
+		const main = mainAnchor();
 		expect(main.target).toBe('_blank');
 		expect(main.dataset.whtticon).toBe('false');
 		expect(main.dataset.disableWowheadTouchTooltip).toBe('true');
-		expect(improved1.dataset.whtticon).toBe('false');
-		expect(improved1.dataset.disableWowheadTouchTooltip).toBe('true');
-	});
-
-	it('marks the first improved anchor active only above value 1', () => {
-		const settings = new Settings(1);
-		const config = configFor({ states: 3, improvedId });
-		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[1].hasAttribute('data-active')).toBe(false);
-
-		act(() => settings.set(2));
-		rerender(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[1].hasAttribute('data-active')).toBe(true);
-	});
-
-	it('hides the second improved anchor until value 3, and drops it entirely when states 4 no longer configures it', () => {
-		const settings = new Settings(2);
-		const config = configFor({ states: 4, improvedId, improvedId2 });
-		const { rerender } = render(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[2].hidden).toBe(true);
-
-		act(() => settings.set(3));
-		rerender(<IconPicker modObject={settings} config={config} />);
-		expect(allAnchors()[2].hidden).toBe(false);
-
-		rerender(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		expect(allAnchors()).toHaveLength(2);
-		expect(allAnchors()[1].hidden).toBe(false);
 	});
 
 	it('renders no counter label at states 2 and renders one above', () => {
@@ -282,7 +219,7 @@ describe('IconPicker', () => {
 
 	it("renders the level container as the anchor's next sibling, so no anchor sits inside another", () => {
 		const settings = new Settings(0);
-		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
+		render(<IconPicker modObject={settings} config={configFor({ states: 4 })} />);
 		const anchor = screen.getByTestId('icon-picker-button');
 		const container = screen.getByTestId('icon-input-level-container');
 
@@ -292,39 +229,13 @@ describe('IconPicker', () => {
 		expect(document.querySelectorAll('a a')).toHaveLength(0);
 	});
 
-	it('keeps the improved anchors and the counter inside the container, with their href and hidden intact', () => {
+	it('keeps the counter inside the container', () => {
 		const settings = new Settings(3);
-		render(<IconPicker modObject={settings} config={configFor({ states: 4, improvedId, improvedId2 })} />);
+		render(<IconPicker modObject={settings} config={configFor({ states: 4 })} />);
 		const container = screen.getByTestId('icon-input-level-container');
-		const [improved1, improved2] = Array.from(container.querySelectorAll('a'));
 
-		expect(container.children).toHaveLength(3);
-		expect(improved1.getAttribute('href')).toBe(ActionId.makeSpellUrl(2));
-		expect(improved2.getAttribute('href')).toBe(ActionId.makeSpellUrl(3));
-		expect(improved1.hidden).toBe(true);
-		expect(improved2.hidden).toBe(false);
+		expect(container.children).toHaveLength(1);
 		expect(within(container).getByTestId('icon-picker-label')).toBeTruthy();
-	});
-
-	// The container overlays the anchor rather than living inside it, so the handler has to be carried
-	// on both: otherwise a click on an improved icon leaves the value alone and follows the wowhead
-	// link instead.
-	it('left-clicks, right-clicks and suppresses the context menu from the container as well', () => {
-		const settings = new Settings(1);
-		render(<IconPicker modObject={settings} config={configFor({ states: 3, improvedId })} />);
-		const improved = screen.getByTestId('icon-input-improved1');
-		const container = screen.getByTestId('icon-input-level-container');
-
-		fireEvent.click(improved);
-		expect(settings.level).toBe(2);
-
-		fireEvent.mouseDown(improved, { button: 2 });
-		expect(settings.level).toBe(1);
-
-		// fireEvent returns false when preventDefault() was called.
-		expect(fireEvent.contextMenu(container)).toBe(false);
-		expect(fireEvent.click(container)).toBe(false);
-		expect(settings.level).toBe(2);
 	});
 });
 
