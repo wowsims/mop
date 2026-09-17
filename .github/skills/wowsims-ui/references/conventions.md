@@ -19,6 +19,17 @@ everywhere, `arrowParens: "avoid"`. Import order is `simple-import-sort` through
 `npm run lint:js:fix` sorts and `npm run fmt:fix` formats; run both on files you touched and on
 nothing else.
 
+oxfmt also sorts Tailwind classes, and **each `clsx` argument is sorted separately** — an argument
+boundary is a sort barrier. So `clsx('text-red-500 flex', 'p-2 items-center')` formats to
+`clsx('flex text-red-500', 'items-center p-2')`: sorted within each group, never across them. On a
+`className` (or any attribute in `sortTailwindcss.attributes`) a static list should therefore be one
+plain string — `className="flex items-center p-2 text-red-500"` — which gets a single canonical
+sort and drops a render-time call. The inverse holds on a **module-level const**, where a bare
+string is not sorted at all: there `clsx` is the only reason the formatter looks at it, so
+`const ROW_CLASS = clsx(…)` in `ui/features/gear/components/SelectorModal/ItemList.tsx` keeps its
+call and must not be "simplified" away. Use `clsx` when an argument is conditional or a variable,
+never to wrap or line-break a fixed list.
+
 `.oxfmtrc.json` deliberately ignores the preset JSON (`ui/**/apls/*.apl.json`,
 `gear_sets/*.gear.json`, `builds/*.build.json`, `presets/**/*.json`, `ui/sim/talents/trees/*.json`).
 Reformatting one of those is a diff nobody can review. Its ignore list also still names

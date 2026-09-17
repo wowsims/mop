@@ -45,6 +45,16 @@ Reach for a **named utility** first, including its variants and `!`-free forms. 
   `w-(--loader-width,60px)`, `text-(length:--btn-font-size)`. `var()` stays inside a class name only
   inside a genuine multi-term `calc()`/`min()`/gradient, or an arbitrary property (`[prop:…]`) that
   has no utility form.
+- **No `clsx` for a static class list, but keep it on a const.** `clsx` is registered under
+  `sortTailwindcss.functions` in `.oxfmtrc.json`, and oxfmt sorts **each argument separately** — an
+  argument boundary is a sort barrier, so `clsx('text-red-500 flex', 'p-2 items-center')` formats to
+  `clsx('flex text-red-500', 'items-center p-2')`, sorted within each group and never across them.
+  On a `className` (or any attribute listed in `sortTailwindcss.attributes`) write one plain string
+  instead: `className="flex items-center p-2 text-red-500"` gets a single canonical sort. The
+  inverse holds for a **module-level const**, where a bare string is not sorted at all — there
+  `clsx` is what makes the formatter look at it, so `const ROW_CLASS = clsx(…)`
+  (`ui/features/gear/components/SelectorModal/ItemList.tsx`) must keep its call. Reach for `clsx`
+  when an argument is conditional or a variable, never to wrap or line-break a fixed list.
 
 Breakpoints are named tokens in `ui/styles/theme/breakpoints.css`: `sm md lg xl xxl xxxl fhd qhd uhd`
 (`576px` through `3841px`; `fhd` is the legacy `1080p` 1921px cutover, kept as a layout breakpoint even
