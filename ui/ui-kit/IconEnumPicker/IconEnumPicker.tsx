@@ -4,7 +4,6 @@ import { useInput } from '@ui-kit/hooks/useInput';
 import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 import { useEffect, useId, useRef } from 'react';
 
 import { IconEnumOption } from './IconEnumOption';
@@ -67,7 +66,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 	return (
 		<PickerShell
 			config={config as typeof config & { id: string }}
-			className={clsx('ui-icon-field', 'relative')}
+			className="ui-icon-field relative"
 			testId="icon-enum-picker-root"
 			iconField
 			hidden={hidden}
@@ -79,7 +78,7 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 					render={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
 					openOnHover
 					delay={0}
-					className={clsx('ui-icon-picker-swatch', 'transition-none')}
+					className="ui-icon-picker-swatch transition-none"
 					data-testid="icon-enum-picker-button"
 					data-active={active ? '' : undefined}
 					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}

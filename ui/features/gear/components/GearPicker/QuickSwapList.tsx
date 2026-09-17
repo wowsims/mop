@@ -29,12 +29,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 		<li className="not-last:border-b not-last:border-b-border odd:[&_a]:bg-table-odd">
 			<a
 				href={href || undefined}
-				className={clsx(
-					'flex cursor-pointer items-center border border-transparent bg-table-even',
-					'transition-[background-color,color,border] duration-150 ease-in-out',
-					'pointer-fine:hover:bg-table-row-even-hover',
-					'-outline-offset-1 focus-visible:outline focus-visible:outline-1 focus-visible:outline-link data-active:border-success',
-				)}
+				className="flex cursor-pointer items-center border border-transparent bg-table-even -outline-offset-1 transition-[background-color,color,border] duration-150 ease-in-out focus-visible:outline focus-visible:outline-1 focus-visible:outline-link data-active:border-success pointer-fine:hover:bg-table-row-even-hover"
 				data-testid="tooltip-quick-swap__anchor"
 				data-active={entry.active ? '' : undefined}
 				onClick={event => {

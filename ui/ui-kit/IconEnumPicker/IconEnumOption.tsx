@@ -1,7 +1,6 @@
 import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
-import clsx from 'clsx';
 
 import { wowheadAnchorProps } from '../utils/wowhead';
 import type { IconEnumValueConfig } from './types';
@@ -23,7 +22,7 @@ export const IconEnumOption = <ModObject, T>({ valueConfig, hidden, tooltipId, o
 		<li role="none" data-testid="icon-dropdown-option">
 			<Menu.LinkItem
 				closeOnClick
-				className={clsx('ui-icon-picker-swatch', 'filter-[opacity(0.7)] transition-none hover:filter-none')}
+				className="ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none"
 				data-testid="icon-picker-button"
 				onClick={event => {
 					event.preventDefault();

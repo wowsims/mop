@@ -108,11 +108,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 							data-testid="sim-content">
 							<header
 								ref={header}
-								className={clsx(
-									'sticky -top-px z-header -mx-page h-sim-header pt-6 pr-page pl-page whitespace-nowrap transition-colors duration-150 ease-in-out max-lg:pt-2',
-									"after:absolute after:inset-x-0 after:-bottom-px after:mx-auto after:h-px after:w-page-inset-w after:bg-border after:transition-[width] after:duration-150 after:ease-in-out after:content-[''] data-stuck:after:w-full",
-									'data-stuck:bg-background',
-								)}
+								className="sticky -top-px z-header -mx-page h-sim-header pt-6 pr-page pl-page whitespace-nowrap transition-colors duration-150 ease-in-out after:absolute after:inset-x-0 after:-bottom-px after:mx-auto after:h-px after:w-page-inset-w after:bg-border after:transition-[width] after:duration-150 after:ease-in-out after:content-[''] data-stuck:bg-background data-stuck:after:w-full max-lg:pt-2"
 								data-testid="sim-header"
 								data-stuck={stuck ? '' : undefined}>
 								<div

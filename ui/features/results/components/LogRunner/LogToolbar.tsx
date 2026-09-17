@@ -68,7 +68,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 					trigger={
 						<ToolbarButton
 							testId="log-fab-toggle"
-							className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
+							className="ui-fab-toggle flex items-center gap-2"
 							aria-label={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}>
 							<Icon name="filter" />
 							<span data-testid="log-fab-summary">

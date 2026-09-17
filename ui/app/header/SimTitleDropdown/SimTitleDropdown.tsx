@@ -36,7 +36,7 @@ const ClassSubmenu = ({ playerClass }: { playerClass: PlayerClass<Class> }) => {
 					<Menu.Positioner side="right" align="start" sideOffset={0} className="ui-menu-positioner-plain" data-testid="sim-title-positioner">
 						<Menu.Popup
 							render={<ul />}
-							className={clsx('m-0 list-none p-0', 'ui-sim-title-popup', 'ui-menu-plain', 'w-auto min-w-popup-min-w')}
+							className="ui-sim-title-popup ui-menu-plain m-0 w-auto min-w-popup-min-w list-none p-0"
 							data-testid="sim-title-popup">
 							{Object.values(playerClass.specs).map(spec => (
 								<li key={spec.simLink} role="none">
@@ -85,11 +85,11 @@ export const SimTitleDropdown = ({ currentSpec }: SimTitleDropdownProps) => {
 						<Menu.Positioner
 							align="start"
 							sideOffset={0}
-							className={clsx('ui-sim-title-positioner', 'ui-menu-positioner-plain')}
+							className="ui-sim-title-positioner ui-menu-positioner-plain"
 							data-testid="sim-title-positioner">
 							<Menu.Popup
 								render={<ul />}
-								className={clsx('m-0 list-none p-0', 'ui-sim-title-popup', 'ui-menu-plain', 'ui-menu-anchor-width')}
+								className="ui-sim-title-popup ui-menu-plain ui-menu-anchor-width m-0 list-none p-0"
 								data-testid="sim-title-popup">
 								{PlayerClasses.naturalOrder.map(playerClass => (
 									<ClassSubmenu key={playerClass.friendlyName} playerClass={playerClass} />

@@ -90,7 +90,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 					trigger={
 						<ToolbarButton
 							testId="rotation-fab-toggle"
-							className={clsx('flex items-center gap-2', 'ui-fab-toggle')}
+							className="ui-fab-toggle flex items-center gap-2"
 							aria-label={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}>
 							<i className="fas fa-eye-slash" />
 							<span data-testid="rotation-fab-summary">
