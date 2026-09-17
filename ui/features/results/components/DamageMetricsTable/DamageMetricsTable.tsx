@@ -10,18 +10,16 @@ import { useSimResult } from '../../hooks/useSimResult';
 import { buildMetricRows, filterMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
 import type { SimResultData } from '../../model/result_data';
 import {
-	amountHeader,
 	attackFormat,
 	attackMetricsColumns,
-	castsGroup,
-	damageBreakdownGroup,
-	hitGroups,
-	missGroup,
+	castsTooltip,
+	damageBreakdownTooltip,
+	hitsTooltip,
+	missTooltip,
 	threatTooltip,
 	useMetricMax,
 } from '../AttackMetricsColumns';
-import { MetricsCombinedTooltip } from '../MetricsCombinedTooltip';
-import { createMetricsColumnHelper, metricForAnchor, MetricsTable } from '../MetricsTable';
+import { createMetricsColumnHelper, metricForAnchor, MetricsTable, MetricTooltip } from '../MetricsTable';
 
 const helper = createMetricsColumnHelper<ActionMetrics>();
 
@@ -159,64 +157,17 @@ export const DamageMetricsTable = () => {
 				rowThreatOnly={isThreatOnly}
 			/>
 			<Tooltip id={TOOLTIP.avgCastHeader} />
-			<Tooltip
-				id={TOOLTIP.damage}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => <MetricsCombinedTooltip headerValues={amountHeader()} groups={[damageBreakdownGroup(metric)]} />)
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.casts}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						(!metric.landedHits && !metric.totalMisses) || metric.isPassiveAction ? null : <MetricsCombinedTooltip groups={[castsGroup(metric)]} />,
-					)
-				}
-			/>
-			<Tooltip
+			<MetricTooltip id={TOOLTIP.damage} forAnchor={forAnchor} body={damageBreakdownTooltip} />
+			<MetricTooltip id={TOOLTIP.casts} forAnchor={forAnchor} body={castsTooltip} />
+			<MetricTooltip
 				id={TOOLTIP.avgCast}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						!metric.avgCastHit && !metric.avgCastTick ? null : threatTooltip(metric, metric.avgCastThreat, showThreatMetrics),
-					)
-				}
+				forAnchor={forAnchor}
+				body={metric => (!metric.avgCastHit && !metric.avgCastTick ? null : threatTooltip(metric, metric.avgCastThreat, showThreatMetrics))}
 			/>
-			<Tooltip
-				id={TOOLTIP.hits}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={hitGroups(metric)} />,
-					)
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.avgHit}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => threatTooltip(metric, metric.avgHitThreat, showThreatMetrics))}
-			/>
-			<Tooltip
-				id={TOOLTIP.missPercent}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => (metric.totalMissesPercent ? <MetricsCombinedTooltip groups={[missGroup(metric)]} /> : null))
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.dps}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => (metric.dps ? threatTooltip(metric, metric.tps, showThreatMetrics) : null))}
-			/>
+			<MetricTooltip id={TOOLTIP.hits} forAnchor={forAnchor} body={hitsTooltip} />
+			<MetricTooltip id={TOOLTIP.avgHit} forAnchor={forAnchor} body={metric => threatTooltip(metric, metric.avgHitThreat, showThreatMetrics)} />
+			<MetricTooltip id={TOOLTIP.missPercent} forAnchor={forAnchor} body={missTooltip} />
+			<MetricTooltip id={TOOLTIP.dps} forAnchor={forAnchor} body={metric => (metric.dps ? threatTooltip(metric, metric.tps, showThreatMetrics) : null)} />
 		</>
 	);
 };

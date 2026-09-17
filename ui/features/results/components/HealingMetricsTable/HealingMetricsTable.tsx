@@ -11,7 +11,7 @@ import { buildMetricRows, filterMetricRows, indexMetricRows, type MetricGrouping
 import type { SimResultData } from '../../model/result_data';
 import { attackFormat, attackMetricsColumns, threatTooltip, useMetricMax } from '../AttackMetricsColumns';
 import { MetricsCombinedTooltip, type MetricsCombinedTooltipGroup } from '../MetricsCombinedTooltip';
-import { createMetricsColumnHelper, metricForAnchor, MetricsTable } from '../MetricsTable';
+import { createMetricsColumnHelper, metricForAnchor, MetricsTable, MetricTooltip } from '../MetricsTable';
 
 const helper = createMetricsColumnHelper<ActionMetrics>();
 
@@ -208,44 +208,23 @@ export const HealingMetricsTable = () => {
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip id={TOOLTIP.hitsHeader} />
 			<Tooltip id={TOOLTIP.avgHitHeader} />
-			<Tooltip
-				id={TOOLTIP.healing}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => <MetricsCombinedTooltip groups={[healingGroup(metric)]} />)}
-			/>
-			<Tooltip
+			<MetricTooltip id={TOOLTIP.healing} forAnchor={forAnchor} body={metric => <MetricsCombinedTooltip groups={[healingGroup(metric)]} />} />
+			<MetricTooltip
 				id={TOOLTIP.avgCast}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => (metric.avgCastHealing ? threatTooltip(metric, metric.avgCastThreat, showThreatMetrics) : null))
-				}
+				forAnchor={forAnchor}
+				body={metric => (metric.avgCastHealing ? threatTooltip(metric, metric.avgCastThreat, showThreatMetrics) : null)}
 			/>
-			<Tooltip
+			<MetricTooltip
 				id={TOOLTIP.hits}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={healingHitGroups(metric)} />,
-					)
-				}
+				forAnchor={forAnchor}
+				body={metric => (!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={healingHitGroups(metric)} />)}
 			/>
-			<Tooltip
+			<MetricTooltip
 				id={TOOLTIP.avgHit}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => (metric.avgHitHealing ? threatTooltip(metric, metric.avgHitThreat, showThreatMetrics) : null))
-				}
+				forAnchor={forAnchor}
+				body={metric => (metric.avgHitHealing ? threatTooltip(metric, metric.avgHitThreat, showThreatMetrics) : null)}
 			/>
-			<Tooltip
-				id={TOOLTIP.hps}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) => forAnchor(activeAnchor, metric => threatTooltip(metric, metric.tps, showThreatMetrics))}
-			/>
+			<MetricTooltip id={TOOLTIP.hps} forAnchor={forAnchor} body={metric => threatTooltip(metric, metric.tps, showThreatMetrics)} />
 		</>
 	);
 };
