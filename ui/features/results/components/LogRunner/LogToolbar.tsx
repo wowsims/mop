@@ -3,7 +3,7 @@ import { Icon } from '@ui-kit/Icon';
 import type { ReactNode } from 'react';
 
 import type { SuggestionSource } from '../../model/log/search/indexes';
-import { FabBar } from '../FabBar';
+import { FloatingActionBar } from '../FloatingActionBar';
 import { LogSearchBar } from './LogSearchBar';
 import type { IdentifiedSearchGroup } from './utils';
 import { labelOf, sentenceCase } from './utils';
@@ -24,7 +24,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 		.map(group => `${sentenceCase(group.field)}: ${group.values.map(value => labelOf(group.field, value)).join(', ')}`);
 
 	return (
-		<FabBar
+		<FloatingActionBar
 			testIdPrefix="log"
 			rootClassName="ui-log-fab-bar"
 			sheetClassName="ui-fab-sheet ui-log-fab-sheet"
@@ -52,6 +52,6 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 			<div data-testid="log-fab-filters" className="ui-fab-drawer">
 				<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
 			</div>
-		</FabBar>
+		</FloatingActionBar>
 	);
 };

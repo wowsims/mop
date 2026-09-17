@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-export interface FabBarClearAction {
+export interface FloatingActionBarClearAction {
 	testId: string;
 	className?: string;
 	icon: ReactNode;
@@ -14,7 +14,7 @@ export interface FabBarClearAction {
 	onClick: () => void;
 }
 
-export interface FabBarProps {
+export interface FloatingActionBarProps {
 	/** Builds the bar's test ids: `<prefix>-floating-action-bar-root`, `<prefix>-fab-toggle` and the rest. */
 	testIdPrefix: string;
 	rootClassName: string;
@@ -25,14 +25,14 @@ export interface FabBarProps {
 	icon: ReactNode;
 	summary: string;
 	preview: string;
-	clear: FabBarClearAction;
+	clear: FloatingActionBarClearAction;
 	/** The bar's right-hand controls — export, back to top, the debug toggle. */
 	controls?: ReactNode;
 	/** The drawer's contents, wrapper and all. */
 	children: ReactNode;
 }
 
-export const FabBar = ({
+export const FloatingActionBar = ({
 	testIdPrefix,
 	rootClassName,
 	sheetClassName,
@@ -44,7 +44,7 @@ export const FabBar = ({
 	clear,
 	controls,
 	children,
-}: FabBarProps) => {
+}: FloatingActionBarProps) => {
 	const [expanded, setExpanded] = useState(false);
 	const { ref: rootRef, stuck } = useStickyViewportBottom<HTMLDivElement>();
 

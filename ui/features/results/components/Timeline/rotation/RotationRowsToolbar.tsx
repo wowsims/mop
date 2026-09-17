@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import type { ContentRow, RotationModel, Section } from '../../../model/timeline/rotation';
 import { rowAt } from '../../../model/timeline/rotation';
-import { FabBar } from '../../FabBar';
+import { FloatingActionBar } from '../../FloatingActionBar';
 import { RotationFabGroup } from './RotationFabGroup';
 
 export interface RotationRowsToolbarProps {
@@ -52,7 +52,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 	});
 
 	return (
-		<FabBar
+		<FloatingActionBar
 			testIdPrefix="rotation"
 			rootClassName="ui-rotation-fab-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			sheetClassName="ui-fab-sheet ui-rotation-fab-sheet"
@@ -77,6 +77,6 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 					<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
 				))}
 			</div>
-		</FabBar>
+		</FloatingActionBar>
 	);
 };
