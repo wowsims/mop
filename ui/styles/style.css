@@ -8,25 +8,8 @@
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 @import './theme/index.css';
-@import '../features/results/components/MetricsTable/MetricsTable.css';
-@import '../features/character-stats/components/CharacterStats/CharacterStats.css';
 
-@import '../features/bulk/components/BulkPickerGroups/BulkItemCell.css';
 @import '../ui-kit/ItemCell/ItemCell.css';
-@import '../features/gear/components/FiltersMenu/FiltersMenu.css';
-@import '../features/gear/components/GearChangeIcon/GearChangeIcon.css';
-@import '../features/gear/components/SelectorModal/SlotRail.css';
-@import '../features/gear/components/SelectorModal/SelectorModal.css';
-@import '../features/gear/components/SummaryTable/SummaryTable.css';
-@import '../features/apl/apl.css';
-@import '../features/results/components/DetailedResults/DetailedResultsPane.css';
-@import '../features/results/components/CombatReplay/CombatReplay.css';
-@import '../features/results/components/Timeline/Timeline.css';
-@import '../features/results/components/LogRunner/LogRunner.css';
-@import '../features/stat-weights/components/EpWeightsDialog/EpWeightsDialog.css';
-@import '../features/reforge/components/ReforgePanel/ReforgePanel.css';
-@import '../features/talents/components/TalentsPicker/TalentPicker.css';
-
 @import '../ui-kit/Button/Button.css';
 @import '../ui-kit/ComboBox/ComboBox.css';
 @import '../ui-kit/FormControl/FormControl.css';
@@ -55,6 +38,24 @@
 @import '../ui-kit/SavedDataPanel/SavedDataPanel.css';
 @import '../ui-kit/SidebarActionButton/SidebarActionButton.css';
 @import '../ui-kit/SocialLink/SocialLink.css';
+
+@import '../features/results/components/MetricsTable/MetricsTable.css';
+@import '../features/character-stats/components/CharacterStats/CharacterStats.css';
+@import '../features/bulk/components/BulkPickerGroups/BulkItemCell.css';
+@import '../features/gear/components/FiltersMenu/FiltersMenu.css';
+@import '../features/gear/components/GearChangeIcon/GearChangeIcon.css';
+@import '../features/gear/components/SelectorModal/SlotRail.css';
+@import '../features/gear/components/SelectorModal/SelectorModal.css';
+@import '../features/gear/components/SummaryTable/SummaryTable.css';
+@import '../features/apl/apl.css';
+@import '../features/results/components/DetailedResults/DetailedResultsPane.css';
+@import '../features/results/components/CombatReplay/CombatReplay.css';
+@import '../features/results/components/Timeline/Timeline.css';
+@import '../features/results/components/LogRunner/LogRunner.css';
+@import '../features/stat-weights/components/EpWeightsDialog/EpWeightsDialog.css';
+@import '../features/reforge/components/ReforgePanel/ReforgePanel.css';
+@import '../features/talents/components/TalentsPicker/TalentPicker.css';
+
 @import '../app/header/SimTitleDropdown/SimTitleDropdown.css';
 @import '../app/landing/Landing.css';
 
