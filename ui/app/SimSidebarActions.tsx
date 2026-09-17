@@ -14,7 +14,7 @@ export interface SimSidebarActionsProps {
 // between these two actions.
 export const SimSidebarActions = ({ host }: SimSidebarActionsProps) => (
 	<SidebarDisabledContext value={host.disabled}>
-		<SimulateAction />
+		{!host.simDisabled && <SimulateAction />}
 		<SidebarActions registry={host.sidebar} />
 		<StatWeightsAction />
 		<NoticeNativeSim container={host.simActionsContainer} />

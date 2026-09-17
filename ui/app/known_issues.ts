@@ -9,6 +9,8 @@ const statusNotice = (status: LaunchStatus): string => {
 	switch (status) {
 		case LaunchStatus.Unlaunched:
 			return i18n.t('info.status.unlaunched');
+		case LaunchStatus.GearPlanner:
+			return i18n.t('info.status.gear_planner');
 		case LaunchStatus.Alpha:
 			return i18n.t('info.status.alpha');
 		case LaunchStatus.Beta:

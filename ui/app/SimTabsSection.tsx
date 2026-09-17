@@ -37,21 +37,26 @@ export const SimTabsSection = memo(({ host }: SimTabsSectionProps) => (
 				<TalentsTabBody />
 			</SimTabPane>
 		</SimTabDef>
-		<SimTabDef id="rotation-tab" title={i18n.t('rotation_tab.title')}>
-			<RotationTabPane />
-		</SimTabDef>
-		{/* Not a `SimTabPane`: the doubled id and the missing content container are what the stylesheets select on. */}
-		<SimTabDef id="detailed-results-tab-tab" title={i18n.t('results_tab.title')}>
-			<div id="detailed-results-tab-tab">
-				<div>
-					<DetailedResults resultsManager={host.raidSimResultsManager} />
-				</div>
-			</div>
-		</SimTabDef>
-		<SimTabDef id="bulk-tab" title={i18n.t('bulk_tab.title')} badge={i18n.t('bulk_tab.title_badge')}>
-			<SimTabPane id="bulk-tab" className="p-0">
-				<BulkTabBody />
-			</SimTabPane>
-		</SimTabDef>
+		{/* The three tabs that only mean something once a sim has run. A gear planner never runs one. */}
+		{!host.simDisabled && (
+			<>
+				<SimTabDef id="rotation-tab" title={i18n.t('rotation_tab.title')}>
+					<RotationTabPane />
+				</SimTabDef>
+				{/* Not a `SimTabPane`: the doubled id and the missing content container are what the stylesheets select on. */}
+				<SimTabDef id="detailed-results-tab-tab" title={i18n.t('results_tab.title')}>
+					<div id="detailed-results-tab-tab">
+						<div>
+							<DetailedResults resultsManager={host.raidSimResultsManager} />
+						</div>
+					</div>
+				</SimTabDef>
+				<SimTabDef id="bulk-tab" title={i18n.t('bulk_tab.title')} badge={i18n.t('bulk_tab.title_badge')}>
+					<SimTabPane id="bulk-tab" className="p-0">
+						<BulkTabBody />
+					</SimTabPane>
+				</SimTabDef>
+			</>
+		)}
 	</SimTabs>
 ));

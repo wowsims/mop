@@ -175,7 +175,8 @@ export const EpWeightsDialog = ({ open, onOpenChange, settings }: EpWeightsDialo
 			scrollContents
 			title={i18n.t('sidebar.buttons.stat_weights.modal.title')}
 			footer={
-				isTank ? undefined : (
+				// A gear planner keeps the editor and drops the calculation: there is no sim to run it on.
+				isTank || host.simDisabled ? undefined : (
 					<Button data-testid="calc-weights" disabled={isRunning} onClick={() => void onCalculate()}>
 						<Icon name="calculator" className="mr-1" />
 						{i18n.t('sidebar.buttons.stat_weights.modal.calculate')}

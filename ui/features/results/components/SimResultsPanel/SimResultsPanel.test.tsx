@@ -22,9 +22,10 @@ vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
 // under test here is that the content zone renders it and nothing else.
 vi.mock('./SimResultSummary', () => ({ SimResultSummary: () => <div data-testid="sim-result-summary-root" /> }));
 
-const host = (disabled = false, isHealingSpec = false) =>
+const host = (disabled = false, isHealingSpec = false, simDisabled = disabled) =>
 	fakeHost({
 		disabled,
+		simDisabled,
 		player: { getPlayerSpec: () => ({ isHealingSpec }) },
 		// The warnings only read the registry once the sim reports ready; every case here is a loaded sim.
 		sim: {
@@ -38,10 +39,17 @@ const host = (disabled = false, isHealingSpec = false) =>
 const progress = (dps: number, hps: number, completed: number, total: number, presimRunning = false) =>
 	ProgressMetrics.create({ dps, hps, completedIterations: completed, totalIterations: total, presimRunning });
 
-const mount = (panel: ResultsPanelStore, warnings: WarningsRegistry, disabled = false, isHealingSpec = false, results: SimResultsManager | null = null) => {
+const mount = (
+	panel: ResultsPanelStore,
+	warnings: WarningsRegistry,
+	disabled = false,
+	isHealingSpec = false,
+	results: SimResultsManager | null = null,
+	simDisabled = disabled,
+) => {
 	const commits = vi.fn();
 	const view = render(
-		<SimHostProvider host={host(disabled, isHealingSpec)}>
+		<SimHostProvider host={host(disabled, isHealingSpec, simDisabled)}>
 			<Profiler id="panel" onRender={commits}>
 				<SimResultsPanel panel={panel} warnings={warnings} results={results} />
 			</Profiler>
@@ -231,6 +239,29 @@ describe('SimResultsPanel', () => {
 		const viewer = zone(view, '[data-testid="results-viewer"]');
 		expect(viewer.lastElementChild!.getAttribute('data-testid')).toBe('sim-ui-unlaunched-container');
 		expect(viewer.querySelectorAll('[data-testid="sim-ui-unlaunched-container"] p').length).toBe(2);
+	});
+
+	it('renders the gear planner notice for a sim that never runs, and the unlaunched notice instead when the sim is disabled', () => {
+		const launched = mount(panel, warnings, false);
+		expect(launched.view.container.querySelector('[data-testid="sim-ui-gear-planner-container"]')).toBeNull();
+		launched.view.unmount();
+
+		const planner = mount(new ResultsPanelStore(), new WarningsRegistry(), false, true, null, true);
+		const viewer = zone(planner.view, '[data-testid="results-viewer"]');
+		expect(viewer.lastElementChild!.getAttribute('data-testid')).toBe('sim-ui-gear-planner-container');
+		expect(viewer.querySelectorAll('[data-testid="sim-ui-gear-planner-container"] p').length).toBe(2);
+		expect(viewer.querySelector('[data-testid="sim-ui-unlaunched-container"]')).toBeNull();
+		planner.view.unmount();
+
+		// A gear planner that is not a healer gets the one paragraph; the QE Live pointer is for healers.
+		const dps = mount(new ResultsPanelStore(), new WarningsRegistry(), false, false, null, true);
+		expect(dps.view.container.querySelectorAll('[data-testid="sim-ui-gear-planner-container"] p').length).toBe(1);
+		dps.view.unmount();
+
+		// Unlaunched outside dev mode: both flags are set and only the unlaunched notice shows.
+		const { view } = mount(new ResultsPanelStore(), new WarningsRegistry(), true, true, null, true);
+		expect(view.container.querySelector('[data-testid="sim-ui-unlaunched-container"]')).not.toBeNull();
+		expect(view.container.querySelector('[data-testid="sim-ui-gear-planner-container"]')).toBeNull();
 	});
 
 	it('drops its subscriptions and its tooltip on unmount', () => {
