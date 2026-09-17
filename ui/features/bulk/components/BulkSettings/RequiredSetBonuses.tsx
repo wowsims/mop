@@ -34,7 +34,7 @@ export const RequiredSetBonuses = () => {
 							config={{
 								id: `${setBonusDomId(setBonus)}-2p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_2p'),
-								inline: true,
+								layout: 'inline',
 								enableWhen: () => canEnableRequiredTwoPiece(requiredSetBonuses, setBonus.setId, canSatisfy),
 								value: requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
 								onChange: (newValue: boolean) => {
@@ -50,7 +50,7 @@ export const RequiredSetBonuses = () => {
 							config={{
 								id: `${setBonusDomId(setBonus)}-4p`,
 								label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
-								inline: true,
+								layout: 'inline',
 								enableWhen: () => canEnableRequiredFourPiece(requiredSetBonuses, setBonus, canSatisfy),
 								value: requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
 								onChange: (newValue: boolean) => {

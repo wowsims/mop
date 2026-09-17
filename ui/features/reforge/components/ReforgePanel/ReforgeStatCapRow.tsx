@@ -84,7 +84,6 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						config={{
 							id: `reforge-optimizer-${statName}-undershoot`,
 							label: '',
-							inline: false,
 							storeSubscribe: () => subscribeReforgeChange(settings),
 							getValue: () => settings.undershootCaps.getUnitStat(unitStat) > 0,
 							setValue: (_player, newValue) => {

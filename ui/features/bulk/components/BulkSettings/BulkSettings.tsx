@@ -98,7 +98,7 @@ export const BulkSettings = () => {
 								id: 'use-legacy-bulk-sim',
 								label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
 								labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
-								inline: true,
+								layout: 'inline',
 								value: useLegacyBulkSim,
 								onChange: (newValue: boolean) => {
 									setBulkUseLegacyBulkSim(player, newValue);
@@ -114,7 +114,7 @@ export const BulkSettings = () => {
 								id: 'inherit-upgrades',
 								label: i18n.t('bulk_tab.settings.inherit_upgrades.label'),
 								labelTooltip: i18n.t('bulk_tab.settings.inherit_upgrades.tooltip'),
-								inline: true,
+								layout: 'inline',
 								value: inheritUpgrades,
 								onChange: (newValue: boolean) => {
 									setBulkInheritUpgrades(player, newValue);

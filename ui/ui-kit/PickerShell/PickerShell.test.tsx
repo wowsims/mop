@@ -25,7 +25,7 @@ const root = () => screen.getByTestId('input-root');
 
 describe('PickerShell', () => {
 	it('builds the root class list in the order the vanilla Input produces', () => {
-		shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { disabled: true });
+		shell(configFor({ layout: 'inline', extraClassNames: ['apl-picker'] }), { disabled: true });
 		expect(root().getAttribute('class')).toBe('ui-field number-picker-root apl-picker');
 		expect(root().hasAttribute('data-input-root')).toBe(true);
 		expect(root().getAttribute('data-layout')).toBe('inline');
@@ -33,7 +33,7 @@ describe('PickerShell', () => {
 	});
 
 	it('renders nothing at all when hidden', () => {
-		const { container } = shell(configFor({ inline: true, extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
+		const { container } = shell(configFor({ layout: 'inline', extraClassNames: ['apl-picker'] }), { hidden: true, disabled: true });
 		expect(container.querySelector('[data-testid="input-root"]')).toBeNull();
 		expect(container.querySelector('input')).toBeNull();
 	});

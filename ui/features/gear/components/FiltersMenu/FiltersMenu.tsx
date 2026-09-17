@@ -36,7 +36,7 @@ const SPEED_OPTIONS = { float: true, positive: true };
 const listFilterConfig = <K extends FilterListField>(field: K, value: DatabaseFilters[K][number], id: string, label: string) => ({
 	id,
 	label,
-	inline: true,
+	layout: 'inline' as const,
 	storeSubscribe,
 	getValue: (sim: Sim) => (sim.getFilters() as Record<FilterListField, Array<number>>)[field].includes(value),
 	setValue: (sim: Sim, newValue: boolean) => {

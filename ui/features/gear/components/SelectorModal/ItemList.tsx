@@ -145,7 +145,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								id: 'show-1h-weapons-selector',
 								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_1h_weapons.label'),
-								inline: true,
+								layout: 'inline',
 								storeField: 'sim:filters',
 								getValue: subject => subject.getFilters().oneHandedWeapons,
 								setValue: (subject, newValue) => {
@@ -165,7 +165,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								id: 'show-2h-weapons-selector',
 								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_2h_weapons.label'),
-								inline: true,
+								layout: 'inline',
 								storeField: 'sim:filters',
 								getValue: subject => subject.getFilters().twoHandedWeapons,
 								setValue: (subject, newValue) => {
@@ -185,7 +185,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								id: 'show-matching-gems-selector',
 								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_matching_gems.label'),
-								inline: true,
+								layout: 'inline',
 								storeField: 'sim:filters',
 								getValue: subject => subject.getFilters().matchingGemsOnly,
 								setValue: (subject, newValue) => {
@@ -205,7 +205,7 @@ export const ItemList = ({ tab, slot, equippedItem }: ItemListProps) => {
 								id: 'show-ep-values-selector',
 								extraClassNames: ['mb-0'],
 								label: i18n.t('settings_tab.other.show_ep_values.label'),
-								inline: true,
+								layout: 'inline',
 								storeField: 'ui:showEPValues',
 								getValue: subject => subject.getShowEPValues(),
 								setValue: (subject, newValue) => subject.setShowEPValues(newValue),

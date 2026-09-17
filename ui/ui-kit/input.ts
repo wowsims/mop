@@ -13,7 +13,6 @@ export interface InputChrome<ModObject> {
 	label?: string;
 	labelTooltip?: string | Element | ReactElement;
 	description?: string | Element;
-	inline?: boolean;
 	layout?: PickerLayout;
 	id?: string;
 	extraClassNames?: Array<string>;
