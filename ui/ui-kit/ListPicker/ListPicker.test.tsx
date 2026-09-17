@@ -545,6 +545,30 @@ describe('ListPicker', () => {
 			expect(names()).toEqual(['a', 'b', 'c']);
 		});
 
+		it('lands an item write made in the same event as a clone-replacing list write', () => {
+			const rows = rowsOf('a', 'b');
+			render(
+				<ListPicker<Rows, Row>
+					modObject={rows}
+					config={configFor()}
+					renderItem={(index, itemConfig) => (
+						<button
+							data-testid="leaf"
+							onClick={() => {
+								rows.set(rows.value.map(cloneRow));
+								itemConfig.setValue(rows, { name: `${index}!` });
+							}}>
+							{itemConfig.getValue(rows).name}
+						</button>
+					)}
+				/>,
+			);
+
+			fireEvent.click(root().querySelectorAll('[data-testid="leaf"]')[1]);
+
+			expect(rows.value.map(row => row.name)).toEqual(['a', '1!']);
+		});
+
 		it('a stale itemConfig captured before a reorder still reaches its own item after the reorder', () => {
 			const rows = rowsOf('a', 'b', 'c');
 			let staleConfig: ListItemPickerConfig<Rows, Row> | null = null;

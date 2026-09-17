@@ -127,7 +127,7 @@ export const ListPicker = <ModObject, ItemType>({ modObject, config, renderItem,
 				return list[indexOf(list)];
 			},
 			setValue: (obj: ModObject, newValue: ItemType) => {
-				const next = configRef.current.getValue(obj);
+				const next = source();
 				const idx = indexOf(next);
 				if (idx === -1) return;
 				carryId(next[idx], newValue);
