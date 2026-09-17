@@ -1,0 +1,33 @@
+@layer components {
+	.ui-columns {
+		@apply gap-page max-lg:gap-section;
+	}
+
+	.ui-columns-apl {
+		@apply gap-x-page gap-y-6;
+	}
+
+	.ui-columns-left {
+		@apply grid grid-cols-auto-fit-220 max-lg:flex max-lg:flex-col;
+	}
+
+	.ui-columns-left-auto {
+		@apply grid grid-cols-single max-lg:flex max-lg:flex-col;
+	}
+
+	.ui-columns-left-settings {
+		@apply grid grid-cols-settings max-lg:flex max-lg:flex-col;
+	}
+
+	.ui-columns-left-stacked {
+		@apply flex grid-cols-auto-fit-220 flex-col;
+	}
+
+	.ui-columns-right {
+		@apply flex w-full min-w-50 flex-[1.25] flex-col gap-section;
+	}
+
+	.ui-columns-col {
+		@apply flex flex-col;
+	}
+}

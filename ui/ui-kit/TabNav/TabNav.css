@@ -1,0 +1,33 @@
+@layer components {
+	.ui-tab {
+		@apply m-0 flex cursor-pointer items-center border-0 bg-transparent px-4 py-4 font-[inherit] text-sm font-bold whitespace-nowrap text-link no-underline transition-colors duration-150 ease-in-out;
+		@apply hover:text-link-hover;
+
+		&:focus-visible {
+			@apply focus-ring outline-0;
+		}
+
+		&[data-active] {
+			@apply relative text-white;
+
+			&::after {
+				content: '';
+
+				@apply absolute inset-x-0 bottom-0 h-0.5 bg-white;
+			}
+		}
+	}
+
+	.ui-tab-nav {
+		@apply h-full border-current;
+		@apply focus:text-link-hover;
+	}
+
+	.ui-tabs-sim {
+		@apply m-0 flex list-none flex-nowrap items-end p-0;
+	}
+
+	.ui-tabs {
+		@apply mb-0 flex list-none pl-0;
+	}
+}

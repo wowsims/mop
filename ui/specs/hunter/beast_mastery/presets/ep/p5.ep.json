@@ -1,0 +1,13 @@
+{
+	"name": "P5",
+	"stats": {
+		"StatAgility": 1,
+		"StatRangedAttackPower": 0.35,
+		"StatHitRating": 0.42,
+		"StatExpertiseRating": 0.42,
+		"StatHasteRating": 0.41,
+		"StatCritRating": 0.39,
+		"StatMasteryRating": 0.4
+	},
+	"pseudoStats": { "PseudoStatRangedDps": 0.7 }
+}

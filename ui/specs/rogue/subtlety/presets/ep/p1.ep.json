@@ -1,0 +1,15 @@
+{
+	"name": "Sub",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatCritRating": 0.31,
+		"StatHitRating": 0.54,
+		"StatHasteRating": 0.32,
+		"StatMasteryRating": 0.26,
+		"StatExpertiseRating": 0.35
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.43,
+		"PseudoStatOffHandDps": 0.26
+	}
+}

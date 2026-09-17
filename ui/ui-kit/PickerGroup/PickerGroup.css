@@ -1,0 +1,10 @@
+@layer components {
+	.ui-picker-group {
+		@apply grid w-full gap-3;
+		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+	}
+
+	.ui-picker-group-icons {
+		@apply flex gap-1;
+	}
+}

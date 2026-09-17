@@ -1,0 +1,26 @@
+@layer components {
+	.ui-landing-nav-link {
+		@apply text-white hover:text-brand focus:text-brand;
+	}
+
+	.ui-landing-sim-link-dropdown {
+		@apply relative mr-[25%] w-full max-w-1/4 grow basis-1/4 max-lg:mr-0 max-lg:max-w-1/2 max-lg:basis-1/2 max-md:basis-full;
+	}
+
+	.ui-landing-sim-link-cell {
+		@apply flex w-full no-underline hover:bg-black/50 data-highlighted:bg-black/50 data-popup-open:bg-black/50;
+		@apply max-lg:mr-0 max-lg:max-w-1/2 max-lg:grow max-lg:basis-1/2 max-md:max-w-none max-md:basis-full;
+	}
+
+	.ui-landing-sim-link-popup {
+		@apply w-(--anchor-width) border border-solid border-surface-border bg-black/50 outline-none max-lg:bg-surface-raised;
+	}
+
+	.ui-landing-language-popup {
+		@apply min-w-40 border border-solid border-surface-border bg-surface-raised p-0 text-base text-white outline-none;
+	}
+
+	.ui-landing-language-caret::after {
+		@apply ml-[0.255em] inline-block align-[0.255em] content-[''] [border-bottom:0] [border-left:0.3em_solid_transparent] [border-right:0.3em_solid_transparent] [border-top:0.3em_solid];
+	}
+}

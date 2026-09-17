@@ -1,0 +1,39 @@
+@layer components {
+	.ui-item-picker-root {
+		@apply flex;
+	}
+
+	.ui-item-picker-icon-wrapper {
+		--icon-size: 4rem;
+
+		@apply relative h-(--icon-size) w-(--icon-size) border border-border max-lg:[--icon-size:3rem];
+	}
+
+	.ui-item-picker-ilvl {
+		@apply pointer-events-none absolute z-1 bg-black/75 pl-px text-ui;
+	}
+
+	.ui-item-picker-sockets-container {
+		@apply absolute right-auto bottom-0 left-auto flex w-full justify-center;
+	}
+
+	.ui-item-picker-labels-container {
+		@apply flex flex-1 flex-col items-start p-2 pb-0;
+	}
+
+	.ui-item-picker-name-container {
+		@apply text-(length:--h6-font-size) text-white in-[.ui-gear-picker]:focus-visible:outline in-[.ui-gear-picker]:focus-visible:outline-1 in-[.ui-gear-picker]:focus-visible:outline-offset-1 in-[.ui-gear-picker]:focus-visible:outline-link;
+	}
+
+	.ui-item-picker-label-muted {
+		@apply text-ui text-quality-uncommon in-[.ui-gear-picker]:focus-visible:outline in-[.ui-gear-picker]:focus-visible:outline-1 in-[.ui-gear-picker]:focus-visible:outline-offset-1 in-[.ui-gear-picker]:focus-visible:outline-link;
+	}
+
+	.ui-item-picker-icon {
+		@apply relative inline-block h-full w-full cursor-pointer bg-cover bg-center bg-no-repeat in-[.ui-gear-picker]:focus-visible:outline in-[.ui-gear-picker]:focus-visible:outline-1 in-[.ui-gear-picker]:focus-visible:outline-offset-1 in-[.ui-gear-picker]:focus-visible:outline-link;
+	}
+
+	.ui-gem-socket-focus-scope {
+		@apply in-[.ui-gear-picker]:focus-visible:outline in-[.ui-gear-picker]:focus-visible:outline-1 in-[.ui-gear-picker]:focus-visible:outline-offset-1 in-[.ui-gear-picker]:focus-visible:outline-link;
+	}
+}

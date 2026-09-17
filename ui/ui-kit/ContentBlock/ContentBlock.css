@@ -1,0 +1,13 @@
+@layer components {
+	.ui-content-block {
+		@apply gap-3;
+	}
+
+	.ui-content-block-header {
+		@apply border-b border-b-border pb-2;
+	}
+
+	.ui-content-block-body {
+		@apply flex gap-3;
+	}
+}

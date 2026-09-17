@@ -1,0 +1,137 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'react-tooltip/dist/react-tooltip.css' layer(base);
+@import './base.css' layer(base);
+@import './vendor.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@import './theme/index.css';
+@import '../features/results/components/MetricsTable/MetricsTable.css';
+@import '../features/character-stats/components/CharacterStats/CharacterStats.css';
+
+@import '../features/bulk/components/BulkPickerGroups/BulkItemCell.css';
+@import '../ui-kit/ItemCell/ItemCell.css';
+@import '../features/gear/components/FiltersMenu/FiltersMenu.css';
+@import '../features/gear/components/GearChangeIcon/GearChangeIcon.css';
+@import '../features/gear/components/SelectorModal/SlotRail.css';
+@import '../features/gear/components/SelectorModal/SelectorModal.css';
+@import '../features/gear/components/SummaryTable/SummaryTable.css';
+@import '../features/apl/apl.css';
+@import '../features/results/components/DetailedResults/DetailedResultsPane.css';
+@import '../features/results/components/CombatReplay/CombatReplay.css';
+@import '../features/results/components/Timeline/Timeline.css';
+@import '../features/results/components/LogRunner/LogRunner.css';
+@import '../features/stat-weights/components/EpWeightsDialog/EpWeightsDialog.css';
+@import '../features/reforge/components/ReforgePanel/ReforgePanel.css';
+@import '../features/talents/components/TalentsPicker/TalentPicker.css';
+
+@import '../ui-kit/Button/Button.css';
+@import '../ui-kit/ComboBox/ComboBox.css';
+@import '../ui-kit/FormControl/FormControl.css';
+@import '../ui-kit/PickerShell/PickerShell.css';
+@import '../ui-kit/IconPicker/IconPicker.css';
+@import '../ui-kit/ListPicker/ListPicker.css';
+@import '../ui-kit/BooleanPicker/BooleanPicker.css';
+@import '../ui-kit/PickerGroup/PickerGroup.css';
+@import '../ui-kit/DropdownPicker/DropdownMenu.css';
+@import '../ui-kit/Menu/Menu.css';
+@import '../ui-kit/Tooltip/Tooltip.css';
+@import '../ui-kit/Popover/Popover.css';
+@import '../ui-kit/Toolbar/Toolbar.css';
+@import '../ui-kit/Dialog/Dialog.css';
+@import '../ui-kit/Toast/Toast.css';
+@import '../ui-kit/ProgressTrackerDialog/ProgressTrackerBar.css';
+@import '../ui-kit/Chip/Chip.css';
+@import '../ui-kit/TabNav/TabNav.css';
+@import '../ui-kit/TabPanelColumns/TabPanelColumns.css';
+@import '../ui-kit/Spinner/Spinner.css';
+@import '../ui-kit/Skeleton/Skeleton.css';
+@import '../ui-kit/UnitPicker/UnitIcon.css';
+@import '../ui-kit/hooks/useStickyToolbar.css';
+@import '../ui-kit/SimLinkContent/SimLinkContent.css';
+@import '../ui-kit/ContentBlock/ContentBlock.css';
+@import '../ui-kit/SavedDataPanel/SavedDataPanel.css';
+@import '../ui-kit/SidebarActionButton/SidebarActionButton.css';
+@import '../ui-kit/SocialLink/SocialLink.css';
+@import '../app/header/SimTitleDropdown/SimTitleDropdown.css';
+@import '../app/landing/Landing.css';
+
+@source '../app';
+@source '../features';
+@source '../sim';
+@source '../specs';
+@source '../ui-kit';
+@source '../tracking';
+@source '../generated';
+@source '../index.html';
+@source '../index_template.html';
+
+@source '../../assets/locales/**/*.json';
+
+@utility text-fluid-xl {
+	font-size: calc(1.275rem + 0.3vw);
+
+	@variant xl {
+		font-size: 1.5rem;
+	}
+}
+
+@utility text-fluid-5xl {
+	font-size: calc(1.625rem + 4.5vw);
+
+	@variant xl {
+		font-size: 5rem;
+	}
+}
+
+@utility interactive {
+	cursor: pointer;
+	user-select: none;
+}
+
+@utility icon-sm {
+	display: inline-block;
+	min-width: --spacing(4);
+	width: --spacing(4);
+	height: --spacing(4);
+	background-size: cover;
+}
+
+@utility focus-ring {
+	outline: 1px solid var(--color-link);
+	outline-offset: 1px;
+}
+
+@utility focus-ring-inset {
+	outline: 1px solid var(--color-link);
+	outline-offset: -1px;
+}
+
+@utility active-underline {
+	position: relative;
+
+	&::after {
+		content: ' ';
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		right: 0;
+		width: calc(100% - 2 * var(--spacing-page));
+		height: 1px;
+		margin-left: auto;
+		margin-right: auto;
+		background-color: var(--color-border);
+		transition: width 0.15s ease-in-out;
+	}
+}
+
+@utility fade-in-out {
+	transition: var(--transition-fade);
+
+	&[data-starting-style],
+	&[data-ending-style] {
+		opacity: 0;
+	}
+}

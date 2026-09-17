@@ -21,9 +21,9 @@ func TestBalance(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "t16"),
+			GearSet: core.GetGearSet("../../../ui/specs/druid/balance/gear_sets", "t16"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t15"),
+				core.GetGearSet("../../../ui/specs/druid/balance/gear_sets", "t15"),
 			},
 			Talents: BalanceIncarnationDocTalents,
 			OtherTalentSets: []core.TalentsCombo{
@@ -33,7 +33,7 @@ func TestBalance(t *testing.T) {
 			Glyphs:         BalanceIncarnationDocGlyphs,
 			Consumables:    FullConsumesSpec,
 			SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
-			Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
+			Rotation:       core.GetAplRotation("../../../ui/specs/druid/balance/apls", "standard"),
 			OtherRotations: []core.RotationCombo{},
 			ItemFilter:     ItemFilter,
 		},

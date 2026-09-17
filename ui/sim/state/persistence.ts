@@ -1,0 +1,103 @@
+// The load order is a contract: defaults, then localStorage, then the hash, and
+// autosave subscribed last. The localStorage key is built by the caller and the
+// browser surface comes in through the sim's `Env` adapter (state/env.ts).
+//
+// Load order is a contract; do not reorder:
+//   defaults → saved localStorage settings → URL-hash link import (partial
+//   imports keep the rest) → clear hash → default player name → subscribe
+//   autosave LAST (so initialization doesn't re-store) → stat-weight settings.
+import { IndividualSimSettings } from '@generated/proto/ui';
+
+import type { SimSettingCategories } from '../constants/sim_settings';
+import type { Player } from '../player/player';
+import type { StatWeightActionSettings } from '../settings/stat_weight_settings';
+import { batch } from './batch';
+import { tryParseUrlLocation } from './sim_links';
+import type { StoreSubscribe } from './subscriptions';
+
+export const SETTINGS_STORAGE_SUFFIX = '__currentSettings__';
+const AUTOSAVE_DEBOUNCE_MS = 300;
+// Saved encounters deliberately skip the per-spec prefix so they are shared
+// across all sims.
+export const SHARED_SAVED_ENCOUNTER_STORAGE_KEY = 'sharedData__savedEncounter__';
+
+// The pieces of the sim UI the load sequence drives. toProto/fromProto are the
+// (wrapper) envelope serializers; applyDefaults stays UI-owned.
+export interface IndividualSettingsHost {
+	applyDefaults(): void;
+	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings;
+	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>): void;
+}
+
+export function loadIndividualSettings(
+	host: IndividualSettingsHost,
+	opts: {
+		storageKey: string;
+		player: Player<any>;
+		// Store subscription whose fires trigger an autosave of the full envelope.
+		autosaveSubscribe: StoreSubscribe;
+		statWeightSettings: StatWeightActionSettings;
+	},
+) {
+	const env = opts.player.sim.env;
+	// Declared before the batch: its flush can already schedule a persist.
+	let persistTimer: ReturnType<typeof setTimeout> | null = null;
+	opts.player.sim.applyLoadedSettings(() =>
+		batch(() => {
+			host.applyDefaults();
+
+			const savedSettings = env.storage.getItem(opts.storageKey);
+			if (savedSettings != null) {
+				try {
+					const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
+					host.fromProto(settings);
+				} catch (e) {
+					console.warn('Failed to parse saved settings: ' + e);
+				}
+			}
+
+			// Loading from link needs to happen after loading saved settings, so that partial link imports
+			// (e.g. rotation only) include the previous settings for other categories.
+			try {
+				const urlParseResults = tryParseUrlLocation(env.location);
+				if (urlParseResults) {
+					host.fromProto(urlParseResults.settings, urlParseResults.categories);
+				}
+			} catch (e) {
+				console.warn('Failed to parse link settings: ' + e);
+			}
+			env.location.setHash('');
+
+			opts.player.setName('Player');
+
+			// This needs to go last so it doesn't re-store things as they are initialized.
+			// Debounced: serializing + storing the full settings on every keystroke
+			// cost ~50 ms per APL edit. A pending write is flushed on page hide.
+			opts.autosaveSubscribe(schedulePersist);
+
+			opts.statWeightSettings.load();
+		}),
+	);
+
+	// The subscription above only sees changes made after it was registered,
+	// so write once explicitly here (the old code saved once at the end of the
+	// initial load too).
+	persist();
+
+	function schedulePersist() {
+		if (persistTimer != null) clearTimeout(persistTimer);
+		persistTimer = setTimeout(flushPersist, AUTOSAVE_DEBOUNCE_MS);
+	}
+	function flushPersist() {
+		if (persistTimer == null) return;
+		clearTimeout(persistTimer);
+		persistTimer = null;
+		persist();
+	}
+	env.onPageHide(flushPersist);
+
+	function persist() {
+		const jsonStr = IndividualSimSettings.toJsonString(host.toProto());
+		env.storage.setItem(opts.storageKey, jsonStr);
+	}
+}

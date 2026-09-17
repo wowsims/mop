@@ -1,0 +1,45 @@
+@layer components {
+	.ui-field {
+		@apply flex flex-col items-start;
+
+		&[data-disabled] {
+			@apply filter-[opacity(0.5)];
+		}
+
+		&:where(:not([data-layout])):where(:not(.ui-icon-field)) label {
+			@apply max-w-full overflow-hidden text-ellipsis whitespace-nowrap;
+		}
+
+		&:where(:not([data-layout])):where(:not(.ui-icon-field)) {
+			@variant max-md {
+				@apply gap-2;
+			}
+		}
+
+		&[data-layout='inline'] {
+			@apply flex-row items-center justify-between;
+
+			label {
+				@apply mr-2 mb-0 overflow-visible text-clip;
+			}
+
+			input,
+			select {
+				@apply w-20;
+			}
+		}
+	}
+
+	.ui-icon-field {
+		@apply flex min-w-0 flex-row items-center gap-2;
+
+		label,
+		.ui-field-label {
+			@apply mb-0 line-clamp-2 min-w-0;
+		}
+	}
+
+	.ui-field-description {
+		@apply order-3 mt-1 w-full bg-surface p-2 text-ui [&_*:last-child]:mb-0;
+	}
+}

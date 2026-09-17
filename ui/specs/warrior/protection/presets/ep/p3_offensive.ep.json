@@ -1,0 +1,20 @@
+{
+	"name": "P3 & P4 - Offensive",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 0.31,
+		"StatHitRating": 2.4,
+		"StatCritRating": 1.13,
+		"StatHasteRating": 0.28,
+		"StatExpertiseRating": 2.44,
+		"StatDodgeRating": 1.0,
+		"StatParryRating": 1.11,
+		"StatMasteryRating": 0.07,
+		"StatAttackPower": 0.34,
+		"StatArmor": 0.24,
+		"StatBonusArmor": 0.24
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 0.91
+	}
+}

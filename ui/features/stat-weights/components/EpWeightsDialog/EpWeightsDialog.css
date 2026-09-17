@@ -1,0 +1,21 @@
+@layer components {
+	.ui-ep-weights-table-header-cell {
+		@apply sticky top-0 bg-background pt-2 pr-2 pb-2 text-left;
+	}
+
+	.ui-ep-weights-input-align-right {
+		@apply text-right;
+	}
+
+	.ui-ep-weights-compact-input {
+		@apply max-lg:pr-0.75 max-lg:pl-0 max-lg:text-center;
+	}
+
+	.ui-ep-weights-table-cell {
+		@apply pt-2 pr-2 pb-2 pl-2;
+	}
+
+	.ui-ep-weights-sidebar .ui-saved-data-create-container {
+		@apply max-w-50;
+	}
+}

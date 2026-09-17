@@ -1,0 +1,11 @@
+@layer components {
+	.ui-sim-title-trigger .ui-sim-link-content,
+	.ui-sim-title-popup .ui-sim-link-content {
+		@apply px-6;
+	}
+
+	.ui-sim-title-positioner[data-base-ui-inert],
+	.ui-sim-title-positioner[data-base-ui-inert] * {
+		pointer-events: auto !important;
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "213322",
+	"glyphs": {
+		"major1": "GlyphOfFortifyingBrew",
+		"major2": "GlyphOfEnduringHealingSphere",
+		"major3": "GlyphOfFortuitousSpheres",
+		"minor1": "GlyphOfSpiritRoll",
+		"minor2": "GlyphOfJab",
+		"minor3": "GlyphOfWaterRoll"
+	}
+}

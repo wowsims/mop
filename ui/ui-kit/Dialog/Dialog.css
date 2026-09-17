@@ -1,0 +1,79 @@
+@layer components {
+	.ui-dialog-backdrop {
+		@apply fixed inset-0 z-modal-backdrop bg-black fade-in-out opacity-50 motion-reduce:transition-none;
+
+		&[data-elevated='true'] {
+			@apply z-modal-elevated-backdrop;
+		}
+	}
+
+	.ui-dialog-viewport {
+		@apply fixed inset-0 z-modal overflow-x-hidden overflow-y-auto fade-in-out motion-reduce:transition-none;
+
+		&[data-elevated='true'] {
+			@apply z-modal-elevated;
+		}
+	}
+
+	.ui-dialog {
+		@apply relative flex flex-col border border-surface-border bg-background bg-clip-padding outline-0 transition-transform duration-300 ease-out motion-reduce:transition-none;
+
+		&[data-size='sm'] {
+			@apply max-w-modal-sm max-lg:max-w-modal-inset-w;
+		}
+
+		&[data-size='md'] {
+			@apply max-w-modal-md max-lg:max-w-modal-inset-w;
+		}
+
+		&[data-size='lg'] {
+			@apply max-w-modal-lg max-lg:max-w-modal-inset-w;
+		}
+
+		&[data-size='xl'] {
+			@apply max-w-modal-xl max-lg:max-w-modal-inset-w;
+		}
+	}
+
+	.ui-dialog-header {
+		@apply mx-5 flex shrink-0 items-start border-b border-border py-5;
+	}
+
+	.ui-dialog-title {
+		@apply mb-0 text-lg leading-normal;
+	}
+
+	.ui-dialog-close {
+		@apply z-modal-close -mt-2 -mr-1 -mb-2 ml-auto box-content flex h-[1em] w-[1em] items-center justify-center px-2 py-2 text-link transition-colors duration-150 ease-in-out;
+		@apply hover:text-white;
+
+		&:focus-visible {
+			@apply shadow-focus-ring outline-0;
+		}
+	}
+
+	.ui-dialog-body {
+		@apply relative flex flex-1 flex-col gap-5 p-5;
+	}
+
+	.ui-dialog-footer {
+		@apply mx-5 flex shrink-0 flex-wrap items-center justify-end border-t border-border py-5;
+	}
+
+	.ui-dialog-top {
+		@apply mx-auto my-7;
+		@apply data-ending-style:transform-(--modal-fade-transform) data-starting-style:transform-(--modal-fade-transform);
+	}
+
+	.ui-dialog-centered {
+		@apply top-1/2 left-1/2 m-0 -translate-x-1/2 -translate-y-1/2;
+	}
+
+	.ui-dialog-scroll {
+		@apply max-h-modal-inset-h;
+	}
+
+	.ui-dialog-header-flush {
+		@apply pt-5 pb-0;
+	}
+}

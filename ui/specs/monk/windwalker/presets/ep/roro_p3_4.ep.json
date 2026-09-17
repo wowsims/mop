@@ -1,0 +1,16 @@
+{
+	"name": "RoRo",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatHitRating": 1.79,
+		"StatCritRating": 0.74,
+		"StatHasteRating": 0.89,
+		"StatExpertiseRating": 1.49,
+		"StatMasteryRating": 0.34,
+		"StatAttackPower": 0.35
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 2.33,
+		"PseudoStatOffHandDps": 1.17
+	}
+}

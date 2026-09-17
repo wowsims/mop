@@ -1,0 +1,154 @@
+@theme static {
+	--color-black: #000;
+	--color-white: #fff;
+	--color-grey: #808080;
+
+	--color-gray-300: #dee2e6;
+	--color-gray-600: #6c757d;
+	--color-gray-700: #495057;
+	--color-gray-800: #343a40;
+	--color-gray-900: #212529;
+
+	--color-background: #15171e;
+	--color-foreground: var(--color-white);
+	--color-foreground-disabled: --alpha(var(--color-white) / 60%);
+	--color-surface: #1e2633;
+	--color-surface-border: #373d57;
+	--color-surface-raised: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
+	--color-surface-hover: color-mix(in srgb, var(--color-background), var(--color-black) 30%);
+	--color-overlay: color-mix(in srgb, var(--color-background), var(--color-white) 5%);
+	--color-panel: color-mix(in srgb, var(--color-background) 80%, transparent);
+	--color-panel-hover: color-mix(in srgb, var(--color-background) 85%, transparent);
+	--color-border: var(--color-gray-600);
+	--color-border-muted: color-mix(in srgb, var(--color-border) 50%, transparent);
+	--color-primary: #0d6efd;
+	--color-primary-foreground: var(--color-white);
+	--color-primary-disabled-foreground: var(--color-white);
+	--color-secondary: var(--color-gray-600);
+	--color-secondary-hover: #4c5258;
+	--color-secondary-active: #565e64;
+	--color-orange: #fd7e14;
+	--color-success: #1eff00;
+	--color-danger: #dc3545;
+	--color-danger-hover: #9a2530;
+	--color-danger-active: #b02a37;
+	--color-warning: #ffc107;
+	--color-info: #0dcaf0;
+	--color-cancel: #e68066;
+	--color-cancel-hover: #ea937d;
+	--color-cancel-active: #eb9985;
+
+	--color-brand: #e0a335;
+	--color-expansion: #23c88c;
+
+	--color-muted: #212529bf;
+	--color-link: #a5b1d6;
+	--color-link-hover: var(--color-white);
+	--color-link-danger: #ef9eaa;
+	--color-link-warning: #faf07f;
+
+	--color-frozen: red;
+	--color-maroon: maroon;
+
+	--color-class-death-knight: rgb(194, 46, 70);
+	--color-class-druid: rgb(255, 125, 10);
+	--color-class-hunter: rgb(171, 212, 115);
+	--color-class-mage: rgb(105, 204, 240);
+	--color-class-monk: rgb(0, 255, 152);
+	--color-class-paladin: rgb(245, 140, 186);
+	--color-class-priest: rgb(255, 255, 255);
+	--color-class-rogue: rgb(255, 245, 105);
+	--color-class-shaman: rgb(36, 89, 255);
+	--color-class-warlock: rgb(148, 130, 201);
+	--color-class-warrior: rgb(199, 156, 110);
+
+	--color-class-death-knight-foreground: var(--color-white);
+	--color-class-druid-foreground: var(--color-black);
+	--color-class-hunter-foreground: var(--color-black);
+	--color-class-mage-foreground: var(--color-black);
+	--color-class-monk-foreground: var(--color-black);
+	--color-class-paladin-foreground: var(--color-black);
+	--color-class-priest-foreground: var(--color-black);
+	--color-class-rogue-foreground: var(--color-black);
+	--color-class-shaman-foreground: var(--color-white);
+	--color-class-warlock-foreground: var(--color-black);
+	--color-class-warrior-foreground: var(--color-black);
+
+	--color-school-physical: #e5cc80;
+	--color-school-arcane: #8ff2ff;
+	--color-school-fire: #eb4561;
+	--color-school-frost: #4a80ff;
+	--color-school-holy: #ffff8f;
+	--color-school-nature: #d1fa99;
+	--color-school-shadow: #b8a8f0;
+	--color-school-chaos: #a330c9;
+
+	--color-quality-junk: #9d9d9d;
+	--color-quality-common: var(--color-white);
+	--color-quality-uncommon: #1eff00;
+	--color-quality-rare: #0070dd;
+	--color-quality-epic: #a335ee;
+	--color-quality-legendary: #ff8000;
+	--color-quality-artifact: #e5cc80;
+	--color-quality-heirloom: #0cf;
+
+	--color-resource-health: #22ba00;
+	--color-resource-mana: #2e93fa;
+	--color-resource-energy: #ffd700;
+	--color-resource-rage: #f00;
+	--color-resource-focus: #cd853f;
+	--color-resource-chi: #00ff98;
+	--color-resource-combo-points: #ffa07a;
+	--color-resource-holy-power: #eed98a;
+	--color-resource-lunar-energy: #4a8aff;
+	--color-resource-solar-energy: #d2952b;
+	--color-resource-arcane-charges: #5c7cfa;
+	--color-resource-shadow-orbs: #9b59d0;
+	--color-resource-demonic-fury: #8e6fc9;
+	--color-resource-burning-embers: #e8590c;
+	--color-resource-soul-shards: #8551c9;
+
+	--color-damage-hit: green;
+	--color-damage-crit: blue;
+	--color-damage-partial: yellow;
+	--color-damage-miss: red;
+	--color-damage-dps: #ed5653;
+	--color-damage-threat: #b56d07;
+
+	--color-timeline-cast: rgb(229 204 128 / 0.7);
+	--color-timeline-cast-cancelled: rgb(230 128 102 / 0.7);
+	--color-timeline-travel: rgb(249 192 255 / 0.6);
+	--color-timeline-aura: rgb(0 0 255 / 0.52);
+
+	--color-faction-horde: red;
+	--color-faction-alliance: blue;
+
+	--color-talent-full: #ffd100;
+	--color-talent-partial: #40bf40;
+
+	--color-input-disabled: color-mix(in srgb, var(--color-background), var(--color-white) 20%);
+	--color-scrim: --alpha(var(--color-black) / 50%);
+	--color-spinner: #3498db;
+
+	--color-cr-scene-glow: color-mix(in srgb, var(--color-background) 65%, var(--color-warning) 35%);
+	--color-cr-dmg-num: color-mix(in srgb, var(--color-warning) 80%, var(--color-white));
+	--color-cr-hp-fill-end: color-mix(in srgb, var(--color-success) 70%, var(--color-white));
+	--color-cr-hit-flash-mid: color-mix(in srgb, var(--color-warning) 60%, transparent);
+	--color-cr-hit-glow: color-mix(in srgb, var(--color-damage-crit) 40%, transparent);
+}
+
+@theme static inline {
+	--color-light: var(--color-gray-50);
+	--color-off-white: var(--color-zinc-100);
+	--color-table-even: var(--color-zinc-900);
+	--color-table-odd: var(--color-zinc-800);
+	--color-spinner-track: var(--color-zinc-100);
+	--color-primary-hover: color-mix(in srgb, var(--color-primary) 70%, var(--color-black));
+	--color-primary-active: color-mix(in srgb, var(--color-primary) 80%, var(--color-black));
+	--color-primary-dampened: color-mix(in srgb, var(--color-primary) 25%, var(--color-black));
+	--color-primary-disabled: color-mix(in srgb, var(--color-gray-600) 50%, var(--color-primary));
+	--color-sim-backdrop: color-mix(in srgb, var(--theme-background-color) calc(var(--theme-background-opacity) * 100%), transparent);
+	--color-cr-cast-fill-end: color-mix(in srgb, var(--color-primary) 78%, var(--color-white));
+	--color-input-focus-border: color-mix(in srgb, var(--color-surface-border), var(--color-white) 20%);
+	--color-table-row-even-hover: color-mix(in srgb, var(--table-row-even-bg) 90%, transparent);
+}

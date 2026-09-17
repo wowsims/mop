@@ -1,0 +1,16 @@
+{
+	"name": "Item Level < 500",
+	"stats": {
+		"StatStrength": 1,
+		"StatAttackPower": 0.45,
+		"StatExpertiseRating": 1.2,
+		"StatHitRating": 1.4,
+		"StatCritRating": 0.59,
+		"StatHasteRating": 0.32,
+		"StatMasteryRating": 0.39
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 3.71,
+		"PseudoStatOffHandDps": 0
+	}
+}

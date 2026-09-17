@@ -1,0 +1,39 @@
+@theme static {
+	--font-*: initial;
+	--text-*: initial;
+
+	--font-sans: SimDefaultFont, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.875rem;
+	--text-base: 1rem;
+	--text-md: 1.125rem;
+	--text-lg: 1.25rem;
+	--text-xl: 1.5rem;
+	--text-2xl: 1.75rem;
+	--text-3xl: 2rem;
+	--text-4xl: 2.5rem;
+	--text-5xl: 5rem;
+
+	--text-ui: 0.75rem;
+	--text-ep-delta: 0.8rem;
+
+	--leading-heading: 1.2;
+
+	--text-2xs: 0.625rem;
+
+	--text-cr-badge: 9px;
+}
+
+@theme static inline {
+	--text-shadow-glow-danger: 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger), 0 0 0.5rem var(--color-danger);
+	--text-shadow-glow-link: 0 0 0.5rem var(--color-link);
+	--text-shadow-glow-offwhite: 0 0 0.5rem var(--color-off-white);
+	--text-shadow-outline-sm: 1px 1px 3px var(--color-black);
+	--text-shadow-outline-md: 1px 1px 4px var(--color-black);
+	--text-shadow-outline-strong: 0 0 6px var(--color-black), 0 0 6px var(--color-black), 0 2px 4px --alpha(var(--color-black) / 80%);
+	--text-shadow-outline-soft: 0 0 3px var(--color-black), 0 0 3px var(--color-black);
+	--text-shadow-outline-glow: 0 0 4px var(--color-black), 0 0 4px var(--color-black);
+	--text-shadow-glow-crit: 0 0 8px var(--color-danger), 0 0 8px var(--color-danger);
+}

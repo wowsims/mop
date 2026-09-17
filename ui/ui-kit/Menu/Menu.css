@@ -1,0 +1,41 @@
+@layer components {
+	.ui-menu-item {
+		@apply block w-full cursor-pointer border-0 bg-transparent px-2 py-1 text-left font-normal whitespace-nowrap text-white transition-colors duration-200 ease-in-out;
+
+		&[data-highlighted] {
+			@apply bg-surface-hover;
+		}
+
+		&[data-checked] {
+			@apply bg-surface-raised;
+		}
+
+		&[data-disabled] {
+			@apply pointer-events-auto cursor-not-allowed opacity-50;
+		}
+	}
+
+	.ui-menu-item-row {
+		@apply flex items-center;
+	}
+
+	.ui-menu-positioner {
+		@apply z-dropdown;
+	}
+
+	.ui-menu-positioner-plain {
+		@apply z-menu;
+	}
+
+	.ui-menu {
+		@apply min-w-40 border border-surface-border bg-surface-raised py-0 text-base text-white;
+	}
+
+	.ui-menu-plain {
+		@apply border-0 bg-background;
+	}
+
+	.ui-menu-anchor-width {
+		@apply w-(--anchor-width);
+	}
+}

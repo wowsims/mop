@@ -1,0 +1,31 @@
+@layer components {
+	.ui-character-stats-row {
+		@apply text-ui;
+	}
+
+	.ui-character-stats-row:first-child {
+		@apply border-t border-solid border-t-border;
+	}
+
+	.ui-character-stats-row:last-child .ui-character-stats-label,
+	.ui-character-stats-row:last-child .ui-character-stats-value {
+		@apply pb-2;
+	}
+
+	.ui-character-stats-label,
+	.ui-character-stats-value {
+		@apply pt-2;
+	}
+
+	.ui-character-stats-label {
+		@apply text-left;
+	}
+
+	.ui-character-stats-value {
+		@apply text-right font-bold;
+	}
+
+	.ui-character-stats-value .ui-stat-value-link-container {
+		@apply inline-flex flex-col;
+	}
+}

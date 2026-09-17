@@ -1,0 +1,18 @@
+@layer components {
+	.ui-slot-rail-icon-wrapper {
+		@apply relative size-10 border border-(--modal-border-color);
+
+		&[data-active] {
+			@apply size-12 border-2 border-r-0;
+		}
+
+		&:nth-child(6),
+		&:nth-child(14) {
+			@apply mb-4;
+		}
+
+		&:not(:first-child) {
+			@apply -mt-px;
+		}
+	}
+}

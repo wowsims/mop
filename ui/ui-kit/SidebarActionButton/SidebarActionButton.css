@@ -1,0 +1,25 @@
+@layer components {
+	.ui-sim-sidebar-actions > button,
+	.ui-reforge-sidebar-actions button {
+		position: relative;
+	}
+
+	.ui-sim-sidebar-actions > button[data-loading] {
+		transition: none;
+		color: var(--color-primary-disabled);
+	}
+
+	.ui-sim-sidebar-actions > button > span,
+	.ui-reforge-sidebar-actions button > span {
+		display: none;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: var(--color-primary-disabled-foreground);
+	}
+
+	.ui-sim-sidebar-actions > button[data-loading] > span {
+		display: block;
+	}
+}

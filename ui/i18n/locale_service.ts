@@ -4,8 +4,8 @@
 const STORAGE_KEY = 'lang';
 
 export const supportedLanguages: Record<string, string> = {
-	'en': 'English',
-	'fr': 'Français',
+	en: 'English',
+	fr: 'Français',
 };
 
 export const getLang = (): string => {
@@ -20,18 +20,6 @@ export const setLang = (lang: string): string => {
 	if (lang in supportedLanguages) {
 		localStorage.setItem(STORAGE_KEY, lang);
 		document.documentElement.lang = lang;
-		if (window.i18next) {
-			window.i18next.changeLanguage(lang);
-		}
 	}
 	return lang;
 };
-
-// Add TypeScript interface for i18next on window
-declare global {
-	interface Window {
-		i18next: {
-			changeLanguage: (lang: string) => Promise<unknown>;
-		};
-	}
-}

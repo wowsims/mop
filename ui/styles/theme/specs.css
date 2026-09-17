@@ -1,0 +1,201 @@
+.sim-ui {
+	--color-primary: var(--theme-color, #0d6efd);
+	--color-primary-foreground: var(--theme-color-foreground, var(--color-white));
+	--color-primary-disabled-foreground: var(--color-primary-foreground);
+	--theme-background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-black));
+	--theme-background-opacity: 0.95;
+	--theme-background-image: linear-gradient(var(--color-black), var(--color-black));
+	--form-check-box-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+	--form-check-radio-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23000'/%3e%3c/svg%3e");
+}
+
+.blood-death-knight-sim-ui,
+.frost-death-knight-sim-ui,
+.unholy-death-knight-sim-ui {
+	--theme-color: var(--color-class-death-knight);
+	--theme-color-foreground: var(--color-class-death-knight-foreground);
+}
+
+.balance-druid-sim-ui,
+.feral-druid-sim-ui,
+.guardian-druid-sim-ui,
+.restoration-druid-sim-ui {
+	--theme-color: var(--color-class-druid);
+	--theme-color-foreground: var(--color-class-druid-foreground);
+}
+
+.beast-mastery-hunter-sim-ui,
+.marksmanship-hunter-sim-ui,
+.survival-hunter-sim-ui {
+	--theme-color: var(--color-class-hunter);
+	--theme-color-foreground: var(--color-class-hunter-foreground);
+}
+
+.arcane-mage-sim-ui,
+.fire-mage-sim-ui,
+.frost-mage-sim-ui {
+	--theme-color: var(--color-class-mage);
+	--theme-color-foreground: var(--color-class-mage-foreground);
+}
+
+.brewmaster-monk-sim-ui,
+.mistweaver-monk-sim-ui,
+.windwalker-monk-sim-ui {
+	--theme-color: var(--color-class-monk);
+	--theme-color-foreground: var(--color-class-monk-foreground);
+}
+
+.holy-paladin-sim-ui,
+.protection-paladin-sim-ui,
+.retribution-paladin-sim-ui {
+	--theme-color: var(--color-class-paladin);
+	--theme-color-foreground: var(--color-class-paladin-foreground);
+}
+
+.discipline-priest-sim-ui,
+.holy-priest-sim-ui,
+.shadow-priest-sim-ui {
+	--theme-color: var(--color-class-priest);
+	--theme-color-foreground: var(--color-class-priest-foreground);
+}
+
+.assassination-rogue-sim-ui,
+.combat-rogue-sim-ui,
+.subtlety-rogue-sim-ui {
+	--theme-color: var(--color-class-rogue);
+	--theme-color-foreground: var(--color-class-rogue-foreground);
+}
+
+.elemental-shaman-sim-ui,
+.enhancement-shaman-sim-ui,
+.restoration-shaman-sim-ui {
+	--theme-color: var(--color-class-shaman);
+	--theme-color-foreground: var(--color-class-shaman-foreground);
+}
+
+.affliction-warlock-sim-ui,
+.demonology-warlock-sim-ui,
+.destruction-warlock-sim-ui {
+	--theme-color: var(--color-class-warlock);
+	--theme-color-foreground: var(--color-class-warlock-foreground);
+}
+
+.arms-warrior-sim-ui,
+.fury-warrior-sim-ui,
+.protection-warrior-sim-ui {
+	--theme-color: var(--color-class-warrior);
+	--theme-color-foreground: var(--color-class-warrior-foreground);
+}
+
+.blood-death-knight-sim-ui,
+.frost-death-knight-sim-ui,
+.unholy-death-knight-sim-ui,
+.elemental-shaman-sim-ui,
+.enhancement-shaman-sim-ui,
+.restoration-shaman-sim-ui {
+	--form-check-box-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+	--form-check-radio-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.blood-death-knight-sim-ui,
+.frost-death-knight-sim-ui,
+.unholy-death-knight-sim-ui {
+	--theme-background-image: url(/mop/assets/img/death_knight_background.jpg);
+}
+
+.balance-druid-sim-ui {
+	--theme-background-image: url(/mop/assets/img/balance_druid_background.jpg);
+}
+
+.feral-druid-sim-ui {
+	--theme-background-image: url(/mop/assets/img/feral_druid_background.jpg);
+}
+
+.guardian-druid-sim-ui {
+	--theme-background-image: url(/mop/assets/img/feral_druid_tank_background.jpg);
+}
+
+.restoration-druid-sim-ui {
+	--theme-background-image: url(/mop/assets/img/resto_druid_background.jpg);
+}
+
+.beast-mastery-hunter-sim-ui,
+.marksmanship-hunter-sim-ui,
+.survival-hunter-sim-ui {
+	--theme-background-image: url(/mop/assets/img/hunter_background.jpg);
+}
+
+.arcane-mage-sim-ui,
+.fire-mage-sim-ui,
+.frost-mage-sim-ui {
+	--theme-background-image: url(/mop/assets/img/mage_background.jpg);
+}
+
+.brewmaster-monk-sim-ui,
+.mistweaver-monk-sim-ui,
+.windwalker-monk-sim-ui {
+	--theme-background-image: url(/mop/assets/img/monk_background.jpg);
+}
+
+.holy-paladin-sim-ui {
+	--theme-background-image: url(/mop/assets/img/holy_paladin_background.jpg);
+}
+
+.protection-paladin-sim-ui {
+	--theme-background-image: url(/mop/assets/img/prot_paladin.jpg);
+}
+
+.retribution-paladin-sim-ui {
+	--theme-background-image: url(/mop/assets/img/retribution_paladin.jpg);
+}
+
+.discipline-priest-sim-ui {
+	--theme-background-image: url(/mop/assets/img/smite_priest_background.jpg);
+}
+
+.holy-priest-sim-ui {
+	--theme-background-image: url(/mop/assets/img/healing_priest_background.jpg);
+}
+
+.shadow-priest-sim-ui {
+	--theme-background-image: url(/mop/assets/img/shadow_priest_background.jpg);
+}
+
+.assassination-rogue-sim-ui,
+.combat-rogue-sim-ui,
+.subtlety-rogue-sim-ui {
+	--theme-background-image: url(/mop/assets/img/rogue_background.jpg);
+}
+
+.elemental-shaman-sim-ui {
+	--theme-background-image: url(/mop/assets/img/elemental_shaman_background.jpg);
+}
+
+.enhancement-shaman-sim-ui {
+	--theme-background-image: url(/mop/assets/img/enhancement_shaman_background.jpg);
+}
+
+.restoration-shaman-sim-ui {
+	--theme-background-image: url(/mop/assets/img/resto_shaman_background.jpg);
+}
+
+.affliction-warlock-sim-ui,
+.demonology-warlock-sim-ui,
+.destruction-warlock-sim-ui {
+	--theme-background-image: url(/mop/assets/img/warlock_background.jpg);
+}
+
+.arms-warrior-sim-ui,
+.fury-warrior-sim-ui {
+	--theme-background-image: url(/mop/assets/img/warrior_background.jpg);
+}
+
+.protection-warrior-sim-ui {
+	--theme-background-image: url(/mop/assets/img/protection_warrior_background.jpg);
+}
+
+.beast-mastery-hunter-sim-ui,
+.marksmanship-hunter-sim-ui,
+.survival-hunter-sim-ui {
+	--theme-background-opacity: 0.9;
+}

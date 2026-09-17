@@ -1,0 +1,27 @@
+[
+	{ "token": "sim-ui", "reason": "sim-ui root class; theme/specs.css selects it" },
+	{ "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*-sim-ui$", "reason": "<spec>-sim-ui pattern; theme/specs.css selects these per spec" },
+	{ "token": "group", "reason": "Tailwind group/peer companion class" },
+	{ "pattern": "^group\\/.+$", "reason": "Tailwind named group companion class" },
+	{ "token": "peer", "reason": "Tailwind group/peer companion class" },
+	{ "pattern": "^peer\\/.+$", "reason": "Tailwind named peer companion class" },
+	{ "token": "sim-tooltip", "reason": "ui-kit Tooltip base class, forwarded to react-tooltip" },
+	{ "token": "sim-tooltip--unpadded", "reason": "ui-kit Tooltip unpadded variant, forwarded to react-tooltip" },
+	{
+		"token": "tooltip-quick-swap",
+		"reason": "third-party-required: react-tooltip forwards the Tooltip className as its data-theme attribute (no data-testid alternative); ItemPickerCell.tsx"
+	},
+	{
+		"token": "suggest-reforges-softcaps",
+		"reason": "third-party-required: same react-tooltip data-theme forwarding as tooltip-quick-swap; ReforgePanel.tsx"
+	},
+	{
+		"token": "bonus-stats-popover",
+		"reason": "third-party-required: react-tooltip class-based testId — Tooltip.tsx clsx()s its testId prop into className because react-tooltip forwards no data-testid; BonusStatsLink.tsx"
+	},
+	{ "token": "fa", "reason": "FontAwesome base class, loaded externally" },
+	{ "token": "fas", "reason": "FontAwesome solid style class, loaded externally" },
+	{ "token": "far", "reason": "FontAwesome regular style class, loaded externally" },
+	{ "token": "fab", "reason": "FontAwesome brand style class, loaded externally" },
+	{ "pattern": "^fa-.+$", "reason": "FontAwesome icon name class, loaded externally" }
+]

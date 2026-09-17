@@ -1,0 +1,49 @@
+@layer components {
+	.ui-bulk-item-cell {
+		--gem-width: 1rem;
+
+		& .ui-item-picker-icon-wrapper {
+			--icon-size: 3.5rem;
+			min-width: 3.5rem;
+			min-height: 3.5rem;
+		}
+
+		& .ui-item-picker-name-row {
+			width: 100%;
+		}
+
+		& .ui-item-picker-labels-container {
+			width: 100%;
+			padding-top: 0;
+			overflow: hidden;
+		}
+
+		& .ui-item-picker-name-container {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			column-gap: --spacing(1);
+			max-width: 100%;
+		}
+
+		& .ui-item-picker-name {
+			max-width: 100%;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.ui-bulk-result-item {
+		border: 3px solid transparent;
+	}
+
+	.ui-bulk-item-search-item {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		padding: --spacing(2);
+		border: 1px solid var(--color-border);
+		white-space: normal;
+	}
+}

@@ -1,0 +1,29 @@
+@theme static {
+	--breakpoint-*: initial;
+
+	--breakpoint-sm: 576px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 992px;
+	--breakpoint-xl: 1200px;
+	--breakpoint-xxl: 1400px;
+	--breakpoint-xxxl: 1600px;
+	--breakpoint-fhd: 1921px;
+	--breakpoint-qhd: 2561px;
+	--breakpoint-uhd: 3841px;
+}
+
+:root {
+	@variant lg {
+		--spacing-page: 2rem;
+		--spacing-section: 1.5rem;
+	}
+
+	@variant xxl {
+		--spacing-page: 3rem;
+		--spacing-section: 2rem;
+	}
+
+	@variant max-lg {
+		--spacing-sim-header: 65px;
+	}
+}

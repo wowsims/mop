@@ -23,16 +23,16 @@ func init() {
 
 func TestGuardian(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "ij_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "horridon_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "sha_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "empress_default", ItemFilter, nil, nil),
-		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/specs/druid/guardian/builds", "ij_default", ItemFilter, nil, nil),
+		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/specs/druid/guardian/builds", "horridon_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/specs/druid/guardian/builds", "sha_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/specs/druid/guardian/builds", "empress_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/specs/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class: proto.Class_ClassDruid,
 			Race:  proto.Race_RaceWorgen,
 
-			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "p5_offensive"),
+			GearSet: core.GetGearSet("../../../ui/specs/druid/guardian/gear_sets", "p5_offensive"),
 
 			Talents: StandardTalents,
 			Glyphs:  StandardGlyphs,
@@ -43,7 +43,7 @@ func TestGuardian(t *testing.T) {
 
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
-			Rotation:    core.GetAplRotation("../../../ui/druid/guardian/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/specs/druid/guardian/apls", "default"),
 
 			IsTank:          true,
 			InFrontOfTarget: true,

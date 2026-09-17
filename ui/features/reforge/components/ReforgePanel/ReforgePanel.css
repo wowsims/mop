@@ -1,0 +1,17 @@
+@layer components {
+	.ui-reforge-cap-table {
+		@apply w-full border-collapse border-spacing-0 p-0;
+	}
+
+	.ui-reforge-cap-label-cell {
+		@apply w-0 pr-2 pb-1;
+	}
+
+	.ui-reforge-cap-value-cell {
+		@apply w-18.75 pb-1 pl-0.5;
+	}
+
+	.ui-reforge-sidebar-actions {
+		--reforge-cols: auto var(--settings-button-width);
+	}
+}

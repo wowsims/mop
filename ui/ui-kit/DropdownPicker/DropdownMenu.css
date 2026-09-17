@@ -1,0 +1,24 @@
+@layer components {
+	.ui-dropdown-trigger {
+		@apply flex cursor-pointer items-center rounded-none border-0 px-0 py-4 text-center align-middle text-sm leading-normal font-normal whitespace-nowrap no-underline transition-[color,background-color,border-color] duration-150 ease-in-out select-none;
+
+		&:focus-visible {
+			@apply outline-none;
+		}
+
+		&:disabled {
+			@apply pointer-events-none opacity-65;
+		}
+
+		&::after {
+			display: inline-block;
+			margin-left: 0.255em;
+			vertical-align: 0.255em;
+			content: '';
+			border-top: 0.3em solid;
+			border-right: 0.3em solid transparent;
+			border-bottom: 0;
+			border-left: 0.3em solid transparent;
+		}
+	}
+}
