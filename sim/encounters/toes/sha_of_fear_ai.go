@@ -168,7 +168,7 @@ func (ai *ShaAI) registerTankSwaps() {
 	var oldArmorMultiplier float64
 
 	ai.TankSwapDebuff = ai.TankUnit.RegisterAura(core.Aura{
-		Label:    "Naked and Afraid",
+		Label:    "Naked and Afraid " + ai.Target.Label,
 		ActionID: actionID,
 		Duration: time.Second * 55,
 

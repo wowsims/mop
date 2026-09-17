@@ -199,7 +199,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	const banishmentDuration = time.Second * 15
 
 	ai.BanishmentAura = ai.TankUnit.RegisterAura(core.Aura{
-		Label:    "Banishment",
+		Label:    "Banishment " + ai.Target.Label,
 		ActionID: core.ActionID{SpellID: 116272},
 		Duration: banishmentDuration,
 
@@ -229,7 +229,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	var lastTaunt time.Duration
 
 	ai.VoodooDollsAura = ai.TankUnit.RegisterAura(core.Aura{
-		Label:    "Voodoo Dolls",
+		Label:    "Voodoo Dolls " + ai.Target.Label,
 		ActionID: core.ActionID{SpellID: 116000},
 		Duration: voodooDollsDuration,
 
