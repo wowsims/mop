@@ -26,8 +26,6 @@ cd "$repo"
 
 # Paths this skill names precisely because they are gone or uncommitted.
 ABSENT_BY_DESIGN="tools/browser-perf/
-tools/react-migration/
-tools/react-migration/README.md
 tools/restructure/move.mjs
 ui/index.ts
 ui/sim/proto/action_id/dom.ts

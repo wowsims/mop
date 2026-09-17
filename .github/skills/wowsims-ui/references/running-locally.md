@@ -71,13 +71,12 @@ shape by serving a known-good build of the parent branch on a second port and co
 URL, rather than trusting a remembered element count — those numbers rot faster than anything else
 in a document like this.
 
-There is no _committed_ browser or perf harness. There are two **git-excluded** ones, and the
-distinction matters: `tools/browser-perf/` (timings) and `tools/react-migration/` (DOM parity — see
-`verification.md`) are both lines in `.git/info/exclude`. That file lives in the shared common git
-dir, so the rule applies to every worktree of this clone, but it is never committed and the
-directories travel with no clone at all. They exist wherever their owner made them and nowhere else
-— not in a fresh clone, not in CI, and not necessarily in the worktree you are in.
+There is no _committed_ browser or perf harness. `tools/browser-perf/` (timings) is **git-excluded**:
+it is a line in `.git/info/exclude`. That file lives in the shared common git dir, so the rule applies
+to every worktree of this clone, but it is never committed and the directory travels with no clone at
+all. It exists wherever its owner made it and nowhere else — not in a fresh clone, not in CI, and not
+necessarily in the worktree you are in.
 
-So: check before you rely on one (`/usr/bin/ls tools/browser-perf/ tools/react-migration/`), and do
-not tell anyone else a path is there. If neither is present and you need reference-swap or APL-edit
+So: check before you rely on it (`/usr/bin/ls tools/browser-perf/`), and do not tell anyone else a
+path is there. If neither is present and you need reference-swap or APL-edit
 timings, drive the page with Playwright yourself and record the protocol in the PR.
