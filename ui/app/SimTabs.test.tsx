@@ -129,9 +129,7 @@ describe('SimTabs', () => {
 	});
 
 	// Arrow/Home/End navigation is Base UI's composite, and it does not drive under happy-dom — the
-	// keys land but the roving focus never moves. `tools/react-migration/tabs-a11y.mjs` asserts the
-	// whole sequence in a real browser, against the parent branch's, which is a stronger check than
-	// this file could make anyway.
+	// keys land but the roving focus never moves, so this file cannot assert the sequence.
 
 	it('leaves other keys alone, so typing still reaches the page', () => {
 		renderTabs(['gear-tab', 'settings-tab']);

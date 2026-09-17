@@ -85,8 +85,8 @@ describe('ProgressTrackerDialog', () => {
 		expect(barFill().style.width).toBe('');
 	});
 
-	// The rule the skill states as "sim progress bypasses the store". The bound is one commit of this
-	// leaf per batch of ticks — the dialog around it never re-renders.
+	// Sim progress bypasses the store. The bound is one commit of this leaf per batch of ticks — the
+	// dialog around it never re-renders.
 	it('renders once for a hundred progress ticks in one batch, and shows the last of them', () => {
 		const { commits } = renderDialog();
 		const atMount = commits.mock.calls.length;

@@ -50,8 +50,8 @@ describe('WarningsRegistry', () => {
 		expect(registry.getContents()).toEqual(['one', 'two', 'three']);
 	});
 
-	// Risk 3 in the plan: `parity.mjs` compares `hide` on the warning item at load, so a filter widened
-	// to `.trim()` would change that class on any spec whose warning returns whitespace.
+	// Widening this filter to `.trim()` would change the warning item's `hide` state at load for any
+	// spec whose warning returns whitespace.
 	it('keeps a whitespace-only warning, because the filter is strict', () => {
 		const registry = new WarningsRegistry();
 		registry.add(warning(() => ' ').warning);

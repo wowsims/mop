@@ -33,7 +33,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 	// growing under a bar that was already pinned produces exactly that pair — the short pane's
 	// `ratio: 1` followed by the tall pane's `0.98`. Reading the first leaves the bar unpinned for
 	// good, because nothing moves again to produce another record. Measured: with `[entry]` the log
-	// pane lost `stuck` on four of six specs in `results-tabs.mjs`, at random.
+	// pane lost `stuck` on four of six specs, at random.
 	useEffect(() => {
 		const element = rootRef.current;
 		if (!element) return;

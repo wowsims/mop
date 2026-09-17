@@ -1,8 +1,8 @@
 // Does a React binding need state/batch.ts's gate?
 //
 // The gate exists for direct, non-React store subscribers: a batch() defers their listeners so a
-// multi-slice write notifies once with final state. React has its own coalescing, so the plan
-// listed "does React need subscribeGated?" as a question to settle by measurement. This is that
+// multi-slice write notifies once with final state. React has its own coalescing, so whether a
+// React binding needs `subscribeGated` is a question to settle by measurement. This is that
 // measurement, over three bindings of the same store:
 //
 //   gated    — useStoreSubscribe over a subscribeGated source (what every ported component uses)

@@ -199,9 +199,9 @@ describe('DetailedResults', () => {
 		expect(panes[pane].at(-1)).toBe(false);
 	});
 
-	// The arrow walk itself is `results-tabs.mjs`: Base UI drives it through a composite that does
-	// not answer synthetic key events under happy-dom, so what is checkable here is the roving
-	// tabindex the walk moves along - exactly one stop, and it follows the selection.
+	// Base UI drives the arrow walk through a composite that does not answer synthetic key events
+	// under happy-dom, so what is checkable here is the roving tabindex the walk moves along -
+	// exactly one stop, and it follows the selection.
 	it('leaves one tab stop on the strip and moves it with the selection', () => {
 		const { container } = renderPane();
 		const stops = () =>

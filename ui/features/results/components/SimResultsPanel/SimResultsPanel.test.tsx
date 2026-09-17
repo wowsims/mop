@@ -1,8 +1,8 @@
 // The two halves this panel is built on, and one race that only a unit test can reach.
 //
-// Progress is refs and DOM writes; only a stage change renders. `sim-progress.mjs` drives the real
-// thing in a browser, but it waits for text to appear, so it passes on tick two and can never see
-// that tick one's numbers were dropped — that gap is what the "same commit" case below covers.
+// Progress is refs and DOM writes; only a stage change renders. A browser-level check waits for text
+// to appear, so it passes on tick two and can never see that tick one's numbers were dropped — that
+// gap is what the "same commit" case below covers.
 import { ProgressMetrics } from '@generated/proto/api';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import type { SimWarning } from '@sim/sim_host';

@@ -21,7 +21,6 @@ export const ImportExportMenu = ({ kind, icon, iconStyle = 'base', title, childr
 	const unsupportedId = useId();
 	const [open, setOpen] = useState(false);
 	const [openDialog, setOpenDialog] = useState<string | null>(null);
-	// KNOWN DIVERGENCE, recorded in `header-toolbar.mjs` and the skill.
 
 	return (
 		<div className="static flex" data-testid="sim-dropdown-menu">
