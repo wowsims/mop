@@ -3,21 +3,21 @@
 		@apply grid grid-cols-label-value gap-x-2 border-b border-b-border;
 	}
 
-	.ui-fab-root {
+	.ui-floating-action-bar-root {
 		@apply sticky bottom-0 z-4 mt-3 -mb-page box-border flex h-fab-bar items-center border-0 border-border;
 		@apply data-stuck:border data-stuck:bg-background data-stuck:p-2;
 	}
 
-	.ui-fab-toggle {
+	.ui-floating-action-bar-toggle {
 		@apply relative z-1 min-w-0;
 	}
 
-	.ui-fab-drawer {
+	.ui-floating-action-bar-drawer {
 		@apply max-h-[min(45vh,26rem)] overflow-y-auto border-t border-r border-l border-border bg-background px-2 py-4;
 		@apply transition-transform duration-150 ease-in-out motion-reduce:transition-none;
 	}
 
-	.ui-fab-sheet {
+	.ui-floating-action-bar-sheet {
 		@apply fixed z-dropdown overflow-clip outline-none;
 		@apply opacity-100 transition-opacity duration-150 ease-in-out motion-reduce:transition-none;
 
@@ -29,17 +29,17 @@
 		&[data-ending-style] {
 			@apply opacity-0;
 
-			& .ui-fab-drawer {
+			& .ui-floating-action-bar-drawer {
 				@apply translate-y-full;
 			}
 		}
 	}
 
-	.ui-log-fab-bar {
+	.ui-log-floating-action-bar {
 		anchor-name: --log-fab;
 	}
 
-	.ui-log-fab-sheet {
+	.ui-log-floating-action-bar-sheet {
 		@supports (anchor-name: --a) {
 			position-anchor: --log-fab;
 			left: anchor(left);
@@ -48,11 +48,11 @@
 		}
 	}
 
-	.ui-rotation-fab-bar {
+	.ui-rotation-floating-action-bar {
 		anchor-name: --rotation-fab;
 	}
 
-	.ui-rotation-fab-sheet {
+	.ui-rotation-floating-action-bar-sheet {
 		@supports (anchor-name: --a) {
 			position-anchor: --rotation-fab;
 			left: anchor(left);

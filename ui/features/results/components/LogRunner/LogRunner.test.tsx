@@ -198,7 +198,7 @@ describe('LogRunner', () => {
 		result = resultWith(LOGS);
 		const { container } = mount();
 
-		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][0]);
+		fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-floating-action-bar-controls"] button')][0]);
 
 		// Three lines, not the two the list shows: the search and the debug toggle are the list's alone.
 		// The cast-completed line is gone from both — that filter is on `logs`.
@@ -229,7 +229,7 @@ describe('LogRunner', () => {
 	it('gives both bar buttons an explicit type, so neither submits a form', () => {
 		const { container } = mount();
 
-		expect([...container.querySelectorAll('[data-testid="log-fab-controls"] button')].map(button => button.getAttribute('type'))).toEqual([
+		expect([...container.querySelectorAll('[data-testid="log-floating-action-bar-controls"] button')].map(button => button.getAttribute('type'))).toEqual([
 			'button',
 			'button',
 		]);
@@ -255,7 +255,7 @@ describe('LogRunner', () => {
 		const hidePane = (container: HTMLElement) => placeList(container, null);
 
 		const backToTop = (container: HTMLElement) =>
-			fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-fab-controls"] button')][1]);
+			fireEvent.click([...container.querySelectorAll<HTMLButtonElement>('[data-testid="log-floating-action-bar-controls"] button')][1]);
 
 		beforeEach(() => {
 			rootScrollIntoView.mockClear();

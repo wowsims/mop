@@ -15,7 +15,7 @@ export interface FloatingActionBarClearAction {
 }
 
 export interface FloatingActionBarProps {
-	/** Builds the bar's test ids: `<prefix>-floating-action-bar-root`, `<prefix>-fab-toggle` and the rest. */
+	/** Builds the bar's test ids: `<prefix>-floating-action-bar-root`, `<prefix>-floating-action-bar-toggle` and the rest. */
 	testIdPrefix: string;
 	rootClassName: string;
 	sheetClassName: string;
@@ -52,10 +52,10 @@ export const FloatingActionBar = ({
 		<div
 			ref={rootRef}
 			data-testid={`${testIdPrefix}-floating-action-bar-root`}
-			className={clsx('group ui-fab-root', rootClassName)}
+			className={clsx('group ui-floating-action-bar-root', rootClassName)}
 			data-stuck={stuck ? '' : undefined}>
 			<Toolbar
-				testId={`${testIdPrefix}-fab-actions`}
+				testId={`${testIdPrefix}-floating-action-bar-actions`}
 				className={clsx('relative min-w-0 flex-1 flex-nowrap items-center', toolbarClassName, 'overflow-x-auto group-data-stuck:bg-background')}>
 				<Drawer
 					open={expanded}
@@ -63,12 +63,15 @@ export const FloatingActionBar = ({
 					modal={false}
 					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
 					className={sheetClassName}
-					testId={`${testIdPrefix}-fab-panel-inner`}
+					testId={`${testIdPrefix}-floating-action-bar-panel-inner`}
 					trigger={
-						<ToolbarButton testId={`${testIdPrefix}-fab-toggle`} className="ui-fab-toggle flex items-center gap-2" aria-label={toggleLabel}>
+						<ToolbarButton
+							testId={`${testIdPrefix}-floating-action-bar-toggle`}
+							className="ui-floating-action-bar-toggle flex items-center gap-2"
+							aria-label={toggleLabel}>
 							{icon}
-							<span data-testid={`${testIdPrefix}-fab-summary`}>{summary}</span>
-							<span data-testid={`${testIdPrefix}-fab-preview`} className="truncate opacity-75">
+							<span data-testid={`${testIdPrefix}-floating-action-bar-summary`}>{summary}</span>
+							<span data-testid={`${testIdPrefix}-floating-action-bar-preview`} className="truncate opacity-75">
 								{preview}
 							</span>
 						</ToolbarButton>

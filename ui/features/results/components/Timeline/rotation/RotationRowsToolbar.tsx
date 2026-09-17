@@ -55,8 +55,8 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 	return (
 		<FloatingActionBar
 			testIdPrefix="rotation"
-			rootClassName="ui-rotation-fab-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
-			sheetClassName="ui-fab-sheet ui-rotation-fab-sheet"
+			rootClassName="ui-rotation-floating-action-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
+			sheetClassName="ui-floating-action-bar-sheet ui-rotation-floating-action-bar-sheet"
 			toggleLabel={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
 			icon={<Icon name="eye-slash" />}
 			summary={
@@ -66,14 +66,14 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			}
 			preview={preview.length ? `${preview.join(', ')}${hiddenKeys.length > preview.length ? ', …' : ''}` : ''}
 			clear={{
-				testId: 'rotation-fab-show-all',
+				testId: 'rotation-floating-action-bar-show-all',
 				className: 'ml-auto',
 				icon: <Icon name="times" className="mr-1" />,
 				label: i18n.t('results_tab.details.timeline.floatingActionBar.showAll'),
 				hidden: hiddenKeys.length === 0,
 				onClick: onShowAll,
 			}}>
-			<div className="ui-fab-drawer flex flex-col gap-4">
+			<div className="ui-floating-action-bar-drawer flex flex-col gap-4">
 				{groups.map(group => (
 					<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
 				))}

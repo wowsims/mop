@@ -33,11 +33,11 @@ const mount = (hidden: Array<string> = []) => {
 	const onToggle = vi.fn();
 	const onShowAll = vi.fn();
 	const view = render(<RotationRowsToolbar model={MODEL} hidden={new Set(hidden)} onToggle={onToggle} onShowAll={onShowAll} />);
-	return { ...view, onToggle, onShowAll, toggle: view.container.querySelector<HTMLButtonElement>('[data-testid="rotation-fab-toggle"]')! };
+	return { ...view, onToggle, onShowAll, toggle: view.container.querySelector<HTMLButtonElement>('[data-testid="rotation-floating-action-bar-toggle"]')! };
 };
 
 const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[data-testid="rotation-fab-chip"]')];
-const panel = () => document.querySelector<HTMLElement>('[data-testid="rotation-fab-panel-inner"]');
+const panel = () => document.querySelector<HTMLElement>('[data-testid="rotation-floating-action-bar-panel-inner"]');
 
 describe('RotationRowsToolbar', () => {
 	it('builds no chips until the drawer is opened', () => {
@@ -83,21 +83,21 @@ describe('RotationRowsToolbar', () => {
 	});
 
 	it('previews up to three hidden rows and marks the rest with an ellipsis', () => {
-		expect(mount(['cast:0', 'cast:1']).container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe('Alpha, Beta');
-		expect(mount(['cast:0', 'cast:1', 'cast:2', 'cast:3']).container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe(
-			'Alpha, Beta, Gamma, …',
-		);
+		expect(mount(['cast:0', 'cast:1']).container.querySelector('[data-testid="rotation-floating-action-bar-preview"]')!.textContent).toBe('Alpha, Beta');
+		expect(
+			mount(['cast:0', 'cast:1', 'cast:2', 'cast:3']).container.querySelector('[data-testid="rotation-floating-action-bar-preview"]')!.textContent,
+		).toBe('Alpha, Beta, Gamma, …');
 	});
 
 	it('ignores hidden keys the current model does not have', () => {
 		const { container } = mount(['cast:0', 'from-another-result']);
-		expect(container.querySelector('[data-testid="rotation-fab-preview"]')!.textContent).toBe('Alpha');
+		expect(container.querySelector('[data-testid="rotation-floating-action-bar-preview"]')!.textContent).toBe('Alpha');
 	});
 
 	it('offers show-all only while something is hidden', () => {
-		expect(mount().container.querySelector<HTMLElement>('[data-testid="rotation-fab-show-all"]')!.hidden).toBe(true);
+		expect(mount().container.querySelector<HTMLElement>('[data-testid="rotation-floating-action-bar-show-all"]')!.hidden).toBe(true);
 		const { container, onShowAll } = mount(['cast:0']);
-		const showAll = container.querySelector<HTMLElement>('[data-testid="rotation-fab-show-all"]')!;
+		const showAll = container.querySelector<HTMLElement>('[data-testid="rotation-floating-action-bar-show-all"]')!;
 		expect(showAll.hidden).toBe(false);
 		fireEvent.click(showAll);
 		expect(onShowAll).toHaveBeenCalled();

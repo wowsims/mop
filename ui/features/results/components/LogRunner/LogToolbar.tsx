@@ -26,8 +26,8 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 	return (
 		<FloatingActionBar
 			testIdPrefix="log"
-			rootClassName="ui-log-fab-bar"
-			sheetClassName="ui-fab-sheet ui-log-fab-sheet"
+			rootClassName="ui-log-floating-action-bar"
+			sheetClassName="ui-floating-action-bar-sheet ui-log-floating-action-bar-sheet"
 			toolbarClassName="gap-2"
 			toggleLabel={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
 			icon={<Icon name="filter" />}
@@ -38,18 +38,18 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 			}
 			preview={labels.length ? `${labels.slice(0, PREVIEW_LIMIT).join(', ')}${labels.length > PREVIEW_LIMIT ? ', …' : ''}` : ''}
 			clear={{
-				testId: 'log-fab-clear',
+				testId: 'log-floating-action-bar-clear',
 				icon: <Icon name="times" className="mr-1" />,
 				label: i18n.t('results_tab.details.logs.floatingActionBar.clear'),
 				hidden: labels.length === 0,
 				onClick: () => onChange([]),
 			}}
 			controls={
-				<div data-testid="log-fab-controls" className="flex items-center gap-2 md:ml-auto">
+				<div data-testid="log-floating-action-bar-controls" className="flex items-center gap-2 md:ml-auto">
 					{children}
 				</div>
 			}>
-			<div data-testid="log-fab-filters" className="ui-fab-drawer">
+			<div data-testid="log-floating-action-bar-filters" className="ui-floating-action-bar-drawer">
 				<LogSearchBar groups={groups} suggestions={suggestions} onChange={onChange} />
 			</div>
 		</FloatingActionBar>

@@ -132,7 +132,7 @@ describe('RotationView', () => {
 		const { container } = await mount();
 		fireEvent.click(container.querySelector('[data-row-key="cast:a"] [data-testid="rotation-row-hide"]')!);
 		await settle();
-		fireEvent.click(container.querySelector('[data-testid="rotation-fab-show-all"]')!);
+		fireEvent.click(container.querySelector('[data-testid="rotation-floating-action-bar-show-all"]')!);
 		await settle();
 		expect(rowKeys(container)).toEqual(['header:player', 'cast:a', 'cast:b']);
 	});
