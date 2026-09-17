@@ -698,26 +698,25 @@ func (monk *Monk) registerAscension() {
 		return
 	}
 
-	core.MakePermanent(monk.GetOrRegisterAura(core.Aura{
-		Label:    "Ascension" + monk.Label,
-		ActionID: core.ActionID{SpellID: 115396},
+	aura := core.MakePermanent(monk.GetOrRegisterAura(core.Aura{
+		Label:      "Ascension" + monk.Label,
+		ActionID:   core.ActionID{SpellID: 115396},
+		BuildPhase: core.CharacterBuildPhaseTalents,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			monk.ApplyAdditiveEnergyRegenBonus(sim, 0.15)
 			monk.SetMaxComboPoints(5)
-
-			if monk.HasManaBar() {
-				monk.MultiplyStat(stats.Mana, 1.15)
-			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			monk.ApplyAdditiveEnergyRegenBonus(sim, -0.15)
 			monk.SetMaxComboPoints(4)
-
-			if monk.HasManaBar() {
-				monk.MultiplyStat(stats.Mana, 1.0/1.15)
-			}
 		},
 	}))
+
+	// +15% maximum mana. A stat dependency instead of MultiplyStat in OnGain, so the
+	// permanent aura can be re-activated on every reset after the stat deps are finalized.
+	if monk.HasManaBar() {
+		aura.AttachStatDependency(monk.NewDynamicMultiplyStat(stats.Mana, 1.15))
+	}
 }
 
 func (monk *Monk) registerChiBrew() {

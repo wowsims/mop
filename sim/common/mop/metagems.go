@@ -10,6 +10,11 @@ import (
 
 func init() {
 	// Keep these in order by item ID
+	// Ember Primal Diamond
+	core.NewItemEffect(76879, func(agent core.Agent, _ proto.ItemLevelState) {
+		// +2% maximum mana
+		agent.GetCharacter().MultiplyStat(stats.Mana, 1.02)
+	})
 	// Agile Primal Diamond
 	core.NewItemEffect(76884, core.ApplyMetaGemCriticalDamageEffect)
 	// Burning Primal Diamond

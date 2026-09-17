@@ -49,6 +49,7 @@
         },
         "status": {
             "unlaunched": "Pas encore supporté",
+            "gear_planner": "Planificateur d'équipement",
             "alpha": "Alpha",
             "beta": "Bêta",
             "launched": "Lancé"
@@ -260,6 +261,10 @@
         "crash_modal": {
             "title": "Informations supplémentaires sur le crash",
             "header": "Veuillez ajouter le lien complet suivant au rapport que vous venez de créer. Cela simplifiera le débogage du problème."
+        },
+        "gear_planner": {
+            "title": "Planification d'équipement uniquement.",
+            "message": "L'équipement, les gemmes, les enchantements, les talents et l'optimiseur de reforge fonctionnent pour cette spécialisation. Aucune simulation n'est prévue."
         },
         "unlaunched": {
             "title": "Ce simulateur n'est actuellement pas pris en charge.",
@@ -2265,6 +2270,7 @@
 		"github": "Contribuer sur GitHub",
 		"status": {
 			"unlaunched": "Cette simulation est EN COURS DE DÉVELOPPEMENT. Elle n'est pas entièrement développée et ne devrait pas être utilisée à des fins générales.",
+			"gear_planner": "Cette simulation est un PLANIFICATEUR D'ÉQUIPEMENT uniquement. L'équipement, les gemmes, les enchantements, les talents et l'optimiseur de reforge fonctionnent. Aucune simulation n'est prévue pour cette spécialisation.",
 			"alpha": "Cette simulation est en ALPHA. Des bugs sont attendus ; merci de nous informer si vous en trouvez un !",
 			"beta": "Cette simulation est en BÊTA. Il peut encore y avoir quelques bugs ; merci de nous informer si vous en trouvez un !"
 		},

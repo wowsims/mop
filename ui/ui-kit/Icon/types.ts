@@ -46,6 +46,7 @@ export type IconName =
 	| 'plus-minus'
 	| 'right-from-bracket'
 	| 'rotate-left'
+	| 'screwdriver-wrench'
 	| 'spinner'
 	| 'star'
 	| 'times'

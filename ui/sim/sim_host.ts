@@ -27,7 +27,11 @@ export interface SimWarning {
 export interface SimHost {
 	readonly sim: Sim;
 	readonly rootElem: HTMLElement;
+	// Unlaunched sim outside dev mode: every sidebar action is off and the results panel shows the unlaunched notice.
 	readonly disabled: boolean;
+	// The simulation controls (Simulate, iterations, stat weight calculation, the rotation, results and bulk tabs) are
+	// hidden. True for `disabled` sims and always for gear planners, dev mode included. Stat weights can still be edited.
+	readonly simDisabled: boolean;
 	readonly config: { className: string; cssScheme: string };
 	readonly resultsViewer: ResultsPanelHandle;
 	readonly simTabContentsContainer: HTMLElement;

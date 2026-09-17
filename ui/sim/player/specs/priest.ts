@@ -19,8 +19,8 @@ export class DisciplinePriest extends PlayerSpec<Spec.SpecDisciplinePriest> {
 	static canDualWield = false;
 
 	static launch: SimStatus = {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	};
 
 	readonly specIndex = DisciplinePriest.specIndex;
@@ -62,8 +62,8 @@ export class HolyPriest extends PlayerSpec<Spec.SpecHolyPriest> {
 	static canDualWield = false;
 
 	static launch: SimStatus = {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	};
 
 	readonly specIndex = HolyPriest.specIndex;

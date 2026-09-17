@@ -1,62 +1,85 @@
 package holy
 
 import (
-	_ "github.com/wowsims/mop/sim/common" // imported to get caster sets included.
+	"testing"
+
+	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
+	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func init() {
 	RegisterHolyPriest()
 }
 
-// func TestSmite(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-// 		{
-// 			Class: proto.Class_ClassPriest,
-// 			Race:  proto.Race_RaceUndead,
+// Stats-only suite: this spec is a gear planner, it has no healing rotation.
+// Pins the final character stats for each gear preset so the passives stay covered. The empty APL
+// rotation and the fake prepull (no SkipRotation) make it exercise a full environment reset, the
+// path the UI's stats request takes.
+func TestHolyPriest(t *testing.T) {
+	newPlayer := func(gearSetDir string, gearSet string, glyphs *proto.Glyphs) *proto.Player {
+		return core.WithSpec(
+			&proto.Player{
+				Class:         proto.Class_ClassPriest,
+				Race:          proto.Race_RaceUndead,
+				Equipment:     core.GetGearSet(gearSetDir, gearSet).GearSet,
+				Consumables:   FullConsumes,
+				Buffs:         core.FullIndividualBuffs,
+				TalentsString: StandardTalents,
+				Glyphs:        glyphs,
+				Profession1:   proto.Profession_Engineering,
+				Profession2:   proto.Profession_Enchanting,
+				Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
+			},
+			PlayerOptions,
+		)
+	}
+	statsTest := func(name string, player *proto.Player) core.TestGenerator {
+		return &core.SingleCharacterStatsTestGenerator{
+			Name: name,
+			Request: &proto.ComputeStatsRequest{
+				Raid: core.SinglePlayerRaidProto(player, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
+			},
+		}
+	}
 
-// 			GearSet:     core.GetGearSet("../../../ui/smite_priest/gear_sets", "p1"),
-// 			Talents:     DefaultTalents,
-// 			Glyphs:      DefaultGlyphs,
-// 			Consumes:    FullConsumes,
-// 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-// 			Rotation:    core.GetAplRotation("../../../ui/smite_priest/apls", "default"),
+	generators := []core.TestGenerator{
+		statsTest("preraid", newPlayer("../../../ui/specs/priest/holy/gear_sets", "preraid", StandardGlyphs)),
+		statsTest("p5", newPlayer("../../../ui/specs/priest/holy/gear_sets", "p5", StandardGlyphs)),
+		// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
+		// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
+		statsTest("p5-shadow-tier", newPlayer("../../../ui/specs/priest/shadow/gear_sets", "p5", StandardGlyphs)),
+		// Glyph of Inner Fire: the armor gained from Inner Fire is 90% instead of 60%.
+		statsTest("p5-glyph-of-inner-fire", newPlayer("../../../ui/specs/priest/holy/gear_sets", "p5", InnerFireGlyphs)),
+	}
+	core.RunTestSuite(t, t.Name(), generators)
+}
 
-// 			ItemFilter: core.ItemFilter{
-// 				WeaponTypes: []proto.WeaponType{
-// 					proto.WeaponType_WeaponTypeDagger,
-// 					proto.WeaponType_WeaponTypeMace,
-// 					proto.WeaponType_WeaponTypeOffHand,
-// 					proto.WeaponType_WeaponTypeStaff,
-// 				},
-// 				ArmorType: proto.ArmorType_ArmorTypeCloth,
-// 				RangedWeaponTypes: []proto.RangedWeaponType{
-// 					proto.RangedWeaponType_RangedWeaponTypeWand,
-// 				},
-// 			},
-// 		},
-// 	}))
-// }
+var StandardTalents = "122112"
+var StandardGlyphs = &proto.Glyphs{
+	Major1: int32(proto.PriestMajorGlyph_GlyphOfRenew),
+	Major2: int32(proto.PriestMajorGlyph_GlyphOfPrayerOfMending),
+	Major3: int32(proto.PriestMajorGlyph_GlyphOfCircleOfHealing),
+}
 
-// var DefaultTalents = "05332031013005023310001-005551002020152-00502"
-// var DefaultGlyphs = &proto.Glyphs{
-// 	Major1: int32(proto.PriestMajorGlyph_GlyphOfSmite),
-// 	Major2: int32(proto.PriestMajorGlyph_GlyphOfHolyNova),
-// 	Major3: int32(proto.PriestMajorGlyph_GlyphOfShadowWordDeath),
-// 	// No interesting minor glyphs.
-// }
+var InnerFireGlyphs = &proto.Glyphs{
+	Major1: int32(proto.PriestMajorGlyph_GlyphOfInnerFire),
+	Major2: int32(proto.PriestMajorGlyph_GlyphOfPrayerOfMending),
+	Major3: int32(proto.PriestMajorGlyph_GlyphOfCircleOfHealing),
+}
 
-// var FullConsumes = &proto.Consumes{
-// 	Flask:         proto.Flask_FlaskOfTheFrostWyrm,
-// 	Food:          proto.Food_FoodFishFeast,
-// 	DefaultPotion: proto.Potions_RunicManaInjector,
-// 	PrepopPotion:  proto.Potions_PotionOfWildMagic,
-// }
+var FullConsumes = &proto.ConsumesSpec{
+	FlaskId: 76085, // Flask of the Warm Sun
+	FoodId:  74650, // Mogu Fish Stew
+	PotId:   76093, // Potion of the Jade Serpent
+}
 
-// var PlayerOptionsBasic = &proto.Player_SmitePriest{
-// 	SmitePriest: &proto.SmitePriest{
-// 		Options: &proto.SmitePriest_Options{
-// 			UseInnerFire:   true,
-// 			UseShadowfiend: true,
-// 		},
-// 	},
-// }
+var PlayerOptions = &proto.Player_HolyPriest{
+	HolyPriest: &proto.HolyPriest{
+		Options: &proto.HolyPriest_Options{
+			ClassOptions: &proto.PriestOptions{
+				Armor: proto.PriestOptions_InnerFire,
+			},
+		},
+	},
+}

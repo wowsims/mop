@@ -32,6 +32,9 @@ func NewMistweaverMonk(character *core.Character, options *proto.Player) *Mistwe
 	}
 	mw.EnableManaBar()
 
+	// Mana Meditation (121278): 50% of mana regeneration from Spirit continues in combat.
+	mw.NewSpecPassiveAura("Mana Meditation", 121278).AttachAdditivePseudoStatBuff(&mw.PseudoStats.SpiritRegenRateCombat, 0.5)
+
 	strAPDep := mw.NewDynamicStatDependency(stats.Strength, stats.AttackPower, 1)
 	agiAPDep := mw.NewDynamicStatDependency(stats.Agility, stats.AttackPower, 2)
 

@@ -10,7 +10,9 @@ vi.mock('@features/encounter', () => ({
 	SavedEncounter: () => <div data-testid="saved-encounter-root" />,
 }));
 vi.mock('@features/settings', () => ({
-	ConsumesPicker: () => <div />,
+	ConsumesPicker: ({ encounterConsumes }: { encounterConsumes: boolean }) => (
+		<div data-testid="consumes-picker-stub" data-encounter-consumes={String(encounterConsumes)} />
+	),
 	CustomSection: ({ section }: { section: { id: string } }) => <div data-testid="custom-section-stub" data-id={section.id} />,
 	OtherSettings: () => <div />,
 	PlayerSettings: () => <div />,
@@ -42,7 +44,9 @@ vi.mock('@features/settings/model/stat_options', () => ({
 // Needs a real player and store; SelectorModal.test.tsx is where it is asserted.
 vi.mock('@features/gear/components/SelectorModal', () => ({ SelectorModal: () => null }));
 vi.mock('../PresetConfigurationPicker', () => ({
-	PresetConfigurationPicker: () => <div data-testid="preset-configuration-picker-root" data-saved-data-manager="" />,
+	PresetConfigurationPicker: ({ categories }: { categories: ReadonlyArray<unknown> }) => (
+		<div data-testid="preset-configuration-picker-root" data-saved-data-manager="" data-categories={categories.length} />
+	),
 }));
 
 const { SettingsTabBody } = await import('./SettingsTabBody');
@@ -54,7 +58,8 @@ interface Config {
 }
 
 let resolveInit: () => void;
-const hostWith = (config: Partial<Config> = {}) => ({
+const hostWith = (config: Partial<Config> = {}, simDisabled = false) => ({
+	simDisabled,
 	sim: {
 		waitForInit: () => new Promise<void>(resolve => (resolveInit = resolve)),
 		encounter: {},
@@ -75,9 +80,9 @@ const hostWith = (config: Partial<Config> = {}) => ({
 	getSavedSettingsStorageKey: () => 'settings',
 });
 
-const mount = (config?: Partial<Config>) => {
+const mount = (config?: Partial<Config>, simDisabled = false) => {
 	const { container } = render(
-		<SimHostProvider host={hostWith(config) as never}>
+		<SimHostProvider host={hostWith(config, simDisabled) as never}>
 			<SettingsTabBody />
 		</SimHostProvider>,
 	);
@@ -172,6 +177,26 @@ describe('SettingsTabBody', () => {
 		expect(container.querySelector('[data-block="buffs-settings"]')).not.toBeNull();
 		expect(bodyOf(container, 'buffs-settings')).toBeNull();
 		expect(bodyOf(container, 'debuffs-settings')).toBeNull();
+	});
+
+	it('keeps only the sections that change the character stats on a gear planner', async () => {
+		const container = mount({ sections: [{ id: 'totems' }] }, true);
+		await becomeReady();
+		expect(blocks(container, 0)).toEqual(['player-settings']);
+		expect(blocks(container, 1)).toEqual(['consumes-settings', 'other-settings']);
+		expect(blocks(container, 2)).toEqual(['buffs-settings']);
+		expect(container.querySelector('[data-testid="consumes-picker-stub"]')!.getAttribute('data-encounter-consumes')).toBe('false');
+		// The right column drops the saved encounters and offers settings presets only.
+		const right = container.querySelector('[data-testid="tab-panel-right"]')!;
+		expect([...right.children].map(child => child.getAttribute('data-testid'))).toEqual(['preset-configuration-picker-root', 'saved-settings-root']);
+		expect(right.firstElementChild!.getAttribute('data-categories')).toBe('1');
+	});
+
+	it('passes the encounter consumes through and both preset categories on a sim that runs', async () => {
+		const container = mount();
+		await becomeReady();
+		expect(container.querySelector('[data-testid="consumes-picker-stub"]')!.getAttribute('data-encounter-consumes')).toBe('true');
+		expect(container.querySelector('[data-testid="preset-configuration-picker-root"]')!.getAttribute('data-categories')).toBe('2');
 	});
 
 	it('leaves those bodies alone when the lists are not empty', async () => {

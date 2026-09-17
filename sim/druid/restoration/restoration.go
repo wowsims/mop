@@ -3,6 +3,7 @@ package restoration
 import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/druid"
 )
 
@@ -36,6 +37,8 @@ func NewRestorationDruid(character *core.Character, options *proto.Player) *Rest
 		resto.SelfBuffs.InnervateTarget = restoOptions.Options.ClassOptions.InnervateTarget
 	}
 
+	resto.registerPassives()
+
 	return resto
 }
 
@@ -51,7 +54,25 @@ func (resto *RestorationDruid) Initialize() {
 	resto.Druid.Initialize()
 }
 
-func (resto *RestorationDruid) ApplyTalents() {}
+func (resto *RestorationDruid) ApplyTalents() {
+	resto.Druid.ApplyTalents()
+	resto.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeLeather, 86093)
+}
+
+// Stat-affecting Restoration passives. Healing spells are not implemented;
+// this spec is a gear planner only.
+func (resto *RestorationDruid) registerPassives() {
+	// Natural Insight (112857): increases mana pool by 400%.
+	resto.NewSpecPassiveAura("Natural Insight", 112857).AttachStatDependency(resto.NewDynamicMultiplyStat(stats.Mana, 5))
+
+	// Meditation (85101): 50% of mana regeneration from Spirit continues in combat.
+	resto.NewSpecPassiveAura("Meditation", 85101).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.5)
+
+	// Restoration Hotfix Passive (137012): mana regeneration from Spirit in
+	// combat increased by 5%, so Meditation keeps 55% instead of 50%.
+	// https://www.wowhead.com/mop-classic/spell=137012/hotfix-passive
+	resto.NewSpecPassiveAura("Hotfix Passive", 137012).AttachAdditivePseudoStatBuff(&resto.PseudoStats.SpiritRegenRateCombat, 0.05)
+}
 
 func (resto *RestorationDruid) Reset(sim *core.Simulation) {
 	resto.Druid.Reset(sim)

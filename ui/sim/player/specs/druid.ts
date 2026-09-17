@@ -148,8 +148,8 @@ export class RestorationDruid extends PlayerSpec<Spec.SpecRestorationDruid> {
 	static canDualWield = false;
 
 	static launch: SimStatus = {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	};
 
 	readonly specIndex = RestorationDruid.specIndex;

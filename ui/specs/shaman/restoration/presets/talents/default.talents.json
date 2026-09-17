@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "331132",
+	"glyphs": {
+		"major1": "GlyphOfSpiritwalkersGrace",
+		"major2": "GlyphOfHealingStreamTotem",
+		"major3": "GlyphOfTelluricCurrents",
+		"minor1": "GlyphOfTheSpectralWolf",
+		"minor2": "GlyphOfTheLakestrider",
+		"minor3": "GlyphOfSpiritWolf"
+	}
+}

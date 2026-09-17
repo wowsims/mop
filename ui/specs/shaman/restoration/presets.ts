@@ -1,58 +1,23 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec } from '@generated/proto/common';
-import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '@generated/proto/shaman';
-import { SavedTalents } from '@generated/proto/ui';
+import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
+import { RestorationShaman_Options as RestorationShamanOptions, ShamanMajorGlyph, ShamanMinorGlyph, ShamanShield } from '@generated/proto/shaman';
+import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 
-import P1Gear from './gear_sets/p1.gear.json';
-import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
-import P4Gear from './gear_sets/p4.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
-import P1EpJson from './presets/ep/p1.ep.json';
+import QELiveEpJson from './presets/ep/qe_live.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
-// Preset options for this spec.
-// Eventually we will import these values for the raid sim too, so its good to
-// keep them in a separate file.
+export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-export const PRERAID_PRESET = PresetUtils.makePresetGear('PreRaid', PreraidGear);
-export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
-export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
-export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
-
-// Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Shaman/RestoShamanClassic.js
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(QELiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const TankHealingTalents = {
-	name: 'Tank Healing',
-	data: SavedTalents.create({
-		// talentsString: '-30205033-05005331335010501122331251',
-		// glyphs: Glyphs.create({
-		// 	major1: ShamanMajorGlyph.GlyphOfEarthlivingWeapon,
-		// 	major2: ShamanMajorGlyph.GlyphOfEarthShield,
-		// 	major3: ShamanMajorGlyph.GlyphOfLesserHealingWave,
-		// 	minor2: ShamanMinorGlyph.GlyphOfWaterShield,
-		// 	minor1: ShamanMinorGlyph.GlyphOfRenewedLife,
-		// 	minor3: ShamanMinorGlyph.GlyphOfGhostWolf,
-		// }),
-	}),
-};
-export const RaidHealingTalents = {
-	name: 'Raid Healing',
-	data: SavedTalents.create({
-		// talentsString: '-3020503-50005331335310501122331251',
-		// glyphs: Glyphs.create({
-		// 	major1: ShamanMajorGlyph.GlyphOfChainHeal,
-		// 	major2: ShamanMajorGlyph.GlyphOfEarthShield,
-		// 	major3: ShamanMajorGlyph.GlyphOfEarthlivingWeapon,
-		// 	minor2: ShamanMinorGlyph.GlyphOfWaterShield,
-		// 	minor1: ShamanMinorGlyph.GlyphOfRenewedLife,
-		// 	minor3: ShamanMinorGlyph.GlyphOfGhostWolf,
-		// }),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: ShamanMajorGlyph, minor: ShamanMinorGlyph });
 
 export const DefaultOptions = RestorationShamanOptions.create({
 	classOptions: {
@@ -62,7 +27,31 @@ export const DefaultOptions = RestorationShamanOptions.create({
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 123, // Flask of the Frost Wyrm (not in list)
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 123, // Runic Mana Injector (not in list)
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, // Potion of the Jade Serpent
 });
+
+export const OtherDefaults = {
+	profession1: Profession.Engineering,
+	profession2: Profession.Tailoring,
+	distanceFromTarget: 18,
+};
+
+// HoT tick breakpoints as total spell haste percent (raid buff included):
+// (ticks - 0.5) / baseTicks - 1. Riptide 18s/3s, Earthliving 12s/3s.
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.687;
+
+export const RESTORATION_BREAKPOINTS: UnitStatPresets[] = [
+	{
+		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+		presets: new Map([
+			['7-tick - Riptide', 8.33334],
+			['5-tick - Earthliving', 12.5],
+			['8-tick - Riptide', 25],
+			['6-tick - Earthliving', 37.5],
+			['9-tick - Riptide', 41.66667],
+			['10-tick - Riptide', 58.33334],
+		]),
+	},
+];

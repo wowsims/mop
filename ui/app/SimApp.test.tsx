@@ -20,6 +20,7 @@ vi.mock('./individual_sim_ui', async () => {
 			readonly sim = { waitForInit: () => Promise.resolve(), isNative: true };
 			readonly sidebar = new SidebarRegistry();
 			readonly disabled = false;
+			readonly simDisabled = false;
 			readonly individualConfig = { displayStats: [], epReferenceStat: 0 };
 			readonly simActionsContainer: HTMLElement;
 			// The sidebar panel is React now; the shell only owns the store it drives and the registry

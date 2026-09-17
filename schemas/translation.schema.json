@@ -158,6 +158,9 @@
 						"unlaunched": {
 							"type": "string"
 						},
+						"gear_planner": {
+							"type": "string"
+						},
 						"alpha": {
 							"type": "string"
 						},
@@ -963,6 +966,19 @@
 					},
 					"additionalProperties": false,
 					"required": ["title", "header"]
+				},
+				"gear_planner": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"message": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["title", "message"]
 				},
 				"unlaunched": {
 					"type": "object",
@@ -7968,6 +7984,9 @@
 					"type": "object",
 					"properties": {
 						"unlaunched": {
+							"type": "string"
+						},
+						"gear_planner": {
 							"type": "string"
 						},
 						"alpha": {

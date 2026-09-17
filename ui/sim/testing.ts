@@ -32,6 +32,7 @@ export const fakeHost = (parts: FakeHostParts = {}): IndividualSimHost<any> =>
 		player: {},
 		sim: {},
 		disabled: false,
+		simDisabled: false,
 		config: { className: '', cssScheme: '' },
 		individualConfig: {},
 		...parts,

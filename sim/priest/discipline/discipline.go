@@ -43,6 +43,10 @@ func newDisciplinePriest(character *core.Character, options *proto.Player) *Disc
 		Options: discOptions.Options,
 	}
 
+	// Meditation (95860): 50% of mana regeneration from Spirit continues in combat.
+	// Healing spells are not implemented; this spec is a gear planner only.
+	discPriest.NewSpecPassiveAura("Meditation", 95860).AttachAdditivePseudoStatBuff(&discPriest.PseudoStats.SpiritRegenRateCombat, 0.5)
+
 	discPriest.SelfBuffs.PowerInfusionTarget = &proto.UnitReference{}
 	// TODO: Fix this to work with the new talent system.
 	// if discPriest.Talents.PowerInfusion && discPriest.Options.PowerInfusionTarget != nil {

@@ -46,6 +46,7 @@ import {
 	STAT_WEIGHT_SETTINGS_STORAGE_KEY,
 } from '@sim/state/storage_keys';
 import { subscribeAll, subscribeReforgeChange, subscribeSimChange } from '@sim/state/subscriptions';
+import { getEnumValues } from '@sim/utils/collections';
 import { isDevMode } from '@sim/utils/env';
 import { WorkerProgressCallback } from '@sim/workers/worker_pool';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
@@ -68,11 +69,14 @@ export type {
 	SpecDefinition,
 } from '@sim/spec_config';
 export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@sim/spec_config';
+const ALL_SETTING_CATEGORIES = getEnumValues<SimSettingCategories>(SimSettingCategories);
+
 // The individual sim's host: the registries, openers and cross-cutting actions the React tree
 // reaches through `useSimHost()`. `SimShell` owns every element handed to the constructor.
 export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<SpecType> {
 	readonly sim: Sim;
 	readonly disabled: boolean;
+	readonly simDisabled: boolean;
 	readonly rootElem: HTMLElement;
 
 	readonly resultsPanel = new ResultsPanelStore();
@@ -106,7 +110,9 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	constructor(dom: ShellDom, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
 		this.rootElem = dom.root;
 		this.sim = player.sim;
-		this.disabled = !isDevMode() && player.getPlayerSpec().launch.status === LaunchStatus.Unlaunched;
+		const launchStatus = player.getPlayerSpec().launch.status;
+		this.disabled = !isDevMode() && launchStatus === LaunchStatus.Unlaunched;
+		this.simDisabled = this.disabled || launchStatus === LaunchStatus.GearPlanner;
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
@@ -131,7 +137,8 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 			registerSetBonusNotices(this.sim.db);
 			this.loadSettings();
 
-			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {
+			// Gear planners never simulate, so the healing-sim disclaimer does not apply to them.
+			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode() && !this.simDisabled) {
 				alert(i18n.t('sim.healing_sim_disclaimer'));
 			}
 		});
@@ -291,7 +298,13 @@ export class SimHostObject<SpecType extends Spec> implements IndividualSimHost<S
 	}
 
 	fromProto(settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {
-		applyIndividualSimSettings(this.serializationContext(), settings, includeCategories);
+		// A gear planner hides the encounter settings, so the default target applied by `applyDefaults`
+		// stays whatever the saved settings or the link carried: stats and the reforge optimizer always
+		// have a full environment to build, without a second ComputeStats to put it back.
+		const categories = this.simDisabled
+			? (includeCategories?.length ? includeCategories : ALL_SETTING_CATEGORIES).filter(category => category !== SimSettingCategories.Encounter)
+			: includeCategories;
+		applyIndividualSimSettings(this.serializationContext(), settings, categories);
 	}
 
 	getSavedGearStorageKey(): string {

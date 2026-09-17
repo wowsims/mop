@@ -62,8 +62,8 @@ export class MistweaverMonk extends PlayerSpec<Spec.SpecMistweaverMonk> {
 	static canDualWield = false;
 
 	static launch: SimStatus = {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Unlaunched,
+		phase: Phase.Phase5,
+		status: LaunchStatus.GearPlanner,
 	};
 
 	readonly specIndex = MistweaverMonk.specIndex;

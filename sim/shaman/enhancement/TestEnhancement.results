@@ -103,8 +103,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 220492.47543
-  tps: 187113.63719
+  dps: 220296.99546
+  tps: 186933.2257
  }
 }
 dps_results: {
@@ -124,8 +124,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-BraidofTenSongs-84072"
  value: {
-  dps: 215625.0198
-  tps: 183067.69546
+  dps: 215104.82587
+  tps: 182542.99349
  }
 }
 dps_results: {
@@ -201,8 +201,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 215586.20858
-  tps: 183023.22976
+  dps: 216077.14947
+  tps: 183395.75449
  }
 }
 dps_results: {
@@ -566,14 +566,14 @@ dps_results: {
  key: "TestEnhancement-AllItems-EmberPrimalDiamond"
  value: {
   dps: 220693.95115
-  tps: 183957.08015
+  tps: 183958.8429
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-EmblemofKypariZar-84077"
  value: {
-  dps: 215457.15241
-  tps: 182871.99227
+  dps: 215591.23737
+  tps: 182743.39057
  }
 }
 dps_results: {
@@ -677,15 +677,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-FearwurmBadge-84074"
  value: {
-  dps: 217037.81216
-  tps: 184357.75844
+  dps: 218202.61975
+  tps: 185262.00978
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-FearwurmRelic-84070"
  value: {
-  dps: 214594.11995
-  tps: 182177.33295
+  dps: 214855.25876
+  tps: 182431.9293
  }
 }
 dps_results: {
@@ -705,8 +705,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 244477.3224
-  tps: 207574.00602
+  dps: 243361.9988
+  tps: 206582.00204
  }
 }
 dps_results: {
@@ -775,15 +775,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Gladiator'sEarthshaker"
  value: {
-  dps: 204815.65364
-  tps: 171710.63186
+  dps: 205317.77501
+  tps: 172180.32316
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 232894.91627
-  tps: 197990.07176
+  dps: 235258.63131
+  tps: 199723.96889
  }
 }
 dps_results: {
@@ -859,8 +859,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Hawkmaster'sTalon-89082"
  value: {
-  dps: 221512.65893
-  tps: 187583.17208
+  dps: 222095.16278
+  tps: 188090.79858
  }
 }
 dps_results: {
@@ -950,8 +950,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-IronBellyWok-89083"
  value: {
-  dps: 218709.68977
-  tps: 185547.59749
+  dps: 217985.49241
+  tps: 184944.78546
  }
 }
 dps_results: {
@@ -1399,15 +1399,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 221510.57802
-  tps: 189071.6318
+  dps: 221490.24844
+  tps: 189041.73254
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 222529.47938
-  tps: 189904.80376
+  dps: 222700.08174
+  tps: 190084.66913
  }
 }
 dps_results: {
@@ -1434,8 +1434,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-RegaliaoftheFirebird"
  value: {
-  dps: 140302.77021
-  tps: 119471.26375
+  dps: 140413.45223
+  tps: 119689.19924
  }
 }
 dps_results: {
@@ -1840,8 +1840,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 231914.54505
-  tps: 196223.60149
+  dps: 231934.60211
+  tps: 196230.20016
  }
 }
 dps_results: {
@@ -1861,8 +1861,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Time-LostArtifact-103678"
  value: {
-  dps: 219296.14507
-  tps: 186122.3259
+  dps: 219939.5865
+  tps: 186750.34244
  }
 }
 dps_results: {
@@ -2029,8 +2029,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 228457.43907
-  tps: 193537.4955
+  dps: 228625.54108
+  tps: 194223.67298
  }
 }
 dps_results: {

@@ -194,6 +194,7 @@ export const specI18nKeys: Record<Spec, string> = {
 
 export const statusI18nKeys: Record<LaunchStatus, string> = {
 	[LaunchStatus.Unlaunched]: 'unlaunched',
+	[LaunchStatus.GearPlanner]: 'gear_planner',
 	[LaunchStatus.Alpha]: 'alpha',
 	[LaunchStatus.Beta]: 'beta',
 	[LaunchStatus.Launched]: 'launched',

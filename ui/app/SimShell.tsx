@@ -87,7 +87,8 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 									ref={sidebarActions}
 									className="ui-sim-sidebar-actions -mx-6 flex flex-col items-center gap-3 px-page *:mb-0 max-xxl:mx-0 max-xxl:p-0"
 									data-testid="sim-sidebar-actions">
-									<IterationsPicker sim={sim} />
+									{/* Nothing to iterate on a sim that never runs. */}
+									{!host?.simDisabled && <IterationsPicker sim={sim} />}
 									{host && <SimSidebarActions host={host} />}
 								</div>
 								<div className="flex items-center justify-center" data-testid="sim-sidebar-results">

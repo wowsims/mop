@@ -18,9 +18,11 @@ export interface ConsumesPickerProps {
 	conjuredOptions: ReadonlyArray<ConsumableStatOption<number>>;
 	explosiveOptions: ReadonlyArray<ConsumableStatOption<number>>;
 	petInputs: ReadonlyArray<IconInputConfig<Player<any>, any>>;
+	// Potions and explosives only matter inside an encounter; a gear planner never runs one and passes false.
+	encounterConsumes?: boolean;
 }
 
-export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOptions, petInputs }: ConsumesPickerProps) => {
+export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOptions, petInputs, encounterConsumes = true }: ConsumesPickerProps) => {
 	const player = usePlayer() as Player<any>;
 	const configs = useMemo(
 		() => consumeConfigs(player, Database.getSync(), consumableStats, conjuredOptions, explosiveOptions),
@@ -29,13 +31,15 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 
 	return (
 		<div className="grid gap-3 max-lg:grid-cols-3 max-md:grid-cols-1">
-			<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
-				<PickerGroup variant="icons" className="justify-end" data-testid="consumes-potions">
-					<IconEnumPicker modObject={player} config={configs.prepot} />
-					<IconEnumPicker modObject={player} config={configs.potion} />
-					<IconEnumPicker modObject={player} config={configs.conjured} />
-				</PickerGroup>
-			</ConsumeRow>
+			{encounterConsumes && (
+				<ConsumeRow name="potions" configs={[configs.potion, configs.conjured, configs.prepot]}>
+					<PickerGroup variant="icons" className="justify-end" data-testid="consumes-potions">
+						<IconEnumPicker modObject={player} config={configs.prepot} />
+						<IconEnumPicker modObject={player} config={configs.potion} />
+						<IconEnumPicker modObject={player} config={configs.conjured} />
+					</PickerGroup>
+				</ConsumeRow>
+			)}
 			<ConsumeRow name="elixirs">
 				<PickerGroup variant="icons" className="justify-end">
 					<div data-testid="consumes-flasks">
@@ -55,11 +59,13 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<IconEnumPicker modObject={player} config={configs.food} />
 				</PickerGroup>
 			</ConsumeRow>
-			<ConsumeRow name="engineering" configs={[configs.explosive]}>
-				<PickerGroup variant="icons" className="justify-end" data-testid="consumes-engi">
-					<IconEnumPicker modObject={player} config={configs.explosive} />
-				</PickerGroup>
-			</ConsumeRow>
+			{encounterConsumes && (
+				<ConsumeRow name="engineering" configs={[configs.explosive]}>
+					<PickerGroup variant="icons" className="justify-end" data-testid="consumes-engi">
+						<IconEnumPicker modObject={player} config={configs.explosive} />
+					</PickerGroup>
+				</ConsumeRow>
+			)}
 			{petInputs.length > 0 && (
 				<ConsumeRow name="pet">
 					<PickerGroup variant="icons" className="justify-end">
