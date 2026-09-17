@@ -1,5 +1,5 @@
 import { Field } from '@base-ui/react/field';
-import type { AnyInputConfig } from '@ui-kit/input';
+import type { AnyInputConfig, PickerLayout } from '@ui-kit/input';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { isValidElement, type ReactNode, type Ref, useMemo } from 'react';
@@ -17,7 +17,7 @@ export interface PickerShellProps<ModObject, T, V> {
 	children?: ReactNode;
 	ref?: Ref<HTMLDivElement>;
 	testId?: string;
-	inline?: boolean;
+	layout?: PickerLayout;
 	iconField?: boolean;
 }
 
@@ -30,7 +30,7 @@ export const PickerShell = <ModObject, T, V>({
 	children,
 	ref,
 	testId,
-	inline: inlineProp,
+	layout: layoutProp,
 	iconField: iconFieldProp,
 }: PickerShellProps<ModObject, T, V>) => {
 	const tooltip = config.labelTooltip;
@@ -46,7 +46,7 @@ export const PickerShell = <ModObject, T, V>({
 
 	if (hidden) return null;
 
-	const inline = inlineProp || config.inline;
+	const layout = layoutProp ?? config.layout ?? (config.inline ? 'inline' : undefined);
 	const iconField = iconFieldProp ?? !!className?.includes('ui-icon-field');
 
 	return (
@@ -54,14 +54,14 @@ export const PickerShell = <ModObject, T, V>({
 			ref={ref}
 			disabled={disabled}
 			data-disabled={disabled ? '' : undefined}
-			data-layout={inline ? 'inline' : undefined}
+			data-layout={layout}
 			data-testid={testId ?? 'input-root'}
 			data-input-root=""
 			className={dedupe(
 				clsx(
 					config.description && 'flex-wrap',
 					'ui-field',
-					!inline && !iconField && 'max-md:flex-col max-md:items-start',
+					!layout && !iconField && 'max-md:flex-col max-md:items-start',
 					className,
 					config.extraClassNames,
 				),

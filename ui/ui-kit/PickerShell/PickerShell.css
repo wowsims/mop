@@ -16,7 +16,8 @@
 			}
 		}
 
-		&[data-layout='inline'] {
+		&[data-layout='inline'],
+		&[data-layout='split'] {
 			@apply flex-row items-center justify-between;
 
 			label {
@@ -26,6 +27,18 @@
 			input,
 			select {
 				@apply w-20;
+			}
+		}
+
+		&[data-layout='split'] {
+			label {
+				@apply w-3/5 pr-2;
+			}
+
+			input,
+			select,
+			.ui-picker-group {
+				@apply min-w-2/5;
 			}
 		}
 	}
