@@ -129,8 +129,15 @@ type GarajalAI struct {
 func (ai *GarajalAI) Initialize(target *core.Target, config *proto.Target) {
 	// Save unit references
 	ai.Target = target
-	ai.BossUnit = target.Env.Encounter.AllTargetUnits[0]
-	ai.AddUnits = target.Env.Encounter.AllTargetUnits[1:]
+	ai.AddUnits = garajalUnits(target.Env, false)
+	ai.BossUnit = &target.Unit
+
+	if !ai.isBoss {
+		if bossUnits := garajalUnits(target.Env, true); len(bossUnits) > 0 {
+			ai.BossUnit = bossUnits[0]
+		}
+	}
+
 	ai.TankUnit = ai.BossUnit.CurrentTarget
 
 	// Save user input parameters
@@ -145,6 +152,22 @@ func (ai *GarajalAI) Initialize(target *core.Target, config *proto.Target) {
 	ai.registerShadowBolt()
 	ai.registerSpiritualGrasp()
 	ai.registerFrenzy()
+}
+
+// garajalUnits returns the units in the encounter that were built from the Gara'jal boss
+// preset, or from the Severer of Souls add preset. Targets can be copied and deleted in
+// the encounter modal, so the boss and its adds have to be identified by the preset AI
+// each target was given rather than by their position in the target list.
+func garajalUnits(env *core.Environment, isBoss bool) []*core.Unit {
+	var units []*core.Unit
+
+	for _, target := range env.Encounter.AllTargets {
+		if otherAI, isGarajal := target.AI.(*GarajalAI); isGarajal && (otherAI.isBoss == isBoss) {
+			units = append(units, &target.Unit)
+		}
+	}
+
+	return units
 }
 
 func (ai *GarajalAI) registerShadowyAttacks() {
@@ -199,7 +222,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	const banishmentDuration = time.Second * 15
 
 	ai.BanishmentAura = ai.TankUnit.RegisterAura(core.Aura{
-		Label:    "Banishment",
+		Label:    "Banishment " + ai.Target.Label,
 		ActionID: core.ActionID{SpellID: 116272},
 		Duration: banishmentDuration,
 
@@ -209,7 +232,12 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			}
 
 			sim.DisableTargetUnit(ai.BossUnit, false)
-			ai.TankUnit.CurrentTarget = ai.AddUnits[0]
+
+			// The add can be deleted from the encounter, in which case there is
+			// nothing downstairs for the tank to swap onto.
+			if len(ai.AddUnits) > 0 {
+				ai.TankUnit.CurrentTarget = ai.AddUnits[0]
+			}
 		},
 
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
@@ -229,7 +257,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	var lastTaunt time.Duration
 
 	ai.VoodooDollsAura = ai.TankUnit.RegisterAura(core.Aura{
-		Label:    "Voodoo Dolls",
+		Label:    "Voodoo Dolls " + ai.Target.Label,
 		ActionID: core.ActionID{SpellID: 116000},
 		Duration: voodooDollsDuration,
 

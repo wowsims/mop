@@ -127,17 +127,43 @@ func (ai *DynamicAddsAI) Initialize(target *core.Target, config *proto.Target) {
 	ai.Target = target
 	ai.Target.AutoAttacks.MHConfig().ActionID.Tag = core.TernaryInt32(ai.isBoss, dynamicBossID, dynamicAddID)
 
-	ai.BossUnit = target.Env.Encounter.AllTargetUnits[0]
-	ai.AddUnits = target.Env.Encounter.AllTargetUnits[1:]
+	ai.AddUnits = dynamicAddsUnits(target.Env, false)
+	ai.BossUnit = &target.Unit
+
+	if !ai.isBoss {
+		if bossUnits := dynamicAddsUnits(target.Env, true); len(bossUnits) > 0 {
+			ai.BossUnit = bossUnits[0]
+		}
+	}
 
 	ai.MainTank = ai.BossUnit.CurrentTarget
-	ai.OffTank = ai.AddUnits[0].CurrentTarget
+
+	// The add can be deleted from the encounter, leaving the boss with nothing to spawn.
+	if len(ai.AddUnits) > 0 {
+		ai.OffTank = ai.AddUnits[0].CurrentTarget
+	}
 
 	if ai.isBoss && len(config.TargetInputs) >= 3 {
 		ai.addLifetime = core.DurationFromSeconds(config.TargetInputs[1].NumberValue)
 		ai.respawnTime = core.DurationFromSeconds(config.TargetInputs[0].NumberValue)
 		ai.spawnDelay = core.DurationFromSeconds(config.TargetInputs[2].NumberValue)
 	}
+}
+
+// dynamicAddsUnits returns the units in the encounter that were built from the dynamic
+// boss preset, or from the dynamic add preset. Targets can be copied and deleted in the
+// encounter modal, so the boss and its adds have to be identified by the preset AI each
+// target was given rather than by their position in the target list.
+func dynamicAddsUnits(env *core.Environment, isBoss bool) []*core.Unit {
+	var units []*core.Unit
+
+	for _, target := range env.Encounter.AllTargets {
+		if otherAI, isDynamic := target.AI.(*DynamicAddsAI); isDynamic && (otherAI.isBoss == isBoss) {
+			units = append(units, &target.Unit)
+		}
+	}
+
+	return units
 }
 
 func (ai *DynamicAddsAI) Reset(sim *core.Simulation) {
