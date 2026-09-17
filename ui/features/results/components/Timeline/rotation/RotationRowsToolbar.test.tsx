@@ -36,7 +36,7 @@ const mount = (hidden: Array<string> = []) => {
 	return { ...view, onToggle, onShowAll, toggle: view.container.querySelector<HTMLButtonElement>('[data-testid="rotation-floating-action-bar-toggle"]')! };
 };
 
-const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[data-testid="rotation-fab-chip"]')];
+const chips = (container: HTMLElement) => [...container.querySelectorAll<HTMLButtonElement>('[data-testid="rotation-floating-action-bar-chip"]')];
 const panel = () => document.querySelector<HTMLElement>('[data-testid="rotation-floating-action-bar-panel-inner"]');
 
 describe('RotationRowsToolbar', () => {
@@ -46,7 +46,7 @@ describe('RotationRowsToolbar', () => {
 
 		fireEvent.click(toggle);
 		expect(chips(document.body).map(chip => chip.textContent)).toEqual(['Alpha', 'Beta', 'Gamma', 'Delta']);
-		expect(document.querySelector('[data-testid="rotation-fab-group-title"]')!.textContent).toBe('Player');
+		expect(document.querySelector('[data-testid="rotation-floating-action-bar-group-title"]')!.textContent).toBe('Player');
 	});
 
 	it('keeps the drawer open across a new result and rebuilds its chips', () => {

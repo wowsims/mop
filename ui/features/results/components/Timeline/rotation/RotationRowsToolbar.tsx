@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import type { ContentRow, RotationModel, Section } from '../../../model/timeline/rotation';
 import { rowAt } from '../../../model/timeline/rotation';
 import { FloatingActionBar } from '../../FloatingActionBar';
-import { RotationFabGroup } from './RotationFabGroup';
+import { RotationFloatingActionBarGroup } from './RotationFloatingActionBarGroup';
 
 export interface RotationRowsToolbarProps {
 	model: RotationModel | null;
@@ -75,7 +75,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			}}>
 			<div className="ui-floating-action-bar-drawer flex flex-col gap-4">
 				{groups.map(group => (
-					<RotationFabGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
+					<RotationFloatingActionBarGroup key={group.id} title={group.title} rows={group.rows} hidden={hidden} onToggle={onToggle} />
 				))}
 			</div>
 		</FloatingActionBar>

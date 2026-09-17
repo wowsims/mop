@@ -1,6 +1,6 @@
 import { Chip } from '@ui-kit/Chip';
 
-export interface RotationFabChipProps {
+export interface RotationFloatingActionBarChipProps {
 	label: string;
 	shown: boolean;
 	/** One chip per group is in the tab order; the arrow keys move it. */
@@ -9,11 +9,11 @@ export interface RotationFabChipProps {
 	onFocus: () => void;
 }
 
-export const RotationFabChip = ({ label, shown, focused, onToggle, onFocus }: RotationFabChipProps) => (
+export const RotationFloatingActionBarChip = ({ label, shown, focused, onToggle, onFocus }: RotationFloatingActionBarChipProps) => (
 	<Chip
 		as="button"
 		nameAs="span"
-		testId="rotation-fab-chip"
+		testId="rotation-floating-action-bar-chip"
 		label={label}
 		active={shown}
 		rootProps={{
