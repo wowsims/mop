@@ -15,14 +15,9 @@ const SURFACE_CLASSES = {
 	none: '',
 } as const;
 
-export interface MenuProps {
+interface MenuSharedProps {
 	trigger?: ReactNode;
-	triggerRender?: ReactElement;
 	triggerProps?: Record<string, unknown>;
-	submenu?: boolean;
-	open?: boolean;
-	onOpenChange?: (open: boolean) => void;
-	modal?: boolean;
 	surface: 'menu' | 'plain' | 'none';
 	anchorWidth?: boolean;
 	side?: BaseMenu.Positioner.Props['side'];
@@ -40,6 +35,26 @@ export interface MenuProps {
 	popupProps?: Record<string, unknown>;
 	children: ReactNode;
 }
+
+interface MenuRootProps extends MenuSharedProps {
+	submenu?: false;
+	triggerRender?: ReactElement;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+	modal?: boolean;
+}
+
+// A submenu's open state belongs to the menu tree, so the root's controlled-open props are not its
+// to take, and its row element is the caller's rather than a default nothing forces it to supply.
+interface MenuSubmenuProps extends MenuSharedProps {
+	submenu: true;
+	triggerRender: ReactElement;
+	open?: never;
+	onOpenChange?: never;
+	modal?: never;
+}
+
+export type MenuProps = MenuRootProps | MenuSubmenuProps;
 
 export const Menu = ({
 	trigger,
@@ -92,7 +107,9 @@ export const Menu = ({
 		return (
 			<BaseMenu.SubmenuRoot>
 				<li role="none">
-					{trigger}
+					<BaseMenu.SubmenuTrigger render={triggerRender} {...triggerProps}>
+						{trigger}
+					</BaseMenu.SubmenuTrigger>
 					{popup}
 				</li>
 			</BaseMenu.SubmenuRoot>

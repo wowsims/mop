@@ -1,5 +1,5 @@
 import { Menu as BaseMenu } from '@base-ui/react/menu';
-import { Menu, MenuItem } from '@ui-kit/Menu';
+import { Menu } from '@ui-kit/Menu';
 import { tooltipAnchorProps } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 
@@ -45,23 +45,22 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 					side="right"
 					positionerProps={{ 'data-testid': 'dropdown-picker-positioner' }}
 					popupProps={{ 'data-testid': 'dropdown-submenu' }}
+					triggerRender={<button type="button" />}
+					triggerProps={{
+						onClick: entry.trigger ? () => onSelect(entry.trigger!.index) : undefined,
+						className: clsx('ui-menu-item', 'ui-menu-item-row', entry.trigger?.option.className),
+						'data-testid': 'dropdown-item',
+						...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip),
+					}}
 					trigger={
-						<MenuItem
-							submenu
-							layout="row"
-							className={clsx(entry.trigger?.option.className)}
-							onClick={entry.trigger ? () => onSelect(entry.trigger!.index) : undefined}
-							data-testid="dropdown-item"
-							{...tooltipAnchorProps(entry.trigger?.option.tooltip === undefined ? undefined : tooltipId, entry.trigger?.option.tooltip)}>
-							{entry.trigger ? (
-								<>
-									{entry.trigger.option.icon}
-									{entry.trigger.option.label}
-								</>
-							) : (
-								entry.label
-							)}
-						</MenuItem>
+						entry.trigger ? (
+							<>
+								{entry.trigger.option.icon}
+								{entry.trigger.option.label}
+							</>
+						) : (
+							entry.label
+						)
 					}>
 					<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
 				</Menu>

@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Menu } from './Menu';
@@ -58,5 +58,42 @@ describe('MenuItem', () => {
 		);
 		fireEvent.click(getByText('Open'));
 		expect(getByText('Block item').className).toContain('ui-menu-item');
+	});
+});
+
+describe('Menu submenu', () => {
+	const mountSubmenu = () =>
+		render(
+			<Menu trigger="Open" surface="menu" triggerProps={{ 'data-testid': 'trigger' }} open>
+				<Menu
+					submenu
+					surface="menu"
+					trigger={<span>Sub</span>}
+					triggerRender={<button type="button" />}
+					triggerProps={{ className: 'ui-submenu-trigger-probe', 'data-testid': 'submenu-trigger' }}
+					popupProps={{ 'data-testid': 'submenu-popup' }}>
+					<MenuItem layout="row">Nested item</MenuItem>
+				</Menu>
+			</Menu>,
+		);
+
+	it('renders the trigger element the caller asked for, with its props', () => {
+		const { getByTestId } = mountSubmenu();
+
+		const trigger = getByTestId('submenu-trigger');
+		expect(trigger.tagName).toBe('BUTTON');
+		expect(trigger.getAttribute('role')).toBe('menuitem');
+		expect(trigger.getAttribute('aria-haspopup')).toBe('menu');
+		expect(trigger.className).toContain('ui-submenu-trigger-probe');
+		expect(trigger.textContent).toBe('Sub');
+	});
+
+	it('opens the submenu popup from that trigger', () => {
+		const { getByTestId, queryByTestId } = mountSubmenu();
+		expect(queryByTestId('submenu-popup')).toBeNull();
+
+		act(() => void fireEvent.click(getByTestId('submenu-trigger')));
+
+		expect(within(getByTestId('submenu-popup')).getByText('Nested item')).toBeTruthy();
 	});
 });
