@@ -1,5 +1,5 @@
 import { ItemSlot } from '@generated/proto/common';
-import { SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
+import { DatabaseFilters, SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { sourceFilterI18nKeys } from '@i18n/entity_mapping';
 import { translateArmorType, translateRaidFilter, translateRangedWeaponType, translateSourceFilter, translateWeaponType } from '@i18n/localization';
@@ -28,6 +28,47 @@ const SOURCES = [...Sim.ALL_SOURCES].sort((a, b) => sourceKeys.indexOf(a) - sour
 
 const storeSubscribe = (sim: Sim) => subscribeSimField(sim, 'filters');
 
+type FilterListField = { [K in keyof DatabaseFilters]: DatabaseFilters[K] extends Array<number> ? K : never }[keyof DatabaseFilters];
+type FilterNumberField = { [K in keyof DatabaseFilters]: DatabaseFilters[K] extends number ? K : never }[keyof DatabaseFilters];
+
+const SPEED_OPTIONS = { float: true, positive: true };
+
+const listFilterConfig = <K extends FilterListField>(field: K, value: DatabaseFilters[K][number], id: string, label: string) => ({
+	id,
+	label,
+	inline: true,
+	storeSubscribe,
+	getValue: (sim: Sim) => (sim.getFilters() as Record<FilterListField, Array<number>>)[field].includes(value),
+	setValue: (sim: Sim, newValue: boolean) => {
+		const filters = sim.getFilters();
+		const lists = filters as Record<FilterListField, Array<number>>;
+		if (newValue) {
+			lists[field].push(value);
+		} else {
+			lists[field] = lists[field].filter(v => v != value);
+		}
+		sim.setFilters(filters);
+	},
+});
+
+const numberFilterConfig = (
+	field: FilterNumberField,
+	id: string,
+	label: string,
+	options: { float?: boolean; positive?: boolean; showZeroes?: boolean } = {},
+) => ({
+	id,
+	label,
+	...options,
+	storeSubscribe,
+	getValue: (sim: Sim) => (sim.getFilters() as Record<FilterNumberField, number>)[field],
+	setValue: (sim: Sim, newValue: number) => {
+		const filters = sim.getFilters();
+		(filters as Record<FilterNumberField, number>)[field] = newValue;
+		sim.setFilters(filters);
+	},
+});
+
 export interface FiltersMenuProps {
 	slot: ItemSlot;
 	open: boolean;
@@ -48,28 +89,7 @@ const SourceSection = ({ sim }: { sim: Sim }) => (
 		{SOURCES.map(source => {
 			const label = translateSourceFilter(source);
 			if (!label) return null;
-			return (
-				<BooleanPicker<Sim>
-					key={source}
-					modObject={sim}
-					config={{
-						id: `filters-source-${source}`,
-						label,
-						inline: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().sources.includes(source),
-						setValue: (sim: Sim, newValue: boolean) => {
-							const filters = sim.getFilters();
-							if (newValue) {
-								filters.sources.push(source);
-							} else {
-								filters.sources = filters.sources.filter(v => v != source);
-							}
-							sim.setFilters(filters);
-						},
-					}}
-				/>
-			);
+			return <BooleanPicker<Sim> key={source} modObject={sim} config={listFilterConfig('sources', source, `filters-source-${source}`, label)} />;
 		})}
 	</MenuSection>
 );
@@ -84,22 +104,7 @@ const ArmorTypeSection = ({ player }: { player: Player<any> }) => {
 				<BooleanPicker<Sim>
 					key={armorType}
 					modObject={player.sim}
-					config={{
-						id: `filters-armor-type-${armorType}`,
-						label: translateArmorType(armorType),
-						inline: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().armorTypes.includes(armorType),
-						setValue: (sim: Sim, newValue: boolean) => {
-							const filters = sim.getFilters();
-							if (newValue) {
-								filters.armorTypes.push(armorType);
-							} else {
-								filters.armorTypes = filters.armorTypes.filter(at => at != armorType);
-							}
-							sim.setFilters(filters);
-						},
-					}}
+					config={listFilterConfig('armorTypes', armorType, `filters-armor-type-${armorType}`, translateArmorType(armorType))}
 				/>
 			))}
 		</MenuSection>
@@ -117,91 +122,38 @@ const WeaponSections = ({ player }: { player: Player<any> }) => {
 					<BooleanPicker<Sim>
 						key={weaponType}
 						modObject={player.sim}
-						config={{
-							id: `filters-weapon-type-${weaponType}`,
-							label: translateWeaponType(weaponType),
-							inline: true,
-							storeSubscribe,
-							getValue: (sim: Sim) => sim.getFilters().weaponTypes.includes(weaponType),
-							setValue: (sim: Sim, newValue: boolean) => {
-								const filters = sim.getFilters();
-								if (newValue) {
-									filters.weaponTypes.push(weaponType);
-								} else {
-									filters.weaponTypes = filters.weaponTypes.filter(at => at != weaponType);
-								}
-								sim.setFilters(filters);
-							},
-						}}
+						config={listFilterConfig('weaponTypes', weaponType, `filters-weapon-type-${weaponType}`, translateWeaponType(weaponType))}
 					/>
 				))}
 			</MenuSection>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.weapon_speed')} className="ui-filters-menu-section-number-list">
 				<NumberPicker<Sim>
 					modObject={player.sim}
-					config={{
-						id: 'filters-min-weapon-speed',
-						label: i18n.t('gear_tab.gear_picker.min_mh_speed'),
-						float: true,
-						positive: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().minMhWeaponSpeed,
-						setValue: (sim: Sim, newValue: number) => {
-							const filters = sim.getFilters();
-							filters.minMhWeaponSpeed = newValue;
-							sim.setFilters(filters);
-						},
-					}}
+					config={numberFilterConfig('minMhWeaponSpeed', 'filters-min-weapon-speed', i18n.t('gear_tab.gear_picker.min_mh_speed'), SPEED_OPTIONS)}
 				/>
 				<NumberPicker<Sim>
 					modObject={player.sim}
-					config={{
-						id: 'filters-max-weapon-speed',
-						label: i18n.t('gear_tab.gear_picker.max_mh_speed'),
-						float: true,
-						positive: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().maxMhWeaponSpeed,
-						setValue: (sim: Sim, newValue: number) => {
-							const filters = sim.getFilters();
-							filters.maxMhWeaponSpeed = newValue;
-							sim.setFilters(filters);
-						},
-					}}
+					config={numberFilterConfig('maxMhWeaponSpeed', 'filters-max-weapon-speed', i18n.t('gear_tab.gear_picker.max_mh_speed'), SPEED_OPTIONS)}
 				/>
 				{player.getPlayerSpec().canDualWield && (
 					<>
 						<NumberPicker<Sim>
 							modObject={player.sim}
-							config={{
-								id: 'filters-min-oh-weapon-speed',
-								label: i18n.t('gear_tab.gear_picker.min_oh_speed'),
-								float: true,
-								positive: true,
-								storeSubscribe,
-								getValue: (sim: Sim) => sim.getFilters().minOhWeaponSpeed,
-								setValue: (sim: Sim, newValue: number) => {
-									const filters = sim.getFilters();
-									filters.minOhWeaponSpeed = newValue;
-									sim.setFilters(filters);
-								},
-							}}
+							config={numberFilterConfig(
+								'minOhWeaponSpeed',
+								'filters-min-oh-weapon-speed',
+								i18n.t('gear_tab.gear_picker.min_oh_speed'),
+								SPEED_OPTIONS,
+							)}
 						/>
 						<NumberPicker<Sim>
 							modObject={player.sim}
-							config={{
-								id: 'filters-max-oh-weapon-speed',
-								label: i18n.t('gear_tab.gear_picker.max_oh_speed'),
-								float: true,
-								positive: true,
-								storeSubscribe,
-								getValue: (sim: Sim) => sim.getFilters().maxOhWeaponSpeed,
-								setValue: (sim: Sim, newValue: number) => {
-									const filters = sim.getFilters();
-									filters.maxOhWeaponSpeed = newValue;
-									sim.setFilters(filters);
-								},
-							}}
+							config={numberFilterConfig(
+								'maxOhWeaponSpeed',
+								'filters-max-oh-weapon-speed',
+								i18n.t('gear_tab.gear_picker.max_oh_speed'),
+								SPEED_OPTIONS,
+							)}
 						/>
 					</>
 				)}
@@ -221,57 +173,33 @@ const RangedWeaponSections = ({ player }: { player: Player<any> }) => {
 					<BooleanPicker<Sim>
 						key={rangedWeaponType}
 						modObject={player.sim}
-						config={{
-							id: `filter-ranged-weapon-type-${rangedWeaponType}`,
-							label: translateRangedWeaponType(rangedWeaponType),
-							inline: true,
-							storeSubscribe,
-							getValue: (sim: Sim) => sim.getFilters().rangedWeaponTypes.includes(rangedWeaponType),
-							setValue: (sim: Sim, newValue: boolean) => {
-								const filters = sim.getFilters();
-								if (newValue) {
-									filters.rangedWeaponTypes.push(rangedWeaponType);
-								} else {
-									filters.rangedWeaponTypes = filters.rangedWeaponTypes.filter(at => at != rangedWeaponType);
-								}
-								sim.setFilters(filters);
-							},
-						}}
+						config={listFilterConfig(
+							'rangedWeaponTypes',
+							rangedWeaponType,
+							`filter-ranged-weapon-type-${rangedWeaponType}`,
+							translateRangedWeaponType(rangedWeaponType),
+						)}
 					/>
 				))}
 			</MenuSection>
 			<MenuSection name={i18n.t('gear_tab.gear_picker.ranged_weapon_speed')} className="ui-filters-menu-section-number-list">
 				<NumberPicker<Sim>
 					modObject={player.sim}
-					config={{
-						id: 'filters-min-ranged-weapon-speed',
-						label: i18n.t('gear_tab.gear_picker.min_ranged_speed'),
-						float: true,
-						positive: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().minRangedWeaponSpeed,
-						setValue: (sim: Sim, newValue: number) => {
-							const filters = sim.getFilters();
-							filters.minRangedWeaponSpeed = newValue;
-							sim.setFilters(filters);
-						},
-					}}
+					config={numberFilterConfig(
+						'minRangedWeaponSpeed',
+						'filters-min-ranged-weapon-speed',
+						i18n.t('gear_tab.gear_picker.min_ranged_speed'),
+						SPEED_OPTIONS,
+					)}
 				/>
 				<NumberPicker<Sim>
 					modObject={player.sim}
-					config={{
-						id: 'filters-max-ranged-weapon-speed',
-						label: i18n.t('gear_tab.gear_picker.max_ranged_speed'),
-						float: true,
-						positive: true,
-						storeSubscribe,
-						getValue: (sim: Sim) => sim.getFilters().maxRangedWeaponSpeed,
-						setValue: (sim: Sim, newValue: number) => {
-							const filters = sim.getFilters();
-							filters.maxRangedWeaponSpeed = newValue;
-							sim.setFilters(filters);
-						},
-					}}
+					config={numberFilterConfig(
+						'maxRangedWeaponSpeed',
+						'filters-max-ranged-weapon-speed',
+						i18n.t('gear_tab.gear_picker.max_ranged_speed'),
+						SPEED_OPTIONS,
+					)}
 				/>
 			</MenuSection>
 		</>
@@ -296,34 +224,12 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 				<div className="grid grid-cols-split gap-x-(--modal-padding)">
 					<NumberPicker<Sim>
 						modObject={sim}
-						config={{
-							id: 'filters-min-ilvl',
-							label: i18n.t('gear_tab.gear_picker.filters.min_ilvl'),
-							showZeroes: false,
-							storeSubscribe,
-							getValue: (sim: Sim) => sim.getFilters().minIlvl,
-							setValue: (sim: Sim, newValue: number) => {
-								const newFilters = sim.getFilters();
-								newFilters.minIlvl = newValue;
-								sim.setFilters(newFilters);
-							},
-						}}
+						config={numberFilterConfig('minIlvl', 'filters-min-ilvl', i18n.t('gear_tab.gear_picker.filters.min_ilvl'), { showZeroes: false })}
 					/>
 					<span className="flex justify-center self-end py-1.5">-</span>
 					<NumberPicker<Sim>
 						modObject={sim}
-						config={{
-							id: 'filters-max-ilvl',
-							label: i18n.t('gear_tab.gear_picker.filters.max_ilvl'),
-							showZeroes: false,
-							storeSubscribe,
-							getValue: (sim: Sim) => sim.getFilters().maxIlvl,
-							setValue: (sim: Sim, newValue: number) => {
-								const newFilters = sim.getFilters();
-								newFilters.maxIlvl = newValue;
-								sim.setFilters(newFilters);
-							},
-						}}
+						config={numberFilterConfig('maxIlvl', 'filters-max-ilvl', i18n.t('gear_tab.gear_picker.filters.max_ilvl'), { showZeroes: false })}
 					/>
 				</div>
 				<EnumPicker<Sim>
@@ -350,22 +256,7 @@ export const FiltersMenu = ({ slot, open, onOpenChange }: FiltersMenuProps) => {
 					<BooleanPicker<Sim>
 						key={raid}
 						modObject={sim}
-						config={{
-							id: `filters-raid-${raid}`,
-							label: translateRaidFilter(raid),
-							inline: true,
-							storeSubscribe,
-							getValue: (sim: Sim) => sim.getFilters().raids.includes(raid),
-							setValue: (sim: Sim, newValue: boolean) => {
-								const filters = sim.getFilters();
-								if (newValue) {
-									filters.raids.push(raid);
-								} else {
-									filters.raids = filters.raids.filter(v => v != raid);
-								}
-								sim.setFilters(filters);
-							},
-						}}
+						config={listFilterConfig('raids', raid, `filters-raid-${raid}`, translateRaidFilter(raid))}
 					/>
 				))}
 			</MenuSection>
