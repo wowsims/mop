@@ -62,7 +62,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 							</Menu.SubmenuTrigger>
 							<Menu.Portal container={portalContainer ?? undefined}>
 								<Menu.Positioner align="start" side="right" className="ui-menu-positioner" data-testid="dropdown-picker-positioner">
-									<Menu.Popup render={<ul />} className="ui-menu" data-testid="dropdown-submenu">
+									<Menu.Popup render={<ul />} className="ui-menu m-0 list-none p-0" data-testid="dropdown-submenu">
 										<DropdownMenuItems entries={entry.entries} tooltipId={tooltipId} onSelect={onSelect} />
 									</Menu.Popup>
 								</Menu.Positioner>
