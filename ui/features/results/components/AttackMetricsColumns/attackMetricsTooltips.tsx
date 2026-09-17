@@ -87,7 +87,7 @@ const missGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => ({
 	],
 });
 
-export const threatGroup = (metric: ActionMetrics, value: number): MetricsCombinedTooltipGroup => ({
+const threatGroup = (metric: ActionMetrics, value: number): MetricsCombinedTooltipGroup => ({
 	spellSchool: metric.spellSchool,
 	totalPercentage: 100,
 	data: [{ name: i18n.t('results_tab.details.attack_types.threat'), value, percentage: 100 }],
