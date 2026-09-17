@@ -27,7 +27,7 @@ export const LogToolbar = ({ groups, suggestions, onChange, children }: LogToolb
 		<FloatingActionBar
 			testIdPrefix="log"
 			rootClassName="ui-log-floating-action-bar"
-			sheetClassName="ui-floating-action-bar-sheet ui-log-floating-action-bar-sheet"
+			sheetClassName="ui-log-floating-action-bar-sheet"
 			toolbarClassName="gap-2"
 			toggleLabel={i18n.t('results_tab.details.logs.floatingActionBar.toggle')}
 			icon={<Icon name="filter" />}

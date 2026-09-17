@@ -56,7 +56,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 		<FloatingActionBar
 			testIdPrefix="rotation"
 			rootClassName="ui-rotation-floating-action-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
-			sheetClassName="ui-floating-action-bar-sheet ui-rotation-floating-action-bar-sheet"
+			sheetClassName="ui-rotation-floating-action-bar-sheet"
 			toggleLabel={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
 			icon={<Icon name="eye-slash" />}
 			summary={

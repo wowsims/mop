@@ -18,6 +18,7 @@ export interface FloatingActionBarProps {
 	/** Builds the bar's test ids: `<prefix>-floating-action-bar-root`, `<prefix>-floating-action-bar-toggle` and the rest. */
 	testIdPrefix: string;
 	rootClassName: string;
+	/** The bar's own anchor class; the shared sheet class is applied here. */
 	sheetClassName: string;
 	/** Slotted mid-list, so the bar's own utilities keep the order they are written in today. */
 	toolbarClassName?: string;
@@ -62,7 +63,7 @@ export const FloatingActionBar = ({
 					onOpenChange={setExpanded}
 					modal={false}
 					ignoreOutsidePress={event => !!rootRef.current?.contains(event.target as Node)}
-					className={sheetClassName}
+					className={clsx('ui-floating-action-bar-sheet', sheetClassName)}
 					testId={`${testIdPrefix}-floating-action-bar-panel-inner`}
 					trigger={
 						<ToolbarButton
