@@ -23,7 +23,7 @@ func TestRestorationDruid(t *testing.T) {
 			&proto.Player{
 				Class:         proto.Class_ClassDruid,
 				Race:          proto.Race_RaceTauren,
-				Equipment:     core.GetGearSet("../../../ui/druid/restoration/gear_sets", gearSet).GearSet,
+				Equipment:     core.GetGearSet("../../../ui/specs/druid/restoration/gear_sets", gearSet).GearSet,
 				Consumables:   FullConsumes,
 				Buffs:         core.FullIndividualBuffs,
 				TalentsString: StandardTalents,

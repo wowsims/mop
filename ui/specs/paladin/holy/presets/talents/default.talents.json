@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "121312",
+	"glyphs": {
+		"major1": "GlyphOfHandOfSacrifice",
+		"major2": "GlyphOfDivinity",
+		"major3": "GlyphOfBeaconOfLight",
+		"minor1": "GlyphOfTheRighteousRetreat",
+		"minor2": "GlyphOfBladedJudgment",
+		"minor3": "GlyphOfWingedVengeance"
+	}
+}

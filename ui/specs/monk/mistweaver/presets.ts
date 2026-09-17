@@ -1,43 +1,47 @@
 import * as PresetUtils from '@app/preset_utils';
 import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
-import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@generated/proto/monk';
+import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph } from '@generated/proto/monk';
 import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 
-import DefaultGear from './gear_sets/default.gear.json';
-import DefaultEpJson from './presets/ep/default.ep.json';
+import P5Gear from './gear_sets/p5.gear.json';
+import PreraidGear from './gear_sets/preraid.gear.json';
+import QELiveEpJson from './presets/ep/qe_live.ep.json';
 import DefaultTalentsJson from './presets/talents/default.talents.json';
 
-// Preset options for this spec.
-// Eventually we will import these values for the raid sim too, so its good to
-// keep them in a separate file.
+export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Default', DefaultGear);
-
-// Preset options for EP weights
-export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Monk/MistweaverMonkClassic.js
+// QE Live has no hit weight: its profile takes hit from Spirit alone. Hit rating only matters for the
+// Eminence healing a fistweaver gets from landing attacks, so it sits below crit and below twice
+// Spirit's own weight, which keeps a Spirit reforge ahead of a Hit reforge on the way to the 15% cap.
+// QE weights haste at 0.3 and reforges to a Renewing Mist tick breakpoint separately. Haste sits
+// just above crit here so the reforge optimizer reaches that breakpoint too; past the threshold it
+// falls back to QE's 0.3 (see the haste threshold in spec.ts).
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(QELiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-
-export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph });
 
 export const DefaultOptions = MistweaverMonkOptions.create({
 	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 76093, // Flask of the Winds
-	foodId: 62290, // Seafood Magnifique Feast
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
 	potId: 76093, // Potion of the Jade Serpent
-	prepotId: 76093, // Potion of the Jade Serpent
 });
 
 export const OtherDefaults = {
 	profession1: Profession.Engineering,
-	profession2: Profession.Blacksmithing,
+	profession2: Profession.Leatherworking,
 	distanceFromTarget: 5,
-	iterationCount: 25000,
 };
+
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.3;
 
 export const MISTWEAVER_BREAKPOINTS: UnitStatPresets[] = [
 	{

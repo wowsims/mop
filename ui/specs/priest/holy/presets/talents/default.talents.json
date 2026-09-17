@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "122112",
+	"glyphs": {
+		"major1": "GlyphOfRenew",
+		"major2": "GlyphOfPrayerOfMending",
+		"major3": "GlyphOfCircleOfHealing"
+	}
+}

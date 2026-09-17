@@ -1,16 +1,24 @@
-import * as OtherInputs from '@features/settings/model/other_inputs';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import { StatCapType } from '@generated/proto/api';
 import { APLRotation } from '@generated/proto/apl';
-import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import * as Mechanics from '@sim/constants/mechanics';
 import { PlayerClasses } from '@sim/player/classes';
 import { Player } from '@sim/player/player';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@sim/proto/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@sim/proto/stats';
+import { defaultHealerRaidBuffs } from '@sim/proto/utils';
 import { defineSpec } from '@sim/spec_config';
 
-import * as HolyInputs from './inputs';
+import * as PaladinInputs from '../shared/inputs';
 import * as Presets from './presets';
 
+const hasteBreakpoints = Presets.HOLY_BREAKPOINTS.find(entry => entry.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent))!.presets!;
+
+// Gear planner only: no healing spells are implemented, so there is no simulation for this spec.
 export default defineSpec<Spec.SpecHolyPaladin>({
 	spec: Spec.SpecHolyPaladin,
+	// Nothing is simulated, so the incoming-healing model stays off.
+	enableHealing: false,
 
 	className: 'holy-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssScheme(PlayerClasses.Paladin),
@@ -18,46 +26,63 @@ export default defineSpec<Spec.SpecHolyPaladin>({
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatMasteryRating],
-	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
+	epStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating],
+	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating, Stat.StatArmor, Stat.StatStamina],
-		[PseudoStat.PseudoStatSpellHastePercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHitPercent],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpirit,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
+		[PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent, PseudoStat.PseudoStatSpellHitPercent],
 	),
 	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_GEAR_PRESET.gear,
+		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_EP_PRESET.epWeights,
+		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		// Default soft caps for the Reforge optimizer: reach an Eternal Flame tick breakpoint, then
+		// value haste at QE Live's weight.
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [hasteBreakpoints.get('12-tick - Eternal Flame')!, hasteBreakpoints.get('13-tick - Eternal Flame')!],
+				capType: StatCapType.TypeThreshold,
+				postCapEPs: [Presets.QE_HASTE_EP_PAST_BREAKPOINT * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			}),
+		],
+		breakpointLimits: new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, hasteBreakpoints.get('12-tick - Eternal Flame')!),
+		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
-		talents: Presets.StandardTalents.data,
+		talents: Presets.DefaultTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
-		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: Presets.DefaultRaidBuffs,
+		raidBuffs: defaultHealerRaidBuffs(),
 		partyBuffs: PartyBuffs.create({}),
-
 		individualBuffs: IndividualBuffs.create({}),
-		debuffs: Presets.DefaultDebuffs,
+		debuffs: Debuffs.create({}),
 	},
 
 	// IconInputs to include in the 'Player' section on the settings tab.
-	playerIconInputs: [],
-	// Inputs to include in the 'Rotation' section on the settings tab.
-	rotationInputs: HolyInputs.PaladinRotationConfig,
+	playerIconInputs: [PaladinInputs.StartingSealSelection()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	// Stamina is not an EP stat for healers, but the buff still belongs in the stats panel.
+	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [OtherInputs.InputDelay, OtherInputs.TankAssignment],
+		inputs: [],
 	},
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
@@ -65,15 +90,21 @@ export default defineSpec<Spec.SpecHolyPaladin>({
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET],
+		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents],
+		talents: [Presets.DefaultTalents],
+		// Preset rotations that the user can quickly select.
 		rotations: [],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_GEAR_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P5_PRESET],
 	},
 
-	autoRotation: (_player: Player<Spec.SpecHolyPaladin>): APLRotation => {
+	autoRotation: (_: Player<Spec.SpecHolyPaladin>): APLRotation => {
 		return APLRotation.create();
+	},
+
+	reforge: {
+		statSelectionPresets: Presets.HOLY_BREAKPOINTS,
+		enableBreakpointLimits: true,
 	},
 });

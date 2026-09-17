@@ -23,7 +23,7 @@ func TestRestorationShaman(t *testing.T) {
 			&proto.Player{
 				Class:         proto.Class_ClassShaman,
 				Race:          proto.Race_RaceTroll,
-				Equipment:     core.GetGearSet("../../../ui/shaman/restoration/gear_sets", gearSet).GearSet,
+				Equipment:     core.GetGearSet("../../../ui/specs/shaman/restoration/gear_sets", gearSet).GearSet,
 				Consumables:   FullConsumes,
 				Buffs:         core.FullIndividualBuffs,
 				TalentsString: StandardTalents,

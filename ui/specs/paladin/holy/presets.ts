@@ -1,54 +1,58 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, Profession, RaidBuffs } from '@generated/proto/common';
-import { HolyPaladin_Options as Paladin_Options, PaladinMajorGlyph as MajorGlyph, PaladinSeal } from '@generated/proto/paladin';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
+import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
+import { HolyPaladin_Options as HolyPaladinOptions, PaladinMajorGlyph, PaladinMinorGlyph, PaladinSeal } from '@generated/proto/paladin';
+import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 
-import P1Gear from './gear_sets/p1.gear.json';
-import P1EpJson from './presets/ep/p1.ep.json';
-import StandardTalentsJson from './presets/talents/standard.talents.json';
+import P5Gear from './gear_sets/p5.gear.json';
+import PreraidGear from './gear_sets/preraid.gear.json';
+import QELiveEpJson from './presets/ep/qe_live.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
-// Preset options for this spec.
-// Eventually we will import these values for the raid sim too, so its good to
-// keep them in a separate file.
+export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
-
-// Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Paladin/HolyPaladinClassic.js
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(QELiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: PaladinMajorGlyph, minor: PaladinMinorGlyph });
 
-export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, { major: MajorGlyph });
-
-export const DefaultOptions = Paladin_Options.create({
+export const DefaultOptions = HolyPaladinOptions.create({
 	classOptions: {
 		seal: PaladinSeal.Insight,
 	},
 });
 
-export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns(),
-});
-
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 58086, // Flask of the Draconic Mind
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 58091, // Volcanic Potion
-});
-
-export const DefaultDebuffs = Debuffs.create({
-	// bloodFrenzy: true,
-	// sunderArmor: true,
-	// ebonPlaguebringer: true,
-	// mangle: true,
-	// criticalMass: true,
-	// demoralizingShout: true,
-	// frostFever: true,
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, // Potion of the Jade Serpent
 });
 
 export const OtherDefaults = {
-	distanceFromTarget: 40,
 	profession1: Profession.Engineering,
 	profession2: Profession.Jewelcrafting,
+	distanceFromTarget: 18,
 };
+
+// HoT tick breakpoints as total spell haste percent (raid buff included):
+// (ticks - 0.5) / baseTicks - 1. Eternal Flame 30s/3s, Sacred Shield 30s/6s.
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0.527;
+
+export const HOLY_BREAKPOINTS: UnitStatPresets[] = [
+	{
+		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+		presets: new Map([
+			['11-tick - Eternal Flame', 5],
+			['6-tick - Sacred Shield', 10],
+			['12-tick - Eternal Flame', 15],
+			['13-tick - Eternal Flame', 25],
+			['7-tick - Sacred Shield', 30],
+			['14-tick - Eternal Flame', 35],
+			['15-tick - Eternal Flame', 45],
+			['8-tick - Sacred Shield', 50],
+		]),
+	},
+];

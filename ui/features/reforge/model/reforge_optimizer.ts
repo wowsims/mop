@@ -75,7 +75,9 @@ export interface ReforgeOptimizerModel {
 	applyDefaults(): void;
 }
 
-const HYBRID_CASTER_SPECS = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk];
+// Specs whose Spirit has no value beyond the hit it converts to. Mistweaver also turns Spirit into
+// hit, but only half of it, and Spirit carries its own healing value, so it keeps its EP weight.
+const HYBRID_CASTER_SPECS = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman];
 
 export const createReforgeOptimizer = (sim: Sim, player: Player<any>, options: ReforgeOptimizerModelOptions): ReforgeOptimizerModel => {
 	const { defaults, epStats, getEPDefaults, updateSoftCaps, statSelectionPresets } = options;

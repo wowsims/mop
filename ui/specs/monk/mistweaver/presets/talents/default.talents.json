@@ -1,12 +1,9 @@
 {
 	"name": "Default",
-	"talentsString": "",
+	"talentsString": "213312",
 	"glyphs": {
-		"major1": "GlyphOfSpinningCraneKick",
-		"major2": "GlyphOfTouchOfKarma",
-		"major3": "GlyphOfZenMeditation",
-		"minor1": "GlyphOfBlackoutKick",
-		"minor2": "GlyphOfJab",
-		"minor3": "GlyphOfWaterRoll"
+		"major1": "GlyphOfManaTea",
+		"major2": "GlyphOfRenewingMists",
+		"major3": "GlyphOfSurgingMist"
 	}
 }

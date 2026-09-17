@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "113113",
+	"glyphs": {
+		"major1": "GlyphOfPenance",
+		"major2": "GlyphOfPowerWordShield",
+		"major3": "GlyphOfHolyFire"
+	}
+}

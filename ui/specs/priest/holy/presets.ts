@@ -1,98 +1,61 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs } from '@generated/proto/common';
-import { HolyPriest_Options as Options, PriestOptions_Armor } from '@generated/proto/priest';
-import { SavedTalents } from '@generated/proto/ui';
-import { defaultRaidBuffMajorDamageCooldowns } from '@sim/proto/utils';
+import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
+import { HolyPriest_Options as HolyPriestOptions, PriestMajorGlyph, PriestOptions_Armor } from '@generated/proto/priest';
+import { UnitStat, UnitStatPresets } from '@sim/proto/stats';
 
-import AOE24Apl from './apls/aoe_2_4.apl.json';
-import AOE4PlusApl from './apls/aoe_4_plus.apl.json';
-import DefaultApl from './apls/default.apl.json';
-import P1Gear from './gear_sets/p1.gear.json';
-import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
-import P4Gear from './gear_sets/p4.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
-import P1EpJson from './presets/ep/p1.ep.json';
+import QELiveEpJson from './presets/ep/qe_live.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
-// Preset options for this spec.
-// Eventually we will import these values for the raid sim too, so its good to
-// keep them in a separate file.
+export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-export const PRERAID_PRESET = PresetUtils.makePresetGear('Preraid Preset', PreraidGear);
-export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
-export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
-export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
-
-export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const ROTATION_PRESET_AOE24 = PresetUtils.makePresetAPLRotation('AOE (2 to 4 targets)', AOE24Apl);
-export const ROTATION_PRESET_AOE4PLUS = PresetUtils.makePresetAPLRotation('AOE (4+ targets)', AOE4PlusApl);
-
-// Preset options for EP weights
-export const P1_EP_WEIGHTS = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Priest/HolyPriestClassic.js
+// QE Live weights haste at 0 and reforges to the 5-tick Renew breakpoint separately. Haste sits just
+// above mastery here so the reforge optimizer reaches that breakpoint too; past the threshold it
+// falls back to QE's 0 (see the haste threshold in spec.ts).
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(QELiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		// talentsString: '05032031--325023051223010323151301351',
-		// glyphs: Glyphs.create({
-		// 	major1: MajorGlyph.GlyphOfShadow,
-		// 	major2: MajorGlyph.GlyphOfMindFlay,
-		// 	major3: MajorGlyph.GlyphOfDispersion,
-		// 	minor1: MinorGlyph.GlyphOfFortitude,
-		// 	minor2: MinorGlyph.GlyphOfShadowProtection,
-		// 	minor3: MinorGlyph.GlyphOfShadowfiend,
-		// }),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: PriestMajorGlyph });
 
-export const EnlightenmentTalents = {
-	name: 'Enlightenment',
-	data: SavedTalents.create({
-		// talentsString: '05032031303005022--3250230012230101231513011',
-		// glyphs: Glyphs.create({
-		// 	major1: MajorGlyph.GlyphOfShadow,
-		// 	major2: MajorGlyph.GlyphOfMindFlay,
-		// 	major3: MajorGlyph.GlyphOfShadowWordDeath,
-		// 	minor1: MinorGlyph.GlyphOfFortitude,
-		// 	minor2: MinorGlyph.GlyphOfShadowProtection,
-		// 	minor3: MinorGlyph.GlyphOfShadowfiend,
-		// }),
-	}),
-};
-
-export const DefaultOptions = Options.create({
+export const DefaultOptions = HolyPriestOptions.create({
 	classOptions: {
 		armor: PriestOptions_Armor.InnerFire,
 	},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 123, // Flask of the Frost Wyrm (not found in list)
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 58091, // Volcanic Potion
-	prepotId: 58091, // Volcanic Potion
-});
-export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns(),
-});
-
-export const DefaultIndividualBuffs = IndividualBuffs.create({});
-
-export const DefaultDebuffs = Debuffs.create({
-	// bloodFrenzy: true,
-	// sunderArmor: true,
-	// ebonPlaguebringer: true,
-	// mangle: true,
-	// criticalMass: true,
-	// demoralizingShout: true,
-	// frostFever: true,
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, // Potion of the Jade Serpent
 });
 
 export const OtherDefaults = {
-	channelClipDelay: 100,
 	profession1: Profession.Engineering,
-	profession2: Profession.Tailoring,
+	profession2: Profession.Enchanting,
+	distanceFromTarget: 18,
 };
+
+// HoT tick breakpoints as total spell haste percent (raid buff included):
+// (ticks - 0.5) / baseTicks - 1. Renew 12s/3s, Holy Word: Sanctuary 30s/2s.
+export const QE_HASTE_EP_PAST_BREAKPOINT = 0;
+
+export const HOLY_BREAKPOINTS: UnitStatPresets[] = [
+	{
+		unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+		presets: new Map([
+			['16-tick - Sanctuary', 3.33334],
+			['17-tick - Sanctuary', 10],
+			['5-tick - Renew', 12.5],
+			['18-tick - Sanctuary', 16.66667],
+			['19-tick - Sanctuary', 23.33334],
+			['20-tick - Sanctuary', 30],
+			['6-tick - Renew', 37.5],
+			['7-tick - Renew', 62.5],
+		]),
+	},
+];

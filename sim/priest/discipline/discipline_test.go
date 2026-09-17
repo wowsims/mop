@@ -44,11 +44,11 @@ func TestDisciplinePriest(t *testing.T) {
 	}
 
 	generators := []core.TestGenerator{
-		statsTest("preraid", newPlayer("../../../ui/priest/discipline/gear_sets", "preraid")),
-		statsTest("p5", newPlayer("../../../ui/priest/discipline/gear_sets", "p5")),
+		statsTest("preraid", newPlayer("../../../ui/specs/priest/discipline/gear_sets", "preraid")),
+		statsTest("p5", newPlayer("../../../ui/specs/priest/discipline/gear_sets", "p5")),
 		// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
 		// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
-		statsTest("p5-shadow-tier", newPlayer("../../../ui/priest/shadow/gear_sets", "p5")),
+		statsTest("p5-shadow-tier", newPlayer("../../../ui/specs/priest/shadow/gear_sets", "p5")),
 	}
 	core.RunTestSuite(t, t.Name(), generators)
 }

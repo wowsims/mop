@@ -44,13 +44,13 @@ func TestHolyPriest(t *testing.T) {
 	}
 
 	generators := []core.TestGenerator{
-		statsTest("preraid", newPlayer("../../../ui/priest/holy/gear_sets", "preraid", StandardGlyphs)),
-		statsTest("p5", newPlayer("../../../ui/priest/holy/gear_sets", "p5", StandardGlyphs)),
+		statsTest("preraid", newPlayer("../../../ui/specs/priest/holy/gear_sets", "preraid", StandardGlyphs)),
+		statsTest("p5", newPlayer("../../../ui/specs/priest/holy/gear_sets", "p5", StandardGlyphs)),
 		// Shadow's tier items are shared cloth: the set bonuses must not touch Shadow-only state
 		// (the T16 4pc hooks the Shadow Orb bar) when a healer wears them.
-		statsTest("p5-shadow-tier", newPlayer("../../../ui/priest/shadow/gear_sets", "p5", StandardGlyphs)),
+		statsTest("p5-shadow-tier", newPlayer("../../../ui/specs/priest/shadow/gear_sets", "p5", StandardGlyphs)),
 		// Glyph of Inner Fire: the armor gained from Inner Fire is 90% instead of 60%.
-		statsTest("p5-glyph-of-inner-fire", newPlayer("../../../ui/priest/holy/gear_sets", "p5", InnerFireGlyphs)),
+		statsTest("p5-glyph-of-inner-fire", newPlayer("../../../ui/specs/priest/holy/gear_sets", "p5", InnerFireGlyphs)),
 	}
 	core.RunTestSuite(t, t.Name(), generators)
 }

@@ -1,0 +1,12 @@
+{
+	"name": "QE Live",
+	"stats": {
+		"StatIntellect": 1.245,
+		"StatSpirit": 0.371,
+		"StatSpellPower": 1,
+		"StatHitRating": 0.6,
+		"StatCritRating": 0.795,
+		"StatHasteRating": 0.8,
+		"StatMasteryRating": 0.428
+	}
+}

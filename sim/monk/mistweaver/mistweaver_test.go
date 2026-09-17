@@ -23,7 +23,7 @@ func TestMistweaverMonk(t *testing.T) {
 			&proto.Player{
 				Class:         proto.Class_ClassMonk,
 				Race:          proto.Race_RaceHordePandaren,
-				Equipment:     core.GetGearSet("../../../ui/monk/mistweaver/gear_sets", gearSet).GearSet,
+				Equipment:     core.GetGearSet("../../../ui/specs/monk/mistweaver/gear_sets", gearSet).GearSet,
 				Consumables:   FullConsumes,
 				Buffs:         core.FullIndividualBuffs,
 				TalentsString: StandardTalents,
