@@ -78,5 +78,5 @@ all. It exists wherever its owner made it and nowhere else — not in a fresh cl
 necessarily in the worktree you are in.
 
 So: check before you rely on it (`/usr/bin/ls tools/browser-perf/`), and do not tell anyone else a
-path is there. If neither is present and you need reference-swap or APL-edit
-timings, drive the page with Playwright yourself and record the protocol in the PR.
+path is there. If it is not present and you need APL-edit timings, drive the page with Playwright
+yourself and record the protocol in the PR.
