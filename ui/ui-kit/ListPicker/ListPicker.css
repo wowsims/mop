@@ -1,6 +1,7 @@
 @layer components {
 	.ui-list-picker-root {
 		@apply flex-col items-start gap-3 max-md:gap-2;
+		--list-picker-nested-spacing: --spacing(2);
 
 		&.ui-list-picker-horizontal {
 			@apply flex-row items-center;
@@ -31,7 +32,7 @@
 		border: var(--border-default);
 
 		& .ui-list-picker-items {
-			--drag-background-spacing: var(--apl-spacer);
+			--drag-background-spacing: var(--list-picker-nested-spacing);
 		}
 
 		&[data-drag='from'] {

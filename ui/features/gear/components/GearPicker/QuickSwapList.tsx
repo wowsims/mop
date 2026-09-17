@@ -2,9 +2,8 @@ import type { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { ActionId } from '@sim/proto/action_id';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import { itemQualityClassName } from '@ui-kit/utils/css';
+import { cssVars, itemQualityClassName } from '@ui-kit/utils/css';
 import clsx from 'clsx';
-import type { CSSProperties } from 'react';
 
 export type QuickSwapItem = Gem | Enchant;
 
@@ -40,7 +39,7 @@ const QuickSwapRow = <T extends QuickSwapItem>({ entry, onItemClick }: { entry: 
 					alt={entry.item.name}
 					className="static inset-gem z-1 mr-1 inline-block size-gem-inner shrink-0 cursor-pointer rounded-none bg-cover bg-center bg-no-repeat"
 					data-testid="gem-icon"
-					style={{ '--gem-width': '2.5rem' } as CSSProperties}
+					style={cssVars({ '--gem-width': '2.5rem' })}
 					src={iconUrl || undefined}
 				/>
 				<span className={clsx('truncate text-left', itemQualityClassName(entry.item.quality))} data-testid="tooltip-quick-swap__label">

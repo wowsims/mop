@@ -6,10 +6,13 @@ import { useId, useMemo, useState } from 'react';
 
 import { DropdownMenuItems } from './DropdownMenuItems';
 import type { DropdownOption } from './types';
-import { buildMenuTree } from './utils';
+import { buildMenuTree, type MenuEntries } from './utils';
 
 // Offsets the menu 2px from the toggle.
 const BOOTSTRAP_DROPDOWN_OFFSET = 2;
+
+// Shared across every closed picker, so a closed menu retains no tree.
+const EMPTY_ENTRIES: MenuEntries<never> = [];
 
 export interface DropdownMenuProps<V> {
 	id?: string;
@@ -53,7 +56,7 @@ export const DropdownMenu = <V,>({
 	const selected = options[selectedIndex] as DropdownOption<V> | undefined;
 	const hideLabel = !!selected && !!hideLabelWhenDefault?.(selected.value);
 
-	const entries = useMemo(() => buildMenuTree(options, equals), [options, equals]);
+	const entries = useMemo(() => (open ? buildMenuTree(options, equals) : EMPTY_ENTRIES), [open, options, equals]);
 	// The shared tooltip below anchors on the options, which exist only while the menu is open, so it mounts and unmounts with them.
 	const hasTooltips = open && options.some(option => option.tooltip !== undefined);
 

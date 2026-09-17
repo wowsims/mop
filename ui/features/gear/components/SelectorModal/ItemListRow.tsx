@@ -3,6 +3,7 @@ import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import { UIItem as Item } from '@generated/proto/ui';
 import { useSimHost } from '@sim/context/SimHostContext';
 import { isIndividualSimHost } from '@sim/sim_host';
+import { formatDeltaText } from '@sim/utils/format';
 import { Button } from '@ui-kit/Button';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { Icon } from '@ui-kit/Icon';
@@ -32,12 +33,6 @@ export interface ItemListRowProps {
 	onToggleFavourite: () => void;
 }
 
-const formatDelta = (before: number, after: number): { text: string; tone: 'positive' | 'negative' | null } => {
-	const delta = after - before;
-	const text = delta >= 0 ? `+${delta.toFixed(0)}` : delta.toFixed(0);
-	return { text, tone: delta === 0 ? null : delta > 0 ? 'positive' : 'negative' };
-};
-
 export const ItemListRow = ({
 	itemData,
 	label,
@@ -63,7 +58,7 @@ export const ItemListRow = ({
 	// hook re-reads on a notification only, so a recycled row would keep the previous item's flag.
 	const inBatch = useStore(host.sim.store, () => !!batchPlayer && hasBulkItem(batchPlayer, batchSpec));
 
-	const delta = equippedEP !== null && equippedEP !== itemEP ? formatDelta(equippedEP, itemEP) : null;
+	const delta = equippedEP !== null && equippedEP !== itemEP ? formatDeltaText(equippedEP, itemEP, 0) : null;
 
 	return (
 		<>

@@ -3,7 +3,7 @@ import type { UIGem as Gem } from '@generated/proto/ui';
 import { ActionId } from '@sim/proto/action_id';
 import { getEmptyGemSocketIconUrl } from '@sim/proto/gems';
 import { useActionId } from '@ui-kit/hooks/useActionId';
-import type { CSSProperties } from 'react';
+import { cssVars } from '@ui-kit/utils/css';
 
 export interface TabGemIconProps {
 	socketColor: GemColor;
@@ -17,10 +17,7 @@ export const TabGemIcon = ({ socketColor, gem }: TabGemIconProps) => {
 	const emptyIconUrl = getEmptyGemSocketIconUrl(socketColor);
 
 	return (
-		<span
-			className="relative size-(--gem-width) shrink-0 not-last:mr-px"
-			data-testid="gem-socket-container"
-			style={{ '--gem-width': '2rem' } as CSSProperties}>
+		<span className="relative size-(--gem-width) shrink-0 not-last:mr-px" data-testid="gem-socket-container" style={cssVars({ '--gem-width': '2rem' })}>
 			{gem && (
 				<img
 					className="absolute inset-gem z-1 inline-block size-gem-inner cursor-pointer rounded-full bg-cover bg-center bg-no-repeat"
