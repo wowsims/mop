@@ -4,7 +4,7 @@
 	}
 
 	.ui-floating-action-bar-root {
-		@apply sticky bottom-0 z-4 mt-3 -mb-page box-border flex h-fab-bar items-center border-0 border-border;
+		@apply sticky bottom-0 z-4 mt-3 -mb-page box-border flex h-floating-action-bar items-center border-0 border-border;
 		@apply data-stuck:border data-stuck:bg-background data-stuck:p-2;
 	}
 
@@ -22,7 +22,7 @@
 		@apply opacity-100 transition-opacity duration-150 ease-in-out motion-reduce:transition-none;
 
 		@supports not (anchor-name: --a) {
-			@apply inset-x-0 bottom-fab-bar;
+			@apply inset-x-0 bottom-floating-action-bar;
 		}
 
 		&[data-starting-style],
@@ -36,12 +36,12 @@
 	}
 
 	.ui-log-floating-action-bar {
-		anchor-name: --log-fab;
+		anchor-name: --log-floating-action-bar;
 	}
 
 	.ui-log-floating-action-bar-sheet {
 		@supports (anchor-name: --a) {
-			position-anchor: --log-fab;
+			position-anchor: --log-floating-action-bar;
 			left: anchor(left);
 			right: anchor(right);
 			bottom: anchor(top);
@@ -49,12 +49,12 @@
 	}
 
 	.ui-rotation-floating-action-bar {
-		anchor-name: --rotation-fab;
+		anchor-name: --rotation-floating-action-bar;
 	}
 
 	.ui-rotation-floating-action-bar-sheet {
 		@supports (anchor-name: --a) {
-			position-anchor: --rotation-fab;
+			position-anchor: --rotation-floating-action-bar;
 			left: anchor(left);
 			right: anchor(right);
 			bottom: anchor(top);
