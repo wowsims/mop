@@ -11,7 +11,7 @@
 	#rotation-tab {
 		& .ui-apl-list-item-picker {
 			flex-wrap: wrap;
-			align-items: flex-start !important;
+			align-items: flex-start;
 			width: 100%;
 
 			& label {
@@ -133,7 +133,7 @@
 		}
 
 		& .ui-list-picker-item-header .ui-list-picker-item-title {
-			display: none !important;
+			display: none;
 		}
 
 		& .ui-list-picker-root {
@@ -144,9 +144,9 @@
 			}
 
 			& .ui-list-picker-item-container {
-				padding: 0 !important;
-				border: 0 !important;
-				margin-bottom: 0 !important;
+				padding: 0;
+				border: 0;
+				margin-bottom: 0;
 				display: flex;
 
 				& .ui-list-picker-item-header {
@@ -175,7 +175,7 @@
 		}
 
 		& .ui-list-picker-new-button {
-			width: unset !important;
+			width: unset;
 		}
 	}
 
