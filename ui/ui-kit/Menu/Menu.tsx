@@ -87,13 +87,12 @@ export const Menu = ({
 		</BaseMenu.Portal>
 	);
 
+	// The row owns the popup: Base UI leaves focus guards where the portal sits, and they belong inside the `li`, not between the list's rows.
 	if (submenu)
 		return (
 			<BaseMenu.SubmenuRoot>
 				<li role="none">
-					<BaseMenu.SubmenuTrigger render={triggerRender} {...triggerProps}>
-						{trigger}
-					</BaseMenu.SubmenuTrigger>
+					{trigger}
 					{popup}
 				</li>
 			</BaseMenu.SubmenuRoot>

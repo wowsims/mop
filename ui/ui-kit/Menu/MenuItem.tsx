@@ -9,6 +9,8 @@ const LAYOUT_CLASSES = {
 
 export interface MenuItemProps {
 	layout: 'block' | 'row';
+	/** Opens the submenu `Menu` this item is the `trigger` of, rather than acting on click. That `Menu` supplies the row's `li`. */
+	submenu?: boolean;
 	disabled?: boolean;
 	onClick?: () => void;
 	render?: ReactElement;
@@ -17,15 +19,18 @@ export interface MenuItemProps {
 	[key: string]: unknown;
 }
 
-export const MenuItem = ({ layout, disabled, onClick, render, className, children, ...rest }: MenuItemProps) => (
-	<li role="none">
-		<BaseMenu.Item
-			render={render ?? <button type="button" />}
-			disabled={disabled}
-			onClick={onClick}
-			className={clsx('ui-menu-item', LAYOUT_CLASSES[layout], className)}
-			{...rest}>
-			{children}
-		</BaseMenu.Item>
-	</li>
-);
+export const MenuItem = ({ layout, submenu, disabled, onClick, render, className, children, ...rest }: MenuItemProps) => {
+	const itemProps = {
+		render: render ?? <button type="button" />,
+		disabled,
+		onClick,
+		className: clsx('ui-menu-item', LAYOUT_CLASSES[layout], className),
+		...rest,
+	};
+	if (submenu) return <BaseMenu.SubmenuTrigger {...itemProps}>{children}</BaseMenu.SubmenuTrigger>;
+	return (
+		<li role="none">
+			<BaseMenu.Item {...itemProps}>{children}</BaseMenu.Item>
+		</li>
+	);
+};
