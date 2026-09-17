@@ -12,14 +12,18 @@
 	}
 
 	.ui-button-link {
-		@apply cursor-pointer rounded-none border-0 p-0 text-center align-middle text-sm leading-normal font-normal no-underline transition-[color,background-color,border-color] duration-150 ease-in-out select-none;
+		@apply cursor-pointer rounded-none border-0 p-0 text-center align-middle text-sm leading-normal font-normal text-link no-underline transition-[color,background-color,border-color] duration-150 ease-in-out select-none;
+
+		&:hover {
+			@apply text-link-hover;
+		}
 
 		&:focus-visible {
-			@apply outline-none;
+			@apply shadow-focus-link outline-none;
 		}
 
 		&:disabled {
-			@apply pointer-events-none opacity-65;
+			@apply pointer-events-none text-gray-600 opacity-65;
 		}
 	}
 
@@ -96,22 +100,6 @@
 
 		&:active {
 			@apply border-cancel-active bg-cancel-active;
-		}
-	}
-
-	.ui-button-link {
-		@apply text-link;
-
-		&:hover {
-			@apply text-link-hover;
-		}
-
-		&:focus-visible {
-			@apply shadow-focus-link;
-		}
-
-		&:disabled {
-			@apply text-gray-600;
 		}
 	}
 
