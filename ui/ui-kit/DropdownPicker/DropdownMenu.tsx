@@ -1,5 +1,5 @@
-import { Menu } from '@base-ui/react/menu';
-import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
+import { Menu as BaseMenu } from '@base-ui/react/menu';
+import { Menu } from '@ui-kit/Menu';
 import { LocaleHtml, Tooltip } from '@ui-kit/Tooltip';
 import clsx from 'clsx';
 import { useId, useMemo, useState } from 'react';
@@ -22,8 +22,8 @@ export interface DropdownMenuProps<V> {
 	equals: (a: V | undefined, b: V | undefined) => boolean;
 	defaultLabel: React.ReactNode;
 	hideLabelWhenDefault?: (value: V) => boolean;
-	side?: Menu.Positioner.Props['side'];
-	positionMethod?: Menu.Positioner.Props['positionMethod'];
+	side?: BaseMenu.Positioner.Props['side'];
+	positionMethod?: BaseMenu.Positioner.Props['positionMethod'];
 	triggerClassName?: string;
 }
 
@@ -47,7 +47,6 @@ export const DropdownMenu = <V,>({
 	positionMethod,
 	triggerClassName,
 }: DropdownMenuProps<V>) => {
-	const portalContainer = usePortalContainer();
 	const [open, setOpen] = useState(false);
 	const tooltipId = `${useId()}-option`;
 
@@ -62,48 +61,49 @@ export const DropdownMenu = <V,>({
 
 	return (
 		<>
-			<Menu.Root open={open} onOpenChange={setOpen} modal={false}>
-				<Menu.Trigger
-					id={id}
-					className={clsx(
-						'ui-dropdown-trigger',
-						triggerClassName,
-						'text-foreground',
-						!selected?.className && 'hover:text-white/80',
-						selected?.className,
-					)}
-					data-testid="dropdown-picker-button">
-					{selected ? (
+			<Menu
+				surface="menu"
+				open={open}
+				onOpenChange={setOpen}
+				trigger={
+					selected ? (
 						<>
 							{selected.icon}
 							{!hideLabel && selected.label}
 						</>
 					) : (
 						defaultLabel
-					)}
-				</Menu.Trigger>
-				<Menu.Portal container={portalContainer ?? undefined} className="contents" data-testid="dropdown-picker-portal">
-					<Menu.Positioner
-						align="start"
-						side={side}
-						positionMethod={positionMethod}
-						sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
-						className="ui-menu-positioner"
-						data-testid="dropdown-picker-positioner">
-						<Menu.Popup className="ui-menu" data-testid="dropdown-picker-menu">
-							<Menu.RadioGroup
-								render={<ul />}
-								className="m-0 list-none p-0"
-								data-testid="dropdown-picker-list"
-								value={selectedIndex}
-								onValueChange={(index: number) => onChange(options[index].value)}>
-								{/* Built on open and dropped on close. */}
-								{open && <DropdownMenuItems entries={entries} tooltipId={tooltipId} onSelect={index => onChange(options[index].value)} />}
-							</Menu.RadioGroup>
-						</Menu.Popup>
-					</Menu.Positioner>
-				</Menu.Portal>
-			</Menu.Root>
+					)
+				}
+				triggerProps={{
+					id,
+					className: clsx(
+						'ui-dropdown-trigger',
+						triggerClassName,
+						'text-foreground',
+						!selected?.className && 'hover:text-white/80',
+						selected?.className,
+					),
+					'data-testid': 'dropdown-picker-button',
+				}}
+				align="start"
+				side={side}
+				positionMethod={positionMethod}
+				sideOffset={BOOTSTRAP_DROPDOWN_OFFSET}
+				portalProps={{ className: 'contents', 'data-testid': 'dropdown-picker-portal' }}
+				positionerProps={{ 'data-testid': 'dropdown-picker-positioner' }}
+				popupRender={<div />}
+				popupProps={{ 'data-testid': 'dropdown-picker-menu' }}>
+				<BaseMenu.RadioGroup
+					render={<ul />}
+					className="m-0 list-none p-0"
+					data-testid="dropdown-picker-list"
+					value={selectedIndex}
+					onValueChange={(index: number) => onChange(options[index].value)}>
+					{/* Built on open and dropped on close. */}
+					{open && <DropdownMenuItems entries={entries} tooltipId={tooltipId} onSelect={index => onChange(options[index].value)} />}
+				</BaseMenu.RadioGroup>
+			</Menu>
 			{/*
 			 * One tooltip serves every option: an APL kind menu opens sixty at once, and the model
 			 * layer builds each body as HTML (`<p>short</p> full`), which is why this is the one place
