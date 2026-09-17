@@ -1,4 +1,5 @@
 import i18n from '@i18n/config';
+import { Icon } from '@ui-kit/Icon';
 import { useMemo } from 'react';
 
 import type { ContentRow, RotationModel, Section } from '../../../model/timeline/rotation';
@@ -57,7 +58,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			rootClassName="ui-rotation-fab-bar [transition:padding_150ms_ease-in-out,border-width_150ms_ease-in-out]"
 			sheetClassName="ui-fab-sheet ui-rotation-fab-sheet"
 			toggleLabel={i18n.t('results_tab.details.timeline.floatingActionBar.toggle')}
-			icon={<i className="fas fa-eye-slash" />}
+			icon={<Icon name="eye-slash" />}
 			summary={
 				hiddenKeys.length
 					? i18n.t('results_tab.details.timeline.floatingActionBar.hidden', { count: hiddenKeys.length })
@@ -67,7 +68,7 @@ export const RotationRowsToolbar = ({ model, hidden, onToggle, onShowAll }: Rota
 			clear={{
 				testId: 'rotation-fab-show-all',
 				className: 'ml-auto',
-				icon: <i className="fas fa-times mr-1" />,
+				icon: <Icon name="times" className="mr-1" />,
 				label: i18n.t('results_tab.details.timeline.floatingActionBar.showAll'),
 				hidden: hiddenKeys.length === 0,
 				onClick: onShowAll,
