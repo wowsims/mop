@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useMedia } from 'react-use';
 
 /** The header a `useStickyToolbar` bar sticks below. Null until the shell has laid its own out. */
 export const StickyHeaderContext = createContext<HTMLElement | null>(null);
@@ -6,12 +7,6 @@ export const StickyHeaderContext = createContext<HTMLElement | null>(null);
 // `--spacing-sim-header` is one height above `--breakpoint-lg` and another below it, so the header
 // measured under one is the wrong shave under the other. Mirrors `breakpoints.css`.
 const LG_BREAKPOINT = '(min-width: 992px)';
-const subscribeToBreakpoint = (onChange: () => void) => {
-	const query = window.matchMedia(LG_BREAKPOINT);
-	query.addEventListener('change', onChange);
-	return () => query.removeEventListener('change', onChange);
-};
-const isWide = () => window.matchMedia(LG_BREAKPOINT).matches;
 
 /**
  * A `position: sticky` toolbar that reports whether it is currently pinned, as `.stuck`.
@@ -23,7 +18,7 @@ export const useStickyToolbar = <T extends HTMLElement>() => {
 	const header = useContext(StickyHeaderContext);
 	const ref = useRef<T>(null);
 	const [stuck, setStuck] = useState(false);
-	const wide = useSyncExternalStore(subscribeToBreakpoint, isWide);
+	const wide = useMedia(LG_BREAKPOINT);
 
 	useEffect(() => {
 		const element = ref.current;
