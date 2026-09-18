@@ -137,7 +137,7 @@ describe('SavedEncounter', () => {
 			expect(chipNamed('Council').hasAttribute('data-disabled')).toBe(false);
 		});
 
-		it('holds the presets back until the sim is ready', () => {
+		it('holds the presets back until the sim is ready', async () => {
 			presets = [{ name: 'Council', encounter: encounterWith(400) }];
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Mine: storedJson(200) }));
 			let resolveInit = () => {};
@@ -151,7 +151,7 @@ describe('SavedEncounter', () => {
 
 			expect(chips('presets')).toHaveLength(0);
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Mine']);
-			resolveInit();
+			await act(async () => resolveInit());
 		});
 	});
 

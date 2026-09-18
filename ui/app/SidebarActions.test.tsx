@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { SidebarRegistry } from '@ui-kit/sidebar_registry';
 import { SidebarActionButton, SidebarDisabledContext } from '@ui-kit/SidebarActionButton';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -63,7 +63,7 @@ describe('SidebarActions', () => {
 		const { rerender } = renderActions(registry);
 		expect(buttons().map(button => button.disabled)).toEqual([false, false]);
 
-		action.update({ disabled: true });
+		act(() => action.update({ disabled: true }));
 		rerender(actions(registry));
 		expect(buttons().map(button => button.disabled)).toEqual([true, false]);
 	});
@@ -75,7 +75,7 @@ describe('SidebarActions', () => {
 		const { rerender } = renderActions(registry);
 		expect(buttons()[0].getAttribute('aria-busy')).toBe('true');
 
-		action.update({ loading: false });
+		act(() => action.update({ loading: false }));
 		rerender(actions(registry));
 		expect(buttons()[0].getAttribute('aria-busy')).toBeNull();
 	});

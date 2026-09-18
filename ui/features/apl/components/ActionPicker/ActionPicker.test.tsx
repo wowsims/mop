@@ -101,6 +101,7 @@ describe('ActionPicker', () => {
 		);
 		const cold = await import('./ActionPicker');
 		render(<cold.ActionPicker player={player as never} config={configForRoot() as never} />);
+		await act(async () => {});
 
 		expect(roots()).toHaveLength(2);
 	}, 30000);

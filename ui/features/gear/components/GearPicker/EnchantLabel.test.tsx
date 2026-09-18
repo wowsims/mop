@@ -1,5 +1,5 @@
 import type { UIEnchant as Enchant } from '@generated/proto/ui';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const tooltip = vi.hoisted(() => ({ settle: new Map<number, (url: string) => void>() }));
@@ -34,9 +34,7 @@ describe('EnchantLabel', () => {
 		tooltip.settle.get(2)!('spell=2');
 		await waitFor(() => expect(anchor(container).dataset.wowhead).toBe('spell=2'));
 
-		tooltip.settle.get(1)!('spell=1');
-		await Promise.resolve();
-		await Promise.resolve();
+		await act(async () => tooltip.settle.get(1)!('spell=1'));
 		expect(anchor(container).dataset.wowhead).toBe('spell=2');
 	});
 });

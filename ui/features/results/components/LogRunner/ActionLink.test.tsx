@@ -1,5 +1,5 @@
 import type { ActionId } from '@sim/proto/action_id';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ActionLink } from './ActionLink';
@@ -25,8 +25,9 @@ const actionId = (extra: Record<string, unknown> = {}) =>
 const anchor = (container: HTMLElement) => container.querySelector('a[data-testid="log-action"]') as HTMLAnchorElement;
 
 describe('ActionLink', () => {
-	it('renders the icon and the name inside one anchor', () => {
+	it('renders the icon and the name inside one anchor', async () => {
 		const { container } = render(<ActionLink actionId={actionId()} />);
+		await act(async () => {});
 
 		expect(anchor(container).textContent).toBe(' Mortal Strike');
 		expect(anchor(container).querySelector<HTMLElement>('[data-testid="log-action-icon"]')!.style.backgroundImage).toContain(
@@ -34,8 +35,9 @@ describe('ActionLink', () => {
 		);
 	});
 
-	it('opens Wowhead in a new tab without handing it a window opener', () => {
+	it('opens Wowhead in a new tab without handing it a window opener', async () => {
 		const { container } = render(<ActionLink actionId={actionId()} />);
+		await act(async () => {});
 
 		expect(anchor(container).getAttribute('target')).toBe('_blank');
 		expect(anchor(container).getAttribute('href')).toContain('spell=12294');
@@ -50,9 +52,10 @@ describe('ActionLink', () => {
 		await waitFor(() => expect(anchor(container).getAttribute('data-wowhead')).toBe('spell=12345'));
 	});
 
-	it('asks for the buff aura when the line is an aura line', () => {
+	it('asks for the buff aura when the line is an aura line', async () => {
 		tooltipData.mockClear();
 		render(<ActionLink actionId={actionId()} isAura />);
+		await act(async () => {});
 
 		expect(tooltipData).toHaveBeenCalledWith(expect.anything(), { useBuffAura: true });
 	});

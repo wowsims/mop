@@ -203,7 +203,7 @@ describe('SavedGear', () => {
 			expect(chipNamed('On').querySelector('[data-testid="saved-data-set-name"]')!.getAttribute('data-tooltip-content')).toBe('Best in slot');
 		});
 
-		it('holds the presets back until the sim is ready', () => {
+		it('holds the presets back until the sim is ready', async () => {
 			presets = [{ name: 'Default', gear: gearWith(1) }];
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			let resolveInit = () => {};
@@ -217,7 +217,7 @@ describe('SavedGear', () => {
 
 			expect(chips('presets')).toHaveLength(0);
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Raiding']);
-			resolveInit();
+			await act(async () => resolveInit());
 		});
 	});
 

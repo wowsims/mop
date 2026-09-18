@@ -80,7 +80,7 @@ const dropOn = (index: number, clientY = 0) => {
 	act(() => void fireEvent.drop(container, { dataTransfer: dataTransfer(), clientY }));
 };
 
-afterEach(() => endDrag());
+afterEach(() => act(() => endDrag()));
 
 describe('ListPicker', () => {
 	describe('markup', () => {
@@ -590,7 +590,7 @@ describe('ListPicker', () => {
 
 			expect(staleConfig!.getValue(rows).name).toBe('a');
 
-			staleConfig!.setValue(rows, { name: 'a!' });
+			act(() => staleConfig!.setValue(rows, { name: 'a!' }));
 			expect(rows.value.map(row => row.name)).toEqual(['c', 'a!', 'b']);
 		});
 
