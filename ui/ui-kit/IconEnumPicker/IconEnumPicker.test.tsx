@@ -213,7 +213,9 @@ describe('IconEnumPicker', () => {
 		mount(new Options());
 		open();
 		const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-		optionAnchor(1).dispatchEvent(event);
+		act(() => {
+			optionAnchor(1).dispatchEvent(event);
+		});
 		expect(event.defaultPrevented).toBe(true);
 	});
 
