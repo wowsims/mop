@@ -13,6 +13,10 @@ const open = (element: HTMLElement) => act(() => void fireEvent.click(element));
 
 const classRows = () => within(screen.getAllByTestId('sim-title-popup')[0]).getAllByTestId('sim-link');
 
+// By role, not by test id: a trigger wrapped twice carries the test id on the inner element only,
+// so `classRows()` still counts one per class while the menu holds two.
+const classMenuItems = () => within(screen.getAllByTestId('sim-title-popup')[0]).getAllByRole('menuitem');
+
 const openRoot = () => {
 	mount();
 	open(within(screen.getByTestId('sim-link-dropdown')).getByTestId('sim-link'));
@@ -24,6 +28,7 @@ describe('SimTitleDropdown', () => {
 
 		const rows = classRows();
 		expect(rows).toHaveLength(PlayerClasses.naturalOrder.length);
+		expect(classMenuItems()).toHaveLength(PlayerClasses.naturalOrder.length);
 		expect(rows.map(row => row.tagName)).toEqual(rows.map(() => 'BUTTON'));
 		expect(rows.map(row => row.getAttribute('role'))).toEqual(rows.map(() => 'menuitem'));
 		expect(rows.map(row => row.getAttribute('aria-haspopup'))).toEqual(rows.map(() => 'menu'));
