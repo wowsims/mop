@@ -11,7 +11,10 @@ vi.mock('@features/apl/components/RotationTypePicker', () => ({ RotationTypePick
 
 class FakeIntersectionObserver {
 	static instances: Array<FakeIntersectionObserver> = [];
-	constructor(readonly callback: IntersectionObserverCallback) {
+	constructor(
+		readonly callback: IntersectionObserverCallback,
+		readonly options?: IntersectionObserverInit,
+	) {
 		FakeIntersectionObserver.instances.push(this);
 	}
 	observe = vi.fn();
@@ -123,6 +126,37 @@ describe('AplNavbar', () => {
 		const { container } = mount();
 		act(() => FakeIntersectionObserver.instances.at(-1)!.fire(0));
 		expect(container.querySelector('[data-testid="apl-rotation-navbar"]')!.hasAttribute('data-stuck')).toBe(false);
+	});
+
+	// Built inside a hidden tab, the ratio goes 0 -> pinned without ever passing through 1, so a
+	// threshold of [1] alone never fires again.
+	it('watches for the pin with both thresholds', () => {
+		Object.defineProperty(header, 'offsetHeight', { value: 63, configurable: true });
+		mount();
+		expect(FakeIntersectionObserver.instances).toHaveLength(1);
+		expect(FakeIntersectionObserver.instances[0].options).toEqual({ rootMargin: '-64px 0px 0px 0px', threshold: [0, 1] });
+	});
+
+	it('re-measures the header and rebuilds the observer when the lg breakpoint changes', () => {
+		const listeners = new Set<() => void>();
+		const query = {
+			matches: false,
+			addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
+			removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
+		};
+		vi.stubGlobal('matchMedia', () => query);
+		Object.defineProperty(header, 'offsetHeight', { value: 65, configurable: true });
+
+		mount();
+		expect(FakeIntersectionObserver.instances[0].options).toMatchObject({ rootMargin: '-66px 0px 0px 0px' });
+
+		Object.defineProperty(header, 'offsetHeight', { value: 63, configurable: true });
+		query.matches = true;
+		act(() => listeners.forEach(listener => listener()));
+
+		expect(FakeIntersectionObserver.instances).toHaveLength(2);
+		expect(FakeIntersectionObserver.instances[1].options).toMatchObject({ rootMargin: '-64px 0px 0px 0px' });
+		expect(FakeIntersectionObserver.instances[0].disconnect).toHaveBeenCalled();
 	});
 
 	it('disconnects the observer on unmount', () => {
