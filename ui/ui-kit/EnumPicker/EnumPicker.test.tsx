@@ -89,7 +89,7 @@ describe('EnumPicker', () => {
 
 	it('links the label to the select, and carries inline and extra classes', () => {
 		const settings = new Settings();
-		const { container } = render(<EnumPicker modObject={settings} config={configFor({ inline: true, extraClassNames: ['encounter-picker-field'] })} />);
+		const { container } = render(<EnumPicker modObject={settings} config={configFor({ layout: 'inline', extraClassNames: ['encounter-picker-field'] })} />);
 		const root = container.firstElementChild!;
 		expect(root.getAttribute('data-layout')).toBe('inline');
 		expect(root.classList.contains('encounter-picker-field')).toBe(true);

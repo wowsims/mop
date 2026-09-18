@@ -30,7 +30,7 @@ export const fieldInputConfig = (
 	id,
 	label: spec.label,
 	labelTooltip: spec.labelTooltip,
-	inline: INLINE_KINDS.has(spec.kind),
+	layout: INLINE_KINDS.has(spec.kind) ? 'inline' : undefined,
 	extraClassNames: fieldClasses(spec),
 	storeSubscribe: changeSource,
 	getValue: () => {

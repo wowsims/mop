@@ -1,7 +1,7 @@
 @theme static {
 	--spacing-page: 0.5rem;
 	--spacing-section: 2rem;
-	--spacing-fab-bar: calc(2.75rem + (var(--spacing) * 2 * 2) + 2px);
+	--spacing-floating-action-bar: calc(2.75rem + (var(--spacing) * 2 * 2) + 2px);
 	--spacing-popup-min-w: 300px;
 	--size-scrollbar: 0.2rem;
 

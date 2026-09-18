@@ -1,3 +1,4 @@
+import { TargetInput } from '@generated/proto/common';
 import type { Encounter } from '@sim/raid/encounter';
 
 export const repairTargetInputs = (encounter: Encounter): void => {
@@ -7,6 +8,6 @@ export const repairTargetInputs = (encounter: Encounter): void => {
 	const current = encounter.primaryTarget.targetInputs;
 	if (current.length === targetInputs.length && current.every((input, index) => input.label === targetInputs[index].label)) return;
 	encounter.modifyTarget(0, target => {
-		target.targetInputs = targetInputs;
+		target.targetInputs = targetInputs.map(input => TargetInput.clone(input));
 	});
 };

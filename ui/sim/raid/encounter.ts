@@ -142,13 +142,15 @@ export class Encounter {
 		return preset.targets.length == targets.length && targets.every((t, i) => TargetProto.equals(t, preset.targets[i].target));
 	}
 
+	// A preset's target proto is owned by `sim.db` and shared by every encounter naming that preset,
+	// so the store gets a clone: what it holds, it owns.
 	applyPreset(preset: PresetEncounter) {
-		this.set({ targets: preset.targets.map(presetTarget => presetTarget.target || TargetProto.create()) });
+		this.set({ targets: preset.targets.map(presetTarget => (presetTarget.target ? TargetProto.clone(presetTarget.target) : TargetProto.create())) });
 	}
 
 	applyPresetTarget(preset: PresetTarget, index: number) {
 		const targets = this.enc.targets.slice();
-		targets[index] = preset.target || TargetProto.create();
+		targets[index] = preset.target ? TargetProto.clone(preset.target) : TargetProto.create();
 		this.set({ targets });
 	}
 

@@ -1,7 +1,6 @@
-import { Menu } from '@base-ui/react/menu';
 import { useActionId } from '@ui-kit/hooks/useActionId';
 import { useInput } from '@ui-kit/hooks/useInput';
-import { usePortalContainer } from '@ui-kit/hooks/usePortalContainer';
+import { Menu } from '@ui-kit/Menu';
 import { PickerShell } from '@ui-kit/PickerShell';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useEffect, useId, useRef } from 'react';
@@ -16,7 +15,6 @@ export interface IconEnumPickerProps<ModObject, T> {
 }
 
 export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPickerProps<ModObject, T>) => {
-	const portalContainer = usePortalContainer();
 	const { value, setValue, disabled, revision } = useInput(modObject, config);
 	const tooltipId = useId();
 
@@ -71,54 +69,50 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 			iconField
 			hidden={hidden}
 			disabled={disabled}>
-			<Menu.Root modal={false}>
-				<Menu.Trigger
-					nativeButton={false}
-					// No href when nothing is selected: React refuses javascript:void(0), and nativeButton={false} keeps the anchor focusable.
-					render={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
-					openOnHover
-					delay={0}
-					className="ui-icon-picker-swatch transition-none"
-					data-testid="icon-enum-picker-button"
-					data-active={active ? '' : undefined}
-					style={selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined}
-					data-whtticon="false"
-					data-disable-wowhead-touch-tooltip="true"
-					{...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip)}
-				/>
-				<Menu.Portal container={portalContainer ?? undefined} className="contents" data-testid="icon-enum-picker-portal">
-					{/* `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against whatever ancestor is `position: relative`. */}
-					<Menu.Positioner
-						side={horizontal ? 'right' : 'bottom'}
-						align="start"
-						sideOffset={-1}
-						positionMethod="fixed"
-						className="z-dropdown"
-						data-testid="icon-enum-picker-positioner">
-						<Menu.Popup
-							render={<ul />}
-							className="m-0 grid list-none border-0 bg-grey p-0"
-							data-testid="icon-enum-picker-menu"
-							style={{
-								gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,
-								gridAutoFlow: horizontal ? 'column' : undefined,
-							}}>
-							{config.values.map((valueConfig, index) => (
-								<IconEnumOption
-									key={index}
-									valueConfig={valueConfig}
-									hidden={!shows(valueConfig)}
-									tooltipId={tooltipId}
-									onSelect={() => {
-										storedValue.current = undefined;
-										setValue(valueConfig.value);
-									}}
-								/>
-							))}
-						</Menu.Popup>
-					</Menu.Positioner>
-				</Menu.Portal>
-			</Menu.Root>
+			<Menu
+				surface="none"
+				// No href when nothing is selected: React refuses javascript:void(0), and nativeButton={false} keeps the anchor focusable.
+				triggerRender={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
+				triggerProps={{
+					nativeButton: false,
+					openOnHover: true,
+					delay: 0,
+					className: 'ui-icon-picker-swatch transition-none',
+					'data-testid': 'icon-enum-picker-button',
+					'data-active': active ? '' : undefined,
+					style: selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined,
+					'data-whtticon': 'false',
+					'data-disable-wowhead-touch-tooltip': 'true',
+					...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip),
+				}}
+				side={horizontal ? 'right' : 'bottom'}
+				align="start"
+				sideOffset={-1}
+				// `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against whatever ancestor is `position: relative`.
+				positionMethod="fixed"
+				portalProps={{ className: 'contents', 'data-testid': 'icon-enum-picker-portal' }}
+				positionerProps={{ 'data-testid': 'icon-enum-picker-positioner' }}
+				className="grid border-0 bg-grey"
+				popupProps={{
+					'data-testid': 'icon-enum-picker-menu',
+					style: {
+						gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,
+						gridAutoFlow: horizontal ? 'column' : undefined,
+					},
+				}}>
+				{config.values.map((valueConfig, index) => (
+					<IconEnumOption
+						key={index}
+						valueConfig={valueConfig}
+						hidden={!shows(valueConfig)}
+						tooltipId={tooltipId}
+						onSelect={() => {
+							storedValue.current = undefined;
+							setValue(valueConfig.value);
+						}}
+					/>
+				))}
+			</Menu>
 			<label
 				className="ui-field-label"
 				data-testid="form-label"

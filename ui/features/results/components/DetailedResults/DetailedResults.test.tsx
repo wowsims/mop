@@ -112,7 +112,7 @@ beforeEach(() => {
 });
 
 describe('DetailedResults', () => {
-	it('renders only the tabs whose metrics toggle is on, damage tab selected', () => {
+	it('renders only the tabs whose metrics toggle is on, opens the damage pane and fades the rest out, and keeps each pane in the container its island was built into', () => {
 		const { container } = renderPane();
 		const buttons = [...container.querySelectorAll<HTMLButtonElement>('[data-testid="dr-toolbar"] [role="tab"]')];
 		expect(buttons).toHaveLength(8);
@@ -131,15 +131,21 @@ describe('DetailedResults', () => {
 		expect(buttons[0].tabIndex).toBe(0);
 		expect(buttons[1].tabIndex).toBe(-1);
 		expect(buttons.every(button => button.getAttribute('type') === 'button')).toBe(true);
-	});
 
-	it('opens the damage pane and leaves the other nine faded out', () => {
-		const { container } = renderPane();
 		expect(container.querySelector<HTMLElement>('#damageTab')!.hidden).toBe(false);
 		expect(container.querySelector('#damageTab')!.hasAttribute('data-starting-style')).toBe(false);
 		expect(container.querySelector<HTMLElement>('#logTab')!.hidden).toBe(true);
 		expect(container.querySelectorAll('[data-testid="dr-tab-content"] > [id]:not([hidden]):not([data-ending-style])')).toHaveLength(2);
 		expect(container.querySelector('#noResultsTab')).toBeTruthy();
+
+		expect(
+			container.querySelectorAll('[data-testid="dr-toolbar-row"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]'),
+		).toHaveLength(1);
+		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > [data-testid="log"] > .log-runner-root')).toHaveLength(1);
+		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > [data-testid="timeline"] > .timeline-root')).toHaveLength(1);
+		expect(
+			container.querySelectorAll('#replayTab [data-testid="dr-row"] > [data-testid="combat-replay"] > [data-testid="combat-replay-root"]'),
+		).toHaveLength(1);
 	});
 
 	it('holds every ported metrics table in the container the vanilla pane built for it', () => {
@@ -155,18 +161,6 @@ describe('DetailedResults', () => {
 		expect(container.querySelectorAll('#resourcesTab [data-testid="resource-metrics"] > [data-testid="resource-metrics-root"]')).toHaveLength(1);
 		expect(container.querySelectorAll('[data-testid="dr-row-topline"] > [data-testid="topline-results-root"]')).toHaveLength(3);
 		expect(container.querySelectorAll('#damageTab [data-testid="dr-row-dps-histogram"] > [data-testid="dps-histogram-root"]')).toHaveLength(1);
-	});
-
-	it('keeps each pane in the container its island was built into', () => {
-		const { container } = renderPane();
-		expect(
-			container.querySelectorAll('[data-testid="dr-toolbar-row"] > [data-testid="results-filter"] > [data-testid="results-filter-root"]'),
-		).toHaveLength(1);
-		expect(container.querySelectorAll('#logTab [data-testid="dr-row"] > [data-testid="log"] > .log-runner-root')).toHaveLength(1);
-		expect(container.querySelectorAll('#timelineTab [data-testid="dr-row"] > [data-testid="timeline"] > .timeline-root')).toHaveLength(1);
-		expect(
-			container.querySelectorAll('#replayTab [data-testid="dr-row"] > [data-testid="combat-replay"] > [data-testid="combat-replay-root"]'),
-		).toHaveLength(1);
 	});
 
 	it('drops dr-no-results once a result reaches the channel', () => {
@@ -256,7 +250,7 @@ describe('DetailedResults', () => {
 		expect(emitted).toHaveLength(2);
 	});
 
-	it('drops a selected target the next run no longer has, before that run is emitted', async () => {
+	it('keeps a selected target the next run still has, and drops one the next run no longer has before that run is emitted', async () => {
 		const emitted: Array<SimResultData | null> = [];
 		resultChannel.on(value => emitted.push(value));
 		runData = { run: { request: { requestId: 'run-1' } } };
@@ -267,33 +261,22 @@ describe('DetailedResults', () => {
 			fireEvent.click(filterButton(container));
 		});
 		expect(emitted.at(-1)!.filter).toEqual({ target: 1 });
-
-		run.targets = 1;
-		runData = { run: { request: { requestId: 'run-2' } } };
-		await act(async () => currentChangeEmitter.emit());
-
-		expect(emitted.at(-1)!.filter).toEqual({ target: null });
-		expect(filterButton(container).dataset.target).toBe('-1');
-		// The reset rides on the run's own emit rather than queueing a second one.
-		expect(emitted).toHaveLength(3);
-	});
-
-	it('keeps a selected target the next run still has', async () => {
-		const emitted: Array<SimResultData | null> = [];
-		resultChannel.on(value => emitted.push(value));
-		runData = { run: { request: { requestId: 'run-1' } } };
-		const { container } = renderPane();
-
-		await act(async () => currentChangeEmitter.emit());
-		await act(async () => {
-			fireEvent.click(filterButton(container));
-		});
 
 		runData = { run: { request: { requestId: 'run-2' } } };
 		await act(async () => currentChangeEmitter.emit());
 
 		expect(emitted.at(-1)!.filter).toEqual({ target: 1 });
 		expect(filterButton(container).dataset.target).toBe('1');
+
+		const beforeDrop = emitted.length;
+		run.targets = 1;
+		runData = { run: { request: { requestId: 'run-3' } } };
+		await act(async () => currentChangeEmitter.emit());
+
+		expect(emitted.at(-1)!.filter).toEqual({ target: null });
+		expect(filterButton(container).dataset.target).toBe('-1');
+		// The reset rides on the run's own emit rather than queueing a second one.
+		expect(emitted).toHaveLength(beforeDrop + 1);
 	});
 
 	it('keeps the death button disabled while no run has reported death seeds', async () => {

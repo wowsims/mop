@@ -29,7 +29,7 @@
 
 	.ui-field-label,
 	.ui-picker-label {
-		@apply mb-1 inline-block text-ui font-normal;
+		@apply mb-1 inline-block text-ui font-normal wrap-break-word;
 	}
 
 	.ui-help-text {

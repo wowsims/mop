@@ -326,7 +326,7 @@ describe('EpWeightsDialog', () => {
 		expect(popup().querySelector('[data-testid="ep-reference-options"]')).toBeNull();
 	});
 
-	it('shows the spec stats, and the rest only once Show all stats is on', () => {
+	it('shows the spec stats, and the rest — without an include toggle — only once Show all stats is on', () => {
 		renderDialog();
 		const names = () => [...table().querySelectorAll('tbody tr')].map(row => row.firstElementChild!.textContent);
 		expect(names()).toEqual(['Strength', 'Agility', 'Crit Rating', 'Spell Hit Percent']);
@@ -335,28 +335,23 @@ describe('EpWeightsDialog', () => {
 			fireEvent.click(popup().querySelector('#ep-show-all-stats')!);
 		});
 		expect(names().length).toBeGreaterThan(4);
+
+		const unweighted = UnitStat.fromStat(Stat.StatStamina).getFullName(Class.ClassWarrior);
+		expect(rowFor(unweighted)).toBeTruthy();
+		expect(rowFor(unweighted).querySelector('[data-testid="swcalc-include-toggle"] input')).toBeNull();
+		expect(rowFor('Strength').querySelector('[data-testid="swcalc-include-toggle"] input')).not.toBeNull();
 	});
 
-	it('switches the table between EP and weight columns', () => {
-		renderDialog();
-		expect(table().getAttribute('data-stats-type')).toBe('ep');
-
-		const select = popup().querySelector<HTMLSelectElement>('#ep-type-select')!;
-		act(() => {
-			select.value = '1';
-			fireEvent.change(select);
-		});
-		expect(table().getAttribute('data-stats-type')).toBe('weight');
-	});
-
-	it('keeps the stats type and show-all pick in step with the table across a close and reopen', async () => {
+	it('switches the table between EP and weight columns, and keeps that and the show-all pick in step across a close and reopen', async () => {
 		const { getByTestId } = renderDialog();
 		const select = () => popup().querySelector<HTMLSelectElement>('#ep-type-select')!;
 		const showAll = () => popup().querySelector<HTMLInputElement>('#ep-show-all-stats')!;
+		expect(table().getAttribute('data-stats-type')).toBe('ep');
 		act(() => {
 			select().value = '1';
 			fireEvent.change(select());
 		});
+		expect(table().getAttribute('data-stats-type')).toBe('weight');
 		act(() => {
 			fireEvent.click(showAll());
 		});
@@ -378,18 +373,14 @@ describe('EpWeightsDialog', () => {
 
 	// DEFECT FIXED. `makeEpRatioCell` was applied to the six EP cells and the six weight cells, both
 	// indexed 0-5, so `ep-ratio-0`…`ep-ratio-5` each existed twice.
-	it('gives every EP-ratio picker a unique id', () => {
+	it('gives every EP-ratio picker a unique id, and writes each ratio at its own index', () => {
 		host.sim.showThreatMetrics = true;
 		renderDialog();
 		const ids = [...table().querySelectorAll('[data-testid="ep-ratios"] input')].map(input => input.id);
 		expect(ids).toHaveLength(12);
 		expect(new Set(ids).size).toBe(12);
 		expect(ids.slice(0, 2)).toEqual(['ep-ratio-weight-0', 'ep-ratio-ep-0']);
-	});
 
-	it('writes the ratio at its own index', () => {
-		host.sim.showThreatMetrics = true;
-		renderDialog();
 		const input = table().querySelector<HTMLInputElement>('#ep-ratio-ep-2')!;
 		act(() => {
 			input.value = '0.5';
@@ -400,27 +391,13 @@ describe('EpWeightsDialog', () => {
 
 	// DEFECT FIXED. The id was the untranslated full name, so it carried ASCII spaces — the line
 	// below it in the same function already called `sanitizeId`.
-	it('sanitises the include-toggle id', () => {
+	it('sanitises the include-toggle id, and disables the toggle on the reference stat', () => {
 		renderDialog();
 		expect(rowFor('Spell Hit Percent').querySelector('[data-testid="swcalc-include-toggle"] input')!.id).toBe('sw-stat-toggle-spellhitpercent');
 		expect(rowFor('Crit Rating').querySelector('[data-testid="current-ep"] input')!.id).toBe('ep-weight-stat-crit');
-	});
 
-	it('leaves the reference stat out of the calculation and disables its toggle', () => {
-		renderDialog();
 		expect(rowFor('Strength').querySelector<HTMLInputElement>('[data-testid="swcalc-include-toggle"] input')!.disabled).toBe(true);
 		expect(rowFor('Agility').querySelector<HTMLInputElement>('[data-testid="swcalc-include-toggle"] input')!.disabled).toBe(false);
-	});
-
-	it('renders no include toggle for a stat the spec does not weight', () => {
-		renderDialog();
-		act(() => {
-			fireEvent.click(popup().querySelector('#ep-show-all-stats')!);
-		});
-		const unweighted = UnitStat.fromStat(Stat.StatStamina).getFullName(Class.ClassWarrior);
-		expect(rowFor(unweighted)).toBeTruthy();
-		expect(rowFor(unweighted).querySelector('[data-testid="swcalc-include-toggle"] input')).toBeNull();
-		expect(rowFor('Strength').querySelector('[data-testid="swcalc-include-toggle"] input')).not.toBeNull();
 	});
 
 	// DEFECT FIXED. Every `<button>` in the panel was written without one, so any inside a form would
@@ -448,29 +425,20 @@ describe('EpWeightsDialog', () => {
 
 	// DEFECT FIXED. The `<option>`s carried no `value`, so the selection round-tripped through the
 	// translated display string.
-	it('carries the stat enum on each reference option, and writes it', () => {
+	it('carries the stat enum on each reference option, writes it, and follows it in the column tooltip', () => {
 		renderDialog();
 		const select = popup().querySelector<HTMLSelectElement>('#ep-ref-stat-damage')!;
 		expect([...select.options].map(option => option.value)).toEqual([String(Stat.StatStrength), String(Stat.StatAgility), String(Stat.StatCritRating)]);
 		expect(select.value).toBe(String(Stat.StatStrength));
+
+		const dpsEpLabel = () => table().querySelectorAll('thead tr:first-child th')[3].querySelector('span')!;
+		expect(dpsEpLabel().getAttribute('data-tooltip-content')).toContain('Strength');
 
 		act(() => {
 			select.value = String(Stat.StatAgility);
 			fireEvent.change(select);
 		});
 		expect(player.getRefStat('dpsRefStat')).toBe(Stat.StatAgility);
-	});
-
-	it('follows the reference stat in the column tooltip', () => {
-		renderDialog();
-		const dpsEpLabel = () => table().querySelectorAll('thead tr:first-child th')[3].querySelector('span')!;
-		expect(dpsEpLabel().getAttribute('data-tooltip-content')).toContain('Strength');
-
-		const select = popup().querySelector<HTMLSelectElement>('#ep-ref-stat-damage')!;
-		act(() => {
-			select.value = String(Stat.StatAgility);
-			fireEvent.change(select);
-		});
 		expect(dpsEpLabel().getAttribute('data-tooltip-content')).toContain('Agility');
 		expect(dpsEpLabel().getAttribute('data-tooltip-content')).not.toContain('Strength');
 	});
@@ -491,8 +459,10 @@ describe('EpWeightsDialog', () => {
 		host.sim.showThreatMetrics = true;
 		host.individualConfig.defaults.epWeights = new Stats().withStat(Stat.StatAgility, 7).withStat(Stat.StatStrength, 11);
 		renderDialog();
-		player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
-		settings.setStatExcluded(AGILITY, true);
+		act(() => {
+			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
+			settings.setStatExcluded(AGILITY, true);
+		});
 
 		act(() => {
 			fireEvent.click(table().querySelectorAll('thead tr:first-child th')[14].querySelector('[data-testid="col-action"]')!);
@@ -513,7 +483,7 @@ describe('EpWeightsDialog', () => {
 		await act(async () => {
 			fireEvent.click(calculate());
 		});
-		player.setEpWeights(new Stats().withStat(Stat.StatStrength, 5));
+		act(() => player.setEpWeights(new Stats().withStat(Stat.StatStrength, 5)));
 
 		act(() => {
 			fireEvent.click(table().querySelector('[data-testid="ep-ratios"] [data-testid="compute-ep"]')!);
@@ -534,7 +504,7 @@ describe('EpWeightsDialog', () => {
 	});
 
 	describe('calculating', () => {
-		it('runs, shows progress, and fills the table', async () => {
+		it('runs, shows progress, and fills the table, greying the columns whose EP ratio is zero', async () => {
 			let report: ((metrics: any) => void) | null = null;
 			let finish: ((result: StatWeightsResult) => void) | null = null;
 			player.computeStatWeights.mockImplementation(
@@ -583,11 +553,15 @@ describe('EpWeightsDialog', () => {
 			expect(strength.querySelector('[data-column-type="weight"] [data-testid="results-avg"]')!.textContent).toBe('2.00');
 			expect(strength.querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.textContent).toBe('1.00');
 			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.textContent).toBe('0.50');
+
+			const stdevCells = [...strength.querySelectorAll('[data-testid="stdev-cell"]')];
+			expect(stdevCells[0].hasAttribute('data-unused')).toBe(false);
+			expect(stdevCells[2].hasAttribute('data-unused')).toBe(true);
 		});
 
 		// DEFECT FIXED. The delta test was `if (…) epAvgElem;` — an expression statement that does
 		// nothing, so a column at its current EP was styled as a change.
-		it('marks the EP cell against the current weight, and not at all when they match', async () => {
+		it('marks the EP cell against the current weight with a live colour utility, and not at all when they match', async () => {
 			player.computeStatWeights.mockResolvedValue(
 				weightsResult([
 					[STRENGTH, 2],
@@ -595,51 +569,21 @@ describe('EpWeightsDialog', () => {
 				]),
 			);
 			renderDialog();
-			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5));
-
-			await act(async () => {
-				fireEvent.click(calculate());
-			});
-
-			expect(rowFor('Strength').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBe('positive');
-			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBeNull();
-
-			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
-			expect(rowFor('Agility').querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!.getAttribute('data-sign')).toBe('negative');
-		});
-
-		it('colours the moved EP with a live utility, not the bare tone name', async () => {
-			player.computeStatWeights.mockResolvedValue(
-				weightsResult([
-					[STRENGTH, 2],
-					[AGILITY, 1],
-				]),
-			);
-			renderDialog();
-			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5));
+			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5)));
 
 			await act(async () => {
 				fireEvent.click(calculate());
 			});
 
 			const epValue = (stat: string) => rowFor(stat).querySelector('[data-column-type="ep"] [data-testid="results-avg"]')!;
+			expect(epValue('Strength').getAttribute('data-sign')).toBe('positive');
 			expect([...epValue('Strength').classList]).toEqual(['text-success']);
+			expect(epValue('Agility').getAttribute('data-sign')).toBeNull();
 			expect([...epValue('Agility').classList]).toEqual([]);
 
 			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 9)));
+			expect(epValue('Agility').getAttribute('data-sign')).toBe('negative');
 			expect([...epValue('Agility').classList]).toEqual(['text-danger']);
-		});
-
-		it('greys the columns whose EP ratio is zero', async () => {
-			player.computeStatWeights.mockResolvedValue(weightsResult([[STRENGTH, 2]]));
-			renderDialog();
-			await act(async () => {
-				fireEvent.click(calculate());
-			});
-
-			const cells = [...rowFor('Strength').querySelectorAll('[data-testid="stdev-cell"]')];
-			expect(cells[0].hasAttribute('data-unused')).toBe(false);
-			expect(cells[2].hasAttribute('data-unused')).toBe(true);
 		});
 
 		it('shows N/A for a stat excluded from the calculation', async () => {
@@ -650,7 +594,7 @@ describe('EpWeightsDialog', () => {
 				]),
 			);
 			renderDialog();
-			settings.setStatExcluded(AGILITY, true);
+			act(() => settings.setStatExcluded(AGILITY, true));
 
 			await act(async () => {
 				fireEvent.click(calculate());
@@ -674,17 +618,6 @@ describe('EpWeightsDialog', () => {
 			expect(abortType).toHaveBeenCalledTimes(1);
 			expect(openChanges).toEqual([]);
 			expect(popup().hasAttribute('hidden')).toBe(false);
-		});
-
-		it('reports an aborted run and leaves the previous results in place', async () => {
-			player.computeStatWeights.mockResolvedValue({ ...emptyStatWeightsResult(), error: { type: ErrorOutcomeType.ErrorOutcomeAborted, message: '' } });
-			renderDialog();
-			await act(async () => {
-				fireEvent.click(calculate());
-			});
-
-			expect(toasts).toEqual([{ variant: 'info', body: 'Statweight sim cancelled.' }]);
-			expect(rowFor('Strength').querySelector('[data-column-type="ep"] [data-notapplicable]')).not.toBeNull();
 		});
 
 		// DEFECT FIXED. `isRunning` was set before the pre-run abort and the catch returned without
@@ -730,7 +663,7 @@ describe('EpWeightsDialog', () => {
 			});
 		});
 
-		it('reports a thrown run and stays usable', async () => {
+		it('reports a thrown run, then an aborted one, and closes afterwards without aborting', async () => {
 			player.computeStatWeights.mockRejectedValueOnce(new Error('sim exploded'));
 			renderDialog();
 
@@ -740,19 +673,24 @@ describe('EpWeightsDialog', () => {
 			expect(toasts).toEqual([{ variant: 'error', body: 'sim exploded' }]);
 			expect(calculate().disabled).toBe(false);
 			expect(rootElem.querySelector('[data-testid="progress-tracker-dialog"]')).toBeNull();
-		});
-	});
 
-	it('closing with nothing running aborts nothing', async () => {
-		renderDialog();
-		expect(popup().hasAttribute('hidden')).toBe(false);
-		abortType.mockClear();
+			player.computeStatWeights.mockResolvedValue({ ...emptyStatWeightsResult(), error: { type: ErrorOutcomeType.ErrorOutcomeAborted, message: '' } });
+			await act(async () => {
+				fireEvent.click(calculate());
+			});
+			expect(toasts).toEqual([
+				{ variant: 'error', body: 'sim exploded' },
+				{ variant: 'info', body: 'Statweight sim cancelled.' },
+			]);
+			expect(rowFor('Strength').querySelector('[data-column-type="ep"] [data-notapplicable]')).not.toBeNull();
 
-		await act(async () => {
-			fireEvent.click(popup().querySelector('button[data-testid="sim-dialog-close"]')!);
+			abortType.mockClear();
+			await act(async () => {
+				fireEvent.click(popup().querySelector('button[data-testid="sim-dialog-close"]')!);
+			});
+			expect(openChanges).toEqual([false]);
+			expect(abortType).not.toHaveBeenCalled();
 		});
-		expect(openChanges).toEqual([false]);
-		expect(abortType).not.toHaveBeenCalled();
 	});
 
 	// DEFECT FIXED. The panel discarded the unsubscribe its table-level `subscribePlayerField`

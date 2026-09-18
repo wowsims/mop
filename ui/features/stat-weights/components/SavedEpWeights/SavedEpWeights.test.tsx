@@ -305,7 +305,7 @@ describe('SavedEpWeights', () => {
 			expect(document.querySelector('[data-testid="saved-data-custom"]')).toBeNull();
 		});
 
-		it('holds the presets back until the sim is ready, as the vanilla manager did', () => {
+		it('holds the presets back until the sim is ready, as the vanilla manager did', async () => {
 			presets = [{ name: 'Default', epWeights: weights(3) }];
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Raiding: storedJson(4) }));
 			let resolveInit = () => {};
@@ -319,7 +319,7 @@ describe('SavedEpWeights', () => {
 
 			expect(chips('presets')).toHaveLength(0);
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Raiding']);
-			resolveInit();
+			await act(async () => resolveInit());
 		});
 	});
 });

@@ -4,7 +4,7 @@ import type { ToastData, ToastOptions } from './types';
 
 export const DEFAULT_TOAST_DELAY = 3000;
 
-/** Beyond this the oldest toasts are flagged `data-limited`, which `Toast.scss` hides. */
+/** Beyond this the oldest toasts are flagged `data-limited`, which `Toast.css` hides. */
 export const DEFAULT_TOAST_LIMIT = 5;
 
 const createBaseToastManager = () => BaseToast.createToastManager<ToastData>();

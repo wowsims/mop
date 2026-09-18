@@ -1,12 +1,13 @@
 import { ResourceType } from '@generated/proto/spell';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ReplayModel } from '../../model/replay';
 import type { SimResultData } from '../../model/result_data';
 import { replayAction, replayAura, replayEnemy, replayHit, replayModel, resourceRow } from './testing';
 
-vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: () => Promise.resolve('spell=1') }));
+const tooltipNeverSettles = vi.hoisted(() => () => new Promise<string>(() => {}));
+vi.mock('@sim/proto/action_id/tooltip_data', () => ({ actionIdWowheadTooltipData: tooltipNeverSettles }));
 
 let result: SimResultData | null = null;
 let model: ReplayModel;
@@ -27,11 +28,12 @@ let frames: Map<number, (timestamp: number) => void>;
 let nextHandle = 0;
 
 /** Delivers every frame that is due, the way a browser would: a cancelled one never arrives. */
-const step = (timestamp: number) => {
-	const due = [...frames.values()];
-	frames.clear();
-	due.forEach(callback => callback(timestamp));
-};
+const step = (timestamp: number) =>
+	act(() => {
+		const due = [...frames.values()];
+		frames.clear();
+		due.forEach(callback => callback(timestamp));
+	});
 
 const mount = (active = true) => render(<CombatReplay active={active} />).container;
 

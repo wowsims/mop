@@ -39,7 +39,7 @@ export const EpWeightsOptions = ({ options, onStatsTypeChange, onShowAllStatsCha
 				config={{
 					id: 'ep-show-all-stats',
 					label: i18n.t('sidebar.buttons.stat_weights.modal.show_all_stats'),
-					inline: true,
+					layout: 'inline',
 					getValue: subject => subject.showAllStats,
 					setValue: (subject, newValue) => {
 						subject.showAllStats = newValue;

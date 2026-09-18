@@ -13,7 +13,7 @@ export interface OtherSettingsProps {
 export const OtherSettings = ({ inputs, itemSlots }: OtherSettingsProps) => (
 	<>
 		{inputs.map(config => (
-			<InputPicker key={config.id} config={{ ...config, inline: true }} />
+			<InputPicker key={config.id} config={{ ...config, layout: 'split' }} />
 		))}
 		{itemSlots.length > 0 && <ItemSwapPicker itemSlots={itemSlots} />}
 	</>

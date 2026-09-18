@@ -245,7 +245,7 @@ before the makefile stopped generating pages — and `spec_entry.ts`'s `import.m
 the spec module up from the URL. A new spec's page therefore appears with no build-config edit.
 
 Copying one page 34× is only sound because the page is constant: `ui/index_template.html` carries
-no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
+no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/styles/style.css`,
 `/app/spec_entry.tsx`, `/i18n/localization.ts`), so vite rewrites them all to
 `/mop/...` and nothing in the built page depends on where it is served from. It is also the reason
 the 34 pages share one entry chunk (`bundle/spec_entry-<hash>.entry.js`, from the `spec_entry` key

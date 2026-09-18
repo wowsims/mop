@@ -67,7 +67,7 @@ jobs:
                       gh pr merge --merge --delete-branch
                   fi
               env:
-                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Deploy 🚀
               uses: JamesIves/github-pages-deploy-action@v4

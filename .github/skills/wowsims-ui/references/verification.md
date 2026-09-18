@@ -14,11 +14,11 @@ npm run type-check     # node_modules/typescript/bin/tsc --noEmit — the whole 
 npm run lint:js        # npx oxlint ./ui
 npm run test:unit      # vitest run — happy-dom, ui/**/*.test.ts(x)
 npm run test:snapshots # store-contract test, then 34 golden spec protos
-npm run fmt            # npx oxfmt ui --check
+npm run fmt            # npx oxfmt . --check — the whole repo, not just ui/
 ```
 
 Add `npm run test:locales` whenever you touched `assets/locales/**` or `schemas/**`, and
-`npm run lint:css` (stylelint) whenever you touched SCSS.
+`npm run lint:css` (stylelint) whenever you touched CSS.
 
 What each one is actually for:
 
@@ -28,31 +28,63 @@ What each one is actually for:
 | `lint:js`        | layer violations (`no-restricted-imports`), browser globals in `ui/sim` and feature models, hook-rule breaks, import order | anything not listed in `.oxlintrc.json` — `categories.correctness` is **off** |
 | `test:unit`      | component and helper behaviour, the store hooks' gating                                                                    | anything without a `.test.ts(x)` beside it                                    |
 | `test:snapshots` | the store notification contract, then serialization drift across all 34 specs                                              | rendering                                                                     |
-| `fmt`            | `ui/` formatting only — `.oxfmtrc.json` has no markdown and no `tools/` in scope                                           |                                                                               |
+| `fmt`            | formatting across the repo, markdown included — `assets/**` and `**/test-fixtures/*.json` are the ignored trees            | anything `.gitignore` already hides, which is how generated output escapes it |
 
 **Zero `no-restricted-imports` errors is the bar**, not "no new ones": the layer rules are the whole
 point of the current tree, and `lint:js` is the only thing enforcing them anywhere.
 
-## What CI runs — it is not the list above
+## What CI runs
 
 `.github/workflows/run_tests.yml` has two jobs:
 
-- **`build-ui`**: `npm ci`, `npm run test:locales`, then `make dist/mop/.dirstamp`.
+- **`build-ui`**, in order: `npm ci` and `npm run test:locales`, then `npm run fmt`,
+  `npm run lint:js`, `npm run lint:css`, `make ui/generated/proto/api.ts go-to-ts`,
+  `npm run type-check`, `npm run test:unit`, and finally `make dist/mop/.dirstamp`.
 - **`test`**: eight shards of `go test --tags=with_db ./sim/...` — the Go sim, not the UI.
+
+Cheapest first, so a formatting slip reports in about a minute instead of behind the wasm build.
+The generation step is not optional: `tsc` and the unit tests resolve `@generated/proto/*` and the
+three `*_auto_gen.ts`, all gitignored and absent from a fresh checkout.
 
 `make dist/mop/.dirstamp` is not a thin wrapper: through `dist/mop/bundle/.dirstamp` it runs
 `tsc --noEmit`, `npx tsx vite.build-workers.mts` and `npx vite build`, and it also builds
-`dist/mop/lib.wasm.gz`, `ui/generated/proto/api.ts` and the asset copies. So CI does type-check and
-does build the bundle — through make, never by calling `vite build` directly.
+`dist/mop/lib.wasm.gz`, `ui/generated/proto/api.ts` and the asset copies. It keeps its own `tsc`
+even though the step above already ran one.
 
-**CI does not run oxlint, vitest, or the snapshot harness.** A layer violation, a failing unit test
-and a golden diff all reach master green. Run them locally; nothing else will.
+**`test:snapshots` is deliberately not a CI step.** The 34 goldens move far less often than the
+tests do. Run it locally when you touch the store or its serialization; nothing upstream will.
+
+`build-ui` is reused through `workflow_call` by `deploy.yml` and `release.yml`, both with
+`needs: tests`, so every gate above also blocks a deploy and a release.
 
 Read the current job list rather than trusting this section:
 
 ```
-/usr/bin/grep -n "run:" -A3 .github/workflows/run_tests.yml
+RTK_DISABLED=1 /usr/bin/grep -n "name:\|run:" .github/workflows/run_tests.yml
 ```
+
+## Warnings are invisible unless you ask for them
+
+vitest intercepts console output, so React and Base UI warnings do not reach stdout on a normal run
+— `npm run test:unit` can be entirely green while the suite emits hundreds of them. They surface in
+CI logs and nowhere else, which makes them look like a CI-only phenomenon. They are not:
+
+```
+RTK_DISABLED=1 npx vitest run --disableConsoleIntercept 2>&1 | grep -c "not wrapped in act"
+```
+
+Three counts worth keeping at zero, all of which were nonzero before anyone looked:
+
+- `not wrapped in act` — a state update landing outside an act window. Usually a promise resolving
+  after the test body, or a store notify called bare between acts.
+- `overlapping act` — the failure mode introduced by fixing the first one carelessly.
+- `Base UI:` — the `nativeButton` contract, among others.
+
+**Prefix `RTK_DISABLED=1` on anything whose output you grep for a count**, not just git. RTK rewrites
+dev commands too, and a compressed one-line summary greps as zero — indistinguishable from success.
+
+If a flag the count depends on might be silently ignored, pass a deliberately bogus one first: an
+unknown flag throws `CACError: Unknown option`, so a clean run proves the real flag was accepted.
 
 ## Locales
 
@@ -120,27 +152,17 @@ Rendering, layout and interaction. None of the five commands above constructs th
 `applyDefaults` by hand, so the goldens prove no state write leaked into a component and say nothing
 about whether anything rendered.
 
-**There is a DOM-parity harness, and it is not in a fresh clone.** `tools/react-migration/` holds
-~30 `.mjs` files: Playwright probes (`a11y.mjs`, `tabs-behaviour.mjs`, and one per tab and per
-widget) over a shared `browser.mjs`. Each probe compares a built React branch against a built
-baseline, both served first. Read `tools/react-migration/README.md` before running one — in
-particular its `PORT` section: several of the gates silently measure the **baseline** unless you set
-`PORT`, so a bare invocation can report a clean run of the wrong build.
+**Nothing above proves the page rendered.** The goldens are a state contract, not a render check, so
+a change that only moves DOM or CSS around can pass every command here. When a change touches
+rendering, layout or interaction, drive the built page yourself — build it, serve it, and compare
+against a build of the parent commit rather than against a remembered element count. Say in the PR
+what you ran or what you clicked.
 
-The directory is **git-excluded**, not deleted: `tools/react-migration/` is a line in
-`.git/info/exclude`, which lives in the shared common git dir and therefore applies to every worktree
-of this clone but travels with none of them. So `git status` is clean, `git log` knows nothing about
-it, and whether the files are actually present depends on whether that checkout's owner made them.
-Check before concluding anything:
-
-```
-/usr/bin/ls tools/react-migration/ 2>/dev/null | wc -l
-git check-ignore -v tools/react-migration
-```
-
-`tools/browser-perf/` (perf timings, not parity) is excluded the same way and behaves the same way.
-If neither is present where you are working, running the page yourself is the fallback — see
-`running-locally.md`. Either way, say in the PR what you ran or what you clicked.
+`tools/browser-perf/` (perf timings) is **git-excluded**: it is a line in `.git/info/exclude`, which
+lives in the shared common git dir, so the rule applies to every worktree of this clone but the
+directory travels with none of them. It exists wherever its owner made it — not in a fresh clone and
+not in CI. Check before relying on it (`/usr/bin/ls tools/browser-perf/`) and do not tell anyone else
+a path is there.
 
 ## A fresh checkout needs generated files first
 
@@ -149,13 +171,12 @@ If neither is present where you are working, running the page yourself is the fa
 (`make go-to-ts`, which runs `go run ./tools/database/gen_db -gen=go-to-ts`). Copying them from a
 built checkout works and is faster. Never run `gen_db` concurrently with another copy of itself.
 
-Known wart: the makefile's `AUTO_GEN_FILES_TS` still lists the pre-restructure path
-`ui/sim/player_classes/capabilities_auto_gen.ts`, while `tools/database/gen_character_constants_ts.go`
-writes `ui/sim/player/classes/capabilities_auto_gen.ts`. The prerequisite therefore never appears, so
-every `make` that depends on it — `dist/mop/.dirstamp`, `host`, `devmode`, `rundevserver` — re-runs
-`gen_db` and re-bundles even when nothing changed. Verify before blaming your own change:
+The makefile declares those paths in `AUTO_GEN_FILES_TS` and the Go generators write them with their
+own literals, so a rename has to land in both. A target make cannot see never counts as made: it
+re-runs `gen_db` and re-bundles on every build, silently. After moving a generated file, check the
+two agree:
 
 ```
 /usr/bin/grep -n AUTO_GEN_FILES_TS makefile | head -1
-/usr/bin/grep -n 'os.WriteFile("ui/' tools/database/gen_character_constants_ts.go
+/usr/bin/grep -rn 'os.WriteFile("ui/' tools/database/
 ```

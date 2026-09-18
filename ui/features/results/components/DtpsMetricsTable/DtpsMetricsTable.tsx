@@ -6,18 +6,8 @@ import { useMemo } from 'react';
 import { useSimResult } from '../../hooks/useSimResult';
 import { buildMetricRows, indexMetricRows, type MetricGrouping, type MetricRow } from '../../model/grouping';
 import type { SimResultData } from '../../model/result_data';
-import {
-	amountHeader,
-	attackFormat,
-	attackMetricsColumns,
-	castsGroup,
-	damageBreakdownGroup,
-	hitGroups,
-	missGroup,
-	useMetricMax,
-} from '../AttackMetricsColumns';
-import { MetricsCombinedTooltip } from '../MetricsCombinedTooltip';
-import { createMetricsColumnHelper, metricForAnchor, MetricsTable } from '../MetricsTable';
+import { attackFormat, attackMetricsColumns, castsTooltip, damageBreakdownTooltip, hitsTooltip, missTooltip, useMetricMax } from '../AttackMetricsColumns';
+import { createMetricsColumnHelper, metricForAnchor, MetricsTable, MetricTooltip } from '../MetricsTable';
 
 const helper = createMetricsColumnHelper<ActionMetrics>();
 
@@ -127,42 +117,10 @@ export const DtpsMetricsTable = () => {
 			<MetricsTable rootTestId="dtps-metrics-root" columns={columns} rows={rows} sortColumnId="dtps" hasResult={!!resultData} />
 			<Tooltip id={TOOLTIP.avgCastHeader} />
 			<Tooltip id={TOOLTIP.missPercentHeader} />
-			<Tooltip
-				id={TOOLTIP.damageTaken}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => <MetricsCombinedTooltip headerValues={amountHeader()} groups={[damageBreakdownGroup(metric)]} />)
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.casts}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						(!metric.landedHits && !metric.totalMisses) || metric.isPassiveAction ? null : <MetricsCombinedTooltip groups={[castsGroup(metric)]} />,
-					)
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.hits}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric =>
-						!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={hitGroups(metric)} />,
-					)
-				}
-			/>
-			<Tooltip
-				id={TOOLTIP.missPercent}
-				className="ui-metrics-tooltip text-xs"
-				maxWidth="max-w-none max-sm:max-w-metrics-tooltip"
-				render={({ activeAnchor }) =>
-					forAnchor(activeAnchor, metric => (metric.totalMissesPercent ? <MetricsCombinedTooltip groups={[missGroup(metric)]} /> : null))
-				}
-			/>
+			<MetricTooltip id={TOOLTIP.damageTaken} forAnchor={forAnchor} body={damageBreakdownTooltip} />
+			<MetricTooltip id={TOOLTIP.casts} forAnchor={forAnchor} body={castsTooltip} />
+			<MetricTooltip id={TOOLTIP.hits} forAnchor={forAnchor} body={hitsTooltip} />
+			<MetricTooltip id={TOOLTIP.missPercent} forAnchor={forAnchor} body={missTooltip} />
 		</>
 	);
 };

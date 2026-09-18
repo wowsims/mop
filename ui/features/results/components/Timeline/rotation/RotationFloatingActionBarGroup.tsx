@@ -2,16 +2,16 @@ import type { KeyboardEvent } from 'react';
 import { useState } from 'react';
 
 import type { ContentRow } from '../../../model/timeline/rotation';
-import { RotationFabChip } from './RotationFabChip';
+import { RotationFloatingActionBarChip } from './RotationFloatingActionBarChip';
 
-export interface RotationFabGroupProps {
+export interface RotationFloatingActionBarGroupProps {
 	title: string;
 	rows: ReadonlyArray<ContentRow>;
 	hidden: ReadonlySet<string>;
 	onToggle: (key: string) => void;
 }
 
-export const RotationFabGroup = ({ title, rows, hidden, onToggle }: RotationFabGroupProps) => {
+export const RotationFloatingActionBarGroup = ({ title, rows, hidden, onToggle }: RotationFloatingActionBarGroupProps) => {
 	// A roving tabindex: the group is one tab stop and the arrow keys walk it. Focus is what carries
 	// the move, so a chip reached by any other route claims the tab stop too.
 	const [focusedKey, setFocusedKey] = useState(rows[0].key);
@@ -27,13 +27,13 @@ export const RotationFabGroup = ({ title, rows, hidden, onToggle }: RotationFabG
 	};
 
 	return (
-		<div data-testid="rotation-fab-group">
-			<div data-testid="rotation-fab-group-title" className="mb-1 font-bold">
+		<div data-testid="rotation-floating-action-bar-group">
+			<div data-testid="rotation-floating-action-bar-group-title" className="mb-1 font-bold">
 				{title}
 			</div>
 			<div className="flex flex-wrap gap-1" onKeyDown={onKeyDown}>
 				{rows.map(row => (
-					<RotationFabChip
+					<RotationFloatingActionBarChip
 						key={row.key}
 						label={row.label}
 						shown={!hidden.has(row.key)}

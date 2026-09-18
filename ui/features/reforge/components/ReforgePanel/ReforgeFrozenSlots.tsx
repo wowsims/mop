@@ -33,7 +33,7 @@ export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: Reforg
 									config={{
 										id: 'reforge-optimizer-freeze-' + ItemSlot[slot],
 										label: translateSlotName(slot),
-										inline: true,
+										layout: 'inline',
 										storeField: 'reforge:freezeItemSlots',
 										getValue: () => settings.getFrozenItemSlot(slot) || false,
 										setValue: (_player, newValue) => settings.setFrozenItemSlot(slot, newValue),

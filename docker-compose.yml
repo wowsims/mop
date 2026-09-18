@@ -10,28 +10,28 @@
 # The sim is stateless: no volume needed, runs fully read-only.
 
 services:
-  sim:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    image: wowsimmop:local
-    restart: unless-stopped
-    # The server exits cleanly on SIGINT (its only handled signal).
-    stop_signal: SIGINT
-    stop_grace_period: 10s
+    sim:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: prod
+        image: wowsimmop:local
+        restart: unless-stopped
+        # The server exits cleanly on SIGINT (its only handled signal).
+        stop_signal: SIGINT
+        stop_grace_period: 10s
 
-    # --- hardening ---------------------------------------------------------
-    read_only: true            # no writable layer; app writes nothing to disk
-    tmpfs:
-      - /tmp                   # only scratch space the Go runtime might want
-    cap_drop:
-      - ALL                    # binds 8080 as non-root, needs no capabilities
-    security_opt:
-      - no-new-privileges:true
-    # -----------------------------------------------------------------------
+        # --- hardening ---------------------------------------------------------
+        read_only: true # no writable layer; app writes nothing to disk
+        tmpfs:
+            - /tmp # only scratch space the Go runtime might want
+        cap_drop:
+            - ALL # binds 8080 as non-root, needs no capabilities
+        security_opt:
+            - no-new-privileges:true
+        # -----------------------------------------------------------------------
 
-    # Published on the loopback interface only — reachable by the host's
-    # reverse proxy, never on the LAN/VPN/internet directly.
-    ports:
-      - "127.0.0.1:18791:8080"
+        # Published on the loopback interface only — reachable by the host's
+        # reverse proxy, never on the LAN/VPN/internet directly.
+        ports:
+            - '127.0.0.1:18791:8080'

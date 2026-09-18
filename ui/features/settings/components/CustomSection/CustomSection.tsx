@@ -31,12 +31,12 @@ export const CustomSection = ({ section }: CustomSectionProps) => {
 					{section.iconInputs.map((config, index) => {
 						if (config.type !== 'icon')
 							throw new Error(`custom section ${section.id}: ${config.type} inputs need a React picker that does not exist yet`);
-						return <IconPicker key={index} modObject={player} config={{ ...config, inline: true }} />;
+						return <IconPicker key={index} modObject={player} config={{ ...config, layout: 'inline' }} />;
 					})}
 				</PickerGroup>
 			)}
 			{section.inputs?.map(config => (
-				<InputPicker key={config.id} config={{ ...config, inline: true }} />
+				<InputPicker key={config.id} config={{ ...config, layout: 'inline' }} />
 			))}
 		</ContentBlock>
 	);

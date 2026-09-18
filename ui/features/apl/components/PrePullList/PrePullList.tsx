@@ -50,7 +50,7 @@ export const PrePullList = () => {
 										label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 										labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 										extraClassNames: ['w-[unset]', 'm-0'],
-										inline: true,
+										layout: 'inline',
 										getValue: () => itemConfig.getValue(player)?.doAtValue,
 										setValue: (subject: Player<any>, newValue: APLValue | undefined) => {
 											const item = itemConfig.getValue(subject);

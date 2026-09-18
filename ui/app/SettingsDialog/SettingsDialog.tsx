@@ -96,7 +96,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			id: 'simui-show-threat-metrics',
 			label: i18n.t('info.options.feature_toggles.show_threat_metrics'),
 			labelTooltip: 'Shows all options and metrics relevant to tanks, like TPS/DTPS.',
-			inline: true,
+			layout: 'inline',
 			storeSubscribe: (subject: Sim) => subscribeUiField(subject, 'showThreatMetrics'),
 			getValue: (subject: Sim) => subject.getShowThreatMetrics(),
 			setValue: (subject: Sim, newValue: boolean) => {
@@ -111,7 +111,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			id: 'simui-show-experimental',
 			label: i18n.t('info.options.feature_toggles.show_experimental'),
 			labelTooltip: 'Shows experimental options, if there are any active experiments.',
-			inline: true,
+			layout: 'inline',
 			storeSubscribe: (subject: Sim) => subscribeUiField(subject, 'showExperimental'),
 			getValue: (subject: Sim) => subject.getShowExperimental(),
 			setValue: (subject: Sim, newValue: boolean) => {
@@ -132,7 +132,7 @@ export const SettingsDialog = ({ open, onOpenChange, host }: SettingsDialogProps
 			id: 'simui-show-quick-swap',
 			label: i18n.t('info.options.feature_toggles.show_quick_swap'),
 			labelTooltip: 'Allows you to quickly swap between Gems/Enchants through your favorites. (Disabled on touch devices)',
-			inline: true,
+			layout: 'inline',
 			storeSubscribe: (subject: Sim) => subscribeUiField(subject, 'showQuickSwap'),
 			getValue: (subject: Sim) => subject.getShowQuickSwap(),
 			setValue: (subject: Sim, newValue: boolean) => {

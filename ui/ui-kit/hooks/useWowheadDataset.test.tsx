@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { useWowheadDataset } from './useWowheadDataset';
@@ -53,9 +53,7 @@ describe('useWowheadDataset', () => {
 		fast.settle('item=new');
 		await waitFor(() => expect(anchor(container).dataset.wowhead).toBe('item=new'));
 
-		slow.settle('item=old');
-		await Promise.resolve();
-		await Promise.resolve();
+		await act(async () => slow.settle('item=old'));
 		expect(anchor(container).dataset.wowhead).toBe('item=new');
 	});
 });

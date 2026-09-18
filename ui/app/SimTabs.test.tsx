@@ -133,7 +133,7 @@ describe('SimTabs', () => {
 
 	it('leaves other keys alone, so typing still reaches the page', () => {
 		renderTabs(['gear-tab', 'settings-tab']);
-		tab('gear-tab').focus();
+		act(() => tab('gear-tab').focus());
 		press('a');
 		expect(openId()).toBe('gear-tab');
 	});

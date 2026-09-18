@@ -3,7 +3,7 @@
 Extracts World of Warcraft client data into `tools/database/wowsims.db`, the
 SQLite database that `gen_db` consumes.
 
-The flow end to end: `generator-settings.json` says *what* to extract, `tact`
+The flow end to end: `generator-settings.json` says _what_ to extract, `tact`
 finds the bytes inside the WoW install, `wdc` + `dbd` turn them into typed rows
 (with hotfixes applied), and `sqlite` writes `wowsims.db`.
 

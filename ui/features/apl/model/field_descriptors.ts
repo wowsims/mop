@@ -54,12 +54,6 @@ export type APLFieldDescriptor = { [K in keyof FieldDescriptorPayloads]: Descrip
 /** Everything an APL *value* kind may use — i.e. no action pickers. */
 export type ValueFieldDescriptor = Exclude<APLFieldDescriptor, Descriptor<'action' | 'actionList'>>;
 
-/** The subset AplField renders without recursing into a value or action picker. */
-export type CommonFieldDescriptor = Exclude<
-	ValueFieldDescriptor,
-	Descriptor<'comparisonOperator' | 'mathOperator' | 'executePhaseThreshold' | 'totemType' | 'value' | 'valueList'>
->;
-
 // Constructors mirror the argument order of the `*FieldConfig` picker factories
 // they replace in the view, so the kind tables below read exactly as before.
 export function actionIdFieldConfig(

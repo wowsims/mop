@@ -132,7 +132,7 @@ export const LogRunner = ({ active }: LogRunnerProps) => {
 			id: 'log-runner-show-debug',
 			extraClassNames: ['w-auto', 'mb-0'],
 			label: i18n.t('results_tab.details.logs.show_debug'),
-			inline: true,
+			layout: 'inline',
 			reverse: true,
 			// No `storeSubscribe`: this is `InputConfig`'s UI-local toggle, re-read after its own write.
 			getValue: holder => holder.current,

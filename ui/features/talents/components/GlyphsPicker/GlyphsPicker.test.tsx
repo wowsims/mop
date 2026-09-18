@@ -73,17 +73,12 @@ beforeEach(() => {
 });
 
 describe('GlyphsPicker', () => {
-	it('builds three major and three minor slots once the database has loaded', async () => {
+	it('builds three major and three minor slots once the database has loaded, wearing the input-root class its label vocabulary needs', async () => {
 		mount();
 
 		expect(slots('major')).toHaveLength(0);
 		await waitFor(() => expect(slots('major')).toHaveLength(3));
 		expect(slots('minor')).toHaveLength(3);
-	});
-
-	it('wears the input-root class its label vocabulary needs', async () => {
-		mount();
-		await waitFor(() => expect(slots('major')).toHaveLength(3));
 
 		const slot = slots('major')[0];
 		expect(slot.hasAttribute('data-input-root')).toBe(true);

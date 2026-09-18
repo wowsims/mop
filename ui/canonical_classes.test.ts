@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 

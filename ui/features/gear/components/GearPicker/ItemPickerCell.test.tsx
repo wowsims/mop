@@ -85,9 +85,7 @@ describe('ItemPickerCell', () => {
 		tooltip.settles[1]('item=2');
 		await waitFor(() => expect(anchors(container).map(element => element.dataset.wowhead)).toEqual(['item=2', 'item=2']));
 
-		tooltip.settles[0]('item=1');
-		await Promise.resolve();
-		await Promise.resolve();
+		await act(async () => tooltip.settles[0]('item=1'));
 		expect(anchors(container).map(element => element.dataset.wowhead)).toEqual(['item=2', 'item=2']);
 	});
 });

@@ -112,7 +112,7 @@ export const SimShell = ({ domRef, host, sim, className, spec, noticeText, known
 								data-testid="sim-header"
 								data-stuck={stuck ? '' : undefined}>
 								<div
-									className="flex h-full flex-1 scrollbar-none items-stretch overflow-x-scroll [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+									className="flex h-full flex-1 scrollbar-none items-stretch overflow-x-scroll [&::-webkit-scrollbar]:hidden"
 									data-testid="sim-header-container">
 									<div className="contents" data-testid="sim-tabs-mount">
 										{host && <SimTabsSection host={host} />}

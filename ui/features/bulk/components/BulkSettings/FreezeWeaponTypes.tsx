@@ -37,7 +37,7 @@ export const FreezeWeaponTypes = ({ slot }: FreezeWeaponTypesProps) => {
 								config={{
 									id: `bulk-${slot}-weapon-type-${weaponType}`,
 									label: translateWeaponType(weaponType),
-									inline: true,
+									layout: 'inline',
 									value: weaponTypeFilters.get(slot)!.includes(weaponType),
 									onChange: (newValue: boolean) => {
 										const filter = weaponTypeFilters.get(slot)!;

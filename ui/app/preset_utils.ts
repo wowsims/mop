@@ -250,10 +250,6 @@ export const makePresetItemSwapGearHelper = (name: string, itemSwap: ItemSwap): 
 	};
 };
 
-export const makePresetSettings = (name: string, spec: Spec, simSettings: IndividualSimSettings): PresetSettings => {
-	return makePresetSettingsHelper(name, spec, simSettings);
-};
-
 const makePresetSettingsHelper = (name: string, spec: Spec, simSettings: IndividualSimSettings): PresetSettings => {
 	const settings: PresetSettings = { name };
 

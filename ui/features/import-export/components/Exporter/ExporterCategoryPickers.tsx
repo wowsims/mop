@@ -18,7 +18,7 @@ export const ExporterCategoryPickers = ({ categories, onChange }: ExporterCatego
 				id: `link-exporter-${option.category}`,
 				label: option.label,
 				labelTooltip: option.labelTooltip,
-				inline: true,
+				layout: 'inline',
 				getValue: current => current[option.category],
 				setValue: (current, newValue) => {
 					current[option.category] = newValue;

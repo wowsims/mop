@@ -24,13 +24,13 @@ vi.mock('@sim/state/subscriptions', async () => {
 
 // Both take a live player and are covered by their own suites.
 vi.mock('@ui-kit/IconPicker', () => ({
-	IconPicker: ({ config }: { config: { inline?: boolean } }) => (
-		<div className="icon-picker-root" data-testid="icon-picker-root" data-inline={String(!!config.inline)} />
+	IconPicker: ({ config }: { config: { layout?: string } }) => (
+		<div className="icon-picker-root" data-testid="icon-picker-root" data-layout={config.layout} />
 	),
 }));
 vi.mock('../InputPicker', () => ({
-	InputPicker: ({ config }: { config: { id: string; inline?: boolean } }) => (
-		<div data-testid="input-picker-stub" data-id={config.id} data-inline={String(!!config.inline)} />
+	InputPicker: ({ config }: { config: { id: string; layout?: string } }) => (
+		<div data-testid="input-picker-stub" data-id={config.id} data-layout={config.layout} />
 	),
 }));
 
@@ -77,8 +77,8 @@ describe('CustomSection', () => {
 		});
 		const body = block.querySelector('[data-testid="content-block-body"]')!;
 		expect(body.querySelector('[data-picker-group].totem-dropdowns-container.ui-picker-group-icons')).not.toBeNull();
-		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-inline')).toBe('true');
-		expect(body.querySelector('[data-testid="input-picker-stub"]')!.getAttribute('data-inline')).toBe('true');
+		expect(body.querySelector('[data-testid="icon-picker-root"]')!.getAttribute('data-layout')).toBe('inline');
+		expect(body.querySelector('[data-testid="input-picker-stub"]')!.getAttribute('data-layout')).toBe('inline');
 	});
 
 	it('does not subscribe at all when the section declares no `when`', () => {

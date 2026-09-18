@@ -16,7 +16,7 @@ export interface InputPickerProps {
 
 export const InputPicker = ({ config, inline }: InputPickerProps) => {
 	const player = usePlayer();
-	const shared = inline ? { ...config, inline: true } : config;
+	const shared = inline ? { ...config, layout: 'inline' as const } : config;
 
 	switch (shared.type) {
 		case 'number':

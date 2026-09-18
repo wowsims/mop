@@ -4,9 +4,9 @@ import type { ActionMetrics } from '@sim/proto/sim_result';
 import { MetricsCombinedTooltip, type MetricsCombinedTooltipGroup } from '../MetricsCombinedTooltip';
 
 /** The Count header replaced by "Amount", which every breakdown of a damage or threat total uses. */
-export const amountHeader = (): Array<string | undefined> => [undefined, i18n.t('results_tab.details.tooltip_table.amount')];
+const amountHeader = (): Array<string | undefined> => [undefined, i18n.t('results_tab.details.tooltip_table.amount')];
 
-export const damageBreakdownGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => {
+const damageBreakdownGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => {
 	const done = metric.damageDone;
 	return {
 		spellSchool: metric.spellSchool,
@@ -24,7 +24,7 @@ export const damageBreakdownGroup = (metric: ActionMetrics): MetricsCombinedTool
 	};
 };
 
-export const castsGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => {
+const castsGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => {
 	const landed = metric.landedHits || metric.casts;
 	return {
 		spellSchool: metric.spellSchool,
@@ -42,7 +42,7 @@ export const castsGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup =
 	};
 };
 
-export const hitGroups = (metric: ActionMetrics): Array<MetricsCombinedTooltipGroup> => [
+const hitGroups = (metric: ActionMetrics): Array<MetricsCombinedTooltipGroup> => [
 	{
 		spellSchool: metric.spellSchool,
 		totalPercentage: 100,
@@ -77,7 +77,7 @@ export const hitGroups = (metric: ActionMetrics): Array<MetricsCombinedTooltipGr
 	},
 ];
 
-export const missGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => ({
+const missGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup => ({
 	spellSchool: metric.spellSchool,
 	totalPercentage: metric.totalMissesPercent,
 	data: [
@@ -87,7 +87,7 @@ export const missGroup = (metric: ActionMetrics): MetricsCombinedTooltipGroup =>
 	],
 });
 
-export const threatGroup = (metric: ActionMetrics, value: number): MetricsCombinedTooltipGroup => ({
+const threatGroup = (metric: ActionMetrics, value: number): MetricsCombinedTooltipGroup => ({
 	spellSchool: metric.spellSchool,
 	totalPercentage: 100,
 	data: [{ name: i18n.t('results_tab.details.attack_types.threat'), value, percentage: 100 }],
@@ -96,3 +96,15 @@ export const threatGroup = (metric: ActionMetrics, value: number): MetricsCombin
 /** The threat veto, as a body that is simply not built: `showThreatMetrics` comes from the store, and a `render` that returns nothing draws no tooltip at all. */
 export const threatTooltip = (metric: ActionMetrics, value: number, showThreatMetrics: boolean) =>
 	showThreatMetrics && value ? <MetricsCombinedTooltip headerValues={amountHeader()} groups={[threatGroup(metric, value)]} /> : null;
+
+export const damageBreakdownTooltip = (metric: ActionMetrics) => (
+	<MetricsCombinedTooltip headerValues={amountHeader()} groups={[damageBreakdownGroup(metric)]} />
+);
+
+export const castsTooltip = (metric: ActionMetrics) =>
+	(!metric.landedHits && !metric.totalMisses) || metric.isPassiveAction ? null : <MetricsCombinedTooltip groups={[castsGroup(metric)]} />;
+
+export const hitsTooltip = (metric: ActionMetrics) =>
+	!metric.landedHits && !metric.landedTicks ? null : <MetricsCombinedTooltip groups={hitGroups(metric)} />;
+
+export const missTooltip = (metric: ActionMetrics) => (metric.totalMissesPercent ? <MetricsCombinedTooltip groups={[missGroup(metric)]} /> : null);

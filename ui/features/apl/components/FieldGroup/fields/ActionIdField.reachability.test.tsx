@@ -101,16 +101,18 @@ beforeEach(() => {
 });
 
 describe('ActionIdField — the cached read, if the prop could ever move', () => {
-	it('reads the unit named by unitRefField on mount', () => {
+	it('reads the unit named by unitRefField on mount', async () => {
 		setup();
 		render(<Harness />);
+		await act(async () => {});
 
 		expect(new Set(reads)).toEqual(new Set(['Target:3']));
 	});
 
-	it('keeps reading the old unitRefField for one notification after the prop changes, because the notification re-reads before the render that brings the new prop', () => {
+	it('keeps reading the old unitRefField for one notification after the prop changes, because the notification re-reads before the render that brings the new prop', async () => {
 		setup();
 		render(<Harness />);
+		await act(async () => {});
 		reads.length = 0;
 
 		act(() => {
@@ -123,9 +125,10 @@ describe('ActionIdField — the cached read, if the prop could ever move', () =>
 		expect(reads).toEqual(['Target:3', 'Player:1']);
 	});
 
-	it('performs no read at all when the prop changes without a notification', () => {
+	it('performs no read at all when the prop changes without a notification', async () => {
 		setup();
 		const view = render(<Harness />);
+		await act(async () => {});
 		reads.length = 0;
 
 		act(() => {
@@ -163,7 +166,7 @@ describe('ActionIdField — but no user action can move that prop', () => {
 		expect(valueKinds.dotIsActive.fields.indexOf(actionIdDescriptors(valueKinds.dotIsActive.fields)[0])).toBe(1);
 	});
 
-	it('replaces the whole field group when the kind changes, so the mounted ActionIdField is unmounted before the second spec exists', () => {
+	it('replaces the whole field group when the kind changes, so the mounted ActionIdField is unmounted before the second spec exists', async () => {
 		setup();
 		player.aplRotation = APLRotation.create({
 			valueVariables: [{ name: 'root', value: APLValue.create({ value: { oneofKind: 'auraIsKnown', auraIsKnown: {} }, uuid: { value: 'u' } }) }],
@@ -173,10 +176,11 @@ describe('ActionIdField — but no user action can move that prop', () => {
 				<ValuePicker player={player as never} config={valueConfig() as never} />
 			</SimHostProvider>,
 		);
+		await act(async () => {});
 		const before = builderRoots()[0];
 		expect(before).toBeTruthy();
 
-		act(() => {
+		await act(async () => {
 			player.aplRotation.valueVariables[0].value!.value = { oneofKind: 'dotIsActive', dotIsActive: {} } as never;
 			source.notify();
 		});

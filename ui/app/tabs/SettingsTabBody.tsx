@@ -77,11 +77,7 @@ export const SettingsTabBody = () => {
 							{hasOtherSettings && (
 								<ContentBlock
 									rootDataAttributes={{ 'data-block': 'other-settings' }}
-									config={{
-										header: { title: i18n.t('settings_tab.other.title') },
-										bodyClassName:
-											'[&_.ui-field_label]:w-3/5 [&_.ui-field_label]:pr-2 [&_.ui-field_input]:min-w-2/5 [&_.ui-field_select]:min-w-2/5 [&_.ui-field_.ui-picker-group]:min-w-2/5',
-									}}>
+									config={{ header: { title: i18n.t('settings_tab.other.title') } }}>
 									<OtherSettings inputs={config.otherInputs.inputs} itemSlots={itemSwapSlots} />
 								</ContentBlock>
 							)}
@@ -100,7 +96,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.buffs.length === 0,
-									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
+									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3',
 								}}
 								headerChildren={<p className="text-sm">{i18n.t('settings_tab.raid_buffs.description')}</p>}>
 								<RaidBuffs options={options.buffs} miscOptions={options.buffsMisc} />
@@ -114,7 +110,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_damage_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
+										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3',
 									}}>
 									<StatOptionIcons options={options.externalDamageCooldowns} />
 								</ContentBlock>
@@ -128,7 +124,7 @@ export const SettingsTabBody = () => {
 											tooltip: i18n.t('settings_tab.external_defensive_cooldowns.tooltip'),
 											className: 'flex-col',
 										},
-										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
+										bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3',
 									}}>
 									<StatOptionIcons options={options.externalDefensiveCooldowns} />
 								</ContentBlock>
@@ -142,7 +138,7 @@ export const SettingsTabBody = () => {
 										className: 'flex-col',
 									},
 									withoutBody: options.debuffs.length === 0,
-									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3 [&_.ui-picker-label]:wrap-break-word',
+									bodyClassName: 'grid grid-cols-1 xl:grid-cols-2 gap-3 fhd:grid-cols-3',
 								}}>
 								<StatOptionIcons options={options.debuffs} />
 							</ContentBlock>

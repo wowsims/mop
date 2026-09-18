@@ -4,7 +4,6 @@ about: Request one or more items be added to the sim's database.
 title: 'Missing items: [ITEMS]'
 labels: ''
 assignees: ''
-
 ---
 
-Links to [Mists of Pandaria Wowhead](https://wowhead.com/mop-classic/items "https://wowhead.com/mop-classic/items") for each item:
+Links to [Mists of Pandaria Wowhead](https://wowhead.com/mop-classic/items 'https://wowhead.com/mop-classic/items') for each item:

@@ -2,6 +2,8 @@ import type { StoreField } from '@sim/hooks/useStoreField';
 import type { StoreSubscribe } from '@sim/state/subscriptions';
 import type { ReactElement } from 'react';
 
+export type PickerLayout = 'inline' | 'split';
+
 export type StoreBinding<ModObject> =
 	| { storeSubscribe: (obj: ModObject) => StoreSubscribe; storeField?: StoreField | ReadonlyArray<StoreField> }
 	| { storeSubscribe?: undefined; storeField: StoreField | ReadonlyArray<StoreField> };
@@ -11,7 +13,7 @@ export interface InputChrome<ModObject> {
 	label?: string;
 	labelTooltip?: string | Element | ReactElement;
 	description?: string | Element;
-	inline?: boolean;
+	layout?: PickerLayout;
 	id?: string;
 	extraClassNames?: Array<string>;
 

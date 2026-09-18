@@ -160,7 +160,7 @@ describe('SavedSettings', () => {
 			expect(chipNamed('Council Swap').hasAttribute('data-active')).toBe(false);
 		});
 
-		it('holds the presets back until the sim is ready', () => {
+		it('holds the presets back until the sim is ready', async () => {
 			presets = [{ name: 'Council', race: Race.RaceOrc }];
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ Mine: storedJson(Race.RaceOrc) }));
 			let resolveInit = () => {};
@@ -174,7 +174,7 @@ describe('SavedSettings', () => {
 
 			expect(chips('presets')).toHaveLength(0);
 			expect(chips('custom').map(chip => chip.textContent)).toEqual(['Mine']);
-			resolveInit();
+			await act(async () => resolveInit());
 		});
 	});
 

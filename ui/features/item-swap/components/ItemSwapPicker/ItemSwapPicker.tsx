@@ -35,7 +35,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 			reverse: true,
 			label: i18n.t('settings_tab.other.enable_item_swap.label'),
 			labelTooltip: <LocaleHtml html={i18n.t('settings_tab.other.enable_item_swap.tooltip')} />,
-			inline: true,
+			layout: 'split',
 			storeField: 'itemSwap',
 			getValue: (subject: Player<SpecType>) => subject.itemSwapSettings.getEnableItemSwap(),
 			setValue: (subject: Player<SpecType>, newValue: boolean) => subject.itemSwapSettings.setEnableItemSwap(newValue),
@@ -47,7 +47,7 @@ export const ItemSwapPicker = <SpecType extends Spec>({ itemSlots, note }: ItemS
 		<div className="grid gap-3" data-testid="item-swap-picker-root">
 			<BooleanPicker modObject={player} config={enableConfig} />
 			{enabled && (
-				<div className="ui-field flex-wrap gap-3" data-testid="input-item-swap-container" data-input-root="" data-layout="inline">
+				<div className="ui-field flex-wrap gap-3" data-testid="input-item-swap-container" data-input-root="" data-layout="split">
 					<FieldLabel as="span" id={labelId}>
 						{i18n.t('settings_tab.other.item_swap.label')}
 					</FieldLabel>

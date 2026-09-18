@@ -64,16 +64,16 @@ line silently disables it.
 
 ## Aliases
 
-| Alias            | Resolves to               |
-| ---------------- | ------------------------- |
-| `@sim/*`         | `ui/sim/*`                |
-| `@generated/*`   | `ui/generated/*`          |
-| `@worker/*`      | `ui/worker/*`             |
-| `@ui-kit/*`      | `ui/ui-kit/*`             |
-| `@features/*`    | `ui/features/*`           |
-| `@app/*`         | `ui/app/*`                |
-| `@specs/*`       | `ui/specs/*`              |
-| `@i18n/*`        | `ui/i18n/*`               |
+| Alias          | Resolves to      |
+| -------------- | ---------------- |
+| `@sim/*`       | `ui/sim/*`       |
+| `@generated/*` | `ui/generated/*` |
+| `@worker/*`    | `ui/worker/*`    |
+| `@ui-kit/*`    | `ui/ui-kit/*`    |
+| `@features/*`  | `ui/features/*`  |
+| `@app/*`       | `ui/app/*`       |
+| `@specs/*`     | `ui/specs/*`     |
+| `@i18n/*`      | `ui/i18n/*`      |
 
 Check with `node -e "console.log(require('./tsconfig.json').compilerOptions.paths)"`. The same table
 is `resolve.alias` in `vite.config.mts` (`getBaseConfig`, inherited by the worker builds) and in

@@ -4,7 +4,7 @@ import i18n from '@i18n/config';
 import type { EquippedItem } from '@sim/proto/equipped_item';
 import type { Gear } from '@sim/proto/gear';
 import { CopyButton } from '@ui-kit/CopyButton';
-import type { CSSProperties } from 'react';
+import { cssVars } from '@ui-kit/utils/css';
 
 export interface ReforgeDoneToastProps {
 	itemSlots: ItemSlot[];
@@ -21,7 +21,7 @@ export const ReforgeDoneToast = ({ itemSlots, changedSlots, previousGear, settin
 		<p className="mb-0">{i18n.t('gear_tab.reforge_success.title')}</p>
 		<ul className="m-0 grid w-full list-none grid-cols-icon-fill gap-2 p-0">
 			{itemSlots.map(slot => (
-				<li key={slot} style={{ '--icon-size': '4rem' } as CSSProperties}>
+				<li key={slot} style={cssVars({ '--icon-size': '4rem' })}>
 					<GearChangeIcon slot={slot} item={changedSlots.get(slot)} previousItem={previousGear?.getEquippedItem(slot) ?? undefined} />
 				</li>
 			))}
