@@ -80,9 +80,29 @@ export const formatToCompactNumber: typeof formatToNumber = (number, options) =>
 
 export const formatToPercent: typeof formatToNumber = (number, options) => formatToNumber(number / 100, { style: 'percent', ...options });
 
+const numberFormatters = new Map<string, Intl.NumberFormat>();
+
+const numberFormatterKey = (options: Intl.NumberFormatOptions) =>
+	JSON.stringify(
+		Object.entries(options)
+			.sort(([a], [b]) => (a < b ? -1 : 1))
+			.map(([name, value]) => [name, value === undefined ? '\u0000' : value]),
+	);
+
+const numberFormatter = (options: Intl.NumberFormatOptions) => {
+	const key = numberFormatterKey(options);
+	let formatter = numberFormatters.get(key);
+	if (!formatter) {
+		formatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, ...options });
+		numberFormatters.set(key, formatter);
+	}
+	return formatter;
+};
+
 export const formatToNumber = (number: number, options?: Intl.NumberFormatOptions & { fallbackString?: string }) => {
 	if (!number && options?.fallbackString) return options.fallbackString;
-	return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, ...options }).format(number);
+	const { fallbackString: _fallbackString, ...intlOptions } = options ?? {};
+	return numberFormatter(intlOptions).format(number);
 };
 
 export const normalizeName = (name: string): string => {
