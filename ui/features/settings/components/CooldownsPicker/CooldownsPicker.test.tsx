@@ -71,11 +71,15 @@ const labels = () => rows().map(row => row.querySelector('[data-testid="cooldown
 const deleteButton = (index: number) => rows()[index].querySelector('[data-testid="delete-cooldown"]') as HTMLButtonElement;
 const timingsInput = (index: number) => rows()[index].querySelector('[data-testid="number-list-picker-input"]') as HTMLInputElement;
 
+let resolveFill = false;
+
 beforeEach(() => {
-	// A filled ActionId as fill() returns one, so useActionId resolves synchronously and no test
-	// touches the network — the pattern IconEnumPicker.test.tsx uses.
-	vi.spyOn(ActionId.prototype, 'fill').mockImplementation(async function (this: ActionId) {
-		return Object.assign(Object.create(ActionId.prototype), this, { name: NAMES[this.spellId] ?? '', iconUrl: 'icon.jpg' }) as ActionId;
+	resolveFill = false;
+	// A filled ActionId as fill() returns one, for the single test that reads a name; everywhere else
+	// it never settles, so no test touches the network and none updates state after its own body.
+	vi.spyOn(ActionId.prototype, 'fill').mockImplementation(function (this: ActionId) {
+		if (!resolveFill) return new Promise<ActionId>(() => {});
+		return Promise.resolve(Object.assign(Object.create(ActionId.prototype), this, { name: NAMES[this.spellId] ?? '', iconUrl: 'icon.jpg' }) as ActionId);
 	});
 });
 
@@ -89,6 +93,7 @@ describe('CooldownsPicker', () => {
 	});
 
 	it('names each row after its own cooldown, and leaves the trailing row unnamed', async () => {
+		resolveFill = true;
 		setup([cooldownFor(3), cooldownFor(1)]);
 		mount();
 		await act(async () => {});

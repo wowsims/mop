@@ -1,6 +1,7 @@
 import { LaunchStatus, Phase } from '@sim/constants/other';
 import { createSimStore } from '@sim/state/sim_store';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
+import type { ReactElement } from 'react';
 import { StrictMode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -94,23 +95,29 @@ const spec = {
 const player = { sim, getPlayerSpec: () => spec } as never;
 const def = { className: 'arms-warrior-sim-ui', encounterPicker: { showExecuteProportion: true } } as never;
 
+const mount = async (element: ReactElement) => {
+	const rendered = render(element);
+	await act(async () => {});
+	return rendered;
+};
+
 describe('SimApp', () => {
 	beforeEach(() => {
 		constructions.length = 0;
 		paneContainers.length = 0;
 	});
 
-	it('constructs the shell once', () => {
-		const { container } = render(<SimApp player={player} def={def} />);
+	it('constructs the shell once', async () => {
+		const { container } = await mount(<SimApp player={player} def={def} />);
 		expect(constructions).toHaveLength(1);
 		expect(container.querySelectorAll('[data-testid="sim-ui"]')).toHaveLength(1);
 	});
 
-	it('still constructs once under StrictMode, whose effects run twice', () => {
+	it('still constructs once under StrictMode, whose effects run twice', async () => {
 		// This is the whole reason the gate exists. Constructing the shell subscribes autosave with no
 		// unsubscribe and queues work on sim.waitForInit(), so a second construction cannot be undone
 		// by a cleanup function — it has to not happen.
-		const { container } = render(
+		const { container } = await mount(
 			<StrictMode>
 				<SimApp player={player} def={def} />
 			</StrictMode>,
@@ -119,23 +126,23 @@ describe('SimApp', () => {
 		expect(container.querySelectorAll('[data-testid="sim-ui"]')).toHaveLength(1);
 	});
 
-	it('renders the sidebar stats into the container the shell built', () => {
-		const { container } = render(<SimApp player={player} def={def} />);
+	it('renders the sidebar stats into the container the shell built', async () => {
+		const { container } = await mount(<SimApp player={player} def={def} />);
 		expect(container.querySelectorAll('[data-testid="sim-sidebar-stats"] .character-stats-root')).toHaveLength(1);
 	});
 
-	it('renders the results panel into the container the shell built', () => {
-		const { container } = render(<SimApp player={player} def={def} />);
+	it('renders the results panel into the container the shell built', async () => {
+		const { container } = await mount(<SimApp player={player} def={def} />);
 		expect(container.querySelectorAll('[data-testid="sim-sidebar-results"] [data-testid="results-viewer"]')).toHaveLength(1);
 	});
 
-	it('renders each registered pane into the pane container the shell built', () => {
-		render(<SimApp player={player} def={def} />);
+	it('renders each registered pane into the pane container the shell built', async () => {
+		await mount(<SimApp player={player} def={def} />);
 		expect(paneContainers[0].querySelectorAll('.gear-tab-left')).toHaveLength(1);
 	});
 
-	it('renders it exactly once under StrictMode', () => {
-		render(
+	it('renders it exactly once under StrictMode', async () => {
+		await mount(
 			<StrictMode>
 				<SimApp player={player} def={def} />
 			</StrictMode>,
@@ -146,8 +153,8 @@ describe('SimApp', () => {
 	// The failure this guards against is silent: React re-renders when `simUI` is set, and if the
 	// skeleton were recreated in that second render, every element the shell imperatively filled
 	// during construction would be discarded with the old nodes.
-	it('keeps the same skeleton nodes when the constructed shell arrives', () => {
-		const { container } = render(<SimApp player={player} def={def} />);
+	it('keeps the same skeleton nodes when the constructed shell arrives', async () => {
+		const { container } = await mount(<SimApp player={player} def={def} />);
 		const dom = constructions[0];
 		const marker = document.createElement('span');
 		marker.className = 'built-imperatively';
@@ -159,8 +166,8 @@ describe('SimApp', () => {
 		expect(dom.sidebarActions.querySelector('.built-imperatively')).toBe(marker);
 	});
 
-	it('mounts the shell at the mount point, with no wrapper of its own', () => {
-		const { container } = render(<SimApp player={player} def={def} />);
+	it('mounts the shell at the mount point, with no wrapper of its own', async () => {
+		const { container } = await mount(<SimApp player={player} def={def} />);
 		// The shell is handed a DOM bundle rather than a parent, so what ties it to the mount is the
 		// bundle's root being a child of it.
 		expect(constructions[0].root).toBe(container.querySelector('[data-testid="sim-ui"]'));

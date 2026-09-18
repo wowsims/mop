@@ -491,8 +491,10 @@ describe('EpWeightsDialog', () => {
 		host.sim.showThreatMetrics = true;
 		host.individualConfig.defaults.epWeights = new Stats().withStat(Stat.StatAgility, 7).withStat(Stat.StatStrength, 11);
 		renderDialog();
-		player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
-		settings.setStatExcluded(AGILITY, true);
+		act(() => {
+			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 3));
+			settings.setStatExcluded(AGILITY, true);
+		});
 
 		act(() => {
 			fireEvent.click(table().querySelectorAll('thead tr:first-child th')[14].querySelector('[data-testid="col-action"]')!);
@@ -513,7 +515,7 @@ describe('EpWeightsDialog', () => {
 		await act(async () => {
 			fireEvent.click(calculate());
 		});
-		player.setEpWeights(new Stats().withStat(Stat.StatStrength, 5));
+		act(() => player.setEpWeights(new Stats().withStat(Stat.StatStrength, 5)));
 
 		act(() => {
 			fireEvent.click(table().querySelector('[data-testid="ep-ratios"] [data-testid="compute-ep"]')!);
@@ -595,7 +597,7 @@ describe('EpWeightsDialog', () => {
 				]),
 			);
 			renderDialog();
-			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5));
+			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5)));
 
 			await act(async () => {
 				fireEvent.click(calculate());
@@ -616,7 +618,7 @@ describe('EpWeightsDialog', () => {
 				]),
 			);
 			renderDialog();
-			player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5));
+			act(() => player.setEpWeights(new Stats().withStat(Stat.StatAgility, 0.5)));
 
 			await act(async () => {
 				fireEvent.click(calculate());
@@ -650,7 +652,7 @@ describe('EpWeightsDialog', () => {
 				]),
 			);
 			renderDialog();
-			settings.setStatExcluded(AGILITY, true);
+			act(() => settings.setStatExcluded(AGILITY, true));
 
 			await act(async () => {
 				fireEvent.click(calculate());
