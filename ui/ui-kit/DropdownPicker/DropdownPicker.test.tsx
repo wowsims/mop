@@ -62,12 +62,14 @@ describe('DropdownPicker', () => {
 		expect(trigger().className).toContain('text-class-warrior');
 	});
 
-	it('builds no options until it is opened, and drops them again on close', async () => {
+	it('builds no options until it is opened, carries an option class onto them, and drops them again on close', async () => {
 		mount({ id: 0, name: 'All' });
 		expect(items()).toHaveLength(0);
 
 		await open();
 		expect(items().map(item => item.textContent)).toEqual(['All Targets', 'Target 1', 'Target 2']);
+
+		expect(items()[1].className).toContain('text-class-warrior');
 
 		await act(() => void fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' }));
 		expect(items()).toHaveLength(0);
@@ -100,13 +102,6 @@ describe('DropdownPicker', () => {
 		expect(onChange).toHaveBeenCalledTimes(1);
 		expect(onChange).toHaveBeenCalledWith({ id: 2, name: 'Two' });
 		expect(items()).toHaveLength(0);
-	});
-
-	it('carries an option class onto the option as well as the trigger', async () => {
-		mount({ id: 0, name: 'All' });
-		await open();
-
-		expect(items()[1].className).toContain('text-class-warrior');
 	});
 
 	// `side="top"` and `positionMethod="fixed"` are what a picker sitting in an overflow-clipped
@@ -233,32 +228,16 @@ describe('DropdownPicker', () => {
 	});
 
 	describe('hideLabelWhenDefault', () => {
-		it('keeps the icon but drops the label on the trigger for the default selection', () => {
-			render(
-				<DropdownPicker
-					options={units}
-					value={{ id: 0, name: 'All' }}
-					onChange={vi.fn()}
-					equals={sameId}
-					defaultLabel="Unit"
-					hideLabelWhenDefault={value => value.id === 0}
-				/>,
-			);
+		const picker = (value: Unit) => (
+			<DropdownPicker options={units} value={value} onChange={vi.fn()} equals={sameId} defaultLabel="Unit" hideLabelWhenDefault={unit => unit.id === 0} />
+		);
+
+		it('keeps the icon but drops the label on the trigger for the default selection, and shows it for any other', () => {
+			const { rerender } = render(picker({ id: 0, name: 'All' }));
 
 			expect(trigger().textContent).toBe('');
-		});
 
-		it('shows the label for any other selection', () => {
-			render(
-				<DropdownPicker
-					options={units}
-					value={{ id: 1, name: 'One' }}
-					onChange={vi.fn()}
-					equals={sameId}
-					defaultLabel="Unit"
-					hideLabelWhenDefault={value => value.id === 0}
-				/>,
-			);
+			rerender(picker({ id: 1, name: 'One' }));
 
 			expect(trigger().textContent).toBe('Target 1');
 			expect(trigger().querySelectorAll('img.custom-icon-class')).toHaveLength(1);

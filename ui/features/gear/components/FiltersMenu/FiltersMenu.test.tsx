@@ -74,12 +74,6 @@ describe('FiltersMenu', () => {
 		});
 	});
 
-	it('portals into the sim root so the popup keeps the spec theme', () => {
-		setup();
-		expect(rootElem.querySelector('[data-testid="filters-menu"]')).not.toBeNull();
-		expect(document.body.querySelector(':scope > [data-testid="filters-menu"]')).toBeNull();
-	});
-
 	it('renders nothing while closed', () => {
 		setup({}, { open: false });
 		expect(rootElem.querySelector('[data-testid="filters-menu"]')).toBeNull();
@@ -113,17 +107,13 @@ describe('FiltersMenu', () => {
 		expect(sections()).not.toContain('gear_tab.gear_picker.armor_type');
 	});
 
-	it('offers the off hand speed pickers only to a spec that can dual wield', () => {
+	it('adds the off hand speed and ranged sections only for a spec that can dual wield and a class with ranged weapons', () => {
 		setup({ weaponTypes: [WeaponType.WeaponTypeAxe] }, { slot: ItemSlot.ItemSlotMainHand });
 		expect(pickerIds()).not.toContain('filters-min-oh-weapon-speed');
+		expect(sections()).not.toContain('gear_tab.gear_picker.ranged_weapon_type');
 
 		setup({ weaponTypes: [WeaponType.WeaponTypeAxe], canDualWield: true }, { slot: ItemSlot.ItemSlotMainHand });
 		expect(pickerIds()).toEqual(expect.arrayContaining(['filters-min-oh-weapon-speed', 'filters-max-oh-weapon-speed']));
-	});
-
-	it('adds the ranged sections to a weapon slot only for a class with ranged weapons', () => {
-		setup({ weaponTypes: [WeaponType.WeaponTypeAxe] }, { slot: ItemSlot.ItemSlotMainHand });
-		expect(sections()).not.toContain('gear_tab.gear_picker.ranged_weapon_type');
 
 		setup({ weaponTypes: [WeaponType.WeaponTypeAxe], rangedWeaponTypes: [RangedWeaponType.RangedWeaponTypeBow] }, { slot: ItemSlot.ItemSlotMainHand });
 		expect(sections()).toEqual([
@@ -151,9 +141,13 @@ describe('FiltersMenu', () => {
 		expect(rootElem.querySelector<HTMLInputElement>('#filters-max-ilvl')!.value).toBe('528');
 	});
 
-	it('writes a source toggle back through the sim, and drops it again', () => {
+	it('portals into the sim root for the spec theme, writes a source toggle and a faction pick back through the sim, and closes on its own close button', () => {
 		const source = SourceFilterOption.SourceCrafting;
-		setup();
+		const { onOpenChange } = setup();
+
+		expect(rootElem.querySelector('[data-testid="filters-menu"]')).not.toBeNull();
+		expect(document.body.querySelector(':scope > [data-testid="filters-menu"]')).toBeNull();
+
 		const checkbox = rootElem.querySelector<HTMLInputElement>(`#filters-source-${source}`)!;
 		expect(checkbox.checked).toBe(false);
 
@@ -166,10 +160,7 @@ describe('FiltersMenu', () => {
 
 		fireEvent.click(rootElem.querySelector<HTMLInputElement>(`#filters-source-${source}`)!);
 		expect(setFilters.mock.calls[1][0].sources).not.toContain(source);
-	});
 
-	it('offers the three faction restrictions and writes the chosen one back', () => {
-		setup();
 		const select = rootElem.querySelector<HTMLSelectElement>('#filters-faction-restriction')!;
 
 		expect(Array.from(select.options).map(option => Number(option.value))).toEqual([
@@ -180,11 +171,7 @@ describe('FiltersMenu', () => {
 
 		select.value = String(UIItem_FactionRestriction.HORDE_ONLY);
 		fireEvent.change(select);
-		expect(setFilters.mock.calls[0][0].factionRestriction).toBe(UIItem_FactionRestriction.HORDE_ONLY);
-	});
-
-	it('closes on its own close button', () => {
-		const { onOpenChange } = setup();
+		expect(setFilters.mock.lastCall![0].factionRestriction).toBe(UIItem_FactionRestriction.HORDE_ONLY);
 
 		fireEvent.click(rootElem.querySelector<HTMLButtonElement>('[data-testid="filters-menu"] [data-testid="sim-dialog-close"]')!);
 		expect(onOpenChange).toHaveBeenCalledWith(false);

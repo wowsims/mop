@@ -86,7 +86,7 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('IconEnumPicker', () => {
-	it('builds the root, the button and the caption in vanilla’s order', () => {
+	it('builds the root, the button and the caption in vanilla’s order, and mounts the options against the viewport when the menu opens', async () => {
 		mount(new Options());
 
 		expect(root().classList.contains('relative')).toBe(true);
@@ -97,13 +97,19 @@ describe('IconEnumPicker', () => {
 			'label.ui-field-label',
 		]);
 
-		open();
+		expect(screen.queryByTestId('icon-enum-picker-portal')).toBeNull();
+		expect(menu()).toBeNull();
+
+		await open();
 		const portal = screen.getByTestId('icon-enum-picker-portal');
 		expect(portal.className).toBe('contents');
 		expect(portal.children[0].className).toBe('z-dropdown');
 		expect(portal.children[0].getAttribute('data-testid')).toBe('icon-enum-picker-positioner');
 		expect(menu()!.parentElement).toBe(portal.children[0]);
+		expect(screen.getByTestId('icon-enum-picker-positioner').style.position).toBe('fixed');
 
+		expect(menu()!.hasAttribute('hidden')).toBe(false);
+		expect(items()).toHaveLength(3);
 		expect(items().map(item => `${item.tagName.toLowerCase()}.${item.className}`)).toEqual(['li.', 'li.', 'li.']);
 		expect(items().map(item => item.getAttribute('role'))).toEqual(['none', 'none', 'none']);
 		expect(items().map(item => within(item).getByTestId('icon-picker-button').className)).toEqual([
@@ -111,16 +117,6 @@ describe('IconEnumPicker', () => {
 			'ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none',
 			'ui-icon-picker-swatch filter-[opacity(0.7)] transition-none hover:filter-none',
 		]);
-	});
-
-	it('mounts the options when the menu opens and renders none of them until then', () => {
-		mount(new Options());
-		expect(screen.queryByTestId('icon-enum-picker-portal')).toBeNull();
-		expect(menu()).toBeNull();
-
-		open();
-		expect(menu()!.hasAttribute('hidden')).toBe(false);
-		expect(items()).toHaveLength(3);
 	});
 
 	it('takes the button’s icon, href and active class from the selected value', () => {
@@ -348,12 +344,6 @@ describe('IconEnumPicker', () => {
 		open(horizontalButton);
 		const horizontalMenu = document.getElementById(horizontalButton.getAttribute('aria-controls')!) as HTMLUListElement;
 		expect(horizontalMenu.style.gridAutoFlow).toBe('column');
-	});
-
-	it('positions the menu against the viewport', async () => {
-		mount(new Options());
-		await open();
-		expect(screen.getByTestId('icon-enum-picker-positioner').style.position).toBe('fixed');
 	});
 
 	it('carries every tooltip on its anchor, and renders none until one is asked for', () => {
