@@ -27,6 +27,7 @@ export const DropdownMenuItems = <V,>({ entries, tooltipId, onSelect }: Dropdown
 				<li key={`option-${entry.index}`} role="none">
 					<BaseMenu.RadioItem
 						render={<button type="button" />}
+						nativeButton
 						value={entry.index}
 						closeOnClick
 						className={clsx('ui-menu-item', 'ui-menu-item-row', entry.option.className, entry.option.itemClassName)}

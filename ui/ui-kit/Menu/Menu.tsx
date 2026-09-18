@@ -107,7 +107,7 @@ export const Menu = ({
 		return (
 			<BaseMenu.SubmenuRoot>
 				<li role="none">
-					<BaseMenu.SubmenuTrigger render={triggerRender} {...triggerProps}>
+					<BaseMenu.SubmenuTrigger render={triggerRender} nativeButton={triggerRender.type === 'button'} {...triggerProps}>
 						{trigger}
 					</BaseMenu.SubmenuTrigger>
 					{popup}
@@ -117,7 +117,7 @@ export const Menu = ({
 
 	return (
 		<BaseMenu.Root open={open} onOpenChange={onOpenChange} modal={modal}>
-			<BaseMenu.Trigger render={triggerRender} {...triggerProps}>
+			<BaseMenu.Trigger render={triggerRender} nativeButton={triggerRender === undefined || triggerRender.type === 'button'} {...triggerProps}>
 				{trigger}
 			</BaseMenu.Trigger>
 			{popup}

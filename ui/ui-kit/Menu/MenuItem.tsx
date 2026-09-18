@@ -21,6 +21,7 @@ export const MenuItem = ({ layout, disabled, onClick, render, className, childre
 	<li role="none">
 		<BaseMenu.Item
 			render={render ?? <button type="button" />}
+			nativeButton={render === undefined || render.type === 'button'}
 			disabled={disabled}
 			onClick={onClick}
 			className={clsx('ui-menu-item', LAYOUT_CLASSES[layout], className)}
