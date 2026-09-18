@@ -18,7 +18,7 @@ npm run fmt            # npx oxfmt ui --check
 ```
 
 Add `npm run test:locales` whenever you touched `assets/locales/**` or `schemas/**`, and
-`npm run lint:css` (stylelint) whenever you touched SCSS.
+`npm run lint:css` (stylelint) whenever you touched CSS.
 
 What each one is actually for:
 

@@ -14,9 +14,7 @@
 		}
 	},
 	"css.validate": false,
-	"less.validate": false,
-	"scss.validate": false,
-	"stylelint.validate": ["scss"],
+	"stylelint.validate": ["css"],
 	"tailwindCSS.experimental.configFile": "ui/styles/style.css",
 	"tailwindCSS.classFunctions": ["clsx"],
 	"tailwindCSS.classAttributes": [
@@ -32,7 +30,7 @@
 		"selectClassName",
 		"triggerClassName"
 	],
-	"[scss]": {
+	"[css]": {
 		"editor.codeActionsOnSave": {
 			"source.fixAll.stylelint": "always"
 		}

@@ -13,8 +13,7 @@ import { useMedia } from 'react-use';
 
 import { classLaunchStatus } from './landing_classes';
 
-// `media-breakpoint-down(lg)`, where `_homepage.scss` drops the class list to one or two columns.
-// Below it there is no room beside a row, so the menu opens under it instead.
+// Bootstrap's `lg` breakpoint: below it there is no room beside a row, so the menu opens under it instead.
 const STACKED = '(max-width: 991.98px)';
 
 export interface LandingClassMenuProps {

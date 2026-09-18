@@ -79,7 +79,6 @@
 		"http-server": "14.1.1",
 		"oxfmt": "^0.62.0",
 		"oxlint": "^1.77.0",
-		"postcss-scss": "^4.0.9",
 		"stylelint": "^16.22.0",
 		"typescript": "^7.0.2",
 		"vite": "^8.2.0",

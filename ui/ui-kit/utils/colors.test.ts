@@ -26,7 +26,7 @@ describe('colors', () => {
 		expect(Object.keys(CLASS_BORDER)).toHaveLength(11);
 	});
 
-	it('grades safe/warning/danger to match the current _global_old.scss rules', () => {
+	it('grades safe/warning/danger onto the shared danger tones', () => {
 		expect(DANGER_TEXT.safe).toBe('text-success');
 		expect(DANGER_TEXT.warning).toContain('text-damage-partial');
 		expect(DANGER_TEXT.danger).toBe('text-danger');
