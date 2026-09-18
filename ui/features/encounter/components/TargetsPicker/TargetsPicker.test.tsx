@@ -79,74 +79,54 @@ beforeEach(() => {
 });
 
 describe('TargetsPicker', () => {
-	it('wears the classes the encounter stylesheet and the encounter gate select on', () => {
-		mount(new FakeEncounter());
+	it('wears the classes the encounter stylesheet and the encounter gate select on, and renders one row per target', () => {
+		const encounter = new FakeEncounter();
+		mount(encounter);
 
 		expect(root().hasAttribute('data-input-root')).toBe(true);
 		expect(root().classList.contains('mb-0')).toBe(true);
 		expect(targetRoots()).toHaveLength(1);
 		const sections = [...targetRoots()[0].querySelectorAll('[data-testid="target-picker-section"]')];
 		expect(sections).toHaveLength(3);
-	});
-
-	it('renders one target row per target and adds another through the create button', () => {
-		const encounter = new FakeEncounter();
-		mount(encounter);
-		expect(targetRoots()).toHaveLength(1);
 
 		act(() => encounter.setTargets([defaultTarget(), defaultTarget()]));
 		expect(targetRoots()).toHaveLength(2);
 	});
 
-	it('withholds delete from the first target, because an encounter needs one', () => {
+	it('gives every target its own picker ids, withholds delete from the first, and removes the second through the menu', () => {
 		const encounter = new FakeEncounter([defaultTarget(), defaultTarget()]);
 		mount(encounter);
-
-		fireEvent.click(actionsButton(0));
-		expect(popoverOf(0)).not.toBeNull();
-		expect(popoverOf(0)!.querySelector('[data-testid="list-picker-item-delete"]')).toBeNull();
-		fireEvent.click(actionsButton(1));
-		expect(popoverOf(1)!.querySelector('[data-testid="list-picker-item-delete"]')).not.toBeNull();
-	});
-
-	it('removes a target through the menu and reports it as a remove-target event', () => {
-		const encounter = new FakeEncounter([defaultTarget(), defaultTarget()]);
-		mount(encounter);
-
-		fireEvent.click(actionsButton(1));
-		act(() => void fireEvent.click(popoverOf(1)!.querySelector('[data-testid="list-picker-item-delete"]')!));
-
-		expect(encounter.targets).toHaveLength(1);
-		expect(trackEvent).toHaveBeenCalledWith(expect.objectContaining({ label: 'remove-target' }));
-	});
-
-	it('gives every target its own picker ids', () => {
-		mount(new FakeEncounter([defaultTarget(), defaultTarget()]));
 
 		const [first, second] = targetRoots().map(idsIn);
 		expect(first.length).toBeGreaterThan(10);
 		expect(first).toEqual(expect.arrayContaining(['target-0-picker-npc', 'target-0-picker-level', 'target-0-picker-spell-school']));
 		expect(second).toEqual(expect.arrayContaining(['target-1-picker-npc', 'target-1-picker-level', 'target-1-picker-spell-school']));
 		expect(first.filter(id => second.includes(id))).toEqual([]);
+
+		fireEvent.click(actionsButton(0));
+		expect(popoverOf(0)).not.toBeNull();
+		expect(popoverOf(0)!.querySelector('[data-testid="list-picker-item-delete"]')).toBeNull();
+		fireEvent.click(actionsButton(1));
+		const deleteSecond = popoverOf(1)!.querySelector('[data-testid="list-picker-item-delete"]');
+		expect(deleteSecond).not.toBeNull();
+
+		act(() => void fireEvent.click(deleteSecond!));
+
+		expect(encounter.targets).toHaveLength(1);
+		expect(trackEvent).toHaveBeenCalledWith(expect.objectContaining({ label: 'remove-target' }));
 	});
 
-	it('reads each target row from its own index rather than from the first', () => {
+	it('reads each target row from its own index rather than from the first, and writes a level change back to it', () => {
 		const encounter = new FakeEncounter([TargetProto.create({ level: 93 }), TargetProto.create({ level: 88 })]);
 		mount(encounter);
 
-		const levelOf = (index: number) => (targetRoots()[index].querySelector('#target-' + index + '-picker-level') as HTMLSelectElement).value;
-		expect(levelOf(0)).toBe('93');
-		expect(levelOf(1)).toBe('88');
-	});
+		const levelOf = (index: number) => targetRoots()[index].querySelector('#target-' + index + '-picker-level') as HTMLSelectElement;
+		expect(levelOf(0).value).toBe('93');
+		expect(levelOf(1).value).toBe('88');
 
-	it('writes a level change back to the target it belongs to', () => {
-		const encounter = new FakeEncounter([TargetProto.create({ level: 93 }), TargetProto.create({ level: 93 })]);
-		mount(encounter);
+		act(() => void fireEvent.change(levelOf(1), { target: { value: '90' } }));
 
-		const select = targetRoots()[1].querySelector('#target-1-picker-level') as HTMLSelectElement;
-		act(() => void fireEvent.change(select, { target: { value: '88' } }));
-
-		expect(encounter.targets.map(target => target.level)).toEqual([93, 88]);
+		expect(encounter.targets.map(target => target.level)).toEqual([93, 90]);
 	});
 
 	it('disables the dual-wield miss penalty until dual wield is on', () => {
@@ -198,8 +178,9 @@ describe('TargetsPicker', () => {
 				}),
 			]);
 
-		it('renders one picker per input, dispatched on its declared type', () => {
-			mount(withInputs());
+		it('renders one picker per input dispatched on its declared type, shows each its own value, offers no list actions, and writes back to its own index', () => {
+			const encounter = withInputs();
+			mount(encounter);
 			const inputRoots = [...document.querySelectorAll('[data-testid="target-input-picker-root"]')];
 
 			expect(inputRoots).toHaveLength(3);
@@ -208,32 +189,18 @@ describe('TargetsPicker', () => {
 					? node.firstElementChild!.getAttribute('data-testid') === 'enum-picker-root'
 					: node.firstElementChild!.getAttribute('data-testid') === ['number-picker-root', 'boolean-picker-root'][index];
 			expect(inputRoots.map((node, index) => matchesRoot(node, index))).toEqual([true, true, true]);
-		});
-
-		it('shows each input its own value', () => {
-			mount(withInputs());
-			const inputRoots = [...document.querySelectorAll('[data-testid="target-input-picker-root"]')];
 
 			// `float: true`, so the number box shows two decimals.
 			expect(inputRoots[0].querySelector('input')!.value).toBe('3.00');
 			expect(inputRoots[1].querySelector('input')!.checked).toBe(true);
 			expect(inputRoots[2].querySelector('select')!.value).toBe('1');
-		});
 
-		it('offers no add, delete, copy or drag on the inputs list, which the AI owns', () => {
-			mount(withInputs());
 			const list = document.querySelector('.ui-list-picker-compact')!;
-
 			expect(list.querySelector('[data-testid="list-picker-new-button"]')).toBeNull();
 			expect(list.querySelector('[data-testid="list-picker-item-actions"]')).toBeNull();
 			expect([...list.querySelectorAll('[data-testid="list-picker-item-container"]')].every(item => !item.hasAttribute('data-draggable'))).toBe(true);
-		});
 
-		it('writes a number input back to its own index', () => {
-			const encounter = withInputs();
-			mount(encounter);
-			const numberInput = document.querySelectorAll('[data-testid="target-input-picker-root"]')[0].querySelector('input')!;
-
+			const numberInput = inputRoots[0].querySelector('input')!;
 			act(() => void fireEvent.change(numberInput, { target: { value: '7' } }));
 
 			expect(encounter.targets[0].targetInputs.map(input => input.numberValue)).toEqual([7, 0, 0]);
