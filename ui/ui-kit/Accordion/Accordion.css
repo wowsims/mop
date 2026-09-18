@@ -26,12 +26,12 @@
 			@apply text-link-hover;
 		}
 
-		&[data-panel-open] .ui-accordion-caret {
+		&[data-panel-open] .ui-accordion-chevron {
 			@apply rotate-0;
 		}
 	}
 
-	.ui-accordion-caret {
+	.ui-accordion-chevron {
 		@apply -rotate-90 transition-transform duration-150;
 	}
 

@@ -135,6 +135,20 @@ export const BulkSettings = () => {
 							</div>
 							<RequiredSetBonuses />
 						</AccordionItem>
+						{host.reforger && (
+							<AccordionItem
+								value={BULK_SETTINGS_GROUP.reforge}
+								title={i18n.t('bulk_tab.settings.groups.reforge')}
+								testId="bulk-settings-group-reforge">
+								<p className="mb-4 text-sm">{i18n.t('bulk_tab.settings.groups.reforge_description')}</p>
+								<ReforgeSettingsPanel
+									model={host.reforger}
+									options={host.reforgeOptions ?? undefined}
+									idPrefix="bulk-reforge-optimizer"
+									gemsLocked
+								/>
+							</AccordionItem>
+						)}
 						<AccordionItem
 							value={BULK_SETTINGS_GROUP.freezes}
 							title={i18n.t('bulk_tab.settings.groups.frozen_slots')}
@@ -172,20 +186,6 @@ export const BulkSettings = () => {
 								</>
 							)}
 						</AccordionItem>
-						{host.reforger && (
-							<AccordionItem
-								value={BULK_SETTINGS_GROUP.reforge}
-								title={i18n.t('bulk_tab.settings.groups.reforge')}
-								testId="bulk-settings-group-reforge">
-								<p className="mb-4 text-sm">{i18n.t('bulk_tab.settings.groups.reforge_description')}</p>
-								<ReforgeSettingsPanel
-									model={host.reforger}
-									options={host.reforgeOptions ?? undefined}
-									idPrefix="bulk-reforge-optimizer"
-									gemsLocked
-								/>
-							</AccordionItem>
-						)}
 					</Accordion>
 				</div>
 			</div>

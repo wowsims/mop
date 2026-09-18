@@ -17,7 +17,7 @@ export const AccordionItem = ({ value, title, panelClassName, testId, children }
 		<BaseAccordion.Header className="ui-accordion-header" render={<h6 />}>
 			<BaseAccordion.Trigger className="ui-accordion-trigger" data-testid={testId ? `${testId}-trigger` : undefined}>
 				{title}
-				<Icon name="caret-down" className="ui-accordion-caret" />
+				<Icon name="chevron-down" className="ui-accordion-chevron" />
 			</BaseAccordion.Trigger>
 		</BaseAccordion.Header>
 		<BaseAccordion.Panel>
