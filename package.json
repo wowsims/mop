@@ -81,7 +81,6 @@
 		"oxlint": "^1.77.0",
 		"postcss-scss": "^4.0.9",
 		"stylelint": "^16.22.0",
-		"stylelint-selector-bem-pattern": "^4.0.1",
 		"typescript": "^7.0.2",
 		"vite": "^8.2.0",
 		"vite-plugin-checker": "^0.14.5",
