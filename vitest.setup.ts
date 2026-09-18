@@ -1,10 +1,7 @@
-import { act, cleanup } from '@testing-library/react';
+import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
-afterEach(async () => {
-	await act(async () => {});
-	cleanup();
-});
+afterEach(cleanup);
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
