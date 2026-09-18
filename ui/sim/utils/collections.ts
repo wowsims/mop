@@ -1,6 +1,5 @@
 // Array, object and enum helpers.
 
-// @ts-expect-error
 import cloneDeep from 'lodash/cloneDeep';
 
 export const omitDeep = <T>(collection: T, excludeKeys: string[]): T => {
