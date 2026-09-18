@@ -14,7 +14,7 @@ npm run type-check     # node_modules/typescript/bin/tsc --noEmit — the whole 
 npm run lint:js        # npx oxlint ./ui
 npm run test:unit      # vitest run — happy-dom, ui/**/*.test.ts(x)
 npm run test:snapshots # store-contract test, then 34 golden spec protos
-npm run fmt            # npx oxfmt ui --check
+npm run fmt            # npx oxfmt . --check — the whole repo, not just ui/
 ```
 
 Add `npm run test:locales` whenever you touched `assets/locales/**` or `schemas/**`, and
@@ -28,31 +28,63 @@ What each one is actually for:
 | `lint:js`        | layer violations (`no-restricted-imports`), browser globals in `ui/sim` and feature models, hook-rule breaks, import order | anything not listed in `.oxlintrc.json` — `categories.correctness` is **off** |
 | `test:unit`      | component and helper behaviour, the store hooks' gating                                                                    | anything without a `.test.ts(x)` beside it                                    |
 | `test:snapshots` | the store notification contract, then serialization drift across all 34 specs                                              | rendering                                                                     |
-| `fmt`            | `ui/` formatting only — `.oxfmtrc.json` has no markdown and no `tools/` in scope                                           |                                                                               |
+| `fmt`            | formatting across the repo, markdown included — `assets/**` and `**/test-fixtures/*.json` are the ignored trees            | anything `.gitignore` already hides, which is how generated output escapes it |
 
 **Zero `no-restricted-imports` errors is the bar**, not "no new ones": the layer rules are the whole
 point of the current tree, and `lint:js` is the only thing enforcing them anywhere.
 
-## What CI runs — it is not the list above
+## What CI runs
 
 `.github/workflows/run_tests.yml` has two jobs:
 
-- **`build-ui`**: `npm ci`, `npm run test:locales`, then `make dist/mop/.dirstamp`.
+- **`build-ui`**, in order: `npm ci` and `npm run test:locales`, then `npm run fmt`,
+  `npm run lint:js`, `npm run lint:css`, `make ui/generated/proto/api.ts go-to-ts`,
+  `npm run type-check`, `npm run test:unit`, and finally `make dist/mop/.dirstamp`.
 - **`test`**: eight shards of `go test --tags=with_db ./sim/...` — the Go sim, not the UI.
+
+Cheapest first, so a formatting slip reports in about a minute instead of behind the wasm build.
+The generation step is not optional: `tsc` and the unit tests resolve `@generated/proto/*` and the
+three `*_auto_gen.ts`, all gitignored and absent from a fresh checkout.
 
 `make dist/mop/.dirstamp` is not a thin wrapper: through `dist/mop/bundle/.dirstamp` it runs
 `tsc --noEmit`, `npx tsx vite.build-workers.mts` and `npx vite build`, and it also builds
-`dist/mop/lib.wasm.gz`, `ui/generated/proto/api.ts` and the asset copies. So CI does type-check and
-does build the bundle — through make, never by calling `vite build` directly.
+`dist/mop/lib.wasm.gz`, `ui/generated/proto/api.ts` and the asset copies. It keeps its own `tsc`
+even though the step above already ran one.
 
-**CI does not run oxlint, vitest, or the snapshot harness.** A layer violation, a failing unit test
-and a golden diff all reach master green. Run them locally; nothing else will.
+**`test:snapshots` is deliberately not a CI step.** The 34 goldens move far less often than the
+tests do. Run it locally when you touch the store or its serialization; nothing upstream will.
+
+`build-ui` is reused through `workflow_call` by `deploy.yml` and `release.yml`, both with
+`needs: tests`, so every gate above also blocks a deploy and a release.
 
 Read the current job list rather than trusting this section:
 
 ```
-/usr/bin/grep -n "run:" -A3 .github/workflows/run_tests.yml
+RTK_DISABLED=1 /usr/bin/grep -n "name:\|run:" .github/workflows/run_tests.yml
 ```
+
+## Warnings are invisible unless you ask for them
+
+vitest intercepts console output, so React and Base UI warnings do not reach stdout on a normal run
+— `npm run test:unit` can be entirely green while the suite emits hundreds of them. They surface in
+CI logs and nowhere else, which makes them look like a CI-only phenomenon. They are not:
+
+```
+RTK_DISABLED=1 npx vitest run --disableConsoleIntercept 2>&1 | grep -c "not wrapped in act"
+```
+
+Three counts worth keeping at zero, all of which were nonzero before anyone looked:
+
+- `not wrapped in act` — a state update landing outside an act window. Usually a promise resolving
+  after the test body, or a store notify called bare between acts.
+- `overlapping act` — the failure mode introduced by fixing the first one carelessly.
+- `Base UI:` — the `nativeButton` contract, among others.
+
+**Prefix `RTK_DISABLED=1` on anything whose output you grep for a count**, not just git. RTK rewrites
+dev commands too, and a compressed one-line summary greps as zero — indistinguishable from success.
+
+If a flag the count depends on might be silently ignored, pass a deliberately bogus one first: an
+unknown flag throws `CACError: Unknown option`, so a clean run proves the real flag was accepted.
 
 ## Locales
 

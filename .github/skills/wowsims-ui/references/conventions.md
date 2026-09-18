@@ -6,9 +6,12 @@ enforced.
 
 ## Formatting
 
-`oxfmt` is the formatter, not prettier — prettier is not a dependency of this repo. Its scope is
-`ui/` only (`npm run fmt` is `npx oxfmt ui --check`), so `tools/`, the makefile and the markdown in
-`.github/skills/` are formatted by hand.
+`oxfmt` is the formatter, not prettier — prettier is not a dependency of this repo. It covers the
+whole repo: `npm run fmt` is `npx oxfmt . --check` and CI runs it, so `tools/`, the docs and the
+markdown in `.github/skills/` are formatted too, not by hand. Two trees are in `ignorePatterns`
+because they are data rather than source: `assets/**`, whose database is written by `gen_db` and
+paired with `db.bin`, and `**/test-fixtures/*.json`, which is UPDATE_FIXTURES territory. Anything
+`.gitignore` already hides is skipped as well, which is how generated output stays out.
 
 ```
 node -e "console.log(require('./.oxfmtrc.json'))"
