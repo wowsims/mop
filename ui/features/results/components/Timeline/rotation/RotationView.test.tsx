@@ -19,7 +19,17 @@ const host = fakeHost({
 	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
 });
 
+let frames: Map<number, FrameRequestCallback>;
+let nextHandle = 0;
+
 beforeEach(() => {
+	frames = new Map();
+	nextHandle = 0;
+	vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+		frames.set(++nextHandle, callback);
+		return nextHandle;
+	});
+	vi.stubGlobal('cancelAnimationFrame', (handle: number) => frames.delete(handle));
 	for (const name of ['ResizeObserver', 'IntersectionObserver']) {
 		vi.stubGlobal(
 			name,
@@ -37,10 +47,14 @@ beforeEach(() => {
 
 const MODEL = rotationModel([castRow('cast:a', 'Alpha', [castItem(0, 1), castItem(4, 5), castItem(25, 26)]), castRow('cast:b', 'Beta', [castItem(2, 3)])]);
 
+/** Delivers frames the way a browser would — a cancelled one never arrives — until nothing asks for another. */
 const settle = async () => {
-	await act(async () => {
-		await new Promise(resolve => setTimeout(resolve, 40));
-	});
+	for (let generation = 0; frames.size; generation++) {
+		if (generation === 8) throw new Error('the rotation view never stopped scheduling frames');
+		const due = [...frames.values()];
+		frames.clear();
+		await act(async () => due.forEach(callback => callback(generation)));
+	}
 };
 
 const Wrapper = ({ children }: { children: ReactNode }) => {
@@ -72,35 +86,26 @@ const mount = async (model = MODEL) => {
 const rowKeys = (container: HTMLElement) => [...container.querySelectorAll('[data-testid="rotation-row"]')].map(row => row.getAttribute('data-row-key'));
 
 describe('RotationView', () => {
-	it('mounts the ordered rows between the two spacers', async () => {
+	it('mounts the ordered rows between the two spacers, and only the items inside the track window', async () => {
 		const { container } = await mount();
 		expect(rowKeys(container)).toEqual(['header:player', 'cast:a', 'cast:b']);
 		expect(container.querySelectorAll('[data-testid="rotation-content"] > [data-testid="rotation-vspacer"]')).toHaveLength(2);
+		// 800px wide at the default 100 pps, padded 600 each way, is -6s..14s: the 25s cast is out.
+		expect(container.querySelector('[data-row-key="cast:a"]')!.querySelectorAll('[data-testid="rotation-item-cast"]')).toHaveLength(2);
 	});
 
-	it('mounts only the rows near the scrollport, and spaces out the rest of the list', async () => {
+	it('mounts only the rows near the scrollport, and keeps the content its full height through a toggle so the page cannot clamp the scroll', async () => {
 		const tall = rotationModel(Array.from({ length: 60 }, (_, index) => castRow(`cast:${index}`, `Row ${index}`, [])));
 		const { container } = await mount(tall);
 		// 61 rows of 32px against a 768px viewport padded by 200: rows 0..30, and 30 × 32px below.
 		expect(rowKeys(container)).toHaveLength(31);
 		expect(rowKeys(container).at(-1)).toBe('cast:29');
-		const spacers = [...container.querySelectorAll<HTMLElement>('[data-testid="rotation-content"] > [data-testid="rotation-vspacer"]')];
-		expect(spacers[0].style.getPropertyValue('--vspacer-h')).toBe('0');
-		expect(spacers[1].style.getPropertyValue('--vspacer-h')).toBe('960');
-	});
+		const spacers = () => [...container.querySelectorAll<HTMLElement>('[data-testid="rotation-content"] > [data-testid="rotation-vspacer"]')];
+		expect(spacers()[0].style.getPropertyValue('--vspacer-h')).toBe('0');
+		expect(spacers()[1].style.getPropertyValue('--vspacer-h')).toBe('960');
 
-	it('mounts only the items inside the track window', async () => {
-		const { container } = await mount();
-		// 800px wide at the default 100 pps, padded 600 each way, is -6s..14s: the 25s cast is out.
-		expect(container.querySelector('[data-row-key="cast:a"]')!.querySelectorAll('[data-testid="rotation-item-cast"]')).toHaveLength(2);
-	});
-
-	it('keeps the content its full height through a toggle, so the page cannot clamp the scroll', async () => {
-		const tall = rotationModel(Array.from({ length: 60 }, (_, index) => castRow(`cast:${index}`, `Row ${index}`, [])));
-		const { container } = await mount(tall);
 		const height = () => {
-			const spacers = [...container.querySelectorAll<HTMLElement>('[data-testid="rotation-content"] > [data-testid="rotation-vspacer"]')];
-			const spacing = spacers.reduce((total, spacer) => total + Number(spacer.style.getPropertyValue('--vspacer-h')), 0);
+			const spacing = spacers().reduce((total, spacer) => total + Number(spacer.style.getPropertyValue('--vspacer-h')), 0);
 			return spacing + container.querySelectorAll('[data-testid="rotation-row"]').length * 32;
 		};
 		expect(height()).toBe(61 * 32);
@@ -112,26 +117,17 @@ describe('RotationView', () => {
 		expect(height()).toBe(60 * 32);
 	});
 
-	it('takes a row out of the order when its eye toggle is clicked', async () => {
+	it('takes each row out of the order as its eye toggle is clicked, drops the emptied section, and brings them all back from the floating bar', async () => {
 		const { container } = await mount();
+
 		fireEvent.click(container.querySelector('[data-row-key="cast:a"] [data-testid="rotation-row-hide"]')!);
 		await settle();
 		expect(rowKeys(container)).toEqual(['header:player', 'cast:b']);
-	});
 
-	it('drops the whole section once every row in it is hidden', async () => {
-		const { container } = await mount();
-		fireEvent.click(container.querySelector('[data-row-key="cast:a"] [data-testid="rotation-row-hide"]')!);
-		await settle();
 		fireEvent.click(container.querySelector('[data-row-key="cast:b"] [data-testid="rotation-row-hide"]')!);
 		await settle();
 		expect(rowKeys(container)).toEqual([]);
-	});
 
-	it('brings every hidden row back from the floating bar', async () => {
-		const { container } = await mount();
-		fireEvent.click(container.querySelector('[data-row-key="cast:a"] [data-testid="rotation-row-hide"]')!);
-		await settle();
 		fireEvent.click(container.querySelector('[data-testid="rotation-floating-action-bar-show-all"]')!);
 		await settle();
 		expect(rowKeys(container)).toEqual(['header:player', 'cast:a', 'cast:b']);
