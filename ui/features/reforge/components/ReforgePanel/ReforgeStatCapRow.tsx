@@ -12,6 +12,8 @@ import { NumberPicker } from '@ui-kit/NumberPicker';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { type ReactNode, useId, useMemo } from 'react';
 
+import { useReforgeIdPrefix } from './ReforgeIdPrefixContext';
+
 export interface ReforgeStatCapRowProps {
 	model: ReforgeOptimizerModel;
 	player: Player<any>;
@@ -24,6 +26,7 @@ const CAP_FIELDS = ['reforge:useSoftCapBreakpoints', 'reforge:statCaps'] as cons
 /** One stat's cap: the percentage, the undershoot flag, and — where the spec supplies them — a preset select on its own row. */
 export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeStatCapRowProps) => {
 	const settings = model.settings;
+	const idPrefix = useReforgeIdPrefix();
 	const statName = unitStat.getShortName(player.getClass());
 	const tooltipId = useId();
 
@@ -64,7 +67,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 					<NumberPicker
 						modObject={player}
 						config={{
-							id: `reforge-optimizer-${statName}-percentage`,
+							id: `${idPrefix}-${statName}-percentage`,
 							float: true,
 							maxDecimalDigits: 5,
 							showZeroes: false,
@@ -82,7 +85,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 					<BooleanPicker
 						modObject={player}
 						config={{
-							id: `reforge-optimizer-${statName}-undershoot`,
+							id: `${idPrefix}-${statName}-undershoot`,
 							label: '',
 							storeSubscribe: () => subscribeReforgeChange(settings),
 							getValue: () => settings.undershootCaps.getUnitStat(unitStat) > 0,
@@ -100,7 +103,7 @@ export const ReforgeStatCapRow = ({ model, player, unitStat, tooltip }: ReforgeS
 						<EnumPicker
 							modObject={player}
 							config={{
-								id: `reforge-optimizer-${statName}-presets`,
+								id: `${idPrefix}-${statName}-presets`,
 								extraClassNames: ['mb-0'],
 								label: '',
 								values: presetValues,

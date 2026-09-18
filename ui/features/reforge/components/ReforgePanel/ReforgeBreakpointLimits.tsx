@@ -10,6 +10,7 @@ import { Icon } from '@ui-kit/Icon';
 import { Tooltip, tooltipAnchorProps } from '@ui-kit/Tooltip';
 import { useId } from 'react';
 
+import { useReforgeIdPrefix } from './ReforgeIdPrefixContext';
 import { INCLUDED_STATS } from './utils';
 
 export interface ReforgeBreakpointLimitsProps {
@@ -22,6 +23,7 @@ export interface ReforgeBreakpointLimitsProps {
 /** Caps the highest breakpoint the optimizer will chase, one select per soft-capped stat. */
 export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useSoftCapBreakpoints }: ReforgeBreakpointLimitsProps) => {
 	const tooltipId = useId();
+	const idPrefix = useReforgeIdPrefix();
 
 	if (!useSoftCapBreakpoints) return null;
 
@@ -57,7 +59,7 @@ export const ReforgeBreakpointLimits = ({ settings, softCapsConfig, player, useS
 									<EnumPicker
 										modObject={player}
 										config={{
-											id: `reforge-optimizer-${statName}-breakpoint-limit`,
+											id: `${idPrefix}-${statName}-breakpoint-limit`,
 											extraClassNames: ['mb-0'],
 											label: '',
 											values: [

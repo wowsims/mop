@@ -6,14 +6,17 @@ import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 
+import { useReforgeIdPrefix } from './ReforgeIdPrefixContext';
+
 export interface ReforgeFrozenSlotsProps {
 	settings: ReforgeSettings;
 	player: Player<any>;
 	freezeItemSlots: boolean;
 }
 
-/** Two slots per row, in the gear's own slot order. The slot list is read once per open. */
+/** Two slots per row, in the gear's own slot order. The slot list is the whole slot enum, so it is memoised on the player. */
 export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: ReforgeFrozenSlotsProps) => {
+	const idPrefix = useReforgeIdPrefix();
 	const slotsByRow = useMemo(() => {
 		const allSlots = player.getGear().getItemSlots();
 		const numRows = Math.floor(allSlots.length / 2) + 1;
@@ -31,7 +34,7 @@ export const ReforgeFrozenSlots = ({ settings, player, freezeItemSlots }: Reforg
 								<BooleanPicker
 									modObject={player}
 									config={{
-										id: 'reforge-optimizer-freeze-' + ItemSlot[slot],
+										id: `${idPrefix}-freeze-${ItemSlot[slot]}`,
 										label: translateSlotName(slot),
 										layout: 'inline',
 										storeField: 'reforge:freezeItemSlots',

@@ -1,4 +1,4 @@
-import type { ReforgeOptimizerModel } from '@features/reforge/model/reforge_optimizer';
+import type { ReforgeOptimizerModel, ReforgeOptimizerOptions } from '@features/reforge/model/reforge_optimizer';
 import type { ResultChannel } from '@features/results/model/result_channel';
 import type { ResultsPanelHandle } from '@features/results/model/results_panel_handle';
 import type { ErrorOutcome, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
@@ -42,6 +42,7 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	reforger: ReforgeOptimizerModel | null;
+	readonly reforgeOptions: ReforgeOptimizerOptions | null;
 	readonly resultChannel: ResultChannel;
 	applyEmptyAplRotation(): void;
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings;

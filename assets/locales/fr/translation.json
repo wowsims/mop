@@ -799,6 +799,12 @@
         "settings": {
             "combinations_count": "{{amount}} Combinaisons",
             "combination_singular": "1 Combinaison",
+            "groups": {
+            	"options": "Options du lot",
+            	"frozen_slots": "Emplacements figés",
+            	"reforge": "Paramètres de reforge",
+            	"reforge_description": "Ce sont les mêmes paramètres que ceux du bouton Suggérer des reforges. La simulation par lot reforge chaque ensemble avec ceux-ci."
+            },
             "iterations": "Itérations",
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
@@ -808,6 +814,7 @@
 				"label": "Utiliser la simulation mono-étape héritée",
 				"tooltip": "Par défaut, Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. Activez cette option uniquement pour forcer l'ancien comportement avec une seule passe finale."
             },
+			"reforge_gems_locked": "La simulation par lot optimise toujours les gemmes : cette option est donc figée ici.",
 			"required_set_bonuses": {
 				"label": "Bonus d'ensemble requis",
 				"none": "Aucune exigence",

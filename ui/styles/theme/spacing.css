@@ -47,6 +47,7 @@
 	--spacing-sim-header-minus: calc(var(--spacing-sim-header) - 1px);
 	--spacing-cr-icon-offset: calc(var(--spacing-cr-icon) + 20px);
 	--spacing-log-body-min-h: calc(100dvh - var(--spacing-sim-header) - var(--spacing-page));
+	--spacing-bulk-settings-max-h: calc(100dvh - var(--spacing-sim-header) - var(--spacing-page));
 	--spacing-gem-inner: calc(4 * var(--gem-width) / 5);
 	--spacing-gem: calc(var(--gem-width) / 10);
 
