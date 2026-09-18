@@ -9,7 +9,7 @@ So you want to make a new sim for your class/spec! The basic steps are as follow
 
 ## Create the proto interface between Sim and UI
 
-This project uses [Google Protocol Buffers](https://developers.google.com/protocol-buffers/docs/gotutorial "https://developers.google.com/protocol-buffers/docs/gotutorial") to pass data between the sim and the UI. TLDR; Describe data structures in .proto files, and the tool can generate code in any programming language. It lets us avoid repeating the same code in our Go and Typescript worlds without losing type safety.
+This project uses [Google Protocol Buffers](https://developers.google.com/protocol-buffers/docs/gotutorial 'https://developers.google.com/protocol-buffers/docs/gotutorial') to pass data between the sim and the UI. TLDR; Describe data structures in .proto files, and the tool can generate code in any programming language. It lets us avoid repeating the same code in our Go and Typescript worlds without losing type safety.
 
 For a new sim, make the following changes:
 
@@ -100,11 +100,9 @@ calculator is the worked example — a button, a progress dialog and a results d
 registered in two lines:
 
 ```tsx
-export const registerCombustionThresholds = (
-	host: IndividualSimHost<Spec.SpecFireMage>,
-) =>
+export const registerCombustionThresholds = (host: IndividualSimHost<Spec.SpecFireMage>) =>
 	host.sidebar.add({
-		id: "mage-calculate-combustion-thresholds",
+		id: 'mage-calculate-combustion-thresholds',
 		render: () => <CombustionThresholds host={host} />,
 	});
 ```
@@ -120,7 +118,7 @@ sim is initialised.
 
 This step is where most of the magic happens. A few highlights to start understanding the sim code:
 
-- `sim/wasm/main.go` This file is the actual main function, for the [.wasm binary](https://webassembly.org/ "https://webassembly.org/") used by the UI. You shouldn't ever need to touch this, but just know its here.
+- `sim/wasm/main.go` This file is the actual main function, for the [.wasm binary](https://webassembly.org/ 'https://webassembly.org/') used by the UI. You shouldn't ever need to touch this, but just know its here.
 - `sim/core/api.go` This is where the action starts. This file implements the request/response messages defined in `proto/api.proto`.
 - `sim/core/sim.go` Orchestrates everything. Main event loop is in `Simulation.RunOnce`.
 - `sim/core/agent.go` An Agent can be thought of as the 'Player', i.e. the person controlling the game. This is the interface you'll be implementing.

@@ -24,9 +24,10 @@ protoc \
 
 The project settings file for vscode should now pick that up (.vscode/settings.json) should point the schema "jsonschema" directory. The extension ".apl.json" should activate the generated schema.
 
-Create an APL file named "myrotation.apl.json" replacing `myrotation` with whatever name you prefer. 
+Create an APL file named "myrotation.apl.json" replacing `myrotation` with whatever name you prefer.
 
-An empty rotation looks something like 
+An empty rotation looks something like
+
 ```
 {
     "type": "TypeAPL",
@@ -38,6 +39,7 @@ An empty rotation looks something like
 You can then add prepull actions and the main priority list.
 
 Here is what a example prepull action looks like. It casts spell 1 at -1 seconds.
+
 ```
         {
             "action": {
@@ -53,7 +55,7 @@ Here is what a example prepull action looks like. It casts spell 1 at -1 seconds
 
 Here is an example action from the priorityList of elemental shaman. This is the check to see if flameshock dot is applied before casting lavaburst.
 
-Condition is checking that "cmp" (compare) that the "lhs" (left hand side) is "OpGt" (greater than) the "rhs" (right hand side). 
+Condition is checking that "cmp" (compare) that the "lhs" (left hand side) is "OpGt" (greater than) the "rhs" (right hand side).
 
 In this case it is checking that dot remaining time for flameshock is greater than the cast time of lava burst.
 

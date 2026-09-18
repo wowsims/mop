@@ -18,42 +18,44 @@ All translations start in `en.json`. Here's how to structure it:
 
 ```json
 {
-  "common": {
-    "buttons": {
-      "save": "Save",
-      "cancel": "Cancel"
-    }
-  },
-  "gear": {
-    "equipment": {
-      "head": "Head",
-      "chest": "Chest"
-    }
-  }
+	"common": {
+		"buttons": {
+			"save": "Save",
+			"cancel": "Cancel"
+		}
+	},
+	"gear": {
+		"equipment": {
+			"head": "Head",
+			"chest": "Chest"
+		}
+	}
 }
 ```
 
 ### Quick Tips for Keys
 
 ✅ Do this:
+
 ```json
 {
-  "talents": {
-    "specSelection": {
-      "chooseSpec": "Choose Spec",  // Reusable!
-      "currentSpec": "Current Spec"
-    }
-  }
+	"talents": {
+		"specSelection": {
+			"chooseSpec": "Choose Spec", // Reusable!
+			"currentSpec": "Current Spec"
+		}
+	}
 }
 ```
 
 ❌ Don't do this:
+
 ```json
 {
-  "btn1": "Save",           // Too vague
-  "CANCEL_BUTTON": "Cancel", // Weird casing
-  "spec-name": "Fire",      // No hyphens please
-  "talentPageTitle": "Talents Page" // Too specific
+	"btn1": "Save", // Too vague
+	"CANCEL_BUTTON": "Cancel", // Weird casing
+	"spec-name": "Fire", // No hyphens please
+	"talentPageTitle": "Talents Page" // Too specific
 }
 ```
 
@@ -75,45 +77,47 @@ const welcome = i18n.t('common.welcome', { name: playerName });
 
 ```tsx
 function SettingsMenu() {
-  return (
-    <div>
-      <h1>{i18n.t('settings.title')}</h1>
-      <button>{i18n.t('common.buttons.save')}</button>
-    </div>
-  );
+	return (
+		<div>
+			<h1>{i18n.t('settings.title')}</h1>
+			<button>{i18n.t('common.buttons.save')}</button>
+		</div>
+	);
 }
 ```
 
 ## Pro Tips 🎮
 
 1. **Keep it Reusable**
-   ```json
-   // ✅ Good - can use everywhere
-   "common.buttons.save": "Save"
 
-   // ❌ Bad - too specific
-   "talentPageSaveButton": "Save"
-   ```
+    ```json
+    // ✅ Good - can use everywhere
+    "common.buttons.save": "Save"
+
+    // ❌ Bad - too specific
+    "talentPageSaveButton": "Save"
+    ```
 
 2. **Use Variables for Dynamic Stuff**
-   ```json
-   {
-     "character": {
-       "levelUp": "{{name}} hit level {{level}}!" // Nice!
-     }
-   }
-   ```
+
+    ```json
+    {
+    	"character": {
+    		"levelUp": "{{name}} hit level {{level}}!" // Nice!
+    	}
+    }
+    ```
 
 3. **Group Related Things**
-   ```json
-   {
-     "gear": {
-       "equipment": {
-         "head": "Head",
-         "chest": "Chest"
-       }
-     }
-   }
-   ```
+    ```json
+    {
+    	"gear": {
+    		"equipment": {
+    			"head": "Head",
+    			"chest": "Chest"
+    		}
+    	}
+    }
+    ```
 
 That's it! Keep it simple and reusable. If you need to add new languages, just copy `en.json` and translate away! 🚀

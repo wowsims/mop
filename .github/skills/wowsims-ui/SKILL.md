@@ -1,6 +1,6 @@
 ---
 name: wowsims-ui
-description: "Work on the wowsims MoP frontend, ui/ (React 19 + TypeScript). Use when touching ui/sim (the Sim/Player/Raid/Encounter facades, the Zustand store in ui/sim/state, the store hooks in ui/sim/hooks, batching, persistence, the IndividualSimSettings envelope), ui/ui-kit, ui/features, ui/app, ui/i18n, ui/specs or ui/generated/proto; when an import trips the oxlint layer rules; or when a UI change needs verifying (type-check, lint, vitest, the golden snapshot harness, a dev-server or real-sim smoke). Start here, then open the one file under references/ that owns the subject — the routing table is in this file."
+description: 'Work on the wowsims MoP frontend, ui/ (React 19 + TypeScript). Use when touching ui/sim (the Sim/Player/Raid/Encounter facades, the Zustand store in ui/sim/state, the store hooks in ui/sim/hooks, batching, persistence, the IndividualSimSettings envelope), ui/ui-kit, ui/features, ui/app, ui/i18n, ui/specs or ui/generated/proto; when an import trips the oxlint layer rules; or when a UI change needs verifying (type-check, lint, vitest, the golden snapshot harness, a dev-server or real-sim smoke). Start here, then open the one file under references/ that owns the subject — the routing table is in this file.'
 ---
 
 # wowsims-ui
@@ -40,16 +40,16 @@ leaves everything above may depend on, and they may depend on each other.
 generated → worker → {sim, i18n} → ui-kit → features → app → specs → pages
 ```
 
-| Directory                  | Alias        | What lives there                                                                                                                          |
-| -------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui/generated/`            | `@generated` | protobuf-ts output (`proto/**`) and `*_auto_gen.ts`. Tool output — never hand-edit, never lint (`ignorePatterns`)                         |
-| `ui/worker/`               | `@worker`    | the three worker entries (`local_worker`, `net_worker`, `sim_worker`) plus the Go package that `go:embed`s `highs.wasm`                   |
+| Directory                  | Alias        | What lives there                                                                                                                                                                                                        |
+| -------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui/generated/`            | `@generated` | protobuf-ts output (`proto/**`) and `*_auto_gen.ts`. Tool output — never hand-edit, never lint (`ignorePatterns`)                                                                                                       |
+| `ui/worker/`               | `@worker`    | the three worker entries (`local_worker`, `net_worker`, `sim_worker`) plus the Go package that `go:embed`s `highs.wasm`                                                                                                 |
 | `ui/sim/`                  | `@sim`       | node-runnable model: the facades, `state/` (Zustand), `player/`, `raid/`, `settings/`, `talents/`, `presets/`, plus the React bindings in `context/` and `hooks/`. DOM-free and browser-global-free, **not** React-free |
-| `ui/i18n/`                 | `@i18n`      | LEAF: i18next config, entity/label tables, `localization.ts`                                                                              |
-| `ui/ui-kit/`               | `@ui-kit`    | sim-agnostic React widgets, one folder per component (`NumberPicker/`, `Dialog/`, `Tooltip/`, …), plus `hooks/` and `utils/` — no `Player`/`Sim` types except through generic params |
-| `ui/features/<x>/`         | `@features`  | twelve capabilities; `model/` is DOM-free _and_ React-free, `components/` + `hooks/` are React                                            |
-| `ui/app/`                  | `@app`       | composition root: `SimHostObject` (`individual_sim_ui.tsx`), `SimApp`/`SimShell`/`SimTabs`, `header/`, `tabs/`, `landing/`, `spec_entry.tsx`, `browser_env.ts` |
-| `ui/specs/<class>/<spec>/` | `@specs`     | spec data — one `spec.ts` per spec, may import everything                                                                                 |
+| `ui/i18n/`                 | `@i18n`      | LEAF: i18next config, entity/label tables, `localization.ts`                                                                                                                                                            |
+| `ui/ui-kit/`               | `@ui-kit`    | sim-agnostic React widgets, one folder per component (`NumberPicker/`, `Dialog/`, `Tooltip/`, …), plus `hooks/` and `utils/` — no `Player`/`Sim` types except through generic params                                    |
+| `ui/features/<x>/`         | `@features`  | twelve capabilities; `model/` is DOM-free _and_ React-free, `components/` + `hooks/` are React                                                                                                                          |
+| `ui/app/`                  | `@app`       | composition root: `SimHostObject` (`individual_sim_ui.tsx`), `SimApp`/`SimShell`/`SimTabs`, `header/`, `tabs/`, `landing/`, `spec_entry.tsx`, `browser_env.ts`                                                          |
+| `ui/specs/<class>/<spec>/` | `@specs`     | spec data — one `spec.ts` per spec, may import everything                                                                                                                                                               |
 
 Not layers, and not in the arrow: `ui/styles/` (Tailwind entry, tokens, the 34 spec themes as CSS
 variables — see `ui/STYLING.md`), `ui/shared/` (three
@@ -63,15 +63,15 @@ arguing with one.
 
 ## Which reference to open
 
-| You are…                                                                                           | Open                            |
-| -------------------------------------------------------------------------------------------------- | ------------------------------- |
-| moving a file, adding an import that lints, or deciding which directory something belongs in       | `references/layers.md`          |
-| adding a settings field, wiring a picker, or chasing a component that renders stale data or re-renders twice | `references/state.md`  |
-| touching saved settings, the URL hash, autosave, or `IndividualSimSettings`                        | `references/persistence.md`     |
-| about to call a change done, or wondering what CI actually runs                                    | `references/verification.md`    |
-| running the sim in a browser, in a fresh worktree, or measuring a perf regression                  | `references/running-locally.md` |
-| adding a spec, formatting code, or about to re-litigate a decision that was already made           | `references/conventions.md`     |
-| styling a component, adding state, or locating an element in a test/tool                           | `ui/STYLING.md`                 |
+| You are…                                                                                                     | Open                            |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| moving a file, adding an import that lints, or deciding which directory something belongs in                 | `references/layers.md`          |
+| adding a settings field, wiring a picker, or chasing a component that renders stale data or re-renders twice | `references/state.md`           |
+| touching saved settings, the URL hash, autosave, or `IndividualSimSettings`                                  | `references/persistence.md`     |
+| about to call a change done, or wondering what CI actually runs                                              | `references/verification.md`    |
+| running the sim in a browser, in a fresh worktree, or measuring a perf regression                            | `references/running-locally.md` |
+| adding a spec, formatting code, or about to re-litigate a decision that was already made                     | `references/conventions.md`     |
+| styling a component, adding state, or locating an element in a test/tool                                     | `ui/STYLING.md`                 |
 
 ## The short version of "done"
 
@@ -99,16 +99,16 @@ change, the way you would a stale comment.
 
 **Route by kind of change, so nobody has to re-read everything:**
 
-| You changed…                                                                                          | Update                                         |
-| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `.oxlintrc.json`, `tsconfig.json` `paths`, or a top-level `ui/` directory                             | `references/layers.md` and the layer map above |
-| `ui/sim/state/sim_store.ts`, `subscriptions.ts`, `batch.ts`, `events.ts`                              | `references/state.md`                          |
-| `ui/sim/hooks/*`, `ui/sim/context/SimHostContext.tsx`, `ui/ui-kit/hooks/useInput.ts`, `ui/ui-kit/input.ts` | `references/state.md`                     |
-| `ui/sim/state/persistence.ts`, `serialization.ts`, `sim_links.ts`                                     | `references/persistence.md`                    |
-| a `package.json` script, `.github/workflows/run_tests.yml`, or the snapshot harness                   | `references/verification.md`                   |
-| `vite.config.mts`, `vite.build-workers.mts`, `tools/vite/spec_pages.mts`, the makefile's dist targets | `references/running-locally.md`                |
-| `.oxfmtrc.json`, `ui/specs/**` authoring, or a decision recorded as settled                           | `references/conventions.md`                    |
-| `ui/styles/*.css`, a `ui-*` class, a class-hook gate, or how elements are located in tests/tools      | `ui/STYLING.md`                                |
+| You changed…                                                                                               | Update                                         |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `.oxlintrc.json`, `tsconfig.json` `paths`, or a top-level `ui/` directory                                  | `references/layers.md` and the layer map above |
+| `ui/sim/state/sim_store.ts`, `subscriptions.ts`, `batch.ts`, `events.ts`                                   | `references/state.md`                          |
+| `ui/sim/hooks/*`, `ui/sim/context/SimHostContext.tsx`, `ui/ui-kit/hooks/useInput.ts`, `ui/ui-kit/input.ts` | `references/state.md`                          |
+| `ui/sim/state/persistence.ts`, `serialization.ts`, `sim_links.ts`                                          | `references/persistence.md`                    |
+| a `package.json` script, `.github/workflows/run_tests.yml`, or the snapshot harness                        | `references/verification.md`                   |
+| `vite.config.mts`, `vite.build-workers.mts`, `tools/vite/spec_pages.mts`, the makefile's dist targets      | `references/running-locally.md`                |
+| `.oxfmtrc.json`, `ui/specs/**` authoring, or a decision recorded as settled                                | `references/conventions.md`                    |
+| `ui/styles/*.css`, a `ui-*` class, a class-hook gate, or how elements are located in tests/tools           | `ui/STYLING.md`                                |
 
 Then run the path check, which fails on any file this skill names that no longer exists:
 

@@ -3,8 +3,10 @@
 This project has dependencies on Go >=1.25, protobuf-compiler and the corresponding Go plugins, and node >= 22.
 
 ## Ubuntu
+
 Do not use apt to install any dependencies, the versions they install are all too old.
 Script below will curl latest versions and install them.
+
 ```sh
 # Standard Go installation script
 curl -O https://dl.google.com/go/go1.25.4.linux-amd64.tar.gz
@@ -32,7 +34,9 @@ npm install
 ```
 
 ## Docker
+
 Alternatively, install Docker and your workflow will look something like this:
+
 ```sh
 git clone https://github.com/wowsims/mop.git
 cd mop
@@ -60,7 +64,8 @@ $(echo $MOP_CMD) make host
 ```
 
 ## Windows
-If you want to develop on Windows, we recommend setting up a Ubuntu virtual machine (VM) or running Docker using [this guide](https://docs.docker.com/desktop/windows/wsl/ "https://docs.docker.com/desktop/windows/wsl/") and then following the Ubuntu or Docker instructions, respectively.
+
+If you want to develop on Windows, we recommend setting up a Ubuntu virtual machine (VM) or running Docker using [this guide](https://docs.docker.com/desktop/windows/wsl/ 'https://docs.docker.com/desktop/windows/wsl/') and then following the Ubuntu or Docker instructions, respectively.
 
 If you prefer working natively:
 
@@ -72,8 +77,9 @@ If you prefer working natively:
 With all the dependencies setup, you should be able to run the `make` commands and compile the project.
 
 ## Mac OS
-* Docker is available in OS X as well, so in theory similar instructions should work for the Docker method
-* You can also use the Ubuntu setup instructions as above to run natively, with a few modifications:
-  * You may need a different Go installer if `go1.18.3.linux-amd64.tar.gz` is not compatible with your system's architecture; you can do the Go install manually from `https://go.dev/doc/install`.
-  * OS X uses Homebrew instead of apt, so in order to install protobuf-compiler you'll instead need to run `brew install protobuf-c` (note the package name is also a little different than in apt). You might need to first update or upgrade brew.
-  * The provided install script for Node will not included a precompiled binary for OS X, but it's smart enough to compile one. Be ready for your CPU to melt on running `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`.
+
+- Docker is available in OS X as well, so in theory similar instructions should work for the Docker method
+- You can also use the Ubuntu setup instructions as above to run natively, with a few modifications:
+    - You may need a different Go installer if `go1.18.3.linux-amd64.tar.gz` is not compatible with your system's architecture; you can do the Go install manually from `https://go.dev/doc/install`.
+    - OS X uses Homebrew instead of apt, so in order to install protobuf-compiler you'll instead need to run `brew install protobuf-c` (note the package name is also a little different than in apt). You might need to first update or upgrade brew.
+    - The provided install script for Node will not included a precompiled binary for OS X, but it's smart enough to compile one. Be ready for your CPU to melt on running `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash`.

@@ -1,524 +1,449 @@
 {
-  "type": "object",
-  "properties": {
-    "classes": {
-      "type": "object",
-      "properties": {
-        "death_knight": {
-          "type": "string"
-        },
-        "druid": {
-          "type": "string"
-        },
-        "hunter": {
-          "type": "string"
-        },
-        "mage": {
-          "type": "string"
-        },
-        "monk": {
-          "type": "string"
-        },
-        "paladin": {
-          "type": "string"
-        },
-        "priest": {
-          "type": "string"
-        },
-        "rogue": {
-          "type": "string"
-        },
-        "shaman": {
-          "type": "string"
-        },
-        "warlock": {
-          "type": "string"
-        },
-        "warrior": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "death_knight",
-        "druid",
-        "hunter",
-        "mage",
-        "monk",
-        "paladin",
-        "priest",
-        "rogue",
-        "shaman",
-        "warlock",
-        "warrior"
-      ]
-    },
-    "specs": {
-      "type": "object",
-      "properties": {
-        "death_knight": {
-          "type": "object",
-          "properties": {
-            "blood": {
-              "type": "string"
-            },
-            "frost": {
-              "type": "string"
-            },
-            "unholy": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "blood",
-            "frost",
-            "unholy"
-          ]
-        },
-        "druid": {
-          "type": "object",
-          "properties": {
-            "balance": {
-              "type": "string"
-            },
-            "feral": {
-              "type": "string"
-            },
-            "guardian": {
-              "type": "string"
-            },
-            "restoration": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "balance",
-            "feral",
-            "guardian",
-            "restoration"
-          ]
-        },
-        "hunter": {
-          "type": "object",
-          "properties": {
-            "beast_mastery": {
-              "type": "string"
-            },
-            "marksmanship": {
-              "type": "string"
-            },
-            "survival": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "beast_mastery",
-            "marksmanship",
-            "survival"
-          ]
-        },
-        "mage": {
-          "type": "object",
-          "properties": {
-            "arcane": {
-              "type": "string"
-            },
-            "fire": {
-              "type": "string"
-            },
-            "frost": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "arcane",
-            "fire",
-            "frost"
-          ]
-        },
-        "monk": {
-          "type": "object",
-          "properties": {
-            "brewmaster": {
-              "type": "string"
-            },
-            "mistweaver": {
-              "type": "string"
-            },
-            "windwalker": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "brewmaster",
-            "mistweaver",
-            "windwalker"
-          ]
-        },
-        "paladin": {
-          "type": "object",
-          "properties": {
-            "holy": {
-              "type": "string"
-            },
-            "protection": {
-              "type": "string"
-            },
-            "retribution": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "holy",
-            "protection",
-            "retribution"
-          ]
-        },
-        "priest": {
-          "type": "object",
-          "properties": {
-            "discipline": {
-              "type": "string"
-            },
-            "holy": {
-              "type": "string"
-            },
-            "shadow": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "discipline",
-            "holy",
-            "shadow"
-          ]
-        },
-        "rogue": {
-          "type": "object",
-          "properties": {
-            "assassination": {
-              "type": "string"
-            },
-            "combat": {
-              "type": "string"
-            },
-            "subtlety": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "assassination",
-            "combat",
-            "subtlety"
-          ]
-        },
-        "shaman": {
-          "type": "object",
-          "properties": {
-            "elemental": {
-              "type": "string"
-            },
-            "enhancement": {
-              "type": "string"
-            },
-            "restoration": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "elemental",
-            "enhancement",
-            "restoration"
-          ]
-        },
-        "warlock": {
-          "type": "object",
-          "properties": {
-            "affliction": {
-              "type": "string"
-            },
-            "demonology": {
-              "type": "string"
-            },
-            "destruction": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "affliction",
-            "demonology",
-            "destruction"
-          ]
-        },
-        "warrior": {
-          "type": "object",
-          "properties": {
-            "arms": {
-              "type": "string"
-            },
-            "fury": {
-              "type": "string"
-            },
-            "protection": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "arms",
-            "fury",
-            "protection"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "death_knight",
-        "druid",
-        "hunter",
-        "mage",
-        "monk",
-        "paladin",
-        "priest",
-        "rogue",
-        "shaman",
-        "warlock",
-        "warrior"
-      ]
-    },
-    "races": {
-      "type": "object",
-      "properties": {
-        "unknown": {
-          "type": "string"
-        },
-        "blood_elf": {
-          "type": "string"
-        },
-        "draenei": {
-          "type": "string"
-        },
-        "dwarf": {
-          "type": "string"
-        },
-        "gnome": {
-          "type": "string"
-        },
-        "goblin": {
-          "type": "string"
-        },
-        "human": {
-          "type": "string"
-        },
-        "night_elf": {
-          "type": "string"
-        },
-        "orc": {
-          "type": "string"
-        },
-        "alliance_pandaren": {
-          "type": "string"
-        },
-        "horde_pandaren": {
-          "type": "string"
-        },
-        "tauren": {
-          "type": "string"
-        },
-        "troll": {
-          "type": "string"
-        },
-        "undead": {
-          "type": "string"
-        },
-        "worgen": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "unknown",
-        "blood_elf",
-        "draenei",
-        "dwarf",
-        "gnome",
-        "goblin",
-        "human",
-        "night_elf",
-        "orc",
-        "alliance_pandaren",
-        "horde_pandaren",
-        "tauren",
-        "troll",
-        "undead",
-        "worgen"
-      ]
-    },
-    "professions": {
-      "type": "object",
-      "properties": {
-        "unknown": {
-          "type": "string"
-        },
-        "alchemy": {
-          "type": "string"
-        },
-        "blacksmithing": {
-          "type": "string"
-        },
-        "enchanting": {
-          "type": "string"
-        },
-        "engineering": {
-          "type": "string"
-        },
-        "herbalism": {
-          "type": "string"
-        },
-        "inscription": {
-          "type": "string"
-        },
-        "jewelcrafting": {
-          "type": "string"
-        },
-        "leatherworking": {
-          "type": "string"
-        },
-        "mining": {
-          "type": "string"
-        },
-        "skinning": {
-          "type": "string"
-        },
-        "tailoring": {
-          "type": "string"
-        },
-        "archeology": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "unknown",
-        "alchemy",
-        "blacksmithing",
-        "enchanting",
-        "engineering",
-        "herbalism",
-        "inscription",
-        "jewelcrafting",
-        "leatherworking",
-        "mining",
-        "skinning",
-        "tailoring",
-        "archeology"
-      ]
-    },
-    "slots": {
-      "type": "object",
-      "properties": {
-        "head": {
-          "type": "string"
-        },
-        "neck": {
-          "type": "string"
-        },
-        "shoulder": {
-          "type": "string"
-        },
-        "back": {
-          "type": "string"
-        },
-        "chest": {
-          "type": "string"
-        },
-        "wrist": {
-          "type": "string"
-        },
-        "hands": {
-          "type": "string"
-        },
-        "waist": {
-          "type": "string"
-        },
-        "legs": {
-          "type": "string"
-        },
-        "feet": {
-          "type": "string"
-        },
-        "finger_1": {
-          "type": "string"
-        },
-        "finger_2": {
-          "type": "string"
-        },
-        "rings": {
-          "type": "string"
-        },
-        "trinket_1": {
-          "type": "string"
-        },
-        "trinket_2": {
-          "type": "string"
-        },
-        "trinkets": {
-          "type": "string"
-        },
-        "main_hand": {
-          "type": "string"
-        },
-        "off_hand": {
-          "type": "string"
-        },
-        "weapons": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "head",
-        "neck",
-        "shoulder",
-        "back",
-        "chest",
-        "wrist",
-        "hands",
-        "waist",
-        "legs",
-        "feet",
-        "finger_1",
-        "finger_2",
-        "rings",
-        "trinket_1",
-        "trinket_2",
-        "trinkets",
-        "main_hand",
-        "off_hand",
-        "weapons"
-      ]
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "classes",
-    "specs",
-    "races",
-    "professions",
-    "slots"
-  ],
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Generated Schema",
-  "description": "Auto-generated JSON Schema",
-  "definitions": {}
+	"type": "object",
+	"properties": {
+		"classes": {
+			"type": "object",
+			"properties": {
+				"death_knight": {
+					"type": "string"
+				},
+				"druid": {
+					"type": "string"
+				},
+				"hunter": {
+					"type": "string"
+				},
+				"mage": {
+					"type": "string"
+				},
+				"monk": {
+					"type": "string"
+				},
+				"paladin": {
+					"type": "string"
+				},
+				"priest": {
+					"type": "string"
+				},
+				"rogue": {
+					"type": "string"
+				},
+				"shaman": {
+					"type": "string"
+				},
+				"warlock": {
+					"type": "string"
+				},
+				"warrior": {
+					"type": "string"
+				}
+			},
+			"additionalProperties": false,
+			"required": ["death_knight", "druid", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"]
+		},
+		"specs": {
+			"type": "object",
+			"properties": {
+				"death_knight": {
+					"type": "object",
+					"properties": {
+						"blood": {
+							"type": "string"
+						},
+						"frost": {
+							"type": "string"
+						},
+						"unholy": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["blood", "frost", "unholy"]
+				},
+				"druid": {
+					"type": "object",
+					"properties": {
+						"balance": {
+							"type": "string"
+						},
+						"feral": {
+							"type": "string"
+						},
+						"guardian": {
+							"type": "string"
+						},
+						"restoration": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["balance", "feral", "guardian", "restoration"]
+				},
+				"hunter": {
+					"type": "object",
+					"properties": {
+						"beast_mastery": {
+							"type": "string"
+						},
+						"marksmanship": {
+							"type": "string"
+						},
+						"survival": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["beast_mastery", "marksmanship", "survival"]
+				},
+				"mage": {
+					"type": "object",
+					"properties": {
+						"arcane": {
+							"type": "string"
+						},
+						"fire": {
+							"type": "string"
+						},
+						"frost": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["arcane", "fire", "frost"]
+				},
+				"monk": {
+					"type": "object",
+					"properties": {
+						"brewmaster": {
+							"type": "string"
+						},
+						"mistweaver": {
+							"type": "string"
+						},
+						"windwalker": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["brewmaster", "mistweaver", "windwalker"]
+				},
+				"paladin": {
+					"type": "object",
+					"properties": {
+						"holy": {
+							"type": "string"
+						},
+						"protection": {
+							"type": "string"
+						},
+						"retribution": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["holy", "protection", "retribution"]
+				},
+				"priest": {
+					"type": "object",
+					"properties": {
+						"discipline": {
+							"type": "string"
+						},
+						"holy": {
+							"type": "string"
+						},
+						"shadow": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["discipline", "holy", "shadow"]
+				},
+				"rogue": {
+					"type": "object",
+					"properties": {
+						"assassination": {
+							"type": "string"
+						},
+						"combat": {
+							"type": "string"
+						},
+						"subtlety": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["assassination", "combat", "subtlety"]
+				},
+				"shaman": {
+					"type": "object",
+					"properties": {
+						"elemental": {
+							"type": "string"
+						},
+						"enhancement": {
+							"type": "string"
+						},
+						"restoration": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["elemental", "enhancement", "restoration"]
+				},
+				"warlock": {
+					"type": "object",
+					"properties": {
+						"affliction": {
+							"type": "string"
+						},
+						"demonology": {
+							"type": "string"
+						},
+						"destruction": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["affliction", "demonology", "destruction"]
+				},
+				"warrior": {
+					"type": "object",
+					"properties": {
+						"arms": {
+							"type": "string"
+						},
+						"fury": {
+							"type": "string"
+						},
+						"protection": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": ["arms", "fury", "protection"]
+				}
+			},
+			"additionalProperties": false,
+			"required": ["death_knight", "druid", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"]
+		},
+		"races": {
+			"type": "object",
+			"properties": {
+				"unknown": {
+					"type": "string"
+				},
+				"blood_elf": {
+					"type": "string"
+				},
+				"draenei": {
+					"type": "string"
+				},
+				"dwarf": {
+					"type": "string"
+				},
+				"gnome": {
+					"type": "string"
+				},
+				"goblin": {
+					"type": "string"
+				},
+				"human": {
+					"type": "string"
+				},
+				"night_elf": {
+					"type": "string"
+				},
+				"orc": {
+					"type": "string"
+				},
+				"alliance_pandaren": {
+					"type": "string"
+				},
+				"horde_pandaren": {
+					"type": "string"
+				},
+				"tauren": {
+					"type": "string"
+				},
+				"troll": {
+					"type": "string"
+				},
+				"undead": {
+					"type": "string"
+				},
+				"worgen": {
+					"type": "string"
+				}
+			},
+			"additionalProperties": false,
+			"required": [
+				"unknown",
+				"blood_elf",
+				"draenei",
+				"dwarf",
+				"gnome",
+				"goblin",
+				"human",
+				"night_elf",
+				"orc",
+				"alliance_pandaren",
+				"horde_pandaren",
+				"tauren",
+				"troll",
+				"undead",
+				"worgen"
+			]
+		},
+		"professions": {
+			"type": "object",
+			"properties": {
+				"unknown": {
+					"type": "string"
+				},
+				"alchemy": {
+					"type": "string"
+				},
+				"blacksmithing": {
+					"type": "string"
+				},
+				"enchanting": {
+					"type": "string"
+				},
+				"engineering": {
+					"type": "string"
+				},
+				"herbalism": {
+					"type": "string"
+				},
+				"inscription": {
+					"type": "string"
+				},
+				"jewelcrafting": {
+					"type": "string"
+				},
+				"leatherworking": {
+					"type": "string"
+				},
+				"mining": {
+					"type": "string"
+				},
+				"skinning": {
+					"type": "string"
+				},
+				"tailoring": {
+					"type": "string"
+				},
+				"archeology": {
+					"type": "string"
+				}
+			},
+			"additionalProperties": false,
+			"required": [
+				"unknown",
+				"alchemy",
+				"blacksmithing",
+				"enchanting",
+				"engineering",
+				"herbalism",
+				"inscription",
+				"jewelcrafting",
+				"leatherworking",
+				"mining",
+				"skinning",
+				"tailoring",
+				"archeology"
+			]
+		},
+		"slots": {
+			"type": "object",
+			"properties": {
+				"head": {
+					"type": "string"
+				},
+				"neck": {
+					"type": "string"
+				},
+				"shoulder": {
+					"type": "string"
+				},
+				"back": {
+					"type": "string"
+				},
+				"chest": {
+					"type": "string"
+				},
+				"wrist": {
+					"type": "string"
+				},
+				"hands": {
+					"type": "string"
+				},
+				"waist": {
+					"type": "string"
+				},
+				"legs": {
+					"type": "string"
+				},
+				"feet": {
+					"type": "string"
+				},
+				"finger_1": {
+					"type": "string"
+				},
+				"finger_2": {
+					"type": "string"
+				},
+				"rings": {
+					"type": "string"
+				},
+				"trinket_1": {
+					"type": "string"
+				},
+				"trinket_2": {
+					"type": "string"
+				},
+				"trinkets": {
+					"type": "string"
+				},
+				"main_hand": {
+					"type": "string"
+				},
+				"off_hand": {
+					"type": "string"
+				},
+				"weapons": {
+					"type": "string"
+				}
+			},
+			"additionalProperties": false,
+			"required": [
+				"head",
+				"neck",
+				"shoulder",
+				"back",
+				"chest",
+				"wrist",
+				"hands",
+				"waist",
+				"legs",
+				"feet",
+				"finger_1",
+				"finger_2",
+				"rings",
+				"trinket_1",
+				"trinket_2",
+				"trinkets",
+				"main_hand",
+				"off_hand",
+				"weapons"
+			]
+		}
+	},
+	"additionalProperties": false,
+	"required": ["classes", "specs", "races", "professions", "slots"],
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Generated Schema",
+	"description": "Auto-generated JSON Schema",
+	"definitions": {}
 }

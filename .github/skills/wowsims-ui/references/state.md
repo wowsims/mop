@@ -15,17 +15,17 @@ There is exactly one store per page: `Sim.store`, built by `createSimStore()` an
 
 ## Slices and who owns them
 
-| Slice                   | Owner facade                             | Contents                                                                                            |
-| ----------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `ui`                    | `Sim`                                    | show\* flags, language, `wasmConcurrency` — presentation                                            |
-| `sim`                   | `Sim`                                    | iterations, phase, faction, `fixedRngSeed`, filters, `lastUsedRngSeed(+version)`, `metadataVersion` |
-| `encounter`             | `Encounter`                              | duration, execute proportions, `useHealth`, `targets` (replace-on-write)                            |
-| `raid`                  | `Raid` / `Party`                         | buffs, debuffs, tanks, targetDummies, numActiveParties, `partyBuffs[5]`, `composition[5][5]`        |
-| `players[storeKey]`     | `Player` / `ItemSwapSettings`            | the values, as `PlayerSlice`, plus a per-field version counter `v` keyed by `PLAYER_FIELDS`         |
-| `reforge[storeKey]`     | `ReforgeSettings`                        | reforge-optimizer settings (`REFORGE_FIELDS`) + counters                                            |
-| `statWeights[storeKey]` | `StatWeightActionSettings`               | excluded stats + counter                                                                            |
-| `bulk[storeKey]`        | `ui/sim/settings/bulk_settings.ts`       | the batch's items, picker groups, limits, run flags and results, plus `v: { settings, items }`     |
-| `runs`                  | `SimRuns` (`ui/sim/sim_runs.ts`)         | `{ isRunning, isAborting }` per `SimRunKind` — one _user-visible operation_, not one worker request |
+| Slice                   | Owner facade                       | Contents                                                                                            |
+| ----------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `ui`                    | `Sim`                              | show\* flags, language, `wasmConcurrency` — presentation                                            |
+| `sim`                   | `Sim`                              | iterations, phase, faction, `fixedRngSeed`, filters, `lastUsedRngSeed(+version)`, `metadataVersion` |
+| `encounter`             | `Encounter`                        | duration, execute proportions, `useHealth`, `targets` (replace-on-write)                            |
+| `raid`                  | `Raid` / `Party`                   | buffs, debuffs, tanks, targetDummies, numActiveParties, `partyBuffs[5]`, `composition[5][5]`        |
+| `players[storeKey]`     | `Player` / `ItemSwapSettings`      | the values, as `PlayerSlice`, plus a per-field version counter `v` keyed by `PLAYER_FIELDS`         |
+| `reforge[storeKey]`     | `ReforgeSettings`                  | reforge-optimizer settings (`REFORGE_FIELDS`) + counters                                            |
+| `statWeights[storeKey]` | `StatWeightActionSettings`         | excluded stats + counter                                                                            |
+| `bulk[storeKey]`        | `ui/sim/settings/bulk_settings.ts` | the batch's items, picker groups, limits, run flags and results, plus `v: { settings, items }`      |
+| `runs`                  | `SimRuns` (`ui/sim/sim_runs.ts`)   | `{ isRunning, isAborting }` per `SimRunKind` — one _user-visible operation_, not one worker request |
 
 `runs` is keyed by `SimRunKind` (`individual-sim`, `bulk-sim`, `stat-weights`,
 `reforge-optimize`) and written only through `patchRun`. The combustion calculator issues ten worker
