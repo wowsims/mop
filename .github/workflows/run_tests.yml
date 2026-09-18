@@ -53,11 +53,20 @@ jobs:
                   npm ci
                   npm run test:locales
 
+            - name: Check formatting 🎯
+              run: npm run fmt
+
             - name: Lint JS 🧹
               run: npm run lint:js
 
             - name: Lint CSS 🎨
               run: npm run lint:css
+
+            - name: Generate TS sources 🧬
+              run: make ui/generated/proto/api.ts go-to-ts
+
+            - name: Type check 🧠
+              run: npm run type-check
 
             - name: Build 🔧
               run: |
