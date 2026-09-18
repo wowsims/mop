@@ -1,9 +1,7 @@
 // Array, object and enum helpers.
 
-import cloneDeep from 'lodash/cloneDeep';
-
 export const omitDeep = <T>(collection: T, excludeKeys: string[]): T => {
-	const clonedCollection = cloneDeep(collection);
+	const clonedCollection = structuredClone(collection);
 
 	const omitFn = (value: any) => {
 		if (value && typeof value === 'object' && !Array.isArray(value)) {
