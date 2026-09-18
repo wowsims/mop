@@ -139,13 +139,12 @@ a path is there.
 (`make go-to-ts`, which runs `go run ./tools/database/gen_db -gen=go-to-ts`). Copying them from a
 built checkout works and is faster. Never run `gen_db` concurrently with another copy of itself.
 
-Known wart: the makefile's `AUTO_GEN_FILES_TS` still lists the pre-restructure path
-`ui/sim/player_classes/capabilities_auto_gen.ts`, while `tools/database/gen_character_constants_ts.go`
-writes `ui/sim/player/classes/capabilities_auto_gen.ts`. The prerequisite therefore never appears, so
-every `make` that depends on it — `dist/mop/.dirstamp`, `host`, `devmode`, `rundevserver` — re-runs
-`gen_db` and re-bundles even when nothing changed. Verify before blaming your own change:
+The makefile declares those paths in `AUTO_GEN_FILES_TS` and the Go generators write them with their
+own literals, so a rename has to land in both. A target make cannot see never counts as made: it
+re-runs `gen_db` and re-bundles on every build, silently. After moving a generated file, check the
+two agree:
 
 ```
 /usr/bin/grep -n AUTO_GEN_FILES_TS makefile | head -1
-/usr/bin/grep -n 'os.WriteFile("ui/' tools/database/gen_character_constants_ts.go
+/usr/bin/grep -rn 'os.WriteFile("ui/' tools/database/
 ```

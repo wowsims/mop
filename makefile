@@ -11,7 +11,7 @@ ASSETS := $(patsubst assets/%,$(OUT_DIR)/assets/%,$(ASSETS_INPUT))
 rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
-AUTO_GEN_FILES_TS := ui/sim/player_classes/capabilities_auto_gen.ts ui/sim/bulk/constants_auto_gen.ts ui/sim/wasm/bulk_sim/constants_auto_gen.ts
+AUTO_GEN_FILES_TS := ui/sim/player/classes/capabilities_auto_gen.ts ui/sim/bulk/constants_auto_gen.ts ui/sim/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
 
 $(OUT_DIR)/.dirstamp: \
