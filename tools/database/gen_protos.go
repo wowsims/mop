@@ -80,11 +80,11 @@ enum {{.ClassName}}MinorGlyph {
 }
 `
 
-const tsTemplateStr = `import { {{.ClassName}}MajorGlyph, {{.ClassName}}MinorGlyph, {{.ClassName}}Talents } from '../proto/{{.FileName}}.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+const tsTemplateStr = `import { {{.ClassName}}MajorGlyph, {{.ClassName}}MinorGlyph, {{.ClassName}}Talents } from '@generated/proto/{{.FileName}}';
+
+import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import {{.ClassName}}TalentJson from './trees/{{.FileName}}.json';
-{{- $class := .ClassName -}}
+{{ $class := .ClassName -}}
 export const {{.LowerCaseClassName}}TalentsConfig: TalentsConfig<{{.ClassName}}Talents> = newTalentsConfig({{.ClassName}}TalentJson);
 
 export const {{.LowerCaseClassName}}GlyphsConfig: GlyphsConfig = {
@@ -93,7 +93,7 @@ export const {{.LowerCaseClassName}}GlyphsConfig: GlyphsConfig = {
 		[{{$.ClassName}}MajorGlyph.{{protoOverride .EnumName $class}}]: {
 			name: "{{.Name}}",
 			description: "{{.Description}}",
-			iconUrl: "{{.IconUrl}}",
+			iconUrl: '{{.IconUrl}}',
 		},
 		{{- end }}
 	},
@@ -102,7 +102,7 @@ export const {{.LowerCaseClassName}}GlyphsConfig: GlyphsConfig = {
 		[{{$.ClassName}}MinorGlyph.{{protoOverride .EnumName $class}}]: {
 			name: "{{.Name}}",
 			description: "{{.Description}}",
-			iconUrl: "{{.IconUrl}}",
+			iconUrl: '{{.IconUrl}}',
 		},
 		{{- end }}
 	},
