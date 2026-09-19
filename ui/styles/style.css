@@ -9,6 +9,7 @@
 
 @import './theme/index.css';
 
+@import '../ui-kit/Accordion/Accordion.css';
 @import '../ui-kit/ItemCell/ItemCell.css';
 @import '../ui-kit/Button/Button.css';
 @import '../ui-kit/ComboBox/ComboBox.css';

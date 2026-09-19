@@ -16,6 +16,7 @@ export type IconName =
 	| 'caret-right'
 	| 'check'
 	| 'check-circle'
+	| 'chevron-down'
 	| 'chevron-left'
 	| 'chevron-right'
 	| 'circle-exclamation'

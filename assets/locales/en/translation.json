@@ -799,6 +799,12 @@
 		"settings": {
 			"combinations_count": "{{amount}} Combinations",
 			"combination_singular": "1 Combination",
+			"groups": {
+				"options": "Batch options",
+				"frozen_slots": "Frozen slots",
+				"reforge": "Reforge settings",
+				"reforge_description": "These are the same settings the Suggest Reforges button uses. The batch sim reforges every gear set with them."
+			},
 			"iterations": "Iterations",
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
@@ -808,6 +814,7 @@
 				"label": "Use legacy single-stage sim",
 				"tooltip": "By default, Bulk Sim runs large batches in multiple stages: a low-iteration pass to find likely contenders, a medium-iteration refinement pass, and a final high-iteration pass for the best remaining gear sets. Enable this only to force the legacy high-stage-only behavior."
 			},
+			"reforge_gems_locked": "The batch sim always optimizes gems, so this option is fixed here.",
 			"required_set_bonuses": {
 				"label": "Required Set Bonuses",
 				"none": "No requirement",

@@ -1,8 +1,10 @@
+import { ReforgeSettingsPanel } from '@features/reforge/components/ReforgePanel';
 import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BulkSimItemSlot, getBulkPlayerCanDualWield } from '@sim/bulk/utils';
 import { usePlayer, useSimHost } from '@sim/context/SimHostContext';
 import { usePlayerStore } from '@sim/hooks/usePlayerStore';
+import { Accordion, AccordionItem } from '@ui-kit/Accordion';
 import { BooleanPicker } from '@ui-kit/BooleanPicker';
 import { Button } from '@ui-kit/Button';
 import { EnumPicker } from '@ui-kit/EnumPicker';
@@ -10,6 +12,7 @@ import { TabPanelColumns } from '@ui-kit/TabPanelColumns';
 import { useEffect } from 'react';
 
 import { trackEvent } from '../../../../tracking/analytics';
+import { BULK_SETTINGS_GROUP, useBulkSettingsGroups } from '../../hooks/useBulkSettingsGroups';
 import { useBulkState } from '../../hooks/useBulkState';
 import { bulkCombinationsLimit } from '../../model/limits';
 import { frozenItemSlot } from '../../model/picker_groups';
@@ -57,6 +60,7 @@ export const BulkSettings = () => {
 	const useLegacyBulkSim = useBulkState(slice => slice.useLegacyBulkSim);
 	const canRun = useBulkState(slice => canRunBatch(slice, bulkCombinationsLimit(player.sim.isNative)));
 	const gear = usePlayerStore('gear');
+	const [openGroups, setOpenGroups] = useBulkSettingsGroups();
 
 	// Clearing a frozen item whose slot no longer holds it writes to the store; that is not safe
 	// during render, so it runs in an effect after render instead.
@@ -85,76 +89,104 @@ export const BulkSettings = () => {
 
 	return (
 		<TabPanelColumns.Right>
-			<div className="sticky top-sim-header pt-6">
+			<div className="sticky top-sim-header pt-6 lg:max-h-bulk-settings-max-h lg:overflow-y-auto">
 				<div className="grid gap-6 border border-border bg-background p-4" data-testid="bulk-settings-container">
 					<CombinationsCount />
 					<Button data-testid="bulk-settings-btn" disabled={!canRun} onClick={() => void runBulkBatch(host)}>
 						{i18n.t('bulk_tab.actions.simulate_batch')}
 					</Button>
-					<div>
-						<BooleanPicker
-							modObject={player}
-							config={{
-								id: 'use-legacy-bulk-sim',
-								label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
-								labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
-								layout: 'inline',
-								value: useLegacyBulkSim,
-								onChange: (newValue: boolean) => {
-									setBulkUseLegacyBulkSim(player, newValue);
-									trackEvent({ action: 'settings', category: 'batch_sim', label: 'use_legacy_bulk_sim', value: newValue });
-								},
-							}}
-						/>
-					</div>
-					<div>
-						<BooleanPicker
-							modObject={player}
-							config={{
-								id: 'inherit-upgrades',
-								label: i18n.t('bulk_tab.settings.inherit_upgrades.label'),
-								labelTooltip: i18n.t('bulk_tab.settings.inherit_upgrades.tooltip'),
-								layout: 'inline',
-								value: inheritUpgrades,
-								onChange: (newValue: boolean) => {
-									setBulkInheritUpgrades(player, newValue);
-									trackEvent({ action: 'settings', category: 'batch_sim', label: 'inherit_upgrades', value: newValue });
-								},
-							}}
-						/>
-					</div>
-					<RequiredSetBonuses />
-					{FROZEN_PAIRS.map(pair => (
-						<div key={pair.id}>
-							<EnumPicker modObject={player} config={freezeItemConfig(pair)} />
-						</div>
-					))}
-					{getBulkPlayerCanDualWield(player) && (
-						<>
+					<Accordion value={openGroups} onValueChange={setOpenGroups}>
+						<AccordionItem
+							value={BULK_SETTINGS_GROUP.options}
+							title={i18n.t('bulk_tab.settings.groups.options')}
+							panelClassName="grid gap-6"
+							testId="bulk-settings-group-options">
 							<div>
-								<EnumPicker
+								<BooleanPicker
 									modObject={player}
 									config={{
-										id: 'freeze-weapon',
-										label: i18n.t('bulk_tab.settings.freeze_weapon.label'),
-										labelTooltip: i18n.t('bulk_tab.settings.freeze_weapon.tooltip'),
-										values: [
-											{ name: i18n.t('common.none'), value: -1 },
-											{ name: i18n.t('slots.main_hand', { ns: 'character' }), value: ItemSlot.ItemSlotMainHand },
-											{ name: i18n.t('slots.off_hand', { ns: 'character' }), value: ItemSlot.ItemSlotOffHand },
-										],
-										value: frozenWeaponSlot ?? -1,
-										onChange: (newValue: number) => {
-											setBulkFrozenWeaponSlot(player, newValue === -1 ? null : newValue);
-											trackEvent({ action: 'settings', category: 'batch_sim', label: 'freeze_weapon_slot', value: newValue });
+										id: 'use-legacy-bulk-sim',
+										label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
+										labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
+										layout: 'inline',
+										value: useLegacyBulkSim,
+										onChange: (newValue: boolean) => {
+											setBulkUseLegacyBulkSim(player, newValue);
+											trackEvent({ action: 'settings', category: 'batch_sim', label: 'use_legacy_bulk_sim', value: newValue });
 										},
 									}}
 								/>
 							</div>
-							<FreezeWeaponTypes slot={ItemSlot.ItemSlotMainHand} />
-							<FreezeWeaponTypes slot={ItemSlot.ItemSlotOffHand} />
-						</>
-					)}
+							<div>
+								<BooleanPicker
+									modObject={player}
+									config={{
+										id: 'inherit-upgrades',
+										label: i18n.t('bulk_tab.settings.inherit_upgrades.label'),
+										labelTooltip: i18n.t('bulk_tab.settings.inherit_upgrades.tooltip'),
+										layout: 'inline',
+										value: inheritUpgrades,
+										onChange: (newValue: boolean) => {
+											setBulkInheritUpgrades(player, newValue);
+											trackEvent({ action: 'settings', category: 'batch_sim', label: 'inherit_upgrades', value: newValue });
+										},
+									}}
+								/>
+							</div>
+							<RequiredSetBonuses />
+						</AccordionItem>
+						{host.reforger && (
+							<AccordionItem
+								value={BULK_SETTINGS_GROUP.reforge}
+								title={i18n.t('bulk_tab.settings.groups.reforge')}
+								testId="bulk-settings-group-reforge">
+								<p className="mb-4 text-sm">{i18n.t('bulk_tab.settings.groups.reforge_description')}</p>
+								<ReforgeSettingsPanel
+									model={host.reforger}
+									options={host.reforgeOptions ?? undefined}
+									idPrefix="bulk-reforge-optimizer"
+									gemsLocked
+								/>
+							</AccordionItem>
+						)}
+						<AccordionItem
+							value={BULK_SETTINGS_GROUP.freezes}
+							title={i18n.t('bulk_tab.settings.groups.frozen_slots')}
+							panelClassName="grid gap-6"
+							testId="bulk-settings-group-freezes">
+							{FROZEN_PAIRS.map(pair => (
+								<div key={pair.id}>
+									<EnumPicker modObject={player} config={freezeItemConfig(pair)} />
+								</div>
+							))}
+							{getBulkPlayerCanDualWield(player) && (
+								<>
+									<div>
+										<EnumPicker
+											modObject={player}
+											config={{
+												id: 'freeze-weapon',
+												label: i18n.t('bulk_tab.settings.freeze_weapon.label'),
+												labelTooltip: i18n.t('bulk_tab.settings.freeze_weapon.tooltip'),
+												values: [
+													{ name: i18n.t('common.none'), value: -1 },
+													{ name: i18n.t('slots.main_hand', { ns: 'character' }), value: ItemSlot.ItemSlotMainHand },
+													{ name: i18n.t('slots.off_hand', { ns: 'character' }), value: ItemSlot.ItemSlotOffHand },
+												],
+												value: frozenWeaponSlot ?? -1,
+												onChange: (newValue: number) => {
+													setBulkFrozenWeaponSlot(player, newValue === -1 ? null : newValue);
+													trackEvent({ action: 'settings', category: 'batch_sim', label: 'freeze_weapon_slot', value: newValue });
+												},
+											}}
+										/>
+									</div>
+									<FreezeWeaponTypes slot={ItemSlot.ItemSlotMainHand} />
+									<FreezeWeaponTypes slot={ItemSlot.ItemSlotOffHand} />
+								</>
+							)}
+						</AccordionItem>
+					</Accordion>
 				</div>
 			</div>
 		</TabPanelColumns.Right>

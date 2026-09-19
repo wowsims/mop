@@ -1,0 +1,41 @@
+@layer components {
+	.ui-accordion {
+		@apply flex flex-col;
+	}
+
+	.ui-accordion-item {
+		@apply border-t border-border;
+
+		&:first-child {
+			@apply border-t-0;
+
+			& .ui-accordion-trigger {
+				@apply pt-0;
+			}
+		}
+	}
+
+	.ui-accordion-header {
+		@apply m-0;
+	}
+
+	.ui-accordion-trigger {
+		@apply flex w-full interactive items-center justify-between gap-2 py-3 text-left font-bold text-foreground;
+
+		&:hover {
+			@apply text-link-hover;
+		}
+
+		&[data-panel-open] .ui-accordion-chevron {
+			@apply rotate-0;
+		}
+	}
+
+	.ui-accordion-chevron {
+		@apply -rotate-90 transition-transform duration-150;
+	}
+
+	.ui-accordion-panel-body {
+		@apply pb-4;
+	}
+}
