@@ -436,7 +436,7 @@ describe('iconEnumPickerShown', () => {
 
 describe('IconEnumPickerConfig', () => {
 	type WithoutBinding = Omit<IconEnumPickerConfig<Options, number>, 'storeSubscribe' | 'storeField'>;
-	type FieldOnly = WithoutBinding & { storeField: 'bonusStats' };
+	type FieldOnly = WithoutBinding & { storeField: 'player:*' };
 
 	it('will not accept a config that names neither a store subscription nor a store field', () => {
 		expectTypeOf<WithoutBinding>().not.toExtend<IconEnumPickerConfig<Options, number>>();

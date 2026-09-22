@@ -2,9 +2,11 @@ import { Spec } from '@generated/proto/common';
 import type { Database } from '@sim/proto/database';
 import { render } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ITEM_NOTICES, MISSING_RANDOM_SUFFIX_WARNING, registerSetBonusNotices, SET_BONUS_NOTICES } from './item_notices';
+
+vi.mock('@sim/constants/missing_effects_auto_gen', () => ({ MISSING_ITEM_EFFECTS: new Map([[1, ['Does a thing.']]]) }));
 
 const markup = (itemId: number, spec: Spec = Spec.SpecUnknown) => renderToStaticMarkup(ITEM_NOTICES.get(itemId)?.[spec]);
 const noticeContainer = (itemId: number, spec: Spec = Spec.SpecUnknown) => render(<>{ITEM_NOTICES.get(itemId)?.[spec]}</>).container;
@@ -23,14 +25,14 @@ describe('the item notice table', () => {
 	});
 
 	it('lists the tooltips a missing item effect carries', () => {
-		const container = noticeContainer(84373);
+		const container = noticeContainer(1);
 		expect([...container.children].map(child => child.tagName.toLowerCase())).toEqual(['p', 'ul']);
 		const heading = container.querySelector('p')!;
 		expect(heading.className).toBe('font-bold');
 		expect(heading.textContent).toBe('The following item effect (on-use or proc) is not implemented!');
 		const items = container.querySelectorAll('ul > li');
 		expect(items).toHaveLength(1);
-		expect(items[0].textContent).toBe('Your Chains of Ice ability now generates an additional 10 Runic Power.');
+		expect(items[0].textContent).toBe('Does a thing.');
 	});
 
 	it('renders the hand-written trinket notice', () => {
