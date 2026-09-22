@@ -1,6 +1,7 @@
 import { Profession } from '@generated/proto/common';
 import { DungeonDifficulty, RepFaction, RepLevel, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import { ActionId } from '@sim/proto/action_id';
+import { getPVPSeasonFromItem } from '@sim/proto/items';
 import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@sim/proto/names';
 import type { Sim } from '@sim/sim';
 import { render } from '@testing-library/react';
@@ -37,7 +38,7 @@ describe('ItemSource', () => {
 		const { container, getByRole } = mount(item);
 
 		expect(getByRole('link').getAttribute('href')).toBe(ActionId.makeItemUrl(200));
-		expect(container.textContent).toBe('Season 8PVP');
+		expect(container.textContent).toBe(`${getPVPSeasonFromItem(item)}PVP`);
 	});
 
 	it('renders nothing for a plain item with no sources, no suffixes, and no pvp name', () => {

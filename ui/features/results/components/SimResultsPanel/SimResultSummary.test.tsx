@@ -1,7 +1,6 @@
 import { Raid as RaidProto } from '@generated/proto/api';
 import { Encounter as EncounterProto } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
-import { PlayerSpecs } from '@sim/player/specs/index';
 import { fakeHost, mockSubscriptions } from '@sim/testing';
 import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -12,7 +11,7 @@ import { SimResultSummary } from './SimResultSummary';
 vi.mock('@sim/state/subscriptions', async () => mockSubscriptions());
 
 const host = fakeHost({
-	config: { cssScheme: 'mage' },
+	config: { cssScheme: 'test' },
 	sim: { getShowDamageMetrics: () => true, getShowThreatMetrics: () => true, getShowHealingMetrics: () => true } as never,
 });
 
@@ -35,7 +34,7 @@ const result = (dps: number, iterations = 1000) =>
 	}) as never;
 
 const player = {
-	spec: PlayerSpecs.FireMage,
+	spec: { specID: -1 } as never,
 	unitIndex: 0,
 	getTargetIndex: () => null,
 	dps: dist(1000, 10),

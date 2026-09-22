@@ -1,6 +1,6 @@
 import { makePlayer } from '@features/apl/testing';
 import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
-import { defaultTargetIcon } from '@sim/proto/action_id';
+import { defaultTargetIcon, getPetIconFromName } from '@sim/proto/action_id';
 import { describe, expect, it, vi } from 'vitest';
 
 import { refToValue, unitOptionModels } from './unit_values';
@@ -70,7 +70,7 @@ describe('refToValue', () => {
 		const ref = UnitReference.create({ type: UnitType.Pet, index: 0 });
 		const result = refToValue(ref, player, false);
 		expect(result.text).toBe('Wolf');
-		expect(result.iconUrl).toBe('https://wow.zamimg.com/images/wow/icons/medium/ability_hunter_pet_wolf.jpg');
+		expect(result.iconUrl).toBe(getPetIconFromName('Wolf'));
 	});
 
 	it('falls back to the paw icon and an indexed label when the pet has no metadata name', () => {

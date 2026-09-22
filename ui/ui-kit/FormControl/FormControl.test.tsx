@@ -27,12 +27,12 @@ describe('FieldLabel', () => {
 
 	it('sets data-testid from testId and forwards other native props', () => {
 		render(
-			<FieldLabel testId="cooldown-picker-label" title="Bloodlust">
+			<FieldLabel testId="cooldown-picker-label" title="Field title">
 				Name
 			</FieldLabel>,
 		);
 		const label = screen.getByTestId('cooldown-picker-label');
-		expect(label.getAttribute('title')).toBe('Bloodlust');
+		expect(label.getAttribute('title')).toBe('Field title');
 	});
 });
 
