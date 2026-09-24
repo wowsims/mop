@@ -46,7 +46,7 @@ import {
 	valueListFieldConfig,
 	variableNameFieldConfig,
 } from './field_descriptors';
-import { resolveField } from './field_specs';
+import { newKindImpl, resolveField } from './field_specs';
 
 vi.mock('@i18n/config', () => ({ default: { t: (key: string) => key } }));
 
@@ -200,5 +200,21 @@ describe('resolveField statType table', () => {
 		if (spec.kind !== 'enum') throw new Error('expected enum kind');
 		expect(spec.table.options[0].value).toBe(-1);
 		expect(spec.table.options.slice(1).map(option => option.value)).toEqual(getEnumValues(Stat));
+	});
+});
+
+describe('newKindImpl', () => {
+	it('sets action-id fields and leaves the rest to the pickers', () => {
+		const impl = newKindImpl({
+			newValue: () => ({}),
+			fields: [actionIdFieldConfig('spellId', 'castable_spells'), valueFieldConfig('lhs'), unitFieldConfig('target', 'targets')],
+		})() as Record<string, unknown>;
+		expect(impl).toEqual({ spellId: ActionID.create() });
+	});
+
+	it('keeps an action id the kind already set', () => {
+		const spellId = ActionID.create({ rawId: { oneofKind: 'spellId', spellId: 1 } });
+		const impl = newKindImpl({ newValue: () => ({ spellId }), fields: [actionIdFieldConfig('spellId', 'castable_spells')] })();
+		expect(impl).toEqual({ spellId });
 	});
 });

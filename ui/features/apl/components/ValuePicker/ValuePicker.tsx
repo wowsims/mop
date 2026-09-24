@@ -1,5 +1,6 @@
 import { useApl } from '@features/apl/context/AplContext';
 import { useAplInput } from '@features/apl/hooks/useAplInput';
+import { newKindImpl } from '@features/apl/model/field_specs';
 import { valueKindOptions } from '@features/apl/model/kind_options';
 import { swapValueKind } from '@features/apl/model/kind_swap';
 import { type APLValueKind, type ValidAPLValueKind, valueKinds } from '@features/apl/model/value_kinds';
@@ -58,7 +59,7 @@ export const ValuePicker = memo(({ player, config, testId }: ValuePickerProps) =
 			const source = config.getValue(subject);
 			if (source?.value.oneofKind == newKind) return;
 			if (newKind) {
-				const next = swapValueKind(source, newKind, valueKinds[newKind].newValue);
+				const next = swapValueKind(source, newKind, newKindImpl(valueKinds[newKind]));
 				if (source) source.value = next.value;
 				else config.setValue(subject, next);
 			} else {

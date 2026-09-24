@@ -334,3 +334,15 @@ export const resolveField = (descriptor: APLFieldDescriptor): AplFieldSpec => {
 			return { kind: 'actionList', field: descriptor.field, newValue: () => [] };
 	}
 };
+
+/**
+ * A fresh impl for a newly picked kind, with its action-id fields set: the sim is asked for stats
+ * before the pickers render and fill their defaults.
+ */
+export const newKindImpl = (kind: { newValue: () => unknown; fields: Array<APLFieldDescriptor> }) => (): unknown => {
+	const impl = kind.newValue() as Record<string, unknown>;
+	for (const descriptor of kind.fields) {
+		if (descriptor.type === 'actionId' && !impl[descriptor.field]) impl[descriptor.field] = ActionID.create();
+	}
+	return impl;
+};

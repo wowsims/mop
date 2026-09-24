@@ -1,6 +1,7 @@
 import { useApl } from '@features/apl/context/AplContext';
 import { useAplInput } from '@features/apl/hooks/useAplInput';
 import { actionKinds, type APLActionKind } from '@features/apl/model/action_kinds';
+import { newKindImpl } from '@features/apl/model/field_specs';
 import { actionKindOptions } from '@features/apl/model/kind_options';
 import { swapActionKind } from '@features/apl/model/kind_swap';
 import { APLAction, type APLValue } from '@generated/proto/apl';
@@ -67,7 +68,7 @@ export const ActionPicker = memo(({ player, config, stacked, fullWidth }: Action
 		setValue: (subject: Player<any>, newKind: ValidAPLActionKind) => {
 			const source = config.getValue(subject);
 			if (source?.action.oneofKind == newKind) return;
-			const next = swapActionKind(source, newKind, actionKinds[newKind].newValue);
+			const next = swapActionKind(source, newKind, newKindImpl(actionKinds[newKind]));
 			if (source) source.action = next.action;
 			else config.setValue(subject, next);
 			subject.touchRotation();
