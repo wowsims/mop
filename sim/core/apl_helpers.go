@@ -203,6 +203,9 @@ func (rot *APLRotation) GetAPLItemProcAuras(statTypesToMatch []stats.Stat, minIc
 }
 
 func (rot *APLRotation) GetAPLSpell(spellId *proto.ActionID) *Spell {
+	if spellId == nil {
+		return nil
+	}
 	actionID := ProtoToActionID(spellId)
 	var spell *Spell
 
@@ -245,6 +248,9 @@ func (rot *APLRotation) GetAPLSpell(spellId *proto.ActionID) *Spell {
 }
 
 func (rot *APLRotation) GetTargetAPLSpell(spellId *proto.ActionID, targetUnit UnitReference) *Spell {
+	if spellId == nil {
+		return nil
+	}
 	actionID := ProtoToActionID(spellId)
 	target := targetUnit.Get()
 

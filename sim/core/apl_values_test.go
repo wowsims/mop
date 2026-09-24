@@ -79,3 +79,13 @@ func TestGroupReferencePlaceholderCompare(t *testing.T) {
 		t.Fatalf("Rebuilt compare evaluated 2 > 1 as false")
 	}
 }
+
+func TestCastSpellWithoutSpellID(t *testing.T) {
+	rot := &APLRotation{
+		unit: &Unit{},
+	}
+
+	if action := rot.newActionCastSpell(&proto.APLActionCastSpell{}); action != nil {
+		t.Fatalf("Expected no action for a cast without a spell, got %v", action)
+	}
+}
