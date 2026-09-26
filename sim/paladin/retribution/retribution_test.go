@@ -14,64 +14,70 @@ func init() {
 }
 
 func TestRetribution(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		{
-			Class: proto.Class_ClassPaladin,
-			Race:  proto.Race_RaceBloodElf,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{retributionSuite()}))
+}
 
-			GearSet: core.GetGearSet("../../../ui/specs/paladin/retribution/gear_sets", "p5"),
+func BenchmarkRetribution(b *testing.B) {
+	core.CharacterBenchmark(b, retributionSuite())
+}
 
-			Talents: "000023",
-			OtherTalentSets: []core.TalentsCombo{
-				{Label: "HolyAvenger_HolyPrism", Talents: "000011", Glyphs: StandardGlyphs},
-				{Label: "HolyAvenger_LightsHammer", Talents: "000012", Glyphs: StandardGlyphs},
-				{Label: "HolyAvenger_ExecutionSentence", Talents: "000013", Glyphs: StandardGlyphs},
-				{Label: "SanctifiedWrath_HolyPrism", Talents: "000021", Glyphs: StandardGlyphs},
-				{Label: "SanctifiedWrath_LightsHammer", Talents: "000022", Glyphs: StandardGlyphs},
-				// {Label: "SanctifiedWrath_ExecutionSentence", Talents: "000023", Glyphs: StandardGlyphs},
-				{Label: "DivinePurpose_HolyPrism", Talents: "000031", Glyphs: StandardGlyphs},
-				{Label: "DivinePurpose_LightsHammer", Talents: "000032", Glyphs: StandardGlyphs},
-				{Label: "DivinePurpose_ExecutionSentence", Talents: "000033", Glyphs: StandardGlyphs},
-			},
+func retributionSuite() core.CharacterSuiteConfig {
+	return core.CharacterSuiteConfig{
+		Class: proto.Class_ClassPaladin,
+		Race:  proto.Race_RaceBloodElf,
 
-			Glyphs: StandardGlyphs,
+		GearSet: core.GetGearSet("../../../ui/specs/paladin/retribution/gear_sets", "p5"),
 
-			Consumables: &proto.ConsumesSpec{
-				FlaskId:  76088, // Flask of Winter's Bite
-				FoodId:   74646, // Black Pepper Ribs and Shrimp
-				PotId:    76095, // Potion of Mogu Power
-				PrepotId: 76095, // Potion of Mogu Power
-			},
-
-			SpecOptions: core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
-			OtherSpecOptions: []core.SpecOptionsCombo{
-				{Label: "Seal of Insight", SpecOptions: SealOfInsight},
-				{Label: "Seal of Justice", SpecOptions: SealOfJustice},
-				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
-			},
-
-			Rotation: core.GetAplRotation("../../../ui/specs/paladin/retribution/apls", "default"),
-
-			Profession1: proto.Profession_Engineering,
-			Profession2: proto.Profession_Herbalism,
-
-			ItemFilter: core.ItemFilter{
-				ArmorType: proto.ArmorType_ArmorTypePlate,
-
-				HandTypes: []proto.HandType{
-					proto.HandType_HandTypeTwoHand,
-				},
-
-				WeaponTypes: []proto.WeaponType{
-					proto.WeaponType_WeaponTypeAxe,
-					proto.WeaponType_WeaponTypeMace,
-					proto.WeaponType_WeaponTypePolearm,
-					proto.WeaponType_WeaponTypeSword,
-				},
-				RangedWeaponTypes: []proto.RangedWeaponType{},
-			},
+		Talents: "000023",
+		OtherTalentSets: []core.TalentsCombo{
+			{Label: "HolyAvenger_HolyPrism", Talents: "000011", Glyphs: StandardGlyphs},
+			{Label: "HolyAvenger_LightsHammer", Talents: "000012", Glyphs: StandardGlyphs},
+			{Label: "HolyAvenger_ExecutionSentence", Talents: "000013", Glyphs: StandardGlyphs},
+			{Label: "SanctifiedWrath_HolyPrism", Talents: "000021", Glyphs: StandardGlyphs},
+			{Label: "SanctifiedWrath_LightsHammer", Talents: "000022", Glyphs: StandardGlyphs},
+			// {Label: "SanctifiedWrath_ExecutionSentence", Talents: "000023", Glyphs: StandardGlyphs},
+			{Label: "DivinePurpose_HolyPrism", Talents: "000031", Glyphs: StandardGlyphs},
+			{Label: "DivinePurpose_LightsHammer", Talents: "000032", Glyphs: StandardGlyphs},
+			{Label: "DivinePurpose_ExecutionSentence", Talents: "000033", Glyphs: StandardGlyphs},
 		},
-	}))
+
+		Glyphs: StandardGlyphs,
+
+		Consumables: &proto.ConsumesSpec{
+			FlaskId:  76088, // Flask of Winter's Bite
+			FoodId:   74646, // Black Pepper Ribs and Shrimp
+			PotId:    76095, // Potion of Mogu Power
+			PrepotId: 76095, // Potion of Mogu Power
+		},
+
+		SpecOptions: core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
+		OtherSpecOptions: []core.SpecOptionsCombo{
+			{Label: "Seal of Insight", SpecOptions: SealOfInsight},
+			{Label: "Seal of Justice", SpecOptions: SealOfJustice},
+			{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
+		},
+
+		Rotation: core.GetAplRotation("../../../ui/specs/paladin/retribution/apls", "default"),
+
+		Profession1: proto.Profession_Engineering,
+		Profession2: proto.Profession_Herbalism,
+
+		ItemFilter: core.ItemFilter{
+			ArmorType: proto.ArmorType_ArmorTypePlate,
+
+			HandTypes: []proto.HandType{
+				proto.HandType_HandTypeTwoHand,
+			},
+
+			WeaponTypes: []proto.WeaponType{
+				proto.WeaponType_WeaponTypeAxe,
+				proto.WeaponType_WeaponTypeMace,
+				proto.WeaponType_WeaponTypePolearm,
+				proto.WeaponType_WeaponTypeSword,
+			},
+			RangedWeaponTypes: []proto.RangedWeaponType{},
+		},
+	}
 }
 
 var StandardGlyphs = &proto.Glyphs{
