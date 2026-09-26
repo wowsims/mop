@@ -16,34 +16,40 @@ func init() {
 }
 
 func TestFury(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		{
-			Class:      proto.Class_ClassWarrior,
-			Race:       proto.Race_RaceTroll,
-			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{furySuite()}))
+}
 
-			GearSet: core.GetGearSet("../../../ui/specs/warrior/fury/gear_sets", "p4_fury_tg"),
+func BenchmarkFury(b *testing.B) {
+	core.CharacterBenchmark(b, furySuite())
+}
 
-			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/specs/warrior/fury/gear_sets", "preraid_fury_tg"),
-			},
-			Talents: TGTalents,
-			OtherTalentSets: []core.TalentsCombo{
-				{
-					Label:   "Single-Minded Fury",
-					Talents: SMFTalents,
-					Glyphs:  FuryGlyphs,
-				},
-			},
-			Glyphs:           FuryGlyphs,
-			Consumables:      FullConsumesSpec,
-			SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFury},
-			Rotation:         core.GetAplRotation("../../../ui/specs/warrior/fury/apls", "default"),
-			StartingDistance: 25,
+func furySuite() core.CharacterSuiteConfig {
+	return core.CharacterSuiteConfig{
+		Class:      proto.Class_ClassWarrior,
+		Race:       proto.Race_RaceTroll,
+		OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			ItemFilter: ItemFilter,
+		GearSet: core.GetGearSet("../../../ui/specs/warrior/fury/gear_sets", "p4_fury_tg"),
+
+		OtherGearSets: []core.GearSetCombo{
+			core.GetGearSet("../../../ui/specs/warrior/fury/gear_sets", "preraid_fury_tg"),
 		},
-	}))
+		Talents: TGTalents,
+		OtherTalentSets: []core.TalentsCombo{
+			{
+				Label:   "Single-Minded Fury",
+				Talents: SMFTalents,
+				Glyphs:  FuryGlyphs,
+			},
+		},
+		Glyphs:           FuryGlyphs,
+		Consumables:      FullConsumesSpec,
+		SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFury},
+		Rotation:         core.GetAplRotation("../../../ui/specs/warrior/fury/apls", "default"),
+		StartingDistance: 25,
+
+		ItemFilter: ItemFilter,
+	}
 }
 
 var ItemFilter = core.ItemFilter{

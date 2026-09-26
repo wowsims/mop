@@ -15,26 +15,32 @@ func init() {
 }
 
 func TestArms(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-		{
-			Class:            proto.Class_ClassWarrior,
-			Race:             proto.Race_RaceOrc,
-			OtherRaces:       []proto.Race{proto.Race_RaceWorgen},
-			StartingDistance: 25,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{armsSuite()}))
+}
 
-			GearSet: core.GetGearSet("../../../ui/specs/warrior/arms/gear_sets", "p5_arms_bis"),
-			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/specs/warrior/arms/gear_sets", "p4_arms_bis"),
-			},
-			Talents:     ArmsTalents,
-			Glyphs:      ArmsDefaultGlyphs,
-			Consumables: FullConsumesSpec,
-			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsArms},
-			Rotation:    core.GetAplRotation("../../../ui/specs/warrior/arms/apls", "arms"),
+func BenchmarkArms(b *testing.B) {
+	core.CharacterBenchmark(b, armsSuite())
+}
 
-			ItemFilter: ItemFilter,
+func armsSuite() core.CharacterSuiteConfig {
+	return core.CharacterSuiteConfig{
+		Class:            proto.Class_ClassWarrior,
+		Race:             proto.Race_RaceOrc,
+		OtherRaces:       []proto.Race{proto.Race_RaceWorgen},
+		StartingDistance: 25,
+
+		GearSet: core.GetGearSet("../../../ui/specs/warrior/arms/gear_sets", "p5_arms_bis"),
+		OtherGearSets: []core.GearSetCombo{
+			core.GetGearSet("../../../ui/specs/warrior/arms/gear_sets", "p4_arms_bis"),
 		},
-	}))
+		Talents:     ArmsTalents,
+		Glyphs:      ArmsDefaultGlyphs,
+		Consumables: FullConsumesSpec,
+		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsArms},
+		Rotation:    core.GetAplRotation("../../../ui/specs/warrior/arms/apls", "arms"),
+
+		ItemFilter: ItemFilter,
+	}
 }
 
 var ArmsTalents = "113132"

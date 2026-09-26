@@ -53,6 +53,14 @@ type ProcTrigger struct {
 	ExtraCondition     ProcExtraCondition
 }
 
+type deferredProc struct {
+	pa        PendingAction
+	spell     *Spell
+	result    SpellResult
+	hasResult bool
+	cleanUp   func(*Simulation)
+}
+
 func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) {
 	var icd Cooldown
 	if config.ICD != 0 {
@@ -70,6 +78,7 @@ func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) 
 	}
 
 	handler := config.Handler
+	var freeDeferred []*deferredProc
 
 	applyHandler := func(sim *Simulation, spell *Spell, result *SpellResult) {
 		if config.TriggerImmediately {
@@ -77,20 +86,40 @@ func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) 
 			return
 		}
 
-		pa := sim.GetConsumedPendingActionFromPool()
-		pa.NextActionAt = sim.CurrentTime + SpellBatchWindow
-		pa.Priority = ActionPriorityDOT
-
-		// Due to the result struct possibly being disposed of after this handler is triggered
-		// we need to clone the result to make sure the values don't get overwritten
-		newResult := spell.CloneResult(result)
-
-		pa.OnAction = func(sim *Simulation) {
-			handler(sim, spell, newResult)
-			spell.DisposeResult(newResult)
+		// Deferred-proc records (PendingAction + result snapshot) come from a
+		// per-trigger free list and return to it when they fire or are cleaned up.
+		var dp *deferredProc
+		if n := len(freeDeferred); n > 0 {
+			dp = freeDeferred[n-1]
+			freeDeferred = freeDeferred[:n-1]
+		} else {
+			dp = &deferredProc{}
+			release := func() {
+				dp.spell = nil
+				freeDeferred = append(freeDeferred, dp)
+			}
+			dp.pa.OnAction = func(sim *Simulation) {
+				res := &dp.result
+				if !dp.hasResult {
+					res = nil
+				}
+				handler(sim, dp.spell, res)
+				release()
+			}
+			dp.cleanUp = func(sim *Simulation) { release() }
 		}
-
-		sim.AddPendingAction(pa)
+		dp.spell = spell
+		dp.hasResult = result != nil
+		if result != nil {
+			// Snapshot the result: the original may be reused before the handler runs.
+			dp.result = *result
+			dp.result.inUse = true
+		}
+		dp.pa.NextActionAt = sim.CurrentTime + SpellBatchWindow
+		dp.pa.Priority = ActionPriorityDOT
+		dp.pa.CleanUp = dp.cleanUp
+		dp.pa.cancelled = false
+		sim.AddPendingAction(&dp.pa)
 	}
 
 	callback := func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {

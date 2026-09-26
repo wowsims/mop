@@ -244,6 +244,23 @@ func (sdm *StatDependencyManager) IsFinalized() bool {
 	return sdm.finalized
 }
 
+// ApplyStatDependenciesInPlace is ApplyStatDependencies without copying the array.
+func (sdm *StatDependencyManager) ApplyStatDependenciesInPlace(s *Stats) {
+	for _, dep := range sdm.deps {
+		if dep.enabled {
+			if dep.src == dep.dst {
+				s[dep.dst] *= dep.amount
+			} else if isFlooredGameStat[dep.src] {
+				s[dep.dst] += math.Floor(s[dep.src]) * dep.amount
+			} else if isRoundedGameStat[dep.src] {
+				s[dep.dst] += math.Round(s[dep.src]) * dep.amount
+			} else {
+				s[dep.dst] += s[dep.src] * dep.amount
+			}
+		}
+	}
+}
+
 func (sdm *StatDependencyManager) ApplyStatDependencies(s Stats) Stats {
 	for _, dep := range sdm.deps {
 		if dep.enabled {

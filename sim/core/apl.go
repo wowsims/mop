@@ -13,6 +13,7 @@ type APLRotation struct {
 	priorityList   []*APLAction
 	groups         []*APLGroup
 	valueVariables []*APLValueVariable
+	resetActions   []*APLAction
 
 	// Shared variable caches: all APLValueVariableRef instances for the same
 	// variable name share the same cache (but each has its own expression tree).
@@ -421,13 +422,16 @@ func (rot *APLRotation) allPrepullActions() []*APLAction {
 }
 
 func (rot *APLRotation) reset(sim *Simulation) {
-	rot.controllingActions = nil
+	rot.controllingActions = rot.controllingActions[:0]
 	rot.inLoop = false
 	rot.interruptChannelIf = nil
 	rot.allowChannelRecastOnInterrupt = false
 	rot.recastingChannel = false
 	rot.evalGeneration++ // Invalidate any variable caches from previous iteration or initialization
-	for _, action := range rot.allAPLActions() {
+	if rot.resetActions == nil {
+		rot.resetActions = rot.allAPLActions()
+	}
+	for _, action := range rot.resetActions {
 		action.impl.Reset(sim)
 	}
 }
