@@ -68,51 +68,53 @@ export const IconEnumPicker = <ModObject, T>({ modObject, config }: IconEnumPick
 			testId="icon-enum-picker-root"
 			iconField
 			hidden={hidden}
-			disabled={disabled}>
-			<Menu
-				surface="none"
-				// No href when nothing is selected: React refuses javascript:void(0), and nativeButton={false} keeps the anchor focusable.
-				triggerRender={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
-				triggerProps={{
-					nativeButton: false,
-					openOnHover: true,
-					delay: 0,
-					className: 'ui-icon-picker-swatch transition-none',
-					'data-testid': 'icon-enum-picker-button',
-					'data-active': active ? '' : undefined,
-					style: selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined,
-					'data-whtticon': 'false',
-					'data-disable-wowhead-touch-tooltip': 'true',
-					...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip),
-				}}
-				side={horizontal ? 'right' : 'bottom'}
-				align="start"
-				sideOffset={-1}
-				// `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against whatever ancestor is `position: relative`.
-				positionMethod="fixed"
-				portalProps={{ className: 'contents', 'data-testid': 'icon-enum-picker-portal' }}
-				positionerProps={{ 'data-testid': 'icon-enum-picker-positioner' }}
-				className="grid border-0 bg-grey"
-				popupProps={{
-					'data-testid': 'icon-enum-picker-menu',
-					style: {
-						gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,
-						gridAutoFlow: horizontal ? 'column' : undefined,
-					},
-				}}>
-				{config.values.map((valueConfig, index) => (
-					<IconEnumOption
-						key={index}
-						valueConfig={valueConfig}
-						hidden={!shows(valueConfig)}
-						tooltipId={tooltipId}
-						onSelect={() => {
-							storedValue.current = undefined;
-							setValue(valueConfig.value);
-						}}
-					/>
-				))}
-			</Menu>
+			disabled={disabled}
+			leading={
+				<Menu
+					surface="none"
+					// No href when nothing is selected: React refuses javascript:void(0), and nativeButton={false} keeps the anchor focusable.
+					triggerRender={<a href={selectedHidden ? undefined : href || undefined} {...disabledAttribute} />}
+					triggerProps={{
+						nativeButton: false,
+						openOnHover: true,
+						delay: 0,
+						className: 'ui-icon-picker-swatch transition-none',
+						'data-testid': 'icon-enum-picker-button',
+						'data-active': active ? '' : undefined,
+						style: selectedHidden ? undefined : selected ? iconStyleOf(selected, iconUrl) : backupId ? actionIconStyle(iconUrl) : undefined,
+						'data-whtticon': 'false',
+						'data-disable-wowhead-touch-tooltip': 'true',
+						...tooltipAnchorProps(config.tooltip ? tooltipId : undefined, config.tooltip),
+					}}
+					side={horizontal ? 'right' : 'bottom'}
+					align="start"
+					sideOffset={-1}
+					// `positionMethod="fixed"`, not the default `absolute`: Base UI renders the positioner `position: fixed` until it has a position, so Floating UI measures it against the viewport, and the switch to `absolute` then reads those viewport coordinates against whatever ancestor is `position: relative`.
+					positionMethod="fixed"
+					portalProps={{ className: 'contents', 'data-testid': 'icon-enum-picker-portal' }}
+					positionerProps={{ 'data-testid': 'icon-enum-picker-positioner' }}
+					className="grid border-0 bg-grey"
+					popupProps={{
+						'data-testid': 'icon-enum-picker-menu',
+						style: {
+							gridTemplateColumns: config.numColumns ? `repeat(${config.numColumns}, 1fr)` : undefined,
+							gridAutoFlow: horizontal ? 'column' : undefined,
+						},
+					}}>
+					{config.values.map((valueConfig, index) => (
+						<IconEnumOption
+							key={index}
+							valueConfig={valueConfig}
+							hidden={!shows(valueConfig)}
+							tooltipId={tooltipId}
+							onSelect={() => {
+								storedValue.current = undefined;
+								setValue(valueConfig.value);
+							}}
+						/>
+					))}
+				</Menu>
+			}>
 			<label
 				className="ui-field-label"
 				data-testid="form-label"
