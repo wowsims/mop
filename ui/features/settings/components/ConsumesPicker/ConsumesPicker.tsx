@@ -36,7 +36,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					<IconEnumPicker modObject={player} config={configs.conjured} />
 				</PickerGroup>
 			</ConsumeRow>
-			<ConsumeRow name="elixirs">
+			<ConsumeRow name="elixirs" configs={[configs.flask, configs.battleElixir, configs.guardianElixir]}>
 				<PickerGroup variant="icons" className="justify-end">
 					<div data-testid="consumes-flasks">
 						<IconEnumPicker modObject={player} config={configs.flask} />
@@ -50,7 +50,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 					</div>
 				</PickerGroup>
 			</ConsumeRow>
-			<ConsumeRow name="food">
+			<ConsumeRow name="food" configs={[configs.food]}>
 				<PickerGroup variant="icons" className="justify-end" data-testid="consumes-food">
 					<IconEnumPicker modObject={player} config={configs.food} />
 				</PickerGroup>
@@ -61,7 +61,7 @@ export const ConsumesPicker = ({ consumableStats, conjuredOptions, explosiveOpti
 				</PickerGroup>
 			</ConsumeRow>
 			{petInputs.length > 0 && (
-				<ConsumeRow name="pet">
+				<ConsumeRow name="pet" configs={petInputs}>
 					<PickerGroup variant="icons" className="justify-end">
 						{petInputs.map((config, index) =>
 							config.type === 'icon' ? (

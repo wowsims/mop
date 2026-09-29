@@ -43,7 +43,7 @@ const configFor = (shown: (options: Options) => boolean): IconEnumPickerConfig<O
 
 const CHILD_CLASS_NAME = 'picker-group icon-group consumes-row-inputs consumes-engi';
 
-const row = (options: Options, configs?: Array<IconEnumPickerConfig<Options, number>>) => {
+const row = (options: Options, configs: Array<IconEnumPickerConfig<Options, number>>) => {
 	render(
 		<SimHostProvider host={{ player: options } as never}>
 			<ConsumeRow name="engineering" configs={configs as never}>
@@ -101,13 +101,9 @@ describe('ConsumeRow', () => {
 		expect(document.body.contains(element)).toBe(true);
 	});
 
-	it('never unmounts a row that names no pickers', () => {
-		const options = new Options();
-		const element = row(options);
-		expect(document.body.contains(element)).toBe(true);
-
-		act(() => options.changeProfession(1));
-		expect(document.body.contains(element)).toBe(true);
+	it('does not mount a row that names no pickers', () => {
+		row(new Options(), []);
+		expect(document.querySelector('[data-testid="consumes-row"]')).toBeNull();
 	});
 
 	it('watches the two professions and nothing else', () => {

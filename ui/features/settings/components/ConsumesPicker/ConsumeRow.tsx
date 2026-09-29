@@ -5,11 +5,17 @@ import type { Player } from '@sim/player/player';
 import { FieldLabel } from '@ui-kit/FormControl';
 import { iconEnumPickerShown } from '@ui-kit/IconEnumPicker';
 import type { IconEnumPickerConfig } from '@ui-kit/IconEnumPicker/types';
+import type { IconPickerConfig } from '@ui-kit/IconPicker/types';
 import { type ReactNode, useId, useMemo } from 'react';
+
+export type ConsumeRowConfig = IconEnumPickerConfig<Player<any>, any> | IconPickerConfig<Player<any>, any>;
+
+const rowConfigShown = (config: ConsumeRowConfig, player: Player<any>): boolean =>
+	'values' in config ? iconEnumPickerShown(config, player) : !config.showWhen || config.showWhen(player);
 
 export interface ConsumeRowProps {
 	name: 'potions' | 'elixirs' | 'food' | 'engineering' | 'pet';
-	configs?: ReadonlyArray<IconEnumPickerConfig<Player<any>, any>>;
+	configs: ReadonlyArray<ConsumeRowConfig>;
 	children: ReactNode;
 }
 
@@ -19,7 +25,7 @@ export const ConsumeRow = ({ name, configs, children }: ConsumeRowProps) => {
 	const profession2 = usePlayerStore('profession2');
 	const labelId = useId();
 	const shown = useMemo(
-		() => !configs || configs.some(config => iconEnumPickerShown(config, player)),
+		() => configs.some(config => rowConfigShown(config, player)),
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- the professions reach `showWhen` through the player facade rather than by name; they are the invalidation keys.
 		[configs, player, profession1, profession2],
 	);
