@@ -10,3 +10,10 @@
 .sim-tooltip--unpadded [class*='styles-module_content'] {
 	padding: 0;
 }
+
+/* The tooltip can open over the next option of a hover-opened menu, and a pointer landing on it leaves the menu. */
+@media (pointer: fine) {
+	.wowhead-tooltip {
+		pointer-events: none;
+	}
+}
