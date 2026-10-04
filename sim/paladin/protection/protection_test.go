@@ -22,26 +22,34 @@ func TestProtection(t *testing.T) {
 		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/specs/paladin/protection/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
 		core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/specs/paladin/protection/builds", "horridon_default", ItemFilter, nil, nil),
 		// core.GetTestBuildFromJSON(proto.Class_ClassPaladin, "../../../ui/specs/paladin/protection/builds", "sha_default", ItemFilter, nil, nil),
-		{
-			Class: proto.Class_ClassPaladin,
-			Race:  proto.Race_RaceBloodElf,
-
-			GearSet:     core.GetGearSet("../../../ui/specs/paladin/protection/gear_sets", "p5_balanced"),
-			Talents:     StandardTalents,
-			Glyphs:      StandardGlyphs,
-			Consumables: FullConsumesSpec,
-			SpecOptions: core.SpecOptionsCombo{Label: "Seal of Insight", SpecOptions: SealOfInsight},
-			OtherSpecOptions: []core.SpecOptionsCombo{
-				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
-				{Label: "Seal of Truth", SpecOptions: SealOfTruth},
-			},
-			Rotation: core.GetAplRotation("../../../ui/specs/paladin/protection/apls", "iron_juggernaut"),
-
-			IsTank:          true,
-			InFrontOfTarget: true,
-			ItemFilter:      ItemFilter,
-		},
+		protectionSuite(),
 	}))
+}
+
+func BenchmarkProtection(b *testing.B) {
+	core.CharacterBenchmark(b, protectionSuite())
+}
+
+func protectionSuite() core.CharacterSuiteConfig {
+	return core.CharacterSuiteConfig{
+		Class: proto.Class_ClassPaladin,
+		Race:  proto.Race_RaceBloodElf,
+
+		GearSet:     core.GetGearSet("../../../ui/specs/paladin/protection/gear_sets", "p5_balanced"),
+		Talents:     StandardTalents,
+		Glyphs:      StandardGlyphs,
+		Consumables: FullConsumesSpec,
+		SpecOptions: core.SpecOptionsCombo{Label: "Seal of Insight", SpecOptions: SealOfInsight},
+		OtherSpecOptions: []core.SpecOptionsCombo{
+			{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
+			{Label: "Seal of Truth", SpecOptions: SealOfTruth},
+		},
+		Rotation: core.GetAplRotation("../../../ui/specs/paladin/protection/apls", "iron_juggernaut"),
+
+		IsTank:          true,
+		InFrontOfTarget: true,
+		ItemFilter:      ItemFilter,
+	}
 }
 
 var StandardTalents = "313213"

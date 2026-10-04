@@ -217,6 +217,28 @@ func RaidBenchmark(b *testing.B, rsr *proto.RaidSimRequest) {
 	}
 }
 
+// CharacterBenchmark sims a suite config's default setup against one target. The seed is fixed,
+// so the reported dps only moves when a change alters results.
+func CharacterBenchmark(b *testing.B, config CharacterSuiteConfig) {
+	_, raid := config.defaultPlayerAndRaid()
+	rsr := &proto.RaidSimRequest{
+		Raid:       raid,
+		Encounter:  Ternary(config.Encounter.Encounter != nil, config.Encounter.Encounter, MakeSingleTargetEncounter(0)),
+		SimOptions: &proto.SimOptions{Iterations: 1000, RandomSeed: 101},
+	}
+
+	b.ReportAllocs()
+	var dps float64
+	for b.Loop() {
+		result := RunRaidSim(rsr)
+		if result.Error != nil {
+			b.Fatalf("CharacterBenchmark() failed: %v", result.Error.Message)
+		}
+		dps = result.RaidMetrics.Dps.Avg
+	}
+	b.ReportMetric(dps, "dps")
+}
+
 func GetAplRotation(dir string, file string) RotationCombo {
 	filePath := dir + "/" + file + ".apl.json"
 	data, err := os.ReadFile(filePath)

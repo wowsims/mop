@@ -8,6 +8,7 @@ type QueuedSpell struct {
 	spell       *Spell
 	target      *Unit
 	queueAction *PendingAction
+	castFn      func(*Simulation)
 
 	// Stores the time at which QueueSpell() was called to ensure that only one spell can be queued up per timestep
 	QueueInitiatedAt time.Duration
@@ -35,13 +36,15 @@ func (qs *QueuedSpell) InitiateQueue(sim *Simulation, spell *Spell, target *Unit
 	qs.target = target
 
 	if qs.queueAction == nil {
+		if qs.castFn == nil {
+			qs.castFn = func(sim *Simulation) {
+				qs.spell.Cast(sim, qs.target)
+			}
+		}
 		pa := &PendingAction{
 			NextActionAt: executeAt,
 			Priority:     ActionPriorityGCD,
-
-			OnAction: func(sim *Simulation) {
-				qs.spell.Cast(sim, qs.target)
-			},
+			OnAction:     qs.castFn,
 		}
 		qs.queueAction = pa
 	} else {

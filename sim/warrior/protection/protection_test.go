@@ -25,28 +25,36 @@ func TestProtectionWarrior(t *testing.T) {
 		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/specs/warrior/protection/builds", "horridon_default", ItemFilter, nil, nil),
 		// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/specs/warrior/protection/builds", "sha_default", ItemFilter, nil, nil),
 		// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/specs/warrior/protection/builds", "garajal_default", ItemFilter, nil, nil),
-		{
-			Class:            proto.Class_ClassWarrior,
-			Race:             proto.Race_RaceOrc,
-			OtherRaces:       []proto.Race{proto.Race_RaceHuman},
-			StartingDistance: 15,
-
-			GearSet:       core.GetGearSet("../../../ui/specs/warrior/protection/gear_sets", "p5_bis"),
-			OtherGearSets: []core.GearSetCombo{
-				// core.GetGearSet("../../../ui/specs/warrior/protection/gear_sets", "p2_bis"),
-			},
-			Talents:     DefaultTalents,
-			Glyphs:      DefaultGlyphs,
-			Consumables: FullConsumesSpec,
-			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-			Rotation:    core.GetAplRotation("../../../ui/specs/warrior/protection/apls", "default"),
-
-			IsTank:          true,
-			InFrontOfTarget: true,
-
-			ItemFilter: ItemFilter,
-		},
+		protectionWarriorSuite(),
 	}))
+}
+
+func BenchmarkProtectionWarrior(b *testing.B) {
+	core.CharacterBenchmark(b, protectionWarriorSuite())
+}
+
+func protectionWarriorSuite() core.CharacterSuiteConfig {
+	return core.CharacterSuiteConfig{
+		Class:            proto.Class_ClassWarrior,
+		Race:             proto.Race_RaceOrc,
+		OtherRaces:       []proto.Race{proto.Race_RaceHuman},
+		StartingDistance: 15,
+
+		GearSet:       core.GetGearSet("../../../ui/specs/warrior/protection/gear_sets", "p5_bis"),
+		OtherGearSets: []core.GearSetCombo{
+			// core.GetGearSet("../../../ui/specs/warrior/protection/gear_sets", "p2_bis"),
+		},
+		Talents:     DefaultTalents,
+		Glyphs:      DefaultGlyphs,
+		Consumables: FullConsumesSpec,
+		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+		Rotation:    core.GetAplRotation("../../../ui/specs/warrior/protection/apls", "default"),
+
+		IsTank:          true,
+		InFrontOfTarget: true,
+
+		ItemFilter: ItemFilter,
+	}
 }
 
 var ItemFilter = core.ItemFilter{

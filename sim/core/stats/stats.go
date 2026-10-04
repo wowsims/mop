@@ -59,6 +59,16 @@ func (s Stats) RoundGameStats() Stats {
 	return s
 }
 
+// RoundGameStatsInPlace is RoundGameStats without copying the array.
+func (s *Stats) RoundGameStatsInPlace() {
+	for _, k := range flooredGameStats {
+		s[k] = math.Floor(s[k])
+	}
+	for _, k := range roundedGameStats {
+		s[k] = math.Round(s[k])
+	}
+}
+
 type Stat byte
 
 // Use internal representation instead of proto.Stat so we can add functions

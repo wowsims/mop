@@ -2,6 +2,7 @@ package shaman
 
 import (
 	"math"
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -56,9 +57,13 @@ var ItemSetRegaliaOfTheWitchDoctor = core.NewItemSet(core.ItemSet{
 				ThreatMultiplier: 1,
 				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 					nTargets := shaman.Env.ActiveTargetCount()
-					spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, damageCalculatorFactory(nTargets))
+					// The set bonus can cast another strike while this one is in flight, which rewrites
+					// the spell's shared result slice, so each cast keeps its own.
+					results := slices.Clone(spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, damageCalculatorFactory(nTargets)))
 					spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-						spell.DealBatchedAoeDamage(sim)
+						for _, result := range results {
+							spell.DealDamage(sim, result)
+						}
 					})
 				},
 			})

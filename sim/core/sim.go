@@ -642,24 +642,24 @@ func (sim *Simulation) AddPendingAction(pa *PendingAction) {
 	//	panic(fmt.Sprintf("Cant add action in the past: %s", pa.NextActionAt))
 	//}
 	pa.consumed = false
-	for index, v := range sim.pendingActions[1:] {
+	// The queue is sorted with the next action at the end, and most new actions
+	// are near-term, so scan from the end to find the insertion point.
+	pas := sim.pendingActions
+	k := len(pas)
+	for k > 1 {
+		v := pas[k-1]
 		if v.NextActionAt < pa.NextActionAt || (v.NextActionAt == pa.NextActionAt && v.Priority >= pa.Priority) {
-			//if sim.Log != nil {
-			//	sim.Log("Adding action at index %d for time %s", index - len(sim.pendingActions), pa.NextActionAt)
-			//	for i := index; i < len(sim.pendingActions); i++ {
-			//		sim.Log("Upcoming action at %s", sim.pendingActions[i].NextActionAt)
-			//	}
-			//}
-			sim.pendingActions = append(sim.pendingActions, pa)
-			copy(sim.pendingActions[index+2:], sim.pendingActions[index+1:])
-			sim.pendingActions[index+1] = pa
-			return
+			k--
+			continue
 		}
+		break
 	}
-	//if sim.Log != nil {
-	//	sim.Log("Adding action at end for time %s", pa.NextActionAt)
-	//}
-	sim.pendingActions = append(sim.pendingActions, pa)
+	pas = append(pas, pa)
+	if k < len(pas)-1 {
+		copy(pas[k+1:], pas[k:])
+		pas[k] = pa
+	}
+	sim.pendingActions = pas
 }
 
 // Use this for any "fire and forget" delayed actions where your code does not
