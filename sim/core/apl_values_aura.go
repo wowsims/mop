@@ -119,6 +119,10 @@ type APLValueAuraNumStacks struct {
 	reactionTime        time.Duration
 	includeReactionTime bool
 
+	stackHistories []auraStackHistory // Indexed by UnitIndex, one per unit the aura reference can resolve to.
+}
+
+type auraStackHistory struct {
 	stackUpdateTime time.Duration
 	stacks          int32
 	previousStacks  int32
@@ -142,19 +146,31 @@ func (rot *APLRotation) newValueAuraNumStacks(config *proto.APLValueAuraNumStack
 		aura:                aura,
 		reactionTime:        rot.unit.ReactionTime,
 		includeReactionTime: config.IncludeReactionTime,
+		stackHistories:      make([]auraStackHistory, len(rot.unit.Env.AllUnits)),
 	}
 
-	resolvedAura.ApplyOnStacksChange(func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32) {
-		if sim.CurrentTime-value.stackUpdateTime >= value.reactionTime {
-			value.previousStacks = oldStacks
+	auras := aura.allTargetAuras
+	if aura.fixedAura != nil {
+		auras = AuraArray{aura.fixedAura}
+	}
+	for _, unitAura := range auras {
+		if unitAura == nil {
+			continue
 		}
-		value.stackUpdateTime = sim.CurrentTime
-		value.stacks = newStacks
-	}).ApplyOnReset(func(aura *Aura, sim *Simulation) {
-		value.stackUpdateTime = NeverExpires
-		value.previousStacks = aura.GetStacks()
-		value.stacks = aura.GetStacks()
-	})
+		unitAura.ApplyOnStacksChange(func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32) {
+			history := &value.stackHistories[aura.Unit.UnitIndex]
+			if sim.CurrentTime-history.stackUpdateTime >= value.reactionTime {
+				history.previousStacks = oldStacks
+			}
+			history.stackUpdateTime = sim.CurrentTime
+			history.stacks = newStacks
+		}).ApplyOnReset(func(aura *Aura, sim *Simulation) {
+			history := &value.stackHistories[aura.Unit.UnitIndex]
+			history.stackUpdateTime = NeverExpires
+			history.previousStacks = aura.GetStacks()
+			history.stacks = aura.GetStacks()
+		})
+	}
 
 	return value
 }
@@ -162,10 +178,15 @@ func (value *APLValueAuraNumStacks) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeInt
 }
 func (value *APLValueAuraNumStacks) GetInt(sim *Simulation) int32 {
-	if value.includeReactionTime {
-		return TernaryInt32(sim.CurrentTime-value.stackUpdateTime >= value.reactionTime, value.stacks, value.previousStacks)
+	aura := value.aura.Get()
+	if aura == nil {
+		return 0
 	}
-	return value.stacks
+	history := &value.stackHistories[aura.Unit.UnitIndex]
+	if value.includeReactionTime {
+		return TernaryInt32(sim.CurrentTime-history.stackUpdateTime >= value.reactionTime, history.stacks, history.previousStacks)
+	}
+	return history.stacks
 }
 func (value *APLValueAuraNumStacks) String() string {
 	return fmt.Sprintf("Aura Num Stacks(%s)", value.aura.String())

@@ -95,7 +95,18 @@ func NewFakeElementalShaman(char *Character, _ *proto.Player) Agent {
 }
 
 func SetupFakeSim() *Simulation {
-	sim := NewSim(&proto.RaidSimRequest{
+	return setupFakeSimFrom(fakeSimRequest())
+}
+
+func setupFakeSimFrom(request *proto.RaidSimRequest) *Simulation {
+	sim := NewSim(request, simsignals.CreateSignals())
+	sim.Reset()
+
+	return sim
+}
+
+func fakeSimRequest() *proto.RaidSimRequest {
+	return &proto.RaidSimRequest{
 		SimOptions: &proto.SimOptions{
 			RandomSeed: 100,
 		},
@@ -121,10 +132,7 @@ func SetupFakeSim() *Simulation {
 			},
 			Duration: 180,
 		},
-	}, simsignals.CreateSignals())
-	sim.Reset()
-
-	return sim
+	}
 }
 
 func expectDotTickDamage(t *testing.T, sim *Simulation, dot *Dot, expectedDamage float64) {
