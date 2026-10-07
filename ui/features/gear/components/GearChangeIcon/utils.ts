@@ -11,7 +11,7 @@ export interface GearChangeSocket {
  * One entry per socket of the new item. `changed` walks the *previous* item's sockets, so a slot
  * that gained sockets reports only the ones it already had.
  */
-export const gearChangeSockets = (item: EquippedItem | undefined, previousItem: EquippedItem | undefined): GearChangeSocket[] => {
+export const gearChangeSockets = (item: EquippedItem | undefined, previousItem: EquippedItem | undefined, isBlacksmithing: boolean): GearChangeSocket[] => {
 	if (!item) return [];
 	const gems = item.gems;
 	const previousGems = previousItem?.gems;
@@ -20,7 +20,7 @@ export const gearChangeSockets = (item: EquippedItem | undefined, previousItem: 
 		if (previousGems?.[socketIdx]?.id !== gems[socketIdx]?.id) changed.add(socketIdx);
 	});
 
-	return item.allSocketColors().map((socketColor, gemIdx) => ({
+	return item.curSocketColors(isBlacksmithing).map((socketColor, gemIdx) => ({
 		socketColor,
 		gemName: gems[gemIdx]?.name,
 		changed: changed.has(gemIdx),

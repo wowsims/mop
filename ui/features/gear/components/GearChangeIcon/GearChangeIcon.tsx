@@ -39,7 +39,7 @@ export const GearChangeIcon = ({ slot, item, previousItem }: GearChangeIconProps
 
 	const reforge = item?.reforge;
 	const showReforge = !!item && (!!reforge || !!previousItem?.reforge);
-	const sockets = useMemo(() => gearChangeSockets(item, previousItem), [item, previousItem]);
+	const sockets = useMemo(() => gearChangeSockets(item, previousItem, isBlacksmithing), [item, previousItem, isBlacksmithing]);
 
 	return (
 		<div className="ui-item-picker-root" data-testid="gear-change-icon">
