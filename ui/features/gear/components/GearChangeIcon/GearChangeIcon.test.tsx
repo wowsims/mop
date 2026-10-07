@@ -1,4 +1,4 @@
-import { ItemSlot } from '@generated/proto/common';
+import { GemColor, ItemSlot } from '@generated/proto/common';
 import { SimHostProvider } from '@sim/context/SimHostContext';
 import { createSimStore } from '@sim/state/sim_store';
 import { fakeHost } from '@sim/testing';
@@ -16,12 +16,22 @@ const { gearChangeSockets } = await import('./utils');
 
 const host = fakeHost({ player: { sim: { store: createSimStore() } } });
 
-const item = ({ gems = [], sockets = [], reforge = undefined }: { gems?: Array<{ id: number; name: string } | null>; sockets?: number[]; reforge?: any }) =>
+const item = ({
+	gems = [],
+	sockets = [],
+	reforge = undefined,
+	extraSocket = false,
+}: {
+	gems?: Array<{ id: number; name: string } | null>;
+	sockets?: number[];
+	reforge?: any;
+	extraSocket?: boolean;
+}) =>
 	({
 		gems,
 		gemSockets: sockets,
 		reforge,
-		allSocketColors: () => sockets,
+		curSocketColors: (isBlacksmithing: boolean) => (extraSocket && isBlacksmithing ? sockets.concat([GemColor.GemColorPrismatic]) : sockets),
 		asActionId: () => ({}),
 	}) as any;
 
@@ -109,6 +119,7 @@ describe('gearChangeSockets', () => {
 				sockets: [1, 2],
 			}),
 			item({ gems: [{ id: 1, name: 'Bold' }], sockets: [1] }),
+			false,
 		);
 
 		expect(result.map(entry => entry.changed)).toEqual([false, false]);
@@ -116,10 +127,17 @@ describe('gearChangeSockets', () => {
 	});
 
 	it('reports nothing without a previous item', () => {
-		expect(gearChangeSockets(item({ gems: [{ id: 1, name: 'Bold' }], sockets: [1] }), undefined).map(entry => entry.changed)).toEqual([false]);
+		expect(gearChangeSockets(item({ gems: [{ id: 1, name: 'Bold' }], sockets: [1] }), undefined, false).map(entry => entry.changed)).toEqual([false]);
+	});
+
+	it('lists the extra wrist/hands socket only for a blacksmith', () => {
+		const wrist = item({ gems: [{ id: 1, name: 'Bold' }, null], sockets: [1], extraSocket: true });
+
+		expect(gearChangeSockets(wrist, wrist, false)).toHaveLength(1);
+		expect(gearChangeSockets(wrist, wrist, true)).toHaveLength(2);
 	});
 
 	it('reports an empty list when there is no item', () => {
-		expect(gearChangeSockets(undefined, item({ gems: [], sockets: [1] }))).toEqual([]);
+		expect(gearChangeSockets(undefined, item({ gems: [], sockets: [1] }), false)).toEqual([]);
 	});
 });

@@ -10,7 +10,7 @@
 	--z-index-modal-elevated-backdrop: 1060;
 	--z-index-modal-elevated: 1065;
 	--z-index-popover: 1070;
-	--z-index-tooltip: 1080;
+	--z-index-tooltip: 10000;
 	--z-index-sticky: 1020;
 	--z-index-menu: 1500;
 	--z-index-toast: 9999;
