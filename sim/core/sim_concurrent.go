@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"slices"
+	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
@@ -25,6 +26,10 @@ func SplitSimRequestForConcurrency(request *proto.RaidSimRequest, splitCount int
 	if request.SimOptions.Iterations <= 0 {
 		res.ErrorResult = "Iterations can't be 0 or negative!"
 		return res
+	}
+
+	if request.SimOptions.RandomSeed == 0 {
+		request.SimOptions.RandomSeed = time.Now().UnixNano()
 	}
 
 	splitCount = min(splitCount, request.SimOptions.Iterations)
