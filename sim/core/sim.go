@@ -196,6 +196,7 @@ func newSimWithEnv(env *Environment, simOptions *proto.SimOptions, signals simsi
 	rseed := simOptions.RandomSeed
 	if rseed == 0 {
 		rseed = time.Now().UnixNano()
+		simOptions.RandomSeed = rseed
 	}
 
 	return &Simulation{
